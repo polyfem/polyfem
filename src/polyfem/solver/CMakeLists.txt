@@ -51,6 +51,7 @@ set(SOURCES
 	AdjointNLProblem.hpp
 	AdjointNLProblem.cpp
 	Parameter.hpp
+	Parameter.cpp
 	ControlParameter.hpp
 	ControlParameter.cpp
 	ShapeParameter.hpp

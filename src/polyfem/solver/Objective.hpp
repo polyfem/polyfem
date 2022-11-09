@@ -93,14 +93,17 @@ namespace polyfem::solver
 	class SumObjective: public Objective
 	{
 	public:
-		SumObjective(const json &args);
+		SumObjective(const std::vector<std::shared_ptr<Objective>> &objs): objs_(objs) 
+		{ weights_.setOnes(objs_.size()); }
+		SumObjective(const std::vector<std::shared_ptr<Objective>> &objs, const Eigen::VectorXd &weights): objs_(objs), weights_(weights) {}
 		~SumObjective() = default;
 
 		double value() const override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State& state) const override;
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
 	protected:
-		std::vector<Objective> objs;
+		std::vector<std::shared_ptr<Objective>> objs_;
+		Eigen::VectorXd weights_;
 	};
 
 	class BoundarySmoothingObjective: public Objective

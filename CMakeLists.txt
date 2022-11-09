@@ -303,10 +303,8 @@ target_link_libraries(polyfem PUBLIC finitediff::finitediff)
 # Main executable
 if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
-    add_executable(shape_optimization src/polyfem/main_shape_opt.cpp)
+    add_executable(optimization src/polyfem/main_optimization.cpp)
     add_executable(trajectory_optimization src/polyfem/main_trajectory_opt.cpp)
-    add_executable(topology_optimization src/polyfem/main_top_opt.cpp)
-    add_executable(homogenization src/polyfem/main_homogenization.cpp)
 
     target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
     include(cli11)
@@ -317,8 +315,8 @@ if(POLYFEM_TOPLEVEL_PROJECT)
             CLI11::CLI11
     )
 
-    target_compile_features(shape_optimization PUBLIC ${CXX14_FEATURES})
-    target_link_libraries(shape_optimization
+    target_compile_features(optimization PUBLIC ${CXX14_FEATURES})
+    target_link_libraries(optimization
         PUBLIC
             polyfem::polyfem
             polyfem::warnings
@@ -327,22 +325,6 @@ if(POLYFEM_TOPLEVEL_PROJECT)
 
     target_compile_features(trajectory_optimization PUBLIC ${CXX14_FEATURES})
     target_link_libraries(trajectory_optimization
-        PUBLIC
-            polyfem::polyfem
-            polyfem::warnings
-            CLI11::CLI11
-    )
-
-    target_compile_features(topology_optimization PUBLIC ${CXX14_FEATURES})
-    target_link_libraries(topology_optimization
-        PUBLIC
-            polyfem::polyfem
-            polyfem::warnings
-            CLI11::CLI11
-    )
-
-    target_compile_features(homogenization PUBLIC ${CXX14_FEATURES})
-    target_link_libraries(homogenization
         PUBLIC
             polyfem::polyfem
             polyfem::warnings

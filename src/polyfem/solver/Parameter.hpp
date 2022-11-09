@@ -11,6 +11,8 @@ namespace polyfem
 		{ assert(states_ptr_.size() > 0); }
 		virtual ~Parameter() = default;
 
+		static std::shared_ptr<Parameter> create(const std::string &type, std::vector<std::shared_ptr<State>> states_ptr);
+
 		inline const State& get_state() const { return *(states_ptr_[0]); }
 
 		inline virtual bool contains_state(const State &state) const
@@ -22,6 +24,8 @@ namespace polyfem
 		}
 
 		virtual void update() = 0;
+
+		virtual Eigen::VectorXd initial_guess() { return Eigen::VectorXd::Zero(optimization_dim_); } // initial guess for the optimization
 
 		// from design dof to full dof mapping
 		virtual Eigen::MatrixXd map(const Eigen::VectorXd &x) const { return x; }

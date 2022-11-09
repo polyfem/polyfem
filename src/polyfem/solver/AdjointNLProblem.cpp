@@ -2,18 +2,18 @@
 
 namespace polyfem::solver
 {
-	double AdjointNLProblem::target_value(const Eigen::VectorXd &x) const
+	double AdjointNLProblem::target_value(const Eigen::VectorXd &x)
 	{
 		// TODO: user specify selection of functionals to be target
 		return obj_->value();
 	}
 
-	double AdjointNLProblem::value(const Eigen::VectorXd &x, const bool only_elastic) const
+	double AdjointNLProblem::value(const Eigen::VectorXd &x, const bool only_elastic)
 	{
 		return obj_->value();
 	}
 
-	double AdjointNLProblem::value(const Eigen::VectorXd &x) const
+	double AdjointNLProblem::value(const Eigen::VectorXd &x)
 	{
 		return value(x, false);
 	}

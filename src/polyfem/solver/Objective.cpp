@@ -185,25 +185,14 @@ namespace polyfem::solver
             return term;
     }
 
-    SumObjective::SumObjective(const json &args)
-    {
-        if (args.is_array())
-        {
-
-        }
-        else
-        {
-
-        }
-    }
-
     Eigen::MatrixXd SumObjective::compute_adjoint_rhs(const State& state) const
     {
         Eigen::VectorXd rhs;
         rhs.setZero(state.ndof());
-        for (const auto &obj : objs)
+        int i = 0;
+        for (const auto &obj : objs_)
         {
-            rhs += obj.compute_adjoint_rhs(state);
+            rhs += weights_(i++) * obj->compute_adjoint_rhs(state);
         }
         return rhs;
     }
@@ -212,9 +201,10 @@ namespace polyfem::solver
     {
         Eigen::VectorXd grad;
         grad.setZero(param.full_dim());
-        for (const auto &obj : objs)
+        int i = 0;
+        for (const auto &obj : objs_)
         {
-            grad += obj.compute_partial_gradient(param);
+            grad += weights_(i++) * obj->compute_partial_gradient(param);
         }
         return grad;
     }
@@ -222,9 +212,10 @@ namespace polyfem::solver
     double SumObjective::value() const
     {
         double val = 0;
-        for (const auto &obj : objs)
+        int i = 0;
+        for (const auto &obj : objs_)
         {
-            val += obj.value();
+            val += weights_(i++) * obj->value();
         }
         return val;
     }
