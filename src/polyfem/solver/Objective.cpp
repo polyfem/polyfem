@@ -477,7 +477,8 @@ namespace polyfem::solver
 		IntegrableFunctional j;
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setOnes(u.rows(), 1);
-            val *= this->weights_(params["elem"]);
+            const int e = params["elem"];
+            val *= this->weights_(e);
 		});
 
         const State &state = shape_param_->get_state();
@@ -499,7 +500,8 @@ namespace polyfem::solver
             IntegrableFunctional j;
             j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
                 val.setOnes(u.rows(), 1);
-                val *= this->weights_(params["elem"]);
+                const int e = params["elem"];
+                val *= this->weights_(e);
             });
 
             const State &state = shape_param_->get_state();
