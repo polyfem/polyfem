@@ -47,8 +47,9 @@ namespace polyfem
 		Eigen::VectorXd x;
 		if (args["optimization"]["enabled"])
 		{
+			auto A_tmp = A;
 			prefactorize(*solver, A, boundary_nodes, precond_num, args["output"]["data"]["stiffness_mat"]);
-			dirichlet_solve_prefactorized(*solver, stiffness, b, boundary_nodes, x);
+			dirichlet_solve_prefactorized(*solver, A_tmp, b, boundary_nodes, x);
 		}
 		else
 		{

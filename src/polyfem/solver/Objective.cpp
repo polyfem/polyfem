@@ -9,6 +9,103 @@ namespace polyfem::solver
     namespace {
         double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
     }
+
+    std::shared_ptr<Objective> Objective::create(const json &args, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &states)
+    {
+        const std::string type = args["type"];
+        std::shared_ptr<Objective> obj;
+        if (type == "trajectory")
+        {
+            assert(false);
+        }
+        else if (type == "stress")
+        {
+            State &state = *(states[args["state"]]);
+            std::shared_ptr<ShapeParameter> shape_param;
+            std::shared_ptr<ElasticParameter> elastic_param;
+            if (args["shape_parameter"] >= 0)
+            {
+                shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+                if (!shape_param->contains_state(state))
+                    logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
+            }
+            else
+                logger().warn("No shape parameter is assigned to functional");
+            
+            if (args["material_parameter"] >= 0)
+                elastic_param = std::dynamic_pointer_cast<ElasticParameter>(parameters[args["material_parameter"]]);
+
+            std::shared_ptr<solver::StaticObjective> tmp = std::make_shared<solver::StressObjective>(state, shape_param, elastic_param, args);
+            if (state.problem->is_time_dependent())
+                obj = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], args["transient_integral_type"], tmp);
+            else
+                obj = tmp;
+        }
+        else if (type == "position")
+        {
+            State &state = *(states[args["state"]]);
+            std::shared_ptr<ShapeParameter> shape_param;
+            if (args["shape_parameter"] >= 0)
+            {
+                shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+                if (!shape_param->contains_state(state))
+                    logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
+            }
+            else
+                logger().warn("No shape parameter is assigned to functional");
+
+            std::shared_ptr<solver::PositionObjective> tmp = std::make_shared<solver::PositionObjective>(state, shape_param, args);
+            tmp->set_dim(args["dim"]);
+            if (state.problem->is_time_dependent())
+                obj = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], args["transient_integral_type"], tmp);
+            else
+                obj = tmp;
+        }
+        else if (type == "boundary_smoothing")
+        {
+            std::shared_ptr<ShapeParameter> shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+            obj = std::make_shared<solver::BoundarySmoothingObjective>(shape_param, args);
+        }
+        else if (type == "control_smoothing")
+        {
+            assert(false);
+        }
+        else if (type == "material_smoothing")
+        {
+            assert(false);
+        }
+        else if (type == "volume_constraint")
+        {
+            std::shared_ptr<ShapeParameter> shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+            obj = std::make_shared<solver::VolumePaneltyObjective>(shape_param, args);
+        }
+        else if (type == "compliance")
+        {
+            State &state = *(states[args["state"]]);
+            
+            std::shared_ptr<ShapeParameter> shape_param;
+            if (args["shape_parameter"] >= 0)
+                shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+            
+            std::shared_ptr<ElasticParameter> elastic_param;
+            if (args["material_parameter"] >= 0)
+                elastic_param = std::dynamic_pointer_cast<ElasticParameter>(parameters[args["material_parameter"]]);
+            
+            std::shared_ptr<TopologyOptimizationParameter> topo_param;
+            if (args["topology_parameter"] >= 0)
+                topo_param = std::dynamic_pointer_cast<TopologyOptimizationParameter>(parameters[args["topology_parameter"]]);
+            
+            if (!shape_param && !topo_param && !elastic_param)
+                logger().warn("No parameter is assigned to functional");
+            
+            obj = std::make_shared<solver::ComplianceObjective>(state, shape_param, elastic_param, topo_param, args);
+        }
+        else
+            log_and_throw_error("Unkown functional type {}!", type);
+
+        return obj;
+    }
+
     Eigen::VectorXd Objective::compute_adjoint_term(const State& state, const Parameter &param)
     {
         Eigen::VectorXd term;
@@ -369,13 +466,18 @@ namespace polyfem::solver
             log_and_throw_error("Volume Objective needs non-empty shape parameter!");
         auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
         interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+
+        weights_.setOnes(shape_param_->get_state().bases.size());
     }
 
     double VolumeObjective::value() const
     {
+        assert(weights_.size() == shape_param_->get_state().bases.size());
+        
 		IntegrableFunctional j;
-		j.set_j([](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setOnes(u.rows(), 1);
+            val *= this->weights_(params["elem"]);
 		});
 
         const State &state = shape_param_->get_state();
@@ -392,9 +494,12 @@ namespace polyfem::solver
     {
         if (&param == shape_param_.get())
         {
+            assert(weights_.size() == shape_param_->get_state().bases.size());
+
             IntegrableFunctional j;
-            j.set_j([](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+            j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
                 val.setOnes(u.rows(), 1);
+                val *= this->weights_(params["elem"]);
             });
 
             const State &state = shape_param_->get_state();

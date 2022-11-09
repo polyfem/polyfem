@@ -150,6 +150,8 @@ int main(int argc, char **argv)
     json opt_args;
     if (!load_json(json_file, opt_args))
         log_and_throw_error("Failed to load optimization json file!");
+    
+    opt_args = apply_opt_json_spec(opt_args, false);
 
     // create states
     json state_args = opt_args["states"];
@@ -201,76 +203,8 @@ int main(int argc, char **argv)
     i = 0;
     for (const json &args : obj_args)
     {
-        const std::string type = args["type"];
         weights[i] = args["weight"];
-        if (type == "trajectory")
-        {
-            assert(false);
-        }
-        else if (type == "stress")
-        {
-            State &state = *(states[args["state"]]);
-            std::shared_ptr<ShapeParameter> shape_param;
-            std::shared_ptr<ElasticParameter> elastic_param;
-            if (args.contains("shape_parameter"))
-            {
-                shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
-                if (!shape_param->contains_state(state))
-                    logger().error("Shape parameter {} is inconsistent with state {} in functional {}", args["shape_parameter"], args["state"], i);
-            }
-            else
-                logger().warn("No shape parameter is assigned to functional {}", i);
-            
-            if (args.contains("material_parameter"))
-                elastic_param = std::dynamic_pointer_cast<ElasticParameter>(parameters[args["material_parameter"]]);
-
-            std::shared_ptr<solver::StaticObjective> tmp = std::make_shared<solver::StressObjective>(state, shape_param, elastic_param, args);
-            if (state.problem->is_time_dependent())
-                objs[i] = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], args["transient_integral_type"], tmp);
-            else
-                objs[i] = tmp;
-        }
-        else if (type == "position")
-        {
-            State &state = *(states[args["state"]]);
-            std::shared_ptr<ShapeParameter> shape_param;
-            if (args.contains("shape_parameter"))
-            {
-                shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
-                if (!shape_param->contains_state(state))
-                    logger().error("Shape parameter {} is inconsistent with state {} in functional {}", args["shape_parameter"], args["state"], i);
-            }
-            else
-                logger().warn("No shape parameter is assigned to functional {}", i);
-
-            std::shared_ptr<solver::PositionObjective> tmp = std::make_shared<solver::PositionObjective>(state, shape_param, args);
-            tmp->set_dim(args["dim"]);
-            if (state.problem->is_time_dependent())
-                objs[i] = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], args["transient_integral_type"], tmp);
-            else
-                objs[i] = tmp;
-        }
-        else if (type == "boundary_smoothing")
-        {
-            std::shared_ptr<ShapeParameter> shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
-            objs[i] = std::make_shared<solver::BoundarySmoothingObjective>(shape_param, args);
-        }
-        else if (type == "control_smoothing")
-        {
-            assert(false);
-        }
-        else if (type == "material_smoothing")
-        {
-            assert(false);
-        }
-        else if (type == "volume_constraint")
-        {
-            std::shared_ptr<ShapeParameter> shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
-            objs[i] = std::make_shared<solver::VolumePaneltyObjective>(shape_param, args);
-        }
-        else
-            log_and_throw_error("Unkown functional type {}!", type);
-        i++;
+        objs[i++] = solver::Objective::create(args, parameters, states);
     }
     std::shared_ptr<solver::Objective> sum_obj = std::make_shared<solver::SumObjective>(objs, weights);
 

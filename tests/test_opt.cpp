@@ -2,14 +2,24 @@
 #include <polyfem/State.hpp>
 #include <polyfem/utils/CompositeFunctional.hpp>
 #include <polyfem/solver/Optimizations.hpp>
+#include <polyfem/solver/AdjointNLProblem.hpp>
+#include <polyfem/solver/BFGSSolver.hpp>
+#include <polyfem/solver/LBFGSSolver.hpp>
+#include <polyfem/solver/LBFGSBSolver.hpp>
+#include <polyfem/solver/MMASolver.hpp>
+#include <polyfem/solver/GradientDescentSolver.hpp>
+#include <polyfem/utils/StringUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
+#include <jse/jse.h>
 
 #include <iostream>
 #include <fstream>
-#include "polyfem/utils/JSONUtils.hpp"
 #include <catch2/catch.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polysolve;
 
 namespace {
 
@@ -27,6 +37,47 @@ bool load_json(const std::string &json_file, json &out)
 	return true;
 }
 
+std::string resolve_output_path(const std::string &output_dir, const std::string &path)
+{
+	if (std::filesystem::path(path).is_absolute())
+		return path;
+	else
+		return std::filesystem::weakly_canonical(std::filesystem::path(output_dir) / path).string();
+}
+
+json apply_opt_json_spec(const json &input_args, bool strict_validation)
+{
+    json args_in = input_args;
+
+    // CHECK validity json
+    json rules;
+    jse::JSE jse;
+    {
+        jse.strict = strict_validation;
+        const std::string polyfem_input_spec = POLYFEM_OPT_INPUT_SPEC;
+        std::ifstream file(polyfem_input_spec);
+
+        if (file.is_open())
+            file >> rules;
+        else
+        {
+            logger().error("unable to open {} rules", polyfem_input_spec);
+            throw std::runtime_error("Invald spec file");
+        }
+    }
+
+    const bool valid_input = jse.verify_json(args_in, rules);
+   
+    if (!valid_input)
+    {
+        logger().error("invalid input json:\n{}", jse.log2str());
+        throw std::runtime_error("Invald input json file");
+    }
+
+    json args = jse.inject_defaults(args_in, rules);
+    return args;
+}
+
 std::shared_ptr<State> create_state(const json &args)
 {
 	std::shared_ptr<State> state = std::make_shared<State>(32);
@@ -42,6 +93,41 @@ std::shared_ptr<State> create_state(const json &args)
 	return state;
 }
 
+template <typename ProblemType>
+std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(const json &solver_params)
+{
+    const std::string name = solver_params["solver"].template get<std::string>();
+    if (name == "GradientDescent" || name == "gradientdescent" || name == "gradient")
+    {
+        return std::make_shared<cppoptlib::GradientDescentSolver<ProblemType>>(
+            solver_params);
+    }
+    else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
+    {
+        return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(
+            solver_params);
+    }
+    else if (name == "bfgs" || name == "BFGS" || name == "BFGS")
+    {
+        return std::make_shared<cppoptlib::BFGSSolver<ProblemType>>(
+            solver_params);
+    }
+    else if (name == "lbfgsb" || name == "LBFGSB" || name == "L-BFGS-B")
+    {
+        return std::make_shared<cppoptlib::LBFGSBSolver<ProblemType>>(
+            solver_params);
+    }
+    else if (name == "mma" || name == "MMA")
+    {
+        return std::make_shared<cppoptlib::MMASolver<ProblemType>>(
+            solver_params);
+    }
+    else
+    {
+        throw std::invalid_argument(fmt::format("invalid nonlinear solver type: {}", name));
+    }
+}
+
 void solve_pde(State &state)
 {
 	state.assemble_rhs();
@@ -50,7 +136,26 @@ void solve_pde(State &state)
 	state.solve_problem(sol, pressure);
 }
 
-} // namespace
+std::vector<double> read_energy(const std::string &file)
+{
+	std::ifstream energy_out(file);
+	std::vector<double> energies;
+	std::string line;
+	if (energy_out.is_open())
+	{
+		while (getline(energy_out, line))
+		{
+			energies.push_back(std::stod(line.substr(0, line.find(","))));
+		}
+	}
+	double starting_energy = energies[0];
+	double optimized_energy = energies[energies.size() - 1];
+
+	std::cout << "initial " << energies[0] << std::endl;
+	std::cout << "final " << energies[energies.size() - 1] << std::endl;
+
+	return energies;
+}
 
 void run_trajectory_opt(const std::string &name)
 {
@@ -115,29 +220,91 @@ void run_trajectory_opt(const std::string &name)
 	CHECK_THROWS_WITH(general_optimization(*state, func), Catch::Matchers::Contains("Reached iteration limit"));
 }
 
+void run_opt_new(const std::string &name)
+{
+	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + name + "/";
+    json opt_args;
+    if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
+        log_and_throw_error("Failed to load optimization json file!");
+    
+    opt_args = apply_opt_json_spec(opt_args, false);
+
+    // create states
+    json state_args = opt_args["states"];
+    assert(state_args.is_array() && state_args.size() > 0);
+    std::vector<std::shared_ptr<State>> states(state_args.size());
+    std::map<int, int> id_to_state;
+    int i = 0;
+    for (const json &args : state_args)
+    {
+        json cur_args;
+        if (!load_json(resolve_output_path(root_folder, args["path"]), cur_args))
+            log_and_throw_error("Can't find json for State {}", args["id"]);
+
+        states[i] = create_state(cur_args);
+        id_to_state[args["id"].get<int>()] = i++;
+    }
+
+    // create parameters
+    json param_args = opt_args["parameters"];
+    assert(param_args.is_array() && param_args.size() > 0);
+    std::vector<std::shared_ptr<Parameter>> parameters(param_args.size());
+    i = 0;
+    for (const json &args : param_args)
+    {
+        std::vector<std::shared_ptr<State>> some_states;
+        for (int id : args["states"])
+        {
+            some_states.push_back(states[id_to_state[id]]);
+        }
+        parameters[i++] = Parameter::create(args, some_states);
+    }
+
+    // create objectives
+    json obj_args = opt_args["functionals"];
+    assert(obj_args.is_array() && obj_args.size() > 0);
+    std::vector<std::shared_ptr<solver::Objective>> objs(obj_args.size());
+    Eigen::VectorXd weights;
+    weights.setOnes(objs.size());
+    i = 0;
+    for (const json &args : obj_args)
+    {
+        weights[i] = args["weight"];
+        objs[i++] = solver::Objective::create(args, parameters, states);
+    }
+    std::shared_ptr<solver::Objective> sum_obj = std::make_shared<solver::SumObjective>(objs, weights);
+
+    solver::AdjointNLProblem nl_problem(sum_obj, parameters, states);
+    std::shared_ptr<cppoptlib::NonlinearSolver<solver::AdjointNLProblem>> nlsolver = make_nl_solver<solver::AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+
+    Eigen::VectorXd x(nl_problem.full_size());
+    int cumulative = 0;
+    for (const auto &p : parameters)
+    {
+        x.segment(cumulative, p->optimization_dim()) = p->initial_guess();
+        cumulative += p->optimization_dim();
+    }
+
+    for (auto &state : states)
+    {
+        state->assemble_rhs();
+        state->assemble_stiffness_mat();
+        Eigen::MatrixXd sol, pressure;
+        state->solve_problem(sol, pressure);
+    }
+
+	CHECK_THROWS_WITH(nlsolver->minimize(nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+}
+} // namespace
+
 #if defined(__linux__)
 
 TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 {
 	run_trajectory_opt("shape-trajectory-surface-opt");
+	auto energies = read_energy("shape-trajectory-surface-opt");
 
-	std::ifstream energy_out("shape-trajectory-surface-opt");
-	std::vector<double> energies;
-	std::string line;
-	if (energy_out.is_open())
-	{
-		while (getline(energy_out, line))
-		{
-			energies.push_back(std::stod(line.substr(0, line.find(","))));
-		}
-	}
-	double starting_energy = energies[0];
-	double optimized_energy = energies[energies.size() - 1];
-
-	std::cout << starting_energy << std::endl;
-	std::cout << optimized_energy << std::endl;
-
-	REQUIRE(optimized_energy == Approx(0.6 * starting_energy).epsilon(0.05));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.6 * energies[0]).epsilon(0.05));
 }
 
 TEST_CASE("shape-stress-opt", "[optimization]")
@@ -161,72 +328,36 @@ TEST_CASE("shape-stress-opt", "[optimization]")
 
 	CHECK_THROWS_WITH(single_optimization(*state, func), Catch::Matchers::Contains("Reached iteration limit"));
 
-	std::ifstream energy_out("shape-stress-opt");
-	std::vector<double> energies;
-	std::string line;
-	if (energy_out.is_open())
-	{
-		while (getline(energy_out, line))
-		{
-			energies.push_back(std::stod(line.substr(0, line.find(","))));
-		}
-	}
-	double starting_energy = energies[0];
-	double optimized_energy = energies[energies.size() - 1];
+	auto energies = read_energy("shape-stress-opt");
 
-	std::cout << starting_energy << std::endl;
-	std::cout << optimized_energy << std::endl;
-
-	REQUIRE(starting_energy  == Approx(12.0721).epsilon(1e-4));
-	REQUIRE(optimized_energy == Approx(11.3404).epsilon(1e-4));
+	REQUIRE(energies[0] == Approx(12.0721).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(11.3404).epsilon(1e-4));
 }
 
 TEST_CASE("material-opt", "[optimization]")
 {
 	run_trajectory_opt("material-opt");
+	auto energies = read_energy("material-opt");
 
-	std::ifstream energy_out("material-opt");
-	std::vector<double> energies;
-	std::string line;
-	if (energy_out.is_open())
-	{
-		while (getline(energy_out, line))
-		{
-			energies.push_back(std::stod(line.substr(0, line.find(","))));
-		}
-	}
-	double starting_energy = energies[0];
-	double optimized_energy = energies[energies.size() - 1];
-
-	std::cout << starting_energy << std::endl;
-	std::cout << optimized_energy << std::endl;
-
-	REQUIRE(starting_energy  == Approx(0.00143472).epsilon(1e-4));
-	REQUIRE(optimized_energy == Approx(1.10657e-05).epsilon(1e-4));
+	REQUIRE(energies[0] == Approx(0.00143472).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(1.10657e-05).epsilon(1e-4));
 }
 
 TEST_CASE("initial-opt", "[optimization]")
 {
 	run_trajectory_opt("initial-opt");
+	auto energies = read_energy("initial-opt");
 
-	std::ifstream energy_out("initial-opt");
-	std::vector<double> energies;
-	std::string line;
-	if (energy_out.is_open())
-	{
-		while (getline(energy_out, line))
-		{
-			energies.push_back(std::stod(line.substr(0, line.find(","))));
-		}
-	}
-	double starting_energy = energies[0];
-	double optimized_energy = energies[energies.size() - 1];
-
-	std::cout << starting_energy << std::endl;
-	std::cout << optimized_energy << std::endl;
-
-	REQUIRE(starting_energy  == Approx(0.147092).epsilon(1e-4));
-	REQUIRE(optimized_energy == Approx(0.109971).epsilon(1e-4));
+	REQUIRE(energies[0] == Approx(0.147092).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.109971).epsilon(1e-4));
 }
 
+TEST_CASE("topology-opt", "[optimization]")
+{
+	run_opt_new("topology-opt");
+	auto energies = read_energy("topology-opt");
+
+	REQUIRE(energies[0] == Approx(78.0531).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(12.8921).epsilon(1e-4));
+}
 #endif

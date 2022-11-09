@@ -113,23 +113,82 @@ namespace polyfem
 
     Eigen::VectorXd TopologyOptimizationParameter::force_inequality_constraint(const Eigen::VectorXd &x0, const Eigen::VectorXd &dx)
     {
-        return x0 + dx;
+		Eigen::VectorXd x_new = x0 + dx;
+
+		for (int i = 0; i < x_new.size(); i++)
+		{
+			if (x_new(i) < min_density)
+				x_new(i) = min_density;
+			else if (x_new(i) > max_density)
+				x_new(i) = max_density;
+		}
+
+		return x_new;
     }
 
     int TopologyOptimizationParameter::n_inequality_constraints()
     {
-        // TODO: total mass constraint
-        return 0;
+		if (!has_mass_constraint)
+			return 0;
+		
+		int n_constraints = 1;
+		if (min_mass > 0)
+			n_constraints++;
+		return n_constraints; // mass constraints
     }
 
     double TopologyOptimizationParameter::inequality_constraint_val(const Eigen::VectorXd &x, const int index)
     {
-        return -1;
+		auto filtered_density = apply_filter(x);
+        const auto &state = get_state();
+		auto &gbases = state.geom_bases();
+
+        double val = 0;
+		for (int e = 0; e < state.bases.size(); e++)
+		{
+            assembler::ElementAssemblyValues vals;
+            state.ass_vals_cache.compute(e, state.mesh->is_volume(), state.bases[e], gbases[e], vals);
+			val += (vals.det.array() * vals.quadrature.weights.array()).sum() * filtered_density(e);
+		}
+
+		if (index == 0)
+			val = val / max_mass - 1;
+		else if (index == 1)
+			val = 1 - val / min_mass;
+		else
+			assert(false);
+        
+        return val;
     }
 
     Eigen::VectorXd TopologyOptimizationParameter::inequality_constraint_grad(const Eigen::VectorXd &x, const int index)
     {
-        return Eigen::VectorXd::Zero(x.size());
+		auto filtered_density = apply_filter(x);
+        const auto &state = get_state();
+		auto &gbases = state.geom_bases();
+
+        Eigen::VectorXd grad(state.bases.size());
+		for (int e = 0; e < state.bases.size(); e++)
+		{
+            assembler::ElementAssemblyValues vals;
+            state.ass_vals_cache.compute(e, state.mesh->is_volume(), state.bases[e], gbases[e], vals);
+			grad(e) = (vals.det.array() * vals.quadrature.weights.array()).sum();
+		}
+
+        grad = apply_filter_to_grad(x, grad);
+
+		if (index == 0)
+		{
+			grad /= max_mass;
+		}
+		else if (index == 1)
+		{
+			grad *= -1 / min_mass;
+		}
+		else
+			assert(false);
+
+		return grad;
     }
 
     bool TopologyOptimizationParameter::pre_solve(const Eigen::VectorXd &newX)

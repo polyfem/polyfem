@@ -15,6 +15,8 @@ namespace polyfem::solver
 		Objective() = default;
 		virtual ~Objective() = default;
 
+		static std::shared_ptr<Objective> create(const json &args, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &states);
+
 		virtual double value() const = 0;
 		Eigen::VectorXd gradient(const State& state, const Parameter &param) const
 		{
@@ -137,6 +139,8 @@ namespace polyfem::solver
 	public:
 		VolumeObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
 		~VolumeObjective() = default;
+		
+		void set_weights(const Eigen::VectorXd &weights) { weights_ = weights; }
 
 		double value() const override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State& state) const override;
@@ -145,6 +149,7 @@ namespace polyfem::solver
 	protected:
 		std::shared_ptr<const ShapeParameter> shape_param_;
 		std::set<int> interested_ids_;
+		Eigen::VectorXd weights_;
 	};
 
 	class VolumePaneltyObjective: public Objective
@@ -160,22 +165,6 @@ namespace polyfem::solver
 	protected:
 		std::shared_ptr<VolumeObjective> obj;
 		Eigen::Vector2d bound;
-	};
-
-	class MassObjective: public Objective
-	{
-	public:
-		MassObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
-		~MassObjective() = default;
-
-		double value() const override;
-		Eigen::MatrixXd compute_adjoint_rhs(const State& state) const override;
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
-
-	protected:
-		std::shared_ptr<const ShapeParameter> shape_param_;
-		std::shared_ptr<const TopologyOptimizationParameter> topo_param_;
-		std::set<int> interested_ids_;
 	};
 
 	class PositionObjective: public SpatialIntegralObjective

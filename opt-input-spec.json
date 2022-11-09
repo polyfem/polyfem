@@ -583,6 +583,7 @@
             "trajectory",
             "position",
             "stress",
+            "compliance",
             "boundary_smoothing",
             "control_smoothing",
             "material_smoothing",
@@ -756,16 +757,6 @@
         "doc": "TODO"
     },
     {
-        "pointer": "/functionals/*/state",
-        "type": "list",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/functionals/*/state/*",
-        "type": "int",
-        "doc": "TODO"
-    },
-    {
         "pointer": "/functionals/*/shape_parameter",
         "type": "int",
         "default": -1,
@@ -773,6 +764,12 @@
     },
     {
         "pointer": "/functionals/*/material_parameter",
+        "type": "int",
+        "default": -1,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/topology_parameter",
         "type": "int",
         "default": -1,
         "doc": "TODO"
@@ -810,7 +807,8 @@
         "optional": [
             "shape_parameter",
             "weight",
-            "transient_integral_type"
+            "transient_integral_type",
+            "volume_selection"
         ],
         "doc": "TODO"
     },
@@ -825,7 +823,26 @@
         "optional": [
             "shape_parameter",
             "material_parameter",
+            "volume_selection",
             "power",
+            "weight",
+            "transient_integral_type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "compliance",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "shape_parameter",
+            "material_parameter",
+            "topology_parameter",
+            "volume_selection",
             "weight",
             "transient_integral_type"
         ],
@@ -844,7 +861,8 @@
             "power",
             "weight",
             "adjust_weight_period",
-            "adjustment_coeff"
+            "adjustment_coeff",
+            "surface_selection"
         ],
         "doc": "TODO"
     },
@@ -857,7 +875,8 @@
             "type"
         ],
         "optional": [
-            "weight"
+            "weight",
+            "volume_selection"
         ],
         "doc": "TODO"
     },
@@ -884,7 +903,8 @@
             "soft_bound"
         ],
         "optional": [
-            "weight"
+            "weight",
+            "volume_selection"
         ],
         "doc": "TODO"
     },
