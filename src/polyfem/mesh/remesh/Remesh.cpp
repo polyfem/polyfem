@@ -79,11 +79,11 @@ namespace polyfem::mesh
 		Eigen::MatrixXi elements;
 		state.build_mesh_matrices(rest_positions, elements);
 
-		WildRemeshing2D::EdgeMap edge_to_boundary_id;
+		WildRemeshing2D::EdgeMap<int> edge_to_boundary_id;
 		for (int ei = 0; ei < state.mesh->n_edges(); ei++)
 		{
-			int e0 = state.in_node_to_node[state.mesh->edge_vertex(ei, 0)];
-			int e1 = state.in_node_to_node[state.mesh->edge_vertex(ei, 1)];
+			size_t e0 = state.in_node_to_node[state.mesh->edge_vertex(ei, 0)];
+			size_t e1 = state.in_node_to_node[state.mesh->edge_vertex(ei, 1)];
 			if (e1 < e0)
 				std::swap(e0, e1);
 			edge_to_boundary_id[std::make_pair(e0, e1)] = state.mesh->get_boundary_id(ei);
@@ -106,13 +106,11 @@ namespace polyfem::mesh
 		WildRemeshing2D remeshing(state);
 		remeshing.init(rest_positions, positions, elements, projection_quantities, edge_to_boundary_id, body_ids);
 
-		for (int i = 0; i < 1; ++i)
-		{
-			remeshing.split_all_edges();
-			// remeshing.consolidate_mesh();
-			// remeshing.smooth_all_vertices();
-			// remeshing.collapse_all_edges();
-		}
+		const bool made_change = remeshing.execute(
+			/*split=*/true, /*collapse=*/false, /*smooth=*/false, /*swap=*/false,
+			/*max_ops_percent=*/-1);
+		if (!made_change)
+			return;
 
 		remeshing.consolidate_mesh();
 
@@ -131,12 +129,12 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 		// set boundary ids
 
-		const WildRemeshing2D::EdgeMap remesh_boundary_ids = remeshing.boundary_ids();
+		const WildRemeshing2D::EdgeMap<int> remesh_boundary_ids = remeshing.boundary_ids();
 		std::vector<int> boundary_ids(state.mesh->n_edges(), -1);
 		for (int i = 0; i < state.mesh->n_edges(); i++)
 		{
-			int e0 = state.mesh->edge_vertex(i, 0);
-			int e1 = state.mesh->edge_vertex(i, 1);
+			size_t e0 = state.mesh->edge_vertex(i, 0);
+			size_t e1 = state.mesh->edge_vertex(i, 1);
 			if (e1 < e0)
 				std::swap(e0, e1);
 			boundary_ids[i] = remesh_boundary_ids.at(std::make_pair(e0, e1));

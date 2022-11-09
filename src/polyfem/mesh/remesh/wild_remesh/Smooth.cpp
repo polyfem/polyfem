@@ -18,7 +18,7 @@ namespace polyfem::mesh
 		if (vertex_attrs[t.vid(*this)].fixed)
 			return false;
 
-		cache_before();
+		cache_before(); // Cache global quantaties for projection
 
 		return true;
 	}
@@ -27,11 +27,15 @@ namespace polyfem::mesh
 	{
 		const size_t vid = t.vid(*this);
 
-		const std::vector<Tuple> locs = get_one_ring_tris_for_vertex(t);
-		assert(locs.size() > 0);
+		const std::vector<Tuple> one_ring = get_one_ring_tris_for_vertex(t);
+		assert(one_ring.size() > 0);
 
+		// ---------------------------------------------------------------------
+		// 1. update rest position of new vertex
+
+		// TODO: use same energy as we simulate
 		std::vector<std::shared_ptr<Form>> forms;
-		for (const Tuple &loc : locs)
+		for (const Tuple &loc : one_ring)
 		{
 			// For each triangle, make a reordered copy of the vertices so that
 			// the vertex to optimize is always the first
@@ -56,8 +60,6 @@ namespace polyfem::mesh
 
 		FullNLProblem problem(forms);
 
-		// ---------------------------------------------------------------------
-
 		// Make a backup of the current configuration
 		const Eigen::Vector2d old_rest_pos = vertex_attrs[vid].rest_position;
 
@@ -80,6 +82,7 @@ namespace polyfem::mesh
 			"solver": "Eigen::PardisoLDLT",
 			"precond": "Eigen::IdentityPreconditioner"
 		})"_json;
+		// TODO: This should be dense
 		cppoptlib::SparseNewtonDescentSolver<FullNLProblem> solver(newton_args, linear_solver_args);
 
 		Eigen::VectorXd new_rest_pos = old_rest_pos;
@@ -93,45 +96,26 @@ namespace polyfem::mesh
 			return false;
 		}
 
-		logger().critical("old pos {} -> new pos {}", old_rest_pos.transpose(), new_rest_pos.transpose());
-
 		vertex_attrs[vid].rest_position = new_rest_pos;
 
-		double energy_before_projection = compute_global_energy();
-		logger().critical("energy_before={} energy_before_projection={}", energy_before, energy_before_projection);
-
-		update_positions();
-
-		double energy_after = compute_global_energy();
-
-		logger().critical("energy_before={} energy_after={} accept={}", energy_before, energy_after, energy_after < energy_before);
-		return energy_after < energy_before;
-	}
-
-	void WildRemeshing2D::smooth_all_vertices()
-	{
-		std::vector<std::pair<std::string, Tuple>> collect_all_ops;
-		for (const Tuple &loc : get_vertices())
+		if (!invariants(one_ring))
 		{
-			collect_all_ops.emplace_back("vertex_smooth", loc);
+			assert(false); // this should be satisfied because of the line-search
+			return false;
 		}
-		logger().debug("Num verts {}", collect_all_ops.size());
-		if (NUM_THREADS > 0)
-		{
-			wmtk::ExecutePass<WildRemeshing2D, wmtk::ExecutionPolicy::kPartition> executor;
-			executor.lock_vertices = [](WildRemeshing2D &m,
-										const Tuple &e,
-										int task_id) -> bool {
-				return m.try_set_vertex_mutex_one_ring(e, task_id);
-			};
-			executor.num_threads = NUM_THREADS;
-			executor(*this, collect_all_ops);
-		}
-		else
-		{
-			wmtk::ExecutePass<WildRemeshing2D, wmtk::ExecutionPolicy::kSeq> executor;
-			executor(*this, collect_all_ops);
-		}
+
+		// ---------------------------------------------------------------------
+		// 2. project quantaties so to minimize the L2 error
+		project_quantities();
+
+		// There is no non-inversion check in project_quantities, so check it here.
+		if (!invariants(one_ring))
+			return false;
+
+		// ---------------------------------------------------------------------
+		// 3. perform a local relaxation of the n-ring to get an estimate of the
+		//    energy decrease.
+		return local_relaxation(t, n_ring_size);
 	}
 
 } // namespace polyfem::mesh

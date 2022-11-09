@@ -5,6 +5,8 @@
 #include <wmtk/TriMesh.h>
 #include <wmtk/ExecutionScheduler.hpp>
 
+#include <unordered_map>
+
 namespace polyfem::mesh
 {
 	class WildRemeshing2D : public wmtk::TriMesh
@@ -23,7 +25,8 @@ namespace polyfem::mesh
 		/// @brief Current execuation policy (sequencial or parallel)
 		static constexpr wmtk::ExecutionPolicy EXECUTION_POLICY = wmtk::ExecutionPolicy::kSeq;
 		/// @brief Map from a (sorted) edge to an integer (ID)
-		using EdgeMap = std::unordered_map<std::pair<int, int>, int, polyfem::utils::HashPair>;
+		template <typename T>
+		using EdgeMap = std::unordered_map<std::pair<size_t, size_t>, T, polyfem::utils::HashPair>;
 
 		/// @brief Initialize the mesh
 		/// @param rest_positions Rest positions of the mesh (|V| × DIM)
@@ -37,7 +40,7 @@ namespace polyfem::mesh
 			const Eigen::MatrixXd &positions,
 			const Eigen::MatrixXi &triangles,
 			const Eigen::MatrixXd &projection_quantities,
-			const EdgeMap &edge_to_boundary_id,
+			const EdgeMap<int> &edge_to_boundary_id,
 			const std::vector<int> &body_ids);
 
 		/// @brief Exports rest positions of the stored mesh
@@ -53,7 +56,7 @@ namespace polyfem::mesh
 		/// @brief Exports projected quantities of the stored mesh
 		Eigen::MatrixXd projected_quantities() const;
 		/// @brief Exports boundary ids of the stored mesh
-		EdgeMap boundary_ids() const;
+		EdgeMap<int> boundary_ids() const;
 		/// @brief Exports body ids of the stored mesh
 		std::vector<int> body_ids() const;
 
@@ -66,7 +69,7 @@ namespace polyfem::mesh
 		/// @brief Set if a vertex is fixed
 		void set_fixed(const std::vector<bool> &fixed);
 		/// @brief Set the boundary IDs of all edges
-		void set_boundary_ids(const EdgeMap &edge_to_boundary_id);
+		void set_boundary_ids(const EdgeMap<int> &edge_to_boundary_id);
 		/// @brief Set the body IDs of all triangles
 		void set_body_ids(const std::vector<int> &body_ids);
 
@@ -81,9 +84,11 @@ namespace polyfem::mesh
 		/// @param path Output path
 		void write_deformed_obj(const std::string &path) const { write_obj(path, true); }
 
-		/// @brief Compute the global energy of the mesh
-		double compute_global_energy() const;
-		double compute_global_wicke_measure() const;
+		/// @brief Compute the length of an edge.
+		double edge_length(const Tuple &e) const;
+
+		/// @brief Compute the average elastic energy of the faces containing an edge.
+		double edge_elastic_energy(const Tuple &e) const;
 
 		/// @brief Check if a triangle is inverted
 		bool is_inverted(const Tuple &loc) const;
@@ -91,24 +96,38 @@ namespace polyfem::mesh
 		/// @brief Check if invariants are satisfied
 		bool invariants(const std::vector<Tuple> &new_tris) override;
 
-		/// @brief Update the mesh positions
-		void update_positions();
+		/// @brief Execute the remeshing
+		/// @param split Perform splitting operations
+		/// @param collapse Perform collapsing operations
+		/// @param smooth Perform smoothing operations
+		/// @param swap Perform edge swapping operations
+		/// @param max_ops Maximum number of operations to perform (default: unlimited)
+		/// @return True if any operation was performed.
+		bool execute(
+			const bool split = true,
+			const bool collapse = false,
+			const bool smooth = false,
+			const bool swap = false,
+			const double max_ops_percent = -1);
 
 		// Smoothing
-		void smooth_all_vertices();
 		bool smooth_before(const Tuple &t) override;
 		bool smooth_after(const Tuple &t) override;
 
 		// Edge splitting
-		void split_all_edges();
 		bool split_edge_before(const Tuple &t) override;
 		bool split_edge_after(const Tuple &t) override;
 
 		// Edge collapse
-		void collapse_all_edges();
 		bool collapse_edge_before(const Tuple &t) override;
 		bool collapse_edge_after(const Tuple &t) override;
 
+		// Edge swap
+		// bool swap_edge_before(const Tuple &t) override;
+		// bool swap_edge_after(const Tuple &t) override;
+
+		/// @brief Create a vector of all the new edge after an operation.
+		/// @param tris New triangles.
 		std::vector<Tuple> new_edges_after(const std::vector<Tuple> &tris) const;
 
 		struct VertexAttributes
@@ -123,6 +142,11 @@ namespace polyfem::mesh
 			size_t partition_id = 0; // Vertices marked as fixed cannot be modified by any local operation
 
 			Eigen::Vector2d displacement() const { return position - rest_position; }
+
+			// TODO: handle multi-step time integrators
+			Eigen::Vector2d prev_displacement() const { return projection_quantities.col(0); }
+			Eigen::Vector2d prev_velocity() const { return projection_quantities.col(1); }
+			Eigen::Vector2d prev_acceleration() const { return projection_quantities.col(2); }
 		};
 		wmtk::AttributeCollection<VertexAttributes> vertex_attrs;
 
@@ -138,19 +162,16 @@ namespace polyfem::mesh
 		};
 		wmtk::AttributeCollection<EdgeAttributes> edge_attrs;
 
+		/// @brief Minimum edge length for splitting
+		double min_edge_length = 1e-6;
+		/// @brief Accept operation if energy decreased by at least (100 * x)%
+		double energy_relative_tolerance = 1e-3;
+		/// @brief Accept operation if energy decreased by at least x
+		double energy_absolute_tolerance = 1e-8;
+		/// @brief Size of n-ring for local relaxation
+		int n_ring_size = 3;
+
 	protected:
-		std::vector<Tuple> get_n_ring_tris_for_vertex(const Tuple &root, int n) const;
-
-		double local_relaxation(const Tuple &t, const int n_ring);
-
-		void build_local_matricies(
-			const std::vector<Tuple> &tris,
-			Eigen::MatrixXd &V, // rest positions
-			Eigen::MatrixXd &U, // displacement
-			Eigen::MatrixXi &F, // triangles as vertex indices
-			std::unordered_map<size_t, size_t> &local_to_global,
-			std::vector<int> &body_ids) const;
-
 		/// @brief Get the boundary nodes of the stored mesh
 		std::vector<int> boundary_nodes() const;
 
@@ -167,8 +188,23 @@ namespace polyfem::mesh
 			std::vector<polyfem::basis::ElementBases> &bases,
 			Eigen::VectorXi &vertex_to_basis);
 
+		/// @brief Create an assembler object
+		/// @param body_ids One body ID per triangle.
+		/// @return Assembler object
 		assembler::AssemblerUtils create_assembler(const std::vector<int> &body_ids) const;
 
+		/// @brief Update the mesh positions
+		void project_quantities();
+
+		/// @brief Relax a local n-ring around a vertex.
+		/// @param t Center of the local n-ring
+		/// @param n_ring Size of the n-ring
+		/// @return If the local relaxation reduced the energy "significantly"
+		bool local_relaxation(const Tuple &t, const int n_ring);
+
+		// --------------------------------------------------------------------
+
+		/// @brief Reference to the simulation state.
 		const State &state;
 
 		/// @brief Number of projection quantities (not including the position)
@@ -177,28 +213,44 @@ namespace polyfem::mesh
 		/// @brief Cache quantaties before applying an operation
 		void cache_before();
 
-		/// @brief Rest positions of the mesh before an operation
-		Eigen::MatrixXd rest_positions_before;
-		/// @brief Deformed positions of the mesh before an operation
-		Eigen::MatrixXd positions_before;
-		/// @brief Triangled before an operation
-		Eigen::MatrixXi triangles_before;
-		/// @brief DIM rows per vertex and 1 column per quantity
-		Eigen::MatrixXd projected_quantities_before;
-		/// @brief Energy before an operation
-		double energy_before;
-
-		struct EdgeCache
+		// TODO: Drop this and only use a local EdgeOperationCache
+		struct GlobalCache
 		{
-			EdgeCache() = default;
-			EdgeCache(const WildRemeshing2D &m, const Tuple &t);
-
-			VertexAttributes v0;
-			VertexAttributes v1;
-			std::vector<EdgeAttributes> edges;
-			std::vector<FaceAttributes> faces;
+			/// @brief Rest positions of the mesh before an operation
+			Eigen::MatrixXd rest_positions_before;
+			/// @brief Deformed positions of the mesh before an operation
+			Eigen::MatrixXd positions_before;
+			/// @brief Triangled before an operation
+			Eigen::MatrixXi triangles_before;
+			/// @brief DIM rows per vertex and 1 column per quantity
+			Eigen::MatrixXd projected_quantities_before;
+			/// @brief Energy before an operation
+			double energy_before;
 		};
-		EdgeCache edge_cache;
+		GlobalCache global_cache;
+
+		class EdgeOperationCache
+		{
+		public:
+			/// @brief Construct a local mesh as an n-ring around a vertex.
+			static EdgeOperationCache split(WildRemeshing2D &m, const Tuple &t);
+			// static EdgeOperationCache swap(WildRemeshing2D &m, const Tuple &t);
+			static EdgeOperationCache collapse(WildRemeshing2D &m, const Tuple &t);
+
+			const std::pair<size_t, VertexAttributes> &v0() const { return m_v0; }
+			const std::pair<size_t, VertexAttributes> &v1() const { return m_v1; }
+			const EdgeMap<EdgeAttributes> &edges() const { return m_edges; }
+			const std::vector<FaceAttributes> &faces() const { return m_faces; }
+
+		protected:
+			std::pair<size_t, VertexAttributes> m_v0;
+			std::pair<size_t, VertexAttributes> m_v1;
+			EdgeMap<EdgeAttributes> m_edges;
+			std::vector<FaceAttributes> m_faces;
+		};
+
+		// TODO: make this thread local
+		EdgeOperationCache edge_cache;
 	};
 
 } // namespace polyfem::mesh

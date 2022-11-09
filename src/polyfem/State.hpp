@@ -16,6 +16,8 @@
 #include <polyfem/mesh/MeshNodes.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 
+#include <polyfem/solver/SolveData.hpp>
+
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
@@ -53,51 +55,6 @@ namespace polyfem
 		class Mesh2D;
 		class Mesh3D;
 	} // namespace mesh
-
-	namespace solver
-	{
-		class NLProblem;
-
-		class Form;
-		class ContactForm;
-		class FrictionForm;
-		class BodyForm;
-		class ALForm;
-		class InertiaForm;
-		class ElasticForm;
-	} // namespace solver
-
-	namespace time_integrator
-	{
-		class ImplicitTimeIntegrator;
-	} // namespace time_integrator
-
-	/// class to store time stepping data
-	class SolveData
-	{
-	public:
-		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
-		std::shared_ptr<solver::NLProblem> nl_problem;
-
-		std::shared_ptr<solver::ContactForm> contact_form;
-		std::shared_ptr<solver::BodyForm> body_form;
-		std::shared_ptr<solver::ALForm> al_form;
-		std::shared_ptr<solver::ElasticForm> damping_form;
-		std::shared_ptr<solver::FrictionForm> friction_form;
-		std::shared_ptr<solver::InertiaForm> inertia_form;
-		std::shared_ptr<solver::ElasticForm> elastic_form;
-
-		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
-
-		/// @brief update the barrier stiffness for the forms
-		/// @param x current solution
-		void updated_barrier_stiffness(const Eigen::VectorXd &x);
-
-		/// @brief updates the dt inside the different forms
-		void update_dt();
-
-		std::unordered_map<std::string, std::shared_ptr<solver::Form>> named_forms() const;
-	};
 
 	/// main class that contains the polyfem solver and all its state
 	class State
@@ -316,7 +273,7 @@ namespace polyfem
 		}
 
 		/// timedependent stuff cached
-		SolveData solve_data;
+		solver::SolveData solve_data;
 		/// initialize solver
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure

@@ -10,71 +10,100 @@ namespace polyfem::mesh
 		if (!super::collapse_edge_before(t))
 			return false;
 
-		if (vertex_attrs[t.vid(*this)].fixed
-			|| vertex_attrs[t.switch_vertex(*this).vid(*this)].fixed)
-		{
+		const int v0i = t.vid(*this);
+		const int v1i = t.switch_vertex(*this).vid(*this);
+
+		if (vertex_attrs[v0i].fixed && vertex_attrs[v1i].fixed)
 			return false;
-		}
 
 		cache_before();
-		edge_cache = EdgeCache(*this, t);
+		edge_cache = EdgeOperationCache::collapse(*this, t);
 
 		return true;
 	}
 
 	bool WildRemeshing2D::collapse_edge_after(const Tuple &t)
 	{
-		size_t vid = t.vid(*this);
+		// 0) perform operation (done before this function)
 
-		vertex_attrs[vid].rest_position = (edge_cache.v0.rest_position + edge_cache.v1.rest_position) / 2.0;
-		vertex_attrs[vid].partition_id = edge_cache.v0.partition_id;
-		vertex_attrs[vid].fixed = false;
+		const auto &[old_v0_id, v0] = edge_cache.v0();
+		const auto &[old_v1_id, v1] = edge_cache.v1();
+		const auto &old_edges = edge_cache.edges();
+		const size_t new_vid = t.vid(*this);
 
-		// TODO: set the boundary_id of the new edges
-
-		// vertex_attrs[vid].position = (cache[0].position + cache[1].position) / 2.0;
-		// vertex_attrs[vid].velocity = (cache[0].velocity + cache[1].velocity) / 2.0;
-		// vertex_attrs[vid].acceleration = (cache[0].acceleration + cache[1].acceleration) / 2.0;
-
-		update_positions();
-
-		const double energy_after = compute_global_energy();
-
-		logger().critical("energy_before={} energy_after={} accept={}", energy_before, energy_after, energy_after < energy_before);
-		return energy_after < energy_before;
-	}
-
-	void WildRemeshing2D::collapse_all_edges()
-	{
-		write_rest_obj("rest_mesh_before.obj");
-		write_deformed_obj("deformed_mesh_before.obj");
-
-		std::vector<std::pair<std::string, Tuple>> collect_all_ops;
-		for (const Tuple &loc : get_edges())
+		// 1a) Update rest position of new vertex
+		assert(!(v0.fixed && v1.fixed));
+		if (v0.fixed)
 		{
-			collect_all_ops.emplace_back("edge_collapse", loc);
+			vertex_attrs[new_vid].rest_position = v0.rest_position;
+			vertex_attrs[new_vid].partition_id = v0.partition_id;
+			vertex_attrs[new_vid].fixed = true;
 		}
-
-		logger().debug("Num edges {}", collect_all_ops.size());
-		if (NUM_THREADS > 0)
+		else if (v1.fixed)
 		{
-			wmtk::ExecutePass<WildRemeshing2D, wmtk::ExecutionPolicy::kPartition> executor;
-			executor.lock_vertices = [](WildRemeshing2D &m,
-										const Tuple &e,
-										int task_id) -> bool {
-				return m.try_set_vertex_mutex_one_ring(e, task_id);
-			};
-			executor.num_threads = NUM_THREADS;
-			executor(*this, collect_all_ops);
+			vertex_attrs[new_vid].rest_position = v1.rest_position;
+			vertex_attrs[new_vid].partition_id = v1.partition_id;
+			vertex_attrs[new_vid].fixed = true;
 		}
 		else
 		{
-			wmtk::ExecutePass<WildRemeshing2D, wmtk::ExecutionPolicy::kSeq> executor;
-			executor(*this, collect_all_ops);
+			// TODO: using an average midpoint for now
+			vertex_attrs[new_vid].rest_position = (v0.rest_position + v1.rest_position) / 2.0;
+			vertex_attrs[new_vid].partition_id = v0.partition_id; // TODO: what should this be?
+			vertex_attrs[new_vid].fixed = false;
 		}
 
-		write_rest_obj("rest_mesh_after.obj");
-		write_deformed_obj("deformed_mesh_after.obj");
+		// 1b) Assign edge attributes to the new edges
+		const std::vector<Tuple> one_ring_edges = get_one_ring_edges_for_vertex(t);
+		for (const Tuple &e : one_ring_edges)
+		{
+			const size_t e_id = e.eid(*this);
+
+			size_t v0_id = e.vid(*this);
+			size_t v1_id = e.switch_vertex(*this).vid(*this);
+			if (v0_id > v1_id)
+				std::swap(v0_id, v1_id);
+			assert(v1_id == new_vid); // should be the new vertex because it has a larger id
+
+			std::pair<int, int> old_edge(std::min(v0_id, old_v0_id), std::max(v0_id, old_v0_id));
+			if (old_edges.find(old_edge) != old_edges.end())
+			{
+				edge_attrs[e_id] = old_edges.at(old_edge);
+			}
+			else
+			{
+				old_edge = std::make_pair(std::min(v0_id, old_v1_id), std::max(v0_id, old_v1_id));
+				assert(old_edges.find(old_edge) != old_edges.end());
+				edge_attrs[e_id] = old_edges.at(old_edge);
+			}
+		}
+
+		// Nothing to do for the face attributes because no new faces are created.
+
+		// 2) Project quantaties so to minimize the L2 error
+
+		// initial guess for the new vertex position
+		if (v0.fixed)
+		{
+			vertex_attrs[new_vid].position = v0.position;
+			vertex_attrs[new_vid].projection_quantities = v0.projection_quantities;
+		}
+		else if (v1.fixed)
+		{
+			vertex_attrs[new_vid].position = v1.position;
+			vertex_attrs[new_vid].projection_quantities = v1.projection_quantities;
+		}
+		else
+		{
+			vertex_attrs[new_vid].position = (v0.position + v1.position) / 2.0;
+			vertex_attrs[new_vid].projection_quantities = (v0.projection_quantities + v1.projection_quantities) / 2.0;
+		}
+
+		project_quantities(); // also projects positions
+
+		// 3) Perform a local relaxation of the n-ring to get an estimate of the
+		//    energy decrease.
+		return local_relaxation(t, n_ring_size);
 	}
 
 } // namespace polyfem::mesh

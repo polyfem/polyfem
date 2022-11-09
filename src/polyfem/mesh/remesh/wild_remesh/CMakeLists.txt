@@ -2,6 +2,12 @@ set(SOURCES
 	AMIPSForm.cpp
 	AMIPSForm.hpp
 	Collapse.cpp
+	EdgeOperationCache.cpp
+	Execute.cpp
+	LocalMesh.cpp
+	LocalMesh.hpp
+	LocalRelaxation.cpp
+	ProjectQuantaties.cpp
 	Smooth.cpp
 	Split.cpp
 )

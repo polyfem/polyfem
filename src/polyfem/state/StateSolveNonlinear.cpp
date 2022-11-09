@@ -14,6 +14,7 @@
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/ALSolver.hpp>
+#include <polyfem/solver/SolveData.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/mesh/remesh/Remesh.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -43,66 +44,9 @@ namespace polyfem
 {
 	using namespace mesh;
 	using namespace solver;
+	using namespace time_integrator;
 	using namespace io;
 	using namespace utils;
-
-	void SolveData::updated_barrier_stiffness(const Eigen::VectorXd &x)
-	{
-		// TODO: missing use_adaptive_barrier_stiffness_ if (use_adaptive_barrier_stiffness_ && is_time_dependent_)
-		// if (inertia_form == nullptr)
-		// 	return;
-		if (contact_form == nullptr)
-			return;
-
-		if (!contact_form->use_adaptive_barrier_stiffness())
-			return;
-
-		Eigen::VectorXd grad_energy(x.size(), 1);
-		grad_energy.setZero();
-
-		elastic_form->first_derivative(x, grad_energy);
-
-		if (inertia_form)
-		{
-			Eigen::VectorXd grad_inertia(x.size());
-			inertia_form->first_derivative(x, grad_inertia);
-			grad_energy += grad_inertia;
-		}
-
-		Eigen::VectorXd body_energy(x.size());
-		body_form->first_derivative(x, body_energy);
-		grad_energy += body_energy;
-
-		contact_form->update_barrier_stiffness(x, grad_energy);
-	}
-
-	void SolveData::update_dt()
-	{
-		if (time_integrator) // if is time dependent
-		{
-			elastic_form->set_weight(time_integrator->acceleration_scaling());
-			body_form->set_weight(time_integrator->acceleration_scaling());
-			if (damping_form)
-				damping_form->set_weight(time_integrator->acceleration_scaling());
-
-			// TODO: Determine if friction should be scaled by h²
-			// if (friction_form)
-			// 	friction_form->set_weight(time_integrator->acceleration_scaling());
-		}
-	}
-
-	std::unordered_map<std::string, std::shared_ptr<solver::Form>> SolveData::named_forms() const
-	{
-		return {
-			{"contact", contact_form},
-			{"body", body_form},
-			{"augmented_lagrangian", al_form},
-			{"damping", damping_form},
-			{"friction", friction_form},
-			{"inertia", inertia_form},
-			{"elastic", elastic_form},
-		};
-	}
 
 	template <typename ProblemType>
 	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> State::make_nl_solver() const
@@ -204,7 +148,7 @@ namespace polyfem
 		assert(!problem->is_scalar());                                       // tensor
 		assert(!assembler.is_mixed(formulation()));
 
-		///////////////////////////////////////////////////////////////////////
+		// --------------------------------------------------------------------
 		// Check for initial intersections
 		if (is_contact_enabled())
 		{
@@ -222,9 +166,33 @@ namespace polyfem
 			}
 		}
 
+		// --------------------------------------------------------------------
+		// Initialize time integrator
+		if (problem->is_time_dependent())
+		{
+			POLYFEM_SCOPED_TIMER("Initialize time integrator");
+			solve_data.time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
+
+			Eigen::MatrixXd velocity, acceleration;
+			initial_velocity(velocity);
+			assert(velocity.size() == sol.size());
+			initial_velocity(acceleration);
+			assert(acceleration.size() == sol.size());
+
+			const double dt = args["time"]["dt"];
+			solve_data.time_integrator->init(sol, velocity, acceleration, dt);
+		}
+
+		// --------------------------------------------------------------------
+		// Initialize forms
+
 		const int ndof = n_bases * mesh->dimension();
-		// if (is_formulation_mixed) //mixed not supported
-		// 	ndof_ += n_pressure_bases; // Pressure is a scalar
+
+		// const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
+		// 	n_bases, bases, geom_bases(), assembler, ass_vals_cache, formulation(),
+		// 	mesh->dimension(), n_pressure_bases, boundary_nodes, local_boundary,
+		// 	local_neumann_boundary, n_boundary_samples(), rhs, t, sol, args, mass,
+		// 	obstacle, collision_mesh, boundary_nodes_pos, avg_mass);
 
 		assert(solve_data.rhs_assembler != nullptr);
 
@@ -360,8 +328,10 @@ namespace polyfem
 			log_and_throw_error("Rayleigh damping is only supported for time-dependent problems");
 		}
 
-		///////////////////////////////////////////////////////////////////////
+		// --------------------------------------------------------------------
 		// Initialize nonlinear problems
+
+		// const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
 			*solve_data.rhs_assembler, t, forms);

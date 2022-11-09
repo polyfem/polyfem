@@ -21,7 +21,7 @@ namespace polyfem::solver
 	NLProblem::NLProblem(
 		const int full_size,
 		const std::vector<int> &boundary_nodes,
-		std::vector<std::shared_ptr<Form>> &forms)
+		const std::vector<std::shared_ptr<Form>> &forms)
 		: FullNLProblem(forms),
 		  boundary_nodes_(boundary_nodes),
 		  full_size_(full_size),
@@ -41,7 +41,7 @@ namespace polyfem::solver
 		const int n_boundary_samples,
 		const assembler::RhsAssembler &rhs_assembler,
 		const double t,
-		std::vector<std::shared_ptr<Form>> &forms)
+		const std::vector<std::shared_ptr<Form>> &forms)
 		: FullNLProblem(forms),
 		  boundary_nodes_(boundary_nodes),
 		  full_size_(full_size),

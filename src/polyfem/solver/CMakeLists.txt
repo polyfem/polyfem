@@ -13,6 +13,8 @@ set(SOURCES
 	NonlinearSolver.tpp
 	OperatorSplittingSolver.hpp
 	OperatorSplittingSolver.cpp
+	SolveData.cpp
+	SolveData.hpp
 	SparseNewtonDescentSolver.hpp
 	SparseNewtonDescentSolver.tpp
 	TransientNavierStokesSolver.cpp

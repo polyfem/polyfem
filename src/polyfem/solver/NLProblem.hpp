@@ -13,13 +13,20 @@ namespace polyfem::solver
 		using typename FullNLProblem::THessian;
 		using typename FullNLProblem::TVector;
 
+	protected:
+		NLProblem(
+			const int full_size,
+			const std::vector<int> &boundary_nodes,
+			const std::vector<std::shared_ptr<Form>> &forms);
+
+	public:
 		NLProblem(const int full_size,
 				  const std::vector<int> &boundary_nodes,
 				  const std::vector<mesh::LocalBoundary> &local_boundary,
 				  const int n_boundary_samples,
 				  const assembler::RhsAssembler &rhs_assembler,
 				  const double t,
-				  std::vector<std::shared_ptr<Form>> &forms);
+				  const std::vector<std::shared_ptr<Form>> &forms);
 
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
@@ -53,11 +60,6 @@ namespace polyfem::solver
 		void set_apply_DBC(const TVector &x, const bool val);
 
 	protected:
-		NLProblem(
-			const int full_size,
-			const std::vector<int> &boundary_nodes,
-			std::vector<std::shared_ptr<Form>> &forms);
-
 		virtual Eigen::MatrixXd boundary_values() const;
 
 		const std::vector<int> &boundary_nodes_;
