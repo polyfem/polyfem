@@ -155,6 +155,7 @@ target_compile_definitions(polyfem PUBLIC -DPOLYFEM_SMALL_N=${POLYFEM_SMALL_N})
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
 
 target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${CMAKE_SOURCE_DIR}/input-spec.json")
+target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${CMAKE_SOURCE_DIR}/opt-input-spec.json")
 
 if (MSVC)
     add_compile_options(/bigobj)
