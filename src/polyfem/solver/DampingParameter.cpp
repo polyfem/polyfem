@@ -2,7 +2,7 @@
 
 namespace polyfem
 {
-	DampingParameter::DampingParameter(std::vector<std::shared_ptr<State>> states_ptr) : Parameter(states_ptr)
+	DampingParameter::DampingParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args) : Parameter(states_ptr, args)
 	{
 		parameter_name_ = "damping";
 
@@ -13,15 +13,7 @@ namespace polyfem
 			if (!state->problem->is_time_dependent())
 				log_and_throw_error("Damping parameter optimization is only supported in transient simulations!");
 
-		json opt_params = states_ptr_[0]->args["optimization"];
-		for (const auto &param : opt_params["parameters"])
-		{
-			if (param["type"] == "damping")
-			{
-				material_params = param;
-				break;
-			}
-		}
+		material_params = args;
 
 		if (material_params["phi_bound"].get<std::vector<double>>().size() == 0)
 		{

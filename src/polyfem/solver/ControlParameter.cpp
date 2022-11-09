@@ -4,7 +4,7 @@
 
 namespace polyfem
 {
-	ControlParameter::ControlParameter(std::vector<std::shared_ptr<State>> states_ptr_) : Parameter(states_ptr_)
+	ControlParameter::ControlParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args): Parameter(states_ptr, args)
 	{
 		assert(states_ptr_[0]->problem->is_time_dependent());
 		parameter_name_ = "control";
@@ -20,14 +20,7 @@ namespace polyfem
 
 		full_dim_ = states_ptr_[0]->boundary_nodes.size() * states_ptr_[0]->args["time"]["time_steps"].get<int>();
 
-		json opt_params = states_ptr_[0]->args["optimization"];
-		for (const auto &params : opt_params["parameters"])
-		{
-			if (params["type"] == "control")
-			{
-				control_params = params;
-			}
-		}
+		control_params = args;
 
 		if (control_params.contains("surface_selection"))
 		{

@@ -184,7 +184,7 @@ namespace polyfem
 		}
 	} // namespace
 
-	ShapeParameter::ShapeParameter(std::vector<std::shared_ptr<State>> states_ptr) : Parameter(states_ptr)
+	ShapeParameter::ShapeParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args) : Parameter(states_ptr, args)
 	{
 		parameter_name_ = "shape";
 
@@ -215,18 +215,9 @@ namespace polyfem
 		Eigen::MatrixXd boundary_nodes_pos;
 		states_ptr_[0]->build_collision_mesh(boundary_nodes_pos, collision_mesh, states_ptr_[0]->n_geom_bases, gbases);
 
-		json opt_params;
-		// SLIM
-		for (const auto &param : opt_params["parameters"])
-		{
-			if (param["type"] == "shape")
-			{
-				shape_params = param;
-				if (shape_params.contains("smoothing_paramters"))
-					slim_params = shape_params["smoothing_paramters"];
-				break;
-			}
-		}
+		shape_params = args;
+		if (shape_params.contains("smoothing_paramters"))
+			slim_params = shape_params["smoothing_paramters"];
 		if (slim_params.empty())
 		{
 			slim_params = json::parse(R"(

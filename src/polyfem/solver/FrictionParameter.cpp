@@ -2,7 +2,7 @@
 
 namespace polyfem
 {
-	FrictionParameter::FrictionParameter(std::vector<std::shared_ptr<State>> states_ptr) : Parameter(states_ptr)
+	FrictionParameter::FrictionParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args) : Parameter(states_ptr, args)
 	{
 		parameter_name_ = "friction";
 
@@ -12,15 +12,7 @@ namespace polyfem
 			if (!state->problem->is_time_dependent())
 				log_and_throw_error("Friction parameter optimization is only supported in transient simulations!");
 
-		json opt_params;
-		for (const auto &param : opt_params["parameters"])
-		{
-			if (param["type"] == "friction")
-			{
-				material_params = param;
-				break;
-			}
-		}
+		material_params = args;
 
 		if (material_params["bound"].get<std::vector<double>>().size() == 0)
 		{

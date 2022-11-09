@@ -7,11 +7,11 @@ namespace polyfem
 	class Parameter
 	{
 	public:
-		Parameter(std::vector<std::shared_ptr<State>> states_ptr) : states_ptr_(states_ptr) 
+		Parameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args) : states_ptr_(states_ptr) 
 		{ assert(states_ptr_.size() > 0); }
 		virtual ~Parameter() = default;
 
-		static std::shared_ptr<Parameter> create(const std::string &type, std::vector<std::shared_ptr<State>> states_ptr);
+		static std::shared_ptr<Parameter> create(const json &args, std::vector<std::shared_ptr<State>> states_ptr);
 
 		inline const State& get_state() const { return *(states_ptr_[0]); }
 
@@ -25,7 +25,8 @@ namespace polyfem
 
 		virtual void update() = 0;
 
-		virtual Eigen::VectorXd initial_guess() { return Eigen::VectorXd::Zero(optimization_dim_); } // initial guess for the optimization
+		// initial guess for the optimization, to initialize outer optimization
+		virtual Eigen::VectorXd initial_guess() const = 0;
 
 		// from design dof to full dof mapping
 		virtual Eigen::MatrixXd map(const Eigen::VectorXd &x) const { return x; }

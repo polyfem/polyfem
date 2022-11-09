@@ -11,10 +11,16 @@ namespace polyfem
 	class ShapeParameter : public Parameter
 	{
 	public:
-		ShapeParameter(std::vector<std::shared_ptr<State>> states_ptr);
+		ShapeParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args);
 
 		void update() override
 		{
+		}
+
+		Eigen::VectorXd initial_guess() const override
+		{
+			assert(false);
+			return Eigen::VectorXd();
 		}
 
 		void smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) override;

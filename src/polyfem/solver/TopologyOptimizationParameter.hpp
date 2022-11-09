@@ -7,11 +7,13 @@ namespace polyfem
 	class TopologyOptimizationParameter : public Parameter
 	{
 	public:
-		TopologyOptimizationParameter(std::vector<std::shared_ptr<State>> states_ptr);
+		TopologyOptimizationParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args);
 
 		void update() override
 		{
 		}
+
+		Eigen::VectorXd initial_guess() const override;
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 
@@ -37,13 +39,19 @@ namespace polyfem
 		double min_density = 0;
 		double max_density = 1;
 
+		Eigen::VectorXd initial_density_;
+
+		// E = E0 * pow(filter(x), density_power_)
+		double density_power_;
+		double lambda0, mu0;
+
 		double min_mass = 0;
 		double max_mass = 1;
-
 		bool has_mass_constraint = false;
 
 		json topo_params;
 
+		bool has_filter;
 		Eigen::SparseMatrix<double> tt_radius_adjacency;
 		Eigen::VectorXd tt_radius_adjacency_row_sum;
 	};

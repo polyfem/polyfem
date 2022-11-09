@@ -7,12 +7,18 @@ namespace polyfem
 	class FrictionParameter : public Parameter
 	{
 	public:
-		FrictionParameter(std::vector<std::shared_ptr<State>> states_ptr);
+		FrictionParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args);
 
 		void update() override
 		{
 		}
 
+		Eigen::VectorXd initial_guess() const override
+		{
+			assert(false);
+			return Eigen::VectorXd();
+		}
+		
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 
 		bool remesh(Eigen::VectorXd &x) override { return false; }

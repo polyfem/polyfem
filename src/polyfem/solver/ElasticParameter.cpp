@@ -4,20 +4,12 @@
 
 namespace polyfem
 {
-	ElasticParameter::ElasticParameter(std::vector<std::shared_ptr<State>> states_ptr) : Parameter(states_ptr)
+	ElasticParameter::ElasticParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args) : Parameter(states_ptr, args)
 	{
 		parameter_name_ = "material";
 		full_dim_ = states_ptr_[0]->bases.size() * 2;
 
-		json opt_params = states_ptr_[0]->args["optimization"];
-		for (const auto &param : opt_params["parameters"])
-		{
-			if (param["type"] == "material")
-			{
-				material_params = param;
-				break;
-			}
-		}
+		material_params = args;
 
 		if (material_params["mu_bound"].get<std::vector<double>>().size() == 0)
 		{
@@ -63,19 +55,6 @@ namespace polyfem
 			max_nu = material_params["nu_bound"][1];
 		}
 
-		has_material_smoothing = false;
-		for (const auto &param : opt_params["functionals"])
-		{
-			if (param["type"] == "material_smoothing")
-			{
-				smoothing_params = param;
-				has_material_smoothing = true;
-				smoothing_weight = smoothing_params.value("weight", 1.0);
-				break;
-			}
-			else
-				target_weight = param.value("weight", 1.0);
-		}
 	}
 
 	bool ElasticParameter::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)

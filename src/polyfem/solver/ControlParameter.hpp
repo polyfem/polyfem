@@ -7,11 +7,17 @@ namespace polyfem
 	class ControlParameter : public Parameter
 	{
 	public:
-		ControlParameter(std::vector<std::shared_ptr<State>> states_ptr);
+		ControlParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args);
 
 		Eigen::MatrixXd map(const Eigen::VectorXd &x) const override
 		{
 			return x;
+		}
+
+		Eigen::VectorXd initial_guess() const override
+		{
+			assert(false);
+			return Eigen::VectorXd();
 		}
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;

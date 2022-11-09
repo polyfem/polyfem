@@ -1,4 +1,4 @@
-{
+[
     {
         "pointer": "/",
         "type": "object",
@@ -8,22 +8,7 @@
             "states",
             "solver"
         ],
-        "optional": [
-            "constraints"
-        ],
         "doc": "Root of the configuration file."
-    },
-    {
-        "pointer": "/constraints",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/constraints/*",
-        "type": "object",
-        "default": null,
-        "doc": "TODO"
     },
     {
         "pointer": "/states",
@@ -291,8 +276,20 @@
             "states"
         ],
         "optional": [
-            "restriction"
+            "restriction",
+            "constraints"
         ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/constraints",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/constraints/*",
+        "type": "object",
         "doc": "TODO"
     },
     {
@@ -303,8 +300,22 @@
             "states"
         ],
         "optional": [
-            "power"
+            "power",
+            "initial",
+            "filter"
         ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/filter",
+        "type": "object",
+        "default": null,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/initial",
+        "type": "float",
+        "default": 1,
         "doc": "TODO"
     },
     {
@@ -887,4 +898,4 @@
         "type": "float",
         "doc": "TODO"
     }
-}
+]

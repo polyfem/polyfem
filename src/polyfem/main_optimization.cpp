@@ -13,6 +13,7 @@
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+#include <jse/jse.h>
 
 #include <time.h>
 
@@ -40,6 +41,39 @@ bool load_json(const std::string &json_file, json &out)
     out["root_path"] = json_file;
 
 	return true;
+}
+
+json apply_opt_json_spec(const json &input_args, bool strict_validation)
+{
+    json args_in = input_args;
+
+    // CHECK validity json
+    json rules;
+    jse::JSE jse;
+    {
+        jse.strict = strict_validation;
+        const std::string polyfem_input_spec = POLYFEM_OPT_INPUT_SPEC;
+        std::ifstream file(polyfem_input_spec);
+
+        if (file.is_open())
+            file >> rules;
+        else
+        {
+            logger().error("unable to open {} rules", polyfem_input_spec);
+            throw std::runtime_error("Invald spec file");
+        }
+    }
+
+    const bool valid_input = jse.verify_json(args_in, rules);
+   
+    if (!valid_input)
+    {
+        logger().error("invalid input json:\n{}", jse.log2str());
+        throw std::runtime_error("Invald input json file");
+    }
+
+    json args = jse.inject_defaults(args_in, rules);
+    return args;
 }
 
 template <typename ProblemType>
@@ -125,21 +159,21 @@ int main(int argc, char **argv)
     int i = 0;
     for (const json &args : state_args)
     {
-        json state_args;
-        if (!load_json(args["path"], state_args))
+        json cur_args;
+        if (!load_json(args["path"], cur_args))
             log_and_throw_error("Can't find json for State {}", args["id"]);
 
         auto& state = states[i];
         state = std::make_shared<State>(max_threads);
         state->init_logger(log_file, log_level, false);
-        state->init(state_args, false);
+        state->init(cur_args, false);
         state->args["optimization"]["enabled"] = true;
         state->load_mesh(/*non_conforming=*/false);
         state->build_basis();
         state->assemble_rhs();
         state->assemble_stiffness_mat();
-        Eigen::MatrixXd sol, pressure;
-        state->solve_problem(sol, pressure);
+        // Eigen::MatrixXd sol, pressure;
+        // state->solve_problem(sol, pressure);
         id_to_state[args["id"].get<int>()] = i++;
     }
 
@@ -155,7 +189,7 @@ int main(int argc, char **argv)
         {
             some_states.push_back(states[id_to_state[id]]);
         }
-        parameters[i++] = Parameter::create(args["type"], some_states);
+        parameters[i++] = Parameter::create(args, some_states);
     }
 
     // create objectives
@@ -250,6 +284,15 @@ int main(int argc, char **argv)
         x.segment(cumulative, p->optimization_dim()) = p->initial_guess();
         cumulative += p->optimization_dim();
     }
+
+    for (auto &state : states)
+    {
+        state->assemble_rhs();
+        state->assemble_stiffness_mat();
+        Eigen::MatrixXd sol, pressure;
+        state->solve_problem(sol, pressure);
+    }
+
     nlsolver->minimize(nl_problem, x);
 
 	return EXIT_SUCCESS;

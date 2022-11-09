@@ -830,43 +830,44 @@ namespace polyfem
 
 		std::shared_ptr<TopologyOptimizationProblem> top_opt = std::make_shared<TopologyOptimizationProblem>(state, j);
 
-		Eigen::MatrixXd density_mat = state.assembler.lame_params().density_mat_;
-		if (density_mat.size() != state.bases.size())
-			density_mat.setZero(state.bases.size(), 1);
-		for (const auto &param : opt_params["parameters"])
-		{
-			if (param["type"] == "topology")
-			{
-				if (param.contains("initial"))
-					density_mat.setConstant(param["initial"]);
-				else
-				{
-					Eigen::MatrixXd barycenters;
-					if (state.mesh->is_volume())
-					{
-						state.mesh->cell_barycenters(barycenters);
-						for (int e = 0; e < state.bases.size(); e++)
-						{
-							density_mat(e) = cross3(barycenters(e, 0), barycenters(e, 1), barycenters(e, 2));
-						}
-					}
-					else
-					{
-						state.mesh->face_barycenters(barycenters);
-						for (int e = 0; e < state.bases.size(); e++)
-						{
-							density_mat(e) = cross2(barycenters(e, 0), barycenters(e, 1));
-						}
-					}
-					// density_mat.setOnes();
-				}
+		// deprecated
+		// Eigen::MatrixXd density_mat = state.assembler.lame_params().density_mat_;
+		// if (density_mat.size() != state.bases.size())
+		// 	density_mat.setZero(state.bases.size(), 1);
+		// for (const auto &param : opt_params["parameters"])
+		// {
+		// 	if (param["type"] == "topology")
+		// 	{
+		// 		if (param.contains("initial"))
+		// 			density_mat.setConstant(param["initial"]);
+		// 		else
+		// 		{
+		// 			Eigen::MatrixXd barycenters;
+		// 			if (state.mesh->is_volume())
+		// 			{
+		// 				state.mesh->cell_barycenters(barycenters);
+		// 				for (int e = 0; e < state.bases.size(); e++)
+		// 				{
+		// 					density_mat(e) = cross3(barycenters(e, 0), barycenters(e, 1), barycenters(e, 2));
+		// 				}
+		// 			}
+		// 			else
+		// 			{
+		// 				state.mesh->face_barycenters(barycenters);
+		// 				for (int e = 0; e < state.bases.size(); e++)
+		// 				{
+		// 					density_mat(e) = cross2(barycenters(e, 0), barycenters(e, 1));
+		// 				}
+		// 			}
+		// 			// density_mat.setOnes();
+		// 		}
 
-				state.assembler.update_lame_params_density(top_opt->apply_filter(density_mat), param["power"]);
-				break;
-			}
-		}
+		// 		state.assembler.update_lame_params_density(top_opt->apply_filter(density_mat), param["power"]);
+		// 		break;
+		// 	}
+		// }
 
-		x_initial = density_mat;
+		// x_initial = density_mat;
 
 		return top_opt;
 	}

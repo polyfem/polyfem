@@ -7,10 +7,16 @@ namespace polyfem
 	class DampingParameter : public Parameter
 	{
 	public:
-		DampingParameter(std::vector<std::shared_ptr<State>> states_ptr);
+		DampingParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args);
 
 		void update() override
 		{
+		}
+
+		Eigen::VectorXd initial_guess() const override
+		{
+			assert(false);
+			return Eigen::VectorXd();
 		}
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;

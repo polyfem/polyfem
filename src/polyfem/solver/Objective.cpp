@@ -6,6 +6,9 @@ using namespace polyfem::utils;
 
 namespace polyfem::solver
 {
+    namespace {
+        double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
+    }
     Eigen::VectorXd Objective::compute_adjoint_term(const State& state, const Parameter &param)
     {
         Eigen::VectorXd term;
@@ -654,6 +657,7 @@ namespace polyfem::solver
 
     ComplianceObjective::ComplianceObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const std::shared_ptr<const TopologyOptimizationParameter> topo_param, const json &args): SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param), topo_param_(topo_param)
     {
+        assert(!topo_param_ || !elastic_param_);
         formulation_ = state.formulation();
     }
 
@@ -684,12 +688,7 @@ namespace polyfem::solver
 			{
 				Eigen::MatrixXd grad_u_q, stress;
 				vector2matrix(grad_u.row(q), grad_u_q);
-				if (this->formulation_ == "LinearElasticity")
-				{
-					stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
-				}
-				else
-					logger().error("Unknown formulation!");
+				stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
 
 				for (int i = 0; i < dim; i++)
 					for (int l = 0; l < dim; l++)
@@ -704,52 +703,39 @@ namespace polyfem::solver
     {
         Eigen::VectorXd term;
         term.setZero(param.full_dim());
-        if (&param == elastic_param_.get())
-        {
-            // TODO: differentiate wrt. lame param
-            log_and_throw_error("Not implemented!");
-        }
-        else if (&param == shape_param_.get())
+        if (&param == shape_param_.get())
             term = compute_partial_gradient(param);
-        else if (&param == topo_param_.get())
+        else if (&param == topo_param_.get() || &param == elastic_param_.get())
         {
             const auto &bases = state_.bases;
             const auto &gbases = state_.geom_bases();
+            auto df_dmu_dlambda_function = state_.assembler.get_dstress_dmu_dlambda_function(formulation_);
             const int dim = state_.mesh->dimension();
             
-			const LameParameters &params = state_.assembler.lame_params();
-			const auto &density_mat = params.density_mat_;
-			const double density_power = params.density_power_;
 			for (int e = 0; e < bases.size(); e++)
 			{
 				assembler::ElementAssemblyValues vals;
 				state_.ass_vals_cache.compute(e, state_.mesh->is_volume(), bases[e], gbases[e], vals);
 
 				const quadrature::Quadrature &quadrature = vals.quadrature;
+                Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
+                Eigen::MatrixXd u, grad_u;
+                io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, state_.diff_cached[time_step_].u, u, grad_u);
+
+                Eigen::MatrixXd grad_u_q;                
 				for (int q = 0; q < quadrature.weights.size(); q++)
 				{
 					double lambda, mu;
-					params.lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu, false);
+					state_.assembler.lame_params().lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
 
-					Eigen::MatrixXd grad_u_q(dim, dim);
-					grad_u_q.setZero();
-					for (const auto &v : vals.basis_values)
-						for (int d = 0; d < dim; d++)
-						{
-							double coeff = 0;
-							for (const auto &g : v.global)
-								coeff += state_.diff_cached[time_step_].u(g.index * dim + d) * g.val;
-							grad_u_q.row(d) += v.grad_t_m.row(q) * coeff;
-						}
+                    vector2matrix(grad_u.row(q), grad_u_q);
 
-					Eigen::MatrixXd stress;
-					if (state_.formulation() == "LinearElasticity")
-						stress = mu * (grad_u_q + grad_u_q.transpose()) + lambda * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
-					else
-						logger().error("Unknown formulation!");
+                    Eigen::MatrixXd f_prime_dmu, f_prime_dlambda;
+                    df_dmu_dlambda_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_q, f_prime_dmu, f_prime_dlambda);
 
-					term(e) += density_power * pow(density_mat(e), density_power - 1) * (stress.array() * grad_u_q.array()).sum() * quadrature.weights(q) * vals.det(q);
+					term(e + bases.size()) += dot(f_prime_dmu, grad_u_q) * da(q);
+                    term(e) += dot(f_prime_dlambda, grad_u_q) * da(q);
 				}
 			}
         }

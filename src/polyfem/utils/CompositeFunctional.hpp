@@ -188,32 +188,6 @@ namespace polyfem
 		IntegrableFunctional get_volume_functional();
 	};
 
-	class MassFunctional : public CompositeFunctional
-	{
-	public:
-		MassFunctional()
-		{
-			functional_name = "Mass";
-			surface_integral = false;
-			transient_integral_type = "final";
-			min_mass = 0;
-			max_mass = std::numeric_limits<double>::max();
-		}
-		~MassFunctional() = default;
-
-		double energy(State &state) override;
-		Eigen::VectorXd gradient(State &state, const std::string &type) override;
-
-		void set_min_mass(double min_mass_) { min_mass = min_mass_; }
-		void set_max_mass(double max_mass_) { max_mass = max_mass_; }
-
-	private:
-		double min_mass;
-		double max_mass;
-
-		IntegrableFunctional get_mass_functional();
-	};
-
 	class HeightFunctional : public CompositeFunctional
 	{
 	public:

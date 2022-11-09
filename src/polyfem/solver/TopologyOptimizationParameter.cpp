@@ -2,53 +2,81 @@
 
 namespace polyfem
 {
-    TopologyOptimizationParameter::TopologyOptimizationParameter(std::vector<std::shared_ptr<State>> states_ptr): Parameter(states_ptr)
+    TopologyOptimizationParameter::TopologyOptimizationParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args): Parameter(states_ptr, args)
     {
         parameter_name_ = "topology";
+        const auto &state = get_state();
 
-        full_dim_ = get_state().bases.size();
-        optimization_dim_ = full_dim_;
+        full_dim_ = state.bases.size() * 2;
+        optimization_dim_ = state.bases.size();
 
-        json opt_params = get_state().args["optimization"];
-        bool found = false;
-		for (const auto &param : opt_params["parameters"])
-		{
-			if (param["type"] == "topology")
-			{
-				topo_params = param;
-				if (param["bound"].get<std::vector<double>>().size() == 2)
-				{
-					min_density = param["bound"][0];
-					max_density = param["bound"][1];
-				}
-                found = true;
-				break;
-			}
-		}
-        assert(found);
+		assert(args["type"] == "topology");
+        topo_params = args;
+        if (args["bound"].get<std::vector<double>>().size() == 2)
+        {
+            min_density = args["bound"][0];
+            max_density = args["bound"][1];
+        }
 
-		for (const auto &param : opt_params["constraints"])
-		{
-			if (param["type"] == "mass")
-			{
-				has_mass_constraint = true;
-				min_mass = param["bound"][0];
-				max_mass = param["bound"][1];
-                break;
-			}
-		}
+        initial_density_.setConstant(state.bases.size(), 1, args["initial"]);
+        density_power_ = args["power"];
+        lambda0 = state.assembler.lame_params().lambda_mat_(0);
+        mu0 = state.assembler.lame_params().mu_mat_(0);
 
-        build_filter(topo_params["filter"]);
+        if (args.contains("constraints") && args["constraints"].size() != 0)
+        {
+            for (const auto &param : args["constraints"])
+            {
+                if (param["type"] == "mass")
+                {
+                    has_mass_constraint = true;
+                    min_mass = param["bound"][0];
+                    max_mass = param["bound"][1];
+                    break;
+                }
+            }
+        }
+
+        has_filter = !topo_params["filter"].is_null();
+        if (has_filter)
+            build_filter(topo_params["filter"]);
+
+        assert(is_step_valid(initial_guess(), initial_guess()));
+        pre_solve(initial_guess());
+    }
+
+    Eigen::VectorXd TopologyOptimizationParameter::initial_guess() const
+    {
+        return initial_density_;
     }
 
     Eigen::MatrixXd TopologyOptimizationParameter::map(const Eigen::VectorXd &x) const
     {
+        assert(false);
         return apply_filter(x);
     }
 
     Eigen::VectorXd TopologyOptimizationParameter::map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const
     {
-        return apply_filter_to_grad(x, full_grad);
+        const int n_elem = full_grad.size() / 2;
+        const Eigen::VectorXd &dJ_dlambda = full_grad.head(n_elem);
+        const Eigen::VectorXd &dJ_dmu = full_grad.tail(n_elem);
+        const auto &state = get_state();
+        const auto &cur_lambdas = state.assembler.lame_params().lambda_mat_;
+        const auto &cur_mus = state.assembler.lame_params().mu_mat_;
+        const Eigen::VectorXd filtered_density = apply_filter(x);
+
+        Eigen::VectorXd dJ_drho(n_elem);
+        for (int e = 0; e < n_elem; e++)
+        {
+            const double E = convert_to_E(state.mesh->is_volume(), cur_lambdas(e), cur_mus(e));
+            const double nu = convert_to_nu(state.mesh->is_volume(), cur_lambdas(e), cur_mus(e));
+            const Eigen::Matrix2d jacobian = d_lambda_mu_d_E_nu(state.mesh->is_volume(), E, nu);
+            
+            const double dJ_dE = dJ_dlambda(e) * jacobian(0, 0) + dJ_dmu(e) * jacobian(1, 0);
+            dJ_drho(e) = dJ_dE * density_power_ * E / filtered_density(e);
+        }
+        return apply_filter_to_grad(x, dJ_drho);
     }
 
     Eigen::VectorXd TopologyOptimizationParameter::get_lower_bound(const Eigen::VectorXd &x) const
@@ -77,9 +105,7 @@ namespace polyfem
 
     bool TopologyOptimizationParameter::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
     {
-        const auto &cur_density = get_state().assembler.lame_params().density_mat_;
-
-        if (cur_density.minCoeff() < min_density || cur_density.maxCoeff() > max_density)
+        if (x1.minCoeff() < min_density || x1.maxCoeff() > max_density)
             return false;
         
         return true;
@@ -108,8 +134,23 @@ namespace polyfem
 
     bool TopologyOptimizationParameter::pre_solve(const Eigen::VectorXd &newX)
     {
-        for (const auto &state : states_ptr_)
-		    state->assembler.update_lame_params_density(apply_filter(newX));
+        const Eigen::VectorXd filtered_density = apply_filter(newX);
+
+        for (auto &state : states_ptr_)
+        {
+            auto cur_lambdas = state->assembler.lame_params().lambda_mat_;
+            auto cur_mus = state->assembler.lame_params().mu_mat_;
+
+            assert(cur_mus.size() == filtered_density.size());
+            assert(cur_lambdas.size() == filtered_density.size());
+            for (int e = 0; e < cur_mus.size(); e++)
+            {
+                cur_mus(e) = pow(filtered_density(e), density_power_) * mu0;
+                cur_lambdas(e) = pow(filtered_density(e), density_power_) * lambda0;
+            }
+            state->assembler.update_lame_params(cur_lambdas, cur_mus);
+        }
+
 		return true;
     }
 
@@ -154,12 +195,16 @@ namespace polyfem
 
     Eigen::VectorXd TopologyOptimizationParameter::apply_filter(const Eigen::VectorXd &x) const
     {
+        if (!has_filter)
+            return x;
         Eigen::VectorXd y = (tt_radius_adjacency * x).array() / tt_radius_adjacency_row_sum.array();
         return y;
     }
 
     Eigen::VectorXd TopologyOptimizationParameter::apply_filter_to_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &grad) const
     {
+        if (!has_filter)
+            return grad;
         Eigen::VectorXd grad_ = (tt_radius_adjacency * grad).array() / tt_radius_adjacency_row_sum.array();
         return grad_;
     }

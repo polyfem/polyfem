@@ -19,8 +19,6 @@ namespace polyfem
 			func = std::make_shared<SDFTrajectoryFunctional>();
 		else if (functional_name_ == "Volume")
 			func = std::make_shared<VolumeFunctional>();
-		else if (functional_name_ == "Mass")
-			func = std::make_shared<MassFunctional>();
 		else if (functional_name_ == "Height")
 			func = std::make_shared<HeightFunctional>();
 		else if (functional_name_ == "Stress")
@@ -470,53 +468,6 @@ namespace polyfem
 		IntegrableFunctional j;
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setOnes(u.rows(), 1);
-		});
-		return j;
-	}
-
-	double MassFunctional::energy(State &state)
-	{
-		IntegrableFunctional j = get_mass_functional();
-
-		double current_mass = AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? AdjointForm::SpatialIntegralType::SURFACE : AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
-		logger().trace("Current mass: {}", current_mass);
-
-		if (current_mass > max_mass)
-			return pow(current_mass - max_mass, 2);
-		else if (current_mass < min_mass)
-			return pow(current_mass - min_mass, 2);
-		else
-			return 0.;
-	}
-
-	Eigen::VectorXd MassFunctional::gradient(State &state, const std::string &type)
-	{
-		IntegrableFunctional j = get_mass_functional();
-
-		Eigen::VectorXd grad;
-		AdjointForm::gradient(state, j, type, grad, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? AdjointForm::SpatialIntegralType::SURFACE : AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
-
-		double current_mass = AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? AdjointForm::SpatialIntegralType::SURFACE : AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
-
-		double derivative = 0;
-		if (current_mass > max_mass)
-			derivative = 2 * (current_mass - max_mass);
-		else if (current_mass < min_mass)
-			derivative = 2 * (current_mass - min_mass);
-
-		return derivative * grad;
-	}
-
-	IntegrableFunctional MassFunctional::get_mass_functional()
-	{
-		assert(max_mass >= min_mass);
-		assert(!surface_integral);
-		assert(transient_integral_type == "final");
-		IntegrableFunctional j;
-		j.set_name("Mass");
-		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val.setOnes(u.rows(), 1);
-			val *= params["density"].get<double>();
 		});
 		return j;
 	}

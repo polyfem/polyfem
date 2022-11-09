@@ -7,10 +7,16 @@ namespace polyfem
 	class ElasticParameter : public Parameter
 	{
 	public:
-		ElasticParameter(std::vector<std::shared_ptr<State>> states_ptr);
+		ElasticParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args);
 
 		void update() override
 		{
+		}
+
+		Eigen::VectorXd initial_guess() const override
+		{
+			assert(false);
+			return Eigen::VectorXd();
 		}
 
 		Eigen::MatrixXd map(const Eigen::VectorXd &x) const override

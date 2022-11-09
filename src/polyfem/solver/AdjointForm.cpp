@@ -149,7 +149,7 @@ namespace polyfem::solver
 			else if (param_name == "shape")
 				dJ_shape_static_adjoint_term(state, state.diff_cached[0].u, state.diff_cached[0].p, term);
 			else if (param_name == "topology")
-				dJ_topology_static_adjoint_term(state, state.diff_cached[0].u, state.diff_cached[0].p, term);
+				dJ_material_static(state, state.diff_cached[0].u, state.diff_cached[0].p, term);
 			else
 				log_and_throw_error("Unknown design parameter!");
 		}
@@ -204,7 +204,7 @@ namespace polyfem::solver
 			else if (param_name == "shape")
 				dJ_shape_static(state, state.diff_cached[0].u, state.diff_cached[0].p, j, interested_ids, spatial_integral_type, grad);
 			else if (param_name == "topology")
-				dJ_topology_static(state, state.diff_cached[0].u, state.diff_cached[0].p, j, interested_ids, spatial_integral_type, grad);
+				dJ_material_static(state, state.diff_cached[0].u, state.diff_cached[0].p, grad);
 			else if (param_name == "friction")
 				log_and_throw_error("Static friction coefficient grad not implemented!");
 			else if (param_name == "dirichlet")

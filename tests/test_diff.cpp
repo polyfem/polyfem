@@ -82,11 +82,6 @@ void perturb(State &state, const Eigen::MatrixXd &dx, const std::string &type)
 		state.args["materials"]["phi"] = state.args["materials"]["phi"].get<double>() + dx(1);
 		state.set_materials();
 	}
-	else if (type == "topology")
-	{
-		auto density_mat = state.assembler.lame_params().density_mat_;
-		state.assembler.update_lame_params_density(density_mat + dx);
-	}
 	else
 		log_and_throw_error("Unknown type of perturbation!");
 }
@@ -204,7 +199,7 @@ TEST_CASE("laplacian", "[adjoint_method]")
 	State &state = *state_ptr;
 
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, state.args["optimization"]["parameters"][0]);
 	StressObjective func(state, shape_param, NULL, state.args["optimization"]["functionals"][0], false);
 
 	auto velocity = [](const Eigen::MatrixXd &position) {
@@ -231,7 +226,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 	State &state = *state_ptr;
 
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, state.args["optimization"]["parameters"][0]);
 	PositionObjective obj(state, shape_param, state.args["optimization"]["functionals"][0]);
 	obj.set_integral_type(AdjointForm::SpatialIntegralType::SURFACE);
 
@@ -262,7 +257,7 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 	State &state = *state_ptr;
 
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, state.args["optimization"]["parameters"][0]);
 	PositionObjective obj(state, shape_param, state.args["optimization"]["functionals"][0]);
 	obj.set_integral_type(AdjointForm::SpatialIntegralType::SURFACE);
 
@@ -296,19 +291,37 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 	State &state = *state_ptr;
 	
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-	std::shared_ptr<TopologyOptimizationParameter> topo_param = std::make_shared<TopologyOptimizationParameter>(states_ptr);
+	std::shared_ptr<TopologyOptimizationParameter> topo_param = std::make_shared<TopologyOptimizationParameter>(states_ptr, state.args["optimization"]["parameters"][0]);
 	ComplianceObjective func(state, NULL, NULL, topo_param, state.args["optimization"]["functionals"][0]);
 
-	Eigen::MatrixXd density_mat;
-	density_mat.setConstant(state.mesh->n_elements(), 1, 0.5);
-	state.assembler.update_lame_params_density(density_mat, 5);
 	solve_pde(state);
 
 	Eigen::MatrixXd theta(state.bases.size(), 1);
 	for (int e = 0; e < state.bases.size(); e++)
 		theta(e) = (rand() % 1000) / 1000.0;
 
-	verify_adjoint(func, state, topo_param, "topology", theta, 1e-6, 1e-6);
+	// verify_adjoint(func, state, topo_param, "topology", theta, 1e-6, 1e-6);
+	const double dt = 1e-6;
+	const double tol = 1e-6;
+	double functional_val = func.value();
+
+	state.solve_adjoint(func.compute_adjoint_rhs(state));
+	Eigen::VectorXd one_form = topo_param->map_grad(topo_param->initial_guess(), func.gradient(state, *topo_param));
+	double derivative = (one_form.array() * theta.array()).sum();
+
+	topo_param->pre_solve(topo_param->initial_guess() + dt * theta);
+	solve_pde(state);
+	double next_functional_val = func.value();
+
+	topo_param->pre_solve(topo_param->initial_guess() - dt * theta);
+	solve_pde(state);
+	double former_functional_val = func.value();
+
+	double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
+	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
+	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
+
+	REQUIRE(derivative == Approx(finite_difference).epsilon(tol));
 }
 
 TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
@@ -321,7 +334,7 @@ TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
 	State &state = *state_ptr;
 
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, state.args["optimization"]["parameters"][0]);
 	StressObjective func(state, shape_param, NULL, state.args["optimization"]["functionals"][0]);
 
 	double functional_val = func.value();
@@ -350,7 +363,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	State &state = *state_ptr;
 
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, state.args["optimization"]["parameters"][0]);
 	StressObjective func(state, shape_param, NULL, state.args["optimization"]["functionals"][0]);
 
 	state.pre_sol = state.diff_cached[0].u;
@@ -441,7 +454,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	State &state = *state_ptr;
 
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-	std::shared_ptr<DampingParameter> damping_param = std::make_shared<DampingParameter>(states_ptr);
+	std::shared_ptr<DampingParameter> damping_param = std::make_shared<DampingParameter>(states_ptr, state.args["optimization"]["parameters"][0]);
 	std::shared_ptr<TargetObjective> func_aux = std::make_shared<TargetObjective>(state, std::shared_ptr<ShapeParameter>(), state.args["optimization"]["functionals"][0]);
 	func_aux->set_reference(state_reference, {1, 3});
 	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], state.args["optimization"]["functionals"][0]["transient_integral_type"], func_aux);
@@ -467,7 +480,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 	State &state = *state_ptr;
 
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-	std::shared_ptr<ElasticParameter> elastic_param = std::make_shared<ElasticParameter>(states_ptr);
+	std::shared_ptr<ElasticParameter> elastic_param = std::make_shared<ElasticParameter>(states_ptr, state.args["optimization"]["parameters"][0]);
 	std::shared_ptr<TargetObjective> func_aux = std::make_shared<TargetObjective>(state, std::shared_ptr<ShapeParameter>(), state.args["optimization"]["functionals"][0]);
 	func_aux->set_reference(state_reference, {1, 3});
 	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], state.args["optimization"]["functionals"][0]["transient_integral_type"], func_aux);
@@ -489,7 +502,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	State &state = *state_ptr;
 
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, state.args["optimization"]["parameters"][0]);
 	json functional_args = state.args["optimization"]["functionals"][0];
 	std::shared_ptr<StaticObjective> func_aux = std::make_shared<StressObjective>(state, shape_param, std::shared_ptr<ElasticParameter>(), functional_args, false);
 	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], functional_args["transient_integral_type"], func_aux);
@@ -582,7 +595,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	State& state = *state_ptr;
 
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-	std::shared_ptr<InitialConditionParameter> initial_param = std::make_shared<InitialConditionParameter>(states_ptr);
+	std::shared_ptr<InitialConditionParameter> initial_param = std::make_shared<InitialConditionParameter>(states_ptr, state.args["optimization"]["parameters"][0]);
 	std::shared_ptr<TargetObjective> func_aux = std::make_shared<TargetObjective>(state, std::shared_ptr<ShapeParameter>(), state.args["optimization"]["functionals"][0]);
 	func_aux->set_reference(state_reference, {1, 3});
 	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], state.args["optimization"]["functionals"][0]["transient_integral_type"], func_aux);
@@ -607,6 +620,9 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
 	State& state = *state_ptr;
 
+	json shape_arg;
+	shape_arg["type"] = "shape";
+
 	Eigen::MatrixXd centers;
 	{
 		auto in_args_ref = in_args;
@@ -614,7 +630,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 		in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
 		std::shared_ptr<State> state_reference = create_state_and_solve(in_args_ref);
 		std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-		std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
+		std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, shape_arg);
 		BarycenterTargetObjective func_aux(*state_reference, shape_param, state.args["optimization"]["functionals"][0], Eigen::MatrixXd::Zero(state_reference->diff_cached.size(), state_reference->mesh->dimension()));
 		centers.setZero(state_reference->diff_cached.size(), state_reference->mesh->dimension());
 		for (int t = 0; t < state_reference->diff_cached.size(); t++)
@@ -625,8 +641,8 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	}
 
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr);
-	std::shared_ptr<InitialConditionParameter> initial_param = std::make_shared<InitialConditionParameter>(states_ptr);
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, shape_arg);
+	std::shared_ptr<InitialConditionParameter> initial_param = std::make_shared<InitialConditionParameter>(states_ptr, state.args["optimization"]["parameters"][0]);
 
 	std::shared_ptr<StaticObjective> func_aux = std::make_shared<BarycenterTargetObjective>(state, shape_param, state.args["optimization"]["functionals"][0], centers);
 	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], state.args["optimization"]["functionals"][0]["transient_integral_type"], func_aux);

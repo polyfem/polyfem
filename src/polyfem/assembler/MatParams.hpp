@@ -67,6 +67,7 @@ namespace polyfem::assembler
 				el_id, lambda, mu, has_density);
 		}
 		
+		// TODO: remove density from here
 		double density(const int el_id) const
 		{
 			if (density_mat_.size() > 0)
