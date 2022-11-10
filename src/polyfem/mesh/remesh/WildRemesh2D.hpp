@@ -123,8 +123,8 @@ namespace polyfem::mesh
 		bool collapse_edge_after(const Tuple &t) override;
 
 		// Edge swap
-		// bool swap_edge_before(const Tuple &t) override;
-		// bool swap_edge_after(const Tuple &t) override;
+		bool swap_edge_before(const Tuple &t) override;
+		bool swap_edge_after(const Tuple &t) override;
 
 		/// @brief Create a vector of all the new edge after an operation.
 		/// @param tris New triangles.
@@ -234,7 +234,7 @@ namespace polyfem::mesh
 		public:
 			/// @brief Construct a local mesh as an n-ring around a vertex.
 			static EdgeOperationCache split(WildRemeshing2D &m, const Tuple &t);
-			// static EdgeOperationCache swap(WildRemeshing2D &m, const Tuple &t);
+			static EdgeOperationCache swap(WildRemeshing2D &m, const Tuple &t);
 			static EdgeOperationCache collapse(WildRemeshing2D &m, const Tuple &t);
 
 			const std::pair<size_t, VertexAttributes> &v0() const { return m_v0; }

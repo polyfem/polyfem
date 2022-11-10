@@ -90,6 +90,8 @@ namespace polyfem
 				solve_data.nl_problem->value(sol));
 			energy_file.flush();
 		};
+		std::ofstream relax_diff_file(resolve_output_path("relax_diff.csv"));
+		relax_diff_file << "L2,Linf" << std::endl;
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
@@ -107,7 +109,10 @@ namespace polyfem
 				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
+				const Eigen::MatrixXd loc_relax_sol = sol;
 				solve_tensor_nonlinear(sol, t); // solve the scene again after remeshing
+				relax_diff_file << fmt::format("{},{}\n", (loc_relax_sol - sol).norm(), (loc_relax_sol - sol).lpNorm<Eigen::Infinity>());
+				relax_diff_file.flush();
 
 				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure

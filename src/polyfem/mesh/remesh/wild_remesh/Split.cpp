@@ -1,13 +1,5 @@
 #include <polyfem/mesh/remesh/WildRemesh2D.hpp>
 
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
-#include <polyfem/assembler/NeoHookeanElasticity.hpp>
-#include <polyfem/mesh/remesh/wild_remesh/LocalMesh.hpp>
-#include <polyfem/utils/Logger.hpp>
-#include <polyfem/utils/GeometryUtils.hpp>
-
-#include <wmtk/utils/ExecutorUtils.hpp>
-
 namespace polyfem::mesh
 {
 	namespace
@@ -92,9 +84,6 @@ namespace polyfem::mesh
 
 		// Cache necessary local data
 		edge_cache = EdgeOperationCache::split(*this, e);
-
-		if (!edge_cache.v0().second.fixed || !edge_cache.v1().second.fixed)
-			return false;
 
 		return true;
 	}

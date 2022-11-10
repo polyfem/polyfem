@@ -14,6 +14,13 @@
 
 namespace polyfem::mesh
 {
+	namespace
+	{
+		inline bool contains(const std::unordered_set<int> &set, int val)
+		{
+			return set.find(val) != set.end();
+		}
+	} // namespace
 
 	int WildRemeshing2D::build_bases(
 		const Eigen::MatrixXd &V,
@@ -104,21 +111,22 @@ namespace polyfem::mesh
 		igl::boundary_facets(local_mesh.triangles(), boundary_edges);
 
 		std::vector<int> boundary_nodes;
+		const auto &vertex_boundary_ids = local_mesh.vertex_boundary_ids();
 		for (int i = 0; i < boundary_edges.rows(); ++i)
 		{
 			for (int j = 0; j < boundary_edges.cols(); ++j)
 			{
 				const int vi = boundary_edges(i, j);
-				// if (vertex_attrs[local_to_global[vi]].fixed)
-				// 	// && vertex_boundary_ids[vi].find(2) == vertex_boundary_ids[vi].end()
-				// 	// && vertex_boundary_ids[vi].find(4) == vertex_boundary_ids[vi].end())
-				// 	continue; // Leave the actual boundary free.
-
-				const int basis_id = vertex_to_basis[vi];
-				assert(basis_id >= 0);
-				for (int d = 0; d < DIM; ++d)
+				bool on_real_boundary = vertex_attrs[local_mesh.local_to_global()[vi]].fixed;
+				// if (!on_real_boundary || contains(vertex_boundary_ids[vi], 2) || contains(vertex_boundary_ids[vi], 4))
+				if (!on_real_boundary)
 				{
-					boundary_nodes.push_back(DIM * basis_id + d);
+					const int basis_id = vertex_to_basis[vi];
+					assert(basis_id >= 0);
+					for (int d = 0; d < DIM; ++d)
+					{
+						boundary_nodes.push_back(DIM * basis_id + d);
+					}
 				}
 			}
 		}
@@ -126,6 +134,7 @@ namespace polyfem::mesh
 		std::sort(boundary_nodes.begin(), boundary_nodes.end());
 		auto new_end = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 		boundary_nodes.erase(new_end, boundary_nodes.end());
+		// assert(boundary_nodes.size() >= 3);
 
 		const Eigen::MatrixXd target_x = utils::flatten(utils::reorder_matrix(
 			local_mesh.displacements(), vertex_to_basis));
@@ -156,6 +165,8 @@ namespace polyfem::mesh
 			n_bases * DIM, boundary_nodes, M, Obstacle(), target_x);
 		forms.push_back(al_form);
 
+		/*
+
 		std::shared_ptr<ImplicitTimeIntegrator> time_integrator =
 			ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
 		time_integrator->init(
@@ -168,6 +179,8 @@ namespace polyfem::mesh
 		forms.push_back(inertia_form);
 
 		elastic_form->set_weight(time_integrator->acceleration_scaling());
+
+		*/
 
 		// --------------------------------------------------------------------
 
@@ -232,9 +245,11 @@ namespace polyfem::mesh
 		}
 
 		// 3. Return the energy of the relaxed mesh.
-		elastic_form->set_weight(1);
-		const double energy_before = elastic_form->value(target_x);
-		const double energy_after = elastic_form->value(sol);
+		// elastic_form->set_weight(1);
+		// const double energy_before = elastic_form->value(target_x);
+		// const double energy_after = elastic_form->value(sol);
+		const double energy_before = nl_problem.value(target_x);
+		const double energy_after = nl_problem.value(sol);
 
 		assert(std::isfinite(energy_before));
 		assert(std::isfinite(energy_after));

@@ -10,6 +10,7 @@ set(SOURCES
 	ProjectQuantaties.cpp
 	Smooth.cpp
 	Split.cpp
+	Swap.cpp
 )
 
 prepend_current_path(SOURCES)

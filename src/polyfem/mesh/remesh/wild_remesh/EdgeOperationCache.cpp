@@ -76,4 +76,26 @@ namespace polyfem::mesh
 
 		return cache;
 	}
+
+	WildRemeshing2D::EdgeOperationCache WildRemeshing2D::EdgeOperationCache::swap(
+		WildRemeshing2D &m, const Tuple &t)
+	{
+		EdgeOperationCache cache;
+
+		cache.m_v0.first = t.vid(m);
+		cache.m_v1.first = t.switch_vertex(m).vid(m);
+
+		cache.m_v0.second = m.vertex_attrs[cache.m_v0.first];
+		cache.m_v1.second = m.vertex_attrs[cache.m_v1.first];
+
+		insert_edges_of_face(m, t, cache.m_edges);
+		cache.m_faces.push_back(m.face_attrs[t.fid(m)]);
+
+		assert(t.switch_face(m));
+		const Tuple t1 = t.switch_face(m).value();
+		insert_edges_of_face(m, t1, cache.m_edges);
+		cache.m_faces.push_back(m.face_attrs[t1.fid(m)]);
+
+		return cache;
+	}
 } // namespace polyfem::mesh
