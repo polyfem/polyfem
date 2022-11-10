@@ -160,7 +160,7 @@ namespace cppoptlib
 			}
 			delta_x *= max_step_size;
 
-			if (grad_norm != 0 && delta_x.dot(grad) >= 0)
+			if (grad_norm != 0 && delta_x.dot(grad) >= 0 && name() != "MMA")
 			{
 				increase_descent_strategy();
 				if (!disable_log)

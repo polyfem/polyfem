@@ -46,6 +46,7 @@ namespace cppoptlib
 		void increase_descent_strategy() override
 		{
 			assert(this->descent_strategy <= 1);
+			this->descent_strategy++;
 		}
 
 	protected:
