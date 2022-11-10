@@ -1,4 +1,5 @@
 #include "AdjointNLProblem.hpp"
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 namespace polyfem::solver
 {
@@ -154,7 +155,7 @@ namespace polyfem::solver
 		int id = 0;
 		for (const auto &state : all_states_)
 		{
-			std::string vis_mesh_path = state->resolve_output_path(fmt::format("opt_iter{:d}_state{:d}.vtu", iter, id));
+			std::string vis_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter));
 			logger().debug("Save to file {} ...", vis_mesh_path);
 			id++;
 
@@ -281,13 +282,16 @@ namespace polyfem::solver
 		// solve PDE
 		if (solve)
 		{
-			for (const auto state : all_states_)
-			{
-				state->assemble_rhs();
-				state->assemble_stiffness_mat();
-				Eigen::MatrixXd sol, pressure; // solution is also cached in state
-				state->solve_problem(sol, pressure);
-			}
+			utils::maybe_parallel_for(all_states_.size(), [&](int start, int end, int thread_id) {
+				for (int i = start; i < end; i++)
+				{
+					const auto &state = all_states_[i];
+					state->assemble_rhs();
+					state->assemble_stiffness_mat();
+					Eigen::MatrixXd sol, pressure; // solution is also cached in state
+					state->solve_problem(sol, pressure);
+				}
+			});
 		}
 
 		// post actions after solving PDE

@@ -84,14 +84,6 @@ namespace polyfem::solver
 			const SpatialIntegralType spatial_integral_type,
 			Eigen::VectorXd &term,
 			const int cur_time_step);
-		static void dJ_topology_static(
-			const State &state,
-			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd &adjoint,
-			const IntegrableFunctional &j,
-			const std::set<int> &interested_ids,
-			const SpatialIntegralType spatial_integral_type,
-			Eigen::VectorXd &one_form);
 		static void dJ_topology_static_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &sol,

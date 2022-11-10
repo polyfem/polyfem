@@ -29,8 +29,6 @@ set(SOURCES
 	FrictionProblem.cpp
 	InitialConditionProblem.hpp
 	InitialConditionProblem.cpp
-	TopologyOptimizationProblem.hpp
-	TopologyOptimizationProblem.cpp
 	ControlProblem.cpp
 	ControlProblem.hpp
 	OptimizationProblem.hpp

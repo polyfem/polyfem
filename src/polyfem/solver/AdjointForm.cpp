@@ -1200,22 +1200,6 @@ namespace polyfem::solver
 			logger().error("Not supported functional type in topology optimization!");
 	}
 
-	void AdjointForm::dJ_topology_static(
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &adjoint,
-		const IntegrableFunctional &j,
-		const std::set<int> &interested_ids,
-		const SpatialIntegralType spatial_integral_type,
-		Eigen::VectorXd &one_form)
-	{
-		Eigen::VectorXd elasticity_term, functional_term;
-		state.solve_data.elastic_form->foce_topology_derivative(state.diff_cached[0].u, adjoint, elasticity_term);
-		compute_topology_derivative_functional_term(state, state.diff_cached[0].u, j, interested_ids, spatial_integral_type, functional_term);
-
-		one_form = elasticity_term + functional_term;
-	}
-
 	void AdjointForm::dJ_topology_static_adjoint_term(
 		const State &state,
 		const Eigen::MatrixXd &sol,
