@@ -8,6 +8,9 @@
             "states",
             "solver"
         ],
+        "optional": [
+            "output"
+        ],
         "doc": "Root of the configuration file."
     },
     {
@@ -33,6 +36,28 @@
         "pointer": "/states/*/path",
         "type": "file",
         "doc": "TODO"
+    },
+    {
+        "pointer": "/output",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solve_log_level",
+            "save_frequency"
+        ],
+        "doc": "Optimization output options"
+    },
+    {
+        "pointer": "/output/save_frequency",
+        "default": 1,
+        "type": "int",
+        "doc": "Optimization output frequency"
+    },
+    {
+        "pointer": "/output/solve_log_level",
+        "default": 2,
+        "type": "int",
+        "doc": "Log level in forward solve"
     },
     {
         "pointer": "/solver",
@@ -302,21 +327,47 @@
         "optional": [
             "power",
             "initial",
-            "filter"
+            "rand_seed",
+            "filter",
+            "periodic",
+            "max_change"
         ],
         "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/max_change",
+        "default": 1e10,
+        "type": "float",
+        "doc": "Max difference in design variables in single iteration"
+    },
+    {
+        "pointer": "/parameters/*/periodic",
+        "type": "int",
+        "default": 0,
+        "doc": "periodicity for periodic topology pattern"
     },
     {
         "pointer": "/parameters/*/filter",
         "type": "object",
         "default": null,
-        "doc": "TODO"
+        "doc": "topology optimization filter parameters"
     },
     {
         "pointer": "/parameters/*/initial",
         "type": "float",
         "default": 1,
-        "doc": "TODO"
+        "doc": "constant initialization"
+    },
+    {
+        "pointer": "/parameters/*/initial",
+        "type": "list",
+        "doc": "bound of random initialization"
+    },
+    {
+        "pointer": "/parameters/*/rand_seed",
+        "type": "int",
+        "default": 1,
+        "doc": "seed for random number generator in parameter initialization"
     },
     {
         "pointer": "/parameters/*/type",
@@ -587,7 +638,8 @@
             "boundary_smoothing",
             "control_smoothing",
             "material_smoothing",
-            "volume_constraint"
+            "volume_constraint",
+            "naive_negative_poisson"
         ],
         "doc": "TODO"
     },
@@ -827,6 +879,21 @@
             "power",
             "weight",
             "transient_integral_type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "naive_negative_poisson",
+        "required": [
+            "state1",
+            "state2",
+            "v1",
+            "v2"
+        ],
+        "optional": [
+            "weight"
         ],
         "doc": "TODO"
     },

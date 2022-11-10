@@ -45,12 +45,14 @@ namespace polyfem
 		double density_power_;
 		double lambda0, mu0;
 
+		// mass constraint
 		double min_mass = 0;
 		double max_mass = 1;
 		bool has_mass_constraint = false;
 
 		json topo_params;
 
+		// filter
 		bool has_filter;
 		Eigen::SparseMatrix<double> tt_radius_adjacency;
 		Eigen::VectorXd tt_radius_adjacency_row_sum;

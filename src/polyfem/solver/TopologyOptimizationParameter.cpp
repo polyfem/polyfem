@@ -8,7 +8,9 @@ namespace polyfem
         const auto &state = get_state();
 
         full_dim_ = state.bases.size() * 2;
-        optimization_dim_ = state.bases.size();
+        optimization_dim_ = args["periodic"] > 0 ? args["periodic"].get<int>() : state.bases.size();
+        if (state.bases.size() % optimization_dim_)
+            logger().error("Number of elements doesn't match with pattern periodicity!");
 
 		assert(args["type"] == "topology");
         topo_params = args;
@@ -18,7 +20,22 @@ namespace polyfem
             max_density = args["bound"][1];
         }
 
-        initial_density_.setConstant(state.bases.size(), 1, args["initial"]);
+        max_change = args["max_change"];
+
+        if (args["initial"].is_number())
+            initial_density_.setConstant(optimization_dim_, 1, args["initial"]);
+        else
+        {
+            assert(args["initial"].is_array());
+            assert(args["initial"].size() == 2);
+            Eigen::VectorXd bound = args["initial"];
+            std::srand(args["rand_seed"].get<int>());
+            initial_density_.setZero(optimization_dim_);
+            for (int i = 0; i < initial_density_.size(); i++)
+            {
+                initial_density_(i) = (std::rand() / (double)RAND_MAX) * (bound[1] - bound[0]) + bound[0];
+            }
+        }
         density_power_ = args["power"];
         lambda0 = state.assembler.lame_params().lambda_mat_(0);
         mu0 = state.assembler.lame_params().mu_mat_(0);
@@ -228,7 +245,7 @@ namespace polyfem
         RowVectorNd min, max;
         state.mesh->bounding_box(min, max);
         // TODO: more efficient way
-        for (int i = 0; i < state.mesh->n_elements(); i++)
+        for (int i = 0; i < optimization_dim_; i++)
         {
             auto center_i = barycenters.row(i);
             for (int j = 0; j <= i; j++)
@@ -244,7 +261,7 @@ namespace polyfem
                 }
             }
         }
-        tt_radius_adjacency.resize(state.mesh->n_elements(), state.mesh->n_elements());
+        tt_radius_adjacency.resize(optimization_dim_, optimization_dim_);
         tt_radius_adjacency.setFromTriplets(tt_adjacency_list.begin(), tt_adjacency_list.end());
 
         tt_radius_adjacency_row_sum.setZero(tt_radius_adjacency.rows());
@@ -254,17 +271,27 @@ namespace polyfem
 
     Eigen::VectorXd TopologyOptimizationParameter::apply_filter(const Eigen::VectorXd &x) const
     {
+        Eigen::VectorXd y;
         if (!has_filter)
-            return x;
-        Eigen::VectorXd y = (tt_radius_adjacency * x).array() / tt_radius_adjacency_row_sum.array();
-        return y;
+            y = x;
+        else
+            y = (tt_radius_adjacency * x).array() / tt_radius_adjacency_row_sum.array();
+
+        int n_tiles = get_state().bases.size() / optimization_dim_;
+        Eigen::VectorXd y_full = y.replicate(n_tiles, 1);
+        return y_full;
     }
 
     Eigen::VectorXd TopologyOptimizationParameter::apply_filter_to_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &grad) const
     {
+        int n_tiles = get_state().bases.size() / optimization_dim_;
+        Eigen::VectorXd grad_reduced;
+        grad_reduced.setZero(optimization_dim_);
+        for (int i = 0; i < n_tiles; i++)
+            grad_reduced += grad.segment(i * optimization_dim_, optimization_dim_);
         if (!has_filter)
-            return grad;
-        Eigen::VectorXd grad_ = (tt_radius_adjacency * grad).array() / tt_radius_adjacency_row_sum.array();
+            return grad_reduced;
+        Eigen::VectorXd grad_ = (tt_radius_adjacency * grad_reduced).array() / tt_radius_adjacency_row_sum.array();
         return grad_;
     }
 }

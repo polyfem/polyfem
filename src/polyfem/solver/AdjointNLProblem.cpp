@@ -282,6 +282,8 @@ namespace polyfem::solver
 		// solve PDE
 		if (solve)
 		{
+			const int cur_log = all_states_[0]->current_log_level;
+			all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
 			utils::maybe_parallel_for(all_states_.size(), [&](int start, int end, int thread_id) {
 				for (int i = start; i < end; i++)
 				{
@@ -292,6 +294,7 @@ namespace polyfem::solver
 					state->solve_problem(sol, pressure);
 				}
 			});
+			all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
 		}
 
 		// post actions after solving PDE
