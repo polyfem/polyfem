@@ -357,7 +357,7 @@ TEST_CASE("topology-opt", "[optimization]")
 	run_opt_new("topology-opt");
 	auto energies = read_energy("topology-opt");
 
-	REQUIRE(energies[0] == Approx(78.0531).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(12.8921).epsilon(1e-4));
+	REQUIRE(energies[0] == Approx(136.014).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(1.73135).epsilon(1e-4));
 }
 #endif

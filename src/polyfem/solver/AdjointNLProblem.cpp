@@ -38,10 +38,7 @@ namespace polyfem::solver
 
 		for (const auto &p : parameters_)
 		{
-			Eigen::VectorXd gradv_param;	
-			gradv_param.setZero(p->full_dim());
-			for (auto &state_ptr : all_states_)
-				gradv_param += obj_->gradient(*state_ptr, *p);
+			Eigen::VectorXd gradv_param = obj_->gradient(all_states_, *p);
 			
 			gradv.segment(cumulative, p->optimization_dim()) += p->map_grad(x.segment(cumulative, p->optimization_dim()), gradv_param);
 			cumulative += p->optimization_dim();

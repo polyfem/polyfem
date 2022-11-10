@@ -18,6 +18,16 @@ namespace polyfem::solver
 		static std::shared_ptr<Objective> create(const json &args, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &states);
 
 		virtual double value() const = 0;
+		Eigen::VectorXd gradient(const std::vector<std::shared_ptr<State>> &states, const Parameter &param) const
+		{
+			Eigen::VectorXd grad = compute_partial_gradient(param);
+			for (const auto &state : states)
+				grad += compute_adjoint_term(*state, param);
+			
+			return grad;
+		}
+
+		// use only if there's only one state
 		Eigen::VectorXd gradient(const State& state, const Parameter &param) const
 		{
 			return compute_partial_gradient(param) + compute_adjoint_term(state, param);
