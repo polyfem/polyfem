@@ -100,6 +100,11 @@ namespace polyfem::solver
             
             obj = std::make_shared<solver::ComplianceObjective>(state, shape_param, elastic_param, topo_param, args);
         }
+        else if (type == "naive_negative_poisson")
+        {
+            State state2;
+            obj = std::make_shared<solver::NaiveNegativePoissonObjective>(*(states[args["state1"]]), state2, args);
+        }
         else
             log_and_throw_error("Unkown functional type {}!", type);
 
@@ -848,6 +853,61 @@ namespace polyfem::solver
         }
         
         return term;
+    }
+
+    bool is_same_position(Eigen::VectorXd x, Eigen::VectorXd y)
+    {
+        if (x.size() != y.size())
+            return false;
+        
+        return ((x - y).norm() < 1e-8) || ((x - y).norm() / x.norm() < 1e-5);
+    }
+
+    NaiveNegativePoissonObjective::NaiveNegativePoissonObjective(const State &state1, const State &state2, const json &args): state1_(state1), state2_(state2)
+    {
+        Eigen::Vector2d a, b;
+        a = args["v1"];
+        b = args["v2"];
+        for (int i = 0; i < state1_.n_bases; i++)
+        {
+            if (is_same_position(state1_.mesh_nodes->node_position(i), a))
+            {
+                v1 = i;
+            }
+            if (is_same_position(state1_.mesh_nodes->node_position(i), b))
+            {
+                v2 = i;
+            }
+        }
+        if (v1 < 0 || v2 < 0)
+            log_and_throw_error("Failed to find target vertices in objective!");
+    }
+
+    double NaiveNegativePoissonObjective::value() const
+    {
+        const int dim = state1_.mesh->dimension();
+        return (state1_.diff_cached[0].u(v1 * dim + 1) - state1_.diff_cached[0].u(v2 * dim + 1)) + (state1_.mesh_nodes->node_position(v1)(1) - state1_.mesh_nodes->node_position(v2)(1));
+    }
+
+    Eigen::MatrixXd NaiveNegativePoissonObjective::compute_adjoint_rhs(const State& state) const
+    {
+        Eigen::MatrixXd rhs;
+        rhs.setZero(state.diff_cached[0].u.size(), 1);
+
+        const int dim = state1_.mesh->dimension();
+        
+        if (&state == &state1_)
+        {
+            rhs(v1 * dim + 1) = 1;
+            rhs(v2 * dim + 1) = -1;
+        }
+        
+        return rhs;
+    }
+
+    Eigen::VectorXd NaiveNegativePoissonObjective::compute_partial_gradient(const Parameter &param) const
+    {
+        return Eigen::VectorXd::Zero(param.full_dim());
     }
 
     IntegrableFunctional TargetObjective::get_integral_functional() const

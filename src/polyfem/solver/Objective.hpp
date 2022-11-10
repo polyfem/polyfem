@@ -33,12 +33,6 @@ namespace polyfem::solver
 			return compute_partial_gradient(param) + compute_adjoint_term(state, param);
 		}
 
-		Eigen::VectorXd gradient(const Parameter &param) const
-		{
-			log_and_throw_error("Shouldn't use this!");
-			return Eigen::VectorXd();
-		}
-
 		virtual Eigen::MatrixXd compute_adjoint_rhs(const State& state) const = 0; // compute $\partial_u J$
 
 		virtual Eigen::VectorXd compute_partial_gradient(const Parameter &param) const = 0; // compute $\partial_q J$
@@ -250,6 +244,24 @@ namespace polyfem::solver
 
 		std::shared_ptr<const ElasticParameter> elastic_param_; // stress depends on elastic param
 		std::shared_ptr<const TopologyOptimizationParameter> topo_param_;
+	};
+
+	class NaiveNegativePoissonObjective: public Objective
+	{
+	public:
+		NaiveNegativePoissonObjective(const State &state1, const State &state2, const json &args);
+		~NaiveNegativePoissonObjective() = default;
+
+		double value() const override;
+		Eigen::MatrixXd compute_adjoint_rhs(const State& state) const override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
+
+	protected:
+		const State& state1_;
+		const State& state2_;
+
+		int v1 = -1;
+		int v2 = -1;
 	};
 
 	class TargetObjective: public SpatialIntegralObjective
