@@ -49,7 +49,7 @@ namespace polyfem
 
 			Eigen::Vector4d adjoint_spectrum;
 			Eigen::VectorXd x;
-			adjoint_spectrum = dirichlet_solve(*solver, A, b, indices, x, precond_num, "", "", false, false);
+			adjoint_spectrum = dirichlet_solve(*solver, A, b, indices, x, precond_num, "", false, false, false);
 			adjoint_solution = x;
 		}
 
