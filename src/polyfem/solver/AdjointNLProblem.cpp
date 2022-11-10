@@ -1,5 +1,6 @@
 #include "AdjointNLProblem.hpp"
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/Timer.hpp>
 
 namespace polyfem::solver
 {
@@ -31,18 +32,31 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv, const bool only_elastic)
 	{
-		int cumulative = 0;
-		gradv.setZero(optimization_dim_);
-
-		for (auto &state_ptr : all_states_)
-			state_ptr->solve_adjoint(obj_->compute_adjoint_rhs(*state_ptr));
-
-		for (const auto &p : parameters_)
+		if (cur_grad.size() == x.size())
+			gradv = cur_grad;
+		else
 		{
-			Eigen::VectorXd gradv_param = obj_->gradient(all_states_, *p);
-			
-			gradv.segment(cumulative, p->optimization_dim()) += p->map_grad(x.segment(cumulative, p->optimization_dim()), gradv_param);
-			cumulative += p->optimization_dim();
+			int cumulative = 0;
+			gradv.setZero(optimization_dim_);
+
+			{
+				POLYFEM_SCOPED_TIMER("adjoint solve", adjoint_solve_time);
+				for (auto &state_ptr : all_states_)
+					state_ptr->solve_adjoint(obj_->compute_adjoint_rhs(*state_ptr));
+			}
+
+			{
+				POLYFEM_SCOPED_TIMER("gradient assembly", grad_assembly_time);
+				for (const auto &p : parameters_)
+				{
+					Eigen::VectorXd gradv_param = obj_->gradient(all_states_, *p);
+					
+					gradv.segment(cumulative, p->optimization_dim()) += p->map_grad(x.segment(cumulative, p->optimization_dim()), gradv_param);
+					cumulative += p->optimization_dim();
+				}
+			}
+
+			cur_grad = gradv;
 		}
 	}
 
@@ -281,27 +295,34 @@ namespace polyfem::solver
 
 		// solve PDE
 		if (solve)
-		{
-			const int cur_log = all_states_[0]->current_log_level;
-			all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
-			utils::maybe_parallel_for(all_states_.size(), [&](int start, int end, int thread_id) {
-				for (int i = start; i < end; i++)
-				{
-					const auto &state = all_states_[i];
-					state->assemble_rhs();
-					state->assemble_stiffness_mat();
-					Eigen::MatrixXd sol, pressure; // solution is also cached in state
-					state->solve_problem(sol, pressure);
-				}
-			});
-			all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
-		}
+			solve_pde();
 
 		// post actions after solving PDE
 		for (const auto &p : parameters_)
 		{
 			p->post_solve(newX);
 		}
+
+		cur_x = newX;
+	}
+
+	void AdjointNLProblem::solve_pde()
+	{
+		const int cur_log = all_states_[0]->current_log_level;
+		all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
+		utils::maybe_parallel_for(all_states_.size(), [&](int start, int end, int thread_id) {
+			for (int i = start; i < end; i++)
+			{
+				const auto &state = all_states_[i];
+				state->assemble_rhs();
+				state->assemble_stiffness_mat();
+				Eigen::MatrixXd sol, pressure; // solution is also cached in state
+				state->solve_problem(sol, pressure);
+			}
+		});
+		all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
+
+		cur_grad.resize(0);
 	}
 
 } // namespace polyfem

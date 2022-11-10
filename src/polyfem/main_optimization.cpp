@@ -219,14 +219,7 @@ int main(int argc, char **argv)
         cumulative += p->optimization_dim();
     }
 
-    for (auto &state : states)
-    {
-        state->assemble_rhs();
-        state->assemble_stiffness_mat();
-        Eigen::MatrixXd sol, pressure;
-        state->solve_problem(sol, pressure);
-    }
-
+    nl_problem.solve_pde();
     nlsolver->minimize(nl_problem, x);
 
 	return EXIT_SUCCESS;

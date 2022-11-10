@@ -39,6 +39,7 @@ namespace polyfem::solver
 		void save_to_file(const Eigen::VectorXd &x0);
 
 		void solution_changed(const Eigen::VectorXd &new_x);
+		void solve_pde();
 
 		Eigen::VectorXd get_lower_bound(const Eigen::VectorXd &x) const;
 		Eigen::VectorXd get_upper_bound(const Eigen::VectorXd &x) const;
@@ -53,10 +54,13 @@ namespace polyfem::solver
 		std::shared_ptr<Objective> 				obj_;
 		std::vector<std::shared_ptr<Parameter>> parameters_;
 		std::vector<std::shared_ptr<State>>     all_states_;
-		Eigen::VectorXd cur_x;
+		Eigen::VectorXd cur_x, cur_grad;
 		int iter = 0;
 
 		const int solve_log_level;
 		const int save_freq;
+
+		double adjoint_solve_time = 0;
+		double grad_assembly_time = 0;
 	};
 } // namespace polyfem::solver

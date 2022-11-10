@@ -63,6 +63,7 @@ void perturb_material(assembler::AssemblerUtils &assembler, const Eigen::MatrixX
 	assembler.update_lame_params(cur_lambdas + lambda_update, cur_mus + mu_update);
 }
 
+// TODO: call parameter class instead
 void perturb(State &state, const Eigen::MatrixXd &dx, const std::string &type)
 {
 	if (type == "shape")
