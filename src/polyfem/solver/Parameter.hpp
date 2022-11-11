@@ -89,7 +89,7 @@ namespace polyfem
 		}
 
 	protected:
-		std::vector<std::shared_ptr<State>> &states_ptr_;
+		std::vector<std::shared_ptr<State>> states_ptr_;
 		int optimization_dim_;
 		int full_dim_ = 0;
 		std::string parameter_name_;
