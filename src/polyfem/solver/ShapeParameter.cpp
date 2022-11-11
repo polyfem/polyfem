@@ -184,7 +184,7 @@ namespace polyfem
 		}
 	} // namespace
 
-	ShapeParameter::ShapeParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args) : Parameter(states_ptr, args)
+	ShapeParameter::ShapeParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args) : Parameter(states_ptr, args)
 	{
 		parameter_name_ = "shape";
 

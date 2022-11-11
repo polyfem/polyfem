@@ -9,7 +9,7 @@
 
 namespace polyfem
 {
-    std::shared_ptr<Parameter> Parameter::create(const json &args, std::vector<std::shared_ptr<State>> states_ptr)
+    std::shared_ptr<Parameter> Parameter::create(const json &args, std::vector<std::shared_ptr<State>> &states_ptr)
     {
         const std::string type = args["type"];
         if (type == "initial")

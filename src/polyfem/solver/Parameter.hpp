@@ -7,11 +7,11 @@ namespace polyfem
 	class Parameter
 	{
 	public:
-		Parameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args) : states_ptr_(states_ptr) 
+		Parameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args) : states_ptr_(states_ptr) 
 		{ assert(states_ptr_.size() > 0); }
 		virtual ~Parameter() = default;
 
-		static std::shared_ptr<Parameter> create(const json &args, std::vector<std::shared_ptr<State>> states_ptr);
+		static std::shared_ptr<Parameter> create(const json &args, std::vector<std::shared_ptr<State>> &states_ptr);
 
 		inline const State& get_state() const { return *(states_ptr_[0]); }
 
@@ -89,7 +89,7 @@ namespace polyfem
 		}
 
 	protected:
-		std::vector<std::shared_ptr<State>> states_ptr_;
+		std::vector<std::shared_ptr<State>> &states_ptr_;
 		int optimization_dim_;
 		int full_dim_ = 0;
 		std::string parameter_name_;

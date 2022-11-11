@@ -8,7 +8,7 @@ namespace polyfem
 	class Constraints
 	{
 	public:
-		Constraints(json constraint_params, int full_size, int reduced_size) : constraint_params_(constraint_params), full_size_(full_size), reduced_size_(reduced_size) {}
+		Constraints(const json &constraint_params, int full_size, int reduced_size) : constraint_params_(constraint_params), full_size_(full_size), reduced_size_(reduced_size) {}
 		virtual ~Constraints() = default;
 
 		virtual void full_to_reduced(const Eigen::VectorXd &full, Eigen::VectorXd &reduced, Eigen::MatrixXd &grad)

@@ -12,7 +12,7 @@ namespace polyfem
 			state->set_v(full);
 		}
 
-		ShapeConstraints(json constraint_params, int full_size, int reduced_size) : Constraints(constraint_params, full_size, reduced_size)
+		ShapeConstraints(const json &constraint_params, int full_size, int reduced_size) : Constraints(constraint_params, full_size, reduced_size)
 		{
 			if (constraint_params["type"] == "identity")
 			{

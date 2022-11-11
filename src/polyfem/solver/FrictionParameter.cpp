@@ -2,7 +2,7 @@
 
 namespace polyfem
 {
-	FrictionParameter::FrictionParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args) : Parameter(states_ptr, args)
+	FrictionParameter::FrictionParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args) : Parameter(states_ptr, args)
 	{
 		parameter_name_ = "friction";
 

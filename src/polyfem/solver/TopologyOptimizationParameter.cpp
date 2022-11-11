@@ -2,7 +2,7 @@
 
 namespace polyfem
 {
-    TopologyOptimizationParameter::TopologyOptimizationParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args): Parameter(states_ptr, args)
+    TopologyOptimizationParameter::TopologyOptimizationParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args): Parameter(states_ptr, args)
     {
         parameter_name_ = "topology";
         const auto &state = get_state();
@@ -241,17 +241,17 @@ namespace polyfem
     void TopologyOptimizationParameter::build_filter(const json &filter_args)
     {
         const double radius = filter_args["radius"];
-        const State &state = get_state();
+        const auto &mesh = get_state().mesh;
         std::vector<Eigen::Triplet<double>> tt_adjacency_list;
 
         Eigen::MatrixXd barycenters;
-        if (state.mesh->is_volume())
-            state.mesh->cell_barycenters(barycenters);
+        if (mesh->is_volume())
+            mesh->cell_barycenters(barycenters);
         else
-            state.mesh->face_barycenters(barycenters);
+            mesh->face_barycenters(barycenters);
 
         RowVectorNd min, max;
-        state.mesh->bounding_box(min, max);
+        mesh->bounding_box(min, max);
         // TODO: more efficient way
         for (int i = 0; i < optimization_dim_; i++)
         {

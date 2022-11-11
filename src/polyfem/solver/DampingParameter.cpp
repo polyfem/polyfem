@@ -2,7 +2,7 @@
 
 namespace polyfem
 {
-	DampingParameter::DampingParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args) : Parameter(states_ptr, args)
+	DampingParameter::DampingParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args) : Parameter(states_ptr, args)
 	{
 		parameter_name_ = "damping";
 

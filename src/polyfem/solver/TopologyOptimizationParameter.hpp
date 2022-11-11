@@ -7,7 +7,7 @@ namespace polyfem
 	class TopologyOptimizationParameter : public Parameter
 	{
 	public:
-		TopologyOptimizationParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args);
+		TopologyOptimizationParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args);
 
 		void update() override
 		{
@@ -30,11 +30,11 @@ namespace polyfem
 
 		bool pre_solve(const Eigen::VectorXd &newX) override;
 
+	private:
 		void build_filter(const json &filter_args);
 		Eigen::VectorXd apply_filter(const Eigen::VectorXd &x) const;
 		Eigen::VectorXd apply_filter_to_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &grad) const;
 
-	private:
 		double max_change = 1;
 		double min_density = 0;
 		double max_density = 1;

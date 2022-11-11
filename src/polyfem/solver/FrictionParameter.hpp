@@ -7,7 +7,7 @@ namespace polyfem
 	class FrictionParameter : public Parameter
 	{
 	public:
-		FrictionParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args);
+		FrictionParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args);
 
 		void update() override
 		{

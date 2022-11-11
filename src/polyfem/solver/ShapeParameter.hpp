@@ -11,7 +11,7 @@ namespace polyfem
 	class ShapeParameter : public Parameter
 	{
 	public:
-		ShapeParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args);
+		ShapeParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args);
 
 		void update() override
 		{

@@ -7,7 +7,7 @@ namespace polyfem
 	class DampingParameter : public Parameter
 	{
 	public:
-		DampingParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args);
+		DampingParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args);
 
 		void update() override
 		{

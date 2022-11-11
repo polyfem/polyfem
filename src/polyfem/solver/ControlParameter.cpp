@@ -4,7 +4,7 @@
 
 namespace polyfem
 {
-	ControlParameter::ControlParameter(std::vector<std::shared_ptr<State>> states_ptr, const json &args): Parameter(states_ptr, args)
+	ControlParameter::ControlParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args): Parameter(states_ptr, args)
 	{
 		assert(states_ptr_[0]->problem->is_time_dependent());
 		parameter_name_ = "control";
