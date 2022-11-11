@@ -559,7 +559,9 @@ namespace polyfem
 												  const Eigen::MatrixXd &fun,
 												  Eigen::MatrixXd &result) const
 		{
-			if (assembler == "LinearElasticity")
+			if (assembler == "Laplacian")
+				laplacian_.local_assembler().compute_stiffness_tensor(vals, local_pts, fun, result);
+			else if (assembler == "LinearElasticity")
 				linear_elasticity_.local_assembler().compute_stiffness_tensor(vals, local_pts, fun, result);
 			else if (assembler == "NeoHookean")
 				neo_hookean_elasticity_.local_assembler().compute_stiffness_tensor(vals, local_pts, fun, result);

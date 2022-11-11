@@ -34,6 +34,7 @@ namespace polyfem
 			void add_multimaterial(const int index, const json &params) {}
 
 			void compute_stress_grad_multiply_mat(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const;
+			void compute_stiffness_tensor(const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const;
 
 			//laplacian has no parameters.
 			//in case these are passes trough params

@@ -109,6 +109,7 @@ namespace polyfem
 		bool depend_on_u() const { return has_u; }
 		bool depend_on_gradu() const { return has_gradu; }
 
+	private:
 		void lambda_mu(const LameParameters &lame_params, const int e, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, Eigen::MatrixXd &lambda, Eigen::MatrixXd &mu) const
 		{
 			lambda.setZero(local_pts.rows(), 1);
@@ -117,7 +118,6 @@ namespace polyfem
 				lame_params.lambda_mu(local_pts.row(p), pts.row(p), e, lambda(p), mu(p));
 		}
 
-	private:
 		std::string name = "";
 		bool has_x = false, has_u = false, has_gradu = false;
 		functionalType j_func, dj_dx_func, dj_du_func, dj_dgradu_func;

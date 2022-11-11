@@ -221,7 +221,8 @@ namespace polyfem::solver
 
 	Eigen::VectorXd AdjointNLProblem::force_inequality_constraint(const Eigen::VectorXd &x0, const Eigen::VectorXd &dx)
 	{
-		Eigen::VectorXd newX(optimization_dim_);
+		Eigen::VectorXd newX;
+		newX.setZero(optimization_dim_);
 		int cumulative = 0;
 		for (const auto &p : parameters_)
 		{
@@ -295,15 +296,17 @@ namespace polyfem::solver
 
 		// solve PDE
 		if (solve)
+		{
 			solve_pde();
 
-		// post actions after solving PDE
-		for (const auto &p : parameters_)
-		{
-			p->post_solve(newX);
-		}
+			// post actions after solving PDE
+			for (const auto &p : parameters_)
+			{
+				p->post_solve(newX);
+			}
 
-		cur_x = newX;
+			cur_x = newX;
+		}
 	}
 
 	void AdjointNLProblem::solve_pde()

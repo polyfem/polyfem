@@ -11,6 +11,8 @@ namespace polyfem::solver
 	public:
 		AdjointNLProblem(const std::shared_ptr<Objective> &obj, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &all_states, const json &args) : obj_(obj), parameters_(parameters), all_states_(all_states), solve_log_level(args["output"]["solve_log_level"]), save_freq(args["output"]["save_frequency"])
 		{
+			cur_x.setZero(0);
+			cur_grad.setZero(0);
 			for (const auto &p : parameters)
 				optimization_dim_ += p->optimization_dim();
 		}

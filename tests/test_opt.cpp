@@ -277,7 +277,8 @@ void run_opt_new(const std::string &name)
     solver::AdjointNLProblem nl_problem(sum_obj, parameters, states, opt_args);
     std::shared_ptr<cppoptlib::NonlinearSolver<solver::AdjointNLProblem>> nlsolver = make_nl_solver<solver::AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 
-    Eigen::VectorXd x(nl_problem.full_size());
+    Eigen::VectorXd x;
+	x.setZero(nl_problem.full_size());
     int cumulative = 0;
     for (const auto &p : parameters)
     {
