@@ -1,6 +1,7 @@
 #include "Objective.hpp"
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/utils/AutodiffTypes.hpp>
 
 using namespace polyfem::utils;
 
@@ -8,6 +9,36 @@ namespace polyfem::solver
 {
     namespace {
         double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
+    
+        typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1>> Diff;
+        
+        template <typename T>
+        T strain_norm(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &F)
+        {
+            T val = T(0);
+            auto strain = (F.transpose() + F) / T(2.0);
+            for (int i = 0; i < strain.rows(); i++)
+                for (int j = 0; j < strain.cols(); j++)
+                    val += strain(i, j) * strain(i, j);
+            return val;
+        }
+        
+        Eigen::MatrixXd strain_norm_grad(const Eigen::MatrixXd &F)
+        {
+            DiffScalarBase::setVariableCount(F.size());
+            Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic> full_diff(F.rows(), F.cols());
+            for (int i = 0; i < F.rows(); i++)
+                for (int j = 0; j < F.cols(); j++)
+                    full_diff(i, j) = Diff(i + j * F.rows(), F(i, j));
+            auto reduced_diff = strain_norm(full_diff);
+            
+            Eigen::MatrixXd grad(F.rows(), F.cols());
+            for (int i = 0; i < F.rows(); ++i)
+                for (int j = 0; j < F.cols(); ++j)
+                    grad(i, j) = reduced_diff.getGradient()(i + j * F.rows());
+            
+            return grad;
+        }
     }
 
     std::shared_ptr<Objective> Objective::create(const json &args, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &states)
@@ -99,6 +130,16 @@ namespace polyfem::solver
                 logger().warn("No parameter is assigned to functional");
             
             obj = std::make_shared<solver::ComplianceObjective>(state, shape_param, elastic_param, topo_param, args);
+        }
+        else if (type == "strain_norm")
+        {
+            State &state = *(states[args["state"]]);
+            
+            std::shared_ptr<ShapeParameter> shape_param;
+            if (args["shape_parameter"] >= 0)
+                shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+            
+            obj = std::make_shared<solver::StrainObjective>(state, shape_param, args);
         }
         else if (type == "naive_negative_poisson")
         {
@@ -855,6 +896,38 @@ namespace polyfem::solver
         return term;
     }
 
+    IntegrableFunctional StrainObjective::get_integral_functional() const
+    {
+        IntegrableFunctional j;
+
+		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(grad_u.rows(), 1);
+			for (int q = 0; q < grad_u.rows(); q++)
+			{
+				Eigen::MatrixXd grad_u_q;
+				vector2matrix(grad_u.row(q), grad_u_q);
+				val(q) = strain_norm(grad_u_q);
+			}
+		});
+
+		j.set_dj_dgradu([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(grad_u.rows(), grad_u.cols());
+			const int dim = sqrt(grad_u.cols());
+			for (int q = 0; q < grad_u.rows(); q++)
+			{
+				Eigen::MatrixXd grad_u_q;
+				vector2matrix(grad_u.row(q), grad_u_q);
+                Eigen::MatrixXd grad = strain_norm_grad(grad_u_q);
+
+				for (int i = 0; i < dim; i++)
+					for (int l = 0; l < dim; l++)
+						val(q, i * dim + l) = grad(i, l);
+			}
+		});
+
+        return j;
+    }
+
     bool is_same_position(Eigen::VectorXd x, Eigen::VectorXd y)
     {
         if (x.size() != y.size())
@@ -886,7 +959,7 @@ namespace polyfem::solver
     double NaiveNegativePoissonObjective::value() const
     {
         const int dim = state1_.mesh->dimension();
-        return (state1_.diff_cached[0].u(v1 * dim + 1) - state1_.diff_cached[0].u(v2 * dim + 1)) + (state1_.mesh_nodes->node_position(v1)(1) - state1_.mesh_nodes->node_position(v2)(1));
+        return (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
     }
 
     Eigen::MatrixXd NaiveNegativePoissonObjective::compute_adjoint_rhs(const State& state) const
@@ -898,8 +971,8 @@ namespace polyfem::solver
         
         if (&state == &state1_)
         {
-            rhs(v1 * dim + 1) = 1;
-            rhs(v2 * dim + 1) = -1;
+            rhs(v1 * dim + 0) = 1;
+            rhs(v2 * dim + 0) = -1;
         }
         
         return rhs;

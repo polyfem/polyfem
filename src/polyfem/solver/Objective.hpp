@@ -246,6 +246,15 @@ namespace polyfem::solver
 		std::shared_ptr<const TopologyOptimizationParameter> topo_param_;
 	};
 
+	class StrainObjective: public SpatialIntegralObjective
+	{
+	public:
+		StrainObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args): SpatialIntegralObjective(state, shape_param, args) {}
+		~StrainObjective() = default;
+
+		IntegrableFunctional get_integral_functional() const override;
+	};
+
 	class NaiveNegativePoissonObjective: public Objective
 	{
 	public:

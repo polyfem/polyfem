@@ -635,6 +635,7 @@
             "position",
             "stress",
             "compliance",
+            "strain_norm",
             "boundary_smoothing",
             "control_smoothing",
             "material_smoothing",
@@ -909,6 +910,22 @@
             "shape_parameter",
             "material_parameter",
             "topology_parameter",
+            "volume_selection",
+            "weight",
+            "transient_integral_type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "strain_norm",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "shape_parameter",
             "volume_selection",
             "weight",
             "transient_integral_type"

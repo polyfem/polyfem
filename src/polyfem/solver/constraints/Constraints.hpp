@@ -20,7 +20,7 @@ namespace polyfem
 				return;
 			}
 
-			DiffScalarBase::setVariableCount(reduced_size_);
+			DiffScalarBase::setVariableCount(full_size_); // size of input vector
 			assert(full.size() == full_size_);
 			DiffVector full_diff(full_size_);
 			for (int i = 0; i < full.size(); ++i)
@@ -28,7 +28,7 @@ namespace polyfem
 			auto reduced_diff = full_to_reduced_diff_(full_diff);
 			assert(reduced_diff.size() == reduced_size_);
 			reduced.resize(reduced_size_);
-			grad.resize(full_size_, reduced_size_);
+			grad.resize(reduced_size_, full_size_);
 			for (int i = 0; i < reduced_size_; ++i)
 			{
 				reduced(i) = reduced_diff(i).getValue();

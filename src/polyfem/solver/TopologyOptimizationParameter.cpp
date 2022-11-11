@@ -27,13 +27,21 @@ namespace polyfem
         else
         {
             assert(args["initial"].is_array());
-            assert(args["initial"].size() == 2);
-            Eigen::VectorXd bound = args["initial"];
-            std::srand(args["rand_seed"].get<int>());
-            initial_density_.setZero(optimization_dim_);
-            for (int i = 0; i < initial_density_.size(); i++)
+            if (args["initial"].size() == 2)
             {
-                initial_density_(i) = (std::rand() / (double)RAND_MAX) * (bound[1] - bound[0]) + bound[0];
+                Eigen::VectorXd bound = args["initial"];
+                std::srand(args["rand_seed"].get<int>());
+                initial_density_.setZero(optimization_dim_);
+                for (int i = 0; i < initial_density_.size(); i++)
+                {
+                    initial_density_(i) = (std::rand() / (double)RAND_MAX) * (bound[1] - bound[0]) + bound[0];
+                }
+            }
+            else
+            {
+                initial_density_ = args["initial"];
+                if (initial_density_.size() != optimization_dim_)
+                    log_and_throw_error("initial density input doesn't match with problem dimension!");
             }
         }
         density_power_ = args["power"];
