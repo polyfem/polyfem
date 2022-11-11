@@ -15,7 +15,7 @@ var searchData=
   ['hat_12',['hat',['../namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32',1,'polyfem::assembler']]],
   ['hessian_13',['hessian',['../classpolyfem_1_1solver_1_1_full_n_l_problem.html#a1c9df48eaa86babc1355b4f4226bba58',1,'polyfem::solver::FullNLProblem::hessian()'],['../classpolyfem_1_1solver_1_1_n_l_problem.html#ac5391ca8bfaf7182e806ea462405c8a9',1,'polyfem::solver::NLProblem::hessian()']]],
   ['hessian_5ffrom_5fenergy_14',['hessian_from_energy',['../namespacepolyfem.html#a62aec6e705390cac4c531c6bf2cd7441',1,'polyfem']]],
-  ['hex_5fface_5flocal_5fnodes_15',['hex_face_local_nodes',['../classpolyfem_1_1basis_1_1_f_e_basis3d.html#af7a94ca631f9a4cdb5d5600e25f84815',1,'polyfem::basis::FEBasis3d']]],
+  ['hex_5fface_5flocal_5fnodes_15',['hex_face_local_nodes',['../classpolyfem_1_1basis_1_1_lagrange_basis3d.html#a2c2b08f4a3a5621aa452f8516b05d1df',1,'polyfem::basis::LagrangeBasis3d']]],
   ['hex_5flocal_5fnode_5fcoordinates_5ffrom_5fface_16',['hex_local_node_coordinates_from_face',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a7d837e24efe5b9e75db8487e39f4c8a9',1,'polyfem::utils::BoundarySampler']]],
   ['hexquadrature_17',['HexQuadrature',['../classpolyfem_1_1quadrature_1_1_hex_quadrature.html#ae035e4d3b2e454b06c6cd5f95e5e22d4',1,'polyfem::quadrature::HexQuadrature']]],
   ['hooke_18',['hooke',['../namespaceelasticity__rhs.html#ac9ddcfd900a82f06105f1b39539b32b5',1,'elasticity_rhs']]],

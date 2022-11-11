@@ -2,9 +2,9 @@ var namespacepolyfem_1_1basis =
 [
     [ "Basis", "classpolyfem_1_1basis_1_1_basis.html", "classpolyfem_1_1basis_1_1_basis" ],
     [ "ElementBases", "classpolyfem_1_1basis_1_1_element_bases.html", "classpolyfem_1_1basis_1_1_element_bases" ],
-    [ "FEBasis2d", "classpolyfem_1_1basis_1_1_f_e_basis2d.html", null ],
-    [ "FEBasis3d", "classpolyfem_1_1basis_1_1_f_e_basis3d.html", null ],
     [ "InterfaceData", "structpolyfem_1_1basis_1_1_interface_data.html", "structpolyfem_1_1basis_1_1_interface_data" ],
+    [ "LagrangeBasis2d", "classpolyfem_1_1basis_1_1_lagrange_basis2d.html", null ],
+    [ "LagrangeBasis3d", "classpolyfem_1_1basis_1_1_lagrange_basis3d.html", null ],
     [ "Local2Global", "classpolyfem_1_1basis_1_1_local2_global.html", "classpolyfem_1_1basis_1_1_local2_global" ],
     [ "MVPolygonalBasis2d", "classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html", null ],
     [ "PolygonalBasis2d", "classpolyfem_1_1basis_1_1_polygonal_basis2d.html", null ],

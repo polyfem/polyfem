@@ -17,7 +17,7 @@ var searchData=
   ['linear_5felasticity_14',['linear_elasticity',['../namespaceelasticity__rhs.html#a7dc1b1746dc23f3e691222947cb3178c',1,'elasticity_rhs']]],
   ['linear_5felasticity_5f2d_5ffunction_15',['linear_elasticity_2d_function',['../namespacepolyfem_1_1autogen.html#affa69accbfb13eb3669550bb6c4f2d7b',1,'polyfem::autogen']]],
   ['linear_5felasticity_5f3d_5ffunction_16',['linear_elasticity_3d_function',['../namespacepolyfem_1_1autogen.html#aeb4ebaf3fd6946d81a03e6ccd9207d88',1,'polyfem::autogen']]],
-  ['linear_5fhex_5fface_5flocal_5fnodes_5fcoordinates_17',['linear_hex_face_local_nodes_coordinates',['../classpolyfem_1_1basis_1_1_f_e_basis3d.html#a00d8d4a5f07b0523a5aaa621fdf6b8a1',1,'polyfem::basis::FEBasis3d']]],
+  ['linear_5fhex_5fface_5flocal_5fnodes_5fcoordinates_17',['linear_hex_face_local_nodes_coordinates',['../classpolyfem_1_1basis_1_1_lagrange_basis3d.html#a9e5815573805eb00594f39dee3df25a3',1,'polyfem::basis::LagrangeBasis3d']]],
   ['linearassemblerdata_18',['LinearAssemblerData',['../classpolyfem_1_1assembler_1_1_linear_assembler_data.html#ab797716e9777407f5d2eecca18c9a1a0',1,'polyfem::assembler::LinearAssemblerData']]],
   ['linearelasticproblemexact_19',['LinearElasticProblemExact',['../classpolyfem_1_1problem_1_1_linear_elastic_problem_exact.html#ae4cf049fc86787f47eb34872ec62297d',1,'polyfem::problem::LinearElasticProblemExact']]],
   ['linearproblem_20',['LinearProblem',['../classpolyfem_1_1problem_1_1_linear_problem.html#a9276af519e6a4f9e3154362d0bf3a119',1,'polyfem::problem::LinearProblem']]],

@@ -46,7 +46,7 @@ if (edges && edges.length) {
         </defs>
 
 <script type="text/javascript">
-var viewWidth = 815;
+var viewWidth = 789;
 var viewHeight = 104;
 var sectionId = 'dynsection-1';
 </script>
@@ -58,9 +58,9 @@ var sectionId = 'dynsection-1';
 <g id="node1" class="node">
 <title>Node1</title>
 <g id="a_node1"><a xlink:title=" ">
-<polygon fill="#999999" stroke="#666666" points="479,-96 348,-96 348,-66 479,-66 479,-96"/>
-<text text-anchor="start" x="356" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/quadrature</text>
-<text text-anchor="middle" x="413.5" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">/TetQuadrature.hpp</text>
+<polygon fill="#999999" stroke="#666666" points="453,-96 322,-96 322,-66 453,-66 453,-96"/>
+<text text-anchor="start" x="330" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/quadrature</text>
+<text text-anchor="middle" x="387.5" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">/TetQuadrature.hpp</text>
 </a>
 </g>
 </g>
@@ -76,70 +76,71 @@ var sectionId = 'dynsection-1';
 <!-- Node1&#45;&gt;Node2 -->
 <g id="edge1" class="edge">
 <title>Node1&#45;&gt;Node2</title>
-<path fill="none" stroke="#63b8ff" d="M337.92,-66.94C281.31,-57.07 201.99,-43.03 132.5,-30 123.36,-28.29 113.57,-26.39 104.28,-24.57"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="337.41,-70.41 347.86,-68.68 338.61,-63.51 337.41,-70.41"/>
+<path fill="none" stroke="#63b8ff" d="M312.03,-65.35C261.04,-55.43 192.2,-42 131.5,-30 122.62,-28.25 113.12,-26.35 104.06,-24.54"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="311.5,-68.81 321.98,-67.29 312.83,-61.94 311.5,-68.81"/>
 </g>
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="_f_e_basis3d_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="317.5,-24.5 141.5,-24.5 141.5,-5.5 317.5,-5.5 317.5,-24.5"/>
-<text text-anchor="middle" x="229.5" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/FEBasis3d.cpp</text>
+<g id="a_node3"><a xlink:href="_lagrange_basis3d_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="292,-30 141,-30 141,0 292,0 292,-30"/>
+<text text-anchor="start" x="149" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/Lagrange</text>
+<text text-anchor="middle" x="216.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Basis3d.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
 <g id="edge2" class="edge">
 <title>Node1&#45;&gt;Node3</title>
-<path fill="none" stroke="#63b8ff" d="M363.41,-62.58C327.9,-50.23 281.79,-34.19 253.99,-24.52"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="362.53,-65.98 373.12,-65.95 364.83,-59.36 362.53,-65.98"/>
+<path fill="none" stroke="#63b8ff" d="M340.27,-62.32C313.05,-52.14 279.31,-39.51 253.94,-30.01"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="339.38,-65.73 349.97,-65.95 341.83,-59.17 339.38,-65.73"/>
 </g>
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
 <g id="a_node4"><a xlink:href="_evaluator_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="491,-24.5 336,-24.5 336,-5.5 491,-5.5 491,-24.5"/>
-<text text-anchor="middle" x="413.5" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/io/Evaluator.cpp</text>
+<polygon fill="white" stroke="#666666" points="465,-24.5 310,-24.5 310,-5.5 465,-5.5 465,-24.5"/>
+<text text-anchor="middle" x="387.5" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/io/Evaluator.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
 <g id="edge3" class="edge">
 <title>Node1&#45;&gt;Node4</title>
-<path fill="none" stroke="#63b8ff" d="M413.5,-55.6C413.5,-44.8 413.5,-32.78 413.5,-24.84"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="410,-55.8 413.5,-65.8 417,-55.8 410,-55.8"/>
+<path fill="none" stroke="#63b8ff" d="M387.5,-55.6C387.5,-44.8 387.5,-32.78 387.5,-24.84"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="384,-55.8 387.5,-65.8 391,-55.8 384,-55.8"/>
 </g>
 <!-- Node5 -->
 <g id="node5" class="node">
 <title>Node5</title>
 <g id="a_node5"><a xlink:href="_polyhedron_quadrature_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="658,-30 509,-30 509,0 658,0 658,-30"/>
-<text text-anchor="start" x="517" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/quadrature</text>
-<text text-anchor="middle" x="583.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/PolyhedronQuadrature.cpp</text>
+<polygon fill="white" stroke="#666666" points="632,-30 483,-30 483,0 632,0 632,-30"/>
+<text text-anchor="start" x="491" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/quadrature</text>
+<text text-anchor="middle" x="557.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/PolyhedronQuadrature.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node5 -->
 <g id="edge4" class="edge">
 <title>Node1&#45;&gt;Node5</title>
-<path fill="none" stroke="#63b8ff" d="M460.46,-62.32C487.51,-52.14 521.05,-39.51 546.28,-30.01"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="458.93,-59.16 450.81,-65.95 461.4,-65.71 458.93,-59.16"/>
+<path fill="none" stroke="#63b8ff" d="M434.46,-62.32C461.51,-52.14 495.05,-39.51 520.28,-30.01"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="432.93,-59.16 424.81,-65.95 435.4,-65.71 432.93,-59.16"/>
 </g>
 <!-- Node6 -->
 <g id="node6" class="node">
 <title>Node6</title>
 <g id="a_node6"><a xlink:href="_tet_quadrature_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="807,-30 676,-30 676,0 807,0 807,-30"/>
-<text text-anchor="start" x="684" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/quadrature</text>
-<text text-anchor="middle" x="741.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/TetQuadrature.cpp</text>
+<polygon fill="white" stroke="#666666" points="781,-30 650,-30 650,0 781,0 781,-30"/>
+<text text-anchor="start" x="658" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/quadrature</text>
+<text text-anchor="middle" x="715.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/TetQuadrature.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node6 -->
 <g id="edge5" class="edge">
 <title>Node1&#45;&gt;Node6</title>
-<path fill="none" stroke="#63b8ff" d="M489.03,-65.26C545.45,-54.25 621.82,-39.35 675.75,-28.83"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="488.23,-61.85 479.09,-67.2 489.57,-68.72 488.23,-61.85"/>
+<path fill="none" stroke="#63b8ff" d="M463.03,-65.26C519.45,-54.25 595.82,-39.35 649.75,-28.83"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="462.23,-61.85 453.09,-67.2 463.57,-68.72 462.23,-61.85"/>
 </g>
 </g>
 </svg>

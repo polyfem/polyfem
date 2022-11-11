@@ -46,7 +46,7 @@ if (edges && edges.length) {
         </defs>
 
 <script type="text/javascript">
-var viewWidth = 1061;
+var viewWidth = 1035;
 var viewHeight = 170;
 var sectionId = 'dynsection-1';
 </script>
@@ -58,9 +58,9 @@ var sectionId = 'dynsection-1';
 <g id="node1" class="node">
 <title>Node1</title>
 <g id="a_node1"><a xlink:title=" ">
-<polygon fill="#999999" stroke="#666666" points="581.5,-162 433.5,-162 433.5,-132 581.5,-132 581.5,-162"/>
-<text text-anchor="start" x="441.5" y="-150" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/mesh/mesh3D</text>
-<text text-anchor="middle" x="507.5" y="-139" font-family="Helvetica,sans-Serif" font-size="10.00">/CMesh3D.hpp</text>
+<polygon fill="#999999" stroke="#666666" points="555.5,-162 407.5,-162 407.5,-132 555.5,-132 555.5,-162"/>
+<text text-anchor="start" x="415.5" y="-150" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/mesh/mesh3D</text>
+<text text-anchor="middle" x="481.5" y="-139" font-family="Helvetica,sans-Serif" font-size="10.00">/CMesh3D.hpp</text>
 </a>
 </g>
 </g>
@@ -76,137 +76,139 @@ var sectionId = 'dynsection-1';
 <!-- Node1&#45;&gt;Node2 -->
 <g id="edge1" class="edge">
 <title>Node1&#45;&gt;Node2</title>
-<path fill="none" stroke="#63b8ff" d="M423.32,-141.59C328.55,-135.44 181.39,-122 132.5,-96 100.53,-79 76.07,-41.48 66.23,-24.57"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="423.27,-145.09 433.47,-142.23 423.71,-138.1 423.27,-145.09"/>
+<path fill="none" stroke="#63b8ff" d="M397.36,-140.71C308.76,-133.96 176.05,-120.16 131.5,-96 99.87,-78.84 75.81,-41.41 66.14,-24.54"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="397.16,-144.2 407.4,-141.46 397.69,-137.22 397.16,-144.2"/>
 </g>
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="_f_e_basis3d_8hpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="318,-90.5 141,-90.5 141,-71.5 318,-71.5 318,-90.5"/>
-<text text-anchor="middle" x="229.5" y="-78.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/FEBasis3d.hpp</text>
+<g id="a_node3"><a xlink:href="_lagrange_basis3d_8hpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="292,-96 141,-96 141,-66 292,-66 292,-96"/>
+<text text-anchor="start" x="149" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/Lagrange</text>
+<text text-anchor="middle" x="216.5" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">Basis3d.hpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
 <g id="edge2" class="edge">
 <title>Node1&#45;&gt;Node3</title>
-<path fill="none" stroke="#63b8ff" d="M436.59,-129.68C382.36,-117.19 309.76,-100.48 266.5,-90.52"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="435.96,-133.12 446.49,-131.95 437.53,-126.3 435.96,-133.12"/>
+<path fill="none" stroke="#63b8ff" d="M413.52,-129.58C370.5,-119.19 315.48,-105.9 274.52,-96.01"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="412.8,-133.01 423.34,-131.95 414.45,-126.21 412.8,-133.01"/>
 </g>
 <!-- Node7 -->
 <g id="node7" class="node">
 <title>Node7</title>
 <g id="a_node7"><a xlink:href="_mesh_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="490.5,-90.5 336.5,-90.5 336.5,-71.5 490.5,-71.5 490.5,-90.5"/>
-<text text-anchor="middle" x="413.5" y="-78.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/mesh/Mesh.cpp</text>
+<polygon fill="white" stroke="#666666" points="464.5,-90.5 310.5,-90.5 310.5,-71.5 464.5,-71.5 464.5,-90.5"/>
+<text text-anchor="middle" x="387.5" y="-78.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/mesh/Mesh.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node7 -->
 <g id="edge7" class="edge">
 <title>Node1&#45;&gt;Node7</title>
-<path fill="none" stroke="#63b8ff" d="M477.94,-125.87C460.54,-114.03 439.42,-99.65 426.22,-90.66"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="476.4,-129.06 486.64,-131.8 480.34,-123.28 476.4,-129.06"/>
+<path fill="none" stroke="#63b8ff" d="M451.94,-125.87C434.54,-114.03 413.42,-99.65 400.22,-90.66"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="450.4,-129.06 460.64,-131.8 454.34,-123.28 450.4,-129.06"/>
 </g>
 <!-- Node8 -->
 <g id="node8" class="node">
 <title>Node8</title>
 <g id="a_node8"><a xlink:href="_mesh_nodes_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="694,-90.5 509,-90.5 509,-71.5 694,-71.5 694,-90.5"/>
-<text text-anchor="middle" x="601.5" y="-78.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/mesh/MeshNodes.cpp</text>
+<polygon fill="white" stroke="#666666" points="668,-90.5 483,-90.5 483,-71.5 668,-71.5 668,-90.5"/>
+<text text-anchor="middle" x="575.5" y="-78.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/mesh/MeshNodes.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node8 -->
 <g id="edge8" class="edge">
 <title>Node1&#45;&gt;Node8</title>
-<path fill="none" stroke="#63b8ff" d="M537.06,-125.87C554.46,-114.03 575.58,-99.65 588.78,-90.66"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="534.66,-123.28 528.36,-131.8 538.6,-129.06 534.66,-123.28"/>
+<path fill="none" stroke="#63b8ff" d="M511.06,-125.87C528.46,-114.03 549.58,-99.65 562.78,-90.66"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="508.66,-123.28 502.36,-131.8 512.6,-129.06 508.66,-123.28"/>
 </g>
 <!-- Node9 -->
 <g id="node9" class="node">
 <title>Node9</title>
 <g id="a_node9"><a xlink:href="_c_mesh3_d_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="860.5,-96 712.5,-96 712.5,-66 860.5,-66 860.5,-96"/>
-<text text-anchor="start" x="720.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/mesh/mesh3D</text>
-<text text-anchor="middle" x="786.5" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">/CMesh3D.cpp</text>
+<polygon fill="white" stroke="#666666" points="834.5,-96 686.5,-96 686.5,-66 834.5,-66 834.5,-96"/>
+<text text-anchor="start" x="694.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/mesh/mesh3D</text>
+<text text-anchor="middle" x="760.5" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">/CMesh3D.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node9 -->
 <g id="edge9" class="edge">
 <title>Node1&#45;&gt;Node9</title>
-<path fill="none" stroke="#63b8ff" d="M578.5,-129.71C623.87,-119.31 682.11,-105.95 725.42,-96.01"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="577.69,-126.31 568.73,-131.95 579.26,-133.13 577.69,-126.31"/>
+<path fill="none" stroke="#63b8ff" d="M552.5,-129.71C597.87,-119.31 656.11,-105.95 699.42,-96.01"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="551.69,-126.31 542.73,-131.95 553.26,-133.13 551.69,-126.31"/>
 </g>
 <!-- Node10 -->
 <g id="node10" class="node">
 <title>Node10</title>
 <g id="a_node10"><a xlink:href="_state_load_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="1052.5,-90.5 878.5,-90.5 878.5,-71.5 1052.5,-71.5 1052.5,-90.5"/>
-<text text-anchor="middle" x="965.5" y="-78.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/state/StateLoad.cpp</text>
+<polygon fill="white" stroke="#666666" points="1026.5,-90.5 852.5,-90.5 852.5,-71.5 1026.5,-71.5 1026.5,-90.5"/>
+<text text-anchor="middle" x="939.5" y="-78.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/state/StateLoad.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node10 -->
 <g id="edge10" class="edge">
 <title>Node1&#45;&gt;Node10</title>
-<path fill="none" stroke="#63b8ff" d="M591.82,-134.54C665.2,-124.52 774.41,-109.5 869.5,-96 881.84,-94.25 895.07,-92.34 907.64,-90.51"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="591.14,-131.1 581.71,-135.92 592.09,-138.03 591.14,-131.1"/>
+<path fill="none" stroke="#63b8ff" d="M565.82,-134.54C639.2,-124.52 748.41,-109.5 843.5,-96 855.84,-94.25 869.07,-92.34 881.64,-90.51"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="565.14,-131.1 555.71,-135.92 566.09,-138.03 565.14,-131.1"/>
 </g>
 <!-- Node3&#45;&gt;Node2 -->
 <g id="edge3" class="edge">
 <title>Node3&#45;&gt;Node2</title>
-<path fill="none" stroke="#63b8ff" d="M197.15,-67.68C163.95,-55.03 113.16,-35.68 84.07,-24.6"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="196.25,-71.08 206.84,-71.37 198.74,-64.54 196.25,-71.08"/>
+<path fill="none" stroke="#63b8ff" d="M173.15,-62.1C143.4,-49.82 105.25,-34.06 82.13,-24.52"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="171.91,-65.37 182.48,-65.95 174.58,-58.9 171.91,-65.37"/>
 </g>
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="_f_e_basis3d_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="317.5,-24.5 141.5,-24.5 141.5,-5.5 317.5,-5.5 317.5,-24.5"/>
-<text text-anchor="middle" x="229.5" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/FEBasis3d.cpp</text>
+<g id="a_node4"><a xlink:href="_lagrange_basis3d_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="292,-30 141,-30 141,0 292,0 292,-30"/>
+<text text-anchor="start" x="149" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/Lagrange</text>
+<text text-anchor="middle" x="216.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Basis3d.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
 <g id="edge4" class="edge">
 <title>Node3&#45;&gt;Node4</title>
-<path fill="none" stroke="#63b8ff" d="M229.5,-61.08C229.5,-49.13 229.5,-34.22 229.5,-24.91"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="226,-61.37 229.5,-71.37 233,-61.37 226,-61.37"/>
+<path fill="none" stroke="#63b8ff" d="M216.5,-55.54C216.5,-46.96 216.5,-37.61 216.5,-30.16"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="213,-55.8 216.5,-65.8 220,-55.8 213,-55.8"/>
 </g>
 <!-- Node5 -->
 <g id="node5" class="node">
 <title>Node5</title>
 <g id="a_node5"><a xlink:href="_polygonal_basis3d_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="489.5,-30 335.5,-30 335.5,0 489.5,0 489.5,-30"/>
-<text text-anchor="start" x="343.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/Polygonal</text>
-<text text-anchor="middle" x="412.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Basis3d.cpp</text>
+<polygon fill="white" stroke="#666666" points="464.5,-30 310.5,-30 310.5,0 464.5,0 464.5,-30"/>
+<text text-anchor="start" x="318.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/Polygonal</text>
+<text text-anchor="middle" x="387.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Basis3d.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node3&#45;&gt;Node5 -->
 <g id="edge5" class="edge">
 <title>Node3&#45;&gt;Node5</title>
-<path fill="none" stroke="#63b8ff" d="M264.02,-67.93C294.76,-57.18 339.75,-41.44 372.14,-30.12"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="262.46,-64.76 254.18,-71.37 264.78,-71.37 262.46,-64.76"/>
+<path fill="none" stroke="#63b8ff" d="M263.73,-62.32C290.95,-52.14 324.69,-39.51 350.06,-30.01"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="262.17,-59.17 254.03,-65.95 264.62,-65.73 262.17,-59.17"/>
 </g>
 <!-- Node6 -->
 <g id="node6" class="node">
 <title>Node6</title>
 <g id="a_node6"><a xlink:href="_spline_basis3d_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="643.5,-30 507.5,-30 507.5,0 643.5,0 643.5,-30"/>
-<text text-anchor="start" x="515.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/Spline</text>
-<text text-anchor="middle" x="575.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Basis3d.cpp</text>
+<polygon fill="white" stroke="#666666" points="618.5,-30 482.5,-30 482.5,0 618.5,0 618.5,-30"/>
+<text text-anchor="start" x="490.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/Spline</text>
+<text text-anchor="middle" x="550.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Basis3d.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node3&#45;&gt;Node6 -->
 <g id="edge6" class="edge">
 <title>Node3&#45;&gt;Node6</title>
-<path fill="none" stroke="#63b8ff" d="M285.95,-69.56C346.52,-58.35 442.73,-40.56 507.45,-28.59"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="285,-66.17 275.8,-71.44 286.27,-73.06 285,-66.17"/>
+<path fill="none" stroke="#63b8ff" d="M299.76,-64.05C356.12,-53.25 429.65,-39.16 482.49,-29.03"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="298.96,-60.64 289.8,-65.95 300.28,-67.51 298.96,-60.64"/>
 </g>
 </g>
 </svg>

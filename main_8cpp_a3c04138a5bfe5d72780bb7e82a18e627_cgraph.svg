@@ -634,18 +634,18 @@ var sectionId = 'dynsection-1';
 <!-- Node25 -->
 <g id="node23" class="node">
 <title>Node25</title>
-<g id="a_node23"><a xlink:href="classpolyfem_1_1basis_1_1_f_e_basis2d.html#a651dd714470a3af6b81408dec09b6669" target="_top" xlink:title="Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1, Q2 over quads).">
-<polygon fill="white" stroke="#666666" points="427,-231.06 282,-231.06 282,-201.06 427,-201.06 427,-231.06"/>
-<text text-anchor="start" x="290" y="-219.06" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::FEBasis2d</text>
-<text text-anchor="middle" x="354.5" y="-208.06" font-family="Helvetica,sans-Serif" font-size="10.00">::build_bases</text>
+<g id="a_node23"><a xlink:href="classpolyfem_1_1basis_1_1_lagrange_basis2d.html#a1690ad5c21dbaac0954721a21529e9d4" target="_top" xlink:title="Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1, Q2 over quads).">
+<polygon fill="white" stroke="#666666" points="424.5,-231.06 284.5,-231.06 284.5,-201.06 424.5,-201.06 424.5,-231.06"/>
+<text text-anchor="start" x="292.5" y="-219.06" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::Lagrange</text>
+<text text-anchor="middle" x="354.5" y="-208.06" font-family="Helvetica,sans-Serif" font-size="10.00">Basis2d::build_bases</text>
 </a>
 </g>
 </g>
 <!-- Node24&#45;&gt;Node25 -->
 <g id="edge31" class="edge">
 <title>Node24&#45;&gt;Node25</title>
-<path fill="none" stroke="#63b8ff" d="M216.65,-673.34C224.51,-669.32 231.68,-664.02 237,-657.06 293.48,-583.16 214.26,-312.17 273,-240.06 273.6,-239.32 274.23,-238.6 274.88,-237.9"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="277.3,-240.43 282.52,-231.22 272.69,-235.17 277.3,-240.43"/>
+<path fill="none" stroke="#63b8ff" d="M216.65,-673.34C224.51,-669.32 231.68,-664.02 237,-657.06 293.48,-583.16 214.26,-312.17 273,-240.06 274.01,-238.82 275.08,-237.65 276.2,-236.53"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="278.72,-238.99 284.31,-229.99 274.33,-233.54 278.72,-238.99"/>
 </g>
 <!-- Node26 -->
 <g id="node24" class="node">
@@ -666,10 +666,10 @@ var sectionId = 'dynsection-1';
 <!-- Node44 -->
 <g id="node25" class="node">
 <title>Node44</title>
-<g id="a_node25"><a xlink:href="classpolyfem_1_1basis_1_1_f_e_basis3d.html#ae7c1dd77414ca212ec86ce51a2ae783a" target="_top" xlink:title="Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes).">
-<polygon fill="white" stroke="#666666" points="427,-1019.06 282,-1019.06 282,-989.06 427,-989.06 427,-1019.06"/>
-<text text-anchor="start" x="290" y="-1007.06" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::FEBasis3d</text>
-<text text-anchor="middle" x="354.5" y="-996.06" font-family="Helvetica,sans-Serif" font-size="10.00">::build_bases</text>
+<g id="a_node25"><a xlink:href="classpolyfem_1_1basis_1_1_lagrange_basis3d.html#a998eb7a3ebc581ad4332d8fa370a62b4" target="_top" xlink:title="Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes).">
+<polygon fill="white" stroke="#666666" points="424.5,-1019.06 284.5,-1019.06 284.5,-989.06 424.5,-989.06 424.5,-1019.06"/>
+<text text-anchor="start" x="292.5" y="-1007.06" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::Lagrange</text>
+<text text-anchor="middle" x="354.5" y="-996.06" font-family="Helvetica,sans-Serif" font-size="10.00">Basis3d::build_bases</text>
 </a>
 </g>
 </g>
