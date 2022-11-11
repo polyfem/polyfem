@@ -3,10 +3,10 @@ set(SOURCES
 	Basis.hpp
 	ElementBases.cpp
 	ElementBases.hpp
-	FEBasis2d.cpp
-	FEBasis2d.hpp
-	FEBasis3d.cpp
-	FEBasis3d.hpp
+	LagrangeBasis2d.cpp
+	LagrangeBasis2d.hpp
+	LagrangeBasis3d.cpp
+	LagrangeBasis3d.hpp
 	function/QuadraticBSpline.cpp
 	function/QuadraticBSpline.hpp
 	function/QuadraticBSpline2d.cpp
