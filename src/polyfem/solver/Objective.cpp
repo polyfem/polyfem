@@ -1222,7 +1222,8 @@ namespace polyfem::solver
     double NaiveNegativePoissonObjective::value() const
     {
         const int dim = state1_.mesh->dimension();
-        return (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
+        const double length = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
+        return 1. / length;
     }
 
     Eigen::MatrixXd NaiveNegativePoissonObjective::compute_adjoint_rhs(const State& state) const
@@ -1234,8 +1235,10 @@ namespace polyfem::solver
         
         if (&state == &state1_)
         {
+            const double length = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
             rhs(v1 * dim + 0) = 1;
             rhs(v2 * dim + 0) = -1;
+            rhs *= -1. / length / length;
         }
         
         return rhs;
