@@ -637,6 +637,7 @@
             "compliance",
             "strain_norm",
             "boundary_smoothing",
+            "deformed_boundary_smoothing",
             "control_smoothing",
             "material_smoothing",
             "volume_constraint",
@@ -946,6 +947,22 @@
             "weight",
             "adjust_weight_period",
             "adjustment_coeff",
+            "surface_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "deformed_boundary_smoothing",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "shape_parameter",
+            "power",
+            "weight",
             "surface_selection"
         ],
         "doc": "TODO"

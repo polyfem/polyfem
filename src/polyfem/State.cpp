@@ -879,7 +879,8 @@ namespace polyfem
 
 		build_polygonal_basis();
 
-		if (is_contact_enabled())
+		// if (is_contact_enabled())
+		if (args["optimization"]["enabled"])
 		{
 			Eigen::SparseMatrix<bool, 0> tmp1(n_geom_bases, n_bases);
 			Eigen::SparseMatrix<bool, 0> tmp2(n_geom_bases, n_bases);
@@ -1301,7 +1302,7 @@ void State::build_collision_mesh(
 		const std::vector<basis::ElementBases> &bases_) const
 	{
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
-		io::OutGeometryData::extract_boundary_mesh(*mesh, n_bases, bases, total_local_boundary,
+		io::OutGeometryData::extract_boundary_mesh(*mesh, n_bases_, bases_, total_local_boundary,
 												   boundary_nodes_pos_, boundary_edges, boundary_triangles);
 
 		Eigen::VectorXi codimensional_nodes;

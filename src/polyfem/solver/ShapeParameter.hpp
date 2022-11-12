@@ -49,9 +49,10 @@ namespace polyfem
 		const json &get_shape_params() const { return shape_params; }
 
 		void get_full_mesh(Eigen::MatrixXd &V, Eigen::MatrixXi &F) const { assert(false); }
+		// N x 2, vertex id tuples specifying boundary edges
 		Eigen::MatrixXi get_boundary_edges() const { assert(false); return Eigen::MatrixXi(); }
+		// boundary vertex ids
 		std::vector<int> get_boundary_nodes() const { assert(false); return std::vector<int>(); }
-		std::vector<bool> get_active_vertex_mask() const { assert(false); return std::vector<bool>(); }
 
 	private:
 		int iter = 0;

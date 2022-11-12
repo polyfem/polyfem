@@ -97,6 +97,18 @@ namespace polyfem::solver
             std::shared_ptr<ShapeParameter> shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
             obj = std::make_shared<solver::BoundarySmoothingObjective>(shape_param, args);
         }
+        else if (type == "deformed_boundary_smoothing")
+        {
+            State &state = *(states[args["state"]]);
+            std::shared_ptr<ShapeParameter> shape_param;
+            if (args["shape_parameter"] >= 0)
+            {
+                shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+                if (!shape_param->contains_state(state))
+                    logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
+            }
+            obj = std::make_shared<solver::DeformedBoundarySmoothingObjective>(state, shape_param, args);
+        }
         else if (type == "control_smoothing")
         {
             assert(false);
@@ -366,26 +378,60 @@ namespace polyfem::solver
         return val;
     }
 
-    void BoundarySmoothingObjective::init(const std::shared_ptr<const ShapeParameter> shape_param)
+    void BoundarySmoothingObjective::init()
     {
-        shape_param_ = shape_param;
-
-        shape_param_->get_full_mesh(V, F);
+        const auto &state_ = shape_param_->get_state();
+        Eigen::MatrixXd V;
+        Eigen::MatrixXi F;
+        state_.get_vf(V, F);
 
         const int dim = V.cols();
         const int n_verts = V.rows();
+        
+        // collect active nodes
+        std::vector<bool> active_mask;
+        active_mask.assign(n_verts, false);
+        std::vector<int> tmp = args_["surface_selection"];
+        std::set<int> surface_ids = std::set(tmp.begin(), tmp.end());
 
-        Eigen::MatrixXi boundary_edges = shape_param_->get_boundary_edges();
-        active_mask = shape_param_->get_active_vertex_mask();
-        boundary_nodes = shape_param_->get_boundary_nodes();
+        const auto &gbases = state_.geom_bases();
+        for (const auto &lb : state_.total_local_boundary)
+        {
+            const int e = lb.element_id();
+            for (int i = 0; i < lb.size(); i++)
+            {
+                const int global_primitive_id = lb.global_primitive_id(i);
+                const int boundary_id = state_.mesh->get_boundary_id(global_primitive_id);
+                if (!surface_ids.empty() && surface_ids.find(boundary_id) == surface_ids.end())
+                    continue;
+                
+                const auto nodes = gbases[e].local_nodes_for_primitive(lb.global_primitive_id(i), *state_.mesh);
+
+                for (int n = 0; n < nodes.size(); n++)
+                {
+                    const auto &global = gbases[e].bases[nodes(n)].global();
+                    for (int g = 0; g < global.size(); g++)
+                        active_mask[global[g].index] = true;
+                }
+            }
+        }
 
         adj.setZero();
         adj.resize(n_verts, n_verts);
         std::vector<Eigen::Triplet<bool>> T_adj;
-        for (int e = 0; e < boundary_edges.rows(); e++)
+
+        ipc::CollisionMesh collision_mesh;
+		Eigen::MatrixXd boundary_nodes_pos;
+		state_.build_collision_mesh(boundary_nodes_pos, collision_mesh, state_.n_geom_bases, state_.geom_bases());
+        for (int e = 0; e < collision_mesh.num_edges(); e++)
         {
-            T_adj.emplace_back(boundary_edges(e, 0), boundary_edges(e, 1), true);
-            T_adj.emplace_back(boundary_edges(e, 1), boundary_edges(e, 0), true);
+            int v1 = collision_mesh.to_full_vertex_id(collision_mesh.edges()(e, 0));
+            int v2 = collision_mesh.to_full_vertex_id(collision_mesh.edges()(e, 1));
+            if (active_mask[v1] && active_mask[v2])
+            {
+                T_adj.emplace_back(v1, v2, true);
+                T_adj.emplace_back(v2, v1, true);
+            }
         }
         adj.setFromTriplets(T_adj.begin(), T_adj.end());
 
@@ -415,13 +461,17 @@ namespace polyfem::solver
         }
     }
 
-    BoundarySmoothingObjective::BoundarySmoothingObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args): args_(args)
+    BoundarySmoothingObjective::BoundarySmoothingObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args): shape_param_(shape_param), args_(args)
     {
-        init(shape_param);
+        init();
     }
 
     double BoundarySmoothingObjective::value() const
     {
+        const auto &state_ = shape_param_->get_state();
+        Eigen::MatrixXd V;
+        Eigen::MatrixXi F;
+        state_.get_vf(V, F);
         const int dim = V.cols();
         const int n_verts = V.rows();
         const int power = args_["power"];
@@ -429,21 +479,24 @@ namespace polyfem::solver
         double val = 0;
         if (args_["scale_invariant"])
         {
-			for (int b : boundary_nodes)
+			for (int b = 0; b < adj.rows(); b++)
 			{
-				if (!active_mask[b])
-					continue;
 				polyfem::RowVectorNd s;
 				s.setZero(V.cols());
 				double sum_norm = 0;
+                int valence = 0;
 				for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, b); it; ++it)
 				{
 					assert(it.col() != b);
 					s += V.row(b) - V.row(it.col());
 					sum_norm += (V.row(b) - V.row(it.col())).norm();
-				}
-				s = s / sum_norm;
-				val += pow(s.norm(), power);
+                    valence += 1;
+                }
+                if (valence)
+                {
+                    s = s / sum_norm;
+                    val += pow(s.norm(), power);
+                }
 			}
         }
         else
@@ -459,6 +512,13 @@ namespace polyfem::solver
 
     Eigen::VectorXd BoundarySmoothingObjective::compute_partial_gradient(const Parameter &param) const
     {
+        if (&param != shape_param_.get())
+            return Eigen::VectorXd::Zero(param.full_dim());
+
+        const auto &state_ = shape_param_->get_state();
+        Eigen::MatrixXd V;
+        Eigen::MatrixXi F;
+        state_.get_vf(V, F);
         const int dim = V.cols();
         const int n_verts = V.rows();
         const int power = args_["power"];
@@ -467,10 +527,8 @@ namespace polyfem::solver
         {
             Eigen::VectorXd grad;
 			grad.setZero(V.size());
-			for (int b : boundary_nodes)
+			for (int b = 0; b < adj.rows(); b++)
 			{
-				if (!active_mask[b])
-					continue;
 				polyfem::RowVectorNd s;
 				s.setZero(dim);
 				double sum_norm = 0;
@@ -485,25 +543,230 @@ namespace polyfem::solver
 					sum_normalized += x.normalized();
 					valence += 1;
 				}
-				s = s / sum_norm;
+                if (valence)
+                {
+                    s = s / sum_norm;
 
-				for (int d = 0; d < dim; d++)
-				{
-					grad(b * dim + d) += (s(d) * valence - s.squaredNorm() * sum_normalized(d)) * power * pow(s.norm(), power - 2.) / sum_norm;
-				}
+                    for (int d = 0; d < dim; d++)
+                    {
+                        grad(b * dim + d) += (s(d) * valence - s.squaredNorm() * sum_normalized(d)) * power * pow(s.norm(), power - 2.) / sum_norm;
+                    }
 
-				for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, b); it; ++it)
-				{
-					for (int d = 0; d < dim; d++)
-					{
-						grad(it.col() * dim + d) -= (s(d) + s.squaredNorm() * (V(it.col(), d) - V(b, d)) / (V.row(b) - V.row(it.col())).norm()) * power * pow(s.norm(), power - 2.) / sum_norm;
-					}
-				}
+                    for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, b); it; ++it)
+                    {
+                        for (int d = 0; d < dim; d++)
+                        {
+                            grad(it.col() * dim + d) -= (s(d) + s.squaredNorm() * (V(it.col(), d) - V(b, d)) / (V.row(b) - V.row(it.col())).norm()) * power * pow(s.norm(), power - 2.) / sum_norm;
+                        }
+                    }
+                }
 			}
             return grad;
         }
         else
             return 2 * (L.transpose() * (L * V));
+    }
+
+    void DeformedBoundarySmoothingObjective::init()
+    {
+        Eigen::MatrixXd V;
+        Eigen::MatrixXi F;
+        state_.get_vf(V, F);
+
+        const int dim = V.cols();
+        const int n_verts = V.rows();
+        
+        // collect active nodes
+        std::vector<bool> active_mask;
+        active_mask.assign(n_verts, false);
+        std::vector<int> tmp = args_["surface_selection"];
+        std::set<int> surface_ids = std::set(tmp.begin(), tmp.end());
+
+        const auto &gbases = state_.geom_bases();
+        for (const auto &lb : state_.total_local_boundary)
+        {
+            const int e = lb.element_id();
+            for (int i = 0; i < lb.size(); i++)
+            {
+                const int global_primitive_id = lb.global_primitive_id(i);
+                const int boundary_id = state_.mesh->get_boundary_id(global_primitive_id);
+                if (!surface_ids.empty() && surface_ids.find(boundary_id) == surface_ids.end())
+                    continue;
+                
+                const auto nodes = gbases[e].local_nodes_for_primitive(lb.global_primitive_id(i), *state_.mesh);
+
+                for (int n = 0; n < nodes.size(); n++)
+                {
+                    const auto &global = gbases[e].bases[nodes(n)].global();
+                    for (int g = 0; g < global.size(); g++)
+                        active_mask[global[g].index] = true;
+                }
+            }
+        }
+
+        adj.setZero();
+        adj.resize(n_verts, n_verts);
+        std::vector<Eigen::Triplet<bool>> T_adj;
+
+        ipc::CollisionMesh collision_mesh;
+		Eigen::MatrixXd boundary_nodes_pos;
+		state_.build_collision_mesh(boundary_nodes_pos, collision_mesh, state_.n_geom_bases, state_.geom_bases());
+        for (int e = 0; e < collision_mesh.num_edges(); e++)
+        {
+            int v1 = collision_mesh.to_full_vertex_id(collision_mesh.edges()(e, 0));
+            int v2 = collision_mesh.to_full_vertex_id(collision_mesh.edges()(e, 1));
+            if (active_mask[v1] && active_mask[v2])
+            {
+                T_adj.emplace_back(v1, v2, true);
+                T_adj.emplace_back(v2, v1, true);
+            }
+        }
+        adj.setFromTriplets(T_adj.begin(), T_adj.end());
+    }
+
+    DeformedBoundarySmoothingObjective::DeformedBoundarySmoothingObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args): state_(state), shape_param_(shape_param), args_(args)
+    {
+        init();
+    }
+
+    double DeformedBoundarySmoothingObjective::value() const
+    {
+        Eigen::MatrixXd V;
+        Eigen::MatrixXi F;
+        state_.get_vf(V, F);
+        const int dim = V.cols();
+        const int n_verts = V.rows();
+        const int power = args_["power"];
+        Eigen::MatrixXd displaced = V + utils::unflatten(state_.down_sampling_mat * state_.diff_cached[0].u, dim);
+
+        double val = 0;
+        for (int b = 0; b < adj.rows(); b++)
+        {
+            polyfem::RowVectorNd s;
+            s.setZero(dim);
+            double sum_norm = 0;
+            int valence = 0;
+            for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, b); it; ++it)
+            {
+                assert(it.col() != b);
+                s += displaced.row(b) - displaced.row(it.col());
+                sum_norm += (displaced.row(b) - displaced.row(it.col())).norm();
+                valence += 1;
+            }
+            if (valence)
+            {
+                s = s / sum_norm;
+                val += pow(s.norm(), power);
+            }
+        }
+
+        return val;
+    }
+
+    Eigen::MatrixXd DeformedBoundarySmoothingObjective::compute_adjoint_rhs(const State& state) const
+    {
+        if (&state != &state_)
+            return Eigen::MatrixXd::Zero(state.diff_cached[0].u.size(), 1);
+        
+        Eigen::MatrixXd V;
+        Eigen::MatrixXi F;
+        state_.get_vf(V, F);
+        const int dim = V.cols();
+        const int n_verts = V.rows();
+        const int power = args_["power"];
+        Eigen::MatrixXd displaced = V + utils::unflatten(state.down_sampling_mat * state.diff_cached[0].u, dim);
+
+        Eigen::VectorXd grad;
+        grad.setZero(displaced.size());
+        for (int b = 0; b < adj.rows(); b++)
+        {
+            polyfem::RowVectorNd s;
+            s.setZero(dim);
+            double sum_norm = 0;
+            auto sum_normalized = s;
+            int valence = 0;
+            for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, b); it; ++it)
+            {
+                assert(it.col() != b);
+                auto x = displaced.row(b) - displaced.row(it.col());
+                s += x;
+                sum_norm += x.norm();
+                sum_normalized += x.normalized();
+                valence += 1;
+            }
+            if (valence)
+            {
+                s = s / sum_norm;
+
+                for (int d = 0; d < dim; d++)
+                {
+                    grad(b * dim + d) += (s(d) * valence - s.squaredNorm() * sum_normalized(d)) * power * pow(s.norm(), power - 2.) / sum_norm;
+                }
+
+                for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, b); it; ++it)
+                {
+                    for (int d = 0; d < dim; d++)
+                    {
+                        grad(it.col() * dim + d) -= (s(d) + s.squaredNorm() * (displaced(it.col(), d) - displaced(b, d)) / (displaced.row(b) - displaced.row(it.col())).norm()) * power * pow(s.norm(), power - 2.) / sum_norm;
+                    }
+                }
+            }
+        }
+        
+        return state.down_sampling_mat.transpose() * grad;
+    }
+
+    Eigen::VectorXd DeformedBoundarySmoothingObjective::compute_partial_gradient(const Parameter &param) const
+    {
+        if (&param != shape_param_.get())
+            return Eigen::VectorXd::Zero(param.full_dim());
+
+        Eigen::MatrixXd V;
+        Eigen::MatrixXi F;
+        state_.get_vf(V, F);
+        const int dim = V.cols();
+        const int n_verts = V.rows();
+        const int power = args_["power"];
+        Eigen::MatrixXd displaced = V + utils::unflatten(state_.down_sampling_mat * state_.diff_cached[0].u, dim);
+
+        Eigen::VectorXd grad;
+        grad.setZero(displaced.size());
+        for (int b = 0; b < adj.rows(); b++)
+        {
+            polyfem::RowVectorNd s;
+            s.setZero(dim);
+            double sum_norm = 0;
+            auto sum_normalized = s;
+            int valence = 0;
+            for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, b); it; ++it)
+            {
+                assert(it.col() != b);
+                auto x = displaced.row(b) - displaced.row(it.col());
+                s += x;
+                sum_norm += x.norm();
+                sum_normalized += x.normalized();
+                valence += 1;
+            }
+            if (valence)
+            {
+                s = s / sum_norm;
+
+                for (int d = 0; d < dim; d++)
+                {
+                    grad(b * dim + d) += (s(d) * valence - s.squaredNorm() * sum_normalized(d)) * power * pow(s.norm(), power - 2.) / sum_norm;
+                }
+
+                for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, b); it; ++it)
+                {
+                    for (int d = 0; d < dim; d++)
+                    {
+                        grad(it.col() * dim + d) -= (s(d) + s.squaredNorm() * (displaced(it.col(), d) - displaced(b, d)) / (displaced.row(b) - displaced.row(it.col())).norm()) * power * pow(s.norm(), power - 2.) / sum_norm;
+                    }
+                }
+            }
+        }
+        
+        return grad;
     }
 
     VolumeObjective::VolumeObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args): shape_param_(shape_param)

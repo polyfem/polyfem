@@ -112,13 +112,14 @@ namespace polyfem::solver
 		Eigen::VectorXd weights_;
 	};
 
+	// note: active nodes are selected by surface selection on the first state in shape_param
 	class BoundarySmoothingObjective: public Objective
 	{
 	public:
 		BoundarySmoothingObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
 		~BoundarySmoothingObjective() = default;
 		
-		void init(const std::shared_ptr<const ShapeParameter> shape_param);
+		void init();
 
 		double value() const override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State& state) const override;
@@ -129,13 +130,28 @@ namespace polyfem::solver
 
 		const json args_;
 
-        Eigen::MatrixXd V;
-        Eigen::MatrixXi F;
-		
-		std::vector<bool> active_mask;
-		std::vector<int> boundary_nodes;
 		Eigen::SparseMatrix<bool, Eigen::RowMajor> adj;
 		Eigen::SparseMatrix<double, Eigen::RowMajor> L;
+	};
+
+	class DeformedBoundarySmoothingObjective: public Objective
+	{
+	public:
+		DeformedBoundarySmoothingObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
+		~DeformedBoundarySmoothingObjective() = default;
+		
+		void init();
+
+		double value() const override;
+		Eigen::MatrixXd compute_adjoint_rhs(const State& state) const override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
+
+	protected:
+		const State &state_;
+		std::shared_ptr<const ShapeParameter> shape_param_;
+		const json args_;
+		
+		Eigen::SparseMatrix<bool, Eigen::RowMajor> adj;
 	};
 
 	class VolumeObjective: public Objective
