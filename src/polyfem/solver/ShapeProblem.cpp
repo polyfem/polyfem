@@ -229,6 +229,11 @@ namespace polyfem
 		Eigen::MatrixXd boundary_nodes_pos;
 		state.build_collision_mesh(boundary_nodes_pos, collision_mesh, state.n_geom_bases, gbases);
 
+		Eigen::MatrixXi boundary_edges = collision_mesh.edges();
+		for (int i = 0; i < boundary_edges.rows(); i++)
+			for (int j = 0; j < boundary_edges.cols(); j++)
+				boundary_edges(i, j) = collision_mesh.to_full_vertex_id(boundary_edges(i, j));
+
 		// boundary smoothing
 		has_boundary_smoothing = false;
 		for (const auto &param : opt_params["functionals"])
@@ -240,7 +245,7 @@ namespace polyfem
 				if (param["scale_invariant"].get<bool>())
 					boundary_smoother.p = boundary_smoothing_params.value("power", 2);
 				boundary_smoother.dim = dim;
-				boundary_smoother.build_laplacian(state.n_geom_bases, state.mesh->dimension(), collision_mesh.edges(), state.boundary_gnodes, fixed_nodes);
+				boundary_smoother.build_laplacian(state.n_geom_bases, state.mesh->dimension(), boundary_edges, state.boundary_gnodes, fixed_nodes);
 				has_boundary_smoothing = true;
 				break;
 			}
@@ -880,7 +885,12 @@ namespace polyfem
 		sol_at_ls_begin.resize(0, 0);
 		x_at_ls_begin.resize(0);
 
-		boundary_smoother.build_laplacian(state.n_geom_bases, state.mesh->dimension(), collision_mesh.edges(), state.boundary_gnodes, fixed_nodes);
+		Eigen::MatrixXi boundary_edges = collision_mesh.edges();
+		for (int i = 0; i < boundary_edges.rows(); i++)
+			for (int j = 0; j < boundary_edges.cols(); j++)
+				boundary_edges(i, j) = collision_mesh.to_full_vertex_id(boundary_edges(i, j));
+
+		boundary_smoother.build_laplacian(state.n_geom_bases, state.mesh->dimension(), boundary_edges, state.boundary_gnodes, fixed_nodes);
 
 		logger().info("Remeshing finished!");
 
