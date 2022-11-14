@@ -142,11 +142,6 @@ int main(int argc, char **argv)
 
 	CLI11_PARSE(command_line, argc, argv);
 
-    if (max_threads > 32)
-    {
-        logger().warn("Using {} threads may slow down the optimization!", max_threads);
-    }
-
     json opt_args;
     if (!load_json(json_file, opt_args))
         log_and_throw_error("Failed to load optimization json file!");

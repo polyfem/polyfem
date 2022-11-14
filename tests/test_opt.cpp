@@ -80,7 +80,7 @@ json apply_opt_json_spec(const json &input_args, bool strict_validation)
 
 std::shared_ptr<State> create_state(const json &args)
 {
-	std::shared_ptr<State> state = std::make_shared<State>(32);
+	std::shared_ptr<State> state = std::make_shared<State>();
 	state->init_logger("", spdlog::level::level_enum::err, false);
 	state->init(args, false);
 	state->args["optimization"]["enabled"] = true;
