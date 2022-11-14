@@ -893,12 +893,16 @@ namespace polyfem
 				Eigen::MatrixXd local_pts;
 				const int order = bs.front().order();
 				assert(order <= 2);
-				if (!mesh->is_simplex(e))
-					log_and_throw_error("Not implemented for quads!");
 				if (mesh->is_volume())
-					autogen::p_nodes_3d(order, local_pts);
+					if (mesh->is_simplex(e))
+						autogen::p_nodes_3d(order, local_pts);
+					else
+						autogen::q_nodes_3d(order, local_pts);
 				else
-					autogen::p_nodes_2d(order, local_pts);
+					if (mesh->is_simplex(e))
+						autogen::p_nodes_2d(order, local_pts);
+					else
+						autogen::q_nodes_2d(order, local_pts);
 
 				ElementAssemblyValues vals;
 				vals.compute(e, mesh->is_volume(), local_pts, gbases[e], gbases[e]);

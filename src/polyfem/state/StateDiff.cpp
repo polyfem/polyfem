@@ -8,6 +8,7 @@
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/LBFGSSolver.hpp>
@@ -142,10 +143,18 @@ namespace polyfem
 			{
 				n_loc_bases = bases[e].bases.size();
 				Eigen::MatrixXd local_pts, pts;
-				if (!mesh->is_volume())
-					autogen::p_nodes_2d(bases[e].bases.front().order(), local_pts);
+
+				if (mesh->is_volume())
+					if (mesh->is_simplex(e))
+						autogen::p_nodes_3d(bases[e].bases.front().order(), local_pts);
+					else
+						autogen::q_nodes_3d(bases[e].bases.front().order(), local_pts);
 				else
-					autogen::p_nodes_3d(bases[e].bases.front().order(), local_pts);
+					if (mesh->is_simplex(e))
+						autogen::p_nodes_2d(bases[e].bases.front().order(), local_pts);
+					else
+						autogen::q_nodes_2d(bases[e].bases.front().order(), local_pts);
+
 				gbases[e].eval_geom_mapping(local_pts, pts);
 				for (int i = 0; i < n_loc_bases; ++i)
 				{
