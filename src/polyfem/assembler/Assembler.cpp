@@ -852,15 +852,15 @@ namespace polyfem::assembler
 		rhs.resize(projection.cols(), 1);
 		rhs.setZero();
 
-		// auto storage = create_thread_storage(LocalThreadVecStorage(rhs.size()));
+		auto storage = create_thread_storage(LocalThreadVecStorage(rhs.size()));
 
 		const int n_bases = int(bases.size());
 
-		// maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
-			// LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
 
-			// for (int e = start; e < end; ++e)
-			for (int e = 0; e < n_bases; ++e)
+			for (int e = start; e < end; ++e)
+			// for (int e = 0; e < n_bases; ++e)
 			{
 				// igl::Timer timer; timer.start();
 
@@ -896,7 +896,7 @@ namespace polyfem::assembler
 							const auto wj = global_j[jj].val;
 
 							for (int p = 0; p < projection.cols(); p++)
-								rhs(p) += local_value * wj * projection(gj, p);
+								local_storage.vec(p) += local_value * wj * projection(gj, p);
 						}
 					}
 
@@ -907,11 +907,11 @@ namespace polyfem::assembler
 				// timer.stop();
 				// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
 			}
-		// });
+		});
 
 		// Serially merge local storages
-		// for (const LocalThreadVecStorage &local_storage : storage)
-		// 	rhs += local_storage.vec;
+		for (const LocalThreadVecStorage &local_storage : storage)
+			rhs += local_storage.vec;
 	}
 
 	template <class LocalAssembler>
@@ -1062,17 +1062,17 @@ namespace polyfem::assembler
 	{
 		grad.setZero(projection.cols() * projection.cols(), 1);
 
-		// auto storage = create_thread_storage(LocalThreadVecStorage(grad.size()));
+		auto storage = create_thread_storage(LocalThreadVecStorage(grad.size()));
 
 		const int n_bases = int(bases.size());
 		igl::Timer timerg;
 		timerg.start();
 
-		// maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
-		// 	LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
 
-			// for (int e = start; e < end; ++e)
-			for (int e = 0; e < n_bases; ++e)
+			for (int e = start; e < end; ++e)
+			// for (int e = 0; e < n_bases; ++e)
 			{
 				ElementAssemblyValues vals;
 				cache.compute(e, is_volume, bases[e], gbases[e], vals);
@@ -1116,7 +1116,7 @@ namespace polyfem::assembler
 
 										for (int p = 0; p < projection.cols(); p++)
 											for (int q = 0; q < projection.cols(); q++)
-												grad(p * projection.cols() + q) += local_value * wi * wj * projection(gi, p) * projection(gj, q);
+												local_storage.vec(p * projection.cols() + q) += local_value * wi * wj * projection(gi, p) * projection(gj, q);
 									}
 								}
 							}
@@ -1124,7 +1124,7 @@ namespace polyfem::assembler
 					}
 				}
 			}
-		// });
+		});
 
 		timerg.stop();
 		logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
@@ -1132,8 +1132,8 @@ namespace polyfem::assembler
 		timerg.start();
 
 		// Serially merge local storages
-		// for (const LocalThreadVecStorage &local_storage : storage)
-		// 	grad += local_storage.vec;
+		for (const LocalThreadVecStorage &local_storage : storage)
+			grad += local_storage.vec;
 		grad = utils::unflatten(grad, projection.cols());
 
 		timerg.stop();

@@ -12,7 +12,6 @@
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 
-#include <cppoptlib/problem.h>
 #include <polyfem/solver/NonlinearSolver.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/solver/DenseNewtonDescentSolver.hpp>
@@ -25,9 +24,6 @@
 #ifdef POLYSOLVE_WITH_SPECTRA
 #include <SymEigsSolver.h>
 #endif
-
-std::shared_ptr<polyfem::State> state;
-double microstructure_volume = 0;
 
 namespace polyfem::assembler
 {
@@ -142,127 +138,27 @@ namespace polyfem::assembler
 			return same;
 		}
 	
-		class MultiscaleRBProblem : public cppoptlib::Problem<double>
-		{
-			public:
-				using typename cppoptlib::Problem<double>::Scalar;
-				using typename cppoptlib::Problem<double>::TVector;
-				typedef StiffnessMatrix THessian;
+		// Eigen::MatrixXd homogenize_def_grad(const State &state, const Eigen::MatrixXd &x)
+		// {
+		// 	const int dim = state.mesh->dimension();
+		// 	Eigen::VectorXd avgs;
+		// 	avgs.setZero(dim * dim);
+		// 	for (int e = 0; e < state.bases.size(); e++)
+		// 	{
+		// 		assembler::ElementAssemblyValues vals;
+		// 		state.ass_vals_cache.compute(e, dim == 3, state.bases[e], state.geom_bases()[e], vals);
 
-				MultiscaleRBProblem(const Eigen::MatrixXd &reduced_basis): reduced_basis_(reduced_basis) 
-				{
-				}
-				~MultiscaleRBProblem() = default;
+		// 		Eigen::MatrixXd u, grad_u;
+		// 		io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x, u, grad_u);
 
-				void set_linear_disp(const Eigen::MatrixXd &linear_sol) { linear_sol_ = linear_sol; }
+		// 		const quadrature::Quadrature &quadrature = vals.quadrature;
+		// 		Eigen::VectorXd da = quadrature.weights * vals.det;
+		// 		avgs += grad_u.transpose() * da;
+		// 	}
+		// 	avgs /= microstructure_volume;
 
-				double value(const TVector &x) { return value(x, false); }
-				double value(const TVector &x, const bool only_elastic)
-				{
-					Eigen::MatrixXd sol = coeff_to_field(x);
-					return state->assembler.assemble_energy(
-						state->formulation(), state->mesh->is_volume(), state->bases, state->geom_bases(),
-						state->ass_vals_cache, 0, sol, sol) / microstructure_volume;
-				}
-				double target_value(const TVector &x) { return value(x); }
-				void gradient(const TVector &x, TVector &gradv) { gradient(x, gradv, false); }
-				void gradient(const TVector &x, TVector &gradv, const bool only_elastic)
-				{
-					Eigen::MatrixXd sol = coeff_to_field(x);
-					Eigen::MatrixXd grad;
-					state->assembler.assemble_energy_gradient(
-						state->formulation(), state->mesh->is_volume(), state->n_bases, state->bases, state->geom_bases(),
-						state->ass_vals_cache, 0, sol, sol, reduced_basis_, grad);
-					gradv = grad / microstructure_volume;
-				}
-				void target_gradient(const TVector &x, TVector &gradv) { gradient(x, gradv); }
-				void hessian(const TVector &x, THessian &hessian)
-				{
-					Eigen::MatrixXd sol = coeff_to_field(x);
-					Eigen::MatrixXd tmp;
-					state->assembler.assemble_energy_hessian(
-						state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
-						state->geom_bases(), state->ass_vals_cache, 0, sol, sol, reduced_basis_, tmp);
-					hessian = tmp.sparseView();
-					hessian /= microstructure_volume;
-				}
-				void hessian(const TVector &x, Eigen::MatrixXd &hessian)
-				{
-					Eigen::MatrixXd sol = coeff_to_field(x);
-					state->assembler.assemble_energy_hessian(
-						state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
-						state->geom_bases(), state->ass_vals_cache, 0, sol, sol, reduced_basis_, hessian);
-					hessian /= microstructure_volume;
-				}
-
-				Eigen::MatrixXd coeff_to_field(const TVector &x)
-				{
-					return linear_sol_ + reduced_basis_ * x;
-				}
-
-				bool is_step_valid(const TVector &x0, const TVector &x1)
-				{
-					TVector gradv;
-					gradient(x1, gradv);
-					if (std::isnan(gradv.norm()))
-						return false;
-					return true;
-				}
-
-				bool verify_gradient(const TVector &x, const TVector &gradv) { return true; }
-				
-				void set_project_to_psd(bool val) {}
-				void save_to_file(const TVector &x0) {}
-				void solution_changed(const TVector &newX) {}
-				void line_search_begin(const TVector &x0, const TVector &x1) {}
-				void line_search_end() {}
-				void post_step(const int iter_num, const TVector &x) {}
-				void smoothing(const TVector &x, TVector &new_x) {}
-				bool is_intersection_free(const TVector &x) { return true; }
-				bool stop(const TVector &x) { return false; }
-				bool remesh(TVector &x) { return false; }
-				TVector force_inequality_constraint(const TVector &x0, const TVector &dx) { return x0 + dx; }
-				double max_step_size(const TVector &x0, const TVector &x1) { return 1; }
-				bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; }
-				int n_inequality_constraints() { return 0; }
-				double inequality_constraint_val(const TVector &x, const int index)
-				{
-					assert(false);
-					return std::nan("");
-				}
-				TVector inequality_constraint_grad(const TVector &x, const int index)
-				{
-					assert(false);
-					return TVector();
-				}
-
-			private:
-
-				Eigen::MatrixXd linear_sol_;
-				const Eigen::MatrixXd &reduced_basis_;
-		};
-	
-		Eigen::MatrixXd homogenize_def_grad(const Eigen::MatrixXd &x)
-		{
-			const int dim = state->mesh->dimension();
-			Eigen::VectorXd avgs;
-			avgs.setZero(dim * dim);
-			for (int e = 0; e < state->bases.size(); e++)
-			{
-				assembler::ElementAssemblyValues vals;
-				state->ass_vals_cache.compute(e, dim == 3, state->bases[e], state->geom_bases()[e], vals);
-
-				Eigen::MatrixXd u, grad_u;
-				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x, u, grad_u);
-
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-				Eigen::VectorXd da = quadrature.weights * vals.det;
-				avgs += grad_u.transpose() * da;
-			}
-			avgs /= microstructure_volume;
-
-			return utils::unflatten(avgs, dim);
-		}
+		// 	return utils::unflatten(avgs, dim);
+		// }
 
 		Eigen::MatrixXd generate_linear_field(const State &state, const Eigen::MatrixXd &grad)
 		{
@@ -408,7 +304,7 @@ namespace polyfem::assembler
 		Eigen::VectorXd xi;
 		xi.setZero(reduced_basis.cols());
 
-		std::shared_ptr<MultiscaleRBProblem> nl_problem = std::make_shared<MultiscaleRBProblem>(reduced_basis);
+		std::shared_ptr<MultiscaleRBProblem> nl_problem = std::make_shared<MultiscaleRBProblem>(state, reduced_basis);
 		nl_problem->set_linear_disp(generate_linear_field(*state, F));
 		std::shared_ptr<cppoptlib::NonlinearSolver<MultiscaleRBProblem>> nlsolver = std::make_shared<cppoptlib::DenseNewtonDescentSolver<MultiscaleRBProblem>>(
 				state->args["solver"]["nonlinear"], state->args["solver"]["linear"]);
@@ -1113,4 +1009,48 @@ namespace polyfem::assembler
 	// });
 	}
 
+	MultiscaleRBProblem::MultiscaleRBProblem(const std::shared_ptr<State> &state_ptr, const Eigen::MatrixXd &reduced_basis): state(state_ptr), reduced_basis_(reduced_basis) 
+	{
+		RowVectorNd min, max;
+		state->mesh->bounding_box(min, max);
+		microstructure_volume = (max - min).prod();
+	}
+
+	double MultiscaleRBProblem::value(const TVector &x, const bool only_elastic)
+	{
+		Eigen::MatrixXd sol = coeff_to_field(x);
+		return state->assembler.assemble_energy(
+			state->formulation(), state->mesh->is_volume(), state->bases, state->geom_bases(),
+			state->ass_vals_cache, 0, sol, sol) / microstructure_volume;
+	}
+
+	void MultiscaleRBProblem::gradient(const TVector &x, TVector &gradv, const bool only_elastic)
+	{
+		Eigen::MatrixXd sol = coeff_to_field(x);
+		Eigen::MatrixXd grad;
+		state->assembler.assemble_energy_gradient(
+			state->formulation(), state->mesh->is_volume(), state->n_bases, state->bases, state->geom_bases(),
+			state->ass_vals_cache, 0, sol, sol, reduced_basis_, grad);
+		gradv = grad / microstructure_volume;
+	}
+
+	void MultiscaleRBProblem::hessian(const TVector &x, THessian &hessian)
+	{
+		Eigen::MatrixXd sol = coeff_to_field(x);
+		Eigen::MatrixXd tmp;
+		state->assembler.assemble_energy_hessian(
+			state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
+			state->geom_bases(), state->ass_vals_cache, 0, sol, sol, reduced_basis_, tmp);
+		hessian = tmp.sparseView();
+		hessian /= microstructure_volume;
+	}
+
+	void MultiscaleRBProblem::hessian(const TVector &x, Eigen::MatrixXd &hessian)
+	{
+		Eigen::MatrixXd sol = coeff_to_field(x);
+		state->assembler.assemble_energy_hessian(
+			state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
+			state->geom_bases(), state->ass_vals_cache, 0, sol, sol, reduced_basis_, hessian);
+		hessian /= microstructure_volume;
+	}
 } // namespace polyfem::assembler
