@@ -206,7 +206,7 @@ int main(int argc, char **argv)
         weights[i] = args["weight"];
         objs[i++] = solver::Objective::create(args, parameters, states);
     }
-    std::shared_ptr<solver::Objective> sum_obj = std::make_shared<solver::SumObjective>(objs, weights);
+    std::shared_ptr<solver::SumObjective> sum_obj = std::make_shared<solver::SumObjective>(objs, weights);
 
     solver::AdjointNLProblem nl_problem(sum_obj, parameters, states, opt_args);
     std::shared_ptr<cppoptlib::NonlinearSolver<solver::AdjointNLProblem>> nlsolver = make_nl_solver<solver::AdjointNLProblem>(opt_args["solver"]["nonlinear"]);

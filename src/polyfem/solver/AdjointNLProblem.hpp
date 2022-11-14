@@ -9,7 +9,7 @@ namespace polyfem::solver
 	class AdjointNLProblem : public cppoptlib::Problem<double>
 	{
 	public:
-		AdjointNLProblem(const std::shared_ptr<Objective> &obj, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &all_states, const json &args) : obj_(obj), parameters_(parameters), all_states_(all_states), solve_log_level(args["output"]["solve_log_level"]), save_freq(args["output"]["save_frequency"]), debug_finite_diff(args["solver"]["nonlinear"]["debug_fd"]), finite_diff_eps(args["solver"]["nonlinear"]["debug_fd_eps"])
+		AdjointNLProblem(const std::shared_ptr<SumObjective> &obj, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &all_states, const json &args) : obj_(obj), parameters_(parameters), all_states_(all_states), solve_log_level(args["output"]["solve_log_level"]), save_freq(args["output"]["save_frequency"]), debug_finite_diff(args["solver"]["nonlinear"]["debug_fd"]), finite_diff_eps(args["solver"]["nonlinear"]["debug_fd_eps"])
 		{
 			cur_x.setZero(0);
 			cur_grad.setZero(0);
@@ -55,7 +55,7 @@ namespace polyfem::solver
 
 	private:
 		int optimization_dim_ = 0;
-		std::shared_ptr<Objective> 				obj_;
+		std::shared_ptr<SumObjective> 				   obj_;
 		std::vector<std::shared_ptr<Parameter>> parameters_;
 		std::vector<std::shared_ptr<State>>     all_states_;
 		Eigen::VectorXd cur_x, cur_grad;

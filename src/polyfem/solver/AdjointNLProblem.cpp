@@ -167,6 +167,8 @@ namespace polyfem::solver
 	{
 		logger().info("Iter {}", iter);
 		int id = 0;
+		if (iter % save_freq != 0)
+			return;
 		for (const auto &state : all_states_)
 		{
 			std::string vis_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter));
