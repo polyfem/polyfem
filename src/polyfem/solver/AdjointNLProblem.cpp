@@ -198,7 +198,8 @@ namespace polyfem::solver
 
 	Eigen::VectorXd AdjointNLProblem::get_lower_bound(const Eigen::VectorXd &x) const
 	{
-		Eigen::VectorXd min(optimization_dim_);
+		Eigen::VectorXd min;
+		min.setZero(optimization_dim_);
 		int cumulative = 0;
 		for (const auto &p : parameters_)
 		{
@@ -209,7 +210,8 @@ namespace polyfem::solver
 	}
 	Eigen::VectorXd AdjointNLProblem::get_upper_bound(const Eigen::VectorXd &x) const
 	{
-		Eigen::VectorXd max(optimization_dim_);
+		Eigen::VectorXd max;
+		max.setZero(optimization_dim_);
 		int cumulative = 0;
 		for (const auto &p : parameters_)
 		{
@@ -264,8 +266,8 @@ namespace polyfem::solver
 	{
 		int num = 0;
 		int cumulative = 0;
-		Eigen::VectorXd grad(optimization_dim_);
-		grad.setZero();
+		Eigen::VectorXd grad;
+		grad.setZero(optimization_dim_);
 		for (const auto &p : parameters_)
 		{
 			num += p->n_inequality_constraints();
@@ -326,6 +328,37 @@ namespace polyfem::solver
 		all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
 
 		cur_grad.resize(0);
+	}
+
+	bool AdjointNLProblem::verify_gradient(const Eigen::VectorXd &x, const Eigen::VectorXd &gradv)
+	{
+		if (debug_finite_diff)
+		{
+			Eigen::VectorXd x2 = x + gradv * finite_diff_eps;
+			Eigen::VectorXd x1 = x - gradv * finite_diff_eps;
+
+			solution_changed(x2);
+			double J2 = value(x2);
+
+			solution_changed(x1);
+			double J1 = value(x1);
+
+			solution_changed(x);
+
+			double fd = (J2 - J1) / 2 / finite_diff_eps;
+			double analytic = gradv.squaredNorm();
+
+			bool match = abs(fd - analytic) < 1e-8 || abs(fd - analytic) < 1e-1 * abs(analytic);
+
+			if (match)
+				logger().info("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
+			else
+				logger().error("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
+			
+			return match;
+		}
+		
+		return true;
 	}
 
 } // namespace polyfem

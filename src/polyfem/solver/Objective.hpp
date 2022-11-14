@@ -287,6 +287,8 @@ namespace polyfem::solver
 
 		int v1 = -1;
 		int v2 = -1;
+
+		double power_ = 2;
 	};
 
 	class TargetObjective: public SpatialIntegralObjective

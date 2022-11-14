@@ -10,6 +10,8 @@ namespace polyfem
 		using typename cppoptlib::Problem<double>::Scalar;
 		using typename cppoptlib::Problem<double>::TVector;
 
+		bool verify_gradient(const TVector &x, const TVector &gradv) { return true; }
+
 		GeneralOptimizationProblem(std::vector<std::shared_ptr<OptimizationProblem>> subproblems_, const std::shared_ptr<CompositeFunctional> j_)
 		{
 			subproblems = subproblems_;

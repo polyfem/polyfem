@@ -21,6 +21,8 @@ namespace polyfem
 
 		virtual void solve_pde(const TVector &x) final;
 
+		bool verify_gradient(const TVector &x, const TVector &gradv) { return true; }
+
 		virtual double target_value(const TVector &x) = 0;
 		virtual void target_gradient(const TVector &x, TVector &gradv) = 0;
 

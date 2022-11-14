@@ -129,6 +129,11 @@ namespace cppoptlib
 				objFunc.gradient(x, grad);
 			}
 
+			{
+				POLYFEM_SCOPED_TIMER("verify gradient", grad_time);
+				objFunc.verify_gradient(x, grad);
+			}
+
 			const double grad_norm = objFunc.n_inequality_constraints() > 0 ? (objFunc.force_inequality_constraint(x, -grad) - x).norm() : grad.norm();
 			if (std::isnan(grad_norm))
 			{

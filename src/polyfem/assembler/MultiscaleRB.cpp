@@ -208,6 +208,8 @@ namespace polyfem::assembler
 						return false;
 					return true;
 				}
+
+				bool verify_gradient(const TVector &x, const TVector &gradv) { return true; }
 				
 				void set_project_to_psd(bool val) {}
 				void save_to_file(const TVector &x0) {}

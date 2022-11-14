@@ -11,7 +11,33 @@ namespace polyfem::solver
         double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
     
         typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1>> Diff;
-        
+
+        template <typename T>
+        T inverse_Lp_norm(const Eigen::Matrix<T, Eigen::Dynamic, 1> &F, const double p)
+        {
+            T val = T(0);
+            for (int i = 0; i < F.size(); i++)
+            {
+                val += pow(F(i), p);
+            }
+            return T(1) / pow(val, 1. / p);
+        }
+
+        Eigen::VectorXd inverse_Lp_norm_grad(const Eigen::VectorXd &F, const double p)
+        {
+            DiffScalarBase::setVariableCount(F.size());
+            Eigen::Matrix<Diff, Eigen::Dynamic, 1> full_diff(F.size());
+            for (int i = 0; i < F.size(); i++)
+                full_diff(i) = Diff(i, F(i));
+            auto reduced_diff = inverse_Lp_norm(full_diff, p);
+            
+            Eigen::VectorXd grad(F.size());
+            for (int i = 0; i < F.size(); ++i)
+                grad(i) = reduced_diff.getGradient()(i);
+            
+            return grad;
+        }
+
         template <typename T>
         T strain_norm(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &F)
         {
@@ -322,7 +348,7 @@ namespace polyfem::solver
     {
         Eigen::VectorXd term;
         term.setZero(param.full_dim());
-        if (&param == elastic_param_.get())
+        if (&param == elastic_param_.get() || param.name() == "topology")
         {
             // TODO: differentiate stress wrt. lame param
             log_and_throw_error("Not implemented!");
@@ -1191,7 +1217,7 @@ namespace polyfem::solver
         return j;
     }
 
-    bool is_same_position(Eigen::VectorXd x, Eigen::VectorXd y)
+    bool almost_equal(const Eigen::VectorXd &x, const Eigen::VectorXd &y)
     {
         if (x.size() != y.size())
             return false;
@@ -1201,17 +1227,20 @@ namespace polyfem::solver
 
     NaiveNegativePoissonObjective::NaiveNegativePoissonObjective(const State &state1, const State &state2, const json &args): state1_(state1), state2_(state2)
     {
-        Eigen::Vector2d a, b;
+        power_ = args["power"];
+        Eigen::VectorXd a, b;
         a = args["v1"];
         b = args["v2"];
         for (int i = 0; i < state1_.n_bases; i++)
         {
-            if (is_same_position(state1_.mesh_nodes->node_position(i), a))
+            if (almost_equal(state1_.mesh_nodes->node_position(i), a))
             {
+                assert(almost_equal(state2_.mesh_nodes->node_position(i), a));
                 v1 = i;
             }
-            if (is_same_position(state1_.mesh_nodes->node_position(i), b))
+            if (almost_equal(state1_.mesh_nodes->node_position(i), b))
             {
+                assert(almost_equal(state2_.mesh_nodes->node_position(i), b));
                 v2 = i;
             }
         }
@@ -1222,8 +1251,13 @@ namespace polyfem::solver
     double NaiveNegativePoissonObjective::value() const
     {
         const int dim = state1_.mesh->dimension();
-        const double length = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
-        return 1. / length;
+        const double length1 = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
+        const double length2 = (state2_.diff_cached[0].u(v1 * dim + 0) - state2_.diff_cached[0].u(v2 * dim + 0)) + (state2_.mesh_nodes->node_position(v1)(0) - state2_.mesh_nodes->node_position(v2)(0));
+
+        // Eigen::VectorXd vec(2); vec << length1, length2;
+        // return inverse_Lp_norm(vec, power_);
+
+        return 1. / length1;
     }
 
     Eigen::MatrixXd NaiveNegativePoissonObjective::compute_adjoint_rhs(const State& state) const
@@ -1233,12 +1267,26 @@ namespace polyfem::solver
 
         const int dim = state1_.mesh->dimension();
         
-        if (&state == &state1_)
+        if (&state == &state1_ || &state == &state2_)
         {
-            const double length = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
+            const double length1 = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
+            const double length2 = (state2_.diff_cached[0].u(v1 * dim + 0) - state2_.diff_cached[0].u(v2 * dim + 0)) + (state2_.mesh_nodes->node_position(v1)(0) - state2_.mesh_nodes->node_position(v2)(0));
+
+            // Eigen::VectorXd vec(2); vec << length1, length2;
+            // Eigen::VectorXd grad = inverse_Lp_norm_grad(vec, power_);
+
             rhs(v1 * dim + 0) = 1;
             rhs(v2 * dim + 0) = -1;
-            rhs *= -1. / length / length;
+
+            // if (&state == &state1_)
+            //     rhs *= grad(0);
+            // else
+            //     rhs *= grad(1);
+
+            if (&state == &state1_)
+                rhs *= -1 / length1 / length1;
+            else
+                rhs *= 0;
         }
         
         return rhs;
@@ -1246,6 +1294,9 @@ namespace polyfem::solver
 
     Eigen::VectorXd NaiveNegativePoissonObjective::compute_partial_gradient(const Parameter &param) const
     {
+        if (param.name() == "shape")
+            log_and_throw_error("Not implemented!");
+        
         return Eigen::VectorXd::Zero(param.full_dim());
     }
 

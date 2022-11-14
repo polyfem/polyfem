@@ -25,6 +25,8 @@ namespace polyfem::solver
 		void target_gradient(const TVector &x, TVector &gradv) { gradient(x, gradv); }
 		virtual void hessian(const TVector &x, THessian &hessian);
 
+		bool verify_gradient(const TVector &x, const TVector &gradv) { return true; }
+
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) const;
 		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1) const;
 		virtual double max_step_size(const TVector &x0, const TVector &x1) const;
