@@ -181,8 +181,11 @@ namespace polyfem::solver
         }
         else if (type == "naive_negative_poisson")
         {
-            State state2;
-            obj = std::make_shared<solver::NaiveNegativePoissonObjective>(*(states[args["state1"]]), state2, args);
+            obj = std::make_shared<solver::NaiveNegativePoissonObjective>(*(states[args["state"]]), args);
+        }
+        else if (type == "target_length")
+        {
+            obj = std::make_shared<solver::TargetLengthObjective>(*(states[args["state"]]), args);
         }
         else
             log_and_throw_error("Unkown functional type {}!", type);
@@ -1225,7 +1228,7 @@ namespace polyfem::solver
         return ((x - y).norm() < 1e-8) || ((x - y).norm() / x.norm() < 1e-5);
     }
 
-    NaiveNegativePoissonObjective::NaiveNegativePoissonObjective(const State &state1, const State &state2, const json &args): state1_(state1), state2_(state2)
+    NaiveNegativePoissonObjective::NaiveNegativePoissonObjective(const State &state1, const json &args): state1_(state1)
     {
         power_ = args["power"];
         Eigen::VectorXd a, b;
@@ -1235,12 +1238,10 @@ namespace polyfem::solver
         {
             if (almost_equal(state1_.mesh_nodes->node_position(i), a))
             {
-                assert(almost_equal(state2_.mesh_nodes->node_position(i), a));
                 v1 = i;
             }
             if (almost_equal(state1_.mesh_nodes->node_position(i), b))
             {
-                assert(almost_equal(state2_.mesh_nodes->node_position(i), b));
                 v2 = i;
             }
         }
@@ -1252,7 +1253,6 @@ namespace polyfem::solver
     {
         const int dim = state1_.mesh->dimension();
         const double length1 = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
-        const double length2 = (state2_.diff_cached[0].u(v1 * dim + 0) - state2_.diff_cached[0].u(v2 * dim + 0)) + (state2_.mesh_nodes->node_position(v1)(0) - state2_.mesh_nodes->node_position(v2)(0));
 
         // Eigen::VectorXd vec(2); vec << length1, length2;
         // return inverse_Lp_norm(vec, power_);
@@ -1267,32 +1267,73 @@ namespace polyfem::solver
 
         const int dim = state1_.mesh->dimension();
         
-        if (&state == &state1_ || &state == &state2_)
+        if (&state == &state1_)
         {
             const double length1 = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
-            const double length2 = (state2_.diff_cached[0].u(v1 * dim + 0) - state2_.diff_cached[0].u(v2 * dim + 0)) + (state2_.mesh_nodes->node_position(v1)(0) - state2_.mesh_nodes->node_position(v2)(0));
 
-            // Eigen::VectorXd vec(2); vec << length1, length2;
-            // Eigen::VectorXd grad = inverse_Lp_norm_grad(vec, power_);
-
-            rhs(v1 * dim + 0) = 1;
-            rhs(v2 * dim + 0) = -1;
-
-            // if (&state == &state1_)
-            //     rhs *= grad(0);
-            // else
-            //     rhs *= grad(1);
-
-            if (&state == &state1_)
-                rhs *= -1 / length1 / length1;
-            else
-                rhs *= 0;
+            rhs(v1 * dim + 0) = -1 / length1 / length1;
+            rhs(v2 * dim + 0) = 1 / length1 / length1;
         }
         
         return rhs;
     }
 
     Eigen::VectorXd NaiveNegativePoissonObjective::compute_partial_gradient(const Parameter &param) const
+    {
+        if (param.name() == "shape")
+            log_and_throw_error("Not implemented!");
+        
+        return Eigen::VectorXd::Zero(param.full_dim());
+    }
+
+    TargetLengthObjective::TargetLengthObjective(const State &state1, const json &args): state1_(state1)
+    {
+        Eigen::VectorXd a, b;
+        a = args["v1"];
+        b = args["v2"];
+        target_length = args["target_length"];
+        for (int i = 0; i < state1_.n_bases; i++)
+        {
+            if (almost_equal(state1_.mesh_nodes->node_position(i), a))
+            {
+                v1 = i;
+            }
+            if (almost_equal(state1_.mesh_nodes->node_position(i), b))
+            {
+                v2 = i;
+            }
+        }
+        if (v1 < 0 || v2 < 0)
+            log_and_throw_error("Failed to find target vertices in objective!");
+    }
+
+    double TargetLengthObjective::value() const
+    {
+        const int dim = state1_.mesh->dimension();
+        const double length1 = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
+
+        return pow(length1 - target_length, 2);
+    }
+
+    Eigen::MatrixXd TargetLengthObjective::compute_adjoint_rhs(const State& state) const
+    {
+        Eigen::MatrixXd rhs;
+        rhs.setZero(state.diff_cached[0].u.size(), 1);
+
+        const int dim = state1_.mesh->dimension();
+        
+        if (&state == &state1_)
+        {
+            const double length1 = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
+
+            rhs(v1 * dim + 0) = 2 * (length1 - target_length);
+            rhs(v2 * dim + 0) = -2 * (length1 - target_length);
+        }
+        
+        return rhs;
+    }
+
+    Eigen::VectorXd TargetLengthObjective::compute_partial_gradient(const Parameter &param) const
     {
         if (param.name() == "shape")
             log_and_throw_error("Not implemented!");

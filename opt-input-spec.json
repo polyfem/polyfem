@@ -641,7 +641,8 @@
             "control_smoothing",
             "material_smoothing",
             "volume_constraint",
-            "naive_negative_poisson"
+            "naive_negative_poisson",
+            "target_length"
         ],
         "doc": "TODO"
     },
@@ -889,14 +890,27 @@
         "type": "object",
         "type_name": "naive_negative_poisson",
         "required": [
-            "state1",
-            "state2",
+            "state",
             "v1",
             "v2"
         ],
         "optional": [
-            "weight",
-            "power"
+            "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "target_length",
+        "required": [
+            "state",
+            "v1",
+            "v2",
+            "target_length"
+        ],
+        "optional": [
+            "weight"
         ],
         "doc": "TODO"
     },

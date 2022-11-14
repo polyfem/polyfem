@@ -274,7 +274,7 @@ namespace polyfem::solver
 	class NaiveNegativePoissonObjective: public Objective
 	{
 	public:
-		NaiveNegativePoissonObjective(const State &state1, const State &state2, const json &args);
+		NaiveNegativePoissonObjective(const State &state1, const json &args);
 		~NaiveNegativePoissonObjective() = default;
 
 		double value() const override;
@@ -283,10 +283,29 @@ namespace polyfem::solver
 
 	protected:
 		const State& state1_;
-		const State& state2_;
 
 		int v1 = -1;
 		int v2 = -1;
+
+		double power_ = 2;
+	};
+
+	class TargetLengthObjective: public Objective
+	{
+	public:
+		TargetLengthObjective(const State &state1, const json &args);
+		~TargetLengthObjective() = default;
+
+		double value() const override;
+		Eigen::MatrixXd compute_adjoint_rhs(const State& state) const override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
+
+	protected:
+		const State& state1_;
+
+		int v1 = -1;
+		int v2 = -1;
+		double target_length;
 
 		double power_ = 2;
 	};
