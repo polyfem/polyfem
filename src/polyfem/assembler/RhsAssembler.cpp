@@ -368,11 +368,8 @@ namespace polyfem
 						for (size_t i = 0; i < indices.size(); ++i)
 						{
 							const int tag = tags[i];
-							for (int d = 0; d < size_; ++d)
-							{
-								if (problem_.all_dimensions_dirichlet() || problem_.is_dimension_dirichet(tag, d))
-									rhs(indices[i] * size_ + d) = 0;
-							}
+							if (problem_.all_dimensions_dirichlet() || problem_.is_dimension_dirichet(tag, d))
+								rhs(indices[i] * size_ + d) = 0;
 						}
 					}
 					else
