@@ -1556,40 +1556,6 @@ void State::build_collision_mesh(
 		logger().info(" took {}s", timings.assigning_rhs_time);
 	}
 
-	void State::solve_homogenization(Eigen::MatrixXd &sol)
-	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
-		if (n_bases <= 0)
-		{
-			logger().error("Build the bases first!");
-			return;
-		}
-
-		igl::Timer timer;
-		timer.start();
-		logger().info("Solving {} homogenization", formulation());
-
-		solve_data.elastic_form = std::make_shared<solver::ElasticForm>(
-			n_bases, bases, geom_bases(),
-			assembler, ass_vals_cache,
-			formulation(),
-			0.0,
-			mesh->is_volume());
-
-		if (assembler.is_linear(formulation()))
-			solve_linear_homogenization(sol);
-		else
-			logger().error("Doesn't support homogenization of {}", formulation());
-
-		timer.stop();
-		timings.solving_time = timer.getElapsedTime();
-		logger().info(" took {}s", timings.solving_time);
-	}
-
 	void State::solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		if (!mesh)

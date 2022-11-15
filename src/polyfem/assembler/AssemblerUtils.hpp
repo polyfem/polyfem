@@ -15,6 +15,7 @@
 #include "SaintVenantElasticity.hpp"
 #include "NeoHookeanElasticity.hpp"
 #include "MultiscaleRB.hpp"
+#include "Multiscale.hpp"
 #include "GenericElastic.hpp"
 #include "MooneyRivlinElasticity.hpp"
 #include "MultiModel.hpp"
@@ -227,7 +228,6 @@ namespace polyfem
 			const DampingParameters &damping_params() const { return damping_.local_assembler().damping_params(); }
 			void update_lame_params(const LameParameters &newParams);
 			void update_lame_params(const Eigen::MatrixXd& lambdas, const Eigen::MatrixXd& mus);
-			void update_lame_params_density(const Eigen::MatrixXd& density, const double power = -1);
 
 			std::function<double(const Eigen::MatrixXd &, const double, const double)> get_elastic_energy_function(const std::string& assembler) const;
 			std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> get_stress_grad_multiply_mat_function(const std::string& assembler) const;
@@ -287,6 +287,7 @@ namespace polyfem
 			NLAssembler<SaintVenantElasticity> saint_venant_elasticity_;
 			NLAssembler<NeoHookeanElasticity> neo_hookean_elasticity_;
 			NLAssembler<MultiscaleRB> multiscale_reduced_basis_;
+			NLAssembler<Multiscale>   multiscale_;
 			NLAssembler<GenericElastic<MooneyRivlinElasticity>> mooney_rivlin_elasticity_;
 			NLAssembler<MultiModel> multi_models_elasticity_;
 			NLAssembler<GenericElastic<OgdenElasticity>> ogden_elasticity_;

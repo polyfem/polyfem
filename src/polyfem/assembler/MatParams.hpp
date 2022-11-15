@@ -66,18 +66,8 @@ namespace polyfem::assembler
 				p(0), p(1), p.size() ? 0. : p(2),
 				el_id, lambda, mu, has_density);
 		}
-		
-		// TODO: remove density from here
-		double density(const int el_id) const
-		{
-			if (density_mat_.size() > 0)
-				return density_mat_(el_id);
-			else
-				return 0;
-		}
 
-		Eigen::MatrixXd lambda_mat_, mu_mat_, density_mat_;
-		double density_power_ = 1;
+		Eigen::MatrixXd lambda_mat_, mu_mat_;
 
 	private:
 		void set_e_nu(const int index, const json &E, const json &nu);

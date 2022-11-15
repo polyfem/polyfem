@@ -221,7 +221,7 @@ TEST_CASE("deformed_boundary_smoothing", "[adjoint_method]")
 
 	velocity_discrete.normalize();
 
-	verify_adjoint(obj, state, shape_param, "shape", velocity_discrete, 1e-6, 1e-7);
+	verify_adjoint(obj, state, shape_param, "shape", velocity_discrete, 1e-6, 1e-5);
 }
 
 TEST_CASE("laplacian", "[adjoint_method]")

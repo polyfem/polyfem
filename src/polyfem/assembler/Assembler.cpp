@@ -11,6 +11,7 @@
 #include "SaintVenantElasticity.hpp"
 #include "NeoHookeanElasticity.hpp"
 #include "MultiscaleRB.hpp"
+#include "Multiscale.hpp"
 #include "GenericElastic.hpp"
 #include "MooneyRivlinElasticity.hpp"
 #include "MultiModel.hpp"
@@ -1218,6 +1219,7 @@ namespace polyfem::assembler
 	template class NLAssembler<MultiModel>;
 	template class NLAssembler<GenericElastic<OgdenElasticity>>;
 	template class NLAssembler<MultiscaleRB>;
+	template class NLAssembler<Multiscale>;
 
 	template class NLAssembler<ViscousDamping>;
 	template class NLAssembler<ViscousDampingPrev>;

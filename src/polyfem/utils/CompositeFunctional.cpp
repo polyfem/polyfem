@@ -25,10 +25,6 @@ namespace polyfem
 			func = std::make_shared<StressFunctional>();
 		else if (functional_name_ == "Compliance")
 			func = std::make_shared<ComplianceFunctional>();
-		else if (functional_name_ == "HomogenizedStiffness")
-			func = std::make_shared<HomogenizedStiffnessFunctional>();
-		else if (functional_name_ == "HomogenizedPermeability")
-			func = std::make_shared<HomogenizedPermeabilityFunctional>();
 		// else if (functional_name_ == "CenterTrajectory")
 		// 	func = std::make_shared<CenterTrajectoryFunctional>();
 		else if (functional_name_ == "NodeTrajectory")
@@ -571,122 +567,6 @@ namespace polyfem
 		});
 
 		return j;
-	}
-
-	double HomogenizedStiffnessFunctional::energy(State &state)
-	{
-		Eigen::MatrixXd C_H;
-		state.homogenize_weighted_linear_elasticity(C_H);
-
-		if (state.mesh->is_volume())
-		{
-			if (subtype == "trace")
-				return -C_H.trace();
-			else if (subtype == "E11")
-				return -C_H(0, 0);
-			else if (subtype == "E22")
-				return -C_H(1, 1);
-			else if (subtype == "E33")
-				return -C_H(2, 2);
-			else if (subtype == "E12")
-				return -C_H(0, 1);
-			else if (subtype == "E44")
-				return -C_H(3, 3);
-			else if (subtype == "E55")
-				return -C_H(4, 4);
-			else if (subtype == "E66")
-				return -C_H(5, 5);
-			else
-				throw std::runtime_error("Unknown functional subtype!");
-		}
-		else
-		{
-			if (subtype == "trace")
-				return -C_H.trace();
-			else if (subtype == "E11")
-				return -C_H(0, 0);
-			else if (subtype == "E22")
-				return -C_H(1, 1);
-			else if (subtype == "E33")
-				return -C_H(2, 2);
-			else if (subtype == "E12")
-				return -C_H(0, 1);
-			else
-				throw std::runtime_error("Unknown functional subtype!");
-		}
-
-		return -C_H(0, 0);
-	}
-
-	Eigen::VectorXd HomogenizedStiffnessFunctional::gradient(State &state, const std::string &type)
-	{
-		Eigen::MatrixXd C_H;
-		Eigen::MatrixXd grad;
-		state.homogenize_weighted_linear_elasticity_grad(C_H, grad);
-
-		if (state.mesh->is_volume())
-		{
-			if (subtype == "trace")
-				return -grad.col(0) - grad.col(7) - grad.col(14) - grad.col(28) - grad.col(35) - grad.col(42);
-			else if (subtype == "E11")
-				return -grad.col(0);
-			else if (subtype == "E22")
-				return -grad.col(7);
-			else if (subtype == "E33")
-				return -grad.col(14);
-			else if (subtype == "E12")
-				return -grad.col(1);
-			else if (subtype == "E44")
-				return -grad.col(21);
-			else if (subtype == "E55")
-				return -grad.col(28);
-			else if (subtype == "E66")
-				return -grad.col(35);
-			else
-				throw std::runtime_error("Unknown functional subtype!");
-		}
-		else
-		{
-			if (subtype == "trace")
-				return -grad.col(0) - grad.col(4) - grad.col(8);
-			else if (subtype == "E11")
-				return -grad.col(0);
-			else if (subtype == "E22")
-				return -grad.col(4);
-			else if (subtype == "E33")
-				return -grad.col(8);
-			else if (subtype == "E12")
-				return -grad.col(1);
-			else
-				throw std::runtime_error("Unknown functional subtype!");
-		}
-
-		return -grad.col(0);
-	}
-
-	double HomogenizedPermeabilityFunctional::energy(State &state)
-	{
-		Eigen::MatrixXd C_H;
-		state.homogenize_weighted_stokes(C_H);
-
-		std::cout << "Permeability tensor:\n"
-				  << C_H << "\n";
-		if (state.mesh->is_volume())
-			return -C_H(0, 1) - C_H(1, 2);
-		else
-			return -C_H(0, 1);
-	}
-
-	Eigen::VectorXd HomogenizedPermeabilityFunctional::gradient(State &state, const std::string &type)
-	{
-		Eigen::MatrixXd C_H;
-		Eigen::MatrixXd grad;
-		state.homogenize_weighted_stokes_grad(C_H, grad);
-
-		if (state.mesh->is_volume())
-			return -grad.col(1) - grad.col(5);
-		else
-			return -grad.col(1);
 	}
 
 	double ComplianceFunctional::energy(State &state)

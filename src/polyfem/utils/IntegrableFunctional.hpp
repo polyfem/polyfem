@@ -41,7 +41,6 @@ namespace polyfem
 			assert(j_func);
 			Eigen::MatrixXd lambda, mu;
 			lambda_mu(lame_params, params["elem"], local_pts, pts, lambda, mu);
-			params["density"] = lame_params.density(params["elem"]);
 			j_func(local_pts, pts, u, grad_u, lambda, mu, params, val);
 		}
 
@@ -50,7 +49,6 @@ namespace polyfem
 			assert(has_x);
 			Eigen::MatrixXd lambda, mu;
 			lambda_mu(lame_params, params["elem"], local_pts, pts, lambda, mu);
-			params["density"] = lame_params.density(params["elem"]);
 			if (dj_dx_func)
 			{
 				dj_dx_func(local_pts, pts, u, grad_u, lambda, mu, params, val);
@@ -66,7 +64,6 @@ namespace polyfem
 			assert(has_u);
 			Eigen::MatrixXd lambda, mu;
 			lambda_mu(lame_params, params["elem"], local_pts, pts, lambda, mu);
-			params["density"] = lame_params.density(params["elem"]);
 			if (dj_du_func)
 			{
 				dj_du_func(local_pts, pts, u, grad_u, lambda, mu, params, val);
@@ -82,7 +79,6 @@ namespace polyfem
 			assert(has_gradu);
 			Eigen::MatrixXd lambda, mu;
 			lambda_mu(lame_params, params["elem"], local_pts, pts, lambda, mu);
-			params["density"] = lame_params.density(params["elem"]);
 			if (dj_dgradu_func)
 			{
 				dj_dgradu_func(local_pts, pts, u, grad_u, lambda, mu, params, val);

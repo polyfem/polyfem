@@ -734,24 +734,6 @@ private:
 		//---------------------------------------------------
 public:
 		void solve_homogenized_field(const Eigen::MatrixXd &def_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_, const std::string &hessian_path = "");
-		
-		void solve_linear_homogenization(Eigen::MatrixXd &sol);
-		void compute_homogenized_tensor(Eigen::MatrixXd &sol, Eigen::MatrixXd &C);
-		void homogenization(Eigen::MatrixXd &C_H)
-		{
-			Eigen::MatrixXd sol;
-			assemble_stiffness_mat();
-			solve_homogenization(sol);
-			compute_homogenized_tensor(sol, C_H);
-		}
-
-		void homogenize_weighted_linear_elasticity(Eigen::MatrixXd &C_H);
-		void homogenize_weighted_stokes(Eigen::MatrixXd &K_H);
-
-		void homogenize_linear_elasticity_shape_grad(Eigen::MatrixXd &C_H, Eigen::MatrixXd &grad);
-		void homogenize_weighted_linear_elasticity_grad(Eigen::MatrixXd &C_H, Eigen::MatrixXd &grad);
-		void solve_adjoint_homogenize_linear_elasticity(Eigen::MatrixXd &react_sol, Eigen::MatrixXd &adjoint_solution);
-		void homogenize_weighted_stokes_grad(Eigen::MatrixXd &K_H, Eigen::MatrixXd &grad);
 	};
 
 } // namespace polyfem

@@ -81,12 +81,12 @@ Eigen::VectorXd transform(const Eigen::VectorXd &p)
 	double rand2 = myrand(0.5);
 	A = std::pow(rand1, 1./3) * (rand2 * C).exp();
 
-	double rand3 = myrand(180);
+	double rand3 = myrand(180) / 180.0 * (0.5 * M_PI);
 	Eigen::Matrix2d B;
 	B << std::cos(rand3), -std::sin(rand3),
 		 std::sin(rand3), std::cos(rand3);
 
-	return B*A*p;
+	return A*p;
 }
 
 bool compare_matrix(
@@ -109,6 +109,107 @@ bool compare_matrix(
 }
 
 TEST_CASE("multiscale_derivatives", "[assembler]")
+{
+	const std::string path = POLYFEM_DATA_DIR;
+	json in_args = R"(
+	{
+		"geometry": [
+			{
+				"mesh": "",
+				"transformation": {
+					"scale": 1
+				},
+				"volume_selection": 1,
+				"surface_selection": {
+					"threshold": 1e-7
+				}
+			}
+		],
+		"solver": {
+			"linear": {
+				"solver": "Eigen::SimplicialLDLT"
+			}
+		},
+		"boundary_conditions": {
+			"dirichlet_boundary": [
+				{
+					"id": 1,
+					"value": [0, 0]
+				}
+			]
+		},
+		"materials": {
+			"type": "Multiscale",
+			"microstructure": 
+			{
+				"geometry": [
+					{
+						"mesh": "",
+						"n_refs": 0,
+						"transformation": {
+							"scale": 1e-3
+						},
+						"surface_selection": {
+							"threshold": 1e-8
+						}
+					}
+				],
+				"solver": {
+					"linear": {
+						"solver": "Eigen::SimplicialLDLT"
+					}
+				},
+				"boundary_conditions": {
+					"periodic_boundary": [true, true]
+				},
+				"materials": {
+					"type": "NeoHookean",
+					"E": 100,
+					"nu": 0.5
+				}
+			},
+			"rho": 1
+		}
+	}
+	)"_json;
+	in_args["geometry"][0]["mesh"] = path + "/../square.msh";
+	in_args["materials"]["microstructure"]["geometry"][0]["mesh"] = path + "/../cross2d.msh";
+	// in_args["materials"]["microstructure"]["materials"]["E"] = path + "/../Es.txt";
+	// in_args["materials"]["microstructure"]["materials"]["nu"] = path + "/../nus.txt";
+
+	State state;
+	state.init_logger("", spdlog::level::warn, false);
+	state.init(in_args, false);
+	state.load_mesh();
+	state.build_basis();
+
+	Eigen::MatrixXd grad;
+	Eigen::MatrixXd disp(state.n_bases * 2, 1);
+	disp.setZero();
+
+	utils::SpareMatrixCache mat_cache;
+
+	for (int rand = 0; rand < 2; ++rand)
+	{
+		for (int p = 0; p < state.n_bases; p++)
+		{
+			RowVectorNd point = state.mesh_nodes->node_position(p);
+			disp.block(p * 2, 0, 2, 1) = transform(point.transpose()) - point.transpose();
+		}
+
+		state.assembler.assemble_energy_gradient(
+			state.formulation(), false, state.n_bases, state.bases, state.geom_bases(), 
+			state.ass_vals_cache, 0, disp, disp, grad);
+
+		Eigen::VectorXd fgrad;
+		fd::finite_gradient(
+			disp, [&state](const Eigen::VectorXd &x) -> double { return state.assembler.assemble_energy(state.formulation(), false, state.bases, state.geom_bases(), state.ass_vals_cache, 0, x, x); }, fgrad);
+
+		REQUIRE (compare_matrix(grad, fgrad));
+	}
+}
+
+TEST_CASE("multiscale_rb_derivatives", "[assembler]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = R"(
@@ -179,12 +280,12 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 	}
 	)"_json;
 	in_args["geometry"][0]["mesh"] = path + "/../square.msh";
-	in_args["materials"]["microstructure"]["geometry"][0]["mesh"] = path + "/../negative-nu.msh";
+	in_args["materials"]["microstructure"]["geometry"][0]["mesh"] = path + "/../cross2d.msh";
 	// in_args["materials"]["microstructure"]["materials"]["E"] = path + "/../Es.txt";
 	// in_args["materials"]["microstructure"]["materials"]["nu"] = path + "/../nus.txt";
 
 	State state;
-	state.init_logger("", spdlog::level::err, false);
+	state.init_logger("", spdlog::level::warn, false);
 	state.init(in_args, false);
 	state.load_mesh();
 	state.build_basis();

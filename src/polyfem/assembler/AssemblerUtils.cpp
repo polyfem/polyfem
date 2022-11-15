@@ -30,6 +30,7 @@ namespace polyfem
 			{"HookeLinearElasticity",          {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/true}},
 			{"Damping",                        {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
 			{"MultiscaleRB",                   {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
+			{"Multiscale",                     {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
 			{"IncompressibleLinearElasticity", {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/true,  /*is_solution_displacement=*/true,  /*is_linear=*/true}},
 			{"SaintVenant",                    {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
 			{"NeoHookean",                     {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
@@ -138,7 +139,7 @@ namespace polyfem
 			// return;
 			else if(assembler == "Ogden")
 				return;
-			else if (assembler == "MultiscaleRB")
+			else if (assembler == "MultiscaleRB" || assembler == "Multiscale")
 				return;
 			else
 			{
@@ -183,7 +184,7 @@ namespace polyfem
 			// return;
 			//else if(assembler == "Ogden")
 			//	return;
-			else if (assembler == "MultiscaleRB")
+			else if (assembler == "MultiscaleRB" || assembler == "Multiscale")
 				return;
 			else
 			{
@@ -353,6 +354,8 @@ namespace polyfem
 				return damping_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
 			else if (assembler == "MultiscaleRB")
 				return multiscale_reduced_basis_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
+			else if (assembler == "Multiscale")
+				return multiscale_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
 
 			else if (assembler == "Ogden")
 				return ogden_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
@@ -385,6 +388,8 @@ namespace polyfem
 				damping_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
 			else if (assembler == "MultiscaleRB")
 				multiscale_reduced_basis_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
+			else if (assembler == "Multiscale")
+				multiscale_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
 			else if (assembler == "DampingPrev")
 				damping_prev_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
 			else if (assembler == "NavierStokes")
@@ -419,6 +424,8 @@ namespace polyfem
 				damping_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
 			else if (assembler == "MultiscaleRB")
 				multiscale_reduced_basis_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
+			else if (assembler == "Multiscale")
+				multiscale_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
 			else if (assembler == "DampingPrev")
 				damping_prev_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
 			else if (assembler == "NavierStokes")
@@ -456,6 +463,8 @@ namespace polyfem
 				damping_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
 			else if (assembler == "MultiscaleRB")
 				multiscale_reduced_basis_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			else if (assembler == "Multiscale")
+				multiscale_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
 			else if (assembler == "DampingPrev")
 				damping_prev_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
 			else if (assembler == "NavierStokesPicard")
@@ -494,6 +503,8 @@ namespace polyfem
 				damping_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
 			else if (assembler == "MultiscaleRB")
 				multiscale_reduced_basis_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
+			else if (assembler == "Multiscale")
+				multiscale_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
 			else if (assembler == "DampingPrev")
 				damping_prev_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
 			else if (assembler == "NavierStokesPicard")
@@ -537,6 +548,8 @@ namespace polyfem
 				ogden_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "MultiscaleRB")
 				multiscale_reduced_basis_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
+			else if (assembler == "Multiscale")
+				multiscale_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "Stokes" || assembler == "OperatorSplitting")
 				stokes_velocity_.local_assembler().compute_norm_velocity(bs, gbs, local_pts, fun, result);
 			else if (assembler == "NavierStokes")
@@ -601,6 +614,8 @@ namespace polyfem
 				ogden_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "MultiscaleRB")
 				multiscale_reduced_basis_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
+			else if (assembler == "Multiscale")
+				multiscale_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "Stokes" || assembler == "OperatorSplitting") // WARNING stokes and NS dont have el_id
 				stokes_velocity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 			else if (assembler == "NavierStokes")
@@ -741,6 +756,7 @@ namespace polyfem
 			mooney_rivlin_elasticity_.local_assembler().set_size(dim);
 			multi_models_elasticity_.local_assembler().set_size(dim);
 			multiscale_reduced_basis_.local_assembler().set_size(dim);
+			multiscale_.local_assembler().set_size(dim);
 			ogden_elasticity_.local_assembler().set_size(dim);
 
 			damping_.local_assembler().set_size(dim);
@@ -768,6 +784,7 @@ namespace polyfem
 			neo_hookean_elasticity_.local_assembler().set_params(newParams);
 			multi_models_elasticity_.local_assembler().set_params(newParams);
 			multiscale_reduced_basis_.local_assembler().set_params(newParams);
+			multiscale_.local_assembler().set_params(newParams);
 			// ogden_elasticity_.local_assembler().set_params(newParams);
 
 			incompressible_lin_elast_displacement_.local_assembler().set_params(newParams);
@@ -781,27 +798,13 @@ namespace polyfem
 			linear_elasticity_energy_.local_assembler().lame_params().lambda_mat_ = lambdas;
 			neo_hookean_elasticity_.local_assembler().lame_params().lambda_mat_ = lambdas;
 			multiscale_reduced_basis_.local_assembler().lame_params().lambda_mat_ = lambdas;
+			multiscale_.local_assembler().lame_params().lambda_mat_ = lambdas;
 
 			linear_elasticity_.local_assembler().lame_params().mu_mat_ = mus;
 			linear_elasticity_energy_.local_assembler().lame_params().mu_mat_ = mus;
 			neo_hookean_elasticity_.local_assembler().lame_params().mu_mat_ = mus;
 			multiscale_reduced_basis_.local_assembler().lame_params().mu_mat_ = mus;
-		}
-
-		void AssemblerUtils::update_lame_params_density(const Eigen::MatrixXd& density, const double power)
-		{
-			linear_elasticity_.local_assembler().lame_params().density_mat_ = density;
-			linear_elasticity_energy_.local_assembler().lame_params().density_mat_ = density;
-			neo_hookean_elasticity_.local_assembler().lame_params().density_mat_ = density;
-			multiscale_reduced_basis_.local_assembler().lame_params().density_mat_ = density;
-
-			if (power >= 1)
-			{
-				linear_elasticity_.local_assembler().lame_params().density_power_ = power;
-				linear_elasticity_energy_.local_assembler().lame_params().density_power_ = power;
-				neo_hookean_elasticity_.local_assembler().lame_params().density_power_ = power;
-				multiscale_reduced_basis_.local_assembler().lame_params().density_power_ = power;
-			}
+			multiscale_.local_assembler().lame_params().mu_mat_ = mus;
 		}
 
 		std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> AssemblerUtils::get_stress_grad_multiply_mat_function(const std::string& assembler) const
@@ -938,6 +941,7 @@ namespace polyfem
 			mooney_rivlin_elasticity_.local_assembler().add_multimaterial(index, params);
 			multi_models_elasticity_.local_assembler().add_multimaterial(index, params);
 			multiscale_reduced_basis_.local_assembler().add_multimaterial(index, params);
+			multiscale_.local_assembler().add_multimaterial(index, params);
 			ogden_elasticity_.local_assembler().add_multimaterial(index, params);
 
 			damping_.local_assembler().add_multimaterial(index, params);

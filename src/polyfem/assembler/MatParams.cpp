@@ -306,12 +306,6 @@ namespace polyfem::assembler
 			lambda = lambda_mat_(el_id);
 			mu = mu_mat_(el_id);
 		}
-
-		if (has_density && el_id < density_mat_.size())
-		{
-			lambda *= pow(density(el_id), density_power_);
-			mu *= pow(density(el_id), density_power_);
-		}
 		
 		assert(!std::isnan(lambda));
 		assert(!std::isnan(mu));

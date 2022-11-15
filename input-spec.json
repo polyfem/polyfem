@@ -2319,6 +2319,20 @@
     {
         "pointer": "/materials/*",
         "type": "object",
+        "type_name": "Multiscale",
+        "required": [
+            "type",
+            "microstructure"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
         "type_name": "MultiscaleRB",
         "required": [
             "type",
@@ -2695,6 +2709,7 @@
             "SaintVenant",
             "NeoHookean",
             "MultiscaleRB",
+            "Multiscale",
             "MooneyRivlin",
             "Stokes",
             "NavierStokes",

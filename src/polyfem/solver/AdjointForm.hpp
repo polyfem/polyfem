@@ -69,13 +69,6 @@ namespace polyfem::solver
 			const SpatialIntegralType spatial_integral_type,
 			const std::string &transient_integral_type,
 			Eigen::MatrixXd &terms);
-		static void compute_topology_derivative_functional_term(
-			const State &state,
-			const Eigen::MatrixXd &solution,
-			const IntegrableFunctional &j,
-			const std::set<int> &interested_ids, // either body id or surface id
-			const SpatialIntegralType spatial_integral_type,
-			Eigen::VectorXd &term);
 		static void compute_shape_derivative_functional_term(
 			const State &state,
 			const Eigen::MatrixXd &solution,
@@ -84,11 +77,6 @@ namespace polyfem::solver
 			const SpatialIntegralType spatial_integral_type,
 			Eigen::VectorXd &term,
 			const int cur_time_step);
-		static void dJ_topology_static_adjoint_term(
-			const State &state,
-			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd &adjoint,
-			Eigen::VectorXd &one_form);
 		static void dJ_shape_static(
 			const State &state,
 			const Eigen::MatrixXd &sol,
