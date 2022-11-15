@@ -48,9 +48,10 @@ namespace polyfem
 			void homogenization(const Eigen::MatrixXd &def_grad, double &energy) const override;
 			void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress) const override;
 			void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const;
-			void brute_force_homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &fluctuated) const;
 
 			void homogenize_stiffness(const Eigen::MatrixXd &x, Eigen::MatrixXd &stiffness) const;
+
+			std::string name() const override { return "MultiscaleRB"; }
 
 			int n_reduced_basis = 5;
 		};

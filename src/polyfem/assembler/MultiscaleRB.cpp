@@ -529,27 +529,6 @@ namespace polyfem::assembler
 		energy = homogenize_energy(x);
 	}
 
-	void MultiscaleRB::brute_force_homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &fluctuated) const
-	{
-		{
-			double time;
-			POLYFEM_SCOPED_TIMER("coefficient newton", time);
-			Eigen::MatrixXd disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
-			// projection(disp_grad, x);
-			static int hess_idx = 0;
-			Eigen::MatrixXd x;
-			state->solve_homogenized_field(disp_grad, fluctuated, x); // , "hess_" + std::to_string(hess_idx) + ".mat");
-			fluctuated = x + generate_linear_field(*state, disp_grad);
-			hess_idx++;
-		}
-
-		// effective energy = average energy over unit cell
-		energy = homogenize_energy(fluctuated);
-
-		// effective stress = average stress over unit cell
-		homogenize_stress(fluctuated, stress);
-	}
-
 	void MultiscaleRB::sample_def_grads(const Eigen::VectorXd &sample_det, const Eigen::VectorXd &sample_amp, const int n_sample_dir, std::vector<Eigen::MatrixXd> &def_grads) const
 	{		
 		const int unit_sphere_dim = (size() == 2) ? 2 : 5;
@@ -593,27 +572,10 @@ namespace polyfem::assembler
 
 	void MultiscaleRB::add_multimaterial(const int index, const json &params)
 	{
-		assert(size_ == 2 || size_ == 3);
+		Multiscale::add_multimaterial(index, params);
 
-		if (params["type"] == "MultiscaleRB")
+		if (params.contains("type") && params["type"] == name())
 		{
-			json unit_cell_args = params["microstructure"];
-
-			{
-				state = std::make_shared<polyfem::State>(utils::get_n_threads(), true);
-				state->init(unit_cell_args, false, "", false);
-				state->load_mesh(false);
-				if (state->mesh == nullptr)
-					log_and_throw_error("No microstructure mesh found!");
-				state->stats.compute_mesh_stats(*state->mesh);
-				state->build_basis();
-				state->assemble_stiffness_mat(true);
-
-				RowVectorNd min, max;
-				state->mesh->bounding_box(min, max);
-				microstructure_volume = (max - min).prod();
-			}
-
 			if (params["load_reduced_basis"] != "")
 			{
 				const std::string path = params["load_reduced_basis"].get<std::string>();
@@ -778,7 +740,7 @@ namespace polyfem::assembler
 	{
 		energy_errors.setZero(def_grads.size());
 		stress_errors.setZero(def_grads.size());
-		Eigen::MatrixXd fluctuated;
+		// Eigen::MatrixXd fluctuated;
 		// utils::maybe_parallel_for(def_grads.size(), [&](int start, int end, int thread_id) {
 		// 	for (int i = start; i < end; i++)
 			for (int i = 0; i < def_grads.size(); i++)
@@ -789,7 +751,8 @@ namespace polyfem::assembler
 				Eigen::MatrixXd stress, stress_ref;
 
 				homogenization(F, val, stress);
-				brute_force_homogenization(F, val_ref, stress_ref, fluctuated);
+				// brute_force_homogenization(F, val_ref, stress_ref, fluctuated);
+				Multiscale::homogenization(F, val_ref, stress_ref);
 
 				if (val_ref != 0)
 				{

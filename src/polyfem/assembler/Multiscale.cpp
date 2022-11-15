@@ -151,7 +151,7 @@ namespace polyfem::assembler
 	{
 		assert(size_ == 2 || size_ == 3);
 
-		if (params["type"] == "Multiscale")
+		if (params.contains("type") && params["type"] == name())
 		{
 			json unit_cell_args = params["microstructure"];
 

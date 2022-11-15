@@ -66,6 +66,8 @@ namespace polyfem
 			double homogenize_energy(const Eigen::MatrixXd &x) const;
 			void homogenize_stress(const Eigen::MatrixXd &x, Eigen::MatrixXd &stress) const;
 
+			virtual std::string name() const { return "Multiscale"; }
+
 			std::shared_ptr<polyfem::State> state;
 			double microstructure_volume = 0;
 		};
