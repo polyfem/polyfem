@@ -53,10 +53,7 @@ namespace polyfem
 
 			void test_reduced_basis(const std::vector<Eigen::MatrixXd> &def_grads, Eigen::VectorXd &energy_errors, Eigen::VectorXd &stress_errors);
 
-		protected:
-			int size_ = -1;
-
-			LameParameters params_;
+			std::shared_ptr<State> get_microstructure_state() { return state; }
 
 			void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
 			
@@ -67,6 +64,11 @@ namespace polyfem
 			void homogenize_stress(const Eigen::MatrixXd &x, Eigen::MatrixXd &stress) const;
 
 			virtual std::string name() const { return "Multiscale"; }
+
+		protected:
+			int size_ = -1;
+
+			LameParameters params_;
 
 			std::shared_ptr<polyfem::State> state;
 			double microstructure_volume = 0;

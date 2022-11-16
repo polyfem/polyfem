@@ -807,6 +807,17 @@ namespace polyfem
 			multiscale_.local_assembler().lame_params().mu_mat_ = mus;
 		}
 
+		Multiscale& AssemblerUtils::get_microstructure_local_assembler(const std::string &assembler)
+		{
+			if (assembler == "Multiscale")
+				return multiscale_.local_assembler();
+			else if (assembler == "MultiscaleRB")
+				return multiscale_reduced_basis_.local_assembler();
+
+			log_and_throw_error("Unknown type of microstructure formulation!");
+			return multiscale_.local_assembler();
+		}
+
 		std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> AssemblerUtils::get_stress_grad_multiply_mat_function(const std::string& assembler) const
 		{
 			if (assembler == "Laplacian")

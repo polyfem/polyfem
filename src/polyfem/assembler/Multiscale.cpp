@@ -163,6 +163,7 @@ namespace polyfem::assembler
 					log_and_throw_error("No microstructure mesh found!");
 				state->stats.compute_mesh_stats(*state->mesh);
 				state->build_basis();
+				state->assemble_rhs();
 				state->assemble_stiffness_mat(true);
 
 				RowVectorNd min, max;

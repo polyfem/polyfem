@@ -33,6 +33,8 @@
 
 namespace polyfem
 {
+	class State;
+	
 	namespace assembler
 	{
 		// factory class that dispaces call to the different assemblers
@@ -228,6 +230,7 @@ namespace polyfem
 			const DampingParameters &damping_params() const { return damping_.local_assembler().damping_params(); }
 			void update_lame_params(const LameParameters &newParams);
 			void update_lame_params(const Eigen::MatrixXd& lambdas, const Eigen::MatrixXd& mus);
+			Multiscale& get_microstructure_local_assembler(const std::string &assembler);
 
 			std::function<double(const Eigen::MatrixXd &, const double, const double)> get_elastic_energy_function(const std::string& assembler) const;
 			std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> get_stress_grad_multiply_mat_function(const std::string& assembler) const;
