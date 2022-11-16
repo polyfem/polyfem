@@ -86,7 +86,7 @@ Eigen::VectorXd transform(const Eigen::VectorXd &p)
 	B << std::cos(rand3), -std::sin(rand3),
 		 std::sin(rand3), std::cos(rand3);
 
-	return B*A*p;
+	return A*p;
 }
 
 bool compare_matrix(
