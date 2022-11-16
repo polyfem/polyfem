@@ -1,14 +1,17 @@
 #include "ElasticParameter.hpp"
 
-#include <polyfem/mesh/Mesh.hpp>
-
 namespace polyfem
 {
 	ElasticParameter::ElasticParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args) : Parameter(states_ptr, args)
 	{
 		parameter_name_ = "material";
-		full_dim_ = states_ptr_[0]->bases.size() * 2;
+		full_dim_ = get_state().bases.size() * 2;
 		optimization_dim_ = full_dim_;
+
+		max_change_ = args["max_change"];
+		design_variable_name = args["restriction"];
+		if (design_variable_name == "")
+			design_variable_name = "lambda_mu";
 
 		if (args["mu_bound"].get<std::vector<double>>().size() == 0)
 		{
@@ -46,7 +49,7 @@ namespace polyfem
 		if (args["nu_bound"].get<std::vector<double>>().size() == 0)
 		{
 			min_nu = 0.0;
-			max_nu = std::numeric_limits<double>::max();
+			max_nu = get_state().mesh->is_volume() ? 0.5 : 1;
 		}
 		else
 		{
@@ -62,22 +65,22 @@ namespace polyfem
 			return false;
 		pre_solve(x1);
 
-		const auto &cur_lambdas = states_ptr_[0]->assembler.lame_params().lambda_mat_;
-		const auto &cur_mus = states_ptr_[0]->assembler.lame_params().mu_mat_;
+		const auto &lambdas = get_state().assembler.lame_params().lambda_mat_;
+		const auto &mus = get_state().assembler.lame_params().mu_mat_;
 
 		bool flag = true;
 
-		if (cur_lambdas.minCoeff() < min_lambda || cur_mus.minCoeff() < min_mu)
+		if (lambdas.minCoeff() < min_lambda || mus.minCoeff() < min_mu)
 			flag = false;
-		if (cur_lambdas.maxCoeff() > max_lambda || cur_mus.maxCoeff() > max_mu)
+		if (lambdas.maxCoeff() > max_lambda || mus.maxCoeff() > max_mu)
 			flag = false;
 
-		for (int e = 0; e < cur_lambdas.size(); e++)
+		for (int e = 0; e < lambdas.size(); e++)
 		{
-			const double E = cur_mus(e) * (3 * cur_lambdas(e) + 2 * cur_mus(e)) / (cur_lambdas(e) + cur_mus(e));
-			const double nu = cur_lambdas(e) / (2 * (cur_lambdas(e) + cur_mus(e)));
+			const double E = convert_to_E(get_state().mesh->is_volume(), lambdas(e), mus(e));
+			const double nu = convert_to_nu(get_state().mesh->is_volume(), lambdas(e), mus(e));
 
-			if (E < min_E || E > max_E || nu < min_nu || E > max_E)
+			if (E < min_E || E > max_E || nu < min_nu || nu > max_nu)
 				flag = false;
 		}
 
@@ -123,12 +126,13 @@ namespace polyfem
 	Eigen::VectorXd ElasticParameter::get_lower_bound(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd min(x.size());
-		// min.setConstant(std::numeric_limits<double>::min());
+		const int n_elem = get_state().bases.size();
+		min.setConstant(-std::numeric_limits<double>::max());
 		if (design_variable_name == "lambda_mu")
 		{
 			for (int i = 0; i < x.size(); i++)
 			{
-				if (i % 2 == 0)
+				if (i < n_elem)
 					min(i) = min_lambda;
 				else
 					min(i) = min_mu;
@@ -138,7 +142,7 @@ namespace polyfem
 		{
 			for (int i = 0; i < x.size(); i++)
 			{
-				if (i % 2 == 0)
+				if (i < n_elem)
 					min(i) = min_E;
 				else
 					min(i) = min_nu;
@@ -152,12 +156,13 @@ namespace polyfem
 	Eigen::VectorXd ElasticParameter::get_upper_bound(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd max(x.size());
+		const int n_elem = get_state().bases.size();
 		max.setConstant(std::numeric_limits<double>::max());
 		if (design_variable_name == "lambda_mu")
 		{
 			for (int i = 0; i < x.size(); i++)
 			{
-				if (i % 2 == 0)
+				if (i < n_elem)
 					max(i) = max_lambda;
 				else
 					max(i) = max_mu;
@@ -167,7 +172,7 @@ namespace polyfem
 		{
 			for (int i = 0; i < x.size(); i++)
 			{
-				if (i % 2 == 0)
+				if (i < n_elem)
 					max(i) = max_E;
 				else
 					max(i) = max_nu;

@@ -1472,7 +1472,7 @@ namespace polyfem::solver
 		}
     }
 
-    NodeTargetObjective::NodeTargetObjective(const State &state, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_): state_(state), active_nodes(active_nodes_), target_vertex_positions(target_vertex_positions_)
+    NodeTargetObjective::NodeTargetObjective(const State &state, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_): state_(state), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
     {
 
     }
