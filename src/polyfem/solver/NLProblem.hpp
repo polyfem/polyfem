@@ -49,12 +49,12 @@ namespace polyfem::solver
 		void use_full_size() { current_size_ = CurrentSize::FULL_SIZE; }
 		void use_reduced_size() { current_size_ = CurrentSize::REDUCED_SIZE; }
 
-		TVector full_to_reduced(const TVector &full) const;
-		TVector reduced_to_full(const TVector &reduced) const;
+		virtual TVector full_to_reduced(const TVector &full) const;
+		virtual TVector reduced_to_full(const TVector &reduced) const;
 
 		void set_apply_DBC(const TVector &x, const bool val);
 
-	private:
+	protected:
 		const std::vector<int> &boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> &local_boundary_;
 

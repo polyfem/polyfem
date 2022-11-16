@@ -1,5 +1,5 @@
 #include <polyfem/State.hpp>
-#include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/HomogenizationNLProblem.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
@@ -8,8 +8,10 @@
 #include <polyfem/solver/LBFGSSolver.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 
-#include <polyfem/solver/forms/ElasticHomogenizationForm.hpp>
-#include <polyfem/solver/forms/LeastSquareForm.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/ElasticForm.hpp>
+#include <polyfem/solver/forms/FrictionForm.hpp>
+// #include <polyfem/solver/forms/LeastSquareForm.hpp>
 
 #include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
@@ -121,7 +123,7 @@ namespace
     }
 }
 
-void State::solve_homogenized_field(const Eigen::MatrixXd &def_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_, const std::string &hessian_path)
+void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_, const std::string &hessian_path)
 {
     if (formulation() != "NeoHookean" && formulation() != "LinearElasticity")
     {
@@ -136,23 +138,63 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &def_grad, const Eigen
 
     std::vector<std::shared_ptr<Form>> forms;
 
-    std::shared_ptr<ElasticHomogenizationForm> homo_form = std::make_shared<ElasticHomogenizationForm>(
+    std::shared_ptr<ElasticForm> elastic_form = std::make_shared<ElasticForm>(
         n_bases, bases, geom_bases(),
         assembler, ass_vals_cache,
         formulation(),
         problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
         mesh->is_volume());
-    forms.push_back(homo_form);
+    forms.push_back(elastic_form);
 
-    std::shared_ptr<LeastSquareForm> least_square_form = std::make_shared<LeastSquareForm>(mass);
-    if (target.size() == sol_.size())
+    std::shared_ptr<ContactForm> contact_form = nullptr;
+    std::shared_ptr<FrictionForm> friction_form = nullptr;
+    if (args["contact"]["enabled"])
     {
-        // std::cout << (target - generate_linear_field(def_grad)).transpose() << "\n";
-        least_square_form->set_target(target - generate_linear_field(*this, def_grad));
-    }
-    forms.push_back(least_square_form);
 
-    std::shared_ptr<NLProblem> homo_problem = std::make_shared<NLProblem>(
+        const bool use_adaptive_barrier_stiffness = !args["solver"]["contact"]["barrier_stiffness"].is_number();
+
+        contact_form = std::make_shared<ContactForm>(
+            collision_mesh, boundary_nodes_pos,
+            args["contact"]["dhat"],
+            avg_mass,
+            use_adaptive_barrier_stiffness,
+            /*is_time_dependent=*/solve_data.time_integrator != nullptr,
+            args["solver"]["contact"]["CCD"]["broad_phase"],
+            args["solver"]["contact"]["CCD"]["tolerance"],
+            args["solver"]["contact"]["CCD"]["max_iterations"]);
+
+        if (use_adaptive_barrier_stiffness)
+        {
+            contact_form->set_weight(1);
+            logger().debug("Using adaptive barrier stiffness");
+        }
+        else
+        {
+            contact_form->set_weight(args["solver"]["contact"]["barrier_stiffness"]);
+            logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
+        }
+
+        forms.push_back(contact_form);
+
+        // ----------------------------------------------------------------
+
+        if (args["contact"]["friction_coefficient"].get<double>() != 0)
+        {
+            friction_form = std::make_shared<FrictionForm>(
+                collision_mesh,
+                boundary_nodes_pos,
+                args["contact"]["epsv"],
+                args["contact"]["friction_coefficient"],
+                args["contact"]["dhat"],
+                args["solver"]["contact"]["CCD"]["broad_phase"],
+                args.value("/time/dt"_json_pointer, 1.0), // dt=1.0 if static
+                *contact_form,
+                args["solver"]["contact"]["friction_iterations"]);
+            forms.push_back(friction_form);
+        }
+    }
+
+    std::shared_ptr<HomogenizationNLProblem> homo_problem = std::make_shared<HomogenizationNLProblem>(
         ndof,
         formulation(),
         boundary_nodes,
@@ -160,21 +202,12 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &def_grad, const Eigen
         n_boundary_samples(),
         *solve_data.rhs_assembler, *this, 0, forms);
     
-    homo_form->set_macro_field(generate_linear_field(*this, def_grad));
+    Eigen::VectorXd macro_field = generate_linear_field(*this, disp_grad);
+    homo_problem->set_macro_field(macro_field);
 
-    std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_homo_solver<NLProblem>(args["solver"]);
+    std::shared_ptr<cppoptlib::NonlinearSolver<HomogenizationNLProblem>> nl_solver = make_nl_homo_solver<HomogenizationNLProblem>(args["solver"]);
     
     Eigen::VectorXd tmp_sol = homo_problem->full_to_reduced(sol_);
-    if (target.size() == sol_.size())
-    {
-        homo_form->set_weight(0); least_square_form->set_weight(1e5);
-        homo_problem->init(tmp_sol);
-        nl_solver->minimize(*homo_problem, tmp_sol);
-        // std::cout << tmp_sol.transpose() << "\n";
-        // sol_ = homo_problem->reduced_to_full(tmp_sol);
-    }
-
-    homo_form->set_weight(1); least_square_form->set_weight(0);
     homo_problem->init(tmp_sol);
     nl_solver->minimize(*homo_problem, tmp_sol);
     sol_ = homo_problem->reduced_to_full(tmp_sol);

@@ -64,7 +64,6 @@ namespace polyfem
 		class ALForm;
 		class InertiaForm;
 		class ElasticForm;
-		class ElasticHomogenizationForm;
 		class LeastSquareForm;
 	} // namespace solver
 
@@ -87,9 +86,6 @@ namespace polyfem
 		std::shared_ptr<solver::FrictionForm> friction_form;
 		std::shared_ptr<solver::InertiaForm> inertia_form;
 		std::shared_ptr<solver::ElasticForm> elastic_form;
-
-		std::shared_ptr<solver::ElasticHomogenizationForm> elastic_homo_form;
-		// std::shared_ptr<solver::LeastSquareForm> least_square_form;
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 
@@ -733,7 +729,7 @@ private:
 		//-----------------homogenization--------------------
 		//---------------------------------------------------
 public:
-		void solve_homogenized_field(const Eigen::MatrixXd &def_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_, const std::string &hessian_path = "");
+		void solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_, const std::string &hessian_path = "");
 	};
 
 } // namespace polyfem

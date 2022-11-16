@@ -50,8 +50,6 @@ namespace polyfem
 		double max_mass = 1;
 		bool has_mass_constraint = false;
 
-		json topo_params;
-
 		// filter
 		bool has_filter;
 		Eigen::SparseMatrix<double> tt_radius_adjacency;
