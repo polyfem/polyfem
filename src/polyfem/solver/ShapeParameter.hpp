@@ -59,8 +59,7 @@ namespace polyfem
 		// boundary vertex ids
 		std::vector<int> get_boundary_nodes() const
 		{
-			assert(false);
-			return std::vector<int>();
+			return states_ptr_[0]->boundary_nodes;
 		}
 
 	private:
