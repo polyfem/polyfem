@@ -425,21 +425,20 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 	json in_args;
 	load_json(path + "node-trajectory.json", in_args);
 
-	State state;
-	state.init_logger("", spdlog::level::level_enum::err, false);
-	state.init(in_args, false);
-	state.load_mesh();
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
 
-	state.build_basis();
-
-	NodeTrajectoryFunctional j;
 	Eigen::MatrixXd targets(state.n_bases, state.mesh->dimension());
+	std::vector<int> actives;
 	for (int i = 0; i < targets.size(); i++)
 		targets(i) = (rand() % 10) / 10.;
-	j.set_target_vertex_positions(targets);
+	for (int i = 0; i < targets.rows(); i++)
+		actives.push_back(i);
 
-	solve_pde(state);
-	double functional_val = j.energy(state);
+	NodeTargetObjective func(state, actives, targets);
+
+	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+	std::shared_ptr<ElasticParameter> elastic_param = std::make_shared<ElasticParameter>(states_ptr, state.args["optimization"]["parameters"][0]);
 
 	auto velocity = [](const Eigen::MatrixXd &position) {
 		auto vel = position;
@@ -453,24 +452,7 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 	Eigen::MatrixXd velocity_discrete;
 	sample_field(state, velocity, velocity_discrete, 0);
 
-	Eigen::VectorXd one_form = j.gradient(state, "material");
-	double derivative = (one_form.array() * velocity_discrete.array()).sum();
-
-	const double t = 1e-5;
-
-	perturb_material(state.assembler, velocity_discrete * t);
-	solve_pde(state);
-	double next_functional_val = j.energy(state);
-
-	perturb_material(state.assembler, velocity_discrete * (-2 * t));
-	solve_pde(state);
-	double former_functional_val = j.energy(state);
-
-	double finite_difference = (next_functional_val - former_functional_val) / 2. / t;
-
-	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
-	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
+	verify_adjoint(func, state, elastic_param, "material", velocity_discrete, 1e-5, 1e-5);
 }
 
 TEST_CASE("damping-transient", "[adjoint_method]")

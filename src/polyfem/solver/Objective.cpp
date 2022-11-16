@@ -2,6 +2,7 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
+#include <polyfem/io/MatrixIO.hpp>
 
 using namespace polyfem::utils;
 
@@ -1447,4 +1448,73 @@ namespace polyfem::solver
 			}
 		}
 	}
+
+
+    NodeTargetObjective::NodeTargetObjective(const State &state, const json &args): state_(state)
+    {
+        std::string target_data_path = args["target_data_path"];
+		if (!std::filesystem::is_regular_file(target_data_path))
+		{
+			throw std::runtime_error("Marker path invalid!");
+		}
+		Eigen::MatrixXd tmp;
+		io::read_matrix(target_data_path, tmp);
+
+		// markers to nodes
+        Eigen::VectorXi nodes = tmp.col(0).cast<int>();
+		target_vertex_positions.setZero(nodes.size(), state_.mesh->dimension());
+		active_nodes.reserve(nodes.size());
+		for (int s = 0; s < nodes.size(); s++)
+		{
+			const int node_id = state_.in_node_to_node(nodes(s));
+			target_vertex_positions.row(s) = tmp.block(s, 1, 1, tmp.cols() - 1);
+			active_nodes.push_back(node_id);
+		}
+    }
+
+    NodeTargetObjective::NodeTargetObjective(const State &state, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_): state_(state), active_nodes(active_nodes_), target_vertex_positions(target_vertex_positions_)
+    {
+
+    }
+
+    double NodeTargetObjective::value() const
+    {
+        const int dim = state_.mesh->dimension();
+        double val = 0;
+        for (int v : active_nodes)
+        {
+            RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + state_.diff_cached[time_step_].u.block(v * dim, 0, dim, 1).transpose();
+            val += (cur_pos - target_vertex_positions.row(v)).squaredNorm();
+        }
+        return val;
+    }
+
+    Eigen::VectorXd NodeTargetObjective::compute_adjoint_rhs_step(const State& state) const
+    {
+        Eigen::VectorXd rhs;
+        rhs.setZero(state.diff_cached[0].u.size());
+
+        const int dim = state_.mesh->dimension();
+        
+        if (&state == &state_)
+        {
+            for (int v : active_nodes)
+            {
+                RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + state_.diff_cached[time_step_].u.block(v * dim, 0, dim, 1).transpose();
+                
+                rhs.segment(v * dim, dim) = 2 * (cur_pos - target_vertex_positions.row(v));
+            }
+        }
+        
+        return rhs;
+    }
+
+    Eigen::VectorXd NodeTargetObjective::compute_partial_gradient(const Parameter &param) const
+    {
+        if (param.name() == "shape")
+            log_and_throw_error("Not implemented!");
+        
+        return Eigen::VectorXd::Zero(param.full_dim());
+    }
+
 }

@@ -326,4 +326,22 @@ namespace polyfem::solver
 		std::shared_ptr<const State> target_state_;
 		std::map<int, int> e_to_ref_e_;
 	};
+
+	class NodeTargetObjective: public StaticObjective
+	{
+	public:
+		NodeTargetObjective(const State &state, const json &args);
+		NodeTargetObjective(const State &state, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_);
+		~NodeTargetObjective() = default;
+
+		double value() const override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const State& state) const override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param) const override;
+
+	protected:
+		const State& state_;
+
+		Eigen::MatrixXd target_vertex_positions;
+		std::vector<int> active_nodes;
+	};
 } // namespace polyfem::solver
