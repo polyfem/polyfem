@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 		Eigen::MatrixXd disp_grad = F - Eigen::MatrixXd::Identity(dim, dim);
 		Eigen::MatrixXd x;
 		micro_state->solve_homogenized_field(disp_grad, fluctuated, x);
-		fluctuated = x + generate_linear_field(*micro_state, disp_grad);
+		fluctuated = x;
 	}
 
 	// effective energy = average energy over unit cell

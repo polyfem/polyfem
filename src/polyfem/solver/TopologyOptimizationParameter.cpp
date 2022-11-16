@@ -13,7 +13,6 @@ namespace polyfem
             logger().error("Number of elements doesn't match with pattern periodicity!");
 
 		assert(args["type"] == "topology");
-        topo_params = args;
         if (args["bound"].get<std::vector<double>>().size() == 2)
         {
             min_density = args["bound"][0];
@@ -62,9 +61,9 @@ namespace polyfem
             }
         }
 
-        has_filter = !topo_params["filter"].is_null();
+        has_filter = !args["filter"].is_null();
         if (has_filter)
-            build_filter(topo_params["filter"]);
+            build_filter(args["filter"]);
 
         assert(is_step_valid(initial_guess(), initial_guess()));
         pre_solve(initial_guess());

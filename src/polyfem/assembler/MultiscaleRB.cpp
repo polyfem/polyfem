@@ -202,7 +202,7 @@ namespace polyfem::assembler
 				// solve fluctuation field
 				Eigen::MatrixXd grad = def_grads[idx] - Eigen::MatrixXd::Identity(size(), size());
 				state->solve_homogenized_field(grad, Eigen::MatrixXd(), tmp);
-				sols.col(idx) = tmp;
+				sols.col(idx) = tmp - generate_linear_field(*state, grad);
 			}
 		});
 

@@ -572,12 +572,19 @@
         ],
         "optional": [
             "restriction",
+            "max_change",
             "E_bound",
             "nu_bound",
             "lambda_bound",
             "mu_bound"
         ],
         "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/restriction",
+        "type": "string",
+        "default": "",
+        "doc": "TODO" 
     },
     {
         "pointer": "/parameters/*/E_bound",

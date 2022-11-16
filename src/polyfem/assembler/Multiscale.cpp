@@ -121,7 +121,7 @@ namespace polyfem::assembler
 			Eigen::MatrixXd disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd x;
 			state->solve_homogenized_field(disp_grad, fluctuated, x);
-			fluctuated = x + generate_linear_field(*state, disp_grad);
+			fluctuated = x;
 		}
 
 		// effective energy = average energy over unit cell
@@ -140,7 +140,7 @@ namespace polyfem::assembler
 			Eigen::MatrixXd disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd x;
 			state->solve_homogenized_field(disp_grad, fluctuated, x);
-			fluctuated = x + generate_linear_field(*state, disp_grad);
+			fluctuated = x;
 		}
 
 		// effective energy = average energy over unit cell
