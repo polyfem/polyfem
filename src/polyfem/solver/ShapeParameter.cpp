@@ -83,9 +83,15 @@ namespace polyfem
 			{
 				for (int i = 0; i < F.rows(); i++)
 				{
-					Eigen::RowVector3d e0; e0(2) = 0; e0.head(2) = V.row(F(i, 2)) - V.row(F(i, 1));
-					Eigen::RowVector3d e1; e1(2) = 0; e1.head(2) = V.row(F(i, 0)) - V.row(F(i, 2));
-					Eigen::RowVector3d e2; e2(2) = 0; e2.head(2) = V.row(F(i, 1)) - V.row(F(i, 0));
+					Eigen::RowVector3d e0;
+					e0(2) = 0;
+					e0.head(2) = V.row(F(i, 2)) - V.row(F(i, 1));
+					Eigen::RowVector3d e1;
+					e1(2) = 0;
+					e1.head(2) = V.row(F(i, 0)) - V.row(F(i, 2));
+					Eigen::RowVector3d e2;
+					e2(2) = 0;
+					e2.head(2) = V.row(F(i, 1)) - V.row(F(i, 0));
 
 					double l0 = e0.norm();
 					double l1 = e1.norm();
@@ -184,7 +190,7 @@ namespace polyfem
 		}
 	} // namespace
 
-	ShapeParameter::ShapeParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args) : Parameter(states_ptr, args)
+	ShapeParameter::ShapeParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args) : Parameter(states_ptr, args), shape_constraints_(args, full_dim_, optimization_dim_)
 	{
 		parameter_name_ = "shape";
 
@@ -238,41 +244,20 @@ namespace polyfem
 		if (free_dimension.size() < dim)
 			free_dimension.assign(dim, true);
 
-		// constraints on optimization
-		x_to_param = [this](const Eigen::VectorXd &x, const Eigen::MatrixXd &V_prev, Eigen::MatrixXd &V) {
-			V.setZero(x.size() / this->dim, this->dim);
-			for (int i = 0; i < V.rows(); i++)
-				for (int d = 0; d < this->dim; d++)
-					V(i, d) = x(i * this->dim + d);
+		optimization_dim_ = full_dim_ - (dim * fixed_nodes.size());
+	}
 
-			for (const auto &pair : this->tied_nodes)
-				for (int d = 0; d < this->dim; d++)
-					V(pair[1], d) = V(pair[0], d);
-		};
-		param_to_x = [this](Eigen::VectorXd &x, const Eigen::MatrixXd &V) {
-			x.setZero(V.rows() * this->dim, 1);
-			for (int i = 0; i < V.rows(); i++)
-				for (int d = 0; d < this->dim; d++)
-					x(i * this->dim + d) = V(i, d);
-		};
-		dparam_to_dx = [this](Eigen::VectorXd &grad_x, const Eigen::VectorXd &grad_v) {
-			grad_x = grad_v;
-			for (int b : this->fixed_nodes)
-				for (int d = 0; d < this->dim; d++)
-					grad_x(b * this->dim + d) = 0;
-
-			const int size = grad_v.size() / this->dim;
-			for (int d = 0; d < this->dim; d++)
-				if (!free_dimension[d])
-					for (int i = 0; i < size; i++)
-						grad_x(i * this->dim + d) = 0;
-
-			for (const auto &pair : this->tied_nodes)
-			{
-				grad_x(Eigen::seqN(pair[0] * this->dim, this->dim)) += grad_x(Eigen::seqN(pair[1] * this->dim, this->dim));
-				grad_x(Eigen::seqN(pair[1] * this->dim, this->dim)).setZero();
-			}
-		};
+	Eigen::MatrixXd ShapeParameter::map(const Eigen::VectorXd &x) const
+	{
+		Eigen::MatrixXd V_full;
+		shape_constraints_.reduced_to_full(x, V_rest, V_full);
+		return V_full;
+	}
+	Eigen::VectorXd ShapeParameter::map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const
+	{
+		Eigen::VectorXd dreduced;
+		shape_constraints_.dfull_to_dreduced(x, full_grad, dreduced);
+		return dreduced;
 	}
 
 	void ShapeParameter::update_constraint_set(const Eigen::MatrixXd &displaced_surface)
@@ -299,7 +284,7 @@ namespace polyfem
 			return true;
 
 		Eigen::MatrixXd V;
-		x_to_param(x, V_rest, V);
+		shape_constraints_.reduced_to_full(x, V_rest, V);
 
 		return !ipc::has_intersections(collision_mesh, collision_mesh.vertices(V));
 	}
@@ -310,8 +295,8 @@ namespace polyfem
 			return true;
 
 		Eigen::MatrixXd V0, V1;
-		x_to_param(x0, V_rest, V0);
-		x_to_param(x1, V_rest, V1);
+		shape_constraints_.reduced_to_full(x0, V_rest, V0);
+		shape_constraints_.reduced_to_full(x1, V_rest, V1);
 
 		// Skip CCD if the displacement is zero.
 		if ((V1 - V0).lpNorm<Eigen::Infinity>() == 0.0)
@@ -341,7 +326,7 @@ namespace polyfem
 	void ShapeParameter::smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x)
 	{
 		Eigen::MatrixXd V, new_V;
-		x_to_param(x, V_rest, V);
+		shape_constraints_.reduced_to_full(x, V_rest, V);
 
 		double rate = 2.;
 		bool good_enough = false;
@@ -353,7 +338,7 @@ namespace polyfem
 			logger().trace("Try SLIM with step size {}", rate);
 			Eigen::VectorXd tmp_x = (1. - rate) * x + rate * new_x;
 			Eigen::MatrixXd tmp_V;
-			x_to_param(tmp_x, V_rest, tmp_V);
+			shape_constraints_.reduced_to_full(tmp_x, V_rest, tmp_V);
 			for (int b = 0; b < states_ptr_[0]->boundary_gnodes.size(); ++b)
 				boundary_constraints.row(b) = tmp_V.block(states_ptr_[0]->boundary_gnodes[b], 0, 1, dim);
 
@@ -363,14 +348,14 @@ namespace polyfem
 		logger().debug("SLIM succeeds with step size {}", rate);
 
 		V_rest = new_V;
-		param_to_x(new_x, new_V);
+		shape_constraints_.full_to_reduced(new_V, new_x);
 		pre_solve(new_x);
 	}
 
 	bool ShapeParameter::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
 		Eigen::MatrixXd V1;
-		x_to_param(x1, V_rest, V1);
+		shape_constraints_.reduced_to_full(x1, V_rest, V1);
 		if (is_flipped(V1, elements))
 			return false;
 
@@ -383,8 +368,8 @@ namespace polyfem
 			return 1;
 
 		Eigen::MatrixXd V0, V1;
-		x_to_param(x0, V_rest, V0);
-		x_to_param(x1, V_rest, V1);
+		shape_constraints_.reduced_to_full(x0, V_rest, V0);
+		shape_constraints_.reduced_to_full(x1, V_rest, V1);
 
 		double max_step = 1;
 		assert(!is_flipped(V0, elements));
@@ -415,8 +400,8 @@ namespace polyfem
 			return;
 
 		Eigen::MatrixXd V0, V1;
-		x_to_param(x0, V_rest, V0);
-		x_to_param(x1, V_rest, V1);
+		shape_constraints_.reduced_to_full(x0, V_rest, V0);
+		shape_constraints_.reduced_to_full(x1, V_rest, V1);
 
 		ipc::construct_collision_candidates(
 			collision_mesh,
@@ -442,7 +427,7 @@ namespace polyfem
 		if (has_collision)
 		{
 			Eigen::MatrixXd V;
-			x_to_param(x0, V_rest, V);
+			shape_constraints_.reduced_to_full(x0, V_rest, V);
 			Eigen::MatrixXd displaced_surface = states_ptr_[0]->collision_mesh.vertices(V);
 
 			const double dist_sqr = ipc::compute_minimum_distance(collision_mesh, displaced_surface, _constraint_set);
@@ -455,7 +440,7 @@ namespace polyfem
 	bool ShapeParameter::pre_solve(const Eigen::VectorXd &newX)
 	{
 		Eigen::MatrixXd V;
-		x_to_param(newX, V_rest, V);
+		shape_constraints_.reduced_to_full(newX, V_rest, V);
 		mesh_flipped = is_flipped(V, elements);
 		if (mesh_flipped)
 		{
@@ -474,7 +459,7 @@ namespace polyfem
 			return;
 
 		Eigen::MatrixXd V;
-		x_to_param(newX, V_rest, V);
+		shape_constraints_.reduced_to_full(newX, V_rest, V);
 		update_constraint_set(collision_mesh.vertices(V));
 	}
 
@@ -679,7 +664,7 @@ namespace polyfem
 
 			state->get_vf(V_rest, elements);
 		}
-		param_to_x(x, V_rest);
+		shape_constraints_.full_to_reduced(V_rest, x);
 
 		Eigen::MatrixXd boundary_nodes_pos;
 		states_ptr_[0]->build_collision_mesh(boundary_nodes_pos, collision_mesh, states_ptr_[0]->n_geom_bases, gbases);

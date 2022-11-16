@@ -5,6 +5,7 @@
 
 #include <ipc/collisions/collision_constraint.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
+#include "constraints/ShapeConstraints.hpp"
 
 namespace polyfem
 {
@@ -23,6 +24,9 @@ namespace polyfem
 			return Eigen::VectorXd();
 		}
 
+		Eigen::MatrixXd map(const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const override;
+
 		void smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) override;
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		bool is_intersection_free(const Eigen::VectorXd &x) override;
@@ -40,19 +44,23 @@ namespace polyfem
 		void build_fixed_nodes();
 		void build_tied_nodes();
 
-		std::function<void(const Eigen::VectorXd &x, const Eigen::MatrixXd &position, Eigen::MatrixXd &V)> x_to_param;
-		std::function<void(Eigen::VectorXd &x, const Eigen::MatrixXd &V)> param_to_x;
-		std::function<void(Eigen::VectorXd &grad_x, const Eigen::VectorXd &grad_v)> dparam_to_dx;
-
 		std::map<int, std::vector<int>> optimization_boundary_to_node;
 
 		const json &get_shape_params() const { return shape_params; }
 
 		void get_full_mesh(Eigen::MatrixXd &V, Eigen::MatrixXi &F) const { assert(false); }
 		// N x 2, vertex id tuples specifying boundary edges
-		Eigen::MatrixXi get_boundary_edges() const { assert(false); return Eigen::MatrixXi(); }
+		Eigen::MatrixXi get_boundary_edges() const
+		{
+			assert(false);
+			return Eigen::MatrixXi();
+		}
 		// boundary vertex ids
-		std::vector<int> get_boundary_nodes() const { assert(false); return std::vector<int>(); }
+		std::vector<int> get_boundary_nodes() const
+		{
+			assert(false);
+			return std::vector<int>();
+		}
 
 	private:
 		int iter = 0;
@@ -90,6 +98,8 @@ namespace polyfem
 		ipc::FrictionConstraints _friction_constraint_set;
 		ipc::Candidates _candidates;
 		bool _use_cached_candidates = false;
+
+		ShapeConstraints shape_constraints_;
 
 		void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
 	};
