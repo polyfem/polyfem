@@ -16,6 +16,8 @@ namespace polyfem
 
 		virtual void update_state(std::shared_ptr<State> state, const Eigen::VectorXd &reduced) = 0;
 
+		virtual int get_optimization_dim() { return reduced_size_; }
+
 	protected:
 		int full_size_;
 		int reduced_size_;
