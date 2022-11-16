@@ -418,6 +418,18 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/parameters/*/remesh",
+        "type": "object",
+        "default": null,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/surface_selection",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
         "pointer": "/parameters/*/dimensions",
         "type": "list",
         "default": [],
@@ -607,6 +619,12 @@
         "pointer": "/parameters/*/mu_bound",
         "type": "list",
         "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/restriction",
+        "type": "string",
+        "default": "",
         "doc": "TODO"
     },
     {
@@ -953,10 +971,10 @@
         "type": "object",
         "type_name": "boundary_smoothing",
         "required": [
-            "shape_parameter",
             "type"
         ],
         "optional": [
+            "shape_parameter",
             "scale_invariant",
             "power",
             "weight",
@@ -1014,11 +1032,11 @@
         "type": "object",
         "type_name": "volume_constraint",
         "required": [
-            "shape_parameter",
             "type",
             "soft_bound"
         ],
         "optional": [
+            "shape_parameter",
             "weight",
             "volume_selection"
         ],
