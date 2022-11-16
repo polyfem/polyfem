@@ -594,7 +594,7 @@ namespace polyfem::solver
             return grad;
         }
         else
-            return 2 * (L.transpose() * (L * V));
+            return utils::flatten(2 * (L.transpose() * (L * V)));
     }
 
     void DeformedBoundarySmoothingObjective::init()
