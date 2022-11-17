@@ -190,7 +190,8 @@ namespace polyfem
 		}
 	} // namespace
 
-	ShapeParameter::ShapeParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args) : Parameter(states_ptr, args), shape_constraints_(args, full_dim_, optimization_dim_)
+	ShapeParameter::ShapeParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args)
+		: Parameter(states_ptr, args), shape_constraints_(args, states_ptr[0]->n_geom_bases, states_ptr_[0]->mesh->dimension())
 	{
 		parameter_name_ = "shape";
 
@@ -244,7 +245,8 @@ namespace polyfem
 		if (free_dimension.size() < dim)
 			free_dimension.assign(dim, true);
 
-		optimization_dim_ = full_dim_ - (dim * fixed_nodes.size());
+		shape_constraints_.set_fixed_nodes(fixed_nodes);
+		optimization_dim_ = shape_constraints_.get_optimization_dim();
 	}
 
 	Eigen::MatrixXd ShapeParameter::map(const Eigen::VectorXd &x) const

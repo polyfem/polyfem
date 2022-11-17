@@ -16,35 +16,40 @@ namespace polyfem
 			state->set_v(V_full);
 		}
 
-		ShapeConstraints(const json &constraint_params, int full_size, int reduced_size) : Constraints(constraint_params, full_size, reduced_size)
+		ShapeConstraints(const json &constraint_params, const int num_vertices, const int dim)
+			: Constraints(constraint_params, num_vertices * dim, 0), num_vertices_(num_vertices), dim_(dim)
 		{
-			if (constraint_params["type"] == "identity")
+			int reduced_size;
+			if (constraint_params["restriction"] == "none")
 			{
-				// full_to_reduced_diff_ = [this](const DiffMatrix &full) {
-				// 	DiffVector reduced(reduced_size_);
-				// 	for (int i = 0; i < reduced_size_; ++i)
-				// 		reduced(i) = full(i);
-				// 	return reduced;
-				// };
+				reduced_size_ = num_vertices * dim;
 				reduced_to_full_ = [this](const Eigen::VectorXd &reduced, const Eigen::MatrixXd &V_rest) {
-					Eigen::MatrixXd full(full_size_, 1);
-					for (int i = 0; i < full_size_; ++i)
-						full(i) = reduced(i);
-					return full;
+					Eigen::MatrixXd V(num_vertices_, dim_);
+					for (int i = 0; i < num_vertices_; i++)
+						for (int d = 0; d < dim_; d++)
+							V(i, d) = reduced(i * dim_ + d);
+					return V;
 				};
 				full_to_reduced_ = [this](const Eigen::MatrixXd &V_full) {
 					Eigen::VectorXd reduced(reduced_size_);
-					for (int i = 0; i < reduced_size_; ++i)
-						reduced(i) = V_full(i);
+					for (int i = 0; i < num_vertices_; i++)
+						for (int d = 0; d < dim_; d++)
+							reduced(i * dim_ + d) = V_full(i, d);
 					return reduced;
 				};
 				dfull_to_dreduced_ = [this](const Eigen::VectorXd &dV_full) {
-					Eigen::VectorXd dreduced(reduced_size_);
-					for (int i = 0; i < reduced_size_; ++i)
-						dreduced(i) = dV_full(i);
+					Eigen::VectorXd dreduced = dV_full;
+					for (int b : fixed_nodes_)
+						for (int d = 0; d < dim_; d++)
+							dreduced(b * dim_ + d) = 0;
 					return dreduced;
 				};
 			}
+		}
+
+		void set_fixed_nodes(const std::set<int> &fixed_nodes)
+		{
+			fixed_nodes_ = fixed_nodes;
 		}
 
 		void reduced_to_full(const Eigen::VectorXd &reduced, const Eigen::MatrixXd &V_rest, Eigen::MatrixXd &V_full) const
@@ -52,7 +57,7 @@ namespace polyfem
 			V_full = reduced_to_full_(reduced, V_rest);
 		}
 
-		void full_to_reduced(const Eigen::VectorXd &V_full, Eigen::VectorXd &reduced) const
+		void full_to_reduced(const Eigen::MatrixXd &V_full, Eigen::VectorXd &reduced) const
 		{
 			if (full_to_reduced_ != nullptr)
 			{
@@ -98,7 +103,9 @@ namespace polyfem
 		}
 
 	private:
-		const Eigen::MatrixXd V_rest;
+		std::set<int> fixed_nodes_;
+		const int num_vertices_;
+		const int dim_;
 
 		// Must define the inverse function with Eigen types, differentiability is not needed.
 		std::function<Eigen::MatrixXd(const Eigen::VectorXd &, const Eigen::MatrixXd &)> reduced_to_full_;

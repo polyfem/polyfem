@@ -581,12 +581,6 @@
         "doc": "TODO"
     },
     {
-        "pointer": "/parameters/*/restriction",
-        "type": "string",
-        "default": "",
-        "doc": "TODO" 
-    },
-    {
         "pointer": "/parameters/*/E_bound",
         "type": "list",
         "default": [],
@@ -631,7 +625,7 @@
     {
         "pointer": "/parameters/*/restriction",
         "type": "string",
-        "default": "",
+        "default": "none",
         "doc": "TODO"
     },
     {

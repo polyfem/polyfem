@@ -20,8 +20,9 @@ namespace polyfem
 
 		Eigen::VectorXd initial_guess() const override
 		{
-			assert(false);
-			return Eigen::VectorXd();
+			Eigen::VectorXd reduced;
+			shape_constraints_.full_to_reduced(V_rest, reduced);
+			return reduced;
 		}
 
 		Eigen::MatrixXd map(const Eigen::VectorXd &x) const override;
@@ -58,8 +59,7 @@ namespace polyfem
 		// boundary vertex ids
 		std::vector<int> get_boundary_nodes() const
 		{
-			assert(false);
-			return std::vector<int>();
+			return states_ptr_[0]->boundary_nodes;
 		}
 
 	private:
