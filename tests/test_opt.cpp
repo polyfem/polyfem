@@ -306,7 +306,8 @@ TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 	run_trajectory_opt("shape-trajectory-surface-opt");
 	auto energies = read_energy("shape-trajectory-surface-opt");
 
-	REQUIRE(energies[energies.size() - 1] == Approx(0.6 * energies[0]).epsilon(0.05));
+	REQUIRE(energies[0] == Approx(6.1658e-05).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(3.6194e-05).epsilon(1e-4));
 }
 
 TEST_CASE("shape-stress-opt", "[optimization]")
@@ -368,7 +369,7 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 	run_opt_new("shape-stress-opt-new");
 	auto energies = read_energy("shape-stress-opt-new");
 
-	REQUIRE(energies[0] == Approx(12.0721).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(11.5431).epsilon(1e-4));
+	REQUIRE(energies[0] == Approx(12.0735).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(11.5482).epsilon(1e-4));
 }
 #endif
