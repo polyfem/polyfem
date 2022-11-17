@@ -11,11 +11,30 @@
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
-// #include <polyfem/solver/forms/LeastSquareForm.hpp>
+#include <polyfem/solver/forms/LaggedRegForm.hpp>
 
 #include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
 #include <unsupported/Eigen/SparseExtra>
+
+#include <ipc/ipc.hpp>
+
+// map BroadPhaseMethod values to JSON as strings
+namespace ipc
+{
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		ipc::BroadPhaseMethod,
+		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
+		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}})
+} // namespace ipc
 
 namespace polyfem {
 
@@ -27,65 +46,6 @@ using namespace quadrature;
 
 namespace
 {
-    class LocalThreadMatStorage
-    {
-    public:
-        SpareMatrixCache cache;
-        ElementAssemblyValues vals;
-
-        LocalThreadMatStorage()
-        {
-        }
-
-        LocalThreadMatStorage(const int buffer_size, const int rows, const int cols)
-        {
-            init(buffer_size, rows, cols);
-        }
-
-        LocalThreadMatStorage(const int buffer_size, const SpareMatrixCache &c)
-        {
-            init(buffer_size, c);
-        }
-
-        void init(const int buffer_size, const int rows, const int cols)
-        {
-            // assert(rows == cols);
-            cache.reserve(buffer_size);
-            cache.init(rows, cols);
-        }
-
-        void init(const int buffer_size, const SpareMatrixCache &c)
-        {
-            cache.reserve(buffer_size);
-            cache.init(c);
-        }
-    };
-
-    class LocalThreadVecStorage
-    {
-    public:
-        Eigen::MatrixXd vec;
-        ElementAssemblyValues vals;
-
-        LocalThreadVecStorage(const int size)
-        {
-            vec.resize(size, 1);
-            vec.setZero();
-        }
-    };
-
-    class LocalThreadScalarStorage
-    {
-    public:
-        double val;
-        ElementAssemblyValues vals;
-
-        LocalThreadScalarStorage()
-        {
-            val = 0;
-        }
-    };
-    
 	template <typename ProblemType>
 	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_homo_solver(const json &solver_args)
 	{
@@ -145,6 +105,15 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eige
         problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
         mesh->is_volume());
     forms.push_back(elastic_form);
+
+    std::shared_ptr<LaggedRegForm> lag_form = nullptr;
+    if (target.size() == sol_.size())
+    {
+        lag_form = std::make_shared<LaggedRegForm>(1);
+        lag_form->init_lagging(target);
+        lag_form->disable();
+        forms.push_back(lag_form);
+    }
 
     std::shared_ptr<ContactForm> contact_form = nullptr;
     std::shared_ptr<FrictionForm> friction_form = nullptr;
@@ -207,8 +176,27 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eige
 
     std::shared_ptr<cppoptlib::NonlinearSolver<HomogenizationNLProblem>> nl_solver = make_nl_homo_solver<HomogenizationNLProblem>(args["solver"]);
     
-    Eigen::VectorXd tmp_sol = homo_problem->full_to_reduced(sol_);
-    homo_problem->init(tmp_sol);
+    Eigen::VectorXd tmp_sol;
+    if (lag_form)
+    {
+        for (auto form : forms)
+            form->set_weight(0); // do not disable so it detects nan
+        lag_form->set_weight(1);
+
+        tmp_sol = homo_problem->full_to_reduced(sol_);
+        homo_problem->init(homo_problem->reduced_to_full(tmp_sol));
+        nl_solver->minimize(*homo_problem, tmp_sol);
+        sol_ = homo_problem->reduced_to_full(tmp_sol) - macro_field;
+
+        for (auto form : forms)
+            form->set_weight(1);
+        lag_form->disable();
+    }
+    
+    tmp_sol = homo_problem->full_to_reduced(sol_);
+    // export_data(homo_problem->reduced_to_full(tmp_sol), Eigen::MatrixXd());
+    
+    homo_problem->init(homo_problem->reduced_to_full(tmp_sol));
     nl_solver->minimize(*homo_problem, tmp_sol);
     sol_ = homo_problem->reduced_to_full(tmp_sol);
 

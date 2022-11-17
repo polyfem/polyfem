@@ -64,7 +64,6 @@ namespace polyfem
 		class ALForm;
 		class InertiaForm;
 		class ElasticForm;
-		class LeastSquareForm;
 	} // namespace solver
 
 	namespace time_integrator
