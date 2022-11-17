@@ -16,8 +16,8 @@ namespace polyfem
 			state->set_v(V_full);
 		}
 
-		ShapeConstraints(const json &constraint_params, const int num_vertices, const int dim, const std::set<int> &fixed_nodes)
-			: Constraints(constraint_params, num_vertices * dim, 0), fixed_nodes_(fixed_nodes), num_vertices_(num_vertices), dim_(dim)
+		ShapeConstraints(const json &constraint_params, const int num_vertices, const int dim)
+			: Constraints(constraint_params, num_vertices * dim, 0), num_vertices_(num_vertices), dim_(dim)
 		{
 			int reduced_size;
 			if (constraint_params["restriction"] == "none")
@@ -45,6 +45,11 @@ namespace polyfem
 					return dreduced;
 				};
 			}
+		}
+
+		void set_fixed_nodes(const std::set<int> &fixed_nodes)
+		{
+			fixed_nodes_ = fixed_nodes;
 		}
 
 		void reduced_to_full(const Eigen::VectorXd &reduced, const Eigen::MatrixXd &V_rest, Eigen::MatrixXd &V_full) const
@@ -98,7 +103,7 @@ namespace polyfem
 		}
 
 	private:
-		const std::set<int> fixed_nodes_;
+		std::set<int> fixed_nodes_;
 		const int num_vertices_;
 		const int dim_;
 
