@@ -1008,7 +1008,10 @@
         "default": null,
         "type": "object",
         "optional": [
-            "t0"
+            "t0",
+            "rel_tol",
+            "abs_tol",
+            "n_ring_size"
         ],
         "doc": "Settings for adaptive remeshing"
     },
@@ -1017,6 +1020,24 @@
         "default": 0.0,
         "type": "float",
         "doc": "Time at which to start adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/rel_tol",
+        "default": 1e-3,
+        "type": "float",
+        "doc": "energy relative tolerance for adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/abs_tol",
+        "default": 1e-8,
+        "type": "float",
+        "doc": "energy absolute tolerance for adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/n_ring_size",
+        "default": 3,
+        "type": "int",
+        "doc": "size of n-ring for local relaxation"
     },
     {
         "pointer": "/space/advanced",

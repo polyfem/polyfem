@@ -104,6 +104,9 @@ namespace polyfem::mesh
 
 		assert(!state.mesh->is_volume());
 		WildRemeshing2D remeshing(state);
+		remeshing.energy_relative_tolerance = state.args["space"]["remesh"]["rel_tol"];
+		remeshing.energy_absolute_tolerance = state.args["space"]["remesh"]["abs_tol"];
+		remeshing.n_ring_size = state.args["space"]["remesh"]["n_ring_size"];
 		remeshing.init(rest_positions, positions, elements, projection_quantities, edge_to_boundary_id, body_ids);
 
 		const bool made_change = remeshing.execute(
