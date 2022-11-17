@@ -3729,9 +3729,9 @@
     {
         "pointer": "/optimization/parameters/*/restriction",
         "type": "string",
-        "default": "",
+        "default": "none",
         "options": [
-            "",
+            "none",
             "position",
             "velocity",
             "velocityXZ",
