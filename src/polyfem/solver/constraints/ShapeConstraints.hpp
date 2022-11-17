@@ -20,7 +20,7 @@ namespace polyfem
 			: Constraints(constraint_params, num_vertices * dim, 0), num_vertices_(num_vertices), dim_(dim)
 		{
 			int reduced_size;
-			if (constraint_params["restriction"] == "none")
+			if (!constraint_params.contains("restriction") || constraint_params["restriction"] == "none")
 			{
 				reduced_size_ = num_vertices * dim;
 				reduced_to_full_ = [this](const Eigen::VectorXd &reduced, const Eigen::MatrixXd &V_rest) {
