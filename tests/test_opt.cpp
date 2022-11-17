@@ -234,16 +234,14 @@ namespace
 		json state_args = opt_args["states"];
 		assert(state_args.is_array() && state_args.size() > 0);
 		std::vector<std::shared_ptr<State>> states(state_args.size());
-		std::map<int, int> id_to_state;
 		int i = 0;
 		for (const json &args : state_args)
 		{
 			json cur_args;
 			if (!load_json(resolve_output_path(root_folder, args["path"]), cur_args))
-				log_and_throw_error("Can't find json for State {}", args["id"]);
+				log_and_throw_error("Can't find json for State {}", i);
 
-			states[i] = create_state(cur_args);
-			id_to_state[args["id"].get<int>()] = i++;
+			states[i++] = create_state(cur_args);
 		}
 
 		// create parameters
@@ -256,7 +254,7 @@ namespace
 			std::vector<std::shared_ptr<State>> some_states;
 			for (int id : args["states"])
 			{
-				some_states.push_back(states[id_to_state[id]]);
+				some_states.push_back(states[id]);
 			}
 			parameters[i++] = Parameter::create(args, some_states);
 		}

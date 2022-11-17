@@ -152,15 +152,14 @@ int main(int argc, char **argv)
     json state_args = opt_args["states"];
     assert(state_args.is_array() && state_args.size() > 0);
     std::vector<std::shared_ptr<State>> states(state_args.size());
-    std::map<int, int> id_to_state;
     int i = 0;
     for (const json &args : state_args)
     {
         json cur_args;
         if (!load_json(args["path"], cur_args))
-            log_and_throw_error("Can't find json for State {}", args["id"]);
+            log_and_throw_error("Can't find json for State {}", i);
 
-        auto& state = states[i];
+        auto& state = states[i++];
         state = std::make_shared<State>(max_threads);
         state->init_logger(log_file, log_level, false);
         state->init(cur_args, false);
@@ -169,9 +168,6 @@ int main(int argc, char **argv)
         state->build_basis();
         state->assemble_rhs();
         state->assemble_stiffness_mat();
-        // Eigen::MatrixXd sol, pressure;
-        // state->solve_problem(sol, pressure);
-        id_to_state[args["id"].get<int>()] = i++;
     }
 
     // create parameters
@@ -184,7 +180,7 @@ int main(int argc, char **argv)
         std::vector<std::shared_ptr<State>> some_states;
         for (int id : args["states"])
         {
-            some_states.push_back(states[id_to_state[id]]);
+            some_states.push_back(states[id]);
         }
         parameters[i++] = Parameter::create(args, some_states);
     }

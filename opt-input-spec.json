@@ -5,11 +5,11 @@
         "required": [
             "parameters",
             "functionals",
-            "states",
-            "solver"
+            "states"
         ],
         "optional": [
-            "output"
+            "output",
+            "solver"
         ],
         "doc": "Root of the configuration file."
     },
@@ -22,14 +22,8 @@
         "pointer": "/states/*",
         "type": "object",
         "required": [
-            "id",
             "path"
         ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/states/*/id",
-        "type": "int",
         "doc": "TODO"
     },
     {
@@ -62,6 +56,7 @@
     {
         "pointer": "/solver",
         "type": "object",
+        "default": null,
         "optional": [
             "nonlinear",
             "contact"
@@ -326,6 +321,7 @@
         ],
         "optional": [
             "power",
+            "bound",
             "initial",
             "rand_seed",
             "filter",
@@ -651,6 +647,7 @@
         "type": "string",
         "options": [
             "trajectory",
+            "height",
             "position",
             "stress",
             "compliance",
@@ -695,7 +692,6 @@
         "type_name": "trajectory",
         "required": [
             "state",
-            "parameters",
             "type",
             "matching"
         ],
@@ -945,6 +941,22 @@
             "shape_parameter",
             "material_parameter",
             "topology_parameter",
+            "volume_selection",
+            "weight",
+            "transient_integral_type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "height",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "shape_parameter",
             "volume_selection",
             "weight",
             "transient_integral_type"
