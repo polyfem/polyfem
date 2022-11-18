@@ -407,7 +407,7 @@ namespace polyfem::solver
 	Eigen::MatrixXd SumObjective::compute_adjoint_rhs(const State &state) const
 	{
 		Eigen::MatrixXd rhs;
-		rhs.setZero(state.ndof(), state.problem->is_time_dependent() ? state.args["time"]["time_steps"].get<int>() : 1);
+		rhs.setZero(state.ndof(), state.problem->is_time_dependent() ? state.args["time"]["time_steps"].get<int>() + 1 : 1);
 		int i = 0;
 		for (const auto &obj : objs_)
 		{
