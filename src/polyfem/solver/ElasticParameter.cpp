@@ -2,15 +2,17 @@
 
 namespace polyfem
 {
-	ElasticParameter::ElasticParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args) : Parameter(states_ptr, args)
+	ElasticParameter::ElasticParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args) : Parameter(states_ptr, args), material_constraints_(args, *(states_ptr[0]))
 	{
 		parameter_name_ = "material";
 		full_dim_ = get_state().bases.size() * 2;
-		optimization_dim_ = full_dim_;
+		optimization_dim_ = material_constraints_.get_optimization_dim();
 
 		max_change_ = args["max_change"];
 		design_variable_name = args["restriction"];
-		if (design_variable_name == "")
+		if (design_variable_name.find("E_nu") != std::string::npos)
+			design_variable_name = "E_nu";
+		else
 			design_variable_name = "lambda_mu";
 
 		if (args["mu_bound"].get<std::vector<double>>().size() == 0)
@@ -56,7 +58,6 @@ namespace polyfem
 			min_nu = args["nu_bound"][0];
 			max_nu = args["nu_bound"][1];
 		}
-
 	}
 
 	bool ElasticParameter::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
@@ -70,18 +71,23 @@ namespace polyfem
 
 		bool flag = true;
 
-		if (lambdas.minCoeff() < min_lambda || mus.minCoeff() < min_mu)
-			flag = false;
-		if (lambdas.maxCoeff() > max_lambda || mus.maxCoeff() > max_mu)
-			flag = false;
-
-		for (int e = 0; e < lambdas.size(); e++)
+		if (design_variable_name == "lambda_mu")
 		{
-			const double E = convert_to_E(get_state().mesh->is_volume(), lambdas(e), mus(e));
-			const double nu = convert_to_nu(get_state().mesh->is_volume(), lambdas(e), mus(e));
-
-			if (E < min_E || E > max_E || nu < min_nu || nu > max_nu)
+			if (lambdas.minCoeff() < min_lambda || mus.minCoeff() < min_mu)
 				flag = false;
+			if (lambdas.maxCoeff() > max_lambda || mus.maxCoeff() > max_mu)
+				flag = false;
+		}
+		else
+		{
+			for (int e = 0; e < lambdas.size(); e++)
+			{
+				const double E = convert_to_E(get_state().mesh->is_volume(), lambdas(e), mus(e));
+				const double nu = convert_to_nu(get_state().mesh->is_volume(), lambdas(e), mus(e));
+
+				if (E < min_E || E > max_E || nu < min_nu || nu > max_nu)
+					flag = false;
+			}
 		}
 
 		pre_solve(x0);
@@ -91,12 +97,7 @@ namespace polyfem
 
 	Eigen::VectorXd ElasticParameter::initial_guess() const
 	{
-		// TODO: apply constraints
-		const auto &state = get_state();
-		Eigen::VectorXd x(state.bases.size() * 2);
-		x.head(state.bases.size()) = state.assembler.lame_params().lambda_mat_;
-		x.tail(state.bases.size()) = state.assembler.lame_params().mu_mat_;
-		return x;
+		return material_constraints_.x_from_state();
 	}
 
 	Eigen::MatrixXd ElasticParameter::map(const Eigen::VectorXd &x) const
@@ -107,18 +108,13 @@ namespace polyfem
 
 	Eigen::VectorXd ElasticParameter::map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const
 	{
-		return full_grad;
+		return material_constraints_.grad_full_to_grad_reduced(full_grad, x);
 	}
 
 	bool ElasticParameter::pre_solve(const Eigen::VectorXd &newX)
 	{
-		// TODO: apply constraints
-		Eigen::VectorXd lambda = newX.head(newX.size() / 2);
-		Eigen::VectorXd mu     = newX.tail(newX.size() / 2);
-        for (auto &state : states_ptr_)
-        {
-            state->assembler.update_lame_params(lambda, mu);
-        }
+		for (auto &state : states_ptr_)
+			material_constraints_.update_state(state, newX);
 
 		return true;
 	}
