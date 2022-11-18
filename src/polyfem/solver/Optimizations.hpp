@@ -53,9 +53,9 @@ namespace polyfem::solver
 		}
 	}
 
-	std::shared_ptr<AdjointNLProblem> make_nl_problem(json &opt_args);
+	std::shared_ptr<AdjointNLProblem> make_nl_problem(json &opt_args, spdlog::level::level_enum log_level);
 
-	std::shared_ptr<State> create_state(const json &args, const int max_threads = 32);
+	std::shared_ptr<State> create_state(const json &args, spdlog::level::level_enum log_level = spdlog::level::level_enum::err, const int max_threads = 32);
 
 	void solve_pde(State &state);
 

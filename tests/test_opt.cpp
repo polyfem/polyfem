@@ -135,7 +135,7 @@ namespace
 		for (auto &state_arg : opt_args["states"])
 			state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
 
-		auto nl_problem = make_nl_problem(opt_args);
+		auto nl_problem = make_nl_problem(opt_args, spdlog::level::level_enum::err);
 
 		Eigen::VectorXd x = nl_problem->initial_guess();
 
