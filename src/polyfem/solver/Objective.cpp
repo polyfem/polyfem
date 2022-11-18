@@ -114,7 +114,7 @@ namespace polyfem::solver
 				Eigen::MatrixXd targets;
 				targets.setZero(nodes.size(), dim);
 				std::vector<int> active_nodes;
-				
+
 				if (matching == "exact-marker")
 				{
 					const State &state_reference = *(states[args["target_state"]]);
@@ -288,13 +288,13 @@ namespace polyfem::solver
 		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 	}
 
-	double SpatialIntegralObjective::value() const
+	double SpatialIntegralObjective::value()
 	{
 		assert(time_step_ < state_.diff_cached.size());
 		return AdjointForm::integrate_objective(state_, get_integral_functional(), state_.diff_cached[time_step_].u, interested_ids_, spatial_integral_type_, time_step_);
 	}
 
-	Eigen::VectorXd SpatialIntegralObjective::compute_adjoint_rhs_step(const State &state) const
+	Eigen::VectorXd SpatialIntegralObjective::compute_adjoint_rhs_step(const State &state)
 	{
 		if (&state != &state_)
 			return Eigen::VectorXd::Zero(state.ndof());
@@ -307,7 +307,7 @@ namespace polyfem::solver
 		return rhs;
 	}
 
-	Eigen::VectorXd SpatialIntegralObjective::compute_partial_gradient(const Parameter &param) const
+	Eigen::VectorXd SpatialIntegralObjective::compute_partial_gradient(const Parameter &param)
 	{
 		Eigen::VectorXd term;
 		term.setZero(param.full_dim());
@@ -327,7 +327,7 @@ namespace polyfem::solver
 		out_sqrt_ = has_integral_sqrt;
 	}
 
-	IntegrableFunctional StressObjective::get_integral_functional() const
+	IntegrableFunctional StressObjective::get_integral_functional()
 	{
 		IntegrableFunctional j;
 
@@ -397,7 +397,7 @@ namespace polyfem::solver
 		return j;
 	}
 
-	double StressObjective::value() const
+	double StressObjective::value()
 	{
 		double val = SpatialIntegralObjective::value();
 		if (out_sqrt_)
@@ -406,7 +406,7 @@ namespace polyfem::solver
 			return val;
 	}
 
-	Eigen::VectorXd StressObjective::compute_adjoint_rhs_step(const State &state) const
+	Eigen::VectorXd StressObjective::compute_adjoint_rhs_step(const State &state)
 	{
 		Eigen::VectorXd rhs = SpatialIntegralObjective::compute_adjoint_rhs_step(state);
 
@@ -421,7 +421,7 @@ namespace polyfem::solver
 			return rhs;
 	}
 
-	Eigen::VectorXd StressObjective::compute_partial_gradient(const Parameter &param) const
+	Eigen::VectorXd StressObjective::compute_partial_gradient(const Parameter &param)
 	{
 		Eigen::VectorXd term;
 		term.setZero(param.full_dim());
@@ -446,7 +446,7 @@ namespace polyfem::solver
 			return term;
 	}
 
-	Eigen::MatrixXd SumObjective::compute_adjoint_rhs(const State &state) const
+	Eigen::MatrixXd SumObjective::compute_adjoint_rhs(const State &state)
 	{
 		Eigen::MatrixXd rhs;
 		rhs.setZero(state.ndof(), state.problem->is_time_dependent() ? state.args["time"]["time_steps"].get<int>() + 1 : 1);
@@ -458,7 +458,7 @@ namespace polyfem::solver
 		return rhs;
 	}
 
-	Eigen::VectorXd SumObjective::compute_partial_gradient(const Parameter &param) const
+	Eigen::VectorXd SumObjective::compute_partial_gradient(const Parameter &param)
 	{
 		Eigen::VectorXd grad;
 		grad.setZero(param.full_dim());
@@ -470,7 +470,7 @@ namespace polyfem::solver
 		return grad;
 	}
 
-	double SumObjective::value() const
+	double SumObjective::value()
 	{
 		double val = 0;
 		int i = 0;
@@ -569,7 +569,7 @@ namespace polyfem::solver
 		init();
 	}
 
-	double BoundarySmoothingObjective::value() const
+	double BoundarySmoothingObjective::value()
 	{
 		const auto &state_ = shape_param_->get_state();
 		Eigen::MatrixXd V;
@@ -608,12 +608,12 @@ namespace polyfem::solver
 		return val;
 	}
 
-	Eigen::MatrixXd BoundarySmoothingObjective::compute_adjoint_rhs(const State &state) const
+	Eigen::MatrixXd BoundarySmoothingObjective::compute_adjoint_rhs(const State &state)
 	{
 		return Eigen::VectorXd::Zero(state.ndof());
 	}
 
-	Eigen::VectorXd BoundarySmoothingObjective::compute_partial_gradient(const Parameter &param) const
+	Eigen::VectorXd BoundarySmoothingObjective::compute_partial_gradient(const Parameter &param)
 	{
 		if (&param != shape_param_.get())
 			return Eigen::VectorXd::Zero(param.full_dim());
@@ -732,7 +732,7 @@ namespace polyfem::solver
 		init();
 	}
 
-	double DeformedBoundarySmoothingObjective::value() const
+	double DeformedBoundarySmoothingObjective::value()
 	{
 		Eigen::MatrixXd V;
 		Eigen::MatrixXi F;
@@ -766,7 +766,7 @@ namespace polyfem::solver
 		return val;
 	}
 
-	Eigen::MatrixXd DeformedBoundarySmoothingObjective::compute_adjoint_rhs(const State &state) const
+	Eigen::MatrixXd DeformedBoundarySmoothingObjective::compute_adjoint_rhs(const State &state)
 	{
 		if (&state != &state_)
 			return Eigen::MatrixXd::Zero(state.diff_cached[0].u.size(), 1);
@@ -819,7 +819,7 @@ namespace polyfem::solver
 		return state.down_sampling_mat.transpose() * grad;
 	}
 
-	Eigen::VectorXd DeformedBoundarySmoothingObjective::compute_partial_gradient(const Parameter &param) const
+	Eigen::VectorXd DeformedBoundarySmoothingObjective::compute_partial_gradient(const Parameter &param)
 	{
 		if (&param != shape_param_.get())
 			return Eigen::VectorXd::Zero(param.full_dim());
@@ -882,7 +882,7 @@ namespace polyfem::solver
 		weights_.setOnes(shape_param_->get_state().bases.size());
 	}
 
-	double VolumeObjective::value() const
+	double VolumeObjective::value()
 	{
 		assert(weights_.size() == shape_param_->get_state().bases.size());
 
@@ -898,12 +898,12 @@ namespace polyfem::solver
 		return AdjointForm::integrate_objective(state, j, Eigen::MatrixXd::Zero(state.ndof(), 1), interested_ids_, AdjointForm::SpatialIntegralType::VOLUME, 0);
 	}
 
-	Eigen::MatrixXd VolumeObjective::compute_adjoint_rhs(const State &state) const
+	Eigen::MatrixXd VolumeObjective::compute_adjoint_rhs(const State &state)
 	{
 		return Eigen::VectorXd::Zero(state.ndof()); // Important: it's state, not state_
 	}
 
-	Eigen::VectorXd VolumeObjective::compute_partial_gradient(const Parameter &param) const
+	Eigen::VectorXd VolumeObjective::compute_partial_gradient(const Parameter &param)
 	{
 		if (&param == shape_param_.get())
 		{
@@ -935,7 +935,7 @@ namespace polyfem::solver
 		obj = std::make_shared<VolumeObjective>(shape_param, args);
 	}
 
-	double VolumePaneltyObjective::value() const
+	double VolumePaneltyObjective::value()
 	{
 		double vol = obj->value();
 
@@ -946,11 +946,11 @@ namespace polyfem::solver
 		else
 			return 0;
 	}
-	Eigen::MatrixXd VolumePaneltyObjective::compute_adjoint_rhs(const State &state) const
+	Eigen::MatrixXd VolumePaneltyObjective::compute_adjoint_rhs(const State &state)
 	{
 		return Eigen::MatrixXd::Zero(state.diff_cached[0].u.size(), 1);
 	}
-	Eigen::VectorXd VolumePaneltyObjective::compute_partial_gradient(const Parameter &param) const
+	Eigen::VectorXd VolumePaneltyObjective::compute_partial_gradient(const Parameter &param)
 	{
 		double vol = obj->value();
 		Eigen::VectorXd grad = obj->compute_partial_gradient(param);
@@ -967,7 +967,7 @@ namespace polyfem::solver
 	{
 	}
 
-	IntegrableFunctional PositionObjective::get_integral_functional() const
+	IntegrableFunctional PositionObjective::get_integral_functional()
 	{
 		IntegrableFunctional j;
 
@@ -988,7 +988,7 @@ namespace polyfem::solver
 		return j;
 	}
 
-	Eigen::MatrixXd StaticObjective::compute_adjoint_rhs(const State &state) const
+	Eigen::MatrixXd StaticObjective::compute_adjoint_rhs(const State &state)
 	{
 		Eigen::MatrixXd term(state.ndof(), state.diff_cached.size());
 		term.col(time_step_) = compute_adjoint_rhs_step(state);
@@ -1026,11 +1026,11 @@ namespace polyfem::solver
 			obj->set_time_step(time_step);
 	}
 
-	double BarycenterTargetObjective::value() const
+	double BarycenterTargetObjective::value()
 	{
 		return (get_barycenter() - get_target()).squaredNorm();
 	}
-	Eigen::VectorXd BarycenterTargetObjective::compute_partial_gradient(const Parameter &param) const
+	Eigen::VectorXd BarycenterTargetObjective::compute_partial_gradient(const Parameter &param)
 	{
 		Eigen::VectorXd term;
 		term.setZero(param.full_dim());
@@ -1053,7 +1053,7 @@ namespace polyfem::solver
 
 		return term;
 	}
-	Eigen::VectorXd BarycenterTargetObjective::compute_adjoint_rhs_step(const State &state) const
+	Eigen::VectorXd BarycenterTargetObjective::compute_adjoint_rhs_step(const State &state)
 	{
 		Eigen::VectorXd term;
 		term.setZero(state.ndof());
@@ -1132,7 +1132,7 @@ namespace polyfem::solver
 		return weights;
 	}
 
-	double TransientObjective::value() const
+	double TransientObjective::value()
 	{
 		double value = 0;
 		std::vector<double> weights = get_transient_quadrature_weights();
@@ -1144,7 +1144,7 @@ namespace polyfem::solver
 		return value;
 	}
 
-	Eigen::MatrixXd TransientObjective::compute_adjoint_rhs(const State &state) const
+	Eigen::MatrixXd TransientObjective::compute_adjoint_rhs(const State &state)
 	{
 		Eigen::MatrixXd terms;
 		terms.setZero(state.ndof(), time_steps_ + 1);
@@ -1159,7 +1159,7 @@ namespace polyfem::solver
 		return terms;
 	}
 
-	Eigen::VectorXd TransientObjective::compute_partial_gradient(const Parameter &param) const
+	Eigen::VectorXd TransientObjective::compute_partial_gradient(const Parameter &param)
 	{
 		Eigen::VectorXd term;
 		term.setZero(param.full_dim());
@@ -1180,7 +1180,7 @@ namespace polyfem::solver
 		formulation_ = state.formulation();
 	}
 
-	IntegrableFunctional ComplianceObjective::get_integral_functional() const
+	IntegrableFunctional ComplianceObjective::get_integral_functional()
 	{
 		IntegrableFunctional j;
 
@@ -1218,7 +1218,7 @@ namespace polyfem::solver
 		return j;
 	}
 
-	Eigen::VectorXd ComplianceObjective::compute_partial_gradient(const Parameter &param) const
+	Eigen::VectorXd ComplianceObjective::compute_partial_gradient(const Parameter &param)
 	{
 		Eigen::VectorXd term;
 		term.setZero(param.full_dim());
@@ -1262,7 +1262,7 @@ namespace polyfem::solver
 		return term;
 	}
 
-	IntegrableFunctional StrainObjective::get_integral_functional() const
+	IntegrableFunctional StrainObjective::get_integral_functional()
 	{
 		IntegrableFunctional j;
 
@@ -1323,7 +1323,7 @@ namespace polyfem::solver
 			log_and_throw_error("Failed to find target vertices in objective!");
 	}
 
-	double NaiveNegativePoissonObjective::value() const
+	double NaiveNegativePoissonObjective::value()
 	{
 		const int dim = state1_.mesh->dimension();
 		const double length1 = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
@@ -1334,7 +1334,7 @@ namespace polyfem::solver
 		return 1. / length1;
 	}
 
-	Eigen::MatrixXd NaiveNegativePoissonObjective::compute_adjoint_rhs(const State &state) const
+	Eigen::MatrixXd NaiveNegativePoissonObjective::compute_adjoint_rhs(const State &state)
 	{
 		Eigen::MatrixXd rhs;
 		rhs.setZero(state.diff_cached[0].u.size(), 1);
@@ -1352,7 +1352,7 @@ namespace polyfem::solver
 		return rhs;
 	}
 
-	Eigen::VectorXd NaiveNegativePoissonObjective::compute_partial_gradient(const Parameter &param) const
+	Eigen::VectorXd NaiveNegativePoissonObjective::compute_partial_gradient(const Parameter &param)
 	{
 		if (param.name() == "shape")
 			log_and_throw_error("Not implemented!");
@@ -1381,7 +1381,7 @@ namespace polyfem::solver
 			log_and_throw_error("Failed to find target vertices in objective!");
 	}
 
-	double TargetLengthObjective::value() const
+	double TargetLengthObjective::value()
 	{
 		const int dim = state1_.mesh->dimension();
 		const double length1 = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
@@ -1389,7 +1389,7 @@ namespace polyfem::solver
 		return pow(length1 - target_length, 2);
 	}
 
-	Eigen::MatrixXd TargetLengthObjective::compute_adjoint_rhs(const State &state) const
+	Eigen::MatrixXd TargetLengthObjective::compute_adjoint_rhs(const State &state)
 	{
 		Eigen::MatrixXd rhs;
 		rhs.setZero(state.diff_cached[0].u.size(), 1);
@@ -1407,7 +1407,7 @@ namespace polyfem::solver
 		return rhs;
 	}
 
-	Eigen::VectorXd TargetLengthObjective::compute_partial_gradient(const Parameter &param) const
+	Eigen::VectorXd TargetLengthObjective::compute_partial_gradient(const Parameter &param)
 	{
 		if (param.name() == "shape")
 			log_and_throw_error("Not implemented!");
@@ -1415,7 +1415,7 @@ namespace polyfem::solver
 		return Eigen::VectorXd::Zero(param.full_dim());
 	}
 
-	IntegrableFunctional TargetObjective::get_integral_functional() const
+	IntegrableFunctional TargetObjective::get_integral_functional()
 	{
 		assert(target_state_);
 		assert(target_state_->diff_cached.size() > 0);
@@ -1548,7 +1548,7 @@ namespace polyfem::solver
 	{
 	}
 
-	double NodeTargetObjective::value() const
+	double NodeTargetObjective::value()
 	{
 		const int dim = state_.mesh->dimension();
 		double val = 0;
@@ -1561,7 +1561,7 @@ namespace polyfem::solver
 		return val;
 	}
 
-	Eigen::VectorXd NodeTargetObjective::compute_adjoint_rhs_step(const State &state) const
+	Eigen::VectorXd NodeTargetObjective::compute_adjoint_rhs_step(const State &state)
 	{
 		Eigen::VectorXd rhs;
 		rhs.setZero(state.diff_cached[0].u.size());
@@ -1582,12 +1582,165 @@ namespace polyfem::solver
 		return rhs;
 	}
 
-	Eigen::VectorXd NodeTargetObjective::compute_partial_gradient(const Parameter &param) const
+	Eigen::VectorXd NodeTargetObjective::compute_partial_gradient(const Parameter &param)
 	{
 		if (param.name() == "shape")
 			log_and_throw_error("Not implemented!");
 
 		return Eigen::VectorXd::Zero(param.full_dim());
+	}
+
+	void SDFTargetObjective::compute_distance(const Eigen::MatrixXd &point, double &distance, Eigen::MatrixXd &grad)
+	{
+		int nearest;
+		double t_optimal, distance_to_start, distance_to_end;
+		CompositeSplineParam::find_nearest_spline(point, control_points_, tangents_, nearest, t_optimal, distance, distance_to_start, distance_to_end);
+
+		// If no nearest with t \in [0, 1] found, check the endpoints and assign one
+		if (nearest == -1)
+		{
+			if (distance_to_start < distance_to_end)
+			{
+				nearest = 0;
+				t_optimal = 0;
+				distance = distance_to_start;
+			}
+			else
+			{
+
+				nearest = control_points_.rows() - 2;
+				t_optimal = 1;
+				distance = distance_to_end;
+			}
+		}
+		distance = pow(distance, 1. / 2.);
+
+		grad.setZero(3, 1);
+		if (distance < 1e-8)
+			return;
+
+		CompositeSplineParam::gradient(point, control_points_, tangents_, nearest, t_optimal, distance, grad);
+		assert(abs(1 - grad.col(0).segment(0, 2).norm()) < 1e-6);
+	}
+
+	void SDFTargetObjective::bicubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad)
+	{
+		Eigen::MatrixXd corner_val(4, 1);
+		Eigen::MatrixXd corner_grad(4, 3);
+		for (int i = 0; i < 4; ++i)
+		{
+			corner_val(i) = implicit_function_distance.at(keys[i]);
+			corner_grad.row(i) = implicit_function_grad.at(keys[i]).transpose();
+		}
+		Eigen::MatrixXd x(16, 1);
+		x << corner_val(0), corner_val(1), corner_val(2), corner_val(3),
+			delta_(0) * corner_grad(0, 0), delta_(0) * corner_grad(1, 0), delta_(0) * corner_grad(2, 0), delta_(0) * corner_grad(3, 0),
+			delta_(1) * corner_grad(0, 1), delta_(1) * corner_grad(1, 1), delta_(1) * corner_grad(2, 1), delta_(1) * corner_grad(3, 1),
+			delta_(0) * delta_(1) * corner_grad(0, 2), delta_(0) * delta_(1) * corner_grad(1, 2), delta_(0) * delta_(1) * corner_grad(2, 2), delta_(0) * delta_(1) * corner_grad(3, 2);
+
+		Eigen::MatrixXd coeffs = bicubic_mat * x;
+
+		auto bar_x = [&corner_point](double x_) { return (x_ - corner_point(0, 0)) / (corner_point(1, 0) - corner_point(0, 0)); };
+		auto bar_y = [&corner_point](double y_) { return (y_ - corner_point(0, 1)) / (corner_point(2, 1) - corner_point(0, 1)); };
+
+		val = 0;
+		grad.setZero(2, 1);
+		for (int i = 0; i < 4; ++i)
+			for (int j = 0; j < 4; ++j)
+			{
+				val += coeffs(i + j * 4) * pow(bar_x(point(0)), i) * pow(bar_y(point(1)), j);
+				grad(0) += i == 0 ? 0 : (coeffs(i + j * 4) * i * pow(bar_x(point(0)), i - 1) * pow(bar_y(point(1)), j));
+				grad(1) += j == 0 ? 0 : coeffs(i + j * 4) * pow(bar_x(point(0)), i) * j * pow(bar_y(point(1)), j - 1);
+			}
+
+		grad(0) /= (corner_point(1, 0) - corner_point(0, 0));
+		grad(1) /= (corner_point(2, 1) - corner_point(0, 1));
+
+		assert(!std::isnan(grad(0)) && !std::isnan(grad(0)));
+	}
+
+	void SDFTargetObjective::evaluate(const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad)
+	{
+		grad.setZero(dim, 1);
+		int num_points = dim == 2 ? 4 : 8;
+		Eigen::MatrixXd A(num_points, num_points);
+		Eigen::VectorXd b(num_points);
+		if (dim == 2)
+		{
+			Eigen::MatrixXi bin(dim, 1);
+			for (int k = 0; k < dim; ++k)
+				bin(k, 0) = (int)std::floor(point(k) / delta_(k));
+			Eigen::MatrixXd keys(4, dim);
+			keys << bin(0), bin(1),
+				bin(0) + 1, bin(1),
+				bin(0), bin(1) + 1,
+				bin(0) + 1, bin(1) + 1;
+			std::vector<std::string> keys_string;
+			keys_string.push_back(std::to_string(bin(0)) + "," + std::to_string(bin(1)));
+			keys_string.push_back(std::to_string(bin(0) + 1) + "," + std::to_string(bin(1)));
+			keys_string.push_back(std::to_string(bin(0)) + "," + std::to_string(bin(1) + 1));
+			keys_string.push_back(std::to_string(bin(0) + 1) + "," + std::to_string(bin(1) + 1));
+			Eigen::MatrixXd corner_point(4, 2);
+			for (int i = 0; i < 4; ++i)
+			{
+				Eigen::MatrixXd clamped_point = keys.row(i).cwiseProduct(delta_).transpose();
+				corner_point.row(i) = clamped_point.transpose();
+				if (implicit_function_distance.count(keys_string[i]) == 0)
+				{
+					std::unique_lock lock(mutex_);
+					compute_distance(clamped_point, implicit_function_distance[keys_string[i]], implicit_function_grad[keys_string[i]]);
+				}
+			}
+			{
+				std::shared_lock lock(mutex_);
+				bicubic_interpolation(corner_point, keys_string, point, val, grad);
+			}
+		}
+		else
+		{
+			logger().error("Don't yet support 3D SDF.");
+		}
+
+		for (int i = 0; i < dim; ++i)
+			if (std::isnan(grad(i)))
+			{
+				logger().error("Nan found in gradient computation.");
+				break;
+			}
+	}
+
+	IntegrableFunctional SDFTargetObjective::get_integral_functional()
+	{
+		IntegrableFunctional j;
+		auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(u.rows(), 1);
+
+			for (int q = 0; q < u.rows(); q++)
+			{
+				double distance;
+				Eigen::MatrixXd unused_grad;
+				evaluate(u.row(q) + pts.row(q), distance, unused_grad);
+				val(q) = pow(distance, 2);
+			}
+		};
+
+		auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(u.rows(), u.cols());
+
+			for (int q = 0; q < u.rows(); q++)
+			{
+				double distance;
+				Eigen::MatrixXd grad;
+				evaluate(u.row(q) + pts.row(q), distance, grad);
+				val.row(q) = 2 * distance * grad.transpose();
+			}
+		};
+
+		j.set_j(j_func);
+		j.set_dj_du(djdu_func);
+		j.set_dj_dx(djdu_func);
+
+		return j;
 	}
 
 } // namespace polyfem::solver
