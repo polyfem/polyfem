@@ -696,7 +696,6 @@
             "matching"
         ],
         "optional": [
-            "path",
             "target_position",
             "control_points",
             "tangents",
@@ -705,7 +704,9 @@
             "weight",
             "volume_selection",
             "surface_selection",
-            "reference_cached_body_ids"
+            "reference_cached_body_ids",
+            "target_state",
+            "shape_parameter"
         ],
         "doc": "TODO"
     },
@@ -743,9 +744,9 @@
         "doc": "TODO"
     },
     {
-        "pointer": "/functionals/*/path",
-        "type": "file",
-        "default": "",
+        "pointer": "/functionals/*/target_state",
+        "type": "int",
+        "default": -1,
         "doc": "TODO"
     },
     {

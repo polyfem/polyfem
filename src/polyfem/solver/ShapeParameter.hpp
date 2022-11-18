@@ -21,7 +21,7 @@ namespace polyfem
 		Eigen::VectorXd initial_guess() const override
 		{
 			Eigen::VectorXd reduced;
-			shape_constraints_.full_to_reduced(V_rest, reduced);
+			shape_constraints_->full_to_reduced(V_rest, reduced);
 			return reduced;
 		}
 
@@ -99,7 +99,7 @@ namespace polyfem
 		ipc::Candidates _candidates;
 		bool _use_cached_candidates = false;
 
-		ShapeConstraints shape_constraints_;
+		std::unique_ptr<ShapeConstraints> shape_constraints_;
 
 		void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
 	};

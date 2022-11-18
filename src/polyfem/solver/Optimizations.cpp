@@ -11,11 +11,14 @@
 #include <polyfem/utils/CompositeSplineParam.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
 
+#include <polyfem/utils/MaybeParallelFor.hpp>
+
 #include <map>
 
 namespace polyfem::solver
 {
-	namespace {
+	namespace
+	{
 		bool load_json(const std::string &json_file, json &out)
 		{
 			std::ifstream file(json_file);
@@ -60,7 +63,7 @@ namespace polyfem::solver
 		}
 
 		double matrix_dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
-	}
+	} // namespace
 
 	std::shared_ptr<OptimizationProblem> setup_initial_condition_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
@@ -796,7 +799,7 @@ namespace polyfem::solver
 
 		return shape_problem;
 	}
-	
+
 	std::shared_ptr<OptimizationProblem> setup_control_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 		const auto &opt_params = state.args["optimization"];
@@ -979,6 +982,14 @@ namespace polyfem::solver
 			parameters[i++] = Parameter::create(args, some_states);
 		}
 
+		utils::maybe_parallel_for(states.size(), [&](int start, int end, int thread_id) {
+			for (int i = start; i < end; i++)
+			{
+				auto &state = states[i];
+				solve_pde(*state);
+			}
+		});
+
 		// create objectives
 		json obj_args = opt_args["functionals"];
 		assert(obj_args.is_array() && obj_args.size() > 0);
@@ -997,4 +1008,4 @@ namespace polyfem::solver
 
 		return nl_problem;
 	}
-} // namespace polyfem
+} // namespace polyfem::solver

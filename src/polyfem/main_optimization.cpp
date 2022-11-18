@@ -33,7 +33,7 @@ bool load_json(const std::string &json_file, json &out)
 
 	file >> out;
 
-    out["root_path"] = json_file;
+	out["root_path"] = json_file;
 
 	return true;
 }
@@ -69,18 +69,17 @@ int main(int argc, char **argv)
 
 	CLI11_PARSE(command_line, argc, argv);
 
-    json opt_args;
-    if (!load_json(json_file, opt_args))
-        log_and_throw_error("Failed to load optimization json file!");
-    
-    auto nl_problem = make_nl_problem(opt_args);
+	json opt_args;
+	if (!load_json(json_file, opt_args))
+		log_and_throw_error("Failed to load optimization json file!");
 
-    std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nlsolver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+	auto nl_problem = make_nl_problem(opt_args);
 
-    Eigen::VectorXd x = nl_problem->initial_guess();
-    nl_problem->solve_pde();
+	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nlsolver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 
-    nlsolver->minimize(*nl_problem, x);
+	Eigen::VectorXd x = nl_problem->initial_guess();
+
+	nlsolver->minimize(*nl_problem, x);
 
 	return EXIT_SUCCESS;
 }
