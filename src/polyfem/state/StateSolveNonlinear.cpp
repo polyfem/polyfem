@@ -197,7 +197,7 @@ namespace polyfem
 		// 	n_bases, bases, geom_bases(), assembler, ass_vals_cache, formulation(),
 		// 	mesh->dimension(), n_pressure_bases, boundary_nodes, local_boundary,
 		// 	local_neumann_boundary, n_boundary_samples(), rhs, t, sol, args, mass,
-		// 	obstacle, collision_mesh, boundary_nodes_pos, avg_mass);
+		// 	obstacle, collision_mesh, avg_mass);
 
 		assert(solve_data.rhs_assembler != nullptr);
 
@@ -268,7 +268,7 @@ namespace polyfem
 			const bool use_adaptive_barrier_stiffness = !args["solver"]["contact"]["barrier_stiffness"].is_number();
 
 			solve_data.contact_form = std::make_shared<ContactForm>(
-				collision_mesh, boundary_nodes_pos,
+				collision_mesh,
 				args["contact"]["dhat"],
 				avg_mass,
 				use_adaptive_barrier_stiffness,
@@ -296,7 +296,6 @@ namespace polyfem
 			{
 				solve_data.friction_form = std::make_shared<FrictionForm>(
 					collision_mesh,
-					boundary_nodes_pos,
 					args["contact"]["epsv"],
 					args["contact"]["friction_coefficient"],
 					args["contact"]["dhat"],

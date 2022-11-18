@@ -173,7 +173,6 @@ TEST_CASE("contact form derivatives", "[form][form_derivatives][contact_form]")
 
 	ContactForm form(
 		state_ptr->collision_mesh,
-		state_ptr->boundary_nodes_pos,
 		dhat,
 		state_ptr->avg_mass,
 		use_adaptive_barrier_stiffness,
@@ -213,17 +212,12 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 	const int ccd_max_iterations = static_cast<int>(1e6);
 
 	const ContactForm contact_form(
-		state_ptr->collision_mesh,
-		state_ptr->boundary_nodes_pos,
-		dhat,
-		state_ptr->avg_mass,
-		use_adaptive_barrier_stiffness,
+		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, use_adaptive_barrier_stiffness,
 		is_time_dependent, broad_phase_method, ccd_tolerance, ccd_max_iterations);
 
 	FrictionForm form(
-		state_ptr->collision_mesh,
-		state_ptr->boundary_nodes_pos,
-		epsv, mu, dhat, broad_phase_method, dt, contact_form, /*n_lagging_iters=*/-1);
+		state_ptr->collision_mesh, epsv, mu, dhat, broad_phase_method, dt,
+		contact_form, /*n_lagging_iters=*/-1);
 
 	test_form(form, *state_ptr);
 }

@@ -451,10 +451,6 @@ namespace polyfem
 		//-----------------IPC-------------------------------
 		//---------------------------------------------------
 
-		// boundary mesh used for collision
-		/// @brief Boundary_nodes_pos contains the total number of nodes, the internal ones are zero.
-		/// For high-order fem the faces are triangulated this is currently supported only for tri and tet meshes.
-		Eigen::MatrixXd boundary_nodes_pos;
 		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
 
@@ -466,7 +462,8 @@ namespace polyfem
 		/// @return if vertex is obstalce
 		bool is_obstacle_vertex(const size_t vi) const
 		{
-			return vi >= boundary_nodes_pos.rows() - obstacle.n_vertices();
+			// The obstalce vertices are at the bottom of the collision mesh vertices
+			return vi >= collision_mesh.full_num_vertices() - obstacle.n_vertices();
 		}
 
 		/// @brief does the simulation has contact

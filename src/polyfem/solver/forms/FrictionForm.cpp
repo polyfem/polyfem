@@ -6,17 +6,16 @@
 
 namespace polyfem::solver
 {
-	FrictionForm::FrictionForm(const ipc::CollisionMesh &collision_mesh,
-							   const Eigen::MatrixXd &boundary_nodes_pos,
-							   const double epsv,
-							   const double mu,
-							   const double dhat,
-							   const ipc::BroadPhaseMethod broad_phase_method,
-							   const double dt,
-							   const ContactForm &contact_form,
-							   const int n_lagging_iters)
+	FrictionForm::FrictionForm(
+		const ipc::CollisionMesh &collision_mesh,
+		const double epsv,
+		const double mu,
+		const double dhat,
+		const ipc::BroadPhaseMethod broad_phase_method,
+		const double dt,
+		const ContactForm &contact_form,
+		const int n_lagging_iters)
 		: collision_mesh_(collision_mesh),
-		  boundary_nodes_pos_(boundary_nodes_pos),
 		  epsv_(epsv),
 		  mu_(mu),
 		  dt_(dt),
@@ -30,7 +29,7 @@ namespace polyfem::solver
 
 	Eigen::MatrixXd FrictionForm::compute_displaced_surface(const Eigen::VectorXd &x) const
 	{
-		return collision_mesh_.displace_vertices(utils::unflatten(x, boundary_nodes_pos_.cols()));
+		return collision_mesh_.displace_vertices(utils::unflatten(x, collision_mesh_.dim()));
 	}
 
 	double FrictionForm::value_unweighted(const Eigen::VectorXd &x) const

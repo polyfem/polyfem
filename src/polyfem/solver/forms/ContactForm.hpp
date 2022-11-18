@@ -15,15 +15,15 @@ namespace polyfem::solver
 	{
 	public:
 		/// @brief Construct a new Contact Form object
-		/// @param state Reference to the simulation state
+		/// @param collision_mesh Reference to the collision mesh
 		/// @param dhat Barrier activation distance
+		/// @param avg_mass Average mass of the mesh
 		/// @param use_adaptive_barrier_stiffness If true, use an adaptive barrier stiffness
 		/// @param is_time_dependent Is the simulation time dependent?
 		/// @param broad_phase_method Broad phase method to use for distance and CCD evaluations
 		/// @param ccd_tolerance Continuous collision detection tolerance
 		/// @param ccd_max_iterations Continuous collision detection maximum iterations
 		ContactForm(const ipc::CollisionMesh &collision_mesh,
-					const Eigen::MatrixXd &boundary_nodes_pos,
 					const double dhat,
 					const double avg_mass,
 					const bool use_adaptive_barrier_stiffness,
@@ -97,7 +97,6 @@ namespace polyfem::solver
 
 	private:
 		const ipc::CollisionMesh &collision_mesh_;
-		const Eigen::MatrixXd &boundary_nodes_pos_;
 
 		const double dhat_; ///< Barrier activation distance
 

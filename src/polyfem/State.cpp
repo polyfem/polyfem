@@ -983,18 +983,20 @@ namespace polyfem
 
 	void State::build_collision_mesh()
 	{
+		Eigen::MatrixXd node_positions;
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
-		io::OutGeometryData::extract_boundary_mesh(*mesh, n_bases, bases, total_local_boundary,
-												   boundary_nodes_pos, boundary_edges, boundary_triangles);
+		io::OutGeometryData::extract_boundary_mesh(
+			*mesh, n_bases, bases, total_local_boundary,
+			node_positions, boundary_edges, boundary_triangles);
 
 		Eigen::VectorXi codimensional_nodes;
 		if (obstacle.n_vertices() > 0)
 		{
-			// boundary_nodes_pos uses n_bases that already contains the obstacle
-			const int n_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
+			// node_positions uses n_bases that already contains the obstacle
+			const int n_v = node_positions.rows() - obstacle.n_vertices();
 
 			if (obstacle.v().size())
-				boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
+				node_positions.bottomRows(obstacle.v().rows()) = obstacle.v();
 
 			if (obstacle.codim_v().size())
 			{
@@ -1015,13 +1017,13 @@ namespace polyfem
 			}
 		}
 
-		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(boundary_nodes_pos.rows(), boundary_edges);
+		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(node_positions.rows(), boundary_edges);
 		for (int i = 0; i < codimensional_nodes.size(); i++)
 		{
 			is_on_surface[codimensional_nodes[i]] = true;
 		}
 
-		collision_mesh = ipc::CollisionMesh(is_on_surface, boundary_nodes_pos, boundary_edges, boundary_triangles);
+		collision_mesh = ipc::CollisionMesh(is_on_surface, node_positions, boundary_edges, boundary_triangles);
 
 		collision_mesh.can_collide = [&](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles

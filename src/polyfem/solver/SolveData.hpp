@@ -58,7 +58,6 @@ namespace polyfem::solver
 			const StiffnessMatrix &mass,
 			const polyfem::mesh::Obstacle &obstacle,
 			const ipc::CollisionMesh &collision_mesh,
-			const Eigen::MatrixXd &boundary_nodes_pos,
 			const double avg_mass);
 
 		/// @brief update the barrier stiffness for the forms

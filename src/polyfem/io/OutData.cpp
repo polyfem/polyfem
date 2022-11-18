@@ -68,7 +68,7 @@ namespace polyfem::io
 		const int n_bases,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<mesh::LocalBoundary> &total_local_boundary,
-		Eigen::MatrixXd &boundary_nodes_pos,
+		Eigen::MatrixXd &node_positions,
 		Eigen::MatrixXi &boundary_edges,
 		Eigen::MatrixXi &boundary_triangles)
 	{
@@ -76,8 +76,8 @@ namespace polyfem::io
 
 		if (mesh.is_volume())
 		{
-			boundary_nodes_pos.resize(n_bases, 3);
-			boundary_nodes_pos.setZero();
+			node_positions.resize(n_bases, 3);
+			node_positions.setZero();
 			const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
 
 			std::vector<std::tuple<int, int, int>> tris;
@@ -128,7 +128,7 @@ namespace polyfem::io
 							continue;
 
 						int gindex = glob.front().index;
-						boundary_nodes_pos.row(gindex) = glob.front().node;
+						node_positions.row(gindex) = glob.front().node;
 						loc_nodes.push_back(gindex);
 					}
 
@@ -199,8 +199,8 @@ namespace polyfem::io
 		}
 		else
 		{
-			boundary_nodes_pos.resize(n_bases, 2);
-			boundary_nodes_pos.setZero();
+			node_positions.resize(n_bases, 2);
+			node_positions.setZero();
 			const Mesh2D &mesh2d = dynamic_cast<const Mesh2D &>(mesh);
 
 			std::vector<std::pair<int, int>> edges;
@@ -226,7 +226,7 @@ namespace polyfem::io
 							continue;
 
 						int gindex = glob.front().index;
-						boundary_nodes_pos.row(gindex) << glob.front().node(0), glob.front().node(1);
+						node_positions.row(gindex) << glob.front().node(0), glob.front().node(1);
 
 						if (prev_node >= 0)
 							edges.emplace_back(prev_node, gindex);
@@ -1545,7 +1545,6 @@ namespace polyfem::io
 		const std::string &formulation = state.formulation();
 		const mesh::Mesh &mesh = *state.mesh;
 		const ipc::CollisionMesh &collision_mesh = state.collision_mesh;
-		const Eigen::MatrixXd &boundary_nodes_pos = state.boundary_nodes_pos;
 		const double dhat = state.args["contact"]["dhat"];
 		const double friction_coefficient = state.args["contact"]["friction_coefficient"];
 		const double epsv = state.args["contact"]["epsv"];

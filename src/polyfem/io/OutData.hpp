@@ -79,7 +79,7 @@ namespace polyfem::io
 		/// @param[in] n_bases number of bases
 		/// @param[in] bases bases
 		/// @param[in] total_local_boundary mesh boundaries
-		/// @param[out] boundary_nodes_pos nodes positions
+		/// @param[out] node_positions nodes positions
 		/// @param[out] boundary_edges edges
 		/// @param[out] boundary_triangles triangles
 		static void extract_boundary_mesh(
@@ -87,7 +87,7 @@ namespace polyfem::io
 			const int n_bases,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<mesh::LocalBoundary> &total_local_boundary,
-			Eigen::MatrixXd &boundary_nodes_pos,
+			Eigen::MatrixXd &node_positions,
 			Eigen::MatrixXi &boundary_edges,
 			Eigen::MatrixXi &boundary_triangles);
 

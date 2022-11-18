@@ -37,7 +37,6 @@ namespace polyfem::solver
 		const StiffnessMatrix &mass,
 		const polyfem::mesh::Obstacle &obstacle,
 		const ipc::CollisionMesh &collision_mesh,
-		const Eigen::MatrixXd &boundary_nodes_pos,
 		const double avg_mass)
 	{
 		assert(rhs_assembler != nullptr);
@@ -104,7 +103,7 @@ namespace polyfem::solver
 			const bool use_adaptive_barrier_stiffness = !args["solver"]["contact"]["barrier_stiffness"].is_number();
 
 			contact_form = std::make_shared<ContactForm>(
-				collision_mesh, boundary_nodes_pos, args["contact"]["dhat"],
+				collision_mesh, args["contact"]["dhat"],
 				avg_mass, use_adaptive_barrier_stiffness, is_time_dependent,
 				args["solver"]["contact"]["CCD"]["broad_phase"],
 				args["solver"]["contact"]["CCD"]["tolerance"],
@@ -128,7 +127,7 @@ namespace polyfem::solver
 			if (args["contact"]["friction_coefficient"].get<double>() != 0)
 			{
 				friction_form = std::make_shared<FrictionForm>(
-					collision_mesh, boundary_nodes_pos, args["contact"]["epsv"],
+					collision_mesh, args["contact"]["epsv"],
 					args["contact"]["friction_coefficient"], args["contact"]["dhat"],
 					args["solver"]["contact"]["CCD"]["broad_phase"],
 					is_time_dependent ? dt : 1.0, *contact_form,
