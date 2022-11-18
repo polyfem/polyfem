@@ -426,6 +426,12 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/parameters/*/volume_selection",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
         "pointer": "/parameters/*/dimensions",
         "type": "list",
         "default": [],
@@ -572,7 +578,8 @@
             "E_bound",
             "nu_bound",
             "lambda_bound",
-            "mu_bound"
+            "mu_bound",
+            "volume_selection"
         ],
         "doc": "TODO"
     },
