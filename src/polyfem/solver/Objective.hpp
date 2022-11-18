@@ -316,6 +316,8 @@ namespace polyfem::solver
 		TargetObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args): SpatialIntegralObjective(state, shape_param, args) 
 		{
 			spatial_integral_type_ = AdjointForm::SpatialIntegralType::SURFACE;
+			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
+			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 		}
 		~TargetObjective() = default;
 
