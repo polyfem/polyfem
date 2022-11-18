@@ -95,7 +95,32 @@ namespace polyfem::solver
 			}
 			else if (matching == "sdf")
 			{
-				assert(false);
+				Eigen::MatrixXd control_points, tangents, delta;
+				control_points.setZero(args["control_points"].size(), args["control_points"][0].size());
+				for (int i = 0; i < args["control_points"].size(); ++i)
+				{
+					for (int j = 0; j < args["control_points"][i].size(); ++j)
+						control_points(i, j) = args["control_points"][i][j].get<double>();
+				}
+				tangents.setZero(args["tangents"].size(), args["tangents"][0].size());
+				for (int i = 0; i < args["tangents"].size(); ++i)
+					for (int j = 0; j < args["tangents"][i].size(); ++j)
+						tangents(i, j) = args["tangents"][i][j].get<double>();
+
+				delta.setZero(args["delta"].size(), 1);
+				for (int i = 0; i < delta.size(); ++i)
+					delta(i) = args["delta"][i].get<double>();
+
+				std::shared_ptr<ShapeParameter> shape_param;
+				if (args["shape_parameter"] >= 0)
+				{
+					shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+					if (!shape_param->contains_state(state))
+						logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
+				}
+
+				auto target_obj = std::make_shared<SDFTargetObjective>(state, shape_param, args);
+				target_obj->set_spline_target(control_points, tangents, delta);
 			}
 			else if (matching == "marker-data" || matching == "exact-marker")
 			{
