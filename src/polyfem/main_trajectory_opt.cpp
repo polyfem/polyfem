@@ -17,6 +17,7 @@
 #include <time.h>
 
 using namespace polyfem;
+using namespace solver;
 using namespace polysolve;
 using namespace Eigen;
 

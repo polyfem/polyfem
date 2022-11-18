@@ -2,22 +2,17 @@
 
 #include <CLI/CLI.hpp>
 
-#include <polyfem/solver/AdjointNLProblem.hpp>
-
-#include <polyfem/solver/BFGSSolver.hpp>
-#include <polyfem/solver/LBFGSSolver.hpp>
-#include <polyfem/solver/LBFGSBSolver.hpp>
-#include <polyfem/solver/MMASolver.hpp>
-#include <polyfem/solver/GradientDescentSolver.hpp>
+#include <polyfem/solver/Optimizations.hpp>
+#include <polyfem/solver/NonlinearSolver.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
-#include <jse/jse.h>
 
 #include <time.h>
 
 using namespace polyfem;
+using namespace solver;
 using namespace polysolve;
 
 bool has_arg(const CLI::App &command_line, const std::string &value)
@@ -41,74 +36,6 @@ bool load_json(const std::string &json_file, json &out)
     out["root_path"] = json_file;
 
 	return true;
-}
-
-json apply_opt_json_spec(const json &input_args, bool strict_validation)
-{
-    json args_in = input_args;
-
-    // CHECK validity json
-    json rules;
-    jse::JSE jse;
-    {
-        jse.strict = strict_validation;
-        const std::string polyfem_input_spec = POLYFEM_OPT_INPUT_SPEC;
-        std::ifstream file(polyfem_input_spec);
-
-        if (file.is_open())
-            file >> rules;
-        else
-        {
-            logger().error("unable to open {} rules", polyfem_input_spec);
-            throw std::runtime_error("Invald spec file");
-        }
-    }
-
-    const bool valid_input = jse.verify_json(args_in, rules);
-   
-    if (!valid_input)
-    {
-        logger().error("invalid input json:\n{}", jse.log2str());
-        throw std::runtime_error("Invald input json file");
-    }
-
-    json args = jse.inject_defaults(args_in, rules);
-    return args;
-}
-
-template <typename ProblemType>
-std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(const json &solver_params)
-{
-    const std::string name = solver_params["solver"].template get<std::string>();
-    if (name == "GradientDescent" || name == "gradientdescent" || name == "gradient")
-    {
-        return std::make_shared<cppoptlib::GradientDescentSolver<ProblemType>>(
-            solver_params);
-    }
-    else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
-    {
-        return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(
-            solver_params);
-    }
-    else if (name == "bfgs" || name == "BFGS" || name == "BFGS")
-    {
-        return std::make_shared<cppoptlib::BFGSSolver<ProblemType>>(
-            solver_params);
-    }
-    else if (name == "lbfgsb" || name == "LBFGSB" || name == "L-BFGS-B")
-    {
-        return std::make_shared<cppoptlib::LBFGSBSolver<ProblemType>>(
-            solver_params);
-    }
-    else if (name == "mma" || name == "MMA")
-    {
-        return std::make_shared<cppoptlib::MMASolver<ProblemType>>(
-            solver_params);
-    }
-    else
-    {
-        throw std::invalid_argument(fmt::format("invalid nonlinear solver type: {}", name));
-    }
 }
 
 int main(int argc, char **argv)
@@ -146,72 +73,14 @@ int main(int argc, char **argv)
     if (!load_json(json_file, opt_args))
         log_and_throw_error("Failed to load optimization json file!");
     
-    opt_args = apply_opt_json_spec(opt_args, false);
+    auto nl_problem = make_nl_problem(opt_args);
 
-    // create states
-    json state_args = opt_args["states"];
-    assert(state_args.is_array() && state_args.size() > 0);
-    std::vector<std::shared_ptr<State>> states(state_args.size());
-    int i = 0;
-    for (const json &args : state_args)
-    {
-        json cur_args;
-        if (!load_json(args["path"], cur_args))
-            log_and_throw_error("Can't find json for State {}", i);
+    std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nlsolver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 
-        auto& state = states[i++];
-        state = std::make_shared<State>(max_threads);
-        state->init_logger(log_file, log_level, false);
-        state->init(cur_args, false);
-        state->args["optimization"]["enabled"] = true;
-        state->load_mesh(/*non_conforming=*/false);
-        state->build_basis();
-        state->assemble_rhs();
-        state->assemble_stiffness_mat();
-    }
+    Eigen::VectorXd x = nl_problem->initial_guess();
+    nl_problem->solve_pde();
 
-    // create parameters
-    json param_args = opt_args["parameters"];
-    assert(param_args.is_array() && param_args.size() > 0);
-    std::vector<std::shared_ptr<Parameter>> parameters(param_args.size());
-    i = 0;
-    for (const json &args : param_args)
-    {
-        std::vector<std::shared_ptr<State>> some_states;
-        for (int id : args["states"])
-        {
-            some_states.push_back(states[id]);
-        }
-        parameters[i++] = Parameter::create(args, some_states);
-    }
-
-    // create objectives
-    json obj_args = opt_args["functionals"];
-    assert(obj_args.is_array() && obj_args.size() > 0);
-    std::vector<std::shared_ptr<solver::Objective>> objs(obj_args.size());
-    Eigen::VectorXd weights;
-    weights.setOnes(objs.size());
-    i = 0;
-    for (const json &args : obj_args)
-    {
-        weights[i] = args["weight"];
-        objs[i++] = solver::Objective::create(args, parameters, states);
-    }
-    std::shared_ptr<solver::SumObjective> sum_obj = std::make_shared<solver::SumObjective>(objs, weights);
-
-    solver::AdjointNLProblem nl_problem(sum_obj, parameters, states, opt_args);
-    std::shared_ptr<cppoptlib::NonlinearSolver<solver::AdjointNLProblem>> nlsolver = make_nl_solver<solver::AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
-
-    Eigen::VectorXd x(nl_problem.full_size());
-    int cumulative = 0;
-    for (const auto &p : parameters)
-    {
-        x.segment(cumulative, p->optimization_dim()) = p->initial_guess();
-        cumulative += p->optimization_dim();
-    }
-
-    nl_problem.solve_pde();
-    nlsolver->minimize(nl_problem, x);
+    nlsolver->minimize(*nl_problem, x);
 
 	return EXIT_SUCCESS;
 }

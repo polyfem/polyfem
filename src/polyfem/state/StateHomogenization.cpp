@@ -180,8 +180,9 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eige
     if (lag_form)
     {
         for (auto form : forms)
-            form->set_weight(0); // do not disable so it detects nan
+            form->set_weight(1e-8); // do not disable so it detects nan
         lag_form->set_weight(1);
+        lag_form->enable();
 
         tmp_sol = homo_problem->full_to_reduced(sol_);
         homo_problem->init(homo_problem->reduced_to_full(tmp_sol));

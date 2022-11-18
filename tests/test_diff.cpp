@@ -12,7 +12,7 @@
 #include <jse/jse.h>
 
 #include <polyfem/solver/DampingParameter.hpp>
-
+#include <polyfem/solver/Optimizations.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
 
 #include <catch2/catch.hpp>
@@ -90,33 +90,11 @@ void perturb(State &state, const Eigen::MatrixXd &dx, const std::string &type)
 
 std::shared_ptr<State> create_state_and_solve(const json &args)
 {
-	std::shared_ptr<State> state = std::make_shared<State>(32);
-	state->init_logger("", spdlog::level::level_enum::warn, false);
-	state->init(args, false);
-	state->load_mesh();
+	std::shared_ptr<State> state = create_state(args);
 	Eigen::MatrixXd sol, pressure;
-	state->build_basis();
-	state->assemble_rhs();
-	state->assemble_stiffness_mat();
 	state->solve_problem(sol, pressure);
 
 	return state;
-}
-
-void solve_pde(std::shared_ptr<State> &state)
-{
-	state->assemble_rhs();
-	state->assemble_stiffness_mat();
-	Eigen::MatrixXd sol, pressure;
-	state->solve_problem(sol, pressure);
-}
-
-void solve_pde(State &state)
-{
-	state.assemble_rhs();
-	state.assemble_stiffness_mat();
-	Eigen::MatrixXd sol, pressure;
-	state.solve_problem(sol, pressure);
 }
 
 void sample_field(const State &state, std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1)
@@ -187,39 +165,6 @@ void verify_adjoint(Objective &obj, State& state, const std::shared_ptr<Paramete
 	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 
 	REQUIRE(derivative == Approx(finite_difference).epsilon(tol));
-}
-
-json apply_opt_json_spec(const json &input_args, bool strict_validation)
-{
-	json args_in = input_args;
-
-	// CHECK validity json
-	json rules;
-	jse::JSE jse;
-	{
-		jse.strict = strict_validation;
-		const std::string polyfem_input_spec = POLYFEM_OPT_INPUT_SPEC;
-		std::ifstream file(polyfem_input_spec);
-
-		if (file.is_open())
-			file >> rules;
-		else
-		{
-			logger().error("unable to open {} rules", polyfem_input_spec);
-			throw std::runtime_error("Invald spec file");
-		}
-	}
-
-	const bool valid_input = jse.verify_json(args_in, rules);
-
-	if (!valid_input)
-	{
-		logger().error("invalid input json:\n{}", jse.log2str());
-		throw std::runtime_error("Invald input json file");
-	}
-
-	json args = jse.inject_defaults(args_in, rules);
-	return args;
 }
 
 } // namespace

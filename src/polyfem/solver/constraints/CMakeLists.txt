@@ -1,5 +1,6 @@
 set(SOURCES
     Constraints.hpp
+    MaterialConstraints.hpp
     ShapeConstraints.hpp
 )
 

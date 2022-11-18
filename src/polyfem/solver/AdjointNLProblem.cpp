@@ -198,6 +198,19 @@ namespace polyfem::solver
 		}
 	}
 
+	Eigen::VectorXd AdjointNLProblem::initial_guess() const
+	{
+		Eigen::VectorXd x;
+		x.setZero(full_size());
+		int cumulative = 0;
+		for (const auto &p : parameters_)
+		{
+			x.segment(cumulative, p->optimization_dim()) = p->initial_guess();
+			cumulative += p->optimization_dim();
+		}
+		return x;
+	}
+
 	Eigen::VectorXd AdjointNLProblem::get_lower_bound(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd min;

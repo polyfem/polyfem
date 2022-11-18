@@ -45,6 +45,8 @@ namespace polyfem::solver
 		void solution_changed(const Eigen::VectorXd &new_x);
 		void solve_pde();
 
+		Eigen::VectorXd initial_guess() const;
+
 		Eigen::VectorXd get_lower_bound(const Eigen::VectorXd &x) const;
 		Eigen::VectorXd get_upper_bound(const Eigen::VectorXd &x) const;
 
