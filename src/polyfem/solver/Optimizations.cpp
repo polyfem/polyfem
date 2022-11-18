@@ -985,7 +985,7 @@ namespace polyfem::solver
 		utils::maybe_parallel_for(states.size(), [&](int start, int end, int thread_id) {
 			for (int i = start; i < end; i++)
 			{
-				auto &state = states[i];
+				auto state = states[i];
 				solve_pde(*state);
 			}
 		});
