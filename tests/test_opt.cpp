@@ -138,7 +138,6 @@ namespace
 		auto nl_problem = make_nl_problem(opt_args);
 
 		Eigen::VectorXd x = nl_problem->initial_guess();
-		nl_problem->solve_pde();
 
 		std::shared_ptr<cppoptlib::NonlinearSolver<solver::AdjointNLProblem>> nlsolver = make_nl_solver<solver::AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 
@@ -219,4 +218,13 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 	REQUIRE(energies[0] == Approx(12.0735).epsilon(1e-4));
 	REQUIRE(energies[energies.size() - 1] == Approx(11.5482).epsilon(1e-4));
 }
+
+// TEST_CASE("shape-trajectory-surface-opt-new", "[optimization]")
+// {
+// 	run_opt_new("shape-trajectory-surface-opt-new");
+// 	auto energies = read_energy("shape-trajectory-surface-opt-new");
+
+// 	REQUIRE(energies[0] == Approx(6.1658e-05).epsilon(1e-4));
+// 	REQUIRE(energies[energies.size() - 1] == Approx(3.6194e-05).epsilon(1e-4));
+// }
 #endif
