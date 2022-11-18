@@ -464,30 +464,28 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
 	load_json(path + "damping-transient.json", in_args);
+	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
 
 	json opt_args;
 	load_json(path + "damping-transient-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	// compute reference solution
-	auto in_args_ref = in_args;
-	in_args_ref["materials"]["phi"] = 1;
-	in_args_ref["materials"]["psi"] = 20;
+	json in_args_ref;
+	load_json(path + "damping-transient-target.json", in_args_ref);
 	std::shared_ptr<State> state_reference = create_state_and_solve(in_args_ref);
 
-	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-	State &state = *state_ptr;
-
-	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr, state_reference};
 	std::shared_ptr<DampingParameter> damping_param = std::make_shared<DampingParameter>(states_ptr, opt_args["parameters"][0]);
-	std::shared_ptr<TargetObjective> func_aux = std::make_shared<TargetObjective>(state, std::shared_ptr<ShapeParameter>(), opt_args["functionals"][0]);
-	func_aux->set_reference(state_reference, {1, 3});
-	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], func_aux);
+	std::vector<std::shared_ptr<Parameter>> parameters = {damping_param};
+	
+	std::shared_ptr<Objective> func = Objective::create(opt_args["functionals"][0], parameters, states_ptr);
 
 	Eigen::VectorXd velocity_discrete;
 	velocity_discrete.setOnes(2);
 
-	verify_adjoint(func, state, damping_param, "damping", velocity_discrete, 1e-5, 1e-4);
+	verify_adjoint(*func, state, damping_param, "damping", velocity_discrete, 1e-5, 1e-4);
 }
 
 TEST_CASE("material-transient", "[adjoint_method]")
@@ -616,25 +614,23 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
 	load_json(path + "initial-contact.json", in_args);
+	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
+	State& state = *state_ptr;
 
 	json opt_args;
 	load_json(path + "initial-contact-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	// compute reference solution
-	auto in_args_ref = in_args;
-	in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 4;
-	in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
+	json in_args_ref;
+	load_json(path + "initial-contact-target.json", in_args_ref);
 	std::shared_ptr<State> state_reference = create_state_and_solve(in_args_ref);
 
-	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-	State& state = *state_ptr;
-
-	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr, state_reference};
 	std::shared_ptr<InitialConditionParameter> initial_param = std::make_shared<InitialConditionParameter>(states_ptr, opt_args["parameters"][0]);
-	std::shared_ptr<TargetObjective> func_aux = std::make_shared<TargetObjective>(state, std::shared_ptr<ShapeParameter>(), opt_args["functionals"][0]);
-	func_aux->set_reference(state_reference, {1, 3});
-	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], func_aux);
+	std::vector<std::shared_ptr<Parameter>> parameters = {initial_param};
+
+	std::shared_ptr<Objective> func = Objective::create(opt_args["functionals"][0], parameters, states_ptr);
 
 	Eigen::MatrixXd velocity_discrete;
 	velocity_discrete.setZero(state.ndof() * 2, 1);
@@ -644,7 +640,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 		velocity_discrete(state.ndof() + i * 2 + 1) = -1.;
 	}
 
-	verify_adjoint(func, state, initial_param, "initial", velocity_discrete, 1e-5, 1e-5);
+	verify_adjoint(*func, state, initial_param, "initial", velocity_discrete, 1e-5, 1e-5);
 }
 
 TEST_CASE("barycenter", "[adjoint_method]")
