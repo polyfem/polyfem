@@ -893,10 +893,10 @@ namespace polyfem::solver
 		std::cout << solver_info << std::endl;
 	}
 
-	std::shared_ptr<State> create_state(const json &args, const int max_threads)
+	std::shared_ptr<State> create_state(const json &args, spdlog::level::level_enum log_level, const int max_threads)
 	{
 		std::shared_ptr<State> state = std::make_shared<State>(max_threads);
-		state->init_logger("", spdlog::level::level_enum::err, false);
+		state->init_logger("", log_level, false);
 		state->init(args, false);
 		state->args["optimization"]["enabled"] = true;
 		state->load_mesh();
@@ -949,7 +949,7 @@ namespace polyfem::solver
 		return args;
 	}
 
-	std::shared_ptr<AdjointNLProblem> make_nl_problem(json &opt_args)
+	std::shared_ptr<AdjointNLProblem> make_nl_problem(json &opt_args, spdlog::level::level_enum log_level)
 	{
 		opt_args = apply_opt_json_spec(opt_args, false);
 
@@ -964,7 +964,7 @@ namespace polyfem::solver
 			if (!load_json(args["path"], cur_args))
 				log_and_throw_error("Can't find json for State {}", i);
 
-			states[i++] = create_state(cur_args);
+			states[i++] = create_state(cur_args, log_level);
 		}
 
 		// create parameters
@@ -982,6 +982,8 @@ namespace polyfem::solver
 			parameters[i++] = Parameter::create(args, some_states);
 		}
 
+		const int cur_log = states[0]->current_log_level;
+		states[0]->set_log_level(static_cast<spdlog::level::level_enum>(opt_args["output"]["solve_log_level"])); // log level is global, only need to change in one state
 		utils::maybe_parallel_for(states.size(), [&](int start, int end, int thread_id) {
 			for (int i = start; i < end; i++)
 			{
@@ -989,6 +991,7 @@ namespace polyfem::solver
 				solve_pde(*state);
 			}
 		});
+		states[0]->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
 
 		// create objectives
 		json obj_args = opt_args["functionals"];

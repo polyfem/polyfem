@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 	if (!load_json(json_file, opt_args))
 		log_and_throw_error("Failed to load optimization json file!");
 
-	auto nl_problem = make_nl_problem(opt_args);
+	auto nl_problem = make_nl_problem(opt_args, log_level);
 
 	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nlsolver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 
