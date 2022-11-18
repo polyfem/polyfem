@@ -97,6 +97,48 @@ namespace polyfem::solver
 			{
 				assert(false);
 			}
+			else if (matching == "marker-data" || matching == "exact-marker")
+			{
+				State &state = *(states[args["state"]]);
+				const int dim = state.mesh->dimension();
+				const std::string target_data_path = args["marker_data_path"];
+
+				if (!std::filesystem::is_regular_file(target_data_path))
+				{
+					throw std::runtime_error("Marker path invalid!");
+				}
+				Eigen::MatrixXd tmp;
+				io::read_matrix(target_data_path, tmp);
+				Eigen::VectorXi nodes = tmp.col(0).cast<int>();
+
+				Eigen::MatrixXd targets;
+				targets.setZero(nodes.size(), dim);
+				std::vector<int> active_nodes;
+				
+				if (matching == "exact-marker")
+				{
+					const State &state_reference = *(states[args["target_state"]]);
+					const Eigen::MatrixXd &sol = state_reference.diff_cached[0].u;
+
+					for (int s = 0; s < nodes.size(); s++)
+					{
+						const int node_id = state.in_node_to_node(nodes(s));
+						targets.row(s) = sol.block(node_id * dim, 0, dim, 1).transpose() + state_reference.mesh_nodes->node_position(node_id);
+						active_nodes.push_back(node_id);
+					}
+				}
+				else
+				{
+					for (int s = 0; s < nodes.size(); s++)
+					{
+						const int node_id = state.in_node_to_node(nodes(s));
+						targets.row(node_id) = tmp.block(s, 1, 1, tmp.cols() - 1);
+						active_nodes.push_back(node_id);
+					}
+				}
+
+				static_obj = std::make_shared<NodeTargetObjective>(state, active_nodes, targets);
+			}
 			else
 			{
 				assert(false);
@@ -1510,10 +1552,11 @@ namespace polyfem::solver
 	{
 		const int dim = state_.mesh->dimension();
 		double val = 0;
+		int i = 0;
 		for (int v : active_nodes)
 		{
 			RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + state_.diff_cached[time_step_].u.block(v * dim, 0, dim, 1).transpose();
-			val += (cur_pos - target_vertex_positions.row(v)).squaredNorm();
+			val += (cur_pos - target_vertex_positions.row(i++)).squaredNorm();
 		}
 		return val;
 	}
@@ -1527,11 +1570,12 @@ namespace polyfem::solver
 
 		if (&state == &state_)
 		{
+			int i = 0;
 			for (int v : active_nodes)
 			{
 				RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + state_.diff_cached[time_step_].u.block(v * dim, 0, dim, 1).transpose();
 
-				rhs.segment(v * dim, dim) = 2 * (cur_pos - target_vertex_positions.row(v));
+				rhs.segment(v * dim, dim) = 2 * (cur_pos - target_vertex_positions.row(i++));
 			}
 		}
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Parameter.hpp"
+#include <polyfem/solver/constraints/MaterialConstraints.hpp>
 
 namespace polyfem
 {
@@ -30,6 +31,8 @@ namespace polyfem
 		double max_mu, max_lambda;
 		double min_E, min_nu;
 		double max_E, max_nu;
+
+		MaterialConstraints material_constraints_;
 
 		std::string design_variable_name = "lambda_mu";
 	};
