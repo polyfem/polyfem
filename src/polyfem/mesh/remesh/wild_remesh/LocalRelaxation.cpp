@@ -9,6 +9,7 @@
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
+#include <polyfem/io/OBJWriter.hpp>
 
 #include <igl/boundary_facets.h>
 
@@ -105,6 +106,16 @@ namespace polyfem::mesh
 			assert(basis_id >= 0);
 #endif
 
+		// io::OBJWriter::write(
+		// 	state.resolve_output_path("local_mesh0_before.obj"),
+		// 	local_mesh.rest_positions(), local_mesh.triangles());
+		// io::OBJWriter::write(
+		// 	state.resolve_output_path("local_mesh1_before.obj"),
+		// 	local_mesh.positions(), local_mesh.triangles());
+
+		// write_rest_obj(state.resolve_output_path("global_mesh0_before.obj"));
+		// write_deformed_obj(state.resolve_output_path("global_mesh1_before.obj"));
+
 		// --------------------------------------------------------------------
 
 		Eigen::MatrixXi boundary_edges;
@@ -114,12 +125,19 @@ namespace polyfem::mesh
 		const auto &vertex_boundary_ids = local_mesh.vertex_boundary_ids();
 		for (int i = 0; i < boundary_edges.rows(); ++i)
 		{
+			// if either endpoint is an internal node, fix the edge
+			const bool fixed_edge = !local_mesh.is_edge_on_global_boundary(boundary_edges.row(i));
+
 			for (int j = 0; j < boundary_edges.cols(); ++j)
 			{
 				const int vi = boundary_edges(i, j);
-				bool on_real_boundary = vertex_attrs[local_mesh.local_to_global()[vi]].fixed;
-				// if (!on_real_boundary || contains(vertex_boundary_ids[vi], 2) || contains(vertex_boundary_ids[vi], 4))
-				if (!on_real_boundary)
+				const auto &vertex_attr = vertex_attrs[local_mesh.local_to_global()[vi]];
+				// TODO: replace this with a more general check
+				const bool on_fixed_boundary =
+					vertex_attr.rest_position.y() < (-0.1 + 1e-3)
+					|| vertex_attr.rest_position.y() > (0.1 - 1e-3);
+
+				if (fixed_edge || on_fixed_boundary)
 				{
 					const int basis_id = vertex_to_basis[vi];
 					assert(basis_id >= 0);
@@ -245,9 +263,6 @@ namespace polyfem::mesh
 		}
 
 		// 3. Return the energy of the relaxed mesh.
-		// elastic_form->set_weight(1);
-		// const double energy_before = elastic_form->value(target_x);
-		// const double energy_after = elastic_form->value(sol);
 		const double energy_before = nl_problem.value(target_x);
 		const double energy_after = nl_problem.value(sol);
 
@@ -257,7 +272,29 @@ namespace polyfem::mesh
 		const double abs_diff = energy_before - energy_after; // > 0 if energy decreased
 		const double rel_diff = abs_diff / energy_before;
 
-		logger().critical("rel_diff={:g} abs_diff={:g}", rel_diff, abs_diff);
+		// const LocalMesh local_mesh_after = LocalMesh::n_ring(*this, t, n_ring);
+
+		// io::OBJWriter::write(
+		// 	state.resolve_output_path("local_mesh0.obj"),
+		// 	local_mesh_after.rest_positions(), local_mesh_after.triangles());
+		// io::OBJWriter::write(
+		// 	state.resolve_output_path("local_mesh1.obj"),
+		// 	local_mesh_after.positions(), local_mesh_after.triangles());
+
+		// write_rest_obj(state.resolve_output_path("global_mesh0.obj"));
+		// write_deformed_obj(state.resolve_output_path("global_mesh1.obj"));
+
+		static int i = 0;
+		if (rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance)
+		{
+			logger().critical(
+				"{} energy_before={:g} energy_after={:g} rel_diff={:g} abs_diff={:g}",
+				i, energy_before, energy_after, rel_diff, abs_diff);
+
+			// if (i > 88)
+			// 	exit(0);
+		}
+		i++;
 
 		return rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance;
 	}

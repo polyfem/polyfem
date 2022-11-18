@@ -28,6 +28,9 @@ namespace polyfem::mesh
 		const std::vector<int> &local_to_global() const { return m_local_to_global; }
 		const std::vector<int> &body_ids() const { return m_body_ids; }
 		const std::vector<std::unordered_set<int>> &vertex_boundary_ids() const { return m_vertex_boundary_ids; }
+		const WildRemeshing2D::EdgeMap<bool> &is_edge_on_global_boundary() const { return m_is_edge_on_global_boundary; }
+		bool is_edge_on_global_boundary(size_t v0, size_t v1) const;
+		bool is_edge_on_global_boundary(const Eigen::Vector2i &e) const { return is_edge_on_global_boundary(e[0], e[1]); }
 
 	protected:
 		Eigen::MatrixXi m_triangles;
@@ -41,6 +44,7 @@ namespace polyfem::mesh
 		std::vector<int> m_local_to_global;
 		std::vector<int> m_body_ids;
 		std::vector<std::unordered_set<int>> m_vertex_boundary_ids;
+		WildRemeshing2D::EdgeMap<bool> m_is_edge_on_global_boundary;
 
 		static constexpr int DIM = 2;
 	};

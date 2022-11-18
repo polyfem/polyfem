@@ -51,8 +51,14 @@ namespace polyfem::mesh
 			for (const Tuple &edge : edges)
 			{
 				const int boundary_id = m.edge_attrs[edge.eid(m)].boundary_id;
-				m_vertex_boundary_ids[m_global_to_local[edge.vid(m)]].insert(boundary_id);
-				m_vertex_boundary_ids[m_global_to_local[edge.switch_vertex(m).vid(m)]].insert(boundary_id);
+				size_t v0 = m_global_to_local[edge.vid(m)], v1 = m_global_to_local[edge.switch_vertex(m).vid(m)];
+				if (v0 > v1)
+					std::swap(v0, v1);
+
+				m_vertex_boundary_ids[v0].insert(boundary_id);
+				m_vertex_boundary_ids[v1].insert(boundary_id);
+
+				m_is_edge_on_global_boundary[{v0, v1}] = !bool(edge.switch_face(m));
 			}
 		}
 
@@ -66,48 +72,51 @@ namespace polyfem::mesh
 
 	LocalMesh LocalMesh::n_ring(const WildRemeshing2D &m, const WildRemeshing2D::Tuple &center, int n)
 	{
-		std::vector<Tuple> triangles = {{center}};
-		std::vector<int> depths{{0}};
-		std::unordered_set<size_t> visited{{center.fid(m)}};
+		std::vector<Tuple> triangles = m.get_one_ring_tris_for_vertex(center);
+		std::unordered_set<size_t> visited_vertices{{center.vid(m)}};
+		std::unordered_set<size_t> visited_faces;
+		for (const auto &triangle : triangles)
+			visited_faces.insert(triangle.fid(m));
 
-		// Loop around a vertex until we return to the starting triangle or hit a boundary.
-		const auto helper = [&](const int depth, std::optional<Tuple> &nav) -> void {
-			assert(nav);
-			const size_t start_fid = nav->fid(m);
-			do
-			{
-				nav = nav->switch_edge(m);
-				if (visited.find(nav->fid(m)) == visited.end())
-				{
-					triangles.push_back(nav->switch_vertex(m));
-					depths.push_back(depth + 1);
-					visited.insert(nav->fid(m));
-				}
-				nav = nav->switch_face(m);
-			} while (nav && nav->fid(m) != start_fid);
-		};
+		std::vector<Tuple> new_triangles = triangles;
 
-		int i = 0;
-		while (i < triangles.size())
+		for (int i = 1; i < n; i++)
 		{
-			const Tuple t = triangles[i];
-			const int depth = depths[i];
-			i++;
-
-			if (depth > n)
-				continue;
-
-			// NOTE: This only works for manifold meshes.
-			std::optional<Tuple> nav = t;
-			helper(depth, nav);
-			if (!nav) // Hit a boundary, so loop in the opposite direction.
+			std::vector<Tuple> new_new_triangles;
+			for (const auto &t : new_triangles)
 			{
-				// Switch edge to cause the helper loop to go the opposite direction
-				nav = t.switch_edge(m);
-				helper(depth, nav);
+				const std::array<Tuple, 3> vs = m.oriented_tri_vertices(t);
+				for (int vi = 0; vi < 3; vi++)
+				{
+					const Tuple &v = vs[vi];
+					if (visited_vertices.find(v.vid(m)) != visited_vertices.end())
+						continue;
+					visited_vertices.insert(v.vid(m));
+
+					std::vector<wmtk::TriMesh::Tuple> tmp = m.get_one_ring_tris_for_vertex(v);
+					for (auto &t1 : tmp)
+					{
+						if (visited_faces.find(t1.fid(m)) != visited_faces.end())
+							continue;
+						visited_faces.insert(t1.fid(m));
+						triangles.push_back(t1);
+						new_new_triangles.push_back(t1);
+					}
+				}
 			}
+			new_triangles = new_new_triangles;
+			if (new_triangles.empty())
+				break;
 		}
 
 		return LocalMesh(m, triangles);
+	}
+
+	bool LocalMesh::is_edge_on_global_boundary(size_t v0, size_t v1) const
+	{
+		assert(v0 < num_vertices() && v1 < num_vertices());
+		if (v0 > v1)
+			std::swap(v0, v1);
+		return m_is_edge_on_global_boundary.at({v0, v1});
 	}
 } // namespace polyfem::mesh

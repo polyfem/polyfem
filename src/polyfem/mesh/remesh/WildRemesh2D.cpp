@@ -242,15 +242,18 @@ namespace polyfem::mesh
 
 		// The element is inverted if it not positive (i.e. it is negative or it is degenerate)
 		return rest_orientation != igl::predicates::Orientation::POSITIVE
-			   && deformed_orientation != igl::predicates::Orientation::POSITIVE;
+			   || deformed_orientation != igl::predicates::Orientation::POSITIVE;
 	}
 
 	bool WildRemeshing2D::invariants(const std::vector<Tuple> &new_tris)
 	{
-		for (auto &t : new_tris)
+		// for (auto &t : new_tris)
+		for (auto &t : get_faces())
 		{
 			if (is_inverted(t))
 			{
+				logger().error("Inverted triangle found, invariants violated");
+				// exit(1);
 				return false;
 			}
 		}
