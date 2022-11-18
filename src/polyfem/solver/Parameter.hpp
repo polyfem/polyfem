@@ -15,7 +15,7 @@ namespace polyfem
 
 		static std::shared_ptr<Parameter> create(const json &args, std::vector<std::shared_ptr<State>> &states_ptr);
 
-		inline const State &get_state() const { return *(states_ptr_[0]); }
+		inline const State &get_state(int id = 0) const { assert(id < states_ptr_.size()); return *(states_ptr_[id]); }
 
 		inline virtual bool contains_state(const State &state) const
 		{

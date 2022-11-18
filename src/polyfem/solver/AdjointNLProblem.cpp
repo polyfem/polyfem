@@ -334,10 +334,13 @@ namespace polyfem::solver
 			for (int i = start; i < end; i++)
 			{
 				const auto &state = all_states_[i];
-				state->assemble_rhs();
-				state->assemble_stiffness_mat();
-				Eigen::MatrixXd sol, pressure; // solution is also cached in state
-				state->solve_problem(sol, pressure);
+				if (active_state_mask[i] || state->diff_cached.size() == 0)
+				{
+					state->assemble_rhs();
+					state->assemble_stiffness_mat();
+					Eigen::MatrixXd sol, pressure; // solution is also cached in state
+					state->solve_problem(sol, pressure);
+				}
 			}
 		});
 		all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));

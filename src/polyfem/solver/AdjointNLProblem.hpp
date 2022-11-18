@@ -15,6 +15,21 @@ namespace polyfem::solver
 			cur_grad.setZero(0);
 			for (const auto &p : parameters)
 				optimization_dim_ += p->optimization_dim();
+			
+			active_state_mask.assign(all_states_.size(), false);
+			int i = 0;
+			for (const auto &state_ptr : all_states_)
+			{
+				for (const auto &p : parameters)
+				{
+					if (p->contains_state(*state_ptr))
+					{
+						active_state_mask[i] = true;
+						break;
+					}
+				}
+				i++;
+			}
 		}
 
 		int full_size() const { return optimization_dim_; }
@@ -60,6 +75,7 @@ namespace polyfem::solver
 		std::shared_ptr<SumObjective> 				   obj_;
 		std::vector<std::shared_ptr<Parameter>> parameters_;
 		std::vector<std::shared_ptr<State>>     all_states_;
+		std::vector<bool>						active_state_mask;
 		Eigen::VectorXd cur_x, cur_grad;
 		int iter = 0;
 
