@@ -50,7 +50,7 @@ namespace polyfem::solver
 				for (const auto &p : parameters_)
 				{
 					Eigen::VectorXd gradv_param = obj_->gradient(all_states_, *p);
-					
+
 					gradv.segment(cumulative, p->optimization_dim()) += p->map_grad(x.segment(cumulative, p->optimization_dim()), gradv_param);
 					cumulative += p->optimization_dim();
 				}
@@ -193,7 +193,7 @@ namespace polyfem::solver
 				"", // stress_path,
 				"", // mises_path,
 				state->is_contact_enabled(), state->solution_frames);
-			
+
 			// TODO: if shape opt, save rest meshes as well
 		}
 	}
@@ -333,7 +333,7 @@ namespace polyfem::solver
 		utils::maybe_parallel_for(all_states_.size(), [&](int start, int end, int thread_id) {
 			for (int i = start; i < end; i++)
 			{
-				const auto &state = all_states_[i];
+				auto state = all_states_[i];
 				if (active_state_mask[i] || state->diff_cached.size() == 0)
 				{
 					state->assemble_rhs();
@@ -372,11 +372,11 @@ namespace polyfem::solver
 				logger().info("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
 			else
 				logger().error("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
-			
+
 			return match;
 		}
-		
+
 		return true;
 	}
 
-} // namespace polyfem
+} // namespace polyfem::solver
