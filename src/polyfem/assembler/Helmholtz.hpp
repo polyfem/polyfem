@@ -23,6 +23,8 @@ namespace polyfem::assembler
 		// sets the k parameter
 		void add_multimaterial(const int index, const json &params);
 
+		double k() const { return k_; }
+
 	private:
 		double k_ = 1;
 	};
