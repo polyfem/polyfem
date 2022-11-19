@@ -15,7 +15,7 @@ namespace polyfem::solver
 		Objective() = default;
 		virtual ~Objective() = default;
 
-		static std::shared_ptr<Objective> create(const json &args, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &states);
+		static std::shared_ptr<Objective> create(const json &args, const std::string &root_path, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &states);
 
 		virtual double value() = 0;
 		Eigen::VectorXd gradient(const std::vector<std::shared_ptr<State>> &states, const Parameter &param)

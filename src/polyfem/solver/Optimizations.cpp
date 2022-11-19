@@ -951,6 +951,10 @@ namespace polyfem::solver
 
 	std::shared_ptr<AdjointNLProblem> make_nl_problem(json &opt_args, spdlog::level::level_enum log_level)
 	{
+		std::string root_path = "";
+		if (utils::is_param_valid(opt_args, "root_path"))
+			root_path = opt_args["root_path"].get<std::string>();
+
 		opt_args = apply_opt_json_spec(opt_args, false);
 
 		// create states
@@ -961,7 +965,7 @@ namespace polyfem::solver
 		for (const json &args : state_args)
 		{
 			json cur_args;
-			if (!load_json(args["path"], cur_args))
+			if (!load_json(utils::resolve_path(args["path"], root_path, false), cur_args))
 				log_and_throw_error("Can't find json for State {}", i);
 
 			states[i++] = create_state(cur_args, log_level);
@@ -1003,7 +1007,7 @@ namespace polyfem::solver
 		for (const json &args : obj_args)
 		{
 			weights[i] = args["weight"];
-			objs[i++] = Objective::create(args, parameters, states);
+			objs[i++] = Objective::create(args, root_path, parameters, states);
 		}
 		std::shared_ptr<SumObjective> sum_obj = std::make_shared<SumObjective>(objs, weights);
 

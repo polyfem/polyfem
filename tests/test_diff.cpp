@@ -22,150 +22,151 @@
 using namespace polyfem;
 using namespace solver;
 
-namespace {
-
-bool load_json(const std::string &json_file, json &out)
+namespace
 {
-	std::ifstream file(json_file);
 
-	if (!file.is_open())
-		return false;
-
-	file >> out;
-
-    out["root_path"] = json_file;
-
-	return true;
-}
-
-void perturb_mesh(State &state, const Eigen::MatrixXd &perturbation)
-{
-	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-
-	state.get_vf(V, F);
-	V += utils::unflatten(perturbation, V.cols());
-
-	state.set_v(V);
-}
-
-void perturb_material(assembler::AssemblerUtils &assembler, const Eigen::MatrixXd &perturbation)
-{
-	const auto &cur_lambdas = assembler.lame_params().lambda_mat_;
-	const auto &cur_mus = assembler.lame_params().mu_mat_;
-
-	Eigen::MatrixXd lambda_update(cur_lambdas.size(), 1), mu_update(cur_mus.size(), 1);
-	for (int i = 0; i < lambda_update.size(); i++)
+	bool load_json(const std::string &json_file, json &out)
 	{
-		lambda_update(i) = perturbation(i);
-		mu_update(i) = perturbation(i + lambda_update.size());
+		std::ifstream file(json_file);
+
+		if (!file.is_open())
+			return false;
+
+		file >> out;
+
+		out["root_path"] = json_file;
+
+		return true;
 	}
 
-	assembler.update_lame_params(cur_lambdas + lambda_update, cur_mus + mu_update);
-}
-
-// TODO: call parameter class instead
-void perturb(State &state, const Eigen::MatrixXd &dx, const std::string &type)
-{
-	if (type == "shape")
-		perturb_mesh(state, dx);
-	else if (type == "initial")
+	void perturb_mesh(State &state, const Eigen::MatrixXd &perturbation)
 	{
-		assert(dx.cols() == 1);
-		Eigen::VectorXd dx_ = dx;
-		state.initial_sol_update += dx_.head(state.ndof());
-		state.initial_vel_update += dx_.tail(state.ndof());
+		Eigen::MatrixXd V;
+		Eigen::MatrixXi F;
+
+		state.get_vf(V, F);
+		V += utils::unflatten(perturbation, V.cols());
+
+		state.set_v(V);
 	}
-	else if (type == "material")
-		perturb_material(state.assembler, dx);
-	else if (type == "damping")
+
+	void perturb_material(assembler::AssemblerUtils &assembler, const Eigen::MatrixXd &perturbation)
 	{
-		state.args["materials"]["psi"] = state.args["materials"]["psi"].get<double>() + dx(0);
-		state.args["materials"]["phi"] = state.args["materials"]["phi"].get<double>() + dx(1);
-		state.set_materials();
-	}
-	else
-		log_and_throw_error("Unknown type of perturbation!");
-}
+		const auto &cur_lambdas = assembler.lame_params().lambda_mat_;
+		const auto &cur_mus = assembler.lame_params().mu_mat_;
 
-std::shared_ptr<State> create_state_and_solve(const json &args)
-{
-	std::shared_ptr<State> state = create_state(args);
-	Eigen::MatrixXd sol, pressure;
-	state->solve_problem(sol, pressure);
-
-	return state;
-}
-
-void sample_field(const State &state, std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1)
-{
-	Eigen::MatrixXd tmp;
-	tmp.setZero(1, state.mesh->dimension());
-	tmp = field(tmp);
-	const int actual_dim = tmp.cols();
-
-	if (order >= 1)
-	{
-		const bool use_bases = order > 1;
-		const int n_current_bases = use_bases ? state.n_bases : state.n_geom_bases;
-		const auto &current_bases = use_bases ? state.bases : state.geom_bases();
-		discrete_field.setZero(n_current_bases * actual_dim, 1);
-
-		for (int e = 0; e < state.bases.size(); e++)
+		Eigen::MatrixXd lambda_update(cur_lambdas.size(), 1), mu_update(cur_mus.size(), 1);
+		for (int i = 0; i < lambda_update.size(); i++)
 		{
-			Eigen::MatrixXd local_pts, pts;
-			if (!state.mesh->is_volume())
-				autogen::p_nodes_2d(current_bases[e].bases.front().order(), local_pts);
-			else
-				autogen::p_nodes_3d(current_bases[e].bases.front().order(), local_pts);
+			lambda_update(i) = perturbation(i);
+			mu_update(i) = perturbation(i + lambda_update.size());
+		}
 
-			current_bases[e].eval_geom_mapping(local_pts, pts);
-			Eigen::MatrixXd result = field(pts);
-			for (int i = 0; i < local_pts.rows(); i++)
+		assembler.update_lame_params(cur_lambdas + lambda_update, cur_mus + mu_update);
+	}
+
+	// TODO: call parameter class instead
+	void perturb(State &state, const Eigen::MatrixXd &dx, const std::string &type)
+	{
+		if (type == "shape")
+			perturb_mesh(state, dx);
+		else if (type == "initial")
+		{
+			assert(dx.cols() == 1);
+			Eigen::VectorXd dx_ = dx;
+			state.initial_sol_update += dx_.head(state.ndof());
+			state.initial_vel_update += dx_.tail(state.ndof());
+		}
+		else if (type == "material")
+			perturb_material(state.assembler, dx);
+		else if (type == "damping")
+		{
+			state.args["materials"]["psi"] = state.args["materials"]["psi"].get<double>() + dx(0);
+			state.args["materials"]["phi"] = state.args["materials"]["phi"].get<double>() + dx(1);
+			state.set_materials();
+		}
+		else
+			log_and_throw_error("Unknown type of perturbation!");
+	}
+
+	std::shared_ptr<State> create_state_and_solve(const json &args)
+	{
+		std::shared_ptr<State> state = create_state(args);
+		Eigen::MatrixXd sol, pressure;
+		state->solve_problem(sol, pressure);
+
+		return state;
+	}
+
+	void sample_field(const State &state, std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1)
+	{
+		Eigen::MatrixXd tmp;
+		tmp.setZero(1, state.mesh->dimension());
+		tmp = field(tmp);
+		const int actual_dim = tmp.cols();
+
+		if (order >= 1)
+		{
+			const bool use_bases = order > 1;
+			const int n_current_bases = use_bases ? state.n_bases : state.n_geom_bases;
+			const auto &current_bases = use_bases ? state.bases : state.geom_bases();
+			discrete_field.setZero(n_current_bases * actual_dim, 1);
+
+			for (int e = 0; e < state.bases.size(); e++)
 			{
-				assert(current_bases[e].bases[i].global().size() == 1);
-				for (int d = 0; d < actual_dim; d++)
-					discrete_field(current_bases[e].bases[i].global()[0].index * actual_dim + d) = result(i, d);
+				Eigen::MatrixXd local_pts, pts;
+				if (!state.mesh->is_volume())
+					autogen::p_nodes_2d(current_bases[e].bases.front().order(), local_pts);
+				else
+					autogen::p_nodes_3d(current_bases[e].bases.front().order(), local_pts);
+
+				current_bases[e].eval_geom_mapping(local_pts, pts);
+				Eigen::MatrixXd result = field(pts);
+				for (int i = 0; i < local_pts.rows(); i++)
+				{
+					assert(current_bases[e].bases[i].global().size() == 1);
+					for (int d = 0; d < actual_dim; d++)
+						discrete_field(current_bases[e].bases[i].global()[0].index * actual_dim + d) = result(i, d);
+				}
 			}
 		}
+		else if (order == 0)
+		{
+			discrete_field.setZero(state.bases.size() * actual_dim, 1);
+			Eigen::MatrixXd centers;
+			if (state.mesh->is_volume())
+				state.mesh->cell_barycenters(centers);
+			else
+				state.mesh->face_barycenters(centers);
+			Eigen::MatrixXd result = field(centers);
+			for (int e = 0; e < state.bases.size(); e++)
+				for (int d = 0; d < actual_dim; d++)
+					discrete_field(e * actual_dim + d) = result(e, d);
+		}
 	}
-	else if (order == 0)
+
+	void verify_adjoint(Objective &obj, State &state, const std::shared_ptr<Parameter> &param, const std::string &type, const Eigen::MatrixXd &theta, const double dt, const double tol)
 	{
-		discrete_field.setZero(state.bases.size() * actual_dim, 1);
-		Eigen::MatrixXd centers;
-		if (state.mesh->is_volume())
-			state.mesh->cell_barycenters(centers);
-		else
-			state.mesh->face_barycenters(centers);
-		Eigen::MatrixXd result = field(centers);
-		for (int e = 0; e < state.bases.size(); e++)
-			for (int d = 0; d < actual_dim; d++)
-				discrete_field(e * actual_dim + d) = result(e, d);
+		double functional_val = obj.value();
+
+		state.solve_adjoint(obj.compute_adjoint_rhs(state));
+		Eigen::VectorXd one_form = obj.gradient(state, *param);
+		double derivative = (one_form.array() * theta.array()).sum();
+
+		perturb(state, theta * dt, type);
+		solve_pde(state);
+		double next_functional_val = obj.value();
+
+		perturb(state, theta * (-2 * dt), type);
+		solve_pde(state);
+		double former_functional_val = obj.value();
+
+		double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
+		std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
+		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
+
+		REQUIRE(derivative == Approx(finite_difference).epsilon(tol));
 	}
-}
-
-void verify_adjoint(Objective &obj, State& state, const std::shared_ptr<Parameter> &param, const std::string &type, const Eigen::MatrixXd &theta, const double dt, const double tol)
-{
-	double functional_val = obj.value();
-
-	state.solve_adjoint(obj.compute_adjoint_rhs(state));
-	Eigen::VectorXd one_form = obj.gradient(state, *param);
-	double derivative = (one_form.array() * theta.array()).sum();
-
-	perturb(state, theta * dt, type);
-	solve_pde(state);
-	double next_functional_val = obj.value();
-
-	perturb(state, theta * (-2 * dt), type);
-	solve_pde(state);
-	double former_functional_val = obj.value();
-
-	double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
-	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
-	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-
-	REQUIRE(derivative == Approx(finite_difference).epsilon(tol));
-}
 
 } // namespace
 
@@ -319,7 +320,7 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 	state_ptr->load_mesh();
 	state_ptr->build_basis();
 	State &state = *state_ptr;
-	
+
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
 	std::shared_ptr<TopologyOptimizationParameter> topo_param = std::make_shared<TopologyOptimizationParameter>(states_ptr, opt_args["parameters"][0]);
 	ComplianceObjective func(state, NULL, NULL, topo_param, opt_args["functionals"][0]);
@@ -471,6 +472,10 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	load_json(path + "damping-transient-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
 
+	std::string root_path = "";
+	if (utils::is_param_valid(opt_args, "root_path"))
+		root_path = opt_args["root_path"].get<std::string>();
+
 	// compute reference solution
 	json in_args_ref;
 	load_json(path + "damping-transient-target.json", in_args_ref);
@@ -479,8 +484,8 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr, state_reference};
 	std::shared_ptr<DampingParameter> damping_param = std::make_shared<DampingParameter>(states_ptr, opt_args["parameters"][0]);
 	std::vector<std::shared_ptr<Parameter>> parameters = {damping_param};
-	
-	std::shared_ptr<Objective> func = Objective::create(opt_args["functionals"][0], parameters, states_ptr);
+
+	std::shared_ptr<Objective> func = Objective::create(opt_args["functionals"][0], root_path, parameters, states_ptr);
 
 	Eigen::VectorXd velocity_discrete;
 	velocity_discrete.setOnes(2);
@@ -572,7 +577,7 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 	func.set_transient_integral_type("final");
 
 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-	State& state = *state_ptr;
+	State &state = *state_ptr;
 	double functional_val = func.energy(state);
 
 	Eigen::MatrixXd velocity_discrete;
@@ -615,11 +620,15 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	json in_args;
 	load_json(path + "initial-contact.json", in_args);
 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-	State& state = *state_ptr;
+	State &state = *state_ptr;
 
 	json opt_args;
 	load_json(path + "initial-contact-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
+
+	std::string root_path = "";
+	if (utils::is_param_valid(opt_args, "root_path"))
+		root_path = opt_args["root_path"].get<std::string>();
 
 	// compute reference solution
 	json in_args_ref;
@@ -630,7 +639,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	std::shared_ptr<InitialConditionParameter> initial_param = std::make_shared<InitialConditionParameter>(states_ptr, opt_args["parameters"][0]);
 	std::vector<std::shared_ptr<Parameter>> parameters = {initial_param};
 
-	std::shared_ptr<Objective> func = Objective::create(opt_args["functionals"][0], parameters, states_ptr);
+	std::shared_ptr<Objective> func = Objective::create(opt_args["functionals"][0], root_path, parameters, states_ptr);
 
 	Eigen::MatrixXd velocity_discrete;
 	velocity_discrete.setZero(state.ndof() * 2, 1);
@@ -654,7 +663,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-	State& state = *state_ptr;
+	State &state = *state_ptr;
 
 	json shape_arg = opt_args["parameters"][1];
 
@@ -700,7 +709,7 @@ TEST_CASE("dirichlet-sdf", "[adjoint_method]")
 	load_json(path + "dirichlet-sdf.json", in_args);
 
 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-	State& state = *state_ptr;
+	State &state = *state_ptr;
 
 	Eigen::MatrixXd control_points, tangents, delta;
 	control_points.setZero(2, 2);
@@ -773,7 +782,7 @@ TEST_CASE("dirichlet-ref", "[adjoint_method]")
 	load_json(path + "dirichlet-ref.json", in_args);
 
 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-	State& state = *state_ptr;
+	State &state = *state_ptr;
 
 	int time_steps = state.args["time"]["time_steps"].get<int>();
 
