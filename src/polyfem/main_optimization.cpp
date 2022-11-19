@@ -33,7 +33,10 @@ bool load_json(const std::string &json_file, json &out)
 
 	file >> out;
 
-	out["root_path"] = json_file;
+	if (!out.contains("root_path"))
+	{
+		out["root_path"] = json_file;
+	}
 
 	return true;
 }

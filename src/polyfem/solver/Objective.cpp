@@ -69,11 +69,12 @@ namespace polyfem::solver
 		}
 	} // namespace
 
-	std::shared_ptr<Objective> Objective::create(const json &args, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &states)
+	std::shared_ptr<Objective> Objective::create(const json &args, const std::string &root_path, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &states)
 	{
 		std::shared_ptr<Objective> obj;
 		std::shared_ptr<StaticObjective> static_obj;
 		const std::string type = args["type"];
+
 		if (type == "trajectory")
 		{
 			State &state = *(states[args["state"]]);
@@ -126,7 +127,7 @@ namespace polyfem::solver
 			{
 				State &state = *(states[args["state"]]);
 				const int dim = state.mesh->dimension();
-				const std::string target_data_path = args["marker_data_path"];
+				const std::string target_data_path = utils::resolve_path(args["marker_data_path"], root_path, false);
 
 				if (!std::filesystem::is_regular_file(target_data_path))
 				{
@@ -137,7 +138,7 @@ namespace polyfem::solver
 				Eigen::VectorXi nodes = tmp.col(0).cast<int>();
 
 				Eigen::MatrixXd targets;
-				targets.setZero(nodes.size(), dim);
+				targets.setZero(state.n_bases, dim);
 				std::vector<int> active_nodes;
 
 				if (matching == "exact-marker")
