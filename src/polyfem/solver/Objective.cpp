@@ -138,7 +138,7 @@ namespace polyfem::solver
 				Eigen::VectorXi nodes = tmp.col(0).cast<int>();
 
 				Eigen::MatrixXd targets;
-				targets.setZero(nodes.size(), dim);
+				targets.setZero(state.n_bases, dim);
 				std::vector<int> active_nodes;
 
 				if (matching == "exact-marker")
