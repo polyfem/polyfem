@@ -408,6 +408,7 @@
             "smoothing_parameters",
             "remesh",
             "spline_specification",
+            "graph_specification",
             "dimensions",
             "surface_selection"
         ],
@@ -441,6 +442,12 @@
         "pointer": "/parameters/*/dimensions/*",
         "type": "bool",
         "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/graph_specification",
+        "type": "list",
+        "default": [],
+        "doc": "low dimensional shape parameters of a graph structure"
     },
     {
         "pointer": "/parameters/*/spline_specification",
@@ -629,6 +636,17 @@
         "pointer": "/parameters/*/restriction",
         "type": "string",
         "default": "none",
+        "options": [
+            "none",
+            "cubic_hermite_spline",
+            "graph_structure",
+            "E_nu",
+            "E_nu_log",
+            "constant_E_nu",
+            "lambda_mu",
+            "lambda_mu_log",
+            "constant_lambda_mu"
+        ],
         "doc": "TODO"
     },
     {
