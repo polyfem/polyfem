@@ -42,25 +42,12 @@ namespace polyfem
 		void post_solve(const Eigen::VectorXd &newX) override;
 
 		bool remesh(Eigen::VectorXd &x) override;
-		void build_fixed_nodes();
+		void build_active_nodes();
 		void build_tied_nodes();
 
 		std::map<int, std::vector<int>> optimization_boundary_to_node;
 
 		const json &get_shape_params() const { return shape_params; }
-
-		void get_full_mesh(Eigen::MatrixXd &V, Eigen::MatrixXi &F) const { assert(false); }
-		// N x 2, vertex id tuples specifying boundary edges
-		Eigen::MatrixXi get_boundary_edges() const
-		{
-			assert(false);
-			return Eigen::MatrixXi();
-		}
-		// boundary vertex ids
-		std::vector<int> get_boundary_nodes() const
-		{
-			return states_ptr_[0]->boundary_nodes;
-		}
 
 	private:
 		int iter = 0;
@@ -69,7 +56,7 @@ namespace polyfem
 		Eigen::MatrixXd V_rest;
 		Eigen::MatrixXi elements;
 
-		std::set<int> fixed_nodes;
+		std::vector<bool> active_nodes_mask;
 		std::vector<bool> free_dimension;
 
 		std::vector<bool> tied_nodes_mask;

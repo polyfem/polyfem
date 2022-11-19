@@ -237,16 +237,16 @@ namespace polyfem
 			)");
 		}
 
-		build_fixed_nodes();
+		build_active_nodes();
 		build_tied_nodes();
 
 		if (shape_params["dimensions"].is_array())
 			free_dimension = shape_params["dimensions"].get<std::vector<bool>>();
-		if (free_dimension.size() < dim)
-			free_dimension.assign(dim, true);
+		if (free_dimension.size() != dim)
+			free_dimension.resize(dim, true);
 
 		shape_constraints_ = std::make_unique<ShapeConstraints>(args, V_rest, optimization_boundary_to_node);
-		shape_constraints_->set_fixed_nodes(fixed_nodes);
+		shape_constraints_->set_active_nodes_mask(active_nodes_mask);
 		optimization_dim_ = shape_constraints_->get_optimization_dim();
 	}
 
@@ -672,7 +672,7 @@ namespace polyfem
 		Eigen::MatrixXd boundary_nodes_pos;
 		states_ptr_[0]->build_collision_mesh(boundary_nodes_pos, collision_mesh, states_ptr_[0]->n_geom_bases, gbases);
 
-		build_fixed_nodes();
+		build_active_nodes();
 		build_tied_nodes();
 
 		logger().info("Remeshing finished!");
@@ -767,65 +767,84 @@ namespace polyfem
 		states_ptr_[0]->pre_sol = states_ptr_[0]->down_sampling_mat.transpose() * vertex_perturbation;
 	}
 
-	void ShapeParameter::build_fixed_nodes()
+	void ShapeParameter::build_active_nodes()
 	{
-		fixed_nodes.clear();
-		const auto &gbases = states_ptr_[0]->geom_bases();
+		const auto &mesh = get_state().mesh;
+		const auto &bases = get_state().bases;
+		const auto &gbases = get_state().geom_bases();
 
 		Eigen::MatrixXd V;
-		states_ptr_[0]->get_vf(V, elements);
+		get_state().get_vf(V, elements);
 
-		// fix certain object
+		active_nodes_mask.assign(get_state().n_geom_bases, true);
+		for (const auto &lb : get_state().total_local_boundary)
+		{
+			const int e = lb.element_id();
+			for (int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
+
+				for (long n = 0; n < nodes.size(); ++n)
+				{
+					const int g_id = gbases[e].bases[nodes(n)].global()[0].index;
+					active_nodes_mask[g_id] = false;
+				}
+			}
+		}
+
+		// select certain object
 		std::set<int> optimize_body_ids;
 		std::set<int> optimize_boundary_ids;
 		if (shape_params["volume_selection"].size() > 0)
 		{
 			for (int i : shape_params["volume_selection"])
 				optimize_body_ids.insert(i);
+			
+			logger().debug("Optimize shape based on volume selection...");
 
-			for (int e = 0; e < states_ptr_[0]->bases.size(); e++)
+			for (int e = 0; e < gbases.size(); e++)
 			{
-				const int body_id = states_ptr_[0]->mesh->get_body_id(e);
-				if (!optimize_body_ids.count(body_id))
+				const int body_id = mesh->get_body_id(e);
+				if (optimize_body_ids.count(body_id))
 					for (const auto &gbs : gbases[e].bases)
 						for (const auto &g : gbs.global())
-							fixed_nodes.insert(g.index);
+							active_nodes_mask[g.index] = true;
 			}
 		}
 		else if (shape_params["surface_selection"].size() > 0)
 		{
 			for (int i : shape_params["surface_selection"])
 				optimize_boundary_ids.insert(i);
+			
+			logger().debug("Optimize shape based on surface selection...");
 
-			for (const auto &lb : states_ptr_[0]->total_local_boundary)
+			for (const auto &lb : get_state().total_local_boundary)
 			{
 				const int e = lb.element_id();
 				for (int i = 0; i < lb.size(); ++i)
 				{
 					const int primitive_global_id = lb.global_primitive_id(i);
-					const auto nodes = states_ptr_[0]->bases[e].local_nodes_for_primitive(primitive_global_id, *states_ptr_[0]->mesh);
+					const int boundary_id = mesh->get_boundary_id(primitive_global_id);
+					const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
 
-					if (!optimize_boundary_ids.count(states_ptr_[0]->mesh->get_boundary_id(primitive_global_id)))
+					if (optimize_boundary_ids.count(boundary_id))
 					{
 						for (long n = 0; n < nodes.size(); ++n)
 						{
-							fixed_nodes.insert(states_ptr_[0]->bases[e].bases[nodes(n)].global()[0].index);
-						}
-					}
-					else
-					{
-						for (long n = 0; n < nodes.size(); ++n)
-						{
-							if (optimization_boundary_to_node.count(states_ptr_[0]->mesh->get_boundary_id(primitive_global_id)) != 0)
+							const int g_id = gbases[e].bases[nodes(n)].global()[0].index;
+							active_nodes_mask[g_id] = true;
+
+							if (optimization_boundary_to_node.count(boundary_id) != 0)
 							{
-								if (std::count(optimization_boundary_to_node[states_ptr_[0]->mesh->get_boundary_id(primitive_global_id)].begin(), optimization_boundary_to_node[states_ptr_[0]->mesh->get_boundary_id(primitive_global_id)].end(), states_ptr_[0]->bases[e].bases[nodes(n)].global()[0].index) == 0)
+								if (std::count(optimization_boundary_to_node[boundary_id].begin(), optimization_boundary_to_node[boundary_id].end(), g_id) == 0)
 								{
-									optimization_boundary_to_node[states_ptr_[0]->mesh->get_boundary_id(primitive_global_id)].push_back(states_ptr_[0]->bases[e].bases[nodes(n)].global()[0].index);
+									optimization_boundary_to_node[boundary_id].push_back(g_id);
 								}
 							}
 							else
 							{
-								optimization_boundary_to_node[states_ptr_[0]->mesh->get_boundary_id(primitive_global_id)] = {states_ptr_[0]->bases[e].bases[nodes(n)].global()[0].index};
+								optimization_boundary_to_node[boundary_id] = {g_id};
 							}
 						}
 					}
@@ -833,28 +852,27 @@ namespace polyfem
 			}
 		}
 		else
-			logger().info("No optimization body or boundary specified, optimize shape of every mesh...");
+		{
+			logger().debug("No volume or surface selection specified, optimize shape of every mesh...");
 
+			active_nodes_mask.assign(active_nodes_mask.size(), true);
+		}
 		// fix dirichlet bc
 		if (!shape_params.contains("fix_dirichlet") || shape_params["fix_dirichlet"].get<bool>())
 		{
 			logger().info("Fix position of Dirichlet boundary nodes.");
-			for (const auto &lb : states_ptr_[0]->local_boundary)
+			for (const auto &lb : get_state().local_boundary)
 			{
 				for (int i = 0; i < lb.size(); ++i)
 				{
 					const int e = lb.element_id();
 					const int primitive_g_id = lb.global_primitive_id(i);
-					const int tag = states_ptr_[0]->mesh->get_boundary_id(primitive_g_id);
-					const auto nodes = gbases[e].local_nodes_for_primitive(primitive_g_id, *(states_ptr_[0]->mesh));
-
-					if (tag <= 0)
-						continue;
+					const auto nodes = gbases[e].local_nodes_for_primitive(primitive_g_id, *(get_state().mesh));
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
 						assert(gbases[e].bases[nodes(n)].global().size() == 1);
-						fixed_nodes.insert(gbases[e].bases[nodes(n)].global()[0].index);
+						active_nodes_mask[gbases[e].bases[nodes(n)].global()[0].index] = false;
 					}
 				}
 			}
@@ -862,22 +880,18 @@ namespace polyfem
 
 		// fix neumann bc
 		logger().info("Fix position of nonzero Neumann boundary nodes.");
-		for (const auto &lb : states_ptr_[0]->local_neumann_boundary)
+		for (const auto &lb : get_state().local_neumann_boundary)
 		{
 			for (int i = 0; i < lb.size(); ++i)
 			{
 				const int e = lb.element_id();
 				const int primitive_g_id = lb.global_primitive_id(i);
-				const int tag = states_ptr_[0]->mesh->get_boundary_id(primitive_g_id);
-				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_g_id, *(states_ptr_[0]->mesh));
-
-				if (tag <= 0)
-					continue;
+				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_g_id, *(get_state().mesh));
 
 				for (long n = 0; n < nodes.size(); ++n)
 				{
 					assert(gbases[e].bases[nodes(n)].global().size() == 1);
-					fixed_nodes.insert(gbases[e].bases[nodes(n)].global()[0].index);
+					active_nodes_mask[gbases[e].bases[nodes(n)].global()[0].index] = false;
 				}
 			}
 		}
@@ -898,8 +912,8 @@ namespace polyfem
 				if (constraint.compute_distance(collision_mesh.vertices(V), collision_mesh.edges(), collision_mesh.faces()) >= threshold)
 					continue;
 
-				fixed_nodes.insert(collision_mesh.to_full_vertex_id(constraint.vertex_indices(collision_mesh.edges(), collision_mesh.faces())[0]));
-				fixed_nodes.insert(collision_mesh.to_full_vertex_id(constraint.vertex_indices(collision_mesh.edges(), collision_mesh.faces())[1]));
+				active_nodes_mask[collision_mesh.to_full_vertex_id(constraint.vertex_indices(collision_mesh.edges(), collision_mesh.faces())[0])] = false;
+				active_nodes_mask[collision_mesh.to_full_vertex_id(constraint.vertex_indices(collision_mesh.edges(), collision_mesh.faces())[1])] = false;
 			}
 
 			contact_set.ee_constraints.clear();
@@ -911,10 +925,15 @@ namespace polyfem
 				if (constraint.compute_distance(collision_mesh.vertices(V), collision_mesh.edges(), collision_mesh.faces()) >= threshold)
 					continue;
 
-				fixed_nodes.insert(collision_mesh.to_full_vertex_id(constraint.vertex_indices(collision_mesh.edges(), collision_mesh.faces())[0]));
+				active_nodes_mask[collision_mesh.to_full_vertex_id(constraint.vertex_indices(collision_mesh.edges(), collision_mesh.faces())[0])] = false;
 			}
 		}
 
-		logger().info("Fixed nodes: {}", fixed_nodes.size());
+		int num = 0;
+		for (bool b : active_nodes_mask)
+			if (b)
+				num++;
+
+		logger().info("Active boundary nodes in shape optimization: {}", num);
 	}
 } // namespace polyfem

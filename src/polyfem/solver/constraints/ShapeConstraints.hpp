@@ -41,9 +41,10 @@ namespace polyfem
 				};
 				dfull_to_dreduced_ = [this](const Eigen::VectorXd &dV_full) {
 					Eigen::VectorXd dreduced = dV_full;
-					for (int b : fixed_nodes_)
-						for (int d = 0; d < dim_; d++)
-							dreduced(b * dim_ + d) = 0;
+					for (int b = 0; b < active_nodes_mask_.size(); b++)
+						if (!active_nodes_mask_[b])
+							for (int d = 0; d < dim_; d++)
+								dreduced(b * dim_ + d) = 0;
 					return dreduced;
 				};
 			}
@@ -182,9 +183,14 @@ namespace polyfem
 					return dreduced;
 				};
 			}
+			else if (restriction == "graph_structure")
+			{
+				const auto &graph_param = constraint_params["graph_specification"];
+				assert(false);
+			}
 		}
 
-		void set_fixed_nodes(const std::set<int> &fixed_nodes) { fixed_nodes_ = fixed_nodes; }
+		void set_active_nodes_mask(const std::vector<bool> &active_nodes_mask) { active_nodes_mask_ = active_nodes_mask; }
 
 		void reduced_to_full(const Eigen::VectorXd &reduced, const Eigen::MatrixXd &V_rest, Eigen::MatrixXd &V_full) const
 		{
@@ -237,7 +243,7 @@ namespace polyfem
 		}
 
 	private:
-		std::set<int> fixed_nodes_;
+		std::vector<bool> active_nodes_mask_;
 		std::map<int, std::vector<int>> optimization_boundary_to_node_ids_;
 		const int num_vertices_;
 		const int dim_;
