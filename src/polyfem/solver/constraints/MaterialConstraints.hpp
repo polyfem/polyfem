@@ -55,6 +55,13 @@ namespace polyfem
 
         void update_state(std::shared_ptr<State> state, const Eigen::VectorXd &reduced) override
         {
+            Eigen::VectorXd x = reduced_to_full(reduced);
+            
+            state->assembler.update_lame_params(x.segment(0, n_elem), x.segment(n_elem, n_elem));
+        }
+
+		Eigen::VectorXd reduced_to_full(const Eigen::VectorXd &reduced) const
+        {
             Eigen::VectorXd x = reduced;
 
             if (apply_log)
@@ -71,17 +78,12 @@ namespace polyfem
             if (per_body)
                 x = per_body_to_per_elem(x);
             
-            state->assembler.update_lame_params(x.segment(0, n_elem), x.segment(n_elem, n_elem));
+            return x;
         }
-
-        Eigen::VectorXd x_from_state() const
+		
+        Eigen::VectorXd full_to_reduced(const Eigen::VectorXd &full) const
         {
-            Eigen::VectorXd lambdas = state_.assembler.lame_params().lambda_mat_;
-            Eigen::VectorXd mus = state_.assembler.lame_params().mu_mat_;
-
-            Eigen::VectorXd x(full_size_);
-            x.segment(0, n_elem) = lambdas;
-            x.segment(n_elem, n_elem) = mus;
+            Eigen::VectorXd x = full;
 
             if (per_body)
                 x = per_elem_to_per_body(x);
@@ -98,6 +100,15 @@ namespace polyfem
             }
 
             return x;
+        }
+
+        Eigen::VectorXd x_from_state() const
+        {
+            Eigen::VectorXd x(full_size_);
+            x.segment(0, n_elem) = state_.assembler.lame_params().lambda_mat_;
+            x.segment(n_elem, n_elem) = state_.assembler.lame_params().mu_mat_;
+
+            return full_to_reduced(x);
         }
 
         Eigen::VectorXd grad_full_to_grad_reduced(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &reduced) const

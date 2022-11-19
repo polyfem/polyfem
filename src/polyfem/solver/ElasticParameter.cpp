@@ -113,8 +113,10 @@ namespace polyfem
 
 	bool ElasticParameter::pre_solve(const Eigen::VectorXd &newX)
 	{
+		auto full = material_constraints_.reduced_to_full(newX);
+		const int n_elem = get_state().bases.size();
 		for (auto &state : states_ptr_)
-			material_constraints_.update_state(state, newX);
+			state->assembler.update_lame_params(full.segment(0, n_elem), full.segment(n_elem, n_elem));
 
 		return true;
 	}
