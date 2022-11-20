@@ -213,7 +213,6 @@ namespace polyfem
 		{
 			_dhat = opt_contact_params["dhat"];
 			_prev_distance = -1;
-			_barrier_stiffness = opt_contact_params["barrier_stiffness"];
 			_broad_phase_method = opt_contact_params["CCD"]["broad_phase"];
 			_ccd_tolerance = opt_contact_params["CCD"]["tolerance"];
 			_ccd_max_iterations = opt_contact_params["CCD"]["max_iterations"];
@@ -225,6 +224,7 @@ namespace polyfem
 		shape_params = args;
 		if (shape_params.contains("smoothing_paramters"))
 			slim_params = shape_params["smoothing_paramters"];
+		// TODO: put me in json spec
 		if (slim_params.empty())
 		{
 			slim_params = json::parse(R"(
@@ -232,7 +232,8 @@ namespace polyfem
 				"min_iter" : 2,
 				"tol" : 1e-8,
 				"soft_p" : 1e5,
-				"exp_factor" : 5
+				"exp_factor" : 5,
+				"skip": false
 			}
 			)");
 		}
@@ -328,6 +329,12 @@ namespace polyfem
 
 	void ShapeParameter::smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x)
 	{
+		if (slim_params["skip"])
+		{
+			new_x = x;
+			return;
+		}
+
 		Eigen::MatrixXd V, new_V;
 		shape_constraints_->reduced_to_full(x, V_rest, V);
 
@@ -931,9 +938,9 @@ namespace polyfem
 
 		int num = 0;
 		for (bool b : active_nodes_mask)
-			if (b)
+			if (!b)
 				num++;
 
-		logger().info("Active boundary nodes in shape optimization: {}", num);
+		logger().info("Fixed nodes in shape optimization: {}", num);
 	}
 } // namespace polyfem

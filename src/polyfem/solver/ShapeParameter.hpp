@@ -43,7 +43,7 @@ namespace polyfem
 
 		bool remesh(Eigen::VectorXd &x) override;
 		void build_active_nodes();
-		void build_tied_nodes();
+		void build_tied_nodes(); // not applied to shape constraints
 
 		std::map<int, std::vector<int>> optimization_boundary_to_node;
 
@@ -57,16 +57,14 @@ namespace polyfem
 		Eigen::MatrixXi elements;
 
 		std::vector<bool> active_nodes_mask;
-		std::vector<bool> free_dimension;
+		std::vector<bool> free_dimension; // not applied to shape constraints
 
-		std::vector<bool> tied_nodes_mask;
-		std::vector<std::array<int, 2>> tied_nodes;
+		std::vector<bool> tied_nodes_mask; // not applied to shape constraints
+		std::vector<std::array<int, 2>> tied_nodes; // not applied to shape constraints
 
 		bool mesh_flipped = false;
 
 		json shape_params, slim_params;
-
-		double target_weight = 1;
 
 		// below only used for problems with contact
 
@@ -74,7 +72,6 @@ namespace polyfem
 
 		double _dhat;
 		double _prev_distance;
-		double _barrier_stiffness;
 
 		ipc::BroadPhaseMethod _broad_phase_method;
 		double _ccd_tolerance;
@@ -82,7 +79,6 @@ namespace polyfem
 
 		ipc::Constraints _constraint_set;
 		ipc::CollisionMesh collision_mesh;
-		ipc::FrictionConstraints _friction_constraint_set;
 		ipc::Candidates _candidates;
 		bool _use_cached_candidates = false;
 

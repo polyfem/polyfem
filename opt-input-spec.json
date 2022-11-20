@@ -513,6 +513,13 @@
         "pointer": "/parameters/*/smoothing_parameters",
         "type": "object",
         "default": null,
+        "optional": [
+            "exp_factor",
+            "soft_p",
+            "tol",
+            "min_iter",
+            "skip"
+        ],
         "doc": "TODO"
     },
     {
@@ -537,6 +544,12 @@
         "pointer": "/parameters/*/smoothing_parameters/min_iter",
         "type": "int",
         "default": 2,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/smoothing_parameters/skip",
+        "type": "bool",
+        "default": false,
         "doc": "TODO"
     },
     {
