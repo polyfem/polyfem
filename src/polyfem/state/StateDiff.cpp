@@ -127,7 +127,15 @@ namespace polyfem
 	void State::set_v(const Eigen::MatrixXd &vertices)
 	{
 		auto &gbases = geom_bases();
+		auto &gmesh_nodes = iso_parametric() ? mesh_nodes : geom_mesh_nodes;
 		const int n_elements = int(gbases.size());
+		assert(vertices.cols() == mesh->dimension());
+
+		for (int n = 0; n < gmesh_nodes->n_nodes(); n++)
+		{
+			gmesh_nodes->set_node_position(n, vertices.row(n));
+		}
+
 		for (int e = 0; e < n_elements; ++e)
 		{
 			int n_loc_bases = gbases[e].bases.size();
@@ -136,7 +144,7 @@ namespace polyfem
 				auto &v = gbases[e].bases[i];
 				assert(v.global().size() == 1);
 
-				v.global()[0].node = vertices.block(v.global()[0].index, 0, 1, mesh->dimension());
+				v.global()[0].node = gmesh_nodes->node_position(v.global()[0].index); // vertices.row(v.global()[0].index);
 			}
 
 			if (!iso_parametric())
@@ -162,9 +170,12 @@ namespace polyfem
 					assert(v.global().size() == 1);
 
 					v.global()[0].node = pts.block(i, 0, 1, mesh->dimension());
+					mesh_nodes->set_node_position(v.global()[0].index, v.global()[0].node);
 				}
 			}
 		}
+
+		assert(!assembler.is_mixed(formulation())); // need to update pressure_bases and pressure_mesh_nodes
 
 		{
 			const auto &primitive_to_node = iso_parametric() ? primitive_to_bases_node : primitive_to_geom_bases_node;
