@@ -116,11 +116,6 @@ int main(int argc, char **argv)
 		return command_line.exit(CLI::RequiredError("--json or --hdf5"));
 	}
 
-	if (!output_dir.empty())
-	{
-		std::filesystem::create_directories(output_dir);
-	}
-
 	if (has_arg(command_line, "log_level"))
 	{
 		auto tmp = R"({
@@ -149,8 +144,21 @@ int main(int argc, char **argv)
 		in_args.merge_patch(tmp);
 	}
 
+	if (has_arg(command_line, "output_dir"))
+	{
+		auto tmp = R"({
+				"output": {
+					"directory": -1
+				}
+			})"_json;
+
+		tmp["output"]["directory"] = output_dir;
+
+		in_args.merge_patch(tmp);
+	}
+
 	State state;
-	state.init(in_args, is_strict, output_dir, fallback_solver);
+	state.init(in_args, is_strict, fallback_solver);
 	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
 
 	// Mesh was not loaded successfully; load_mesh() logged the error.

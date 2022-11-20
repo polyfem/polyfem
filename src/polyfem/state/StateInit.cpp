@@ -148,7 +148,7 @@ namespace polyfem
 		ipc::logger().set_level(log_level);
 	}
 
-	void State::init(const json &p_args_in, const bool strict_validation, const std::string &output_dir, const bool fallback_solver)
+	void State::init(const json &p_args_in, const bool strict_validation, const bool fallback_solver)
 	{
 		json args_in = p_args_in; // mutable copy
 
@@ -288,6 +288,11 @@ namespace polyfem
 		}
 
 		// Save output directory and resolve output paths dynamically
+		const std::string output_dir = this->args["output"]["directory"];
+		if (!output_dir.empty())
+		{
+			std::filesystem::create_directories(output_dir);
+		}
 		this->output_dir = output_dir;
 	}
 

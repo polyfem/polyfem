@@ -3252,6 +3252,7 @@
         "default": null,
         "type": "object",
         "optional": [
+            "directory",
             "log",
             "json",
             "paraview",
@@ -3260,6 +3261,12 @@
             "reference"
         ],
         "doc": "output settings"
+    },
+    {
+        "pointer": "/output/directory",
+        "default": "",
+        "type": "string",
+        "doc": "Directory for output files."
     },
     {
         "pointer": "/output/log",
