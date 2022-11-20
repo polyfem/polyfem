@@ -28,6 +28,19 @@
 
 #include <sstream>
 
+namespace spdlog
+{
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		spdlog::level::level_enum,
+		{{spdlog::level::level_enum::trace, "trace"},
+		 {spdlog::level::level_enum::debug, "debug"},
+		 {spdlog::level::level_enum::info, "info"},
+		 {spdlog::level::level_enum::warn, "warning"},
+		 {spdlog::level::level_enum::err, "error"},
+		 {spdlog::level::level_enum::critical, "critical"},
+		 {spdlog::level::level_enum::off, "off"}})
+}
+
 namespace polyfem
 {
 	using namespace problem;
@@ -202,6 +215,15 @@ namespace polyfem
 		// end of check
 
 		this->args = jse.inject_defaults(args_in, rules);
+
+		std::string out_path_log = this->args["output"]["log"]["path"];
+		if (!out_path_log.empty())
+		{
+			out_path_log = resolve_output_path(out_path_log);
+		}
+
+		spdlog::level::level_enum log_level = this->args["output"]["log"]["level"];
+		init_logger(out_path_log, log_level, this->args["output"]["log"]["quiet"]);
 
 		// std::cout << this->args.dump() << std::endl;
 
