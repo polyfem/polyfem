@@ -94,7 +94,7 @@ namespace polyfem
 		};
 	} // namespace
 
-	State::State(const unsigned int max_threads)
+	State::State()
 	{
 		using namespace polysolve;
 #ifndef WIN32
@@ -102,12 +102,6 @@ namespace polyfem
 #endif
 
 		GEO::initialize();
-		const unsigned int num_threads = std::max(1u, std::min(max_threads, std::thread::hardware_concurrency()));
-		NThread::get().num_threads = num_threads;
-#ifdef POLYFEM_WITH_TBB
-		thread_limiter = std::make_shared<tbb::global_control>(tbb::global_control::max_allowed_parallelism, num_threads);
-#endif
-		Eigen::setNbThreads(num_threads);
 
 		// Import standard command line arguments, and custom ones
 		GEO::CmdLine::import_arg_group("standard");
@@ -225,7 +219,8 @@ namespace polyfem
 		spdlog::level::level_enum log_level = this->args["output"]["log"]["level"];
 		init_logger(out_path_log, log_level, this->args["output"]["log"]["quiet"]);
 
-		// std::cout << this->args.dump() << std::endl;
+		const unsigned int thread_in = this->args["solver"]["max_threads"];
+		set_max_threads(thread_in <= 0 ? std::numeric_limits<unsigned int>::max() : thread_in);
 
 		has_dhat = args_in["contact"].contains("dhat");
 
@@ -294,6 +289,16 @@ namespace polyfem
 
 		// Save output directory and resolve output paths dynamically
 		this->output_dir = output_dir;
+	}
+
+	void State::set_max_threads(const unsigned int max_threads)
+	{
+		const unsigned int num_threads = std::max(1u, std::min(max_threads, std::thread::hardware_concurrency()));
+		NThread::get().num_threads = num_threads;
+#ifdef POLYFEM_WITH_TBB
+		thread_limiter = std::make_shared<tbb::global_control>(tbb::global_control::max_allowed_parallelism, num_threads);
+#endif
+		Eigen::setNbThreads(num_threads);
 	}
 
 	void State::init_time()

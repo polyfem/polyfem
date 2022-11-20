@@ -1315,6 +1315,7 @@
         "default": null,
         "type": "object",
         "optional": [
+            "max_threads",
             "linear",
             "nonlinear",
             "augmented_lagrangian",
@@ -1324,6 +1325,13 @@
             "advanced"
         ],
         "doc": "The settings for the solver including linear solver, nonlinear solver, and some advanced options."
+    },
+    {
+        "pointer": "/solver/max_threads",
+        "default": 0,
+        "type": "int",
+        "min": 0,
+        "doc": "Maximum number of threads used; 0 is illimited."
     },
     {
         "pointer": "/solver/linear",

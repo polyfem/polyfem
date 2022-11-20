@@ -136,7 +136,20 @@ int main(int argc, char **argv)
 		in_args.merge_patch(tmp);
 	}
 
-	State state(max_threads);
+	if (has_arg(command_line, "max_threads"))
+	{
+		auto tmp = R"({
+				"solver": {
+					"max_threads": -1
+				}
+			})"_json;
+
+		tmp["solver"]["max_threads"] = max_threads;
+
+		in_args.merge_patch(tmp);
+	}
+
+	State state;
 	state.init(in_args, is_strict, output_dir, fallback_solver);
 	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
 
