@@ -1338,6 +1338,7 @@
         "default": null,
         "type": "object",
         "optional": [
+            "enable_overwrite_solver",
             "solver",
             "precond",
             "Eigen::LeastSquaresConjugateGradient",
@@ -1351,6 +1352,12 @@
             "AMGCL"
         ],
         "doc": "Settings for the linear solver."
+    },
+    {
+        "pointer": "/solver/linear/enable_overwrite_solver",
+        "default": false,
+        "type": "bool",
+        "doc": "If solver name is not present, falls back to default"
     },
     {
         "pointer": "/solver/linear/solver",

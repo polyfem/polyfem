@@ -157,8 +157,23 @@ int main(int argc, char **argv)
 		in_args.merge_patch(tmp);
 	}
 
+	if (has_arg(command_line, "enable_overwrite_solver"))
+	{
+		auto tmp = R"({
+				"solver": {
+					"linear": {
+						"enable_overwrite_solver": false
+					}
+				}
+			})"_json;
+
+		tmp["solver"]["linear"]["enable_overwrite_solver"] = fallback_solver;
+
+		in_args.merge_patch(tmp);
+	}
+
 	State state;
-	state.init(in_args, is_strict, fallback_solver);
+	state.init(in_args, is_strict);
 	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
 
 	// Mesh was not loaded successfully; load_mesh() logged the error.

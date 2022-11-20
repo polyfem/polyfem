@@ -148,7 +148,7 @@ namespace polyfem
 		ipc::logger().set_level(log_level);
 	}
 
-	void State::init(const json &p_args_in, const bool strict_validation, const bool fallback_solver)
+	void State::init(const json &p_args_in, const bool strict_validation)
 	{
 		json args_in = p_args_in; // mutable copy
 
@@ -186,19 +186,6 @@ namespace polyfem
 			}
 		}
 
-		// // Fallback to default linear solver if the specified solver is invalid
-		if (fallback_solver && args_in.contains("/solver/linear/solver"_json_pointer))
-		{
-			const std::string s_json = args_in["solver"]["linear"]["solver"];
-			const auto ss = polysolve::LinearSolver::availableSolvers();
-			const auto solver_found = std::find(ss.begin(), ss.end(), s_json);
-			if (solver_found == ss.end())
-			{
-				logger().warn("Solver {} is invalid, falling back to {}", s_json, polysolve::LinearSolver::defaultSolver());
-				args_in["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
-			}
-		}
-
 		const bool valid_input = jse.verify_json(args_in, rules);
 
 		if (!valid_input)
@@ -209,6 +196,20 @@ namespace polyfem
 		// end of check
 
 		this->args = jse.inject_defaults(args_in, rules);
+
+		const bool fallback_solver = this->args["solver"]["linear"]["enable_overwrite_solver"];
+		// Fallback to default linear solver if the specified solver is invalid
+		if (fallback_solver)
+		{
+			const std::string s_json = this->args["solver"]["linear"]["solver"];
+			const auto ss = polysolve::LinearSolver::availableSolvers();
+			const auto solver_found = std::find(ss.begin(), ss.end(), s_json);
+			if (solver_found == ss.end())
+			{
+				logger().warn("Solver {} is invalid, falling back to {}", s_json, polysolve::LinearSolver::defaultSolver());
+				this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
+			}
+		}
 
 		std::string out_path_log = this->args["output"]["log"]["path"];
 		if (!out_path_log.empty())
