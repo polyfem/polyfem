@@ -337,7 +337,8 @@ namespace polyfem::solver
 
 	SpatialIntegralObjective::SpatialIntegralObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : state_(state), shape_param_(shape_param)
 	{
-		assert(shape_param_->name() == "shape");
+		if (shape_param_)
+			assert(shape_param_->name() == "shape");
 	}
 
 	double SpatialIntegralObjective::value()
@@ -1235,7 +1236,8 @@ namespace polyfem::solver
 
 	ComplianceObjective::ComplianceObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
 	{
-		assert(elastic_param_->name() == "material");
+		if (elastic_param_)
+			assert(elastic_param_->name() == "material");
 		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
