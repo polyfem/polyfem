@@ -81,10 +81,10 @@ namespace polyfem::solver
 			const std::string matching = args["matching"];
 			if (matching == "exact")
 			{
-				std::shared_ptr<ShapeParameter> shape_param;
+				std::shared_ptr<Parameter> shape_param;
 				if (args["shape_parameter"] >= 0)
 				{
-					shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+					shape_param = parameters[args["shape_parameter"]];
 					if (!shape_param->contains_state(state))
 						logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
 				}
@@ -112,10 +112,10 @@ namespace polyfem::solver
 				for (int i = 0; i < delta.size(); ++i)
 					delta(i) = args["delta"][i].get<double>();
 
-				std::shared_ptr<ShapeParameter> shape_param;
+				std::shared_ptr<Parameter> shape_param;
 				if (args["shape_parameter"] >= 0)
 				{
-					shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+					shape_param = parameters[args["shape_parameter"]];
 					if (!shape_param->contains_state(state))
 						logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
 				}
@@ -178,11 +178,11 @@ namespace polyfem::solver
 		else if (type == "stress")
 		{
 			State &state = *(states[args["state"]]);
-			std::shared_ptr<ShapeParameter> shape_param;
+			std::shared_ptr<Parameter> shape_param;
 			std::shared_ptr<ElasticParameter> elastic_param;
 			if (args["shape_parameter"] >= 0)
 			{
-				shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+				shape_param = parameters[args["shape_parameter"]];
 				if (!shape_param->contains_state(state))
 					logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
 			}
@@ -201,10 +201,10 @@ namespace polyfem::solver
 		else if (type == "position")
 		{
 			State &state = *(states[args["state"]]);
-			std::shared_ptr<ShapeParameter> shape_param;
+			std::shared_ptr<Parameter> shape_param;
 			if (args["shape_parameter"] >= 0)
 			{
-				shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+				shape_param = parameters[args["shape_parameter"]];
 				if (!shape_param->contains_state(state))
 					logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
 			}
@@ -220,16 +220,16 @@ namespace polyfem::solver
 		}
 		else if (type == "boundary_smoothing")
 		{
-			std::shared_ptr<ShapeParameter> shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+			std::shared_ptr<Parameter> shape_param = parameters[args["shape_parameter"]];
 			obj = std::make_shared<solver::BoundarySmoothingObjective>(shape_param, args);
 		}
 		else if (type == "deformed_boundary_smoothing")
 		{
 			State &state = *(states[args["state"]]);
-			std::shared_ptr<ShapeParameter> shape_param;
+			std::shared_ptr<Parameter> shape_param;
 			if (args["shape_parameter"] >= 0)
 			{
-				shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+				shape_param = parameters[args["shape_parameter"]];
 				if (!shape_param->contains_state(state))
 					logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
 			}
@@ -245,16 +245,16 @@ namespace polyfem::solver
 		}
 		else if (type == "volume_constraint")
 		{
-			std::shared_ptr<ShapeParameter> shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+			std::shared_ptr<Parameter> shape_param = parameters[args["shape_parameter"]];
 			obj = std::make_shared<solver::VolumePaneltyObjective>(shape_param, args);
 		}
 		else if (type == "compliance")
 		{
 			State &state = *(states[args["state"]]);
 
-			std::shared_ptr<ShapeParameter> shape_param;
+			std::shared_ptr<Parameter> shape_param;
 			if (args["shape_parameter"] >= 0)
-				shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+				shape_param = parameters[args["shape_parameter"]];
 
 			std::shared_ptr<ElasticParameter> elastic_param;
 			if (args["material_parameter"] >= 0)
@@ -273,9 +273,9 @@ namespace polyfem::solver
 		{
 			State &state = *(states[args["state"]]);
 
-			std::shared_ptr<ShapeParameter> shape_param;
+			std::shared_ptr<Parameter> shape_param;
 			if (args["shape_parameter"] >= 0)
-				shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+				shape_param = parameters[args["shape_parameter"]];
 
 			obj = std::make_shared<solver::StrainObjective>(state, shape_param, args);
 		}
@@ -307,8 +307,9 @@ namespace polyfem::solver
 		return term;
 	}
 
-	SpatialIntegralObjective::SpatialIntegralObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : state_(state), shape_param_(shape_param)
+	SpatialIntegralObjective::SpatialIntegralObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : state_(state), shape_param_(shape_param)
 	{
+		assert(shape_param_->name() == "shape");
 		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -346,7 +347,7 @@ namespace polyfem::solver
 		return term;
 	}
 
-	StressObjective::StressObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const json &args, bool has_integral_sqrt) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
+	StressObjective::StressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const json &args, bool has_integral_sqrt) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
 	{
 		formulation_ = state.formulation();
 		in_power_ = args["power"];
@@ -590,7 +591,7 @@ namespace polyfem::solver
 		}
 	}
 
-	BoundarySmoothingObjective::BoundarySmoothingObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : shape_param_(shape_param), args_(args)
+	BoundarySmoothingObjective::BoundarySmoothingObjective(const std::shared_ptr<const Parameter> shape_param, const json &args) : shape_param_(shape_param), args_(args)
 	{
 		init();
 	}
@@ -753,7 +754,7 @@ namespace polyfem::solver
 		adj.setFromTriplets(T_adj.begin(), T_adj.end());
 	}
 
-	DeformedBoundarySmoothingObjective::DeformedBoundarySmoothingObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : state_(state), shape_param_(shape_param), args_(args)
+	DeformedBoundarySmoothingObjective::DeformedBoundarySmoothingObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : state_(state), shape_param_(shape_param), args_(args)
 	{
 		init();
 	}
@@ -898,7 +899,7 @@ namespace polyfem::solver
 		return grad;
 	}
 
-	VolumeObjective::VolumeObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : shape_param_(shape_param)
+	VolumeObjective::VolumeObjective(const std::shared_ptr<const Parameter> shape_param, const json &args) : shape_param_(shape_param)
 	{
 		if (!shape_param)
 			log_and_throw_error("Volume Objective needs non-empty shape parameter!");
@@ -951,7 +952,7 @@ namespace polyfem::solver
 			return Eigen::VectorXd::Zero(param.full_dim());
 	}
 
-	VolumePaneltyObjective::VolumePaneltyObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args)
+	VolumePaneltyObjective::VolumePaneltyObjective(const std::shared_ptr<const Parameter> shape_param, const json &args)
 	{
 		if (args["soft_bound"].get<std::vector<double>>().size() == 2)
 			bound = args["soft_bound"];
@@ -989,7 +990,7 @@ namespace polyfem::solver
 			return Eigen::VectorXd::Zero(grad.size(), 1);
 	}
 
-	PositionObjective::PositionObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
+	PositionObjective::PositionObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
 	{
 	}
 
@@ -1022,7 +1023,7 @@ namespace polyfem::solver
 		return term;
 	}
 
-	BarycenterTargetObjective::BarycenterTargetObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args, const Eigen::MatrixXd &target)
+	BarycenterTargetObjective::BarycenterTargetObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args, const Eigen::MatrixXd &target)
 	{
 		dim_ = state.mesh->dimension();
 		target_ = target;
@@ -1200,7 +1201,7 @@ namespace polyfem::solver
 		return term;
 	}
 
-	ComplianceObjective::ComplianceObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const std::shared_ptr<const TopologyOptimizationParameter> topo_param, const json &args) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param), topo_param_(topo_param)
+	ComplianceObjective::ComplianceObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const std::shared_ptr<const TopologyOptimizationParameter> topo_param, const json &args) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param), topo_param_(topo_param)
 	{
 		assert(!topo_param_ || !elastic_param_);
 		formulation_ = state.formulation();

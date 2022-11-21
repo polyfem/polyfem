@@ -59,7 +59,7 @@ namespace polyfem::solver
 	class SpatialIntegralObjective : public StaticObjective
 	{
 	public:
-		SpatialIntegralObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
+		SpatialIntegralObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args);
 		virtual ~SpatialIntegralObjective() = default;
 
 		double value() override;
@@ -71,7 +71,7 @@ namespace polyfem::solver
 
 	protected:
 		const State &state_;
-		std::shared_ptr<const ShapeParameter> shape_param_;
+		std::shared_ptr<const Parameter> shape_param_;
 		AdjointForm::SpatialIntegralType spatial_integral_type_;
 		std::set<int> interested_ids_;
 	};
@@ -79,7 +79,7 @@ namespace polyfem::solver
 	class StressObjective : public SpatialIntegralObjective
 	{
 	public:
-		StressObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const json &args, bool has_integral_sqrt = true);
+		StressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const json &args, bool has_integral_sqrt = true);
 		~StressObjective() = default;
 
 		double value() override;
@@ -119,7 +119,7 @@ namespace polyfem::solver
 	class BoundarySmoothingObjective : public Objective
 	{
 	public:
-		BoundarySmoothingObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
+		BoundarySmoothingObjective(const std::shared_ptr<const Parameter> shape_param, const json &args);
 		~BoundarySmoothingObjective() = default;
 
 		void init();
@@ -129,7 +129,7 @@ namespace polyfem::solver
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
 
 	protected:
-		std::shared_ptr<const ShapeParameter> shape_param_;
+		std::shared_ptr<const Parameter> shape_param_;
 
 		const json args_;
 
@@ -140,7 +140,7 @@ namespace polyfem::solver
 	class DeformedBoundarySmoothingObjective : public Objective
 	{
 	public:
-		DeformedBoundarySmoothingObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
+		DeformedBoundarySmoothingObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args);
 		~DeformedBoundarySmoothingObjective() = default;
 
 		void init();
@@ -151,7 +151,7 @@ namespace polyfem::solver
 
 	protected:
 		const State &state_;
-		std::shared_ptr<const ShapeParameter> shape_param_;
+		std::shared_ptr<const Parameter> shape_param_;
 		const json args_;
 
 		Eigen::SparseMatrix<bool, Eigen::RowMajor> adj;
@@ -160,7 +160,7 @@ namespace polyfem::solver
 	class VolumeObjective : public Objective
 	{
 	public:
-		VolumeObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
+		VolumeObjective(const std::shared_ptr<const Parameter> shape_param, const json &args);
 		~VolumeObjective() = default;
 
 		void set_weights(const Eigen::VectorXd &weights) { weights_ = weights; }
@@ -170,7 +170,7 @@ namespace polyfem::solver
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
 
 	protected:
-		std::shared_ptr<const ShapeParameter> shape_param_;
+		std::shared_ptr<const Parameter> shape_param_;
 		std::set<int> interested_ids_;
 		Eigen::VectorXd weights_;
 	};
@@ -178,7 +178,7 @@ namespace polyfem::solver
 	class VolumePaneltyObjective : public Objective
 	{
 	public:
-		VolumePaneltyObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
+		VolumePaneltyObjective(const std::shared_ptr<const Parameter> shape_param, const json &args);
 		~VolumePaneltyObjective() = default;
 
 		double value() override;
@@ -193,7 +193,7 @@ namespace polyfem::solver
 	class PositionObjective : public SpatialIntegralObjective
 	{
 	public:
-		PositionObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args);
+		PositionObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args);
 		~PositionObjective() = default;
 
 		void set_dim(const int dim) { dim_ = dim; }
@@ -208,7 +208,7 @@ namespace polyfem::solver
 	class BarycenterTargetObjective : public StaticObjective
 	{
 	public:
-		BarycenterTargetObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args, const Eigen::MatrixXd &target);
+		BarycenterTargetObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args, const Eigen::MatrixXd &target);
 		~BarycenterTargetObjective() = default;
 
 		double value() override;
@@ -253,7 +253,7 @@ namespace polyfem::solver
 	class ComplianceObjective : public SpatialIntegralObjective
 	{
 	public:
-		ComplianceObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const std::shared_ptr<const TopologyOptimizationParameter> topo_param, const json &args);
+		ComplianceObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const std::shared_ptr<const TopologyOptimizationParameter> topo_param, const json &args);
 		~ComplianceObjective() = default;
 
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
@@ -269,7 +269,7 @@ namespace polyfem::solver
 	class StrainObjective : public SpatialIntegralObjective
 	{
 	public:
-		StrainObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args) {}
+		StrainObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args) {}
 		~StrainObjective() = default;
 
 		IntegrableFunctional get_integral_functional() override;
@@ -317,7 +317,7 @@ namespace polyfem::solver
 	class TargetObjective : public SpatialIntegralObjective
 	{
 	public:
-		TargetObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
+		TargetObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
 		{
 			spatial_integral_type_ = AdjointForm::SpatialIntegralType::SURFACE;
 			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
@@ -336,7 +336,7 @@ namespace polyfem::solver
 	class SDFTargetObjective : public SpatialIntegralObjective
 	{
 	public:
-		SDFTargetObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
+		SDFTargetObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
 		{
 			spatial_integral_type_ = AdjointForm::SpatialIntegralType::SURFACE;
 			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
