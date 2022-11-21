@@ -28,7 +28,7 @@
 
 #include <sstream>
 
-namespace spdlog
+namespace spdlog::level
 {
 	NLOHMANN_JSON_SERIALIZE_ENUM(
 		spdlog::level::level_enum,
