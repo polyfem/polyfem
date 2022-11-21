@@ -561,6 +561,12 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
 	load_json(path + "shape-transient-friction-sdf.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
+
+	json opt_args;
+	load_json(path + "shape-transient-friction-sdf-opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
 
 	Eigen::MatrixXd control_points, tangents, delta;
 	control_points.setZero(2, 2);
@@ -571,15 +577,15 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 		-1, 0;
 	delta.setZero(1, 2);
 	delta << 0.05, 0.05;
-	SDFTrajectoryFunctional func;
-	func.set_spline_target(control_points, tangents, delta);
-	func.set_interested_ids({}, {2});
-	func.set_surface_integral();
-	func.set_transient_integral_type("final");
 
-	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-	State &state = *state_ptr;
-	double functional_val = func.energy(state);
+	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
+	std::shared_ptr<StaticObjective> func_aux;
+	auto sdf_aux = std::make_shared<SDFTargetObjective>(state, shape_param, opt_args["parameters"][0]);
+	json functional_args = opt_args["functionals"][0];
+	sdf_aux->set_spline_target(control_points, tangents, delta);
+	func_aux = sdf_aux;
+	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], functional_args["transient_integral_type"], func_aux);
 
 	Eigen::MatrixXd velocity_discrete;
 	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
@@ -591,28 +597,7 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 
 	velocity_discrete.normalize();
 
-	Eigen::VectorXd one_form = func.gradient(state, "shape");
-	double derivative = (one_form.array() * velocity_discrete.array()).sum();
-
-	// Check that the answer given is correct via finite difference.
-	// First alter the mesh according to the velocity.
-	const double t = 1e-6;
-	perturb_mesh(state, velocity_discrete * t);
-
-	solve_pde(state);
-	double next_functional_val = func.energy(state);
-
-	perturb_mesh(state, velocity_discrete * (-2 * t));
-
-	solve_pde(state);
-	double prev_functional_val = func.energy(state);
-
-	double finite_difference = (next_functional_val - prev_functional_val) / (2 * t);
-
-	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << prev_functional_val << " f(x+dt) " << next_functional_val << "\n";
-	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-
-	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-5));
+	verify_adjoint(func, state, shape_param, "shape", velocity_discrete, 1e-6, 1e-5);
 }
 
 TEST_CASE("initial-contact", "[adjoint_method]")

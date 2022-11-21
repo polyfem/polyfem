@@ -269,7 +269,12 @@ namespace polyfem::solver
 	class StrainObjective : public SpatialIntegralObjective
 	{
 	public:
-		StrainObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args) {}
+		StrainObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
+		{
+			spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
+			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+		}
 		~StrainObjective() = default;
 
 		IntegrableFunctional get_integral_functional() override;

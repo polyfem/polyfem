@@ -91,7 +91,8 @@ namespace polyfem::solver
 
 				auto target = states[args["target_state"]];
 				auto target_obj = std::make_shared<TargetObjective>(state, shape_param, args);
-				target_obj->set_reference(target, args["reference_cached_body_ids"]);
+				auto reference_cached = args["reference_cached_body_ids"].get<std::vector<int>>();
+				target_obj->set_reference(target, std::set(reference_cached.begin(), reference_cached.end()));
 				static_obj = target_obj;
 			}
 			else if (matching == "sdf")
@@ -309,9 +310,6 @@ namespace polyfem::solver
 
 	SpatialIntegralObjective::SpatialIntegralObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : state_(state), shape_param_(shape_param)
 	{
-		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
-		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
-		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 	}
 
 	double SpatialIntegralObjective::value()
@@ -348,6 +346,10 @@ namespace polyfem::solver
 
 	StressObjective::StressObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const json &args, bool has_integral_sqrt) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
 	{
+		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
+		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+
 		formulation_ = state.formulation();
 		in_power_ = args["power"];
 		out_sqrt_ = has_integral_sqrt;
@@ -991,6 +993,9 @@ namespace polyfem::solver
 
 	PositionObjective::PositionObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
 	{
+		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
+		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 	}
 
 	IntegrableFunctional PositionObjective::get_integral_functional()
@@ -1202,6 +1207,10 @@ namespace polyfem::solver
 
 	ComplianceObjective::ComplianceObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const std::shared_ptr<const TopologyOptimizationParameter> topo_param, const json &args) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param), topo_param_(topo_param)
 	{
+		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
+		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+
 		assert(!topo_param_ || !elastic_param_);
 		formulation_ = state.formulation();
 	}
