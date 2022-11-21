@@ -212,9 +212,10 @@ namespace polyfem::mesh
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+		ipc::CollisionMesh collision_mesh; // This has to stay alive
 		if (free_boundary)
 		{
-			ipc::CollisionMesh collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
+			collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
 				utils::reorder_matrix(local_mesh.rest_positions(), vertex_to_basis),
 				utils::map_index_matrix(local_mesh.boundary_edges(), vertex_to_basis),
 				/*boundary_faces=*/Eigen::MatrixXi());

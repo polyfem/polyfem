@@ -82,7 +82,7 @@ namespace polyfem::mesh
 			{
 				for (int j = 0; j < m_boundary_edges.cols(); j++)
 				{
-					m_fixed_vertices.push_back(m_boundary_edges(i, i));
+					m_fixed_vertices.push_back(m_boundary_edges(i, j));
 				}
 				// TODO:
 				// m_boundary_ids.push_back(m.edge_attrs[e.eid(m)].boundary_id);
