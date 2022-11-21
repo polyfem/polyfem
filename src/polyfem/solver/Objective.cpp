@@ -1,4 +1,6 @@
 #include "Objective.hpp"
+
+#include <polyfem/utils/CompositeSplineParam.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>

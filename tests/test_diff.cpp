@@ -11,6 +11,7 @@
 #include <cmath>
 #include <jse/jse.h>
 
+#include <polyfem/solver/ShapeParameter.hpp>
 #include <polyfem/solver/DampingParameter.hpp>
 #include <polyfem/solver/ElasticParameter.hpp>
 #include <polyfem/solver/Optimizations.hpp>

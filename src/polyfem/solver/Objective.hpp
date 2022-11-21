@@ -1,6 +1,5 @@
 #pragma once
 
-#include <polyfem/utils/CompositeSplineParam.hpp>
 #include "AdjointForm.hpp"
 
 #include <array>
