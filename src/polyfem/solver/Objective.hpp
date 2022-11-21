@@ -424,12 +424,17 @@ namespace polyfem::solver
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
 
 	protected:
-		double min_E, max_E;
-		double min_lambda, max_lambda;
-		double min_mu, max_mu;
-		double min_nu, max_nu;
+		std::shared_ptr<const Parameter> elastic_param_;
 
-		double barrier_stiffness;
-		double dhat;
+		const bool is_volume;
+		
+		double min_E = 0, max_E = 0;
+		double kappa_E = 0, dhat_E = 0;
+		double min_lambda = 0, max_lambda = 0;
+		double kappa_lambda = 0, dhat_lambda = 0;
+		double min_mu = 0, max_mu = 0;
+		double kappa_mu = 0, dhat_mu = 0;
+		double min_nu = 0, max_nu = 0;
+		double kappa_nu = 0, dhat_nu = 0;
 	};
 } // namespace polyfem::solver

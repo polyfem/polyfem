@@ -69,6 +69,28 @@ namespace polyfem::solver
 
 			return grad;
 		}
+
+		double barrier_func(double x, double dhat)
+		{
+			double y = x / dhat;
+			if (0 < y && y < 1)
+				return -pow(y - 1, 2) * log(y);
+			else if (x > dhat)
+				return 0;
+			else
+				return std::nan("");
+		}
+
+		double barrier_func_derivative(double x, double dhat)
+		{
+			double y = x / dhat;
+			if (0 < y && y < 1)
+				return -(1 - y) * (1 - y - 2 * y * log(y)) / x;
+			else if (y > 1)
+				return 0;
+			else
+				return std::nan("");
+		}
 	} // namespace
 
 	std::shared_ptr<Objective> Objective::create(const json &args, const std::string &root_path, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &states)
@@ -237,6 +259,13 @@ namespace polyfem::solver
 					logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
 			}
 			obj = std::make_shared<solver::DeformedBoundarySmoothingObjective>(state, shape_param, args);
+		}
+		else if (type == "material_bound")
+		{
+			if (args["material_parameter"] < 0)
+				log_and_throw_error("No material parameter assigned to material bound objective!");
+			std::shared_ptr<Parameter> elastic_param = parameters[args["material_parameter"]];
+			obj = std::make_shared<MaterialBoundObjective>(elastic_param, args);
 		}
 		else if (type == "control_smoothing")
 		{
@@ -1775,6 +1804,139 @@ namespace polyfem::solver
 		j.set_dj_dx(djdu_func);
 
 		return j;
+	}
+
+	MaterialBoundObjective::MaterialBoundObjective(const std::shared_ptr<const Parameter> elastic_param, const json &args): elastic_param_(elastic_param), is_volume(elastic_param->get_state().mesh->is_volume())
+	{
+		for (const auto &arg : args["bounds"])
+		{
+			if (arg["type"] == "E")
+			{
+				min_E = arg["min"];
+				max_E = arg["max"];
+				kappa_E = arg["kappa"];
+				dhat_E = arg["dhat"];
+			}
+			else if (arg["type"] == "nu")
+			{
+				min_nu = arg["min"];
+				max_nu = arg["max"];
+				kappa_nu = arg["kappa"];
+				dhat_nu = arg["dhat"];
+			}
+			else if (arg["type"] == "lambda")
+			{
+				min_lambda = arg["min"];
+				max_lambda = arg["max"];
+				kappa_lambda = arg["kappa"];
+				dhat_lambda = arg["dhat"];
+			}
+			else if (arg["type"] == "mu")
+			{
+				min_mu = arg["min"];
+				max_mu = arg["max"];
+				kappa_mu = arg["kappa"];
+				dhat_mu = arg["dhat"];
+			}
+		}
+	}
+
+	double MaterialBoundObjective::value()
+	{
+		const auto &lambdas = elastic_param_->get_state().assembler.lame_params().lambda_mat_;
+		const auto &mus = elastic_param_->get_state().assembler.lame_params().mu_mat_;
+
+		double val = 0;
+		for (int e = 0; e < lambdas.size(); e++)
+		{
+			const double lambda = lambdas(e);
+			const double mu = mus(e);
+			const double E = convert_to_E(is_volume, lambda, mu);
+			const double nu = convert_to_nu(is_volume, lambda, mu);
+
+			if (kappa_E > 0 && dhat_E > 0)
+			{
+				val += barrier_func(E - min_E, dhat_E) * kappa_E;
+				val += barrier_func(max_E - E, dhat_E) * kappa_E;
+			}
+
+			if (kappa_nu > 0 && dhat_nu > 0)
+			{
+				val += barrier_func(nu - min_nu, dhat_nu) * kappa_nu;
+				val += barrier_func(max_nu - nu, dhat_nu) * kappa_nu;
+			}
+
+			if (kappa_mu > 0 && dhat_mu > 0)
+			{
+				val += barrier_func(mu - min_mu, dhat_mu) * kappa_mu;
+				val += barrier_func(max_mu - mu, dhat_mu) * kappa_mu;
+			}
+
+			if (kappa_lambda > 0 && dhat_lambda > 0)
+			{
+				val += barrier_func(lambda - min_lambda, dhat_lambda) * kappa_lambda;
+				val += barrier_func(max_lambda - lambda, dhat_lambda) * kappa_lambda;
+			}
+		}
+
+		return val;
+	}
+
+	Eigen::MatrixXd MaterialBoundObjective::compute_adjoint_rhs(const State &state)
+	{
+		return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
+	}
+
+	Eigen::VectorXd MaterialBoundObjective::compute_partial_gradient(const Parameter &param)
+	{
+		Eigen::VectorXd grad;
+		grad.setZero(param.full_dim());
+
+		const auto &lambdas = elastic_param_->get_state().assembler.lame_params().lambda_mat_;
+		const auto &mus = elastic_param_->get_state().assembler.lame_params().mu_mat_;
+
+		assert(grad.size() == lambdas.size() + mus.size());
+		for (int e = 0; e < lambdas.size(); e++)
+		{
+			const double lambda = lambdas(e);
+			const double mu = mus(e);
+			const double E = convert_to_E(is_volume, lambda, mu);
+			const double nu = convert_to_nu(is_volume, lambda, mu);
+			Eigen::Matrix2d jacobian = d_lambda_mu_d_E_nu(is_volume, E, nu);
+			jacobian = jacobian.inverse().eval();
+
+			if (kappa_E > 0 && dhat_E > 0)
+			{
+				double val = 0;
+				val += barrier_func_derivative(E - min_E, dhat_E) * kappa_E;
+				val += -barrier_func_derivative(max_E - E, dhat_E) * kappa_E;
+				grad(e) += val * jacobian(0, 0);
+				grad(e + lambdas.size()) += val * jacobian(0, 1);
+			}
+
+			if (kappa_nu > 0 && dhat_nu > 0)
+			{
+				double val = 0;
+				val += barrier_func_derivative(nu - min_nu, dhat_nu) * kappa_nu;
+				val += -barrier_func_derivative(max_nu - nu, dhat_nu) * kappa_nu;
+				grad(e) += val * jacobian(1, 0);
+				grad(e + lambdas.size()) += val * jacobian(1, 1);
+			}
+
+			if (kappa_mu > 0 && dhat_mu > 0)
+			{
+				grad(e + lambdas.size()) += barrier_func_derivative(mu - min_mu, dhat_mu) * kappa_mu;
+				grad(e + lambdas.size()) += -barrier_func_derivative(max_mu - mu, dhat_mu) * kappa_mu;
+			}
+
+			if (kappa_lambda > 0 && dhat_lambda > 0)
+			{
+				grad(e) += barrier_func_derivative(lambda - min_lambda, dhat_lambda) * kappa_lambda;
+				grad(e) += -barrier_func_derivative(max_lambda - lambda, dhat_lambda) * kappa_lambda;
+			}
+		}
+
+		return grad;
 	}
 
 } // namespace polyfem::solver
