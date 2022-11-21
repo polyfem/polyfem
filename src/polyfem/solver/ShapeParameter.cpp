@@ -460,7 +460,10 @@ namespace polyfem
 		}
 
 		for (auto state : states_ptr_)
-			state->set_v(V);
+		{
+			state->set_mesh_vertices(V);
+			state->build_basis();
+		}
 		return true;
 	}
 

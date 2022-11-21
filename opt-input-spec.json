@@ -408,7 +408,6 @@
             "smoothing_parameters",
             "remesh",
             "spline_specification",
-            "graph_specification",
             "dimensions",
             "surface_selection"
         ],
@@ -418,7 +417,30 @@
         "pointer": "/parameters/*/remesh",
         "type": "object",
         "default": null,
+        "optional": [
+            "period",
+            "tolerance",
+            "remesh_exe"
+        ],
         "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/remesh/remesh_exe",
+        "default": "",
+        "type": "file",
+        "doc": "Remesh every N iterations of optimization"
+    },
+    {
+        "pointer": "/parameters/*/remesh/period",
+        "type": "int",
+        "default": 1000000,
+        "doc": "Remesh every N iterations of optimization"
+    },
+    {
+        "pointer": "/parameters/*/remesh/tolerance",
+        "type": "float",
+        "default": 1e-2,
+        "doc": "Remesh when min scaled jacobian reaches tolerance"
     },
     {
         "pointer": "/parameters/*/surface_selection",
@@ -442,12 +464,6 @@
         "pointer": "/parameters/*/dimensions/*",
         "type": "bool",
         "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/graph_specification",
-        "type": "list",
-        "default": [],
-        "doc": "low dimensional shape parameters of a graph structure"
     },
     {
         "pointer": "/parameters/*/spline_specification",

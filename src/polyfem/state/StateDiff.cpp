@@ -124,79 +124,14 @@ namespace polyfem
 		}
 	}
 
-	void State::set_v(const Eigen::MatrixXd &vertices)
+	void State::set_mesh_vertices(const Eigen::MatrixXd &vertices)
 	{
-		auto &gbases = geom_bases();
-		auto &gmesh_nodes = iso_parametric() ? mesh_nodes : geom_mesh_nodes;
-		const int n_elements = int(gbases.size());
 		assert(vertices.cols() == mesh->dimension());
 
-		for (int n = 0; n < gmesh_nodes->n_nodes(); n++)
-		{
-			gmesh_nodes->set_node_position(n, vertices.row(n));
-		}
-
-		for (int e = 0; e < n_elements; ++e)
-		{
-			int n_loc_bases = gbases[e].bases.size();
-			for (int i = 0; i < n_loc_bases; ++i)
-			{
-				auto &v = gbases[e].bases[i];
-				assert(v.global().size() == 1);
-
-				v.global()[0].node = gmesh_nodes->node_position(v.global()[0].index); // vertices.row(v.global()[0].index);
-			}
-
-			if (!iso_parametric())
-			{
-				n_loc_bases = bases[e].bases.size();
-				Eigen::MatrixXd local_pts, pts;
-
-				if (mesh->is_volume())
-					if (mesh->is_simplex(e))
-						autogen::p_nodes_3d(bases[e].bases.front().order(), local_pts);
-					else
-						autogen::q_nodes_3d(bases[e].bases.front().order(), local_pts);
-				else
-					if (mesh->is_simplex(e))
-						autogen::p_nodes_2d(bases[e].bases.front().order(), local_pts);
-					else
-						autogen::q_nodes_2d(bases[e].bases.front().order(), local_pts);
-
-				gbases[e].eval_geom_mapping(local_pts, pts);
-				for (int i = 0; i < n_loc_bases; ++i)
-				{
-					auto &v = bases[e].bases[i];
-					assert(v.global().size() == 1);
-
-					v.global()[0].node = pts.block(i, 0, 1, mesh->dimension());
-					mesh_nodes->set_node_position(v.global()[0].index, v.global()[0].node);
-				}
-			}
-		}
-
-		assert(!assembler.is_mixed(formulation())); // need to update pressure_bases and pressure_mesh_nodes
-
-		{
-			const auto &primitive_to_node = iso_parametric() ? primitive_to_bases_node : primitive_to_geom_bases_node;
-			for (int v = 0; v < mesh->n_vertices(); v++)
-				if (primitive_to_node[v] >= 0 && primitive_to_node[v] < vertices.rows())
-					mesh->set_point(v, vertices.block(primitive_to_node[v], 0, 1, mesh->dimension()));
-		}
-
-		// update assembly cache
-		ass_vals_cache.clear();
-		pressure_ass_vals_cache.clear();
-		mass_ass_vals_cache.clear();
-		if (n_bases <= args["cache_size"])
-		{
-			ass_vals_cache.init(mesh->is_volume(), bases, gbases);
-			mass_ass_vals_cache.init(mesh->is_volume(), bases, bases, true);
-			if (assembler.is_mixed(formulation()))
-				pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, gbases);
-		}
-
-		build_collision_mesh(boundary_nodes_pos, collision_mesh, n_bases, bases);
+		const auto &primitive_to_node = iso_parametric() ? primitive_to_bases_node : primitive_to_geom_bases_node;
+		for (int v = 0; v < mesh->n_vertices(); v++)
+			if (primitive_to_node[v] >= 0 && primitive_to_node[v] < vertices.rows())
+				mesh->set_point(v, vertices.block(primitive_to_node[v], 0, 1, mesh->dimension()));
 	}
 
 	void State::cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol)

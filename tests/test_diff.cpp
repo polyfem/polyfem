@@ -47,7 +47,8 @@ namespace
 		state.get_vf(V, F);
 		V += utils::unflatten(perturbation, V.cols());
 
-		state.set_v(V);
+		state.set_mesh_vertices(V);
+		state.build_basis();
 	}
 
 	void perturb_material(assembler::AssemblerUtils &assembler, const Eigen::MatrixXd &perturbation)

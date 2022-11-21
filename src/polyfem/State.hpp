@@ -715,7 +715,7 @@ public:
 		void solve_static_adjoint(const Eigen::VectorXd &adjoint_rhs);
 		void solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs);
 		// Change geometric node positions
-		void set_v(const Eigen::MatrixXd &vertices);
+		void set_mesh_vertices(const Eigen::MatrixXd &vertices);
 		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true) const;
 
 		// to replace the initial condition
