@@ -252,8 +252,7 @@ namespace polyfem::mesh
 		{
 			if (is_inverted(t))
 			{
-				logger().error("Inverted triangle found, invariants violated");
-				// exit(1);
+				log_and_throw_error("Inverted triangle found, invariants violated");
 				return false;
 			}
 		}
@@ -287,6 +286,15 @@ namespace polyfem::mesh
 			if (vertex_attrs[t.vid(*this)].fixed)
 				boundary_nodes.push_back(t.vid(*this));
 		return boundary_nodes;
+	}
+
+	std::vector<WildRemeshing2D::Tuple> WildRemeshing2D::boundary_edges() const
+	{
+		std::vector<Tuple> boundary_edges;
+		for (const Tuple &e : get_edges())
+			if (!e.switch_face(*this))
+				boundary_edges.push_back(e);
+		return boundary_edges;
 	}
 
 } // namespace polyfem::mesh

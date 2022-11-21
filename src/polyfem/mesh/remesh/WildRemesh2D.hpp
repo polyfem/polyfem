@@ -60,6 +60,8 @@ namespace polyfem::mesh
 		/// @brief Exports body ids of the stored mesh
 		std::vector<int> body_ids() const;
 
+		std::vector<Tuple> boundary_edges() const;
+
 		/// @brief Set rest positions of the stored mesh
 		void set_rest_positions(const Eigen::MatrixXd &positions);
 		/// @brief Set deformed positions of the stored mesh

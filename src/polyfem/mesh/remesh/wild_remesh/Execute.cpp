@@ -22,7 +22,7 @@ namespace polyfem::mesh
 		std::vector<Tuple> tris{{e}};
 		if (e.switch_face(*this))
 			tris.push_back(e.switch_face(*this).value());
-		const LocalMesh local_mesh(*this, tris);
+		const LocalMesh local_mesh(*this, tris, /*include_global_boundary=*/false);
 
 		std::vector<polyfem::basis::ElementBases> bases;
 		Eigen::VectorXi vertex_to_basis;

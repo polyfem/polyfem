@@ -139,5 +139,13 @@ namespace polyfem
 			const Eigen::VectorXi &in_to_out,
 			int in_blocks = -1,
 			const int block_size = 1);
+
+		/// @brief Map the entrys of an index matrix to new indices.
+		/// @param in Input index matrix.
+		/// @param index_mapping Mapping from old to new indices.
+		/// @return Mapped index matrix.
+		Eigen::MatrixXi map_index_matrix(
+			const Eigen::MatrixXi &in,
+			const Eigen::VectorXi &index_mapping);
 	} // namespace utils
 } // namespace polyfem

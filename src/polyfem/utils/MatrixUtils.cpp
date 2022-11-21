@@ -507,3 +507,18 @@ Eigen::MatrixXd polyfem::utils::unreorder_matrix(
 
 	return in;
 }
+
+Eigen::MatrixXi polyfem::utils::map_index_matrix(
+	const Eigen::MatrixXi &in,
+	const Eigen::VectorXi &index_mapping)
+{
+	Eigen::MatrixXi out(in.rows(), in.cols());
+	for (int i = 0; i < in.rows(); i++)
+	{
+		for (int j = 0; j < in.cols(); j++)
+		{
+			out(i, j) = index_mapping[in(i, j)];
+		}
+	}
+	return out;
+}

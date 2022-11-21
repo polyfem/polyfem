@@ -6,10 +6,12 @@
 #include <polyfem/basis/FEBasis2d.hpp>
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+#include <polyfem/io/MatrixIO.hpp>
 
 #include <igl/boundary_facets.h>
 
@@ -92,18 +94,31 @@ namespace polyfem::mesh
 		using namespace polyfem::solver;
 		using namespace polyfem::time_integrator;
 
+		constexpr bool free_boundary = true;
+
 		// 1. Get the n-ring of triangles around the vertex.
-		const LocalMesh local_mesh = LocalMesh::n_ring(*this, t, n_ring);
+		const LocalMesh local_mesh = LocalMesh::n_ring(
+			*this, t, n_ring, /*include_global_boundary=*/free_boundary);
 
 		std::vector<polyfem::basis::ElementBases> bases;
 		Eigen::VectorXi vertex_to_basis;
-		const int n_bases = WildRemeshing2D::build_bases(
+		int n_bases = WildRemeshing2D::build_bases(
 			local_mesh.rest_positions(), local_mesh.triangles(), state.formulation(),
 			bases, vertex_to_basis);
 
+		assert(n_bases == local_mesh.num_local_vertices());
+		n_bases = local_mesh.num_vertices();
+		assert(vertex_to_basis.size() == n_bases);
+		for (int i = local_mesh.num_local_vertices(); i < n_bases; i++)
+		{
+			vertex_to_basis[i] = i;
+		}
+
 #ifndef NDEBUG
 		for (const int basis_id : vertex_to_basis)
+		{
 			assert(basis_id >= 0);
+		}
 #endif
 
 		// io::OBJWriter::write(
@@ -116,43 +131,43 @@ namespace polyfem::mesh
 		// write_rest_obj(state.resolve_output_path("global_mesh0_before.obj"));
 		// write_deformed_obj(state.resolve_output_path("global_mesh1_before.obj"));
 
+		// io::OBJWriter::write(
+		// 	state.resolve_output_path("fixed_vertices.obj"),
+		// 	local_mesh.positions()(local_mesh.fixed_vertices(), Eigen::all), Eigen::MatrixXi());
+
 		// --------------------------------------------------------------------
 
-		Eigen::MatrixXi boundary_edges;
-		igl::boundary_facets(local_mesh.triangles(), boundary_edges);
-
 		std::vector<int> boundary_nodes;
-		const auto &vertex_boundary_ids = local_mesh.vertex_boundary_ids();
-		for (int i = 0; i < boundary_edges.rows(); ++i)
-		{
-			// if either endpoint is an internal node, fix the edge
-			const bool fixed_edge = !local_mesh.is_edge_on_global_boundary(boundary_edges.row(i));
-
-			for (int j = 0; j < boundary_edges.cols(); ++j)
+		const auto add_vertex_to_boundary_nodes = [&](const int v) {
+			const int basis_id = vertex_to_basis[v];
+			assert(basis_id >= 0);
+			for (int d = 0; d < DIM; ++d)
 			{
-				const int vi = boundary_edges(i, j);
-				const auto &vertex_attr = vertex_attrs[local_mesh.local_to_global()[vi]];
-				// TODO: replace this with a more general check
-				const bool on_fixed_boundary =
-					vertex_attr.rest_position.y() < (-0.1 + 1e-3)
-					|| vertex_attr.rest_position.y() > (0.1 - 1e-3);
-
-				if (fixed_edge || on_fixed_boundary)
+				boundary_nodes.push_back(DIM * basis_id + d);
+			}
+		};
+		for (const int vi : local_mesh.fixed_vertices())
+		{
+			add_vertex_to_boundary_nodes(vi);
+		}
+		if (free_boundary)
+		{
+			// TODO: handle the correct DBC
+			for (int ei = 0; ei < local_mesh.boundary_edges().rows(); ei++)
+			{
+				const int boundary_id = local_mesh.boundary_ids()[ei];
+				if (boundary_id == 2 || boundary_id == 4)
 				{
-					const int basis_id = vertex_to_basis[vi];
-					assert(basis_id >= 0);
-					for (int d = 0; d < DIM; ++d)
-					{
-						boundary_nodes.push_back(DIM * basis_id + d);
-					}
+					add_vertex_to_boundary_nodes(local_mesh.boundary_edges()(ei, 0));
+					add_vertex_to_boundary_nodes(local_mesh.boundary_edges()(ei, 1));
 				}
 			}
 		}
+
 		// Sort and remove the duplicate boundary_nodes.
 		std::sort(boundary_nodes.begin(), boundary_nodes.end());
 		auto new_end = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 		boundary_nodes.erase(new_end, boundary_nodes.end());
-		// assert(boundary_nodes.size() >= 3);
 
 		const Eigen::MatrixXd target_x = utils::flatten(utils::reorder_matrix(
 			local_mesh.displacements(), vertex_to_basis));
@@ -164,6 +179,8 @@ namespace polyfem::mesh
 
 		std::vector<std::shared_ptr<Form>> forms;
 
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 		assembler::AssemblerUtils assembler = create_assembler(local_mesh.body_ids());
 
 		assembler::AssemblyValsCache ass_vals_cache;
@@ -171,20 +188,56 @@ namespace polyfem::mesh
 		std::shared_ptr<ElasticForm> elastic_form = std::make_shared<ElasticForm>(
 			n_bases, bases, bases, assembler, ass_vals_cache, state.formulation(),
 			/*dt=*/0, /*is_volume=*/DIM == 3);
+		elastic_form->set_weight(state.solve_data.elastic_form->weight());
 		forms.push_back(elastic_form);
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 		ass_vals_cache.init(/*is_volume=*/DIM == 3, bases, /*gbases=*/bases, /*is_mass=*/true);
 		Eigen::SparseMatrix<double> M;
 		assembler.assemble_mass_matrix(
 			/*assembler_formulation=*/"", /*is_volume=*/DIM == 3, n_bases,
 			/*use_density=*/true, bases, /*gbases=*/bases, ass_vals_cache, M);
+		for (int i = DIM * local_mesh.num_local_vertices(); i < DIM * local_mesh.num_vertices(); ++i)
+		{
+			M.coeffRef(i, i) = state.avg_mass;
+		}
+
+		// TODO: set the diagonal of M to be 1 for the collision boundary nodes.
 
 		std::shared_ptr<ALForm> al_form = std::make_shared<ALForm>(
 			n_bases * DIM, boundary_nodes, M, Obstacle(), target_x);
+		al_form->set_weight(state.solve_data.al_form->weight());
 		forms.push_back(al_form);
 
-		/*
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+		if (free_boundary)
+		{
+			ipc::CollisionMesh collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
+				utils::reorder_matrix(local_mesh.rest_positions(), vertex_to_basis),
+				utils::map_index_matrix(local_mesh.boundary_edges(), vertex_to_basis),
+				/*boundary_faces=*/Eigen::MatrixXi());
+			// io::OBJWriter::write(
+			// 	state.resolve_output_path("collision_mesh_before.obj"),
+			// 	collision_mesh.displace_vertices(utils::unflatten(target_x, DIM)), collision_mesh.edges());
+
+			std::shared_ptr<ContactForm> contact_form = std::make_shared<ContactForm>(
+				collision_mesh,
+				state.args["contact"]["dhat"],
+				state.avg_mass,
+				/*use_adaptive_barrier_stiffness=*/false,
+				/*is_time_dependent=*/false,
+				state.args["solver"]["contact"]["CCD"]["broad_phase"],
+				state.args["solver"]["contact"]["CCD"]["tolerance"],
+				state.args["solver"]["contact"]["CCD"]["max_iterations"]);
+			contact_form->set_weight(state.solve_data.contact_form->weight());
+			forms.push_back(contact_form);
+		}
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+		/*
 		std::shared_ptr<ImplicitTimeIntegrator> time_integrator =
 			ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
 		time_integrator->init(
@@ -195,9 +248,6 @@ namespace polyfem::mesh
 
 		std::shared_ptr<InertiaForm> inertia_form = std::make_shared<InertiaForm>(M, *time_integrator);
 		forms.push_back(inertia_form);
-
-		elastic_form->set_weight(time_integrator->acceleration_scaling());
-
 		*/
 
 		// --------------------------------------------------------------------
@@ -284,15 +334,16 @@ namespace polyfem::mesh
 		// write_rest_obj(state.resolve_output_path("global_mesh0.obj"));
 		// write_deformed_obj(state.resolve_output_path("global_mesh1.obj"));
 
+		// io::OBJWriter::write(
+		// 	state.resolve_output_path("collision_mesh.obj"),
+		// 	collision_mesh.displace_vertices(utils::unflatten(sol, DIM)), collision_mesh.edges());
+
 		static int i = 0;
 		if (rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance)
 		{
 			logger().critical(
 				"{} energy_before={:g} energy_after={:g} rel_diff={:g} abs_diff={:g}",
 				i, energy_before, energy_after, rel_diff, abs_diff);
-
-			// if (i > 88)
-			// 	exit(0);
 		}
 		i++;
 
