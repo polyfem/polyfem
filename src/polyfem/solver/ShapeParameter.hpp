@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Parameter.hpp"
-#include <igl/slim.h>
 
 #include <ipc/collisions/collision_constraint.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
@@ -67,6 +66,7 @@ namespace polyfem
 		json shape_params, slim_params;
 
 		// below only used for problems with contact
+		// TODO: move to objective
 
 		bool has_collision;
 

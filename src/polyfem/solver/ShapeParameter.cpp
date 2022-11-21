@@ -4,6 +4,7 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
+#include <igl/slim.h>
 #include <igl/writeOBJ.h>
 #include <igl/writeMESH.h>
 #include <igl/write_triangle_mesh.h>
@@ -492,7 +493,7 @@ namespace polyfem
 
 		json remesh_args = shape_params["remesh"];
 		if (remesh_args.size() == 0)
-			return true;
+			return false;
 
 		if (min_quality < remesh_args["tolerance"].get<double>())
 		{
@@ -636,20 +637,23 @@ namespace polyfem
 				}
 
 				// modify json
-				bool flag = false;
-				for (int m = 0; m < states_ptr_[0]->in_args["geometry"].get<std::vector<json>>().size(); m++)
+				for (auto state : states_ptr_)
 				{
-					if (states_ptr_[0]->in_args["geometry"][m]["volume_selection"].get<int>() != body_id)
-						continue;
-					if (!flag)
-						flag = true;
-					else
+					bool flag = false;
+					for (int m = 0; m < state->in_args["geometry"].get<std::vector<json>>().size(); m++)
 					{
-						logger().error("Multiple meshes found with same body id!");
-						return false;
+						if (state->in_args["geometry"][m]["volume_selection"].get<int>() != body_id)
+							continue;
+						if (!flag)
+							flag = true;
+						else
+						{
+							logger().error("Multiple meshes found with same body id!");
+							return false;
+						}
+						state->in_args["geometry"][m]["transformation"]["skip"] = true;
+						state->in_args["geometry"][m]["mesh"] = after_remesh_path;
 					}
-					states_ptr_[0]->in_args["geometry"][m]["transformation"]["skip"] = true;
-					states_ptr_[0]->in_args["geometry"][m]["mesh"] = after_remesh_path;
 				}
 			}
 		}
@@ -669,11 +673,10 @@ namespace polyfem
 			state->init(in_args, false);
 
 			state->load_mesh();
-			state->stats.compute_mesh_stats(*states_ptr_[0]->mesh);
+			state->stats.compute_mesh_stats(*state->mesh);
 			state->build_basis();
-
-			state->get_vf(V_rest, elements);
 		}
+		states_ptr_[0]->get_vf(V_rest, elements);
 		shape_constraints_->full_to_reduced(V_rest, x);
 
 		Eigen::MatrixXd boundary_nodes_pos;
