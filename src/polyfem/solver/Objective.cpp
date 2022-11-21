@@ -180,7 +180,7 @@ namespace polyfem::solver
 		{
 			State &state = *(states[args["state"]]);
 			std::shared_ptr<Parameter> shape_param;
-			std::shared_ptr<ElasticParameter> elastic_param;
+			std::shared_ptr<Parameter> elastic_param;
 			if (args["shape_parameter"] >= 0)
 			{
 				shape_param = parameters[args["shape_parameter"]];
@@ -191,7 +191,7 @@ namespace polyfem::solver
 				logger().warn("No shape parameter is assigned to functional");
 
 			if (args["material_parameter"] >= 0)
-				elastic_param = std::dynamic_pointer_cast<ElasticParameter>(parameters[args["material_parameter"]]);
+				elastic_param = parameters[args["material_parameter"]];
 
 			std::shared_ptr<solver::StaticObjective> tmp = std::make_shared<solver::StressObjective>(state, shape_param, elastic_param, args);
 			if (state.problem->is_time_dependent())
@@ -257,18 +257,14 @@ namespace polyfem::solver
 			if (args["shape_parameter"] >= 0)
 				shape_param = parameters[args["shape_parameter"]];
 
-			std::shared_ptr<ElasticParameter> elastic_param;
+			std::shared_ptr<Parameter> elastic_param;
 			if (args["material_parameter"] >= 0)
-				elastic_param = std::dynamic_pointer_cast<ElasticParameter>(parameters[args["material_parameter"]]);
+				elastic_param = parameters[args["material_parameter"]];
 
-			std::shared_ptr<TopologyOptimizationParameter> topo_param;
-			if (args["topology_parameter"] >= 0)
-				topo_param = std::dynamic_pointer_cast<TopologyOptimizationParameter>(parameters[args["topology_parameter"]]);
-
-			if (!shape_param && !topo_param && !elastic_param)
+			if (!shape_param && !elastic_param)
 				logger().warn("No parameter is assigned to functional");
 
-			obj = std::make_shared<solver::ComplianceObjective>(state, shape_param, elastic_param, topo_param, args);
+			obj = std::make_shared<solver::ComplianceObjective>(state, shape_param, elastic_param, args);
 		}
 		else if (type == "strain_norm")
 		{
@@ -345,7 +341,7 @@ namespace polyfem::solver
 		return term;
 	}
 
-	StressObjective::StressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const json &args, bool has_integral_sqrt) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
+	StressObjective::StressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args, bool has_integral_sqrt) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
 	{
 		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
@@ -454,7 +450,7 @@ namespace polyfem::solver
 	{
 		Eigen::VectorXd term;
 		term.setZero(param.full_dim());
-		if (&param == elastic_param_.get() || param.name() == "topology")
+		if (&param == elastic_param_.get())
 		{
 			// TODO: differentiate stress wrt. lame param
 			log_and_throw_error("Not implemented!");
@@ -1206,13 +1202,13 @@ namespace polyfem::solver
 		return term;
 	}
 
-	ComplianceObjective::ComplianceObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const std::shared_ptr<const TopologyOptimizationParameter> topo_param, const json &args) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param), topo_param_(topo_param)
+	ComplianceObjective::ComplianceObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
 	{
+		assert(elastic_param_->name() == "material");
 		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 
-		assert(!topo_param_ || !elastic_param_);
 		formulation_ = state.formulation();
 	}
 
@@ -1260,7 +1256,7 @@ namespace polyfem::solver
 		term.setZero(param.full_dim());
 		if (&param == shape_param_.get())
 			term = compute_partial_gradient(param);
-		else if (&param == topo_param_.get() || &param == elastic_param_.get())
+		else if (&param == elastic_param_.get())
 		{
 			const auto &bases = state_.bases;
 			const auto &gbases = state_.geom_bases();

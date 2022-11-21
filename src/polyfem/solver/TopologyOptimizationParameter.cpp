@@ -4,7 +4,7 @@ namespace polyfem
 {
     TopologyOptimizationParameter::TopologyOptimizationParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args): Parameter(states_ptr, args)
     {
-        parameter_name_ = "topology";
+        parameter_name_ = "material";
         const auto &state = get_state();
 
         full_dim_ = state.bases.size() * 2;

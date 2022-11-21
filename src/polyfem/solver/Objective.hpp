@@ -1,8 +1,6 @@
 #pragma once
 
-#include "ElasticParameter.hpp"
-#include "ShapeParameter.hpp"
-#include "TopologyOptimizationParameter.hpp"
+#include <polyfem/utils/CompositeSplineParam.hpp>
 #include "AdjointForm.hpp"
 
 #include <array>
@@ -79,7 +77,7 @@ namespace polyfem::solver
 	class StressObjective : public SpatialIntegralObjective
 	{
 	public:
-		StressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const json &args, bool has_integral_sqrt = true);
+		StressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args, bool has_integral_sqrt = true);
 		~StressObjective() = default;
 
 		double value() override;
@@ -93,7 +91,7 @@ namespace polyfem::solver
 		bool out_sqrt_;
 		std::string formulation_;
 
-		std::shared_ptr<const ElasticParameter> elastic_param_; // stress depends on elastic param
+		std::shared_ptr<const Parameter> elastic_param_; // stress depends on elastic param
 	};
 
 	class SumObjective : public Objective
@@ -253,7 +251,7 @@ namespace polyfem::solver
 	class ComplianceObjective : public SpatialIntegralObjective
 	{
 	public:
-		ComplianceObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const std::shared_ptr<const TopologyOptimizationParameter> topo_param, const json &args);
+		ComplianceObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args);
 		~ComplianceObjective() = default;
 
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
@@ -262,8 +260,7 @@ namespace polyfem::solver
 	protected:
 		std::string formulation_;
 
-		std::shared_ptr<const ElasticParameter> elastic_param_; // stress depends on elastic param
-		std::shared_ptr<const TopologyOptimizationParameter> topo_param_;
+		std::shared_ptr<const Parameter> elastic_param_; // stress depends on elastic param
 	};
 
 	class StrainObjective : public SpatialIntegralObjective
@@ -415,5 +412,25 @@ namespace polyfem::solver
 
 		Eigen::MatrixXd target_vertex_positions;
 		std::vector<int> active_nodes;
+	};
+
+	class MaterialBoundObjective : public Objective
+	{
+	public:
+		MaterialBoundObjective(const std::shared_ptr<const Parameter> elastic_param, const json &args);
+		~MaterialBoundObjective() = default;
+
+		double value() override;
+		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+
+	protected:
+		double min_E, max_E;
+		double min_lambda, max_lambda;
+		double min_mu, max_mu;
+		double min_nu, max_nu;
+
+		double barrier_stiffness;
+		double dhat;
 	};
 } // namespace polyfem::solver

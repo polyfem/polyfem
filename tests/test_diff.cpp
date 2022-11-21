@@ -12,6 +12,7 @@
 #include <jse/jse.h>
 
 #include <polyfem/solver/DampingParameter.hpp>
+#include <polyfem/solver/ElasticParameter.hpp>
 #include <polyfem/solver/Optimizations.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
 
@@ -324,7 +325,7 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
 	std::shared_ptr<TopologyOptimizationParameter> topo_param = std::make_shared<TopologyOptimizationParameter>(states_ptr, opt_args["parameters"][0]);
-	ComplianceObjective func(state, NULL, NULL, topo_param, opt_args["functionals"][0]);
+	ComplianceObjective func(state, NULL, topo_param, opt_args["functionals"][0]);
 
 	solve_pde(state);
 
@@ -540,7 +541,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
 	json functional_args = opt_args["functionals"][0];
-	std::shared_ptr<StaticObjective> func_aux = std::make_shared<StressObjective>(state, shape_param, std::shared_ptr<ElasticParameter>(), functional_args, false);
+	std::shared_ptr<StaticObjective> func_aux = std::make_shared<StressObjective>(state, shape_param, std::shared_ptr<Parameter>(), functional_args, false);
 	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], functional_args["transient_integral_type"], func_aux);
 
 	Eigen::MatrixXd velocity_discrete;

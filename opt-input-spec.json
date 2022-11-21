@@ -894,12 +894,6 @@
         "doc": "TODO"
     },
     {
-        "pointer": "/functionals/*/topology_parameter",
-        "type": "int",
-        "default": -1,
-        "doc": "TODO"
-    },
-    {
         "pointer": "/functionals/*/control_parameter",
         "type": "int",
         "default": -1,
@@ -996,7 +990,6 @@
         "optional": [
             "shape_parameter",
             "material_parameter",
-            "topology_parameter",
             "volume_selection",
             "weight",
             "transient_integral_type"
