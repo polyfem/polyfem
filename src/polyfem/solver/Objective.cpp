@@ -74,7 +74,7 @@ namespace polyfem::solver
 		{
 			double y = x / dhat;
 			if (0 < y && y < 1)
-				return -pow(y - 1, 2) * log(y);
+				return -pow(y - 1, 2) * log(y) * dhat;
 			else if (x > dhat)
 				return 0;
 			else
@@ -85,7 +85,7 @@ namespace polyfem::solver
 		{
 			double y = x / dhat;
 			if (0 < y && y < 1)
-				return -(1 - y) * (1 - y - 2 * y * log(y)) / x;
+				return -(1 - y) * (1 - y - 2 * y * log(y)) / y;
 			else if (y > 1)
 				return 0;
 			else

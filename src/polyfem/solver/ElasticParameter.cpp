@@ -70,16 +70,12 @@ namespace polyfem
 		const auto &mus = get_state().assembler.lame_params().mu_mat_;
 
 		bool flag = true;
-
-		if (design_variable_name == "lambda_mu")
 		{
 			if (lambdas.minCoeff() < min_lambda || mus.minCoeff() < min_mu)
 				flag = false;
 			if (lambdas.maxCoeff() > max_lambda || mus.maxCoeff() > max_mu)
 				flag = false;
-		}
-		else
-		{
+			
 			for (int e = 0; e < lambdas.size(); e++)
 			{
 				const double E = convert_to_E(get_state().mesh->is_volume(), lambdas(e), mus(e));
