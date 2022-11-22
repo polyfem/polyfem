@@ -409,11 +409,19 @@
             "out_velocity_path"
         ],
         "optional": [
+            "max_change",
             "lower_bound",
             "upper_bound",
-            "initial"
+            "initial",
+            "meshing_options"
         ],
         "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/meshing_options",
+        "default": "",
+        "type": "file",
+        "doc": "Path to the meshing option json file."
     },
     {
         "pointer": "/parameters/*/graph_path",

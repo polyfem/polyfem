@@ -29,9 +29,14 @@ namespace polyfem
 		bool pre_solve(const Eigen::VectorXd &newX) override;
 
     private:
+
+		bool generate_graph_mesh(const Eigen::VectorXd &x, const std::string &out_mesh_path);
+
+		double max_change_;
 		std::string graph_path_; // graph structure obj
         std::string graph_exe_path_; // binary to generate mesh based on graph and params
 		std::string symmetry_type_; // e.g. 2D_doubly_periodic
+		std::string meshing_options_;
         Eigen::VectorXd initial_guess_; // initial shape parameters
 
 		std::string out_velocity_path_;

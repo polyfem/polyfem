@@ -20,10 +20,12 @@ namespace polyfem
     {
         parameter_name_ = "shape";
         
+        max_change_ = args["max_change"];
         graph_exe_path_ = args["graph_exe_path"];
         graph_path_ = args["graph_path"];
         symmetry_type_ = args["symmetry_type"];
         out_velocity_path_ = args["out_velocity_path"];
+        meshing_options_ = args["meshing_options"];
 
         initial_guess_ = args["initial"];
         full_dim_ = get_state().n_geom_bases * get_state().mesh->dimension();
@@ -59,41 +61,73 @@ namespace polyfem
     
     Eigen::VectorXd GraphParameter::get_lower_bound(const Eigen::VectorXd &x) const 
     {
-        return bounds_.col(0);
+        Eigen::VectorXd min = bounds_.col(0);
+        for (int i = 0; i < min.size(); i++)
+        {
+            if (x(i) - min(i) > max_change_)
+                min(i) = x(i) - max_change_;
+        }
+        return min;
     }
 
     Eigen::VectorXd GraphParameter::get_upper_bound(const Eigen::VectorXd &x) const 
     {
-        return bounds_.col(1);
+        Eigen::VectorXd max = bounds_.col(1);
+        for (int i = 0; i < max.size(); i++)
+        {
+            if (max(i) - x(i) > max_change_)
+                max(i) = x(i) + max_change_;
+        }
+        return max;
     }
 
     bool GraphParameter::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
     {
+        if ((x1 - x0).cwiseAbs().maxCoeff() > max_change_)
+            return false;
         if ((x1 - bounds_.col(0)).minCoeff() < 0)
             return false;
         if ((bounds_.col(1) - x1).minCoeff() < 0)
             return false;
+
+        std::string out_mesh_path = get_state().resolve_output_path("micro-tmp.msh");
+        return generate_graph_mesh(x1, out_mesh_path);
+    }
+
+    bool GraphParameter::generate_graph_mesh(const Eigen::VectorXd &x, const std::string &out_mesh_path)
+    {
+        std::string shape_params = "--params \"";
+        for (int i = 0; i < x.size(); i++)
+            shape_params += to_string_with_precision(x(i), 16) + " ";
+        shape_params += "\" ";
+
+        if (std::filesystem::exists(meshing_options_))
+            shape_params += "-m " + meshing_options_;
+
+        std::string command = graph_exe_path_ + " " + symmetry_type_ + " " + graph_path_ + " " + shape_params + " -S " + out_velocity_path_ + " " + out_mesh_path;
+
+        int return_val;
+        try 
+        {
+            return_val = system(command.c_str());
+        }
+        catch (const std::exception &err)
+        {
+            logger().error("remesh command \"{}\" returns {}", command, return_val);
+
+            return false;
+        }
+
+        logger().info("remesh command \"{}\" returns {}", command, return_val);
 
         return true;
     }
 
     bool GraphParameter::pre_solve(const Eigen::VectorXd &newX)
     {
-        // send parameters and graph to microstructure inflator
         std::string out_mesh_path = get_state().resolve_output_path("micro-tmp.msh");
-        
-        std::string shape_params = "--params \"";
-        for (int i = 0; i < newX.size(); i++)
-            shape_params += to_string_with_precision(newX(i), 16) + " ";
-        shape_params += "\" ";
-
-        std::string command = graph_exe_path_ + " " + symmetry_type_ + " " + graph_path_ + " " + shape_params + " -S " + out_velocity_path_ + " " + out_mesh_path;
-
-        int return_val = system(command.c_str());
-        if (return_val == 0)
-            logger().info("remesh command \"{}\" returns {}", command, return_val);
-        else
-            log_and_throw_error("remesh command \"{}\" returns {}", command, return_val);
+        if (!generate_graph_mesh(newX, out_mesh_path))
+            return false;
 
         // reload mesh and recompute basis
         for (auto state : states_ptr_)
