@@ -748,7 +748,8 @@
             "states"
         ],
         "optional": [
-            "surface_selection"
+            "surface_selection",
+            "restriction"
         ],
         "doc": "TODO"
     },
@@ -878,7 +879,8 @@
         "options": [
             "simpson",
             "uniform",
-            "final"
+            "final",
+            "step_10"
         ],
         "doc": "TODO"
     },

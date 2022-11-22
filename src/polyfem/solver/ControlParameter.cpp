@@ -4,10 +4,10 @@
 
 namespace polyfem
 {
-	ControlParameter::ControlParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args): Parameter(states_ptr, args)
+	ControlParameter::ControlParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args) : Parameter(states_ptr, args)
 	{
 		assert(states_ptr_[0]->problem->is_time_dependent());
-		parameter_name_ = "control";
+		parameter_name_ = "dirichlet";
 
 		if (states_ptr_.size() > 1)
 		{
@@ -18,7 +18,11 @@ namespace polyfem
 		if (get_state().get_bdf_order() > 1)
 			logger().error("Dirichlet derivative only works for BDF1!");
 
-		full_dim_ = states_ptr_[0]->boundary_nodes.size() * states_ptr_[0]->args["time"]["time_steps"].get<int>();
+		dim = states_ptr_[0]->mesh->dimension();
+
+		time_steps = states_ptr_[0]->args["time"]["time_steps"].get<int>();
+
+		full_dim_ = states_ptr_[0]->boundary_nodes.size() * time_steps;
 
 		control_params = args;
 
@@ -27,13 +31,18 @@ namespace polyfem
 			int count = 0;
 			for (int i : control_params["surface_selection"])
 			{
-				optimize_boundary_ids_to_position[i] = count;
+				boundary_id_to_reduced_param[i] = count;
 				count++;
 			}
 		}
 
+		starting_dirichlet.resize(time_steps * boundary_id_to_reduced_param.size() * dim);
+		for (auto dirichlet : states_ptr_[0]->args["boundary_conditions"]["dirichlet_boundary"])
+			for (int k = 0; k < dim; ++k)
+				for (int i = 0; i < time_steps; ++i)
+					starting_dirichlet(i * boundary_id_to_reduced_param.size() * dim + boundary_id_to_reduced_param[dirichlet["id"].get<int>()] * dim + k) = dirichlet["value"][k][i];
+
 		boundary_ids_list.resize(states_ptr_[0]->boundary_nodes.size());
-		int dim = states_ptr_[0]->mesh->dimension();
 		for (auto it = states_ptr_[0]->local_boundary.begin(); it != states_ptr_[0]->local_boundary.end(); ++it)
 		{
 			const auto &lb = *it;
@@ -68,9 +77,10 @@ namespace polyfem
 
 		smoothing_weight = smoothing_params.contains("weight") ? smoothing_params["weight"].get<double>() : 1.;
 
-		time_steps = states_ptr_[0]->args["time"]["time_steps"].get<int>();
 		if (time_steps < 1)
 			logger().error("Set time_steps for control optimization, currently {}!", time_steps);
+
+		control_constraints_ = std::make_shared<ControlConstraints>(args, time_steps, states_ptr[0]->mesh->dimension(), boundary_ids_list, boundary_id_to_reduced_param);
 	}
 
 	bool ControlParameter::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
@@ -79,10 +89,25 @@ namespace polyfem
 		return true;
 	}
 
+	Eigen::MatrixXd ControlParameter::map(const Eigen::VectorXd &x) const
+	{
+		Eigen::MatrixXd dirichlet_full;
+		control_constraints_->reduced_to_full(x, dirichlet_full);
+		return dirichlet_full;
+	}
+
+	Eigen::VectorXd ControlParameter::map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const
+	{
+		Eigen::VectorXd dreduced;
+		control_constraints_->dfull_to_dreduced(x, full_grad, dreduced);
+		return dreduced;
+	}
+
 	bool ControlParameter::pre_solve(const Eigen::VectorXd &newX)
 	{
 		auto &problem = *dynamic_cast<assembler::GenericTensorProblem *>(states_ptr_[0]->problem.get());
-		for (const auto &kv : optimize_boundary_ids_to_position)
+		// This should eventually update dirichlet boundaries per boundary element, using the shape constraint.
+		for (const auto &kv : boundary_id_to_reduced_param)
 		{
 			json dirichlet_bc;
 			if (states_ptr_[0]->mesh->dimension() == 2)
@@ -93,7 +118,7 @@ namespace polyfem
 			{
 				for (int t = 0; t < time_steps; ++t)
 				{
-					dirichlet_bc[k].push_back(newX(t * optimize_boundary_ids_to_position.size() * states_ptr_[0]->mesh->dimension() + kv.second * states_ptr_[0]->mesh->dimension() + k));
+					dirichlet_bc[k].push_back(newX(t * boundary_id_to_reduced_param.size() * states_ptr_[0]->mesh->dimension() + kv.second * states_ptr_[0]->mesh->dimension() + k));
 				}
 				// Need time_steps + 1 entry, though unused.
 				dirichlet_bc[k].push_back(dirichlet_bc[k][time_steps - 1]);

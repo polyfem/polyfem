@@ -13,6 +13,7 @@
 
 #include <polyfem/solver/ShapeParameter.hpp>
 #include <polyfem/solver/DampingParameter.hpp>
+#include <polyfem/solver/ControlParameter.hpp>
 #include <polyfem/solver/ElasticParameter.hpp>
 #include <polyfem/solver/Optimizations.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
@@ -169,6 +170,32 @@ namespace
 		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 
 		REQUIRE(derivative == Approx(finite_difference).epsilon(tol));
+	}
+
+	void verify_adjoint_dirichlet(Objective &obj, std::shared_ptr<State> state, std::shared_ptr<Parameter> param, const Eigen::MatrixXd &theta, std::function<void(std::shared_ptr<Parameter> &, std::shared_ptr<State> &, const Eigen::MatrixXd &)> perturb_fn, const double dt, const double tol)
+	{
+		double functional_val = obj.value();
+
+		state->solve_adjoint(obj.compute_adjoint_rhs(*state));
+		Eigen::VectorXd one_form = obj.gradient(*state, *param);
+		double derivative = (param->map_grad(param->initial_guess(), one_form).array() * theta.array()).sum();
+
+		perturb_fn(param, state, theta * dt);
+		solve_pde(*state);
+		double next_functional_val = obj.value();
+
+		perturb_fn(param, state, theta * (-2 * dt));
+		solve_pde(*state);
+		double former_functional_val = obj.value();
+
+		double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
+		std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
+		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
+
+		CHECK(derivative == Approx(finite_difference).epsilon(tol));
+
+		perturb_fn(param, state, theta * dt);
+		solve_pde(*state);
 	}
 
 } // namespace
@@ -762,6 +789,73 @@ TEST_CASE("dirichlet-sdf", "[adjoint_method]")
 	std::cout << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
 }
+
+// TEST_CASE("dirichlet-sdf-new", "[adjoint_method]")
+// {
+// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+// 	json in_args;
+// 	load_json(path + "dirichlet-sdf.json", in_args);
+
+// 	json opt_args;
+// 	load_json(path + "dirichlet-sdf-opt.json", opt_args);
+// 	opt_args = apply_opt_json_spec(opt_args, false);
+
+// 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
+// 	State &state = *state_ptr;
+
+// 	Eigen::MatrixXd control_points, tangents, delta;
+// 	control_points.setZero(2, 2);
+// 	control_points << -2.5, -0.1,
+// 		2.5, -0.1;
+// 	tangents.setZero(2, 2);
+// 	tangents << 1.5, -2,
+// 		1.5, 2;
+// 	delta.setZero(1, 2);
+// 	delta << 0.5, 0.5;
+
+// 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+// 	std::shared_ptr<ControlParameter> control_param = std::make_shared<ControlParameter>(states_ptr, opt_args["parameters"][0]);
+// 	auto sdf_aux = std::make_shared<SDFTargetObjective>(state, nullptr, opt_args["parameters"][0]);
+// 	sdf_aux->set_spline_target(control_points, tangents, delta);
+// 	std::shared_ptr<StaticObjective> func_aux = sdf_aux;
+// 	json functional_args = opt_args["functionals"][0];
+
+// 	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], func_aux);
+
+// 	int time_steps = state.args["time"]["time_steps"].get<int>();
+
+// 	Eigen::MatrixXd velocity_discrete;
+// 	velocity_discrete.setZero(time_steps * 3 * state.mesh->dimension(), 1);
+// 	for (int j = 0; j < time_steps; ++j)
+// 		for (int k = 0; k < state.mesh->dimension(); ++k)
+// 		{
+// 			double random_val = (rand() % 200) / 100. - 1.;
+// 			for (int i = 0; i < 3; ++i)
+// 			{
+// 				velocity_discrete(j * 3 * state.mesh->dimension() + i * state.mesh->dimension() + k) = random_val;
+// 			}
+// 		}
+
+// 	auto initial_guess = control_param->initial_guess();
+// 	auto perturb_fn = [&initial_guess](std::shared_ptr<Parameter> param, std::shared_ptr<State> &state, const Eigen::MatrixXd &dx) {
+// 		initial_guess += dx;
+// 		param->pre_solve(initial_guess);
+// 	};
+
+// 	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn, 1e-7, 1e-5);
+
+// 	json temp_args = in_args;
+// 	auto perturb_fn_json = [&temp_args, time_steps](std::shared_ptr<Parameter> param, std::shared_ptr<State> &state, const Eigen::MatrixXd &dx) {
+// 		for (int t = 0; t < time_steps; ++t)
+// 			for (int k = 0; k < 2; ++k)
+// 				for (int i = 0; i < 3; ++i)
+// 					temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t].get<double>() + dx(t * 3 * 2 + i * 2 + k);
+// 		state->init(temp_args, false);
+// 		state->args["optimization"]["enabled"] = true;
+// 	};
+
+// 	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn_json, 1e-7, 1e-5);
+// }
 
 TEST_CASE("dirichlet-ref", "[adjoint_method]")
 {
