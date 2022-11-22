@@ -40,6 +40,8 @@ namespace polyfem::assembler
 		// sets material params
 		void add_multimaterial(const int index, const json &params);
 
+		const ElasticFormulation &formulation() const { return formulation_; }
+
 	private:
 		int size_ = -1;
 		ElasticFormulation formulation_;
