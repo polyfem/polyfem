@@ -58,7 +58,7 @@ namespace polyfem
 		std::vector<bool> active_nodes_mask;
 		std::vector<bool> free_dimension; // not applied to shape constraints
 
-		std::vector<bool> tied_nodes_mask; // not applied to shape constraints
+		std::vector<bool> tied_nodes_mask;          // not applied to shape constraints
 		std::vector<std::array<int, 2>> tied_nodes; // not applied to shape constraints
 
 		bool mesh_flipped = false;

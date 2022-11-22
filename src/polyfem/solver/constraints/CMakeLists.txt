@@ -2,6 +2,7 @@ set(SOURCES
     Constraints.hpp
     MaterialConstraints.hpp
     ShapeConstraints.hpp
+    ControlConstraints.hpp
 )
 
 prepend_current_path(SOURCES)

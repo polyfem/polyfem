@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Parameter.hpp"
+#include "constraints/ControlConstraints.hpp"
 
 namespace polyfem
 {
@@ -9,15 +10,16 @@ namespace polyfem
 	public:
 		ControlParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args);
 
-		Eigen::MatrixXd map(const Eigen::VectorXd &x) const override
+		void update() override
 		{
-			return x;
 		}
+
+		Eigen::MatrixXd map(const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const override;
 
 		Eigen::VectorXd initial_guess() const override
 		{
-			assert(false);
-			return Eigen::VectorXd();
+			return starting_dirichlet;
 		}
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
@@ -27,7 +29,7 @@ namespace polyfem
 
 		bool pre_solve(const Eigen::VectorXd &newX) override;
 
-		const std::map<int, int> &get_optimize_boundary_ids_to_position() { return optimize_boundary_ids_to_position; }
+		const std::map<int, int> &get_boundary_id_to_reduced_param() { return boundary_id_to_reduced_param; }
 
 	private:
 		double target_weight = 1;
@@ -35,10 +37,15 @@ namespace polyfem
 		std::vector<int> boundary_ids_list;
 
 		int time_steps;
+		int dim;
+
+		Eigen::VectorXd starting_dirichlet;
 
 		json control_params;
 		json smoothing_params;
 
-		std::map<int, int> optimize_boundary_ids_to_position;
+		std::map<int, int> boundary_id_to_reduced_param;
+
+		std::shared_ptr<ControlConstraints> control_constraints_;
 	};
 } // namespace polyfem
