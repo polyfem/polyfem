@@ -55,6 +55,8 @@ set(SOURCES
 	ControlParameter.cpp
 	ShapeParameter.hpp
 	ShapeParameter.cpp
+	GraphParameter.hpp
+	GraphParameter.cpp
 	DampingParameter.hpp
 	DampingParameter.cpp
 	FrictionParameter.hpp

@@ -936,18 +936,19 @@ namespace polyfem::solver
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 
-		weights_.setOnes(shape_param_->get_state().bases.size());
+		weights_.setOnes(0);
 	}
 
 	double VolumeObjective::value()
 	{
-		assert(weights_.size() == shape_param_->get_state().bases.size());
+		assert(weights_.size() == 0 || weights_.size() == shape_param_->get_state().bases.size());
 
 		IntegrableFunctional j;
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setOnes(u.rows(), 1);
 			const int e = params["elem"];
-			val *= this->weights_(e);
+			if (weights_.size() > e)
+				val *= this->weights_(e);
 		});
 
 		const State &state = shape_param_->get_state();
@@ -964,13 +965,14 @@ namespace polyfem::solver
 	{
 		if (&param == shape_param_.get())
 		{
-			assert(weights_.size() == shape_param_->get_state().bases.size());
+			assert(weights_.size() == 0 || weights_.size() == shape_param_->get_state().bases.size());
 
 			IntegrableFunctional j;
 			j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setOnes(u.rows(), 1);
 				const int e = params["elem"];
-				val *= this->weights_(e);
+				if (weights_.size() > e)
+					val *= this->weights_(e);
 			});
 
 			const State &state = shape_param_->get_state();
