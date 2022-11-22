@@ -357,7 +357,7 @@
     {
         "pointer": "/parameters/*/initial",
         "type": "list",
-        "doc": "bound of random initialization"
+        "doc": "TODO"
     },
     {
         "pointer": "/parameters/*/rand_seed",
@@ -374,6 +374,7 @@
             "friction",
             "damping",
             "shape",
+            "graph",
             "topology",
             "control"
         ],
@@ -394,6 +395,58 @@
         "type": "int",
         "default": 1,
         "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*",
+        "type_name": "graph",
+        "type": "object",
+        "required": [
+            "type",
+            "states",
+            "graph_path",
+            "graph_exe_path",
+            "symmetry_type",
+            "out_velocity_path"
+        ],
+        "optional": [
+            "lower_bound",
+            "upper_bound",
+            "initial"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/graph_path",
+        "type": "file",
+        "doc": "Path to the graph obj file."
+    },
+    {
+        "pointer": "/parameters/*/graph_exe_path",
+        "type": "file",
+        "doc": "Path to the microstructure binary file."
+    },
+    {
+        "pointer": "/parameters/*/symmetry_type",
+        "type": "string",
+        "options": [
+            "2D_doubly_periodic",
+            "2D_cubic",
+            "doubly_periodic",
+            "cubic"
+        ], 
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/lower_bound",
+        "type": "list",
+        "default": [],
+        "doc": "List of numbers deciding the lower bound of each dimension in graph parameters."
+    },
+    {
+        "pointer": "/parameters/*/upper_bound",
+        "type": "list",
+        "default": [],
+        "doc": "List of numbers deciding the upper bound of each dimension in graph parameters."
     },
     {
         "pointer": "/parameters/*",
@@ -709,6 +762,7 @@
             "strain_norm",
             "boundary_smoothing",
             "deformed_boundary_smoothing",
+            "material_bound",
             "control_smoothing",
             "material_smoothing",
             "volume_constraint",
@@ -896,12 +950,6 @@
         "doc": "TODO"
     },
     {
-        "pointer": "/functionals/*/topology_parameter",
-        "type": "int",
-        "default": -1,
-        "doc": "TODO"
-    },
-    {
         "pointer": "/functionals/*/control_parameter",
         "type": "int",
         "default": -1,
@@ -998,7 +1046,6 @@
         "optional": [
             "shape_parameter",
             "material_parameter",
-            "topology_parameter",
             "volume_selection",
             "weight",
             "transient_integral_type"
@@ -1040,6 +1087,46 @@
     {
         "pointer": "/functionals/*",
         "type": "object",
+        "type_name": "material_bound",
+        "required": [
+            "type",
+            "bounds"
+        ],
+        "optional": [
+            "material_parameter"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/bounds",
+        "type": "list",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/bounds/*",
+        "type": "object",
+        "required": [
+            "min",
+            "max",
+            "type",
+            "dhat",
+            "kappa"
+        ],
+        "doc": "Barrier function parameters for material bounds."
+    },
+    {
+        "pointer": "/functionals/*/bounds/*/type",
+        "type": "string",
+        "options": [
+            "E",
+            "nu",
+            "lambda",
+            "mu"
+        ]
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
         "type_name": "boundary_smoothing",
         "required": [
             "type"
@@ -1076,10 +1163,10 @@
         "type": "object",
         "type_name": "material_smoothing",
         "required": [
-            "material_parameter",
             "type"
         ],
         "optional": [
+            "material_parameter",
             "weight",
             "volume_selection"
         ],

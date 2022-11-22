@@ -1,4 +1,6 @@
 #include "Objective.hpp"
+
+#include <polyfem/utils/CompositeSplineParam.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
@@ -67,6 +69,28 @@ namespace polyfem::solver
 
 			return grad;
 		}
+
+		double barrier_func(double x, double dhat)
+		{
+			double y = x / dhat;
+			if (0 < y && y < 1)
+				return -pow(y - 1, 2) * log(y) * dhat;
+			else if (x > dhat)
+				return 0;
+			else
+				return std::nan("");
+		}
+
+		double barrier_func_derivative(double x, double dhat)
+		{
+			double y = x / dhat;
+			if (0 < y && y < 1)
+				return -(1 - y) * (1 - y - 2 * y * log(y)) / y;
+			else if (y > 1)
+				return 0;
+			else
+				return std::nan("");
+		}
 	} // namespace
 
 	std::shared_ptr<Objective> Objective::create(const json &args, const std::string &root_path, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &states)
@@ -81,10 +105,10 @@ namespace polyfem::solver
 			const std::string matching = args["matching"];
 			if (matching == "exact")
 			{
-				std::shared_ptr<ShapeParameter> shape_param;
+				std::shared_ptr<Parameter> shape_param;
 				if (args["shape_parameter"] >= 0)
 				{
-					shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+					shape_param = parameters[args["shape_parameter"]];
 					if (!shape_param->contains_state(state))
 						logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
 				}
@@ -113,10 +137,10 @@ namespace polyfem::solver
 				for (int i = 0; i < delta.size(); ++i)
 					delta(i) = args["delta"][i].get<double>();
 
-				std::shared_ptr<ShapeParameter> shape_param;
+				std::shared_ptr<Parameter> shape_param;
 				if (args["shape_parameter"] >= 0)
 				{
-					shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+					shape_param = parameters[args["shape_parameter"]];
 					if (!shape_param->contains_state(state))
 						logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
 				}
@@ -179,11 +203,11 @@ namespace polyfem::solver
 		else if (type == "stress")
 		{
 			State &state = *(states[args["state"]]);
-			std::shared_ptr<ShapeParameter> shape_param;
-			std::shared_ptr<ElasticParameter> elastic_param;
+			std::shared_ptr<Parameter> shape_param;
+			std::shared_ptr<Parameter> elastic_param;
 			if (args["shape_parameter"] >= 0)
 			{
-				shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+				shape_param = parameters[args["shape_parameter"]];
 				if (!shape_param->contains_state(state))
 					logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
 			}
@@ -191,7 +215,7 @@ namespace polyfem::solver
 				logger().warn("No shape parameter is assigned to functional");
 
 			if (args["material_parameter"] >= 0)
-				elastic_param = std::dynamic_pointer_cast<ElasticParameter>(parameters[args["material_parameter"]]);
+				elastic_param = parameters[args["material_parameter"]];
 
 			std::shared_ptr<solver::StaticObjective> tmp = std::make_shared<solver::StressObjective>(state, shape_param, elastic_param, args);
 			if (state.problem->is_time_dependent())
@@ -202,10 +226,10 @@ namespace polyfem::solver
 		else if (type == "position")
 		{
 			State &state = *(states[args["state"]]);
-			std::shared_ptr<ShapeParameter> shape_param;
+			std::shared_ptr<Parameter> shape_param;
 			if (args["shape_parameter"] >= 0)
 			{
-				shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+				shape_param = parameters[args["shape_parameter"]];
 				if (!shape_param->contains_state(state))
 					logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
 			}
@@ -221,20 +245,27 @@ namespace polyfem::solver
 		}
 		else if (type == "boundary_smoothing")
 		{
-			std::shared_ptr<ShapeParameter> shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+			std::shared_ptr<Parameter> shape_param = parameters[args["shape_parameter"]];
 			obj = std::make_shared<solver::BoundarySmoothingObjective>(shape_param, args);
 		}
 		else if (type == "deformed_boundary_smoothing")
 		{
 			State &state = *(states[args["state"]]);
-			std::shared_ptr<ShapeParameter> shape_param;
+			std::shared_ptr<Parameter> shape_param;
 			if (args["shape_parameter"] >= 0)
 			{
-				shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+				shape_param = parameters[args["shape_parameter"]];
 				if (!shape_param->contains_state(state))
 					logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
 			}
 			obj = std::make_shared<solver::DeformedBoundarySmoothingObjective>(state, shape_param, args);
+		}
+		else if (type == "material_bound")
+		{
+			if (args["material_parameter"] < 0)
+				log_and_throw_error("No material parameter assigned to material bound objective!");
+			std::shared_ptr<Parameter> elastic_param = parameters[args["material_parameter"]];
+			obj = std::make_shared<MaterialBoundObjective>(elastic_param, args);
 		}
 		else if (type == "control_smoothing")
 		{
@@ -246,37 +277,33 @@ namespace polyfem::solver
 		}
 		else if (type == "volume_constraint")
 		{
-			std::shared_ptr<ShapeParameter> shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+			std::shared_ptr<Parameter> shape_param = parameters[args["shape_parameter"]];
 			obj = std::make_shared<solver::VolumePaneltyObjective>(shape_param, args);
 		}
 		else if (type == "compliance")
 		{
 			State &state = *(states[args["state"]]);
 
-			std::shared_ptr<ShapeParameter> shape_param;
+			std::shared_ptr<Parameter> shape_param;
 			if (args["shape_parameter"] >= 0)
-				shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+				shape_param = parameters[args["shape_parameter"]];
 
-			std::shared_ptr<ElasticParameter> elastic_param;
+			std::shared_ptr<Parameter> elastic_param;
 			if (args["material_parameter"] >= 0)
-				elastic_param = std::dynamic_pointer_cast<ElasticParameter>(parameters[args["material_parameter"]]);
+				elastic_param = parameters[args["material_parameter"]];
 
-			std::shared_ptr<TopologyOptimizationParameter> topo_param;
-			if (args["topology_parameter"] >= 0)
-				topo_param = std::dynamic_pointer_cast<TopologyOptimizationParameter>(parameters[args["topology_parameter"]]);
-
-			if (!shape_param && !topo_param && !elastic_param)
+			if (!shape_param && !elastic_param)
 				logger().warn("No parameter is assigned to functional");
 
-			obj = std::make_shared<solver::ComplianceObjective>(state, shape_param, elastic_param, topo_param, args);
+			obj = std::make_shared<solver::ComplianceObjective>(state, shape_param, elastic_param, args);
 		}
 		else if (type == "strain_norm")
 		{
 			State &state = *(states[args["state"]]);
 
-			std::shared_ptr<ShapeParameter> shape_param;
+			std::shared_ptr<Parameter> shape_param;
 			if (args["shape_parameter"] >= 0)
-				shape_param = std::dynamic_pointer_cast<ShapeParameter>(parameters[args["shape_parameter"]]);
+				shape_param = parameters[args["shape_parameter"]];
 
 			obj = std::make_shared<solver::StrainObjective>(state, shape_param, args);
 		}
@@ -308,8 +335,10 @@ namespace polyfem::solver
 		return term;
 	}
 
-	SpatialIntegralObjective::SpatialIntegralObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : state_(state), shape_param_(shape_param)
+	SpatialIntegralObjective::SpatialIntegralObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : state_(state), shape_param_(shape_param)
 	{
+		if (shape_param_)
+			assert(shape_param_->name() == "shape");
 	}
 
 	double SpatialIntegralObjective::value()
@@ -344,7 +373,7 @@ namespace polyfem::solver
 		return term;
 	}
 
-	StressObjective::StressObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const json &args, bool has_integral_sqrt) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
+	StressObjective::StressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args, bool has_integral_sqrt) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
 	{
 		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
@@ -453,7 +482,7 @@ namespace polyfem::solver
 	{
 		Eigen::VectorXd term;
 		term.setZero(param.full_dim());
-		if (&param == elastic_param_.get() || param.name() == "topology")
+		if (&param == elastic_param_.get())
 		{
 			// TODO: differentiate stress wrt. lame param
 			log_and_throw_error("Not implemented!");
@@ -592,7 +621,7 @@ namespace polyfem::solver
 		}
 	}
 
-	BoundarySmoothingObjective::BoundarySmoothingObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : shape_param_(shape_param), args_(args)
+	BoundarySmoothingObjective::BoundarySmoothingObjective(const std::shared_ptr<const Parameter> shape_param, const json &args) : shape_param_(shape_param), args_(args)
 	{
 		init();
 	}
@@ -755,7 +784,7 @@ namespace polyfem::solver
 		adj.setFromTriplets(T_adj.begin(), T_adj.end());
 	}
 
-	DeformedBoundarySmoothingObjective::DeformedBoundarySmoothingObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : state_(state), shape_param_(shape_param), args_(args)
+	DeformedBoundarySmoothingObjective::DeformedBoundarySmoothingObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : state_(state), shape_param_(shape_param), args_(args)
 	{
 		init();
 	}
@@ -900,25 +929,26 @@ namespace polyfem::solver
 		return grad;
 	}
 
-	VolumeObjective::VolumeObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : shape_param_(shape_param)
+	VolumeObjective::VolumeObjective(const std::shared_ptr<const Parameter> shape_param, const json &args) : shape_param_(shape_param)
 	{
 		if (!shape_param)
 			log_and_throw_error("Volume Objective needs non-empty shape parameter!");
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 
-		weights_.setOnes(shape_param_->get_state().bases.size());
+		weights_.setOnes(0);
 	}
 
 	double VolumeObjective::value()
 	{
-		assert(weights_.size() == shape_param_->get_state().bases.size());
+		assert(weights_.size() == 0 || weights_.size() == shape_param_->get_state().bases.size());
 
 		IntegrableFunctional j;
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 			val.setOnes(u.rows(), 1);
 			const int e = params["elem"];
-			val *= this->weights_(e);
+			if (weights_.size() > e)
+				val *= this->weights_(e);
 		});
 
 		const State &state = shape_param_->get_state();
@@ -935,13 +965,14 @@ namespace polyfem::solver
 	{
 		if (&param == shape_param_.get())
 		{
-			assert(weights_.size() == shape_param_->get_state().bases.size());
+			assert(weights_.size() == 0 || weights_.size() == shape_param_->get_state().bases.size());
 
 			IntegrableFunctional j;
 			j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
 				val.setOnes(u.rows(), 1);
 				const int e = params["elem"];
-				val *= this->weights_(e);
+				if (weights_.size() > e)
+					val *= this->weights_(e);
 			});
 
 			const State &state = shape_param_->get_state();
@@ -953,7 +984,7 @@ namespace polyfem::solver
 			return Eigen::VectorXd::Zero(param.full_dim());
 	}
 
-	VolumePaneltyObjective::VolumePaneltyObjective(const std::shared_ptr<const ShapeParameter> shape_param, const json &args)
+	VolumePaneltyObjective::VolumePaneltyObjective(const std::shared_ptr<const Parameter> shape_param, const json &args)
 	{
 		if (args["soft_bound"].get<std::vector<double>>().size() == 2)
 			bound = args["soft_bound"];
@@ -991,7 +1022,7 @@ namespace polyfem::solver
 			return Eigen::VectorXd::Zero(grad.size(), 1);
 	}
 
-	PositionObjective::PositionObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
+	PositionObjective::PositionObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
 	{
 		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
@@ -1027,7 +1058,7 @@ namespace polyfem::solver
 		return term;
 	}
 
-	BarycenterTargetObjective::BarycenterTargetObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const json &args, const Eigen::MatrixXd &target)
+	BarycenterTargetObjective::BarycenterTargetObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args, const Eigen::MatrixXd &target)
 	{
 		dim_ = state.mesh->dimension();
 		target_ = target;
@@ -1205,13 +1236,14 @@ namespace polyfem::solver
 		return term;
 	}
 
-	ComplianceObjective::ComplianceObjective(const State &state, const std::shared_ptr<const ShapeParameter> shape_param, const std::shared_ptr<const ElasticParameter> &elastic_param, const std::shared_ptr<const TopologyOptimizationParameter> topo_param, const json &args) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param), topo_param_(topo_param)
+	ComplianceObjective::ComplianceObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
 	{
+		if (elastic_param_)
+			assert(elastic_param_->name() == "material");
 		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 
-		assert(!topo_param_ || !elastic_param_);
 		formulation_ = state.formulation();
 	}
 
@@ -1259,7 +1291,7 @@ namespace polyfem::solver
 		term.setZero(param.full_dim());
 		if (&param == shape_param_.get())
 			term = compute_partial_gradient(param);
-		else if (&param == topo_param_.get() || &param == elastic_param_.get())
+		else if (&param == elastic_param_.get())
 		{
 			const auto &bases = state_.bases;
 			const auto &gbases = state_.geom_bases();
@@ -1776,6 +1808,139 @@ namespace polyfem::solver
 		j.set_dj_dx(djdu_func);
 
 		return j;
+	}
+
+	MaterialBoundObjective::MaterialBoundObjective(const std::shared_ptr<const Parameter> elastic_param, const json &args): elastic_param_(elastic_param), is_volume(elastic_param->get_state().mesh->is_volume())
+	{
+		for (const auto &arg : args["bounds"])
+		{
+			if (arg["type"] == "E")
+			{
+				min_E = arg["min"];
+				max_E = arg["max"];
+				kappa_E = arg["kappa"];
+				dhat_E = arg["dhat"];
+			}
+			else if (arg["type"] == "nu")
+			{
+				min_nu = arg["min"];
+				max_nu = arg["max"];
+				kappa_nu = arg["kappa"];
+				dhat_nu = arg["dhat"];
+			}
+			else if (arg["type"] == "lambda")
+			{
+				min_lambda = arg["min"];
+				max_lambda = arg["max"];
+				kappa_lambda = arg["kappa"];
+				dhat_lambda = arg["dhat"];
+			}
+			else if (arg["type"] == "mu")
+			{
+				min_mu = arg["min"];
+				max_mu = arg["max"];
+				kappa_mu = arg["kappa"];
+				dhat_mu = arg["dhat"];
+			}
+		}
+	}
+
+	double MaterialBoundObjective::value()
+	{
+		const auto &lambdas = elastic_param_->get_state().assembler.lame_params().lambda_mat_;
+		const auto &mus = elastic_param_->get_state().assembler.lame_params().mu_mat_;
+
+		double val = 0;
+		for (int e = 0; e < lambdas.size(); e++)
+		{
+			const double lambda = lambdas(e);
+			const double mu = mus(e);
+			const double E = convert_to_E(is_volume, lambda, mu);
+			const double nu = convert_to_nu(is_volume, lambda, mu);
+
+			if (kappa_E > 0 && dhat_E > 0)
+			{
+				val += barrier_func(E - min_E, dhat_E) * kappa_E;
+				val += barrier_func(max_E - E, dhat_E) * kappa_E;
+			}
+
+			if (kappa_nu > 0 && dhat_nu > 0)
+			{
+				val += barrier_func(nu - min_nu, dhat_nu) * kappa_nu;
+				val += barrier_func(max_nu - nu, dhat_nu) * kappa_nu;
+			}
+
+			if (kappa_mu > 0 && dhat_mu > 0)
+			{
+				val += barrier_func(mu - min_mu, dhat_mu) * kappa_mu;
+				val += barrier_func(max_mu - mu, dhat_mu) * kappa_mu;
+			}
+
+			if (kappa_lambda > 0 && dhat_lambda > 0)
+			{
+				val += barrier_func(lambda - min_lambda, dhat_lambda) * kappa_lambda;
+				val += barrier_func(max_lambda - lambda, dhat_lambda) * kappa_lambda;
+			}
+		}
+
+		return val;
+	}
+
+	Eigen::MatrixXd MaterialBoundObjective::compute_adjoint_rhs(const State &state)
+	{
+		return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
+	}
+
+	Eigen::VectorXd MaterialBoundObjective::compute_partial_gradient(const Parameter &param)
+	{
+		Eigen::VectorXd grad;
+		grad.setZero(param.full_dim());
+
+		const auto &lambdas = elastic_param_->get_state().assembler.lame_params().lambda_mat_;
+		const auto &mus = elastic_param_->get_state().assembler.lame_params().mu_mat_;
+
+		assert(grad.size() == lambdas.size() + mus.size());
+		for (int e = 0; e < lambdas.size(); e++)
+		{
+			const double lambda = lambdas(e);
+			const double mu = mus(e);
+			const double E = convert_to_E(is_volume, lambda, mu);
+			const double nu = convert_to_nu(is_volume, lambda, mu);
+			Eigen::Matrix2d jacobian = d_lambda_mu_d_E_nu(is_volume, E, nu);
+			jacobian = jacobian.inverse().eval();
+
+			if (kappa_E > 0 && dhat_E > 0)
+			{
+				double val = 0;
+				val += barrier_func_derivative(E - min_E, dhat_E) * kappa_E;
+				val += -barrier_func_derivative(max_E - E, dhat_E) * kappa_E;
+				grad(e) += val * jacobian(0, 0);
+				grad(e + lambdas.size()) += val * jacobian(0, 1);
+			}
+
+			if (kappa_nu > 0 && dhat_nu > 0)
+			{
+				double val = 0;
+				val += barrier_func_derivative(nu - min_nu, dhat_nu) * kappa_nu;
+				val += -barrier_func_derivative(max_nu - nu, dhat_nu) * kappa_nu;
+				grad(e) += val * jacobian(1, 0);
+				grad(e + lambdas.size()) += val * jacobian(1, 1);
+			}
+
+			if (kappa_mu > 0 && dhat_mu > 0)
+			{
+				grad(e + lambdas.size()) += barrier_func_derivative(mu - min_mu, dhat_mu) * kappa_mu;
+				grad(e + lambdas.size()) += -barrier_func_derivative(max_mu - mu, dhat_mu) * kappa_mu;
+			}
+
+			if (kappa_lambda > 0 && dhat_lambda > 0)
+			{
+				grad(e) += barrier_func_derivative(lambda - min_lambda, dhat_lambda) * kappa_lambda;
+				grad(e) += -barrier_func_derivative(max_lambda - lambda, dhat_lambda) * kappa_lambda;
+			}
+		}
+
+		return grad;
 	}
 
 } // namespace polyfem::solver

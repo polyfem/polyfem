@@ -924,12 +924,6 @@ namespace polyfem::io
 			logger().error("Build the bases first!");
 			return;
 		}
-		// if (stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
-		if (rhs.size() <= 0)
-		{
-			logger().error("Assemble the rhs first!");
-			return;
-		}
 		if (sol.size() <= 0)
 		{
 			logger().error("Solve the problem first!");

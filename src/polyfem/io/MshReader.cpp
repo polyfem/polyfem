@@ -171,19 +171,18 @@ namespace polyfem::io
 			}
 		}
 
+		node_data.resize(spec.node_data.size());
+		int i = 0;
 		for (const auto &data : spec.node_data)
 		{
 			for (const auto &str : data.header.string_tags)
 				node_data_name.push_back(str);
 			
-			int i = 0;
-			node_data.resize(data.entries.size());
 			for (const auto &entry : data.entries)
-			{
 				for (const auto &d : entry.data)
 					node_data[i].push_back(d);
-				i++;
-			}
+			
+			i++;
 		}
 
 		// std::ifstream infile(path.c_str());
