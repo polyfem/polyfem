@@ -34,13 +34,14 @@ namespace polyfem::solver
 
 		int full_size() const { return optimization_dim_; }
 
-		double target_value(const Eigen::VectorXd &x);
 		double value(const Eigen::VectorXd &x) override;
 		double value(const Eigen::VectorXd &x, const bool only_elastic);
 
-		void target_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv);
 		void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
 		void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv, const bool only_elastic);
+
+		Eigen::VectorXd component_values(const Eigen::VectorXd &x);
+		Eigen::MatrixXd component_gradients(const Eigen::VectorXd &x);
 
 		bool verify_gradient(const Eigen::VectorXd &x, const Eigen::VectorXd &gradv);
 

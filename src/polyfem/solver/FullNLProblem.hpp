@@ -20,11 +20,11 @@ namespace polyfem::solver
 		virtual void init(const TVector &x0);
 
 		virtual double value(const TVector &x) override;
-		double target_value(const TVector &x) { return value(x); }
 		virtual void gradient(const TVector &x, TVector &gradv) override;
-		void target_gradient(const TVector &x, TVector &gradv) { gradient(x, gradv); }
 		virtual void hessian(const TVector &x, THessian &hessian);
 
+		TVector component_values(const TVector &x);
+		Eigen::MatrixXd component_gradients(const TVector &x);
 		bool verify_gradient(const TVector &x, const TVector &gradv) { return true; }
 
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) const;

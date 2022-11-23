@@ -71,12 +71,24 @@ namespace polyfem
 			double value(const TVector &x) { return value(x, false); }
 			double value(const TVector &x, const bool only_elastic);
 
-			double target_value(const TVector &x) { return value(x); }
 			void gradient(const TVector &x, TVector &gradv) { gradient(x, gradv, false); }
 			void gradient(const TVector &x, TVector &gradv, const bool only_elastic);
-			void target_gradient(const TVector &x, TVector &gradv) { gradient(x, gradv); }
 			void hessian(const TVector &x, THessian &hessian);
 			void hessian(const TVector &x, Eigen::MatrixXd &hessian);
+
+			TVector component_values(const TVector &x)
+			{
+				TVector val(1);
+				val(0) = value(x);
+				return val;
+			}
+
+			Eigen::MatrixXd component_gradients(const TVector &x)
+			{
+				Eigen::VectorXd grad(x.size());
+				gradient(x, grad);
+				return grad;
+			}
 
 			Eigen::MatrixXd coeff_to_field(const TVector &x)
 			{

@@ -147,9 +147,18 @@ namespace cppoptlib
 			objFunc.save_to_file(x);
 			if (outfile.is_open())
 			{
-				TVector target_grad;
-				objFunc.target_gradient(x, target_grad);
-				outfile << objFunc.target_value(x) << "," << energy << "," << target_grad.norm() << "," << grad_norm << "\n";
+				Eigen::VectorXd values = objFunc.component_values(x);
+				Eigen::MatrixXd grads = objFunc.component_gradients(x);
+				assert(values.size() == grads.cols());
+				outfile << energy << ", " << grad_norm << ", ";
+				for (int i = 0; i < values.size(); i++)
+				{
+					outfile << values(i) << ", " << grads.col(i).norm();
+					if (i == values.size() - 1)
+						outfile << "\n";
+					else
+						outfile << ", ";
+				}
 				outfile.flush();
 			}
 

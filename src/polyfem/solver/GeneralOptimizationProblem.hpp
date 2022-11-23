@@ -21,6 +21,19 @@ namespace polyfem
 
 		int optimization_dim()  { return optimization_dim_; }
 
+		TVector component_values(const TVector &x)
+		{
+			TVector val(1);
+			val(0) = value(x);
+			return val;
+		}
+		Eigen::MatrixXd component_gradients(const TVector &x)
+		{
+			Eigen::VectorXd grad(x.size());
+			gradient(x, grad);
+			return grad;
+		}
+
 		double target_value(const TVector &x) 
 		{
 			double val = 0;
