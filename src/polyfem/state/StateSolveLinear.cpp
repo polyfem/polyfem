@@ -37,20 +37,13 @@ namespace polyfem
 		b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
 
 		std::vector<int> boundary_nodes_tmp = boundary_nodes;
+		full_to_periodic(boundary_nodes_tmp);
 		if (has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"])
 		{
 			precond_num = full_to_periodic(A);
  			Eigen::MatrixXd tmp = b;
  			full_to_periodic(tmp);
  			b = tmp;
-
-			// new index for boundary_nodes
-			for (int i = 0; i < boundary_nodes_tmp.size(); i++)
-				boundary_nodes_tmp[i] = periodic_reduce_map(boundary_nodes[i]);
-
-			std::sort(boundary_nodes_tmp.begin(), boundary_nodes_tmp.end());
-			auto it = std::unique(boundary_nodes_tmp.begin(), boundary_nodes_tmp.end());
-			boundary_nodes_tmp.resize(std::distance(boundary_nodes_tmp.begin(), it));
 		}
 
 		Eigen::VectorXd x;
@@ -77,9 +70,7 @@ namespace polyfem
 
 		x.conservativeResize(x.size() - n_lagrange_multipliers());
  		if (has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"])
- 		{
  			sol = periodic_to_full(full_size, x);
- 		}
  		else
  			sol = x; // Explicit copy because sol is a MatrixXd (with one column)
 

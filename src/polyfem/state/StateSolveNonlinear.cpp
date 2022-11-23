@@ -310,16 +310,7 @@ namespace polyfem
 		}
 
 		std::vector<int> boundary_nodes_tmp = boundary_nodes;
-		if (has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"])
-		{
-			// new index for boundary_nodes
-			for (int i = 0; i < boundary_nodes_tmp.size(); i++)
-				boundary_nodes_tmp[i] = periodic_reduce_map(boundary_nodes[i]);
-
-			std::sort(boundary_nodes_tmp.begin(), boundary_nodes_tmp.end());
-			auto it = std::unique(boundary_nodes_tmp.begin(), boundary_nodes_tmp.end());
-			boundary_nodes_tmp.resize(std::distance(boundary_nodes_tmp.begin(), it));
-		}
+		full_to_periodic(boundary_nodes_tmp);
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize nonlinear problems

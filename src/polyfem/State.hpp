@@ -417,6 +417,18 @@ namespace polyfem
 		// compute the matrix/vector under periodic basis, if the size is larger than #periodic_basis, the extra rows are kept
 		int full_to_periodic(StiffnessMatrix &A) const;
 		int full_to_periodic(Eigen::MatrixXd &b, bool force_dirichlet = true) const;
+		void full_to_periodic(std::vector<int> &boundary_nodes_) const
+		{
+			if (has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"])
+			{
+				for (int i = 0; i < boundary_nodes_.size(); i++)
+					boundary_nodes_[i] = periodic_reduce_map(boundary_nodes_[i]);
+
+				std::sort(boundary_nodes_.begin(), boundary_nodes_.end());
+				auto it = std::unique(boundary_nodes_.begin(), boundary_nodes_.end());
+				boundary_nodes_.resize(std::distance(boundary_nodes_.begin(), it));
+			}
+		}
 
 		Eigen::MatrixXd periodic_to_full(const int ndofs, const Eigen::MatrixXd &x_periodic) const;
 
