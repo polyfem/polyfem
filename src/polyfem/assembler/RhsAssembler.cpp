@@ -224,22 +224,10 @@ namespace polyfem
 			Eigen::MatrixXd uv, samples, gtmp, rhs_fun;
 			Eigen::VectorXi global_primitive_ids;
 
-			int index = 0;
-			std::vector<int> indices;
-			indices.reserve(n_el * 10);
-			// std::map<int, int> global_index_to_col;
-
-			long total_size = 0;
+			const int actual_dim = problem_.is_scalar() ? 1 : mesh_.dimension();
 
 			Eigen::Matrix<bool, Eigen::Dynamic, 1> is_boundary(n_basis_);
 			is_boundary.setConstant(false);
-			Eigen::VectorXi global_index_to_col(n_basis_);
-			global_index_to_col.setConstant(-1);
-
-			const int actual_dim = problem_.is_scalar() ? 1 : mesh_.dimension();
-
-			// assert((bounday_nodes.size()/actual_dim)*actual_dim == bounday_nodes.size());
-
 			int skipped_count = 0;
 			for (int b : bounday_nodes)
 			{
@@ -252,158 +240,164 @@ namespace polyfem
 			}
 			assert(skipped_count <= 1);
 
-			for (const auto &lb : local_boundary)
+			for (int d = 0; d < size_; ++d)
 			{
-				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::sample_boundary(lb, resolution, mesh_, true, uv, samples, global_primitive_ids);
+				int index = 0;
+				std::vector<int> indices;
+				indices.reserve(n_el * 10);
+				std::vector<int> tags;
+				tags.reserve(n_el * 10);
 
-				if (!has_samples)
-					continue;
+				long total_size = 0;
 
-				const basis::ElementBases &bs = bases_[e];
-				const int n_local_bases = int(bs.bases.size());
+				Eigen::VectorXi global_index_to_col(n_basis_);
+				global_index_to_col.setConstant(-1);
 
-				total_size += samples.rows();
+				std::vector<AssemblyValues> tmp_val;
 
-				for (int j = 0; j < n_local_bases; ++j)
+				for (const auto &lb : local_boundary)
 				{
-					const basis::Basis &b = bs.bases[j];
+					const int e = lb.element_id();
+					bool has_samples = utils::BoundarySampler::sample_boundary(lb, resolution, mesh_, true, uv, samples, global_primitive_ids);
 
-					for (std::size_t ii = 0; ii < b.global().size(); ++ii)
+					if (!has_samples)
+						continue;
+
+					const basis::ElementBases &bs = bases_[e];
+					bs.evaluate_bases(samples, tmp_val);
+					const int n_local_bases = int(bs.bases.size());
+					assert(global_primitive_ids.size() == samples.rows());
+
+					for (int s = 0; s < samples.rows(); ++s)
 					{
-						// pt found
-						// if(std::find(bounday_nodes.begin(), bounday_nodes.end(), size_ * b.global()[ii].index) != bounday_nodes.end())
-						if (is_boundary[b.global()[ii].index])
+						const int tag = mesh_.get_boundary_id(global_primitive_ids(s));
+						if (!problem_.all_dimensions_dirichlet() && !problem_.is_dimension_dirichet(tag, d))
+							continue;
+
+						total_size++;
+
+						for (int j = 0; j < n_local_bases; ++j)
 						{
-							// if(!global_index_to_col.contains(b.global()[ii].index))
-							if (global_index_to_col(b.global()[ii].index) == -1)
+							const basis::Basis &b = bs.bases[j];
+							const double tmp = tmp_val[j].val(s);
+
+							if (fabs(tmp) < 1e-10)
+								continue;
+
+							for (std::size_t ii = 0; ii < b.global().size(); ++ii)
 							{
-								// global_index_to_col[b.global()[ii].index] = index++;
-								global_index_to_col(b.global()[ii].index) = index++;
-								indices.push_back(b.global()[ii].index);
-								assert(indices.size() == size_t(index));
+								// pt found
+								if (is_boundary[b.global()[ii].index])
+								{
+									if (global_index_to_col(b.global()[ii].index) == -1)
+									{
+										global_index_to_col(b.global()[ii].index) = index++;
+										indices.push_back(b.global()[ii].index);
+										tags.push_back(tag);
+										assert(indices.size() == size_t(index));
+									}
+								}
 							}
 						}
 					}
 				}
-			}
 
-			// Eigen::MatrixXd global_mat = Eigen::MatrixXd::Zero(total_size, indices.size());
-			Eigen::MatrixXd global_rhs = Eigen::MatrixXd::Zero(total_size, size_);
+				Eigen::MatrixXd global_rhs = Eigen::MatrixXd::Zero(total_size, 1);
 
-			const long buffer_size = total_size * long(indices.size());
-			std::vector<Eigen::Triplet<double>> entries, entries_t;
-			// entries.reserve(buffer_size);
-			// entries_t.reserve(buffer_size);
+				const long buffer_size = total_size * long(indices.size());
+				std::vector<Eigen::Triplet<double>> entries, entries_t;
 
-			index = 0;
+				index = 0;
 
-			int global_counter = 0;
-			Eigen::MatrixXd mapped;
+				int global_counter = 0;
+				Eigen::MatrixXd mapped;
 
-			std::vector<AssemblyValues> tmp_val;
-
-			for (const auto &lb : local_boundary)
-			{
-				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::sample_boundary(lb, resolution, mesh_, false, uv, samples, global_primitive_ids);
-
-				if (!has_samples)
-					continue;
-
-				const basis::ElementBases &bs = bases_[e];
-				const basis::ElementBases &gbs = gbases_[e];
-				const int n_local_bases = int(bs.bases.size());
-
-				gbs.eval_geom_mapping(samples, mapped);
-
-				bs.evaluate_bases(samples, tmp_val);
-				for (int j = 0; j < n_local_bases; ++j)
+				for (const auto &lb : local_boundary)
 				{
-					const basis::Basis &b = bs.bases[j];
-					const auto &tmp = tmp_val[j].val;
+					const int e = lb.element_id();
+					bool has_samples = utils::BoundarySampler::sample_boundary(lb, resolution, mesh_, false, uv, samples, global_primitive_ids);
 
-					for (std::size_t ii = 0; ii < b.global().size(); ++ii)
+					if (!has_samples)
+						continue;
+
+					const basis::ElementBases &bs = bases_[e];
+					const basis::ElementBases &gbs = gbases_[e];
+					const int n_local_bases = int(bs.bases.size());
+
+					gbs.eval_geom_mapping(samples, mapped);
+
+					bs.evaluate_bases(samples, tmp_val);
+					df(global_primitive_ids, uv, mapped, rhs_fun);
+
+					for (int s = 0; s < samples.rows(); ++s)
 					{
-						// auto item = global_index_to_col.find(b.global()[ii].index);
-						// if(item != global_index_to_col.end()){
-						auto item = global_index_to_col(b.global()[ii].index);
-						if (item != -1)
+						const int tag = mesh_.get_boundary_id(global_primitive_ids(s));
+						if (!problem_.all_dimensions_dirichlet() && !problem_.is_dimension_dirichet(tag, d))
+							continue;
+
+						for (int j = 0; j < n_local_bases; ++j)
 						{
-							for (int k = 0; k < int(tmp.size()); ++k)
+							const basis::Basis &b = bs.bases[j];
+							const double tmp = tmp_val[j].val(s);
+
+							for (std::size_t ii = 0; ii < b.global().size(); ++ii)
 							{
-								// entries.push_back(Eigen::Triplet<double>(global_counter+k, item->second, tmp(k, j) * b.global()[ii].val));
-								// entries_t.push_back(Eigen::Triplet<double>(item->second, global_counter+k, tmp(k, j) * b.global()[ii].val));
-								entries.push_back(Eigen::Triplet<double>(global_counter + k, item, tmp(k) * b.global()[ii].val));
-								entries_t.push_back(Eigen::Triplet<double>(item, global_counter + k, tmp(k) * b.global()[ii].val));
+								auto item = global_index_to_col(b.global()[ii].index);
+								if (item != -1)
+								{
+									entries.push_back(Eigen::Triplet<double>(global_counter, item, tmp * b.global()[ii].val));
+									entries_t.push_back(Eigen::Triplet<double>(item, global_counter, tmp * b.global()[ii].val));
+								}
 							}
-							// global_mat.block(global_counter, item->second, tmp.size(), 1) = tmp;
 						}
+
+						global_rhs(global_counter) = rhs_fun(s, d);
+						global_counter++;
 					}
 				}
 
-				// problem_.dirichlet_bc(mesh_, global_primitive_ids, mapped, t, rhs_fun);
-				df(global_primitive_ids, uv, mapped, rhs_fun);
-				global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
-				global_counter += rhs_fun.rows();
+				assert(global_counter == total_size);
 
-				// UIState::ui_state().debug_data().add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
-
-				// Eigen::MatrixXd asd(mapped.rows(), 3);
-				// asd.col(0)=mapped.col(0);
-				// asd.col(1)=mapped.col(1);
-				// asd.col(2)=rhs_fun;
-				// UIState::ui_state().debug_data().add_points(asd, Eigen::MatrixXd::Constant(1, 3, 0));
-			}
-
-			assert(global_counter == total_size);
-
-			if (total_size > 0)
-			{
-				const double mmin = global_rhs.minCoeff();
-				const double mmax = global_rhs.maxCoeff();
-
-				if (fabs(mmin) < 1e-8 && fabs(mmax) < 1e-8)
+				if (total_size > 0)
 				{
-					// std::cout<<"is all zero, skipping"<<std::endl;
-					for (size_t i = 0; i < indices.size(); ++i)
+					const double mmin = global_rhs.minCoeff();
+					const double mmax = global_rhs.maxCoeff();
+
+					if (fabs(mmin) < 1e-8 && fabs(mmax) < 1e-8)
 					{
-						for (int d = 0; d < size_; ++d)
+						for (size_t i = 0; i < indices.size(); ++i)
 						{
-							if (problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), indices[i] * size_ + d) != bounday_nodes.end())
+							const int tag = tags[i];
+							if (problem_.all_dimensions_dirichlet() || problem_.is_dimension_dirichet(tag, d))
 								rhs(indices[i] * size_ + d) = 0;
 						}
 					}
-				}
-				else
-				{
-					StiffnessMatrix mat(int(total_size), int(indices.size()));
-					mat.setFromTriplets(entries.begin(), entries.end());
-
-					StiffnessMatrix mat_t(int(indices.size()), int(total_size));
-					mat_t.setFromTriplets(entries_t.begin(), entries_t.end());
-
-					StiffnessMatrix A = mat_t * mat;
-					Eigen::MatrixXd b = mat_t * global_rhs;
-
-					Eigen::MatrixXd coeffs(b.rows(), b.cols());
-					auto solver = LinearSolver::create(solver_, preconditioner_);
-					solver->setParameters(solver_params_);
-					solver->analyzePattern(A, A.rows());
-					solver->factorize(A);
-					coeffs.setZero();
-					for (long i = 0; i < b.cols(); ++i)
+					else
 					{
-						solver->solve(b.col(i), coeffs.col(i));
-					}
-					logger().trace("RHS solve error {}", (A * coeffs - b).norm());
+						StiffnessMatrix mat(int(total_size), int(indices.size()));
+						mat.setFromTriplets(entries.begin(), entries.end());
 
-					for (long i = 0; i < coeffs.rows(); ++i)
-					{
-						for (int d = 0; d < size_; ++d)
+						StiffnessMatrix mat_t(int(indices.size()), int(total_size));
+						mat_t.setFromTriplets(entries_t.begin(), entries_t.end());
+
+						StiffnessMatrix A = mat_t * mat;
+						Eigen::VectorXd b = mat_t * global_rhs;
+
+						Eigen::VectorXd coeffs(b.rows(), 1);
+						auto solver = LinearSolver::create(solver_, preconditioner_);
+						solver->setParameters(solver_params_);
+						solver->analyzePattern(A, A.rows());
+						solver->factorize(A);
+						coeffs.setZero();
+						solver->solve(b, coeffs);
+
+						logger().trace("RHS solve error {}", (A * coeffs - b).norm());
+
+						for (long i = 0; i < coeffs.rows(); ++i)
 						{
-							if (problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), indices[i] * size_ + d) != bounday_nodes.end())
-								rhs(indices[i] * size_ + d) = coeffs(i, d);
+							const int tag = tags[i];
+							if (problem_.all_dimensions_dirichlet() || problem_.is_dimension_dirichet(tag, d))
+								rhs(indices[i] * size_ + d) = coeffs(i);
 						}
 					}
 				}
@@ -448,6 +442,8 @@ namespace polyfem
 				{
 					global_primitive_ids(0) = lb.global_primitive_id(i);
 					const auto nodes = bs.local_nodes_for_primitive(global_primitive_ids(0), mesh_);
+					assert(global_primitive_ids.size() == 1);
+					const int tag = mesh_.get_boundary_id(global_primitive_ids(0));
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
@@ -463,8 +459,11 @@ namespace polyfem
 
 							for (int d = 0; d < size_; ++d)
 							{
-								if (problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), glob[ii].index * size_ + d) != bounday_nodes.end())
+								if (problem_.all_dimensions_dirichlet() || problem_.is_dimension_dirichet(tag, d))
+								{
+									assert(problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), glob[ii].index * size_ + d) != bounday_nodes.end());
 									rhs(glob[ii].index * size_ + d) = rhs_fun(0, d);
+								}
 							}
 						}
 					}
@@ -475,6 +474,7 @@ namespace polyfem
 		void RhsAssembler::integrate_bc(const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
 										const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, Eigen::MatrixXd &rhs) const
 		{
+			assert(false);
 			Eigen::MatrixXd uv, samples, rhs_fun, normals, mapped;
 			Eigen::VectorXd weights;
 
@@ -709,7 +709,6 @@ namespace polyfem
 			{
 				assemble(density, rhs, t);
 				rhs *= -1;
-				// set_bc(local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs, t);
 
 				if (rhs.size() != final_rhs.size())
 				{
