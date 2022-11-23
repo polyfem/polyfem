@@ -1046,17 +1046,18 @@ namespace polyfem
 	void State::build_collision_mesh()
 	{
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
+		Eigen::SparseMatrix<double> displacement_map;
 		io::OutGeometryData::extract_boundary_mesh(*mesh, n_bases, bases, total_local_boundary,
-												   boundary_nodes_pos, boundary_edges, boundary_triangles);
+												   boundary_nodes_pos, boundary_edges, boundary_triangles, displacement_map);
 
 		Eigen::VectorXi codimensional_nodes;
 		if (obstacle.n_vertices() > 0)
 		{
 			// boundary_nodes_pos uses n_bases that already contains the obstacle
-			const int n_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
+			const int n_v = n_bases - obstacle.n_vertices();
 
 			if (obstacle.v().size())
-				boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
+				boundary_nodes_pos.block(n_v, 0, obstacle.v().rows(), obstacle.v().cols()) = obstacle.v();
 
 			if (obstacle.codim_v().size())
 			{
@@ -1083,7 +1084,11 @@ namespace polyfem
 			is_on_surface[codimensional_nodes[i]] = true;
 		}
 
-		collision_mesh = ipc::CollisionMesh(is_on_surface, boundary_nodes_pos, boundary_edges, boundary_triangles);
+		collision_mesh = ipc::CollisionMesh(is_on_surface,
+											boundary_nodes_pos,
+											boundary_edges,
+											boundary_triangles,
+											displacement_map);
 
 		collision_mesh.can_collide = [&](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles

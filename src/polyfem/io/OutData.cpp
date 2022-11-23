@@ -72,17 +72,25 @@ namespace polyfem::io
 		const std::vector<mesh::LocalBoundary> &total_local_boundary,
 		Eigen::MatrixXd &boundary_nodes_pos,
 		Eigen::MatrixXi &boundary_edges,
-		Eigen::MatrixXi &boundary_triangles)
+		Eigen::MatrixXi &boundary_triangles,
+		Eigen::SparseMatrix<double> &displacement_map)
 	{
 		using namespace polyfem::mesh;
 
+		displacement_map.resize(0, 0);
+
 		if (mesh.is_volume())
 		{
-			boundary_nodes_pos.resize(n_bases, 3);
+			std::vector<Eigen::Triplet<double>> displacement_map_entries;
+			const bool is_simplicial = mesh.is_simplicial();
+
+			boundary_nodes_pos.resize(n_bases + (is_simplicial ? 0 : mesh.n_faces()), 3);
 			boundary_nodes_pos.setZero();
 			const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
 
 			std::vector<std::tuple<int, int, int>> tris;
+
+			std::vector<bool> visited_node(n_bases, false);
 
 			std::stringstream print_warning;
 
@@ -96,11 +104,60 @@ namespace polyfem::io
 					const int lid = lb[j];
 					const auto nodes = b.local_nodes_for_primitive(eid, mesh3d);
 
-					if (!mesh.is_simplex(lb.element_id()))
+					if (mesh.is_cube(lb.element_id()))
 					{
-						logger().trace("skipping element {} since it is not a simplex", eid);
+						assert(!is_simplicial);
+						assert(!mesh.is_polytope());
+						std::vector<int> loc_nodes;
+						RowVectorNd bary = RowVectorNd::Zero(3);
+
+						for (long n = 0; n < nodes.size(); ++n)
+						{
+							auto &bs = b.bases[nodes(n)];
+							const auto &glob = bs.global();
+							if (glob.size() != 1)
+								continue;
+
+							int gindex = glob.front().index;
+							boundary_nodes_pos.row(gindex) = glob.front().node;
+							bary += glob.front().node;
+							loc_nodes.push_back(gindex);
+						}
+
+						if (loc_nodes.size() != 4)
+						{
+							logger().trace("skipping element {} since it is not Q1", eid);
+							continue;
+						}
+
+						bary /= 4;
+
+						const int new_node = n_bases + eid;
+						boundary_nodes_pos.row(new_node) = bary;
+						tris.emplace_back(loc_nodes[1], loc_nodes[0], new_node);
+						tris.emplace_back(loc_nodes[2], loc_nodes[1], new_node);
+						tris.emplace_back(loc_nodes[3], loc_nodes[2], new_node);
+						tris.emplace_back(loc_nodes[0], loc_nodes[3], new_node);
+
+						for (int q = 0; q < 4; ++q)
+						{
+							if (!visited_node[loc_nodes[q]])
+								displacement_map_entries.emplace_back(loc_nodes[q], loc_nodes[q], 1);
+
+							visited_node[loc_nodes[q]] = true;
+							displacement_map_entries.emplace_back(new_node, loc_nodes[q], 0.25);
+						}
+
 						continue;
 					}
+
+					if (!mesh.is_simplex(lb.element_id()))
+					{
+						logger().trace("skipping element {} since it is not a simplex or hex", eid);
+						continue;
+					}
+
+					assert(is_simplicial);
 
 					std::vector<int> loc_nodes;
 
@@ -197,6 +254,12 @@ namespace polyfem::io
 			if (boundary_triangles.rows() > 0)
 			{
 				igl::edges(boundary_triangles, boundary_edges);
+			}
+
+			if (!displacement_map_entries.empty())
+			{
+				displacement_map.resize(boundary_nodes_pos.rows(), n_bases);
+				displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
 			}
 		}
 		else
