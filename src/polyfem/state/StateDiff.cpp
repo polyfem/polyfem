@@ -229,6 +229,8 @@ namespace polyfem
 		StiffnessMatrix A = diff_cached[0].gradu_h;
 		Eigen::VectorXd b = adjoint_rhs;
 		const int full_size = A.rows();
+		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+		int precond_num = problem_dim * n_bases;
 
 		apply_lagrange_multipliers(A);
 		b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
@@ -237,28 +239,33 @@ namespace polyfem
 		full_to_periodic(boundary_nodes_tmp);
 		if (has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"])
 		{
-			full_to_periodic(A);
+			precond_num = full_to_periodic(A);
  			Eigen::MatrixXd tmp = b;
  			full_to_periodic(tmp);
  			b = tmp;
 		}
 
+		for (int i : boundary_nodes_tmp)
+			b(i) = 0;
+
 		Eigen::VectorXd x;
 		if (lin_solver_cached)
 		{
-			for (int i : boundary_nodes_tmp)
-				b(i) = 0;
-			
 			dirichlet_solve_prefactorized(*lin_solver_cached, A, b, boundary_nodes_tmp, x);
 		}
 		else
-			solve_zero_dirichlet(args["solver"]["linear"], A, b, boundary_nodes_tmp, diff_cached[0].p); //TODO: consider periodic bc
+		{
+			auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
+			solver->setParameters(args["solver"]["linear"]);
+
+			dirichlet_solve(*solver, A, b, boundary_nodes_tmp, x, precond_num, "", false, false, false);
+		}
 
 		x.conservativeResize(x.size() - n_lagrange_multipliers());
  		if (has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"])
  			diff_cached[0].p = periodic_to_full(full_size, x);
  		else
- 			diff_cached[0].p = x; // Explicit copy because sol is a MatrixXd (with one column)
+ 			diff_cached[0].p = x;
 
 		adjoint_solved_ = true;
 	}

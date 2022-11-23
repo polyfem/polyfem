@@ -151,13 +151,13 @@ namespace cppoptlib
 				Eigen::VectorXd values = objFunc.component_values(x);
 				Eigen::MatrixXd grads = objFunc.component_gradients(x);
 				assert(values.size() == grads.cols());
-				outfile << energy << ", " << grad_norm;
+				outfile << std::setprecision(12) << energy << ", " << grad_norm;
 				if (export_energy_components)
 				{
 					outfile << ", ";
 					for (int i = 0; i < values.size(); i++)
 					{
-						outfile << values(i) << ", " << grads.col(i).norm();
+						outfile << std::setprecision(12) << values(i) << ", " << grads.col(i).norm();
 						if (i < values.size() - 1)
 							outfile << ", ";
 					}
