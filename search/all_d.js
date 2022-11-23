@@ -132,8 +132,9 @@ var searchData=
   ['multimodel_129',['MultiModel',['../classpolyfem_1_1assembler_1_1_multi_model.html',1,'polyfem::assembler']]],
   ['multimodel_2ecpp_130',['MultiModel.cpp',['../_multi_model_8cpp.html',1,'']]],
   ['multimodel_2ehpp_131',['MultiModel.hpp',['../_multi_model_8hpp.html',1,'']]],
-  ['mus_5f_132',['mus_',['../classpolyfem_1_1assembler_1_1_ogden_elasticity.html#a844a509f89cd4b32d64139b3525b7777',1,'polyfem::assembler::OgdenElasticity']]],
-  ['mvpolygonalbasis2d_133',['MVPolygonalBasis2d',['../classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html',1,'polyfem::basis']]],
-  ['mvpolygonalbasis2d_2ecpp_134',['MVPolygonalBasis2d.cpp',['../_m_v_polygonal_basis2d_8cpp.html',1,'']]],
-  ['mvpolygonalbasis2d_2ehpp_135',['MVPolygonalBasis2d.hpp',['../_m_v_polygonal_basis2d_8hpp.html',1,'']]]
+  ['mus_132',['mus',['../classpolyfem_1_1assembler_1_1_ogden_elasticity.html#a52d339a616fa52dab7df30ad88003733',1,'polyfem::assembler::OgdenElasticity']]],
+  ['mus_5f_133',['mus_',['../classpolyfem_1_1assembler_1_1_ogden_elasticity.html#a844a509f89cd4b32d64139b3525b7777',1,'polyfem::assembler::OgdenElasticity']]],
+  ['mvpolygonalbasis2d_134',['MVPolygonalBasis2d',['../classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html',1,'polyfem::basis']]],
+  ['mvpolygonalbasis2d_2ecpp_135',['MVPolygonalBasis2d.cpp',['../_m_v_polygonal_basis2d_8cpp.html',1,'']]],
+  ['mvpolygonalbasis2d_2ehpp_136',['MVPolygonalBasis2d.hpp',['../_m_v_polygonal_basis2d_8hpp.html',1,'']]]
 ];

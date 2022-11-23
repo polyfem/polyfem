@@ -16,7 +16,8 @@ var searchData=
   ['vis_5fe_13',['vis_e',['../classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html#aca0b1e457353454fb15c2720ff716e53',1,'polyfem::mesh::Obstacle::Plane']]],
   ['vis_5ff_14',['vis_f',['../classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html#acf8490ff8221ee8655997474025e9b32',1,'polyfem::mesh::Obstacle::Plane']]],
   ['vis_5fv_15',['vis_v',['../classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html#aaa965c347548471284fcecb2b00602a3',1,'polyfem::mesh::Obstacle::Plane']]],
-  ['viscousdamping_16',['ViscousDamping',['../classpolyfem_1_1assembler_1_1_viscous_damping.html#aff5c5acf1dc89ce69ca03200b9cb98e9',1,'polyfem::assembler::ViscousDamping']]],
-  ['von_5fmises_5fstress_5ffor_5fstress_5ftensor_17',['von_mises_stress_for_stress_tensor',['../namespacepolyfem.html#a99d54b5136c9fd5b53151e3ae47bad34',1,'polyfem']]],
-  ['vtuwriter_18',['VTUWriter',['../classpolyfem_1_1io_1_1_v_t_u_writer.html#a66e1b6e60e44d603e73c4baf1b7be90d',1,'polyfem::io::VTUWriter']]]
+  ['viscosity_16',['viscosity',['../classpolyfem_1_1assembler_1_1_stokes_velocity.html#aa314f40f3e931db4ae63797210f38262',1,'polyfem::assembler::StokesVelocity']]],
+  ['viscousdamping_17',['ViscousDamping',['../classpolyfem_1_1assembler_1_1_viscous_damping.html#aff5c5acf1dc89ce69ca03200b9cb98e9',1,'polyfem::assembler::ViscousDamping']]],
+  ['von_5fmises_5fstress_5ffor_5fstress_5ftensor_18',['von_mises_stress_for_stress_tensor',['../namespacepolyfem.html#a99d54b5136c9fd5b53151e3ae47bad34',1,'polyfem']]],
+  ['vtuwriter_19',['VTUWriter',['../classpolyfem_1_1io_1_1_v_t_u_writer.html#a66e1b6e60e44d603e73c4baf1b7be90d',1,'polyfem::io::VTUWriter']]]
 ];

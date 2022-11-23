@@ -1,5 +1,6 @@
 var classpolyfem_1_1assembler_1_1_assembler_utils =
 [
+    [ "ParamFunc", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a9bf585fe7fc81a4b569d0132a7941970", null ],
     [ "BasisType", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93c", [
       [ "SIMPLEX_LAGRANGE", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93caafefc7ae5fe3420e0323b2a46660b139", null ],
       [ "CUBE_LAGRANGE", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93caa2f055a3bf84437b39b826e3d3479e89", null ],
@@ -22,8 +23,8 @@ var classpolyfem_1_1assembler_1_1_assembler_utils =
     [ "has_damping", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a8e8f0ffad83b13e274fd537b6f8e1e7e", null ],
     [ "init_multimodels", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a0998defe6831960aa8ce69168a866539", null ],
     [ "kernel", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aac5bf54ebb15b1a41efe23cf78792f4b", null ],
-    [ "lame_params", "classpolyfem_1_1assembler_1_1_assembler_utils.html#affab12827817e4d41a0c502bcbc4bc13", null ],
     [ "local_assemble", "classpolyfem_1_1assembler_1_1_assembler_utils.html#af89a5ecea1a6e133a1227d1122305ef8", null ],
+    [ "parameters", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a5d9370f37381fd9d5e8f35b3fd25a704", null ],
     [ "set_size", "classpolyfem_1_1assembler_1_1_assembler_utils.html#adeca5a0703faf4b814320197d0285fe5", null ],
     [ "bilaplacian_aux_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#ab6c7090b8dc55deb3ec74934592e509f", null ],
     [ "bilaplacian_main_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a76080a4768021893f33047c81a17cab7", null ],

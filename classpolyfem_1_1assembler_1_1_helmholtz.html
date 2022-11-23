@@ -141,6 +141,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a1d56bab4f6940501a2a933dc97b4e32f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a638cf913d2bdc4f0a30a371d72448f0f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#a638cf913d2bdc4f0a30a371d72448f0f">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
 <tr class="separator:a638cf913d2bdc4f0a30a371d72448f0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42cbed4e7d56b794fb285261b2fb061d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_helmholtz.html#a42cbed4e7d56b794fb285261b2fb061d">k</a> () const</td></tr>
+<tr class="separator:a42cbed4e7d56b794fb285261b2fb061d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -179,7 +181,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_helmholtz_8cpp_source.html#l00032">32</a> of file <a class="el" href="_helmholtz_8cpp_source.html">Helmholtz.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_helmholtz_8hpp_source.html#l00027">k_</a>.</p>
+<p class="reference">References <a class="el" href="_helmholtz_8hpp_source.html#l00029">k_</a>.</p>
 
 </div>
 </div>
@@ -201,7 +203,13 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_helmholtz_8cpp_source.html#l00008">8</a> of file <a class="el" href="_helmholtz_8cpp_source.html">Helmholtz.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00045">polyfem::assembler::LinearAssemblerData::da</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00041">polyfem::assembler::LinearAssemblerData::i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00043">polyfem::assembler::LinearAssemblerData::j</a>, <a class="el" href="_helmholtz_8hpp_source.html#l00027">k_</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00039">polyfem::assembler::LinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00045">polyfem::assembler::LinearAssemblerData::da</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00041">polyfem::assembler::LinearAssemblerData::i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00043">polyfem::assembler::LinearAssemblerData::j</a>, <a class="el" href="_helmholtz_8hpp_source.html#l00026">k()</a>, <a class="el" href="_helmholtz_8hpp_source.html#l00029">k_</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00039">polyfem::assembler::LinearAssemblerData::vals</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_helmholtz_addc81035ecd839dc37d7926abc48d783_cgraph.svg" width="379" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
 
 </div>
 </div>
@@ -223,7 +231,44 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_helmholtz_8cpp_source.html#l00024">24</a> of file <a class="el" href="_helmholtz_8cpp_source.html">Helmholtz.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_helmholtz_8hpp_source.html#l00027">k_</a>.</p>
+<p class="reference">References <a class="el" href="_helmholtz_8hpp_source.html#l00029">k_</a>.</p>
+
+</div>
+</div>
+<a id="a42cbed4e7d56b794fb285261b2fb061d" name="a42cbed4e7d56b794fb285261b2fb061d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42cbed4e7d56b794fb285261b2fb061d">&#9670;&#160;</a></span>k()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::assembler::Helmholtz::k </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_helmholtz_8hpp_source.html#l00026">26</a> of file <a class="el" href="_helmholtz_8hpp_source.html">Helmholtz.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_helmholtz_8hpp_source.html#l00029">k_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_helmholtz_8cpp_source.html#l00008">assemble()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_helmholtz_a42cbed4e7d56b794fb285261b2fb061d_icgraph.svg" width="379" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
 
 </div>
 </div>
@@ -255,7 +300,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_helmholtz_8cpp_source.html#l00040">40</a> of file <a class="el" href="_helmholtz_8cpp_source.html">Helmholtz.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_helmholtz_8hpp_source.html#l00027">k_</a>.</p>
+<p class="reference">References <a class="el" href="_helmholtz_8hpp_source.html#l00029">k_</a>.</p>
 
 </div>
 </div>
@@ -307,9 +352,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_helmholtz_8hpp_source.html#l00027">27</a> of file <a class="el" href="_helmholtz_8hpp_source.html">Helmholtz.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_helmholtz_8hpp_source.html#l00029">29</a> of file <a class="el" href="_helmholtz_8hpp_source.html">Helmholtz.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_helmholtz_8cpp_source.html#l00032">add_multimaterial()</a>, <a class="el" href="_helmholtz_8cpp_source.html#l00008">assemble()</a>, <a class="el" href="_helmholtz_8cpp_source.html#l00024">compute_rhs()</a>, and <a class="el" href="_helmholtz_8cpp_source.html#l00040">kernel()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_helmholtz_8cpp_source.html#l00032">add_multimaterial()</a>, <a class="el" href="_helmholtz_8cpp_source.html#l00008">assemble()</a>, <a class="el" href="_helmholtz_8cpp_source.html#l00024">compute_rhs()</a>, <a class="el" href="_helmholtz_8hpp_source.html#l00026">k()</a>, and <a class="el" href="_helmholtz_8cpp_source.html#l00040">kernel()</a>.</p>
 
 </div>
 </div>

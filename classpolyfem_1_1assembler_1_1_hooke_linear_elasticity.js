@@ -7,6 +7,7 @@ var classpolyfem_1_1assembler_1_1_hooke_linear_elasticity =
     [ "compute_rhs", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a8f59a561f54032433b4738f2121ca243", null ],
     [ "compute_stress_tensor", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a896de5ba1433c92d841024c3ea2e6e1a", null ],
     [ "compute_von_mises_stresses", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#ac6f790ea93f4c38909d8baa0cdefaddd", null ],
+    [ "elasticity_tensor", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a3ec7f0d6043ef2ea4fc03bb0fee4468f", null ],
     [ "set_size", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a113212fe39e0fc3ac9df7f8e2d7e6281", null ],
     [ "size", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#aa86865712cb1bfe64eedac109693a811", null ],
     [ "elasticity_tensor_", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#ae4d01ae8d1716269195fd8ac604437da", null ],

@@ -145,6 +145,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a213c5341f4ff0e1cdfb6c90f9f579625"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a249340da256ff6d6aa1fceeb7cd3170f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_velocity.html#a249340da256ff6d6aa1fceeb7cd3170f">compute_stress_tensor</a> (const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;velocity, Eigen::MatrixXd &amp;tensor) const</td></tr>
 <tr class="separator:a249340da256ff6d6aa1fceeb7cd3170f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa314f40f3e931db4ae63797210f38262"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_velocity.html#aa314f40f3e931db4ae63797210f38262">viscosity</a> () const</td></tr>
+<tr class="separator:aa314f40f3e931db4ae63797210f38262"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -185,7 +187,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_stokes_8cpp_source.html#l00009">9</a> of file <a class="el" href="_stokes_8cpp_source.html">Stokes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stokes_8hpp_source.html#l00036">size_</a>, and <a class="el" href="_stokes_8hpp_source.html#l00037">viscosity_</a>.</p>
+<p class="reference">References <a class="el" href="_stokes_8hpp_source.html#l00038">size_</a>, and <a class="el" href="_stokes_8hpp_source.html#l00039">viscosity_</a>.</p>
 
 </div>
 </div>
@@ -207,7 +209,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_stokes_8cpp_source.html#l00025">25</a> of file <a class="el" href="_stokes_8cpp_source.html">Stokes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00045">polyfem::assembler::LinearAssemblerData::da</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00041">polyfem::assembler::LinearAssemblerData::i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00043">polyfem::assembler::LinearAssemblerData::j</a>, <a class="el" href="_stokes_8hpp_source.html#l00028">size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00039">polyfem::assembler::LinearAssemblerData::vals</a>, and <a class="el" href="_stokes_8hpp_source.html#l00037">viscosity_</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00045">polyfem::assembler::LinearAssemblerData::da</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00041">polyfem::assembler::LinearAssemblerData::i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00043">polyfem::assembler::LinearAssemblerData::j</a>, <a class="el" href="_stokes_8hpp_source.html#l00028">size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00039">polyfem::assembler::LinearAssemblerData::vals</a>, and <a class="el" href="_stokes_8hpp_source.html#l00039">viscosity_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -291,7 +293,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_stokes_8cpp_source.html#l00049">49</a> of file <a class="el" href="_stokes_8cpp_source.html">Stokes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stokes_8hpp_source.html#l00028">size()</a>, and <a class="el" href="_stokes_8hpp_source.html#l00037">viscosity_</a>.</p>
+<p class="reference">References <a class="el" href="_stokes_8hpp_source.html#l00028">size()</a>, and <a class="el" href="_stokes_8hpp_source.html#l00039">viscosity_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -375,7 +377,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_stokes_8cpp_source.html#l00019">19</a> of file <a class="el" href="_stokes_8cpp_source.html">Stokes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stokes_8hpp_source.html#l00028">size()</a>, and <a class="el" href="_stokes_8hpp_source.html#l00036">size_</a>.</p>
+<p class="reference">References <a class="el" href="_stokes_8hpp_source.html#l00028">size()</a>, and <a class="el" href="_stokes_8hpp_source.html#l00038">size_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -410,7 +412,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00028">28</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_stokes_8hpp_source.html#l00036">size_</a>.</p>
+<p class="reference">References <a class="el" href="_stokes_8hpp_source.html#l00038">size_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_stokes_8cpp_source.html#l00025">assemble()</a>, <a class="el" href="_stokes_8cpp_source.html#l00062">compute_norm_velocity()</a>, <a class="el" href="_stokes_8cpp_source.html#l00049">compute_rhs()</a>, <a class="el" href="_stokes_8cpp_source.html#l00098">compute_stress_tensor()</a>, and <a class="el" href="_stokes_8cpp_source.html#l00019">set_size()</a>.</p>
 <div class="dynheader">
@@ -419,6 +421,35 @@ Here is the caller graph for this function:</div>
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_stokes_velocity_a206eb7aefd595d10b2d7136df70ae7cc_icgraph.svg" width="434" height="339"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
+
+</div>
+</div>
+<a id="aa314f40f3e931db4ae63797210f38262" name="aa314f40f3e931db4ae63797210f38262"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa314f40f3e931db4ae63797210f38262">&#9670;&#160;</a></span>viscosity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::assembler::StokesVelocity::viscosity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00035">35</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_stokes_8hpp_source.html#l00039">viscosity_</a>.</p>
 
 </div>
 </div>
@@ -443,7 +474,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00036">36</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00038">38</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_stokes_8cpp_source.html#l00009">add_multimaterial()</a>, <a class="el" href="_stokes_8cpp_source.html#l00019">set_size()</a>, and <a class="el" href="_stokes_8hpp_source.html#l00028">size()</a>.</p>
 
@@ -469,9 +500,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00037">37</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00039">39</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_stokes_8cpp_source.html#l00009">add_multimaterial()</a>, <a class="el" href="_stokes_8cpp_source.html#l00025">assemble()</a>, and <a class="el" href="_stokes_8cpp_source.html#l00049">compute_rhs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_stokes_8cpp_source.html#l00009">add_multimaterial()</a>, <a class="el" href="_stokes_8cpp_source.html#l00025">assemble()</a>, <a class="el" href="_stokes_8cpp_source.html#l00049">compute_rhs()</a>, and <a class="el" href="_stokes_8hpp_source.html#l00035">viscosity()</a>.</p>
 
 </div>
 </div>

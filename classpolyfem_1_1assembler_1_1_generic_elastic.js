@@ -10,6 +10,7 @@ var classpolyfem_1_1assembler_1_1_generic_elastic =
     [ "compute_rhs", "classpolyfem_1_1assembler_1_1_generic_elastic.html#ae99d68e77e437d18dc97983dc3211933", null ],
     [ "compute_stress_tensor", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a3759c83ca158d85e8e1137fac9690852", null ],
     [ "compute_von_mises_stresses", "classpolyfem_1_1assembler_1_1_generic_elastic.html#aa2052460c1a0ce523ac9c855ae076840", null ],
+    [ "formulation", "classpolyfem_1_1assembler_1_1_generic_elastic.html#ac50fee0eb69fdf48812729bcbca024a4", null ],
     [ "set_size", "classpolyfem_1_1assembler_1_1_generic_elastic.html#ace7da5c1230d02d69181c411f0618cdd", null ],
     [ "size", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a748c8a2b917a7782fcabd0684f8959db", null ],
     [ "formulation_", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a4e7d20a8dc72b28b5dc67f2592c413dc", null ],

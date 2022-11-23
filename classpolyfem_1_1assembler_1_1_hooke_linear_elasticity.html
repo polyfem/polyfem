@@ -154,6 +154,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a113212fe39e0fc3ac9df7f8e2d7e6281"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a574a581ea6b256c7bdcfbdaf024b9f66"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a574a581ea6b256c7bdcfbdaf024b9f66">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
 <tr class="separator:a574a581ea6b256c7bdcfbdaf024b9f66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ec7f0d6043ef2ea4fc03bb0fee4468f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_tensor.html">ElasticityTensor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a3ec7f0d6043ef2ea4fc03bb0fee4468f">elasticity_tensor</a> () const</td></tr>
+<tr class="separator:a3ec7f0d6043ef2ea4fc03bb0fee4468f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -219,7 +221,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00040">40</a> of file <a class="el" href="_hooke_linear_elasticity_8cpp_source.html">HookeLinearElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00041">elasticity_tensor_</a>, <a class="el" href="_mat_params_8cpp_source.html#l00089">polyfem::assembler::ElasticityTensor::set_from_entries()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00163">polyfem::assembler::ElasticityTensor::set_from_lambda_mu()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00207">polyfem::assembler::ElasticityTensor::set_from_young_poisson()</a>, and <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00039">size_</a>.</p>
+<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00043">elasticity_tensor_</a>, <a class="el" href="_mat_params_8cpp_source.html#l00089">polyfem::assembler::ElasticityTensor::set_from_entries()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00163">polyfem::assembler::ElasticityTensor::set_from_lambda_mu()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00207">polyfem::assembler::ElasticityTensor::set_from_young_poisson()</a>, and <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00041">size_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -247,7 +249,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00076">76</a> of file <a class="el" href="_hooke_linear_elasticity_8cpp_source.html">HookeLinearElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_mat_params_8cpp_source.html#l00260">polyfem::assembler::ElasticityTensor::compute_stress()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00045">polyfem::assembler::LinearAssemblerData::da</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00041">elasticity_tensor_</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00041">polyfem::assembler::LinearAssemblerData::i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00043">polyfem::assembler::LinearAssemblerData::j</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00019">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00032">size()</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00039">size_</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00039">polyfem::assembler::LinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_mat_params_8cpp_source.html#l00260">polyfem::assembler::ElasticityTensor::compute_stress()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00045">polyfem::assembler::LinearAssemblerData::da</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00043">elasticity_tensor_</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00041">polyfem::assembler::LinearAssemblerData::i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00043">polyfem::assembler::LinearAssemblerData::j</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00019">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00032">size()</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00041">size_</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00039">polyfem::assembler::LinearAssemblerData::vals</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -329,7 +331,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00209">209</a> of file <a class="el" href="_hooke_linear_elasticity_8cpp_source.html">HookeLinearElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00203">polyfem::compute_diplacement_grad()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00260">polyfem::assembler::ElasticityTensor::compute_stress()</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00041">elasticity_tensor_</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00032">size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00203">polyfem::compute_diplacement_grad()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00260">polyfem::assembler::ElasticityTensor::compute_stress()</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00043">elasticity_tensor_</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00032">size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00191">compute_stress_tensor()</a>, and <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00200">compute_von_mises_stresses()</a>.</p>
 <div class="dynheader">
@@ -365,7 +367,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00257">257</a> of file <a class="el" href="_hooke_linear_elasticity_8cpp_source.html">HookeLinearElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00041">elasticity_tensor_</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00090">polyfem::autogen::hooke_2d_function()</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00139">polyfem::autogen::hooke_3d_function()</a>, and <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00032">size()</a>.</p>
+<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00043">elasticity_tensor_</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00090">polyfem::autogen::hooke_2d_function()</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00139">polyfem::autogen::hooke_3d_function()</a>, and <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00032">size()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -499,6 +501,35 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
+<a id="a3ec7f0d6043ef2ea4fc03bb0fee4468f" name="a3ec7f0d6043ef2ea4fc03bb0fee4468f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ec7f0d6043ef2ea4fc03bb0fee4468f">&#9670;&#160;</a></span>elasticity_tensor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_tensor.html">ElasticityTensor</a> &amp; polyfem::assembler::HookeLinearElasticity::elasticity_tensor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00038">38</a> of file <a class="el" href="_hooke_linear_elasticity_8hpp_source.html">HookeLinearElasticity.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00043">elasticity_tensor_</a>.</p>
+
+</div>
+</div>
 <a id="a113212fe39e0fc3ac9df7f8e2d7e6281" name="a113212fe39e0fc3ac9df7f8e2d7e6281"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a113212fe39e0fc3ac9df7f8e2d7e6281">&#9670;&#160;</a></span>set_size()</h2>
 
@@ -517,7 +548,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00069">69</a> of file <a class="el" href="_hooke_linear_elasticity_8cpp_source.html">HookeLinearElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00041">elasticity_tensor_</a>, <a class="el" href="_mat_params_8cpp_source.html#l00055">polyfem::assembler::ElasticityTensor::resize()</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00032">size()</a>, and <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00039">size_</a>.</p>
+<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00043">elasticity_tensor_</a>, <a class="el" href="_mat_params_8cpp_source.html#l00055">polyfem::assembler::ElasticityTensor::resize()</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00032">size()</a>, and <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00041">size_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -552,7 +583,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00032">32</a> of file <a class="el" href="_hooke_linear_elasticity_8hpp_source.html">HookeLinearElasticity.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00039">size_</a>.</p>
+<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00041">size_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00076">assemble()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00209">assign_stress_tensor()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00257">compute_rhs()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00191">compute_stress_tensor()</a>, and <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00069">set_size()</a>.</p>
 <div class="dynheader">
@@ -585,9 +616,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00041">41</a> of file <a class="el" href="_hooke_linear_elasticity_8hpp_source.html">HookeLinearElasticity.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00043">43</a> of file <a class="el" href="_hooke_linear_elasticity_8hpp_source.html">HookeLinearElasticity.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00040">add_multimaterial()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00076">assemble()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00209">assign_stress_tensor()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00257">compute_rhs()</a>, and <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00069">set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00040">add_multimaterial()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00076">assemble()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00209">assign_stress_tensor()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00257">compute_rhs()</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00038">elasticity_tensor()</a>, and <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00069">set_size()</a>.</p>
 
 </div>
 </div>
@@ -611,7 +642,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00039">39</a> of file <a class="el" href="_hooke_linear_elasticity_8hpp_source.html">HookeLinearElasticity.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00041">41</a> of file <a class="el" href="_hooke_linear_elasticity_8hpp_source.html">HookeLinearElasticity.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00040">add_multimaterial()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00076">assemble()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00069">set_size()</a>, and <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00032">size()</a>.</p>
 
