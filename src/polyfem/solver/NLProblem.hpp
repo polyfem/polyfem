@@ -55,7 +55,7 @@ namespace polyfem::solver
 		void set_apply_DBC(const TVector &x, const bool val);
 
 	protected:
-		const std::vector<int> &boundary_nodes_;
+		const std::vector<int> boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> &local_boundary_;
 
 		const int n_boundary_samples_;

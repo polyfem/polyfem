@@ -728,7 +728,7 @@ private:
 		//-----------------homogenization--------------------
 		//---------------------------------------------------
 public:
-		void solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_, const std::string &hessian_path = "");
+		void solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_);
 	};
 
 } // namespace polyfem

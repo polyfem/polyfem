@@ -142,7 +142,7 @@ namespace polyfem::solver
 		if (boundary_nodes_.size() > 0)
 		{
 			// rhs_assembler.set_bc(local_boundary_, boundary_nodes_, n_boundary_samples_, local_neumann_boundary_, tmp, t_);
-			rhs_assembler_.set_bc(local_boundary_, boundary_nodes_, n_boundary_samples_, std::vector<mesh::LocalBoundary>(), tmp, Eigen::MatrixXd(), t_);
+			rhs_assembler_.set_bc(local_boundary_, state_.boundary_nodes, n_boundary_samples_, std::vector<mesh::LocalBoundary>(), tmp, Eigen::MatrixXd(), t_);
 		}
 		reduced_to_full_aux(boundary_nodes_, full_size(), current_size(), reduced, tmp, full);
 		return full;
@@ -200,7 +200,7 @@ namespace polyfem::solver
 
 		long j = 0;
 		size_t k = 0;
-		Eigen::MatrixXd tmp(reduced_size + state_.boundary_nodes.size(), 1);
+		Eigen::MatrixXd tmp(reduced_size + boundary_nodes.size(), 1);
 		for (int i = 0; i < tmp.size(); ++i)
 		{
 			if (k < boundary_nodes.size() && boundary_nodes[k] == i)

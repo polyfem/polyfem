@@ -309,12 +309,24 @@ namespace polyfem
 			log_and_throw_error("Rayleigh damping is only supported for time-dependent problems");
 		}
 
+		std::vector<int> boundary_nodes_tmp = boundary_nodes;
+		if (has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"])
+		{
+			// new index for boundary_nodes
+			for (int i = 0; i < boundary_nodes_tmp.size(); i++)
+				boundary_nodes_tmp[i] = periodic_reduce_map(boundary_nodes[i]);
+
+			std::sort(boundary_nodes_tmp.begin(), boundary_nodes_tmp.end());
+			auto it = std::unique(boundary_nodes_tmp.begin(), boundary_nodes_tmp.end());
+			boundary_nodes_tmp.resize(std::distance(boundary_nodes_tmp.begin(), it));
+		}
+
 		///////////////////////////////////////////////////////////////////////
 		// Initialize nonlinear problems
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof,
 			formulation(),
-			boundary_nodes,
+			boundary_nodes_tmp,
 			local_boundary,
 			n_boundary_samples(),
 			*solve_data.rhs_assembler, *this, t, forms);
