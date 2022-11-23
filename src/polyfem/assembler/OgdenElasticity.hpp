@@ -74,6 +74,10 @@ namespace polyfem::assembler
 			return val;
 		}
 
+		const Eigen::VectorXd &alphas() const { return alphas_; }
+		const Eigen::VectorXd &mus() const { return mus_; }
+		const Eigen::VectorXd &Ds() const { return Ds_; }
+
 	private:
 		Eigen::VectorXd alphas_;
 		Eigen::VectorXd mus_;

@@ -46,6 +46,8 @@ namespace polyfem
 				POLY
 			};
 
+			typedef std::function<double(const RowVectorNd &, const RowVectorNd &, double, int)> ParamFunc;
+
 			AssemblerUtils();
 
 			// Linear, assembler is the name of the formulation
@@ -157,8 +159,12 @@ namespace polyfem
 			void add_multimaterial(const int index, const json &params);
 			void set_size(const std::string &assembler, const int dim);
 			void init_multimodels(const std::vector<std::string> &materials);
-			const LameParameters &lame_params() const { return linear_elasticity_.local_assembler().lame_params(); }
+
+			std::map<std::string, ParamFunc> parameters(const std::string &assembler) const;
+
+			// const LameParameters &lame_params() const { return linear_elasticity_.local_assembler().lame_params(); }
 			const Density &density() const { return mass_mat_.local_assembler().density(); }
+
 			// checks if assembler is linear
 			static bool is_linear(const std::string &assembler);
 

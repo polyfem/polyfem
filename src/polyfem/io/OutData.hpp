@@ -173,6 +173,7 @@ namespace polyfem::io
 		/// @param[in] state state to get the data
 		/// @param[in] sol solution
 		/// @param[in] pressure pressure
+		/// @param[in] t time
 		/// @param[in] dt_in delta_t
 		/// @param[in] opts export options
 		/// @param[in] is_contact_enabled if contact is enabled
@@ -181,6 +182,7 @@ namespace polyfem::io
 						  const State &state,
 						  const Eigen::MatrixXd &sol,
 						  const Eigen::MatrixXd &pressure,
+						  const double t,
 						  const double dt_in,
 						  const ExportOptions &opts,
 						  const bool is_contact_enabled,

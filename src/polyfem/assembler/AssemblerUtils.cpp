@@ -666,5 +666,113 @@ namespace polyfem
 					return (basis_degree - 1) * 2 + 1;
 			}
 		}
+
+		std::map<std::string, AssemblerUtils::ParamFunc> AssemblerUtils::parameters(const std::string &assembler) const
+		{
+			std::map<std::string, ParamFunc> res;
+
+			// "Laplacian" "Bilaplacian" "Damping" "MultiModels"
+
+			if (assembler == "Helmholtz")
+			{
+				const double k = helmholtz_.local_assembler().k();
+				res["k"] = [k](const RowVectorNd &, const RowVectorNd &, double, int) { return k; };
+			}
+			else if (assembler == "LinearElasticity" || assembler == "IncompressibleLinearElasticity" || assembler == "NeoHookean")
+			{
+				const auto &params = linear_elasticity_.local_assembler().lame_params();
+				const int size = linear_elasticity_.local_assembler().size();
+
+				res["lambda"] = [&params](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+					double lambda, mu;
+
+					params.lambda_mu(uv, p, e, lambda, mu);
+					return lambda;
+				};
+
+				res["mu"] = [&params](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+					double lambda, mu;
+
+					params.lambda_mu(uv, p, e, lambda, mu);
+					return mu;
+				};
+
+				res["E"] = [&params, size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+					double lambda, mu;
+					params.lambda_mu(uv, p, e, lambda, mu);
+
+					if (size == 3)
+						return mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
+					else
+						return 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
+				};
+
+				res["nu"] = [&params, size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+					double lambda, mu;
+
+					params.lambda_mu(uv, p, e, lambda, mu);
+
+					if (size == 3)
+						return lambda / (2.0 * (lambda + mu));
+					else
+						return lambda / (lambda + 2.0 * mu);
+				};
+			}
+			else if (assembler == "HookeLinearElasticity" || assembler == "SaintVenant")
+			{
+				const auto &elast_tensor = hooke_linear_elasticity_.local_assembler().elasticity_tensor();
+				const int size = hooke_linear_elasticity_.local_assembler().size() == 2 ? 3 : 6;
+
+				for (int i = 0; i < size; ++i)
+				{
+					for (int j = i; j < size; ++j)
+					{
+						res[fmt::format("C_{}{}", i, j)] = [&elast_tensor, i, j](const RowVectorNd &, const RowVectorNd &, double, int) {
+							return elast_tensor(i, j);
+						};
+					}
+				}
+			}
+			else if (assembler == "MooneyRivlin")
+			{
+				const auto &c1 = mooney_rivlin_elasticity_.local_assembler().formulation().c1();
+				const auto &c2 = mooney_rivlin_elasticity_.local_assembler().formulation().c2();
+				const auto &k = mooney_rivlin_elasticity_.local_assembler().formulation().k();
+
+				res["c1"] = [&c1](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+					return c1(p, t, e);
+				};
+
+				res["c2"] = [&c2](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+					return c2(p, t, e);
+				};
+
+				res["k"] = [&k](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+					return k(p, t, e);
+				};
+			}
+			else if (assembler == "Ogden")
+			{
+				const Eigen::VectorXd alphas = ogden_elasticity_.local_assembler().formulation().alphas();
+				const Eigen::VectorXd mus = ogden_elasticity_.local_assembler().formulation().mus();
+				const Eigen::VectorXd Ds = ogden_elasticity_.local_assembler().formulation().Ds();
+
+				for (int i = 0; i < alphas.size(); ++i)
+					res[fmt::format("alpha_{}", i)] = [&alphas, i](const RowVectorNd &, const RowVectorNd &, double, int) { return alphas[i]; };
+
+				for (int i = 0; i < mus.size(); ++i)
+					res[fmt::format("mu_{}", i)] = [&mus, i](const RowVectorNd &, const RowVectorNd &, double, int) { return mus[i]; };
+
+				for (int i = 0; i < Ds.size(); ++i)
+					res[fmt::format("D_{}", i)] = [&Ds, i](const RowVectorNd &, const RowVectorNd &, double, int) { return Ds[i]; };
+			}
+			else if (assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting")
+			{
+				const double nu = stokes_velocity_.local_assembler().viscosity();
+				res["viscosity"] = [nu](const RowVectorNd &, const RowVectorNd &, double, int) { return nu; };
+			}
+
+			return res;
+		}
 	} // namespace assembler
 } // namespace polyfem
