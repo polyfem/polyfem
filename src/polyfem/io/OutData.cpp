@@ -107,7 +107,7 @@ namespace polyfem::io
 					if (mesh.is_cube(lb.element_id()))
 					{
 						assert(!is_simplicial);
-						assert(!mesh.is_polytope());
+						assert(!mesh.has_poly());
 						std::vector<int> loc_nodes;
 						RowVectorNd bary = RowVectorNd::Zero(3);
 
@@ -774,7 +774,7 @@ namespace polyfem::io
 						std::swap(elements[i][18], elements[i][19]);
 					}
 					if (disc_orders(i) > 4)
-						error_msg = "not implementd!!!"; // TODO: higher than 3
+						error_msg = ">P4 implementd!!!"; // TODO: higher than 3
 				}
 				else
 				{
@@ -784,11 +784,11 @@ namespace polyfem::io
 						std::swap(elements[i][n_nodes - 1], elements[i][n_nodes - 2]);
 					}
 					if (disc_orders(i) > 4)
-						error_msg = "not implementd!!!"; // TODO: higher than 3
+						error_msg = ">P4 implementd!!!"; // TODO: higher than 3
 				}
 			}
-			else
-				error_msg = "not implementd!!!"; // TODO: hexes
+			else if (disc_orders(i) > 1)
+				error_msg = ">Q1 not implementd!!!";
 		}
 
 		if (!error_msg.empty())
