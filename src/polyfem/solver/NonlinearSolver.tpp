@@ -21,6 +21,7 @@ namespace cppoptlib
 		solver_info_log = solver_params["solver_info_log"];
 
 		export_energy_path = solver_params["export_energy"];
+		export_energy_components = solver_params["export_energy_components"];
 
 		first_grad_norm_tol = solver_params["first_grad_norm_tol"];
 		this->setStopCriteria(criteria);
@@ -150,15 +151,18 @@ namespace cppoptlib
 				Eigen::VectorXd values = objFunc.component_values(x);
 				Eigen::MatrixXd grads = objFunc.component_gradients(x);
 				assert(values.size() == grads.cols());
-				outfile << energy << ", " << grad_norm << ", ";
-				for (int i = 0; i < values.size(); i++)
+				outfile << energy << ", " << grad_norm;
+				if (export_energy_components)
 				{
-					outfile << values(i) << ", " << grads.col(i).norm();
-					if (i == values.size() - 1)
-						outfile << "\n";
-					else
-						outfile << ", ";
+					outfile << ", ";
+					for (int i = 0; i < values.size(); i++)
+					{
+						outfile << values(i) << ", " << grads.col(i).norm();
+						if (i < values.size() - 1)
+							outfile << ", ";
+					}
 				}
+				outfile << "\n";
 				outfile.flush();
 			}
 

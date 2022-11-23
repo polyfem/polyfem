@@ -28,7 +28,6 @@ namespace polyfem::solver
 			int cumulative = 0;
 			gradv.setZero(optimization_dim_);
 
-			if (!all_states_[0]->adjoint_solved())
 			{
 				POLYFEM_SCOPED_TIMER("adjoint solve", adjoint_solve_time);
 				for (auto &state_ptr : all_states_)
@@ -39,7 +38,7 @@ namespace polyfem::solver
 				POLYFEM_SCOPED_TIMER("gradient assembly", grad_assembly_time);
 				for (const auto &p : parameters_)
 				{
-					Eigen::VectorXd gradv_param = obj_->Objective::gradient(all_states_, *p);
+					Eigen::VectorXd gradv_param = obj_->gradient(all_states_, *p);
 
 					gradv.segment(cumulative, p->optimization_dim()) += p->map_grad(x.segment(cumulative, p->optimization_dim()), gradv_param);
 					cumulative += p->optimization_dim();
@@ -344,7 +343,7 @@ namespace polyfem::solver
 		values.setZero(obj_->n_objs());
 		for (int i = 0; i < obj_->n_objs(); i++)
 		{
-			values(i) = obj_->value(i);
+			values(i) = obj_->get_obj(i)->value();
 		}
 		return values;
 	}
@@ -353,19 +352,16 @@ namespace polyfem::solver
 		Eigen::MatrixXd grads;
 		grads.setZero(x.size(), obj_->n_objs());
 
-		if (!all_states_[0]->adjoint_solved())
-		{
-			POLYFEM_SCOPED_TIMER("adjoint solve", adjoint_solve_time);
-			for (auto &state_ptr : all_states_)
-				state_ptr->solve_adjoint(obj_->compute_adjoint_rhs(*state_ptr));
-		}
-
 		for (int i = 0; i < obj_->n_objs(); i++)
 		{
+			auto obj = obj_->get_obj(i);
+			for (auto &state_ptr : all_states_)
+				state_ptr->solve_adjoint(obj->compute_adjoint_rhs(*state_ptr));
+
 			int cumulative = 0;
 			for (const auto &p : parameters_)
 			{
-				Eigen::VectorXd gradv_param = obj_->gradient(all_states_, *p, i);
+				Eigen::VectorXd gradv_param = obj_->get_weight(i) * obj->gradient(all_states_, *p);
 
 				grads.block(cumulative, i, p->optimization_dim(), 1) += p->map_grad(x.segment(cumulative, p->optimization_dim()), gradv_param);
 				cumulative += p->optimization_dim();

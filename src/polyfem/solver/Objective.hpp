@@ -108,16 +108,8 @@ namespace polyfem::solver
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
 
 		int n_objs() const { return objs_.size(); }
-
-		Eigen::VectorXd gradient(const std::vector<std::shared_ptr<State>> &states, const Parameter &param, const int id)
-		{
-			return objs_[id]->gradient(states, param) * weights_(id);
-		}
-
-		double value(const int id)
-		{
-			return objs_[id]->value() * weights_(id);
-		}
+		std::shared_ptr<Objective> get_obj(const int i) const { return objs_[i]; }
+		double get_weight(const int i) const { return weights_[i]; }
 
 	protected:
 		std::vector<std::shared_ptr<Objective>> objs_;
