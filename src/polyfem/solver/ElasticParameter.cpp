@@ -17,7 +17,7 @@ namespace polyfem
 
 		if (args["mu_bound"].get<std::vector<double>>().size() == 0)
 		{
-			min_mu = 0.0;
+			min_mu = -std::numeric_limits<double>::max();
 			max_mu = std::numeric_limits<double>::max();
 		}
 		else
@@ -28,7 +28,7 @@ namespace polyfem
 
 		if (args["lambda_bound"].get<std::vector<double>>().size() == 0)
 		{
-			min_lambda = 0.0;
+			min_lambda = -std::numeric_limits<double>::max();
 			max_lambda = std::numeric_limits<double>::max();
 		}
 		else
@@ -39,7 +39,7 @@ namespace polyfem
 
 		if (args["E_bound"].get<std::vector<double>>().size() == 0)
 		{
-			min_E = 0.0;
+			min_E = -std::numeric_limits<double>::max();
 			max_E = std::numeric_limits<double>::max();
 		}
 		else
@@ -50,8 +50,8 @@ namespace polyfem
 
 		if (args["nu_bound"].get<std::vector<double>>().size() == 0)
 		{
-			min_nu = 0.0;
 			max_nu = get_state().mesh->is_volume() ? 0.5 : 1;
+			min_nu = -max_nu;
 		}
 		else
 		{
@@ -75,7 +75,7 @@ namespace polyfem
 				flag = false;
 			if (lambdas.maxCoeff() > max_lambda || mus.maxCoeff() > max_mu)
 				flag = false;
-			
+
 			for (int e = 0; e < lambdas.size(); e++)
 			{
 				const double E = convert_to_E(get_state().mesh->is_volume(), lambdas(e), mus(e));
@@ -146,7 +146,7 @@ namespace polyfem
 			log_and_throw_error("Box constraints for current parameter is not supported!");
 		return min;
 	}
-	
+
 	Eigen::VectorXd ElasticParameter::get_upper_bound(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd max(x.size());
