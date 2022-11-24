@@ -200,6 +200,43 @@ namespace
 
 } // namespace
 
+TEST_CASE("deformed_boundary_smoothing", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+	json in_args;
+	load_json(path + "linear_elasticity-surface.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
+
+	json opt_args;
+	load_json(path + "linear_elasticity-surface-opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
+
+	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
+
+	json obj_args = R"(
+	{
+		"type": "deformed_boundary_smoothing",
+		"surface_selection": [2, 3, 4],
+		"power": 4
+	})"_json;
+
+	DeformedBoundarySmoothingObjective obj(state, shape_param, obj_args);
+
+	Eigen::MatrixXd velocity_discrete;
+	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
+	for (int i = 0; i < state.n_geom_bases; ++i)
+	{
+		velocity_discrete(i * 2 + 0) = rand() % 1000;
+		velocity_discrete(i * 2 + 1) = rand() % 1000;
+	}
+
+	velocity_discrete.normalize();
+
+	verify_adjoint(obj, state, shape_param, "shape", velocity_discrete, 1e-6, 1e-5);
+}
+
 TEST_CASE("laplacian", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
