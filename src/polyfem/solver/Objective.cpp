@@ -1,6 +1,6 @@
 #include "Objective.hpp"
 
-#include <polyfem/utils/CompositeSplineParam.hpp>
+#include <polyfem/utils/CubicHermiteSplineParametrization.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
@@ -1661,7 +1661,7 @@ namespace polyfem::solver
 	{
 		int nearest;
 		double t_optimal, distance_to_start, distance_to_end;
-		CompositeSplineParam::find_nearest_spline(point, control_points_, tangents_, nearest, t_optimal, distance, distance_to_start, distance_to_end);
+		CubicHermiteSplineParametrization::find_nearest_spline(point, control_points_, tangents_, nearest, t_optimal, distance, distance_to_start, distance_to_end);
 
 		// If no nearest with t \in [0, 1] found, check the endpoints and assign one
 		if (nearest == -1)
@@ -1686,7 +1686,7 @@ namespace polyfem::solver
 		if (distance < 1e-8)
 			return;
 
-		CompositeSplineParam::gradient(point, control_points_, tangents_, nearest, t_optimal, distance, grad);
+		CubicHermiteSplineParametrization::gradient(point, control_points_, tangents_, nearest, t_optimal, distance, grad);
 		assert(abs(1 - grad.col(0).segment(0, 2).norm()) < 1e-6);
 	}
 
@@ -1810,7 +1810,7 @@ namespace polyfem::solver
 		return j;
 	}
 
-	MaterialBoundObjective::MaterialBoundObjective(const std::shared_ptr<const Parameter> elastic_param, const json &args): elastic_param_(elastic_param), is_volume(elastic_param->get_state().mesh->is_volume())
+	MaterialBoundObjective::MaterialBoundObjective(const std::shared_ptr<const Parameter> elastic_param, const json &args) : elastic_param_(elastic_param), is_volume(elastic_param->get_state().mesh->is_volume())
 	{
 		for (const auto &arg : args["bounds"])
 		{

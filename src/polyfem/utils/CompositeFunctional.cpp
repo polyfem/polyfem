@@ -1,5 +1,5 @@
 #include <polyfem/utils/CompositeFunctional.hpp>
-#include <polyfem/utils/CompositeSplineParam.hpp>
+#include <polyfem/utils/CubicHermiteSplineParametrization.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/solver/AdjointForm.hpp>
 
@@ -215,7 +215,7 @@ namespace polyfem
 	{
 		int nearest;
 		double t_optimal, distance_to_start, distance_to_end;
-		CompositeSplineParam::find_nearest_spline(point, control_points_, tangents_, nearest, t_optimal, distance, distance_to_start, distance_to_end);
+		CubicHermiteSplineParametrization::find_nearest_spline(point, control_points_, tangents_, nearest, t_optimal, distance, distance_to_start, distance_to_end);
 
 		// If no nearest with t \in [0, 1] found, check the endpoints and assign one
 		if (nearest == -1)
@@ -240,7 +240,7 @@ namespace polyfem
 		if (distance < 1e-8)
 			return;
 
-		CompositeSplineParam::gradient(point, control_points_, tangents_, nearest, t_optimal, distance, grad);
+		CubicHermiteSplineParametrization::gradient(point, control_points_, tangents_, nearest, t_optimal, distance, grad);
 		assert(abs(1 - grad.col(0).segment(0, 2).norm()) < 1e-6);
 	}
 
@@ -444,7 +444,7 @@ namespace polyfem
 
 		Eigen::VectorXd grad;
 		AdjointForm::gradient(state, j, type, grad, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? AdjointForm::SpatialIntegralType::SURFACE : AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
-		
+
 		double current_volume = AdjointForm::value(state, j, surface_integral ? interested_boundary_ids_ : interested_body_ids_, surface_integral ? AdjointForm::SpatialIntegralType::SURFACE : AdjointForm::SpatialIntegralType::VOLUME, transient_integral_type);
 
 		double derivative = 0;
@@ -654,7 +654,7 @@ namespace polyfem
 	// 			target = target_series[step];
 	// 		else
 	// 			target = target_series.back();
-			
+
 	// 		Eigen::VectorXd err = x.head(dim) / x(dim) - target;
 	// 		for (int d = 0; d < dim; d++)
 	// 			if (!flags_[d])

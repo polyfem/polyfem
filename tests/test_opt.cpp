@@ -227,4 +227,13 @@ TEST_CASE("shape-trajectory-surface-opt-new", "[optimization]")
 	REQUIRE(energies[0] == Approx(6.1658e-05).epsilon(1e-3));
 	REQUIRE(energies[energies.size() - 1] == Approx(3.6194e-05).epsilon(1e-3));
 }
+
+TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
+{
+	run_opt_new("shape-trajectory-surface-opt-bspline");
+	auto energies = read_energy("shape-trajectory-surface-opt-bspline");
+
+	REQUIRE(energies[0] == Approx(6.1658e-05).epsilon(1e-3));
+	REQUIRE(energies[energies.size() - 1] == Approx(3.6194e-05).epsilon(1e-3));
+}
 #endif

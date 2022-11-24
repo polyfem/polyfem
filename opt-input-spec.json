@@ -448,7 +448,7 @@
             "2D_cubic",
             "doubly_periodic",
             "cubic"
-        ], 
+        ],
         "doc": "TODO"
     },
     {
@@ -543,12 +543,13 @@
         "pointer": "/parameters/*/spline_specification/*",
         "type": "object",
         "required": [
-            "id",
-            "control_point",
-            "tangent"
+            "id"
         ],
         "optional": [
-            "sampling"
+            "tangent",
+            "control_point",
+            "sampling",
+            "knot"
         ],
         "doc": "TODO"
     },
@@ -560,6 +561,7 @@
     {
         "pointer": "/parameters/*/spline_specification/*/control_point",
         "type": "list",
+        "default": [],
         "doc": "TODO"
     },
     {
@@ -575,6 +577,7 @@
     {
         "pointer": "/parameters/*/spline_specification/*/tangent",
         "type": "list",
+        "default": [],
         "doc": "TODO"
     },
     {
@@ -584,6 +587,17 @@
     },
     {
         "pointer": "/parameters/*/spline_specification/*/tangent/*/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/spline_specification/*/knot",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/spline_specification/*/tangent/*",
         "type": "float",
         "doc": "TODO"
     },
@@ -736,6 +750,7 @@
         "options": [
             "none",
             "cubic_hermite_spline",
+            "b_spline",
             "graph_structure",
             "E_nu",
             "E_nu_log",

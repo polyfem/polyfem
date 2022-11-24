@@ -38,7 +38,8 @@ set(SOURCES
 	RBFInterpolation.hpp
 	RefElementSampler.cpp
 	RefElementSampler.hpp
-	CompositeSplineParam.hpp
+	CubicHermiteSplineParametrization.hpp
+	BSplineParametrization.hpp
 	StringUtils.cpp
 	StringUtils.hpp
 	ExpressionValue.cpp

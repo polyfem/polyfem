@@ -2,7 +2,8 @@
 
 #include "Constraints.hpp"
 
-#include <polyfem/utils/CompositeSplineParam.hpp>
+#include <polyfem/utils/CubicHermiteSplineParametrization.hpp>
+#include <polyfem/utils/BSplineParametrization.hpp>
 
 namespace polyfem
 {
@@ -109,7 +110,7 @@ namespace polyfem
 					reduced_size_ += 2 * t.rows();
 					logger().trace("Given tangents are: {}", t);
 				}
-				CompositeSplineParam spline_param(control_point, tangent, optimization_boundary_to_node_ids_, V_start, 0);
+				CubicHermiteSplineParametrization spline_param(control_point, tangent, optimization_boundary_to_node_ids_, V_start, 0);
 				full_to_reduced_ = [this, spline_param](const Eigen::MatrixXd &V_full) {
 					Eigen::VectorXd reduced(reduced_size_);
 					std::map<int, Eigen::MatrixXd> control_point, tangent;
@@ -184,6 +185,63 @@ namespace polyfem
 					return dreduced;
 				};
 			}
+			else if (restriction == "b_spline")
+			{
+				const auto &spline_params = constraint_params["spline_specification"];
+				assert(dim_ == 2);
+				const auto &spline = spline_params[0];
+				const int boundary_id = spline["id"].get<int>();
+				auto c = spline["control_point"];
+				Eigen::MatrixXd control_points(c.size(), dim_);
+				for (int i = 0; i < c.size(); ++i)
+					for (int k = 0; k < dim_; ++k)
+						control_points(i, k) = c[i][k];
+				reduced_size_ = control_points.size() - 2 * dim_;
+				auto k = spline["knot"];
+				Eigen::MatrixXd knots(k.size(), 1);
+				for (int i = 0; i < k.size(); ++i)
+					knots(i) = k[i];
+				assert(optimization_boundary_to_node_ids_.size() == 1);
+				b_spline_parametrization = std::make_shared<BSplineParametrization>(control_points, knots, optimization_boundary_to_node_ids_.begin()->first, optimization_boundary_to_node_ids_.begin()->second, V_start);
+				full_to_reduced_ = [this](const Eigen::MatrixXd &V_full) {
+					Eigen::VectorXd reduced(reduced_size_);
+					Eigen::MatrixXd control_points;
+					b_spline_parametrization->get_parameters(V_full, control_points);
+					int index = 0;
+					for (int i = 0; i < control_points.rows(); ++i)
+					{
+						if (i == 0 || i == (control_points.rows() - 1))
+							continue;
+						reduced.segment(index, dim_) = control_points.row(i);
+						index += dim_;
+					}
+					assert(index == reduced.size());
+					return reduced;
+				};
+				reduced_to_full_ = [this, control_points](const Eigen::VectorXd &reduced, const Eigen::MatrixXd &V_rest) {
+					Eigen::MatrixXd V(num_vertices_, dim_);
+					int index = 0;
+					Eigen::MatrixXd new_control_points(control_points.rows(), dim_);
+					for (int i = 0; i < new_control_points.rows(); ++i)
+					{
+						if (i == 0 || i == (new_control_points.rows() - 1))
+							new_control_points.row(i) = control_points.row(i);
+						else
+						{
+							new_control_points.row(i) = reduced.segment(index, dim_);
+							index += dim_;
+						}
+					}
+					b_spline_parametrization->reparametrize(new_control_points, V_rest, V);
+					return V;
+				};
+				dfull_to_dreduced_ = [this](const Eigen::VectorXd &dV_full) {
+					Eigen::VectorXd grad_control_point;
+					b_spline_parametrization->derivative_wrt_params(dV_full, grad_control_point);
+					Eigen::VectorXd dreduced = grad_control_point.segment(dim_, grad_control_point.rows() - 2 * dim_);
+					return dreduced;
+				};
+			}
 			else if (restriction == "graph_structure")
 			{
 				const auto &graph_param = constraint_params["graph_specification"];
@@ -248,6 +306,8 @@ namespace polyfem
 		std::map<int, std::vector<int>> optimization_boundary_to_node_ids_;
 		const int num_vertices_;
 		const int dim_;
+
+		std::shared_ptr<BSplineParametrization> b_spline_parametrization;
 
 		// Must define the inverse function with Eigen types, differentiability is not needed.
 		std::function<Eigen::MatrixXd(const Eigen::VectorXd &, const Eigen::MatrixXd &)> reduced_to_full_;

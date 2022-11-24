@@ -10,10 +10,10 @@
 
 namespace polyfem
 {
-	class CompositeSplineParam
+	class CubicHermiteSplineParametrization
 	{
 	public:
-		CompositeSplineParam(const std::map<int, Eigen::MatrixXd> &control_point, const std::map<int, Eigen::MatrixXd> &tangent, const std::map<int, std::vector<int>> &boundary_id_to_node_id, const Eigen::MatrixXd &V, const int sampling) : boundary_id_to_node_id_(boundary_id_to_node_id)
+		CubicHermiteSplineParametrization(const std::map<int, Eigen::MatrixXd> &control_point, const std::map<int, Eigen::MatrixXd> &tangent, const std::map<int, std::vector<int>> &boundary_id_to_node_id, const Eigen::MatrixXd &V, const int sampling) : boundary_id_to_node_id_(boundary_id_to_node_id)
 		{
 			// Deduce the t parameter of all of the points in the spline sections
 			int index = 0;

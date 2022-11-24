@@ -8,7 +8,7 @@
 #include "DampingProblem.hpp"
 #include "GeneralOptimizationProblem.hpp"
 
-#include <polyfem/utils/CompositeSplineParam.hpp>
+#include <polyfem/utils/CubicHermiteSplineParametrization.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
 
 #include <polyfem/utils/MaybeParallelFor.hpp>
@@ -722,7 +722,7 @@ namespace polyfem::solver
 					opt_dof += 2 * t.rows();
 					logger().trace("Given tangents are: {}", t);
 				}
-				CompositeSplineParam spline_param(control_point, tangent, shape_problem->optimization_boundary_to_node, V, sampling);
+				CubicHermiteSplineParametrization spline_param(control_point, tangent, shape_problem->optimization_boundary_to_node, V, sampling);
 				shape_problem->param_to_x = [spline_param, opt_dof, dim](ShapeProblem::TVector &x, const Eigen::MatrixXd &V) {
 					std::map<int, Eigen::MatrixXd> control_point, tangent;
 					spline_param.get_parameters(V, control_point, tangent);
