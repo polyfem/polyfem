@@ -36,6 +36,8 @@ namespace polyfem
 		apply_lagrange_multipliers(A);
 		b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
 
+		std::vector<int> boundary_nodes_tmp = boundary_nodes;
+		full_to_periodic(boundary_nodes_tmp);
 		if (has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"])
 		{
 			precond_num = full_to_periodic(A);
@@ -48,13 +50,13 @@ namespace polyfem
 		if (args["optimization"]["enabled"])
 		{
 			auto A_tmp = A;
-			prefactorize(*solver, A, boundary_nodes, precond_num, args["output"]["data"]["stiffness_mat"]);
-			dirichlet_solve_prefactorized(*solver, A_tmp, b, boundary_nodes, x);
+			prefactorize(*solver, A, boundary_nodes_tmp, precond_num, args["output"]["data"]["stiffness_mat"]);
+			dirichlet_solve_prefactorized(*solver, A_tmp, b, boundary_nodes_tmp, x);
 		}
 		else
 		{
 			stats.spectrum = dirichlet_solve(
-				*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
+				*solver, A, b, boundary_nodes_tmp, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
 				assembler.is_fluid(formulation()), use_avg_pressure);
 		}
 
@@ -68,9 +70,7 @@ namespace polyfem
 
 		x.conservativeResize(x.size() - n_lagrange_multipliers());
  		if (has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"])
- 		{
  			sol = periodic_to_full(full_size, x);
- 		}
  		else
  			sol = x; // Explicit copy because sol is a MatrixXd (with one column)
 

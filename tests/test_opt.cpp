@@ -179,8 +179,8 @@ TEST_CASE("shape-stress-opt", "[optimization]")
 
 	auto energies = read_energy("shape-stress-opt");
 
-	REQUIRE(energies[0] == Approx(12.0721).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(11.5431).epsilon(1e-4));
+	REQUIRE(energies[0] == Approx(12.0735).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(11.5482).epsilon(1e-4));
 }
 
 TEST_CASE("material-opt", "[optimization]")

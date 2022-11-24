@@ -26,6 +26,19 @@ namespace polyfem
 		virtual double target_value(const TVector &x) = 0;
 		virtual void target_gradient(const TVector &x, TVector &gradv) = 0;
 
+		TVector component_values(const TVector &x)
+		{
+			TVector val(1);
+			val(0) = value(x);
+			return val;
+		}
+		Eigen::MatrixXd component_gradients(const TVector &x)
+		{
+			Eigen::VectorXd grad(x.size());
+			gradient(x, grad);
+			return grad;
+		}
+
 		virtual double value(const TVector &x) = 0;
 		virtual void gradient(const TVector &x, TVector &gradv) = 0;
 

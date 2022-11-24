@@ -152,7 +152,9 @@ int main(int argc, char **argv)
 	for (int l = 200; l > 100; l--)
 	{
 		F(1, 1) = l / 200.0;
-		
+
+		micro_state->args["output"]["paraview"]["file_name"] = "load_" + std::to_string(l) + ".vtu";
+
 		{
 			Eigen::MatrixXd disp_grad = F - Eigen::MatrixXd::Identity(dim, dim);
 			Eigen::MatrixXd x;
@@ -172,7 +174,6 @@ int main(int argc, char **argv)
 		std::cout << "homogenized stress\n" << stress << "\n";
 
 		Eigen::MatrixXd pressure(micro_state->n_pressure_bases, 1);
-		micro_state->args["output"]["paraview"]["file_name"] = "load_" + std::to_string(l) + ".vtu";
 		micro_state->export_data(fluctuated, pressure);
 	}
 

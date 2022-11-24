@@ -1058,16 +1058,6 @@ namespace polyfem
 
 				n_bases = independent_dof;
 			}
-
-			// new index for boundary_nodes
-			std::vector<int> nodes_periodic = boundary_nodes;
-			for (int i = 0; i < nodes_periodic.size(); i++)
-				nodes_periodic[i] = periodic_reduce_map(boundary_nodes[i]);
-
-			std::sort(nodes_periodic.begin(), nodes_periodic.end());
-			auto it = std::unique(nodes_periodic.begin(), nodes_periodic.end());
-			nodes_periodic.resize(std::distance(nodes_periodic.begin(), it));
-			std::swap(nodes_periodic, boundary_nodes);
 		}
 		if (args["space"]["advanced"]["count_flipped_els"])
 			stats.count_flipped_elements(*mesh, geom_bases());

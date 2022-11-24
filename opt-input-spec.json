@@ -84,6 +84,7 @@
             "relative_gradient",
             "line_search",
             "export_energy",
+            "export_energy_components",
             "first_grad_norm_tol"
         ],
         "doc": "Settings for optimization nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
@@ -100,6 +101,12 @@
             "gradientdescent"
         ],
         "doc": "Nonlinear solver type"
+    },
+    {
+        "pointer": "/solver/nonlinear/export_energy_components",
+        "default": false,
+        "type": "bool",
+        "doc": "Save energy and gradient components"
     },
     {
         "pointer": "/solver/nonlinear/export_energy",

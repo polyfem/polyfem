@@ -107,6 +107,10 @@ namespace polyfem::solver
 		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
 
+		int n_objs() const { return objs_.size(); }
+		std::shared_ptr<Objective> get_obj(const int i) const { return objs_[i]; }
+		double get_weight(const int i) const { return weights_[i]; }
+
 	protected:
 		std::vector<std::shared_ptr<Objective>> objs_;
 		Eigen::VectorXd weights_;

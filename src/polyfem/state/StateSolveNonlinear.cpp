@@ -309,12 +309,15 @@ namespace polyfem
 			log_and_throw_error("Rayleigh damping is only supported for time-dependent problems");
 		}
 
+		std::vector<int> boundary_nodes_tmp = boundary_nodes;
+		full_to_periodic(boundary_nodes_tmp);
+
 		///////////////////////////////////////////////////////////////////////
 		// Initialize nonlinear problems
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof,
 			formulation(),
-			boundary_nodes,
+			boundary_nodes_tmp,
 			local_boundary,
 			n_boundary_samples(),
 			*solve_data.rhs_assembler, *this, t, forms);

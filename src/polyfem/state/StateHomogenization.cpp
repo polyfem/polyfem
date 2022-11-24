@@ -83,7 +83,7 @@ namespace
     }
 }
 
-void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_, const std::string &hessian_path)
+void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_)
 {
     if (formulation() != "NeoHookean" && formulation() != "LinearElasticity")
     {
@@ -195,18 +195,11 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eige
     }
     
     tmp_sol = homo_problem->full_to_reduced(sol_);
-    // export_data(homo_problem->reduced_to_full(tmp_sol), Eigen::MatrixXd());
+    export_data(homo_problem->reduced_to_full(tmp_sol), Eigen::MatrixXd());
     
     homo_problem->init(homo_problem->reduced_to_full(tmp_sol));
     nl_solver->minimize(*homo_problem, tmp_sol);
     sol_ = homo_problem->reduced_to_full(tmp_sol);
-
-    if (hessian_path != "")
-    {
-        StiffnessMatrix hessian;
-        homo_problem->hessian(tmp_sol, hessian);
-        Eigen::saveMarket(hessian, hessian_path);
-    }
 }
 
 }

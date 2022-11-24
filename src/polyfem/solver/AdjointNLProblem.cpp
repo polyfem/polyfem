@@ -4,12 +4,6 @@
 
 namespace polyfem::solver
 {
-	double AdjointNLProblem::target_value(const Eigen::VectorXd &x)
-	{
-		// TODO: user specify selection of functionals to be target
-		return obj_->value();
-	}
-
 	double AdjointNLProblem::value(const Eigen::VectorXd &x, const bool only_elastic)
 	{
 		return obj_->value();
@@ -18,11 +12,6 @@ namespace polyfem::solver
 	double AdjointNLProblem::value(const Eigen::VectorXd &x)
 	{
 		return value(x, false);
-	}
-
-	void AdjointNLProblem::target_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
-	{
-		gradient(x, gradv, false);
 	}
 
 	void AdjointNLProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
@@ -346,6 +335,39 @@ namespace polyfem::solver
 		all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
 
 		cur_grad.resize(0);
+	}
+
+	Eigen::VectorXd AdjointNLProblem::component_values(const Eigen::VectorXd &x)
+	{
+		Eigen::VectorXd values;
+		values.setZero(obj_->n_objs());
+		for (int i = 0; i < obj_->n_objs(); i++)
+		{
+			values(i) = obj_->get_obj(i)->value();
+		}
+		return values;
+	}
+	Eigen::MatrixXd AdjointNLProblem::component_gradients(const Eigen::VectorXd &x)
+	{
+		Eigen::MatrixXd grads;
+		grads.setZero(x.size(), obj_->n_objs());
+
+		for (int i = 0; i < obj_->n_objs(); i++)
+		{
+			auto obj = obj_->get_obj(i);
+			for (auto &state_ptr : all_states_)
+				state_ptr->solve_adjoint(obj->compute_adjoint_rhs(*state_ptr));
+
+			int cumulative = 0;
+			for (const auto &p : parameters_)
+			{
+				Eigen::VectorXd gradv_param = obj_->get_weight(i) * obj->gradient(all_states_, *p);
+
+				grads.block(cumulative, i, p->optimization_dim(), 1) += p->map_grad(x.segment(cumulative, p->optimization_dim()), gradv_param);
+				cumulative += p->optimization_dim();
+			}
+		}
+		return grads;
 	}
 
 	bool AdjointNLProblem::verify_gradient(const Eigen::VectorXd &x, const Eigen::VectorXd &gradv)
