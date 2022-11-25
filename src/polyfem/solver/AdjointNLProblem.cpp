@@ -289,10 +289,6 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::solution_changed(const Eigen::VectorXd &newX)
 	{
-		// if solution was not changed, no action is needed
-		if (cur_x.size() == newX.size() && cur_x == newX)
-			return;
-
 		// update to new parameter and check if the new parameter is valid to solve
 		bool solve = true;
 		for (const auto &p : parameters_)
