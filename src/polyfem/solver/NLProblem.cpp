@@ -38,7 +38,7 @@ namespace polyfem::solver
 	{
 		// assert(!state.assembler.is_mixed(formulation));
 		use_reduced_size();
-		linear_field_.setZero(full_size_);
+		disp_offset_.setZero(full_size_);
 	}
 
 	void NLProblem::init_lagging(const TVector &x)
@@ -219,7 +219,7 @@ namespace polyfem::solver
 		else
 			full = tmp;
 
-		full += linear_field_;
+		full += disp_offset_;
 	}
 
 	void NLProblem::full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const

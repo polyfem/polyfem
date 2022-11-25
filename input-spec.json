@@ -2764,9 +2764,26 @@
             "periodic_boundary",
             "neumann_boundary",
             "pressure_boundary",
-            "obstacle_displacements"
+            "obstacle_displacements",
+            "linear_displacement_offset"
         ],
         "doc": "The settings for boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/linear_displacement_offset",
+        "type": "list",
+        "default": [],
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/linear_displacement_offset/*",
+        "type": "list",
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/linear_displacement_offset/*/*",
+        "type": "float",
+        "doc": ""
     },
     {
         "pointer": "/boundary_conditions/rhs",

@@ -172,7 +172,7 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eige
         *solve_data.rhs_assembler, *this, 0, forms);
     
     Eigen::VectorXd macro_field = generate_linear_field(*this, disp_grad);
-    homo_problem->set_linear_field(macro_field);
+    homo_problem->set_disp_offset(macro_field);
 
     std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_homo_solver<NLProblem>(args["solver"]);
     

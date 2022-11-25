@@ -53,12 +53,13 @@ namespace polyfem::solver
 		virtual TVector reduced_to_full(const TVector &reduced) const;
 
 		void set_apply_DBC(const TVector &x, const bool val);
-		void set_linear_field(const TVector &field) { linear_field_ = field; }
+		void set_disp_offset(const TVector &disp_offset) { disp_offset_ = disp_offset; }
+		TVector get_disp_offset() const { return disp_offset_; }
 
 	protected:
 		const std::vector<int> boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> &local_boundary_;
-		Eigen::VectorXd linear_field_;
+		Eigen::VectorXd disp_offset_;
 
 		const int n_boundary_samples_;
 		const assembler::RhsAssembler &rhs_assembler_;
