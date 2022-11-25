@@ -1,5 +1,5 @@
 #include <polyfem/State.hpp>
-#include <polyfem/solver/HomogenizationNLProblem.hpp>
+#include <polyfem/solver/NLProblem.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
@@ -163,7 +163,7 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eige
         }
     }
 
-    std::shared_ptr<HomogenizationNLProblem> homo_problem = std::make_shared<HomogenizationNLProblem>(
+    std::shared_ptr<NLProblem> homo_problem = std::make_shared<NLProblem>(
         ndof,
         formulation(),
         boundary_nodes,
@@ -172,9 +172,9 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eige
         *solve_data.rhs_assembler, *this, 0, forms);
     
     Eigen::VectorXd macro_field = generate_linear_field(*this, disp_grad);
-    homo_problem->set_macro_field(macro_field);
+    homo_problem->set_disp_offset(macro_field);
 
-    std::shared_ptr<cppoptlib::NonlinearSolver<HomogenizationNLProblem>> nl_solver = make_nl_homo_solver<HomogenizationNLProblem>(args["solver"]);
+    std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_homo_solver<NLProblem>(args["solver"]);
     
     Eigen::VectorXd tmp_sol;
     if (lag_form)

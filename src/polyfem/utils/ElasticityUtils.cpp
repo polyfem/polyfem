@@ -41,6 +41,27 @@ namespace polyfem
 		return A;
 	}
 
+	Eigen::Matrix2d d_E_nu_d_lambda_mu(const bool is_volume, const double lambda, const double mu)
+	{
+		Eigen::Matrix2d A;
+		if (is_volume)
+		{
+			A(0, 0) = pow(mu / (lambda + mu), 2);
+			A(0, 1) = (3 * lambda * lambda + 4 * lambda * mu + 2 * mu * mu) / pow(lambda + mu, 2);
+			A(1, 0) = mu / 2 / pow(lambda + mu, 2);
+			A(1, 1) = -lambda / 2 / pow(lambda + mu, 2);
+		}
+		else
+		{
+			A(0, 0) = pow(2 * mu / (lambda + 2 * mu), 2);
+			A(0, 1) = (4 * lambda * lambda + 8 * lambda * mu + 8 * mu * mu) / pow(lambda + 2 * mu, 2);
+			A(1, 0) = mu * 2 / pow(lambda + 2 * mu, 2);
+			A(1, 1) = -lambda * 2 / pow(lambda + 2 * mu, 2);
+		}
+
+		return A;
+	}
+
 	double convert_to_E(const bool is_volume, const double lambda, const double mu)
 	{
 		if (is_volume)

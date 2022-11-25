@@ -222,6 +222,9 @@ namespace polyfem
 		/// System righ-hand side.
 		Eigen::MatrixXd rhs;
 
+		/// In Elasticity PDE, solve for "min W(disp_offset + u)" instead of "min W(u)"
+		Eigen::MatrixXd disp_offset;
+
 		Eigen::MatrixXd pre_sol;
 
 		/// use average pressure for stokes problem to fix the additional dofs, true by default

@@ -53,6 +53,7 @@ namespace polyfem
 
 			void test_reduced_basis(const std::vector<Eigen::MatrixXd> &def_grads, Eigen::VectorXd &energy_errors, Eigen::VectorXd &stress_errors);
 
+			void set_microstructure_state(const std::shared_ptr<polyfem::State> state_ptr);
 			std::shared_ptr<State> get_microstructure_state() { return state; }
 
 			void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;

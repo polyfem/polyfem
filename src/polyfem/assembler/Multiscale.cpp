@@ -121,6 +121,13 @@ namespace polyfem::assembler
 			Eigen::MatrixXd disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd x;
 			state->solve_homogenized_field(disp_grad, fluctuated, x);
+			// serial only
+			// {
+			// 	Eigen::MatrixXd y, pressure;
+			// 	state->disp_offset = generate_linear_field(*state, disp_grad);
+			// 	state->solve_problem(y, pressure);
+			// 	logger().error("diff: {}, norm: {}", (x-y).norm(), x.norm());
+			// }
 			fluctuated = x;
 		}
 
@@ -145,6 +152,15 @@ namespace polyfem::assembler
 
 		// effective energy = average energy over unit cell
 		energy = homogenize_energy(fluctuated);
+	}
+
+	void Multiscale::set_microstructure_state(const std::shared_ptr<polyfem::State> state_ptr)
+	{
+		state = state_ptr;
+
+		RowVectorNd min, max;
+		state->mesh->bounding_box(min, max);
+		microstructure_volume = (max - min).prod();
 	}
 
 	void Multiscale::add_multimaterial(const int index, const json &params)

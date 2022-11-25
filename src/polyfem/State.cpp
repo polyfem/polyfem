@@ -1069,7 +1069,6 @@ namespace polyfem
 		build_collision_mesh(boundary_nodes_pos, collision_mesh, n_bases, bases);
 		logger().info("Done!");
 
-		// incompatible with optimization, fix me!
 		{
 			igl::Timer timer2;
 			logger().debug("Building node mapping...");
@@ -1168,6 +1167,32 @@ namespace polyfem
 		std::sort(boundary_nodes.begin(), boundary_nodes.end());
 		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
+
+		// build disp_offset
+		{
+			disp_offset.setZero(n_bases * mesh->dimension(), 1);
+			if (args["boundary_conditions"]["linear_displacement_offset"].size() > 0)
+			{
+				Eigen::MatrixXd disp_grad;
+				disp_grad.setZero(mesh->dimension(), mesh->dimension());
+				int i = 0;
+				for (const auto &row : args["boundary_conditions"]["linear_displacement_offset"])
+				{
+					int j = 0;
+					for (const auto &x : row)
+					{
+						disp_grad(i, j) = x;
+						j++;
+					}
+					i++;
+				}
+
+				for (int i = 0; i < n_bases; i++)
+				{
+					disp_offset.block(i * mesh->dimension(), 0, mesh->dimension(), 1) = disp_grad * mesh_nodes->node_position(i).transpose();
+				}
+			}
+		}
 
 		const auto &curret_bases = geom_bases();
 		const int n_samples = 10;
