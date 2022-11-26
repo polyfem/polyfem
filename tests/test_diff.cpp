@@ -218,7 +218,7 @@ TEST_CASE("deformed_boundary_smoothing", "[adjoint_method]")
 	json obj_args = R"(
 	{
 		"type": "deformed_boundary_smoothing",
-		"surface_selection": [2, 3, 4],
+		"surface_selection": [2, 3],
 		"power": 4
 	})"_json;
 
