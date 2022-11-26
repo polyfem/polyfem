@@ -78,6 +78,8 @@ namespace polyfem::solver
 		CurrentSize current_size_; ///< Current size of the problem (either full or reduced size)
 		int current_size() const
 		{
+			if (current_size_ == CurrentSize::FULL_SIZE && state_.has_periodic_bc() && !state_.args["space"]["advanced"]["periodic_basis"])
+				log_and_throw_error("Periodic BC doesn't support AL solve!");
 			return current_size_ == CurrentSize::FULL_SIZE ? full_size() : reduced_size();
 		}
 

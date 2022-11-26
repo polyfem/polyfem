@@ -441,4 +441,22 @@ namespace polyfem::solver
 		double min_nu = 0, max_nu = 0;
 		double kappa_nu = 0, dhat_nu = 0;
 	};
+
+	class HomogenizedStressObjective : public SpatialIntegralObjective
+	{
+	public:
+		HomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args, bool has_integral_sqrt = true);
+		~HomogenizedStressObjective() = default;
+
+		double value() override;
+
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const State &state) override;
+		IntegrableFunctional get_integral_functional() override;
+
+	protected:
+		std::string formulation_;
+
+		std::shared_ptr<const Parameter> elastic_param_; // stress depends on elastic param
+	};
 } // namespace polyfem::solver

@@ -1187,6 +1187,8 @@ namespace polyfem
 					i++;
 				}
 
+				logger().info("Underlying linear displacement field: {}", utils::flatten(disp_grad).transpose());
+
 				for (int i = 0; i < n_bases; i++)
 				{
 					disp_offset.block(i * mesh->dimension(), 0, mesh->dimension(), 1) = disp_grad * mesh_nodes->node_position(i).transpose();
