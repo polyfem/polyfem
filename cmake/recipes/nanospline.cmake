@@ -7,6 +7,8 @@ endif()
 
 message(STATUS "Third-party: creating target 'nanospline'")
 
+option(NANOSPLINE_BUILD_TESTS "Build Tests" OFF)
+
 include(FetchContent)
 FetchContent_Declare(
     nanospline
