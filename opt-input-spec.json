@@ -788,6 +788,7 @@
             "height",
             "position",
             "stress",
+            "homogenized_stress",
             "compliance",
             "strain_norm",
             "boundary_smoothing",
@@ -1022,6 +1023,24 @@
         "pointer": "/functionals/*",
         "type": "object",
         "type_name": "stress",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "shape_parameter",
+            "material_parameter",
+            "volume_selection",
+            "power",
+            "weight",
+            "transient_integral_type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "homogenized_stress",
         "required": [
             "state",
             "type"

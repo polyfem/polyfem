@@ -10,8 +10,12 @@ using namespace polyfem::utils;
 
 namespace polyfem::solver
 {
-	namespace
-	{
+	namespace {
+		bool delta(int i, int j)
+		{
+			return (i == j) ? true : false;
+		}
+
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 
 		typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1>> Diff;
@@ -218,6 +222,29 @@ namespace polyfem::solver
 				elastic_param = parameters[args["material_parameter"]];
 
 			std::shared_ptr<solver::StaticObjective> tmp = std::make_shared<solver::StressObjective>(state, shape_param, elastic_param, args);
+			if (state.problem->is_time_dependent())
+				obj = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], args["transient_integral_type"], tmp);
+			else
+				obj = tmp;
+		}
+		else if (type == "homogenized_stress")
+		{
+			State &state = *(states[args["state"]]);
+			std::shared_ptr<Parameter> shape_param;
+			std::shared_ptr<Parameter> elastic_param;
+			if (args["shape_parameter"] >= 0)
+			{
+				shape_param = parameters[args["shape_parameter"]];
+				if (!shape_param->contains_state(state))
+					logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
+			}
+			else
+				logger().warn("No shape parameter is assigned to functional");
+
+			if (args["material_parameter"] >= 0)
+				elastic_param = parameters[args["material_parameter"]];
+
+			std::shared_ptr<solver::StaticObjective> tmp = std::make_shared<solver::HomogenizedStressObjective>(state, shape_param, elastic_param, args);
 			if (state.problem->is_time_dependent())
 				obj = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], args["transient_integral_type"], tmp);
 			else
@@ -1941,6 +1968,115 @@ namespace polyfem::solver
 		}
 
 		return grad;
+	}
+
+	HomogenizedStressObjective::HomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args, bool has_integral_sqrt) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
+	{
+		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
+		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+
+		formulation_ = state.formulation();
+	}
+
+	IntegrableFunctional HomogenizedStressObjective::get_integral_functional()
+	{
+		IntegrableFunctional j;
+
+		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(grad_u.rows(), 1);
+			Eigen::MatrixXd grad_u_q, stress;
+			for (int q = 0; q < grad_u.rows(); q++)
+			{
+				vector2matrix(grad_u.row(q), grad_u_q);
+				if (this->formulation_ == "LinearElasticity")
+				{
+					stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
+				}
+				else if (this->formulation_ == "NeoHookean")
+				{
+					Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols()) + grad_u_q;
+					Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+					stress = mu(q) * (def_grad - FmT) + lambda(q) * std::log(def_grad.determinant()) * FmT;
+				}
+				else
+					log_and_throw_error("Unknown formulation!");
+				val(q) = stress(0, 0);
+			}
+		});
+
+		j.set_dj_dgradu([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(grad_u.rows(), grad_u.cols());
+			const int dim = sqrt(grad_u.cols());
+			Eigen::MatrixXd grad_u_q, stiffness;
+			for (int q = 0; q < grad_u.rows(); q++)
+			{
+				stiffness.setZero(1, dim * dim * dim * dim);
+				vector2matrix(grad_u.row(q), grad_u_q);
+
+				if (this->formulation_ == "LinearElasticity")
+				{
+					for (int i = 0, idx = 0; i < dim; i++)
+					for (int j = 0; j < dim; j++)
+					for (int k = 0; k < dim; k++)
+					for (int l = 0; l < dim; l++)
+					{
+						stiffness(idx++) = mu(q) * delta(i, k) * delta(j, l) + mu(q) * delta(i, l) * delta(j, k) + lambda(q) * delta(i, j) * delta(k, l);
+					}
+				}
+				else if (this->formulation_ == "NeoHookean")
+				{
+					Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols()) + grad_u_q;
+					Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+					Eigen::VectorXd FmT_vec = utils::flatten(FmT);
+					double J = def_grad.determinant();
+					double tmp1 = mu(q) - lambda(q) * std::log(J);
+					for (int i = 0, idx = 0; i < dim; i++)
+					for (int j = 0; j < dim; j++)
+					for (int k = 0; k < dim; k++)
+					for (int l = 0; l < dim; l++)
+					{
+						stiffness(idx++) = mu(q) * delta(i, k) * delta(j, l) + tmp1 * FmT(i, l) * FmT(k, j);
+					}
+					stiffness += lambda(q) * utils::flatten(FmT_vec * FmT_vec.transpose()).transpose();
+				}
+				else
+					logger().error("Unknown formulation!");
+				
+				val.row(q) = stiffness.block(0, (0 * dim + 0) * dim * dim, 1, dim * dim);
+			}
+		});
+
+		return j;
+	}
+
+	double HomogenizedStressObjective::value()
+	{
+		double val = SpatialIntegralObjective::value();
+		return val;
+	}
+
+	Eigen::VectorXd HomogenizedStressObjective::compute_adjoint_rhs_step(const State &state)
+	{
+		Eigen::VectorXd rhs = SpatialIntegralObjective::compute_adjoint_rhs_step(state);
+		return rhs;
+	}
+
+	Eigen::VectorXd HomogenizedStressObjective::compute_partial_gradient(const Parameter &param)
+	{
+		Eigen::VectorXd term;
+		term.setZero(param.full_dim());
+		if (&param == elastic_param_.get())
+		{
+			// TODO: differentiate stress wrt. lame param
+			log_and_throw_error("Not implemented!");
+		}
+		else if (&param == shape_param_.get())
+		{
+			term = SpatialIntegralObjective::compute_partial_gradient(param);
+		}
+
+		return term;
 	}
 
 } // namespace polyfem::solver

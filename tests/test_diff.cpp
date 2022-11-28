@@ -218,7 +218,7 @@ TEST_CASE("deformed_boundary_smoothing", "[adjoint_method]")
 	json obj_args = R"(
 	{
 		"type": "deformed_boundary_smoothing",
-		"surface_selection": [2, 3, 4],
+		"surface_selection": [2, 3],
 		"power": 4
 	})"_json;
 
@@ -415,6 +415,38 @@ TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
 	sample_field(state, velocity, velocity_discrete);
 
 	verify_adjoint(func, state, shape_param, "shape", velocity_discrete, 1e-6, 1e-3);
+}
+
+TEST_CASE("homogenize-stress", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+	json in_args;
+	load_json(path + "homogenize-stress.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
+
+	json opt_args;
+	load_json(path + "homogenize-stress-opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
+
+	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
+	HomogenizedStressObjective func(state, shape_param, NULL, opt_args["functionals"][0]);
+
+	double functional_val = func.value();
+
+	Eigen::MatrixXd velocity_discrete;
+	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
+	const double eps = 1e-3;
+	for (int i = 0; i < state.n_geom_bases; i++)
+		for (int d = 0; d < 2; d++)
+		{
+			auto vert = state.geom_mesh_nodes->node_position(i);
+			if (vert(0) > eps && vert(0) < 1 - eps && vert(1) > eps && vert(1) < 1 - eps)
+				velocity_discrete(i * 2 + d) = (rand() % 10000) / 1.0e4;
+		}
+
+	verify_adjoint(func, state, shape_param, "shape", velocity_discrete, 1e-6, 5e-4);
 }
 
 TEST_CASE("shape-contact", "[adjoint_method]")
