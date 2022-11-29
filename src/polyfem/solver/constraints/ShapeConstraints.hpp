@@ -238,7 +238,7 @@ namespace polyfem
 				dfull_to_dreduced_ = [this](const Eigen::VectorXd &dV_full) {
 					Eigen::VectorXd grad_control_point;
 					b_spline_parametrization->derivative_wrt_params(dV_full, grad_control_point);
-					Eigen::VectorXd dreduced = grad_control_point.segment(dim_, grad_control_point.rows() - 2 * dim_);
+					Eigen::VectorXd dreduced = grad_control_point.segment(dim_, grad_control_point.size() - 2 * dim_);
 					return dreduced;
 				};
 			}

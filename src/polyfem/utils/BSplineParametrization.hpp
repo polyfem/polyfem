@@ -93,18 +93,18 @@ namespace polyfem
 		void derivative_wrt_params(const Eigen::VectorXd &grad_boundary, Eigen::VectorXd &grad_control_points) const
 		{
 			grad_control_points.setZero(curve.get_control_points().size());
-			nanospline::BSpline<double, 2, 3> curve_;
+			nanospline::BSpline<double, 1, 3> curve_;
 			curve_.set_knots(curve.get_knots());
-			for (const auto &b : node_ids_)
+
+			for (int i = 0; i < curve.get_control_points().rows(); ++i)
 			{
-				for (int i = 0; i < curve.get_control_points().rows(); ++i)
+				Eigen::MatrixXd indicator = Eigen::MatrixXd::Zero(curve.get_control_points().rows(), 1);
+				indicator(i) = 1;
+				curve_.set_control_points(indicator);
+				for (const auto &b : node_ids_)
 				{
-					Eigen::MatrixXd indicator = Eigen::MatrixXd::Zero(curve.get_control_points().rows(), dim);
-					indicator.row(i) = Eigen::VectorXd::Ones(dim);
-					curve_.set_control_points(indicator);
-					auto basis_val = curve_.evaluate(node_id_to_t_.at(b));
 					for (int k = 0; k < dim; ++k)
-						grad_control_points(i * dim + k) += basis_val(k) * grad_boundary(b * dim + k);
+						grad_control_points(i * dim + k) += grad_boundary(b * dim + k) * curve_.evaluate(node_id_to_t_.at(b))(0);
 				}
 			}
 		}

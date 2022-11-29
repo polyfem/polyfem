@@ -17,7 +17,7 @@ namespace polyfem
 			std::string restriction = constraint_params["restriction"];
 			if (restriction == "none")
 			{
-				reduced_size_ = boundary_id_to_reduced_dim_.size() * dim;
+				reduced_size_ = time_steps * boundary_id_to_reduced_dim_.size() * dim;
 				reduced_to_full_ = [this](const Eigen::VectorXd &reduced) {
 					Eigen::VectorXd full;
 					full.setZero(time_steps_ * boundary_ids_list_.size());

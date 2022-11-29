@@ -813,7 +813,7 @@ namespace polyfem
 		{
 			for (int i : shape_params["volume_selection"])
 				optimize_body_ids.insert(i);
-			
+
 			logger().debug("Optimize shape based on volume selection...");
 
 			for (int e = 0; e < gbases.size(); e++)
@@ -829,7 +829,7 @@ namespace polyfem
 		{
 			for (int i : shape_params["surface_selection"])
 				optimize_boundary_ids.insert(i);
-			
+
 			logger().debug("Optimize shape based on surface selection...");
 
 			for (const auto &lb : get_state().total_local_boundary)
