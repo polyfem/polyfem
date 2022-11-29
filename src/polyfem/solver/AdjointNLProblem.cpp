@@ -321,6 +321,8 @@ namespace polyfem::solver
 				auto state = all_states_[i];
 				if (active_state_mask[i] || state->diff_cached.size() == 0)
 				{
+					if (state->diff_cached.size() == 1 && better_initial_guess)
+						state->pre_sol = state->diff_cached[0].u;
 					state->assemble_rhs();
 					state->assemble_stiffness_mat();
 					Eigen::MatrixXd sol, pressure; // solution is also cached in state
@@ -339,7 +341,7 @@ namespace polyfem::solver
 		values.setZero(obj_->n_objs());
 		for (int i = 0; i < obj_->n_objs(); i++)
 		{
-			values(i) = obj_->get_obj(i)->value();
+			values(i) = obj_->get_weight(i) * obj_->get_obj(i)->value();
 		}
 		return values;
 	}
