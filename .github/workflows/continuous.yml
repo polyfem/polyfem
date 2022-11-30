@@ -206,11 +206,13 @@ jobs:
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
           cmake -G Ninja ^
+            -DCMAKE_CXX_FLAGS="/Z7 /DEBUG:FASTLINK /DWIN32" ^
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -DPOLYFEM_WITH_CLIPPER=OFF ^
             -DPOLYFEM_THREADING=${{ matrix.threading }} ^
             -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
+            -DPOLYSOLVE_WITH_AMGCL=OFF ^
             -DPOLYSOLVE_WITH_MKL=OFF ^
             -B build ^
             -S .
