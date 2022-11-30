@@ -1,7 +1,7 @@
 var classpolyfem_1_1_state =
 [
     [ "~State", "classpolyfem_1_1_state.html#a80eb52cce88b5ffab25a27892174b6e4", null ],
-    [ "State", "classpolyfem_1_1_state.html#a8d73206b9320c623d01cbb47fe139feb", null ],
+    [ "State", "classpolyfem_1_1_state.html#a7ea2ea7e63cd4551c91179074321d60b", null ],
     [ "assemble_rhs", "classpolyfem_1_1_state.html#a92ca4b0169412ddc297a77744bd0e724", null ],
     [ "assemble_stiffness_mat", "classpolyfem_1_1_state.html#acde0d85c7ad662775d7d9b89b3248462", null ],
     [ "build_basis", "classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b", null ],
@@ -15,7 +15,7 @@ var classpolyfem_1_1_state =
     [ "formulation", "classpolyfem_1_1_state.html#a0acd0b93140ea778ac836ee0a1a29dfd", null ],
     [ "geom_bases", "classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053", null ],
     [ "get_log", "classpolyfem_1_1_state.html#a3ded3e26faeb339787050e8fb2bb4534", null ],
-    [ "init", "classpolyfem_1_1_state.html#ac53b2f488c2fa6d84c33c97380d55879", null ],
+    [ "init", "classpolyfem_1_1_state.html#a184100545465d3feab07312e3f9c32a4", null ],
     [ "init_logger", "classpolyfem_1_1_state.html#a3fcaafabef9ac580a3af1ca8228fdf8c", null ],
     [ "init_logger", "classpolyfem_1_1_state.html#a4a235688d76d5d47e6af9b3ef9aff0f0", null ],
     [ "init_logger", "classpolyfem_1_1_state.html#acaa1229f1ede8d832e273e685588432b", null ],
@@ -46,6 +46,7 @@ var classpolyfem_1_1_state =
     [ "set_boundary_side_set", "classpolyfem_1_1_state.html#a06021e39b951c4f5647c495883fd97f4", null ],
     [ "set_log_level", "classpolyfem_1_1_state.html#a81d50ae65a097daec8f46b732d057151", null ],
     [ "set_materials", "classpolyfem_1_1_state.html#a0bb7c26ed3624ba3e3578b545abb5c9e", null ],
+    [ "set_max_threads", "classpolyfem_1_1_state.html#a512f9685cbafdb0e60b8db8cb35f7e44", null ],
     [ "sol_to_pressure", "classpolyfem_1_1_state.html#a15c6a567afbf3e32d7b48300222f6386", null ],
     [ "solve", "classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4", null ],
     [ "solve_linear", "classpolyfem_1_1_state.html#ac37bfaa0b218fbf4a3caea64a7f695cb", null ],
