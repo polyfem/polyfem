@@ -16,7 +16,8 @@ namespace polyfem::mesh
 
 		/// @brief Construct a new WildRemeshing2D object
 		/// @param state Simulation current state
-		WildRemeshing2D(const State &state) : wmtk::TriMesh(), state(state) {}
+		WildRemeshing2D(const State &state, const Eigen::VectorXd &obstacle_sol)
+			: wmtk::TriMesh(), state(state), m_obstacle_displacements(utils::unflatten(obstacle_sol, DIM)) {}
 
 		virtual ~WildRemeshing2D(){};
 
@@ -61,6 +62,8 @@ namespace polyfem::mesh
 		std::vector<int> body_ids() const;
 
 		std::vector<Tuple> boundary_edges() const;
+		const Obstacle &obstacle() const { return state.obstacle; }
+		const Eigen::MatrixXd &obstacle_displacements() const { return m_obstacle_displacements; }
 
 		/// @brief Set rest positions of the stored mesh
 		void set_rest_positions(const Eigen::MatrixXd &positions);
@@ -208,6 +211,7 @@ namespace polyfem::mesh
 
 		/// @brief Reference to the simulation state.
 		const State &state;
+		const Eigen::MatrixXd m_obstacle_displacements;
 
 		/// @brief Number of projection quantities (not including the position)
 		int n_quantities;

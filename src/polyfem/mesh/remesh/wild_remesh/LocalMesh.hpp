@@ -25,7 +25,7 @@ namespace polyfem::mesh
 
 		int num_triangles() const { return m_triangles.rows(); }
 		int num_local_vertices() const { return m_num_local_vertices; }
-		int num_vertices() const { return m_global_to_local.size(); }
+		int num_vertices() const { return m_rest_positions.rows(); }
 
 		const Eigen::MatrixXd &rest_positions() const { return m_rest_positions; }
 		const Eigen::MatrixXd &positions() const { return m_positions; }

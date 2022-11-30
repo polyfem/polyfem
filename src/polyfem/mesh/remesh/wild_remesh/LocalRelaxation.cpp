@@ -238,18 +238,21 @@ namespace polyfem::mesh
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-		/*
-		std::shared_ptr<ImplicitTimeIntegrator> time_integrator =
-			ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
-		time_integrator->init(
-			utils::flatten(utils::reorder_matrix(local_mesh.prev_positions(), vertex_to_basis)),
-			utils::flatten(utils::reorder_matrix(local_mesh.prev_velocities(), vertex_to_basis)),
-			utils::flatten(utils::reorder_matrix(local_mesh.prev_accelerations(), vertex_to_basis)),
-			state.args["time"]["dt"]);
+		std::shared_ptr<ImplicitTimeIntegrator> time_integrator;
+		if (!state.args["solver"]["ignore_inertia"])
+		{
+			time_integrator =
+				ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
+			time_integrator->init(
+				utils::flatten(utils::reorder_matrix(local_mesh.prev_positions(), vertex_to_basis)),
+				utils::flatten(utils::reorder_matrix(local_mesh.prev_velocities(), vertex_to_basis)),
+				utils::flatten(utils::reorder_matrix(local_mesh.prev_accelerations(), vertex_to_basis)),
+				state.args["time"]["dt"]);
 
-		std::shared_ptr<InertiaForm> inertia_form = std::make_shared<InertiaForm>(M, *time_integrator);
-		forms.push_back(inertia_form);
-		*/
+			std::shared_ptr<InertiaForm> inertia_form = std::make_shared<InertiaForm>(M, *time_integrator);
+			inertia_form->set_weight(state.solve_data.inertia_form->weight());
+			forms.push_back(inertia_form);
+		}
 
 		// --------------------------------------------------------------------
 

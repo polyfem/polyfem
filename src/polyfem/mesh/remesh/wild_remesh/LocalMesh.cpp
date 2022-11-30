@@ -4,6 +4,28 @@
 
 namespace polyfem::mesh
 {
+	namespace
+	{
+		template <typename DstMat, typename SrcMat>
+		void append_rows(DstMat &dst, const SrcMat &src)
+		{
+			assert(dst.cols() == src.cols());
+			if (src.rows() == 0)
+				return;
+			dst.conservativeResize(dst.rows() + src.rows(), dst.cols());
+			dst.bottomRows(src.rows()) = src;
+		}
+
+		template <typename DstMat>
+		void append_zero_rows(DstMat &dst, const size_t n_zero_rows)
+		{
+			if (n_zero_rows == 0)
+				return;
+			dst.conservativeResize(dst.rows() + n_zero_rows, dst.cols());
+			dst.bottomRows(n_zero_rows).setZero();
+		}
+	} // namespace
+
 	LocalMesh::LocalMesh(
 		const WildRemeshing2D &m,
 		const std::vector<Tuple> &triangle_tuples,
@@ -29,7 +51,7 @@ namespace polyfem::mesh
 			m_body_ids.push_back(m.face_attrs[t.fid(m)].body_id);
 		}
 		// The above puts local vertices at front
-		m_num_local_vertices = num_vertices();
+		m_num_local_vertices = m_global_to_local.size();
 
 		for (int fi = 0; fi < num_triangles(); fi++)
 		{
@@ -96,6 +118,26 @@ namespace polyfem::mesh
 		init_vertex_attributes(m);
 
 		init_local_to_global();
+
+		const int tmp_num_vertices = num_vertices();
+
+		if (include_global_boundary && m.obstacle().n_vertices() > 0)
+		{
+			const Obstacle &obstacle = m.obstacle();
+			append_rows(m_rest_positions, obstacle.v());
+			append_rows(m_positions, obstacle.v() + m.obstacle_displacements());
+			// TODO: append the actual values
+			append_rows(m_prev_positions, obstacle.v());
+			append_zero_rows(m_prev_velocities, obstacle.n_vertices());
+			append_zero_rows(m_prev_accelerations, obstacle.n_vertices());
+			append_rows(m_boundary_edges, obstacle.e().array() + tmp_num_vertices);
+
+			for (int i = 0; i < obstacle.n_vertices(); i++)
+				m_fixed_vertices.push_back(i + tmp_num_vertices);
+
+			for (int i = 0; i < obstacle.n_edges(); i++)
+				m_boundary_ids.push_back(std::numeric_limits<int>::max());
+		}
 	}
 
 	LocalMesh LocalMesh::n_ring(
@@ -163,11 +205,12 @@ namespace polyfem::mesh
 
 	void LocalMesh::init_vertex_attributes(const WildRemeshing2D &m)
 	{
-		m_rest_positions.resize(num_vertices(), DIM);
-		m_positions.resize(num_vertices(), DIM);
-		m_prev_positions.resize(num_vertices(), DIM);
-		m_prev_velocities.resize(num_vertices(), DIM);
-		m_prev_accelerations.resize(num_vertices(), DIM);
+		const int num_vertices = m_global_to_local.size();
+		m_rest_positions.resize(num_vertices, DIM);
+		m_positions.resize(num_vertices, DIM);
+		m_prev_positions.resize(num_vertices, DIM);
+		m_prev_velocities.resize(num_vertices, DIM);
+		m_prev_accelerations.resize(num_vertices, DIM);
 		for (const auto &[glob_vi, loc_vi] : m_global_to_local)
 		{
 			m_rest_positions.row(loc_vi) = m.vertex_attrs[glob_vi].rest_position;
