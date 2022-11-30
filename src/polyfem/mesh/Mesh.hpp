@@ -533,6 +533,20 @@ namespace polyfem
 				return false;
 			}
 
+			/// @brief checks if the mesh is simplicial
+			///
+			/// @return if the mesh is simplicial
+			bool is_simplicial() const
+			{
+				for (int i = 0; i < n_elements(); ++i)
+				{
+					if (!is_simplex(i))
+						return false;
+				}
+
+				return true;
+			}
+
 			/// @brief check if the mesh is linear
 			///
 			/// @return if the mesh is linear
