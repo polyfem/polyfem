@@ -7,15 +7,35 @@
 #include <Eigen/Dense>
 
 #include <nanospline/BSpline.h>
+#include <nanospline/BSplinePatch.h>
 
 namespace polyfem
 {
 	class BSplineParametrization
 	{
 	public:
-		BSplineParametrization(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &knots, const int boundary_id, const std::vector<int> &node_ids, const Eigen::MatrixXd &V) : boundary_id_(boundary_id), node_ids_(node_ids), dim(control_points.cols())
+		BSplineParametrization(const Eigen::MatrixXd &V) { num_vertices = V.rows(); }
+		virtual ~BSplineParametrization() = default;
+
+		virtual void reparametrize(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &V, Eigen::MatrixXd &newV) = 0;
+		virtual void get_parameters(const Eigen::MatrixXd &V, Eigen::MatrixXd &control_points) final
 		{
-			assert(dim == 2); // for now
+			bool mesh_changed = V.rows() != num_vertices;
+			get_parameters(V, control_points, mesh_changed);
+		}
+		virtual void get_parameters(const Eigen::MatrixXd &V, Eigen::MatrixXd &control_points, const bool mesh_changed) = 0;
+		virtual void derivative_wrt_params(const Eigen::VectorXd &grad_boundary, Eigen::VectorXd &grad_control_points) = 0;
+
+	protected:
+		int num_vertices;
+	};
+
+	class BSplineParametrization2D : public BSplineParametrization
+	{
+	public:
+		BSplineParametrization2D(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &knots, const int boundary_id, const std::vector<int> &node_ids, const Eigen::MatrixXd &V) : BSplineParametrization(V), boundary_id_(boundary_id), node_ids_(node_ids), dim(control_points.cols())
+		{
+			assert(dim == 2);
 			// Deduce the t parameter of all of the points in the spline sections
 			double tol = 1e-4;
 			curve.set_control_points(control_points);
@@ -48,7 +68,7 @@ namespace polyfem
 			logger().info("Number of useful boundary nodes in spline parametrization: {}", node_ids_.size());
 		}
 
-		void reparametrize(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &V, Eigen::MatrixXd &newV)
+		void reparametrize(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &V, Eigen::MatrixXd &newV) override
 		{
 			// Given new control parameters and the t parameter precomputed, compute new V
 			curve.set_control_points(control_points);
@@ -61,12 +81,12 @@ namespace polyfem
 		}
 
 		// Assume the connectivity has not changed. Does not work with remeshing
-		void get_parameters(const Eigen::MatrixXd &V, Eigen::MatrixXd &control_points) const
+		void get_parameters(const Eigen::MatrixXd &V, Eigen::MatrixXd &control_points, const bool mesh_changed) override
 		{
+			assert(!mesh_changed);
 			Eigen::MatrixXd boundary_points(node_ids_.size(), dim), t_params(node_ids_.size(), 1);
 			bool boundary_changed = false;
 			for (int i = 0; i < node_ids_.size(); ++i)
-			// for (const auto &b : node_ids_)
 			{
 				auto old_point = curve.evaluate(node_id_to_t_.at(node_ids_[i]));
 				auto new_point = V.block(node_ids_[i], 0, 1, dim);
@@ -90,7 +110,7 @@ namespace polyfem
 			}
 		}
 
-		void derivative_wrt_params(const Eigen::VectorXd &grad_boundary, Eigen::VectorXd &grad_control_points) const
+		void derivative_wrt_params(const Eigen::VectorXd &grad_boundary, Eigen::VectorXd &grad_control_points) override
 		{
 			grad_control_points.setZero(curve.get_control_points().size());
 			nanospline::BSpline<double, 1, 3> curve_;
@@ -132,13 +152,6 @@ namespace polyfem
 			val = curve.evaluate_derivative(t);
 		}
 
-		static void second_deriv(const Eigen::MatrixXd &control_points, const double t, Eigen::MatrixXd &val)
-		{
-			nanospline::BSpline<double, 2, 3> curve;
-			curve.set_control_points(control_points);
-			val = curve.evaluate_2nd_derivative(t);
-		}
-
 	private:
 		int boundary_id_;
 		std::vector<int> node_ids_;
@@ -146,4 +159,152 @@ namespace polyfem
 		const int dim;
 		nanospline::BSpline<double, 2, 3> curve;
 	};
+
+	class BSplineParametrization3D : public BSplineParametrization
+	{
+	public:
+		BSplineParametrization3D(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &knots_u, const Eigen::MatrixXd &knots_v, const int boundary_id, const std::vector<int> &node_ids, const Eigen::MatrixXd &V) : BSplineParametrization(V), boundary_id_(boundary_id), node_ids_(node_ids), dim(control_points.cols())
+		{
+			assert(dim == 3);
+			// Deduce the t parameter of all of the points in the spline sections
+			double tol = 1e-4;
+			patch.set_control_grid(control_points);
+			patch.set_knots_u(knots_u);
+			patch.set_knots_v(knots_v);
+			patch.initialize();
+			std::vector<int> unused;
+			for (const auto &b : node_ids)
+			{
+				Eigen::MatrixXd point = V.block(b, 0, 1, dim);
+				auto uv = patch.approximate_inverse_evaluate(point, 5, 5, 0, 1, 0, 1);
+				assert(uv.size() == 2);
+				double distance = (point - patch.evaluate(uv(0), uv(1))).norm();
+
+				if (distance > tol)
+				{
+					logger().error("Could not find a valid t for deducing spline parametrization. Distance: {}, point: {}", distance, point);
+					unused.push_back(b);
+					continue;
+				}
+
+				node_id_to_param_[b] = uv;
+			}
+
+			// Remove nodes that do not have a parametrization.
+			for (const auto &i : unused)
+			{
+				auto loc = std::find(node_ids_.begin(), node_ids_.end(), i);
+				if (loc == node_ids_.end())
+					logger().error("Error removing unused node.");
+				node_ids_.erase(loc);
+			}
+			logger().info("Number of useful boundary nodes in spline parametrization: {}", node_ids_.size());
+		}
+
+		// Assume the connectivity has not changed. Does not work with remeshing
+		void get_parameters(const Eigen::MatrixXd &V, Eigen::MatrixXd &control_points, const bool mesh_changed) override
+		{
+			assert(!mesh_changed);
+			Eigen::MatrixXd boundary_points(node_ids_.size(), dim), uv_params(node_ids_.size(), 2);
+			bool boundary_changed = false;
+			for (int i = 0; i < node_ids_.size(); ++i)
+			// for (const auto &b : node_ids_)
+			{
+				auto uv = node_id_to_param_.at(node_ids_[i]);
+				assert(uv.size() == 2);
+				auto old_point = patch.evaluate(uv(0), uv(1));
+				auto new_point = V.block(node_ids_[i], 0, 1, dim);
+				boundary_points.block(i, 0, 1, dim) = new_point;
+				uv_params.row(i) = uv;
+				double difference = (old_point - new_point).norm();
+				if (difference > 1e-4)
+				{
+					boundary_changed = true;
+				}
+			}
+			if (boundary_changed)
+			{
+				// Deduce parameter values from vertex positions. This will involve fitting on an overdetermined system
+				auto new_patch = patch.fit(uv_params, boundary_points, patch.get_knots_u().size() - 1 - 3, patch.get_knots_v().size() - 1 - 3, patch.get_knots_u(), patch.get_knots_v());
+				control_points = new_patch.get_control_grid();
+			}
+			else
+			{
+				control_points = patch.get_control_grid();
+			}
+		}
+
+		void reparametrize(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &V, Eigen::MatrixXd &newV) override
+		{
+			// Given new control parameters and the t parameter precomputed, compute new V
+			newV = V;
+			patch.set_control_grid(control_points);
+			patch.initialize();
+			for (const auto &b : node_ids_)
+			{
+				auto uv = node_id_to_param_.at(b);
+				assert(uv.size() == 2);
+				auto new_val = patch.evaluate(uv(0), uv(1));
+				newV.block(b, 0, 1, dim) = new_val;
+			}
+		}
+
+		void derivative_wrt_params(const Eigen::VectorXd &grad_boundary, Eigen::VectorXd &grad_control_points) override
+		{
+
+			grad_control_points.setZero(patch.get_control_grid().size());
+			nanospline::BSplinePatch<double, 1, 3, 3> patch_;
+			patch_.set_knots_u(patch_.get_knots_u());
+			patch_.set_knots_v(patch_.get_knots_v());
+
+			for (int i = 0; i < patch.get_control_grid().rows(); ++i)
+			{
+				Eigen::MatrixXd indicator = Eigen::MatrixXd::Zero(patch.get_control_grid().rows(), 1);
+				indicator(i) = 1;
+				patch_.set_control_grid(indicator);
+				for (const auto &b : node_ids_)
+				{
+					auto uv = node_id_to_param_.at(b);
+					assert(uv.size() == 2);
+					for (int k = 0; k < dim; ++k)
+						grad_control_points(i * dim + k) += grad_boundary(b * dim + k) * patch.evaluate(uv(0), uv(1))(0);
+				}
+			}
+		}
+
+		static void gradient(const Eigen::MatrixXd &point, const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &uv_parameter, const double distance, Eigen::MatrixXd &grad)
+		{
+			assert(uv_parameter.size() == 2);
+			nanospline::BSplinePatch<double, 3, 3, 3> patch;
+			patch.set_control_grid(control_points);
+			auto val = patch.evaluate(uv_parameter(0), uv_parameter(1));
+
+			grad = (point - val) / distance;
+		}
+
+		static void eval(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &uv_parameter, Eigen::MatrixXd &val)
+		{
+			assert(uv_parameter.size() == 2);
+			nanospline::BSplinePatch<double, 3, 3, 3> patch;
+			patch.set_control_grid(control_points);
+			val = patch.evaluate(uv_parameter(0), uv_parameter(1));
+		}
+
+		static void deriv(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &uv_parameter, Eigen::MatrixXd &deriv_u, Eigen::MatrixXd &deriv_v)
+		{
+			assert(uv_parameter.size() == 2);
+			nanospline::BSplinePatch<double, 3, 3, 3> patch;
+			patch.set_control_grid(control_points);
+			deriv_u = patch.evaluate_derivative_u(uv_parameter(0), uv_parameter(1));
+			deriv_v = patch.evaluate_derivative_v(uv_parameter(0), uv_parameter(1));
+		}
+
+	private:
+		int boundary_id_;
+		std::vector<int> node_ids_;
+		std::map<int, Eigen::MatrixXd> node_id_to_param_;
+		const int dim;
+		nanospline::BSplinePatch<double, 3, 3, 3> patch;
+	};
+
 } // namespace polyfem
