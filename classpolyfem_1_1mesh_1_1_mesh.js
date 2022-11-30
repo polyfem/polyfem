@@ -65,6 +65,7 @@ var classpolyfem_1_1mesh_1_1_mesh =
     [ "is_polytope", "classpolyfem_1_1mesh_1_1_mesh.html#a11e698a1c82ee90edab1e7a607808779", null ],
     [ "is_rational", "classpolyfem_1_1mesh_1_1_mesh.html#a13697189b777adac8a396757a606b13d", null ],
     [ "is_simplex", "classpolyfem_1_1mesh_1_1_mesh.html#a62e57386728f26b8feafea1043b65c21", null ],
+    [ "is_simplicial", "classpolyfem_1_1mesh_1_1_mesh.html#a344f3d37fa834c16ad395adce5c9e154", null ],
     [ "is_spline_compatible", "classpolyfem_1_1mesh_1_1_mesh.html#a6adb866818837b8eb10297b32db964fe", null ],
     [ "is_volume", "classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9", null ],
     [ "load", "classpolyfem_1_1mesh_1_1_mesh.html#a939979be61d7499528476866d9b58270", null ],
