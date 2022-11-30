@@ -149,15 +149,25 @@ int main(int argc, char **argv)
 	}
 
 	Eigen::MatrixXd fluctuated;
-	for (int l = 200; l > 100; l--)
+	for (int l = 0; l <= 30; l++)
 	{
-		F(1, 1) = l / 200.0;
+		F(0, 0) = l / 200.0 - 0.15 + 1;
 
 		micro_state->args["output"]["paraview"]["file_name"] = "load_" + std::to_string(l) + ".vtu";
 
 		{
 			Eigen::MatrixXd disp_grad = F - Eigen::MatrixXd::Identity(dim, dim);
 			Eigen::MatrixXd x;
+			fluctuated.resize(0,0);
+			// {
+			// 	x.setZero(micro_state->n_bases * 2, 1);
+			// 	for (int i = 0; i < micro_state->n_bases; i++)
+			// 	{
+			// 		auto p = micro_state->mesh_nodes->node_position(i);
+			// 		x(i * 2 + 0) = 1e-1*sin((p(1) - 0.5) * M_PI);
+			// 		x(i * 2 + 1) = -1e-1*sin((p(0) - 0.5) * M_PI);
+			// 	}
+			// }
 			micro_state->solve_homogenized_field(disp_grad, fluctuated, x);
 			fluctuated = x;
 		}
@@ -170,7 +180,12 @@ int main(int argc, char **argv)
 		Eigen::MatrixXd stress;
 		micro_assembler.homogenize_stress(fluctuated, stress);
 
+		Eigen::MatrixXd def_grad;
+		def_grad = micro_assembler.homogenize_def_grad(fluctuated);
+
+		std::cout << "def grad " << utils::flatten(F).transpose() << "\n";
 		std::cout << "homogenized energy " << energy << "\n";
+		std::cout << "homogenized def grad\n" << def_grad + Eigen::MatrixXd::Identity(dim, dim) << "\n";
 		std::cout << "homogenized stress\n" << stress << "\n";
 
 		Eigen::MatrixXd pressure(micro_state->n_pressure_bases, 1);

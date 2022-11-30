@@ -137,28 +137,6 @@ namespace polyfem::assembler
 
 			return same;
 		}
-	
-		// Eigen::MatrixXd homogenize_def_grad(const State &state, const Eigen::MatrixXd &x)
-		// {
-		// 	const int dim = state.mesh->dimension();
-		// 	Eigen::VectorXd avgs;
-		// 	avgs.setZero(dim * dim);
-		// 	for (int e = 0; e < state.bases.size(); e++)
-		// 	{
-		// 		assembler::ElementAssemblyValues vals;
-		// 		state.ass_vals_cache.compute(e, dim == 3, state.bases[e], state.geom_bases()[e], vals);
-
-		// 		Eigen::MatrixXd u, grad_u;
-		// 		io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x, u, grad_u);
-
-		// 		const quadrature::Quadrature &quadrature = vals.quadrature;
-		// 		Eigen::VectorXd da = quadrature.weights * vals.det;
-		// 		avgs += grad_u.transpose() * da;
-		// 	}
-		// 	avgs /= microstructure_volume;
-
-		// 	return utils::unflatten(avgs, dim);
-		// }
 
 		Eigen::MatrixXd generate_linear_field(const State &state, const Eigen::MatrixXd &grad)
 		{

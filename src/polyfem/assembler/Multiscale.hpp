@@ -62,6 +62,7 @@ namespace polyfem
 			virtual void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress) const;
 
 			double homogenize_energy(const Eigen::MatrixXd &x) const;
+			Eigen::MatrixXd homogenize_def_grad(const Eigen::MatrixXd &x) const;
 			void homogenize_stress(const Eigen::MatrixXd &x, Eigen::MatrixXd &stress) const;
 
 			virtual std::string name() const { return "Multiscale"; }

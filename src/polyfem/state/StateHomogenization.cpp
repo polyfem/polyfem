@@ -200,6 +200,12 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eige
     homo_problem->init(homo_problem->reduced_to_full(tmp_sol));
     nl_solver->minimize(*homo_problem, tmp_sol);
     sol_ = homo_problem->reduced_to_full(tmp_sol);
+
+    // static int index = 0;
+    // StiffnessMatrix H;
+    // homo_problem->hessian(tmp_sol, H);
+    // Eigen::saveMarket(H, "H" + std::to_string(index) + ".mat");
+    // index++;
 }
 
 }
