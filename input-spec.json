@@ -1315,6 +1315,7 @@
         "default": null,
         "type": "object",
         "optional": [
+            "max_threads",
             "linear",
             "nonlinear",
             "augmented_lagrangian",
@@ -1326,10 +1327,18 @@
         "doc": "The settings for the solver including linear solver, nonlinear solver, and some advanced options."
     },
     {
+        "pointer": "/solver/max_threads",
+        "default": 0,
+        "type": "int",
+        "min": 0,
+        "doc": "Maximum number of threads used; 0 is illimited."
+    },
+    {
         "pointer": "/solver/linear",
         "default": null,
         "type": "object",
         "optional": [
+            "enable_overwrite_solver",
             "solver",
             "precond",
             "Eigen::LeastSquaresConjugateGradient",
@@ -1343,6 +1352,12 @@
             "AMGCL"
         ],
         "doc": "Settings for the linear solver."
+    },
+    {
+        "pointer": "/solver/linear/enable_overwrite_solver",
+        "default": false,
+        "type": "bool",
+        "doc": "If solver name is not present, falls back to default"
     },
     {
         "pointer": "/solver/linear/solver",
@@ -3244,6 +3259,8 @@
         "default": null,
         "type": "object",
         "optional": [
+            "directory",
+            "log",
             "json",
             "paraview",
             "data",
@@ -3251,6 +3268,57 @@
             "reference"
         ],
         "doc": "output settings"
+    },
+    {
+        "pointer": "/output/directory",
+        "default": "",
+        "type": "string",
+        "doc": "Directory for output files."
+    },
+    {
+        "pointer": "/output/log",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "level",
+            "path",
+            "quiet"
+        ],
+        "doc": "Setting for the output log."
+    },
+    {
+        "pointer": "/output/log/level",
+        "type": "int",
+        "min": 0,
+        "max": 6,
+        "doc": "Level of logging, 0 trace, 1 debug, 2 info, 3 warning, 4 error, 5 critical, and 6 off."
+    },
+    {
+        "pointer": "/output/log/level",
+        "default": "debug",
+        "type": "string",
+        "options": [
+            "trace",
+            "debug",
+            "info",
+            "warning",
+            "error",
+            "critical",
+            "off"
+        ],
+        "doc": "Level of logging."
+    },
+    {
+        "pointer": "/output/log/path",
+        "default": "",
+        "type": "string",
+        "doc": "File where to save the log; empty string is output to terminal."
+    },
+    {
+        "pointer": "/output/log/quiet",
+        "default": false,
+        "type": "bool",
+        "doc": "Disable cout for logging."
     },
     {
         "pointer": "/output/json",

@@ -26,6 +26,9 @@ int main(int argc, char **argv)
 
 	CLI::App command_line{"polyfem"};
 
+	command_line.ignore_case();
+	command_line.ignore_underscore();
+
 	// Eigen::setNbThreads(1);
 	size_t max_threads = std::numeric_limits<size_t>::max();
 	command_line.add_option("--max_threads", max_threads, "Maximum number of threads");
@@ -39,17 +42,11 @@ int main(int argc, char **argv)
 	std::string output_dir = "";
 	command_line.add_option("-o,--output_dir", output_dir, "Directory for output files")->check(CLI::ExistingDirectory | CLI::NonexistentPath);
 
-	bool is_quiet = false;
-	command_line.add_flag("--quiet", is_quiet, "Disable cout for logging");
-
 	bool is_strict = true;
 	command_line.add_flag("-s,--strict_validation,!--ns,!--no_strict_validation", is_strict, "Disables strict validation of input JSON");
 
 	bool fallback_solver = false;
 	command_line.add_flag("--enable_overwrite_solver", fallback_solver, "If solver in json is not present, falls back to default");
-
-	std::string log_file = "";
-	command_line.add_option("--log_file", log_file, "Log to a file");
 
 	// const std::vector<std::string> solvers = polysolve::LinearSolver::availableSolvers();
 	// std::string solver;
@@ -119,14 +116,64 @@ int main(int argc, char **argv)
 		return command_line.exit(CLI::RequiredError("--json or --hdf5"));
 	}
 
-	if (!output_dir.empty())
+	if (has_arg(command_line, "log_level"))
 	{
-		std::filesystem::create_directories(output_dir);
+		auto tmp = R"({
+				"output": {
+					"log": {
+						"level": -1
+					}
+				}
+			})"_json;
+
+		tmp["output"]["log"]["level"] = int(log_level);
+
+		in_args.merge_patch(tmp);
 	}
 
-	State state(max_threads);
-	state.init_logger(log_file, log_level, is_quiet);
-	state.init(in_args, is_strict, output_dir, fallback_solver);
+	if (has_arg(command_line, "max_threads"))
+	{
+		auto tmp = R"({
+				"solver": {
+					"max_threads": -1
+				}
+			})"_json;
+
+		tmp["solver"]["max_threads"] = max_threads;
+
+		in_args.merge_patch(tmp);
+	}
+
+	if (has_arg(command_line, "output_dir"))
+	{
+		auto tmp = R"({
+				"output": {
+					"directory": -1
+				}
+			})"_json;
+
+		tmp["output"]["directory"] = output_dir;
+
+		in_args.merge_patch(tmp);
+	}
+
+	if (has_arg(command_line, "enable_overwrite_solver"))
+	{
+		auto tmp = R"({
+				"solver": {
+					"linear": {
+						"enable_overwrite_solver": false
+					}
+				}
+			})"_json;
+
+		tmp["solver"]["linear"]["enable_overwrite_solver"] = fallback_solver;
+
+		in_args.merge_patch(tmp);
+	}
+
+	State state;
+	state.init(in_args, is_strict);
 	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
 
 	// Mesh was not loaded successfully; load_mesh() logged the error.

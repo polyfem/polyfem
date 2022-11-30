@@ -92,7 +92,8 @@ namespace
 			else if (serendipity)
 				in_args["space"]["basis_type"] = "Serendipity";
 
-			auto state = std::make_shared<State>(1);
+			auto state = std::make_shared<State>();
+			state->set_max_threads(1);
 			state->init_logger("", spdlog::level::warn, false);
 			state->init(in_args, true);
 

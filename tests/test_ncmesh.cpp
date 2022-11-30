@@ -68,7 +68,8 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 		})"_json;
 	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
 
-	State state(1);
+	State state;
+	state.set_max_threads(1);
 	state.init_logger("", spdlog::level::off, false);
 	state.init(in_args, true);
 

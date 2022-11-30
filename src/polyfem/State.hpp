@@ -104,14 +104,15 @@ namespace polyfem
 
 		~State() = default;
 		/// Constructor
+		State();
+
 		/// @param[in] max_threads max number of threads
-		State(const unsigned int max_threads = std::numeric_limits<unsigned int>::max());
+		void set_max_threads(const unsigned int max_threads = std::numeric_limits<unsigned int>::max());
 
 		/// initialize the polyfem solver with a json settings
 		/// @param[in] args input arguments
 		/// @param[in] strict_validation strict validation of input
-		/// @param[in] output_dir output directory
-		void init(const json &args, const bool strict_validation, const std::string &output_dir = "", const bool fallback_solver = false);
+		void init(const json &args, const bool strict_validation);
 
 		/// initialize time settings if args contains "time"
 		void init_time();

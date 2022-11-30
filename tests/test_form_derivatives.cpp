@@ -62,7 +62,8 @@ namespace
 		})"_json;
 		in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
 
-		auto state = std::make_shared<State>(1);
+		auto state = std::make_shared<State>();
+		state->set_max_threads(1);
 		state->init_logger("", spdlog::level::warn, false);
 		state->init(in_args, true);
 
