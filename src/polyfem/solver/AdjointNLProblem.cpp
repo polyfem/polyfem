@@ -1,6 +1,8 @@
 #include "AdjointNLProblem.hpp"
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>
+#include <polyfem/io/OBJWriter.hpp>
+#include <igl/boundary_facets.h>
 
 namespace polyfem::solver
 {
@@ -162,34 +164,44 @@ namespace polyfem::solver
 		{
 			std::string vis_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter));
 			logger().debug("Save to file {} ...", vis_mesh_path);
-			id++;
 
 			double tend = state->args.value("tend", 1.0);
 			double dt = 1;
 			if (!state->args["time"].is_null())
 				dt = state->args["time"]["dt"];
 
-			state->out_geom.export_data(
+			Eigen::MatrixXd sol;
+			if (state->args["time"].is_null())
+				sol = state->diff_cached[0].u;
+			else
+				sol = state->diff_cached[state->diff_cached.size() - 1].u;
+
+			state->out_geom.save_vtu(
+				vis_mesh_path,
 				*state,
-				state->diff_cached[0].u,
+				sol,
 				Eigen::MatrixXd::Zero(state->n_pressure_bases, 1),
-				// !state->args["time"].is_null(),
-				false,
 				tend, dt,
 				io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
-				vis_mesh_path,
-				"", // nodes_path,
-				"", // solution_path,
-				"", // stress_path,
-				"", // mises_path,
-				state->is_contact_enabled(), state->solution_frames);
+				state->is_contact_enabled(),
+				state->solution_frames);
 
 			// If shape opt, save rest meshes as well
 			bool save_rest_mesh = false;
 			for (const auto p : parameters_)
 				if (p->name() == "shape")
 					save_rest_mesh = true;
-			// TODO
+			if (save_rest_mesh)
+			{
+				Eigen::MatrixXd V;
+				Eigen::MatrixXi F;
+				state->get_vf(V, F);
+				if (state->mesh->dimension() == 3)
+					F = igl::boundary_facets<Eigen::MatrixXi, Eigen::MatrixXi>(F);
+
+				io::OBJWriter::write(state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.obj", id, iter)), V, F);
+			}
+			id++;
 		}
 	}
 
