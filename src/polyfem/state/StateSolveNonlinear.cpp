@@ -321,7 +321,7 @@ namespace polyfem
 			Eigen::MatrixXd velocity, acceleration;
 			initial_velocity(velocity);
 			assert(velocity.size() == sol.size());
-			initial_velocity(acceleration);
+			initial_acceleration(acceleration);
 			assert(acceleration.size() == sol.size());
 
 			const double dt = args["time"]["dt"];
