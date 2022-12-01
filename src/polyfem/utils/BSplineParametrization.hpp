@@ -123,8 +123,9 @@ namespace polyfem
 				curve_.set_control_points(indicator);
 				for (const auto &b : node_ids_)
 				{
+					auto basis_val = curve_.evaluate(node_id_to_t_.at(b))(0);
 					for (int k = 0; k < dim; ++k)
-						grad_control_points(i * dim + k) += grad_boundary(b * dim + k) * curve_.evaluate(node_id_to_t_.at(b))(0);
+						grad_control_points(i * dim + k) += grad_boundary(b * dim + k) * basis_val;
 				}
 			}
 		}
@@ -176,13 +177,13 @@ namespace polyfem
 			for (const auto &b : node_ids)
 			{
 				Eigen::MatrixXd point = V.block(b, 0, 1, dim);
-				auto uv = patch.approximate_inverse_evaluate(point, 5, 5, 0, 1, 0, 1);
+				auto uv = patch.approximate_inverse_evaluate(point, 5, 5, 0, 1, 0, 1, 30);
 				assert(uv.size() == 2);
 				double distance = (point - patch.evaluate(uv(0), uv(1))).norm();
 
 				if (distance > tol)
 				{
-					logger().error("Could not find a valid t for deducing spline parametrization. Distance: {}, point: {}", distance, point);
+					logger().error("Could not find a valid uv for deducing spline parametrization. Distance: {}, point: {}", distance, point);
 					unused.push_back(b);
 					continue;
 				}
@@ -253,21 +254,23 @@ namespace polyfem
 		{
 
 			grad_control_points.setZero(patch.get_control_grid().size());
-			nanospline::BSplinePatch<double, 1, 3, 3> patch_;
-			patch_.set_knots_u(patch_.get_knots_u());
-			patch_.set_knots_v(patch_.get_knots_v());
 
 			for (int i = 0; i < patch.get_control_grid().rows(); ++i)
 			{
-				Eigen::MatrixXd indicator = Eigen::MatrixXd::Zero(patch.get_control_grid().rows(), 1);
-				indicator(i) = 1;
+				nanospline::BSplinePatch<double, 3, 3, 3> patch_;
+				patch_.set_knots_u(patch.get_knots_u());
+				patch_.set_knots_v(patch.get_knots_v());
+				Eigen::MatrixXd indicator = Eigen::MatrixXd::Zero(patch.get_control_grid().rows(), 3);
+				indicator.row(i) = Eigen::VectorXd::Ones(3);
 				patch_.set_control_grid(indicator);
+				patch_.initialize();
 				for (const auto &b : node_ids_)
 				{
 					auto uv = node_id_to_param_.at(b);
 					assert(uv.size() == 2);
+					auto basis_val = patch_.evaluate(uv(0), uv(1))(0);
 					for (int k = 0; k < dim; ++k)
-						grad_control_points(i * dim + k) += grad_boundary(b * dim + k) * patch.evaluate(uv(0), uv(1))(0);
+						grad_control_points(i * dim + k) += grad_boundary(b * dim + k) * basis_val;
 				}
 			}
 		}

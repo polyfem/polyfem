@@ -173,7 +173,8 @@ namespace polyfem::solver
 				*state,
 				state->diff_cached[0].u,
 				Eigen::MatrixXd::Zero(state->n_pressure_bases, 1),
-				!state->args["time"].is_null(),
+				// !state->args["time"].is_null(),
+				false,
 				tend, dt,
 				io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
 				vis_mesh_path,
@@ -183,7 +184,12 @@ namespace polyfem::solver
 				"", // mises_path,
 				state->is_contact_enabled(), state->solution_frames);
 
-			// TODO: if shape opt, save rest meshes as well
+			// If shape opt, save rest meshes as well
+			bool save_rest_mesh = false;
+			for (const auto p : parameters_)
+				if (p->name() == "shape")
+					save_rest_mesh = true;
+			// TODO
 		}
 	}
 

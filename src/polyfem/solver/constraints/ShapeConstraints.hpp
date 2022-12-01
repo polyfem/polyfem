@@ -250,9 +250,11 @@ namespace polyfem
 					auto c = spline["control_point_grid"];
 					Eigen::MatrixXd control_points(c.size(), dim_);
 					for (int i = 0; i < c.size(); ++i)
+					{
+						assert(c[i].size() == dim_);
 						for (int k = 0; k < dim_; ++k)
 							control_points(i, k) = c[i][k];
-					reduced_size_ = control_points.size() - 2 * dim_;
+					}
 					auto k_u = spline["knot_u"];
 					Eigen::MatrixXd knots_u(k_u.size(), 1);
 					for (int i = 0; i < k_u.size(); ++i)
@@ -263,6 +265,8 @@ namespace polyfem
 						knots_v(i) = k_v[i];
 					int num_u = knots_u.rows() - 1 - 3;
 					int num_v = knots_v.rows() - 1 - 3;
+					assert(control_points.size() == dim_ * num_u * num_v);
+					reduced_size_ = dim_ * (num_u * num_v - 2 * num_u - 2 * (num_v - 2));
 					b_spline_parametrization = std::make_shared<BSplineParametrization3D>(control_points, knots_u, knots_v, optimization_boundary_to_node_ids_.begin()->first, optimization_boundary_to_node_ids_.begin()->second, V_start);
 					full_to_reduced_ = [this, num_u, num_v](const Eigen::MatrixXd &V_full) {
 						Eigen::VectorXd reduced(reduced_size_);
@@ -271,9 +275,7 @@ namespace polyfem
 						int index = 0;
 						for (int i = 0; i < control_points.rows(); ++i)
 						{
-							if ((i / num_v) == 0 || (i / num_v) == (num_u - 1))
-								continue;
-							if ((i % num_u) == 0 || (i % num_u) == (num_v - 1))
+							if ((i / num_v) == 0 || (i / num_v) == (num_u - 1) || (i % num_u) == 0 || (i % num_u) == (num_v - 1))
 								continue;
 							reduced.segment(index, dim_) = control_points.row(i);
 							index += dim_;
@@ -288,7 +290,9 @@ namespace polyfem
 						for (int i = 0; i < new_control_points.rows(); ++i)
 						{
 							if ((i / num_v) == 0 || (i / num_v) == (num_u - 1) || (i % num_u) == 0 || (i % num_u) == (num_v - 1))
+							{
 								new_control_points.row(i) = control_points.row(i);
+							}
 							else
 							{
 								new_control_points.row(i) = reduced.segment(index, dim_);
@@ -305,9 +309,7 @@ namespace polyfem
 						int index = 0;
 						for (int i = 0; i < num_u * num_v; ++i)
 						{
-							if ((i / num_v) == 0 || (i / num_v) == (num_u - 1))
-								continue;
-							if ((i % num_u) == 0 || (i % num_u) == (num_v - 1))
+							if ((i / num_v) == 0 || (i / num_v) == (num_u - 1) || (i % num_u) == 0 || (i % num_u) == (num_v - 1))
 								continue;
 							dreduced.segment(index, dim_) = grad_control_point.segment(i * dim_, dim_);
 							index += dim_;

@@ -549,7 +549,10 @@
             "tangent",
             "control_point",
             "sampling",
-            "knot"
+            "knot",
+            "control_point_grid",
+            "knot_u",
+            "knot_v"
         ],
         "doc": "TODO"
     },
@@ -592,6 +595,24 @@
     },
     {
         "pointer": "/parameters/*/spline_specification/*/knot",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/spline_specification/*/knot_u",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/spline_specification/*/knot_v",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/spline_specification/*/control_point_grid",
         "type": "list",
         "default": [],
         "doc": "TODO"
