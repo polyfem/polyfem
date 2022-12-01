@@ -30,18 +30,22 @@ namespace polyfem
 
     private:
 
-		bool generate_graph_mesh(const Eigen::VectorXd &x, const std::string &out_mesh_path);
+		bool generate_graph_mesh(const Eigen::VectorXd &x);
 
 		double max_change_;
-		std::string graph_path_; // graph structure obj
-        std::string graph_exe_path_; // binary to generate mesh based on graph and params
-		std::string symmetry_type_; // e.g. 2D_doubly_periodic
-		std::string meshing_options_;
+        std::string isosurface_inflator_prefix_; // binary to generate mesh based on graph and params
         Eigen::VectorXd initial_guess_; // initial shape parameters
 
 		std::string out_velocity_path_;
+		std::string out_msh_path_;
         Eigen::MatrixXd shape_velocity_; // chain rule from grad of vertices to grad of shape parameters
 
         Eigen::MatrixXd bounds_; // bound on shape parameters
+
+		int elem_period_ = 0;
+		double unit_size_;
+		std::vector<int> full_to_periodic_;
+	
+		void compute_pattern_period();
 	};
 } // namespace polyfem

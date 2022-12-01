@@ -410,17 +410,13 @@
         "required": [
             "type",
             "states",
-            "graph_path",
-            "graph_exe_path",
-            "symmetry_type",
-            "out_velocity_path"
+            "isosurface_inflator_prefix"
         ],
         "optional": [
             "max_change",
             "lower_bound",
             "upper_bound",
-            "initial",
-            "meshing_options"
+            "initial"
         ],
         "doc": "TODO"
     },
@@ -446,6 +442,7 @@
         "options": [
             "2D_doubly_periodic",
             "2D_cubic",
+            "2D_orthotropic",
             "doubly_periodic",
             "cubic"
         ],
