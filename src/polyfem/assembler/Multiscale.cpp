@@ -68,6 +68,20 @@ namespace polyfem::assembler
 
 			return func;
 		}
+
+		class LocalThreadVecStorage
+		{
+		public:
+			Eigen::MatrixXd vec;
+			assembler::ElementAssemblyValues vals;
+			QuadratureVector da;
+
+			LocalThreadVecStorage(const int size)
+			{
+				vec.resize(size, 1);
+				vec.setZero();
+			}
+		};
 	}
 
 	Multiscale::Multiscale()
@@ -115,21 +129,32 @@ namespace polyfem::assembler
 		const auto &gbases = state->geom_bases();
 
 		stress.setZero(size(), size());
-		Eigen::MatrixXd stresses, avg_stress, tmp;
 
-		for (int e = 0; e < bases.size(); ++e)
-		{
-			assembler::ElementAssemblyValues vals;
-			state->ass_vals_cache.compute(e, size() == 3, bases[e], gbases[e], vals);
+		auto storage = utils::create_thread_storage(LocalThreadVecStorage(stress.size()));
 
-			const quadrature::Quadrature &quadrature = vals.quadrature;
-			Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+		utils::maybe_parallel_for(bases.size(), [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+			Eigen::MatrixXd stresses, avg_stress, tmp;
 
-			state->assembler.compute_tensor_value(state->formulation(), e, bases[e], gbases[e], quadrature.points, x, stresses);
-			tmp = stresses.transpose() * da;
-			avg_stress = Eigen::Map<Eigen::MatrixXd>(tmp.data(), size(), size());
-			stress += avg_stress;
-		}
+			for (int e = start; e < end; ++e)
+			{
+				assembler::ElementAssemblyValues &vals = local_storage.vals;
+				state->ass_vals_cache.compute(e, size() == 3, bases[e], gbases[e], vals);
+
+				const quadrature::Quadrature &quadrature = vals.quadrature;
+				local_storage.da = vals.det.array() * quadrature.weights.array();
+
+				state->assembler.compute_tensor_value(state->formulation(), e, bases[e], gbases[e], quadrature.points, x, stresses);
+				tmp = stresses.transpose() * local_storage.da;
+				local_storage.vec += tmp;
+				// avg_stress = Eigen::Map<Eigen::MatrixXd>(tmp.data(), size(), size());
+				// stress += avg_stress;
+			}
+		});
+
+		for (const LocalThreadVecStorage &local_storage : storage)
+			for (int i = 0; i < stress.size(); i++)
+				stress(i) += local_storage.vec(i);
 
 		stress /= microstructure_volume;
 	}
