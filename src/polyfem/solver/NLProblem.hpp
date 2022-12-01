@@ -50,6 +50,7 @@ namespace polyfem::solver
 		void use_reduced_size() { current_size_ = CurrentSize::REDUCED_SIZE; }
 
 		virtual TVector full_to_reduced(const TVector &full) const;
+		virtual TVector full_to_reduced_grad(const TVector &full) const;
 		virtual TVector reduced_to_full(const TVector &reduced) const;
 
 		void set_apply_DBC(const TVector &x, const bool val);
@@ -88,6 +89,9 @@ namespace polyfem::solver
 
 		template <class ReducedMat, class FullMat>
 		void reduced_to_full_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full) const;
+
+		template <class FullMat, class ReducedMat>
+		void full_to_reduced_aux_grad(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
 
 		void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
 	};

@@ -1168,6 +1168,15 @@ namespace polyfem
 		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
 
+		if (boundary_nodes.size() == 0)
+		{
+			for (int d = 0; d < mesh->dimension(); d++)
+			{
+				if (periodic_dimensions[d])
+					boundary_nodes.push_back(d);
+			}
+		}
+
 		// build disp_offset
 		{
 			disp_offset.setZero(n_bases * mesh->dimension(), 1);

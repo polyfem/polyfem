@@ -72,6 +72,24 @@ namespace polyfem
 			solve_data.rhs_assembler->initial_acceleration(acceleration);
 	}
 
+	int State::n_lagrange_multipliers() const
+	{
+		if (boundary_nodes.size() > 0 || problem->is_time_dependent())
+			return 0;
+		
+		if (assembler.is_fluid(formulation()))
+			return mesh->dimension();
+		else if (formulation() == "Laplacian")
+			return 1;
+		else if (assembler.is_solution_displacement(formulation()))
+			if (!has_periodic_bc()) // pure neumann
+				return 3 * (mesh->dimension() - 1);
+			else
+				return 0; //std::accumulate(periodic_dimensions.begin(), periodic_dimensions.end(), (int)0);
+		else
+			return 0;
+	}
+
 	void State::apply_lagrange_multipliers(StiffnessMatrix &A) const
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
@@ -363,10 +381,9 @@ namespace polyfem
 		return independent_dof;
 	}
 
-	int State::full_to_periodic(Eigen::MatrixXd &b, bool force_dirichlet) const
+	int State::full_to_periodic(Eigen::MatrixXd &b, bool accumulate, bool force_dirichlet) const
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
 		const int independent_dof = periodic_reduce_map.maxCoeff() + 1;
 		
 		// account for potential pressure block
@@ -383,7 +400,10 @@ namespace polyfem
 		for (int d = 0; d < b_periodic.cols(); d++)
 		{
 			for (int k = 0; k < b.rows(); k++)
-				b_periodic(index_map(k), d) += b(k, d);
+				if (accumulate)
+					b_periodic(index_map(k), d) += b(k, d);
+				else
+					b_periodic(index_map(k), d) = b(k, d);
 
 			if (force_dirichlet)
 				for (int k : boundary_nodes)

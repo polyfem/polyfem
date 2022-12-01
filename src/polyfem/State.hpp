@@ -397,29 +397,13 @@ namespace polyfem
 		}
 
 		// add lagrangian multiplier rows for pure neumann/periodic boundary condition, returns the number of rows added
-		int n_lagrange_multipliers() const
-		{
-			if (boundary_nodes.size() > 0 || problem->is_time_dependent())
-				return 0;
-			
-			if (assembler.is_fluid(formulation()))
-				return mesh->dimension();
-			else if (formulation() == "Laplacian")
-				return 1;
-			else if (assembler.is_solution_displacement(formulation()))
-				if (!has_periodic_bc()) // pure neumann
-					return 3 * (mesh->dimension() - 1);
-				else
-					return std::accumulate(periodic_dimensions.begin(), periodic_dimensions.end(), (int)0);
-			else
-				return 0;
-		}
+		int n_lagrange_multipliers() const;
 		void apply_lagrange_multipliers(StiffnessMatrix &A) const;
 		void apply_lagrange_multipliers(StiffnessMatrix &A, const Eigen::MatrixXd &coeffs) const;
 		
 		// compute the matrix/vector under periodic basis, if the size is larger than #periodic_basis, the extra rows are kept
 		int full_to_periodic(StiffnessMatrix &A) const;
-		int full_to_periodic(Eigen::MatrixXd &b, bool force_dirichlet = true) const;
+		int full_to_periodic(Eigen::MatrixXd &b, bool accumulate, bool force_dirichlet = true) const;
 		void full_to_periodic(std::vector<int> &boundary_nodes_) const
 		{
 			if (has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"])
@@ -744,6 +728,7 @@ private:
 		//---------------------------------------------------
 public:
 		void solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_);
+		void solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_field2, Eigen::MatrixXd &macro_field1, Eigen::MatrixXd &sol_);
 	};
 
 } // namespace polyfem
