@@ -164,6 +164,7 @@ namespace polyfem
 		}
 		else
 		{
+			solve_data.nl_problem->set_project_to_psd(false);
 			solve_data.nl_problem->FullNLProblem::solution_changed(sol);
 			solve_data.nl_problem->FullNLProblem::hessian(sol, hessian);
 			// if (problem->is_time_dependent())
@@ -241,7 +242,7 @@ namespace polyfem
 		{
 			precond_num = full_to_periodic(A);
  			Eigen::MatrixXd tmp = b;
- 			full_to_periodic(tmp);
+ 			full_to_periodic(tmp, true);
  			b = tmp;
 		}
 
