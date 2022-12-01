@@ -162,8 +162,23 @@ namespace polyfem::solver
 			return;
 		for (const auto &state : all_states_)
 		{
+			bool save_vtu = false;
+			bool save_rest_mesh = false;
+			for (const auto p : parameters_)
+				if (p->contains_state(*state))
+				{
+					save_vtu = true;
+					if (p->name() == "shape")
+						save_rest_mesh = true;
+				}
+
 			std::string vis_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter));
-			logger().debug("Save to file {} ...", vis_mesh_path);
+			std::string rest_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.obj", id, iter));
+			id++;
+
+			if (!save_vtu)
+				continue;
+			logger().debug("Save final vtu to file {} ...", vis_mesh_path);
 
 			double tend = state->args.value("tend", 1.0);
 			double dt = 1;
@@ -186,22 +201,18 @@ namespace polyfem::solver
 				state->is_contact_enabled(),
 				state->solution_frames);
 
-			// If shape opt, save rest meshes as well
-			bool save_rest_mesh = false;
-			for (const auto p : parameters_)
-				if (p->name() == "shape")
-					save_rest_mesh = true;
-			if (save_rest_mesh)
-			{
-				Eigen::MatrixXd V;
-				Eigen::MatrixXi F;
-				state->get_vf(V, F);
-				if (state->mesh->dimension() == 3)
-					F = igl::boundary_facets<Eigen::MatrixXi, Eigen::MatrixXi>(F);
+			if (!save_rest_mesh)
+				continue;
+			logger().debug("Save rest mesh to file {} ...", rest_mesh_path);
 
-				io::OBJWriter::write(state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.obj", id, iter)), V, F);
-			}
-			id++;
+			// If shape opt, save rest meshes as well
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			state->get_vf(V, F);
+			if (state->mesh->dimension() == 3)
+				F = igl::boundary_facets<Eigen::MatrixXi, Eigen::MatrixXi>(F);
+
+			io::OBJWriter::write(rest_mesh_path, V, F);
 		}
 	}
 
