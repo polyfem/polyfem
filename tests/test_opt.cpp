@@ -56,8 +56,15 @@ namespace
 		double starting_energy = energies[0];
 		double optimized_energy = energies[energies.size() - 1];
 
-		std::cout << "initial " << energies[0] << std::endl;
-		std::cout << "final " << energies[energies.size() - 1] << std::endl;
+		for (int i = 0; i < energies.size(); ++i)
+		{
+			if (i == 0)
+				std::cout << "initial " << energies[i] << std::endl;
+			else if (i == energies.size() - 1)
+				std::cout << "final " << energies[i] << std::endl;
+			else
+				std::cout << "step " << i << " " << energies[i] << std::endl;
+		}
 
 		return energies;
 	}
@@ -235,5 +242,14 @@ TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
 
 	REQUIRE(energies[0] == Approx(6.1658e-05).epsilon(1e-3));
 	REQUIRE(energies[energies.size() - 1] == Approx(3.6194e-05).epsilon(1e-3));
+}
+
+TEST_CASE("multiparameter-sdf-trajectory-surface-opt", "[optimization]")
+{
+	run_opt_new("multiparameter-sdf-trajectory-surface-opt");
+	auto energies = read_energy("multiparameter-sdf-trajectory-surface-opt");
+
+	REQUIRE(energies[0] == Approx(0.08577).epsilon(1e-3));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.0819).epsilon(1e-3));
 }
 #endif

@@ -2,6 +2,7 @@
 
 #include "AdjointForm.hpp"
 
+#include <shared_mutex>
 #include <array>
 
 namespace polyfem::solver
@@ -431,7 +432,7 @@ namespace polyfem::solver
 		std::shared_ptr<const Parameter> elastic_param_;
 
 		const bool is_volume;
-		
+
 		double min_E = 0, max_E = 0;
 		double kappa_E = 0, dhat_E = 0;
 		double min_lambda = 0, max_lambda = 0;

@@ -161,7 +161,7 @@ namespace polyfem::solver
 					for (int j = 0; j < args["tangents"][i].size(); ++j)
 						tangents(i, j) = args["tangents"][i][j].get<double>();
 
-				delta.setZero(args["delta"].size(), 1);
+				delta.setZero(1, args["delta"].size());
 				for (int i = 0; i < delta.size(); ++i)
 					delta(i) = args["delta"][i].get<double>();
 
@@ -175,6 +175,7 @@ namespace polyfem::solver
 
 				auto target_obj = std::make_shared<SDFTargetObjective>(state, shape_param, args);
 				target_obj->set_spline_target(control_points, tangents, delta);
+				static_obj = target_obj;
 			}
 			else if (matching == "marker-data" || matching == "exact-marker")
 			{

@@ -42,7 +42,6 @@ namespace polyfem
 		Eigen::VectorXd starting_dirichlet;
 
 		json control_params;
-		json smoothing_params;
 
 		std::map<int, int> boundary_id_to_reduced_param;
 
