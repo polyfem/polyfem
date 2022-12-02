@@ -46,7 +46,6 @@ namespace polyfem
 		virtual void gradient(const TVector &x, TVector &gradv, const bool only_elastic) { gradient(x, gradv); }
 
 		virtual void smoothing(const TVector &x, TVector &new_x) {}
-		virtual bool is_intersection_free(const TVector &x) { return true; }
 
 		virtual void save_to_file(const TVector &x0) final;
 

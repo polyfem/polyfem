@@ -113,7 +113,6 @@ namespace polyfem
 			void line_search_end() {}
 			void post_step(const int iter_num, const TVector &x) {}
 			void smoothing(const TVector &x, TVector &new_x) {}
-			bool is_intersection_free(const TVector &x) { return true; }
 			bool stop(const TVector &x) { return false; }
 			bool remesh(TVector &x) { return false; }
 			TVector force_inequality_constraint(const TVector &x0, const TVector &dx) { return x0 + dx; }

@@ -92,18 +92,6 @@ namespace polyfem::solver
 		return is_valid;
 	}
 
-	bool AdjointNLProblem::is_intersection_free(const Eigen::VectorXd &x) const
-	{
-		int cumulative = 0;
-		bool is_valid = true;
-		for (const auto &p : parameters_)
-		{
-			is_valid &= p->is_intersection_free(x.segment(cumulative, p->optimization_dim()));
-			cumulative += p->optimization_dim();
-		}
-		return is_valid;
-	}
-
 	bool AdjointNLProblem::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
 		int cumulative = 0;
@@ -118,8 +106,14 @@ namespace polyfem::solver
 
 	double AdjointNLProblem::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		// TODO: this was a number multiplied to the descent direction to take either a larger or smaller step, so now it's better to be a vector of numbers?
-		return 1;
+		double step = 1;
+		int cumulative = 0;
+		for (const auto &p : parameters_)
+		{
+			step = std::min(step, p->max_step_size(x0.segment(cumulative, p->optimization_dim()), x1.segment(cumulative, p->optimization_dim())));
+			cumulative += p->optimization_dim();
+		}
+		return step;
 	}
 
 	void AdjointNLProblem::line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)

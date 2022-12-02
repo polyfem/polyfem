@@ -29,7 +29,6 @@ namespace polyfem
 
 		void smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) override;
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
-		bool is_intersection_free(const Eigen::VectorXd &x) override;
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 
@@ -70,20 +69,12 @@ namespace polyfem
 
 		bool has_collision;
 
-		double _dhat;
-		double _prev_distance;
-
 		ipc::BroadPhaseMethod _broad_phase_method;
 		double _ccd_tolerance;
 		int _ccd_max_iterations;
 
-		ipc::Constraints _constraint_set;
 		ipc::CollisionMesh collision_mesh;
-		ipc::Candidates _candidates;
-		bool _use_cached_candidates = false;
 
 		std::unique_ptr<ShapeConstraints> shape_constraints_;
-
-		void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
 	};
 } // namespace polyfem

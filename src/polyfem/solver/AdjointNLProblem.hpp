@@ -49,7 +49,6 @@ namespace polyfem::solver
 		bool remesh(Eigen::VectorXd &x);
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const;
-		bool is_intersection_free(const Eigen::VectorXd &x) const;
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const;
 		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const;
 

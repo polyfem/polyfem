@@ -37,7 +37,6 @@ namespace polyfem
 
 		virtual void smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) {}
 		virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
-		virtual bool is_intersection_free(const Eigen::VectorXd &x) { return true; }
 		virtual bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
 		virtual double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return 1; }
 

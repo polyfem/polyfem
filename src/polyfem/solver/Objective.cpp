@@ -5,6 +5,7 @@
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/io/OBJWriter.hpp>
 
 using namespace polyfem::utils;
 
@@ -327,6 +328,11 @@ namespace polyfem::solver
 		{
 			std::shared_ptr<Parameter> shape_param = parameters[args["shape_parameter"]];
 			obj = std::make_shared<solver::VolumePenaltyObjective>(shape_param, args);
+		}
+		else if (type == "collision_barrier")
+		{
+			std::shared_ptr<Parameter> shape_param = parameters[args["shape_parameter"]];
+			obj = std::make_shared<solver::CollisionBarrierObjective>(shape_param, args);
 		}
 		else if (type == "compliance")
 		{
@@ -715,7 +721,7 @@ namespace polyfem::solver
 
 	Eigen::MatrixXd BoundarySmoothingObjective::compute_adjoint_rhs(const State &state)
 	{
-		return Eigen::VectorXd::Zero(state.ndof());
+		return Eigen::MatrixXd::Zero(state.ndof(), state.problem->is_time_dependent() ? state.args["time"]["time_steps"].get<int>() + 1 : 1);
 	}
 
 	Eigen::VectorXd BoundarySmoothingObjective::compute_partial_gradient(const Parameter &param)
@@ -874,7 +880,7 @@ namespace polyfem::solver
 	Eigen::MatrixXd DeformedBoundarySmoothingObjective::compute_adjoint_rhs(const State &state)
 	{
 		if (&state != &state_)
-			return Eigen::MatrixXd::Zero(state.diff_cached[0].u.size(), 1);
+			return Eigen::MatrixXd::Zero(state.ndof(), state.problem->is_time_dependent() ? state.args["time"]["time_steps"].get<int>() + 1 : 1);
 
 		Eigen::MatrixXd V;
 		Eigen::MatrixXi F;
@@ -1006,7 +1012,7 @@ namespace polyfem::solver
 
 	Eigen::MatrixXd VolumeObjective::compute_adjoint_rhs(const State &state)
 	{
-		return Eigen::VectorXd::Zero(state.ndof()); // Important: it's state, not state_
+		return Eigen::MatrixXd::Zero(state.ndof(), state.problem->is_time_dependent() ? state.args["time"]["time_steps"].get<int>() + 1 : 1); // Important: it's state, not state_
 	}
 
 	Eigen::VectorXd VolumeObjective::compute_partial_gradient(const Parameter &param)
@@ -1057,7 +1063,7 @@ namespace polyfem::solver
 	}
 	Eigen::MatrixXd VolumePenaltyObjective::compute_adjoint_rhs(const State &state)
 	{
-		return Eigen::MatrixXd::Zero(state.diff_cached[0].u.size(), 1);
+		return Eigen::MatrixXd::Zero(state.ndof(), state.problem->is_time_dependent() ? state.args["time"]["time_steps"].get<int>() + 1 : 1);
 	}
 	Eigen::VectorXd VolumePenaltyObjective::compute_partial_gradient(const Parameter &param)
 	{
@@ -2152,6 +2158,68 @@ namespace polyfem::solver
 		for (int i = 0; i < F.size(); i++)
 			grad += grad_aux(i) * js[i]->compute_partial_gradient(param);
 		return grad;
+	}
+
+	CollisionBarrierObjective::CollisionBarrierObjective(const std::shared_ptr<const Parameter> shape_param, const json &args) : shape_param_(shape_param)
+	{
+		if (!shape_param_)
+			log_and_throw_error("CollisionBarrierObjective needs non-empty shape parameter!");
+		else if (shape_param_->name() != "shape")
+			log_and_throw_error("CollisionBarrierObjective wrong parameter type input!");
+	
+		const auto &state = shape_param_->get_state();
+
+		Eigen::MatrixXd boundary_nodes_pos_;
+		state.build_collision_mesh(boundary_nodes_pos_, collision_mesh_, state.n_geom_bases, state.geom_bases());
+
+		dhat = args["dhat"];
+		broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+	}
+
+	void CollisionBarrierObjective::build_constraint_set(const Eigen::MatrixXd &displaced_surface)
+	{
+		static Eigen::MatrixXd cached_displaced_surface;
+		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
+			return;
+		
+		constraint_set.build(collision_mesh_, displaced_surface, dhat, 0, broad_phase_method);
+		
+		cached_displaced_surface = displaced_surface;
+	}
+
+	double CollisionBarrierObjective::value()
+	{
+		const auto &state = shape_param_->get_state();
+		Eigen::MatrixXd V;
+		Eigen::MatrixXi F;
+		state.get_vf(V, F);
+		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(V);
+		build_constraint_set(displaced_surface);
+
+		return ipc::compute_barrier_potential(collision_mesh_, displaced_surface, constraint_set, dhat);
+	}
+
+	Eigen::MatrixXd CollisionBarrierObjective::compute_adjoint_rhs(const State &state)
+	{
+		return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
+	}
+
+	Eigen::VectorXd CollisionBarrierObjective::compute_partial_gradient(const Parameter &param)
+	{
+		if (&param == shape_param_.get())
+		{
+			const auto &state = shape_param_->get_state();
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			state.get_vf(V, F);
+			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(V);
+			build_constraint_set(displaced_surface);
+
+			Eigen::VectorXd grad = ipc::compute_barrier_potential_gradient(collision_mesh_, displaced_surface, constraint_set, dhat);
+			return collision_mesh_.to_full_dof(grad);
+		}
+		else
+			return Eigen::VectorXd::Zero(param.full_dim());
 	}
 
 } // namespace polyfem::solver

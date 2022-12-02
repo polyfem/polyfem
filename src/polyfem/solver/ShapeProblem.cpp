@@ -339,49 +339,9 @@ namespace polyfem
 		cached_displaced_surface = displaced_surface;
 	}
 
-	bool ShapeProblem::is_intersection_free(const TVector &x)
-	{
-		if (!has_collision)
-			return true;
-
-		Eigen::MatrixXd V;
-		x_to_param(x, V_rest, V);
-
-		return !ipc::has_intersections(collision_mesh, collision_mesh.vertices(V));
-	}
-
 	bool ShapeProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 	{
-		if (!has_collision)
-			return true;
-
-		Eigen::MatrixXd V0, V1;
-		x_to_param(x0, V_rest, V0);
-		x_to_param(x1, V_rest, V1);
-
-		// Skip CCD if the displacement is zero.
-		if ((V1 - V0).lpNorm<Eigen::Infinity>() == 0.0)
-		{
-			// Assumes initially intersection-free
-			assert(is_intersection_free(x0));
-			return true;
-		}
-
-		bool is_valid;
-		if (_use_cached_candidates)
-			is_valid = ipc::is_step_collision_free(
-				_candidates, collision_mesh,
-				collision_mesh.vertices(V0),
-				collision_mesh.vertices(V1),
-				_ccd_tolerance, _ccd_max_iterations);
-		else
-			is_valid = ipc::is_step_collision_free(
-				collision_mesh,
-				collision_mesh.vertices(V0),
-				collision_mesh.vertices(V1),
-				ipc::BroadPhaseMethod::HASH_GRID, _ccd_tolerance, _ccd_max_iterations);
-
-		return is_valid;
+		return true;
 	}
 
 	double ShapeProblem::target_value(const TVector &x)

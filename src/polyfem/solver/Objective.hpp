@@ -2,6 +2,8 @@
 
 #include "AdjointForm.hpp"
 
+#include <polyfem/solver/forms/ContactForm.hpp>
+
 #include <shared_mutex>
 #include <array>
 
@@ -474,5 +476,26 @@ namespace polyfem::solver
 
 	protected:
 		std::array<std::shared_ptr<HomogenizedStressObjective>, 4> js;
+	};
+
+	class CollisionBarrierObjective : public Objective
+	{
+	public:
+		CollisionBarrierObjective(const std::shared_ptr<const Parameter> shape_param, const json &args);
+		~CollisionBarrierObjective() = default;
+
+		double value() override;
+		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+	
+	protected:
+		std::shared_ptr<const Parameter> shape_param_;
+
+		ipc::CollisionMesh collision_mesh_;
+		ipc::Constraints constraint_set;
+		void build_constraint_set(const Eigen::MatrixXd &displaced_surface);
+
+		double dhat;
+		ipc::BroadPhaseMethod broad_phase_method;
 	};
 } // namespace polyfem::solver

@@ -138,18 +138,6 @@ namespace polyfem
 			return valid;
 		}
 
-		bool is_intersection_free(const TVector &x)
-		{
-			bool intersection_free = true;
-			int cumulative = 0;
-			for (const auto &subproblem : subproblems)
-			{
-				intersection_free &= subproblem->is_intersection_free(x.segment(cumulative, subproblem->optimization_dim()));
-				cumulative += subproblem->optimization_dim();
-			}
-			return intersection_free;
-		}
-
 		bool is_step_collision_free(const TVector &x0, const TVector &x1)
 		{
 			bool collision_free = true;
