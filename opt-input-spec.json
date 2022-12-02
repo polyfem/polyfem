@@ -851,6 +851,7 @@
             "tangents",
             "delta",
             "transient_integral_type",
+            "steps",
             "weight",
             "volume_selection",
             "surface_selection",
@@ -913,8 +914,14 @@
             "simpson",
             "uniform",
             "final",
-            "step_10"
+            "steps"
         ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/steps",
+        "type": "list",
+        "default": [],
         "doc": "TODO"
     },
     {
@@ -1025,6 +1032,7 @@
             "shape_parameter",
             "weight",
             "transient_integral_type",
+            "steps",
             "volume_selection"
         ],
         "doc": "TODO"
@@ -1043,6 +1051,7 @@
             "volume_selection",
             "power",
             "weight",
+            "steps",
             "transient_integral_type"
         ],
         "doc": "TODO"
@@ -1061,6 +1070,7 @@
             "volume_selection",
             "power",
             "weight",
+            "steps",
             "transient_integral_type"
         ],
         "doc": "TODO"
@@ -1107,6 +1117,7 @@
             "material_parameter",
             "volume_selection",
             "weight",
+            "steps",
             "transient_integral_type"
         ],
         "doc": "TODO"
@@ -1123,6 +1134,7 @@
             "shape_parameter",
             "volume_selection",
             "weight",
+            "steps",
             "transient_integral_type"
         ],
         "doc": "TODO"
@@ -1139,6 +1151,7 @@
             "shape_parameter",
             "volume_selection",
             "weight",
+            "steps",
             "transient_integral_type"
         ],
         "doc": "TODO"
