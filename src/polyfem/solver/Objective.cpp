@@ -128,11 +128,15 @@ namespace polyfem::solver
 		std::shared_ptr<Objective> obj;
 		std::shared_ptr<StaticObjective> static_obj;
 		const std::string type = args["type"];
+		
 		std::string transient_integral_type;
-		if (args["transient_integral_type"] == "steps")
-			transient_integral_type = args["steps"];
-		else
-			transient_integral_type = args["transient_integral_type"];
+		if (args.contains("transient_integral_type"))
+		{
+			if (args["transient_integral_type"] == "steps")
+				transient_integral_type = args["steps"];
+			else
+				transient_integral_type = args["transient_integral_type"];
+		}
 
 		if (type == "trajectory")
 		{

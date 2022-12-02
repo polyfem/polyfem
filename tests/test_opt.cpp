@@ -154,42 +154,6 @@ namespace
 
 #if defined(__linux__)
 
-TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
-{
-	run_trajectory_opt("shape-trajectory-surface-opt");
-	auto energies = read_energy("shape-trajectory-surface-opt");
-
-	REQUIRE(energies[0] == Approx(6.1658e-05).epsilon(1e-3));
-	REQUIRE(energies[energies.size() - 1] == Approx(3.6193e-05).epsilon(1e-3));
-}
-
-TEST_CASE("shape-stress-opt", "[optimization]")
-{
-	const std::string path = POLYFEM_DATA_DIR + std::string("/../optimizations/shape-stress-opt");
-	json in_args;
-	load_json(path + "/run.json", in_args);
-
-	auto state = create_state(in_args);
-
-	std::shared_ptr<CompositeFunctional> func;
-	for (const auto &param : state->args["optimization"]["functionals"])
-	{
-		if (param["type"] == "stress")
-		{
-			func = CompositeFunctional::create("Stress");
-			func->set_power(param["power"]);
-			break;
-		}
-	}
-
-	CHECK_THROWS_WITH(single_optimization(*state, func), Catch::Matchers::Contains("Reached iteration limit"));
-
-	auto energies = read_energy("shape-stress-opt");
-
-	REQUIRE(energies[0] == Approx(12.0735).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(11.5482).epsilon(1e-4));
-}
-
 TEST_CASE("material-opt", "[optimization]")
 {
 	run_trajectory_opt("material-opt");
