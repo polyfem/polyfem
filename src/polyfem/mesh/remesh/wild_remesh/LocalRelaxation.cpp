@@ -97,8 +97,10 @@ namespace polyfem::mesh
 		constexpr bool free_boundary = true;
 
 		// 1. Get the n-ring of triangles around the vertex.
-		const LocalMesh local_mesh = LocalMesh::n_ring(
-			*this, t, n_ring, /*include_global_boundary=*/free_boundary);
+		// const LocalMesh local_mesh = LocalMesh::n_ring(
+		// 	*this, t, n_ring, /*include_global_boundary=*/free_boundary);
+		const LocalMesh local_mesh = LocalMesh::flood_fill_n_ring(
+			*this, t, flood_fill_rel_area * total_area, /*include_global_boundary=*/free_boundary);
 
 		std::vector<polyfem::basis::ElementBases> bases;
 		Eigen::VectorXi vertex_to_basis;
@@ -317,14 +319,16 @@ namespace polyfem::mesh
 		}
 
 		// 3. Return the energy of the relaxed mesh.
-		const double energy_before = nl_problem.value(target_x);
-		const double energy_after = nl_problem.value(sol);
+		const double local_energy_before = nl_problem.value(target_x);
+		const double local_energy_after = nl_problem.value(sol);
 
-		assert(std::isfinite(energy_before));
-		assert(std::isfinite(energy_after));
+		assert(std::isfinite(local_energy_before));
+		assert(std::isfinite(local_energy_after));
 
-		const double abs_diff = energy_before - energy_after; // > 0 if energy decreased
-		const double rel_diff = abs_diff / energy_before;
+		const double abs_diff = local_energy_before - local_energy_after; // > 0 if energy decreased
+		// TODO: compute global_energy_before
+		const double global_energy_before = local_energy_before;
+		const double rel_diff = abs_diff / (global_energy_before);
 
 		// const LocalMesh local_mesh_after = LocalMesh::n_ring(*this, t, n_ring);
 
@@ -347,7 +351,7 @@ namespace polyfem::mesh
 		{
 			logger().critical(
 				"{} energy_before={:g} energy_after={:g} rel_diff={:g} abs_diff={:g}",
-				i, energy_before, energy_after, rel_diff, abs_diff);
+				i, local_energy_before, local_energy_after, rel_diff, abs_diff);
 		}
 		i++;
 

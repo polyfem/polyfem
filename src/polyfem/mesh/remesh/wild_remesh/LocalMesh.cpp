@@ -186,6 +186,58 @@ namespace polyfem::mesh
 		return LocalMesh(m, triangles, include_global_boundary);
 	}
 
+	LocalMesh LocalMesh::flood_fill_n_ring(
+		const WildRemeshing2D &m,
+		const WildRemeshing2D::Tuple &center,
+		const double area,
+		const bool include_global_boundary)
+	{
+		double current_area = 0;
+
+		std::vector<Tuple> triangles = m.get_one_ring_tris_for_vertex(center);
+		std::unordered_set<size_t> visited_vertices{{center.vid(m)}};
+		std::unordered_set<size_t> visited_faces;
+		for (const auto &triangle : triangles)
+			visited_faces.insert(triangle.fid(m));
+
+		std::vector<Tuple> new_triangles = triangles;
+
+		int n_ring = 0;
+		while (current_area < area)
+		{
+			n_ring++;
+			std::vector<Tuple> new_new_triangles;
+			for (const auto &t : new_triangles)
+			{
+				current_area += m.triangle_area(t);
+				const std::array<Tuple, 3> vs = m.oriented_tri_vertices(t);
+				for (int vi = 0; vi < 3; vi++)
+				{
+					const Tuple &v = vs[vi];
+					if (visited_vertices.find(v.vid(m)) != visited_vertices.end())
+						continue;
+					visited_vertices.insert(v.vid(m));
+
+					std::vector<wmtk::TriMesh::Tuple> tmp = m.get_one_ring_tris_for_vertex(v);
+					for (auto &t1 : tmp)
+					{
+						if (visited_faces.find(t1.fid(m)) != visited_faces.end())
+							continue;
+						visited_faces.insert(t1.fid(m));
+						triangles.push_back(t1);
+						new_new_triangles.push_back(t1);
+					}
+				}
+			}
+			new_triangles = new_new_triangles;
+			if (new_triangles.empty())
+				break;
+		}
+		// logger().critical("target_area={:g} area={:g} n_ring={}", area, current_area, n_ring);
+
+		return LocalMesh(m, triangles, include_global_boundary);
+	}
+
 	void LocalMesh::remove_duplicate_fixed_vertices()
 	{
 		std::sort(m_fixed_vertices.begin(), m_fixed_vertices.end());

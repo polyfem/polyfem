@@ -9,6 +9,7 @@
 #include <polyfem/utils/JSONUtils.hpp>
 
 #include <ipc/collision_mesh.hpp>
+#include <ipc/broad_phase/broad_phase.hpp>
 
 #include <Eigen/Core>
 
@@ -54,7 +55,19 @@ namespace polyfem::solver
 			const Eigen::MatrixXd &rhs,
 			const double t,
 			const Eigen::MatrixXd &sol,
-			const json &args,
+			const bool ignore_inertia,
+			const double lagged_regularization_weight,
+			const int lagged_regularization_iterations,
+			const bool contact_enabled,
+			const json &barrier_stiffness,
+			const double dhat,
+			const ipc::BroadPhaseMethod broad_phase,
+			const double ccd_tolerance,
+			const long ccd_max_iterations,
+			const double friction_coefficient,
+			const double epsv,
+			const int friction_iterations,
+			const json &rayleigh_damping,
 			const StiffnessMatrix &mass,
 			const polyfem::mesh::Obstacle &obstacle,
 			const ipc::CollisionMesh &collision_mesh,

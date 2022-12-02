@@ -101,6 +101,9 @@ namespace polyfem::mesh
 		/// @brief Check if invariants are satisfied
 		bool invariants(const std::vector<Tuple> &new_tris) override;
 
+		/// @brief Compute the area of a triangle.
+		double triangle_area(const Tuple &triangle) const;
+
 		/// @brief Execute the remeshing
 		/// @param split Perform splitting operations
 		/// @param collapse Perform collapsing operations
@@ -175,6 +178,8 @@ namespace polyfem::mesh
 		double energy_absolute_tolerance = 1e-8;
 		/// @brief Size of n-ring for local relaxation
 		int n_ring_size = 3;
+		/// @brief Flood fill relative area
+		double flood_fill_rel_area = 0.1;
 
 	protected:
 		/// @brief Get the boundary nodes of the stored mesh
@@ -212,6 +217,8 @@ namespace polyfem::mesh
 		/// @brief Reference to the simulation state.
 		const State &state;
 		const Eigen::MatrixXd m_obstacle_displacements;
+
+		double total_area;
 
 		/// @brief Number of projection quantities (not including the position)
 		int n_quantities;

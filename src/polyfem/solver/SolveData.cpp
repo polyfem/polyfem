@@ -33,19 +33,31 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &rhs,
 		const double t,
 		const Eigen::MatrixXd &sol,
-		const json &args,
+		const bool ignore_inertia,
+		const double lagged_regularization_weight,
+		const int lagged_regularization_iterations,
+		const bool contact_enabled,
+		const json &barrier_stiffness,
+		const double dhat,
+		const ipc::BroadPhaseMethod broad_phase,
+		const double ccd_tolerance,
+		const long ccd_max_iterations,
+		const double friction_coefficient,
+		const double epsv,
+		const int friction_iterations,
+		const json &rayleigh_damping,
 		const StiffnessMatrix &mass,
 		const polyfem::mesh::Obstacle &obstacle,
 		const ipc::CollisionMesh &collision_mesh,
 		const double avg_mass)
 	{
 		assert(rhs_assembler != nullptr);
-		// assert(!is_time_dependent || time_integrator != nullptr);
-		const bool is_time_dependent = time_integrator == nullptr;
+		const bool is_time_dependent = time_integrator != nullptr;
+		assert(!is_time_dependent || time_integrator != nullptr);
 		const double dt = is_time_dependent ? time_integrator->dt() : 0.0;
 		const int ndof = n_bases * dim;
-		// if (is_formulation_mixed) //mixed not supported
-		// 	ndof_ += n_pressure_bases; // Pressure is a scalar
+		// if (is_formulation_mixed) // mixed not supported
+		// 	ndof_ += n_pressure_bases; // pressure is a scalar
 		const bool is_volume = dim == 3;
 
 		std::vector<std::shared_ptr<Form>> forms;
@@ -67,8 +79,9 @@ namespace polyfem::solver
 		damping_form = nullptr;
 		if (is_time_dependent)
 		{
-			if (!args["solver"]["ignore_inertia"])
+			if (!ignore_inertia)
 			{
+				assert(time_integrator != nullptr);
 				inertia_form = std::make_shared<InertiaForm>(mass, *time_integrator);
 				forms.push_back(inertia_form);
 			}
@@ -83,10 +96,9 @@ namespace polyfem::solver
 		}
 		else
 		{
-			const double lagged_regularization_weight = args["solver"]["advanced"]["lagged_regularization_weight"];
 			if (lagged_regularization_weight > 0)
 			{
-				forms.push_back(std::make_shared<LaggedRegForm>(args["solver"]["advanced"]["lagged_regularization_iterations"]));
+				forms.push_back(std::make_shared<LaggedRegForm>(lagged_regularization_iterations));
 				forms.back()->set_weight(lagged_regularization_weight);
 			}
 		}
@@ -98,16 +110,13 @@ namespace polyfem::solver
 
 		contact_form = nullptr;
 		friction_form = nullptr;
-		if (args["contact"]["enabled"])
+		if (contact_enabled)
 		{
-			const bool use_adaptive_barrier_stiffness = !args["solver"]["contact"]["barrier_stiffness"].is_number();
+			const bool use_adaptive_barrier_stiffness = !barrier_stiffness.is_number();
 
 			contact_form = std::make_shared<ContactForm>(
-				collision_mesh, args["contact"]["dhat"],
-				avg_mass, use_adaptive_barrier_stiffness, is_time_dependent,
-				args["solver"]["contact"]["CCD"]["broad_phase"],
-				args["solver"]["contact"]["CCD"]["tolerance"],
-				args["solver"]["contact"]["CCD"]["max_iterations"]);
+				collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness,
+				is_time_dependent, broad_phase, ccd_tolerance, ccd_max_iterations);
 
 			if (use_adaptive_barrier_stiffness)
 			{
@@ -116,7 +125,8 @@ namespace polyfem::solver
 			}
 			else
 			{
-				contact_form->set_weight(args["solver"]["contact"]["barrier_stiffness"]);
+				assert(barrier_stiffness.is_number());
+				contact_form->set_weight(barrier_stiffness);
 				logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
 			}
 
@@ -124,23 +134,20 @@ namespace polyfem::solver
 
 			// ----------------------------------------------------------------
 
-			if (args["contact"]["friction_coefficient"].get<double>() != 0)
+			if (friction_coefficient != 0)
 			{
 				friction_form = std::make_shared<FrictionForm>(
-					collision_mesh, args["contact"]["epsv"],
-					args["contact"]["friction_coefficient"], args["contact"]["dhat"],
-					args["solver"]["contact"]["CCD"]["broad_phase"],
-					is_time_dependent ? dt : 1.0, *contact_form,
-					args["solver"]["contact"]["friction_iterations"]);
+					collision_mesh, epsv, friction_coefficient, dhat, broad_phase,
+					is_time_dependent ? dt : 1.0, *contact_form, friction_iterations);
 				forms.push_back(friction_form);
 			}
 		}
 
 		std::vector<json> rayleigh_damping_jsons;
-		if (args["solver"]["rayleigh_damping"].is_array())
-			rayleigh_damping_jsons = args["solver"]["rayleigh_damping"].get<std::vector<json>>();
+		if (rayleigh_damping.is_array())
+			rayleigh_damping_jsons = rayleigh_damping.get<std::vector<json>>();
 		else
-			rayleigh_damping_jsons.push_back(args["solver"]["rayleigh_damping"]);
+			rayleigh_damping_jsons.push_back(rayleigh_damping);
 		if (is_time_dependent)
 		{
 			// Map from form name to form so RayleighDampingForm::create can get the correct form to damp

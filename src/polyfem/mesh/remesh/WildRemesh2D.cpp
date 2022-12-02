@@ -1,5 +1,6 @@
 #include "WildRemesh2D.hpp"
 
+#include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 
 #include <wmtk/utils/TupleUtils.hpp>
@@ -89,6 +90,10 @@ namespace polyfem::mesh
 
 		set_boundary_ids(edge_to_boundary_id);
 		set_body_ids(body_ids);
+
+		total_area = 0;
+		for (const Tuple &t : get_faces())
+			total_area += triangle_area(t);
 	}
 
 	// ========================================================================
@@ -257,6 +262,17 @@ namespace polyfem::mesh
 			}
 		}
 		return true;
+	}
+
+	// ========================================================================
+
+	double WildRemeshing2D::triangle_area(const Tuple &triangle) const
+	{
+		const std::array<WildRemeshing2D::Tuple, 3> vs = oriented_tri_vertices(triangle);
+		return utils::triangle_area_2D(
+			vertex_attrs[vs[0].vid(*this)].rest_position,
+			vertex_attrs[vs[1].vid(*this)].rest_position,
+			vertex_attrs[vs[2].vid(*this)].rest_position);
 	}
 
 	// ========================================================================

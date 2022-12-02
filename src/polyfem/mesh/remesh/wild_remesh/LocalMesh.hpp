@@ -23,6 +23,13 @@ namespace polyfem::mesh
 			const int n,
 			const bool include_global_boundary);
 
+		/// @brief Construct a local mesh as an n-ring around a vertex.
+		static LocalMesh flood_fill_n_ring(
+			const WildRemeshing2D &m,
+			const Tuple &center,
+			const double area,
+			const bool include_global_boundary);
+
 		int num_triangles() const { return m_triangles.rows(); }
 		int num_local_vertices() const { return m_num_local_vertices; }
 		int num_vertices() const { return m_rest_positions.rows(); }

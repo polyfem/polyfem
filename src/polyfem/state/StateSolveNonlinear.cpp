@@ -76,11 +76,14 @@ namespace polyfem
 		std::ofstream relax_diff_file(resolve_output_path("relax_diff.csv"));
 		relax_diff_file << "L2,Linf" << std::endl;
 
+		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
+		const double remesh_t0 = args["space"]["remesh"]["t0"];
+
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			solve_tensor_nonlinear(sol, t);
 
-			if (t0 + dt * t >= args["space"]["remesh"]["t0"].get<double>())
+			if (remesh_enabled && t0 + dt * t >= remesh_t0)
 			{
 				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
@@ -124,6 +127,8 @@ namespace polyfem
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 		}
 
+		energy_file.close();
+
 		solve_data.time_integrator->save_raw(
 			resolve_output_path(args["output"]["data"]["u_path"]),
 			resolve_output_path(args["output"]["data"]["v_path"]),
@@ -164,183 +169,63 @@ namespace polyfem
 			Eigen::MatrixXd velocity, acceleration;
 			initial_velocity(velocity);
 			assert(velocity.size() == sol.size());
-			initial_velocity(acceleration);
+			initial_acceleration(acceleration);
 			assert(acceleration.size() == sol.size());
 
 			const double dt = args["time"]["dt"];
 			solve_data.time_integrator->init(sol, velocity, acceleration, dt);
+		}
+		else
+		{
+			solve_data.time_integrator = nullptr;
 		}
 
 		// --------------------------------------------------------------------
 		// Initialize forms
 
-		const int ndof = n_bases * mesh->dimension();
-
-		// const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
-		// 	n_bases, bases, geom_bases(), assembler, ass_vals_cache, formulation(),
-		// 	mesh->dimension(), n_pressure_bases, boundary_nodes, local_boundary,
-		// 	local_neumann_boundary, n_boundary_samples(), rhs, t, sol, args, mass,
-		// 	obstacle, collision_mesh, avg_mass);
-
-		assert(solve_data.rhs_assembler != nullptr);
-
-		std::vector<std::shared_ptr<Form>> forms;
-		solve_data.elastic_form = std::make_shared<ElasticForm>(
-			n_bases, bases, geom_bases(),
-			assembler, ass_vals_cache,
+		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
+			n_bases,
+			bases,
+			geom_bases(),
+			assembler,
+			ass_vals_cache,
 			formulation(),
-			problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
-			mesh->is_volume());
-		forms.push_back(solve_data.elastic_form);
-
-		solve_data.body_form = std::make_shared<BodyForm>(
-			ndof, n_pressure_bases,
-			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
-			rhs, *solve_data.rhs_assembler,
-			assembler.density(),
-			/*apply_DBC=*/true, /*is_formulation_mixed=*/false, problem->is_time_dependent());
-		solve_data.body_form->update_quantities(t, sol);
-		forms.push_back(solve_data.body_form);
-
-		solve_data.inertia_form = nullptr;
-		solve_data.damping_form = nullptr;
-		if (problem->is_time_dependent())
-		{
-			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
-			if (!args["solver"]["ignore_inertia"])
-			{
-				solve_data.inertia_form = std::make_shared<InertiaForm>(mass, *solve_data.time_integrator);
-				forms.push_back(solve_data.inertia_form);
-			}
-			if (assembler.has_damping())
-			{
-				solve_data.damping_form = std::make_shared<ElasticForm>(
-					n_bases, bases, geom_bases(),
-					assembler, ass_vals_cache,
-					"Damping",
-					args["time"]["dt"],
-					mesh->is_volume());
-				forms.push_back(solve_data.damping_form);
-			}
-		}
-		else
-		{
-			const double lagged_regularization_weight = args["solver"]["advanced"]["lagged_regularization_weight"];
-			if (lagged_regularization_weight > 0)
-			{
-				forms.push_back(std::make_shared<LaggedRegForm>(args["solver"]["advanced"]["lagged_regularization_iterations"]));
-				forms.back()->set_weight(lagged_regularization_weight);
-			}
-		}
-
-		solve_data.al_form = std::make_shared<ALForm>(
-			ndof,
-			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
+			mesh->dimension(),
+			n_pressure_bases,
+			boundary_nodes,
+			local_boundary,
+			local_neumann_boundary,
+			n_boundary_samples(),
+			rhs,
+			t,
+			sol,
+			args["solver"]["ignore_inertia"],
+			args["solver"]["advanced"]["lagged_regularization_weight"],
+			args["solver"]["advanced"]["lagged_regularization_iterations"],
+			args["contact"]["enabled"],
+			args["solver"]["contact"]["barrier_stiffness"],
+			args["contact"]["dhat"],
+			args["solver"]["contact"]["CCD"]["broad_phase"],
+			args["solver"]["contact"]["CCD"]["tolerance"],
+			args["solver"]["contact"]["CCD"]["max_iterations"],
+			args["contact"]["friction_coefficient"],
+			args["contact"]["epsv"],
+			args["solver"]["contact"]["friction_iterations"],
+			args["solver"]["rayleigh_damping"],
 			mass,
-			*solve_data.rhs_assembler,
 			obstacle,
-			problem->is_time_dependent(),
-			t);
-		forms.push_back(solve_data.al_form);
-
-		solve_data.contact_form = nullptr;
-		solve_data.friction_form = nullptr;
-		if (args["contact"]["enabled"])
-		{
-
-			const bool use_adaptive_barrier_stiffness = !args["solver"]["contact"]["barrier_stiffness"].is_number();
-
-			solve_data.contact_form = std::make_shared<ContactForm>(
-				collision_mesh,
-				args["contact"]["dhat"],
-				avg_mass,
-				use_adaptive_barrier_stiffness,
-				/*is_time_dependent=*/solve_data.time_integrator != nullptr,
-				args["solver"]["contact"]["CCD"]["broad_phase"],
-				args["solver"]["contact"]["CCD"]["tolerance"],
-				args["solver"]["contact"]["CCD"]["max_iterations"]);
-
-			if (use_adaptive_barrier_stiffness)
-			{
-				solve_data.contact_form->set_weight(1);
-				logger().debug("Using adaptive barrier stiffness");
-			}
-			else
-			{
-				solve_data.contact_form->set_weight(args["solver"]["contact"]["barrier_stiffness"]);
-				logger().debug("Using fixed barrier stiffness of {}", solve_data.contact_form->barrier_stiffness());
-			}
-
-			forms.push_back(solve_data.contact_form);
-
-			// ----------------------------------------------------------------
-
-			if (args["contact"]["friction_coefficient"].get<double>() != 0)
-			{
-				solve_data.friction_form = std::make_shared<FrictionForm>(
-					collision_mesh,
-					args["contact"]["epsv"],
-					args["contact"]["friction_coefficient"],
-					args["contact"]["dhat"],
-					args["solver"]["contact"]["CCD"]["broad_phase"],
-					args.value("/time/dt"_json_pointer, 1.0), // dt=1.0 if static
-					*solve_data.contact_form,
-					args["solver"]["contact"]["friction_iterations"]);
-				forms.push_back(solve_data.friction_form);
-			}
-		}
-
-		std::vector<json> rayleigh_damping_jsons;
-		if (args["solver"]["rayleigh_damping"].is_array())
-			rayleigh_damping_jsons = args["solver"]["rayleigh_damping"].get<std::vector<json>>();
-		else
-			rayleigh_damping_jsons.push_back(args["solver"]["rayleigh_damping"]);
-		if (problem->is_time_dependent())
-		{
-			// Map from form name to form so RayleighDampingForm::create can get the correct form to damp
-			const std::unordered_map<std::string, std::shared_ptr<Form>> possible_forms_to_damp = {
-				{"elasticity", solve_data.elastic_form},
-				{"contact", solve_data.contact_form},
-			};
-
-			for (const json &params : rayleigh_damping_jsons)
-			{
-				forms.push_back(RayleighDampingForm::create(
-					params, possible_forms_to_damp,
-					*solve_data.time_integrator));
-			}
-		}
-		else if (rayleigh_damping_jsons.size() > 0)
-		{
-			log_and_throw_error("Rayleigh damping is only supported for time-dependent problems");
-		}
+			collision_mesh,
+			avg_mass);
 
 		// --------------------------------------------------------------------
 		// Initialize nonlinear problems
 
-		// const int ndof = n_bases * mesh->dimension();
+		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
 			*solve_data.rhs_assembler, t, forms);
 
-		///////////////////////////////////////////////////////////////////////
-		// Initialize time integrator
-		if (problem->is_time_dependent())
-		{
-			POLYFEM_SCOPED_TIMER("Initialize time integrator");
-
-			Eigen::MatrixXd velocity, acceleration;
-			initial_velocity(velocity);
-			assert(velocity.size() == sol.size());
-			initial_velocity(acceleration);
-			assert(acceleration.size() == sol.size());
-
-			const double dt = args["time"]["dt"];
-			solve_data.time_integrator->init(sol, velocity, acceleration, dt);
-		}
-		solve_data.update_dt();
-
-		///////////////////////////////////////////////////////////////////////
+		// --------------------------------------------------------------------
 
 		stats.solver_info = json::array();
 	}
