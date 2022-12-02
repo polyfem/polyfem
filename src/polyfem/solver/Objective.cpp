@@ -10,7 +10,8 @@ using namespace polyfem::utils;
 
 namespace polyfem::solver
 {
-	namespace {
+	namespace
+	{
 		bool delta(int i, int j)
 		{
 			return (i == j) ? true : false;
@@ -99,8 +100,8 @@ namespace polyfem::solver
 		template <typename T>
 		T homo_aux(const Eigen::Matrix<T, Eigen::Dynamic, 1> &F)
 		{
-			T val1 = F(0)*F(0);
-			T val2 = F(1)*F(1) + F(3)*F(3) + F(2)*F(2);
+			T val1 = F(0) * F(0);
+			T val2 = F(1) * F(1) + F(3) * F(3) + F(2) * F(2);
 
 			return val1 / (val2 + val1);
 		}
@@ -126,6 +127,11 @@ namespace polyfem::solver
 		std::shared_ptr<Objective> obj;
 		std::shared_ptr<StaticObjective> static_obj;
 		const std::string type = args["type"];
+		std::string transient_integral_type;
+		if (args["transient_integral_type"] == "steps")
+			transient_integral_type = args["steps"];
+		else
+			transient_integral_type = args["transient_integral_type"];
 
 		if (type == "trajectory")
 		{
@@ -1238,6 +1244,16 @@ namespace polyfem::solver
 			assert(step > 0 && step < weights.size());
 			weights[step] = 1;
 		}
+		else if (json(transient_integral_type_).is_array())
+		{
+			weights.assign(time_steps_ + 1, 0);
+			auto steps = json(transient_integral_type_);
+			for (const int step : steps)
+			{
+				assert(step > 0 && step < weights.size());
+				weights[step] = 1. / steps.size();
+			}
+		}
 		else
 			assert(false);
 
@@ -2043,12 +2059,12 @@ namespace polyfem::solver
 				{
 					stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
 					for (int i = 0, idx = 0; i < dim; i++)
-					for (int j = 0; j < dim; j++)
-					for (int k = 0; k < dim; k++)
-					for (int l = 0; l < dim; l++)
-					{
-						stiffness(idx++) = mu(q) * delta(i, k) * delta(j, l) + mu(q) * delta(i, l) * delta(j, k) + lambda(q) * delta(i, j) * delta(k, l);
-					}
+						for (int j = 0; j < dim; j++)
+							for (int k = 0; k < dim; k++)
+								for (int l = 0; l < dim; l++)
+								{
+									stiffness(idx++) = mu(q) * delta(i, k) * delta(j, l) + mu(q) * delta(i, l) * delta(j, k) + lambda(q) * delta(i, j) * delta(k, l);
+								}
 				}
 				else if (this->formulation_ == "NeoHookean")
 				{
@@ -2059,17 +2075,17 @@ namespace polyfem::solver
 					double J = def_grad.determinant();
 					double tmp1 = mu(q) - lambda(q) * std::log(J);
 					for (int i = 0, idx = 0; i < dim; i++)
-					for (int j = 0; j < dim; j++)
-					for (int k = 0; k < dim; k++)
-					for (int l = 0; l < dim; l++)
-					{
-						stiffness(idx++) = mu(q) * delta(i, k) * delta(j, l) + tmp1 * FmT(i, l) * FmT(k, j);
-					}
+						for (int j = 0; j < dim; j++)
+							for (int k = 0; k < dim; k++)
+								for (int l = 0; l < dim; l++)
+								{
+									stiffness(idx++) = mu(q) * delta(i, k) * delta(j, l) + tmp1 * FmT(i, l) * FmT(k, j);
+								}
 					stiffness += lambda(q) * utils::flatten(FmT_vec * FmT_vec.transpose()).transpose();
 				}
 				else
 					logger().error("Unknown formulation!");
-				
+
 				val.row(q) = stiffness.block(0, (id[0] * dim + id[1]) * dim * dim, 1, dim * dim);
 			}
 		});
@@ -2110,16 +2126,24 @@ namespace polyfem::solver
 	{
 		json tmp_arg = args;
 		std::vector<int> id(2);
-		id[0] = 0; id[1] = 0; tmp_arg["id"] = id;
+		id[0] = 0;
+		id[1] = 0;
+		tmp_arg["id"] = id;
 		js[0] = std::make_shared<HomogenizedStressObjective>(state, shape_param, elastic_param, tmp_arg);
 
-		id[0] = 0; id[1] = 1; tmp_arg["id"] = id;
+		id[0] = 0;
+		id[1] = 1;
+		tmp_arg["id"] = id;
 		js[1] = std::make_shared<HomogenizedStressObjective>(state, shape_param, elastic_param, tmp_arg);
 
-		id[0] = 1; id[1] = 0; tmp_arg["id"] = id;
+		id[0] = 1;
+		id[1] = 0;
+		tmp_arg["id"] = id;
 		js[2] = std::make_shared<HomogenizedStressObjective>(state, shape_param, elastic_param, tmp_arg);
 
-		id[0] = 1; id[1] = 1; tmp_arg["id"] = id;
+		id[0] = 1;
+		id[1] = 1;
+		tmp_arg["id"] = id;
 		js[3] = std::make_shared<HomogenizedStressObjective>(state, shape_param, elastic_param, tmp_arg);
 	}
 	double CompositeHomogenizedStressObjective::value()

@@ -67,6 +67,16 @@ namespace polyfem::solver
 				assert(step > 0 && step < weights.size());
 				weights[step] = 1;
 			}
+			else if (json(transient_integral_type).is_array())
+			{
+				weights.assign(n + 1, 0);
+				auto steps = json(transient_integral_type);
+				for (const int step : steps)
+				{
+					assert(step > 0 && step < weights.size());
+					weights[step] = 1. / steps.size();
+				}
+			}
 			else
 				assert(false);
 		}
@@ -178,7 +188,7 @@ namespace polyfem::solver
 				adjoint_nu.col(t) = state.diff_cached[t].nu;
 				adjoint_p.col(t) = state.diff_cached[t].p;
 			}
-			
+
 			if (param_name == "material")
 				dJ_material_transient(state, adjoint_nu, adjoint_p, grad);
 			else if (param_name == "shape")
