@@ -19,8 +19,6 @@ set(SOURCES
 	NonlinearSolver.tpp
 	OperatorSplittingSolver.hpp
 	OperatorSplittingSolver.cpp
-	ShapeProblem.hpp
-	ShapeProblem.cpp
 	ElasticProblem.hpp
 	ElasticProblem.cpp
 	DampingProblem.hpp

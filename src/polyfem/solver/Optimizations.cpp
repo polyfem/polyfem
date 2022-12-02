@@ -1,6 +1,5 @@
 #include "Optimizations.hpp"
 
-#include "ShapeProblem.hpp"
 #include "ElasticProblem.hpp"
 #include "InitialConditionProblem.hpp"
 #include "ControlProblem.hpp"
@@ -645,161 +644,6 @@ namespace polyfem::solver
 		return material_problem;
 	}
 
-	std::shared_ptr<OptimizationProblem> setup_shape_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
-	{
-
-		const auto &opt_params = state.args["optimization"];
-
-		std::shared_ptr<ShapeProblem> shape_problem = std::make_shared<ShapeProblem>(state, j);
-
-		Eigen::MatrixXd V;
-		Eigen::MatrixXi F;
-		state.get_vf(V, F);
-
-		const auto &shape_params = shape_problem->get_shape_params();
-		{
-			if (shape_params["restriction"].get<std::string>() == "cubic_hermite_spline" and shape_params.contains("spline_specification"))
-			{
-				// Assume there is one spline with id 10.
-				const auto &spline_params = shape_params["spline_specification"];
-				std::map<int, Eigen::MatrixXd> control_point, tangent;
-				int sampling;
-				bool couple_tangents; // couple the direction and magnitude of adjacent tangents
-				int opt_dof = 0;
-				int dim = state.mesh->dimension();
-				assert(dim == 2);
-				for (const auto &spline : spline_params)
-				{
-					const int boundary_id = spline["id"].get<int>();
-					auto control_points = spline["control_point"];
-					auto tangents = spline["tangent"];
-					sampling = spline["sampling"].get<int>();
-					Eigen::MatrixXd c(control_points.size(), dim), t(2 * control_points.size() - 2, dim);
-					if (control_points.size() == tangents.size())
-					{
-						couple_tangents = true;
-						for (int i = 0; i < control_points.size(); ++i)
-						{
-							assert(control_points[i].size() == dim);
-							assert(tangents[i].size() == dim);
-							for (int k = 0; k < dim; ++k)
-							{
-								c(i, k) = control_points[i][k];
-								for (int j = 0; j < 2; ++j)
-								{
-									if (i != 0)
-										t(2 * i - 1, k) = tangents[i][k];
-									if (i != (control_points.size() - 1))
-										t(2 * i, k) = tangents[i][k];
-								}
-							}
-						}
-					}
-					else if ((2 * control_points.size() - 2) == tangents.size())
-					{
-						couple_tangents = false;
-						for (int i = 0; i < control_points.size(); ++i)
-						{
-							assert(control_points[i].size() == dim);
-							for (int k = 0; k < dim; ++k)
-								c(i, k) = control_points[i][k];
-						}
-						for (int i = 0; i < tangents.size(); ++i)
-						{
-							assert(tangents[i].size() == dim);
-							for (int k = 0; k < dim; ++k)
-								t(i, k) = tangents[i][k];
-						}
-					}
-					else
-					{
-						logger().error("The number of tangents must be either equal to (or twice of) number of control points.");
-					}
-
-					control_point.insert({boundary_id, c});
-					tangent.insert({boundary_id, t});
-					opt_dof += 2 * (c.rows() - 2);
-					opt_dof += 2 * t.rows();
-					logger().trace("Given tangents are: {}", t);
-				}
-				CubicHermiteSplineParametrization spline_param(control_point, tangent, shape_problem->optimization_boundary_to_node, V, sampling);
-				shape_problem->param_to_x = [spline_param, opt_dof, dim](ShapeProblem::TVector &x, const Eigen::MatrixXd &V) {
-					std::map<int, Eigen::MatrixXd> control_point, tangent;
-					spline_param.get_parameters(V, control_point, tangent);
-					x.setZero(opt_dof);
-					int index = 0;
-					for (const auto &kv : control_point)
-					{
-						for (int i = 0; i < kv.second.rows(); ++i)
-						{
-							if (i == 0 || i == (kv.second.rows() - 1))
-								continue;
-							x.segment(index, dim) = kv.second.row(i);
-							index += dim;
-						}
-					}
-					for (const auto &kv : tangent)
-					{
-						for (int i = 0; i < kv.second.rows(); ++i)
-						{
-							x.segment(index, dim) = kv.second.row(i);
-							index += dim;
-						}
-					}
-					assert(index == x.size());
-				};
-				shape_problem->x_to_param = [control_point, tangent, spline_param](const ShapeProblem::TVector &x, const Eigen::MatrixXd &V_prev, Eigen::MatrixXd &V_) {
-					std::map<int, Eigen::MatrixXd> new_control_point, new_tangent;
-					int index = 0;
-					for (const auto &kv : control_point)
-					{
-						Eigen::MatrixXd control_point_matrix(kv.second.rows(), kv.second.cols());
-						for (int i = 0; i < kv.second.rows(); ++i)
-						{
-							if (i == 0 || i == (kv.second.rows() - 1))
-								control_point_matrix.row(i) = kv.second.row(i);
-							else
-							{
-								control_point_matrix.row(i) = x.segment(index, kv.second.cols());
-								index += kv.second.cols();
-							}
-						}
-						new_control_point[kv.first] = control_point_matrix;
-					}
-					for (const auto &kv : tangent)
-					{
-						Eigen::MatrixXd tangent_matrix(kv.second.rows(), kv.second.cols());
-						for (int i = 0; i < kv.second.rows(); ++i)
-						{
-							tangent_matrix.row(i) = x.segment(index, kv.second.cols());
-							index += kv.second.cols();
-						}
-						new_tangent[kv.first] = tangent_matrix;
-					}
-					spline_param.reparametrize(new_control_point, new_tangent, V_prev, V_);
-				};
-				shape_problem->dparam_to_dx = [control_point, spline_param, opt_dof, dim, couple_tangents](ShapeProblem::TVector &grad_x, const ShapeProblem::TVector &grad_v) {
-					grad_x.setZero(opt_dof);
-					int index = 0;
-					for (const auto &kv : control_point)
-					{
-						Eigen::VectorXd grad_control_point, grad_tangent;
-						spline_param.derivative_wrt_params(grad_v, kv.first, couple_tangents, grad_control_point, grad_tangent);
-						grad_x.segment(index, grad_control_point.rows() - 2 * dim) = grad_control_point.segment(dim, grad_control_point.rows() - 2 * dim);
-						index += grad_control_point.rows() - 2 * dim;
-						grad_x.segment(index, grad_tangent.rows()) = grad_tangent;
-						index += grad_tangent.rows();
-					}
-				};
-			}
-		}
-
-		shape_problem->param_to_x(x_initial, V);
-		shape_problem->set_optimization_dim(x_initial.size());
-
-		return shape_problem;
-	}
-
 	std::shared_ptr<OptimizationProblem> setup_control_optimization(State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
 		const auto &opt_params = state.args["optimization"];
@@ -828,7 +672,7 @@ namespace polyfem::solver
 
 	std::shared_ptr<OptimizationProblem> setup_optimization(const std::string &type, State &state, const std::shared_ptr<CompositeFunctional> j, Eigen::VectorXd &x_initial)
 	{
-		std::map<std::string, std::function<std::shared_ptr<OptimizationProblem>(State &, const std::shared_ptr<CompositeFunctional>, Eigen::VectorXd &)>> setup_functions{{"shape", setup_shape_optimization}, {"initial", setup_initial_condition_optimization}, {"control", setup_control_optimization}, {"material", setup_material_optimization}, {"friction", setup_friction_optimization}, {"damping", setup_damping_optimization}};
+		std::map<std::string, std::function<std::shared_ptr<OptimizationProblem>(State &, const std::shared_ptr<CompositeFunctional>, Eigen::VectorXd &)>> setup_functions{{"initial", setup_initial_condition_optimization}, {"control", setup_control_optimization}, {"material", setup_material_optimization}, {"friction", setup_friction_optimization}, {"damping", setup_damping_optimization}};
 
 		return setup_functions[type](state, j, x_initial);
 	}
