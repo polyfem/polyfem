@@ -128,12 +128,19 @@ namespace polyfem::solver
 		std::shared_ptr<Objective> obj;
 		std::shared_ptr<StaticObjective> static_obj;
 		const std::string type = args["type"];
-		
+
 		std::string transient_integral_type;
 		if (args.contains("transient_integral_type"))
 		{
 			if (args["transient_integral_type"] == "steps")
-				transient_integral_type = args["steps"];
+			{
+				auto steps = args["steps"].get<std::vector<int>>();
+				transient_integral_type = "[";
+				for (auto s : steps)
+					transient_integral_type += std::to_string(s) + ",";
+				transient_integral_type.pop_back();
+				transient_integral_type += "]";
+			}
 			else
 				transient_integral_type = args["transient_integral_type"];
 		}
@@ -236,7 +243,7 @@ namespace polyfem::solver
 			}
 
 			if (state.problem->is_time_dependent())
-				obj = std::make_shared<TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], args["transient_integral_type"], static_obj);
+				obj = std::make_shared<TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], transient_integral_type, static_obj);
 			else
 				obj = static_obj;
 		}
@@ -259,7 +266,7 @@ namespace polyfem::solver
 
 			std::shared_ptr<solver::StaticObjective> tmp = std::make_shared<solver::StressObjective>(state, shape_param, elastic_param, args);
 			if (state.problem->is_time_dependent())
-				obj = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], args["transient_integral_type"], tmp);
+				obj = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], transient_integral_type, tmp);
 			else
 				obj = tmp;
 		}
@@ -298,7 +305,7 @@ namespace polyfem::solver
 			std::shared_ptr<solver::PositionObjective> tmp = std::make_shared<solver::PositionObjective>(state, shape_param, args);
 			tmp->set_dim(args["dim"]);
 			if (state.problem->is_time_dependent())
-				obj = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], args["transient_integral_type"], tmp);
+				obj = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], transient_integral_type, tmp);
 			else
 				obj = tmp;
 		}
@@ -1254,10 +1261,10 @@ namespace polyfem::solver
 			assert(step > 0 && step < weights.size());
 			weights[step] = 1;
 		}
-		else if (json(transient_integral_type_).is_array())
+		else if (json::parse(transient_integral_type_).is_array())
 		{
 			weights.assign(time_steps_ + 1, 0);
-			auto steps = json(transient_integral_type_);
+			auto steps = json::parse(transient_integral_type_);
 			for (const int step : steps)
 			{
 				assert(step > 0 && step < weights.size());
@@ -2194,7 +2201,7 @@ namespace polyfem::solver
 			log_and_throw_error("CollisionBarrierObjective needs non-empty shape parameter!");
 		else if (shape_param_->name() != "shape")
 			log_and_throw_error("CollisionBarrierObjective wrong parameter type input!");
-	
+
 		const auto &state = shape_param_->get_state();
 
 		Eigen::MatrixXd boundary_nodes_pos_;
@@ -2209,9 +2216,9 @@ namespace polyfem::solver
 		static Eigen::MatrixXd cached_displaced_surface;
 		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
 			return;
-		
+
 		constraint_set.build(collision_mesh_, displaced_surface, dhat, 0, broad_phase_method);
-		
+
 		cached_displaced_surface = displaced_surface;
 	}
 
