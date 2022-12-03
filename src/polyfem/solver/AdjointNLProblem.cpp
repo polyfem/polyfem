@@ -314,10 +314,15 @@ namespace polyfem::solver
 	{
 		// update to new parameter and check if the new parameter is valid to solve
 		bool solve = true;
+		int cumulative = 0;
 		for (const auto &p : parameters_)
 		{
-			solve &= p->pre_solve(newX);
+			solve &= p->pre_solve(newX.segment(cumulative, p->optimization_dim()));
+			cumulative += p->optimization_dim();
 		}
+
+		std::cout << "newX" << std::endl;
+		std::cout << newX << std::endl;
 
 		// solve PDE
 		if (solve)
@@ -325,9 +330,11 @@ namespace polyfem::solver
 			solve_pde();
 
 			// post actions after solving PDE
+			cumulative = 0;
 			for (const auto &p : parameters_)
 			{
-				p->post_solve(newX);
+				p->post_solve(newX.segment(cumulative, p->optimization_dim()));
+				cumulative += p->optimization_dim();
 			}
 
 			cur_x = newX;
