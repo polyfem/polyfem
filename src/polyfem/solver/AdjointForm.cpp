@@ -67,10 +67,10 @@ namespace polyfem::solver
 				assert(step > 0 && step < weights.size());
 				weights[step] = 1;
 			}
-			else if (json(transient_integral_type).is_array())
+			else if (json::parse(transient_integral_type).is_array())
 			{
 				weights.assign(n + 1, 0);
-				auto steps = json(transient_integral_type);
+				auto steps = json::parse(transient_integral_type);
 				for (const int step : steps)
 				{
 					assert(step > 0 && step < weights.size());

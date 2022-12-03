@@ -852,7 +852,19 @@ TEST_CASE("dirichlet-sdf-new", "[adjoint_method]")
 	std::shared_ptr<StaticObjective> func_aux = sdf_aux;
 	json functional_args = opt_args["functionals"][0];
 
-	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], func_aux);
+	std::string transient_integral_type;
+	if (opt_args["functionals"][0]["transient_integral_type"] == "steps")
+	{
+		auto steps = opt_args["functionals"][0]["steps"].get<std::vector<int>>();
+		transient_integral_type = "[";
+		for (auto s : steps)
+			transient_integral_type += std::to_string(s) + ",";
+		transient_integral_type.pop_back();
+		transient_integral_type += "]";
+	}
+	else
+		transient_integral_type = opt_args["functionals"][0]["transient_integral_type"];
+	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], transient_integral_type, func_aux);
 
 	int time_steps = state.args["time"]["time_steps"].get<int>();
 
