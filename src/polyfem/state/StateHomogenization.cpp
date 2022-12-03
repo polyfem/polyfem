@@ -12,7 +12,6 @@
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
-#include <polyfem/solver/forms/LaggedRegForm.hpp>
 
 #include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
@@ -89,7 +88,7 @@ namespace
     }
 }
 
-void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_)
+void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::MatrixXd &sol_)
 {
     const int dim = mesh->dimension();
     const int ndof = n_bases * dim;
@@ -107,20 +106,10 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eige
         mesh->is_volume());
     forms.push_back(elastic_form);
 
-    std::shared_ptr<LaggedRegForm> lag_form = nullptr;
-    if (target.size() == sol_.size())
-    {
-        lag_form = std::make_shared<LaggedRegForm>(1);
-        lag_form->init_lagging(target);
-        lag_form->disable();
-        forms.push_back(lag_form);
-    }
-
     std::shared_ptr<ContactForm> contact_form = nullptr;
     std::shared_ptr<FrictionForm> friction_form = nullptr;
     if (args["contact"]["enabled"])
     {
-
         const bool use_adaptive_barrier_stiffness = !args["solver"]["contact"]["barrier_stiffness"].is_number();
 
         contact_form = std::make_shared<ContactForm>(
@@ -178,23 +167,6 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eige
     std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_homo_solver<NLProblem>(args["solver"]);
     
     Eigen::VectorXd tmp_sol;
-    if (lag_form)
-    {
-        for (auto form : forms)
-            form->set_weight(1e-8); // do not disable so it detects nan
-        lag_form->set_weight(1);
-        lag_form->enable();
-
-        tmp_sol = homo_problem->full_to_reduced(sol_);
-        homo_problem->init(homo_problem->reduced_to_full(tmp_sol));
-        nl_solver->minimize(*homo_problem, tmp_sol);
-        sol_ = homo_problem->reduced_to_full(tmp_sol) - macro_field;
-
-        for (auto form : forms)
-            form->set_weight(1);
-        lag_form->disable();
-    }
-    
     tmp_sol = homo_problem->full_to_reduced(sol_);
     export_data(homo_problem->reduced_to_full(tmp_sol), Eigen::MatrixXd());
     

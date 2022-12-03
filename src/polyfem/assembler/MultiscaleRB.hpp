@@ -44,12 +44,12 @@ namespace polyfem
 			void sample_def_grads(const Eigen::VectorXd &sample_det, const Eigen::VectorXd &sample_amp, const int n_sample_dir, std::vector<Eigen::MatrixXd> &def_grads) const;
 			void create_reduced_basis(const std::vector<Eigen::MatrixXd> &def_grads);
 			void projection(const Eigen::MatrixXd &F, Eigen::MatrixXd &x) const;
-			
+
 			void homogenization(const Eigen::MatrixXd &def_grad, double &energy) const override;
 			void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress) const override;
-			void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const;
+			void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const override;
 
-			void homogenize_stiffness(const Eigen::MatrixXd &x, Eigen::MatrixXd &stiffness) const;
+			void homogenize_stiffness(const Eigen::MatrixXd &x, Eigen::MatrixXd &stiffness) const override;
 
 			std::string name() const override { return "MultiscaleRB"; }
 
