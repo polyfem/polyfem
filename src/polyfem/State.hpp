@@ -727,7 +727,7 @@ private:
 		//-----------------homogenization--------------------
 		//---------------------------------------------------
 public:
-		void solve_homogenized_field(const Eigen::MatrixXd &disp_grad, const Eigen::MatrixXd &target, Eigen::MatrixXd &sol_);
+		void solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::MatrixXd &sol_);
 		void solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_field2, Eigen::MatrixXd &macro_field1, Eigen::MatrixXd &sol_);
 	};
 

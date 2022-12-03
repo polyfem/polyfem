@@ -57,13 +57,15 @@ namespace polyfem
 			std::shared_ptr<State> get_microstructure_state() { return state; }
 
 			void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
-			
+
 			virtual void homogenization(const Eigen::MatrixXd &def_grad, double &energy) const;
 			virtual void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress) const;
+			virtual void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const;
 
 			double homogenize_energy(const Eigen::MatrixXd &x) const;
 			Eigen::MatrixXd homogenize_def_grad(const Eigen::MatrixXd &x) const;
 			void homogenize_stress(const Eigen::MatrixXd &x, Eigen::MatrixXd &stress) const;
+			virtual void homogenize_stiffness(const Eigen::MatrixXd &x, Eigen::MatrixXd &stiffness) const;
 
 			virtual std::string name() const { return "Multiscale"; }
 

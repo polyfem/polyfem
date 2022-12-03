@@ -12,6 +12,7 @@
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 
+#include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/NonlinearSolver.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/solver/DenseNewtonDescentSolver.hpp>
@@ -159,46 +160,131 @@ namespace polyfem::assembler
 		stress /= microstructure_volume;
 	}
 
-	void Multiscale::homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress) const
+	void Multiscale::homogenize_stiffness(const Eigen::MatrixXd &x, Eigen::MatrixXd &stiffness) const
 	{
-		Eigen::MatrixXd fluctuated;
+		double time;
+		POLYFEM_SCOPED_TIMER("homogenize variables", time);
+
+		const auto &bases = state->bases;
+		const auto &gbases = state->geom_bases();
+
+		Eigen::MatrixXd avg_stiffness;
+		avg_stiffness.setZero(size()*size(), size()*size());
+
+		Eigen::MatrixXd stiffnesses;
+		Eigen::MatrixXd CB;
+		CB.setZero(size()*size(), state->ndof());
+		for (int e = 0; e < bases.size(); ++e)
+		{
+			assembler::ElementAssemblyValues vals;
+			state->ass_vals_cache.compute(e, size() == 3, bases[e], gbases[e], vals);
+
+			const quadrature::Quadrature &quadrature = vals.quadrature;
+			Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+
+			state->assembler.compute_stiffness_value(state->formulation(), vals, quadrature.points, x, stiffnesses);
+			avg_stiffness += utils::unflatten(stiffnesses.transpose() * da, size()*size());
+
+			for (int i = 0; i < vals.basis_values.size(); i++)
+			{
+				const auto &v = vals.basis_values[i];
+				assert(v.global.size() == 1);
+				for (int a = 0; a < size(); a++)
+				for (int b = 0; b < size(); b++)
+				for (int k = 0; k < size(); k++)
+				for (int l = 0; l < size(); l++)
+				{
+					int X = a * size() + b;
+					int Y = k * size() + l;
+					CB(X, v.global[0].index * size() + k) += (stiffnesses.col(X * size() * size() + Y).array() * v.grad_t_m.col(l).array() * da.array()).sum();
+				}
+			}
+		}
+
+		// compute term2 given CB
+		Eigen::MatrixXd term2;
+		term2.setZero(CB.cols(), CB.rows());
+		if (!state->solve_data.nl_problem)
+			log_and_throw_error("Need nl problem to homogenize stiffness!");
+		if (!state->diff_cached.size())
+			log_and_throw_error("Need differentiability of micro state!");
+
+		for (int i = 0; i < CB.rows(); i++)
+		{
+			Eigen::VectorXd b = CB.row(i);
+			state->solve_adjoint(b);
+			term2.col(i) = state->diff_cached[0].p;
+		}
+
+		stiffness = (avg_stiffness - CB * term2) / microstructure_volume;
+	}
+
+	void Multiscale::homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const
+	{
+		Eigen::MatrixXd x;
 		{
 			double time;
 			POLYFEM_SCOPED_TIMER("micro newton", time);
 			Eigen::MatrixXd disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
-			Eigen::MatrixXd x;
-			state->solve_homogenized_field(disp_grad, fluctuated, x);
-			// serial only
-			// {
-			// 	Eigen::MatrixXd y, pressure;
-			// 	state->disp_offset = generate_linear_field(*state, disp_grad);
-			// 	state->solve_problem(y, pressure);
-			// 	logger().error("diff: {}, norm: {}", (x-y).norm(), x.norm());
-			// }
-			fluctuated = x;
+
+			state->disp_offset.setZero(state->ndof(), 1);
+			for (int i = 0; i < state->n_bases; i++)
+				state->disp_offset.block(i * state->mesh->dimension(), 0, state->mesh->dimension(), 1) = disp_grad * state->mesh_nodes->node_position(i).transpose();
+
+			Eigen::MatrixXd pressure;
+			state->solve_problem(x, pressure);
 		}
 
 		// effective energy = average energy over unit cell
-		energy = homogenize_energy(fluctuated);
+		energy = homogenize_energy(x);
 
 		// effective stress = average stress over unit cell
-		homogenize_stress(fluctuated, stress);
+		homogenize_stress(x, stress);
+
+		homogenize_stiffness(x, stiffness);
+	}
+
+	void Multiscale::homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress) const
+	{
+		Eigen::MatrixXd x;
+		{
+			double time;
+			POLYFEM_SCOPED_TIMER("micro newton", time);
+			Eigen::MatrixXd disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
+
+			state->disp_offset.setZero(state->ndof(), 1);
+			for (int i = 0; i < state->n_bases; i++)
+				state->disp_offset.block(i * state->mesh->dimension(), 0, state->mesh->dimension(), 1) = disp_grad * state->mesh_nodes->node_position(i).transpose();
+
+			Eigen::MatrixXd pressure;
+			state->solve_problem(x, pressure);
+		}
+
+		// effective energy = average energy over unit cell
+		energy = homogenize_energy(x);
+
+		// effective stress = average stress over unit cell
+		homogenize_stress(x, stress);
 	}
 
 	void Multiscale::homogenization(const Eigen::MatrixXd &def_grad, double &energy) const
 	{
-		Eigen::MatrixXd fluctuated;
+		Eigen::MatrixXd x;
 		{
 			double time;
 			POLYFEM_SCOPED_TIMER("micro newton", time);
 			Eigen::MatrixXd disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
-			Eigen::MatrixXd x;
-			state->solve_homogenized_field(disp_grad, fluctuated, x);
-			fluctuated = x;
+
+			state->disp_offset.setZero(state->ndof(), 1);
+			for (int i = 0; i < state->n_bases; i++)
+				state->disp_offset.block(i * state->mesh->dimension(), 0, state->mesh->dimension(), 1) = disp_grad * state->mesh_nodes->node_position(i).transpose();
+
+			Eigen::MatrixXd pressure;
+			state->solve_problem(x, pressure);
 		}
 
 		// effective energy = average energy over unit cell
-		energy = homogenize_energy(fluctuated);
+		energy = homogenize_energy(x);
 	}
 
 	void Multiscale::set_microstructure_state(const std::shared_ptr<polyfem::State> state_ptr)
@@ -334,6 +420,59 @@ namespace polyfem::assembler
 		const auto &bs = data.vals.basis_values;
 		Eigen::MatrixXd hessian;
 		hessian.setZero(bs.size() * size(), bs.size() * size());
+		Eigen::MatrixXd local_disp;
+		local_disp.setZero(bs.size(), size());
+		for (size_t i = 0; i < bs.size(); ++i)
+		{
+			const auto &b = bs[i];
+			for (size_t ii = 0; ii < b.global.size(); ++ii)
+				for (int d = 0; d < size(); ++d)
+					local_disp(i, d) += b.global[ii].val * data.x(b.global[ii].index * size() + d);
+		}
+
+		const int n_pts = data.da.size();
+
+		Eigen::MatrixXd def_grad(size(), size());
+		Eigen::MatrixXd stress_tensor, hessian_temp;
+		for (long p = 0; p < n_pts; ++p)
+		{
+			Eigen::MatrixXd grad(bs.size(), size());
+
+			for (size_t i = 0; i < bs.size(); ++i)
+				grad.row(i) = bs[i].grad.row(p);
+
+			Eigen::MatrixXd jac_it = data.vals.jac_it[p];
+			
+			def_grad = local_disp.transpose() * grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
+
+			double energy = 0;
+			homogenization(def_grad, energy, stress_tensor, hessian_temp);
+
+			{
+				Eigen::MatrixXd hessian_temp2 = hessian_temp;
+				for (int i = 0; i < size(); i++)
+				for (int j = 0; j < size(); j++)
+				for (int k = 0; k < size(); k++)
+				for (int l = 0; l < size(); l++)
+					hessian_temp(i + j * size(), k + l * size()) = hessian_temp2(i * size() + j, k * size() + l);
+			}
+
+			Eigen::MatrixXd delF_delU_tensor(jac_it.size(), grad.size());
+			Eigen::MatrixXd temp;
+			for (size_t j = 0; j < local_disp.cols(); ++j)
+			{
+				temp.setZero(size(), size());
+				for (size_t i = 0; i < local_disp.rows(); ++i)
+				{
+					temp.row(j) = grad.row(i);
+					temp = temp * jac_it;
+					Eigen::VectorXd temp_flattened(Eigen::Map<Eigen::VectorXd>(temp.data(), temp.size()));
+					delF_delU_tensor.col(i * size() + j) = temp_flattened;
+				}
+			}
+
+			hessian += delF_delU_tensor.transpose() * hessian_temp * delF_delU_tensor * data.da(p);
+		}
 
 		return hessian;
 	}
