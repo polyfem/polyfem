@@ -379,19 +379,16 @@ namespace polyfem::assembler
 
 		// compute term2 given CB
 		{
-			Eigen::MatrixXd Dinv;
-			{
-				Eigen::MatrixXd hessian;
-				state->assembler.assemble_energy_hessian(
-					state->formulation(), size() == 3, state->n_bases, false, state->bases,
-					state->geom_bases(), state->ass_vals_cache, 0, x, x, reduced_basis, hessian);
+			Eigen::MatrixXd hessian;
+			state->assembler.assemble_energy_hessian(
+				state->formulation(), size() == 3, state->n_bases, false, state->bases,
+				state->geom_bases(), state->ass_vals_cache, 0, x, x, reduced_basis, hessian);
 
-				Dinv = hessian.inverse();
-			}
-			term2 = CB * Dinv * CB.transpose() / microstructure_volume;
+			Eigen::LLT<Eigen::MatrixXd> llt(hessian);
+			term2 = CB * llt.solve(CB.transpose());
 		}
 
-		stiffness = avg_stiffness - term2;
+		stiffness = avg_stiffness - term2 / microstructure_volume;
 	}
 
 	void MultiscaleRB::homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const
