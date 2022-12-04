@@ -263,45 +263,36 @@ void State::solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_fie
     Eigen::VectorXd tmp_sol = homo_problem->full_to_reduced(sol_);
     
     homo_problem->set_disp_offset(macro_field1);
-    {
-        bool flag = false;
-        Eigen::MatrixXd err = sol_ + macro_field1 - homo_problem->reduced_to_full(tmp_sol);
-        for (int i = 0; i < err.size(); i++)
-            if (abs(err(i)) > 1e-8)
-            {
-                flag = true;
-                std::cout << i << " " << err(i) << ", ";
-            }
-        if (flag)
-        {
-            std::cout << "\nperiodic reduce map\n" << periodic_reduce_map.transpose() << "\n";
-            exit(0);
-        }
-    }
+    Eigen::MatrixXd cur_disp = homo_problem->reduced_to_full(tmp_sol);
+    const Eigen::MatrixXd displaced = collision_mesh.displace_vertices(
+				utils::unflatten(cur_disp, mesh->dimension()));
     if (!std::isfinite(homo_problem->value(tmp_sol))
-        || !homo_problem->is_step_valid(tmp_sol, tmp_sol)
-        || !homo_problem->is_step_collision_free(tmp_sol, tmp_sol))
+        || ipc::has_intersections(collision_mesh, displaced))
     {
         args["output"]["paraview"]["file_name"] = "nan.vtu";
-        export_data(homo_problem->reduced_to_full(tmp_sol), Eigen::MatrixXd());
+        export_data(cur_disp, Eigen::MatrixXd());
         log_and_throw_error("invalid last solution!");
     }
 
+    Eigen::MatrixXd last_disp = cur_disp;
+    int ind = 0;
     while (true)
     {
         double coeff = 1;
         Eigen::VectorXd tmp_macro_field = macro_field2;
         homo_problem->set_disp_offset(tmp_macro_field);
+        cur_disp = homo_problem->reduced_to_full(tmp_sol);
 
         while (!std::isfinite(homo_problem->value(tmp_sol))
-            || !homo_problem->is_step_valid(tmp_sol, tmp_sol)
-            || !homo_problem->is_step_collision_free(tmp_sol, tmp_sol))
+            || !homo_problem->is_step_valid(last_disp, cur_disp)
+            || !homo_problem->is_step_collision_free(last_disp, cur_disp))
         {
             coeff /= 2;
             tmp_macro_field = coeff * macro_field2 + (1 - coeff) * macro_field1;
             homo_problem->set_disp_offset(tmp_macro_field);
+            cur_disp = homo_problem->reduced_to_full(tmp_sol);
 
-            logger().trace("NAN detected, reduce step size to {}", coeff);
+            logger().info("NAN detected, reduce step size to {}", coeff);
 
             if (coeff < 1e-16)
                 log_and_throw_error("Failed to find a valid step!");
@@ -309,7 +300,18 @@ void State::solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_fie
 
         homo_problem->init(homo_problem->reduced_to_full(tmp_sol));
         nl_solver->minimize(*homo_problem, tmp_sol);
-        sol_ = homo_problem->reduced_to_full(tmp_sol);
+        last_disp = homo_problem->reduced_to_full(tmp_sol);
+
+        out_geom.save_vtu(
+            "debug_" + std::to_string(ind) + ".vtu",
+            *this,
+            last_disp,
+            Eigen::MatrixXd(),
+            1.0, 1.0,
+            io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
+            is_contact_enabled(),
+            solution_frames);
+        ind++;
 
         macro_field1 = tmp_macro_field;
 
@@ -317,6 +319,8 @@ void State::solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_fie
             break;
     }
     
+    sol_ = homo_problem->reduced_to_full(tmp_sol);
+
     static int index = 0;
     StiffnessMatrix H;
     homo_problem->hessian(tmp_sol, H);

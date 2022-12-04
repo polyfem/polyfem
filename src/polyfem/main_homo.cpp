@@ -148,7 +148,7 @@ int main(int argc, char **argv)
 		micro_state->args["output"]["paraview"]["file_name"] = "load_" + std::to_string(-l) + ".vtu";
 
 		macro2 = generate_linear_field(*micro_state, F);
-		micro_state->solve_homogenized_field_incremental(macro2, macro1, fluctuated);
+		micro_state->solve_homogenized_field(F, fluctuated);
 		macro1 = macro2;
 
 		// effective energy = average energy over unit cell
