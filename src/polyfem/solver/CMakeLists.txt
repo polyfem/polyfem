@@ -19,16 +19,8 @@ set(SOURCES
 	NonlinearSolver.tpp
 	OperatorSplittingSolver.hpp
 	OperatorSplittingSolver.cpp
-	ElasticProblem.hpp
-	ElasticProblem.cpp
-	DampingProblem.hpp
-	DampingProblem.cpp
-	FrictionProblem.hpp
-	FrictionProblem.cpp
 	InitialConditionProblem.hpp
 	InitialConditionProblem.cpp
-	ControlProblem.cpp
-	ControlProblem.hpp
 	OptimizationProblem.hpp
 	OptimizationProblem.cpp
 	Optimizations.hpp

@@ -12,8 +12,6 @@
 
 namespace polyfem::solver
 {
-	void single_optimization(State &state, const std::shared_ptr<CompositeFunctional> j);
-
 	void general_optimization(State &state, const std::shared_ptr<CompositeFunctional> j);
 
 	json apply_opt_json_spec(const json &input_args, bool strict_validation);
