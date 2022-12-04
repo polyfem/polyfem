@@ -15,8 +15,9 @@ namespace polyfem
 
 		Eigen::VectorXd initial_guess() const override
 		{
-			assert(false);
-			return Eigen::VectorXd();
+			Eigen::VectorXd x(2);
+			x << get_state().assembler.damping_params()[0], get_state().assembler.damping_params()[1];
+			return x;
 		}
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
@@ -25,11 +26,10 @@ namespace polyfem
 
 		bool pre_solve(const Eigen::VectorXd &newX) override;
 
+		Eigen::VectorXd get_lower_bound(const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd get_upper_bound(const Eigen::VectorXd &x) const override;
+
 	private:
-		json material_params;
-
-		double target_weight = 1;
-
 		double min_phi, min_psi;
 		double max_phi, max_psi;
 	};

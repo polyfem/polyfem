@@ -321,8 +321,8 @@ namespace polyfem::solver
 			cumulative += p->optimization_dim();
 		}
 
-		std::cout << "newX" << std::endl;
-		std::cout << newX << std::endl;
+		// std::cout << "newX" << std::endl;
+		// std::cout << newX << std::endl;
 
 		// solve PDE
 		if (solve)

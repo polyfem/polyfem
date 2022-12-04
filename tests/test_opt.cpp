@@ -156,11 +156,29 @@ namespace
 
 TEST_CASE("material-opt", "[optimization]")
 {
-	run_trajectory_opt("material-opt");
+	run_opt_new("material-opt");
 	auto energies = read_energy("material-opt");
 
-	REQUIRE(energies[0] == Approx(0.00143472).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(1.10657e-05).epsilon(1e-4));
+	REQUIRE(energies[0] == Approx(59.5421809553).epsilon(1e-3));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.054021687121).epsilon(1e-3));
+}
+
+TEST_CASE("friction-opt", "[optimization]")
+{
+	run_opt_new("friction-opt");
+	auto energies = read_energy("friction-opt");
+
+	REQUIRE(energies[0] == Approx(0.000103767819516).epsilon(1e-1));
+	REQUIRE(energies[energies.size() - 1] == Approx(3.26161994783e-07).epsilon(1e-1));
+}
+
+TEST_CASE("damping-opt", "[optimization]")
+{
+	run_opt_new("damping-opt");
+	auto energies = read_energy("damping-opt");
+
+	REQUIRE(energies[0] == Approx(4.14517346014e-07).epsilon(1e-3));
+	REQUIRE(energies[energies.size() - 1] == Approx(2.12684299792e-09).epsilon(1e-3));
 }
 
 TEST_CASE("initial-opt", "[optimization]")

@@ -669,7 +669,8 @@
         ],
         "optional": [
             "phi_bound",
-            "psi_bound"
+            "psi_bound",
+            "max_change"
         ],
         "doc": "TODO"
     },
@@ -682,7 +683,8 @@
             "states"
         ],
         "optional": [
-            "bound"
+            "bound",
+            "max_change"
         ],
         "doc": "TODO"
     },
@@ -764,9 +766,11 @@
             "E_nu",
             "E_nu_log",
             "constant_E_nu",
+            "constant_E_nu_log",
             "lambda_mu",
             "lambda_mu_log",
-            "constant_lambda_mu"
+            "constant_lambda_mu",
+            "constant_lambda_mu_log"
         ],
         "doc": "TODO"
     },
