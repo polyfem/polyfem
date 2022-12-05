@@ -12,6 +12,8 @@ set(SOURCES
 	InertiaForm.cpp
 	LaggedRegForm.cpp
 	LaggedRegForm.hpp
+	LinearForm.cpp
+	LinearForm.hpp
 	FrictionForm.cpp
 	FrictionForm.hpp
 	ContactForm.cpp
