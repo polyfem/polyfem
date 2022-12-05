@@ -1226,153 +1226,167 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l01122" name="l01122"></a><span class="lineno"> 1122</span>            codim_edges = cells;</div>
 <div class="line"><a id="l01123" name="l01123"></a><span class="lineno"> 1123</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (cells.cols() == 3)</div>
 <div class="line"><a id="l01124" name="l01124"></a><span class="lineno"> 1124</span>            faces = cells;</div>
-<div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (cells.cols() == 4)</div>
 <div class="line"><a id="l01126" name="l01126"></a><span class="lineno"> 1126</span>        {</div>
-<div class="line"><a id="l01127" name="l01127"></a><span class="lineno"> 1127</span>            assert(cells.cols() == 4);</div>
-<div class="line"><a id="l01128" name="l01128"></a><span class="lineno"> 1128</span>            Eigen::MatrixXd surface_vertices;</div>
-<div class="line"><a id="l01129" name="l01129"></a><span class="lineno"> 1129</span>            <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a614178cdb624f2eff9500fabb9a4f432">extract_triangle_surface_from_tets</a>(vertices, cells, surface_vertices, faces);</div>
-<div class="line"><a id="l01130" name="l01130"></a><span class="lineno"> 1130</span>            vertices = surface_vertices;</div>
-<div class="line"><a id="l01131" name="l01131"></a><span class="lineno"> 1131</span>        }</div>
-<div class="line"><a id="l01132" name="l01132"></a><span class="lineno"> 1132</span>    }</div>
-<div class="line"><a id="l01133" name="l01133"></a><span class="lineno"> 1133</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_function" href="namespacepolyfem_1_1utils_1_1_string_utils.html#ac716d9eff97c92c06c752fe151a714ae">StringUtils::endswith</a>(lowername, <span class="stringliteral">&quot;.obj&quot;</span>)) <span class="comment">// Use specialized OBJ reader function with polyline support</span></div>
-<div class="line"><a id="l01134" name="l01134"></a><span class="lineno"> 1134</span>    {</div>
-<div class="line"><a id="l01135" name="l01135"></a><span class="lineno"> 1135</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="classpolyfem_1_1io_1_1_o_b_j_reader.html#a5aaf18ddd73e237912d47f2c4a998ec2">OBJReader::read</a>(mesh_path, vertices, codim_edges, faces))</div>
-<div class="line"><a id="l01136" name="l01136"></a><span class="lineno"> 1136</span>        {</div>
-<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().error(<span class="stringliteral">&quot;Unable to load mesh: {}&quot;</span>, mesh_path);</div>
-<div class="line"><a id="l01138" name="l01138"></a><span class="lineno"> 1138</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span>        }</div>
-<div class="line"><a id="l01140" name="l01140"></a><span class="lineno"> 1140</span>    }</div>
-<div class="line"><a id="l01141" name="l01141"></a><span class="lineno"> 1141</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!igl::read_triangle_mesh(mesh_path, vertices, faces))</div>
-<div class="line"><a id="l01142" name="l01142"></a><span class="lineno"> 1142</span>    {</div>
-<div class="line"><a id="l01143" name="l01143"></a><span class="lineno"> 1143</span>        GEO::Mesh mesh;</div>
-<div class="line"><a id="l01144" name="l01144"></a><span class="lineno"> 1144</span>        <span class="keywordflow">if</span> (!GEO::mesh_load(mesh_path, mesh))</div>
-<div class="line"><a id="l01145" name="l01145"></a><span class="lineno"> 1145</span>        {</div>
-<div class="line"><a id="l01146" name="l01146"></a><span class="lineno"> 1146</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().error(<span class="stringliteral">&quot;Unable to load mesh: {}&quot;</span>, mesh_path);</div>
-<div class="line"><a id="l01147" name="l01147"></a><span class="lineno"> 1147</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l01148" name="l01148"></a><span class="lineno"> 1148</span>        }</div>
-<div class="line"><a id="l01149" name="l01149"></a><span class="lineno"> 1149</span> </div>
-<div class="line"><a id="l01150" name="l01150"></a><span class="lineno"> 1150</span>        <span class="keywordtype">int</span> dim = <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a0eb020dda8244f82ea9450b2d655cadd">is_planar</a>(mesh) ? 2 : 3;</div>
-<div class="line"><a id="l01151" name="l01151"></a><span class="lineno"> 1151</span>        vertices.resize(mesh.vertices.nb(), dim);</div>
-<div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> vi = 0; vi &lt; mesh.vertices.nb(); vi++)</div>
-<div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span>        {</div>
-<div class="line"><a id="l01154" name="l01154"></a><span class="lineno"> 1154</span>            <span class="keyword">const</span> <span class="keyword">auto</span> &amp;v = mesh.vertices.point(vi);</div>
-<div class="line"><a id="l01155" name="l01155"></a><span class="lineno"> 1155</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> vj = 0; vj &lt; dim; vj++)</div>
-<div class="line"><a id="l01156" name="l01156"></a><span class="lineno"> 1156</span>            {</div>
-<div class="line"><a id="l01157" name="l01157"></a><span class="lineno"> 1157</span>                vertices(vi, vj) = v[vj];</div>
-<div class="line"><a id="l01158" name="l01158"></a><span class="lineno"> 1158</span>            }</div>
-<div class="line"><a id="l01159" name="l01159"></a><span class="lineno"> 1159</span>        }</div>
-<div class="line"><a id="l01160" name="l01160"></a><span class="lineno"> 1160</span> </div>
-<div class="line"><a id="l01161" name="l01161"></a><span class="lineno"> 1161</span>        <span class="comment">// TODO: Check that this works even for a volumetric mesh</span></div>
-<div class="line"><a id="l01162" name="l01162"></a><span class="lineno"> 1162</span>        assert(mesh.facets.nb());</div>
-<div class="line"><a id="l01163" name="l01163"></a><span class="lineno"> 1163</span>        <span class="keywordtype">int</span> face_cols = mesh.facets.nb_vertices(0);</div>
-<div class="line"><a id="l01164" name="l01164"></a><span class="lineno"> 1164</span>        faces.resize(mesh.facets.nb(), face_cols);</div>
-<div class="line"><a id="l01165" name="l01165"></a><span class="lineno"> 1165</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> fi = 0; fi &lt; mesh.facets.nb(); fi++)</div>
-<div class="line"><a id="l01166" name="l01166"></a><span class="lineno"> 1166</span>        {</div>
-<div class="line"><a id="l01167" name="l01167"></a><span class="lineno"> 1167</span>            assert(face_cols == mesh.facets.nb_vertices(fi));</div>
-<div class="line"><a id="l01168" name="l01168"></a><span class="lineno"> 1168</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> fj = 0; fj &lt; mesh.facets.nb_vertices(fi); fj++)</div>
-<div class="line"><a id="l01169" name="l01169"></a><span class="lineno"> 1169</span>            {</div>
-<div class="line"><a id="l01170" name="l01170"></a><span class="lineno"> 1170</span>                faces(fi, fj) = mesh.facets.vertex(fi, fj);</div>
-<div class="line"><a id="l01171" name="l01171"></a><span class="lineno"> 1171</span>            }</div>
-<div class="line"><a id="l01172" name="l01172"></a><span class="lineno"> 1172</span>        }</div>
-<div class="line"><a id="l01173" name="l01173"></a><span class="lineno"> 1173</span>    }</div>
+<div class="line"><a id="l01127" name="l01127"></a><span class="lineno"> 1127</span>            <span class="keywordflow">if</span> (vertices.cols() == 2)</div>
+<div class="line"><a id="l01128" name="l01128"></a><span class="lineno"> 1128</span>            {</div>
+<div class="line"><a id="l01129" name="l01129"></a><span class="lineno"> 1129</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().error(<span class="stringliteral">&quot;read_surface_mesh not implemented for 2D quad meshes&quot;</span>);</div>
+<div class="line"><a id="l01130" name="l01130"></a><span class="lineno"> 1130</span>                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l01131" name="l01131"></a><span class="lineno"> 1131</span>            }</div>
+<div class="line"><a id="l01132" name="l01132"></a><span class="lineno"> 1132</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01133" name="l01133"></a><span class="lineno"> 1133</span>            {</div>
+<div class="line"><a id="l01134" name="l01134"></a><span class="lineno"> 1134</span>                <span class="comment">// TODO: how to distinguish between 3D tet mesh and 3D surface quad mesh?</span></div>
+<div class="line"><a id="l01135" name="l01135"></a><span class="lineno"> 1135</span>                assert(vertices.cols() == 3);</div>
+<div class="line"><a id="l01136" name="l01136"></a><span class="lineno"> 1136</span>                Eigen::MatrixXd surface_vertices;</div>
+<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span>                <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a614178cdb624f2eff9500fabb9a4f432">extract_triangle_surface_from_tets</a>(vertices, cells, surface_vertices, faces);</div>
+<div class="line"><a id="l01138" name="l01138"></a><span class="lineno"> 1138</span>                vertices = surface_vertices;</div>
+<div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span>            }</div>
+<div class="line"><a id="l01140" name="l01140"></a><span class="lineno"> 1140</span>        }</div>
+<div class="line"><a id="l01141" name="l01141"></a><span class="lineno"> 1141</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01142" name="l01142"></a><span class="lineno"> 1142</span>        {</div>
+<div class="line"><a id="l01143" name="l01143"></a><span class="lineno"> 1143</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().error(<span class="stringliteral">&quot;read_surface_mesh not implemented for hexahedral and polygonal/polyhedral meshes&quot;</span>);</div>
+<div class="line"><a id="l01144" name="l01144"></a><span class="lineno"> 1144</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l01145" name="l01145"></a><span class="lineno"> 1145</span>        }</div>
+<div class="line"><a id="l01146" name="l01146"></a><span class="lineno"> 1146</span>    }</div>
+<div class="line"><a id="l01147" name="l01147"></a><span class="lineno"> 1147</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_function" href="namespacepolyfem_1_1utils_1_1_string_utils.html#ac716d9eff97c92c06c752fe151a714ae">StringUtils::endswith</a>(lowername, <span class="stringliteral">&quot;.obj&quot;</span>)) <span class="comment">// Use specialized OBJ reader function with polyline support</span></div>
+<div class="line"><a id="l01148" name="l01148"></a><span class="lineno"> 1148</span>    {</div>
+<div class="line"><a id="l01149" name="l01149"></a><span class="lineno"> 1149</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="classpolyfem_1_1io_1_1_o_b_j_reader.html#a5aaf18ddd73e237912d47f2c4a998ec2">OBJReader::read</a>(mesh_path, vertices, codim_edges, faces))</div>
+<div class="line"><a id="l01150" name="l01150"></a><span class="lineno"> 1150</span>        {</div>
+<div class="line"><a id="l01151" name="l01151"></a><span class="lineno"> 1151</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().error(<span class="stringliteral">&quot;Unable to load mesh: {}&quot;</span>, mesh_path);</div>
+<div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span>        }</div>
+<div class="line"><a id="l01154" name="l01154"></a><span class="lineno"> 1154</span>    }</div>
+<div class="line"><a id="l01155" name="l01155"></a><span class="lineno"> 1155</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!igl::read_triangle_mesh(mesh_path, vertices, faces))</div>
+<div class="line"><a id="l01156" name="l01156"></a><span class="lineno"> 1156</span>    {</div>
+<div class="line"><a id="l01157" name="l01157"></a><span class="lineno"> 1157</span>        GEO::Mesh mesh;</div>
+<div class="line"><a id="l01158" name="l01158"></a><span class="lineno"> 1158</span>        <span class="keywordflow">if</span> (!GEO::mesh_load(mesh_path, mesh))</div>
+<div class="line"><a id="l01159" name="l01159"></a><span class="lineno"> 1159</span>        {</div>
+<div class="line"><a id="l01160" name="l01160"></a><span class="lineno"> 1160</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().error(<span class="stringliteral">&quot;Unable to load mesh: {}&quot;</span>, mesh_path);</div>
+<div class="line"><a id="l01161" name="l01161"></a><span class="lineno"> 1161</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l01162" name="l01162"></a><span class="lineno"> 1162</span>        }</div>
+<div class="line"><a id="l01163" name="l01163"></a><span class="lineno"> 1163</span> </div>
+<div class="line"><a id="l01164" name="l01164"></a><span class="lineno"> 1164</span>        <span class="keywordtype">int</span> dim = <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a0eb020dda8244f82ea9450b2d655cadd">is_planar</a>(mesh) ? 2 : 3;</div>
+<div class="line"><a id="l01165" name="l01165"></a><span class="lineno"> 1165</span>        vertices.resize(mesh.vertices.nb(), dim);</div>
+<div class="line"><a id="l01166" name="l01166"></a><span class="lineno"> 1166</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> vi = 0; vi &lt; mesh.vertices.nb(); vi++)</div>
+<div class="line"><a id="l01167" name="l01167"></a><span class="lineno"> 1167</span>        {</div>
+<div class="line"><a id="l01168" name="l01168"></a><span class="lineno"> 1168</span>            <span class="keyword">const</span> <span class="keyword">auto</span> &amp;v = mesh.vertices.point(vi);</div>
+<div class="line"><a id="l01169" name="l01169"></a><span class="lineno"> 1169</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> vj = 0; vj &lt; dim; vj++)</div>
+<div class="line"><a id="l01170" name="l01170"></a><span class="lineno"> 1170</span>            {</div>
+<div class="line"><a id="l01171" name="l01171"></a><span class="lineno"> 1171</span>                vertices(vi, vj) = v[vj];</div>
+<div class="line"><a id="l01172" name="l01172"></a><span class="lineno"> 1172</span>            }</div>
+<div class="line"><a id="l01173" name="l01173"></a><span class="lineno"> 1173</span>        }</div>
 <div class="line"><a id="l01174" name="l01174"></a><span class="lineno"> 1174</span> </div>
-<div class="line"><a id="l01175" name="l01175"></a><span class="lineno"> 1175</span>    <a class="code hl_function" href="_mesh_utils_8cpp.html#a1364b05c4ec8b3f6a114effcf77b9557">find_codim_vertices</a>(vertices, codim_edges, faces, codim_vertices);</div>
-<div class="line"><a id="l01176" name="l01176"></a><span class="lineno"> 1176</span> </div>
-<div class="line"><a id="l01177" name="l01177"></a><span class="lineno"> 1177</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01178" name="l01178"></a><span class="lineno"> 1178</span>}</div>
-<div class="line"><a id="l01179" name="l01179"></a><span class="lineno"> 1179</span> </div>
-<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1mesh.html#ae919a9ea2b6d1a8776134338a06238a0"> 1180</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#ae919a9ea2b6d1a8776134338a06238a0">polyfem::mesh::count_faces</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> dim, <span class="keyword">const</span> Eigen::MatrixXi &amp;cells)</div>
-<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span>{</div>
-<div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span>    std::unordered_set&lt;std::vector&lt;int&gt;, <a class="code hl_struct" href="structpolyfem_1_1utils_1_1_hash_vector.html">HashVector</a>&gt; boundaries;</div>
-<div class="line"><a id="l01183" name="l01183"></a><span class="lineno"> 1183</span> </div>
-<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span>    <span class="keyword">auto</span> insert = [&amp;](std::vector&lt;int&gt; v) {</div>
-<div class="line"><a id="l01185" name="l01185"></a><span class="lineno"> 1185</span>        std::sort(v.begin(), v.end());</div>
-<div class="line"><a id="l01186" name="l01186"></a><span class="lineno"> 1186</span>        boundaries.insert(v);</div>
-<div class="line"><a id="l01187" name="l01187"></a><span class="lineno"> 1187</span>    };</div>
+<div class="line"><a id="l01175" name="l01175"></a><span class="lineno"> 1175</span>        <span class="comment">// TODO: Check that this works even for a volumetric mesh</span></div>
+<div class="line"><a id="l01176" name="l01176"></a><span class="lineno"> 1176</span>        assert(mesh.facets.nb());</div>
+<div class="line"><a id="l01177" name="l01177"></a><span class="lineno"> 1177</span>        <span class="keywordtype">int</span> face_cols = mesh.facets.nb_vertices(0);</div>
+<div class="line"><a id="l01178" name="l01178"></a><span class="lineno"> 1178</span>        faces.resize(mesh.facets.nb(), face_cols);</div>
+<div class="line"><a id="l01179" name="l01179"></a><span class="lineno"> 1179</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> fi = 0; fi &lt; mesh.facets.nb(); fi++)</div>
+<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"> 1180</span>        {</div>
+<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span>            assert(face_cols == mesh.facets.nb_vertices(fi));</div>
+<div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> fj = 0; fj &lt; mesh.facets.nb_vertices(fi); fj++)</div>
+<div class="line"><a id="l01183" name="l01183"></a><span class="lineno"> 1183</span>            {</div>
+<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span>                faces(fi, fj) = mesh.facets.vertex(fi, fj);</div>
+<div class="line"><a id="l01185" name="l01185"></a><span class="lineno"> 1185</span>            }</div>
+<div class="line"><a id="l01186" name="l01186"></a><span class="lineno"> 1186</span>        }</div>
+<div class="line"><a id="l01187" name="l01187"></a><span class="lineno"> 1187</span>    }</div>
 <div class="line"><a id="l01188" name="l01188"></a><span class="lineno"> 1188</span> </div>
-<div class="line"><a id="l01189" name="l01189"></a><span class="lineno"> 1189</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; cells.rows(); i++)</div>
-<div class="line"><a id="l01190" name="l01190"></a><span class="lineno"> 1190</span>    {</div>
-<div class="line"><a id="l01191" name="l01191"></a><span class="lineno"> 1191</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;cell = cells.row(i);</div>
-<div class="line"><a id="l01192" name="l01192"></a><span class="lineno"> 1192</span>        <span class="keywordflow">if</span> (cells.cols() == 3) <span class="comment">// triangle</span></div>
-<div class="line"><a id="l01193" name="l01193"></a><span class="lineno"> 1193</span>        {</div>
-<div class="line"><a id="l01194" name="l01194"></a><span class="lineno"> 1194</span>            insert({{cell(0), cell(1)}});</div>
-<div class="line"><a id="l01195" name="l01195"></a><span class="lineno"> 1195</span>            insert({{cell(1), cell(2)}});</div>
-<div class="line"><a id="l01196" name="l01196"></a><span class="lineno"> 1196</span>            insert({{cell(2), cell(0)}});</div>
-<div class="line"><a id="l01197" name="l01197"></a><span class="lineno"> 1197</span>        }</div>
-<div class="line"><a id="l01198" name="l01198"></a><span class="lineno"> 1198</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (cells.cols() == 4 &amp;&amp; dim == 2) <span class="comment">// quadralateral</span></div>
-<div class="line"><a id="l01199" name="l01199"></a><span class="lineno"> 1199</span>        {</div>
-<div class="line"><a id="l01200" name="l01200"></a><span class="lineno"> 1200</span>            insert({{cell(0), cell(1)}});</div>
-<div class="line"><a id="l01201" name="l01201"></a><span class="lineno"> 1201</span>            insert({{cell(1), cell(2)}});</div>
-<div class="line"><a id="l01202" name="l01202"></a><span class="lineno"> 1202</span>            insert({{cell(2), cell(3)}});</div>
-<div class="line"><a id="l01203" name="l01203"></a><span class="lineno"> 1203</span>            insert({{cell(3), cell(0)}});</div>
-<div class="line"><a id="l01204" name="l01204"></a><span class="lineno"> 1204</span>        }</div>
-<div class="line"><a id="l01205" name="l01205"></a><span class="lineno"> 1205</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (cells.cols() == 4 &amp;&amp; dim == 3) <span class="comment">// tetrahedron</span></div>
-<div class="line"><a id="l01206" name="l01206"></a><span class="lineno"> 1206</span>        {</div>
-<div class="line"><a id="l01207" name="l01207"></a><span class="lineno"> 1207</span>            insert({{cell(0), cell(2), cell(1)}});</div>
-<div class="line"><a id="l01208" name="l01208"></a><span class="lineno"> 1208</span>            insert({{cell(0), cell(3), cell(2)}});</div>
-<div class="line"><a id="l01209" name="l01209"></a><span class="lineno"> 1209</span>            insert({{cell(0), cell(1), cell(3)}});</div>
-<div class="line"><a id="l01210" name="l01210"></a><span class="lineno"> 1210</span>            insert({{cell(1), cell(2), cell(3)}});</div>
+<div class="line"><a id="l01189" name="l01189"></a><span class="lineno"> 1189</span>    <a class="code hl_function" href="_mesh_utils_8cpp.html#a1364b05c4ec8b3f6a114effcf77b9557">find_codim_vertices</a>(vertices, codim_edges, faces, codim_vertices);</div>
+<div class="line"><a id="l01190" name="l01190"></a><span class="lineno"> 1190</span> </div>
+<div class="line"><a id="l01191" name="l01191"></a><span class="lineno"> 1191</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l01192" name="l01192"></a><span class="lineno"> 1192</span>}</div>
+<div class="line"><a id="l01193" name="l01193"></a><span class="lineno"> 1193</span> </div>
+<div class="line"><a id="l01194" name="l01194"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1mesh.html#ae919a9ea2b6d1a8776134338a06238a0"> 1194</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#ae919a9ea2b6d1a8776134338a06238a0">polyfem::mesh::count_faces</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> dim, <span class="keyword">const</span> Eigen::MatrixXi &amp;cells)</div>
+<div class="line"><a id="l01195" name="l01195"></a><span class="lineno"> 1195</span>{</div>
+<div class="line"><a id="l01196" name="l01196"></a><span class="lineno"> 1196</span>    std::unordered_set&lt;std::vector&lt;int&gt;, <a class="code hl_struct" href="structpolyfem_1_1utils_1_1_hash_vector.html">HashVector</a>&gt; boundaries;</div>
+<div class="line"><a id="l01197" name="l01197"></a><span class="lineno"> 1197</span> </div>
+<div class="line"><a id="l01198" name="l01198"></a><span class="lineno"> 1198</span>    <span class="keyword">auto</span> insert = [&amp;](std::vector&lt;int&gt; v) {</div>
+<div class="line"><a id="l01199" name="l01199"></a><span class="lineno"> 1199</span>        std::sort(v.begin(), v.end());</div>
+<div class="line"><a id="l01200" name="l01200"></a><span class="lineno"> 1200</span>        boundaries.insert(v);</div>
+<div class="line"><a id="l01201" name="l01201"></a><span class="lineno"> 1201</span>    };</div>
+<div class="line"><a id="l01202" name="l01202"></a><span class="lineno"> 1202</span> </div>
+<div class="line"><a id="l01203" name="l01203"></a><span class="lineno"> 1203</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; cells.rows(); i++)</div>
+<div class="line"><a id="l01204" name="l01204"></a><span class="lineno"> 1204</span>    {</div>
+<div class="line"><a id="l01205" name="l01205"></a><span class="lineno"> 1205</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;cell = cells.row(i);</div>
+<div class="line"><a id="l01206" name="l01206"></a><span class="lineno"> 1206</span>        <span class="keywordflow">if</span> (cells.cols() == 3) <span class="comment">// triangle</span></div>
+<div class="line"><a id="l01207" name="l01207"></a><span class="lineno"> 1207</span>        {</div>
+<div class="line"><a id="l01208" name="l01208"></a><span class="lineno"> 1208</span>            insert({{cell(0), cell(1)}});</div>
+<div class="line"><a id="l01209" name="l01209"></a><span class="lineno"> 1209</span>            insert({{cell(1), cell(2)}});</div>
+<div class="line"><a id="l01210" name="l01210"></a><span class="lineno"> 1210</span>            insert({{cell(2), cell(0)}});</div>
 <div class="line"><a id="l01211" name="l01211"></a><span class="lineno"> 1211</span>        }</div>
-<div class="line"><a id="l01212" name="l01212"></a><span class="lineno"> 1212</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (cells.cols() == 8) <span class="comment">// hexahedron</span></div>
+<div class="line"><a id="l01212" name="l01212"></a><span class="lineno"> 1212</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (cells.cols() == 4 &amp;&amp; dim == 2) <span class="comment">// quadralateral</span></div>
 <div class="line"><a id="l01213" name="l01213"></a><span class="lineno"> 1213</span>        {</div>
-<div class="line"><a id="l01214" name="l01214"></a><span class="lineno"> 1214</span>            insert({{cell(0), cell(1), cell(2), cell(3)}});</div>
-<div class="line"><a id="l01215" name="l01215"></a><span class="lineno"> 1215</span>            insert({{cell(1), cell(5), cell(6), cell(3)}});</div>
-<div class="line"><a id="l01216" name="l01216"></a><span class="lineno"> 1216</span>            insert({{cell(5), cell(4), cell(7), cell(6)}});</div>
-<div class="line"><a id="l01217" name="l01217"></a><span class="lineno"> 1217</span>            insert({{cell(0), cell(4), cell(7), cell(3)}});</div>
-<div class="line"><a id="l01218" name="l01218"></a><span class="lineno"> 1218</span>            insert({{cell(0), cell(4), cell(5), cell(1)}});</div>
-<div class="line"><a id="l01219" name="l01219"></a><span class="lineno"> 1219</span>            insert({{cell(2), cell(6), cell(7), cell(3)}});</div>
-<div class="line"><a id="l01220" name="l01220"></a><span class="lineno"> 1220</span>        }</div>
-<div class="line"><a id="l01221" name="l01221"></a><span class="lineno"> 1221</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01222" name="l01222"></a><span class="lineno"> 1222</span>        {</div>
-<div class="line"><a id="l01223" name="l01223"></a><span class="lineno"> 1223</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;count_boundary_elements not implemented for polygons&quot;</span>);</div>
-<div class="line"><a id="l01224" name="l01224"></a><span class="lineno"> 1224</span>        }</div>
-<div class="line"><a id="l01225" name="l01225"></a><span class="lineno"> 1225</span>    }</div>
-<div class="line"><a id="l01226" name="l01226"></a><span class="lineno"> 1226</span> </div>
-<div class="line"><a id="l01227" name="l01227"></a><span class="lineno"> 1227</span>    <span class="keywordflow">return</span> boundaries.size();</div>
-<div class="line"><a id="l01228" name="l01228"></a><span class="lineno"> 1228</span>}</div>
-<div class="line"><a id="l01229" name="l01229"></a><span class="lineno"> 1229</span> </div>
-<div class="line"><a id="l01230" name="l01230"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1mesh.html#ababf65206634e831070307de601d3a57"> 1230</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#ababf65206634e831070307de601d3a57">polyfem::mesh::generate_edges</a>(GEO::Mesh &amp;M)</div>
-<div class="line"><a id="l01231" name="l01231"></a><span class="lineno"> 1231</span>{</div>
-<div class="line"><a id="l01232" name="l01232"></a><span class="lineno"> 1232</span>    <span class="keyword">using namespace </span>GEO;</div>
-<div class="line"><a id="l01233" name="l01233"></a><span class="lineno"> 1233</span>    <span class="keyword">typedef</span> std::pair&lt;index_t, index_t&gt; <a class="code hl_struct" href="structpolyfem_1_1mesh_1_1_edge.html">Edge</a>;</div>
-<div class="line"><a id="l01234" name="l01234"></a><span class="lineno"> 1234</span> </div>
-<div class="line"><a id="l01235" name="l01235"></a><span class="lineno"> 1235</span>    <span class="keywordflow">if</span> (M.edges.nb() &gt; 0)</div>
-<div class="line"><a id="l01236" name="l01236"></a><span class="lineno"> 1236</span>        <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l01237" name="l01237"></a><span class="lineno"> 1237</span> </div>
-<div class="line"><a id="l01238" name="l01238"></a><span class="lineno"> 1238</span>    M.facets.connect();</div>
-<div class="line"><a id="l01239" name="l01239"></a><span class="lineno"> 1239</span>    M.cells.connect();</div>
-<div class="line"><a id="l01240" name="l01240"></a><span class="lineno"> 1240</span>    <span class="keywordflow">if</span> (M.cells.nb() != 0 &amp;&amp; M.facets.nb() == 0)</div>
-<div class="line"><a id="l01241" name="l01241"></a><span class="lineno"> 1241</span>    {</div>
-<div class="line"><a id="l01242" name="l01242"></a><span class="lineno"> 1242</span>        M.cells.compute_borders();</div>
-<div class="line"><a id="l01243" name="l01243"></a><span class="lineno"> 1243</span>    }</div>
-<div class="line"><a id="l01244" name="l01244"></a><span class="lineno"> 1244</span> </div>
-<div class="line"><a id="l01245" name="l01245"></a><span class="lineno"> 1245</span>    <span class="comment">// Compute a list of all the edges, and store edge index as a corner attribute</span></div>
-<div class="line"><a id="l01246" name="l01246"></a><span class="lineno"> 1246</span>    std::vector&lt;std::pair&lt;Edge, index_t&gt;&gt; e2c; <span class="comment">// edge to corner id</span></div>
-<div class="line"><a id="l01247" name="l01247"></a><span class="lineno"> 1247</span>    <span class="keywordflow">for</span> (index_t f = 0; f &lt; M.facets.nb(); ++f)</div>
-<div class="line"><a id="l01248" name="l01248"></a><span class="lineno"> 1248</span>    {</div>
-<div class="line"><a id="l01249" name="l01249"></a><span class="lineno"> 1249</span>        <span class="keywordflow">for</span> (index_t c = M.facets.corners_begin(f); c &lt; M.facets.corners_end(f); ++c)</div>
-<div class="line"><a id="l01250" name="l01250"></a><span class="lineno"> 1250</span>        {</div>
-<div class="line"><a id="l01251" name="l01251"></a><span class="lineno"> 1251</span>            index_t v = M.facet_corners.vertex(c);</div>
-<div class="line"><a id="l01252" name="l01252"></a><span class="lineno"> 1252</span>            index_t c2 = M.facets.next_corner_around_facet(f, c);</div>
-<div class="line"><a id="l01253" name="l01253"></a><span class="lineno"> 1253</span>            index_t v2 = M.facet_corners.vertex(c2);</div>
-<div class="line"><a id="l01254" name="l01254"></a><span class="lineno"> 1254</span>            e2c.emplace_back(std::make_pair(std::min(v, v2), std::max(v, v2)), c);</div>
-<div class="line"><a id="l01255" name="l01255"></a><span class="lineno"> 1255</span>        }</div>
-<div class="line"><a id="l01256" name="l01256"></a><span class="lineno"> 1256</span>    }</div>
-<div class="line"><a id="l01257" name="l01257"></a><span class="lineno"> 1257</span>    std::sort(e2c.begin(), e2c.end());</div>
+<div class="line"><a id="l01214" name="l01214"></a><span class="lineno"> 1214</span>            insert({{cell(0), cell(1)}});</div>
+<div class="line"><a id="l01215" name="l01215"></a><span class="lineno"> 1215</span>            insert({{cell(1), cell(2)}});</div>
+<div class="line"><a id="l01216" name="l01216"></a><span class="lineno"> 1216</span>            insert({{cell(2), cell(3)}});</div>
+<div class="line"><a id="l01217" name="l01217"></a><span class="lineno"> 1217</span>            insert({{cell(3), cell(0)}});</div>
+<div class="line"><a id="l01218" name="l01218"></a><span class="lineno"> 1218</span>        }</div>
+<div class="line"><a id="l01219" name="l01219"></a><span class="lineno"> 1219</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (cells.cols() == 4 &amp;&amp; dim == 3) <span class="comment">// tetrahedron</span></div>
+<div class="line"><a id="l01220" name="l01220"></a><span class="lineno"> 1220</span>        {</div>
+<div class="line"><a id="l01221" name="l01221"></a><span class="lineno"> 1221</span>            insert({{cell(0), cell(2), cell(1)}});</div>
+<div class="line"><a id="l01222" name="l01222"></a><span class="lineno"> 1222</span>            insert({{cell(0), cell(3), cell(2)}});</div>
+<div class="line"><a id="l01223" name="l01223"></a><span class="lineno"> 1223</span>            insert({{cell(0), cell(1), cell(3)}});</div>
+<div class="line"><a id="l01224" name="l01224"></a><span class="lineno"> 1224</span>            insert({{cell(1), cell(2), cell(3)}});</div>
+<div class="line"><a id="l01225" name="l01225"></a><span class="lineno"> 1225</span>        }</div>
+<div class="line"><a id="l01226" name="l01226"></a><span class="lineno"> 1226</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (cells.cols() == 8) <span class="comment">// hexahedron</span></div>
+<div class="line"><a id="l01227" name="l01227"></a><span class="lineno"> 1227</span>        {</div>
+<div class="line"><a id="l01228" name="l01228"></a><span class="lineno"> 1228</span>            insert({{cell(0), cell(1), cell(2), cell(3)}});</div>
+<div class="line"><a id="l01229" name="l01229"></a><span class="lineno"> 1229</span>            insert({{cell(1), cell(5), cell(6), cell(3)}});</div>
+<div class="line"><a id="l01230" name="l01230"></a><span class="lineno"> 1230</span>            insert({{cell(5), cell(4), cell(7), cell(6)}});</div>
+<div class="line"><a id="l01231" name="l01231"></a><span class="lineno"> 1231</span>            insert({{cell(0), cell(4), cell(7), cell(3)}});</div>
+<div class="line"><a id="l01232" name="l01232"></a><span class="lineno"> 1232</span>            insert({{cell(0), cell(4), cell(5), cell(1)}});</div>
+<div class="line"><a id="l01233" name="l01233"></a><span class="lineno"> 1233</span>            insert({{cell(2), cell(6), cell(7), cell(3)}});</div>
+<div class="line"><a id="l01234" name="l01234"></a><span class="lineno"> 1234</span>        }</div>
+<div class="line"><a id="l01235" name="l01235"></a><span class="lineno"> 1235</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01236" name="l01236"></a><span class="lineno"> 1236</span>        {</div>
+<div class="line"><a id="l01237" name="l01237"></a><span class="lineno"> 1237</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;count_boundary_elements not implemented for polygons&quot;</span>);</div>
+<div class="line"><a id="l01238" name="l01238"></a><span class="lineno"> 1238</span>        }</div>
+<div class="line"><a id="l01239" name="l01239"></a><span class="lineno"> 1239</span>    }</div>
+<div class="line"><a id="l01240" name="l01240"></a><span class="lineno"> 1240</span> </div>
+<div class="line"><a id="l01241" name="l01241"></a><span class="lineno"> 1241</span>    <span class="keywordflow">return</span> boundaries.size();</div>
+<div class="line"><a id="l01242" name="l01242"></a><span class="lineno"> 1242</span>}</div>
+<div class="line"><a id="l01243" name="l01243"></a><span class="lineno"> 1243</span> </div>
+<div class="line"><a id="l01244" name="l01244"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1mesh.html#ababf65206634e831070307de601d3a57"> 1244</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#ababf65206634e831070307de601d3a57">polyfem::mesh::generate_edges</a>(GEO::Mesh &amp;M)</div>
+<div class="line"><a id="l01245" name="l01245"></a><span class="lineno"> 1245</span>{</div>
+<div class="line"><a id="l01246" name="l01246"></a><span class="lineno"> 1246</span>    <span class="keyword">using namespace </span>GEO;</div>
+<div class="line"><a id="l01247" name="l01247"></a><span class="lineno"> 1247</span>    <span class="keyword">typedef</span> std::pair&lt;index_t, index_t&gt; <a class="code hl_struct" href="structpolyfem_1_1mesh_1_1_edge.html">Edge</a>;</div>
+<div class="line"><a id="l01248" name="l01248"></a><span class="lineno"> 1248</span> </div>
+<div class="line"><a id="l01249" name="l01249"></a><span class="lineno"> 1249</span>    <span class="keywordflow">if</span> (M.edges.nb() &gt; 0)</div>
+<div class="line"><a id="l01250" name="l01250"></a><span class="lineno"> 1250</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l01251" name="l01251"></a><span class="lineno"> 1251</span> </div>
+<div class="line"><a id="l01252" name="l01252"></a><span class="lineno"> 1252</span>    M.facets.connect();</div>
+<div class="line"><a id="l01253" name="l01253"></a><span class="lineno"> 1253</span>    M.cells.connect();</div>
+<div class="line"><a id="l01254" name="l01254"></a><span class="lineno"> 1254</span>    <span class="keywordflow">if</span> (M.cells.nb() != 0 &amp;&amp; M.facets.nb() == 0)</div>
+<div class="line"><a id="l01255" name="l01255"></a><span class="lineno"> 1255</span>    {</div>
+<div class="line"><a id="l01256" name="l01256"></a><span class="lineno"> 1256</span>        M.cells.compute_borders();</div>
+<div class="line"><a id="l01257" name="l01257"></a><span class="lineno"> 1257</span>    }</div>
 <div class="line"><a id="l01258" name="l01258"></a><span class="lineno"> 1258</span> </div>
-<div class="line"><a id="l01259" name="l01259"></a><span class="lineno"> 1259</span>    <span class="comment">// Assign unique id to edges</span></div>
-<div class="line"><a id="l01260" name="l01260"></a><span class="lineno"> 1260</span>    M.edges.clear();</div>
-<div class="line"><a id="l01261" name="l01261"></a><span class="lineno"> 1261</span>    <a class="code hl_struct" href="structpolyfem_1_1mesh_1_1_edge.html">Edge</a> prev_e(-1, -1);</div>
-<div class="line"><a id="l01262" name="l01262"></a><span class="lineno"> 1262</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;kv : e2c)</div>
-<div class="line"><a id="l01263" name="l01263"></a><span class="lineno"> 1263</span>    {</div>
-<div class="line"><a id="l01264" name="l01264"></a><span class="lineno"> 1264</span>        <a class="code hl_struct" href="structpolyfem_1_1mesh_1_1_edge.html">Edge</a> e = kv.first;</div>
-<div class="line"><a id="l01265" name="l01265"></a><span class="lineno"> 1265</span>        <span class="keywordflow">if</span> (e != prev_e)</div>
-<div class="line"><a id="l01266" name="l01266"></a><span class="lineno"> 1266</span>        {</div>
-<div class="line"><a id="l01267" name="l01267"></a><span class="lineno"> 1267</span>            M.edges.create_edge(e.first, e.second);</div>
-<div class="line"><a id="l01268" name="l01268"></a><span class="lineno"> 1268</span>            prev_e = e;</div>
+<div class="line"><a id="l01259" name="l01259"></a><span class="lineno"> 1259</span>    <span class="comment">// Compute a list of all the edges, and store edge index as a corner attribute</span></div>
+<div class="line"><a id="l01260" name="l01260"></a><span class="lineno"> 1260</span>    std::vector&lt;std::pair&lt;Edge, index_t&gt;&gt; e2c; <span class="comment">// edge to corner id</span></div>
+<div class="line"><a id="l01261" name="l01261"></a><span class="lineno"> 1261</span>    <span class="keywordflow">for</span> (index_t f = 0; f &lt; M.facets.nb(); ++f)</div>
+<div class="line"><a id="l01262" name="l01262"></a><span class="lineno"> 1262</span>    {</div>
+<div class="line"><a id="l01263" name="l01263"></a><span class="lineno"> 1263</span>        <span class="keywordflow">for</span> (index_t c = M.facets.corners_begin(f); c &lt; M.facets.corners_end(f); ++c)</div>
+<div class="line"><a id="l01264" name="l01264"></a><span class="lineno"> 1264</span>        {</div>
+<div class="line"><a id="l01265" name="l01265"></a><span class="lineno"> 1265</span>            index_t v = M.facet_corners.vertex(c);</div>
+<div class="line"><a id="l01266" name="l01266"></a><span class="lineno"> 1266</span>            index_t c2 = M.facets.next_corner_around_facet(f, c);</div>
+<div class="line"><a id="l01267" name="l01267"></a><span class="lineno"> 1267</span>            index_t v2 = M.facet_corners.vertex(c2);</div>
+<div class="line"><a id="l01268" name="l01268"></a><span class="lineno"> 1268</span>            e2c.emplace_back(std::make_pair(std::min(v, v2), std::max(v, v2)), c);</div>
 <div class="line"><a id="l01269" name="l01269"></a><span class="lineno"> 1269</span>        }</div>
 <div class="line"><a id="l01270" name="l01270"></a><span class="lineno"> 1270</span>    }</div>
-<div class="line"><a id="l01271" name="l01271"></a><span class="lineno"> 1271</span>}</div>
+<div class="line"><a id="l01271" name="l01271"></a><span class="lineno"> 1271</span>    std::sort(e2c.begin(), e2c.end());</div>
+<div class="line"><a id="l01272" name="l01272"></a><span class="lineno"> 1272</span> </div>
+<div class="line"><a id="l01273" name="l01273"></a><span class="lineno"> 1273</span>    <span class="comment">// Assign unique id to edges</span></div>
+<div class="line"><a id="l01274" name="l01274"></a><span class="lineno"> 1274</span>    M.edges.clear();</div>
+<div class="line"><a id="l01275" name="l01275"></a><span class="lineno"> 1275</span>    <a class="code hl_struct" href="structpolyfem_1_1mesh_1_1_edge.html">Edge</a> prev_e(-1, -1);</div>
+<div class="line"><a id="l01276" name="l01276"></a><span class="lineno"> 1276</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;kv : e2c)</div>
+<div class="line"><a id="l01277" name="l01277"></a><span class="lineno"> 1277</span>    {</div>
+<div class="line"><a id="l01278" name="l01278"></a><span class="lineno"> 1278</span>        <a class="code hl_struct" href="structpolyfem_1_1mesh_1_1_edge.html">Edge</a> e = kv.first;</div>
+<div class="line"><a id="l01279" name="l01279"></a><span class="lineno"> 1279</span>        <span class="keywordflow">if</span> (e != prev_e)</div>
+<div class="line"><a id="l01280" name="l01280"></a><span class="lineno"> 1280</span>        {</div>
+<div class="line"><a id="l01281" name="l01281"></a><span class="lineno"> 1281</span>            M.edges.create_edge(e.first, e.second);</div>
+<div class="line"><a id="l01282" name="l01282"></a><span class="lineno"> 1282</span>            prev_e = e;</div>
+<div class="line"><a id="l01283" name="l01283"></a><span class="lineno"> 1283</span>        }</div>
+<div class="line"><a id="l01284" name="l01284"></a><span class="lineno"> 1284</span>    }</div>
+<div class="line"><a id="l01285" name="l01285"></a><span class="lineno"> 1285</span>}</div>
 <div class="ttc" id="a_assembler_8cpp_html_a8e8ee90d91b64973bc4ad946fd461666"><div class="ttname"><a href="_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a></div><div class="ttdeci">QuadratureVector da</div><div class="ttdef"><b>Definition:</b> <a href="_assembler_8cpp_source.html#l00044">Assembler.cpp:44</a></div></div>
 <div class="ttc" id="a_hash_utils_8hpp_html"><div class="ttname"><a href="_hash_utils_8hpp.html">HashUtils.hpp</a></div></div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
@@ -1422,10 +1436,10 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html_a9f801017db21aa959f16cfc91c986a04"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#a9f801017db21aa959f16cfc91c986a04">polyfem::mesh::facet_barycenter</a></div><div class="ttdeci">GEO::vec3 facet_barycenter(const GEO::Mesh &amp;M, GEO::index_t f)</div><div class="ttdef"><b>Definition:</b> <a href="_mesh_utils_8cpp_source.html#l00064">MeshUtils.cpp:64</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html_aa56d3e4087c89d5eec16b4af3f128879"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#aa56d3e4087c89d5eec16b4af3f128879">polyfem::mesh::from_geogram_mesh</a></div><div class="ttdeci">void from_geogram_mesh(const GEO::Mesh &amp;M, Eigen::MatrixXd &amp;V, Eigen::MatrixXi &amp;F, Eigen::MatrixXi &amp;T)</div><div class="ttdoc">Extract simplices from a Geogram mesh.</div><div class="ttdef"><b>Definition:</b> <a href="_mesh_utils_8cpp_source.html#l00639">MeshUtils.cpp:639</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html_aae095321d3a795a54c96f6c93ed66583"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#aae095321d3a795a54c96f6c93ed66583">polyfem::mesh::tertrahedralize_star_shaped_surface</a></div><div class="ttdeci">void tertrahedralize_star_shaped_surface(const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;F, const Eigen::RowVector3d &amp;kernel, Eigen::MatrixXd &amp;OV, Eigen::MatrixXi &amp;OF, Eigen::MatrixXi &amp;OT)</div><div class="ttdoc">Tetrahedralize a star-shaped mesh, with a given point in its kernel.</div><div class="ttdef"><b>Definition:</b> <a href="_mesh_utils_8cpp_source.html#l00869">MeshUtils.cpp:869</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1mesh_html_ababf65206634e831070307de601d3a57"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#ababf65206634e831070307de601d3a57">polyfem::mesh::generate_edges</a></div><div class="ttdeci">void generate_edges(GEO::Mesh &amp;M)</div><div class="ttdoc">assing edges to M</div><div class="ttdef"><b>Definition:</b> <a href="_mesh_utils_8cpp_source.html#l01230">MeshUtils.cpp:1230</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1mesh_html_ababf65206634e831070307de601d3a57"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#ababf65206634e831070307de601d3a57">polyfem::mesh::generate_edges</a></div><div class="ttdeci">void generate_edges(GEO::Mesh &amp;M)</div><div class="ttdoc">assing edges to M</div><div class="ttdef"><b>Definition:</b> <a href="_mesh_utils_8cpp_source.html#l01244">MeshUtils.cpp:1244</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html_ad5cb1c08fb1f96a1f0c2bd635457e25f"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#ad5cb1c08fb1f96a1f0c2bd635457e25f">polyfem::mesh::read_surface_mesh</a></div><div class="ttdeci">bool read_surface_mesh(const std::string &amp;mesh_path, Eigen::MatrixXd &amp;vertices, Eigen::VectorXi &amp;codim_vertices, Eigen::MatrixXi &amp;codim_edges, Eigen::MatrixXi &amp;faces)</div><div class="ttdoc">read a surface mesh</div><div class="ttdef"><b>Definition:</b> <a href="_mesh_utils_8cpp_source.html#l01091">MeshUtils.cpp:1091</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html_ad5d500b681dc6c18ea395e2a4424dff8"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#ad5d500b681dc6c18ea395e2a4424dff8">polyfem::mesh::extract_polyhedra</a></div><div class="ttdeci">void extract_polyhedra(const Mesh3D &amp;mesh, std::vector&lt; std::unique_ptr&lt; GEO::Mesh &gt; &gt; &amp;polys, bool triangulated=false)</div><div class="ttdoc">Extract polyhedra from a 3D volumetric mesh.</div><div class="ttdef"><b>Definition:</b> <a href="_mesh_utils_8cpp_source.html#l00715">MeshUtils.cpp:715</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1mesh_html_ae919a9ea2b6d1a8776134338a06238a0"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#ae919a9ea2b6d1a8776134338a06238a0">polyfem::mesh::count_faces</a></div><div class="ttdeci">int count_faces(const int dim, const Eigen::MatrixXi &amp;cells)</div><div class="ttdoc">Count the number of boundary elements (triangles for tetmesh and edges for triangle mesh)</div><div class="ttdef"><b>Definition:</b> <a href="_mesh_utils_8cpp_source.html#l01180">MeshUtils.cpp:1180</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1mesh_html_ae919a9ea2b6d1a8776134338a06238a0"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#ae919a9ea2b6d1a8776134338a06238a0">polyfem::mesh::count_faces</a></div><div class="ttdeci">int count_faces(const int dim, const Eigen::MatrixXi &amp;cells)</div><div class="ttdoc">Count the number of boundary elements (triangles for tetmesh and edges for triangle mesh)</div><div class="ttdef"><b>Definition:</b> <a href="_mesh_utils_8cpp_source.html#l01194">MeshUtils.cpp:1194</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html_afe2f4a1a50f2841a6eb95650ff7b1f0e"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#afe2f4a1a50f2841a6eb95650ff7b1f0e">polyfem::mesh::compute_element_tags</a></div><div class="ttdeci">void compute_element_tags(const GEO::Mesh &amp;M, std::vector&lt; ElementType &gt; &amp;element_tags)</div><div class="ttdoc">Compute the type of each facet in a surface mesh.</div><div class="ttdef"><b>Definition:</b> <a href="_mesh_utils_8cpp_source.html#l00097">MeshUtils.cpp:97</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_1_1_string_utils_html_ac716d9eff97c92c06c752fe151a714ae"><div class="ttname"><a href="namespacepolyfem_1_1utils_1_1_string_utils.html#ac716d9eff97c92c06c752fe151a714ae">polyfem::utils::StringUtils::endswith</a></div><div class="ttdeci">bool endswith(const std::string &amp;str, const std::string &amp;suffix)</div><div class="ttdef"><b>Definition:</b> <a href="_string_utils_8cpp_source.html#l00048">StringUtils.cpp:48</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html"><div class="ttname"><a href="namespacepolyfem_1_1utils.html">polyfem::utils</a></div><div class="ttdef"><b>Definition:</b> <a href="base64_layer_8cpp_source.html#l00005">base64Layer.cpp:6</a></div></div>
