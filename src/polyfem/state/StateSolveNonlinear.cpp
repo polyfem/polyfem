@@ -184,38 +184,32 @@ namespace polyfem
 		// Initialize forms
 
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
-			n_bases,
-			bases,
-			geom_bases(),
-			assembler,
-			ass_vals_cache,
-			formulation(),
-			mesh->dimension(),
-			n_pressure_bases,
-			boundary_nodes,
-			local_boundary,
-			local_neumann_boundary,
-			n_boundary_samples(),
-			rhs,
-			t,
-			sol,
-			args["solver"]["ignore_inertia"],
+			// General
+			mesh->dimension(), t,
+			// Elastic form
+			n_bases, bases, geom_bases(), assembler, ass_vals_cache, formulation(),
+			// Body form
+			n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
+			n_boundary_samples(), rhs, sol,
+			// Inertia form
+			args["solver"]["ignore_inertia"], mass,
+			// Lagged regularization form
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
-			args["contact"]["enabled"],
-			args["solver"]["contact"]["barrier_stiffness"],
-			args["contact"]["dhat"],
+			// Augmented lagrangian form
+			obstacle,
+			// Contact form
+			args["contact"]["enabled"], collision_mesh, args["contact"]["dhat"],
+			args["solver"]["contact"]["barrier_stiffness"], avg_mass,
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
+			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
 			args["solver"]["contact"]["friction_iterations"],
-			args["solver"]["rayleigh_damping"],
-			mass,
-			obstacle,
-			collision_mesh,
-			avg_mass);
+			// Rayleigh damping form
+			args["solver"]["rayleigh_damping"]);
 
 		// --------------------------------------------------------------------
 		// Initialize nonlinear problems
@@ -232,7 +226,6 @@ namespace polyfem
 
 	void State::solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t)
 	{
-
 		assert(solve_data.nl_problem != nullptr);
 		NLProblem &nl_problem = *(solve_data.nl_problem);
 

@@ -61,7 +61,7 @@ namespace polyfem::mesh
 			const int full_size,
 			const std::vector<int> &boundary_nodes,
 			const Eigen::VectorXd &boundary_values,
-			std::vector<std::shared_ptr<polyfem::solver::Form>> &forms)
+			const std::vector<std::shared_ptr<polyfem::solver::Form>> &forms)
 			: polyfem::solver::NLProblem(full_size, boundary_nodes, forms),
 			  boundary_values_(boundary_values)
 		{

@@ -16,8 +16,11 @@ namespace polyfem::mesh
 
 		/// @brief Construct a new WildRemeshing2D object
 		/// @param state Simulation current state
-		WildRemeshing2D(const State &state, const Eigen::VectorXd &obstacle_sol)
-			: wmtk::TriMesh(), state(state), m_obstacle_displacements(utils::unflatten(obstacle_sol, DIM)) {}
+		WildRemeshing2D(const State &state, const Eigen::VectorXd &obstacle_sol, const double current_time)
+			: wmtk::TriMesh(),
+			  state(state),
+			  m_obstacle_displacements(utils::unflatten(obstacle_sol, DIM)),
+			  current_time(current_time) {}
 
 		virtual ~WildRemeshing2D(){};
 
@@ -217,6 +220,7 @@ namespace polyfem::mesh
 		/// @brief Reference to the simulation state.
 		const State &state;
 		const Eigen::MatrixXd m_obstacle_displacements;
+		const double current_time;
 
 		double total_area;
 

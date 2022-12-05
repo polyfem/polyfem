@@ -38,40 +38,62 @@ namespace polyfem::solver
 	{
 	public:
 		/// @brief Initialize the forms and return a vector of pointers to them.
-		/// @note Requires rhs_assembler and time_integrator to be initialized.
+		/// @note Requires rhs_assembler (and time_integrator) to be initialized.
 		std::vector<std::shared_ptr<Form>> init_forms(
+			// General
+			const int dim,
+			const double t,
+
+			// Elastic form
 			const int n_bases,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &geom_bases,
 			const assembler::AssemblerUtils &assembler,
 			const assembler::AssemblyValsCache &ass_vals_cache,
 			const std::string &formulation,
-			const int dim,
+
+			// Body form
 			const int n_pressure_bases,
 			const std::vector<int> &boundary_nodes,
 			const std::vector<mesh::LocalBoundary> &local_boundary,
 			const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
 			const int n_boundary_samples,
 			const Eigen::MatrixXd &rhs,
-			const double t,
 			const Eigen::MatrixXd &sol,
+
+			// Inertia form
 			const bool ignore_inertia,
+			const StiffnessMatrix &mass,
+
+			// Lagged regularization form
 			const double lagged_regularization_weight,
 			const int lagged_regularization_iterations,
+
+			// Augemented lagrangian form
+			// const std::vector<int> &boundary_nodes,
+			// const std::vector<mesh::LocalBoundary> &local_boundary,
+			// const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
+			// const int n_boundary_samples,
+			// const StiffnessMatrix &mass,
+			const polyfem::mesh::Obstacle &obstacle,
+
+			// Contact form
 			const bool contact_enabled,
-			const json &barrier_stiffness,
+			const ipc::CollisionMesh &collision_mesh,
 			const double dhat,
+			const double avg_mass,
+			const json &barrier_stiffness,
 			const ipc::BroadPhaseMethod broad_phase,
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
+
+			// Friction form
 			const double friction_coefficient,
 			const double epsv,
 			const int friction_iterations,
-			const json &rayleigh_damping,
-			const StiffnessMatrix &mass,
-			const polyfem::mesh::Obstacle &obstacle,
-			const ipc::CollisionMesh &collision_mesh,
-			const double avg_mass);
+
+			// Rayleigh damping form
+			const json &rayleigh_damping);
 
 		/// @brief update the barrier stiffness for the forms
 		/// @param x current solution

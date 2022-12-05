@@ -5,26 +5,15 @@
 #include <polyfem/mesh/remesh/L2Projection.hpp>
 #include <polyfem/basis/FEBasis2d.hpp>
 #include <polyfem/solver/ALSolver.hpp>
-#include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
-#include <polyfem/solver/forms/ElasticForm.hpp>
-#include <polyfem/solver/forms/InertiaForm.hpp>
+#include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/io/OBJWriter.hpp>
-#include <polyfem/io/MatrixIO.hpp>
 
 #include <igl/boundary_facets.h>
 
 namespace polyfem::mesh
 {
-	namespace
-	{
-		inline bool contains(const std::unordered_set<int> &set, int val)
-		{
-			return set.find(val) != set.end();
-		}
-	} // namespace
-
 	int WildRemeshing2D::build_bases(
 		const Eigen::MatrixXd &V,
 		const Eigen::MatrixXi &F,
@@ -177,150 +166,141 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 
 		// 2. Perform "relaxation" by minimizing the elastic energy of the n-ring
-		// with the boundary fixed.
-
-		std::vector<std::shared_ptr<Form>> forms;
-
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		// with the internal boundary edges fixed.
 
 		assembler::AssemblerUtils assembler = create_assembler(local_mesh.body_ids());
-
 		assembler::AssemblyValsCache ass_vals_cache;
-		ass_vals_cache.init(/*is_volume=*/DIM == 3, bases, /*gbases=*/bases, /*is_mass=*/false);
-		std::shared_ptr<ElasticForm> elastic_form = std::make_shared<ElasticForm>(
-			n_bases, bases, bases, assembler, ass_vals_cache, state.formulation(),
-			/*dt=*/0, /*is_volume=*/DIM == 3);
-		elastic_form->set_weight(state.solve_data.elastic_form->weight());
-		forms.push_back(elastic_form);
-
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 		ass_vals_cache.init(/*is_volume=*/DIM == 3, bases, /*gbases=*/bases, /*is_mass=*/true);
-		Eigen::SparseMatrix<double> M;
+		Eigen::SparseMatrix<double> mass;
 		assembler.assemble_mass_matrix(
 			/*assembler_formulation=*/"", /*is_volume=*/DIM == 3, n_bases,
-			/*use_density=*/true, bases, /*gbases=*/bases, ass_vals_cache, M);
+			/*use_density=*/true, bases, /*gbases=*/bases, ass_vals_cache, mass);
 		for (int i = DIM * local_mesh.num_local_vertices(); i < DIM * local_mesh.num_vertices(); ++i)
 		{
-			M.coeffRef(i, i) = state.avg_mass;
+			mass.coeffRef(i, i) = state.avg_mass;
 		}
 
-		// TODO: set the diagonal of M to be 1 for the collision boundary nodes.
-
-		std::shared_ptr<ALForm> al_form = std::make_shared<ALForm>(
-			n_bases * DIM, boundary_nodes, M, Obstacle(), target_x);
-		al_form->set_weight(state.solve_data.al_form->weight());
-		forms.push_back(al_form);
-
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		ass_vals_cache.init(/*is_volume=*/DIM == 3, bases, /*gbases=*/bases, /*is_mass=*/false);
 
 		ipc::CollisionMesh collision_mesh; // This has to stay alive
-		if (free_boundary)
+		const bool contact_enabled = state.args["contact"]["enabled"] && free_boundary;
+		if (contact_enabled)
 		{
 			collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
 				utils::reorder_matrix(local_mesh.rest_positions(), vertex_to_basis),
 				utils::map_index_matrix(local_mesh.boundary_edges(), vertex_to_basis),
 				/*boundary_faces=*/Eigen::MatrixXi());
-			// io::OBJWriter::write(
-			// 	state.resolve_output_path("collision_mesh_before.obj"),
-			// 	collision_mesh.displace_vertices(utils::unflatten(target_x, DIM)), collision_mesh.edges());
-
-			std::shared_ptr<ContactForm> contact_form = std::make_shared<ContactForm>(
-				collision_mesh,
-				state.args["contact"]["dhat"],
-				state.avg_mass,
-				/*use_adaptive_barrier_stiffness=*/false,
-				/*is_time_dependent=*/false,
-				state.args["solver"]["contact"]["CCD"]["broad_phase"],
-				state.args["solver"]["contact"]["CCD"]["tolerance"],
-				state.args["solver"]["contact"]["CCD"]["max_iterations"]);
-			contact_form->set_weight(state.solve_data.contact_form->weight());
-			forms.push_back(contact_form);
 		}
 
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		SolveData solve_data;
 
-		std::shared_ptr<ImplicitTimeIntegrator> time_integrator;
-		if (!state.args["solver"]["ignore_inertia"])
+		// Initialize time integrator
+		if (state.problem->is_time_dependent())
 		{
-			time_integrator =
+			solve_data.time_integrator =
 				ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
-			time_integrator->init(
+			solve_data.time_integrator->init(
 				utils::flatten(utils::reorder_matrix(local_mesh.prev_positions(), vertex_to_basis)),
 				utils::flatten(utils::reorder_matrix(local_mesh.prev_velocities(), vertex_to_basis)),
 				utils::flatten(utils::reorder_matrix(local_mesh.prev_accelerations(), vertex_to_basis)),
 				state.args["time"]["dt"]);
-
-			std::shared_ptr<InertiaForm> inertia_form = std::make_shared<InertiaForm>(M, *time_integrator);
-			inertia_form->set_weight(state.solve_data.inertia_form->weight());
-			forms.push_back(inertia_form);
 		}
 
-		// --------------------------------------------------------------------
+		// TODO: initialize solve_data.rhs_assembler
 
-		StaticBoundaryNLProblem nl_problem(
-			n_bases * DIM, boundary_nodes, target_x, forms);
+		const std::vector<mesh::LocalBoundary> local_boundary;
+		const std::vector<mesh::LocalBoundary> local_neumann_boundary;
+		const auto rhs = Eigen::MatrixXd::Zero(target_x.rows(), target_x.cols());
 
-		// --------------------------------------------------------------------
+		std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
+			// General
+			DIM, current_time,
+			// Elastic form
+			n_bases, bases, /*geom_bases=*/bases, assembler, ass_vals_cache, state.formulation(),
+			// Body form
+			/*n_pressure_bases=*/0, boundary_nodes, local_boundary, local_neumann_boundary,
+			state.n_boundary_samples(), rhs, /*sol=*/target_x,
+			// Inertia form
+			state.args["solver"]["ignore_inertia"], mass,
+			// Lagged regularization form
+			state.args["solver"]["advanced"]["lagged_regularization_weight"],
+			state.args["solver"]["advanced"]["lagged_regularization_iterations"],
+			// Augmented lagrangian form
+			Obstacle(),
+			// Contact form
+			contact_enabled,
+			collision_mesh,
+			state.args["contact"]["dhat"],
+			state.args["solver"]["contact"]["barrier_stiffness"],
+			state.avg_mass,
+			state.args["solver"]["contact"]["CCD"]["broad_phase"],
+			state.args["solver"]["contact"]["CCD"]["tolerance"],
+			state.args["solver"]["contact"]["CCD"]["max_iterations"],
+			// Friction form
+			state.args["contact"]["friction_coefficient"],
+			state.args["contact"]["epsv"],
+			state.args["solver"]["contact"]["friction_iterations"],
+			// Rayleigh damping form
+			state.args["solver"]["rayleigh_damping"]);
 
-		// Create Newton solver
-		std::shared_ptr<cppoptlib::NonlinearSolver<decltype(nl_problem)>> nl_solver;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+		const int ndof = n_bases * DIM;
+		assert(solve_data.al_form.use_count() == 2);
+		const std::shared_ptr<ALForm> new_al_form = std::make_shared<ALForm>(ndof, boundary_nodes, mass, Obstacle(), target_x);
+		for (int i = 0; i < forms.size(); i++)
 		{
-			// TODO: expose these parameters
-			const json newton_args = R"({
-				"f_delta": 1e-10,
-				"grad_norm": 1e-5,
-				"use_grad_norm": true,
-				"first_grad_norm_tol": 1e-10,
-				"max_iterations": 1000,
-				"relative_gradient": false,
-				"line_search": {
-					"method": "backtracking",
-					"use_grad_norm_tol": 0.0001
-				}
-			})"_json;
-			const json linear_solver_args = R"({
-				"solver": "Eigen::PardisoLDLT",
-				"precond": "Eigen::IdentityPreconditioner"
-			})"_json;
-			using NewtonSolver = cppoptlib::SparseNewtonDescentSolver<decltype(nl_problem)>;
-			nl_solver = std::make_shared<NewtonSolver>(newton_args, linear_solver_args);
+			if (forms[i] == solve_data.al_form)
+			{
+				forms[i] = new_al_form;
+				solve_data.al_form = new_al_form;
+				break;
+			}
+		}
+		assert(state.solve_data.al_form != nullptr);
+		solve_data.al_form->set_weight(state.solve_data.al_form->weight());
+
+		if (solve_data.contact_form)
+		{
+			assert(state.solve_data.contact_form != nullptr);
+			solve_data.contact_form->set_weight(state.solve_data.contact_form->weight());
+		}
+
+		if (solve_data.friction_form)
+		{
+			solve_data.friction_form->disable();
+			// TODO: add form x.transpose() * friction_force;
+			// forms.push_back(approx_friction_form);
 		}
 
 		// --------------------------------------------------------------------
 
-		// TODO: Make these parameters
-		const double al_initial_weight = 1e6;
-		const double al_max_weight = 1e11;
-		const bool force_al = false;
+		solve_data.nl_problem = std::make_shared<StaticBoundaryNLProblem>(
+			ndof, boundary_nodes, target_x, forms);
+
+		auto nl_solver = state.make_nl_solver<NLProblem>();
 
 		// Create augmented Lagrangian solver
 		ALSolver al_solver(
-			nl_solver, al_form, al_initial_weight, al_max_weight,
-			[](const Eigen::MatrixXd &) {});
+			nl_solver, solve_data.al_form,
+			state.args["solver"]["augmented_lagrangian"]["initial_weight"],
+			state.args["solver"]["augmented_lagrangian"]["max_weight"],
+			[&](const Eigen::VectorXd &x) {
+				// this->solve_data.updated_barrier_stiffness(sol);
+			});
 
 		Eigen::MatrixXd sol = target_x;
 		const auto level_before = logger().level();
 		logger().set_level(spdlog::level::warn);
-		al_solver.solve(nl_problem, sol, force_al);
+		al_solver.solve(*(solve_data.nl_problem), sol, state.args["solver"]["augmented_lagrangian"]["force"]);
 		logger().set_level(level_before);
 
 		// --------------------------------------------------------------------
 
-		for (const auto &[glob_vi, loc_vi] : local_mesh.global_to_local())
-		{
-			const long basis_vi = vertex_to_basis[loc_vi];
-
-			if (basis_vi < 0)
-				continue;
-
-			const Eigen::Vector2d u = sol.middleRows<DIM>(DIM * basis_vi);
-			vertex_attrs[glob_vi].position = vertex_attrs[glob_vi].rest_position + u;
-		}
-
-		// 3. Return the energy of the relaxed mesh.
-		const double local_energy_before = nl_problem.value(target_x);
-		const double local_energy_after = nl_problem.value(sol);
+		// 3. Determine if we should accept the operation based on a decrease in energy.
+		const double local_energy_before = solve_data.nl_problem->value(target_x);
+		const double local_energy_after = solve_data.nl_problem->value(sol);
 
 		assert(std::isfinite(local_energy_before));
 		assert(std::isfinite(local_energy_after));
@@ -346,8 +326,10 @@ namespace polyfem::mesh
 		// 	state.resolve_output_path("collision_mesh.obj"),
 		// 	collision_mesh.displace_vertices(utils::unflatten(sol, DIM)), collision_mesh.edges());
 
+		const bool accept = rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance;
+
 		static int i = 0;
-		if (rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance)
+		if (accept)
 		{
 			logger().critical(
 				"{} energy_before={:g} energy_after={:g} rel_diff={:g} abs_diff={:g}",
@@ -355,7 +337,29 @@ namespace polyfem::mesh
 		}
 		i++;
 
-		return rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance;
+		// Update positions only on acceptance
+		if (accept)
+		{
+			if (solve_data.friction_form)
+			{
+				solve_data.friction_form->enable();
+				// TODO: forms.back()->disable();
+				// TODO: resolve
+			}
+
+			for (const auto &[glob_vi, loc_vi] : local_mesh.global_to_local())
+			{
+				const long basis_vi = vertex_to_basis[loc_vi];
+
+				if (basis_vi < 0)
+					continue;
+
+				const Eigen::Vector2d u = sol.middleRows<DIM>(DIM * basis_vi);
+				vertex_attrs[glob_vi].position = vertex_attrs[glob_vi].rest_position + u;
+			}
+		}
+
+		return accept;
 	}
 
 } // namespace polyfem::mesh

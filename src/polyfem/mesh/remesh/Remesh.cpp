@@ -103,7 +103,7 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd positions = rest_positions + utils::unflatten(mesh_sol, dim);
 
 		assert(!state.mesh->is_volume());
-		WildRemeshing2D remeshing(state, obstacle_sol);
+		WildRemeshing2D remeshing(state, obstacle_sol, time);
 		remeshing.energy_relative_tolerance = state.args["space"]["remesh"]["rel_tol"];
 		remeshing.energy_absolute_tolerance = state.args["space"]["remesh"]["abs_tol"];
 		remeshing.n_ring_size = state.args["space"]["remesh"]["n_ring_size"];
