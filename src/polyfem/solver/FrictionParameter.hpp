@@ -30,8 +30,6 @@ namespace polyfem
 		Eigen::VectorXd get_upper_bound(const Eigen::VectorXd &x) const override;
 
 	private:
-		double target_weight = 1;
-
 		double min_fric;
 		double max_fric;
 	};
