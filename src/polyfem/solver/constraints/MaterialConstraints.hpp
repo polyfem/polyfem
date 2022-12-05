@@ -167,8 +167,8 @@ namespace polyfem
             for (int e = 0; e < n_elem; e++)
             {
                 const int body_id = state_.mesh->get_body_id(e);
-                grad_body(body_id) += grad_elem(e);
-                grad_body(body_id + body_id_map.size()) += grad_elem(e + n_elem);
+                grad_body(body_id_map.at(body_id)[1]) += grad_elem(e);
+                grad_body(body_id_map.at(body_id)[1] + body_id_map.size()) += grad_elem(e + n_elem);
             }
 
             return grad_body;
