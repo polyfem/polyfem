@@ -39,7 +39,7 @@ namespace polyfem::solver
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
-		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 	public:
 		/// @brief Initialize lagged fields
@@ -62,8 +62,7 @@ namespace polyfem::solver
 		double stiffness() const;
 
 	private:
-		// TODO: Make this const by making ElasticForm::second_derivative const
-		Form &form_to_damp_;                                             ///< Reference to the form we are damping
+		const Form &form_to_damp_;                                       ///< Reference to the form we are damping
 		const time_integrator::ImplicitTimeIntegrator &time_integrator_; ///< Reference to the time integrator
 		const bool use_stiffness_as_ratio_;                              ///< Whether to use the stiffness ratio or the stiffness value
 		const double stiffness_;                                         ///< Damping stiffness coefficient

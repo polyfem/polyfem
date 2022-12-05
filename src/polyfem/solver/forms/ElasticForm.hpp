@@ -39,7 +39,7 @@ namespace polyfem::solver
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
-		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 	public:
 		/// @brief Determine if a step from solution x0 to solution x1 is allowed
@@ -63,8 +63,8 @@ namespace polyfem::solver
 		const std::string formulation_; ///< Elasticity formulation name
 		const bool is_volume_;
 		const double dt_;
-		StiffnessMatrix cached_stiffness_;  ///< Cached stiffness matrix for linear elasticity
-		utils::SpareMatrixCache mat_cache_; ///< Matrix cache
+		StiffnessMatrix cached_stiffness_;          ///< Cached stiffness matrix for linear elasticity
+		mutable utils::SpareMatrixCache mat_cache_; ///< Matrix cache (mutable because it is modified in second_derivative_unweighted)
 
 		/// @brief Compute the stiffness matrix (cached)
 		void compute_cached_stiffness();

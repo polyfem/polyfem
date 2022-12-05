@@ -23,7 +23,7 @@ namespace polyfem::solver
 		gradv = (x - x_lagged_);
 	}
 
-	void LaggedRegForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void LaggedRegForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		hessian.resize(x.size(), x.size());
 		hessian.setIdentity();

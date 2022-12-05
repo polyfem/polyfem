@@ -69,7 +69,7 @@ namespace polyfem::solver
 		gradv = masked_lumped_mass_ * (x - target_x_);
 	}
 
-	void ALForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void ALForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		hessian = masked_lumped_mass_;
 	}
