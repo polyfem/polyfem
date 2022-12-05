@@ -72,7 +72,7 @@ namespace polyfem
 
 					{
 						POLYFEM_SCOPED_TIMER("Line Search Begin - CCD broad-phase", this->broad_phase_ccd_time);
-						TVector new_x = objFunc.force_inequality_constraint(x, step_size * delta_x);
+						TVector new_x = x + step_size * delta_x;
 						objFunc.line_search_begin(x, new_x);
 					}
 
@@ -151,7 +151,7 @@ namespace polyfem
 					{
 						this->iterations++;
 
-						TVector new_x = objFunc.force_inequality_constraint(x, step_size * delta_x); // x + step_size * delta_x;
+						TVector new_x = x + step_size * delta_x;
 
 						{
 							POLYFEM_SCOPED_TIMER("solution changed - constraint set update in LS", this->constraint_set_update_time);

@@ -286,12 +286,12 @@ namespace polyfem
 		return is_valid;
 	}
 
-	void ShapeParameter::smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x)
+	bool ShapeParameter::smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x)
 	{
 		if (slim_params["skip"])
 		{
 			new_x = x;
-			return;
+			return false;
 		}
 
 		Eigen::MatrixXd V, new_V;
@@ -319,6 +319,8 @@ namespace polyfem
 		V_rest = new_V;
 		shape_constraints_->full_to_reduced(new_V, new_x);
 		pre_solve(new_x);
+
+		return true;
 	}
 
 	bool ShapeParameter::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)

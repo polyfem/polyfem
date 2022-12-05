@@ -45,7 +45,7 @@ namespace polyfem::solver
 
 		bool verify_gradient(const Eigen::VectorXd &x, const Eigen::VectorXd &gradv);
 
-		void smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x);
+		bool smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x);
 		bool remesh(Eigen::VectorXd &x);
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const;
@@ -66,7 +66,6 @@ namespace polyfem::solver
 		Eigen::VectorXd get_upper_bound(const Eigen::VectorXd &x) const;
 
 		int n_inequality_constraints();
-		Eigen::VectorXd force_inequality_constraint(const Eigen::VectorXd &x0, const Eigen::VectorXd &dx);
 		double inequality_constraint_val(const Eigen::VectorXd &x, const int index);
 		Eigen::VectorXd inequality_constraint_grad(const Eigen::VectorXd &x, const int index);
 

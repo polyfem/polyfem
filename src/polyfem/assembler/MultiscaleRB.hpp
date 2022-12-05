@@ -112,10 +112,9 @@ namespace polyfem
 			void line_search_begin(const TVector &x0, const TVector &x1) {}
 			void line_search_end() {}
 			void post_step(const int iter_num, const TVector &x) {}
-			void smoothing(const TVector &x, TVector &new_x) {}
+			bool smoothing(const TVector &x, TVector &new_x) { return false; }
 			bool stop(const TVector &x) { return false; }
 			bool remesh(TVector &x) { return false; }
-			TVector force_inequality_constraint(const TVector &x0, const TVector &dx) { return x0 + dx; }
 			double max_step_size(const TVector &x0, const TVector &x1) { return 1; }
 			bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; }
 			int n_inequality_constraints() { return 0; }

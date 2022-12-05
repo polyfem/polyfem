@@ -256,7 +256,7 @@ namespace polyfem
 		}
 		else
 		{
-			auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
+			auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["adjoint_solver"], args["solver"]["linear"]["precond"]);
 			solver->setParameters(args["solver"]["linear"]);
 
 			dirichlet_solve(*solver, A, b, boundary_nodes_tmp, x, precond_num, "", false, false, false);

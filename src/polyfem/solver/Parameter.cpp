@@ -7,6 +7,7 @@
 #include "ShapeParameter.hpp"
 #include "TopologyOptimizationParameter.hpp"
 #include "GraphParameter.hpp"
+#include "MacroStrainParameter.hpp"
 
 namespace polyfem
 {
@@ -29,6 +30,8 @@ namespace polyfem
 			return std::make_shared<TopologyOptimizationParameter>(states_ptr, args);
 		else if (type == "graph")
 			return std::make_shared<GraphParameter>(states_ptr, args);
+		else if (type == "macro_strain")
+			return std::make_shared<MacroStrainParameter>(states_ptr, args);
 
 		log_and_throw_error("Unknown type of parameter!");
 		return std::make_shared<ShapeParameter>(states_ptr, args);

@@ -51,17 +51,19 @@ namespace polyfem::solver
 		}
 	}
 
-	void AdjointNLProblem::smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x)
+	bool AdjointNLProblem::smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x)
 	{
 		int cumulative = 0;
+		bool flag = false;
 		for (const auto &p : parameters_)
 		{
 			Eigen::VectorXd tmp = new_x.segment(cumulative, p->optimization_dim());
-			p->smoothing(x.segment(cumulative, p->optimization_dim()), tmp);
+			flag |= p->smoothing(x.segment(cumulative, p->optimization_dim()), tmp);
 			assert(tmp.size() == p->optimization_dim());
 			new_x.segment(cumulative, p->optimization_dim()) = tmp;
 			cumulative += p->optimization_dim();
 		}
+		return flag;
 	}
 
 	bool AdjointNLProblem::remesh(Eigen::VectorXd &x)
@@ -246,19 +248,6 @@ namespace polyfem::solver
 			cumulative += p->optimization_dim();
 		}
 		return max;
-	}
-
-	Eigen::VectorXd AdjointNLProblem::force_inequality_constraint(const Eigen::VectorXd &x0, const Eigen::VectorXd &dx)
-	{
-		Eigen::VectorXd newX;
-		newX.setZero(optimization_dim_);
-		int cumulative = 0;
-		for (const auto &p : parameters_)
-		{
-			newX.segment(cumulative, p->optimization_dim()) = p->force_inequality_constraint(x0.segment(cumulative, p->optimization_dim()), dx.segment(cumulative, p->optimization_dim()));
-			cumulative += p->optimization_dim();
-		}
-		return newX;
 	}
 
 	int AdjointNLProblem::n_inequality_constraints()

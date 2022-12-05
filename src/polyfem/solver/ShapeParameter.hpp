@@ -27,7 +27,7 @@ namespace polyfem
 		Eigen::MatrixXd map(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const override;
 
-		void smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) override;
+		bool smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) override;
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;

@@ -1,4 +1,5 @@
 #include "Multiscale.hpp"
+#include <polyfem/solver/AdjointForm.hpp>
 
 #include <polyfem/basis/Basis.hpp>
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
@@ -33,6 +34,8 @@ namespace polyfem::assembler
 		{
 			return i == j;
 		}
+
+		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 
 		bool compare_matrix(
 			const Eigen::MatrixXd& x,
@@ -171,7 +174,6 @@ namespace polyfem::assembler
 		Eigen::MatrixXd avg_stiffness;
 		avg_stiffness.setZero(size()*size(), size()*size());
 
-		Eigen::MatrixXd stiffnesses;
 		Eigen::MatrixXd CB;
 		CB.setZero(size()*size(), state->ndof());
 		for (int e = 0; e < bases.size(); ++e)
@@ -182,8 +184,10 @@ namespace polyfem::assembler
 			const quadrature::Quadrature &quadrature = vals.quadrature;
 			Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
+			Eigen::MatrixXd stiffnesses;
 			state->assembler.compute_stiffness_value(state->formulation(), vals, quadrature.points, x, stiffnesses);
 			avg_stiffness += utils::unflatten(stiffnesses.transpose() * da, size()*size());
+			stiffnesses.array().colwise() *= da.array();
 
 			for (int i = 0; i < vals.basis_values.size(); i++)
 			{
@@ -192,31 +196,30 @@ namespace polyfem::assembler
 				for (int a = 0; a < size(); a++)
 				for (int b = 0; b < size(); b++)
 				for (int k = 0; k < size(); k++)
-				for (int l = 0; l < size(); l++)
 				{
 					int X = a * size() + b;
-					int Y = k * size() + l;
-					CB(X, v.global[0].index * size() + k) += (stiffnesses.col(X * size() * size() + Y).array() * v.grad_t_m.col(l).array() * da.array()).sum();
+					CB(X, v.global[0].index * size() + k) += dot(stiffnesses.block(0, X * size() * size() + k * size(), da.size(), size()), v.grad_t_m);
 				}
 			}
 		}
 
-		// compute term2 given CB
-		Eigen::MatrixXd term2;
-		term2.setZero(CB.cols(), CB.rows());
 		if (!state->solve_data.nl_problem)
 			log_and_throw_error("Need nl problem to homogenize stiffness!");
 		if (!state->diff_cached.size())
 			log_and_throw_error("Need differentiability of micro state!");
 
+		stiffness = avg_stiffness;
+
 		for (int i = 0; i < CB.rows(); i++)
 		{
-			Eigen::VectorXd b = CB.row(i);
-			state->solve_adjoint(b);
-			term2.col(i) = state->diff_cached[0].p;
+			state->solve_adjoint(CB.row(i).transpose());
+
+			Eigen::VectorXd b;
+			solver::AdjointForm::dJ_macro_strain_adjoint_term(*state, x, state->diff_cached[0].p, b);
+			stiffness.row(i) += b;
 		}
 
-		stiffness = (avg_stiffness - CB * term2) / microstructure_volume;
+		stiffness /= microstructure_volume;
 	}
 
 	void Multiscale::homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const
@@ -285,15 +288,6 @@ namespace polyfem::assembler
 
 		// effective energy = average energy over unit cell
 		energy = homogenize_energy(x);
-	}
-
-	void Multiscale::set_microstructure_state(const std::shared_ptr<polyfem::State> state_ptr)
-	{
-		state = state_ptr;
-
-		RowVectorNd min, max;
-		state->mesh->bounding_box(min, max);
-		microstructure_volume = (max - min).prod();
 	}
 
 	void Multiscale::add_multimaterial(const int index, const json &params)

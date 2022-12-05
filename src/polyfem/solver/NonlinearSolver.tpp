@@ -66,7 +66,7 @@ namespace cppoptlib
 			POLYFEM_SCOPED_TIMER("compute gradient", grad_time);
 			objFunc.gradient(x, grad);
 		}
-		double first_grad_norm = objFunc.n_inequality_constraints() > 0 ? (objFunc.force_inequality_constraint(x, -grad) - x).norm() : grad.norm();
+		double first_grad_norm = grad.norm();
 		if (std::isnan(first_grad_norm))
 		{
 			this->m_status = Status::UserDefined;
@@ -135,7 +135,7 @@ namespace cppoptlib
 				objFunc.verify_gradient(x, grad);
 			}
 
-			const double grad_norm = objFunc.n_inequality_constraints() > 0 ? (objFunc.force_inequality_constraint(x, -grad) - x).norm() : grad.norm();
+			const double grad_norm = grad.norm();
 			if (std::isnan(grad_norm))
 			{
 				this->m_status = Status::UserDefined;
@@ -236,11 +236,12 @@ namespace cppoptlib
 					break;
 			}
 			auto old_x = x;
-			x = objFunc.force_inequality_constraint(old_x, rate * delta_x);
-			objFunc.smoothing(old_x, x);
+			x = old_x + rate * delta_x;
+			if (objFunc.smoothing(old_x, x))
+				objFunc.solution_changed(x);
 
 			this->m_current.xDelta = (x - old_x).array().abs().maxCoeff();
-			objFunc.solution_changed(x);
+			
 
 			// -----------
 			// Post update

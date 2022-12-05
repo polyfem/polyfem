@@ -181,6 +181,11 @@ namespace polyfem
 				rules[i]["default"] = polysolve::LinearSolver::defaultPrecond();
 				rules[i]["options"] = polysolve::LinearSolver::availablePrecond();
 			}
+			else if (rules[i]["pointer"] == "/solver/linear/adjoint_solver")
+			{
+				rules[i]["default"] = polysolve::LinearSolver::defaultSolver();
+				rules[i]["options"] = polysolve::LinearSolver::availableSolvers();
+			}
 		}
 
 		// // Fallback to default linear solver if the specified solver is invalid
@@ -193,6 +198,18 @@ namespace polyfem
 			{
 				logger().warn("Solver {} is invalid, falling back to {}", s_json, polysolve::LinearSolver::defaultSolver());
 				args_in["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
+			}
+		}
+
+		if (fallback_solver && args_in.contains("/solver/linear/adjoint_solver"_json_pointer))
+		{
+			const std::string s_json = args_in["solver"]["linear"]["adjoint_solver"];
+			const auto ss = polysolve::LinearSolver::availableSolvers();
+			const auto solver_found = std::find(ss.begin(), ss.end(), s_json);
+			if (solver_found == ss.end())
+			{
+				logger().warn("Adjoint solver {} is invalid, falling back to {}", s_json, args_in["solver"]["linear"]["solver"]);
+				args_in["solver"]["linear"]["adjoint_solver"] = args_in["solver"]["linear"]["solver"];
 			}
 		}
 
