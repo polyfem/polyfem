@@ -459,16 +459,16 @@ namespace polyfem::solver
 			parameters[i++] = Parameter::create(args, some_states);
 		}
 
-		const int cur_log = states[0]->current_log_level;
-		states[0]->set_log_level(static_cast<spdlog::level::level_enum>(opt_args["output"]["solve_log_level"])); // log level is global, only need to change in one state
-		utils::maybe_parallel_for(states.size(), [&](int start, int end, int thread_id) {
-			for (int i = start; i < end; i++)
-			{
-				auto state = states[i];
-				solve_pde(*state);
-			}
-		});
-		states[0]->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
+		// const int cur_log = states[0]->current_log_level;
+		// states[0]->set_log_level(static_cast<spdlog::level::level_enum>(opt_args["output"]["solve_log_level"])); // log level is global, only need to change in one state
+		// utils::maybe_parallel_for(states.size(), [&](int start, int end, int thread_id) {
+		// 	for (int i = start; i < end; i++)
+		// 	{
+		// 		auto state = states[i];
+		// 		solve_pde(*state);
+		// 	}
+		// });
+		// states[0]->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
 
 		// create objectives
 		json obj_args = opt_args["functionals"];
