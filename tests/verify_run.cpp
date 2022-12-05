@@ -113,10 +113,10 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	}
 
 	State state;
-	state.set_max_threads(1);
-	state.init_logger("", spdlog::level::err, false);
-	spdlog::set_level(spdlog::level::info);
+	args["/output/log/level"_json_pointer] = "error";
 	state.init(args, true);
+	state.set_max_threads(1);
+	spdlog::set_level(spdlog::level::info);
 	state.load_mesh();
 
 	if (state.mesh == nullptr)
