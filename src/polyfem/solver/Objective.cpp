@@ -101,10 +101,10 @@ namespace polyfem::solver
 		template <typename T>
 		T homo_aux(const Eigen::Matrix<T, Eigen::Dynamic, 1> &F)
 		{
-			T val1 = F(0) * F(0);
-			T val2 = F(1) * F(1) + F(3) * F(3) + F(2) * F(2);
+			T val1 = F(0) * F(0) + F(1) * F(1) + F(2) * F(2);
+			T val2 = F(3) * F(3);
 
-			return val1 / (val2 + val1);
+			return sqrt(val1 / (val2 + val1));
 		}
 
 		Eigen::VectorXd homo_aux_grad(const Eigen::VectorXd &F)
@@ -273,8 +273,7 @@ namespace polyfem::solver
 		else if (type == "homogenized_stress")
 		{
 			State &state = *(states[args["state"]]);
-			std::shared_ptr<Parameter> shape_param;
-			std::shared_ptr<Parameter> elastic_param;
+			std::shared_ptr<Parameter> shape_param, elastic_param, macro_strain_param;
 			if (args["shape_parameter"] >= 0)
 			{
 				shape_param = parameters[args["shape_parameter"]];
@@ -287,7 +286,10 @@ namespace polyfem::solver
 			if (args["material_parameter"] >= 0)
 				elastic_param = parameters[args["material_parameter"]];
 
-			obj = std::make_shared<solver::CompositeHomogenizedStressObjective>(state, shape_param, elastic_param, args);
+			if (args["macro_strain_parameter"] >= 0)
+				macro_strain_param = parameters[args["macro_strain_parameter"]];
+
+			obj = std::make_shared<solver::CompositeHomogenizedStressObjective>(state, shape_param, macro_strain_param, elastic_param, args);
 		}
 		else if (type == "position")
 		{
@@ -406,10 +408,21 @@ namespace polyfem::solver
 		return term;
 	}
 
+	SpatialIntegralObjective::SpatialIntegralObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> macro_strain_param, const json &args) : state_(state), shape_param_(shape_param), macro_strain_param_(macro_strain_param)
+	{
+		if (shape_param_)
+			assert(shape_param_->name() == "shape");
+		
+		if (macro_strain_param_)
+			assert(macro_strain_param_->name() == "macro_strain");
+	}
+
 	SpatialIntegralObjective::SpatialIntegralObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : state_(state), shape_param_(shape_param)
 	{
 		if (shape_param_)
 			assert(shape_param_->name() == "shape");
+		
+		macro_strain_param_ = NULL;
 	}
 
 	double SpatialIntegralObjective::value()
@@ -439,6 +452,10 @@ namespace polyfem::solver
 		{
 			assert(time_step_ < state_.diff_cached.size());
 			AdjointForm::compute_shape_derivative_functional_term(state_, state_.diff_cached[time_step_].u, get_integral_functional(), interested_ids_, spatial_integral_type_, term, time_step_);
+		}
+		else if (&param == macro_strain_param_.get())
+		{
+			AdjointForm::compute_macro_strain_derivative_functional_term(state_, state_.diff_cached[time_step_].u, get_integral_functional(), interested_ids_, spatial_integral_type_, term, time_step_);
 		}
 
 		return term;
@@ -2026,7 +2043,7 @@ namespace polyfem::solver
 		return grad;
 	}
 
-	HomogenizedStressObjective::HomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
+	HomogenizedStressObjective::HomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> macro_strain_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args) : SpatialIntegralObjective(state, shape_param, macro_strain_param, args), elastic_param_(elastic_param)
 	{
 		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
@@ -2131,7 +2148,7 @@ namespace polyfem::solver
 			// TODO: differentiate stress wrt. lame param
 			log_and_throw_error("Not implemented!");
 		}
-		else if (&param == shape_param_.get())
+		else
 		{
 			term = SpatialIntegralObjective::compute_partial_gradient(param);
 		}
@@ -2139,29 +2156,29 @@ namespace polyfem::solver
 		return term;
 	}
 
-	CompositeHomogenizedStressObjective::CompositeHomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args)
+	CompositeHomogenizedStressObjective::CompositeHomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> macro_strain_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args)
 	{
 		json tmp_arg = args;
 		std::vector<int> id(2);
 		id[0] = 0;
 		id[1] = 0;
 		tmp_arg["id"] = id;
-		js[0] = std::make_shared<HomogenizedStressObjective>(state, shape_param, elastic_param, tmp_arg);
+		js[0] = std::make_shared<HomogenizedStressObjective>(state, shape_param, macro_strain_param, elastic_param, tmp_arg);
 
 		id[0] = 0;
 		id[1] = 1;
 		tmp_arg["id"] = id;
-		js[1] = std::make_shared<HomogenizedStressObjective>(state, shape_param, elastic_param, tmp_arg);
+		js[1] = std::make_shared<HomogenizedStressObjective>(state, shape_param, macro_strain_param, elastic_param, tmp_arg);
 
 		id[0] = 1;
 		id[1] = 0;
 		tmp_arg["id"] = id;
-		js[2] = std::make_shared<HomogenizedStressObjective>(state, shape_param, elastic_param, tmp_arg);
+		js[2] = std::make_shared<HomogenizedStressObjective>(state, shape_param, macro_strain_param, elastic_param, tmp_arg);
 
 		id[0] = 1;
 		id[1] = 1;
 		tmp_arg["id"] = id;
-		js[3] = std::make_shared<HomogenizedStressObjective>(state, shape_param, elastic_param, tmp_arg);
+		js[3] = std::make_shared<HomogenizedStressObjective>(state, shape_param, macro_strain_param, elastic_param, tmp_arg);
 	}
 	double CompositeHomogenizedStressObjective::value()
 	{

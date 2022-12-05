@@ -55,6 +55,8 @@ set(SOURCES
 	InitialConditionParameter.hpp
 	TopologyOptimizationParameter.hpp
 	TopologyOptimizationParameter.cpp
+	MacroStrainParameter.hpp
+	MacroStrainParameter.cpp
 )
 
 prepend_current_path(SOURCES)

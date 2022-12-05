@@ -364,7 +364,8 @@
             "shape",
             "graph",
             "topology",
-            "control"
+            "control",
+            "macro_strain"
         ],
         "doc": "TODO"
     },
@@ -671,6 +672,20 @@
             "phi_bound",
             "psi_bound",
             "max_change"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*",
+        "type": "object",
+        "type_name": "macro_strain",
+        "required": [
+            "type",
+            "states"
+        ],
+        "optional": [
+            "max_change",
+            "initial"
         ],
         "doc": "TODO"
     },
@@ -1002,6 +1017,12 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/functionals/*/macro_strain_parameter",
+        "type": "int",
+        "default": -1,
+        "doc": "TODO"
+    },
+    {
         "pointer": "/functionals/*/control_parameter",
         "type": "int",
         "default": -1,
@@ -1071,6 +1092,7 @@
         "optional": [
             "shape_parameter",
             "material_parameter",
+            "macro_strain_parameter",
             "volume_selection",
             "power",
             "weight",

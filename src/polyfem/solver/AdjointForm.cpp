@@ -154,15 +154,57 @@ namespace polyfem::solver
 		}
 		else
 		{
-			if (param_name == "material")
+			if (param_name == "material" || param_name == "topology")
 				dJ_material_static(state, state.diff_cached[0].u, state.diff_cached[0].p, term);
 			else if (param_name == "shape")
 				dJ_shape_static_adjoint_term(state, state.diff_cached[0].u, state.diff_cached[0].p, term);
-			else if (param_name == "topology")
-				dJ_material_static(state, state.diff_cached[0].u, state.diff_cached[0].p, term);
+			else if (param_name == "macro_strain")
+				dJ_macro_strain_adjoint_term(state, state.diff_cached[0].u, state.diff_cached[0].p, term);
 			else
 				log_and_throw_error("Unknown design parameter!");
 		}
+	}
+
+	void AdjointForm::dJ_macro_strain_adjoint_term(
+			const State &state,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &adjoint,
+			Eigen::VectorXd &one_form)
+	{
+		const int dim = state.mesh->dimension();
+		const auto &bases = state.bases;
+		const auto &gbases = state.geom_bases();
+
+		one_form.setZero(dim*dim);
+		auto storage = utils::create_thread_storage(LocalThreadVecStorage(one_form.size()));
+		utils::maybe_parallel_for(bases.size(), [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+			Eigen::MatrixXd stiffnesses;
+			Eigen::MatrixXd p, grad_p;
+			for (int e = start; e < end; ++e)
+			{
+				assembler::ElementAssemblyValues &vals = local_storage.vals;
+				state.ass_vals_cache.compute(e, dim == 3, bases[e], gbases[e], vals);
+
+				const quadrature::Quadrature &quadrature = vals.quadrature;
+				local_storage.da = vals.det.array() * quadrature.weights.array();
+
+				state.assembler.compute_stiffness_value(state.formulation(), vals, quadrature.points, sol, stiffnesses);
+				stiffnesses.array().colwise() *= local_storage.da.array();
+
+				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
+
+				for (int a = 0; a < dim; a++)
+				for (int b = 0; b < dim; b++)
+				{
+					int X = a * dim + b;
+					local_storage.vec(X) -= dot(stiffnesses.block(0, X * dim*dim, local_storage.da.size(), dim*dim), grad_p);
+				}
+			}
+		});
+
+		for (const LocalThreadVecStorage &local_storage : storage)
+			one_form += local_storage.vec;
 	}
 
 	void AdjointForm::gradient(
@@ -603,6 +645,66 @@ namespace polyfem::solver
 		{
 			log_and_throw_error("Shape derivative of vertex sum type functional is not implemented!");
 		}
+		for (const LocalThreadVecStorage &local_storage : storage)
+			term += local_storage.vec;
+	}
+
+	void AdjointForm::compute_macro_strain_derivative_functional_term(
+		const State &state,
+		const Eigen::MatrixXd &solution,
+		const IntegrableFunctional &j,
+		const std::set<int> &interested_ids, // either body id or surface id
+		const SpatialIntegralType spatial_integral_type,
+		Eigen::VectorXd &term,
+		const int cur_time_step)
+	{
+		const auto &gbases = state.geom_bases();
+		const auto &bases = state.bases;
+		const int dim = state.mesh->dimension();
+		const int actual_dim = state.problem->is_scalar() ? 1 : dim;
+
+		const int n_elements = int(bases.size());
+		term.setZero(dim * dim, 1);
+		
+		if (!j.depend_on_gradu())
+			return;
+
+		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
+
+		if (spatial_integral_type == SpatialIntegralType::VOLUME)
+		{
+			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
+				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+				Eigen::MatrixXd u, grad_u, dj_du;
+
+				json params = {};
+				params["step"] = cur_time_step;
+
+				for (int e = start; e < end; ++e)
+				{
+					if (interested_ids.size() != 0 && interested_ids.find(state.mesh->get_body_id(e)) == interested_ids.end())
+						continue;
+
+					assembler::ElementAssemblyValues &vals = local_storage.vals;
+					state.ass_vals_cache.compute(e, state.mesh->is_volume(), bases[e], gbases[e], vals);
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, solution, u, grad_u);
+
+					const quadrature::Quadrature &quadrature = vals.quadrature;
+					local_storage.da = vals.det.array() * quadrature.weights.array();
+
+					params["elem"] = e;
+					params["body_id"] = state.mesh->get_body_id(e);
+
+					j.dj_dgradu(state.assembler.lame_params(), quadrature.points, vals.val, u, grad_u, params, dj_du);
+
+					local_storage.vec += dj_du.transpose() * local_storage.da;
+				}
+			});
+		}
+		else 
+			log_and_throw_error("Not implemented!");
+		
 		for (const LocalThreadVecStorage &local_storage : storage)
 			term += local_storage.vec;
 	}

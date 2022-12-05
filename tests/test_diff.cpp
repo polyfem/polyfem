@@ -431,7 +431,7 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
-	CompositeHomogenizedStressObjective func(state, shape_param, NULL, opt_args["functionals"][0]);
+	CompositeHomogenizedStressObjective func(state, shape_param, NULL, NULL, opt_args["functionals"][0]);
 
 	double functional_val = func.value();
 

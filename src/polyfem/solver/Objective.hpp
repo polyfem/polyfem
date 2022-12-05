@@ -60,6 +60,7 @@ namespace polyfem::solver
 	{
 	public:
 		SpatialIntegralObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args);
+		SpatialIntegralObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> macro_strain_param, const json &args);
 		virtual ~SpatialIntegralObjective() = default;
 
 		double value() override;
@@ -72,6 +73,7 @@ namespace polyfem::solver
 	protected:
 		const State &state_;
 		std::shared_ptr<const Parameter> shape_param_;
+		std::shared_ptr<const Parameter> macro_strain_param_;
 		AdjointForm::SpatialIntegralType spatial_integral_type_;
 		std::set<int> interested_ids_;
 	};
@@ -448,7 +450,7 @@ namespace polyfem::solver
 	class HomogenizedStressObjective : public SpatialIntegralObjective
 	{
 	public:
-		HomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args);
+		HomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> macro_strain_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args);
 		~HomogenizedStressObjective() = default;
 
 		double value() override;
@@ -467,7 +469,7 @@ namespace polyfem::solver
 	class CompositeHomogenizedStressObjective : public Objective
 	{
 	public:
-		CompositeHomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args);
+		CompositeHomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> macro_strain_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args);
 		~CompositeHomogenizedStressObjective() = default;
 
 		double value() override;
