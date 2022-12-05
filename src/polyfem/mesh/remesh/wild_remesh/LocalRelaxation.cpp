@@ -7,6 +7,7 @@
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
+#include <polyfem/solver/forms/LinearForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 
@@ -232,8 +233,8 @@ namespace polyfem::mesh
 			contact_enabled,
 			collision_mesh,
 			state.args["contact"]["dhat"],
-			state.args["solver"]["contact"]["barrier_stiffness"],
 			state.avg_mass,
+			state.args["solver"]["contact"]["barrier_stiffness"],
 			state.args["solver"]["contact"]["CCD"]["broad_phase"],
 			state.args["solver"]["contact"]["CCD"]["tolerance"],
 			state.args["solver"]["contact"]["CCD"]["max_iterations"],
@@ -247,17 +248,9 @@ namespace polyfem::mesh
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 		const int ndof = n_bases * DIM;
-		assert(solve_data.al_form.use_count() == 2);
-		const std::shared_ptr<ALForm> new_al_form = std::make_shared<ALForm>(ndof, boundary_nodes, mass, Obstacle(), target_x);
-		for (int i = 0; i < forms.size(); i++)
-		{
-			if (forms[i] == solve_data.al_form)
-			{
-				forms[i] = new_al_form;
-				solve_data.al_form = new_al_form;
-				break;
-			}
-		}
+		assert(solve_data.al_form == nullptr);
+		solve_data.al_form = std::make_shared<ALForm>(ndof, boundary_nodes, mass, Obstacle(), target_x);
+		forms.push_back(solve_data.al_form);
 		assert(state.solve_data.al_form != nullptr);
 		solve_data.al_form->set_weight(state.solve_data.al_form->weight());
 
@@ -270,8 +263,9 @@ namespace polyfem::mesh
 		if (solve_data.friction_form)
 		{
 			solve_data.friction_form->disable();
-			// TODO: add form x.transpose() * friction_force;
-			// forms.push_back(approx_friction_form);
+			// add linear form ∇D(x₀)ᵀ x
+			forms.push_back(std::make_shared<LinearForm>(
+				utils::flatten(utils::reorder_matrix(local_mesh.friction_gradient(), vertex_to_basis))));
 		}
 
 		// --------------------------------------------------------------------
@@ -342,9 +336,9 @@ namespace polyfem::mesh
 		{
 			if (solve_data.friction_form)
 			{
-				solve_data.friction_form->enable();
-				// TODO: forms.back()->disable();
 				// TODO: resolve
+				solve_data.friction_form->enable();
+				forms.back()->disable(); // disable linear form ∇D(x₀)ᵀ x
 			}
 
 			for (const auto &[glob_vi, loc_vi] : local_mesh.global_to_local())

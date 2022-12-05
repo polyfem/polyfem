@@ -130,6 +130,7 @@ namespace polyfem::mesh
 			append_rows(m_prev_positions, obstacle.v());
 			append_zero_rows(m_prev_velocities, obstacle.n_vertices());
 			append_zero_rows(m_prev_accelerations, obstacle.n_vertices());
+			append_zero_rows(m_friction_gradient, obstacle.n_vertices());
 			append_rows(m_boundary_edges, obstacle.e().array() + tmp_num_vertices);
 
 			for (int i = 0; i < obstacle.n_vertices(); i++)
@@ -263,16 +264,18 @@ namespace polyfem::mesh
 		m_prev_positions.resize(num_vertices, DIM);
 		m_prev_velocities.resize(num_vertices, DIM);
 		m_prev_accelerations.resize(num_vertices, DIM);
+		m_friction_gradient.resize(num_vertices, DIM);
 		for (const auto &[glob_vi, loc_vi] : m_global_to_local)
 		{
 			m_rest_positions.row(loc_vi) = m.vertex_attrs[glob_vi].rest_position;
 			m_positions.row(loc_vi) = m.vertex_attrs[glob_vi].position;
 
-			assert(m.vertex_attrs[glob_vi].projection_quantities.cols() == 3);
+			assert(m.vertex_attrs[glob_vi].projection_quantities.cols() == 4);
 
 			m_prev_positions.row(loc_vi) = m.vertex_attrs[glob_vi].prev_displacement();
 			m_prev_velocities.row(loc_vi) = m.vertex_attrs[glob_vi].prev_velocity();
 			m_prev_accelerations.row(loc_vi) = m.vertex_attrs[glob_vi].prev_acceleration();
+			m_friction_gradient.row(loc_vi) = m.vertex_attrs[glob_vi].friction_gradient();
 		}
 	}
 } // namespace polyfem::mesh

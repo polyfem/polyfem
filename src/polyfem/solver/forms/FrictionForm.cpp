@@ -34,12 +34,18 @@ namespace polyfem::solver
 
 	double FrictionForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
+		assert(displaced_surface_prev_.rows() == collision_mesh_.num_vertices());
+		assert(displaced_surface_prev_.cols() == collision_mesh_.dim());
+
 		return ipc::compute_friction_potential(
 			collision_mesh_, displaced_surface_prev_, compute_displaced_surface(x),
 			friction_constraint_set_, epsv_ * dt_);
 	}
 	void FrictionForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
+		assert(displaced_surface_prev_.rows() == collision_mesh_.num_vertices());
+		assert(displaced_surface_prev_.cols() == collision_mesh_.dim());
+
 		const Eigen::VectorXd grad_friction = ipc::compute_friction_potential_gradient(
 			collision_mesh_, displaced_surface_prev_, compute_displaced_surface(x),
 			friction_constraint_set_, epsv_ * dt_);
@@ -49,6 +55,9 @@ namespace polyfem::solver
 	void FrictionForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
 		POLYFEM_SCOPED_TIMER("\t\tfriction hessian");
+
+		assert(displaced_surface_prev_.rows() == collision_mesh_.num_vertices());
+		assert(displaced_surface_prev_.cols() == collision_mesh_.dim());
 
 		hessian = ipc::compute_friction_potential_hessian(
 			collision_mesh_, displaced_surface_prev_, compute_displaced_surface(x),

@@ -108,6 +108,12 @@ namespace polyfem::mesh
 		new_vertex_attr.position = (v0.position + v1.position) / 2.0;
 		new_vertex_attr.projection_quantities =
 			(v0.projection_quantities + v1.projection_quantities) / 2.0;
+		if (!v0.fixed || !v1.fixed)
+		{
+			// NOTE: this assumes friction gradient is the last column of the projection matrix,
+			// so internal points have a gradient of zero.
+			new_vertex_attr.projection_quantities.rightCols(1).setZero();
+		}
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.

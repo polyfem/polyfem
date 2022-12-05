@@ -96,7 +96,7 @@ namespace polyfem
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
 				const Eigen::MatrixXd loc_relax_sol = sol;
-				solve_tensor_nonlinear(sol, t); // solve the scene again after remeshing
+				solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
 				relax_diff_file << fmt::format("{},{}\n", (loc_relax_sol - sol).norm(), (loc_relax_sol - sol).lpNorm<Eigen::Infinity>());
 				relax_diff_file.flush();
 
@@ -200,7 +200,7 @@ namespace polyfem
 			obstacle,
 			// Contact form
 			args["contact"]["enabled"], collision_mesh, args["contact"]["dhat"],
-			args["solver"]["contact"]["barrier_stiffness"], avg_mass,
+			avg_mass, args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
@@ -224,7 +224,7 @@ namespace polyfem
 		stats.solver_info = json::array();
 	}
 
-	void State::solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t)
+	void State::solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t, const bool init_lagging)
 	{
 		assert(solve_data.nl_problem != nullptr);
 		NLProblem &nl_problem = *(solve_data.nl_problem);
@@ -233,9 +233,12 @@ namespace polyfem
 
 		if (nl_problem.uses_lagging())
 		{
-			POLYFEM_SCOPED_TIMER("Initializing lagging");
-			nl_problem.init_lagging(sol); // TODO: this should be u_prev projected
-			logger().info("Lagging iteration {:d}:", 1);
+			if (init_lagging)
+			{
+				POLYFEM_SCOPED_TIMER("Initializing lagging");
+				nl_problem.init_lagging(sol); // TODO: this should be u_prev projected
+			}
+			logger().info("Lagging iteration 1:");
 		}
 
 		// ---------------------------------------------------------------------

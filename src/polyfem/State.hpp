@@ -319,7 +319,7 @@ namespace polyfem
 		/// solves nonlinear problems
 		/// @param[out] sol solution
 		/// @param[in] t (optional) time step id
-		void solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t = 0);
+		void solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t = 0, const bool init_lagging = true);
 
 		/// factory to create the nl solver depdending on input
 		/// @return nonlinear solver (eg newton or LBFGS)

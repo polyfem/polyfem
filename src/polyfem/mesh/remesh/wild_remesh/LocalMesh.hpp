@@ -42,6 +42,8 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd &prev_velocities() const { return m_prev_velocities; }
 		const Eigen::MatrixXd &prev_accelerations() const { return m_prev_accelerations; }
 
+		const Eigen::MatrixXd &friction_gradient() const { return m_friction_gradient; }
+
 		const Eigen::MatrixXi &boundary_edges() const { return m_boundary_edges; }
 		const Eigen::MatrixXi &triangles() const { return m_triangles; }
 
@@ -64,6 +66,8 @@ namespace polyfem::mesh
 		Eigen::MatrixXd m_prev_positions;
 		Eigen::MatrixXd m_prev_velocities;
 		Eigen::MatrixXd m_prev_accelerations;
+
+		Eigen::MatrixXd m_friction_gradient;
 
 		Eigen::MatrixXi m_boundary_edges;
 		Eigen::MatrixXi m_triangles;

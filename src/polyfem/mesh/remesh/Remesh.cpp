@@ -3,6 +3,7 @@
 #include <polyfem/mesh/remesh/L2Projection.hpp>
 #include <polyfem/mesh/remesh/MMGRemesh.hpp>
 #include <polyfem/mesh/remesh/WildRemesh2D.hpp>
+#include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 
@@ -93,7 +94,7 @@ namespace polyfem::mesh
 		assert(body_ids.size() == elements.rows());
 
 		// not including current displacement as this will be handled as positions
-		const Eigen::MatrixXd projection_quantities = combine_projection_quantaties(state, sol);
+		Eigen::MatrixXd projection_quantities = combine_projection_quantaties(state, sol);
 		assert(projection_quantities.rows() == rest_positions.size());
 
 		// Only remesh the FE mesh
@@ -101,6 +102,14 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd mesh_sol = sol.topRows(rest_positions.size());
 		const Eigen::MatrixXd obstacle_sol = sol.bottomRows(state.obstacle.n_vertices() * dim);
 		const Eigen::MatrixXd positions = rest_positions + utils::unflatten(mesh_sol, dim);
+
+		Eigen::VectorXd friction_gradient;
+		if (state.solve_data.friction_form)
+			state.solve_data.friction_form->first_derivative(sol, friction_gradient);
+		else
+			friction_gradient = Eigen::VectorXd::Zero(sol.size());
+		projection_quantities.conservativeResize(projection_quantities.rows(), projection_quantities.cols() + 1);
+		projection_quantities.col(projection_quantities.cols() - 1) = friction_gradient.head(mesh_sol.size());
 
 		assert(!state.mesh->is_volume());
 		WildRemeshing2D remeshing(state, obstacle_sol, time);
@@ -173,12 +182,14 @@ namespace polyfem::mesh
 		{
 			std::vector<Eigen::VectorXd> x_prevs, v_prevs, a_prevs;
 			split_projection_quantaties(
-				state, remeshing.projected_quantities(), x_prevs, v_prevs, a_prevs);
+				state, remeshing.projected_quantities().leftCols(projection_quantities.cols() - 1),
+				x_prevs, v_prevs, a_prevs);
 			state.solve_data.time_integrator->init(x_prevs, v_prevs, a_prevs, dt);
 		}
 
 		// initialize the problem so contact force show up correctly in the output
 		state.solve_data.nl_problem->init(sol);
+		state.solve_data.nl_problem->init_lagging(state.solve_data.time_integrator->x_prev());
 		state.solve_data.updated_barrier_stiffness(sol);
 	}
 } // namespace polyfem::mesh

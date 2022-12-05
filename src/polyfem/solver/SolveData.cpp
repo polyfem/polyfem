@@ -73,7 +73,6 @@ namespace polyfem::solver
 		// Rayleigh damping form
 		const json &rayleigh_damping)
 	{
-		assert(rhs_assembler != nullptr);
 		const bool is_time_dependent = time_integrator != nullptr;
 		assert(!is_time_dependent || time_integrator != nullptr);
 		const double dt = is_time_dependent ? time_integrator->dt() : 0.0;
@@ -89,14 +88,16 @@ namespace polyfem::solver
 			dt, is_volume);
 		forms.push_back(elastic_form);
 
-		assert(rhs_assembler != nullptr);
-		body_form = std::make_shared<BodyForm>(
-			ndof, n_pressure_bases, boundary_nodes, local_boundary,
-			local_neumann_boundary, n_boundary_samples, rhs, *rhs_assembler,
-			assembler.density(), /*apply_DBC=*/true, /*is_formulation_mixed=*/false,
-			is_time_dependent);
-		body_form->update_quantities(t, sol);
-		forms.push_back(body_form);
+		if (rhs_assembler != nullptr)
+		{
+			body_form = std::make_shared<BodyForm>(
+				ndof, n_pressure_bases, boundary_nodes, local_boundary,
+				local_neumann_boundary, n_boundary_samples, rhs, *rhs_assembler,
+				assembler.density(), /*apply_DBC=*/true, /*is_formulation_mixed=*/false,
+				is_time_dependent);
+			body_form->update_quantities(t, sol);
+			forms.push_back(body_form);
+		}
 
 		inertia_form = nullptr;
 		damping_form = nullptr;
@@ -126,10 +127,13 @@ namespace polyfem::solver
 			}
 		}
 
-		al_form = std::make_shared<ALForm>(
-			ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-			n_boundary_samples, mass, *rhs_assembler, obstacle, is_time_dependent, t);
-		forms.push_back(al_form);
+		if (rhs_assembler != nullptr)
+		{
+			al_form = std::make_shared<ALForm>(
+				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
+				n_boundary_samples, mass, *rhs_assembler, obstacle, is_time_dependent, t);
+			forms.push_back(al_form);
+		}
 
 		contact_form = nullptr;
 		friction_form = nullptr;
@@ -144,7 +148,7 @@ namespace polyfem::solver
 			if (use_adaptive_barrier_stiffness)
 			{
 				contact_form->set_weight(1);
-				logger().debug("Using adaptive barrier stiffness");
+				// logger().debug("Using adaptive barrier stiffness");
 			}
 			else
 			{
@@ -210,6 +214,7 @@ namespace polyfem::solver
 		Eigen::VectorXd grad_energy(x.size(), 1);
 		grad_energy.setZero();
 
+		assert(elastic_form != nullptr);
 		elastic_form->first_derivative(x, grad_energy);
 
 		if (inertia_form)
@@ -219,9 +224,12 @@ namespace polyfem::solver
 			grad_energy += grad_inertia;
 		}
 
-		Eigen::VectorXd body_energy(x.size());
-		body_form->first_derivative(x, body_energy);
-		grad_energy += body_energy;
+		if (body_form)
+		{
+			Eigen::VectorXd body_energy(x.size());
+			body_form->first_derivative(x, body_energy);
+			grad_energy += body_energy;
+		}
 
 		contact_form->update_barrier_stiffness(x, grad_energy);
 	}
@@ -230,8 +238,10 @@ namespace polyfem::solver
 	{
 		if (time_integrator) // if is time dependent
 		{
+			assert(elastic_form != nullptr);
 			elastic_form->set_weight(time_integrator->acceleration_scaling());
-			body_form->set_weight(time_integrator->acceleration_scaling());
+			if (body_form)
+				body_form->set_weight(time_integrator->acceleration_scaling());
 			if (damping_form)
 				damping_form->set_weight(time_integrator->acceleration_scaling());
 

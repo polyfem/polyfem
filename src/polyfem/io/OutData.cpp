@@ -1165,25 +1165,25 @@ namespace polyfem::io
 		}
 
 		// TODO: wrap this in an if (opts.all_forces)
-		for (const auto &[name, form] : state.solve_data.named_forms())
-		{
-			// NOTE: Assumes this form will be null for the entire sim
-			if (form == nullptr)
-				continue;
+		// for (const auto &[name, form] : state.solve_data.named_forms())
+		// {
+		// 	// NOTE: Assumes this form will be null for the entire sim
+		// 	if (form == nullptr)
+		// 		continue;
 
-			Eigen::VectorXd force;
-			if (form->enabled())
-			{
-				form->first_derivative(sol, force);
-				force *= -1.0;
-			}
-			else
-			{
-				force.setZero(sol.size());
-			}
+		// 	Eigen::VectorXd force;
+		// 	if (form->enabled())
+		// 	{
+		// 		form->first_derivative(sol, force);
+		// 		force *= -1.0;
+		// 	}
+		// 	else
+		// 	{
+		// 		force.setZero(sol.size());
+		// 	}
 
-			save_volume_vector_field(state, points, opts, name + "_forces", force, writer);
-		}
+		// 	save_volume_vector_field(state, points, opts, name + "_forces", force, writer);
+		// }
 
 		// if(problem->is_mixed())
 		if (assembler.is_mixed(formulation))

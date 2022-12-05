@@ -158,6 +158,7 @@ namespace polyfem::mesh
 			Eigen::Vector2d prev_displacement() const { return projection_quantities.col(0); }
 			Eigen::Vector2d prev_velocity() const { return projection_quantities.col(1); }
 			Eigen::Vector2d prev_acceleration() const { return projection_quantities.col(2); }
+			Eigen::Vector2d friction_gradient() const { return projection_quantities.col(3); }
 		};
 		wmtk::AttributeCollection<VertexAttributes> vertex_attrs;
 
