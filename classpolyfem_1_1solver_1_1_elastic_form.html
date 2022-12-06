@@ -169,9 +169,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2c8aac126073d7bd5ce46de58e30cdaa inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a2c8aac126073d7bd5ce46de58e30cdaa">first_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const</td></tr>
 <tr class="memdesc:a2c8aac126073d7bd5ce46de58e30cdaa inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the first derivative of the value wrt x multiplied with the weigth.  <a href="classpolyfem_1_1solver_1_1_form.html#a2c8aac126073d7bd5ce46de58e30cdaa">More...</a><br /></td></tr>
 <tr class="separator:a2c8aac126073d7bd5ce46de58e30cdaa inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d83fd3e57dbab2ab736ff5236ba32fb inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a6d83fd3e57dbab2ab736ff5236ba32fb">second_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian)</td></tr>
-<tr class="memdesc:a6d83fd3e57dbab2ab736ff5236ba32fb inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the second derivative of the value wrt x multiplied with the weigth.  <a href="classpolyfem_1_1solver_1_1_form.html#a6d83fd3e57dbab2ab736ff5236ba32fb">More...</a><br /></td></tr>
-<tr class="separator:a6d83fd3e57dbab2ab736ff5236ba32fb inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6">second_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) const</td></tr>
+<tr class="memdesc:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the second derivative of the value wrt x multiplied with the weigth.  <a href="classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6">More...</a><br /></td></tr>
+<tr class="separator:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f6226a2602f5ca5bc5c9a93f7a12fd4 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a6f6226a2602f5ca5bc5c9a93f7a12fd4">is_step_valid</a> (const Eigen::VectorXd &amp;x0, const Eigen::VectorXd &amp;x1) const</td></tr>
 <tr class="memdesc:a6f6226a2602f5ca5bc5c9a93f7a12fd4 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if a step from solution x0 to solution x1 is allowed.  <a href="classpolyfem_1_1solver_1_1_form.html#a6f6226a2602f5ca5bc5c9a93f7a12fd4">More...</a><br /></td></tr>
 <tr class="separator:a6f6226a2602f5ca5bc5c9a93f7a12fd4 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -244,18 +244,18 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a9eb7dde77480e465994679d524ef5bc8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html#a9eb7dde77480e465994679d524ef5bc8">first_derivative_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const override</td></tr>
 <tr class="memdesc:a9eb7dde77480e465994679d524ef5bc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the first derivative of the value wrt x.  <a href="classpolyfem_1_1solver_1_1_elastic_form.html#a9eb7dde77480e465994679d524ef5bc8">More...</a><br /></td></tr>
 <tr class="separator:a9eb7dde77480e465994679d524ef5bc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a339bba16674e755f8b16127f015b49df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html#a339bba16674e755f8b16127f015b49df">second_derivative_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) override</td></tr>
-<tr class="memdesc:a339bba16674e755f8b16127f015b49df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the second derivative of the value wrt x.  <a href="classpolyfem_1_1solver_1_1_elastic_form.html#a339bba16674e755f8b16127f015b49df">More...</a><br /></td></tr>
-<tr class="separator:a339bba16674e755f8b16127f015b49df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a1eb1f32b30101e73734d70ab4baead"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html#a2a1eb1f32b30101e73734d70ab4baead">second_derivative_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) const override</td></tr>
+<tr class="memdesc:a2a1eb1f32b30101e73734d70ab4baead"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the second derivative of the value wrt x.  <a href="classpolyfem_1_1solver_1_1_elastic_form.html#a2a1eb1f32b30101e73734d70ab4baead">More...</a><br /></td></tr>
+<tr class="separator:a2a1eb1f32b30101e73734d70ab4baead"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a464a37a939d522c672aed03d281a5a92"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92">value_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const =0</td></tr>
 <tr class="memdesc:a464a37a939d522c672aed03d281a5a92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the value of the form.  <a href="classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92">More...</a><br /></td></tr>
 <tr class="separator:a464a37a939d522c672aed03d281a5a92"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79c3d290522cc08bdb0a94196c5f669a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a">first_derivative_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const =0</td></tr>
 <tr class="memdesc:a79c3d290522cc08bdb0a94196c5f669a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the first derivative of the value wrt x.  <a href="classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a">More...</a><br /></td></tr>
 <tr class="separator:a79c3d290522cc08bdb0a94196c5f669a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa67b3decb49a9300e584cef108446d2b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#aa67b3decb49a9300e584cef108446d2b">second_derivative_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian)=0</td></tr>
-<tr class="memdesc:aa67b3decb49a9300e584cef108446d2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the second derivative of the value wrt x.  <a href="classpolyfem_1_1solver_1_1_form.html#aa67b3decb49a9300e584cef108446d2b">More...</a><br /></td></tr>
-<tr class="separator:aa67b3decb49a9300e584cef108446d2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4313c8af547f3c51a1c8cafd5071b44b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a4313c8af547f3c51a1c8cafd5071b44b">second_derivative_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) const =0</td></tr>
+<tr class="memdesc:a4313c8af547f3c51a1c8cafd5071b44b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the second derivative of the value wrt x.  <a href="classpolyfem_1_1solver_1_1_form.html#a4313c8af547f3c51a1c8cafd5071b44b">More...</a><br /></td></tr>
+<tr class="separator:a4313c8af547f3c51a1c8cafd5071b44b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -287,7 +287,7 @@ Private Attributes</h2></td></tr>
 <tr class="memdesc:a98255bf84889e814bff94426e230c547"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cached stiffness matrix for linear elasticity.  <a href="classpolyfem_1_1solver_1_1_elastic_form.html#a98255bf84889e814bff94426e230c547">More...</a><br /></td></tr>
 <tr class="separator:a98255bf84889e814bff94426e230c547"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a181e54bb24bc481aeaad5e665a53d8a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1utils_1_1_spare_matrix_cache.html">utils::SpareMatrixCache</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html#a181e54bb24bc481aeaad5e665a53d8a6">mat_cache_</a></td></tr>
-<tr class="memdesc:a181e54bb24bc481aeaad5e665a53d8a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matrix cache.  <a href="classpolyfem_1_1solver_1_1_elastic_form.html#a181e54bb24bc481aeaad5e665a53d8a6">More...</a><br /></td></tr>
+<tr class="memdesc:a181e54bb24bc481aeaad5e665a53d8a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matrix cache (mutable because it is modified in second_derivative_unweighted)  <a href="classpolyfem_1_1solver_1_1_elastic_form.html#a181e54bb24bc481aeaad5e665a53d8a6">More...</a><br /></td></tr>
 <tr class="separator:a181e54bb24bc481aeaad5e665a53d8a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1742e5433f6b37f4da578c7c8376f0eb"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html#a1742e5433f6b37f4da578c7c8376f0eb">x_prev_</a></td></tr>
 <tr class="separator:a1742e5433f6b37f4da578c7c8376f0eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -553,8 +553,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a339bba16674e755f8b16127f015b49df" name="a339bba16674e755f8b16127f015b49df"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a339bba16674e755f8b16127f015b49df">&#9670;&#160;</a></span>second_derivative_unweighted()</h2>
+<a id="a2a1eb1f32b30101e73734d70ab4baead" name="a2a1eb1f32b30101e73734d70ab4baead"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a1eb1f32b30101e73734d70ab4baead">&#9670;&#160;</a></span>second_derivative_unweighted()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -577,7 +577,7 @@ Here is the call graph for this function:</div>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -596,7 +596,7 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#aa67b3decb49a9300e584cef108446d2b">polyfem::solver::Form</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a4313c8af547f3c51a1c8cafd5071b44b">polyfem::solver::Form</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_form_8cpp_source.html#l00046">46</a> of file <a class="el" href="_elastic_form_8cpp_source.html">ElasticForm.cpp</a>.</p>
 
@@ -604,7 +604,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_elastic_form_a339bba16674e755f8b16127f015b49df_cgraph.svg" width="442" height="144"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_elastic_form_a2a1eb1f32b30101e73734d70ab4baead_cgraph.svg" width="442" height="144"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -938,12 +938,12 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Matrix cache. </p>
+<p>Matrix cache (mutable because it is modified in second_derivative_unweighted) </p>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00067">67</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
 

@@ -6,7 +6,7 @@ var classpolyfem_1_1solver_1_1_friction_form =
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_friction_form.html#aba546a5686d184c3f8b9779b4f6f0620", null ],
     [ "init_lagging", "classpolyfem_1_1solver_1_1_friction_form.html#a13496c772de23a6a34114dc4a6a725df", null ],
     [ "max_lagging_iterations", "classpolyfem_1_1solver_1_1_friction_form.html#aa9f29a64cef734a1c61bc8bd36d324d0", null ],
-    [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_friction_form.html#a72fef1ad422e278c0d346d003514b6d0", null ],
+    [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_friction_form.html#a36b081d01bbfca96dfb1ca2e7b37b7ac", null ],
     [ "update_lagging", "classpolyfem_1_1solver_1_1_friction_form.html#a2d39d4abbf850fbe702a89befd07da70", null ],
     [ "uses_lagging", "classpolyfem_1_1solver_1_1_friction_form.html#ab6c5ed4c5b1f333f2c49a262994aa76b", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_friction_form.html#a88a9d777ccece8a0e7ed7cac196b10fd", null ],

@@ -4,7 +4,7 @@ var classpolyfem_1_1solver_1_1_elastic_form =
     [ "compute_cached_stiffness", "classpolyfem_1_1solver_1_1_elastic_form.html#a4a66c73e76a0c85f7a206f857f4832ed", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_elastic_form.html#a9eb7dde77480e465994679d524ef5bc8", null ],
     [ "is_step_valid", "classpolyfem_1_1solver_1_1_elastic_form.html#af2f0f857ec53a4bc3e282fce304446a0", null ],
-    [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_elastic_form.html#a339bba16674e755f8b16127f015b49df", null ],
+    [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_elastic_form.html#a2a1eb1f32b30101e73734d70ab4baead", null ],
     [ "update_quantities", "classpolyfem_1_1solver_1_1_elastic_form.html#afc6ed3a44070466e848d7a61fa9f8d8a", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_elastic_form.html#a7a7bc40ed9da1e4c15d4e0abb81180c7", null ],
     [ "ass_vals_cache_", "classpolyfem_1_1solver_1_1_elastic_form.html#adc2cbc3d34896c56ab7a9dd734656bce", null ],

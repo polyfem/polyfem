@@ -10,7 +10,7 @@ var classpolyfem_1_1solver_1_1_contact_form =
     [ "line_search_end", "classpolyfem_1_1solver_1_1_contact_form.html#a8987931f60f3ceaa4fd4d8d53346d00a", null ],
     [ "max_step_size", "classpolyfem_1_1solver_1_1_contact_form.html#a510cabb33d8e00c2fa8dac68f36a2820", null ],
     [ "post_step", "classpolyfem_1_1solver_1_1_contact_form.html#af1f9e0e3d713c85183191e884b7df2d7", null ],
-    [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_contact_form.html#ad7fabb192b6b9c74b8fc06b0527fb028", null ],
+    [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_contact_form.html#a50b36d64836f5ff8a233c785b7c31b47", null ],
     [ "solution_changed", "classpolyfem_1_1solver_1_1_contact_form.html#a70e5349c72c5d268ba2d98753865ab4e", null ],
     [ "update_barrier_stiffness", "classpolyfem_1_1solver_1_1_contact_form.html#ab7f5b55a31f0829c3ae3002b1b1959a7", null ],
     [ "update_constraint_set", "classpolyfem_1_1solver_1_1_contact_form.html#a7cb85c21eb5a2f1d04a33865d695d3d6", null ],
