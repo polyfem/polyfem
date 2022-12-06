@@ -27,7 +27,7 @@ namespace polyfem::solver
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
-		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 	public:
 		/// @brief Initialize lagged fields

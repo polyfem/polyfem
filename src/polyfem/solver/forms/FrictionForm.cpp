@@ -47,7 +47,7 @@ namespace polyfem::solver
 		gradv = collision_mesh_.to_full_dof(grad_friction);
 	}
 
-	void FrictionForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void FrictionForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		POLYFEM_SCOPED_TIMER("\t\tfriction hessian");
 
