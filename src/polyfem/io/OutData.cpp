@@ -100,7 +100,7 @@ namespace polyfem::io
 								continue;
 
 							int gindex = glob.front().index;
-							boundary_nodes_pos.row(gindex) = glob.front().node;
+							node_positions.row(gindex) = glob.front().node;
 							bary += glob.front().node;
 							loc_nodes.push_back(gindex);
 						}
@@ -114,7 +114,7 @@ namespace polyfem::io
 						bary /= 4;
 
 						const int new_node = n_bases + eid;
-						boundary_nodes_pos.row(new_node) = bary;
+						node_positions.row(new_node) = bary;
 						tris.emplace_back(loc_nodes[1], loc_nodes[0], new_node);
 						tris.emplace_back(loc_nodes[2], loc_nodes[1], new_node);
 						tris.emplace_back(loc_nodes[3], loc_nodes[2], new_node);
@@ -239,7 +239,7 @@ namespace polyfem::io
 
 			if (!displacement_map_entries.empty())
 			{
-				displacement_map.resize(boundary_nodes_pos.rows(), n_bases);
+				displacement_map.resize(node_positions.rows(), n_bases);
 				displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
 			}
 		}

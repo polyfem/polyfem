@@ -993,7 +993,7 @@ namespace polyfem
 		Eigen::VectorXi codimensional_nodes;
 		if (obstacle.n_vertices() > 0)
 		{
-			// boundary_nodes_pos uses n_bases that already contains the obstacle
+			// n_bases already contains the obstacle vertices
 			const int n_v = n_bases - obstacle.n_vertices();
 
 			if (obstacle.v().size())

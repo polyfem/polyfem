@@ -136,13 +136,14 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 
 		// TODO: Make these parameters
-		const double al_initial_weight = 1e6;
-		const double al_max_weight = 1e11;
+		const double al_initial_weight = 0.5;
+		const double al_scaling = 10.0;
+		const int al_max_steps = 20;
 		const bool force_al = false;
 
 		// Create augmented Lagrangian solver
 		ALSolver al_solver(
-			nl_solver, al_form, al_initial_weight, al_max_weight,
+			nl_solver, al_form, al_initial_weight, al_scaling, al_max_steps,
 			updated_barrier_stiffness);
 
 		Eigen::MatrixXd sol = Eigen::VectorXd::Zero(M.rows());
@@ -187,7 +188,7 @@ namespace polyfem::mesh
 		gradv = M_ * x - rhs_;
 	}
 
-	void L2ProjectionForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void L2ProjectionForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		hessian = M_;
 	}

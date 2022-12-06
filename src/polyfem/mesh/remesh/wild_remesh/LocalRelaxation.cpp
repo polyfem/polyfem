@@ -3,7 +3,7 @@
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/remesh/wild_remesh/LocalMesh.hpp>
 #include <polyfem/mesh/remesh/L2Projection.hpp>
-#include <polyfem/basis/FEBasis2d.hpp>
+#include <polyfem/basis/LagrangeBasis2d.hpp>
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
@@ -29,7 +29,7 @@ namespace polyfem::mesh
 		std::vector<LocalBoundary> local_boundary;
 		std::map<int, basis::InterfaceData> poly_edge_to_data;
 		std::shared_ptr<mesh::MeshNodes> mesh_nodes;
-		const int n_bases = FEBasis2d::build_bases(
+		const int n_bases = LagrangeBasis2d::build_bases(
 			mesh,
 			assembler_formulation,
 			/*quadrature_order=*/1,
@@ -279,7 +279,8 @@ namespace polyfem::mesh
 		ALSolver al_solver(
 			nl_solver, solve_data.al_form,
 			state.args["solver"]["augmented_lagrangian"]["initial_weight"],
-			state.args["solver"]["augmented_lagrangian"]["max_weight"],
+			state.args["solver"]["augmented_lagrangian"]["scaling"],
+			state.args["solver"]["augmented_lagrangian"]["max_steps"],
 			[&](const Eigen::VectorXd &x) {
 				// this->solve_data.updated_barrier_stiffness(sol);
 			});

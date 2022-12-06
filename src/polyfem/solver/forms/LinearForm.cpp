@@ -18,7 +18,7 @@ namespace polyfem::solver
 		gradv = coeffs_;
 	}
 
-	void LinearForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void LinearForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		hessian.resize(x.size(), x.size());
 		// hessian is zero

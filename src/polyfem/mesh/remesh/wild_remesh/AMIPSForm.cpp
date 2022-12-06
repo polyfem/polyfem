@@ -87,7 +87,7 @@ namespace polyfem
 		}
 
 		void AMIPSForm::second_derivative_unweighted(
-			const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+			const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 		{
 			Eigen::MatrixXd H(x.size(), x.size());
 			if (x.size() == 2)
