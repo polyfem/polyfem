@@ -40,6 +40,8 @@ namespace polyfem::solver
 		int max_lagging_iterations() const;
 		bool uses_lagging() const;
 
+		std::vector<std::shared_ptr<Form>> &forms() { return forms_; }
+
 	protected:
 		std::vector<std::shared_ptr<Form>> forms_;
 	};

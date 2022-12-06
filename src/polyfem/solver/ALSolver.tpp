@@ -10,12 +10,14 @@ namespace polyfem::solver
 		std::shared_ptr<NLSolver> nl_solver,
 		std::shared_ptr<ALForm> al_form,
 		const double initial_al_weight,
-		const double max_al_weight,
+		const double scaling,
+		const int max_al_steps,
 		const std::function<void(const Eigen::VectorXd &)> &updated_barrier_stiffness)
 		: nl_solver(nl_solver),
 		  al_form(al_form),
 		  initial_al_weight(initial_al_weight),
-		  max_al_weight(max_al_weight),
+		  scaling(scaling),
+		  max_al_steps(max_al_steps),
 		  updated_barrier_stiffness(updated_barrier_stiffness)
 	{
 	}
@@ -28,9 +30,16 @@ namespace polyfem::solver
 		Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
 		assert(tmp_sol.size() == nl_problem.reduced_size());
 
+		std::vector<double> initial_weight;
+		for (const auto &f : nl_problem.forms())
+		{
+			initial_weight.push_back(f->weight());
+		}
+
 		// --------------------------------------------------------------------
 
 		double al_weight = initial_al_weight;
+		int al_steps = 0;
 
 		nl_problem.line_search_begin(sol, tmp_sol);
 		while (force_al
@@ -41,7 +50,7 @@ namespace polyfem::solver
 			force_al = false;
 			nl_problem.line_search_end();
 
-			set_al_weight(nl_problem, sol, al_weight);
+			set_al_weight(nl_problem, sol, al_weight, initial_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
 			nl_problem.init(sol);
@@ -50,19 +59,20 @@ namespace polyfem::solver
 			nl_solver->minimize(nl_problem, tmp_sol);
 
 			sol = tmp_sol;
-			set_al_weight(nl_problem, sol, -1);
+			set_al_weight(nl_problem, sol, -1, initial_weight);
 			tmp_sol = nl_problem.full_to_reduced(sol);
 			nl_problem.line_search_begin(sol, tmp_sol);
 
-			al_weight *= 2;
+			al_weight /= scaling;
 
-			if (al_weight >= max_al_weight)
+			if (al_steps >= max_al_steps)
 			{
-				log_and_throw_error(fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight));
+				log_and_throw_error(fmt::format("Unable to solve AL problem, out of iterations {} (current weight = {}), stopping", max_al_steps, al_weight));
 				break;
 			}
 
 			post_subsolve(al_weight);
+			++al_steps;
 		}
 		nl_problem.line_search_end();
 
@@ -78,19 +88,28 @@ namespace polyfem::solver
 	}
 
 	template <class Problem>
-	void ALSolver<Problem>::set_al_weight(Problem &nl_problem, const Eigen::VectorXd &x, const double weight)
+	void ALSolver<Problem>::set_al_weight(Problem &nl_problem, const Eigen::VectorXd &x, const double weight, const std::vector<double> &initial_weight)
 	{
 		if (al_form == nullptr)
 			return;
 		if (weight > 0)
 		{
+			for (int i = 0; i < nl_problem.forms().size(); ++i)
+			{
+				nl_problem.forms()[i]->set_weight(initial_weight[i] * weight);
+			}
 			al_form->enable();
-			al_form->set_weight(weight);
+			al_form->set_weight(1 - weight);
 			nl_problem.use_full_size();
 			nl_problem.set_apply_DBC(x, false);
 		}
 		else
 		{
+			for (int i = 0; i < nl_problem.forms().size(); ++i)
+			{
+				nl_problem.forms()[i]->set_weight(initial_weight[i]);
+			}
+
 			al_form->disable();
 			nl_problem.use_reduced_size();
 			nl_problem.set_apply_DBC(x, true);

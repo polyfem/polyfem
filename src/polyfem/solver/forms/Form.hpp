@@ -34,7 +34,7 @@ namespace polyfem::solver
 		/// @note This is not marked const because ElasticForm needs to cache the matrix assembly.
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
-		inline void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+		inline void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 		{
 			second_derivative_unweighted(x, hessian);
 			hessian *= weight_;
@@ -146,6 +146,6 @@ namespace polyfem::solver
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
-		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) = 0;
+		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const = 0;
 	};
 } // namespace polyfem::solver

@@ -22,7 +22,8 @@ namespace polyfem::solver
 			std::shared_ptr<NLSolver> nl_solver,
 			std::shared_ptr<ALForm> al_form,
 			const double initial_al_weight,
-			const double max_al_weight,
+			const double scaling,
+			const int max_al_steps,
 			const std::function<void(const Eigen::VectorXd &)> &updated_barrier_stiffness);
 
 		void solve(Problem &nl_problem, Eigen::MatrixXd &sol, bool force_al = false);
@@ -30,12 +31,13 @@ namespace polyfem::solver
 		std::function<void(const double)> post_subsolve = [](const double) {};
 
 	protected:
-		void set_al_weight(Problem &nl_problem, const Eigen::VectorXd &x, const double weight);
+		void set_al_weight(Problem &nl_problem, const Eigen::VectorXd &x, const double weight, const std::vector<double> &initial_weight);
 
 		std::shared_ptr<NLSolver> nl_solver;
 		std::shared_ptr<ALForm> al_form;
-		double initial_al_weight;
-		double max_al_weight;
+		const double initial_al_weight;
+		const double scaling;
+		const int max_al_steps;
 
 		// TODO: replace this with a member function
 		std::function<void(const Eigen::VectorXd &)> updated_barrier_stiffness;

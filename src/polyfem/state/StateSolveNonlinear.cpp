@@ -254,7 +254,8 @@ namespace polyfem
 		ALSolver al_solver(
 			nl_solver, solve_data.al_form,
 			args["solver"]["augmented_lagrangian"]["initial_weight"],
-			args["solver"]["augmented_lagrangian"]["max_weight"],
+			args["solver"]["augmented_lagrangian"]["scaling"],
+			args["solver"]["augmented_lagrangian"]["max_steps"],
 			[&](const Eigen::VectorXd &x) {
 				this->solve_data.updated_barrier_stiffness(sol);
 			});

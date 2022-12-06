@@ -25,7 +25,7 @@ namespace polyfem::solver
 		gradv = mass_ * (x - time_integrator_.x_tilde());
 	}
 
-	void InertiaForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void InertiaForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		hessian = mass_;
 	}

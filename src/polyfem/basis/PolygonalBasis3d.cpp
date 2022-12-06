@@ -1,7 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "PolygonalBasis3d.hpp"
+#include "LagrangeBasis3d.hpp"
+
 #include <polyfem/quadrature/PolyhedronQuadrature.hpp>
-#include <polyfem/basis/FEBasis3d.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/mesh2D/Refinement.hpp>
 #include <polyfem/utils/RefElementSampler.hpp>
@@ -256,8 +257,8 @@ namespace polyfem
 					const auto &v = uv.col(1).array();
 					auto index = mesh.get_index_from_element(element_index, lf, lv0);
 					index = mesh.switch_element(index);
-					// Eigen::MatrixXd abcd = FEBasis3d::linear_hex_face_local_nodes_coordinates(mesh, index);
-					const auto indices = FEBasis3d::hex_face_local_nodes(false, 1, mesh, index);
+					// Eigen::MatrixXd abcd = LagrangeBasis3d::linear_hex_face_local_nodes_coordinates(mesh, index);
+					const auto indices = LagrangeBasis3d::hex_face_local_nodes(false, 1, mesh, index);
 					assert(indices.size() == 4);
 					Eigen::MatrixXd abcd;
 					polyfem::autogen::q_nodes_3d(1, abcd);

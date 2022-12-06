@@ -53,17 +53,25 @@ namespace polyfem::io
 		const std::vector<mesh::LocalBoundary> &total_local_boundary,
 		Eigen::MatrixXd &node_positions,
 		Eigen::MatrixXi &boundary_edges,
-		Eigen::MatrixXi &boundary_triangles)
+		Eigen::MatrixXi &boundary_triangles,
+		Eigen::SparseMatrix<double> &displacement_map)
 	{
 		using namespace polyfem::mesh;
 
+		displacement_map.resize(0, 0);
+
 		if (mesh.is_volume())
 		{
-			node_positions.resize(n_bases, 3);
+			std::vector<Eigen::Triplet<double>> displacement_map_entries;
+			const bool is_simplicial = mesh.is_simplicial();
+
+			node_positions.resize(n_bases + (is_simplicial ? 0 : mesh.n_faces()), 3);
 			node_positions.setZero();
 			const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
 
 			std::vector<std::tuple<int, int, int>> tris;
+
+			std::vector<bool> visited_node(n_bases, false);
 
 			std::stringstream print_warning;
 
@@ -77,11 +85,60 @@ namespace polyfem::io
 					const int lid = lb[j];
 					const auto nodes = b.local_nodes_for_primitive(eid, mesh3d);
 
-					if (!mesh.is_simplex(lb.element_id()))
+					if (mesh.is_cube(lb.element_id()))
 					{
-						logger().trace("skipping element {} since it is not a simplex", eid);
+						assert(!is_simplicial);
+						assert(!mesh.has_poly());
+						std::vector<int> loc_nodes;
+						RowVectorNd bary = RowVectorNd::Zero(3);
+
+						for (long n = 0; n < nodes.size(); ++n)
+						{
+							auto &bs = b.bases[nodes(n)];
+							const auto &glob = bs.global();
+							if (glob.size() != 1)
+								continue;
+
+							int gindex = glob.front().index;
+							boundary_nodes_pos.row(gindex) = glob.front().node;
+							bary += glob.front().node;
+							loc_nodes.push_back(gindex);
+						}
+
+						if (loc_nodes.size() != 4)
+						{
+							logger().trace("skipping element {} since it is not Q1", eid);
+							continue;
+						}
+
+						bary /= 4;
+
+						const int new_node = n_bases + eid;
+						boundary_nodes_pos.row(new_node) = bary;
+						tris.emplace_back(loc_nodes[1], loc_nodes[0], new_node);
+						tris.emplace_back(loc_nodes[2], loc_nodes[1], new_node);
+						tris.emplace_back(loc_nodes[3], loc_nodes[2], new_node);
+						tris.emplace_back(loc_nodes[0], loc_nodes[3], new_node);
+
+						for (int q = 0; q < 4; ++q)
+						{
+							if (!visited_node[loc_nodes[q]])
+								displacement_map_entries.emplace_back(loc_nodes[q], loc_nodes[q], 1);
+
+							visited_node[loc_nodes[q]] = true;
+							displacement_map_entries.emplace_back(new_node, loc_nodes[q], 0.25);
+						}
+
 						continue;
 					}
+
+					if (!mesh.is_simplex(lb.element_id()))
+					{
+						logger().trace("skipping element {} since it is not a simplex or hex", eid);
+						continue;
+					}
+
+					assert(is_simplicial);
 
 					std::vector<int> loc_nodes;
 
@@ -178,6 +235,12 @@ namespace polyfem::io
 			if (boundary_triangles.rows() > 0)
 			{
 				igl::edges(boundary_triangles, boundary_edges);
+			}
+
+			if (!displacement_map_entries.empty())
+			{
+				displacement_map.resize(boundary_nodes_pos.rows(), n_bases);
+				displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
 			}
 		}
 		else
@@ -692,7 +755,7 @@ namespace polyfem::io
 						std::swap(elements[i][18], elements[i][19]);
 					}
 					if (disc_orders(i) > 4)
-						error_msg = "not implementd!!!"; // TODO: higher than 3
+						error_msg = ">P4 implementd!!!"; // TODO: higher than 3
 				}
 				else
 				{
@@ -702,11 +765,11 @@ namespace polyfem::io
 						std::swap(elements[i][n_nodes - 1], elements[i][n_nodes - 2]);
 					}
 					if (disc_orders(i) > 4)
-						error_msg = "not implementd!!!"; // TODO: higher than 3
+						error_msg = ">P4 implementd!!!"; // TODO: higher than 3
 				}
 			}
-			else
-				error_msg = "not implementd!!!"; // TODO: hexes
+			else if (disc_orders(i) > 1)
+				error_msg = ">Q1 not implementd!!!";
 		}
 
 		if (!error_msg.empty())
@@ -874,7 +937,7 @@ namespace polyfem::io
 		velocity = args["output"]["paraview"]["options"]["velocity"];
 		acceleration = args["output"]["paraview"]["options"]["acceleration"];
 
-		use_spline = args["space"]["advanced"]["use_spline"];
+		use_spline = args["space"]["basis_type"] == "Spline";
 
 		reorder_output = args["output"]["data"]["advanced"]["reorder_nodes"];
 
@@ -928,7 +991,7 @@ namespace polyfem::io
 
 		if (opts.surface)
 		{
-			save_surface(base_path + "_surf.vtu", state, sol, pressure, dt, opts,
+			save_surface(base_path + "_surf.vtu", state, sol, pressure, t, dt, opts,
 						 is_contact_enabled, solution_frames);
 		}
 
@@ -1047,7 +1110,7 @@ namespace polyfem::io
 			build_high_oder_vis_mesh(mesh, disc_orders, bases,
 									 points, elements, el_id, discr);
 
-		Eigen::MatrixXd fun, exact_fun, err;
+		Eigen::MatrixXd fun, exact_fun, err, node_fun;
 
 		if (opts.sol_on_grid)
 		{
@@ -1115,10 +1178,21 @@ namespace polyfem::io
 			state.polys, state.polys_3d, ref_element_sampler,
 			points.rows(), sol, fun, opts.use_sampler, opts.boundary_only);
 
+		{
+			Eigen::MatrixXd tmp = Eigen::VectorXd::LinSpaced(sol.size(), 0, sol.size());
+
+			Evaluator::interpolate_function(
+				mesh, problem.is_scalar(), bases, state.disc_orders,
+				state.polys, state.polys_3d, ref_element_sampler,
+				points.rows(), tmp, node_fun, opts.use_sampler, opts.boundary_only);
+		}
+
 		if (obstacle.n_vertices() > 0)
 		{
 			fun.conservativeResize(fun.rows() + obstacle.n_vertices(), fun.cols());
+			node_fun.conservativeResize(node_fun.rows() + obstacle.n_vertices(), node_fun.cols());
 			// obstacle.update_displacement(t, fun);
+			// NOTE: Assuming the obstacle displacement is the last part of the solution
 			fun.bottomRows(obstacle.n_vertices()) = utils::unflatten(sol.bottomRows(obstacle.ndof()), fun.cols());
 		}
 
@@ -1141,7 +1215,10 @@ namespace polyfem::io
 		VTUWriter writer;
 
 		if (opts.solve_export_to_file)
+		{
 			writer.add_field("solution", fun);
+			writer.add_field("nodes", node_fun);
+		}
 		else
 			solution_frames.back().solution = fun;
 
@@ -1297,12 +1374,11 @@ namespace polyfem::io
 
 		if (opts.material_params)
 		{
-			const auto &params = assembler.lame_params();
+			const auto &params = assembler.parameters(formulation);
 
-			Eigen::MatrixXd lambdas(points.rows(), 1);
-			Eigen::MatrixXd mus(points.rows(), 1);
-			Eigen::MatrixXd Es(points.rows(), 1);
-			Eigen::MatrixXd nus(points.rows(), 1);
+			std::map<std::string, Eigen::MatrixXd> param_val;
+			for (const auto &[p, _] : params)
+				param_val[p] = Eigen::MatrixXd(points.rows(), 1);
 			Eigen::MatrixXd rhos(points.rows(), 1);
 
 			Eigen::MatrixXd local_pts;
@@ -1356,22 +1432,8 @@ namespace polyfem::io
 
 				for (int j = 0; j < vals.val.rows(); ++j)
 				{
-					double lambda, mu;
-
-					params.lambda_mu(local_pts.row(j), vals.val.row(j), e, lambda, mu);
-					lambdas(index) = lambda;
-					mus(index) = mu;
-
-					if (mesh.is_volume())
-					{
-						Es(index) = mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
-						nus(index) = lambda / (2.0 * (lambda + mu));
-					}
-					else
-					{
-						Es(index) = 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
-						nus(index) = lambda / (lambda + 2.0 * mu);
-					}
+					for (const auto &[p, func] : params)
+						param_val.at(p)(index) = func(local_pts.row(j), vals.val.row(j), t, e);
 
 					rhos(index) = density(local_pts.row(j), vals.val.row(j), e);
 
@@ -1383,26 +1445,17 @@ namespace polyfem::io
 
 			if (obstacle.n_vertices() > 0)
 			{
-				lambdas.conservativeResize(lambdas.size() + obstacle.n_vertices(), 1);
-				lambdas.bottomRows(obstacle.n_vertices()).setZero();
-
-				mus.conservativeResize(mus.size() + obstacle.n_vertices(), 1);
-				mus.bottomRows(obstacle.n_vertices()).setZero();
-
-				Es.conservativeResize(Es.size() + obstacle.n_vertices(), 1);
-				Es.bottomRows(obstacle.n_vertices()).setZero();
-
-				nus.conservativeResize(nus.size() + obstacle.n_vertices(), 1);
-				nus.bottomRows(obstacle.n_vertices()).setZero();
+				for (auto &[_, tmp] : param_val)
+				{
+					tmp.conservativeResize(tmp.size() + obstacle.n_vertices(), 1);
+					tmp.bottomRows(obstacle.n_vertices()).setZero();
+				}
 
 				rhos.conservativeResize(rhos.size() + obstacle.n_vertices(), 1);
 				rhos.bottomRows(obstacle.n_vertices()).setZero();
 			}
-
-			writer.add_field("lambda", lambdas);
-			writer.add_field("mu", mus);
-			writer.add_field("E", Es);
-			writer.add_field("nu", nus);
+			for (const auto &[p, tmp] : param_val)
+				writer.add_field(p, tmp);
 			writer.add_field("rho", rhos);
 		}
 
@@ -1513,6 +1566,7 @@ namespace polyfem::io
 		const State &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &pressure,
+		const double t,
 		const double dt_in,
 		const ExportOptions &opts,
 		const bool is_contact_enabled,
@@ -1707,38 +1761,25 @@ namespace polyfem::io
 
 		if (opts.material_params)
 		{
-			const auto &params = assembler.lame_params();
+			const auto &params = assembler.parameters(formulation);
 
-			Eigen::MatrixXd lambdas(boundary_vis_vertices.rows(), 1);
-			Eigen::MatrixXd mus(boundary_vis_vertices.rows(), 1);
-			Eigen::MatrixXd Es(boundary_vis_vertices.rows(), 1);
-			Eigen::MatrixXd nus(boundary_vis_vertices.rows(), 1);
+			std::map<std::string, Eigen::MatrixXd> param_val;
+			for (const auto &[p, _] : params)
+				param_val[p] = Eigen::MatrixXd(boundary_vis_vertices.rows(), 1);
 			Eigen::MatrixXd rhos(boundary_vis_vertices.rows(), 1);
 
 			for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
 			{
 				double lambda, mu;
 
-				params.lambda_mu(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), boundary_vis_elements_ids(i), lambda, mu);
-				lambdas(i) = lambda;
-				mus(i) = mu;
-				if (mesh.is_volume())
-				{
-					Es(i) = mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
-					nus(i) = lambda / (2.0 * (lambda + mu));
-				}
-				else
-				{
-					Es(i) = 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
-					nus(i) = lambda / (lambda + 2.0 * mu);
-				}
+				for (const auto &[p, func] : params)
+					param_val.at(p)(i) = func(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), t, boundary_vis_elements_ids(i));
+
 				rhos(i) = density(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), boundary_vis_elements_ids(i));
 			}
 
-			writer.add_field("lambda", lambdas);
-			writer.add_field("mu", mus);
-			writer.add_field("E", Es);
-			writer.add_field("nu", nus);
+			for (const auto &[p, tmp] : param_val)
+				writer.add_field(p, tmp);
 			writer.add_field("rho", rhos);
 		}
 

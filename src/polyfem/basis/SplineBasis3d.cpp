@@ -1,5 +1,6 @@
 #include "SplineBasis3d.hpp"
 
+#include "LagrangeBasis3d.hpp"
 #include "function/QuadraticBSpline3d.hpp"
 #include <polyfem/quadrature/HexQuadrature.hpp>
 
@@ -7,7 +8,7 @@
 
 #include <polysolve/LinearSolver.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
-#include <polyfem/basis/FEBasis3d.hpp>
+
 #include <polyfem/utils/Types.hpp>
 
 #include <polyfem/Common.hpp>
@@ -364,8 +365,8 @@ namespace polyfem
 
 				if (mesh_nodes.is_boundary(node_id))
 				{
-					// local_boundary.add_boundary_primitive(index.face, FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[8]-20);
-					local_boundary.add_boundary_primitive(index.face, FEBasis3d::hex_face_local_nodes(false, 2, mesh, index)[8] - 20);
+					// local_boundary.add_boundary_primitive(index.face, LagrangeBasis3d::quadr_hex_face_local_nodes(mesh, index)[8]-20);
+					local_boundary.add_boundary_primitive(index.face, LagrangeBasis3d::hex_face_local_nodes(false, 2, mesh, index)[8] - 20);
 					// bounday_nodes.push_back(node_id);
 				}
 				else if (mesh_nodes.is_interface(node_id))
@@ -763,8 +764,8 @@ namespace polyfem
 				for (int j = 0; j < 8; ++j)
 				{
 					const Navigation3D::Index index = to_vertex[j](start_index);
-					// const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[0];
-					const int loc_index = FEBasis3d::hex_face_local_nodes(false, 2, mesh, index)[0];
+					// const int loc_index = LagrangeBasis3d::quadr_hex_face_local_nodes(mesh, index)[0];
+					const int loc_index = LagrangeBasis3d::hex_face_local_nodes(false, 2, mesh, index)[0];
 
 					int current_vertex_node_id = -1;
 					Eigen::MatrixXd current_vertex_node;
@@ -813,8 +814,8 @@ namespace polyfem
 
 					int current_edge_node_id = -1;
 					Eigen::Matrix<double, 1, 3> current_edge_node;
-					// const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[1];
-					const int loc_index = FEBasis3d::hex_face_local_nodes(false, 2, mesh, index)[4];
+					// const int loc_index = LagrangeBasis3d::quadr_hex_face_local_nodes(mesh, index)[1];
+					const int loc_index = LagrangeBasis3d::hex_face_local_nodes(false, 2, mesh, index)[4];
 
 					bool is_edge_q2 = true;
 
@@ -862,8 +863,8 @@ namespace polyfem
 					Eigen::Matrix<double, 1, 3> current_face_node;
 					const int opposite_element = mesh.switch_element(index).element;
 					const bool is_face_q2 = opposite_element < 0 || !mesh.is_spline_compatible(opposite_element);
-					// const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[8];
-					const int loc_index = FEBasis3d::hex_face_local_nodes(false, 2, mesh, index)[8];
+					// const int loc_index = LagrangeBasis3d::quadr_hex_face_local_nodes(mesh, index)[8];
+					const int loc_index = LagrangeBasis3d::hex_face_local_nodes(false, 2, mesh, index)[8];
 
 					if (is_face_q2)
 					{
@@ -945,19 +946,19 @@ namespace polyfem
 					if (opposite_element < 0 || !mesh.is_cube(opposite_element))
 						continue;
 
-					// const auto &param_p     = FEBasis3d::quadr_hex_face_local_nodes_coordinates(mesh, mesh.switch_element(index));
+					// const auto &param_p     = LagrangeBasis3d::quadr_hex_face_local_nodes_coordinates(mesh, mesh.switch_element(index));
 					Eigen::Matrix<double, 9, 3> param_p;
 					{
 						Eigen::MatrixXd hex_loc_nodes;
 						polyfem::autogen::q_nodes_3d(2, hex_loc_nodes);
-						const auto opposite_indices = FEBasis3d::hex_face_local_nodes(false, 2, mesh, mesh.switch_element(index));
+						const auto opposite_indices = LagrangeBasis3d::hex_face_local_nodes(false, 2, mesh, mesh.switch_element(index));
 						for (int k = 0; k < 9; ++k)
 							param_p.row(k) = hex_loc_nodes.row(opposite_indices[k]);
 					}
 					const auto &other_bases = bases[opposite_element];
 
-					// const auto &indices     = FEBasis3d::quadr_hex_face_local_nodes(mesh, index);
-					const auto &indices = FEBasis3d::hex_face_local_nodes(false, 2, mesh, index);
+					// const auto &indices     = LagrangeBasis3d::quadr_hex_face_local_nodes(mesh, index);
+					const auto &indices = LagrangeBasis3d::hex_face_local_nodes(false, 2, mesh, index);
 
 					std::array<int, 9> sizes;
 
@@ -1007,8 +1008,8 @@ namespace polyfem
 
 					if (is_neigh_poly)
 					{
-						// auto e2l = FEBasis3d::quadr_hex_face_local_nodes(mesh, index);
-						auto e2l = FEBasis3d::hex_face_local_nodes(false, 2, mesh, index);
+						// auto e2l = LagrangeBasis3d::quadr_hex_face_local_nodes(mesh, index);
+						auto e2l = LagrangeBasis3d::hex_face_local_nodes(false, 2, mesh, index);
 
 						InterfaceData &data = poly_face_to_data[index.face];
 
@@ -1149,8 +1150,8 @@ namespace polyfem
 					}
 					assert(index.face == primitive_id);
 
-					// const auto indices = FEBasis3d::quadr_hex_face_local_nodes(mesh3d, index);
-					const auto indices = FEBasis3d::hex_face_local_nodes(false, 2, mesh3d, index);
+					// const auto indices = LagrangeBasis3d::quadr_hex_face_local_nodes(mesh3d, index);
+					const auto indices = LagrangeBasis3d::hex_face_local_nodes(false, 2, mesh3d, index);
 					Eigen::VectorXi res(indices.size());
 
 					for (size_t i = 0; i < indices.size(); ++i)
@@ -1236,7 +1237,7 @@ namespace polyfem
 			// Eigen::MatrixXd samples(n_constraints, dim);
 
 			// for(int i = 0; i < n_constraints; ++i)
-			//     samples.row(i) = FEBasis3d::quadr_hex_local_node_coordinates(i);
+			//     samples.row(i) = LagrangeBasis3d::quadr_hex_local_node_coordinates(i);
 
 			// for(int i = 0; i < n_elements; ++i)
 			// {
@@ -1245,7 +1246,7 @@ namespace polyfem
 			//     if(!mesh.is_cube(i))
 			//         continue;
 
-			//     auto global_ids = FEBasis3d::quadr_hex_local_to_global(mesh, i);
+			//     auto global_ids = LagrangeBasis3d::quadr_hex_local_to_global(mesh, i);
 			//     assert(global_ids.size() == n_constraints);
 
 			//     for(int j = 0; j < n_constraints; ++j)

@@ -94,7 +94,7 @@ namespace polyfem::solver
 		gradv = collision_mesh_.to_full_dof(gradv);
 	}
 
-	void ContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void ContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		POLYFEM_SCOPED_TIMER("\t\tbarrier hessian");
 		hessian = ipc::compute_barrier_potential_hessian(collision_mesh_, compute_displaced_surface(x), constraint_set_, dhat_, project_to_psd_);

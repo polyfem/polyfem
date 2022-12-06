@@ -21,13 +21,7 @@ namespace polyfem::assembler
 		MooneyRivlinElasticity();
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params);
-
-		void stress_from_disp_grad(const int size,
-								   const RowVectorNd &p,
-								   const int el_id,
-								   const Eigen::MatrixXd &displacement_grad,
-								   Eigen::MatrixXd &stress_tensor) const;
+		void add_multimaterial(const int index, const json &params, const int size);
 
 		template <typename T>
 		T elastic_energy(const int size,
@@ -57,6 +51,10 @@ namespace polyfem::assembler
 
 			return val;
 		}
+
+		const GenericMatParam &c1() const { return c1_; }
+		const GenericMatParam &c2() const { return c2_; }
+		const GenericMatParam &k() const { return k_; }
 
 	private:
 		GenericMatParam c1_;

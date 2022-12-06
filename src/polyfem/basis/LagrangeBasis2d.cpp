@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "FEBasis2d.hpp"
+#include "LagrangeBasis2d.hpp"
 
 #include <polyfem/quadrature/TriQuadrature.hpp>
 #include <polyfem/quadrature/QuadQuadrature.hpp>
@@ -510,11 +510,11 @@ namespace
 
 					if (mesh.is_cube(f2))
 					{
-						indices = FEBasis2d::quad_edge_local_nodes(discr_order, mesh, index2);
+						indices = LagrangeBasis2d::quad_edge_local_nodes(discr_order, mesh, index2);
 					}
 					else if (mesh.is_simplex(f2))
 					{
-						indices = FEBasis2d::tri_edge_local_nodes(discr_order, mesh, index2);
+						indices = LagrangeBasis2d::tri_edge_local_nodes(discr_order, mesh, index2);
 					}
 					else
 					{
@@ -608,7 +608,7 @@ namespace
 	}
 } // anonymous namespace
 
-Eigen::VectorXi FEBasis2d::tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index)
+Eigen::VectorXi LagrangeBasis2d::tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index)
 {
 	int f = index.face;
 	assert(mesh.is_simplex(f));
@@ -639,7 +639,7 @@ Eigen::VectorXi FEBasis2d::tri_edge_local_nodes(const int p, const Mesh2D &mesh,
 	return result;
 }
 
-Eigen::VectorXi FEBasis2d::quad_edge_local_nodes(const int q, const Mesh2D &mesh, Navigation::Index index)
+Eigen::VectorXi LagrangeBasis2d::quad_edge_local_nodes(const int q, const Mesh2D &mesh, Navigation::Index index)
 {
 	int f = index.face;
 	assert(mesh.is_cube(f));
@@ -672,7 +672,7 @@ Eigen::VectorXi FEBasis2d::quad_edge_local_nodes(const int q, const Mesh2D &mesh
 
 // -----------------------------------------------------------------------------
 
-int FEBasis2d::build_bases(
+int LagrangeBasis2d::build_bases(
 	const Mesh2D &mesh,
 	const std::string &assembler,
 	const int quadrature_order,
@@ -693,7 +693,7 @@ int FEBasis2d::build_bases(
 	return build_bases(mesh, assembler, quadrature_order, mass_quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 }
 
-int FEBasis2d::build_bases(
+int LagrangeBasis2d::build_bases(
 	const Mesh2D &mesh,
 	const std::string &assembler,
 	const int quadrature_order,
