@@ -337,6 +337,12 @@
         "doc": "topology optimization filter parameters"
     },
     {
+        "pointer": "/parameters/*/fixed_entries",
+        "type": "list",
+        "default": [],
+        "doc": "fixed entries in optimization parameters"
+    },
+    {
         "pointer": "/parameters/*/initial",
         "type": "float",
         "default": 1,
@@ -685,7 +691,8 @@
         ],
         "optional": [
             "max_change",
-            "initial"
+            "initial",
+            "fixed_entries"
         ],
         "doc": "TODO"
     },
