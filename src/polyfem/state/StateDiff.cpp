@@ -238,7 +238,7 @@ namespace polyfem
 
 		std::vector<int> boundary_nodes_tmp = boundary_nodes;
 		full_to_periodic(boundary_nodes_tmp);
-		if (has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"])
+		if (need_periodic_reduction())
 		{
 			precond_num = full_to_periodic(A);
  			Eigen::MatrixXd tmp = b;
@@ -263,7 +263,7 @@ namespace polyfem
 		}
 
 		x.conservativeResize(x.size() - n_lagrange_multipliers());
- 		if (has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"])
+ 		if (need_periodic_reduction())
  			diff_cached[0].p = periodic_to_full(full_size, x);
  		else
  			diff_cached[0].p = x;

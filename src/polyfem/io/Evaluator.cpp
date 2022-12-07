@@ -1324,4 +1324,20 @@ namespace polyfem::io
 			index += local_val.rows();
 		}
 	}
+
+	Eigen::MatrixXd Evaluator::generate_linear_field(
+		const int n_bases,
+		const std::shared_ptr<mesh::MeshNodes> mesh_nodes,
+		const Eigen::MatrixXd &grad)
+	{
+		Eigen::MatrixXd func;
+		func.setZero(n_bases * grad.rows(), 1);
+
+		for (int i = 0; i < n_bases; i++)
+		{
+			func.block(i * grad.rows(), 0, grad.rows(), 1) = grad * mesh_nodes->node_position(i).transpose();
+		}
+
+		return func;
+	}
 } // namespace polyfem::io

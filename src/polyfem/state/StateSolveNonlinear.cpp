@@ -19,6 +19,8 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 
+#include <polyfem/io/Evaluator.hpp>
+
 #include <ipc/ipc.hpp>
 
 // map BroadPhaseMethod values to JSON as strings
@@ -322,8 +324,7 @@ namespace polyfem
 			n_boundary_samples(),
 			*solve_data.rhs_assembler, *this, t, forms);
 		
-		if (disp_offset.rows() == ndof && disp_offset.cols() == 1)
-			solve_data.nl_problem->set_disp_offset(disp_offset);
+		solve_data.nl_problem->set_disp_offset(io::Evaluator::generate_linear_field(n_bases, mesh_nodes, disp_grad));
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize time integrator

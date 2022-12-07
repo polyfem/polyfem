@@ -60,7 +60,7 @@ namespace polyfem::solver
 	protected:
 		const std::vector<int> boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> &local_boundary_;
-		Eigen::VectorXd disp_offset_;
+		TVector disp_offset_;
 
 		const int n_boundary_samples_;
 		const assembler::RhsAssembler &rhs_assembler_;
@@ -79,7 +79,7 @@ namespace polyfem::solver
 		CurrentSize current_size_; ///< Current size of the problem (either full or reduced size)
 		int current_size() const
 		{
-			if (current_size_ == CurrentSize::FULL_SIZE && state_.has_periodic_bc() && !state_.args["space"]["advanced"]["periodic_basis"])
+			if (current_size_ == CurrentSize::FULL_SIZE && state_.need_periodic_reduction())
 				log_and_throw_error("Periodic BC doesn't support AL solve!");
 			return current_size_ == CurrentSize::FULL_SIZE ? full_size() : reduced_size();
 		}

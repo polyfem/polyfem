@@ -640,7 +640,6 @@ namespace polyfem
 		geom_bases_.clear();
 		boundary_nodes.clear();
 		boundary_gnodes.clear();
-		boundary_gnodes_mask.clear();
 		input_dirichlet.clear();
 		dirichlet_nodes.clear();
 		neumann_nodes.clear();
@@ -1095,10 +1094,6 @@ namespace polyfem
 		if (args["materials"].contains("use_avg_pressure"))
 			use_avg_pressure = args["materials"]["use_avg_pressure"];
 
-		boundary_gnodes_mask.assign(n_geom_bases, false);
-		for (auto &bnode : boundary_gnodes)
-			boundary_gnodes_mask[bnode] = true;
-
 		// setp nodal values
 		{
 			dirichlet_nodes_position.resize(dirichlet_nodes.size());
@@ -1181,31 +1176,21 @@ namespace polyfem
 			}
 		}
 
-		// build disp_offset
+		// build disp_grad
 		{
-			disp_offset.setZero(n_bases * mesh->dimension(), 1);
+			disp_grad.setZero(mesh->dimension(), mesh->dimension());
 			if (args["boundary_conditions"]["linear_displacement_offset"].size() > 0)
 			{
-				Eigen::MatrixXd disp_grad;
-				disp_grad.setZero(mesh->dimension(), mesh->dimension());
 				int i = 0;
 				for (const auto &row : args["boundary_conditions"]["linear_displacement_offset"])
 				{
 					int j = 0;
 					for (const auto &x : row)
-					{
-						disp_grad(i, j) = x;
-						j++;
-					}
+						disp_grad(i, j++) = x;
 					i++;
 				}
 
 				logger().info("Underlying linear displacement field: {}", utils::flatten(disp_grad).transpose());
-
-				for (int i = 0; i < n_bases; i++)
-				{
-					disp_offset.block(i * mesh->dimension(), 0, mesh->dimension(), 1) = disp_grad * mesh_nodes->node_position(i).transpose();
-				}
 			}
 		}
 

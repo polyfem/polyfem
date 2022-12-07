@@ -34,7 +34,7 @@ namespace polyfem::solver
 		  state_(state),
 		  t_(t),
 		  full_size_(full_size),
-		  reduced_size_(((state.has_periodic_bc() && !state.args["space"]["advanced"]["periodic_basis"]) ? (state.periodic_reduce_map.maxCoeff() + 1) : full_size) - boundary_nodes.size())
+		  reduced_size_((state.need_periodic_reduction() ? (state.periodic_reduce_map.maxCoeff() + 1) : full_size) - boundary_nodes.size())
 	{
 		// assert(!state.assembler.is_mixed(formulation));
 		use_reduced_size();
@@ -173,7 +173,7 @@ namespace polyfem::solver
 		reduced.resize(reduced_size, 1);
 
 		Eigen::MatrixXd tmp = full;
-		if (state_.has_periodic_bc() && !state_.args["space"]["advanced"]["periodic_basis"])
+		if (state_.need_periodic_reduction())
 			state_.full_to_periodic(tmp, false);
 
 		long j = 0;
@@ -221,7 +221,7 @@ namespace polyfem::solver
 			tmp(i) = reduced(j++);
 		}
 
-		if (state_.has_periodic_bc() && !state_.args["space"]["advanced"]["periodic_basis"])
+		if (state_.need_periodic_reduction())
 			full = state_.periodic_to_full(full_size, tmp);
 		else
 			full = tmp;
@@ -246,7 +246,7 @@ namespace polyfem::solver
 		reduced.resize(reduced_size, 1);
 
 		Eigen::MatrixXd tmp = full;
-		if (state_.has_periodic_bc() && !state_.args["space"]["advanced"]["periodic_basis"])
+		if (state_.need_periodic_reduction())
 			state_.full_to_periodic(tmp, true);
 
 		long j = 0;
@@ -268,7 +268,7 @@ namespace polyfem::solver
 		// POLYFEM_SCOPED_TIMER("\tfull hessian to reduced hessian");
 
 		THessian tmp = full;
-		if (state_.has_periodic_bc() && !state_.args["space"]["advanced"]["periodic_basis"])
+		if (state_.need_periodic_reduction())
 			state_.full_to_periodic(tmp);
 
 		if (current_size() < full_size())

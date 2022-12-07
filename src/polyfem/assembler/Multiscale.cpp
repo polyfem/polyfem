@@ -56,23 +56,6 @@ namespace polyfem::assembler
 			return same;
 		}
 
-		Eigen::MatrixXd generate_linear_field(const State &state, const Eigen::MatrixXd &grad)
-		{
-			const int problem_dim = grad.rows();
-			const int dim = state.mesh->dimension();
-			assert(dim == grad.cols());
-
-			Eigen::MatrixXd func(state.n_bases * problem_dim, 1);
-			func.setZero();
-
-			for (int i = 0; i < state.n_bases; i++)
-			{
-				func.block(i * problem_dim, 0, problem_dim, 1) = grad * state.mesh_nodes->node_position(i).transpose();
-			}
-
-			return func;
-		}
-
 		class LocalThreadVecStorage
 		{
 		public:
@@ -228,12 +211,7 @@ namespace polyfem::assembler
 		{
 			double time;
 			POLYFEM_SCOPED_TIMER("micro newton", time);
-			Eigen::MatrixXd disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
-
-			state->disp_offset.setZero(state->ndof(), 1);
-			for (int i = 0; i < state->n_bases; i++)
-				state->disp_offset.block(i * state->mesh->dimension(), 0, state->mesh->dimension(), 1) = disp_grad * state->mesh_nodes->node_position(i).transpose();
-
+			state->disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd pressure;
 			state->solve_problem(x, pressure);
 		}
@@ -253,12 +231,7 @@ namespace polyfem::assembler
 		{
 			double time;
 			POLYFEM_SCOPED_TIMER("micro newton", time);
-			Eigen::MatrixXd disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
-
-			state->disp_offset.setZero(state->ndof(), 1);
-			for (int i = 0; i < state->n_bases; i++)
-				state->disp_offset.block(i * state->mesh->dimension(), 0, state->mesh->dimension(), 1) = disp_grad * state->mesh_nodes->node_position(i).transpose();
-
+			state->disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd pressure;
 			state->solve_problem(x, pressure);
 		}
@@ -276,12 +249,7 @@ namespace polyfem::assembler
 		{
 			double time;
 			POLYFEM_SCOPED_TIMER("micro newton", time);
-			Eigen::MatrixXd disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
-
-			state->disp_offset.setZero(state->ndof(), 1);
-			for (int i = 0; i < state->n_bases; i++)
-				state->disp_offset.block(i * state->mesh->dimension(), 0, state->mesh->dimension(), 1) = disp_grad * state->mesh_nodes->node_position(i).transpose();
-
+			state->disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd pressure;
 			state->solve_problem(x, pressure);
 		}

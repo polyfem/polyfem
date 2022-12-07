@@ -17,6 +17,8 @@
 #include <polysolve/FEMSolver.hpp>
 #include <unsupported/Eigen/SparseExtra>
 
+#include <polyfem/io/Evaluator.hpp>
+
 #include <ipc/ipc.hpp>
 
 // map BroadPhaseMethod values to JSON as strings
@@ -69,23 +71,6 @@ namespace
 			throw std::invalid_argument(fmt::format("invalid nonlinear solver type: {}", name));
 		}
 	}
-
-    Eigen::MatrixXd generate_linear_field(const State &state, const Eigen::MatrixXd &grad)
-    {
-        const int problem_dim = grad.rows();
-        const int dim = state.mesh->dimension();
-        assert(dim == grad.cols());
-
-        Eigen::MatrixXd func(state.n_bases * problem_dim, 1);
-        func.setZero();
-
-        for (int i = 0; i < state.n_bases; i++)
-        {
-            func.block(i * problem_dim, 0, problem_dim, 1) = grad * state.mesh_nodes->node_position(i).transpose();
-        }
-
-        return func;
-    }
 }
 
 void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::MatrixXd &sol_)
@@ -161,7 +146,7 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         n_boundary_samples(),
         *solve_data.rhs_assembler, *this, 0, forms);
     
-    Eigen::VectorXd macro_field = generate_linear_field(*this, disp_grad);
+    Eigen::VectorXd macro_field = io::Evaluator::generate_linear_field(n_bases, mesh_nodes, disp_grad);
     homo_problem->set_disp_offset(macro_field);
 
     std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_homo_solver<NLProblem>(args["solver"]);
@@ -254,9 +239,6 @@ void State::solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_fie
         local_boundary,
         n_boundary_samples(),
         *solve_data.rhs_assembler, *this, 0, forms);
-
-    // Eigen::VectorXd macro_field2 = generate_linear_field(*this, disp_grad);
-    // Eigen::VectorXd macro_field1 = generate_linear_field(*this, last_disp_grad);
 
     std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_homo_solver<NLProblem>(args["solver"]);
 

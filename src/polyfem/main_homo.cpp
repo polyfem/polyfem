@@ -8,6 +8,7 @@
 #include <polyfem/State.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/io/Evaluator.hpp>
 
 #include <polysolve/LinearSolver.hpp>
 
@@ -18,23 +19,6 @@ bool has_arg(const CLI::App &command_line, const std::string &value)
 		return false;
 
 	return opt->count() > 0;
-}
-
-Eigen::MatrixXd generate_linear_field(const polyfem::State &state, const Eigen::MatrixXd &grad)
-{
-	const int problem_dim = grad.rows();
-	const int dim = state.mesh->dimension();
-	assert(dim == grad.cols());
-
-	Eigen::MatrixXd func(state.n_bases * problem_dim, 1);
-	func.setZero();
-
-	for (int i = 0; i < state.n_bases; i++)
-	{
-		func.block(i * problem_dim, 0, problem_dim, 1) = grad * state.mesh_nodes->node_position(i).transpose();
-	}
-
-	return func;
 }
 
 int main(int argc, char **argv)
@@ -139,7 +123,7 @@ int main(int argc, char **argv)
 	F.setZero(dim, dim);
 
 	Eigen::MatrixXd fluctuated, macro1, macro2;
-	macro1 = generate_linear_field(*micro_state, Eigen::MatrixXd::Zero(dim, dim));
+	macro1 = io::Evaluator::generate_linear_field(micro_state->n_bases, micro_state->mesh_nodes, Eigen::MatrixXd::Zero(dim, dim));
 	for (int l = 0; l >= -40; l--)
 	{
 		F(0, 0) = 0;
@@ -147,7 +131,7 @@ int main(int argc, char **argv)
 
 		micro_state->args["output"]["paraview"]["file_name"] = "load_" + std::to_string(-l) + ".vtu";
 
-		macro2 = generate_linear_field(*micro_state, F);
+		macro2 = io::Evaluator::generate_linear_field(micro_state->n_bases, micro_state->mesh_nodes, F);
 		micro_state->solve_homogenized_field(F, fluctuated);
 		macro1 = macro2;
 

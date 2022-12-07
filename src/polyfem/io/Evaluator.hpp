@@ -5,6 +5,7 @@
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/MeshNodes.hpp>
 
 #include <polyfem/utils/RefElementSampler.hpp>
 
@@ -409,5 +410,10 @@ namespace polyfem::io
 			Eigen::MatrixXd &pts,
 			Eigen::MatrixXi &faces,
 			Eigen::MatrixXd &sidesets);
+
+		static Eigen::MatrixXd generate_linear_field(
+			const int n_bases,
+			const std::shared_ptr<mesh::MeshNodes> mesh_nodes,
+			const Eigen::MatrixXd &grad);
 	};
 } // namespace polyfem::io

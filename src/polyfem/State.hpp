@@ -203,7 +203,6 @@ namespace polyfem
 
 		// list of dirichlet boundary geometry nodes
 		std::vector<int> boundary_gnodes;
-		std::vector<bool> boundary_gnodes_mask;
 
 		/// used to store assembly values for small problems
 		assembler::AssemblyValsCache ass_vals_cache;
@@ -222,8 +221,9 @@ namespace polyfem
 		/// System righ-hand side.
 		Eigen::MatrixXd rhs;
 
-		/// In Elasticity PDE, solve for "min W(disp_offset + u)" instead of "min W(u)"
-		Eigen::MatrixXd disp_offset;
+		/// In Elasticity PDE, solve for "min W(disp_grad + \grad u)" instead of "min W(\grad u)"
+		Eigen::MatrixXd disp_grad;
+		bool solve_disp_grad = false;
 
 		Eigen::MatrixXd pre_sol;
 
@@ -395,6 +395,10 @@ namespace polyfem
 			}
 			return false;
 		}
+		bool need_periodic_reduction() const
+		{
+			return has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"];
+		}
 
 		// add lagrangian multiplier rows for pure neumann/periodic boundary condition, returns the number of rows added
 		int n_lagrange_multipliers() const;
@@ -406,7 +410,7 @@ namespace polyfem
 		int full_to_periodic(Eigen::MatrixXd &b, bool accumulate, bool force_dirichlet = true) const;
 		void full_to_periodic(std::vector<int> &boundary_nodes_) const
 		{
-			if (has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"])
+			if (need_periodic_reduction())
 			{
 				for (int i = 0; i < boundary_nodes_.size(); i++)
 					boundary_nodes_[i] = periodic_reduce_map(boundary_nodes_[i]);

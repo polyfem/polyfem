@@ -57,13 +57,7 @@ namespace polyfem
     {
         Eigen::MatrixXd disp_grad = utils::unflatten(newX, dim);
 		for (auto state : states_ptr_)
-        {
-            state->disp_offset.setZero(state->n_bases * dim, 1);
-            for (int i = 0; i < state->n_bases; i++)
-            {
-                state->disp_offset.block(i * dim, 0, dim, 1) = disp_grad * state->mesh_nodes->node_position(i).transpose();
-            }
-        }
+            state->disp_grad = disp_grad;
 		return true;
     }
 

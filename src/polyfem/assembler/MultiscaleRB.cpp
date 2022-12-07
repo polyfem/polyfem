@@ -137,23 +137,6 @@ namespace polyfem::assembler
 
 			return same;
 		}
-
-		Eigen::MatrixXd generate_linear_field(const State &state, const Eigen::MatrixXd &grad)
-		{
-			const int problem_dim = grad.rows();
-			const int dim = state.mesh->dimension();
-			assert(dim == grad.cols());
-
-			Eigen::MatrixXd func(state.n_bases * problem_dim, 1);
-			func.setZero();
-
-			for (int i = 0; i < state.n_bases; i++)
-			{
-				func.block(i * problem_dim, 0, problem_dim, 1) = grad * state.mesh_nodes->node_position(i).transpose();
-			}
-
-			return func;
-		}
 	}
 
 	MultiscaleRB::MultiscaleRB()
@@ -180,7 +163,7 @@ namespace polyfem::assembler
 				// solve fluctuation field
 				Eigen::MatrixXd grad = def_grads[idx] - Eigen::MatrixXd::Identity(size(), size());
 				state->solve_homogenized_field(grad, tmp);
-				sols.col(idx) = tmp - generate_linear_field(*state, grad);
+				sols.col(idx) = tmp - io::Evaluator::generate_linear_field(state->n_bases, state->mesh_nodes, grad);
 			}
 		});
 
@@ -283,7 +266,7 @@ namespace polyfem::assembler
 		xi.setZero(reduced_basis.cols());
 
 		std::shared_ptr<MultiscaleRBProblem> nl_problem = std::make_shared<MultiscaleRBProblem>(state, reduced_basis);
-		nl_problem->set_linear_disp(generate_linear_field(*state, F));
+		nl_problem->set_linear_disp(io::Evaluator::generate_linear_field(state->n_bases, state->mesh_nodes, F));
 		std::shared_ptr<cppoptlib::NonlinearSolver<MultiscaleRBProblem>> nlsolver = std::make_shared<cppoptlib::DenseNewtonDescentSolver<MultiscaleRBProblem>>(
 				state->args["solver"]["nonlinear"], state->args["solver"]["linear"]);
 		nlsolver->disable_logging();
