@@ -282,7 +282,7 @@ namespace polyfem::mesh
 			state.args["solver"]["augmented_lagrangian"]["scaling"],
 			state.args["solver"]["augmented_lagrangian"]["max_steps"],
 			[&](const Eigen::VectorXd &x) {
-				// this->solve_data.updated_barrier_stiffness(sol);
+				// this->solve_data.update_barrier_stiffness(sol);
 			});
 
 		Eigen::MatrixXd sol = target_x;

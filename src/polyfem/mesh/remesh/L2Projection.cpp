@@ -118,7 +118,7 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 
 		// Create a lambda function to update the barrier stiffness
-		auto updated_barrier_stiffness = [&](const Eigen::MatrixXd &x) {
+		auto update_barrier_stiffness = [&](const Eigen::MatrixXd &x) {
 			// if (!contact_form->use_adaptive_barrier_stiffness())
 			// 	return;
 
@@ -144,7 +144,7 @@ namespace polyfem::mesh
 		// Create augmented Lagrangian solver
 		ALSolver al_solver(
 			nl_solver, al_form, al_initial_weight, al_scaling, al_max_steps,
-			updated_barrier_stiffness);
+			update_barrier_stiffness);
 
 		Eigen::MatrixXd sol = Eigen::VectorXd::Zero(M.rows());
 		al_solver.solve(problem, sol, force_al);

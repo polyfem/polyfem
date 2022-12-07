@@ -189,7 +189,8 @@ namespace polyfem::mesh
 
 		// initialize the problem so contact force show up correctly in the output
 		state.solve_data.nl_problem->init(sol);
-		state.solve_data.nl_problem->init_lagging(state.solve_data.time_integrator->x_prev());
-		state.solve_data.updated_barrier_stiffness(sol);
+		if (state.solve_data.nl_problem->uses_lagging())
+			state.solve_data.nl_problem->init_lagging(state.solve_data.time_integrator->x_prev());
+		state.solve_data.update_barrier_stiffness(sol);
 	}
 } // namespace polyfem::mesh

@@ -97,7 +97,7 @@ namespace polyfem::solver
 
 		/// @brief update the barrier stiffness for the forms
 		/// @param x current solution
-		void updated_barrier_stiffness(const Eigen::VectorXd &x);
+		void update_barrier_stiffness(const Eigen::VectorXd &x);
 
 		/// @brief updates the dt inside the different forms
 		void update_dt();
