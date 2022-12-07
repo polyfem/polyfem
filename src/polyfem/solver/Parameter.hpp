@@ -35,9 +35,8 @@ namespace polyfem
 		// from full grad to design dof grad
 		virtual Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const { return full_grad; }
 
-		virtual void smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) {}
+		virtual bool smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) { return false; }
 		virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
-		virtual bool is_intersection_free(const Eigen::VectorXd &x) { return true; }
 		virtual bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
 		virtual double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return 1; }
 
@@ -64,7 +63,6 @@ namespace polyfem
 
 		inline virtual bool remesh(Eigen::VectorXd &x) { return true; };
 
-		virtual Eigen::VectorXd force_inequality_constraint(const Eigen::VectorXd &x0, const Eigen::VectorXd &dx) { return x0 + dx; }
 		virtual int n_inequality_constraints() { return 0; }
 		virtual double inequality_constraint_val(const Eigen::VectorXd &x, const int index)
 		{

@@ -147,13 +147,21 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 						"mesh": "",
 						"n_refs": 0,
 						"transformation": {
-							"scale": 1e-3
+							"scale": 1
 						},
 						"surface_selection": {
 							"threshold": 1e-8
 						}
 					}
 				],
+				"optimization": {
+					"enabled": true
+				},
+				"space": {
+					"advanced": {
+						"quadrature_order": 5
+					}
+				},
 				"solver": {
 					"linear": {
 						"solver": "Eigen::SimplicialLDLT"
@@ -177,7 +185,7 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 	// in_args["materials"]["microstructure"]["materials"]["E"] = path + "/../Es.txt";
 	// in_args["materials"]["microstructure"]["materials"]["nu"] = path + "/../nus.txt";
 
-	State state;
+	State state(1);
 	state.init_logger("", spdlog::level::warn, false);
 	state.init(in_args, false);
 	state.load_mesh();
@@ -206,6 +214,22 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 			disp, [&state](const Eigen::VectorXd &x) -> double { return state.assembler.assemble_energy(state.formulation(), false, state.bases, state.geom_bases(), state.ass_vals_cache, 0, x, x); }, fgrad);
 
 		REQUIRE (compare_matrix(grad, fgrad));
+
+		StiffnessMatrix hessian;
+		state.assembler.assemble_energy_hessian(state.formulation(), false, state.n_bases, false, state.bases, state.geom_bases(), state.ass_vals_cache, 0, disp, disp, mat_cache, hessian);
+		Eigen::MatrixXd hess = hessian;
+
+		Eigen::MatrixXd fhess;
+		fd::finite_jacobian(
+			disp,
+			[&state](const Eigen::VectorXd &x) -> Eigen::VectorXd {
+				Eigen::MatrixXd grad;
+				state.assembler.assemble_energy_gradient(state.formulation(), false, state.n_bases, state.bases, state.geom_bases(), state.ass_vals_cache, 0, x, x, grad);
+				return grad;
+			},
+			fhess);
+
+		REQUIRE (compare_matrix(hess, fhess));
 	}
 }
 

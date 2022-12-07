@@ -135,21 +135,6 @@ namespace polyfem
         return true;
     }
 
-    Eigen::VectorXd TopologyOptimizationParameter::force_inequality_constraint(const Eigen::VectorXd &x0, const Eigen::VectorXd &dx)
-    {
-		Eigen::VectorXd x_new = x0 + dx;
-
-		for (int i = 0; i < x_new.size(); i++)
-		{
-			if (x_new(i) < min_density)
-				x_new(i) = min_density;
-			else if (x_new(i) > max_density)
-				x_new(i) = max_density;
-		}
-
-		return x_new;
-    }
-
     int TopologyOptimizationParameter::n_inequality_constraints()
     {
 		if (!has_mass_constraint)

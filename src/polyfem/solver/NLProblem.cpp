@@ -38,7 +38,7 @@ namespace polyfem::solver
 	{
 		// assert(!state.assembler.is_mixed(formulation));
 		use_reduced_size();
-		linear_field_.setZero(full_size_);
+		disp_offset_.setZero(full_size_);
 	}
 
 	void NLProblem::init_lagging(const TVector &x)
@@ -89,7 +89,7 @@ namespace polyfem::solver
 	{
 		TVector full_grad;
 		FullNLProblem::gradient(reduced_to_full(x), full_grad);
-		grad = full_to_reduced(full_grad);
+		grad = full_to_reduced_grad(full_grad);
 	}
 
 	void NLProblem::hessian(const TVector &x, THessian &hessian)
@@ -135,6 +135,13 @@ namespace polyfem::solver
 		return reduced;
 	}
 
+	NLProblem::TVector NLProblem::full_to_reduced_grad(const TVector &full) const
+	{
+		TVector reduced;
+		full_to_reduced_aux_grad(boundary_nodes_, full_size(), current_size(), full, reduced);
+		return reduced;
+	}
+
 	NLProblem::TVector NLProblem::reduced_to_full(const TVector &reduced) const
 	{
 		TVector full;
@@ -167,7 +174,7 @@ namespace polyfem::solver
 
 		Eigen::MatrixXd tmp = full;
 		if (state_.has_periodic_bc() && !state_.args["space"]["advanced"]["periodic_basis"])
-			state_.full_to_periodic(tmp);
+			state_.full_to_periodic(tmp, false);
 
 		long j = 0;
 		size_t k = 0;
@@ -219,7 +226,41 @@ namespace polyfem::solver
 		else
 			full = tmp;
 
-		full += linear_field_;
+		full += disp_offset_;
+	}
+
+	template <class FullMat, class ReducedMat>
+	void NLProblem::full_to_reduced_aux_grad(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const
+	{
+		using namespace polyfem;
+
+		// Reduced is already at the full size
+		if (full_size == reduced_size || full.size() == reduced_size)
+		{
+			reduced = full;
+			return;
+		}
+
+		assert(full.size() == full_size);
+		assert(full.cols() == 1);
+		reduced.resize(reduced_size, 1);
+
+		Eigen::MatrixXd tmp = full;
+		if (state_.has_periodic_bc() && !state_.args["space"]["advanced"]["periodic_basis"])
+			state_.full_to_periodic(tmp, true);
+
+		long j = 0;
+		size_t k = 0;
+		for (int i = 0; i < tmp.size(); ++i)
+		{
+			if (k < boundary_nodes.size() && boundary_nodes[k] == i)
+			{
+				++k;
+				continue;
+			}
+
+			reduced(j++) = tmp(i);
+		}
 	}
 
 	void NLProblem::full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const

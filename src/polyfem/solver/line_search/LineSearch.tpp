@@ -95,7 +95,7 @@ namespace polyfem
 				const double rate)
 			{
 				double step_size = starting_step_size;
-				TVector new_x = objFunc.force_inequality_constraint(x, step_size * delta_x);
+				TVector new_x = x + step_size * delta_x;
 
 				// Find step that does not result in nan or infinite energy
 				while (step_size > min_step_size && cur_iter < max_step_size_iter)
@@ -108,7 +108,7 @@ namespace polyfem
 					if (!std::isfinite(energy) || !is_step_valid)
 					{
 						step_size *= rate;
-						new_x = objFunc.force_inequality_constraint(x, step_size * delta_x);
+						new_x = x + step_size * delta_x;
 					}
 					else
 					{
@@ -136,7 +136,7 @@ namespace polyfem
 				const double starting_step_size)
 			{
 				double step_size = starting_step_size;
-				TVector new_x = objFunc.force_inequality_constraint(x, step_size * delta_x);
+				TVector new_x = x + step_size * delta_x;
 
 				// Find step that is collision free
 				double max_step_size = objFunc.max_step_size(x, new_x);

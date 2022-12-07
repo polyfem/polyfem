@@ -187,60 +187,141 @@ namespace polyfem
 			}
 			else if (restriction == "b_spline")
 			{
-				const auto &spline_params = constraint_params["spline_specification"];
-				assert(dim_ == 2);
-				const auto &spline = spline_params[0];
-				const int boundary_id = spline["id"].get<int>();
-				auto c = spline["control_point"];
-				Eigen::MatrixXd control_points(c.size(), dim_);
-				for (int i = 0; i < c.size(); ++i)
-					for (int k = 0; k < dim_; ++k)
-						control_points(i, k) = c[i][k];
-				reduced_size_ = control_points.size() - 2 * dim_;
-				auto k = spline["knot"];
-				Eigen::MatrixXd knots(k.size(), 1);
-				for (int i = 0; i < k.size(); ++i)
-					knots(i) = k[i];
 				assert(optimization_boundary_to_node_ids_.size() == 1);
-				b_spline_parametrization = std::make_shared<BSplineParametrization>(control_points, knots, optimization_boundary_to_node_ids_.begin()->first, optimization_boundary_to_node_ids_.begin()->second, V_start);
-				full_to_reduced_ = [this](const Eigen::MatrixXd &V_full) {
-					Eigen::VectorXd reduced(reduced_size_);
-					Eigen::MatrixXd control_points;
-					b_spline_parametrization->get_parameters(V_full, control_points);
-					int index = 0;
-					for (int i = 0; i < control_points.rows(); ++i)
-					{
-						if (i == 0 || i == (control_points.rows() - 1))
-							continue;
-						reduced.segment(index, dim_) = control_points.row(i);
-						index += dim_;
-					}
-					assert(index == reduced.size());
-					return reduced;
-				};
-				reduced_to_full_ = [this, control_points](const Eigen::VectorXd &reduced, const Eigen::MatrixXd &V_rest) {
-					Eigen::MatrixXd V(num_vertices_, dim_);
-					int index = 0;
-					Eigen::MatrixXd new_control_points(control_points.rows(), dim_);
-					for (int i = 0; i < new_control_points.rows(); ++i)
-					{
-						if (i == 0 || i == (new_control_points.rows() - 1))
-							new_control_points.row(i) = control_points.row(i);
-						else
+				const auto &spline_params = constraint_params["spline_specification"];
+				if (dim_ == 2)
+				{
+					const auto &spline = spline_params[0];
+					const int boundary_id = spline["id"].get<int>();
+					auto c = spline["control_point"];
+					Eigen::MatrixXd control_points(c.size(), dim_);
+					for (int i = 0; i < c.size(); ++i)
+						for (int k = 0; k < dim_; ++k)
+							control_points(i, k) = c[i][k];
+					reduced_size_ = control_points.size() - 2 * dim_;
+					auto k = spline["knot"];
+					Eigen::MatrixXd knots(k.size(), 1);
+					for (int i = 0; i < k.size(); ++i)
+						knots(i) = k[i];
+					b_spline_parametrization = std::make_shared<BSplineParametrization2D>(control_points, knots, optimization_boundary_to_node_ids_.begin()->first, optimization_boundary_to_node_ids_.begin()->second, V_start);
+					full_to_reduced_ = [this](const Eigen::MatrixXd &V_full) {
+						Eigen::VectorXd reduced(reduced_size_);
+						Eigen::MatrixXd control_points;
+						b_spline_parametrization->get_parameters(V_full, control_points);
+						int index = 0;
+						for (int i = 0; i < control_points.rows(); ++i)
 						{
-							new_control_points.row(i) = reduced.segment(index, dim_);
+							if (i == 0 || i == (control_points.rows() - 1))
+								continue;
+							reduced.segment(index, dim_) = control_points.row(i);
 							index += dim_;
 						}
+						assert(index == reduced.size());
+						return reduced;
+					};
+					reduced_to_full_ = [this, control_points](const Eigen::VectorXd &reduced, const Eigen::MatrixXd &V_rest) {
+						Eigen::MatrixXd V(num_vertices_, dim_);
+						int index = 0;
+						Eigen::MatrixXd new_control_points(control_points.rows(), dim_);
+						for (int i = 0; i < new_control_points.rows(); ++i)
+						{
+							if (i == 0 || i == (new_control_points.rows() - 1))
+								new_control_points.row(i) = control_points.row(i);
+							else
+							{
+								new_control_points.row(i) = reduced.segment(index, dim_);
+								index += dim_;
+							}
+						}
+						b_spline_parametrization->reparametrize(new_control_points, V_rest, V);
+						return V;
+					};
+					dfull_to_dreduced_ = [this](const Eigen::VectorXd &dV_full) {
+						Eigen::VectorXd grad_control_point;
+						b_spline_parametrization->derivative_wrt_params(dV_full, grad_control_point);
+						Eigen::VectorXd dreduced = grad_control_point.segment(dim_, grad_control_point.size() - 2 * dim_);
+						return dreduced;
+					};
+				}
+				else if (dim_ == 3)
+				{
+					const auto &spline = spline_params[0];
+					const int boundary_id = spline["id"].get<int>();
+					auto c = spline["control_point_grid"];
+					Eigen::MatrixXd control_points(c.size(), dim_);
+					for (int i = 0; i < c.size(); ++i)
+					{
+						assert(c[i].size() == dim_);
+						for (int k = 0; k < dim_; ++k)
+							control_points(i, k) = c[i][k];
 					}
-					b_spline_parametrization->reparametrize(new_control_points, V_rest, V);
-					return V;
-				};
-				dfull_to_dreduced_ = [this](const Eigen::VectorXd &dV_full) {
-					Eigen::VectorXd grad_control_point;
-					b_spline_parametrization->derivative_wrt_params(dV_full, grad_control_point);
-					Eigen::VectorXd dreduced = grad_control_point.segment(dim_, grad_control_point.rows() - 2 * dim_);
-					return dreduced;
-				};
+					auto k_u = spline["knot_u"];
+					Eigen::MatrixXd knots_u(k_u.size(), 1);
+					for (int i = 0; i < k_u.size(); ++i)
+						knots_u(i) = k_u[i];
+					auto k_v = spline["knot_v"];
+					Eigen::MatrixXd knots_v(k_v.size(), 1);
+					for (int i = 0; i < k_v.size(); ++i)
+						knots_v(i) = k_v[i];
+					int num_u = knots_u.rows() - 1 - 3;
+					int num_v = knots_v.rows() - 1 - 3;
+					assert(control_points.size() == dim_ * num_u * num_v);
+					reduced_size_ = dim_ * (num_u * num_v - 2 * num_u - 2 * (num_v - 2));
+					b_spline_parametrization = std::make_shared<BSplineParametrization3D>(control_points, knots_u, knots_v, optimization_boundary_to_node_ids_.begin()->first, optimization_boundary_to_node_ids_.begin()->second, V_start);
+					full_to_reduced_ = [this, num_u, num_v](const Eigen::MatrixXd &V_full) {
+						Eigen::VectorXd reduced(reduced_size_);
+						Eigen::MatrixXd control_points;
+						b_spline_parametrization->get_parameters(V_full, control_points);
+						int index = 0;
+						for (int i = 0; i < control_points.rows(); ++i)
+						{
+							if ((i / num_v) == 0 || (i / num_v) == (num_u - 1) || (i % num_u) == 0 || (i % num_u) == (num_v - 1))
+								continue;
+							reduced.segment(index, dim_) = control_points.row(i);
+							index += dim_;
+						}
+						assert(index == reduced.size());
+						return reduced;
+					};
+					reduced_to_full_ = [this, control_points, num_u, num_v](const Eigen::VectorXd &reduced, const Eigen::MatrixXd &V_rest) {
+						Eigen::MatrixXd V(num_vertices_, dim_);
+						int index = 0;
+						Eigen::MatrixXd new_control_points(control_points.rows(), dim_);
+						for (int i = 0; i < new_control_points.rows(); ++i)
+						{
+							if ((i / num_v) == 0 || (i / num_v) == (num_u - 1) || (i % num_u) == 0 || (i % num_u) == (num_v - 1))
+							{
+								new_control_points.row(i) = control_points.row(i);
+							}
+							else
+							{
+								new_control_points.row(i) = reduced.segment(index, dim_);
+								index += dim_;
+							}
+						}
+						b_spline_parametrization->reparametrize(new_control_points, V_rest, V);
+						return V;
+					};
+					dfull_to_dreduced_ = [this, num_u, num_v](const Eigen::VectorXd &dV_full) {
+						Eigen::VectorXd grad_control_point;
+						b_spline_parametrization->derivative_wrt_params(dV_full, grad_control_point);
+						Eigen::VectorXd dreduced(dim_ * (num_u * num_v - 2 * num_u - 2 * (num_v - 2)));
+						int index = 0;
+						for (int i = 0; i < num_u * num_v; ++i)
+						{
+							if ((i / num_v) == 0 || (i / num_v) == (num_u - 1) || (i % num_u) == 0 || (i % num_u) == (num_v - 1))
+								continue;
+							dreduced.segment(index, dim_) = grad_control_point.segment(i * dim_, dim_);
+							index += dim_;
+						}
+						assert(index == dreduced.size());
+						return dreduced;
+					};
+				}
+				else
+				{
+					assert(false);
+				}
 			}
 			else if (restriction == "graph_structure")
 			{

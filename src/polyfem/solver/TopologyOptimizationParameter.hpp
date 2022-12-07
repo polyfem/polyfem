@@ -20,7 +20,6 @@ namespace polyfem
 		Eigen::MatrixXd map(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const override;
 		
-		Eigen::VectorXd force_inequality_constraint(const Eigen::VectorXd &x0, const Eigen::VectorXd &dx) override;
 		int n_inequality_constraints() override;
 		double inequality_constraint_val(const Eigen::VectorXd &x, const int index) override;
 		Eigen::VectorXd inequality_constraint_grad(const Eigen::VectorXd &x, const int index) override;

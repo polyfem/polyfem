@@ -137,28 +137,6 @@ namespace polyfem::assembler
 
 			return same;
 		}
-	
-		// Eigen::MatrixXd homogenize_def_grad(const State &state, const Eigen::MatrixXd &x)
-		// {
-		// 	const int dim = state.mesh->dimension();
-		// 	Eigen::VectorXd avgs;
-		// 	avgs.setZero(dim * dim);
-		// 	for (int e = 0; e < state.bases.size(); e++)
-		// 	{
-		// 		assembler::ElementAssemblyValues vals;
-		// 		state.ass_vals_cache.compute(e, dim == 3, state.bases[e], state.geom_bases()[e], vals);
-
-		// 		Eigen::MatrixXd u, grad_u;
-		// 		io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x, u, grad_u);
-
-		// 		const quadrature::Quadrature &quadrature = vals.quadrature;
-		// 		Eigen::VectorXd da = quadrature.weights * vals.det;
-		// 		avgs += grad_u.transpose() * da;
-		// 	}
-		// 	avgs /= microstructure_volume;
-
-		// 	return utils::unflatten(avgs, dim);
-		// }
 
 		Eigen::MatrixXd generate_linear_field(const State &state, const Eigen::MatrixXd &grad)
 		{
@@ -201,7 +179,7 @@ namespace polyfem::assembler
 			{
 				// solve fluctuation field
 				Eigen::MatrixXd grad = def_grads[idx] - Eigen::MatrixXd::Identity(size(), size());
-				state->solve_homogenized_field(grad, Eigen::MatrixXd(), tmp);
+				state->solve_homogenized_field(grad, tmp);
 				sols.col(idx) = tmp - generate_linear_field(*state, grad);
 			}
 		});
@@ -401,19 +379,16 @@ namespace polyfem::assembler
 
 		// compute term2 given CB
 		{
-			Eigen::MatrixXd Dinv;
-			{
-				Eigen::MatrixXd hessian;
-				state->assembler.assemble_energy_hessian(
-					state->formulation(), size() == 3, state->n_bases, false, state->bases,
-					state->geom_bases(), state->ass_vals_cache, 0, x, x, reduced_basis, hessian);
+			Eigen::MatrixXd hessian;
+			state->assembler.assemble_energy_hessian(
+				state->formulation(), size() == 3, state->n_bases, false, state->bases,
+				state->geom_bases(), state->ass_vals_cache, 0, x, x, reduced_basis, hessian);
 
-				Dinv = hessian.inverse();
-			}
-			term2 = CB * Dinv * CB.transpose() / microstructure_volume;
+			Eigen::LLT<Eigen::MatrixXd> llt(hessian);
+			term2 = CB * llt.solve(CB.transpose());
 		}
 
-		stiffness = avg_stiffness - term2;
+		stiffness = avg_stiffness - term2 / microstructure_volume;
 	}
 
 	void MultiscaleRB::homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const

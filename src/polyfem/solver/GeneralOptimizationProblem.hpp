@@ -112,18 +112,20 @@ namespace polyfem
 			}
 		}
 
-		void smoothing(const TVector &x, TVector &new_x) 
+		bool smoothing(const TVector &x, TVector &new_x) 
 		{
 			int cumulative = 0;
+			bool flag = false;
 			for (const auto &subproblem : subproblems)
 			{
 				TVector tmp;
 				tmp = new_x.segment(cumulative, subproblem->optimization_dim());
-				subproblem->smoothing(x.segment(cumulative, subproblem->optimization_dim()), tmp);
+				flag |= subproblem->smoothing(x.segment(cumulative, subproblem->optimization_dim()), tmp);
 				assert(tmp.size() == subproblem->optimization_dim());
 				new_x.segment(cumulative, subproblem->optimization_dim()) = tmp;
 				cumulative += subproblem->optimization_dim();
 			}
+			return flag;
 		}
 
 		bool is_step_valid(const TVector &x0, const TVector &x1) 
@@ -136,18 +138,6 @@ namespace polyfem
 				cumulative += subproblem->optimization_dim();
 			}
 			return valid;
-		}
-
-		bool is_intersection_free(const TVector &x)
-		{
-			bool intersection_free = true;
-			int cumulative = 0;
-			for (const auto &subproblem : subproblems)
-			{
-				intersection_free &= subproblem->is_intersection_free(x.segment(cumulative, subproblem->optimization_dim()));
-				cumulative += subproblem->optimization_dim();
-			}
-			return intersection_free;
 		}
 
 		bool is_step_collision_free(const TVector &x0, const TVector &x1)
@@ -288,18 +278,6 @@ namespace polyfem
 				}
 			}
 			solution_changed_post(newX);
-		}
-
-		TVector force_inequality_constraint(const TVector &x0, const TVector &dx)
-		{
-			TVector newX(x0.size());
-			int cumulative = 0;
-			for (const auto &subproblem : subproblems)
-			{
-				newX.segment(cumulative, subproblem->optimization_dim()) = subproblem->force_inequality_constraint(x0.segment(cumulative, subproblem->optimization_dim()), dx.segment(cumulative, subproblem->optimization_dim()));
-				cumulative += subproblem->optimization_dim();
-			}
-			return newX;
 		}
 
 		int n_inequality_constraints()

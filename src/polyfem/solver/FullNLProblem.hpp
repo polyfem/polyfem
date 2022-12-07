@@ -44,7 +44,6 @@ namespace polyfem::solver
 		int max_lagging_iterations() const;
 		bool uses_lagging() const;
 
-		TVector force_inequality_constraint(const TVector &x0, const TVector &dx) { return x0 + dx; }
 		int n_inequality_constraints() { return 0; }
 		double inequality_constraint_val(const TVector &x, const int index)
 		{
@@ -58,7 +57,7 @@ namespace polyfem::solver
 		}
 
 		bool remesh(TVector &x) { return false; }
-		void smoothing(const TVector &x, TVector &new_x) {}
+		bool smoothing(const TVector &x, TVector &new_x) { return false; }
 		void save_to_file(const TVector &x0) {}
 		std::vector<std::shared_ptr<Form>> &forms() { return forms_; }
 

@@ -678,6 +678,10 @@ namespace polyfem
 		disc_orders.resize(mesh->n_elements());
 		problem->init(*mesh);
 
+		periodic_dimensions = args["boundary_conditions"]["periodic_boundary"].get<std::vector<bool>>();
+		if (periodic_dimensions.size() != mesh->dimension())
+			periodic_dimensions.resize(mesh->dimension(), false);
+
 		logger().info("Building {} basis...", (iso_parametric() ? "isoparametric" : "not isoparametric"));
 		const bool has_polys = mesh->has_poly();
 
@@ -1069,7 +1073,6 @@ namespace polyfem
 		build_collision_mesh(boundary_nodes_pos, collision_mesh, n_bases, bases);
 		logger().info("Done!");
 
-		// incompatible with optimization, fix me!
 		{
 			igl::Timer timer2;
 			logger().debug("Building node mapping...");
@@ -1168,6 +1171,43 @@ namespace polyfem
 		std::sort(boundary_nodes.begin(), boundary_nodes.end());
 		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
+
+		if (boundary_nodes.size() == 0)
+		{
+			for (int d = 0; d < mesh->dimension(); d++)
+			{
+				if (periodic_dimensions[d])
+					boundary_nodes.push_back(d);
+			}
+		}
+
+		// build disp_offset
+		{
+			disp_offset.setZero(n_bases * mesh->dimension(), 1);
+			if (args["boundary_conditions"]["linear_displacement_offset"].size() > 0)
+			{
+				Eigen::MatrixXd disp_grad;
+				disp_grad.setZero(mesh->dimension(), mesh->dimension());
+				int i = 0;
+				for (const auto &row : args["boundary_conditions"]["linear_displacement_offset"])
+				{
+					int j = 0;
+					for (const auto &x : row)
+					{
+						disp_grad(i, j) = x;
+						j++;
+					}
+					i++;
+				}
+
+				logger().info("Underlying linear displacement field: {}", utils::flatten(disp_grad).transpose());
+
+				for (int i = 0; i < n_bases; i++)
+				{
+					disp_offset.block(i * mesh->dimension(), 0, mesh->dimension(), 1) = disp_grad * mesh_nodes->node_position(i).transpose();
+				}
+			}
+		}
 
 		const auto &curret_bases = geom_bases();
 		const int n_samples = 10;

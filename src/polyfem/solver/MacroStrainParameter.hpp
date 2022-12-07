@@ -2,35 +2,36 @@
 
 #include "Parameter.hpp"
 
+#include <polyfem/utils/MatrixUtils.hpp>
+
 namespace polyfem
 {
-	class DampingParameter : public Parameter
+	class MacroStrainParameter : public Parameter
 	{
 	public:
-		DampingParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args);
+		MacroStrainParameter(std::vector<std::shared_ptr<State>> &states_ptr, const json &args);
 
 		void update() override
 		{
 		}
 
-		Eigen::VectorXd initial_guess() const override
-		{
-			Eigen::VectorXd x(2);
-			x << get_state().assembler.damping_params()[0], get_state().assembler.damping_params()[1];
-			return x;
-		}
-
+		Eigen::VectorXd initial_guess() const override;
+		
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 
 		bool remesh(Eigen::VectorXd &x) override { return false; }
+
+		Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const override;
 
 		bool pre_solve(const Eigen::VectorXd &newX) override;
 
 		Eigen::VectorXd get_lower_bound(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd get_upper_bound(const Eigen::VectorXd &x) const override;
 
-	private:
-		double min_phi, min_psi;
-		double max_phi, max_psi;
+    private:
+        int dim;
+		std::vector<int> inactive_entries;
+
+		Eigen::VectorXd initial_disp_grad;
 	};
 } // namespace polyfem

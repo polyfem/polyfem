@@ -24,12 +24,10 @@ namespace polyfem
 
 		full_dim_ = states_ptr_[0]->boundary_nodes.size() * time_steps;
 
-		control_params = args;
-
-		if (control_params.contains("surface_selection"))
+		if (args.contains("surface_selection"))
 		{
 			int count = 0;
-			for (int i : control_params["surface_selection"])
+			for (int i : args["surface_selection"])
 			{
 				boundary_id_to_reduced_param[i] = count;
 				count++;
@@ -40,7 +38,11 @@ namespace polyfem
 		for (auto dirichlet : states_ptr_[0]->args["boundary_conditions"]["dirichlet_boundary"])
 			for (int k = 0; k < dim; ++k)
 				for (int i = 0; i < time_steps; ++i)
+				{
+					if (boundary_id_to_reduced_param.count(dirichlet["id"].get<int>()) == 0)
+						continue;
 					starting_dirichlet(i * boundary_id_to_reduced_param.size() * dim + boundary_id_to_reduced_param[dirichlet["id"].get<int>()] * dim + k) = dirichlet["value"][k][i];
+				}
 
 		boundary_ids_list.resize(states_ptr_[0]->boundary_nodes.size());
 		for (auto it = states_ptr_[0]->local_boundary.begin(); it != states_ptr_[0]->local_boundary.end(); ++it)
@@ -58,9 +60,11 @@ namespace polyfem
 					for (size_t g = 0; g < bs.global().size(); ++g)
 					{
 						const int base_index = bs.global()[g].index * dim;
+						int boundary_id = states_ptr_[0]->mesh->get_boundary_id(primitive_global_id);
+						if (boundary_id_to_reduced_param.count(boundary_id) == 0)
+							continue;
 						for (int d = 0; d < dim; ++d)
 						{
-							int boundary_id = states_ptr_[0]->mesh->get_boundary_id(primitive_global_id);
 							if (states_ptr_[0]->problem->is_dimension_dirichet(boundary_id, d))
 							{
 								auto result = std::find(states_ptr_[0]->boundary_nodes.begin(), states_ptr_[0]->boundary_nodes.end(), base_index + d);
@@ -75,12 +79,11 @@ namespace polyfem
 		}
 		assert(states_ptr_[0]->boundary_nodes.size() == boundary_ids_list.size());
 
-		smoothing_weight = smoothing_params.contains("weight") ? smoothing_params["weight"].get<double>() : 1.;
-
 		if (time_steps < 1)
 			logger().error("Set time_steps for control optimization, currently {}!", time_steps);
 
 		control_constraints_ = std::make_shared<ControlConstraints>(args, time_steps, states_ptr[0]->mesh->dimension(), boundary_ids_list, boundary_id_to_reduced_param);
+		optimization_dim_ = control_constraints_->get_optimization_dim();
 	}
 
 	bool ControlParameter::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)

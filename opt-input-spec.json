@@ -58,8 +58,7 @@
         "type": "object",
         "default": null,
         "optional": [
-            "nonlinear",
-            "contact"
+            "nonlinear"
         ],
         "doc": "TODO"
     },
@@ -225,25 +224,13 @@
         "doc": "When the energy is smaller than use_grad_norm_tol, line-search uses norm of gradient instead of energy"
     },
     {
-        "pointer": "/solver/contact",
-        "default": null,
-        "type": "object",
-        "optional": [
-            "enabled",
-            "CCD",
-            "barrier_stiffness",
-            "dhat"
-        ],
-        "doc": "Settings for optimization contact handling in the solver."
-    },
-    {
-        "pointer": "/solver/contact/enabled",
+        "pointer": "/parameters/*/contact/enabled",
         "default": false,
         "type": "bool",
-        "doc": "TODO"
+        "doc": "collision detection"
     },
     {
-        "pointer": "/solver/contact/CCD",
+        "pointer": "/parameters/*/contact/CCD",
         "default": null,
         "type": "object",
         "optional": [
@@ -254,7 +241,7 @@
         "doc": "CCD options"
     },
     {
-        "pointer": "/solver/contact/CCD/broad_phase",
+        "pointer": "/parameters/*/contact/CCD/broad_phase",
         "default": "hash_grid",
         "type": "string",
         "options": [
@@ -272,25 +259,19 @@
         "doc": "Broad phase collision-detection algorithm to use"
     },
     {
-        "pointer": "/solver/contact/CCD/tolerance",
+        "pointer": "/parameters/*/contact/CCD/tolerance",
         "default": 1e-06,
         "type": "float",
         "doc": "CCD tolerance"
     },
     {
-        "pointer": "/solver/contact/CCD/max_iterations",
+        "pointer": "/parameters/*/contact/CCD/max_iterations",
         "default": 1000000.0,
         "type": "float",
         "doc": "Maximum number of iterations for continuous collision detection"
     },
     {
-        "pointer": "/solver/contact/barrier_stiffness",
-        "type": "float",
-        "default": 0,
-        "doc": "The coefficient of clamped log-barrier function value when not adaptive"
-    },
-    {
-        "pointer": "/solver/contact/dhat",
+        "pointer": "/functionals/*/dhat",
         "type": "float",
         "default": 1e-3,
         "doc": "The support size of barrier function"
@@ -356,6 +337,12 @@
         "doc": "topology optimization filter parameters"
     },
     {
+        "pointer": "/parameters/*/fixed_entries",
+        "type": "list",
+        "default": [],
+        "doc": "fixed entries in optimization parameters"
+    },
+    {
         "pointer": "/parameters/*/initial",
         "type": "float",
         "default": 1,
@@ -383,7 +370,8 @@
             "shape",
             "graph",
             "topology",
-            "control"
+            "control",
+            "macro_strain"
         ],
         "doc": "TODO"
     },
@@ -410,17 +398,13 @@
         "required": [
             "type",
             "states",
-            "graph_path",
-            "graph_exe_path",
-            "symmetry_type",
-            "out_velocity_path"
+            "isosurface_inflator_prefix"
         ],
         "optional": [
             "max_change",
             "lower_bound",
             "upper_bound",
-            "initial",
-            "meshing_options"
+            "initial"
         ],
         "doc": "TODO"
     },
@@ -446,6 +430,7 @@
         "options": [
             "2D_doubly_periodic",
             "2D_cubic",
+            "2D_orthotropic",
             "doubly_periodic",
             "cubic"
         ],
@@ -477,9 +462,19 @@
             "remesh",
             "spline_specification",
             "dimensions",
-            "surface_selection"
+            "surface_selection",
+            "contact"
         ],
         "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/contact",
+        "type": "object",
+        "default": null,
+        "optional": [
+            "CCD",
+            "enabled"
+        ]
     },
     {
         "pointer": "/parameters/*/remesh",
@@ -549,7 +544,10 @@
             "tangent",
             "control_point",
             "sampling",
-            "knot"
+            "knot",
+            "control_point_grid",
+            "knot_u",
+            "knot_v"
         ],
         "doc": "TODO"
     },
@@ -592,6 +590,24 @@
     },
     {
         "pointer": "/parameters/*/spline_specification/*/knot",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/spline_specification/*/knot_u",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/spline_specification/*/knot_v",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/spline_specification/*/control_point_grid",
         "type": "list",
         "default": [],
         "doc": "TODO"
@@ -660,7 +676,23 @@
         ],
         "optional": [
             "phi_bound",
-            "psi_bound"
+            "psi_bound",
+            "max_change"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*",
+        "type": "object",
+        "type_name": "macro_strain",
+        "required": [
+            "type",
+            "states"
+        ],
+        "optional": [
+            "max_change",
+            "initial",
+            "fixed_entries"
         ],
         "doc": "TODO"
     },
@@ -673,7 +705,8 @@
             "states"
         ],
         "optional": [
-            "bound"
+            "bound",
+            "max_change"
         ],
         "doc": "TODO"
     },
@@ -755,9 +788,11 @@
             "E_nu",
             "E_nu_log",
             "constant_E_nu",
+            "constant_E_nu_log",
             "lambda_mu",
             "lambda_mu_log",
-            "constant_lambda_mu"
+            "constant_lambda_mu",
+            "constant_lambda_mu_log"
         ],
         "doc": "TODO"
     },
@@ -788,11 +823,13 @@
             "height",
             "position",
             "stress",
+            "homogenized_stress",
             "compliance",
             "strain_norm",
             "boundary_smoothing",
             "deformed_boundary_smoothing",
             "material_bound",
+            "collision_barrier",
             "control_smoothing",
             "material_smoothing",
             "volume_constraint",
@@ -840,6 +877,7 @@
             "tangents",
             "delta",
             "transient_integral_type",
+            "steps",
             "weight",
             "volume_selection",
             "surface_selection",
@@ -902,8 +940,14 @@
             "simpson",
             "uniform",
             "final",
-            "step_10"
+            "steps"
         ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/steps",
+        "type": "list",
+        "default": [],
         "doc": "TODO"
     },
     {
@@ -980,6 +1024,12 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/functionals/*/macro_strain_parameter",
+        "type": "int",
+        "default": -1,
+        "doc": "TODO"
+    },
+    {
         "pointer": "/functionals/*/control_parameter",
         "type": "int",
         "default": -1,
@@ -1014,6 +1064,7 @@
             "shape_parameter",
             "weight",
             "transient_integral_type",
+            "steps",
             "volume_selection"
         ],
         "doc": "TODO"
@@ -1032,6 +1083,27 @@
             "volume_selection",
             "power",
             "weight",
+            "steps",
+            "transient_integral_type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "homogenized_stress",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "shape_parameter",
+            "material_parameter",
+            "macro_strain_parameter",
+            "volume_selection",
+            "power",
+            "weight",
+            "steps",
             "transient_integral_type"
         ],
         "doc": "TODO"
@@ -1078,6 +1150,7 @@
             "material_parameter",
             "volume_selection",
             "weight",
+            "steps",
             "transient_integral_type"
         ],
         "doc": "TODO"
@@ -1094,6 +1167,7 @@
             "shape_parameter",
             "volume_selection",
             "weight",
+            "steps",
             "transient_integral_type"
         ],
         "doc": "TODO"
@@ -1110,6 +1184,7 @@
             "shape_parameter",
             "volume_selection",
             "weight",
+            "steps",
             "transient_integral_type"
         ],
         "doc": "TODO"
@@ -1212,6 +1287,17 @@
         ],
         "optional": [
             "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "collision_barrier",
+        "optional": [
+            "shape_parameter",
+            "weight",
+            "dhat"
         ],
         "doc": "TODO"
     },

@@ -1334,6 +1334,7 @@
         "type": "object",
         "optional": [
             "solver",
+            "adjoint_solver",
             "precond",
             "Eigen::LeastSquaresConjugateGradient",
             "Eigen::DGMRES",
@@ -1359,6 +1360,32 @@
             "Eigen::UmfPackLU",
             "Eigen::SuperLU",
             "Eigen::PardisoLDLT",
+            "Eigen::PardisoLLT",
+            "Eigen::PardisoLU",
+            "Pardiso",
+            "Hypre",
+            "AMGCL",
+            "Eigen::LeastSquaresConjugateGradient",
+            "Eigen::DGMRES",
+            "Eigen::ConjugateGradient",
+            "Eigen::BiCGSTAB",
+            "Eigen::GMRES",
+            "Eigen::MINRES"
+        ]
+    },
+    {
+        "pointer": "/solver/linear/adjoint_solver",
+        "default": "",
+        "type": "string",
+        "doc": "Adjoint linear solver type.",
+        "options": [
+            "Eigen::SimplicialLDLT",
+            "Eigen::SparseLU",
+            "Eigen::CholmodSupernodalLLT",
+            "Eigen::UmfPackLU",
+            "Eigen::SuperLU",
+            "Eigen::PardisoLDLT",
+            "Eigen::PardisoLLT",
             "Eigen::PardisoLU",
             "Pardiso",
             "Hypre",
@@ -1962,6 +1989,7 @@
         "type": "string",
         "options": [
             "newton",
+            "GradientDescent",
             "lbfgs"
         ],
         "doc": "Nonlinear solver type"
@@ -2764,9 +2792,26 @@
             "periodic_boundary",
             "neumann_boundary",
             "pressure_boundary",
-            "obstacle_displacements"
+            "obstacle_displacements",
+            "linear_displacement_offset"
         ],
         "doc": "The settings for boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/linear_displacement_offset",
+        "type": "list",
+        "default": [],
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/linear_displacement_offset/*",
+        "type": "list",
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/linear_displacement_offset/*/*",
+        "type": "float",
+        "doc": ""
     },
     {
         "pointer": "/boundary_conditions/rhs",

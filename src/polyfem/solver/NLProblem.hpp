@@ -50,15 +50,17 @@ namespace polyfem::solver
 		void use_reduced_size() { current_size_ = CurrentSize::REDUCED_SIZE; }
 
 		virtual TVector full_to_reduced(const TVector &full) const;
+		virtual TVector full_to_reduced_grad(const TVector &full) const;
 		virtual TVector reduced_to_full(const TVector &reduced) const;
 
 		void set_apply_DBC(const TVector &x, const bool val);
-		void set_linear_field(const TVector &field) { linear_field_ = field; }
+		void set_disp_offset(const TVector &disp_offset) { disp_offset_ = disp_offset; }
+		TVector get_disp_offset() const { return disp_offset_; }
 
 	protected:
 		const std::vector<int> boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> &local_boundary_;
-		Eigen::VectorXd linear_field_;
+		Eigen::VectorXd disp_offset_;
 
 		const int n_boundary_samples_;
 		const assembler::RhsAssembler &rhs_assembler_;
@@ -77,6 +79,8 @@ namespace polyfem::solver
 		CurrentSize current_size_; ///< Current size of the problem (either full or reduced size)
 		int current_size() const
 		{
+			if (current_size_ == CurrentSize::FULL_SIZE && state_.has_periodic_bc() && !state_.args["space"]["advanced"]["periodic_basis"])
+				log_and_throw_error("Periodic BC doesn't support AL solve!");
 			return current_size_ == CurrentSize::FULL_SIZE ? full_size() : reduced_size();
 		}
 
@@ -85,6 +89,9 @@ namespace polyfem::solver
 
 		template <class ReducedMat, class FullMat>
 		void reduced_to_full_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full) const;
+
+		template <class FullMat, class ReducedMat>
+		void full_to_reduced_aux_grad(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
 
 		void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
 	};

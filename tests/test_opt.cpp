@@ -56,8 +56,15 @@ namespace
 		double starting_energy = energies[0];
 		double optimized_energy = energies[energies.size() - 1];
 
-		std::cout << "initial " << energies[0] << std::endl;
-		std::cout << "final " << energies[energies.size() - 1] << std::endl;
+		for (int i = 0; i < energies.size(); ++i)
+		{
+			if (i == 0)
+				std::cout << "initial " << energies[i] << std::endl;
+			else if (i == energies.size() - 1)
+				std::cout << "final " << energies[i] << std::endl;
+			else
+				std::cout << "step " << i << " " << energies[i] << std::endl;
+		}
 
 		return energies;
 	}
@@ -147,49 +154,31 @@ namespace
 
 #if defined(__linux__)
 
-TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
-{
-	run_trajectory_opt("shape-trajectory-surface-opt");
-	auto energies = read_energy("shape-trajectory-surface-opt");
-
-	REQUIRE(energies[0] == Approx(6.1658e-05).epsilon(1e-3));
-	REQUIRE(energies[energies.size() - 1] == Approx(3.6193e-05).epsilon(1e-3));
-}
-
-TEST_CASE("shape-stress-opt", "[optimization]")
-{
-	const std::string path = POLYFEM_DATA_DIR + std::string("/../optimizations/shape-stress-opt");
-	json in_args;
-	load_json(path + "/run.json", in_args);
-
-	auto state = create_state(in_args);
-
-	std::shared_ptr<CompositeFunctional> func;
-	for (const auto &param : state->args["optimization"]["functionals"])
-	{
-		if (param["type"] == "stress")
-		{
-			func = CompositeFunctional::create("Stress");
-			func->set_power(param["power"]);
-			break;
-		}
-	}
-
-	CHECK_THROWS_WITH(single_optimization(*state, func), Catch::Matchers::Contains("Reached iteration limit"));
-
-	auto energies = read_energy("shape-stress-opt");
-
-	REQUIRE(energies[0] == Approx(12.0735).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(11.5482).epsilon(1e-4));
-}
-
 TEST_CASE("material-opt", "[optimization]")
 {
-	run_trajectory_opt("material-opt");
+	run_opt_new("material-opt");
 	auto energies = read_energy("material-opt");
 
-	REQUIRE(energies[0] == Approx(0.00143472).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(1.10657e-05).epsilon(1e-4));
+	REQUIRE(energies[0] == Approx(5.95421809553).epsilon(1e-3));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.00101793422213).epsilon(1e-3));
+}
+
+TEST_CASE("friction-opt", "[optimization]")
+{
+	run_opt_new("friction-opt");
+	auto energies = read_energy("friction-opt");
+
+	REQUIRE(energies[0] == Approx(0.000103767819516).epsilon(1e-1));
+	REQUIRE(energies[energies.size() - 1] == Approx(3.26161994783e-07).epsilon(1e-1));
+}
+
+TEST_CASE("damping-opt", "[optimization]")
+{
+	run_opt_new("damping-opt");
+	auto energies = read_energy("damping-opt");
+
+	REQUIRE(energies[0] == Approx(4.14517346014e-07).epsilon(1e-3));
+	REQUIRE(energies[energies.size() - 1] == Approx(2.12684299792e-09).epsilon(1e-3));
 }
 
 TEST_CASE("initial-opt", "[optimization]")
@@ -235,5 +224,14 @@ TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
 
 	REQUIRE(energies[0] == Approx(6.1658e-05).epsilon(1e-3));
 	REQUIRE(energies[energies.size() - 1] == Approx(3.6194e-05).epsilon(1e-3));
+}
+
+TEST_CASE("multiparameter-sdf-trajectory-surface-opt", "[optimization]")
+{
+	run_opt_new("multiparameter-sdf-trajectory-surface-opt");
+	auto energies = read_energy("multiparameter-sdf-trajectory-surface-opt");
+
+	REQUIRE(energies[0] == Approx(0.08577).epsilon(1e-3));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.0819).epsilon(1e-3));
 }
 #endif

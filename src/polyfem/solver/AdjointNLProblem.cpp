@@ -1,6 +1,8 @@
 #include "AdjointNLProblem.hpp"
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>
+#include <polyfem/io/OBJWriter.hpp>
+#include <igl/boundary_facets.h>
 
 namespace polyfem::solver
 {
@@ -49,17 +51,19 @@ namespace polyfem::solver
 		}
 	}
 
-	void AdjointNLProblem::smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x)
+	bool AdjointNLProblem::smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x)
 	{
 		int cumulative = 0;
+		bool flag = false;
 		for (const auto &p : parameters_)
 		{
 			Eigen::VectorXd tmp = new_x.segment(cumulative, p->optimization_dim());
-			p->smoothing(x.segment(cumulative, p->optimization_dim()), tmp);
+			flag |= p->smoothing(x.segment(cumulative, p->optimization_dim()), tmp);
 			assert(tmp.size() == p->optimization_dim());
 			new_x.segment(cumulative, p->optimization_dim()) = tmp;
 			cumulative += p->optimization_dim();
 		}
+		return flag;
 	}
 
 	bool AdjointNLProblem::remesh(Eigen::VectorXd &x)
@@ -90,18 +94,6 @@ namespace polyfem::solver
 		return is_valid;
 	}
 
-	bool AdjointNLProblem::is_intersection_free(const Eigen::VectorXd &x) const
-	{
-		int cumulative = 0;
-		bool is_valid = true;
-		for (const auto &p : parameters_)
-		{
-			is_valid &= p->is_intersection_free(x.segment(cumulative, p->optimization_dim()));
-			cumulative += p->optimization_dim();
-		}
-		return is_valid;
-	}
-
 	bool AdjointNLProblem::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
 		int cumulative = 0;
@@ -116,8 +108,14 @@ namespace polyfem::solver
 
 	double AdjointNLProblem::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		// TODO: this was a number multiplied to the descent direction to take either a larger or smaller step, so now it's better to be a vector of numbers?
-		return 1;
+		double step = 1;
+		int cumulative = 0;
+		for (const auto &p : parameters_)
+		{
+			step = std::min(step, p->max_step_size(x0.segment(cumulative, p->optimization_dim()), x1.segment(cumulative, p->optimization_dim())));
+			cumulative += p->optimization_dim();
+		}
+		return step;
 	}
 
 	void AdjointNLProblem::line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
@@ -160,30 +158,57 @@ namespace polyfem::solver
 			return;
 		for (const auto &state : all_states_)
 		{
+			bool save_vtu = false;
+			bool save_rest_mesh = false;
+			for (const auto p : parameters_)
+				if (p->contains_state(*state))
+				{
+					save_vtu = true;
+					if (p->name() == "shape")
+						save_rest_mesh = true;
+				}
+
 			std::string vis_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter));
-			logger().debug("Save to file {} ...", vis_mesh_path);
+			std::string rest_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.obj", id, iter));
 			id++;
+
+			if (!save_vtu)
+				continue;
+			logger().debug("Save final vtu to file {} ...", vis_mesh_path);
 
 			double tend = state->args.value("tend", 1.0);
 			double dt = 1;
 			if (!state->args["time"].is_null())
 				dt = state->args["time"]["dt"];
 
-			state->out_geom.export_data(
+			Eigen::MatrixXd sol;
+			if (state->args["time"].is_null())
+				sol = state->diff_cached[0].u;
+			else
+				sol = state->diff_cached[state->diff_cached.size() - 1].u;
+
+			state->out_geom.save_vtu(
+				vis_mesh_path,
 				*state,
-				state->diff_cached[0].u,
+				sol,
 				Eigen::MatrixXd::Zero(state->n_pressure_bases, 1),
-				!state->args["time"].is_null(),
 				tend, dt,
 				io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
-				vis_mesh_path,
-				"", // nodes_path,
-				"", // solution_path,
-				"", // stress_path,
-				"", // mises_path,
-				state->is_contact_enabled(), state->solution_frames);
+				state->is_contact_enabled(),
+				state->solution_frames);
 
-			// TODO: if shape opt, save rest meshes as well
+			if (!save_rest_mesh)
+				continue;
+			logger().debug("Save rest mesh to file {} ...", rest_mesh_path);
+
+			// If shape opt, save rest meshes as well
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			state->get_vf(V, F);
+			if (state->mesh->dimension() == 3)
+				F = igl::boundary_facets<Eigen::MatrixXi, Eigen::MatrixXi>(F);
+
+			io::OBJWriter::write(rest_mesh_path, V, F);
 		}
 	}
 
@@ -223,19 +248,6 @@ namespace polyfem::solver
 			cumulative += p->optimization_dim();
 		}
 		return max;
-	}
-
-	Eigen::VectorXd AdjointNLProblem::force_inequality_constraint(const Eigen::VectorXd &x0, const Eigen::VectorXd &dx)
-	{
-		Eigen::VectorXd newX;
-		newX.setZero(optimization_dim_);
-		int cumulative = 0;
-		for (const auto &p : parameters_)
-		{
-			newX.segment(cumulative, p->optimization_dim()) = p->force_inequality_constraint(x0.segment(cumulative, p->optimization_dim()), dx.segment(cumulative, p->optimization_dim()));
-			cumulative += p->optimization_dim();
-		}
-		return newX;
 	}
 
 	int AdjointNLProblem::n_inequality_constraints()
@@ -291,10 +303,15 @@ namespace polyfem::solver
 	{
 		// update to new parameter and check if the new parameter is valid to solve
 		bool solve = true;
+		int cumulative = 0;
 		for (const auto &p : parameters_)
 		{
-			solve &= p->pre_solve(newX);
+			solve &= p->pre_solve(newX.segment(cumulative, p->optimization_dim()));
+			cumulative += p->optimization_dim();
 		}
+
+		// std::cout << "newX" << std::endl;
+		// std::cout << newX << std::endl;
 
 		// solve PDE
 		if (solve)
@@ -302,9 +319,11 @@ namespace polyfem::solver
 			solve_pde();
 
 			// post actions after solving PDE
+			cumulative = 0;
 			for (const auto &p : parameters_)
 			{
-				p->post_solve(newX);
+				p->post_solve(newX.segment(cumulative, p->optimization_dim()));
+				cumulative += p->optimization_dim();
 			}
 
 			cur_x = newX;
@@ -321,6 +340,8 @@ namespace polyfem::solver
 				auto state = all_states_[i];
 				if (active_state_mask[i] || state->diff_cached.size() == 0)
 				{
+					if (state->diff_cached.size() == 1 && better_initial_guess)
+						state->pre_sol = state->diff_cached[0].u;
 					state->assemble_rhs();
 					state->assemble_stiffness_mat();
 					Eigen::MatrixXd sol, pressure; // solution is also cached in state
@@ -339,7 +360,7 @@ namespace polyfem::solver
 		values.setZero(obj_->n_objs());
 		for (int i = 0; i < obj_->n_objs(); i++)
 		{
-			values(i) = obj_->get_obj(i)->value();
+			values(i) = obj_->get_weight(i) * obj_->get_obj(i)->value();
 		}
 		return values;
 	}

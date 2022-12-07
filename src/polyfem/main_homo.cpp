@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 	CLI::App command_line{"polyfem"};
 
 	// Eigen::setNbThreads(1);
-	size_t max_threads = std::numeric_limits<size_t>::max();
+	size_t max_threads = 32;
 	command_line.add_option("--max_threads", max_threads, "Maximum number of threads");
 
 	std::string json_file = "";
@@ -135,46 +135,39 @@ int main(int argc, char **argv)
 	assert(micro_state);
 
 	const int dim = micro_state->mesh->dimension();
-	Eigen::MatrixXd F(dim, dim);
-	int i = 0;
-	for (auto &vec : state.args["def_grad"])
+	Eigen::MatrixXd F;
+	F.setZero(dim, dim);
+
+	Eigen::MatrixXd fluctuated, macro1, macro2;
+	macro1 = generate_linear_field(*micro_state, Eigen::MatrixXd::Zero(dim, dim));
+	for (int l = 0; l >= -40; l--)
 	{
-		int j = 0;
-		for (auto &val : vec)
-		{
-			F(i, j) = val;
-			j++;
-		}
-		i++;
-	}
+		F(0, 0) = 0;
+		F(1, 1) = l / 100.0;
 
-	Eigen::MatrixXd fluctuated;
-	for (int l = 200; l > 100; l--)
-	{
-		F(1, 1) = l / 200.0;
+		micro_state->args["output"]["paraview"]["file_name"] = "load_" + std::to_string(-l) + ".vtu";
 
-		micro_state->args["output"]["paraview"]["file_name"] = "load_" + std::to_string(l) + ".vtu";
-
-		{
-			Eigen::MatrixXd disp_grad = F - Eigen::MatrixXd::Identity(dim, dim);
-			Eigen::MatrixXd x;
-			micro_state->solve_homogenized_field(disp_grad, fluctuated, x);
-			fluctuated = x;
-		}
+		macro2 = generate_linear_field(*micro_state, F);
+		micro_state->solve_homogenized_field(F, fluctuated);
+		macro1 = macro2;
 
 		// effective energy = average energy over unit cell
-		double energy;
-		energy = micro_assembler.homogenize_energy(fluctuated);
+		double energy = micro_assembler.homogenize_energy(fluctuated);
 
 		// effective stress = average stress over unit cell
 		Eigen::MatrixXd stress;
 		micro_assembler.homogenize_stress(fluctuated, stress);
 
+		// Eigen::MatrixXd def_grad = micro_assembler.homogenize_def_grad(fluctuated) + Eigen::MatrixXd::Identity(dim, dim);
+
+		std::cout << "disp grad " << utils::flatten(F).transpose() << "\n";
 		std::cout << "homogenized energy " << energy << "\n";
+		// std::cout << "homogenized def grad\n" << def_grad << "\n";
 		std::cout << "homogenized stress\n" << stress << "\n";
 
-		Eigen::MatrixXd pressure(micro_state->n_pressure_bases, 1);
-		micro_state->export_data(fluctuated, pressure);
+		micro_state->export_data(fluctuated, Eigen::MatrixXd());
+
+		fluctuated = fluctuated - macro2;
 	}
 
 	return EXIT_SUCCESS;

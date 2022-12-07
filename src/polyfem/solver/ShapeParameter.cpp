@@ -206,14 +206,12 @@ namespace polyfem
 		states_ptr_[0]->get_vf(V_rest, elements);
 
 		// contact
-		const auto &opt_contact_params = states_ptr_[0]->args["optimization"]["solver"]["contact"];
+		const auto &opt_contact_params = args["contact"];
 		has_collision = opt_contact_params["enabled"];
 		if (states_ptr_[0]->is_contact_enabled() && !has_collision)
 			logger().warn("Problem has collision, but collision detection in shape optimization is disabled!");
 		if (has_collision)
 		{
-			_dhat = opt_contact_params["dhat"];
-			_prev_distance = -1;
 			_broad_phase_method = opt_contact_params["CCD"]["broad_phase"];
 			_ccd_tolerance = opt_contact_params["CCD"]["tolerance"];
 			_ccd_max_iterations = opt_contact_params["CCD"]["max_iterations"];
@@ -265,35 +263,6 @@ namespace polyfem
 		return dreduced;
 	}
 
-	void ShapeParameter::update_constraint_set(const Eigen::MatrixXd &displaced_surface)
-	{
-		// Store the previous value used to compute the constraint set to avoid
-		// duplicate computation.
-		static Eigen::MatrixXd cached_displaced_surface;
-		if (cached_displaced_surface.size() == displaced_surface.size()
-			&& cached_displaced_surface == displaced_surface)
-			return;
-
-		if (_use_cached_candidates)
-			_constraint_set.build(
-				_candidates, collision_mesh, displaced_surface, _dhat);
-		else
-			_constraint_set.build(
-				collision_mesh, displaced_surface, _dhat, /*dmin=*/0, _broad_phase_method);
-		cached_displaced_surface = displaced_surface;
-	}
-
-	bool ShapeParameter::is_intersection_free(const Eigen::VectorXd &x)
-	{
-		if (!has_collision)
-			return true;
-
-		Eigen::MatrixXd V;
-		shape_constraints_->reduced_to_full(x, V_rest, V);
-
-		return !ipc::has_intersections(collision_mesh, collision_mesh.vertices(V));
-	}
-
 	bool ShapeParameter::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
 		if (!has_collision)
@@ -305,35 +274,24 @@ namespace polyfem
 
 		// Skip CCD if the displacement is zero.
 		if ((V1 - V0).lpNorm<Eigen::Infinity>() == 0.0)
-		{
-			// Assumes initially intersection-free
-			assert(is_intersection_free(x0));
 			return true;
-		}
 
 		bool is_valid;
-		if (_use_cached_candidates)
-			is_valid = ipc::is_step_collision_free(
-				_candidates, collision_mesh,
-				collision_mesh.vertices(V0),
-				collision_mesh.vertices(V1),
-				_ccd_tolerance, _ccd_max_iterations);
-		else
-			is_valid = ipc::is_step_collision_free(
-				collision_mesh,
-				collision_mesh.vertices(V0),
-				collision_mesh.vertices(V1),
-				ipc::BroadPhaseMethod::HASH_GRID, _ccd_tolerance, _ccd_max_iterations);
+		is_valid = ipc::is_step_collision_free(
+			collision_mesh,
+			collision_mesh.vertices(V0),
+			collision_mesh.vertices(V1),
+			_broad_phase_method, _ccd_tolerance, _ccd_max_iterations);
 
 		return is_valid;
 	}
 
-	void ShapeParameter::smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x)
+	bool ShapeParameter::smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x)
 	{
 		if (slim_params["skip"])
 		{
 			new_x = x;
-			return;
+			return false;
 		}
 
 		Eigen::MatrixXd V, new_V;
@@ -361,6 +319,8 @@ namespace polyfem
 		V_rest = new_V;
 		shape_constraints_->full_to_reduced(new_V, new_x);
 		pre_solve(new_x);
+
+		return true;
 	}
 
 	bool ShapeParameter::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
@@ -375,9 +335,6 @@ namespace polyfem
 
 	double ShapeParameter::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
-		if (!has_collision)
-			return 1;
-
 		Eigen::MatrixXd V0, V1;
 		shape_constraints_->reduced_to_full(x0, V_rest, V0);
 		shape_constraints_->reduced_to_full(x1, V_rest, V1);
@@ -387,19 +344,17 @@ namespace polyfem
 		while (is_flipped(V0 + max_step * (V1 - V0), elements))
 			max_step /= 2.;
 
+		if (!has_collision)
+			return max_step;
+
 		// Extract surface only
 		V0 = collision_mesh.vertices(V0);
 		V1 = collision_mesh.vertices(V1);
 
 		auto Vmid = V0 + max_step * (V1 - V0);
-		if (_use_cached_candidates)
-			max_step *= ipc::compute_collision_free_stepsize(
-				_candidates, collision_mesh, V0, Vmid,
-				_ccd_tolerance, _ccd_max_iterations);
-		else
-			max_step *= ipc::compute_collision_free_stepsize(
-				collision_mesh, V0, Vmid,
-				_broad_phase_method, _ccd_tolerance, _ccd_max_iterations);
+		max_step *= ipc::compute_collision_free_stepsize(
+			collision_mesh, V0, Vmid,
+			_broad_phase_method, _ccd_tolerance, _ccd_max_iterations);
 		// polyfem::logger().trace("best step {}", max_step);
 
 		return max_step;
@@ -407,45 +362,15 @@ namespace polyfem
 
 	void ShapeParameter::line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
-		if (!has_collision)
-			return;
-
-		Eigen::MatrixXd V0, V1;
-		shape_constraints_->reduced_to_full(x0, V_rest, V0);
-		shape_constraints_->reduced_to_full(x1, V_rest, V1);
-
-		ipc::construct_collision_candidates(
-			collision_mesh,
-			collision_mesh.vertices(V0),
-			collision_mesh.vertices(V1),
-			_candidates,
-			/*inflation_radius=*/_dhat / 1.99, // divide by 1.99 instead of 2 to be conservative
-			_broad_phase_method);
-
-		_use_cached_candidates = true;
 	}
 
 	void ShapeParameter::line_search_end()
 	{
-		_candidates.clear();
-		_use_cached_candidates = false;
 	}
 
 	void ShapeParameter::post_step(const int iter_num, const Eigen::VectorXd &x0)
 	{
 		iter++;
-
-		if (has_collision)
-		{
-			Eigen::MatrixXd V;
-			shape_constraints_->reduced_to_full(x0, V_rest, V);
-			Eigen::MatrixXd displaced_surface = states_ptr_[0]->collision_mesh.vertices(V);
-
-			const double dist_sqr = ipc::compute_minimum_distance(collision_mesh, displaced_surface, _constraint_set);
-			polyfem::logger().trace("min_dist {}", sqrt(dist_sqr));
-
-			_prev_distance = dist_sqr;
-		}
 	}
 
 	bool ShapeParameter::pre_solve(const Eigen::VectorXd &newX)
@@ -469,12 +394,6 @@ namespace polyfem
 
 	void ShapeParameter::post_solve(const Eigen::VectorXd &newX)
 	{
-		if (!has_collision || mesh_flipped)
-			return;
-
-		Eigen::MatrixXd V;
-		shape_constraints_->reduced_to_full(newX, V_rest, V);
-		update_constraint_set(collision_mesh.vertices(V));
 	}
 
 	bool ShapeParameter::remesh(Eigen::VectorXd &x)
@@ -813,7 +732,7 @@ namespace polyfem
 		{
 			for (int i : shape_params["volume_selection"])
 				optimize_body_ids.insert(i);
-			
+
 			logger().debug("Optimize shape based on volume selection...");
 
 			for (int e = 0; e < gbases.size(); e++)
@@ -829,7 +748,7 @@ namespace polyfem
 		{
 			for (int i : shape_params["surface_selection"])
 				optimize_boundary_ids.insert(i);
-			
+
 			logger().debug("Optimize shape based on surface selection...");
 
 			for (const auto &lb : get_state().total_local_boundary)

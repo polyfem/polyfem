@@ -50,6 +50,7 @@ namespace polyfem
 	double convert_to_lambda(const bool is_volume, const double E, const double nu);
 	double convert_to_mu(const double E, const double nu);
 	Eigen::Matrix2d d_lambda_mu_d_E_nu(const bool is_volume, const double E, const double nu);
+	Eigen::Matrix2d d_E_nu_d_lambda_mu(const bool is_volume, const double lambda, const double mu);
 	double convert_to_E(const bool is_volume, const double lambda, const double mu);
 	double convert_to_nu(const bool is_volume, const double lambda, const double mu);
 

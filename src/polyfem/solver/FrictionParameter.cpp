@@ -6,23 +6,24 @@ namespace polyfem
 	{
 		parameter_name_ = "friction";
 
+		full_dim_ = 1;
 		optimization_dim_ = 1;
+
+		max_change_ = args["max_change"];
 
 		for (auto state : states_ptr_)
 			if (!state->problem->is_time_dependent())
 				log_and_throw_error("Friction parameter optimization is only supported in transient simulations!");
 
-		material_params = args;
-
-		if (material_params["bound"].get<std::vector<double>>().size() == 0)
+		if (args["bound"].get<std::vector<double>>().size() == 0)
 		{
 			min_fric = 0.0;
 			max_fric = std::numeric_limits<double>::max();
 		}
 		else
 		{
-			min_fric = material_params["bound"][0];
-			max_fric = material_params["bound"][1];
+			min_fric = args["bound"][0];
+			max_fric = args["bound"][1];
 		}
 	}
 
@@ -45,6 +46,20 @@ namespace polyfem
 		for (auto state : states_ptr_)
 			state->args["contact"]["friction_coefficient"] = newX(0);
 		return true;
+	}
+
+	Eigen::VectorXd FrictionParameter::get_lower_bound(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd min(1);
+		min(0) = min_fric;
+		return min;
+	}
+
+	Eigen::VectorXd FrictionParameter::get_upper_bound(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd max(1);
+		max(0) = max_fric;
+		return max;
 	}
 
 } // namespace polyfem

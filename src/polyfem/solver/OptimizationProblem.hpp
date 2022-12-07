@@ -45,8 +45,7 @@ namespace polyfem
 		virtual double value(const TVector &x, const bool only_elastic) { return value(x); }
 		virtual void gradient(const TVector &x, TVector &gradv, const bool only_elastic) { gradient(x, gradv); }
 
-		virtual void smoothing(const TVector &x, TVector &new_x) {}
-		virtual bool is_intersection_free(const TVector &x) { return true; }
+		virtual bool smoothing(const TVector &x, TVector &new_x) { return false; }
 
 		virtual void save_to_file(const TVector &x0) final;
 
@@ -87,8 +86,6 @@ namespace polyfem
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) = 0;
 
 		virtual bool remesh(TVector &x) = 0;
-
-		virtual TVector force_inequality_constraint(const TVector &x0, const TVector &dx) { return x0 + dx; }
 
 		virtual double max_step_size(const TVector &x0, const TVector &x1) { return 1; }
 		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; }

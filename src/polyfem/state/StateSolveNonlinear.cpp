@@ -321,6 +321,9 @@ namespace polyfem
 			local_boundary,
 			n_boundary_samples(),
 			*solve_data.rhs_assembler, *this, t, forms);
+		
+		if (disp_offset.rows() == ndof && disp_offset.cols() == 1)
+			solve_data.nl_problem->set_disp_offset(disp_offset);
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize time integrator

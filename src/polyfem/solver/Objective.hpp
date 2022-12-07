@@ -2,6 +2,9 @@
 
 #include "AdjointForm.hpp"
 
+#include <polyfem/solver/forms/ContactForm.hpp>
+
+#include <shared_mutex>
 #include <array>
 
 namespace polyfem::solver
@@ -57,6 +60,7 @@ namespace polyfem::solver
 	{
 	public:
 		SpatialIntegralObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args);
+		SpatialIntegralObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> macro_strain_param, const json &args);
 		virtual ~SpatialIntegralObjective() = default;
 
 		double value() override;
@@ -69,6 +73,7 @@ namespace polyfem::solver
 	protected:
 		const State &state_;
 		std::shared_ptr<const Parameter> shape_param_;
+		std::shared_ptr<const Parameter> macro_strain_param_;
 		AdjointForm::SpatialIntegralType spatial_integral_type_;
 		std::set<int> interested_ids_;
 	};
@@ -176,11 +181,11 @@ namespace polyfem::solver
 		Eigen::VectorXd weights_;
 	};
 
-	class VolumePaneltyObjective : public Objective
+	class VolumePenaltyObjective : public Objective
 	{
 	public:
-		VolumePaneltyObjective(const std::shared_ptr<const Parameter> shape_param, const json &args);
-		~VolumePaneltyObjective() = default;
+		VolumePenaltyObjective(const std::shared_ptr<const Parameter> shape_param, const json &args);
+		~VolumePenaltyObjective() = default;
 
 		double value() override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
@@ -431,7 +436,7 @@ namespace polyfem::solver
 		std::shared_ptr<const Parameter> elastic_param_;
 
 		const bool is_volume;
-		
+
 		double min_E = 0, max_E = 0;
 		double kappa_E = 0, dhat_E = 0;
 		double min_lambda = 0, max_lambda = 0;
@@ -440,5 +445,59 @@ namespace polyfem::solver
 		double kappa_mu = 0, dhat_mu = 0;
 		double min_nu = 0, max_nu = 0;
 		double kappa_nu = 0, dhat_nu = 0;
+	};
+
+	class HomogenizedStressObjective : public SpatialIntegralObjective
+	{
+	public:
+		HomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> macro_strain_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args);
+		~HomogenizedStressObjective() = default;
+
+		double value() override;
+
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const State &state) override;
+		IntegrableFunctional get_integral_functional() override;
+
+	protected:
+		std::vector<int> id;
+		std::string formulation_;
+
+		std::shared_ptr<const Parameter> elastic_param_; // stress depends on elastic param
+	};
+
+	class CompositeHomogenizedStressObjective : public Objective
+	{
+	public:
+		CompositeHomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> macro_strain_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args);
+		~CompositeHomogenizedStressObjective() = default;
+
+		double value() override;
+		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+
+	protected:
+		std::array<std::shared_ptr<HomogenizedStressObjective>, 4> js;
+	};
+
+	class CollisionBarrierObjective : public Objective
+	{
+	public:
+		CollisionBarrierObjective(const std::shared_ptr<const Parameter> shape_param, const json &args);
+		~CollisionBarrierObjective() = default;
+
+		double value() override;
+		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+	
+	protected:
+		std::shared_ptr<const Parameter> shape_param_;
+
+		ipc::CollisionMesh collision_mesh_;
+		ipc::Constraints constraint_set;
+		void build_constraint_set(const Eigen::MatrixXd &displaced_surface);
+
+		double dhat;
+		ipc::BroadPhaseMethod broad_phase_method;
 	};
 } // namespace polyfem::solver

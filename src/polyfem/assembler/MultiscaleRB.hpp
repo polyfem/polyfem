@@ -44,12 +44,12 @@ namespace polyfem
 			void sample_def_grads(const Eigen::VectorXd &sample_det, const Eigen::VectorXd &sample_amp, const int n_sample_dir, std::vector<Eigen::MatrixXd> &def_grads) const;
 			void create_reduced_basis(const std::vector<Eigen::MatrixXd> &def_grads);
 			void projection(const Eigen::MatrixXd &F, Eigen::MatrixXd &x) const;
-			
+
 			void homogenization(const Eigen::MatrixXd &def_grad, double &energy) const override;
 			void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress) const override;
-			void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const;
+			void homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const override;
 
-			void homogenize_stiffness(const Eigen::MatrixXd &x, Eigen::MatrixXd &stiffness) const;
+			void homogenize_stiffness(const Eigen::MatrixXd &x, Eigen::MatrixXd &stiffness) const override;
 
 			std::string name() const override { return "MultiscaleRB"; }
 
@@ -112,11 +112,9 @@ namespace polyfem
 			void line_search_begin(const TVector &x0, const TVector &x1) {}
 			void line_search_end() {}
 			void post_step(const int iter_num, const TVector &x) {}
-			void smoothing(const TVector &x, TVector &new_x) {}
-			bool is_intersection_free(const TVector &x) { return true; }
+			bool smoothing(const TVector &x, TVector &new_x) { return false; }
 			bool stop(const TVector &x) { return false; }
 			bool remesh(TVector &x) { return false; }
-			TVector force_inequality_constraint(const TVector &x0, const TVector &dx) { return x0 + dx; }
 			double max_step_size(const TVector &x0, const TVector &x1) { return 1; }
 			bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; }
 			int n_inequality_constraints() { return 0; }

@@ -113,24 +113,6 @@ namespace polyfem
 		Eigen::MatrixXd sol, pressure;
 		state.solve_problem(sol, pressure);
 
-		if (utils::StringUtils::startswith(j->get_functional_name(), "Center"))
-		{
-			// CenterTrajectoryFunctional f;
-			// f.set_interested_ids(j->get_interested_body_ids(), j->get_interested_boundary_ids());
-			// std::vector<Eigen::VectorXd> barycenters;
-			// f.get_barycenter_series(state, barycenters);
-			// print_centers(barycenters);
-		}
-		else if (j->get_functional_name() == "NodeTrajectory")
-		{
-			const auto &f = *dynamic_cast<NodeTrajectoryFunctional *>(j.get());
-			Eigen::MatrixXd V;
-			Eigen::MatrixXi F;
-			state.get_vf(V, F, false);
-			V += utils::unflatten(sol, state.mesh->dimension());
-			print_markers(V, f.get_active_vertex_mask());
-		}
-
 		state.output_dir = output_dir;
 		state.set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
 
