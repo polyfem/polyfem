@@ -186,9 +186,9 @@ namespace polyfem
 					if (this->cur_iter >= this->max_step_size_iter || step_size <= this->min_step_size)
 					{
 						logger().warn(
-							"Line search failed to find descent step (f(x)={:g} f(x+αΔx)={:g} α_CCD={:g} α={:g}, ||Δx||={:g} is_step_valid={} iter={:d})",
+							"Line search failed to find descent step (f(x)={:g} f(x+αΔx)={:g} α_CCD={:g} α={:g}, ||Δx||={:g} is_step_valid={} use_grad_norm={} iter={:d})",
 							old_energy, cur_energy, starting_step_size, step_size, delta_x.norm(),
-							is_step_valid ? "true" : "false", this->cur_iter);
+							is_step_valid, use_grad_norm, this->cur_iter);
 						objFunc.line_search_end();
 						return std::nan("");
 					}

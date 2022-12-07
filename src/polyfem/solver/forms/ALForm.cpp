@@ -81,7 +81,7 @@ namespace polyfem::solver
 		// ∑ -⎷ mₖ λₖᵀ (xₖ - x̂ₖ) = -λᵀ M (x - x̂)
 		// ᵏ
 
-		logger().trace("AL_penalty={}", sqrt(AL_penalty));
+		// logger().trace("AL_penalty={}", sqrt(AL_penalty));
 
 		return AL_penalty;
 	}

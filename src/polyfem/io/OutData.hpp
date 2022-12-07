@@ -91,7 +91,7 @@ namespace polyfem::io
 			Eigen::MatrixXd &node_positions,
 			Eigen::MatrixXi &boundary_edges,
 			Eigen::MatrixXi &boundary_triangles,
-			Eigen::SparseMatrix<double> &displacement_map);
+			std::vector<Eigen::Triplet<double>> &displacement_map_entries);
 
 		/// @brief unitalize the ref element sampler
 		/// @param[in] mesh mesh

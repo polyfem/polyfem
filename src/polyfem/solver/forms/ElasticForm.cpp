@@ -45,7 +45,7 @@ namespace polyfem::solver
 
 	void ElasticForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
-		POLYFEM_SCOPED_TIMER("\telastic hessian");
+		POLYFEM_SCOPED_TIMER("elastic hessian");
 
 		hessian.resize(x.size(), x.size());
 

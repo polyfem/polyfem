@@ -24,7 +24,7 @@ namespace polyfem::solver
 			const double initial_al_weight,
 			const double scaling,
 			const int max_al_steps,
-			const std::function<void(const Eigen::VectorXd &)> &updated_barrier_stiffness);
+			const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness);
 
 		void solve(Problem &nl_problem, Eigen::MatrixXd &sol, bool force_al = false);
 
@@ -40,7 +40,7 @@ namespace polyfem::solver
 		const int max_al_steps;
 
 		// TODO: replace this with a member function
-		std::function<void(const Eigen::VectorXd &)> updated_barrier_stiffness;
+		std::function<void(const Eigen::VectorXd &)> update_barrier_stiffness;
 	};
 } // namespace polyfem::solver
 

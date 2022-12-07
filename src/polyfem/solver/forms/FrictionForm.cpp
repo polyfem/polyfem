@@ -54,7 +54,7 @@ namespace polyfem::solver
 
 	void FrictionForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
-		POLYFEM_SCOPED_TIMER("\t\tfriction hessian");
+		POLYFEM_SCOPED_TIMER("friction hessian");
 
 		assert(displaced_surface_prev_.rows() == collision_mesh_.num_vertices());
 		assert(displaced_surface_prev_.cols() == collision_mesh_.dim());

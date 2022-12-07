@@ -121,7 +121,7 @@ namespace polyfem
 				solve_data.nl_problem->update_quantities(t0 + (t + 1) * dt, sol);
 
 				solve_data.update_dt();
-				solve_data.updated_barrier_stiffness(sol);
+				solve_data.update_barrier_stiffness(sol);
 			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
@@ -257,7 +257,7 @@ namespace polyfem
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_steps"],
 			[&](const Eigen::VectorXd &x) {
-				this->solve_data.updated_barrier_stiffness(sol);
+				this->solve_data.update_barrier_stiffness(sol);
 			});
 
 		al_solver.post_subsolve = [&](const double al_weight) {
@@ -314,7 +314,7 @@ namespace polyfem
 			// Solve the problem with the updated lagging
 			logger().info("Lagging iteration {:d}:", lag_i + 1);
 			nl_problem.init(sol);
-			solve_data.updated_barrier_stiffness(sol);
+			solve_data.update_barrier_stiffness(sol);
 			nl_solver->minimize(nl_problem, tmp_sol);
 			sol = nl_problem.reduced_to_full(tmp_sol);
 

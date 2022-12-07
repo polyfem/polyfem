@@ -985,10 +985,9 @@ namespace polyfem
 	{
 		Eigen::MatrixXd node_positions;
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
-		Eigen::SparseMatrix<double> displacement_map;
-		io::OutGeometryData::extract_boundary_mesh(
-			*mesh, n_bases, bases, total_local_boundary,
-			node_positions, boundary_edges, boundary_triangles, displacement_map);
+		std::vector<Eigen::Triplet<double>> displacement_map_entries;
+		io::OutGeometryData::extract_boundary_mesh(*mesh, n_bases, bases, total_local_boundary,
+												   node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
 
 		Eigen::VectorXi codimensional_nodes;
 		if (obstacle.n_vertices() > 0)
@@ -998,6 +997,12 @@ namespace polyfem
 
 			if (obstacle.v().size())
 				node_positions.block(n_v, 0, obstacle.v().rows(), obstacle.v().cols()) = obstacle.v();
+
+			if (!displacement_map_entries.empty())
+			{
+				for (int k = n_v; k < n_bases; ++k)
+					displacement_map_entries.emplace_back(k, k, 1);
+			}
 
 			if (obstacle.codim_v().size())
 			{
@@ -1024,7 +1029,18 @@ namespace polyfem
 			is_on_surface[codimensional_nodes[i]] = true;
 		}
 
-		collision_mesh = ipc::CollisionMesh(is_on_surface, node_positions, boundary_edges, boundary_triangles, displacement_map);
+		Eigen::SparseMatrix<double> displacement_map;
+		if (!displacement_map_entries.empty())
+		{
+			displacement_map.resize(node_positions.rows(), n_bases);
+			displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
+		}
+
+		collision_mesh = ipc::CollisionMesh(is_on_surface,
+											node_positions,
+											boundary_edges,
+											boundary_triangles,
+											displacement_map);
 
 		collision_mesh.can_collide = [&](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles
