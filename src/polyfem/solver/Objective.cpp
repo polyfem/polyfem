@@ -74,7 +74,7 @@ namespace polyfem::solver
 		{
 			double y = x / dhat;
 			if (0 < y && y < 1)
-				return -pow(y - 1, 2) * log(y) * dhat;
+				return -(y - 1) * (y - 1) * log(y) * dhat;
 			else if (x > dhat)
 				return 0;
 			else
@@ -1883,7 +1883,7 @@ namespace polyfem::solver
 			}
 		}
 
-		return val;
+		return val / lambdas.size();
 	}
 
 	Eigen::MatrixXd MaterialBoundObjective::compute_adjoint_rhs(const State &state)
@@ -1940,7 +1940,7 @@ namespace polyfem::solver
 			}
 		}
 
-		return grad;
+		return grad / lambdas.size();
 	}
 
 } // namespace polyfem::solver
