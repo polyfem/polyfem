@@ -678,6 +678,10 @@ namespace polyfem
 		disc_orders.resize(mesh->n_elements());
 		problem->init(*mesh);
 
+		periodic_dimensions = args["boundary_conditions"]["periodic_boundary"].get<std::vector<bool>>();
+		if (periodic_dimensions.size() != mesh->dimension())
+			periodic_dimensions.resize(mesh->dimension(), false);
+
 		logger().info("Building {} basis...", (iso_parametric() ? "isoparametric" : "not isoparametric"));
 		const bool has_polys = mesh->has_poly();
 

@@ -252,8 +252,6 @@ namespace polyfem
 			args["contact"]["friction_coefficient"] = 0;
 		}
 
-		periodic_dimensions = args["boundary_conditions"]["periodic_boundary"].get<std::vector<bool>>();
-
 		if (!args.contains("preset_problem"))
 		{
 			if (assembler.is_scalar(formulation()))

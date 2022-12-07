@@ -21,6 +21,8 @@ namespace polyfem
 
 		bool remesh(Eigen::VectorXd &x) override { return false; }
 
+		Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const override;
+
 		bool pre_solve(const Eigen::VectorXd &newX) override;
 
 		Eigen::VectorXd get_lower_bound(const Eigen::VectorXd &x) const override;
@@ -28,6 +30,7 @@ namespace polyfem
 
     private:
         int dim;
+		std::vector<int> inactive_entries;
 
 		Eigen::VectorXd initial_disp_grad;
 	};

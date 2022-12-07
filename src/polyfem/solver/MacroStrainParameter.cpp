@@ -11,6 +11,7 @@ namespace polyfem
         optimization_dim_ = dim*dim;
 
         max_change_ = args["max_change"];
+        inactive_entries = args["fixed_entries"].get<std::vector<int>>();
 
         initial_disp_grad.setZero(dim * dim);
         if (args["initial"].is_array())
@@ -30,6 +31,14 @@ namespace polyfem
     Eigen::VectorXd MacroStrainParameter::initial_guess() const
     {
         return initial_disp_grad;
+    }
+
+    Eigen::VectorXd MacroStrainParameter::map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const
+    {
+        Eigen::VectorXd grad = full_grad;
+        for (int i : inactive_entries)
+            grad(i) = 0;
+        return grad;
     }
     
     bool MacroStrainParameter::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
