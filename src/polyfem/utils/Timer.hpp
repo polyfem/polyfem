@@ -1,6 +1,9 @@
 #pragma once
 
+// clang-format off
+#include <spdlog/fmt/bundled/color.h>
 #include <polyfem/utils/Logger.hpp>
+// clang-format on
 
 #include <igl/Timer.h>
 
@@ -64,9 +67,12 @@ namespace polyfem
 
 			inline void log_msg()
 			{
+				const static std::string log_fmt_text =
+					fmt::format("[{}] {{}} {{:.3g}}s", fmt::format(fmt::fg(fmt::terminal_color::magenta), "timing"));
+
 				if (!m_name.empty())
 				{
-					logger().trace("[timing] {} {:.3g}s", m_name, getElapsedTimeInSec());
+					logger().trace(log_fmt_text, m_name, getElapsedTimeInSec());
 				}
 			}
 

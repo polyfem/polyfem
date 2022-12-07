@@ -49,7 +49,7 @@ namespace polyfem::solver
 
 	void FrictionForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
-		POLYFEM_SCOPED_TIMER("\t\tfriction hessian");
+		POLYFEM_SCOPED_TIMER("friction hessian");
 
 		hessian = ipc::compute_friction_potential_hessian(
 			collision_mesh_, displaced_surface_prev_, compute_displaced_surface(x),
