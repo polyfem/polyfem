@@ -73,15 +73,14 @@ namespace polyfem::io
 		Eigen::MatrixXd &boundary_nodes_pos,
 		Eigen::MatrixXi &boundary_edges,
 		Eigen::MatrixXi &boundary_triangles,
-		Eigen::SparseMatrix<double> &displacement_map)
+		std::vector<Eigen::Triplet<double>> &displacement_map_entries)
 	{
 		using namespace polyfem::mesh;
 
-		displacement_map.resize(0, 0);
+		displacement_map_entries.clear();
 
 		if (mesh.is_volume())
 		{
-			std::vector<Eigen::Triplet<double>> displacement_map_entries;
 			const bool is_simplicial = mesh.is_simplicial();
 
 			boundary_nodes_pos.resize(n_bases + (is_simplicial ? 0 : mesh.n_faces()), 3);
@@ -254,12 +253,6 @@ namespace polyfem::io
 			if (boundary_triangles.rows() > 0)
 			{
 				igl::edges(boundary_triangles, boundary_edges);
-			}
-
-			if (!displacement_map_entries.empty())
-			{
-				displacement_map.resize(boundary_nodes_pos.rows(), n_bases);
-				displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
 			}
 		}
 		else

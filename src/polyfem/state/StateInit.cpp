@@ -38,7 +38,14 @@ namespace spdlog::level
 		 {spdlog::level::level_enum::warn, "warning"},
 		 {spdlog::level::level_enum::err, "error"},
 		 {spdlog::level::level_enum::critical, "critical"},
-		 {spdlog::level::level_enum::off, "off"}})
+		 {spdlog::level::level_enum::off, "off"},
+		 {spdlog::level::level_enum::trace, 0},
+		 {spdlog::level::level_enum::debug, 1},
+		 {spdlog::level::level_enum::info, 2},
+		 {spdlog::level::level_enum::warn, 3},
+		 {spdlog::level::level_enum::err, 3},
+		 {spdlog::level::level_enum::critical, 4},
+		 {spdlog::level::level_enum::off, 5}})
 }
 
 namespace polyfem
