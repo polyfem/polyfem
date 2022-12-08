@@ -73,7 +73,7 @@ double myrand(const double range = 1)
 	return rand() / (double)RAND_MAX * range;
 }
 
-Eigen::VectorXd transform(const Eigen::VectorXd &p)
+Eigen::MatrixXd transform()
 {
 	Eigen::Matrix2d A, C;
 	C = std::pow(1./2, 1./2) * Eigen::MatrixXd{{1, 0}, {0, -1}};
@@ -86,7 +86,7 @@ Eigen::VectorXd transform(const Eigen::VectorXd &p)
 	B << std::cos(rand3), -std::sin(rand3),
 		 std::sin(rand3), std::cos(rand3);
 
-	return A*p;
+	return B * A;
 }
 
 bool compare_matrix(
@@ -199,10 +199,11 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 
 	for (int rand = 0; rand < 2; ++rand)
 	{
+		Eigen::MatrixXd A = transform();
 		for (int p = 0; p < state.n_bases; p++)
 		{
 			RowVectorNd point = state.mesh_nodes->node_position(p);
-			disp.block(p * 2, 0, 2, 1) = transform(point.transpose()) - point.transpose();
+			disp.block(p * 2, 0, 2, 1) = A * point.transpose() - point.transpose();
 		}
 
 		state.assembler.assemble_energy_gradient(
@@ -322,10 +323,11 @@ TEST_CASE("multiscale_rb_derivatives", "[assembler]")
 
 	for (int rand = 0; rand < 2; ++rand)
 	{
+		Eigen::MatrixXd A = transform();
 		for (int p = 0; p < state.n_bases; p++)
 		{
 			RowVectorNd point = state.mesh_nodes->node_position(p);
-			disp.block(p * 2, 0, 2, 1) = transform(point.transpose()) - point.transpose();
+			disp.block(p * 2, 0, 2, 1) = A * point.transpose() - point.transpose();
 		}
 
 		state.assembler.assemble_energy_gradient(
