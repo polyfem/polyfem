@@ -1300,6 +1300,8 @@ namespace polyfem::solver
 		std::vector<double> weights = get_transient_quadrature_weights();
 		for (int i = 0; i <= time_steps_; i++)
 		{
+			if (weights[i] == 0)
+				continue;
 			obj_->set_time_step(i);
 			value += weights[i] * obj_->value();
 		}
@@ -1314,6 +1316,8 @@ namespace polyfem::solver
 		std::vector<double> weights = get_transient_quadrature_weights();
 		for (int i = 0; i <= time_steps_; i++)
 		{
+			if (weights[i] == 0)
+				continue;
 			obj_->set_time_step(i);
 			terms.col(i) = weights[i] * obj_->compute_adjoint_rhs_step(state);
 		}
@@ -1329,6 +1333,8 @@ namespace polyfem::solver
 		std::vector<double> weights = get_transient_quadrature_weights();
 		for (int i = 0; i <= time_steps_; i++)
 		{
+			if (weights[i] == 0)
+				continue;
 			obj_->set_time_step(i);
 			term += weights[i] * obj_->compute_partial_gradient(param);
 		}
