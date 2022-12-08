@@ -32,6 +32,8 @@ set(SOURCES
 	barycentric/BarycentricBasis2d.hpp
 	barycentric/MVPolygonalBasis2d.cpp
 	barycentric/MVPolygonalBasis2d.hpp
+	barycentric/WSPolygonalBasis2d.cpp
+	barycentric/WSPolygonalBasis2d.hpp
 )
 
 prepend_current_path(SOURCES)

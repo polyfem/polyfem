@@ -19,6 +19,7 @@
 #include <polyfem/basis/SplineBasis3d.hpp>
 
 #include <polyfem/basis/barycentric/MVPolygonalBasis2d.hpp>
+#include <polyfem/basis/barycentric/WSPolygonalBasis2d.hpp>
 
 #include <polyfem/basis/PolygonalBasis2d.hpp>
 #include <polyfem/basis/PolygonalBasis3d.hpp>
@@ -1002,8 +1003,8 @@ namespace polyfem
 		{
 			if (mesh->is_volume())
 			{
-				if (args["space"]["poly_basis_type"] == "MeanValue")
-					logger().error("MeanValue bases not supported in 3D");
+				if (args["space"]["poly_basis_type"] == "MeanValue" || args["space"]["poly_basis_type"] == "Wachspress")
+					logger().error("Barycentric bases not supported in 3D");
 				new_bases = basis::PolygonalBasis3d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, bases, poly_edge_to_data, polys_3d);
 			}
 			else
@@ -1011,6 +1012,16 @@ namespace polyfem
 				if (args["space"]["poly_basis_type"] == "MeanValue")
 				{
 					new_bases = basis::MVPolygonalBasis2d::build_bases(
+						formulation(),
+						*dynamic_cast<Mesh2D *>(mesh.get()),
+						n_bases,
+						args["space"]["advanced"]["quadrature_order"],
+						args["space"]["advanced"]["mass_quadrature_order"],
+						bases, local_boundary, polys);
+				}
+				else if (args["space"]["poly_basis_type"] == "Wachspress")
+				{
+					new_bases = basis::WSPolygonalBasis2d::build_bases(
 						formulation(),
 						*dynamic_cast<Mesh2D *>(mesh.get()),
 						n_bases,
@@ -1026,9 +1037,9 @@ namespace polyfem
 		{
 			if (mesh->is_volume())
 			{
-				if (args["space"]["poly_basis_type"] == "MeanValue")
+				if (args["space"]["poly_basis_type"] == "MeanValue" || args["space"]["poly_basis_type"] == "Wachspress")
 				{
-					logger().error("MeanValue bases not supported in 3D");
+					logger().error("Barycentric bases not supported in 3D");
 					throw "not implemented";
 				}
 				new_bases = basis::PolygonalBasis3d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys_3d);
@@ -1036,11 +1047,23 @@ namespace polyfem
 			else
 			{
 				if (args["space"]["poly_basis_type"] == "MeanValue")
-					new_bases = basis::MVPolygonalBasis2d::build_bases(formulation(),
-																	   *dynamic_cast<Mesh2D *>(mesh.get()),
-																	   n_bases, args["space"]["advanced"]["quadrature_order"],
-																	   args["space"]["advanced"]["mass_quadrature_order"],
-																	   bases, local_boundary, polys);
+				{
+					new_bases = basis::MVPolygonalBasis2d::build_bases(
+						formulation(),
+						*dynamic_cast<Mesh2D *>(mesh.get()),
+						n_bases, args["space"]["advanced"]["quadrature_order"],
+						args["space"]["advanced"]["mass_quadrature_order"],
+						bases, local_boundary, polys);
+				}
+				else if (args["space"]["poly_basis_type"] == "Wachspress")
+				{
+					new_bases = basis::WSPolygonalBasis2d::build_bases(
+						formulation(),
+						*dynamic_cast<Mesh2D *>(mesh.get()),
+						n_bases, args["space"]["advanced"]["quadrature_order"],
+						args["space"]["advanced"]["mass_quadrature_order"],
+						bases, local_boundary, polys);
+				}
 				else
 					new_bases = basis::PolygonalBasis2d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys);
 			}
