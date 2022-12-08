@@ -1343,6 +1343,6 @@ namespace polyfem::io
 		const std::shared_ptr<mesh::MeshNodes> mesh_nodes,
 		const Eigen::MatrixXd &grad)
 	{
-		return utils::flatten(get_bases_position(n_bases, mesh_nodes) * grad);
+		return utils::flatten(get_bases_position(n_bases, mesh_nodes) * grad.transpose());
 	}
 } // namespace polyfem::io
