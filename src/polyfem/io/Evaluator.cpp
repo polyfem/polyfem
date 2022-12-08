@@ -1325,19 +1325,24 @@ namespace polyfem::io
 		}
 	}
 
+	Eigen::MatrixXd Evaluator::get_bases_position(
+		const int n_bases,
+		const std::shared_ptr<mesh::MeshNodes> mesh_nodes)
+	{
+		Eigen::MatrixXd func;
+		func.setZero(n_bases, mesh_nodes->node_position(0).size());
+
+		for (int i = 0; i < n_bases; i++)
+			func.row(i) = mesh_nodes->node_position(i);
+
+		return func;
+	}
+
 	Eigen::MatrixXd Evaluator::generate_linear_field(
 		const int n_bases,
 		const std::shared_ptr<mesh::MeshNodes> mesh_nodes,
 		const Eigen::MatrixXd &grad)
 	{
-		Eigen::MatrixXd func;
-		func.setZero(n_bases * grad.rows(), 1);
-
-		for (int i = 0; i < n_bases; i++)
-		{
-			func.block(i * grad.rows(), 0, grad.rows(), 1) = grad * mesh_nodes->node_position(i).transpose();
-		}
-
-		return func;
+		return utils::flatten(get_bases_position(n_bases, mesh_nodes) * grad);
 	}
 } // namespace polyfem::io

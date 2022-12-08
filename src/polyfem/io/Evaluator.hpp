@@ -415,5 +415,9 @@ namespace polyfem::io
 			const int n_bases,
 			const std::shared_ptr<mesh::MeshNodes> mesh_nodes,
 			const Eigen::MatrixXd &grad);
+
+		static Eigen::MatrixXd get_bases_position(
+			const int n_bases,
+			const std::shared_ptr<mesh::MeshNodes> mesh_nodes);
 	};
 } // namespace polyfem::io
