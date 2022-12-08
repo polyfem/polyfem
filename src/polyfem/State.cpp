@@ -1178,9 +1178,9 @@ namespace polyfem
 
 		// build disp_grad
 		{
-			disp_grad.setZero(mesh->dimension(), mesh->dimension());
 			if (args["boundary_conditions"]["linear_displacement_offset"].size() > 0)
 			{
+				disp_grad.setZero(mesh->dimension(), mesh->dimension());
 				int i = 0;
 				for (const auto &row : args["boundary_conditions"]["linear_displacement_offset"])
 				{
@@ -1192,6 +1192,8 @@ namespace polyfem
 
 				logger().info("Underlying linear displacement field: {}", utils::flatten(disp_grad).transpose());
 			}
+			else
+				disp_grad.resize(0, 0);
 		}
 
 		const auto &curret_bases = geom_bases();
@@ -1639,8 +1641,10 @@ void State::build_collision_mesh(
 				init_linear_solve(sol);
 				solve_linear(sol, pressure);
 				if (args["optimization"]["enabled"])
-					cache_transient_adjoint_quantities(0, sol);
+					cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 			}
+			else if (disp_grad.size() > 0)
+				solve_homogenized_field(disp_grad, sol);
 			else if (!assembler.is_linear(formulation()) && problem->is_scalar())
 				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else
@@ -1648,7 +1652,7 @@ void State::build_collision_mesh(
 				init_nonlinear_tensor_solve(sol);
 				solve_tensor_nonlinear(sol);
 				if (args["optimization"]["enabled"])
-					cache_transient_adjoint_quantities(0, sol);
+					cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 				const std::string u_path = resolve_output_path(args["output"]["data"]["u_path"]);
 				if (!u_path.empty())
 					write_matrix(u_path, sol);

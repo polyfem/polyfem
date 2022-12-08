@@ -134,7 +134,7 @@ namespace polyfem
 				mesh->set_point(v, vertices.block(primitive_to_node[v], 0, 1, mesh->dimension()));
 	}
 
-	void State::cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol)
+	void State::cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad)
 	{
 		adjoint_solved_ = false;
 
@@ -152,7 +152,7 @@ namespace polyfem
 
 		auto cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::Constraints();
 		auto cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_constraint_set() : ipc::FrictionConstraints();
-		diff_cached.push_back({gradu_h, StiffnessMatrix(sol.size(), sol.size()), sol, cur_contact_set, cur_friction_set, Eigen::MatrixXd(), Eigen::MatrixXd()});
+		diff_cached.push_back({gradu_h, StiffnessMatrix(sol.size(), sol.size()), sol, disp_grad, cur_contact_set, cur_friction_set, Eigen::MatrixXd(), Eigen::MatrixXd()});
 	}
 
 	void State::compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const
@@ -227,46 +227,56 @@ namespace polyfem
 
 	void State::solve_static_adjoint(const Eigen::VectorXd &adjoint_rhs)
 	{
-		StiffnessMatrix A = diff_cached[0].gradu_h;
 		Eigen::VectorXd b = adjoint_rhs;
-		const int full_size = A.rows();
-		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-		int precond_num = problem_dim * n_bases;
-
-		apply_lagrange_multipliers(A);
-		b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
-
-		std::vector<int> boundary_nodes_tmp = boundary_nodes;
-		full_to_periodic(boundary_nodes_tmp);
-		if (need_periodic_reduction())
-		{
-			precond_num = full_to_periodic(A);
- 			Eigen::MatrixXd tmp = b;
- 			full_to_periodic(tmp, true);
- 			b = tmp;
-		}
-
-		for (int i : boundary_nodes_tmp)
+		for (int i : boundary_nodes)
 			b(i) = 0;
 
-		Eigen::VectorXd x;
 		if (lin_solver_cached)
 		{
+			StiffnessMatrix A = diff_cached[0].gradu_h;
+			const int full_size = A.rows();
+			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+			int precond_num = problem_dim * n_bases;
+			apply_lagrange_multipliers(A);
+
+			b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
+
+			std::vector<int> boundary_nodes_tmp = boundary_nodes;
+			full_to_periodic(boundary_nodes_tmp);
+			if (need_periodic_reduction())
+			{
+				precond_num = full_to_periodic(A);
+				Eigen::MatrixXd tmp = b;
+				full_to_periodic(tmp, true);
+				b = tmp;
+			}
+			
+			Eigen::VectorXd x;
 			dirichlet_solve_prefactorized(*lin_solver_cached, A, b, boundary_nodes_tmp, x);
+			x.conservativeResize(x.size() - n_lagrange_multipliers());
+
+			if (need_periodic_reduction())
+				diff_cached[0].p = periodic_to_full(full_size, x);
+			else
+				diff_cached[0].p = x;
 		}
 		else
 		{
 			auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["adjoint_solver"], args["solver"]["linear"]["precond"]);
 			solver->setParameters(args["solver"]["linear"]);
 
-			dirichlet_solve(*solver, A, b, boundary_nodes_tmp, x, precond_num, "", false, false, false);
-		}
+			StiffnessMatrix A;
+			solve_data.nl_problem->full_hessian_to_reduced_hessian(diff_cached[0].gradu_h, A);
+			b = solve_data.nl_problem->full_to_reduced_grad(b);
 
-		x.conservativeResize(x.size() - n_lagrange_multipliers());
- 		if (need_periodic_reduction())
- 			diff_cached[0].p = periodic_to_full(full_size, x);
- 		else
- 			diff_cached[0].p = x;
+			Eigen::VectorXd x;
+			dirichlet_solve(*solver, A, b, {}, x, A.rows(), "", false, false, false);
+			x.conservativeResize(x.size() - n_lagrange_multipliers());
+
+			diff_cached[0].p = solve_data.nl_problem->reduced_to_full(x);
+			for (int i : boundary_nodes)
+				diff_cached[0].p(i) = 0;
+		}
 
 		adjoint_solved_ = true;
 	}

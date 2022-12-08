@@ -38,7 +38,6 @@ namespace polyfem::solver
 	{
 		// assert(!state.assembler.is_mixed(formulation));
 		use_reduced_size();
-		disp_offset_.setZero(full_size_);
 	}
 
 	void NLProblem::init_lagging(const TVector &x)
@@ -97,7 +96,6 @@ namespace polyfem::solver
 		THessian full_hessian;
 		FullNLProblem::hessian(reduced_to_full(x), full_hessian);
 
-		state_.apply_lagrange_multipliers(full_hessian);
 		full_hessian_to_reduced_hessian(full_hessian, hessian);
 	}
 
@@ -225,8 +223,6 @@ namespace polyfem::solver
 			full = state_.periodic_to_full(full_size, tmp);
 		else
 			full = tmp;
-
-		full += disp_offset_;
 	}
 
 	template <class FullMat, class ReducedMat>
@@ -266,8 +262,9 @@ namespace polyfem::solver
 	void NLProblem::full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const
 	{
 		// POLYFEM_SCOPED_TIMER("\tfull hessian to reduced hessian");
-
 		THessian tmp = full;
+		state_.apply_lagrange_multipliers(tmp);
+		
 		if (state_.need_periodic_reduction())
 			state_.full_to_periodic(tmp);
 

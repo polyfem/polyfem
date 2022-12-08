@@ -213,6 +213,7 @@ namespace polyfem::assembler
 			POLYFEM_SCOPED_TIMER("micro newton", time);
 			state->disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd pressure;
+			state->args["optimization"]["enabled"] = true;
 			state->solve_problem(x, pressure);
 		}
 
@@ -233,6 +234,7 @@ namespace polyfem::assembler
 			POLYFEM_SCOPED_TIMER("micro newton", time);
 			state->disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd pressure;
+			state->args["optimization"]["enabled"] = true;
 			state->solve_problem(x, pressure);
 		}
 
@@ -251,6 +253,7 @@ namespace polyfem::assembler
 			POLYFEM_SCOPED_TIMER("micro newton", time);
 			state->disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd pressure;
+			state->args["optimization"]["enabled"] = true;
 			state->solve_problem(x, pressure);
 		}
 
@@ -340,7 +343,6 @@ namespace polyfem::assembler
 
 			double energy = 0;
 			homogenization(def_grad, energy, stress_tensor);
-
 			// {
 			// 	Eigen::VectorXd fgrad, grad;
 			// 	Eigen::VectorXd x0 = utils::flatten(def_grad);

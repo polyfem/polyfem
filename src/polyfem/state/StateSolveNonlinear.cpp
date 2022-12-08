@@ -117,14 +117,14 @@ namespace polyfem
 		save_timestep(t0, 0, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 
 		if (args["optimization"]["enabled"])
-			cache_transient_adjoint_quantities(0, sol);
+			cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			solve_tensor_nonlinear(sol, t);
 
 			if (args["optimization"]["enabled"])
-				cache_transient_adjoint_quantities(t, sol);
+				cache_transient_adjoint_quantities(t, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 
 			{
 				POLYFEM_SCOPED_TIMER("Update quantities");
@@ -323,8 +323,6 @@ namespace polyfem
 			local_boundary,
 			n_boundary_samples(),
 			*solve_data.rhs_assembler, *this, t, forms);
-		
-		solve_data.nl_problem->set_disp_offset(io::Evaluator::generate_linear_field(n_bases, mesh_nodes, disp_grad));
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize time integrator

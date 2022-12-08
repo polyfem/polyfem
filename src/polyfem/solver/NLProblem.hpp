@@ -25,7 +25,7 @@ namespace polyfem::solver
 
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
-		void hessian(const TVector &x, THessian &hessian) override;
+		virtual void hessian(const TVector &x, THessian &hessian) override;
 
 		bool is_step_valid(const TVector &x0, const TVector &x1) const override;
 		bool is_step_collision_free(const TVector &x0, const TVector &x1) const override;
@@ -49,18 +49,16 @@ namespace polyfem::solver
 		void use_full_size() { current_size_ = CurrentSize::FULL_SIZE; }
 		void use_reduced_size() { current_size_ = CurrentSize::REDUCED_SIZE; }
 
-		virtual TVector full_to_reduced(const TVector &full) const;
+		TVector full_to_reduced(const TVector &full) const;
 		virtual TVector full_to_reduced_grad(const TVector &full) const;
+		virtual void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
 		virtual TVector reduced_to_full(const TVector &reduced) const;
 
 		void set_apply_DBC(const TVector &x, const bool val);
-		void set_disp_offset(const TVector &disp_offset) { disp_offset_ = disp_offset; }
-		TVector get_disp_offset() const { return disp_offset_; }
 
 	protected:
 		const std::vector<int> boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> &local_boundary_;
-		TVector disp_offset_;
 
 		const int n_boundary_samples_;
 		const assembler::RhsAssembler &rhs_assembler_;
@@ -92,7 +90,5 @@ namespace polyfem::solver
 
 		template <class FullMat, class ReducedMat>
 		void full_to_reduced_aux_grad(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
-
-		void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
 	};
 } // namespace polyfem::solver

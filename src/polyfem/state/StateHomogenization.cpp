@@ -1,5 +1,5 @@
 #include <polyfem/State.hpp>
-#include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
@@ -73,13 +73,10 @@ namespace
 	}
 }
 
-void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::MatrixXd &sol_)
+void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::MatrixXd &sol_, bool for_bistable)
 {
     const int dim = mesh->dimension();
     const int ndof = n_bases * dim;
-
-    if (sol_.rows() != ndof || sol_.cols() != 1)
-        sol_.setZero(ndof, 1);
 
     std::vector<std::shared_ptr<Form>> forms;
 
@@ -138,26 +135,60 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         }
     }
 
-    std::shared_ptr<NLProblem> homo_problem = std::make_shared<NLProblem>(
+    std::shared_ptr<NLHomoProblem> homo_problem = std::make_shared<NLHomoProblem>(
         ndof,
         formulation(),
         boundary_nodes,
         local_boundary,
         n_boundary_samples(),
         *solve_data.rhs_assembler, *this, 0, forms);
-    
-    Eigen::VectorXd macro_field = io::Evaluator::generate_linear_field(n_bases, mesh_nodes, disp_grad);
-    homo_problem->set_disp_offset(macro_field);
 
-    std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_homo_solver<NLProblem>(args["solver"]);
-    
+    if (for_bistable)
+    {
+        homo_problem->set_only_symmetric();
+    }
+
+    if (args["optimization"]["enabled"])
+    {
+        solve_data.elastic_form = elastic_form;
+        solve_data.contact_form = contact_form;
+        solve_data.friction_form = friction_form;
+        solve_data.nl_problem = homo_problem;
+    }
+
+    std::shared_ptr<cppoptlib::NonlinearSolver<NLHomoProblem>> nl_solver = make_nl_homo_solver<NLHomoProblem>(args["solver"]);
+
     Eigen::VectorXd tmp_sol;
-    tmp_sol = homo_problem->full_to_reduced(sol_);
-    export_data(homo_problem->reduced_to_full(tmp_sol), Eigen::MatrixXd());
-    
-    homo_problem->init(homo_problem->reduced_to_full(tmp_sol));
-    nl_solver->minimize(*homo_problem, tmp_sol);
+    if (sol_.rows() != ndof || sol_.cols() != 1)
+        sol_.setZero(ndof, 1);
+    tmp_sol = homo_problem->full_to_reduced(sol_, Eigen::MatrixXd::Zero(dim, dim));
+    Eigen::VectorXd tail = homo_problem->macro_full_to_reduced(utils::flatten(disp_grad));
+    tmp_sol.tail(tail.size()) = tail;
+    // export_data(homo_problem->reduced_to_full(tmp_sol), Eigen::MatrixXd());
+    if (for_bistable)
+    {
+        homo_problem->set_fixed_entry({1, 2, 3});
+
+        homo_problem->init(homo_problem->reduced_to_full(tmp_sol));
+        nl_solver->minimize(*homo_problem, tmp_sol);
+
+        homo_problem->set_fixed_entry({});
+
+        // homo_problem->init(homo_problem->reduced_to_full(tmp_sol));
+        nl_solver->minimize(*homo_problem, tmp_sol);
+    }
+    else
+    {
+        homo_problem->set_fixed_entry({0, 1, 2, 3});
+
+        homo_problem->init(homo_problem->reduced_to_full(tmp_sol));
+        nl_solver->minimize(*homo_problem, tmp_sol);
+    }
+
     sol_ = homo_problem->reduced_to_full(tmp_sol);
+
+    if (args["optimization"]["enabled"])
+        cache_transient_adjoint_quantities(0, sol_, homo_problem->reduced_to_disp_grad(tmp_sol));
 
     // static int index = 0;
     // StiffnessMatrix H;
@@ -232,7 +263,7 @@ void State::solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_fie
         }
     }
 
-    std::shared_ptr<NLProblem> homo_problem = std::make_shared<NLProblem>(
+    std::shared_ptr<NLHomoProblem> homo_problem = std::make_shared<NLHomoProblem>(
         ndof,
         formulation(),
         boundary_nodes,
@@ -240,11 +271,11 @@ void State::solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_fie
         n_boundary_samples(),
         *solve_data.rhs_assembler, *this, 0, forms);
 
-    std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_homo_solver<NLProblem>(args["solver"]);
+    std::shared_ptr<cppoptlib::NonlinearSolver<NLHomoProblem>> nl_solver = make_nl_homo_solver<NLHomoProblem>(args["solver"]);
 
-    Eigen::VectorXd tmp_sol = homo_problem->full_to_reduced(sol_);
-    
-    homo_problem->set_disp_offset(macro_field1);
+    Eigen::VectorXd tmp_sol = homo_problem->full_to_reduced(sol_, Eigen::MatrixXd::Zero(dim, dim));
+    tmp_sol.tail(macro_field1.size()) = utils::flatten(macro_field1);
+    // homo_problem->set_disp_offset(macro_field1);
     Eigen::MatrixXd cur_disp = homo_problem->reduced_to_full(tmp_sol);
     const Eigen::MatrixXd displaced = collision_mesh.displace_vertices(
 				utils::unflatten(cur_disp, mesh->dimension()));
@@ -262,7 +293,8 @@ void State::solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_fie
     {
         double coeff = 1;
         Eigen::VectorXd tmp_macro_field = macro_field2;
-        homo_problem->set_disp_offset(tmp_macro_field);
+        // homo_problem->set_disp_offset(tmp_macro_field);
+        tmp_sol.tail(tmp_macro_field.size()) = utils::flatten(tmp_macro_field);
         cur_disp = homo_problem->reduced_to_full(tmp_sol);
 
         while (!std::isfinite(homo_problem->value(tmp_sol))
@@ -271,7 +303,8 @@ void State::solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_fie
         {
             coeff /= 2;
             tmp_macro_field = coeff * macro_field2 + (1 - coeff) * macro_field1;
-            homo_problem->set_disp_offset(tmp_macro_field);
+            tmp_sol.tail(tmp_macro_field.size()) = utils::flatten(tmp_macro_field);
+            // homo_problem->set_disp_offset(tmp_macro_field);
             cur_disp = homo_problem->reduced_to_full(tmp_sol);
 
             logger().info("NAN detected, reduce step size to {}", coeff);

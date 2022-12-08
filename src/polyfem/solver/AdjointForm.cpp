@@ -738,7 +738,10 @@ namespace polyfem::solver
 		// if (j.depend_on_u() || j.depend_on_gradu())
 		{
 			state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, sol, sol, adjoint, elasticity_term);
-			state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, sol, adjoint, rhs_term);
+			if (state.solve_data.body_form)
+				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, sol, adjoint, rhs_term);
+			else
+				rhs_term.setZero(one_form.size());
 
 			if (state.is_contact_enabled())
 			{

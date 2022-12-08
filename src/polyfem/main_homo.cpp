@@ -122,18 +122,15 @@ int main(int argc, char **argv)
 	Eigen::MatrixXd F;
 	F.setZero(dim, dim);
 
-	Eigen::MatrixXd fluctuated, macro1, macro2;
-	macro1 = io::Evaluator::generate_linear_field(micro_state->n_bases, micro_state->mesh_nodes, Eigen::MatrixXd::Zero(dim, dim));
-	for (int l = 0; l >= -40; l--)
+	for (int l = -35; l >= -50; l--)
 	{
 		F(0, 0) = 0;
 		F(1, 1) = l / 100.0;
 
 		micro_state->args["output"]["paraview"]["file_name"] = "load_" + std::to_string(-l) + ".vtu";
 
-		macro2 = io::Evaluator::generate_linear_field(micro_state->n_bases, micro_state->mesh_nodes, F);
-		micro_state->solve_homogenized_field(F, fluctuated);
-		macro1 = macro2;
+		Eigen::MatrixXd fluctuated;
+		micro_state->solve_homogenized_field(F, fluctuated, true);
 
 		// effective energy = average energy over unit cell
 		double energy = micro_assembler.homogenize_energy(fluctuated);
@@ -150,8 +147,6 @@ int main(int argc, char **argv)
 		std::cout << "homogenized stress\n" << stress << "\n";
 
 		micro_state->export_data(fluctuated, Eigen::MatrixXd());
-
-		fluctuated = fluctuated - macro2;
 	}
 
 	return EXIT_SUCCESS;

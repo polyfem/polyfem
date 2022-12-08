@@ -666,12 +666,13 @@ namespace polyfem
 		//-----------------differentiable--------------------
 		//---------------------------------------------------
 public:
-		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol);
+		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
 		struct DiffCachedParts
 		{
 			StiffnessMatrix gradu_h;
 			StiffnessMatrix gradu_h_next;
 			Eigen::MatrixXd u;
+			Eigen::MatrixXd disp_grad;
 			ipc::Constraints contact_set;
 			ipc::FrictionConstraints friction_constraint_set;
 			Eigen::MatrixXd p;
@@ -731,7 +732,7 @@ private:
 		//-----------------homogenization--------------------
 		//---------------------------------------------------
 public:
-		void solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::MatrixXd &sol_);
+		void solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::MatrixXd &sol_, bool for_bistable = false);
 		void solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_field2, Eigen::MatrixXd &macro_field1, Eigen::MatrixXd &sol_);
 	};
 

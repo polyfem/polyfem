@@ -214,7 +214,7 @@ namespace polyfem
 		if (args["optimization"]["enabled"])
 		{
 			log_and_throw_error("Transient linear problems are not differentiable yet!");
-			cache_transient_adjoint_quantities(0, sol);
+			cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 		}
 
 		Eigen::MatrixXd current_rhs = rhs;
@@ -284,7 +284,7 @@ namespace polyfem
 			if (args["optimization"]["enabled"])
 			{
 				log_and_throw_error("Transient linear problems are not differentiable yet!");
-				cache_transient_adjoint_quantities(t, sol);
+				cache_transient_adjoint_quantities(t, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 			}
 
 			time_integrator->update_quantities(sol);
