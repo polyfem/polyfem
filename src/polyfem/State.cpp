@@ -18,7 +18,7 @@
 #include <polyfem/basis/SplineBasis2d.hpp>
 #include <polyfem/basis/SplineBasis3d.hpp>
 
-#include <polyfem/basis/MVPolygonalBasis2d.hpp>
+#include <polyfem/basis/barycentric/MVPolygonalBasis2d.hpp>
 
 #include <polyfem/basis/PolygonalBasis2d.hpp>
 #include <polyfem/basis/PolygonalBasis3d.hpp>
@@ -1010,7 +1010,13 @@ namespace polyfem
 			{
 				if (args["space"]["poly_basis_type"] == "MeanValue")
 				{
-					new_bases = basis::MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], bases, bases, poly_edge_to_data, local_boundary, polys);
+					new_bases = basis::MVPolygonalBasis2d::build_bases(
+						formulation(),
+						*dynamic_cast<Mesh2D *>(mesh.get()),
+						n_bases,
+						args["space"]["advanced"]["quadrature_order"],
+						args["space"]["advanced"]["mass_quadrature_order"],
+						bases, local_boundary, polys);
 				}
 				else
 					new_bases = basis::PolygonalBasis2d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, bases, poly_edge_to_data, polys);
@@ -1030,7 +1036,11 @@ namespace polyfem
 			else
 			{
 				if (args["space"]["poly_basis_type"] == "MeanValue")
-					new_bases = basis::MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], bases, geom_bases_, poly_edge_to_data, local_boundary, polys);
+					new_bases = basis::MVPolygonalBasis2d::build_bases(formulation(),
+																	   *dynamic_cast<Mesh2D *>(mesh.get()),
+																	   n_bases, args["space"]["advanced"]["quadrature_order"],
+																	   args["space"]["advanced"]["mass_quadrature_order"],
+																	   bases, local_boundary, polys);
 				else
 					new_bases = basis::PolygonalBasis2d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys);
 			}
