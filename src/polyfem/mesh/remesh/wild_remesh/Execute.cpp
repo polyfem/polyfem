@@ -5,6 +5,7 @@
 #include <polyfem/mesh/remesh/wild_remesh/LocalMesh.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
+#include <polyfem/utils/Timer.hpp>
 
 #include <wmtk/utils/ExecutorUtils.hpp>
 
@@ -102,6 +103,8 @@ namespace polyfem::mesh
 		const double max_ops_percent)
 	{
 		using Operations = std::vector<std::pair<std::string, Tuple>>;
+
+		POLYFEM_SCOPED_TIMER(timings.total);
 
 		wmtk::logger().set_level(logger().level());
 

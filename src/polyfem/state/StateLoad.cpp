@@ -116,8 +116,7 @@ namespace polyfem
 
 		if (mesh == nullptr)
 		{
-			logger().error("unable to load the mesh!");
-			return;
+			log_and_throw_error("unable to load the mesh!");
 		}
 
 		// if(!flipped_elements.empty())

@@ -19,18 +19,17 @@ namespace polyfem::mesh
 			if (state.solve_data.time_integrator == nullptr)
 				return Eigen::MatrixXd();
 
-			const int ndof = state.mesh->n_vertices() * state.mesh->dimension();
-			assert(sol.size() - ndof == state.obstacle.n_vertices() * state.mesh->dimension());
-
 			// not including current displacement as this will be handled as positions
-			Eigen::MatrixXd projection_quantities(ndof, 3 * state.solve_data.time_integrator->steps());
+			Eigen::MatrixXd projection_quantities(
+				state.solve_data.time_integrator->x_prev().size(),
+				3 * state.solve_data.time_integrator->steps());
 			int i = 0;
 			for (const Eigen::VectorXd &x : state.solve_data.time_integrator->x_prevs())
-				projection_quantities.col(i++) = x.head(ndof);
+				projection_quantities.col(i++) = x;
 			for (const Eigen::VectorXd &v : state.solve_data.time_integrator->v_prevs())
-				projection_quantities.col(i++) = v.head(ndof);
+				projection_quantities.col(i++) = v;
 			for (const Eigen::VectorXd &a : state.solve_data.time_integrator->a_prevs())
-				projection_quantities.col(i++) = a.head(ndof);
+				projection_quantities.col(i++) = a;
 			assert(i == projection_quantities.cols());
 
 			return projection_quantities;
@@ -48,8 +47,10 @@ namespace polyfem::mesh
 
 			const int n_vertices = state.mesh->n_vertices();
 			const int dim = state.mesh->dimension();
+			const int ndof = state.n_bases * dim;
 			const int ndof_mesh = n_vertices * dim;
 			const int ndof_obstacle = state.obstacle.n_vertices() * dim;
+			assert(projected_quantities.rows() == ndof);
 
 			const std::array<std::vector<Eigen::VectorXd> *, 3> all_prevs{{&x_prevs, &v_prevs, &a_prevs}};
 			const int n_steps = state.solve_data.time_integrator->steps();
@@ -60,11 +61,9 @@ namespace polyfem::mesh
 				prevs->clear();
 				for (int i = 0; i < n_steps; ++i)
 				{
-					prevs->emplace_back(ndof_mesh + ndof_obstacle);
+					prevs->push_back(projected_quantities.col(offset + i));
 					prevs->back().head(ndof_mesh) = utils::reorder_matrix(
-						projected_quantities.col(offset + i), state.in_node_to_node, n_vertices, dim);
-					// TODO: Set this to the correct previous position
-					prevs->back().tail(ndof_obstacle).setZero();
+						prevs->back().head(ndof_mesh), state.in_node_to_node, n_vertices, dim);
 				}
 				offset += n_steps;
 			}
@@ -76,9 +75,16 @@ namespace polyfem::mesh
 	void remesh(State &state, Eigen::MatrixXd &sol, const double time, const double dt)
 	{
 		const int dim = state.mesh->dimension();
+		int ndof = sol.size();
+		assert(sol.cols() == 1);
+		int ndof_mesh = state.mesh->n_vertices() * dim;
+		int ndof_obstacle = state.obstacle.n_vertices() * dim;
+		assert(ndof == ndof_mesh + ndof_obstacle);
+
 		Eigen::MatrixXd rest_positions;
 		Eigen::MatrixXi elements;
 		state.build_mesh_matrices(rest_positions, elements);
+		assert(rest_positions.size() == ndof_mesh);
 
 		WildRemeshing2D::EdgeMap<int> edge_to_boundary_id;
 		for (int ei = 0; ei < state.mesh->n_edges(); ei++)
@@ -93,23 +99,27 @@ namespace polyfem::mesh
 		const std::vector<int> &body_ids = state.mesh->get_body_ids();
 		assert(body_ids.size() == elements.rows());
 
-		// not including current displacement as this will be handled as positions
-		Eigen::MatrixXd projection_quantities = combine_projection_quantaties(state, sol);
-		assert(projection_quantities.rows() == rest_positions.size());
-
 		// Only remesh the FE mesh
 		assert(sol.size() - rest_positions.size() == state.obstacle.n_vertices() * dim);
-		const Eigen::MatrixXd mesh_sol = sol.topRows(rest_positions.size());
-		const Eigen::MatrixXd obstacle_sol = sol.bottomRows(state.obstacle.n_vertices() * dim);
+		const Eigen::MatrixXd mesh_sol = sol.topRows(ndof_mesh);
+		const Eigen::MatrixXd obstacle_sol = sol.bottomRows(ndof_obstacle);
 		const Eigen::MatrixXd positions = rest_positions + utils::unflatten(mesh_sol, dim);
+
+		// not including current displacement as this will be handled as positions
+		Eigen::MatrixXd projection_quantities = combine_projection_quantaties(state, sol);
+		assert(projection_quantities.rows() == ndof);
 
 		Eigen::VectorXd friction_gradient;
 		if (state.solve_data.friction_form)
 			state.solve_data.friction_form->first_derivative(sol, friction_gradient);
 		else
 			friction_gradient = Eigen::VectorXd::Zero(sol.size());
-		projection_quantities.conservativeResize(projection_quantities.rows(), projection_quantities.cols() + 1);
-		projection_quantities.col(projection_quantities.cols() - 1) = friction_gradient.head(mesh_sol.size());
+		projection_quantities.conservativeResize(Eigen::NoChange, projection_quantities.cols() + 1);
+		assert(friction_gradient.size() == projection_quantities.rows());
+		projection_quantities.rightCols(1) = friction_gradient;
+
+		const Eigen::MatrixXd obstacle_projection_quantaties = projection_quantities.bottomRows(ndof_obstacle);
+		projection_quantities.conservativeResize(ndof_mesh, Eigen::NoChange);
 
 		assert(!state.mesh->is_volume());
 		WildRemeshing2D remeshing(state, obstacle_sol, time);
@@ -122,6 +132,7 @@ namespace polyfem::mesh
 		const bool made_change = remeshing.execute(
 			/*split=*/true, /*collapse=*/false, /*smooth=*/false, /*swap=*/false,
 			/*max_ops_percent=*/-1);
+		remeshing.timings.log();
 		if (!made_change)
 			return;
 
@@ -130,18 +141,12 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 		// create new mesh
 
-		rest_positions = remeshing.rest_positions();
-		elements = remeshing.triangles();
-		state.load_mesh(rest_positions, elements);
+		state.mesh = mesh::Mesh::create(remeshing.rest_positions(), remeshing.triangles(), /*non_conforming=*/false);
 
-		// --------------------------------------------------------------------
 		// set body ids
-
 		state.mesh->set_body_ids(remeshing.body_ids());
 
-		// --------------------------------------------------------------------
 		// set boundary ids
-
 		const WildRemeshing2D::EdgeMap<int> remesh_boundary_ids = remeshing.boundary_ids();
 		std::vector<int> boundary_ids(state.mesh->n_edges(), -1);
 		for (int i = 0; i < state.mesh->n_edges(); i++)
@@ -154,11 +159,10 @@ namespace polyfem::mesh
 		}
 		state.mesh->set_boundary_ids(boundary_ids);
 
-		// --------------------------------------------------------------------
+		// load mesh (and set materials) (will also reload obstacles from disk)
+		state.load_mesh();
 
-		// NOTE: We need to set the materials again because when it was called in
-		// state.load_mesh() the body ids were not correct.
-		state.set_materials();
+		// --------------------------------------------------------------------
 
 		state.build_basis();
 		state.assemble_rhs();
@@ -166,13 +170,20 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		const int ndof_mesh = state.mesh->n_vertices() * dim;
-		const int ndof_obstacle = state.obstacle.n_vertices() * dim;
+		const int old_ndof = ndof;
+		const int old_ndof_mesh = ndof_mesh;
+		const int old_ndof_obstacle = ndof_obstacle;
 
-		sol.resize(ndof_mesh + ndof_obstacle, 1);
+		ndof_mesh = state.mesh->n_vertices() * dim;
+		ndof_obstacle = state.obstacle.n_vertices() * dim;
+		assert(ndof_obstacle == old_ndof_obstacle);
+		ndof = state.n_bases * dim;
+		assert(ndof == ndof_mesh + ndof_obstacle);
+
+		sol.resize(ndof, 1);
 		sol.topRows(ndof_mesh) = utils::flatten(utils::reorder_matrix(
 			remeshing.displacements(), state.in_node_to_node));
-		if (state.obstacle.n_vertices() > 0)
+		if (ndof_obstacle > 0)
 			sol.bottomRows(ndof_obstacle) = obstacle_sol;
 
 		state.solve_data.rhs_assembler = state.build_rhs_assembler();
@@ -180,10 +191,18 @@ namespace polyfem::mesh
 
 		if (state.problem->is_time_dependent())
 		{
+			assert(state.solve_data.time_integrator->dt() == dt);
+
+			Eigen::MatrixXd projected_quantities = remeshing.projected_quantities();
+			assert(projected_quantities.rows() == ndof_mesh);
+			assert(projected_quantities.cols() == projection_quantities.cols());
+			projected_quantities.conservativeResize(ndof, Eigen::NoChange);
+			projected_quantities.bottomRows(ndof_obstacle) = obstacle_projection_quantaties;
+			// drop the last column (the friction gradient)
+			projected_quantities.conservativeResize(Eigen::NoChange, projected_quantities.cols() - 1);
+
 			std::vector<Eigen::VectorXd> x_prevs, v_prevs, a_prevs;
-			split_projection_quantaties(
-				state, remeshing.projected_quantities().leftCols(projection_quantities.cols() - 1),
-				x_prevs, v_prevs, a_prevs);
+			split_projection_quantaties(state, projected_quantities, x_prevs, v_prevs, a_prevs);
 			state.solve_data.time_integrator->init(x_prevs, v_prevs, a_prevs, dt);
 		}
 
@@ -191,6 +210,6 @@ namespace polyfem::mesh
 		state.solve_data.nl_problem->init(sol);
 		if (state.solve_data.nl_problem->uses_lagging())
 			state.solve_data.nl_problem->init_lagging(state.solve_data.time_integrator->x_prev());
-		state.solve_data.update_barrier_stiffness(sol);
+		state.solve_data.update_barrier_stiffness(sol); // TODO: remove this
 	}
 } // namespace polyfem::mesh

@@ -1,5 +1,7 @@
 #include "LocalMesh.hpp"
 
+#include <polyfem/utils/Timer.hpp>
+
 #include <igl/boundary_facets.h>
 
 namespace polyfem::mesh
@@ -193,6 +195,8 @@ namespace polyfem::mesh
 		const double area,
 		const bool include_global_boundary)
 	{
+		POLYFEM_SCOPED_TIMER(m.timings.create_local_mesh);
+
 		double current_area = 0;
 
 		std::vector<Tuple> triangles = m.get_one_ring_tris_for_vertex(center);
