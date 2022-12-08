@@ -1120,7 +1120,7 @@ TEST_CASE("WS_2d", "[bases]")
 	polygon.row(0) << 0, 0;
 	polygon.row(1) << 1, 0;
 	polygon.row(2) << 1, 1;
-	polygon.row(3) << 1, 2;
+	polygon.row(3) << 0.5, 2;
 	polygon.row(4) << 0, 2;
 	polygon.row(5) << -1, 1;
 
@@ -1141,7 +1141,7 @@ TEST_CASE("WS_2d", "[bases]")
 	pts.row(0) << 0.5, 0.5;
 	pts.row(1) << 0, 0.5;
 	// pts.row(2) << 0.5, 0;
-	pts.row(2) << -0.5, 0;
+	pts.row(2) << 0.5, 1.5;
 	// pts.row(4) << 0.5, 1e-11;
 
 	const double delta = 1e-6;

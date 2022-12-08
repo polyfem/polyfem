@@ -179,7 +179,7 @@ namespace polyfem
 				const int im1 = (i > 0) ? (i - 1) : (n_boundary - 1);
 
 				const double wi = Cs(i) / (areas(im1) * areas(i));
-				derivatives.row(i) = (w_prime.row(i) * W - wi * W_prime) / (W * W);
+				derivatives.row(i) = -(w_prime.row(i) * W - wi * W_prime) / (W * W);
 			}
 		}
 
