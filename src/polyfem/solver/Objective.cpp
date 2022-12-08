@@ -80,7 +80,7 @@ namespace polyfem::solver
 		{
 			double y = x / dhat;
 			if (0 < y && y < 1)
-				return -pow(y - 1, 2) * log(y) * dhat;
+				return -(y - 1) * (y - 1) * log(y) * dhat;
 			else if (x > dhat)
 				return 0;
 			else
@@ -1989,7 +1989,7 @@ namespace polyfem::solver
 			}
 		}
 
-		return val;
+		return val / lambdas.size();
 	}
 
 	Eigen::MatrixXd MaterialBoundObjective::compute_adjoint_rhs(const State &state)
@@ -2046,7 +2046,7 @@ namespace polyfem::solver
 			}
 		}
 
-		return grad;
+		return grad / lambdas.size();
 	}
 
 	HomogenizedStressObjective::HomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> macro_strain_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args) : SpatialIntegralObjective(state, shape_param, macro_strain_param, args), elastic_param_(elastic_param)
