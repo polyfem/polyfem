@@ -1014,10 +1014,11 @@
         "default": "MFSHarmonic",
         "options": [
             "MFSHarmonic",
-            "MeanValue"
+            "MeanValue",
+            "Wachspress"
         ],
         "type": "string",
-        "doc": "Type of basis to use for a polygonal element, one of MFSHarmonic, MeanValue, see 'PolySpline..' paper for details."
+        "doc": "Type of basis to use for a polygonal element, one of MFSHarmonic, MeanValue, or Wachspress see 'PolySpline..' paper for details."
     },
     {
         "pointer": "/space/use_p_ref",
