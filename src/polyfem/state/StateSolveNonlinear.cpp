@@ -44,11 +44,15 @@ namespace polyfem
 	using namespace io;
 	using namespace utils;
 
-	void SolveData::updated_barrier_stiffness(const Eigen::VectorXd &x)
+	void SolveData::update_barrier_stiffness(const Eigen::VectorXd &x)
 	{
 		// TODO: missing use_adaptive_barrier_stiffness_ if (use_adaptive_barrier_stiffness_ && is_time_dependent_)
 		// if (inertia_form == nullptr)
 		// 	return;
+
+		// if (contact_form)
+		// 	contact_form->update_barrier_stiffness(x, *nl_problem, friction_form);
+
 		if (contact_form == nullptr)
 			return;
 
@@ -126,7 +130,7 @@ namespace polyfem
 				solve_data.nl_problem->update_quantities(t0 + (t + 1) * dt, sol);
 
 				solve_data.update_dt();
-				solve_data.updated_barrier_stiffness(sol);
+				solve_data.update_barrier_stiffness(sol);
 			}
 
 			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
@@ -365,7 +369,7 @@ namespace polyfem
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_steps"],
 			[&](const Eigen::VectorXd &x) {
-				this->solve_data.updated_barrier_stiffness(sol);
+				this->solve_data.update_barrier_stiffness(sol);
 			});
 
 		al_solver.post_subsolve = [&](const double al_weight) {
@@ -422,7 +426,7 @@ namespace polyfem
 			// Solve the problem with the updated lagging
 			logger().info("Lagging iteration {:d}:", lag_i + 1);
 			nl_problem.init(sol);
-			solve_data.updated_barrier_stiffness(sol);
+			solve_data.update_barrier_stiffness(sol);
 			nl_solver->minimize(nl_problem, tmp_sol);
 			sol = nl_problem.reduced_to_full(tmp_sol);
 

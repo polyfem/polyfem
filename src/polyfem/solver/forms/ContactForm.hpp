@@ -10,6 +10,9 @@
 
 namespace polyfem::solver
 {
+	class NLProblem;
+	class FrictionForm;
+
 	/// @brief Form representing the contact potential and forces
 	class ContactForm : public Form
 	{
@@ -88,6 +91,15 @@ namespace polyfem::solver
 		/// @brief Checks if the step is collision free
 		/// @return True if the step is collision free else false
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
+
+		/// @brief Update the barrier stiffness based on the current elasticity energy
+		/// @param x Current solution
+		/// @param nl_problem Nonlinear problem to use for computing the gradient
+		/// @param friction_form Pointer to the friction form
+		void update_barrier_stiffness(
+			const Eigen::VectorXd &x,
+			NLProblem &nl_problem,
+			std::shared_ptr<FrictionForm> friction_form);
 
 		/// @brief Update the barrier stiffness based on the current elasticity energy
 		/// @param x Current solution
