@@ -10,7 +10,8 @@
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 
-#include <polyfem/basis/MVPolygonalBasis2d.hpp>
+#include <polyfem/basis/barycentric/MVPolygonalBasis2d.hpp>
+#include <polyfem/basis/barycentric/WSPolygonalBasis2d.hpp>
 
 #include <catch2/catch.hpp>
 #include <iostream>
@@ -1093,6 +1094,72 @@ TEST_CASE("MV_2d", "[bases]")
 		MVPolygonalBasis2d::meanvalue(polygon, pt, b_dy, eps);
 
 		MVPolygonalBasis2d::meanvalue_derivative(polygon, pts.row(i), b_prime, eps);
+		for (int j = 0; j < b.size(); ++j)
+		{
+			REQUIRE(!std::isnan(b(j)));
+			REQUIRE(!std::isnan(b_prime(j, 0)));
+			REQUIRE(!std::isnan(b_prime(j, 1)));
+
+			const double dx = (b_dx(j) - b(j)) / delta;
+			const double dy = (b_dy(j) - b(j)) / delta;
+
+			// std::cout<<j<<": "<<dx<<" "<<dy<<" -> "<<b_prime(j, 0) <<" "<<b_prime(j, 1) <<std::endl;
+
+			REQUIRE(b_prime(j, 0) == Approx(dx).margin(delta * 10));
+			REQUIRE(b_prime(j, 1) == Approx(dy).margin(delta * 10));
+		}
+	}
+}
+
+TEST_CASE("WS_2d", "[bases]")
+{
+	Eigen::MatrixXd b, b_prime, b_dx, b_dy;
+	const double eps = 1e-10;
+
+	Eigen::MatrixXd polygon(6, 2);
+	polygon.row(0) << 0, 0;
+	polygon.row(1) << 1, 0;
+	polygon.row(2) << 1, 1;
+	polygon.row(3) << 0.5, 2;
+	polygon.row(4) << 0, 2;
+	polygon.row(5) << -1, 1;
+
+	for (int i = 0; i < polygon.rows(); ++i)
+	{
+		WSPolygonalBasis2d::wachspress(polygon, polygon.row(i), b, eps);
+
+		for (int j = 0; j < b.size(); ++j)
+		{
+			if (i == j)
+				REQUIRE(b(j) == Approx(1).margin(1e-10));
+			else
+				REQUIRE(b(j) == Approx(0).margin(1e-10));
+		}
+	}
+
+	Eigen::MatrixXd pts(3, 2);
+	pts.row(0) << 0.5, 0.5;
+	pts.row(1) << 0, 0.5;
+	// pts.row(2) << 0.5, 0;
+	pts.row(2) << 0.5, 1.5;
+	// pts.row(4) << 0.5, 1e-11;
+
+	const double delta = 1e-6;
+
+	for (int i = 0; i < pts.rows(); ++i)
+	{
+		Eigen::RowVector2d pt;
+		WSPolygonalBasis2d::wachspress(polygon, pts.row(i), b, eps);
+
+		pt = pts.row(i);
+		pt(0) += delta;
+		WSPolygonalBasis2d::wachspress(polygon, pt, b_dx, eps);
+
+		pt = pts.row(i);
+		pt(1) += delta;
+		WSPolygonalBasis2d::wachspress(polygon, pt, b_dy, eps);
+
+		WSPolygonalBasis2d::wachspress_derivative(polygon, pts.row(i), b_prime, eps);
 		for (int j = 0; j < b.size(); ++j)
 		{
 			REQUIRE(!std::isnan(b(j)));
