@@ -1,5 +1,7 @@
 var NAVTREEINDEX27 =
 {
+"functions_func_f.html":[4,3,1,6],
+"functions_func_g.html":[4,3,1,7],
 "functions_func_h.html":[4,3,1,8],
 "functions_func_i.html":[4,3,1,9],
 "functions_func_k.html":[4,3,1,10],
@@ -247,7 +249,5 @@ var NAVTREEINDEX27 =
 "namespacepolyfem.html#a99d54b5136c9fd5b53151e3ae47bad34":[3,0,6,40],
 "namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2":[3,0,6,21],
 "namespacepolyfem.html#aa181bc58c3a1b62840a1af8c8c651142":[3,0,6,29],
-"namespacepolyfem.html#aa3c7c48e526af400b4beb3738e168c35":[3,0,6,30],
-"namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc":[3,0,6,18],
-"namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321":[3,0,6,23]
+"namespacepolyfem.html#aa3c7c48e526af400b4beb3738e168c35":[3,0,6,30]
 };

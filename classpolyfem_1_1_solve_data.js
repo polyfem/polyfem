@@ -1,7 +1,7 @@
 var classpolyfem_1_1_solve_data =
 [
+    [ "update_barrier_stiffness", "classpolyfem_1_1_solve_data.html#a13824065697e5cc0fb536f9b04494b53", null ],
     [ "update_dt", "classpolyfem_1_1_solve_data.html#a22c789be0d51dc9b560d200593171295", null ],
-    [ "updated_barrier_stiffness", "classpolyfem_1_1_solve_data.html#a20dcd85c7e65018d6d6cc12827124349", null ],
     [ "al_form", "classpolyfem_1_1_solve_data.html#a17ea2402b990cd3942b7f22a2af4e002", null ],
     [ "body_form", "classpolyfem_1_1_solve_data.html#a16be32f112018931c9fcb9e33bf20086", null ],
     [ "contact_form", "classpolyfem_1_1_solve_data.html#abd2957c5c3dc50b61d82a4e8cd2b3368", null ],

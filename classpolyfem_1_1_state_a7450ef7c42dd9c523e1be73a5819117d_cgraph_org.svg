@@ -925,34 +925,34 @@
 <!-- Node173 -->
 <g id="node41" class="node">
 <title>Node173</title>
-<g id="a_node41"><a xlink:href="classpolyfem_1_1solver_1_1_n_l_problem.html#a95e034a58eb88d93767df43d46691746" target="_top" xlink:title=" ">
-<polygon fill="#fff0f0" stroke="red" points="706,-177.96 554,-177.96 554,-147.96 706,-147.96 706,-177.96"/>
-<text text-anchor="start" x="562" y="-165.96" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::NLProblem</text>
-<text text-anchor="middle" x="630" y="-154.96" font-family="Helvetica,sans-Serif" font-size="10.00">::update_lagging</text>
+<g id="a_node41"><a xlink:href="classpolyfem_1_1_solve_data.html#a13824065697e5cc0fb536f9b04494b53" target="_top" xlink:title="update the barrier stiffness for the forms">
+<polygon fill="white" stroke="#666666" points="700,-483.96 560,-483.96 560,-453.96 700,-453.96 700,-483.96"/>
+<text text-anchor="start" x="568" y="-471.96" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::SolveData</text>
+<text text-anchor="middle" x="630" y="-460.96" font-family="Helvetica,sans-Serif" font-size="10.00">::update_barrier_stiffness</text>
 </a>
 </g>
 </g>
 <!-- Node142&#45;&gt;Node173 -->
 <g id="edge84" class="edge">
 <title>Node142&#45;&gt;Node173</title>
-<path fill="none" stroke="#63b8ff" d="M437.23,-303.78C454.74,-276.26 495.5,-218.12 545,-186.96 547.61,-185.31 550.34,-183.78 553.14,-182.35"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="554.72,-185.48 562.34,-178.12 551.79,-179.12 554.72,-185.48"/>
+<path fill="none" stroke="#63b8ff" d="M438.87,-334.19C457.73,-359.57 498.92,-410.59 545,-439.96 550.77,-443.64 557.06,-446.91 563.52,-449.81"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="562.49,-453.17 573.06,-453.79 565.18,-446.71 562.49,-453.17"/>
 </g>
-<!-- Node175 -->
+<!-- Node174 -->
 <g id="node42" class="node">
-<title>Node175</title>
-<g id="a_node42"><a xlink:href="classpolyfem_1_1_solve_data.html#a20dcd85c7e65018d6d6cc12827124349" target="_top" xlink:title="update the barrier stiffness for the forms">
-<polygon fill="white" stroke="#666666" points="703,-483.96 557,-483.96 557,-453.96 703,-453.96 703,-483.96"/>
-<text text-anchor="start" x="565" y="-471.96" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::SolveData</text>
-<text text-anchor="middle" x="630" y="-460.96" font-family="Helvetica,sans-Serif" font-size="10.00">::updated_barrier_stiffness</text>
+<title>Node174</title>
+<g id="a_node42"><a xlink:href="classpolyfem_1_1solver_1_1_n_l_problem.html#a95e034a58eb88d93767df43d46691746" target="_top" xlink:title=" ">
+<polygon fill="#fff0f0" stroke="red" points="706,-177.96 554,-177.96 554,-147.96 706,-147.96 706,-177.96"/>
+<text text-anchor="start" x="562" y="-165.96" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::NLProblem</text>
+<text text-anchor="middle" x="630" y="-154.96" font-family="Helvetica,sans-Serif" font-size="10.00">::update_lagging</text>
 </a>
 </g>
 </g>
-<!-- Node142&#45;&gt;Node175 -->
-<g id="edge86" class="edge">
-<title>Node142&#45;&gt;Node175</title>
-<path fill="none" stroke="#63b8ff" d="M438.87,-334.19C457.73,-359.57 498.92,-410.59 545,-439.96 550.77,-443.64 557.06,-446.91 563.52,-449.81"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="562.49,-453.17 573.06,-453.79 565.18,-446.71 562.49,-453.17"/>
+<!-- Node142&#45;&gt;Node174 -->
+<g id="edge85" class="edge">
+<title>Node142&#45;&gt;Node174</title>
+<path fill="none" stroke="#63b8ff" d="M437.23,-303.78C454.74,-276.26 495.5,-218.12 545,-186.96 547.61,-185.31 550.34,-183.78 553.14,-182.35"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="554.72,-185.48 562.34,-178.12 551.79,-179.12 554.72,-185.48"/>
 </g>
 <!-- Node176 -->
 <g id="node43" class="node">
@@ -1036,9 +1036,9 @@
 <path fill="none" stroke="#63b8ff" d="M659.16,-367.74C677.2,-356.77 699.97,-340.5 715,-320.96 741.52,-286.49 730.68,-268.42 751,-229.96 770.47,-193.1 798.5,-153.78 816.73,-129.53"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="819.71,-131.4 822.97,-121.31 814.13,-127.16 819.71,-131.4"/>
 </g>
-<!-- Node173&#45;&gt;Node150 -->
-<g id="edge85" class="edge">
-<title>Node173&#45;&gt;Node150</title>
+<!-- Node174&#45;&gt;Node150 -->
+<g id="edge86" class="edge">
+<title>Node174&#45;&gt;Node150</title>
 <path fill="none" stroke="#63b8ff" d="M690.34,-178.05C698.73,-180.72 707.16,-183.7 715,-186.96 746.26,-199.95 779.73,-219.12 803.36,-233.63"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="801.56,-236.63 811.9,-238.94 805.26,-230.69 801.56,-236.63"/>
 </g>
@@ -1274,7 +1274,7 @@
 <polygon fill="#63b8ff" stroke="#63b8ff" points="778.77,-760.37 789.27,-761.82 781.96,-754.14 778.77,-760.37"/>
 </g>
 <!-- Node213&#45;&gt;Node31 -->
-<g id="edge129" class="edge">
+<g id="edge130" class="edge">
 <title>Node213&#45;&gt;Node31</title>
 <path fill="none" stroke="#63b8ff" d="M309.23,-612.34C382.72,-616.62 493.47,-623.07 563.46,-627.14"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="563.29,-630.64 573.48,-627.73 563.7,-623.65 563.29,-630.64"/>
@@ -1291,11 +1291,11 @@
 <path fill="none" stroke="#63b8ff" d="M244.05,-592.83C275.47,-545.53 372.01,-400.23 410.2,-342.73"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="413.2,-344.56 415.82,-334.29 407.37,-340.68 413.2,-344.56"/>
 </g>
-<!-- Node213&#45;&gt;Node175 -->
-<g id="edge130" class="edge">
-<title>Node213&#45;&gt;Node175</title>
-<path fill="none" stroke="#63b8ff" d="M252.89,-592.78C274.11,-576.45 310.14,-550.84 345,-535.96 410.05,-508.18 488.62,-490.78 546.61,-480.69"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="547.56,-484.08 556.83,-478.95 546.38,-477.18 547.56,-484.08"/>
+<!-- Node213&#45;&gt;Node173 -->
+<g id="edge129" class="edge">
+<title>Node213&#45;&gt;Node173</title>
+<path fill="none" stroke="#63b8ff" d="M252.89,-592.78C274.11,-576.45 310.14,-550.84 345,-535.96 411.28,-507.66 491.61,-490.12 549.89,-480.12"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="550.5,-483.57 559.78,-478.46 549.34,-476.67 550.5,-483.57"/>
 </g>
 <!-- Node214&#45;&gt;Node3 -->
 <g id="edge132" class="edge">

@@ -13,6 +13,7 @@ var classpolyfem_1_1solver_1_1_contact_form =
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_contact_form.html#a50b36d64836f5ff8a233c785b7c31b47", null ],
     [ "solution_changed", "classpolyfem_1_1solver_1_1_contact_form.html#a70e5349c72c5d268ba2d98753865ab4e", null ],
     [ "update_barrier_stiffness", "classpolyfem_1_1solver_1_1_contact_form.html#ab7f5b55a31f0829c3ae3002b1b1959a7", null ],
+    [ "update_barrier_stiffness", "classpolyfem_1_1solver_1_1_contact_form.html#ab72ad2cea831a7f14fa02608d8aaa13c", null ],
     [ "update_constraint_set", "classpolyfem_1_1solver_1_1_contact_form.html#a7cb85c21eb5a2f1d04a33865d695d3d6", null ],
     [ "update_quantities", "classpolyfem_1_1solver_1_1_contact_form.html#ae4b7ce02d0f40d3bfef34c5106e22f4e", null ],
     [ "use_adaptive_barrier_stiffness", "classpolyfem_1_1solver_1_1_contact_form.html#ab20e81433681bc3eb20e5a075a447d3e", null ],

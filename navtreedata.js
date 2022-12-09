@@ -96,16 +96,16 @@ var NAVTREEINDEX =
 "classpolyfem_1_1problem_1_1_node_values.html",
 "classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a78b28862ee265b63440abebf0cd02912",
 "classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html#a2a81b7dde3eb178337ea00864e48d59d",
-"classpolyfem_1_1solver_1_1_form.html#a358f316a9aaea1785fd4a5b2bdefb4f7",
-"classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a5e0dbade0c3bb633b749d9dcc3fa57a8",
-"classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a4a9d3142ceecbb0b63e8a2783bb6479e",
-"classpolyfem_1_1utils_1_1_file_selection.html#ae41825d8af6aab8302f4e8e189af2155",
-"classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a5cd57937e8740cf63ef1cc02848513aa",
-"functions_func_h.html",
-"namespacepolyfem.html#ac64c417f742692869f9528d2cd10d569",
-"namespaceq__bases.html#a0049f6e47cc2d7c900d43b6630ae21d1",
-"struct_d_scalar2.html#a75a752c6033fe91c0ccc24fd3c782eda",
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a7b462af7b78c113861ba48d3e4fb02e2"
+"classpolyfem_1_1solver_1_1_form.html#a2c8aac126073d7bd5ce46de58e30cdaa",
+"classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a5613cf3385df821cd909783e401b2a42",
+"classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a353761915b4eabc0739af54992a66928",
+"classpolyfem_1_1utils_1_1_file_selection.html#abfb36ed9c86e2a7f1b1da35ef1579eda",
+"classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a4e7da6b6dc12d81f22aab089afd63a5a",
+"functions_func_f.html",
+"namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc",
+"namespacepretty__print.html#a4c61a4500105714e7fea1f44029c7c64",
+"struct_d_scalar2.html#a6a73136197d442eee2f18fe3fb605664",
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a678b74567cef7404d8e386cc810da87f"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

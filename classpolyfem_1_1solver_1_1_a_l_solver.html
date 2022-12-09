@@ -133,8 +133,8 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_a_l_solver.
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a1805b46d167dbce953e7d8ea1dad99a7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#a1805b46d167dbce953e7d8ea1dad99a7">ALSolver</a> (std::shared_ptr&lt; <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html">NLProblem</a> &gt; &gt; <a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#adb12b4f9e69278bd80d625e18229bdfa">nl_solver</a>, std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html">ALForm</a> &gt; <a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#ad7f880fd6eb9f69f7847008e14fc0b19">al_form</a>, const double <a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#a7680a34c8bf0d8f14ea3bf956338ca99">initial_al_weight</a>, const double <a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#aee4e6ac07542450d67239fd9a1667301">scaling</a>, const int <a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#af75d94eb7cfbcb45fba71eb802ad6363">max_al_steps</a>, const std::function&lt; void(const Eigen::VectorXd &amp;)&gt; &amp;<a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#a6a69b6db69134f770cf4909408843833">updated_barrier_stiffness</a>)</td></tr>
-<tr class="separator:a1805b46d167dbce953e7d8ea1dad99a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6e3cf84ec19a7ce6fe8a4f24cd616bc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#ac6e3cf84ec19a7ce6fe8a4f24cd616bc">ALSolver</a> (std::shared_ptr&lt; <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html">cppoptlib::NonlinearSolver</a>&lt; <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html">NLProblem</a> &gt; &gt; <a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#adb12b4f9e69278bd80d625e18229bdfa">nl_solver</a>, std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_a_l_form.html">ALForm</a> &gt; <a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#ad7f880fd6eb9f69f7847008e14fc0b19">al_form</a>, const double <a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#a7680a34c8bf0d8f14ea3bf956338ca99">initial_al_weight</a>, const double <a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#aee4e6ac07542450d67239fd9a1667301">scaling</a>, const int <a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#af75d94eb7cfbcb45fba71eb802ad6363">max_al_steps</a>, const std::function&lt; void(const Eigen::VectorXd &amp;)&gt; &amp;<a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#a3b79ffec357e60ede7cc6582492504b2">update_barrier_stiffness</a>)</td></tr>
+<tr class="separator:ac6e3cf84ec19a7ce6fe8a4f24cd616bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c0a22e768625967a23702241a0a6595"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#a7c0a22e768625967a23702241a0a6595">solve</a> (<a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html">NLProblem</a> &amp;nl_problem, Eigen::MatrixXd &amp;sol, bool force_al=false)</td></tr>
 <tr class="separator:a7c0a22e768625967a23702241a0a6595"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -160,15 +160,15 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:aee4e6ac07542450d67239fd9a1667301"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af75d94eb7cfbcb45fba71eb802ad6363"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#af75d94eb7cfbcb45fba71eb802ad6363">max_al_steps</a></td></tr>
 <tr class="separator:af75d94eb7cfbcb45fba71eb802ad6363"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a69b6db69134f770cf4909408843833"><td class="memItemLeft" align="right" valign="top">std::function&lt; void(const Eigen::VectorXd &amp;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#a6a69b6db69134f770cf4909408843833">updated_barrier_stiffness</a></td></tr>
-<tr class="separator:a6a69b6db69134f770cf4909408843833"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b79ffec357e60ede7cc6582492504b2"><td class="memItemLeft" align="right" valign="top">std::function&lt; void(const Eigen::VectorXd &amp;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_a_l_solver.html#a3b79ffec357e60ede7cc6582492504b2">update_barrier_stiffness</a></td></tr>
+<tr class="separator:a3b79ffec357e60ede7cc6582492504b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_a_l_solver_8hpp_source.html#l00015">15</a> of file <a class="el" href="_a_l_solver_8hpp_source.html">ALSolver.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a1805b46d167dbce953e7d8ea1dad99a7" name="a1805b46d167dbce953e7d8ea1dad99a7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1805b46d167dbce953e7d8ea1dad99a7">&#9670;&#160;</a></span>ALSolver()</h2>
+<a id="ac6e3cf84ec19a7ce6fe8a4f24cd616bc" name="ac6e3cf84ec19a7ce6fe8a4f24cd616bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6e3cf84ec19a7ce6fe8a4f24cd616bc">&#9670;&#160;</a></span>ALSolver()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -207,7 +207,7 @@ Protected Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::function&lt; void(const Eigen::VectorXd &amp;)&gt; &amp;&#160;</td>
-          <td class="paramname"><em>updated_barrier_stiffness</em>&#160;</td>
+          <td class="paramname"><em>update_barrier_stiffness</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -268,7 +268,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_a_l_solver_8cpp_source.html#l00091">91</a> of file <a class="el" href="_a_l_solver_8cpp_source.html">ALSolver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_l_solver_8cpp_source.html#l00093">93</a> of file <a class="el" href="_a_l_solver_8cpp_source.html">ALSolver.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_a_l_solver_8hpp_source.html#l00034">al_form</a>, <a class="el" href="_full_n_l_problem_8hpp_source.html#l00043">polyfem::solver::FullNLProblem::forms()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00121">polyfem::solver::NLProblem::set_apply_DBC()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00047">polyfem::solver::NLProblem::use_full_size()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00048">polyfem::solver::NLProblem::use_reduced_size()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
@@ -322,9 +322,9 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_a_l_solver_8cpp_source.html#l00024">24</a> of file <a class="el" href="_a_l_solver_8cpp_source.html">ALSolver.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00043">polyfem::solver::FullNLProblem::forms()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00044">polyfem::solver::NLProblem::full_size()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00128">polyfem::solver::NLProblem::full_to_reduced()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00010">polyfem::solver::FullNLProblem::init()</a>, <a class="el" href="_a_l_solver_8hpp_source.html#l00035">initial_al_weight</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00074">polyfem::solver::NLProblem::is_step_collision_free()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00069">polyfem::solver::NLProblem::is_step_valid()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00059">polyfem::solver::NLProblem::line_search_begin()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00056">polyfem::solver::FullNLProblem::line_search_end()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_a_l_solver_8hpp_source.html#l00037">max_al_steps</a>, <a class="el" href="_a_l_solver_8hpp_source.html#l00033">nl_solver</a>, <a class="el" href="_a_l_solver_8hpp_source.html#l00028">post_subsolve</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00045">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00135">polyfem::solver::NLProblem::reduced_to_full()</a>, <a class="el" href="_a_l_solver_8hpp_source.html#l00036">scaling</a>, <a class="el" href="_a_l_solver_8cpp_source.html#l00091">set_al_weight()</a>, <a class="el" href="_a_l_solver_8hpp_source.html#l00040">updated_barrier_stiffness</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00079">polyfem::solver::NLProblem::value()</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00043">polyfem::solver::FullNLProblem::forms()</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00044">polyfem::solver::NLProblem::full_size()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00128">polyfem::solver::NLProblem::full_to_reduced()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00010">polyfem::solver::FullNLProblem::init()</a>, <a class="el" href="_a_l_solver_8hpp_source.html#l00035">initial_al_weight</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00074">polyfem::solver::NLProblem::is_step_collision_free()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00069">polyfem::solver::NLProblem::is_step_valid()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00059">polyfem::solver::NLProblem::line_search_begin()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00056">polyfem::solver::FullNLProblem::line_search_end()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_a_l_solver_8hpp_source.html#l00037">max_al_steps</a>, <a class="el" href="_a_l_solver_8hpp_source.html#l00033">nl_solver</a>, <a class="el" href="_a_l_solver_8hpp_source.html#l00028">post_subsolve</a>, <a class="el" href="_n_l_problem_8hpp_source.html#l00045">polyfem::solver::NLProblem::reduced_size()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00135">polyfem::solver::NLProblem::reduced_to_full()</a>, <a class="el" href="_a_l_solver_8hpp_source.html#l00036">scaling</a>, <a class="el" href="_a_l_solver_8cpp_source.html#l00093">set_al_weight()</a>, <a class="el" href="_a_l_solver_8hpp_source.html#l00040">update_barrier_stiffness</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00079">polyfem::solver::NLProblem::value()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00337">polyfem::State::solve_tensor_nonlinear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00341">polyfem::State::solve_tensor_nonlinear()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -363,7 +363,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_a_l_solver_8hpp_source.html#l00034">34</a> of file <a class="el" href="_a_l_solver_8hpp_source.html">ALSolver.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_l_solver_8cpp_source.html#l00091">set_al_weight()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_l_solver_8cpp_source.html#l00093">set_al_weight()</a>.</p>
 
 </div>
 </div>
@@ -459,7 +459,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_a_l_solver_8hpp_source.html#l00028">28</a> of file <a class="el" href="_a_l_solver_8hpp_source.html">ALSolver.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_l_solver_8cpp_source.html#l00024">solve()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00337">polyfem::State::solve_tensor_nonlinear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_l_solver_8cpp_source.html#l00024">solve()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00341">polyfem::State::solve_tensor_nonlinear()</a>.</p>
 
 </div>
 </div>
@@ -489,8 +489,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a6a69b6db69134f770cf4909408843833" name="a6a69b6db69134f770cf4909408843833"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6a69b6db69134f770cf4909408843833">&#9670;&#160;</a></span>updated_barrier_stiffness</h2>
+<a id="a3b79ffec357e60ede7cc6582492504b2" name="a3b79ffec357e60ede7cc6582492504b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b79ffec357e60ede7cc6582492504b2">&#9670;&#160;</a></span>update_barrier_stiffness</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -499,7 +499,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::function&lt;void(const Eigen::VectorXd &amp;)&gt; polyfem::solver::ALSolver::updated_barrier_stiffness</td>
+          <td class="memname">std::function&lt;void(const Eigen::VectorXd &amp;)&gt; polyfem::solver::ALSolver::update_barrier_stiffness</td>
         </tr>
       </table>
   </td>
