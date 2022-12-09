@@ -1,5 +1,9 @@
 var NAVTREEINDEX1 =
 {
+"_lagrange_basis3d_8hpp.html":[5,0,1,0,2,10],
+"_lagrange_basis3d_8hpp_source.html":[5,0,1,0,2,10],
+"_laplacian_8cpp.html":[5,0,1,0,0,22],
+"_laplacian_8cpp_source.html":[5,0,1,0,0,22],
 "_laplacian_8hpp.html":[5,0,1,0,0,23],
 "_laplacian_8hpp_source.html":[5,0,1,0,0,23],
 "_line_quadrature_8cpp.html":[5,0,1,0,6,2],
@@ -35,10 +39,10 @@ var NAVTREEINDEX1 =
 "_logger_8hpp.html#adc7e749e0c40939b7323961c6a41e391":[5,0,1,0,11,24,0],
 "_logger_8hpp.html#ae4cde5432ad6f53159237d00d3c14623":[5,0,1,0,11,24,1],
 "_logger_8hpp_source.html":[5,0,1,0,11,24],
-"_m_v_polygonal_basis2d_8cpp.html":[5,0,1,0,2,10],
-"_m_v_polygonal_basis2d_8cpp_source.html":[5,0,1,0,2,10],
-"_m_v_polygonal_basis2d_8hpp.html":[5,0,1,0,2,11],
-"_m_v_polygonal_basis2d_8hpp_source.html":[5,0,1,0,2,11],
+"_m_v_polygonal_basis2d_8cpp.html":[5,0,1,0,2,0,2],
+"_m_v_polygonal_basis2d_8cpp_source.html":[5,0,1,0,2,0,2],
+"_m_v_polygonal_basis2d_8hpp.html":[5,0,1,0,2,0,3],
+"_m_v_polygonal_basis2d_8hpp_source.html":[5,0,1,0,2,0,3],
 "_mass_8cpp.html":[5,0,1,0,0,26],
 "_mass_8cpp_source.html":[5,0,1,0,0,26],
 "_mass_8hpp.html":[5,0,1,0,0,27],
@@ -245,9 +249,5 @@ var NAVTREEINDEX1 =
 "_navigation3_d_8hpp.html#a833056543775050cfa5dbd377fa8dee2":[5,0,1,0,4,1,8,10],
 "_navigation3_d_8hpp.html#aa975a13eb914b8249046475137f6ffd5":[5,0,1,0,4,1,8,3],
 "_navigation3_d_8hpp.html#abb26569bae2a8e9c79428e485764b6a5":[5,0,1,0,4,1,8,7],
-"_navigation3_d_8hpp.html#abf3f1d35f2c95458576b75de69fa8bea":[5,0,1,0,4,1,8,5],
-"_navigation3_d_8hpp.html#acb2f78e44632a5f6fe0605877c564cd6":[5,0,1,0,4,1,8,6],
-"_navigation3_d_8hpp.html#acf2f94f81c7bf65de4afa6af74bdf131":[5,0,1,0,4,1,8,12],
-"_navigation3_d_8hpp_source.html":[5,0,1,0,4,1,8],
-"_navigation_8cpp.html":[5,0,1,0,4,0,4]
+"_navigation3_d_8hpp.html#abf3f1d35f2c95458576b75de69fa8bea":[5,0,1,0,4,1,8,5]
 };

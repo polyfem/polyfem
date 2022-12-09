@@ -62,6 +62,7 @@ var annotated_dup =
         [ "ViscousDamping", "classpolyfem_1_1assembler_1_1_viscous_damping.html", "classpolyfem_1_1assembler_1_1_viscous_damping" ]
       ] ],
       [ "basis", "namespacepolyfem_1_1basis.html", [
+        [ "BarycentricBasis2d", "classpolyfem_1_1basis_1_1_barycentric_basis2d.html", null ],
         [ "Basis", "classpolyfem_1_1basis_1_1_basis.html", "classpolyfem_1_1basis_1_1_basis" ],
         [ "ElementBases", "classpolyfem_1_1basis_1_1_element_bases.html", "classpolyfem_1_1basis_1_1_element_bases" ],
         [ "InterfaceData", "structpolyfem_1_1basis_1_1_interface_data.html", "structpolyfem_1_1basis_1_1_interface_data" ],
@@ -78,7 +79,8 @@ var annotated_dup =
         [ "RBFWithQuadratic", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic" ],
         [ "RBFWithQuadraticLagrange", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange" ],
         [ "SplineBasis2d", "classpolyfem_1_1basis_1_1_spline_basis2d.html", null ],
-        [ "SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ]
+        [ "SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ],
+        [ "WSPolygonalBasis2d", "classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html", null ]
       ] ],
       [ "io", "namespacepolyfem_1_1io.html", [
         [ "Evaluator", "classpolyfem_1_1io_1_1_evaluator.html", "classpolyfem_1_1io_1_1_evaluator" ],

@@ -1,5 +1,6 @@
 var namespacepolyfem_1_1basis =
 [
+    [ "BarycentricBasis2d", "classpolyfem_1_1basis_1_1_barycentric_basis2d.html", null ],
     [ "Basis", "classpolyfem_1_1basis_1_1_basis.html", "classpolyfem_1_1basis_1_1_basis" ],
     [ "ElementBases", "classpolyfem_1_1basis_1_1_element_bases.html", "classpolyfem_1_1basis_1_1_element_bases" ],
     [ "InterfaceData", "structpolyfem_1_1basis_1_1_interface_data.html", "structpolyfem_1_1basis_1_1_interface_data" ],
@@ -17,6 +18,7 @@ var namespacepolyfem_1_1basis =
     [ "RBFWithQuadraticLagrange", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange.html", "classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_lagrange" ],
     [ "SplineBasis2d", "classpolyfem_1_1basis_1_1_spline_basis2d.html", null ],
     [ "SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ],
+    [ "WSPolygonalBasis2d", "classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html", null ],
     [ "compute_epsilon", "namespacepolyfem_1_1basis.html#a499aa1c6971b36fc766d06a74a7e1482", null ],
     [ "compute_epsilon", "namespacepolyfem_1_1basis.html#a05c9a37e7bf673cecb9e7961ec47f656", null ]
 ];

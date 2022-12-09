@@ -130,8 +130,8 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1basis_1_1_m_v_polygona
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:adf1d3cfcf31379e277705dca652ad130"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html#adf1d3cfcf31379e277705dca652ad130">build_bases</a> (const std::string &amp;assembler_name, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">mesh::Mesh2D</a> &amp;mesh, const int n_bases, const int quadrature_order, const int mass_quadrature_order, std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;gbases, const std::map&lt; int, <a class="el" href="structpolyfem_1_1basis_1_1_interface_data.html">InterfaceData</a> &gt; &amp;poly_edge_to_data, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::map&lt; int, Eigen::MatrixXd &gt; &amp;mapped_boundary)</td></tr>
-<tr class="separator:adf1d3cfcf31379e277705dca652ad130"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89ea43b4f379acbf62d0da00c478438a"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html#a89ea43b4f379acbf62d0da00c478438a">build_bases</a> (const std::string &amp;assembler_name, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">mesh::Mesh2D</a> &amp;mesh, const int n_bases, const int quadrature_order, const int mass_quadrature_order, std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;bases, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::map&lt; int, Eigen::MatrixXd &gt; &amp;mapped_boundary)</td></tr>
+<tr class="separator:a89ea43b4f379acbf62d0da00c478438a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab995c1ceb5684273a9603d30109ca5cb"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html#ab995c1ceb5684273a9603d30109ca5cb">meanvalue</a> (const Eigen::MatrixXd &amp;polygon, const Eigen::RowVector2d &amp;point, Eigen::MatrixXd &amp;b, const double tol)</td></tr>
 <tr class="separator:ab995c1ceb5684273a9603d30109ca5cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac51379547373e1572f065c4a2f0f3c50"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html#ac51379547373e1572f065c4a2f0f3c50">meanvalue_derivative</a> (const Eigen::MatrixXd &amp;polygon, const Eigen::RowVector2d &amp;point, Eigen::MatrixXd &amp;derivatives, const double tol)</td></tr>
@@ -139,10 +139,10 @@ Static Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_m_v_polygonal_basis2d_8hpp_source.html#l00018">18</a> of file <a class="el" href="_m_v_polygonal_basis2d_8hpp_source.html">MVPolygonalBasis2d.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_m_v_polygonal_basis2d_8hpp_source.html#l00014">14</a> of file <a class="el" href="_m_v_polygonal_basis2d_8hpp_source.html">MVPolygonalBasis2d.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="adf1d3cfcf31379e277705dca652ad130" name="adf1d3cfcf31379e277705dca652ad130"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adf1d3cfcf31379e277705dca652ad130">&#9670;&#160;</a></span>build_bases()</h2>
+<a id="a89ea43b4f379acbf62d0da00c478438a" name="a89ea43b4f379acbf62d0da00c478438a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89ea43b4f379acbf62d0da00c478438a">&#9670;&#160;</a></span>build_bases()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -189,18 +189,6 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>gbases</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::map&lt; int, <a class="el" href="structpolyfem_1_1basis_1_1_interface_data.html">InterfaceData</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>poly_edge_to_data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>local_boundary</em>, </td>
         </tr>
@@ -223,21 +211,21 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00341">341</a> of file <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html">MVPolygonalBasis2d.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00241">241</a> of file <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html">MVPolygonalBasis2d.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399">polyfem::mesh::Mesh::face_vertex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111">polyfem::mesh::Mesh2D::get_index_from_face()</a>, <a class="el" href="_polygon_quadrature_8cpp_source.html#l00034">polyfem::quadrature::PolygonQuadrature::get_quadrature()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00033">polyfem::basis::ElementBases::has_parameterization</a>, <a class="el" href="_mesh_8cpp_source.html#l00360">polyfem::mesh::Mesh::is_polytope()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00080">polyfem::assembler::AssemblerUtils::is_tensor()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00025">polyfem::mesh::Mesh2D::is_volume()</a>, <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00123">meanvalue()</a>, <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00193">meanvalue_derivative()</a>, <a class="el" href="_mesh_8hpp_source.html#l00154">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh::n_face_vertices()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">polyfem::mesh::Mesh::point()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00641">polyfem::assembler::AssemblerUtils::quadrature_order()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00087">polyfem::basis::ElementBases::set_bases_func()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00088">polyfem::basis::ElementBases::set_grads_func()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00091">polyfem::basis::ElementBases::set_local_node_from_primitive_func()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00061">polyfem::basis::ElementBases::set_mass_quadrature()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00060">polyfem::basis::ElementBases::set_quadrature()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00091">val</a>.</p>
+<p class="reference">References <a class="el" href="_barycentric_basis2d_8cpp_source.html#l00116">polyfem::basis::BarycentricBasis2d::build_bases()</a>, <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00023">meanvalue()</a>, and <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00093">meanvalue_derivative()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00974">polyfem::State::build_polygonal_basis()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00975">polyfem::State::build_polygonal_basis()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d_adf1d3cfcf31379e277705dca652ad130_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d_a89ea43b4f379acbf62d0da00c478438a_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d_adf1d3cfcf31379e277705dca652ad130_icgraph.svg" width="100%" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d_a89ea43b4f379acbf62d0da00c478438a_icgraph.svg" width="100%" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -289,9 +277,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00123">123</a> of file <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html">MVPolygonalBasis2d.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00023">23</a> of file <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html">MVPolygonalBasis2d.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00341">build_bases()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00241">build_bases()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -347,9 +335,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00193">193</a> of file <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html">MVPolygonalBasis2d.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00093">93</a> of file <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html">MVPolygonalBasis2d.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00341">build_bases()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00241">build_bases()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -360,8 +348,8 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/polyfem/basis/<a class="el" href="_m_v_polygonal_basis2d_8hpp_source.html">MVPolygonalBasis2d.hpp</a></li>
-<li>src/polyfem/basis/<a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html">MVPolygonalBasis2d.cpp</a></li>
+<li>src/polyfem/basis/barycentric/<a class="el" href="_m_v_polygonal_basis2d_8hpp_source.html">MVPolygonalBasis2d.hpp</a></li>
+<li>src/polyfem/basis/barycentric/<a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html">MVPolygonalBasis2d.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -1,5 +1,6 @@
 var dir_13510bfc8d6c882cc83f48e81fc78b9e =
 [
+    [ "barycentric", "dir_6f7b942d206de9669673dbf429edb974.html", "dir_6f7b942d206de9669673dbf429edb974" ],
     [ "function", "dir_139e29326adc6ff55c23eda1e203610b.html", "dir_139e29326adc6ff55c23eda1e203610b" ],
     [ "Basis.cpp", "_basis_8cpp.html", null ],
     [ "Basis.hpp", "_basis_8hpp.html", "_basis_8hpp" ],
@@ -10,8 +11,6 @@ var dir_13510bfc8d6c882cc83f48e81fc78b9e =
     [ "LagrangeBasis2d.hpp", "_lagrange_basis2d_8hpp.html", "_lagrange_basis2d_8hpp" ],
     [ "LagrangeBasis3d.cpp", "_lagrange_basis3d_8cpp.html", null ],
     [ "LagrangeBasis3d.hpp", "_lagrange_basis3d_8hpp.html", "_lagrange_basis3d_8hpp" ],
-    [ "MVPolygonalBasis2d.cpp", "_m_v_polygonal_basis2d_8cpp.html", null ],
-    [ "MVPolygonalBasis2d.hpp", "_m_v_polygonal_basis2d_8hpp.html", "_m_v_polygonal_basis2d_8hpp" ],
     [ "PolygonalBasis2d.cpp", "_polygonal_basis2d_8cpp.html", "_polygonal_basis2d_8cpp" ],
     [ "PolygonalBasis2d.hpp", "_polygonal_basis2d_8hpp.html", "_polygonal_basis2d_8hpp" ],
     [ "PolygonalBasis3d.cpp", "_polygonal_basis3d_8cpp.html", "_polygonal_basis3d_8cpp" ],

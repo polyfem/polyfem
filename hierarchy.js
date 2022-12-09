@@ -25,6 +25,7 @@ var hierarchy =
     [ "polyfem::assembler::AssemblyValues", "classpolyfem_1_1assembler_1_1_assembly_values.html", null ],
     [ "polyfem::AutoDiffAllocator< T >", "classpolyfem_1_1_auto_diff_allocator.html", null ],
     [ "polyfem::AutoDiffAllocator< double >", "classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html", null ],
+    [ "polyfem::basis::BarycentricBasis2d", "classpolyfem_1_1basis_1_1_barycentric_basis2d.html", null ],
     [ "polyfem::utils::base64Layer", "classpolyfem_1_1utils_1_1base64_layer.html", null ],
     [ "polyfem::basis::Basis", "classpolyfem_1_1basis_1_1_basis.html", null ],
     [ "polyfem::problem::PointBasedTensorProblem::BCValue", "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html", null ],
@@ -286,5 +287,6 @@ var hierarchy =
     [ "polyfem::mesh::Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", null ],
     [ "polyfem::renderer::VertexAttributes", "classpolyfem_1_1renderer_1_1_vertex_attributes.html", null ],
     [ "polyfem::assembler::ViscousDamping", "classpolyfem_1_1assembler_1_1_viscous_damping.html", null ],
-    [ "polyfem::io::VTUWriter", "classpolyfem_1_1io_1_1_v_t_u_writer.html", null ]
+    [ "polyfem::io::VTUWriter", "classpolyfem_1_1io_1_1_v_t_u_writer.html", null ],
+    [ "polyfem::basis::WSPolygonalBasis2d", "classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html", null ]
 ];
