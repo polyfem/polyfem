@@ -20,8 +20,6 @@ set(SOURCES
 	function/RBFWithQuadraticLagrange.cpp
 	function/RBFWithQuadraticLagrange.hpp
 	InterfaceData.hpp
-	MVPolygonalBasis2d.cpp
-	MVPolygonalBasis2d.hpp
 	PolygonalBasis2d.cpp
 	PolygonalBasis2d.hpp
 	PolygonalBasis3d.cpp
@@ -30,6 +28,12 @@ set(SOURCES
 	SplineBasis2d.hpp
 	SplineBasis3d.cpp
 	SplineBasis3d.hpp
+	barycentric/BarycentricBasis2d.cpp
+	barycentric/BarycentricBasis2d.hpp
+	barycentric/MVPolygonalBasis2d.cpp
+	barycentric/MVPolygonalBasis2d.hpp
+	barycentric/WSPolygonalBasis2d.cpp
+	barycentric/WSPolygonalBasis2d.hpp
 )
 
 prepend_current_path(SOURCES)

@@ -203,11 +203,35 @@ namespace polyfem::solver
 	void SolveData::update_barrier_stiffness(const Eigen::VectorXd &x)
 	{
 		// TODO: missing use_adaptive_barrier_stiffness_ if (use_adaptive_barrier_stiffness_ && is_time_dependent_)
-		// if (time_integrator == nullptr)
+		// if (inertia_form == nullptr)
 		// 	return;
-		assert(nl_problem != nullptr);
-		if (contact_form)
-			contact_form->update_barrier_stiffness(x, *nl_problem, friction_form);
+
+		// if (contact_form)
+		// 	contact_form->update_barrier_stiffness(x, *nl_problem, friction_form);
+
+		if (contact_form == nullptr)
+			return;
+
+		if (!contact_form->use_adaptive_barrier_stiffness())
+			return;
+
+		Eigen::VectorXd grad_energy(x.size(), 1);
+		grad_energy.setZero();
+
+		elastic_form->first_derivative(x, grad_energy);
+
+		if (inertia_form)
+		{
+			Eigen::VectorXd grad_inertia(x.size());
+			inertia_form->first_derivative(x, grad_inertia);
+			grad_energy += grad_inertia;
+		}
+
+		Eigen::VectorXd body_energy(x.size());
+		body_form->first_derivative(x, body_energy);
+		grad_energy += body_energy;
+
+		contact_form->update_barrier_stiffness(x, grad_energy);
 	}
 
 	void SolveData::update_dt()

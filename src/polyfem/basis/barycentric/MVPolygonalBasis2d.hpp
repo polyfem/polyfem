@@ -1,15 +1,11 @@
 #pragma once
 
-#include <polyfem/mesh/mesh2D/CMesh2D.hpp>
-#include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
-#include <polyfem/basis/InterfaceData.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 
 #include <Eigen/Dense>
 #include <vector>
-#include <map>
 
 namespace polyfem
 {
@@ -25,8 +21,6 @@ namespace polyfem
 				const int quadrature_order,
 				const int mass_quadrature_order,
 				std::vector<ElementBases> &bases,
-				const std::vector<ElementBases> &gbases,
-				const std::map<int, InterfaceData> &poly_edge_to_data,
 				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, Eigen::MatrixXd> &mapped_boundary);
 
