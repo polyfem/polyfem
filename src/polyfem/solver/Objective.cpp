@@ -6,6 +6,7 @@
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+#include "HomoObjective.hpp"
 
 using namespace polyfem::utils;
 
@@ -96,30 +97,6 @@ namespace polyfem::solver
 				return 0;
 			else
 				return std::nan("");
-		}
-
-		template <typename T>
-		T homo_aux(const Eigen::Matrix<T, Eigen::Dynamic, 1> &F)
-		{
-			T val1 = F(0) * F(0) + F(1) * F(1) + F(2) * F(2);
-			T val2 = F(3) * F(3);
-
-			return sqrt(val1 / (val2 + val1));
-		}
-
-		Eigen::VectorXd homo_aux_grad(const Eigen::VectorXd &F)
-		{
-			DiffScalarBase::setVariableCount(F.size());
-			Eigen::Matrix<Diff, Eigen::Dynamic, 1> full_diff(F.size());
-			for (int i = 0; i < F.size(); i++)
-				full_diff(i) = Diff(i, F(i));
-			auto reduced_diff = homo_aux(full_diff);
-
-			Eigen::VectorXd grad(F.size());
-			for (int i = 0; i < F.size(); ++i)
-				grad(i) = reduced_diff.getGradient()(i);
-
-			return grad;
 		}
 	} // namespace
 
@@ -270,6 +247,27 @@ namespace polyfem::solver
 			else
 				obj = tmp;
 		}
+		else if (type == "homogenized_energy")
+		{
+			State &state = *(states[args["state"]]);
+			std::shared_ptr<Parameter> shape_param, elastic_param, macro_strain_param;
+			if (args["shape_parameter"] >= 0)
+			{
+				shape_param = parameters[args["shape_parameter"]];
+				if (!shape_param->contains_state(state))
+					logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
+			}
+			else
+				logger().warn("No shape parameter is assigned to functional");
+
+			if (args["material_parameter"] >= 0)
+				elastic_param = parameters[args["material_parameter"]];
+
+			if (args["macro_strain_parameter"] >= 0)
+				macro_strain_param = parameters[args["macro_strain_parameter"]];
+
+			obj = std::make_shared<solver::HomogenizedEnergyObjective>(state, shape_param, macro_strain_param, elastic_param, args);
+		}
 		else if (type == "homogenized_stress")
 		{
 			State &state = *(states[args["state"]]);
@@ -383,10 +381,6 @@ namespace polyfem::solver
 		else if (type == "naive_negative_poisson")
 		{
 			obj = std::make_shared<solver::NaiveNegativePoissonObjective>(*(states[args["state"]]), args);
-		}
-		else if (type == "target_length")
-		{
-			obj = std::make_shared<solver::TargetLengthObjective>(*(states[args["state"]]), args);
 		}
 		else
 			log_and_throw_error("Unkown functional type {}!", type);
@@ -1533,61 +1527,6 @@ namespace polyfem::solver
 		return Eigen::VectorXd::Zero(param.full_dim());
 	}
 
-	TargetLengthObjective::TargetLengthObjective(const State &state1, const json &args) : state1_(state1)
-	{
-		Eigen::VectorXd a, b;
-		a = args["v1"];
-		b = args["v2"];
-		target_length = args["target_length"];
-		for (int i = 0; i < state1_.n_bases; i++)
-		{
-			if (almost_equal(state1_.mesh_nodes->node_position(i), a))
-			{
-				v1 = i;
-			}
-			if (almost_equal(state1_.mesh_nodes->node_position(i), b))
-			{
-				v2 = i;
-			}
-		}
-		if (v1 < 0 || v2 < 0)
-			log_and_throw_error("Failed to find target vertices in objective!");
-	}
-
-	double TargetLengthObjective::value()
-	{
-		const int dim = state1_.mesh->dimension();
-		const double length1 = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
-
-		return pow(length1 - target_length, 2);
-	}
-
-	Eigen::MatrixXd TargetLengthObjective::compute_adjoint_rhs(const State &state)
-	{
-		Eigen::MatrixXd rhs;
-		rhs.setZero(state.diff_cached[0].u.size(), 1);
-
-		const int dim = state1_.mesh->dimension();
-
-		if (&state == &state1_)
-		{
-			const double length1 = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
-
-			rhs(v1 * dim + 0) = 2 * (length1 - target_length);
-			rhs(v2 * dim + 0) = -2 * (length1 - target_length);
-		}
-
-		return rhs;
-	}
-
-	Eigen::VectorXd TargetLengthObjective::compute_partial_gradient(const Parameter &param)
-	{
-		if (param.name() == "shape")
-			log_and_throw_error("Not implemented!");
-
-		return Eigen::VectorXd::Zero(param.full_dim());
-	}
-
 	IntegrableFunctional TargetObjective::get_integral_functional()
 	{
 		assert(target_state_);
@@ -2047,175 +1986,6 @@ namespace polyfem::solver
 		}
 
 		return grad / lambdas.size();
-	}
-
-	HomogenizedStressObjective::HomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> macro_strain_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args) : SpatialIntegralObjective(state, shape_param, macro_strain_param, args), elastic_param_(elastic_param)
-	{
-		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
-		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
-		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
-
-		id = args["id"].get<std::vector<int>>();
-		assert(id.size() == 2);
-		formulation_ = state.formulation();
-	}
-
-	IntegrableFunctional HomogenizedStressObjective::get_integral_functional()
-	{
-		IntegrableFunctional j;
-
-		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val.setZero(grad_u.rows(), 1);
-			Eigen::MatrixXd grad_u_q, stress;
-			for (int q = 0; q < grad_u.rows(); q++)
-			{
-				vector2matrix(grad_u.row(q), grad_u_q);
-				if (this->formulation_ == "LinearElasticity")
-				{
-					stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
-				}
-				else if (this->formulation_ == "NeoHookean")
-				{
-					Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols()) + grad_u_q;
-					Eigen::MatrixXd FmT = def_grad.inverse().transpose();
-					stress = mu(q) * (def_grad - FmT) + lambda(q) * std::log(def_grad.determinant()) * FmT;
-				}
-				else
-					log_and_throw_error("Unknown formulation!");
-				val(q) = stress(id[0], id[1]);
-			}
-		});
-
-		j.set_dj_dgradu([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val.setZero(grad_u.rows(), grad_u.cols());
-			const int dim = sqrt(grad_u.cols());
-			Eigen::MatrixXd grad_u_q, stiffness, stress;
-			for (int q = 0; q < grad_u.rows(); q++)
-			{
-				stiffness.setZero(1, dim * dim * dim * dim);
-				vector2matrix(grad_u.row(q), grad_u_q);
-
-				if (this->formulation_ == "LinearElasticity")
-				{
-					stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
-					for (int i = 0, idx = 0; i < dim; i++)
-						for (int j = 0; j < dim; j++)
-							for (int k = 0; k < dim; k++)
-								for (int l = 0; l < dim; l++)
-								{
-									stiffness(idx++) = mu(q) * delta(i, k) * delta(j, l) + mu(q) * delta(i, l) * delta(j, k) + lambda(q) * delta(i, j) * delta(k, l);
-								}
-				}
-				else if (this->formulation_ == "NeoHookean")
-				{
-					Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols()) + grad_u_q;
-					Eigen::MatrixXd FmT = def_grad.inverse().transpose();
-					stress = mu(q) * (def_grad - FmT) + lambda(q) * std::log(def_grad.determinant()) * FmT;
-					Eigen::VectorXd FmT_vec = utils::flatten(FmT);
-					double J = def_grad.determinant();
-					double tmp1 = mu(q) - lambda(q) * std::log(J);
-					for (int i = 0, idx = 0; i < dim; i++)
-						for (int j = 0; j < dim; j++)
-							for (int k = 0; k < dim; k++)
-								for (int l = 0; l < dim; l++)
-								{
-									stiffness(idx++) = mu(q) * delta(i, k) * delta(j, l) + tmp1 * FmT(i, l) * FmT(k, j);
-								}
-					stiffness += lambda(q) * utils::flatten(FmT_vec * FmT_vec.transpose()).transpose();
-				}
-				else
-					logger().error("Unknown formulation!");
-
-				val.row(q) = stiffness.block(0, (id[0] * dim + id[1]) * dim * dim, 1, dim * dim);
-			}
-		});
-
-		return j;
-	}
-
-	double HomogenizedStressObjective::value()
-	{
-		double val = SpatialIntegralObjective::value();
-		return val;
-	}
-
-	Eigen::VectorXd HomogenizedStressObjective::compute_adjoint_rhs_step(const State &state)
-	{
-		Eigen::VectorXd rhs = SpatialIntegralObjective::compute_adjoint_rhs_step(state);
-		return rhs;
-	}
-
-	Eigen::VectorXd HomogenizedStressObjective::compute_partial_gradient(const Parameter &param)
-	{
-		Eigen::VectorXd term;
-		term.setZero(param.full_dim());
-		if (&param == elastic_param_.get())
-		{
-			// TODO: differentiate stress wrt. lame param
-			log_and_throw_error("Not implemented!");
-		}
-		else
-		{
-			term = SpatialIntegralObjective::compute_partial_gradient(param);
-		}
-
-		return term;
-	}
-
-	CompositeHomogenizedStressObjective::CompositeHomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> macro_strain_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args)
-	{
-		json tmp_arg = args;
-		std::vector<int> id(2);
-		id[0] = 0;
-		id[1] = 0;
-		tmp_arg["id"] = id;
-		js[0] = std::make_shared<HomogenizedStressObjective>(state, shape_param, macro_strain_param, elastic_param, tmp_arg);
-
-		id[0] = 0;
-		id[1] = 1;
-		tmp_arg["id"] = id;
-		js[1] = std::make_shared<HomogenizedStressObjective>(state, shape_param, macro_strain_param, elastic_param, tmp_arg);
-
-		id[0] = 1;
-		id[1] = 0;
-		tmp_arg["id"] = id;
-		js[2] = std::make_shared<HomogenizedStressObjective>(state, shape_param, macro_strain_param, elastic_param, tmp_arg);
-
-		id[0] = 1;
-		id[1] = 1;
-		tmp_arg["id"] = id;
-		js[3] = std::make_shared<HomogenizedStressObjective>(state, shape_param, macro_strain_param, elastic_param, tmp_arg);
-	}
-	double CompositeHomogenizedStressObjective::value()
-	{
-		Eigen::VectorXd F(4);
-		F << js[0]->value(), js[1]->value(), js[2]->value(), js[3]->value();
-		logger().debug("Current homogenized stress: {}", F.transpose());
-		return homo_aux(F);
-	}
-	Eigen::MatrixXd CompositeHomogenizedStressObjective::compute_adjoint_rhs(const State &state)
-	{
-		Eigen::VectorXd F(4);
-		F << js[0]->value(), js[1]->value(), js[2]->value(), js[3]->value();
-		Eigen::VectorXd grad_aux = homo_aux_grad(F);
-
-		Eigen::MatrixXd grad;
-		grad.setZero(state.ndof(), state.diff_cached.size());
-		for (int i = 0; i < F.size(); i++)
-			grad += grad_aux(i) * js[i]->compute_adjoint_rhs(state);
-		return grad;
-	}
-	Eigen::VectorXd CompositeHomogenizedStressObjective::compute_partial_gradient(const Parameter &param)
-	{
-		Eigen::VectorXd F(4);
-		F << js[0]->value(), js[1]->value(), js[2]->value(), js[3]->value();
-		Eigen::VectorXd grad_aux = homo_aux_grad(F);
-
-		Eigen::MatrixXd grad;
-		grad.setZero(param.full_dim(), 1);
-		for (int i = 0; i < F.size(); i++)
-			grad += grad_aux(i) * js[i]->compute_partial_gradient(param);
-		return grad;
 	}
 
 	CollisionBarrierObjective::CollisionBarrierObjective(const std::shared_ptr<const Parameter> shape_param, const json &args) : shape_param_(shape_param)

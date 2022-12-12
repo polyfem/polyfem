@@ -2325,7 +2325,8 @@
             "cache_size",
             "lump_mass_matrix",
             "lagged_regularization_weight",
-            "lagged_regularization_iterations"
+            "lagged_regularization_iterations",
+            "bistable"
         ],
         "doc": "Advanced settings for the solver"
     },
@@ -2352,6 +2353,12 @@
         "default": 1,
         "type": "int",
         "doc": "Number of regularize singular static problems."
+    },
+    {
+        "pointer": "/solver/advanced/bistable",
+        "default": false,
+        "type": "bool",
+        "doc": "To find the bistable state of a microstructure."
     },
     {
         "pointer": "/materials",

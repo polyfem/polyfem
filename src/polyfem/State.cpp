@@ -1644,7 +1644,7 @@ void State::build_collision_mesh(
 					cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 			}
 			else if (disp_grad.size() > 0)
-				solve_homogenized_field(disp_grad, sol);
+				solve_homogenized_field(disp_grad, sol, args["solver"]["advanced"]["bistable"].get<bool>());
 			else if (!assembler.is_linear(formulation()) && problem->is_scalar())
 				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else

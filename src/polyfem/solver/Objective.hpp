@@ -304,26 +304,6 @@ namespace polyfem::solver
 		double power_ = 2;
 	};
 
-	class TargetLengthObjective : public Objective
-	{
-	public:
-		TargetLengthObjective(const State &state1, const json &args);
-		~TargetLengthObjective() = default;
-
-		double value() override;
-		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
-
-	protected:
-		const State &state1_;
-
-		int v1 = -1;
-		int v2 = -1;
-		double target_length;
-
-		double power_ = 2;
-	};
-
 	class TargetObjective : public SpatialIntegralObjective
 	{
 	public:
@@ -445,39 +425,6 @@ namespace polyfem::solver
 		double kappa_mu = 0, dhat_mu = 0;
 		double min_nu = 0, max_nu = 0;
 		double kappa_nu = 0, dhat_nu = 0;
-	};
-
-	class HomogenizedStressObjective : public SpatialIntegralObjective
-	{
-	public:
-		HomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> macro_strain_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args);
-		~HomogenizedStressObjective() = default;
-
-		double value() override;
-
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
-		Eigen::VectorXd compute_adjoint_rhs_step(const State &state) override;
-		IntegrableFunctional get_integral_functional() override;
-
-	protected:
-		std::vector<int> id;
-		std::string formulation_;
-
-		std::shared_ptr<const Parameter> elastic_param_; // stress depends on elastic param
-	};
-
-	class CompositeHomogenizedStressObjective : public Objective
-	{
-	public:
-		CompositeHomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> macro_strain_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args);
-		~CompositeHomogenizedStressObjective() = default;
-
-		double value() override;
-		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
-
-	protected:
-		std::array<std::shared_ptr<HomogenizedStressObjective>, 4> js;
 	};
 
 	class CollisionBarrierObjective : public Objective
