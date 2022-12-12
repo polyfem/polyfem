@@ -7,7 +7,7 @@ set(SOURCES
 	LocalMesh.cpp
 	LocalMesh.hpp
 	LocalRelaxation.cpp
-	ProjectQuantaties.cpp
+	ProjectQuantities.cpp
 	Smooth.cpp
 	Split.cpp
 	Swap.cpp

@@ -146,7 +146,7 @@ namespace polyfem::mesh
 			Eigen::Vector2d rest_position;
 			Eigen::Vector2d position;
 
-			/// @brief Quantaties to be projected (DIM × n_quantities)
+			/// @brief Quantities to be projected (DIM × n_quantities)
 			Eigen::MatrixXd projection_quantities;
 
 			bool fixed = false;
@@ -282,7 +282,7 @@ namespace polyfem::mesh
 		/// @brief Number of projection quantities (not including the position)
 		int n_quantities;
 
-		/// @brief Cache quantaties before applying an operation
+		/// @brief Cache quantities before applying an operation
 		void cache_before();
 
 		// TODO: Drop this and only use a local EdgeOperationCache

@@ -104,7 +104,7 @@ namespace polyfem::mesh
 		map_edge_split_edge_attributes(*this, t, edge_cache.edges(), old_v0_id, old_v1_id);
 		map_edge_split_face_attributes(*this, t, edge_cache.faces());
 
-		// 2) Project quantaties so to minimize the L2 error
+		// 2) Project quantities so to minimize the L2 error
 		new_vertex_attr.position = (v0.position + v1.position) / 2.0;
 		new_vertex_attr.projection_quantities =
 			(v0.projection_quantities + v1.projection_quantities) / 2.0;

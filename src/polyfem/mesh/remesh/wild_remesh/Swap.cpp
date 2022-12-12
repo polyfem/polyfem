@@ -57,7 +57,7 @@ namespace polyfem::mesh
 		face_attrs[t.fid(*this)] = edge_cache.faces()[0];
 		face_attrs[t.switch_face(*this)->fid(*this)] = edge_cache.faces()[1];
 
-		// 2) Project quantaties so to minimize the L2 error
+		// 2) Project quantities so to minimize the L2 error
 		project_quantities(); // also projects positions
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the

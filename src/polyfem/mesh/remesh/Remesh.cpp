@@ -14,7 +14,7 @@ namespace polyfem::mesh
 {
 	namespace
 	{
-		Eigen::MatrixXd combine_projection_quantaties(const State &state, const Eigen::MatrixXd &sol)
+		Eigen::MatrixXd combine_projection_quantities(const State &state, const Eigen::MatrixXd &sol)
 		{
 			if (state.solve_data.time_integrator == nullptr)
 				return Eigen::MatrixXd();
@@ -35,7 +35,7 @@ namespace polyfem::mesh
 			return projection_quantities;
 		}
 
-		void split_projection_quantaties(
+		void split_projection_quantities(
 			const State &state,
 			const Eigen::MatrixXd &projected_quantities,
 			std::vector<Eigen::VectorXd> &x_prevs,
@@ -106,7 +106,7 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd positions = rest_positions + utils::unflatten(mesh_sol, dim);
 
 		// not including current displacement as this will be handled as positions
-		Eigen::MatrixXd projection_quantities = combine_projection_quantaties(state, sol);
+		Eigen::MatrixXd projection_quantities = combine_projection_quantities(state, sol);
 		assert(projection_quantities.rows() == ndof);
 
 		Eigen::VectorXd friction_gradient;
@@ -118,7 +118,7 @@ namespace polyfem::mesh
 		assert(friction_gradient.size() == projection_quantities.rows());
 		projection_quantities.rightCols(1) = friction_gradient;
 
-		const Eigen::MatrixXd obstacle_projection_quantaties = projection_quantities.bottomRows(ndof_obstacle);
+		const Eigen::MatrixXd obstacle_projection_quantities = projection_quantities.bottomRows(ndof_obstacle);
 		projection_quantities.conservativeResize(ndof_mesh, Eigen::NoChange);
 
 		assert(!state.mesh->is_volume());
@@ -197,12 +197,12 @@ namespace polyfem::mesh
 			assert(projected_quantities.rows() == ndof_mesh);
 			assert(projected_quantities.cols() == projection_quantities.cols());
 			projected_quantities.conservativeResize(ndof, Eigen::NoChange);
-			projected_quantities.bottomRows(ndof_obstacle) = obstacle_projection_quantaties;
+			projected_quantities.bottomRows(ndof_obstacle) = obstacle_projection_quantities;
 			// drop the last column (the friction gradient)
 			projected_quantities.conservativeResize(Eigen::NoChange, projected_quantities.cols() - 1);
 
 			std::vector<Eigen::VectorXd> x_prevs, v_prevs, a_prevs;
-			split_projection_quantaties(state, projected_quantities, x_prevs, v_prevs, a_prevs);
+			split_projection_quantities(state, projected_quantities, x_prevs, v_prevs, a_prevs);
 			state.solve_data.time_integrator->init(x_prevs, v_prevs, a_prevs, dt);
 		}
 

@@ -80,7 +80,7 @@ namespace polyfem::mesh
 
 		// Nothing to do for the face attributes because no new faces are created.
 
-		// 2) Project quantaties so to minimize the L2 error
+		// 2) Project quantities so to minimize the L2 error
 
 		// initial guess for the new vertex position
 		if (v0.fixed)

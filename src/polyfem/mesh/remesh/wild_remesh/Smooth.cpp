@@ -18,7 +18,7 @@ namespace polyfem::mesh
 		if (vertex_attrs[t.vid(*this)].fixed)
 			return false;
 
-		cache_before(); // Cache global quantaties for projection
+		cache_before(); // Cache global quantities for projection
 
 		return true;
 	}
@@ -105,7 +105,7 @@ namespace polyfem::mesh
 		}
 
 		// ---------------------------------------------------------------------
-		// 2. project quantaties so to minimize the L2 error
+		// 2. project quantities so to minimize the L2 error
 		project_quantities();
 
 		// There is no non-inversion check in project_quantities, so check it here.

@@ -78,31 +78,6 @@ namespace polyfem::solver
 		this->update_barrier_stiffness(x, grad_energy);
 	}
 
-	void ContactForm::update_barrier_stiffness(
-		const Eigen::VectorXd &x,
-		NLProblem &nl_problem,
-		std::shared_ptr<FrictionForm> friction_form)
-	{
-		if (!use_adaptive_barrier_stiffness())
-			return;
-
-		const bool enabled_before = this->enabled();
-		const bool friction_enabled_before = friction_form != nullptr && friction_form->enabled();
-
-		this->disable();
-		if (friction_form)
-			friction_form->disable();
-
-		Eigen::VectorXd grad_energy;
-		nl_problem.gradient(x, grad_energy);
-
-		this->set_enabled(enabled_before);
-		if (friction_form)
-			friction_form->set_enabled(friction_enabled_before);
-
-		this->update_barrier_stiffness(x, grad_energy);
-	}
-
 	void ContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
 	{
 		if (!use_adaptive_barrier_stiffness())
