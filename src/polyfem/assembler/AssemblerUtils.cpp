@@ -895,10 +895,10 @@ namespace polyfem
 				return [&](const Eigen::MatrixXd &grad_disp, const double lambda, const double mu) {
 					return linear_elasticity_.local_assembler().compute_energy(grad_disp, lambda, mu);
 				};
-			// else if (assembler == "NeoHookean")
-			// 	return [&](const Eigen::MatrixXd &grad_disp, const double lambda, const double mu) {
-			// 		return neo_hookean_elasticity_.local_assembler().compute_energy(grad_disp, lambda, mu);
-			// 	};
+			else if (assembler == "NeoHookean")
+				return [&](const Eigen::MatrixXd &grad_disp, const double lambda, const double mu) {
+					return neo_hookean_elasticity_.local_assembler().compute_energy(grad_disp, lambda, mu);
+				};
 			else
 			{
 				assert(false);

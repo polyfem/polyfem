@@ -308,6 +308,14 @@ namespace polyfem::assembler
 		return compute_energy_aux<double>(data);
 	}
 
+	double NeoHookeanElasticity::compute_energy(const Eigen::MatrixXd &grad_disp, const double lambda, const double mu)
+	{
+		const int dim = grad_disp.rows();
+		Eigen::MatrixXd def_grad = grad_disp + Eigen::MatrixXd::Identity(dim, dim);
+		double log_det_j = log(def_grad.determinant());
+		return mu / 2 * ((def_grad.transpose() * def_grad).trace() - dim - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
+	}
+
 	// Compute ∫ ½μ (tr(FᵀF) - 3 - 2ln(J)) + ½λ ln²(J) du
 	template <typename T>
 	T NeoHookeanElasticity::compute_energy_aux(const NonLinearAssemblerData &data) const
