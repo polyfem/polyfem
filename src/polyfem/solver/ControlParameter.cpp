@@ -43,7 +43,6 @@ namespace polyfem
 						continue;
 					starting_dirichlet(i * boundary_id_to_reduced_param.size() * dim + boundary_id_to_reduced_param[dirichlet["id"].get<int>()] * dim + k) = dirichlet["value"][k][i];
 				}
-
 		boundary_ids_list.resize(states_ptr_[0]->boundary_nodes.size());
 		for (auto it = states_ptr_[0]->local_boundary.begin(); it != states_ptr_[0]->local_boundary.end(); ++it)
 		{
@@ -84,6 +83,7 @@ namespace polyfem
 
 		control_constraints_ = std::make_shared<ControlConstraints>(args, time_steps, states_ptr[0]->mesh->dimension(), boundary_ids_list, boundary_id_to_reduced_param);
 		optimization_dim_ = control_constraints_->get_optimization_dim();
+		current_dirichlet = starting_dirichlet;
 	}
 
 	bool ControlParameter::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
@@ -104,6 +104,13 @@ namespace polyfem
 		Eigen::VectorXd dreduced;
 		control_constraints_->dfull_to_dreduced(x, full_grad, dreduced);
 		return dreduced;
+	}
+
+	Eigen::VectorXd ControlParameter::inverse_map_grad_timestep(const Eigen::VectorXd &reduced_grad) const
+	{
+		Eigen::VectorXd full_grad_timestep;
+		control_constraints_->dreduced_to_dfull_timestep(reduced_grad, full_grad_timestep);
+		return full_grad_timestep;
 	}
 
 	bool ControlParameter::pre_solve(const Eigen::VectorXd &newX)
@@ -131,6 +138,8 @@ namespace polyfem
 			logger().trace("Updating boundary id {} to dirichlet bc {}", kv.first, dirichlet_bc);
 			problem.update_dirichlet_boundary(kv.first, dirichlet_bc, true, true, true, "");
 		}
+
+		current_dirichlet = newX;
 
 		return true;
 	}

@@ -6,6 +6,7 @@
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+#include "ControlParameter.hpp"
 
 using namespace polyfem::utils;
 
@@ -168,16 +169,21 @@ namespace polyfem::solver
 			else if (matching == "sdf")
 			{
 				Eigen::MatrixXd control_points, tangents, delta;
+				Eigen::VectorXd knots;
 				control_points.setZero(args["control_points"].size(), args["control_points"][0].size());
 				for (int i = 0; i < args["control_points"].size(); ++i)
 				{
 					for (int j = 0; j < args["control_points"][i].size(); ++j)
 						control_points(i, j) = args["control_points"][i][j].get<double>();
 				}
-				tangents.setZero(args["tangents"].size(), args["tangents"][0].size());
-				for (int i = 0; i < args["tangents"].size(); ++i)
-					for (int j = 0; j < args["tangents"][i].size(); ++j)
-						tangents(i, j) = args["tangents"][i][j].get<double>();
+				// tangents.setZero(args["tangents"].size(), args["tangents"][0].size());
+				// for (int i = 0; i < args["tangents"].size(); ++i)
+				// 	for (int j = 0; j < args["tangents"][i].size(); ++j)
+				// 		tangents(i, j) = args["tangents"][i][j].get<double>();
+
+				knots.setZero(args["knots"].size());
+				for (int i = 0; i < args["knots"].size(); ++i)
+					knots(i) = args["knots"][i].get<double>();
 
 				delta.setZero(1, args["delta"].size());
 				for (int i = 0; i < delta.size(); ++i)
@@ -192,7 +198,7 @@ namespace polyfem::solver
 				}
 
 				auto target_obj = std::make_shared<SDFTargetObjective>(state, shape_param, args);
-				target_obj->set_spline_target(control_points, tangents, delta);
+				target_obj->set_bspline_target(control_points, knots, delta);
 				static_obj = target_obj;
 			}
 			else if (matching == "marker-data" || matching == "exact-marker")
@@ -337,7 +343,13 @@ namespace polyfem::solver
 		}
 		else if (type == "control_smoothing")
 		{
-			assert(false);
+			State &state = *(states[args["state"]]);
+			std::shared_ptr<Parameter> control_param = parameters[args["control_parameter"]];
+			auto static_obj = std::make_shared<ControlSmoothingObjective>(control_param, args);
+			if (state.problem->is_time_dependent())
+				obj = std::make_shared<TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], "uniform", static_obj);
+			else
+				assert(false);
 		}
 		else if (type == "material_smoothing")
 		{
@@ -412,7 +424,7 @@ namespace polyfem::solver
 	{
 		if (shape_param_)
 			assert(shape_param_->name() == "shape");
-		
+
 		if (macro_strain_param_)
 			assert(macro_strain_param_->name() == "macro_strain");
 	}
@@ -421,7 +433,7 @@ namespace polyfem::solver
 	{
 		if (shape_param_)
 			assert(shape_param_->name() == "shape");
-		
+
 		macro_strain_param_ = NULL;
 	}
 
@@ -1765,34 +1777,64 @@ namespace polyfem::solver
 
 	void SDFTargetObjective::compute_distance(const Eigen::MatrixXd &point, double &distance, Eigen::MatrixXd &grad)
 	{
-		int nearest;
-		double t_optimal, distance_to_start, distance_to_end;
-		CubicHermiteSplineParametrization::find_nearest_spline(point, control_points_, tangents_, nearest, t_optimal, distance, distance_to_start, distance_to_end);
-
-		// If no nearest with t \in [0, 1] found, check the endpoints and assign one
-		if (nearest == -1)
+		Eigen::MatrixXd p = point.transpose();
+		int nearest_point = 0;
+		double t_optimal = t_sampling(nearest_point);
+		distance = (p - point_sampling.row(nearest_point)).squaredNorm();
+		for (int i = 1; i < t_sampling.size(); ++i)
 		{
-			if (distance_to_start < distance_to_end)
+			auto cur_dist = (p - point_sampling.row(i)).squaredNorm();
+			if (cur_dist < distance)
 			{
-				nearest = 0;
-				t_optimal = 0;
-				distance = distance_to_start;
-			}
-			else
-			{
-
-				nearest = control_points_.rows() - 2;
-				t_optimal = 1;
-				distance = distance_to_end;
+				distance = cur_dist;
+				t_optimal = t_sampling(i);
+				nearest_point = i;
 			}
 		}
+
+		if (nearest_point != 0)
+		{
+			// Check the segment left of the point
+			int i = nearest_point;
+			const double l = (point_sampling.row(i) - point_sampling.row(i - 1)).squaredNorm();
+			assert(l > 0);
+			const float t = std::max(0., std::min(1., ((p - point_sampling.row(i - 1)) * (point_sampling.row(i) - point_sampling.row(i - 1)).transpose())(0) / l));
+			const auto project = point_sampling.row(i - 1) * (1 - t) + point_sampling.row(i) * t;
+			const double project_distance = (p - project).squaredNorm();
+			if (project_distance < distance)
+			{
+				t_optimal = t_sampling(nearest_point) - (1. - t) / (t_sampling.size() - 1);
+				// distance = (p - curve.evaluate(t_optimal)).squaredNorm();
+				distance = project_distance;
+			}
+		}
+		else if (nearest_point != t_sampling.size() - 1)
+		{
+			// Check the segment right of the point
+			int i = nearest_point;
+			const double l = (point_sampling.row(i + 1) - point_sampling.row(i)).squaredNorm();
+			assert(l > 0);
+			const float t = std::max(0., std::min(1., ((p - point_sampling.row(i)) * (point_sampling.row(i + 1) - point_sampling.row(i)).transpose())(0) / l));
+			const auto project = point_sampling.row(i) * (1 - t) + point_sampling.row(i + 1) * t;
+			const double project_distance = (p - project).squaredNorm();
+			if (project_distance < distance)
+			{
+				t_optimal = t_sampling(nearest_point) + t / (t_sampling.size() - 1);
+				// distance = (p - curve.evaluate(t_optimal)).squaredNorm();
+				distance = project_distance;
+			}
+		}
+
+		Eigen::VectorXd point_on_curve = curve.evaluate(t_optimal).transpose();
+		distance = (point - point_on_curve).squaredNorm();
 		distance = pow(distance, 1. / 2.);
 
 		grad.setZero(3, 1);
 		if (distance < 1e-8)
 			return;
 
-		CubicHermiteSplineParametrization::gradient(point, control_points_, tangents_, nearest, t_optimal, distance, grad);
+		grad.block(0, 0, 2, 1) = (point - point_on_curve) / distance;
+		assert(!std::isnan(grad(0)) && !std::isnan(grad(1)));
 		assert(abs(1 - grad.col(0).segment(0, 2).norm()) < 1e-6);
 	}
 
@@ -1829,7 +1871,7 @@ namespace polyfem::solver
 		grad(0) /= (corner_point(1, 0) - corner_point(0, 0));
 		grad(1) /= (corner_point(2, 1) - corner_point(0, 1));
 
-		assert(!std::isnan(grad(0)) && !std::isnan(grad(0)));
+		assert(!std::isnan(grad(0)) && !std::isnan(grad(1)));
 	}
 
 	void SDFTargetObjective::evaluate(const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad)
@@ -2275,6 +2317,56 @@ namespace polyfem::solver
 
 			Eigen::VectorXd grad = ipc::compute_barrier_potential_gradient(collision_mesh_, displaced_surface, constraint_set, dhat);
 			return collision_mesh_.to_full_dof(grad);
+		}
+		else
+			return Eigen::VectorXd::Zero(param.full_dim());
+	}
+
+	ControlSmoothingObjective::ControlSmoothingObjective(const std::shared_ptr<const Parameter> control_param, const json &args) : control_param_(control_param)
+	{
+		if (!control_param_)
+			log_and_throw_error("ControlSmoothingObjective needs non-empty control parameter!");
+		else if (control_param_->name() != "dirichlet")
+			log_and_throw_error("ControlSmoothingObjective wrong parameter type!");
+	}
+
+	Eigen::VectorXd ControlSmoothingObjective::compute_adjoint_rhs_step(const State &state)
+	{
+		return Eigen::VectorXd::Zero(state.ndof());
+	}
+
+	double ControlSmoothingObjective::value()
+	{
+		if (time_step_ == 0)
+			return 0.;
+		const auto &state = control_param_->get_state();
+		double dt = state.args["time"]["dt"];
+		auto control_param = std::dynamic_pointer_cast<const ControlParameter>(control_param_);
+		auto dirichlet_val_i = control_param->get_current_dirichlet(time_step_);
+		auto dirichlet_val_i_prev = control_param->get_current_dirichlet(time_step_ - 1);
+		// auto val = pow(((dirichlet_val_i - dirichlet_val_i_prev) / dt).array().pow(8).sum(), 1. / 8.);
+		auto val = pow(((dirichlet_val_i - dirichlet_val_i_prev) / dt).array().pow(2).sum(), 1. / 2.);
+		return val;
+	}
+
+	Eigen::VectorXd ControlSmoothingObjective::compute_partial_gradient(const Parameter &param)
+	{
+		if (&param == control_param_.get() && time_step_ != 0)
+		{
+			Eigen::VectorXd term;
+			term.setZero(param.full_dim());
+			const auto &state = control_param_->get_state();
+			double dt = state.args["time"]["dt"];
+			auto control_param = std::dynamic_pointer_cast<const ControlParameter>(control_param_);
+			int timestep_dim = control_param->get_timestep_dim();
+			auto dirichlet_val_i = control_param->get_current_dirichlet(time_step_);
+			auto dirichlet_val_i_prev = control_param->get_current_dirichlet(time_step_ - 1);
+			auto x = ((dirichlet_val_i - dirichlet_val_i_prev) / dt);
+			auto y = x / dt / value();
+			term.segment((time_step_ - 1) * timestep_dim, timestep_dim) = control_param->inverse_map_grad_timestep(y);
+			if (time_step_ > 1)
+				term.segment((time_step_ - 2) * timestep_dim, timestep_dim) = control_param->inverse_map_grad_timestep(-y);
+			return term;
 		}
 		else
 			return Eigen::VectorXd::Zero(param.full_dim());
