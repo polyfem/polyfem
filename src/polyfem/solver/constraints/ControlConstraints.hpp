@@ -15,6 +15,20 @@ namespace polyfem
 			: Constraints(constraint_params, boundary_ids_list_.size(), 0), time_steps_(time_steps), dim_(dim), boundary_ids_list_(boundary_ids_list), boundary_id_to_reduced_dim_(boundary_id_to_reduced_dim)
 		{
 			std::string restriction = constraint_params["restriction"];
+
+			for (auto kv : boundary_id_to_reduced_dim_)
+			{
+				int boundary_id = kv.first;
+				int nodes = 0;
+				for (int b = 0; b < boundary_ids_list_.size(); ++b)
+				{
+					if (boundary_ids_list_[b] == boundary_id)
+						nodes++;
+				}
+				std::cout << "multiplicity of position " << kv.second << " is " << (double)nodes / dim << std::endl;
+				reduced_dim_to_full_dim_multiplicity_[kv.second] = nodes / dim_;
+			}
+
 			if (restriction == "none")
 			{
 				reduced_size_ = time_steps * boundary_id_to_reduced_dim_.size() * dim;
@@ -85,9 +99,25 @@ namespace polyfem
 			dreduced = dfull_to_dreduced_(d_dirichlet_full);
 		}
 
+		void dreduced_to_dfull_timestep(const Eigen::VectorXd &dreduced, Eigen::VectorXd &d_dirichlet_full) const
+		{
+			d_dirichlet_full.setZero(boundary_ids_list_.size());
+			for (auto kv : boundary_id_to_reduced_dim_)
+			{
+				int boundary_id = kv.first;
+				for (int b = 0; b < boundary_ids_list_.size(); ++b)
+				{
+					int k = b % dim_;
+					if (boundary_ids_list_[b] == boundary_id)
+						d_dirichlet_full(b) = dreduced(boundary_id_to_reduced_dim_.at(boundary_id) * dim_ + k) / reduced_dim_to_full_dim_multiplicity_.at(boundary_id_to_reduced_dim_.at(boundary_id));
+				}
+			}
+		}
+
 	private:
 		const std::vector<int> boundary_ids_list_;
 		const std::map<int, int> boundary_id_to_reduced_dim_;
+		std::map<int, int> reduced_dim_to_full_dim_multiplicity_;
 		const int dim_;
 		const int time_steps_;
 

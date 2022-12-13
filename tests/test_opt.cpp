@@ -231,7 +231,14 @@ TEST_CASE("multiparameter-sdf-trajectory-surface-opt", "[optimization]")
 	run_opt_new("multiparameter-sdf-trajectory-surface-opt");
 	auto energies = read_energy("multiparameter-sdf-trajectory-surface-opt");
 
-	REQUIRE(energies[0] == Approx(0.08577).epsilon(1e-3));
-	REQUIRE(energies[energies.size() - 1] == Approx(0.0819).epsilon(1e-3));
+	REQUIRE(energies[0] == Approx(0.185975).epsilon(1e-3));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.145893).epsilon(1e-3));
 }
+
+// TEST_CASE("3d-bspline-shape-trajectory-opt", "[optimization]")
+// {
+// 	run_opt_new("3d-bspline-shape-trajectory-opt");
+// 	auto energies = read_energy("3d-bspline-shape-trajectory-opt");
+// }
+
 #endif

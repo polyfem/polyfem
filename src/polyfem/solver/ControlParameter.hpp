@@ -29,17 +29,28 @@ namespace polyfem
 
 		bool pre_solve(const Eigen::VectorXd &newX) override;
 
-		const std::map<int, int> &get_boundary_id_to_reduced_param() { return boundary_id_to_reduced_param; }
+		const std::map<int, int> &get_boundary_id_to_reduced_param() const { return boundary_id_to_reduced_param; }
+
+		int get_timestep_dim() const { return boundary_ids_list.size(); }
+
+		Eigen::VectorXd inverse_map_grad_timestep(const Eigen::VectorXd &reduced_grad) const;
+
+		Eigen::VectorXd get_current_dirichlet(const int time_step) const
+		{
+			if (time_step == 0)
+				return Eigen::VectorXd::Zero(boundary_id_to_reduced_param.size() * dim);
+			else
+				return current_dirichlet.segment((time_step - 1) * boundary_id_to_reduced_param.size() * dim, boundary_id_to_reduced_param.size() * dim);
+		}
 
 	private:
-		double target_weight = 1;
-		double smoothing_weight;
 		std::vector<int> boundary_ids_list;
 
 		int time_steps;
 		int dim;
 
 		Eigen::VectorXd starting_dirichlet;
+		Eigen::VectorXd current_dirichlet;
 
 		json control_params;
 

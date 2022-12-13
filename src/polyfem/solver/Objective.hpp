@@ -4,6 +4,9 @@
 
 #include <polyfem/solver/forms/ContactForm.hpp>
 
+#include <nanospline/BSpline.h>
+#include <polyfem/io/OBJWriter.hpp>
+
 #include <shared_mutex>
 #include <array>
 
@@ -358,19 +361,36 @@ namespace polyfem::solver
 
 		void set_spline_target(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &tangents, const Eigen::MatrixXd &delta)
 		{
+			assert(false);
+		}
+
+		void set_bspline_target(const Eigen::MatrixXd &control_points, const Eigen::VectorXd &knots, const Eigen::MatrixXd &delta)
+		{
 			control_points_ = control_points;
-			tangents_ = tangents;
+			knots_ = knots;
 			dim = control_points.cols();
 			if (dim != 2)
 				logger().error("Only support 2d sdf at the moment.");
 			delta_ = delta;
+			curve.set_control_points(control_points);
+			curve.set_knots(knots);
+
+			t_sampling = Eigen::VectorXd::LinSpaced(100, 0, 1);
+			point_sampling.setZero(100, 2);
+			for (int i = 0; i < t_sampling.size(); ++i)
+				point_sampling.row(i) = curve.evaluate(t_sampling(i));
+
+			Eigen::MatrixXi edges(100, 2);
+			edges.col(0) = Eigen::VectorXi::LinSpaced(100, 1, 100);
+			edges.col(1) = Eigen::VectorXi::LinSpaced(100, 2, 101);
+			io::OBJWriter::write(state_.resolve_output_path(fmt::format("spline_target_{:d}.obj", rand() % 100)), point_sampling, edges);
 		}
 
-	protected:
 		void evaluate(const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad);
 		void compute_distance(const Eigen::MatrixXd &point, double &distance, Eigen::MatrixXd &grad);
 		void bicubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad);
 
+	protected:
 		int dim;
 		double t_cached;
 		Eigen::MatrixXd delta_;
@@ -380,7 +400,12 @@ namespace polyfem::solver
 		Eigen::MatrixXd bicubic_mat;
 
 		Eigen::MatrixXd control_points_;
-		Eigen::MatrixXd tangents_;
+		Eigen::VectorXd knots_;
+
+		Eigen::VectorXd t_sampling;
+		Eigen::MatrixXd point_sampling;
+
+		nanospline::BSpline<double, 2, 3> curve;
 
 		mutable std::shared_mutex mutex_;
 	};
@@ -447,5 +472,20 @@ namespace polyfem::solver
 
 		double dhat;
 		ipc::BroadPhaseMethod broad_phase_method;
+	};
+
+	class ControlSmoothingObjective : public StaticObjective
+	{
+	public:
+		ControlSmoothingObjective(const std::shared_ptr<const Parameter> control_param, const json &args);
+		~ControlSmoothingObjective() = default;
+
+		double value() override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const State &state) override;
+
+	protected:
+		std::shared_ptr<const Parameter> control_param_;
+		int p = 8;
 	};
 } // namespace polyfem::solver

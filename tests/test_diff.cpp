@@ -629,13 +629,22 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 	load_json(path + "shape-transient-friction-sdf-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
 
-	Eigen::MatrixXd control_points, tangents, delta;
-	control_points.setZero(2, 2);
+	Eigen::MatrixXd control_points, delta;
+	Eigen::VectorXd knots;
+	control_points.setZero(4, 2);
 	control_points << 1, 0.4,
+		0.66666667, 0.73333333,
+		0.43333333, 1,
 		0.1, 1;
-	tangents.setZero(2, 2);
-	tangents << -1, 1,
-		-1, 0;
+	knots.setZero(8);
+	knots << 0,
+		0,
+		0,
+		0,
+		1,
+		1,
+		1,
+		1;
 	delta.setZero(1, 2);
 	delta << 0.05, 0.05;
 
@@ -644,7 +653,7 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 	std::shared_ptr<StaticObjective> func_aux;
 	auto sdf_aux = std::make_shared<SDFTargetObjective>(state, shape_param, opt_args["parameters"][0]);
 	json functional_args = opt_args["functionals"][0];
-	sdf_aux->set_spline_target(control_points, tangents, delta);
+	sdf_aux->set_bspline_target(control_points, knots, delta);
 	func_aux = sdf_aux;
 	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], functional_args["transient_integral_type"], func_aux);
 
@@ -835,20 +844,29 @@ TEST_CASE("dirichlet-sdf-new", "[adjoint_method]")
 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
 	State &state = *state_ptr;
 
-	Eigen::MatrixXd control_points, tangents, delta;
-	control_points.setZero(2, 2);
+	Eigen::MatrixXd control_points, delta;
+	Eigen::VectorXd knots;
+	control_points.setZero(4, 2);
 	control_points << -2.5, -0.1,
+		-1, -1,
+		1, 1,
 		2.5, -0.1;
-	tangents.setZero(2, 2);
-	tangents << 1.5, -2,
-		1.5, 2;
+	knots.setZero(8);
+	knots << 0,
+		0,
+		0,
+		0,
+		1,
+		1,
+		1,
+		1;
 	delta.setZero(1, 2);
 	delta << 0.5, 0.5;
 
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
 	std::shared_ptr<ControlParameter> control_param = std::make_shared<ControlParameter>(states_ptr, opt_args["parameters"][0]);
 	auto sdf_aux = std::make_shared<SDFTargetObjective>(state, nullptr, opt_args["functionals"][0]);
-	sdf_aux->set_spline_target(control_points, tangents, delta);
+	sdf_aux->set_bspline_target(control_points, knots, delta);
 	std::shared_ptr<StaticObjective> func_aux = sdf_aux;
 	json functional_args = opt_args["functionals"][0];
 

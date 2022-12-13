@@ -881,6 +881,7 @@
         "optional": [
             "target_position",
             "control_points",
+            "knots",
             "tangents",
             "delta",
             "transient_integral_type",
@@ -1003,6 +1004,17 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/functionals/*/knots",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/knots/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
         "pointer": "/functionals/*/delta",
         "type": "list",
         "default": [],
@@ -1039,7 +1051,6 @@
     {
         "pointer": "/functionals/*/control_parameter",
         "type": "int",
-        "default": -1,
         "doc": "TODO"
     },
     {
@@ -1310,6 +1321,7 @@
         "type_name": "control_smoothing",
         "required": [
             "control_parameter",
+            "state",
             "type"
         ],
         "optional": [
