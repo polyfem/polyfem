@@ -790,7 +790,7 @@ namespace polyfem
 			active_nodes_mask.assign(active_nodes_mask.size(), true);
 		}
 		// fix dirichlet bc
-		if (!shape_params.contains("fix_dirichlet") || shape_params["fix_dirichlet"].get<bool>())
+		if (shape_params["fix_dirichlet"].get<bool>())
 		{
 			logger().info("Fix position of Dirichlet boundary nodes.");
 			for (const auto &lb : get_state().local_boundary)
@@ -811,19 +811,22 @@ namespace polyfem
 		}
 
 		// fix neumann bc
-		logger().info("Fix position of nonzero Neumann boundary nodes.");
-		for (const auto &lb : get_state().local_neumann_boundary)
+		if (shape_params["fix_neumann"].get<bool>())
 		{
-			for (int i = 0; i < lb.size(); ++i)
+			logger().info("Fix position of nonzero Neumann boundary nodes.");
+			for (const auto &lb : get_state().local_neumann_boundary)
 			{
-				const int e = lb.element_id();
-				const int primitive_g_id = lb.global_primitive_id(i);
-				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_g_id, *(get_state().mesh));
-
-				for (long n = 0; n < nodes.size(); ++n)
+				for (int i = 0; i < lb.size(); ++i)
 				{
-					assert(gbases[e].bases[nodes(n)].global().size() == 1);
-					active_nodes_mask[gbases[e].bases[nodes(n)].global()[0].index] = false;
+					const int e = lb.element_id();
+					const int primitive_g_id = lb.global_primitive_id(i);
+					const auto nodes = gbases[e].local_nodes_for_primitive(primitive_g_id, *(get_state().mesh));
+
+					for (long n = 0; n < nodes.size(); ++n)
+					{
+						assert(gbases[e].bases[nodes(n)].global().size() == 1);
+						active_nodes_mask[gbases[e].bases[nodes(n)].global()[0].index] = false;
+					}
 				}
 			}
 		}

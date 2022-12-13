@@ -105,10 +105,10 @@ namespace polyfem::solver
 		return rhs;
 	}
 
-	Eigen::VectorXd HomogenizedEnergyObjective::compute_partial_gradient(const Parameter &param)
+	Eigen::VectorXd HomogenizedEnergyObjective::compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value)
 	{
 		Eigen::VectorXd term;
-		term.setZero(param.full_dim());
+		term.setZero(param.optimization_dim());
 		if (&param == elastic_param_.get())
 		{
 			// TODO: differentiate stress wrt. lame param
@@ -116,7 +116,7 @@ namespace polyfem::solver
 		}
 		else
 		{
-			term = SpatialIntegralObjective::compute_partial_gradient(param);
+			term = SpatialIntegralObjective::compute_partial_gradient(param, param_value);
 		}
 
 		return term;
@@ -218,10 +218,10 @@ namespace polyfem::solver
 		return rhs;
 	}
 
-	Eigen::VectorXd HomogenizedStressObjective::compute_partial_gradient(const Parameter &param)
+	Eigen::VectorXd HomogenizedStressObjective::compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value)
 	{
 		Eigen::VectorXd term;
-		term.setZero(param.full_dim());
+		term.setZero(param.optimization_dim());
 		if (&param == elastic_param_.get())
 		{
 			// TODO: differentiate stress wrt. lame param
@@ -229,7 +229,7 @@ namespace polyfem::solver
 		}
 		else
 		{
-			term = SpatialIntegralObjective::compute_partial_gradient(param);
+			term = SpatialIntegralObjective::compute_partial_gradient(param, param_value);
 		}
 
 		return term;
@@ -278,16 +278,16 @@ namespace polyfem::solver
 			grad += grad_aux(i) * js[i]->compute_adjoint_rhs(state);
 		return grad;
 	}
-	Eigen::VectorXd CompositeHomogenizedStressObjective::compute_partial_gradient(const Parameter &param)
+	Eigen::VectorXd CompositeHomogenizedStressObjective::compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value)
 	{
 		Eigen::VectorXd F(4);
 		F << js[0]->value(), js[1]->value(), js[2]->value(), js[3]->value();
 		Eigen::VectorXd grad_aux = homo_stress_aux_grad(F);
 
-		Eigen::MatrixXd grad;
-		grad.setZero(param.full_dim(), 1);
+		Eigen::VectorXd grad;
+		grad.setZero(param.optimization_dim());
 		for (int i = 0; i < F.size(); i++)
-			grad += grad_aux(i) * js[i]->compute_partial_gradient(param);
+			grad += grad_aux(i) * js[i]->compute_partial_gradient(param, param_value);
 		return grad;
 	}
 }

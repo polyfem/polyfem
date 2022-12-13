@@ -18,7 +18,7 @@ namespace polyfem::solver
 
 		double value() override;
 
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 		Eigen::VectorXd compute_adjoint_rhs_step(const State &state) override;
 		IntegrableFunctional get_integral_functional() override;
 
@@ -37,7 +37,7 @@ namespace polyfem::solver
 
 		double value() override;
 
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 		Eigen::VectorXd compute_adjoint_rhs_step(const State &state) override;
 		IntegrableFunctional get_integral_functional() override;
 
@@ -56,7 +56,7 @@ namespace polyfem::solver
 
 		double value() override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 
 	protected:
 		std::array<std::shared_ptr<HomogenizedStressObjective>, 4> js;

@@ -49,7 +49,7 @@ namespace polyfem
 		{
 			return full_dim_;
 		}
-		inline virtual int optimization_dim() final
+		inline virtual int optimization_dim() const final
 		{
 			if (optimization_dim_ <= 0)
 				log_and_throw_error("Invalid optimization dimension!");

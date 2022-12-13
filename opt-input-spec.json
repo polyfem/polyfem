@@ -457,9 +457,21 @@
             "spline_specification",
             "dimensions",
             "surface_selection",
+            "fix_dirichlet",
+            "fix_neumann",
             "contact"
         ],
         "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/fix_dirichlet",
+        "type": "bool",
+        "default": true
+    },
+    {
+        "pointer": "/parameters/*/fix_neumann",
+        "type": "bool",
+        "default": true
     },
     {
         "pointer": "/parameters/*/contact",

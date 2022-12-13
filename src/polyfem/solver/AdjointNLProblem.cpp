@@ -40,9 +40,9 @@ namespace polyfem::solver
 				POLYFEM_SCOPED_TIMER("gradient assembly", grad_assembly_time);
 				for (const auto &p : parameters_)
 				{
-					Eigen::VectorXd gradv_param = obj_->gradient(all_states_, *p);
+					Eigen::VectorXd gradv_param = obj_->gradient(all_states_, *p, x.segment(cumulative, p->optimization_dim()));
 
-					gradv.segment(cumulative, p->optimization_dim()) += p->map_grad(x.segment(cumulative, p->optimization_dim()), gradv_param);
+					gradv.segment(cumulative, p->optimization_dim()) += gradv_param;
 					cumulative += p->optimization_dim();
 				}
 			}
@@ -378,9 +378,9 @@ namespace polyfem::solver
 			int cumulative = 0;
 			for (const auto &p : parameters_)
 			{
-				Eigen::VectorXd gradv_param = obj_->get_weight(i) * obj->gradient(all_states_, *p);
+				Eigen::VectorXd gradv_param = obj_->get_weight(i) * obj->gradient(all_states_, *p, x.segment(cumulative, p->optimization_dim()));
 
-				grads.block(cumulative, i, p->optimization_dim(), 1) += p->map_grad(x.segment(cumulative, p->optimization_dim()), gradv_param);
+				grads.block(cumulative, i, p->optimization_dim(), 1) += gradv_param;
 				cumulative += p->optimization_dim();
 			}
 		}

@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 	Eigen::MatrixXd F;
 	F.setZero(dim, dim);
 
-	for (int l = -35; l >= -50; l--)
+	for (int l = -30; l >= -40; l--)
 	{
 		F(0, 0) = 0;
 		F(1, 1) = l / 100.0;

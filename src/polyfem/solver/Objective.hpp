@@ -18,24 +18,25 @@ namespace polyfem::solver
 		static std::shared_ptr<Objective> create(const json &args, const std::string &root_path, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &states);
 
 		virtual double value() = 0;
-		Eigen::VectorXd gradient(const std::vector<std::shared_ptr<State>> &states, const Parameter &param)
+		Eigen::VectorXd gradient(const std::vector<std::shared_ptr<State>> &states, const Parameter &param, const Eigen::VectorXd &param_value)
 		{
-			Eigen::VectorXd grad = compute_partial_gradient(param);
+			Eigen::VectorXd adjoint_term;
+			adjoint_term.setZero(param.full_dim());
 			for (const auto &state : states)
-				grad += compute_adjoint_term(*state, param);
+				adjoint_term += compute_adjoint_term(*state, param);
 
-			return grad;
+			return compute_partial_gradient(param, param_value) + param.map_grad(param_value, adjoint_term);
 		}
 
 		// use only if there's only one state
-		Eigen::VectorXd gradient(const State &state, const Parameter &param)
+		Eigen::VectorXd gradient(const State &state, const Parameter &param, const Eigen::VectorXd &param_value)
 		{
-			return compute_partial_gradient(param) + compute_adjoint_term(state, param);
+			return compute_partial_gradient(param, param_value) + param.map_grad(param_value, compute_adjoint_term(state, param));
 		}
 
 		virtual Eigen::MatrixXd compute_adjoint_rhs(const State &state) = 0; // compute $\partial_u J$
 
-		virtual Eigen::VectorXd compute_partial_gradient(const Parameter &param) = 0; // compute $\partial_q J$
+		virtual Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) = 0; // compute $\partial_q J$
 		static Eigen::VectorXd compute_adjoint_term(const State &state, const Parameter &param);
 	};
 
@@ -65,7 +66,7 @@ namespace polyfem::solver
 
 		double value() override;
 
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 		Eigen::VectorXd compute_adjoint_rhs_step(const State &state) override;
 
 		virtual IntegrableFunctional get_integral_functional() = 0;
@@ -86,7 +87,7 @@ namespace polyfem::solver
 
 		double value() override;
 
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 		Eigen::VectorXd compute_adjoint_rhs_step(const State &state) override;
 		IntegrableFunctional get_integral_functional() override;
 
@@ -110,7 +111,7 @@ namespace polyfem::solver
 
 		double value() override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 
 		int n_objs() const { return objs_.size(); }
 		std::shared_ptr<Objective> get_obj(const int i) const { return objs_[i]; }
@@ -132,7 +133,7 @@ namespace polyfem::solver
 
 		double value() override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 
 	protected:
 		std::shared_ptr<const Parameter> shape_param_;
@@ -153,7 +154,7 @@ namespace polyfem::solver
 
 		double value() override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 
 	protected:
 		const State &state_;
@@ -173,7 +174,7 @@ namespace polyfem::solver
 
 		double value() override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 
 	protected:
 		std::shared_ptr<const Parameter> shape_param_;
@@ -189,7 +190,7 @@ namespace polyfem::solver
 
 		double value() override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 
 	protected:
 		std::shared_ptr<VolumeObjective> obj;
@@ -223,7 +224,7 @@ namespace polyfem::solver
 
 		int dim() const { return dim_; }
 
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 		Eigen::VectorXd compute_adjoint_rhs_step(const State &state) override;
 
 		Eigen::VectorXd get_barycenter() const;
@@ -244,7 +245,7 @@ namespace polyfem::solver
 		double value() override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
 
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 
 	protected:
 		std::vector<double> get_transient_quadrature_weights() const;
@@ -262,7 +263,7 @@ namespace polyfem::solver
 		ComplianceObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args);
 		~ComplianceObjective() = default;
 
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 		IntegrableFunctional get_integral_functional() override;
 
 	protected:
@@ -293,7 +294,7 @@ namespace polyfem::solver
 
 		double value() override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 
 	protected:
 		const State &state1_;
@@ -393,7 +394,7 @@ namespace polyfem::solver
 
 		double value() override;
 		Eigen::VectorXd compute_adjoint_rhs_step(const State &state) override;
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 
 	protected:
 		const State &state_;
@@ -410,7 +411,7 @@ namespace polyfem::solver
 
 		double value() override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 
 	protected:
 		std::shared_ptr<const Parameter> elastic_param_;
@@ -435,7 +436,7 @@ namespace polyfem::solver
 
 		double value() override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 	
 	protected:
 		std::shared_ptr<const Parameter> shape_param_;
