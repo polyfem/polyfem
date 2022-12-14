@@ -15,7 +15,11 @@ namespace polyfem
 
 		static std::shared_ptr<Parameter> create(const json &args, std::vector<std::shared_ptr<State>> &states_ptr);
 
-		inline const State &get_state(int id = 0) const { assert(id < states_ptr_.size()); return *(states_ptr_[id]); }
+		inline const State &get_state(int id = 0) const
+		{
+			assert(id < states_ptr_.size());
+			return *(states_ptr_[id]);
+		}
 
 		inline virtual bool contains_state(const State &state) const
 		{
@@ -30,8 +34,6 @@ namespace polyfem
 		// initial guess for the optimization, to initialize outer optimization
 		virtual Eigen::VectorXd initial_guess() const = 0;
 
-		// from design dof to full dof mapping
-		virtual Eigen::MatrixXd map(const Eigen::VectorXd &x) const { return x; }
 		// from full grad to design dof grad
 		virtual Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const { return full_grad; }
 

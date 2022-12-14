@@ -566,7 +566,7 @@ namespace polyfem::solver
 				logger().warn("stress integral too small, may result in NAN grad!");
 			term *= (pow(val, 1. / in_power_ - 1) / in_power_);
 		}
-		
+
 		return term;
 	}
 
@@ -2008,7 +2008,7 @@ namespace polyfem::solver
 		if (&param == control_param_.get() && time_step_ != 0)
 		{
 			Eigen::VectorXd term;
-			term.setZero(param.full_dim());
+			term.setZero(param.optimization_dim());
 			const auto &state = control_param_->get_state();
 			double dt = state.args["time"]["dt"];
 			auto control_param = std::dynamic_pointer_cast<const ControlParameter>(control_param_);
@@ -2017,13 +2017,13 @@ namespace polyfem::solver
 			auto dirichlet_val_i_prev = control_param->get_current_dirichlet(time_step_ - 1);
 			auto x = ((dirichlet_val_i - dirichlet_val_i_prev) / dt);
 			auto y = x / dt / value();
-			term.segment((time_step_ - 1) * timestep_dim, timestep_dim) = control_param->inverse_map_grad_timestep(y);
+			term.segment((time_step_ - 1) * timestep_dim, timestep_dim) = y;
 			if (time_step_ > 1)
-				term.segment((time_step_ - 2) * timestep_dim, timestep_dim) = control_param->inverse_map_grad_timestep(-y);
+				term.segment((time_step_ - 2) * timestep_dim, timestep_dim) = -y;
 			return term;
 		}
 		else
-			return Eigen::VectorXd::Zero(param.full_dim());
+			return Eigen::VectorXd::Zero(param.optimization_dim());
 	}
 
 } // namespace polyfem::solver

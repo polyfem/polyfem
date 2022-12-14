@@ -24,7 +24,7 @@ namespace polyfem
 			return reduced;
 		}
 
-		Eigen::MatrixXd map(const Eigen::VectorXd &x) const override;
+		Eigen::MatrixXd map(const Eigen::VectorXd &x) const;
 		Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const override;
 
 		bool smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) override;

@@ -50,6 +50,7 @@ namespace polyfem
 			std::string expr_;
 			double value_;
 			Eigen::MatrixXd mat_;
+			std::vector<ExpressionValue> mat_expr_;
 			std::map<double, int> t_index_;
 		};
 	} // namespace utils

@@ -886,15 +886,16 @@ TEST_CASE("dirichlet-sdf-new", "[adjoint_method]")
 
 	int time_steps = state.args["time"]["time_steps"].get<int>();
 
+	int dirichlet_dof = 3;
 	Eigen::MatrixXd velocity_discrete;
-	velocity_discrete.setZero(time_steps * 3 * state.mesh->dimension(), 1);
+	velocity_discrete.setZero(time_steps * 3 * dirichlet_dof, 1);
 	for (int j = 0; j < time_steps; ++j)
-		for (int k = 0; k < state.mesh->dimension(); ++k)
+		for (int k = 0; k < dirichlet_dof; ++k)
 		{
 			for (int i = 0; i < 3; ++i)
 			{
 				double random_val = (rand() % 200) / 100. - 1.;
-				velocity_discrete(j * 3 * state.mesh->dimension() + i * state.mesh->dimension() + k) = random_val;
+				velocity_discrete(j * 3 * dirichlet_dof + i * dirichlet_dof + k) = random_val;
 			}
 		}
 
@@ -904,14 +905,14 @@ TEST_CASE("dirichlet-sdf-new", "[adjoint_method]")
 		param->pre_solve(initial_guess);
 	};
 
-	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn, 1e-7, 1e-3);
+	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn, 1e-4, 1e-3);
 
 	json temp_args = in_args;
 	auto perturb_fn_json = [&temp_args, time_steps](std::shared_ptr<Parameter> param, std::shared_ptr<State> &state, const Eigen::MatrixXd &dx) {
 		for (int t = 0; t < time_steps; ++t)
 			for (int k = 0; k < 2; ++k)
 				for (int i = 0; i < 3; ++i)
-					temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t].get<double>() + dx(t * 3 * 2 + i * 2 + k);
+					temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t].get<double>() + dx(t * 3 * 3 + i * 3 + k);
 		state->init(temp_args, false);
 		state->args["optimization"]["enabled"] = true;
 	};
@@ -1020,15 +1021,16 @@ TEST_CASE("dirichlet-ref-new", "[adjoint_method]")
 	func_aux->set_reference(state_ref, {2});
 	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], func_aux);
 
+	int dirichlet_dof = 3;
 	Eigen::MatrixXd velocity_discrete;
-	velocity_discrete.setZero(time_steps * 3 * state.mesh->dimension(), 1);
+	velocity_discrete.setZero(time_steps * 3 * dirichlet_dof, 1);
 	for (int j = 0; j < time_steps; ++j)
-		for (int k = 0; k < state.mesh->dimension(); ++k)
+		for (int k = 0; k < dirichlet_dof; ++k)
 		{
 			for (int i = 0; i < 3; ++i)
 			{
 				double random_val = (rand() % 200) / 100. - 1.;
-				velocity_discrete(j * 3 * state.mesh->dimension() + i * state.mesh->dimension() + k) = random_val;
+				velocity_discrete(j * 3 * dirichlet_dof + i * dirichlet_dof + k) = random_val;
 			}
 		}
 
@@ -1038,14 +1040,14 @@ TEST_CASE("dirichlet-ref-new", "[adjoint_method]")
 		param->pre_solve(initial_guess);
 	};
 
-	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn, 1e-7, 1e-3);
+	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn, 1e-4, 1e-3);
 
 	json temp_args = in_args;
 	auto perturb_fn_json = [&temp_args, time_steps](std::shared_ptr<Parameter> param, std::shared_ptr<State> &state, const Eigen::MatrixXd &dx) {
 		for (int t = 0; t < time_steps; ++t)
 			for (int k = 0; k < 2; ++k)
 				for (int i = 0; i < 3; ++i)
-					temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t].get<double>() + dx(t * 3 * 2 + i * 2 + k);
+					temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t].get<double>() + dx(t * 3 * 3 + i * 3 + k);
 		state->init(temp_args, false);
 		state->args["optimization"]["enabled"] = true;
 	};

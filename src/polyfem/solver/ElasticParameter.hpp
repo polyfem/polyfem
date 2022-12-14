@@ -18,7 +18,7 @@ namespace polyfem
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 
-		Eigen::MatrixXd map(const Eigen::VectorXd &x) const override;
+		Eigen::MatrixXd map(const Eigen::VectorXd &x) const;
 		Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const override;
 
 		Eigen::VectorXd get_lower_bound(const Eigen::VectorXd &x) const override;

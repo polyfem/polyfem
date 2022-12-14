@@ -43,6 +43,7 @@ namespace polyfem
 		{
 			expr_ = "";
 			mat_.resize(0, 0);
+			mat_expr_ = {};
 			sfunc_ = nullptr;
 			tfunc_ = nullptr;
 			value_ = 0;
@@ -122,11 +123,24 @@ namespace polyfem
 
 				for (int i = 0; i < mat_.size(); ++i)
 				{
+					if (vals[i].is_string())
+						break;
 					mat_(i) = vals[i];
 				}
 
+				if (vals.size() > 0 && vals[0].is_string())
+				{
+					mat_.resize(0, 0);
+					mat_expr_ = std::vector<ExpressionValue>(vals.size());
+
+					for (int i = 0; i < vals.size(); ++i)
+					{
+						mat_expr_[i].init(vals[i]);
+					}
+				}
+
 				if (t_index_.size() > 0)
-					if (mat_.size() != t_index_.size())
+					if (mat_.size() != t_index_.size() && mat_expr_.size() != t_index_.size())
 						logger().error("Specifying varying dirichlet over time, however 'time_reference' does not match dirichlet boundary conditions.");
 			}
 			else
@@ -193,7 +207,10 @@ namespace polyfem
 					t = std::round(t * 1000.) / 1000.;
 					if (t_index_.count(t) != 0)
 					{
-						return mat_(t_index_.at(t));
+						if (mat_.size() > 0)
+							return mat_(t_index_.at(t));
+						else if (mat_expr_.size() > 0)
+							return mat_expr_[t_index_.at(t)](x, y, z, t, index);
 					}
 					else
 					{

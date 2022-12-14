@@ -14,7 +14,6 @@ namespace polyfem
 		{
 		}
 
-		Eigen::MatrixXd map(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const override;
 
 		Eigen::VectorXd initial_guess() const override
@@ -31,16 +30,16 @@ namespace polyfem
 
 		const std::map<int, int> &get_boundary_id_to_reduced_param() const { return boundary_id_to_reduced_param; }
 
-		int get_timestep_dim() const { return boundary_ids_list.size(); }
+		int get_timestep_dim() const { return boundary_id_to_reduced_param.size() * (dim - 1) * 3; }
 
 		Eigen::VectorXd inverse_map_grad_timestep(const Eigen::VectorXd &reduced_grad) const;
 
 		Eigen::VectorXd get_current_dirichlet(const int time_step) const
 		{
 			if (time_step == 0)
-				return Eigen::VectorXd::Zero(boundary_id_to_reduced_param.size() * dim);
+				return Eigen::VectorXd::Zero(boundary_id_to_reduced_param.size() * (dim - 1) * 3);
 			else
-				return current_dirichlet.segment((time_step - 1) * boundary_id_to_reduced_param.size() * dim, boundary_id_to_reduced_param.size() * dim);
+				return current_dirichlet.segment((time_step - 1) * boundary_id_to_reduced_param.size() * (dim - 1) * 3, boundary_id_to_reduced_param.size() * (dim - 1) * 3);
 		}
 
 	private:

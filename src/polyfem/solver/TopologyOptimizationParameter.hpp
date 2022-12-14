@@ -17,9 +17,9 @@ namespace polyfem
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 
-		Eigen::MatrixXd map(const Eigen::VectorXd &x) const override;
+		Eigen::MatrixXd map(const Eigen::VectorXd &x) const;
 		Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const override;
-		
+
 		int n_inequality_constraints() override;
 		double inequality_constraint_val(const Eigen::VectorXd &x, const int index) override;
 		Eigen::VectorXd inequality_constraint_grad(const Eigen::VectorXd &x, const int index) override;

@@ -34,15 +34,16 @@ namespace polyfem
 			}
 		}
 
-		starting_dirichlet.resize(time_steps * boundary_id_to_reduced_param.size() * dim);
+		starting_dirichlet.setZero(time_steps * boundary_id_to_reduced_param.size() * (dim - 1) * 3);
 		for (auto dirichlet : states_ptr_[0]->args["boundary_conditions"]["dirichlet_boundary"])
 			for (int k = 0; k < dim; ++k)
 				for (int i = 0; i < time_steps; ++i)
 				{
 					if (boundary_id_to_reduced_param.count(dirichlet["id"].get<int>()) == 0)
 						continue;
-					starting_dirichlet(i * boundary_id_to_reduced_param.size() * dim + boundary_id_to_reduced_param[dirichlet["id"].get<int>()] * dim + k) = dirichlet["value"][k][i];
+					starting_dirichlet(i * boundary_id_to_reduced_param.size() * (dim - 1) * 3 + boundary_id_to_reduced_param[dirichlet["id"].get<int>()] * (dim - 1) * 3 + k) = dirichlet["value"][k][i];
 				}
+
 		boundary_ids_list.resize(states_ptr_[0]->boundary_nodes.size());
 		for (auto it = states_ptr_[0]->local_boundary.begin(); it != states_ptr_[0]->local_boundary.end(); ++it)
 		{
@@ -92,12 +93,12 @@ namespace polyfem
 		return true;
 	}
 
-	Eigen::MatrixXd ControlParameter::map(const Eigen::VectorXd &x) const
-	{
-		Eigen::MatrixXd dirichlet_full;
-		control_constraints_->reduced_to_full(x, dirichlet_full);
-		return dirichlet_full;
-	}
+	// Eigen::MatrixXd ControlParameter::map(const Eigen::VectorXd &x) const
+	// {
+	// 	Eigen::MatrixXd dirichlet_full;
+	// 	control_constraints_->reduced_to_full(x, dirichlet_full);
+	// 	return dirichlet_full;
+	// }
 
 	Eigen::VectorXd ControlParameter::map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const
 	{
@@ -117,24 +118,13 @@ namespace polyfem
 	{
 		auto &problem = *dynamic_cast<assembler::GenericTensorProblem *>(states_ptr_[0]->problem.get());
 		// This should eventually update dirichlet boundaries per boundary element, using the shape constraint.
+		auto constraint_string = control_constraints_->constraint_to_string(newX);
 		for (const auto &kv : boundary_id_to_reduced_param)
 		{
-			json dirichlet_bc;
-			if (states_ptr_[0]->mesh->dimension() == 2)
-				dirichlet_bc = {{}, {}};
-			else
-				dirichlet_bc = {{}, {}, {}};
+			json dirichlet_bc = constraint_string[kv.first];
+			// Need time_steps + 1 entry, though unused.
 			for (int k = 0; k < states_ptr_[0]->mesh->dimension(); ++k)
-			{
-				for (int t = 0; t < time_steps; ++t)
-				{
-					dirichlet_bc[k].push_back(newX(t * boundary_id_to_reduced_param.size() * states_ptr_[0]->mesh->dimension() + kv.second * states_ptr_[0]->mesh->dimension() + k));
-				}
-				// Need time_steps + 1 entry, though unused.
 				dirichlet_bc[k].push_back(dirichlet_bc[k][time_steps - 1]);
-			}
-			// std::cout << kv.first << "\t" << kv.second << std::endl;
-			// std::cout << "time steps: " << time_steps << std::endl;
 			logger().trace("Updating boundary id {} to dirichlet bc {}", kv.first, dirichlet_bc);
 			problem.update_dirichlet_boundary(kv.first, dirichlet_bc, true, true, true, "");
 		}
