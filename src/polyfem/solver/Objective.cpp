@@ -1900,7 +1900,12 @@ namespace polyfem::solver
 			{
 				Eigen::MatrixXd clamped_point = keys.row(i).cwiseProduct(delta_).transpose();
 				corner_point.row(i) = clamped_point.transpose();
-				if (implicit_function_distance.count(keys_string[i]) == 0)
+				bool written;
+				{
+					std::shared_lock lock(mutex_);
+					written = implicit_function_distance.count(keys_string[i]) == 0;
+				}
+				if (written)
 				{
 					std::unique_lock lock(mutex_);
 					compute_distance(clamped_point, implicit_function_distance[keys_string[i]], implicit_function_grad[keys_string[i]]);
