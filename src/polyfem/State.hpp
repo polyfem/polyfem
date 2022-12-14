@@ -308,7 +308,7 @@ namespace polyfem
 		/// initialize the nonlinear solver
 		/// @param[out] sol solution
 		/// @param[in] t (optional) initial time
-		void init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t = 1.0);
+		void init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t = 1.0, const bool init_time_integrator = true);
 		/// solves a linear problem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure

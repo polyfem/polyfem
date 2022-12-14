@@ -72,7 +72,7 @@ namespace polyfem::mesh
 		}
 	} // namespace
 
-	void remesh(State &state, Eigen::MatrixXd &sol, const double time, const double dt)
+	bool remesh(State &state, Eigen::MatrixXd &sol, const double time, const double dt)
 	{
 		const int dim = state.mesh->dimension();
 		int ndof = sol.size();
@@ -96,7 +96,7 @@ namespace polyfem::mesh
 			edge_to_boundary_id[std::make_pair(e0, e1)] = state.mesh->get_boundary_id(ei);
 		}
 
-		const std::vector<int> &body_ids = state.mesh->get_body_ids();
+		const std::vector<int> body_ids = state.mesh->has_body_ids() ? state.mesh->get_body_ids() : std::vector<int>(elements.rows(), 0);
 		assert(body_ids.size() == elements.rows());
 
 		// Only remesh the FE mesh
@@ -122,7 +122,7 @@ namespace polyfem::mesh
 		projection_quantities.conservativeResize(ndof_mesh, Eigen::NoChange);
 
 		assert(!state.mesh->is_volume());
-		WildRemeshing2D remeshing(state, obstacle_sol, time);
+		WildRemeshing2D remeshing(state, obstacle_sol, obstacle_projection_quantities, time, state.solve_data.nl_problem->value(sol));
 		remeshing.energy_relative_tolerance = state.args["space"]["remesh"]["rel_tol"];
 		remeshing.energy_absolute_tolerance = state.args["space"]["remesh"]["abs_tol"];
 		remeshing.n_ring_size = state.args["space"]["remesh"]["n_ring_size"];
@@ -134,12 +134,16 @@ namespace polyfem::mesh
 			/*max_ops_percent=*/-1);
 		remeshing.timings.log();
 		if (!made_change)
-			return;
+			return false;
 
 		remeshing.consolidate_mesh();
 
 		// --------------------------------------------------------------------
 		// create new mesh
+
+		// NOTE: Assumes only split ops were performed
+		if (remeshing.rest_positions().rows() == state.mesh->n_vertices())
+			return false;
 
 		state.mesh = mesh::Mesh::create(remeshing.rest_positions(), remeshing.triangles(), /*non_conforming=*/false);
 
@@ -187,11 +191,11 @@ namespace polyfem::mesh
 			sol.bottomRows(ndof_obstacle) = obstacle_sol;
 
 		state.solve_data.rhs_assembler = state.build_rhs_assembler();
-		state.init_nonlinear_tensor_solve(sol, time);
+		state.init_nonlinear_tensor_solve(sol, time, /*init_time_integrator=*/false);
 
 		if (state.problem->is_time_dependent())
 		{
-			assert(state.solve_data.time_integrator->dt() == dt);
+			assert(state.solve_data.time_integrator != nullptr);
 
 			Eigen::MatrixXd projected_quantities = remeshing.projected_quantities();
 			assert(projected_quantities.rows() == ndof_mesh);
@@ -211,5 +215,7 @@ namespace polyfem::mesh
 		if (state.solve_data.nl_problem->uses_lagging())
 			state.solve_data.nl_problem->init_lagging(state.solve_data.time_integrator->x_prev());
 		state.solve_data.update_barrier_stiffness(sol); // TODO: remove this
+
+		return true;
 	}
 } // namespace polyfem::mesh

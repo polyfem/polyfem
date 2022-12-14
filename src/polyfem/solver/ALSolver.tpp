@@ -83,7 +83,15 @@ namespace polyfem::solver
 
 		nl_problem.init(sol);
 		update_barrier_stiffness(sol);
-		nl_solver->minimize(nl_problem, tmp_sol);
+		try
+		{
+			nl_solver->minimize(nl_problem, tmp_sol);
+		}
+		catch (const std::runtime_error &e)
+		{
+			sol = nl_problem.reduced_to_full(tmp_sol);
+			throw e;
+		}
 		sol = nl_problem.reduced_to_full(tmp_sol);
 
 		post_subsolve(0);

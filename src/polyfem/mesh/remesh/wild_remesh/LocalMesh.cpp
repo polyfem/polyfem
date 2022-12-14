@@ -128,11 +128,10 @@ namespace polyfem::mesh
 			const Obstacle &obstacle = m.obstacle();
 			append_rows(m_rest_positions, obstacle.v());
 			append_rows(m_positions, obstacle.v() + m.obstacle_displacements());
-			// TODO: append the actual values
-			append_rows(m_prev_positions, obstacle.v());
-			append_zero_rows(m_prev_velocities, obstacle.n_vertices());
-			append_zero_rows(m_prev_accelerations, obstacle.n_vertices());
-			append_zero_rows(m_friction_gradient, obstacle.n_vertices());
+			append_rows(m_prev_positions, m.obstacle_prev_positions());
+			append_rows(m_prev_velocities, m.obstacle_prev_velocities());
+			append_rows(m_prev_accelerations, m.obstacle_prev_accelerations());
+			append_rows(m_friction_gradient, m.obstacle_friction_gradient());
 			append_rows(m_boundary_edges, obstacle.e().array() + tmp_num_vertices);
 
 			for (int i = 0; i < obstacle.n_vertices(); i++)

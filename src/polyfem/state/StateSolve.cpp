@@ -39,7 +39,10 @@ namespace polyfem
 		assert(solve_data.rhs_assembler != nullptr);
 		const std::string in_path = resolve_input_path(args["input"]["data"]["u_path"]);
 		if (!in_path.empty())
-			import_matrix(in_path, args["import"], solution);
+		{
+			if (!read_matrix(in_path, solution))
+				log_and_throw_error("Unable to read initial solution from file ({})!", in_path);
+		}
 		else
 		{
 			if (problem->is_time_dependent())
@@ -57,7 +60,10 @@ namespace polyfem
 		assert(solve_data.rhs_assembler != nullptr);
 		const std::string in_path = resolve_input_path(args["input"]["data"]["v_path"]);
 		if (!in_path.empty())
-			import_matrix(in_path, args["import"], velocity);
+		{
+			if (!read_matrix(in_path, velocity))
+				log_and_throw_error("Unable to read initial velocity from file ({})!", in_path);
+		}
 		else
 			solve_data.rhs_assembler->initial_velocity(velocity);
 	}
@@ -67,7 +73,10 @@ namespace polyfem
 		assert(solve_data.rhs_assembler != nullptr);
 		const std::string in_path = resolve_input_path(args["input"]["data"]["a_path"]);
 		if (!in_path.empty())
-			import_matrix(in_path, args["import"], acceleration);
+		{
+			if (!read_matrix(in_path, acceleration))
+				log_and_throw_error("Unable to read initial acceleration from file ({})!", in_path);
+		}
 		else
 			solve_data.rhs_assembler->initial_acceleration(acceleration);
 	}

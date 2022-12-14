@@ -16,11 +16,18 @@ namespace polyfem::mesh
 
 		/// @brief Construct a new WildRemeshing2D object
 		/// @param state Simulation current state
-		WildRemeshing2D(const State &state, const Eigen::VectorXd &obstacle_sol, const double current_time)
+		WildRemeshing2D(
+			const State &state,
+			const Eigen::VectorXd &obstacle_sol,
+			const Eigen::MatrixXd &obstacle_vals,
+			const double current_time,
+			const double starting_energy)
 			: wmtk::TriMesh(),
 			  state(state),
 			  m_obstacle_displacements(utils::unflatten(obstacle_sol, DIM)),
-			  current_time(current_time) {}
+			  m_obstacle_vals(obstacle_vals),
+			  current_time(current_time),
+			  starting_energy(starting_energy) {}
 
 		virtual ~WildRemeshing2D(){};
 
@@ -67,6 +74,10 @@ namespace polyfem::mesh
 		std::vector<Tuple> boundary_edges() const;
 		const Obstacle &obstacle() const { return state.obstacle; }
 		const Eigen::MatrixXd &obstacle_displacements() const { return m_obstacle_displacements; }
+		Eigen::MatrixXd obstacle_prev_positions() const { return utils::unflatten(m_obstacle_vals.col(0), DIM); }
+		Eigen::MatrixXd obstacle_prev_velocities() const { return utils::unflatten(m_obstacle_vals.col(1), DIM); }
+		Eigen::MatrixXd obstacle_prev_accelerations() const { return utils::unflatten(m_obstacle_vals.col(2), DIM); }
+		Eigen::MatrixXd obstacle_friction_gradient() const { return utils::unflatten(m_obstacle_vals.col(3), DIM); }
 
 		/// @brief Set rest positions of the stored mesh
 		void set_rest_positions(const Eigen::MatrixXd &positions);
@@ -275,7 +286,9 @@ namespace polyfem::mesh
 		/// @brief Reference to the simulation state.
 		const State &state;
 		const Eigen::MatrixXd m_obstacle_displacements;
+		Eigen::MatrixXd m_obstacle_vals;
 		const double current_time;
+		const double starting_energy;
 
 		double total_area;
 

@@ -1184,6 +1184,7 @@ namespace polyfem::io
 		{
 			fun.conservativeResize(fun.rows() + obstacle.n_vertices(), fun.cols());
 			node_fun.conservativeResize(node_fun.rows() + obstacle.n_vertices(), node_fun.cols());
+			node_fun.bottomRows(obstacle.n_vertices()).setZero();
 			// obstacle.update_displacement(t, fun);
 			// NOTE: Assuming the obstacle displacement is the last part of the solution
 			fun.bottomRows(obstacle.n_vertices()) = utils::unflatten(sol.bottomRows(obstacle.ndof()), fun.cols());

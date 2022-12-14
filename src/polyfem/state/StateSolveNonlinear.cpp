@@ -83,14 +83,18 @@ namespace polyfem
 		{
 			solve_tensor_nonlinear(sol, t);
 
-			if (remesh_enabled && t0 + dt * t >= remesh_t0)
-			{
-				save_energy(save_i);
-				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+			save_energy(save_i);
+			save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
-				// const double kappa_before = solve_data.contact_form->barrier_stiffness();
-				mesh::remesh(*this, sol, t0 + dt * (t + 0), dt);
-				// solve_data.updated_barrier_stiffness(sol);
+			if (remesh_enabled && t0 + dt * t >= remesh_t0 && mesh::remesh(*this, sol, t0 + dt * (t + 0), dt))
+			{
+				if (mesh->dimension() == 2)
+				{
+					Eigen::MatrixXd V;
+					Eigen::MatrixXi F;
+					build_mesh_matrices(V, F);
+					OBJWriter::write(resolve_output_path("rest_remeshed.obj"), V, F);
+				}
 
 				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
@@ -109,8 +113,6 @@ namespace polyfem
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
-				save_energy(save_i);
-				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 			}
 
 			{
@@ -125,17 +127,15 @@ namespace polyfem
 			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
+
+			solve_data.time_integrator->save_raw(
+				resolve_output_path(args["output"]["data"]["u_path"]),
+				resolve_output_path(args["output"]["data"]["v_path"]),
+				resolve_output_path(args["output"]["data"]["a_path"]));
 		}
-
-		energy_file.close();
-
-		solve_data.time_integrator->save_raw(
-			resolve_output_path(args["output"]["data"]["u_path"]),
-			resolve_output_path(args["output"]["data"]["v_path"]),
-			resolve_output_path(args["output"]["data"]["a_path"]));
 	}
 
-	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t)
+	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t, const bool init_time_integrator)
 	{
 		assert(!assembler.is_linear(formulation()) || is_contact_enabled()); // non-linear
 		assert(!problem->is_scalar());                                       // tensor
@@ -166,14 +166,17 @@ namespace polyfem
 			POLYFEM_SCOPED_TIMER("Initialize time integrator");
 			solve_data.time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
 
-			Eigen::MatrixXd velocity, acceleration;
-			initial_velocity(velocity);
-			assert(velocity.size() == sol.size());
-			initial_acceleration(acceleration);
-			assert(acceleration.size() == sol.size());
+			if (init_time_integrator)
+			{
+				Eigen::MatrixXd velocity, acceleration;
+				initial_velocity(velocity);
+				assert(velocity.size() == sol.size());
+				initial_acceleration(acceleration);
+				assert(acceleration.size() == sol.size());
 
-			const double dt = args["time"]["dt"];
-			solve_data.time_integrator->init(sol, velocity, acceleration, dt);
+				const double dt = args["time"]["dt"];
+				solve_data.time_integrator->init(sol, velocity, acceleration, dt);
+			}
 		}
 		else
 		{
