@@ -675,8 +675,6 @@ public:
 			Eigen::MatrixXd disp_grad;
 			ipc::Constraints contact_set;
 			ipc::FrictionConstraints friction_constraint_set;
-			Eigen::MatrixXd p;
-			Eigen::MatrixXd nu;
 		};
 		std::vector<DiffCachedParts> diff_cached;
 		
@@ -685,11 +683,6 @@ public:
 
 		int n_linear_solves = 0;
 		int n_nonlinear_solves = 0;
-
-		bool adjoint_solved() const
-		{
-			return adjoint_solved_;
-		}
 
 		int ndof() const
 		{
@@ -715,9 +708,9 @@ public:
 		// Aux functions for setting up adjoint equations
 		void compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const;
 		// Solves the adjoint PDE for derivatives
-		void solve_adjoint(const Eigen::MatrixXd &rhs);
-		void solve_static_adjoint(const Eigen::VectorXd &adjoint_rhs);
-		void solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs);
+		Eigen::MatrixXd solve_adjoint(const Eigen::MatrixXd &rhs);
+		Eigen::MatrixXd solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs);
+		Eigen::MatrixXd solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs);
 		// Change geometric node positions
 		void set_mesh_vertices(const Eigen::MatrixXd &vertices);
 		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true) const;
@@ -726,8 +719,6 @@ public:
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
 		// downsample grad on P2 nodes to grad on P1 nodes, only for P2 contact shape derivative
 		StiffnessMatrix down_sampling_mat;
-private:
-		bool adjoint_solved_ = false;
 		//---------------------------------------------------
 		//-----------------homogenization--------------------
 		//---------------------------------------------------

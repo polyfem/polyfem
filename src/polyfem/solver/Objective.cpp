@@ -50,34 +50,6 @@ namespace polyfem::solver
 			return grad;
 		}
 
-		template <typename T>
-		T strain_norm(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &F)
-		{
-			T val = T(0);
-			auto strain = (F.transpose() + F) / T(2.0);
-			for (int i = 0; i < strain.rows(); i++)
-				for (int j = 0; j < strain.cols(); j++)
-					val += strain(i, j) * strain(i, j);
-			return val;
-		}
-
-		Eigen::MatrixXd strain_norm_grad(const Eigen::MatrixXd &F)
-		{
-			DiffScalarBase::setVariableCount(F.size());
-			Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic> full_diff(F.rows(), F.cols());
-			for (int i = 0; i < F.rows(); i++)
-				for (int j = 0; j < F.cols(); j++)
-					full_diff(i, j) = Diff(i + j * F.rows(), F(i, j));
-			auto reduced_diff = strain_norm(full_diff);
-
-			Eigen::MatrixXd grad(F.rows(), F.cols());
-			for (int i = 0; i < F.rows(); ++i)
-				for (int j = 0; j < F.cols(); ++j)
-					grad(i, j) = reduced_diff.getGradient()(i + j * F.rows());
-
-			return grad;
-		}
-
 		double barrier_func(double x, double dhat)
 		{
 			double y = x / dhat;
@@ -400,15 +372,14 @@ namespace polyfem::solver
 		return obj;
 	}
 
-	Eigen::VectorXd Objective::compute_adjoint_term(const State &state, const Parameter &param)
+	Eigen::VectorXd Objective::compute_adjoint_term(const State &state, const Eigen::MatrixXd &adjoints, const Parameter &param)
 	{
 		Eigen::VectorXd term;
 		term.setZero(param.full_dim());
 
 		if (param.contains_state(state))
 		{
-			assert(state.adjoint_solved());
-			AdjointForm::compute_adjoint_term(state, param.name(), term);
+			AdjointForm::compute_adjoint_term(state, adjoints, param.name(), term);
 		}
 
 		return term;
@@ -1445,104 +1416,6 @@ namespace polyfem::solver
 		}
 		else
 			return Eigen::VectorXd::Zero(param.optimization_dim());
-	}
-
-	IntegrableFunctional StrainObjective::get_integral_functional()
-	{
-		IntegrableFunctional j;
-
-		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val.setZero(grad_u.rows(), 1);
-			for (int q = 0; q < grad_u.rows(); q++)
-			{
-				Eigen::MatrixXd grad_u_q;
-				vector2matrix(grad_u.row(q), grad_u_q);
-				val(q) = strain_norm(grad_u_q);
-			}
-		});
-
-		j.set_dj_dgradu([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			val.setZero(grad_u.rows(), grad_u.cols());
-			const int dim = sqrt(grad_u.cols());
-			for (int q = 0; q < grad_u.rows(); q++)
-			{
-				Eigen::MatrixXd grad_u_q;
-				vector2matrix(grad_u.row(q), grad_u_q);
-				Eigen::MatrixXd grad = strain_norm_grad(grad_u_q);
-
-				for (int i = 0; i < dim; i++)
-					for (int l = 0; l < dim; l++)
-						val(q, i * dim + l) = grad(i, l);
-			}
-		});
-
-		return j;
-	}
-
-	bool almost_equal(const Eigen::VectorXd &x, const Eigen::VectorXd &y)
-	{
-		if (x.size() != y.size())
-			return false;
-
-		return ((x - y).norm() < 1e-8) || ((x - y).norm() / x.norm() < 1e-5);
-	}
-
-	NaiveNegativePoissonObjective::NaiveNegativePoissonObjective(const State &state1, const json &args) : state1_(state1)
-	{
-		power_ = args["power"];
-		Eigen::VectorXd a, b;
-		a = args["v1"];
-		b = args["v2"];
-		for (int i = 0; i < state1_.n_bases; i++)
-		{
-			if (almost_equal(state1_.mesh_nodes->node_position(i), a))
-			{
-				v1 = i;
-			}
-			if (almost_equal(state1_.mesh_nodes->node_position(i), b))
-			{
-				v2 = i;
-			}
-		}
-		if (v1 < 0 || v2 < 0)
-			log_and_throw_error("Failed to find target vertices in objective!");
-	}
-
-	double NaiveNegativePoissonObjective::value()
-	{
-		const int dim = state1_.mesh->dimension();
-		const double length1 = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
-
-		// Eigen::VectorXd vec(2); vec << length1, length2;
-		// return inverse_Lp_norm(vec, power_);
-
-		return 1. / length1;
-	}
-
-	Eigen::MatrixXd NaiveNegativePoissonObjective::compute_adjoint_rhs(const State &state)
-	{
-		Eigen::MatrixXd rhs;
-		rhs.setZero(state.diff_cached[0].u.size(), 1);
-
-		const int dim = state1_.mesh->dimension();
-
-		if (&state == &state1_)
-		{
-			const double length1 = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
-
-			rhs(v1 * dim + 0) = -1 / length1 / length1;
-			rhs(v2 * dim + 0) = 1 / length1 / length1;
-		}
-
-		return rhs;
-	}
-
-	Eigen::VectorXd NaiveNegativePoissonObjective::compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value)
-	{
-		if (param.name() == "shape")
-			log_and_throw_error("Not implemented!");
-
-		return Eigen::VectorXd::Zero(param.optimization_dim());
 	}
 
 	IntegrableFunctional TargetObjective::get_integral_functional()

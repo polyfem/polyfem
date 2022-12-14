@@ -21,26 +21,27 @@ namespace polyfem::solver
 		static std::shared_ptr<Objective> create(const json &args, const std::string &root_path, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &states);
 
 		virtual double value() = 0;
-		Eigen::VectorXd gradient(const std::vector<std::shared_ptr<State>> &states, const Parameter &param, const Eigen::VectorXd &param_value)
+		Eigen::VectorXd gradient(const std::vector<std::shared_ptr<State>> &states, const std::vector<Eigen::MatrixXd> &adjoints, const Parameter &param, const Eigen::VectorXd &param_value)
 		{
 			Eigen::VectorXd adjoint_term;
 			adjoint_term.setZero(param.full_dim());
+			int i = 0;
 			for (const auto &state : states)
-				adjoint_term += compute_adjoint_term(*state, param);
+				adjoint_term += compute_adjoint_term(*state, adjoints[i++], param);
 
 			return compute_partial_gradient(param, param_value) + param.map_grad(param_value, adjoint_term);
 		}
 
 		// use only if there's only one state
-		Eigen::VectorXd gradient(const State &state, const Parameter &param, const Eigen::VectorXd &param_value)
+		Eigen::VectorXd gradient(const State &state, const Eigen::MatrixXd &adjoints, const Parameter &param, const Eigen::VectorXd &param_value)
 		{
-			return compute_partial_gradient(param, param_value) + param.map_grad(param_value, compute_adjoint_term(state, param));
+			return compute_partial_gradient(param, param_value) + param.map_grad(param_value, compute_adjoint_term(state, adjoints, param));
 		}
 
 		virtual Eigen::MatrixXd compute_adjoint_rhs(const State &state) = 0; // compute $\partial_u J$
 
 		virtual Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) = 0; // compute $\partial_q J$
-		static Eigen::VectorXd compute_adjoint_term(const State &state, const Parameter &param);
+		static Eigen::VectorXd compute_adjoint_term(const State &state, const Eigen::MatrixXd &adjoints, const Parameter &param);
 	};
 
 	// this objective either depends on solution in one time step, or one static solution
@@ -273,39 +274,6 @@ namespace polyfem::solver
 		std::string formulation_;
 
 		std::shared_ptr<const Parameter> elastic_param_; // stress depends on elastic param
-	};
-
-	class StrainObjective : public SpatialIntegralObjective
-	{
-	public:
-		StrainObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
-		{
-			spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
-			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
-			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
-		}
-		~StrainObjective() = default;
-
-		IntegrableFunctional get_integral_functional() override;
-	};
-
-	class NaiveNegativePoissonObjective : public Objective
-	{
-	public:
-		NaiveNegativePoissonObjective(const State &state1, const json &args);
-		~NaiveNegativePoissonObjective() = default;
-
-		double value() override;
-		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
-		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
-
-	protected:
-		const State &state1_;
-
-		int v1 = -1;
-		int v2 = -1;
-
-		double power_ = 2;
 	};
 
 	class TargetObjective : public SpatialIntegralObjective
