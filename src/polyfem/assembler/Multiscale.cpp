@@ -195,10 +195,8 @@ namespace polyfem::assembler
 
 		for (int i = 0; i < CB.rows(); i++)
 		{
-			state->solve_adjoint(CB.row(i).transpose());
-
 			Eigen::VectorXd b;
-			solver::AdjointForm::dJ_macro_strain_adjoint_term(*state, x, state->diff_cached[0].p, b);
+			solver::AdjointForm::dJ_macro_strain_adjoint_term(*state, x, state->solve_adjoint(CB.row(i).transpose()), b);
 			stiffness.row(i) += b;
 		}
 

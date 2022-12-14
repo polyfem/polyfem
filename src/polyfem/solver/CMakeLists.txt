@@ -38,6 +38,8 @@ set(SOURCES
 	AdjointForm.hpp
 	Objective.cpp
 	Objective.hpp
+	HomoObjective.hpp
+	HomoObjective.cpp
 	AdjointNLProblem.hpp
 	AdjointNLProblem.cpp
 	Parameter.hpp

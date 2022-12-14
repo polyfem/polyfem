@@ -124,19 +124,15 @@ namespace polyfem::solver
 
 	void AdjointForm::compute_adjoint_term(
 		const State &state,
+		const Eigen::MatrixXd &adjoints, 
 		const std::string &param_name,
 		Eigen::VectorXd &term)
 	{
 		if (state.problem->is_time_dependent())
 		{
 			Eigen::MatrixXd adjoint_nu, adjoint_p;
-			adjoint_nu.setZero(state.diff_cached[0].p.size(), state.diff_cached.size());
-			adjoint_p.setZero(state.diff_cached[0].p.size(), state.diff_cached.size());
-			for (int t = 0; t < state.diff_cached.size(); t++) // going to remove
-			{
-				adjoint_nu.col(t) = state.diff_cached[t].nu;
-				adjoint_p.col(t) = state.diff_cached[t].p;
-			}
+			adjoint_nu = adjoints(Eigen::all, Eigen::seq(1, Eigen::last, 2));
+			adjoint_p = adjoints(Eigen::all, Eigen::seq(0, Eigen::last, 2));
 			if (param_name == "material")
 				dJ_material_transient(state, adjoint_nu, adjoint_p, term);
 			else if (param_name == "shape")
@@ -155,11 +151,11 @@ namespace polyfem::solver
 		else
 		{
 			if (param_name == "material" || param_name == "topology")
-				dJ_material_static(state, state.diff_cached[0].u, state.diff_cached[0].p, term);
+				dJ_material_static(state, state.diff_cached[0].u, adjoints, term);
 			else if (param_name == "shape")
-				dJ_shape_static_adjoint_term(state, state.diff_cached[0].u, state.diff_cached[0].p, term);
+				dJ_shape_static_adjoint_term(state, state.diff_cached[0].u, adjoints, term);
 			else if (param_name == "macro_strain")
-				dJ_macro_strain_adjoint_term(state, state.diff_cached[0].u, state.diff_cached[0].p, term);
+				dJ_macro_strain_adjoint_term(state, state.diff_cached[0].u, adjoints, term);
 			else
 				log_and_throw_error("Unknown design parameter!");
 		}
@@ -220,16 +216,11 @@ namespace polyfem::solver
 		{
 			Eigen::MatrixXd adjoint_rhs;
 			dJ_du_transient(state, j, interested_ids, spatial_integral_type, transient_integral_type, adjoint_rhs);
-			state.solve_transient_adjoint(adjoint_rhs);
+			Eigen::MatrixXd adjoints = state.solve_transient_adjoint(adjoint_rhs);
 
 			Eigen::MatrixXd adjoint_nu, adjoint_p;
-			adjoint_nu.setZero(state.diff_cached[0].p.size(), state.diff_cached.size());
-			adjoint_p.setZero(state.diff_cached[0].p.size(), state.diff_cached.size());
-			for (int t = 0; t < state.diff_cached.size(); t++) // going to remove
-			{
-				adjoint_nu.col(t) = state.diff_cached[t].nu;
-				adjoint_p.col(t) = state.diff_cached[t].p;
-			}
+			adjoint_nu = adjoints(Eigen::all, Eigen::seq(1, Eigen::last, 2));
+			adjoint_p = adjoints(Eigen::all, Eigen::seq(0, Eigen::last, 2));
 
 			if (param_name == "material")
 				dJ_material_transient(state, adjoint_nu, adjoint_p, grad);
@@ -250,13 +241,13 @@ namespace polyfem::solver
 		{
 			Eigen::VectorXd adjoint_rhs;
 			dJ_du_step(state, j, state.diff_cached[0].u, interested_ids, spatial_integral_type, 0, adjoint_rhs);
-			state.solve_static_adjoint(adjoint_rhs);
+			Eigen::MatrixXd adjoints = state.solve_static_adjoint(adjoint_rhs);
 			if (param_name == "material")
-				dJ_material_static(state, state.diff_cached[0].u, state.diff_cached[0].p, grad);
+				dJ_material_static(state, state.diff_cached[0].u, adjoints, grad);
 			else if (param_name == "shape")
-				dJ_shape_static(state, state.diff_cached[0].u, state.diff_cached[0].p, j, interested_ids, spatial_integral_type, grad);
+				dJ_shape_static(state, state.diff_cached[0].u, adjoints, j, interested_ids, spatial_integral_type, grad);
 			else if (param_name == "topology")
-				dJ_material_static(state, state.diff_cached[0].u, state.diff_cached[0].p, grad);
+				dJ_material_static(state, state.diff_cached[0].u, adjoints, grad);
 			else if (param_name == "friction")
 				log_and_throw_error("Static friction coefficient grad not implemented!");
 			else if (param_name == "dirichlet")

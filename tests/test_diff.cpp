@@ -153,8 +153,8 @@ namespace
 	{
 		double functional_val = obj.value();
 
-		state.solve_adjoint(obj.compute_adjoint_rhs(state));
-		Eigen::VectorXd one_form = obj.gradient(state, *param);
+		Eigen::MatrixXd adjoints = state.solve_adjoint(obj.compute_adjoint_rhs(state));
+		Eigen::VectorXd one_form = obj.gradient(state, adjoints, *param, param->initial_guess());
 		double derivative = (one_form.array() * theta.array()).sum();
 
 		perturb(state, theta * dt, type);
@@ -176,9 +176,9 @@ namespace
 	{
 		double functional_val = obj.value();
 
-		state->solve_adjoint(obj.compute_adjoint_rhs(*state));
-		Eigen::VectorXd one_form = obj.gradient(*state, *param);
-		double derivative = (param->map_grad(param->initial_guess(), one_form).array() * theta.array()).sum();
+		Eigen::MatrixXd adjoints = state->solve_adjoint(obj.compute_adjoint_rhs(*state));
+		Eigen::VectorXd one_form = obj.gradient(*state, adjoints, *param, param->initial_guess());
+		double derivative = (one_form.array() * theta.array()).sum();
 
 		perturb_fn(param, state, theta * dt);
 		solve_pde(*state);
@@ -366,8 +366,8 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 	const double tol = 1e-6;
 	double functional_val = func.value();
 
-	state.solve_adjoint(func.compute_adjoint_rhs(state));
-	Eigen::VectorXd one_form = topo_param->map_grad(topo_param->initial_guess(), func.gradient(state, *topo_param));
+	Eigen::MatrixXd adjoints = state.solve_adjoint(func.compute_adjoint_rhs(state));
+	Eigen::VectorXd one_form = func.gradient(state, adjoints, *topo_param, topo_param->initial_guess());
 	double derivative = (one_form.array() * theta.array()).sum();
 
 	topo_param->pre_solve(topo_param->initial_guess() + dt * theta);

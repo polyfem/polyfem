@@ -64,8 +64,7 @@ namespace polyfem
 
         // periodic pattern
         unit_size_ = args["unit_size"];
-        if (unit_size_ > 0)
-            compute_pattern_period();
+        compute_pattern_period();
         
         pre_solve(initial_guess_);
     }
@@ -73,8 +72,17 @@ namespace polyfem
     void GraphParameter::compute_pattern_period()
     {
         const mesh::Mesh &mesh = *(get_state().mesh);
-        elem_period_ = 0;
+        int elem_period_ = 0;
         full_to_periodic_.clear();
+
+        if (unit_size_ == 0)
+        {
+            full_to_periodic_.reserve(get_state().n_geom_bases);
+            for (int i = 0; i < get_state().n_geom_bases; i++)
+                full_to_periodic_.push_back(i);
+            
+            return;
+        }
         
         RowVectorNd min, max;
         mesh.bounding_box(min, max);
@@ -216,19 +224,22 @@ namespace polyfem
 
         logger().info("remesh command \"{}\" returns {}", command, return_val);
 
-        command = "python ../tile.py " + out_msh_path_;
-        try 
+        if (unit_size_ > 0)
         {
-            return_val = system(command.c_str());
-        }
-        catch (const std::exception &err)
-        {
-            logger().error("tile command \"{}\" returns {}", command, return_val);
+            command = "python ../tile.py " + out_msh_path_;
+            try 
+            {
+                return_val = system(command.c_str());
+            }
+            catch (const std::exception &err)
+            {
+                logger().error("tile command \"{}\" returns {}", command, return_val);
 
-            return false;
-        }
+                return false;
+            }
 
-        logger().info("tile command \"{}\" returns {}", command, return_val);
+            logger().info("tile command \"{}\" returns {}", command, return_val);
+        }
 
         return true;
     }
@@ -263,8 +274,7 @@ namespace polyfem
 
         states_ptr_[0]->set_log_level(static_cast<spdlog::level::level_enum>(cur_log)); // log level is global, only need to change in one state
 
-        if (unit_size_ > 0)
-            compute_pattern_period();
+        compute_pattern_period();
 
         // load shape velocity
         const int dim = get_state().mesh->dimension();

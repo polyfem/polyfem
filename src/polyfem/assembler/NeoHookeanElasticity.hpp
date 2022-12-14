@@ -27,6 +27,7 @@ namespace polyfem::assembler
 		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const;
 
 		double compute_energy(const NonLinearAssemblerData &data) const;
+		static double compute_energy(const Eigen::MatrixXd &grad_disp, const double lambda, const double mu);
 
 		// rhs for fabbricated solution, compute with automatic sympy code
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>

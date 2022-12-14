@@ -42,7 +42,6 @@ namespace polyfem
 
         Eigen::MatrixXd bounds_; // bound on shape parameters
 
-		int elem_period_ = 0;
 		double unit_size_;
 		std::vector<int> full_to_periodic_;
 	

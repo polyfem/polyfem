@@ -409,12 +409,6 @@
         "doc": "TODO"
     },
     {
-        "pointer": "/parameters/*/meshing_options",
-        "default": "",
-        "type": "file",
-        "doc": "Path to the meshing option json file."
-    },
-    {
         "pointer": "/parameters/*/graph_path",
         "type": "file",
         "doc": "Path to the graph obj file."
@@ -463,9 +457,21 @@
             "spline_specification",
             "dimensions",
             "surface_selection",
+            "fix_dirichlet",
+            "fix_neumann",
             "contact"
         ],
         "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/fix_dirichlet",
+        "type": "bool",
+        "default": true
+    },
+    {
+        "pointer": "/parameters/*/fix_neumann",
+        "type": "bool",
+        "default": true
     },
     {
         "pointer": "/parameters/*/contact",
@@ -823,6 +829,7 @@
             "height",
             "position",
             "stress",
+            "homogenized_energy",
             "homogenized_stress",
             "compliance",
             "strain_norm",
@@ -1091,6 +1098,26 @@
         "optional": [
             "shape_parameter",
             "material_parameter",
+            "volume_selection",
+            "power",
+            "weight",
+            "steps",
+            "transient_integral_type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "homogenized_energy",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "shape_parameter",
+            "material_parameter",
+            "macro_strain_parameter",
             "volume_selection",
             "power",
             "weight",

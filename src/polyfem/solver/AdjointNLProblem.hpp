@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cppoptlib/problem.h>
-#include "Objective.hpp"
+#include "HomoObjective.hpp"
 #include "Parameter.hpp"
 
 namespace polyfem::solver

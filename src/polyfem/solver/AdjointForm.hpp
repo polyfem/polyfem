@@ -38,6 +38,7 @@ namespace polyfem::solver
 		// assume adjoints are solved and stored in state
 		static void compute_adjoint_term(
 			const State &state,
+			const Eigen::MatrixXd &adjoints, 
 			const std::string &param_name,
 			Eigen::VectorXd &term);
 
