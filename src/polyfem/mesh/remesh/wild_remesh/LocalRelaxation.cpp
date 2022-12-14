@@ -91,8 +91,9 @@ namespace polyfem::mesh
 		// 1. Get the n-ring of triangles around the vertex.
 		// const LocalMesh local_mesh = LocalMesh::n_ring(
 		// 	*this, t, n_ring, /*include_global_boundary=*/free_boundary);
-		const LocalMesh local_mesh = LocalMesh::flood_fill_n_ring(
-			*this, t, flood_fill_rel_area * total_area, /*include_global_boundary=*/free_boundary);
+		// const LocalMesh local_mesh = LocalMesh::flood_fill_n_ring(
+		// 	*this, t, flood_fill_rel_area * total_area, /*include_global_boundary=*/free_boundary);
+		const LocalMesh local_mesh(*this, get_faces(), /*include_global_boundary=*/free_boundary);
 
 		std::vector<polyfem::basis::ElementBases> bases;
 		Eigen::VectorXi vertex_to_basis;
@@ -120,19 +121,19 @@ namespace polyfem::mesh
 		}
 		const int ndof = n_bases * DIM;
 
-		// io::OBJWriter::write(
-		// 	state.resolve_output_path("local_mesh0_before.obj"),
-		// 	local_mesh.rest_positions(), local_mesh.triangles());
-		// io::OBJWriter::write(
-		// 	state.resolve_output_path("local_mesh1_before.obj"),
-		// 	local_mesh.positions(), local_mesh.triangles());
+		io::OBJWriter::write(
+			state.resolve_output_path("local_rest_mesh_before_local_relaxation.obj"),
+			local_mesh.rest_positions(), local_mesh.triangles());
+		io::OBJWriter::write(
+			state.resolve_output_path("local_deformed_mesh_before_local_relaxation.obj"),
+			local_mesh.positions(), local_mesh.triangles());
 
-		// write_rest_obj(state.resolve_output_path("global_mesh0_before.obj"));
-		// write_deformed_obj(state.resolve_output_path("global_mesh1_before.obj"));
+		write_rest_obj(state.resolve_output_path("rest_mesh_before_local_relaxation.obj"));
+		write_deformed_obj(state.resolve_output_path("deformed_mesh_before_local_relaxation.obj"));
 
-		// io::OBJWriter::write(
-		// 	state.resolve_output_path("fixed_vertices.obj"),
-		// 	local_mesh.positions()(local_mesh.fixed_vertices(), Eigen::all), Eigen::MatrixXi());
+		io::OBJWriter::write(
+			state.resolve_output_path("fixed_vertices.obj"),
+			local_mesh.positions()(local_mesh.fixed_vertices(), Eigen::all), Eigen::MatrixXi());
 
 		// --------------------------------------------------------------------
 
@@ -259,6 +260,7 @@ namespace polyfem::mesh
 				collision_mesh,
 				state.args["contact"]["dhat"],
 				state.avg_mass,
+				state.args["contact"]["use_convergent_formulation"],
 				state.args["solver"]["contact"]["barrier_stiffness"],
 				state.args["solver"]["contact"]["CCD"]["broad_phase"],
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
@@ -314,8 +316,20 @@ namespace polyfem::mesh
 				});
 
 			sol = target_x;
+
+			solve_data.nl_problem->init(sol);
+			for (int i = 0; i < forms.size(); ++i)
+			{
+				if (forms[i]->enabled())
+				{
+					Eigen::VectorXd tmp;
+					forms[i]->first_derivative(sol, tmp);
+					logger().critical("∇form_{}={}", i, sol.norm());
+				}
+			}
+
 			const auto level_before = logger().level();
-			logger().set_level(spdlog::level::warn);
+			// logger().set_level(spdlog::level::warn);
 			try
 			{
 				al_solver.solve(*(solve_data.nl_problem), sol, state.args["solver"]["augmented_lagrangian"]["force"]);
@@ -323,11 +337,11 @@ namespace polyfem::mesh
 			catch (const std::runtime_error &e)
 			{
 				io::OBJWriter::write(
-					state.resolve_output_path("local_mesh1_after.obj"),
+					state.resolve_output_path("error_local_mesh.obj"),
 					utils::reorder_matrix(local_mesh.rest_positions(), vertex_to_basis) + utils::unflatten(sol, DIM),
 					utils::map_index_matrix(local_mesh.triangles(), vertex_to_basis));
 				io::OBJWriter::write(
-					state.resolve_output_path("collision_mesh_boundary_sol.obj"),
+					state.resolve_output_path("error_collision_mesh.obj"),
 					collision_mesh.displace_vertices(utils::unflatten(sol, DIM)), collision_mesh.edges());
 
 				throw e;
@@ -356,13 +370,10 @@ namespace polyfem::mesh
 		const bool accept = rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance;
 
 		static int i = 0;
-		if (accept)
-		{
-			logger().critical(
-				"{} energy_before={:g} energy_after={:g} rel_diff={:g} > {:g} abs_diff={:g} > {:g}",
-				i, local_energy_before, local_energy_after, rel_diff, energy_relative_tolerance, abs_diff, energy_absolute_tolerance);
-		}
-		i++;
+		logger().log(
+			accept ? spdlog::level::critical : spdlog::level::warn,
+			"{} | rel_diff={:g} rel_tol={:g} | abs_diff={:g} abs_tol={:g}",
+			i++, rel_diff, energy_relative_tolerance, abs_diff, energy_absolute_tolerance);
 
 		// Update positions only on acceptance
 		if (accept)
@@ -370,9 +381,6 @@ namespace polyfem::mesh
 			Eigen::VectorXd friction_gradient = Eigen::VectorXd::Zero(target_x.rows());
 			if (solve_data.friction_form)
 			{
-				// write_rest_obj(state.resolve_output_path("global_mesh0_after.obj"));
-				// write_deformed_obj(state.resolve_output_path("global_mesh1_after.obj"));
-
 				POLYFEM_SCOPED_TIMER(timings.local_relaxation_solve);
 				solve_data.friction_form->enable();
 				forms.back()->disable(); // disable linear form ∇D(x₀)ᵀ x
@@ -398,8 +406,23 @@ namespace polyfem::mesh
 
 				sol = target_x;
 				const auto level_before = logger().level();
-				logger().set_level(spdlog::level::warn);
-				al_solver.solve(*(solve_data.nl_problem), sol, state.args["solver"]["augmented_lagrangian"]["force"]);
+				// logger().set_level(spdlog::level::warn);
+				try
+				{
+					al_solver.solve(*(solve_data.nl_problem), sol, state.args["solver"]["augmented_lagrangian"]["force"]);
+				}
+				catch (const std::runtime_error &e)
+				{
+					io::OBJWriter::write(
+						state.resolve_output_path("error_resolve_local_mesh.obj"),
+						utils::reorder_matrix(local_mesh.rest_positions(), vertex_to_basis) + utils::unflatten(sol, DIM),
+						utils::map_index_matrix(local_mesh.triangles(), vertex_to_basis));
+					io::OBJWriter::write(
+						state.resolve_output_path("error_resolve_collision_mesh.obj"),
+						collision_mesh.displace_vertices(utils::unflatten(sol, DIM)), collision_mesh.edges());
+
+					throw e;
+				}
 				logger().set_level(level_before);
 
 				solve_data.friction_form->first_derivative(sol, friction_gradient);

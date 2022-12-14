@@ -1671,6 +1671,7 @@ namespace polyfem::io
 			const Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(full_displacements);
 
 			ipc::Constraints constraint_set;
+			constraint_set.use_convergent_formulation = state.args["contact"]["use_convergent_formulation"];
 			constraint_set.build(
 				collision_mesh, displaced_surface, dhat,
 				/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);

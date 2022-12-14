@@ -1335,7 +1335,8 @@
             "dhat",
             "dhat_percentage",
             "epsv",
-            "friction_coefficient"
+            "friction_coefficient",
+            "use_convergent_formulation"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1370,6 +1371,12 @@
         "default": 0,
         "type": "float",
         "doc": "Coefficient of friction (global)"
+    },
+    {
+        "pointer": "/contact/use_convergent_formulation",
+        "default": true,
+        "type": "bool",
+        "doc": "Whether to use the convergent (area weighted) formulation of IPC."
     },
     {
         "pointer": "/solver",
@@ -3514,6 +3521,7 @@
             "u_path",
             "v_path",
             "a_path",
+            "rest_mesh",
             "mises",
             "nodes",
             "advanced"
@@ -3561,6 +3569,12 @@
         "default": "",
         "type": "string",
         "doc": "Writes the complete acceleration in PolyFEM format, used to restart the sim"
+    },
+    {
+        "pointer": "/output/data/rest_mesh",
+        "default": "",
+        "type": "string",
+        "doc": "Writes the rest mesh in OBJ format, used to restart the sim"
     },
     {
         "pointer": "/output/data/mises",
@@ -3724,19 +3738,19 @@
     {
         "pointer": "/input/data/u_path",
         "default": "",
-        "type": "string",
+        "type": "file",
         "doc": "input solution"
     },
     {
         "pointer": "/input/data/v_path",
         "default": "",
-        "type": "string",
+        "type": "file",
         "doc": "input velocity"
     },
     {
         "pointer": "/input/data/a_path",
         "default": "",
-        "type": "string",
+        "type": "file",
         "doc": "input acceleration"
     },
     {

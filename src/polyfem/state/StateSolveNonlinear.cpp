@@ -88,14 +88,6 @@ namespace polyfem
 
 			if (remesh_enabled && t0 + dt * t >= remesh_t0 && mesh::remesh(*this, sol, t0 + dt * (t + 0), dt))
 			{
-				if (mesh->dimension() == 2)
-				{
-					Eigen::MatrixXd V;
-					Eigen::MatrixXi F;
-					build_mesh_matrices(V, F);
-					OBJWriter::write(resolve_output_path("rest_remeshed.obj"), V, F);
-				}
-
 				save_energy(save_i);
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
@@ -128,10 +120,21 @@ namespace polyfem
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 
+			const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
+			if (!rest_mesh_path.empty())
+			{
+				Eigen::MatrixXd V;
+				Eigen::MatrixXi F;
+				build_mesh_matrices(V, F);
+				if (mesh->dimension() == 2)
+					OBJWriter::write(resolve_output_path(fmt::format(rest_mesh_path, t)), V, F);
+				else
+					log_and_throw_error("Cannot save rest mesh for 3D");
+			}
 			solve_data.time_integrator->save_raw(
-				resolve_output_path(args["output"]["data"]["u_path"]),
-				resolve_output_path(args["output"]["data"]["v_path"]),
-				resolve_output_path(args["output"]["data"]["a_path"]));
+				resolve_output_path(fmt::format(args["output"]["data"]["u_path"], t)),
+				resolve_output_path(fmt::format(args["output"]["data"]["v_path"], t)),
+				resolve_output_path(fmt::format(args["output"]["data"]["a_path"], t)));
 		}
 	}
 
@@ -203,7 +206,8 @@ namespace polyfem
 			obstacle,
 			// Contact form
 			args["contact"]["enabled"], collision_mesh, args["contact"]["dhat"],
-			avg_mass, args["solver"]["contact"]["barrier_stiffness"],
+			avg_mass, args["contact"]["use_convergent_formulation"],
+			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],

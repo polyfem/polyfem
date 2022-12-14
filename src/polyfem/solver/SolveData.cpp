@@ -60,6 +60,7 @@ namespace polyfem::solver
 		const ipc::CollisionMesh &collision_mesh,
 		const double dhat,
 		const double avg_mass,
+		const bool use_convergent_contact_formulation,
 		const json &barrier_stiffness,
 		const ipc::BroadPhaseMethod broad_phase,
 		const double ccd_tolerance,
@@ -142,8 +143,9 @@ namespace polyfem::solver
 			const bool use_adaptive_barrier_stiffness = !barrier_stiffness.is_number();
 
 			contact_form = std::make_shared<ContactForm>(
-				collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness,
-				is_time_dependent, broad_phase, ccd_tolerance, ccd_max_iterations);
+				collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
+				use_adaptive_barrier_stiffness, is_time_dependent, broad_phase, ccd_tolerance,
+				ccd_max_iterations);
 
 			if (use_adaptive_barrier_stiffness)
 			{

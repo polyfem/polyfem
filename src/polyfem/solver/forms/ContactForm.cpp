@@ -17,6 +17,7 @@ namespace polyfem::solver
 	ContactForm::ContactForm(const ipc::CollisionMesh &collision_mesh,
 							 const double dhat,
 							 const double avg_mass,
+							 const bool use_convergent_formulation,
 							 const bool use_adaptive_barrier_stiffness,
 							 const bool is_time_dependent,
 							 const ipc::BroadPhaseMethod broad_phase_method,
@@ -35,6 +36,7 @@ namespace polyfem::solver
 		assert(ccd_tolerance > 0);
 
 		prev_distance_ = -1;
+		constraint_set_.use_convergent_formulation = use_convergent_formulation;
 	}
 
 	void ContactForm::init(const Eigen::VectorXd &x)
@@ -92,6 +94,8 @@ namespace polyfem::solver
 		weight_ = ipc::initial_barrier_stiffness(
 			ipc::world_bbox_diagonal_length(displaced_surface), dhat_, avg_mass_,
 			grad_energy, grad_barrier, max_barrier_stiffness_);
+		if (use_convergent_formulation())
+			weight_ *= dhat_ * dhat_; // cancel out division in barrier potential
 
 		logger().debug("adaptive barrier form stiffness {}", barrier_stiffness());
 	}
@@ -198,17 +202,17 @@ namespace polyfem::solver
 		{
 			if (is_time_dependent_)
 			{
-				const double prev_barrier_stiffness = weight_;
+				const double prev_barrier_stiffness = barrier_stiffness();
 
 				weight_ = ipc::update_barrier_stiffness(
 					prev_distance_, curr_distance, max_barrier_stiffness_,
-					weight_, ipc::world_bbox_diagonal_length(displaced_surface));
+					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface));
 
-				if (prev_barrier_stiffness != weight_)
+				if (barrier_stiffness() != prev_barrier_stiffness)
 				{
 					polyfem::logger().debug(
 						"updated barrier stiffness from {:g} to {:g}",
-						prev_barrier_stiffness, weight_);
+						prev_barrier_stiffness, barrier_stiffness());
 				}
 			}
 			else

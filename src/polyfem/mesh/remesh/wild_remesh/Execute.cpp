@@ -108,9 +108,6 @@ namespace polyfem::mesh
 
 		wmtk::logger().set_level(logger().level());
 
-		write_rest_obj(state.resolve_output_path("rest_mesh_before.obj"));
-		write_deformed_obj(state.resolve_output_path("deformed_mesh_before.obj"));
-
 		Operations collect_all_ops;
 		const std::vector<Tuple> starting_edges = get_edges();
 		for (const Tuple &e : starting_edges)
@@ -192,9 +189,6 @@ namespace polyfem::mesh
 		executor.stopping_criterion_checking_frequency = 1;
 
 		executor(*this, collect_all_ops);
-
-		write_rest_obj(state.resolve_output_path("rest_mesh_after.obj"));
-		write_deformed_obj(state.resolve_output_path("deformed_mesh_after.obj"));
 
 		return true;
 	}

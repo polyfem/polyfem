@@ -78,6 +78,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
 		ipc::Constraints constraint_set;
+		constraint_set.use_convergent_formulation = contact_form_.use_convergent_formulation();
 		constraint_set.build(
 			collision_mesh_, displaced_surface, dhat_,
 			/*dmin=*/0, broad_phase_method_);

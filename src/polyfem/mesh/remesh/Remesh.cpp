@@ -42,7 +42,7 @@ namespace polyfem::mesh
 			std::vector<Eigen::VectorXd> &v_prevs,
 			std::vector<Eigen::VectorXd> &a_prevs)
 		{
-			if (state.solve_data.time_integrator == nullptr)
+			if (projected_quantities.size() == 0)
 				return;
 
 			const int n_vertices = state.mesh->n_vertices();
@@ -53,7 +53,8 @@ namespace polyfem::mesh
 			assert(projected_quantities.rows() == ndof);
 
 			const std::array<std::vector<Eigen::VectorXd> *, 3> all_prevs{{&x_prevs, &v_prevs, &a_prevs}};
-			const int n_steps = state.solve_data.time_integrator->steps();
+			const int n_steps = projected_quantities.cols() / 3;
+			assert(projected_quantities.cols() % 3 == 0);
 
 			int offset = 0;
 			for (std::vector<Eigen::VectorXd> *prevs : all_prevs)

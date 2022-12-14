@@ -81,9 +81,6 @@ namespace polyfem::mesh
 						  utils::unflatten(x.col(0), DIM), vertex_to_basis, num_vertices));
 		set_projected_quantities(utils::unreorder_matrix(
 			x.rightCols(n_quantities), vertex_to_basis, num_vertices, DIM));
-
-		write_rest_obj(state.resolve_output_path("proposed_rest_mesh.obj"));
-		write_deformed_obj(state.resolve_output_path("proposed_deformed_mesh.obj"));
 	}
 
 } // namespace polyfem::mesh

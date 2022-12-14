@@ -47,6 +47,7 @@ namespace polyfem::solver
 		ContactForm(const ipc::CollisionMesh &collision_mesh,
 					const double dhat,
 					const double avg_mass,
+					const bool use_convergent_formulation,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
 					const ipc::BroadPhaseMethod broad_phase_method,
@@ -124,6 +125,7 @@ namespace polyfem::solver
 		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
 
 		inline bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
+		inline bool use_convergent_formulation() const { return constraint_set_.use_convergent_formulation; }
 
 	private:
 		const ipc::CollisionMesh &collision_mesh_;

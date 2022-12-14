@@ -82,6 +82,7 @@ namespace polyfem::solver
 			const ipc::CollisionMesh &collision_mesh,
 			const double dhat,
 			const double avg_mass,
+			const bool use_convergent_contact_formulation,
 			const json &barrier_stiffness,
 			const ipc::BroadPhaseMethod broad_phase,
 			const double ccd_tolerance,
