@@ -79,10 +79,19 @@ namespace polyfem
 		}
 		assert(states_ptr_[0]->boundary_nodes.size() == boundary_ids_list.size());
 
+		Eigen::VectorXd boundary_nodes_rest(states_ptr_[0]->boundary_nodes.size(), 1);
+		for (int i = 0; i < states_ptr_[0]->boundary_nodes.size(); ++i)
+		{
+			int k = i % dim;
+			if (k != 0)
+				continue;
+			boundary_nodes_rest.segment(i, dim) = states_ptr_[0]->mesh_nodes->node_position(states_ptr_[0]->boundary_nodes[i] / dim);
+		}
+
 		if (time_steps < 1)
 			logger().error("Set time_steps for control optimization, currently {}!", time_steps);
 
-		control_constraints_ = std::make_shared<ControlConstraints>(args, time_steps, states_ptr[0]->mesh->dimension(), boundary_ids_list, boundary_id_to_reduced_param);
+		control_constraints_ = std::make_shared<ControlConstraints>(args, time_steps, states_ptr[0]->mesh->dimension(), boundary_ids_list, boundary_id_to_reduced_param, boundary_nodes_rest);
 		optimization_dim_ = control_constraints_->get_optimization_dim();
 		current_dirichlet = starting_dirichlet;
 	}

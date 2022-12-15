@@ -11,8 +11,8 @@ namespace polyfem
 		{
 		}
 
-		ControlConstraints(const json &constraint_params, const int time_steps, const int dim, const std::vector<int> &boundary_ids_list, const std::map<int, int> &boundary_id_to_reduced_dim)
-			: Constraints(constraint_params, boundary_ids_list_.size(), 0), time_steps_(time_steps), dim_(dim), boundary_ids_list_(boundary_ids_list), boundary_id_to_reduced_dim_(boundary_id_to_reduced_dim)
+		ControlConstraints(const json &constraint_params, const int time_steps, const int dim, const std::vector<int> &boundary_ids_list, const std::map<int, int> &boundary_id_to_reduced_dim, const Eigen::VectorXd &boundary_nodes_rest)
+			: Constraints(constraint_params, boundary_ids_list_.size(), 0), time_steps_(time_steps), dim_(dim), boundary_ids_list_(boundary_ids_list), boundary_id_to_reduced_dim_(boundary_id_to_reduced_dim), boundary_nodes_rest_(boundary_nodes_rest)
 		{
 			std::string restriction = constraint_params["restriction"];
 
@@ -33,16 +33,23 @@ namespace polyfem
 			{
 				if (boundary_id_to_reduced_dim_.count(boundary_ids_list_[b]) == 0)
 					continue;
+				int k = b % dim_;
 				int pos = boundary_id_to_reduced_dim_.at(boundary_ids_list_[b]);
-				initial_boundary_barycenter_.row(pos) += Eigen::MatrixXd::Zero(1, dim_) / reduced_dim_to_full_dim_multiplicity_.at(pos);
+				initial_boundary_barycenter_(pos, k) += boundary_nodes_rest_(b) / reduced_dim_to_full_dim_multiplicity_.at(pos);
 			}
 			initial_boundary_nodes_relative_position_.setZero(boundary_ids_list_.size(), dim_);
 			for (int b = 0; b < boundary_ids_list_.size(); ++b)
 			{
 				if (boundary_id_to_reduced_dim_.count(boundary_ids_list_[b]) == 0)
 					continue;
+				int k = b % dim_;
+				if (k != 0)
+					continue;
 				int pos = boundary_id_to_reduced_dim_.at(boundary_ids_list_.at(b));
-				Eigen::VectorXd rel_pos = -initial_boundary_barycenter_.row(pos);
+				Eigen::VectorXd rel_pos(dim_);
+				for (int i = 0; i < dim_; ++i)
+					rel_pos(i) = boundary_nodes_rest_(b + i);
+				rel_pos -= initial_boundary_barycenter_.row(pos);
 				initial_boundary_nodes_relative_position_(b, 0) = rel_pos.norm();
 				initial_boundary_nodes_relative_position_(b, 1) = std::atan(rel_pos(1) - rel_pos(0));
 				if (dim == 3)
@@ -109,7 +116,7 @@ namespace polyfem
 				{
 					dfull_to_dreduced_ = [this](const Eigen::VectorXd &reduced, const Eigen::VectorXd &dfull) {
 						Eigen::VectorXd dreduced;
-						dreduced.setZero(time_steps_ * boundary_id_to_reduced_dim_.size() * dim_);
+						dreduced.setZero(time_steps_ * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3);
 						assert(dfull.size() == (boundary_ids_list_.size() * time_steps_));
 						for (int t = 0; t < time_steps_; ++t)
 							for (int b = 0; b < boundary_ids_list_.size(); ++b)
@@ -120,7 +127,19 @@ namespace polyfem
 								int k = b % dim_;
 								int position = boundary_id_to_reduced_dim_.at(boundary_id);
 								dreduced(t * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + position * (dim_ - 1) * 3 + k) += dfull(t * boundary_ids_list_.size() + b);
-								dreduced(t * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + position * (dim_ - 1) * 3 + 2) -= initial_boundary_nodes_relative_position_(b, 2) * std::sin(reduced(t * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + position * (dim_ - 1) * 3 + 2)) * dfull(t * boundary_ids_list_.size() + b);
+								double theta = reduced(t * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + position * (dim_ - 1) * 3 + 2);
+								double dtheta = 0;
+								if (k == 0)
+								{
+									dtheta += -(boundary_nodes_rest_(b) - initial_boundary_barycenter_(position, 0)) * std::sin(theta);
+									dtheta += -(boundary_nodes_rest_(b + 1) - initial_boundary_barycenter_(position, 1)) * std::cos(theta);
+								}
+								else if (k == 1)
+								{
+									dtheta += (boundary_nodes_rest_(b - 1) - initial_boundary_barycenter_(position, 0)) * std::cos(theta);
+									dtheta += -(boundary_nodes_rest_(b) - initial_boundary_barycenter_(position, 1)) * std::sin(theta);
+								}
+								dreduced(t * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + position * (dim_ - 1) * 3 + 2) += dtheta * dfull(t * boundary_ids_list_.size() + b);
 							}
 						return dreduced;
 					};
@@ -141,6 +160,8 @@ namespace polyfem
 						}
 						return dfull;
 					};
+					string_fn_vec_ = {[this](const int i, const Eigen::VectorXd &x) { return fmt::format("(x - {:16g}) * cos({:16g}) - (y - {:16g}) * sin({:16g}) + {:16g} + {:16g} - x", initial_boundary_barycenter_(i, 0), x(2), initial_boundary_barycenter_(i, 1), x(2), x(0), initial_boundary_barycenter_(i, 0)); },
+									  [this](const int i, const Eigen::VectorXd &x) { return fmt::format("(x - {:16g}) * sin({:16g}) + (y - {:16g}) * cos({:16g}) + {:16g} + {:16g} - y", initial_boundary_barycenter_(i, 0), x(2), initial_boundary_barycenter_(i, 1), x(2), x(1), initial_boundary_barycenter_(i, 1)); }};
 					constraint_to_string = [this](const Eigen::VectorXd &reduced) {
 						std::map<int, std::vector<std::vector<std::string>>> constraint_string;
 						for (auto kv : boundary_id_to_reduced_dim_)
@@ -151,7 +172,7 @@ namespace polyfem
 								std::vector<std::string> constraint_string_dim;
 								for (int i = 0; i < time_steps_; ++i)
 								{
-									constraint_string_dim.push_back(fmt::format("{:16g}", reduced(i * boundary_id_to_reduced_dim_.size() * dim_ + kv.second * dim_ + k)));
+									constraint_string_dim.push_back(string_fn_vec_[k](kv.second, reduced.segment(i * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + kv.second * (dim_ - 1) * 3, (dim_ - 1) * 3)));
 								}
 								constraint_string_boundary.push_back(constraint_string_dim);
 							}
@@ -183,8 +204,11 @@ namespace polyfem
 		std::map<int, int> reduced_dim_to_full_dim_multiplicity_;
 		Eigen::MatrixXd initial_boundary_barycenter_;
 		Eigen::MatrixXd initial_boundary_nodes_relative_position_;
+		Eigen::VectorXd boundary_nodes_rest_;
 		const int dim_;
 		const int time_steps_;
+
+		std::vector<std::function<std::string(const int, const Eigen::VectorXd &)>> string_fn_vec_;
 
 		// Must define the inverse function with Eigen types, differentiability is not needed.
 		// std::function<Eigen::MatrixXd(const Eigen::VectorXd &)> reduced_to_full_;

@@ -518,6 +518,11 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/parameters/*/surface_selection/*",
+        "type": "int",
+        "doc": "TODO"
+    },
+    {
         "pointer": "/parameters/*/volume_selection",
         "type": "list",
         "default": [],
@@ -598,6 +603,11 @@
         "pointer": "/parameters/*/spline_specification/*/knot",
         "type": "list",
         "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/spline_specification/*/knot/*",
+        "type": "float",
         "doc": "TODO"
     },
     {
@@ -798,7 +808,8 @@
             "lambda_mu",
             "lambda_mu_log",
             "constant_lambda_mu",
-            "constant_lambda_mu_log"
+            "constant_lambda_mu_log",
+            "rigid"
         ],
         "doc": "TODO"
     },
