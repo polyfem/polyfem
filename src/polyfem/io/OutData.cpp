@@ -1209,12 +1209,7 @@ namespace polyfem::io
 		VTUWriter writer;
 
 		if (opts.solve_export_to_file)
-		{
-			writer.add_field("solution", fun);
 			writer.add_field("nodes", node_fun);
-		}
-		else
-			solution_frames.back().solution = fun;
 
 		if (problem.is_time_dependent())
 		{
@@ -1474,6 +1469,13 @@ namespace polyfem::io
 
 		// interpolate_function(pts_index, rhs, fun, opts.boundary_only);
 		// writer.add_field("rhs", fun);
+
+		// Write the solution last so it is the default for warp-by-vector
+		if (opts.solve_export_to_file)
+			writer.add_field("solution", fun);
+		else
+			solution_frames.back().solution = fun;
+
 		if (opts.solve_export_to_file)
 		{
 			if (obstacle.n_vertices() > 0)
@@ -1666,7 +1668,6 @@ namespace polyfem::io
 			const int problem_dim = mesh.dimension();
 			const Eigen::MatrixXd full_displacements = utils::unflatten(sol, problem_dim);
 			const Eigen::MatrixXd surface_displacements = collision_mesh.map_displacements(full_displacements);
-			writer.add_field("solution", surface_displacements);
 
 			const Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(full_displacements);
 
@@ -1724,6 +1725,9 @@ namespace polyfem::io
 			assert(collision_mesh.vertices_at_rest().rows() == surface_displacements.rows());
 			assert(collision_mesh.vertices_at_rest().cols() == surface_displacements.cols());
 
+			// Write the solution last so it is the default for warp-by-vector
+			writer.add_field("solution", surface_displacements);
+
 			writer.write_mesh(
 				export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
 				collision_mesh.vertices_at_rest(),
@@ -1736,7 +1740,6 @@ namespace polyfem::io
 		{
 
 			writer.add_field("normals", boundary_vis_normals);
-			writer.add_field("solution", fun);
 			if (assembler.is_mixed(formulation))
 				writer.add_field("pressure", interp_p);
 			writer.add_field("discr", discr);
@@ -1749,7 +1752,6 @@ namespace polyfem::io
 		}
 		else
 		{
-			solution_frames.back().solution = fun;
 			if (assembler.is_mixed(formulation))
 				solution_frames.back().pressure = interp_p;
 		}
@@ -1790,6 +1792,13 @@ namespace polyfem::io
 
 			writer.add_field("body_ids", ids);
 		}
+
+		// Write the solution last so it is the default for warp-by-vector
+		if (opts.solve_export_to_file)
+			writer.add_field("solution", fun);
+		else
+			solution_frames.back().solution = fun;
+
 		if (opts.solve_export_to_file)
 			writer.write_mesh(export_surface, boundary_vis_vertices, boundary_vis_elements);
 		else
@@ -1926,7 +1935,6 @@ namespace polyfem::io
 		}
 
 		VTUWriter writer;
-		writer.add_field("solution", fun);
 		if (problem.has_exact_sol())
 		{
 			writer.add_field("exact", exact_fun);
@@ -1943,6 +1951,8 @@ namespace polyfem::io
 				ref_element_sampler, pts_index, sol, scalar_val, /*use_sampler*/ true, false);
 			writer.add_field("scalar_value", scalar_val);
 		}
+		// Write the solution last so it is the default for warp-by-vector
+		writer.add_field("solution", fun);
 
 		writer.write_mesh(name, points, edges);
 	}
@@ -1991,8 +2001,9 @@ namespace polyfem::io
 
 		if (opts.solve_export_to_file)
 		{
-			writer.add_field("solution", fun);
 			writer.add_field("sidesets", b_sidesets);
+			// Write the solution last so it is the default for warp-by-vector
+			writer.add_field("solution", fun);
 			writer.write_mesh(path, points, cells, false);
 		}
 	}
