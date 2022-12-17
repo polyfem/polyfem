@@ -625,17 +625,18 @@ namespace polyfem::io
 				else
 					autogen::p_nodes_2d(disc_orders(i), local_pts);
 			}
-			else
+			else if (mesh.is_cube(i))
 			{
 				if (mesh.dimension() == 3)
 					autogen::q_nodes_3d(disc_orders(i), local_pts);
 				else
 					autogen::q_nodes_2d(disc_orders(i), local_pts);
 			}
-			// else if(mesh.is_cube(i))
-			// 	local_pts = sampler.cube_points();
-			// // else
-			// 	// local_pts = vis_pts_poly[i];
+			else
+			{
+				// not supported for polys
+				continue;
+			}
 
 			vals.compute(i, actual_dim == 3, bases[i], gbases[i]);
 			const quadrature::Quadrature &quadrature = vals.quadrature;

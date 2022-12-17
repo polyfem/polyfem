@@ -191,6 +191,11 @@ endif()
 include(libigl)
 target_link_libraries(polyfem PUBLIC igl::core)
 
+if(LIBIGL_WITH_TRIANGLE)
+    target_link_libraries(polyfem PUBLIC igl::triangle)
+    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TRIANGLE)
+endif()
+
 # BVH
 include(BVH)
 target_link_libraries(polyfem PUBLIC BVH_lib)

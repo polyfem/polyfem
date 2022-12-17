@@ -354,7 +354,7 @@ namespace polyfem::io
 					utils::BoundarySampler::sample_parametric_tri_face(lb[k], n_samples, uv, local_pts);
 					break;
 				case BoundaryType::POLYGON:
-					utils::BoundarySampler::normal_for_polygon_edge(lb[k], lb.global_primitive_id(k), mesh, tmp_n);
+					utils::BoundarySampler::normal_for_polygon_edge(lb.element_id(), lb.global_primitive_id(k), mesh, tmp_n);
 					utils::BoundarySampler::sample_polygon_edge(lb.element_id(), lb.global_primitive_id(k), n_samples, mesh, uv, local_pts);
 					break;
 				case BoundaryType::POLYHEDRON:
@@ -704,7 +704,10 @@ namespace polyfem::io
 				else if (mesh.is_cube(i))
 					autogen::q_nodes_2d(disc_orders(i), ref_pts);
 				else
-					continue;
+				{
+					const int n_v = static_cast<const mesh::Mesh2D &>(mesh).n_face_vertices(i);
+					ref_pts.resize(n_v, 2);
+				}
 			}
 
 			pts_total_size += ref_pts.rows();
@@ -786,6 +789,25 @@ namespace polyfem::io
 
 		if (!error_msg.empty())
 			logger().warn(error_msg);
+
+		for (size_t i = 0; i < bases.size(); ++i)
+		{
+			if (!mesh.is_volume() && !mesh.is_polytope(i))
+				continue;
+
+			const auto &mesh2d = static_cast<const mesh::Mesh2D &>(mesh);
+			const int n_v = mesh2d.n_face_vertices(i);
+
+			for (int j = 0; j < n_v; ++j)
+			{
+				points.row(pts_index) = mesh2d.point(mesh2d.face_vertex(i, j));
+				el_id(pts_index) = i;
+				discr(pts_index) = disc_orders(i);
+				elements[i].push_back(pts_index);
+
+				pts_index++;
+			}
+		}
 
 		assert(pts_index == points.rows());
 	}
@@ -1451,7 +1473,16 @@ namespace polyfem::io
 						else if (mesh.is_cube(e))
 							autogen::q_nodes_2d(disc_orders(e), local_pts);
 						else
-							continue;
+						{
+							const auto &mesh2d = static_cast<const mesh::Mesh2D &>(mesh);
+							const int n_v = mesh2d.n_face_vertices(e);
+							local_pts.resize(n_v, 2);
+
+							for (int j = 0; j < n_v; ++j)
+							{
+								local_pts.row(j) = mesh2d.point(mesh2d.face_vertex(e, j));
+							}
+						}
 					}
 				}
 
@@ -1550,7 +1581,7 @@ namespace polyfem::io
 			if (elements.empty())
 				writer.write_mesh(path, points, tets);
 			else
-				writer.write_mesh(path, points, elements, true);
+				writer.write_mesh(path, points, elements, true, disc_orders.maxCoeff() == 1);
 		}
 		else
 		{
@@ -1998,7 +2029,7 @@ namespace polyfem::io
 		{
 			writer.add_field("solution", fun);
 			writer.add_field("sidesets", b_sidesets);
-			writer.write_mesh(path, points, cells, false);
+			writer.write_mesh(path, points, cells, false, false);
 		}
 	}
 

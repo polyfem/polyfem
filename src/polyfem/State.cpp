@@ -979,11 +979,6 @@ namespace polyfem
 			logger().error("Load the mesh first!");
 			return;
 		}
-		if (n_bases <= 0)
-		{
-			logger().error("Build the bases first!");
-			return;
-		}
 
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);

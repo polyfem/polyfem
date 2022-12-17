@@ -124,8 +124,8 @@ namespace polyfem
 				// we are on the vertex
 				if (radii(i) < tol)
 				{
-					assert(false);
-					// b(i) = 1;
+					// assert(false);
+					//  b(i) = 1;
 					return;
 				}
 			}
@@ -174,7 +174,7 @@ namespace polyfem
 
 					// w_gradients[e0] += gradw0;
 					// w_gradients[e1] += gradw1;
-					assert(false);
+					// assert(false);
 					return;
 				}
 				const Eigen::RowVector2d vi = polygon.row(i);
