@@ -1,6 +1,7 @@
-#include <polyfem/mesh/remesh/WildRemeshing2D.hpp>
+#include "OperationCache.hpp"
 
-#include <wmtk/utils/TupleUtils.hpp>
+#include <polyfem/mesh/remesh/WildRemeshing2D.hpp>
+#include <polyfem/mesh/remesh/WildRemeshing3D.hpp>
 
 namespace polyfem::mesh
 {
@@ -23,10 +24,9 @@ namespace polyfem::mesh
 		}
 	} // namespace
 
-	WildRemeshing2D::EdgeOperationCache WildRemeshing2D::EdgeOperationCache::split(
-		WildRemeshing2D &m, const Tuple &t)
+	OperationCache2D OperationCache2D::split(WildRemeshing2D &m, const Tuple &t)
 	{
-		EdgeOperationCache cache;
+		OperationCache2D cache;
 
 		cache.m_v0.first = t.vid(m);
 		cache.m_v1.first = t.switch_vertex(m).vid(m);
@@ -47,10 +47,9 @@ namespace polyfem::mesh
 		return cache;
 	}
 
-	WildRemeshing2D::EdgeOperationCache WildRemeshing2D::EdgeOperationCache::collapse(
-		WildRemeshing2D &m, const Tuple &t)
+	OperationCache2D OperationCache2D::collapse(WildRemeshing2D &m, const Tuple &t)
 	{
-		EdgeOperationCache cache;
+		OperationCache2D cache;
 
 		cache.m_v0.first = t.vid(m);
 		cache.m_v1.first = t.switch_vertex(m).vid(m);
@@ -77,10 +76,9 @@ namespace polyfem::mesh
 		return cache;
 	}
 
-	WildRemeshing2D::EdgeOperationCache WildRemeshing2D::EdgeOperationCache::swap(
-		WildRemeshing2D &m, const Tuple &t)
+	OperationCache2D OperationCache2D::swap(WildRemeshing2D &m, const Tuple &t)
 	{
-		EdgeOperationCache cache;
+		OperationCache2D cache;
 
 		cache.m_v0.first = t.vid(m);
 		cache.m_v1.first = t.switch_vertex(m).vid(m);

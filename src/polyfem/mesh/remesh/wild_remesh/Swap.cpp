@@ -15,7 +15,7 @@ namespace polyfem::mesh
 
 		cache_before();
 		// Cache necessary local data
-		edge_cache = EdgeOperationCache::swap(*this, t);
+		op_cache = OperationCache2D::swap(*this, t);
 
 		return true;
 	}
@@ -28,7 +28,7 @@ namespace polyfem::mesh
 		//     No new vertex, so nothing to do.
 
 		// 1b) Assign edge attributes to the new edges
-		const auto &old_edges = edge_cache.edges();
+		const auto &old_edges = op_cache.edges();
 		const std::array<size_t, 2> face_ids{{t.fid(*this), t.switch_face(*this)->fid(*this)}};
 		for (const size_t fid : face_ids)
 		{
@@ -54,8 +54,8 @@ namespace polyfem::mesh
 			}
 		}
 
-		face_attrs[t.fid(*this)] = edge_cache.faces()[0];
-		face_attrs[t.switch_face(*this)->fid(*this)] = edge_cache.faces()[1];
+		face_attrs[t.fid(*this)] = op_cache.faces()[0];
+		face_attrs[t.switch_face(*this)->fid(*this)] = op_cache.faces()[1];
 
 		// 2) Project quantities so to minimize the L2 error
 		project_quantities(); // also projects positions

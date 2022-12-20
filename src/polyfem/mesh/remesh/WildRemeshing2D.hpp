@@ -1,9 +1,9 @@
 #pragma once
 
 #include <polyfem/mesh/remesh/WildRemeshing.hpp>
+#include <polyfem/mesh/remesh/wild_remesh/OperationCache.hpp>
 
 #include <wmtk/TriMesh.h>
-#include <wmtk/ExecutionScheduler.hpp>
 
 #include <unordered_map>
 
@@ -170,28 +170,8 @@ namespace polyfem::mesh
 		/// @brief Number of projection quantities (not including the position)
 		int m_n_quantities = 0;
 
-		class EdgeOperationCache
-		{
-		public:
-			/// @brief Construct a local mesh as an n-ring around a vertex.
-			static EdgeOperationCache split(WildRemeshing2D &m, const Tuple &t);
-			static EdgeOperationCache swap(WildRemeshing2D &m, const Tuple &t);
-			static EdgeOperationCache collapse(WildRemeshing2D &m, const Tuple &t);
-
-			const std::pair<size_t, VertexAttributes> &v0() const { return m_v0; }
-			const std::pair<size_t, VertexAttributes> &v1() const { return m_v1; }
-			const EdgeMap<EdgeAttributes> &edges() const { return m_edges; }
-			const std::vector<FaceAttributes> &faces() const { return m_faces; }
-
-		protected:
-			std::pair<size_t, VertexAttributes> m_v0;
-			std::pair<size_t, VertexAttributes> m_v1;
-			EdgeMap<EdgeAttributes> m_edges;
-			std::vector<FaceAttributes> m_faces;
-		};
-
 		// TODO: make this thread local
-		EdgeOperationCache edge_cache;
+		OperationCache2D op_cache;
 	};
 
 } // namespace polyfem::mesh

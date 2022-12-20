@@ -17,7 +17,7 @@ namespace polyfem::mesh
 			return false;
 
 		cache_before();
-		edge_cache = EdgeOperationCache::collapse(*this, t);
+		op_cache = OperationCache2D::collapse(*this, t);
 
 		return true;
 	}
@@ -26,9 +26,9 @@ namespace polyfem::mesh
 	{
 		// 0) perform operation (done before this function)
 
-		const auto &[old_v0_id, v0] = edge_cache.v0();
-		const auto &[old_v1_id, v1] = edge_cache.v1();
-		const auto &old_edges = edge_cache.edges();
+		const auto &[old_v0_id, v0] = op_cache.v0();
+		const auto &[old_v1_id, v1] = op_cache.v1();
+		const auto &old_edges = op_cache.edges();
 		const size_t new_vid = t.vid(*this);
 
 		// 1a) Update rest position of new vertex

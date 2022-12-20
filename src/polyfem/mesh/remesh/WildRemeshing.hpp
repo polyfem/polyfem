@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/mesh/remesh/WildRemeshingTimings.hpp>
+#include <polyfem/mesh/remesh/wild_remesh/Timings.hpp>
 #include <polyfem/State.hpp>
 
 #include <wmtk/ExecutionScheduler.hpp>

@@ -86,7 +86,7 @@ namespace polyfem::mesh
 			return false;
 
 		// Cache necessary local data
-		edge_cache = EdgeOperationCache::split(*this, e);
+		op_cache = OperationCache2D::split(*this, e);
 
 		return true;
 	}
@@ -97,15 +97,15 @@ namespace polyfem::mesh
 
 		// 1a) Update rest position of new vertex
 		VertexAttributes &new_vertex_attr = vertex_attrs[t.vid(*this)];
-		const auto &[old_v0_id, v0] = edge_cache.v0();
-		const auto &[old_v1_id, v1] = edge_cache.v1();
+		const auto &[old_v0_id, v0] = op_cache.v0();
+		const auto &[old_v1_id, v1] = op_cache.v1();
 		new_vertex_attr.rest_position = (v0.rest_position + v1.rest_position) / 2.0;
 		new_vertex_attr.fixed = v0.fixed && v1.fixed;
 		new_vertex_attr.partition_id = v0.partition_id; // TODO: what should this be?
 
 		// 1b) Assign edge attributes to the new edges
-		map_edge_split_edge_attributes(*this, t, edge_cache.edges(), old_v0_id, old_v1_id);
-		map_edge_split_face_attributes(*this, t, edge_cache.faces());
+		map_edge_split_edge_attributes(*this, t, op_cache.edges(), old_v0_id, old_v1_id);
+		map_edge_split_face_attributes(*this, t, op_cache.faces());
 
 		// 2) Project quantities so to minimize the L2 error
 		new_vertex_attr.position = (v0.position + v1.position) / 2.0;

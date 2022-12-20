@@ -9,7 +9,7 @@ set(SOURCES
 	WildRemeshing.hpp
 	WildRemeshing2D.cpp
 	WildRemeshing2D.hpp
-	WildRemeshingTimings.hpp
+	WildRemeshing3D.hpp
 )
 
 prepend_current_path(SOURCES)

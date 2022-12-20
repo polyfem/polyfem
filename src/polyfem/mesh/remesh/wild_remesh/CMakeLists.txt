@@ -2,7 +2,8 @@ set(SOURCES
 	AMIPSForm.cpp
 	AMIPSForm.hpp
 	Collapse.cpp
-	EdgeOperationCache.cpp
+	OperationCache.hpp
+	OperationCache.cpp
 	Execute.cpp
 	LocalMesh.cpp
 	LocalMesh.hpp
@@ -11,6 +12,7 @@ set(SOURCES
 	Smooth.cpp
 	Split.cpp
 	Swap.cpp
+	Timings.hpp
 )
 
 prepend_current_path(SOURCES)
