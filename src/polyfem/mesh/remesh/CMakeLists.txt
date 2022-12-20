@@ -7,8 +7,8 @@ set(SOURCES
 	Remesh.cpp
 	WildRemeshing.cpp
 	WildRemeshing.hpp
-	WildRemesh2D.cpp
-	WildRemesh2D.hpp
+	WildRemeshing2D.cpp
+	WildRemeshing2D.hpp
 	WildRemeshingTimings.hpp
 )
 

@@ -1,4 +1,4 @@
-#include "WildRemesh2D.hpp"
+#include "WildRemeshing2D.hpp"
 
 #include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/utils/StringUtils.hpp>

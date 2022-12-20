@@ -1,4 +1,4 @@
-#include <polyfem/mesh/remesh/WildRemesh2D.hpp>
+#include <polyfem/mesh/remesh/WildRemeshing2D.hpp>
 #include <polyfem/mesh/remesh/wild_remesh/AMIPSForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>

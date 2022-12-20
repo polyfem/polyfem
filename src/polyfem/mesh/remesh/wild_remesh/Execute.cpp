@@ -1,4 +1,4 @@
-#include <polyfem/mesh/remesh/WildRemesh2D.hpp>
+#include <polyfem/mesh/remesh/WildRemeshing2D.hpp>
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
