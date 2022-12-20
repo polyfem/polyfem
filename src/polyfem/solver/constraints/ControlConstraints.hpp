@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Constraints.hpp"
+#include <regex>
 
 namespace polyfem
 {
@@ -112,21 +113,21 @@ namespace polyfem
 			}
 			else if (restriction == "rigid")
 			{
-				if (dim == 2)
-				{
-					dfull_to_dreduced_ = [this](const Eigen::VectorXd &reduced, const Eigen::VectorXd &dfull) {
-						Eigen::VectorXd dreduced;
-						dreduced.setZero(time_steps_ * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3);
-						assert(dfull.size() == (boundary_ids_list_.size() * time_steps_));
-						for (int t = 0; t < time_steps_; ++t)
-							for (int b = 0; b < boundary_ids_list_.size(); ++b)
+				dfull_to_dreduced_ = [this](const Eigen::VectorXd &reduced, const Eigen::VectorXd &dfull) {
+					Eigen::VectorXd dreduced;
+					dreduced.setZero(time_steps_ * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3);
+					assert(dfull.size() == (boundary_ids_list_.size() * time_steps_));
+					for (int t = 0; t < time_steps_; ++t)
+						for (int b = 0; b < boundary_ids_list_.size(); ++b)
+						{
+							int boundary_id = boundary_ids_list_[b];
+							if (boundary_id_to_reduced_dim_.count(boundary_id) == 0)
+								continue;
+							int k = b % dim_;
+							int position = boundary_id_to_reduced_dim_.at(boundary_id);
+							dreduced(t * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + position * (dim_ - 1) * 3 + k) += dfull(t * boundary_ids_list_.size() + b);
+							if (dim_ == 2)
 							{
-								int boundary_id = boundary_ids_list_[b];
-								if (boundary_id_to_reduced_dim_.count(boundary_id) == 0)
-									continue;
-								int k = b % dim_;
-								int position = boundary_id_to_reduced_dim_.at(boundary_id);
-								dreduced(t * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + position * (dim_ - 1) * 3 + k) += dfull(t * boundary_ids_list_.size() + b);
 								double theta = reduced(t * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + position * (dim_ - 1) * 3 + 2);
 								double dtheta = 0;
 								if (k == 0)
@@ -141,48 +142,113 @@ namespace polyfem
 								}
 								dreduced(t * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + position * (dim_ - 1) * 3 + 2) += dtheta * dfull(t * boundary_ids_list_.size() + b);
 							}
-						return dreduced;
-					};
-
-					// Needed to project the control smoothing grad to reduced parameters
-					dreduced_to_dfull_ = [this](const Eigen::VectorXd &dreduced) {
-						Eigen::VectorXd dfull;
-						dfull.setZero(boundary_ids_list_.size());
-						for (auto kv : boundary_id_to_reduced_dim_)
-						{
-							int boundary_id = kv.first;
-							for (int b = 0; b < boundary_ids_list_.size(); ++b)
+							else if (dim_ == 3)
 							{
-								int k = b % dim_;
-								if (boundary_ids_list_[b] == boundary_id)
-									dfull(b) = dreduced(boundary_id_to_reduced_dim_.at(boundary_id) * (dim_ - 1) * 3 + k) / reduced_dim_to_full_dim_multiplicity_.at(boundary_id_to_reduced_dim_.at(boundary_id));
+								double phi = reduced(t * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + position * (dim_ - 1) * 3 + 3);
+								double theta = reduced(t * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + position * (dim_ - 1) * 3 + 4);
+								double psi = reduced(t * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + position * (dim_ - 1) * 3 + 5);
+								double dphi = 0;
+								double dtheta = 0;
+								double dpsi = 0;
+								if (k == 0)
+								{
+									dphi += (boundary_nodes_rest_(b + 1) - initial_boundary_barycenter_(position, 1)) * (std::sin(phi) * std::sin(psi) + std::cos(phi) * std::sin(theta) * std::cos(psi));
+									dphi += (boundary_nodes_rest_(b + 2) - initial_boundary_barycenter_(position, 2)) * (std::cos(phi) * std::sin(psi) - std::sin(phi) * std::sin(theta) * std::cos(psi));
+									dtheta += -(boundary_nodes_rest_(b) - initial_boundary_barycenter_(position, 0)) * std::sin(theta) * std::cos(psi);
+									dtheta += (boundary_nodes_rest_(b + 1) - initial_boundary_barycenter_(position, 1)) * std::sin(phi) * std::cos(theta) * std::cos(psi);
+									dtheta += (boundary_nodes_rest_(b + 2) - initial_boundary_barycenter_(position, 2)) * std::cos(phi) * std::cos(theta) * std::cos(psi);
+									dpsi += -(boundary_nodes_rest_(b) - initial_boundary_barycenter_(position, 0)) * std::cos(theta) * std::sin(psi);
+									dpsi += (boundary_nodes_rest_(b + 1) - initial_boundary_barycenter_(position, 1)) * (-std::cos(phi) * std::sin(psi) - std::sin(phi) * std::sin(theta) * std::sin(psi));
+									dpsi += (boundary_nodes_rest_(b + 2) - initial_boundary_barycenter_(position, 2)) * (std::sin(phi) * std::cos(psi) - std::cos(phi) * std::sin(theta) * std::sin(psi));
+								}
+								else if (k == 1)
+								{
+									dphi += (boundary_nodes_rest_(b) - initial_boundary_barycenter_(position, 1)) * (-std::sin(phi) * std::cos(psi) + std::cos(phi) * std::sin(theta) * std::sin(psi));
+									dphi += (boundary_nodes_rest_(b + 1) - initial_boundary_barycenter_(position, 2)) * (-std::cos(phi) * std::cos(psi) - std::sin(phi) * std::sin(theta) * std::sin(psi));
+									dtheta += -(boundary_nodes_rest_(b - 1) - initial_boundary_barycenter_(position, 0)) * std::sin(theta) * std::sin(psi);
+									dtheta += (boundary_nodes_rest_(b) - initial_boundary_barycenter_(position, 1)) * std::sin(phi) * std::cos(theta) * std::sin(psi);
+									dtheta += (boundary_nodes_rest_(b + 1) - initial_boundary_barycenter_(position, 2)) * std::cos(phi) * std::cos(theta) * std::sin(psi);
+									dpsi += (boundary_nodes_rest_(b - 1) - initial_boundary_barycenter_(position, 0)) * std::cos(theta) * std::cos(psi);
+									dpsi += (boundary_nodes_rest_(b) - initial_boundary_barycenter_(position, 1)) * (-std::cos(phi) * std::sin(psi) + std::sin(phi) * std::sin(theta) * std::cos(psi));
+									dpsi += (boundary_nodes_rest_(b + 1) - initial_boundary_barycenter_(position, 2)) * (std::sin(phi) * std::sin(psi) + std::cos(phi) * std::sin(theta) * std::cos(psi));
+								}
+								else if (k == 2)
+								{
+									dphi += (boundary_nodes_rest_(b - 1) - initial_boundary_barycenter_(position, 1)) * std::cos(phi) * std::cos(theta);
+									dphi += -(boundary_nodes_rest_(b) - initial_boundary_barycenter_(position, 2)) * std::sin(phi) * std::cos(theta);
+									dtheta += -(boundary_nodes_rest_(b - 2) - initial_boundary_barycenter_(position, 0)) * std::cos(theta);
+									dtheta += -(boundary_nodes_rest_(b - 1) - initial_boundary_barycenter_(position, 1)) * std::sin(phi) * std::sin(theta);
+									dtheta += -(boundary_nodes_rest_(b) - initial_boundary_barycenter_(position, 2)) * std::cos(phi) * std::sin(theta);
+								}
+								dreduced(t * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + position * (dim_ - 1) * 3 + 3) += dphi * dfull(t * boundary_ids_list_.size() + b);
+								dreduced(t * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + position * (dim_ - 1) * 3 + 4) += dtheta * dfull(t * boundary_ids_list_.size() + b);
+								dreduced(t * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + position * (dim_ - 1) * 3 + 5) += dpsi * dfull(t * boundary_ids_list_.size() + b);
 							}
 						}
-						return dfull;
-					};
+					return dreduced;
+				};
+
+				// Needed to project the control smoothing grad to reduced parameters
+				dreduced_to_dfull_ = [this](const Eigen::VectorXd &dreduced) {
+					Eigen::VectorXd dfull;
+					dfull.setZero(boundary_ids_list_.size());
+					for (auto kv : boundary_id_to_reduced_dim_)
+					{
+						int boundary_id = kv.first;
+						for (int b = 0; b < boundary_ids_list_.size(); ++b)
+						{
+							int k = b % dim_;
+							if (boundary_ids_list_[b] == boundary_id)
+								dfull(b) = dreduced(boundary_id_to_reduced_dim_.at(boundary_id) * (dim_ - 1) * 3 + k) / reduced_dim_to_full_dim_multiplicity_.at(boundary_id_to_reduced_dim_.at(boundary_id));
+						}
+					}
+					return dfull;
+				};
+				if (dim_ == 2)
 					string_fn_vec_ = {[this](const int i, const Eigen::VectorXd &x) { return fmt::format("(x - {:16g}) * cos({:16g}) - (y - {:16g}) * sin({:16g}) + {:16g} + {:16g} - x", initial_boundary_barycenter_(i, 0), x(2), initial_boundary_barycenter_(i, 1), x(2), x(0), initial_boundary_barycenter_(i, 0)); },
 									  [this](const int i, const Eigen::VectorXd &x) { return fmt::format("(x - {:16g}) * sin({:16g}) + (y - {:16g}) * cos({:16g}) + {:16g} + {:16g} - y", initial_boundary_barycenter_(i, 0), x(2), initial_boundary_barycenter_(i, 1), x(2), x(1), initial_boundary_barycenter_(i, 1)); }};
-					constraint_to_string = [this](const Eigen::VectorXd &reduced) {
-						std::map<int, std::vector<std::vector<std::string>>> constraint_string;
-						for (auto kv : boundary_id_to_reduced_dim_)
+				else if (dim == 3)
+					string_fn_vec_ = {[this](const int i, const Eigen::VectorXd &x) {
+										  double phi = x(3);
+										  double theta = x(4);
+										  double psi = x(5);
+										  return fmt::format("(x - {:16g}) * cos({:16g}) * cos({:16g}) + (y - {:16g}) * (-cos({:16g}) * sin({:16g}) + sin({:16g}) * sin({:16g}) * cos({:16g})) + (z - {:16g}) * (sin({:16g}) * sin({:16g}) + cos({:16g}) * sin({:16g}) * cos({:16g})) + {:16g} + {:16g} - x",
+															 initial_boundary_barycenter_(i, 0), theta, psi, initial_boundary_barycenter_(i, 1), phi, psi, phi, theta, psi, initial_boundary_barycenter_(i, 2), phi, psi, phi, theta, psi, x(0), initial_boundary_barycenter_(i, 0));
+									  },
+									  [this](const int i, const Eigen::VectorXd &x) {
+										  double phi = x(3);
+										  double theta = x(4);
+										  double psi = x(5);
+										  return fmt::format("(x - {:16g}) * cos({:16g}) * sin({:16g}) + (y - {:16g}) * (cos({:16g}) * cos({:16g}) + sin({:16g}) * sin({:16g}) * sin({:16g})) + (z - {:16g}) * (-sin({:16g}) * cos({:16g}) + cos({:16g}) * sin({:16g}) * sin({:16g})) + {:16g} + {:16g} - y",
+															 initial_boundary_barycenter_(i, 0), theta, psi, initial_boundary_barycenter_(i, 1), phi, psi, phi, theta, psi, initial_boundary_barycenter_(i, 2), phi, psi, phi, theta, psi, x(1), initial_boundary_barycenter_(i, 1));
+									  },
+									  [this](const int i, const Eigen::VectorXd &x) {
+										  double phi = x(3);
+										  double theta = x(4);
+										  double psi = x(5);
+										  return fmt::format("-(x - {:16g}) * sin({:16g}) + (y - {:16g}) * sin({:16g}) * cos({:16g}) + (z - {:16g}) * cos({:16g}) * cos({:16g}) + {:16g} + {:16g} - z",
+															 initial_boundary_barycenter_(i, 0), theta, initial_boundary_barycenter_(i, 1), phi, theta, initial_boundary_barycenter_(i, 2), phi, theta, x(2), initial_boundary_barycenter_(i, 2));
+									  }};
+				constraint_to_string = [this](const Eigen::VectorXd &reduced) {
+					std::regex whitespace(" ");
+					std::map<int, std::vector<std::vector<std::string>>> constraint_string;
+					for (auto kv : boundary_id_to_reduced_dim_)
+					{
+						std::vector<std::vector<std::string>> constraint_string_boundary;
+						for (int k = 0; k < dim_; ++k)
 						{
-							std::vector<std::vector<std::string>> constraint_string_boundary;
-							for (int k = 0; k < dim_; ++k)
+							std::vector<std::string> constraint_string_dim;
+							for (int i = 0; i < time_steps_; ++i)
 							{
-								std::vector<std::string> constraint_string_dim;
-								for (int i = 0; i < time_steps_; ++i)
-								{
-									constraint_string_dim.push_back(string_fn_vec_[k](kv.second, reduced.segment(i * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + kv.second * (dim_ - 1) * 3, (dim_ - 1) * 3)));
-								}
-								constraint_string_boundary.push_back(constraint_string_dim);
+								std::string bc_string = string_fn_vec_[k](kv.second, reduced.segment(i * boundary_id_to_reduced_dim_.size() * (dim_ - 1) * 3 + kv.second * (dim_ - 1) * 3, (dim_ - 1) * 3));
+								constraint_string_dim.push_back(std::regex_replace(bc_string, whitespace, ""));
 							}
-							constraint_string[kv.first] = constraint_string_boundary;
+							constraint_string_boundary.push_back(constraint_string_dim);
 						}
-						return constraint_string;
-					};
-				}
-				else
-					assert(false);
+						constraint_string[kv.first] = constraint_string_boundary;
+					}
+					return constraint_string;
+				};
 			}
 		}
 
