@@ -95,7 +95,11 @@ namespace polyfem::solver
 			ipc::world_bbox_diagonal_length(displaced_surface), dhat_, avg_mass_,
 			grad_energy, grad_barrier, max_barrier_stiffness_);
 		if (use_convergent_formulation())
-			weight_ *= dhat_ * dhat_; // cancel out division in barrier potential
+		{
+			// cancel out division in barrier potential
+			weight_ *= dhat_ * dhat_;
+			max_barrier_stiffness_ *= dhat_ * dhat_;
+		}
 
 		logger().debug("adaptive barrier form stiffness {}", barrier_stiffness());
 	}

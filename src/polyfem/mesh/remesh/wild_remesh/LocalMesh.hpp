@@ -38,7 +38,7 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd &positions() const { return m_positions; }
 		Eigen::MatrixXd displacements() const { return m_positions - m_rest_positions; }
 
-		const Eigen::MatrixXd &prev_positions() const { return m_prev_positions; }
+		const Eigen::MatrixXd &prev_displacements() const { return m_prev_displacements; }
 		const Eigen::MatrixXd &prev_velocities() const { return m_prev_velocities; }
 		const Eigen::MatrixXd &prev_accelerations() const { return m_prev_accelerations; }
 
@@ -54,6 +54,8 @@ namespace polyfem::mesh
 		const std::vector<int> &boundary_ids() const { return m_boundary_ids; }
 		const std::vector<int> &body_ids() const { return m_body_ids; }
 
+		void reorder_vertices(const Eigen::VectorXi &permutation);
+
 	protected:
 		void remove_duplicate_fixed_vertices();
 		void init_local_to_global();
@@ -63,7 +65,7 @@ namespace polyfem::mesh
 		Eigen::MatrixXd m_positions;
 
 		// TODO: replace this with a time integrator object
-		Eigen::MatrixXd m_prev_positions;
+		Eigen::MatrixXd m_prev_displacements;
 		Eigen::MatrixXd m_prev_velocities;
 		Eigen::MatrixXd m_prev_accelerations;
 

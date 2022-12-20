@@ -74,7 +74,7 @@ namespace polyfem::mesh
 		std::vector<Tuple> boundary_edges() const;
 		const Obstacle &obstacle() const { return state.obstacle; }
 		const Eigen::MatrixXd &obstacle_displacements() const { return m_obstacle_displacements; }
-		Eigen::MatrixXd obstacle_prev_positions() const { return utils::unflatten(m_obstacle_vals.col(0), DIM); }
+		Eigen::MatrixXd obstacle_prev_displacement() const { return utils::unflatten(m_obstacle_vals.col(0), DIM); }
 		Eigen::MatrixXd obstacle_prev_velocities() const { return utils::unflatten(m_obstacle_vals.col(1), DIM); }
 		Eigen::MatrixXd obstacle_prev_accelerations() const { return utils::unflatten(m_obstacle_vals.col(2), DIM); }
 		Eigen::MatrixXd obstacle_friction_gradient() const { return utils::unflatten(m_obstacle_vals.col(3), DIM); }
@@ -95,13 +95,13 @@ namespace polyfem::mesh
 		/// @brief Writes a triangle mesh in OBJ format
 		/// @param path Output path
 		/// @param deformed If true, writes deformed positions, otherwise rest positions
-		void write_obj(const std::string &path, bool deformed) const;
+		void write_mesh(const std::string &path, bool deformed) const;
 		/// @brief Writes a triangle mesh of the rest mesh in OBJ format
 		/// @param path Output path
-		void write_rest_obj(const std::string &path) const { write_obj(path, false); }
+		void write_rest_mesh(const std::string &path) const { write_mesh(path, false); }
 		/// @brief Writes a triangle mesh of the deformed mesh in OBJ format
 		/// @param path Output path
-		void write_deformed_obj(const std::string &path) const { write_obj(path, true); }
+		void write_deformed_mesh(const std::string &path) const { write_mesh(path, true); }
 
 		/// @brief Compute the length of an edge.
 		double edge_length(const Tuple &e) const;

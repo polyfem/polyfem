@@ -79,7 +79,10 @@ namespace polyfem::mesh
 			return false;
 
 		// Dont split if the edge is too small
-		if (edge_length(e) < 1e-6)
+		double min_edge_length = 1e-6;
+		if (!e.switch_face(*this).has_value() && state.has_dhat)
+			min_edge_length = std::max(min_edge_length, 1.01 * state.args["contact"]["dhat"].get<double>());
+		if (edge_length(e) < min_edge_length)
 			return false;
 
 		// Cache necessary local data

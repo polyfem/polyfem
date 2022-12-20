@@ -1,7 +1,9 @@
 #include "WildRemesh2D.hpp"
 
 #include <polyfem/utils/GeometryUtils.hpp>
+#include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+#include <polyfem/io/VTUWriter.hpp>
 
 #include <wmtk/utils/TupleUtils.hpp>
 
@@ -221,9 +223,54 @@ namespace polyfem::mesh
 
 	// ========================================================================
 
-	void WildRemeshing2D::write_obj(const std::string &path, bool deformed) const
+	void WildRemeshing2D::write_mesh(const std::string &path, bool deformed) const
 	{
-		io::OBJWriter::write(path, deformed ? positions() : rest_positions(), triangles());
+		if (utils::StringUtils::endswith(path, ".obj"))
+		{
+			io::OBJWriter::write(path, deformed ? positions() : rest_positions(), triangles());
+		}
+		else if (utils::StringUtils::endswith(path, ".vtu"))
+		{
+			io::VTUWriter writer;
+			const Eigen::MatrixXd projected_quantities = this->projected_quantities();
+
+			Eigen::MatrixXd rest_positions = this->rest_positions();
+			Eigen::MatrixXd displacements = this->displacements();
+			Eigen::MatrixXd prev_displacements = utils::unflatten(projected_quantities.leftCols(1), DIM);
+			Eigen::MatrixXd friction_gradient = utils::unflatten(projected_quantities.rightCols(1), DIM);
+			Eigen::MatrixXi triangles = this->triangles();
+			std::vector<std::vector<int>> elements(triangles.rows(), std::vector<int>(triangles.cols()));
+			for (int i = 0; i < triangles.rows(); i++)
+				for (int j = 0; j < triangles.cols(); j++)
+					elements[i][j] = triangles(i, j);
+
+			const int offset = rest_positions.rows();
+			if (obstacle().n_vertices() > 0)
+			{
+				utils::append_rows(rest_positions, obstacle().v());
+				utils::append_rows(displacements, obstacle_displacements());
+				utils::append_rows(prev_displacements, obstacle_prev_displacement());
+				utils::append_rows(friction_gradient, obstacle_friction_gradient());
+
+				const Eigen::MatrixXi obstacle_edges = obstacle().e().array() + offset;
+				elements.resize(elements.size() + obstacle().n_edges());
+				for (int i = 0; i < obstacle().n_edges(); i++)
+				{
+					elements[i + triangles.rows()] = std::vector<int>(2);
+					for (int j = 0; j < 2; j++)
+						elements[i + triangles.rows()][j] = obstacle_edges(i, j);
+				}
+			}
+
+			writer.add_field("prev_displacement", prev_displacements);
+			writer.add_field("friction_gradient", friction_gradient);
+			writer.add_field("displacement", displacements);
+			writer.write_mesh(path, rest_positions, elements, /*is_simplicial=*/true);
+		}
+		else
+		{
+			log_and_throw_error("Unsupported mesh file format: {}", path);
+		}
 	}
 
 	// ========================================================================

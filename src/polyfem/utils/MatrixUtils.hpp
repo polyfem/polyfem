@@ -147,5 +147,24 @@ namespace polyfem
 		Eigen::MatrixXi map_index_matrix(
 			const Eigen::MatrixXi &in,
 			const Eigen::VectorXi &index_mapping);
+
+		template <typename DstMat, typename SrcMat>
+		void append_rows(DstMat &dst, const SrcMat &src)
+		{
+			assert(dst.cols() == src.cols());
+			if (src.rows() == 0)
+				return;
+			dst.conservativeResize(dst.rows() + src.rows(), dst.cols());
+			dst.bottomRows(src.rows()) = src;
+		}
+
+		template <typename DstMat>
+		void append_zero_rows(DstMat &dst, const size_t n_zero_rows)
+		{
+			if (n_zero_rows == 0)
+				return;
+			dst.conservativeResize(dst.rows() + n_zero_rows, dst.cols());
+			dst.bottomRows(n_zero_rows).setZero();
+		}
 	} // namespace utils
 } // namespace polyfem

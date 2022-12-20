@@ -60,6 +60,10 @@ namespace polyfem::solver
 		/// @param x Current solution
 		void update_lagging(const Eigen::VectorXd &x, const int iter_num) override;
 
+		/// @brief Update lagged fields
+		/// @param x Current solution
+		void update_lagging(const Eigen::VectorXd &x) { update_lagging(x, -1); };
+
 		/// @brief Get the maximum number of lagging iteration allowable.
 		int max_lagging_iterations() const override { return n_lagging_iters_; }
 

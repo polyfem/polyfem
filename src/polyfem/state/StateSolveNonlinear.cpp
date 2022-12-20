@@ -280,6 +280,7 @@ namespace polyfem
 			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 		};
 
+		Eigen::MatrixXd prev_sol = sol;
 		al_solver.solve(nl_problem, sol, args["solver"]["augmented_lagrangian"]["force"]);
 
 		// ---------------------------------------------------------------------
@@ -299,13 +300,23 @@ namespace polyfem
 			// Check if lagging converged
 			Eigen::VectorXd grad;
 			nl_problem.gradient(tmp_sol, grad);
-			logger().debug("Lagging convergence grad_norm={:g} tol={:g}", grad.norm(), lagging_tol);
+			const double delta_x_norm = (prev_sol - sol).lpNorm<Eigen::Infinity>();
+			logger().debug("Lagging convergence grad_norm={:g} tol={:g} (||Δx||={:g})", grad.norm(), lagging_tol, delta_x_norm);
 			if (grad.norm() <= lagging_tol)
 			{
 				logger().info(
 					"Lagging converged in {:d} iteration(s) (grad_norm={:g} tol={:g})",
 					lag_i, grad.norm(), lagging_tol);
 				lagging_converged = true;
+				break;
+			}
+
+			if (delta_x_norm <= 1e-6)
+			{
+				logger().warn(
+					"Lagging produced tiny update between iterations {:d} and {:d} (grad_norm={:g} grad_tol={:g} ||Δx||={:g} Δx_tol={:g}); stopping early",
+					lag_i - 1, lag_i, grad.norm(), lagging_tol, delta_x_norm, 1e-6);
+				lagging_converged = false;
 				break;
 			}
 
@@ -324,6 +335,7 @@ namespace polyfem
 			nl_problem.init(sol);
 			solve_data.update_barrier_stiffness(sol);
 			nl_solver->minimize(nl_problem, tmp_sol);
+			Eigen::MatrixXd prev_sol = sol;
 			sol = nl_problem.reduced_to_full(tmp_sol);
 
 			// Save the subsolve sequence for debugging and info

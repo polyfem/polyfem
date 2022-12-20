@@ -66,7 +66,7 @@ namespace polyfem::solver
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
-	// TODO: hanlde lagging with more than one step
+	// TODO: handle lagging with more than one step
 	void FrictionForm::init_lagging(const Eigen::VectorXd &x)
 	{
 		displaced_surface_prev_ = compute_displaced_surface(x);

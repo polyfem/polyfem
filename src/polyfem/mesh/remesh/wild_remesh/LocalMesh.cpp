@@ -1,33 +1,12 @@
 #include "LocalMesh.hpp"
 
 #include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <igl/boundary_facets.h>
 
 namespace polyfem::mesh
 {
-	namespace
-	{
-		template <typename DstMat, typename SrcMat>
-		void append_rows(DstMat &dst, const SrcMat &src)
-		{
-			assert(dst.cols() == src.cols());
-			if (src.rows() == 0)
-				return;
-			dst.conservativeResize(dst.rows() + src.rows(), dst.cols());
-			dst.bottomRows(src.rows()) = src;
-		}
-
-		template <typename DstMat>
-		void append_zero_rows(DstMat &dst, const size_t n_zero_rows)
-		{
-			if (n_zero_rows == 0)
-				return;
-			dst.conservativeResize(dst.rows() + n_zero_rows, dst.cols());
-			dst.bottomRows(n_zero_rows).setZero();
-		}
-	} // namespace
-
 	LocalMesh::LocalMesh(
 		const WildRemeshing2D &m,
 		const std::vector<Tuple> &triangle_tuples,
@@ -126,13 +105,13 @@ namespace polyfem::mesh
 		if (include_global_boundary && m.obstacle().n_vertices() > 0)
 		{
 			const Obstacle &obstacle = m.obstacle();
-			append_rows(m_rest_positions, obstacle.v());
-			append_rows(m_positions, obstacle.v() + m.obstacle_displacements());
-			append_rows(m_prev_positions, m.obstacle_prev_positions());
-			append_rows(m_prev_velocities, m.obstacle_prev_velocities());
-			append_rows(m_prev_accelerations, m.obstacle_prev_accelerations());
-			append_rows(m_friction_gradient, m.obstacle_friction_gradient());
-			append_rows(m_boundary_edges, obstacle.e().array() + tmp_num_vertices);
+			utils::append_rows(m_rest_positions, obstacle.v());
+			utils::append_rows(m_positions, obstacle.v() + m.obstacle_displacements());
+			utils::append_rows(m_prev_displacements, m.obstacle_prev_displacement());
+			utils::append_rows(m_prev_velocities, m.obstacle_prev_velocities());
+			utils::append_rows(m_prev_accelerations, m.obstacle_prev_accelerations());
+			utils::append_rows(m_friction_gradient, m.obstacle_friction_gradient());
+			utils::append_rows(m_boundary_edges, obstacle.e().array() + tmp_num_vertices);
 
 			for (int i = 0; i < obstacle.n_vertices(); i++)
 				m_fixed_vertices.push_back(i + tmp_num_vertices);
@@ -264,7 +243,7 @@ namespace polyfem::mesh
 		const int num_vertices = m_global_to_local.size();
 		m_rest_positions.resize(num_vertices, DIM);
 		m_positions.resize(num_vertices, DIM);
-		m_prev_positions.resize(num_vertices, DIM);
+		m_prev_displacements.resize(num_vertices, DIM);
 		m_prev_velocities.resize(num_vertices, DIM);
 		m_prev_accelerations.resize(num_vertices, DIM);
 		m_friction_gradient.resize(num_vertices, DIM);
@@ -275,10 +254,37 @@ namespace polyfem::mesh
 
 			assert(m.vertex_attrs[glob_vi].projection_quantities.cols() == 4);
 
-			m_prev_positions.row(loc_vi) = m.vertex_attrs[glob_vi].prev_displacement();
+			m_prev_displacements.row(loc_vi) = m.vertex_attrs[glob_vi].prev_displacement();
 			m_prev_velocities.row(loc_vi) = m.vertex_attrs[glob_vi].prev_velocity();
 			m_prev_accelerations.row(loc_vi) = m.vertex_attrs[glob_vi].prev_acceleration();
 			m_friction_gradient.row(loc_vi) = m.vertex_attrs[glob_vi].friction_gradient();
 		}
+	}
+
+	void LocalMesh::reorder_vertices(const Eigen::VectorXi &permutation)
+	{
+		assert(permutation.size() == num_vertices());
+		m_rest_positions = utils::reorder_matrix(m_rest_positions, permutation);
+		m_positions = utils::reorder_matrix(m_positions, permutation);
+
+		m_prev_displacements = utils::reorder_matrix(m_prev_displacements, permutation);
+		m_prev_velocities = utils::reorder_matrix(m_prev_velocities, permutation);
+		m_prev_accelerations = utils::reorder_matrix(m_prev_accelerations, permutation);
+
+		m_friction_gradient = utils::reorder_matrix(m_friction_gradient, permutation);
+
+		m_boundary_edges = utils::map_index_matrix(m_boundary_edges, permutation);
+		m_triangles = utils::map_index_matrix(m_triangles, permutation);
+
+		for (auto &[glob_vi, loc_vi] : m_global_to_local)
+			loc_vi = permutation[loc_vi];
+
+		std::vector<int> new_local_to_global(m_local_to_global.size());
+		for (int i = 0; i < m_local_to_global.size(); ++i)
+			new_local_to_global[permutation[i]] = m_local_to_global[i];
+		m_local_to_global = new_local_to_global;
+
+		for (int &vi : m_fixed_vertices)
+			vi = permutation[vi];
 	}
 } // namespace polyfem::mesh
