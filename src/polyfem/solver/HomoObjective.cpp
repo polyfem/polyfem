@@ -159,6 +159,10 @@ namespace polyfem::solver
 		id = args["id"].get<std::vector<int>>();
 		assert(id.size() == 2);
 		formulation_ = state.formulation();
+
+		RowVectorNd min, max;
+		state.mesh->bounding_box(min, max);
+		microstructure_volume = (max - min).prod();
 	}
 
 	IntegrableFunctional HomogenizedStressObjective::get_integral_functional()
@@ -237,13 +241,13 @@ namespace polyfem::solver
 	double HomogenizedStressObjective::value()
 	{
 		double val = SpatialIntegralObjective::value();
-		return val;
+		return val / microstructure_volume;
 	}
 
 	Eigen::VectorXd HomogenizedStressObjective::compute_adjoint_rhs_step(const State &state)
 	{
 		Eigen::VectorXd rhs = SpatialIntegralObjective::compute_adjoint_rhs_step(state);
-		return rhs;
+		return rhs / microstructure_volume;
 	}
 
 	Eigen::VectorXd HomogenizedStressObjective::compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value)
@@ -260,7 +264,7 @@ namespace polyfem::solver
 			term = SpatialIntegralObjective::compute_partial_gradient(param, param_value);
 		}
 
-		return term;
+		return term / microstructure_volume;
 	}
 
 	CompositeHomogenizedStressObjective::CompositeHomogenizedStressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> macro_strain_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args)
@@ -351,69 +355,48 @@ namespace polyfem::solver
 		return j;
 	}
 
-	bool almost_equal(const Eigen::VectorXd &x, const Eigen::VectorXd &y)
+	HomogenizedStiffnessObjective::HomogenizedStiffnessObjective(std::shared_ptr<State> state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args): shape_param_(shape_param), elastic_param_(elastic_param)
 	{
-		if (x.size() != y.size())
-			return false;
+		id = args["id"].get<std::vector<int>>();
+		assert(id.size() == 4);
+		formulation_ = state->formulation();
 
-		return ((x - y).norm() < 1e-8) || ((x - y).norm() / x.norm() < 1e-5);
+		multiscale_assembler = std::make_shared<assembler::Multiscale>(state);
 	}
 
-	NaiveNegativePoissonObjective::NaiveNegativePoissonObjective(const State &state1, const json &args) : state1_(state1)
+	double HomogenizedStiffnessObjective::value()
 	{
-		power_ = args["power"];
-		Eigen::VectorXd a, b;
-		a = args["v1"];
-		b = args["v2"];
-		for (int i = 0; i < state1_.n_bases; i++)
+		Eigen::MatrixXd stiffness;
+		multiscale_assembler->homogenize_stiffness(multiscale_assembler->get_microstructure_state()->diff_cached[0].u, stiffness);
+		return stiffness(id[0], id[1]);
+	}
+
+	Eigen::VectorXd HomogenizedStiffnessObjective::compute_adjoint_rhs_step(const State &state)
+	{
+		Eigen::VectorXd rhs;
+		rhs.setZero(state.ndof());
+		if (&state == multiscale_assembler->get_microstructure_state().get())
 		{
-			if (almost_equal(state1_.mesh_nodes->node_position(i), a))
-			{
-				v1 = i;
-			}
-			if (almost_equal(state1_.mesh_nodes->node_position(i), b))
-			{
-				v2 = i;
-			}
+
 		}
-		if (v1 < 0 || v2 < 0)
-			log_and_throw_error("Failed to find target vertices in objective!");
-	}
-
-	double NaiveNegativePoissonObjective::value()
-	{
-		const int dim = state1_.mesh->dimension();
-		const double length1 = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
-
-		// Eigen::VectorXd vec(2); vec << length1, length2;
-		// return inverse_Lp_norm(vec, power_);
-
-		return 1. / length1;
-	}
-
-	Eigen::MatrixXd NaiveNegativePoissonObjective::compute_adjoint_rhs(const State &state)
-	{
-		Eigen::MatrixXd rhs;
-		rhs.setZero(state.diff_cached[0].u.size(), 1);
-
-		const int dim = state1_.mesh->dimension();
-
-		if (&state == &state1_)
-		{
-			const double length1 = (state1_.diff_cached[0].u(v1 * dim + 0) - state1_.diff_cached[0].u(v2 * dim + 0)) + (state1_.mesh_nodes->node_position(v1)(0) - state1_.mesh_nodes->node_position(v2)(0));
-
-			rhs(v1 * dim + 0) = -1 / length1 / length1;
-			rhs(v2 * dim + 0) = 1 / length1 / length1;
-		}
-
 		return rhs;
 	}
 
-	Eigen::VectorXd NaiveNegativePoissonObjective::compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value)
+	Eigen::VectorXd HomogenizedStiffnessObjective::compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value)
 	{
-		if (param.name() == "shape")
+		Eigen::VectorXd term;
+		term.setZero(param.optimization_dim());
+		if (&param == elastic_param_.get())
+		{
+			// TODO: differentiate stress wrt. lame param
 			log_and_throw_error("Not implemented!");
+		}
+		else if (&param == shape_param_.get())
+		{
 
-		return Eigen::VectorXd::Zero(param.optimization_dim());
+		}
+
+		return term;
 	}
+
 }

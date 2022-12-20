@@ -362,10 +362,6 @@ namespace polyfem::solver
 
 			obj = std::make_shared<solver::StrainObjective>(state, shape_param, args);
 		}
-		else if (type == "naive_negative_poisson")
-		{
-			obj = std::make_shared<solver::NaiveNegativePoissonObjective>(*(states[args["state"]]), args);
-		}
 		else
 			log_and_throw_error("Unkown functional type {}!", type);
 

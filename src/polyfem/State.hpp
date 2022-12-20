@@ -708,9 +708,9 @@ public:
 		// Aux functions for setting up adjoint equations
 		void compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const;
 		// Solves the adjoint PDE for derivatives
-		Eigen::MatrixXd solve_adjoint(const Eigen::MatrixXd &rhs);
-		Eigen::MatrixXd solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs);
-		Eigen::MatrixXd solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs);
+		Eigen::MatrixXd solve_adjoint(const Eigen::MatrixXd &rhs) const;
+		Eigen::MatrixXd solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
+		Eigen::MatrixXd solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
 		// Change geometric node positions
 		void set_mesh_vertices(const Eigen::MatrixXd &vertices);
 		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true) const;

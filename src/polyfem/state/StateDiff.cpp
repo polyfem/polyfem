@@ -210,7 +210,7 @@ namespace polyfem
 		}
 	}
 
-	Eigen::MatrixXd State::solve_adjoint(const Eigen::MatrixXd &rhs)
+	Eigen::MatrixXd State::solve_adjoint(const Eigen::MatrixXd &rhs) const
 	{
 		if (problem->is_time_dependent())
 		{
@@ -222,13 +222,13 @@ namespace polyfem
 		}
 	}
 
-	Eigen::MatrixXd State::solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs)
+	Eigen::MatrixXd State::solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs) const
 	{
 		Eigen::MatrixXd b = adjoint_rhs;
 		for (int i : boundary_nodes)
 			b.row(i).setZero();
 
-		Eigen::VectorXd adjoint;
+		Eigen::MatrixXd adjoint;
 		adjoint.setZero(ndof(), adjoint_rhs.cols());
 		if (lin_solver_cached)
 		{
@@ -292,7 +292,7 @@ namespace polyfem
 		return adjoint;
 	}
 
-	Eigen::MatrixXd State::solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs)
+	Eigen::MatrixXd State::solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs) const
 	{
 		const int bdf_order = get_bdf_order();
 		const double dt = args["time"]["dt"];

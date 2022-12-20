@@ -26,6 +26,7 @@ namespace polyfem
 		{
 		public:
 			Multiscale();
+			Multiscale(std::shared_ptr<State> state_ptr);
 			virtual ~Multiscale();
 
 			// energy, gradient, and hessian used in newton method
