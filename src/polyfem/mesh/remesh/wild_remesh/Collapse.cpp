@@ -7,7 +7,7 @@ namespace polyfem::mesh
 {
 	bool WildRemeshing2D::collapse_edge_before(const Tuple &t)
 	{
-		if (!super::collapse_edge_before(t))
+		if (!wmtk::TriMesh::collapse_edge_before(t))
 			return false;
 
 		const int v0i = t.vid(*this);

@@ -10,13 +10,13 @@
 #include <igl/predicates/predicates.h>
 #include <igl/boundary_facets.h>
 
-#define VERTEX_ATTRIBUTE_GETTER(name, attribute)                                           \
-	Eigen::MatrixXd WildRemeshing2D::name() const                                          \
-	{                                                                                      \
-		Eigen::MatrixXd attributes = Eigen::MatrixXd::Constant(vert_capacity(), DIM, NaN); \
-		for (const Tuple &t : get_vertices())                                              \
-			attributes.row(t.vid(*this)) = vertex_attrs[t.vid(*this)].attribute;           \
-		return attributes;                                                                 \
+#define VERTEX_ATTRIBUTE_GETTER(name, attribute)                                             \
+	Eigen::MatrixXd WildRemeshing2D::name() const                                            \
+	{                                                                                        \
+		Eigen::MatrixXd attributes = Eigen::MatrixXd::Constant(vert_capacity(), dim(), NaN); \
+		for (const Tuple &t : get_vertices())                                                \
+			attributes.row(t.vid(*this)) = vertex_attrs[t.vid(*this)].attribute;             \
+		return attributes;                                                                   \
 	}
 
 #define VERTEX_ATTRIBUTE_SETTER(name, attribute)                                 \
@@ -35,41 +35,18 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd &positions,
 		const Eigen::MatrixXi &triangles,
 		const Eigen::MatrixXd &projection_quantities,
-		const EdgeMap<int> &edge_to_boundary_id,
+		const EdgeMap<int> &edge_to_boundary_id, // TODO: this has to change for 3D
 		const std::vector<int> &body_ids)
 	{
-		assert(triangles.size() > 0);
+		WildRemeshing::init(rest_positions, positions, triangles, projection_quantities, edge_to_boundary_id, body_ids);
 
-		// --------------------------------------------------------------------
-		// Determine which vertices are on the boundary
+		total_area = 0;
+		for (const Tuple &t : get_faces())
+			total_area += triangle_area(t);
+	}
 
-		// Partition mesh by body_ids
-		assert(body_ids.size() == triangles.rows());
-		std::unordered_map<int, std::vector<int>> body_triangles;
-		for (int i = 0; i < triangles.rows(); ++i)
-		{
-			const int body_id = body_ids[i];
-			if (body_triangles.find(body_id) == body_triangles.end())
-				body_triangles[body_id] = std::vector<int>();
-			body_triangles[body_id].push_back(i);
-		}
-
-		// Determine boundary vertices
-		std::vector<bool> is_boundary_vertex(positions.rows(), false);
-		for (const auto &[body_id, rows] : body_triangles)
-		{
-			Eigen::MatrixXi boundary_edges;
-			igl::boundary_facets(triangles(rows, Eigen::all), boundary_edges);
-
-			for (int i = 0; i < boundary_edges.rows(); ++i)
-			{
-				is_boundary_vertex[boundary_edges(i, 0)] = true;
-				is_boundary_vertex[boundary_edges(i, 1)] = true;
-			}
-		}
-
-		// --------------------------------------------------------------------
-
+	void WildRemeshing2D::create_mesh(const size_t num_vertices, const Eigen::MatrixXi &triangles)
+	{
 		// Register attributes
 		p_vertex_attrs = &vertex_attrs;
 		p_edge_attrs = &edge_attrs;
@@ -82,20 +59,7 @@ namespace polyfem::mesh
 				tri[i][j] = (size_t)triangles(i, j);
 
 		// Initialize the trimesh class which handles connectivity
-		wmtk::TriMesh::create_mesh(positions.rows(), tri);
-
-		// Save the vertex position in the vertex attributes
-		set_rest_positions(rest_positions);
-		set_positions(positions);
-		set_projected_quantities(projection_quantities);
-		set_fixed(is_boundary_vertex);
-
-		set_boundary_ids(edge_to_boundary_id);
-		set_body_ids(body_ids);
-
-		total_area = 0;
-		for (const Tuple &t : get_faces())
-			total_area += triangle_area(t);
+		wmtk::TriMesh::create_mesh(num_vertices, tri);
 	}
 
 	// ========================================================================
@@ -137,12 +101,12 @@ namespace polyfem::mesh
 	Eigen::MatrixXd WildRemeshing2D::projected_quantities() const
 	{
 		Eigen::MatrixXd projected_quantities =
-			Eigen::MatrixXd::Constant(DIM * vert_capacity(), n_quantities, NaN);
+			Eigen::MatrixXd::Constant(dim() * vert_capacity(), n_quantities(), NaN);
 
 		for (const Tuple &t : get_vertices())
 		{
 			const int vi = t.vid(*this);
-			projected_quantities.middleRows<DIM>(DIM * vi) = vertex_attrs[vi].projection_quantities;
+			projected_quantities.middleRows(dim() * vi, dim()) = vertex_attrs[vi].projection_quantities;
 		}
 
 		return projected_quantities;
@@ -190,14 +154,14 @@ namespace polyfem::mesh
 
 	void WildRemeshing2D::set_projected_quantities(const Eigen::MatrixXd &projected_quantities)
 	{
-		assert(projected_quantities.rows() == DIM * vert_capacity());
-		n_quantities = projected_quantities.cols();
+		assert(projected_quantities.rows() == dim() * vert_capacity());
+		m_n_quantities = projected_quantities.cols();
 
 		for (const Tuple &t : get_vertices())
 		{
 			const int vi = t.vid(*this);
 			vertex_attrs[vi].projection_quantities =
-				projected_quantities.middleRows<DIM>(DIM * vi);
+				projected_quantities.middleRows(dim() * vi, dim());
 		}
 	}
 
@@ -218,58 +182,6 @@ namespace polyfem::mesh
 		for (const Tuple &f : get_faces())
 		{
 			face_attrs[f.fid(*this)].body_id = body_ids.at(f.fid(*this));
-		}
-	}
-
-	// ========================================================================
-
-	void WildRemeshing2D::write_mesh(const std::string &path, bool deformed) const
-	{
-		if (utils::StringUtils::endswith(path, ".obj"))
-		{
-			io::OBJWriter::write(path, deformed ? positions() : rest_positions(), triangles());
-		}
-		else if (utils::StringUtils::endswith(path, ".vtu"))
-		{
-			io::VTUWriter writer;
-			const Eigen::MatrixXd projected_quantities = this->projected_quantities();
-
-			Eigen::MatrixXd rest_positions = this->rest_positions();
-			Eigen::MatrixXd displacements = this->displacements();
-			Eigen::MatrixXd prev_displacements = utils::unflatten(projected_quantities.leftCols(1), DIM);
-			Eigen::MatrixXd friction_gradient = utils::unflatten(projected_quantities.rightCols(1), DIM);
-			Eigen::MatrixXi triangles = this->triangles();
-			std::vector<std::vector<int>> elements(triangles.rows(), std::vector<int>(triangles.cols()));
-			for (int i = 0; i < triangles.rows(); i++)
-				for (int j = 0; j < triangles.cols(); j++)
-					elements[i][j] = triangles(i, j);
-
-			const int offset = rest_positions.rows();
-			if (obstacle().n_vertices() > 0)
-			{
-				utils::append_rows(rest_positions, obstacle().v());
-				utils::append_rows(displacements, obstacle_displacements());
-				utils::append_rows(prev_displacements, obstacle_prev_displacement());
-				utils::append_rows(friction_gradient, obstacle_friction_gradient());
-
-				const Eigen::MatrixXi obstacle_edges = obstacle().e().array() + offset;
-				elements.resize(elements.size() + obstacle().n_edges());
-				for (int i = 0; i < obstacle().n_edges(); i++)
-				{
-					elements[i + triangles.rows()] = std::vector<int>(2);
-					for (int j = 0; j < 2; j++)
-						elements[i + triangles.rows()][j] = obstacle_edges(i, j);
-				}
-			}
-
-			writer.add_field("prev_displacement", prev_displacements);
-			writer.add_field("friction_gradient", friction_gradient);
-			writer.add_field("displacement", displacements);
-			writer.write_mesh(path, rest_positions, elements, /*is_simplicial=*/true);
-		}
-		else
-		{
-			log_and_throw_error("Unsupported mesh file format: {}", path);
 		}
 	}
 

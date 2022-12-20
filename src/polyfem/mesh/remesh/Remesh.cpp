@@ -123,7 +123,7 @@ namespace polyfem::mesh
 		projection_quantities.conservativeResize(ndof_mesh, Eigen::NoChange);
 
 		assert(!state.mesh->is_volume());
-		WildRemeshing2D remeshing(state, obstacle_sol, obstacle_projection_quantities, time, state.solve_data.nl_problem->value(sol));
+		WildRemeshing2D remeshing(state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities, time, state.solve_data.nl_problem->value(sol));
 		remeshing.energy_relative_tolerance = state.args["space"]["remesh"]["rel_tol"];
 		remeshing.energy_absolute_tolerance = state.args["space"]["remesh"]["abs_tol"];
 		remeshing.n_ring_size = state.args["space"]["remesh"]["n_ring_size"];
@@ -146,7 +146,7 @@ namespace polyfem::mesh
 		if (remeshing.rest_positions().rows() == state.mesh->n_vertices())
 			return false;
 
-		state.mesh = mesh::Mesh::create(remeshing.rest_positions(), remeshing.triangles(), /*non_conforming=*/false);
+		state.mesh = mesh::Mesh::create(remeshing.rest_positions(), remeshing.elements(), /*non_conforming=*/false);
 
 		// set body ids
 		state.mesh->set_body_ids(remeshing.body_ids());

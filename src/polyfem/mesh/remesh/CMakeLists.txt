@@ -5,8 +5,11 @@ set(SOURCES
 	MMGRemesh.hpp
 	Remesh.hpp
 	Remesh.cpp
+	WildRemeshing.cpp
+	WildRemeshing.hpp
 	WildRemesh2D.cpp
 	WildRemesh2D.hpp
+	WildRemeshingTimings.hpp
 )
 
 prepend_current_path(SOURCES)

@@ -38,14 +38,8 @@ namespace polyfem::mesh
 
 		assembler::AssemblyValsCache cache;
 		const double energy = assembler.assemble_energy(
-			state.formulation(),
-			/*is_volume=*/DIM == 3,
-			bases,
-			/*gbases=*/bases,
-			cache,
-			/*dt=*/-1,
-			displacements,
-			/*displacement_prev=*/Eigen::MatrixXd());
+			state.formulation(), is_volume(), bases, /*gbases=*/bases, cache,
+			/*dt=*/-1, displacements, /*displacement_prev=*/Eigen::MatrixXd());
 		assert(std::isfinite(energy));
 		return energy / local_mesh.num_triangles(); // average energy per face
 	}

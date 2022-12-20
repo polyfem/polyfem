@@ -1,16 +1,13 @@
 #include <polyfem/mesh/remesh/WildRemesh2D.hpp>
 
-#include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/remesh/wild_remesh/LocalMesh.hpp>
 #include <polyfem/mesh/remesh/L2Projection.hpp>
-#include <polyfem/basis/LagrangeBasis2d.hpp>
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/LinearForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/io/OBJWriter.hpp>
-#include <polyfem/utils/Timer.hpp>
 
 #include <igl/boundary_facets.h>
 
@@ -18,71 +15,6 @@
 
 namespace polyfem::mesh
 {
-	int WildRemeshing2D::build_bases(
-		const Eigen::MatrixXd &V,
-		const Eigen::MatrixXi &F,
-		const std::string &assembler_formulation,
-		std::vector<polyfem::basis::ElementBases> &bases,
-		Eigen::VectorXi &vertex_to_basis)
-	{
-		using namespace polyfem::basis;
-
-		CMesh2D mesh;
-		mesh.build_from_matrices(V, F);
-		std::vector<LocalBoundary> local_boundary;
-		std::map<int, basis::InterfaceData> poly_edge_to_data;
-		std::shared_ptr<mesh::MeshNodes> mesh_nodes;
-		const int n_bases = LagrangeBasis2d::build_bases(
-			mesh,
-			assembler_formulation,
-			/*quadrature_order=*/1,
-			/*mass_quadrature_order=*/2,
-			/*discr_order=*/1,
-			/*serendipity=*/false,
-			/*has_polys=*/false,
-			/*is_geom_bases=*/false,
-			bases,
-			local_boundary,
-			poly_edge_to_data,
-			mesh_nodes);
-
-		// TODO: use mesh_nodes to build vertex_to_basis
-		vertex_to_basis.setConstant(V.rows(), -1);
-		for (const ElementBases &elm : bases)
-		{
-			for (const Basis &basis : elm.bases)
-			{
-				assert(basis.global().size() == 1);
-				const int basis_id = basis.global()[0].index;
-				const RowVectorNd v = basis.global()[0].node;
-
-				for (int i = 0; i < V.rows(); i++)
-				{
-					// if ((V.row(i) - v).norm() < 1e-14)
-					if ((V.row(i).array() == v.array()).all())
-					{
-						if (vertex_to_basis[i] == -1)
-							vertex_to_basis[i] = basis_id;
-						assert(vertex_to_basis[i] == basis_id);
-						break;
-					}
-				}
-			}
-		}
-
-		return n_bases;
-	}
-
-	assembler::AssemblerUtils WildRemeshing2D::create_assembler(
-		const std::vector<int> &body_ids) const
-	{
-		POLYFEM_SCOPED_TIMER(timings.create_assembler);
-		assembler::AssemblerUtils new_assembler = state.assembler;
-		assert(utils::is_param_valid(state.args, "materials"));
-		new_assembler.set_materials(body_ids, state.args["materials"]);
-		return new_assembler;
-	}
-
 	bool WildRemeshing2D::local_relaxation(const Tuple &t, const int n_ring)
 	{
 		using namespace polyfem::solver;
@@ -121,7 +53,7 @@ namespace polyfem::mesh
 
 			local_mesh.reorder_vertices(vertex_to_basis);
 		}
-		const int ndof = n_bases * DIM;
+		const int ndof = n_bases * dim();
 
 		// io::OBJWriter::write(
 		// 	state.resolve_output_path("local_rest_mesh_before_local_relaxation.obj"),
@@ -144,8 +76,8 @@ namespace polyfem::mesh
 			POLYFEM_SCOPED_TIMER(timings.create_boundary_nodes);
 
 			const auto add_vertex_to_boundary_nodes = [&](const int vi) {
-				for (int d = 0; d < DIM; ++d)
-					boundary_nodes.push_back(DIM * vi + d);
+				for (int d = 0; d < dim(); ++d)
+					boundary_nodes.push_back(dim() * vi + d);
 			};
 
 			for (const int vi : local_mesh.fixed_vertices())
@@ -187,15 +119,16 @@ namespace polyfem::mesh
 		Eigen::SparseMatrix<double> mass;
 		{
 			POLYFEM_SCOPED_TIMER(timings.assemble_mass_matrix);
-			ass_vals_cache.init(/*is_volume=*/DIM == 3, bases, /*gbases=*/bases, /*is_mass=*/true);
+			ass_vals_cache.init(is_volume(), bases, /*gbases=*/bases, /*is_mass=*/true);
 			assembler.assemble_mass_matrix(
-				/*assembler_formulation=*/"", /*is_volume=*/DIM == 3, n_bases,
+				/*assembler_formulation=*/"", is_volume(), n_bases,
 				/*use_density=*/true, bases, /*gbases=*/bases, ass_vals_cache, mass);
 			// Set the mass of the codimensional fixed vertices to the average mass.
-			for (int i = DIM * local_mesh.num_local_vertices(); i < DIM * local_mesh.num_vertices(); ++i)
+			const int local_ndof = dim() * local_mesh.num_local_vertices();
+			for (int i = local_ndof; i < ndof; ++i)
 				mass.coeffRef(i, i) = state.avg_mass;
 		}
-		ass_vals_cache.init(/*is_volume=*/DIM == 3, bases, /*gbases=*/bases, /*is_mass=*/false);
+		ass_vals_cache.init(is_volume(), bases, /*gbases=*/bases, /*is_mass=*/false);
 
 		ipc::CollisionMesh collision_mesh; // This has to stay alive
 		const bool contact_enabled = state.args["contact"]["enabled"] && free_boundary;
@@ -232,7 +165,7 @@ namespace polyfem::mesh
 			POLYFEM_SCOPED_TIMER(timings.init_forms);
 			forms = solve_data.init_forms(
 				// General
-				DIM, current_time,
+				dim(), current_time,
 				// Elastic form
 				n_bases, bases, /*geom_bases=*/bases, assembler, ass_vals_cache, state.formulation(),
 				// Body form
@@ -386,12 +319,12 @@ namespace polyfem::mesh
 
 			for (const auto &[glob_vi, loc_vi] : local_mesh.global_to_local())
 			{
-				const Eigen::Vector2d u = sol.middleRows<DIM>(DIM * loc_vi);
+				const Eigen::Vector2d u = sol.middleRows(dim() * loc_vi, dim());
 				const Eigen::Vector2d u_old = vertex_attrs[glob_vi].displacement();
 				vertex_attrs[glob_vi].position = vertex_attrs[glob_vi].rest_position + u;
 
 #ifndef POLYFEM_REMESH_USE_FRICTION_FORM
-				const Eigen::Vector2d f = friction_gradient.segment<DIM>(DIM * loc_vi);
+				const Eigen::Vector2d f = friction_gradient.segment(dim() * loc_vi, dim());
 				const Eigen::Vector2d f_old = vertex_attrs[glob_vi].projection_quantities.rightCols(1);
 				if (f_old.norm() != 0)
 					logger().critical("(f_old⋅f)/(‖f_old‖‖f‖)={:g} ‖f_old‖/‖f‖={:g} ‖u_old - u‖={:g}", (f_old / f_old.norm()).dot(f / f.norm()), f.norm() / f_old.norm(), (u_old - u).norm());

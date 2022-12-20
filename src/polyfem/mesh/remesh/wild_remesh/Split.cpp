@@ -75,7 +75,7 @@ namespace polyfem::mesh
 
 	bool WildRemeshing2D::split_edge_before(const Tuple &e)
 	{
-		if (!super::split_edge_before(e))
+		if (!wmtk::TriMesh::split_edge_before(e))
 			return false;
 
 		// Dont split if the edge is too small
