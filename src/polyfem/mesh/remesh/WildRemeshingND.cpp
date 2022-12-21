@@ -77,15 +77,15 @@ namespace polyfem::mesh
 		Eigen::MatrixXi F = Eigen::MatrixXi::Constant(elements.size(), dim() + 1, -1);
 		for (size_t i = 0; i < elements.size(); i++)
 		{
-			std::array<Tuple, DIM + 1> vs;
+			std::array<size_t, DIM + 1> vids;
 			if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
-				vs = WMTKMesh::oriented_tri_vertices(elements[i]);
+				vids = WMTKMesh::oriented_tri_vids(elements[i]);
 			else
-				vs = WMTKMesh::oriented_tet_vertices(elements[i]);
+				vids = WMTKMesh::oriented_tet_vids(elements[i]);
 
-			for (int j = 0; j < vs.size(); j++)
+			for (int j = 0; j < vids.size(); j++)
 			{
-				F(i, j) = vs[j].vid(*this);
+				F(i, j) = vids[j];
 			}
 		}
 		return F;
@@ -276,20 +276,20 @@ namespace polyfem::mesh
 	{
 		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
 		{
-			const std::array<typename WMTKMesh::Tuple, 3> vs = WMTKMesh::oriented_tri_vertices(e);
+			const std::array<size_t, 3> vids = WMTKMesh::oriented_tri_vids(e);
 			return utils::triangle_area_2D(
-				vertex_attrs[vs[0].vid(*this)].rest_position,
-				vertex_attrs[vs[1].vid(*this)].rest_position,
-				vertex_attrs[vs[2].vid(*this)].rest_position);
+				vertex_attrs[vids[0]].rest_position,
+				vertex_attrs[vids[1]].rest_position,
+				vertex_attrs[vids[2]].rest_position);
 		}
 		else
 		{
-			const std::array<typename WMTKMesh::Tuple, 4> vs = WMTKMesh::oriented_tet_vertices(e);
+			const std::array<size_t, 4> vids = WMTKMesh::oriented_tet_vids(e);
 			return utils::tetrahedron_volume(
-				vertex_attrs[vs[0].vid(*this)].rest_position,
-				vertex_attrs[vs[1].vid(*this)].rest_position,
-				vertex_attrs[vs[2].vid(*this)].rest_position,
-				vertex_attrs[vs[3].vid(*this)].rest_position);
+				vertex_attrs[vids[0]].rest_position,
+				vertex_attrs[vids[1]].rest_position,
+				vertex_attrs[vids[2]].rest_position,
+				vertex_attrs[vids[3]].rest_position);
 		}
 	}
 

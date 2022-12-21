@@ -16,7 +16,7 @@ namespace polyfem::mesh
 		/// @param state Simulation current state
 		WildRemeshing(
 			const State &state,
-			const Eigen::VectorXd &obstacle_displacements,
+			const Eigen::MatrixXd &obstacle_displacements,
 			const Eigen::MatrixXd &obstacle_vals,
 			const double current_time,
 			const double starting_energy)

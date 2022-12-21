@@ -28,19 +28,19 @@ namespace polyfem::mesh
 	bool WildRemeshing2D::is_inverted(const Tuple &loc) const
 	{
 		// Get the vertices ids
-		const std::array<Tuple, 3> vs = oriented_tri_vertices(loc);
+		const std::array<size_t, 3> vids = oriented_tri_vids(loc);
 
 		igl::predicates::exactinit();
 
 		// Use igl for checking orientation
 		igl::predicates::Orientation rest_orientation = igl::predicates::orient2d(
-			vertex_attrs[vs[0].vid(*this)].rest_position,
-			vertex_attrs[vs[1].vid(*this)].rest_position,
-			vertex_attrs[vs[2].vid(*this)].rest_position);
+			vertex_attrs[vids[0]].rest_position,
+			vertex_attrs[vids[1]].rest_position,
+			vertex_attrs[vids[2]].rest_position);
 		igl::predicates::Orientation deformed_orientation = igl::predicates::orient2d(
-			vertex_attrs[vs[0].vid(*this)].position,
-			vertex_attrs[vs[1].vid(*this)].position,
-			vertex_attrs[vs[2].vid(*this)].position);
+			vertex_attrs[vids[0]].position,
+			vertex_attrs[vids[1]].position,
+			vertex_attrs[vids[2]].position);
 
 		// The element is inverted if it not positive (i.e. it is negative or it is degenerate)
 		return rest_orientation != igl::predicates::Orientation::POSITIVE

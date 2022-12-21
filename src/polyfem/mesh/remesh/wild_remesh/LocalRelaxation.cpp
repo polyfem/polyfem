@@ -272,9 +272,9 @@ namespace polyfem::mesh
 
 			static int log_i = 0;
 			logger().log(
-				accept ? spdlog::level::critical : spdlog::level::trace,
-				"{} | rel_diff={:g} rel_tol={:g} | abs_diff={:g} abs_tol={:g}",
-				log_i++, rel_diff, energy_relative_tolerance, abs_diff, energy_absolute_tolerance);
+				accept ? spdlog::level::critical : spdlog::level::debug,
+				"{} {:g} | rel_diff={:g} rel_tol={:g} | abs_diff={:g} abs_tol={:g}",
+				log_i++, starting_energy, rel_diff, energy_relative_tolerance, abs_diff, energy_absolute_tolerance);
 		}
 
 		// Update positions only on acceptance

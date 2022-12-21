@@ -27,13 +27,12 @@ namespace polyfem::mesh
 			const Tuple &t = triangle_tuples[fi];
 			global_triangle_ids.insert(t.fid(m));
 
-			const std::array<Tuple, 3> face = m.oriented_tri_vertices(t);
+			const std::array<size_t, 3> vids = m.oriented_tri_vids(t);
 			for (int i = 0; i < 3; ++i)
 			{
-				const size_t vi = face[i].vid(m);
-				if (m_global_to_local.find(vi) == m_global_to_local.end())
-					m_global_to_local[vi] = m_global_to_local.size();
-				m_triangles(fi, i) = m_global_to_local[vi];
+				if (m_global_to_local.find(vids[i]) == m_global_to_local.end())
+					m_global_to_local[vids[i]] = m_global_to_local.size();
+				m_triangles(fi, i) = m_global_to_local[vids[i]];
 			}
 
 			m_body_ids.push_back(m.element_attrs[t.fid(m)].body_id);
@@ -255,14 +254,19 @@ namespace polyfem::mesh
 			V.col(2).setZero();
 		}
 
-		const Eigen::MatrixXi F = m.elements();
+		const std::vector<Tuple> elements = m.get_elements();
 
 		// Use a AABB tree to find all intersecting elements then loop over only those pairs
-		std::vector<std::array<Eigen::Vector3d, 2>> boxes(F.rows());
-		for (int i = 0; i < F.rows(); i++)
+		std::vector<std::array<Eigen::Vector3d, 2>> boxes(elements.size());
+		for (int i = 0; i < elements.size(); i++)
 		{
-			boxes[i][0] = V(F.row(i), Eigen::all).colwise().minCoeff();
-			boxes[i][1] = V(F.row(i), Eigen::all).colwise().maxCoeff();
+			std::array<size_t, M::DIM + 1> vids;
+			if constexpr (std::is_same_v<M, WildRemeshing2D>)
+				vids = m.oriented_tri_vids(elements[i]);
+			else
+				vids = m.oriented_tet_vids(elements[i]);
+			boxes[i][0] = V(vids, Eigen::all).colwise().minCoeff();
+			boxes[i][1] = V(vids, Eigen::all).colwise().maxCoeff();
 		}
 
 		BVH::BVH bvh;
@@ -272,19 +276,23 @@ namespace polyfem::mesh
 		bvh.intersect_box(
 			center.array() - radius, center.array() + radius, candidates);
 
-		std::vector<Tuple> elements;
+		std::vector<Tuple> intersecting_elements;
 		for (unsigned int fi : candidates)
 		{
+			std::array<size_t, M::DIM + 1> vids;
+			static_assert(std::is_same_v<M, WildRemeshing2D>);
+			vids = m.oriented_tri_vids(elements[fi]);
+
 			const double distance = ipc::point_triangle_distance(
-				center.transpose(), V.row(F(fi, 0)), V.row(F(fi, 1)), V.row(F(fi, 2)));
+				center.transpose(), V.row(vids[0]), V.row(vids[1]), V.row(vids[2]));
 
 			if (distance <= radius)
 			{
-				elements.push_back(m.tuple_from_tri(fi));
+				intersecting_elements.push_back(elements[fi]);
 			}
 		}
 
-		return LocalMesh<M>(m, elements, include_global_boundary);
+		return LocalMesh<M>(m, intersecting_elements, include_global_boundary);
 	}
 
 	template <typename M>
