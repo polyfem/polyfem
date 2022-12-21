@@ -7,7 +7,7 @@
 
 namespace polyfem::mesh
 {
-	class WildRemeshing3D : public WildRemeshingND<wmtk::TetMesh, 3>
+	class WildRemeshing3D : public WildRemeshingND<wmtk::TetMesh>
 	{
 	public:
 		/// @brief Construct a new WildRemeshing3D object

@@ -216,7 +216,7 @@ namespace polyfem
 			else
 				TriQuadrature().get_quadrature(2, quadrature);
 
-			// TODO: Use a AABB tree to find all intersecting elements then loop over only those pairs
+			// Use a AABB tree to find all intersecting elements then loop over only those pairs
 			std::vector<std::array<Eigen::Vector3d, 2>> boxes(from_bases.size());
 			for (int i = 0; i < from_bases.size(); i++)
 			{

@@ -2,12 +2,9 @@
 
 #include <polyfem/utils/GeometryUtils.hpp>
 
-#include <wmtk/TriMesh.h>
-#include <wmtk/TetMesh.h>
-
 #define VERTEX_ATTRIBUTE_GETTER(name, attribute)                                                     \
-	template <class WMTKMesh, int DIM>                                                               \
-	Eigen::MatrixXd WildRemeshingND<WMTKMesh, DIM>::name() const                                     \
+	template <class WMTKMesh>                                                                        \
+	Eigen::MatrixXd WildRemeshingND<WMTKMesh>::name() const                                          \
 	{                                                                                                \
 		Eigen::MatrixXd attributes = Eigen::MatrixXd::Constant(WMTKMesh::vert_capacity(), DIM, NaN); \
 		for (const Tuple &t : WMTKMesh::get_vertices())                                              \
@@ -16,8 +13,8 @@
 	}
 
 #define VERTEX_ATTRIBUTE_SETTER(name, attribute)                                 \
-	template <class WMTKMesh, int DIM>                                           \
-	void WildRemeshingND<WMTKMesh, DIM>::name(const Eigen::MatrixXd &attributes) \
+	template <class WMTKMesh>                                                    \
+	void WildRemeshingND<WMTKMesh>::name(const Eigen::MatrixXd &attributes)      \
 	{                                                                            \
 		for (const Tuple &t : WMTKMesh::get_vertices())                          \
 			vertex_attrs[t.vid(*this)].attribute = attributes.row(t.vid(*this)); \
@@ -27,8 +24,8 @@ namespace polyfem::mesh
 {
 	static constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
 
-	template <class WMTKMesh, int DIM>
-	void WildRemeshingND<WMTKMesh, DIM>::init(
+	template <class WMTKMesh>
+	void WildRemeshingND<WMTKMesh>::init(
 		const Eigen::MatrixXd &rest_positions,
 		const Eigen::MatrixXd &positions,
 		const Eigen::MatrixXi &triangles,
@@ -46,8 +43,8 @@ namespace polyfem::mesh
 	// -------------------------------------------------------------------------
 	// Getters
 
-	template <class WMTKMesh, int DIM>
-	std::vector<typename WildRemeshingND<WMTKMesh, DIM>::Tuple> WildRemeshingND<WMTKMesh, DIM>::get_elements() const
+	template <class WMTKMesh>
+	std::vector<typename WildRemeshingND<WMTKMesh>::Tuple> WildRemeshingND<WMTKMesh>::get_elements() const
 	{
 		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
 			return WMTKMesh::get_faces();
@@ -59,8 +56,8 @@ namespace polyfem::mesh
 	VERTEX_ATTRIBUTE_GETTER(positions, position)
 	VERTEX_ATTRIBUTE_GETTER(displacements, displacement())
 
-	template <class WMTKMesh, int DIM>
-	Eigen::MatrixXi WildRemeshingND<WMTKMesh, DIM>::edges() const
+	template <class WMTKMesh>
+	Eigen::MatrixXi WildRemeshingND<WMTKMesh>::edges() const
 	{
 		const std::vector<Tuple> edges = WMTKMesh::get_edges();
 		Eigen::MatrixXi E = Eigen::MatrixXi::Constant(edges.size(), 2, -1);
@@ -73,11 +70,11 @@ namespace polyfem::mesh
 		return E;
 	}
 
-	template <class WMTKMesh, int DIM>
-	Eigen::MatrixXi WildRemeshingND<WMTKMesh, DIM>::elements() const
+	template <class WMTKMesh>
+	Eigen::MatrixXi WildRemeshingND<WMTKMesh>::elements() const
 	{
 		const std::vector<Tuple> elements = get_elements();
-		Eigen::MatrixXi F = Eigen::MatrixXi::Constant(elements.size(), DIM + 1, -1);
+		Eigen::MatrixXi F = Eigen::MatrixXi::Constant(elements.size(), dim() + 1, -1);
 		for (size_t i = 0; i < elements.size(); i++)
 		{
 			std::array<Tuple, DIM + 1> vs;
@@ -94,8 +91,8 @@ namespace polyfem::mesh
 		return F;
 	}
 
-	template <class WMTKMesh, int DIM>
-	Eigen::MatrixXd WildRemeshingND<WMTKMesh, DIM>::projected_quantities() const
+	template <class WMTKMesh>
+	Eigen::MatrixXd WildRemeshingND<WMTKMesh>::projected_quantities() const
 	{
 		Eigen::MatrixXd projected_quantities =
 			Eigen::MatrixXd::Constant(dim() * WMTKMesh::vert_capacity(), n_quantities(), NaN);
@@ -110,7 +107,7 @@ namespace polyfem::mesh
 	}
 
 	template <>
-	WildRemeshingND<wmtk::TriMesh, 2>::BoundaryMap<int> WildRemeshingND<wmtk::TriMesh, 2>::boundary_ids() const
+	WildRemeshingND<wmtk::TriMesh>::BoundaryMap<int> WildRemeshingND<wmtk::TriMesh>::boundary_ids() const
 	{
 		const std::vector<Tuple> edges = get_edges();
 		EdgeMap<int> boundary_ids;
@@ -126,7 +123,7 @@ namespace polyfem::mesh
 	}
 
 	template <>
-	WildRemeshingND<wmtk::TetMesh, 3>::BoundaryMap<int> WildRemeshingND<wmtk::TetMesh, 3>::boundary_ids() const
+	WildRemeshingND<wmtk::TetMesh>::BoundaryMap<int> WildRemeshingND<wmtk::TetMesh>::boundary_ids() const
 	{
 		const std::vector<Tuple> faces = get_faces();
 		FaceMap<int> boundary_ids;
@@ -144,8 +141,8 @@ namespace polyfem::mesh
 		return boundary_ids;
 	}
 
-	template <class WMTKMesh, int DIM>
-	std::vector<int> WildRemeshingND<WMTKMesh, DIM>::body_ids() const
+	template <class WMTKMesh>
+	std::vector<int> WildRemeshingND<WMTKMesh>::body_ids() const
 	{
 		const std::vector<Tuple> elements = get_elements();
 		std::vector<int> body_ids(elements.size(), -1);
@@ -159,8 +156,8 @@ namespace polyfem::mesh
 		return body_ids;
 	}
 
-	template <class WMTKMesh, int DIM>
-	std::vector<int> WildRemeshingND<WMTKMesh, DIM>::boundary_nodes() const
+	template <class WMTKMesh>
+	std::vector<int> WildRemeshingND<WMTKMesh>::boundary_nodes() const
 	{
 		std::vector<int> boundary_nodes;
 		for (const Tuple &t : WMTKMesh::get_vertices())
@@ -175,8 +172,8 @@ namespace polyfem::mesh
 	VERTEX_ATTRIBUTE_SETTER(set_rest_positions, rest_position)
 	VERTEX_ATTRIBUTE_SETTER(set_positions, position)
 
-	template <class WMTKMesh, int DIM>
-	void WildRemeshingND<WMTKMesh, DIM>::set_projected_quantities(
+	template <class WMTKMesh>
+	void WildRemeshingND<WMTKMesh>::set_projected_quantities(
 		const Eigen::MatrixXd &projected_quantities)
 	{
 		assert(projected_quantities.rows() == dim() * WMTKMesh::vert_capacity());
@@ -190,8 +187,8 @@ namespace polyfem::mesh
 		}
 	}
 
-	template <class WMTKMesh, int DIM>
-	void WildRemeshingND<WMTKMesh, DIM>::set_fixed(
+	template <class WMTKMesh>
+	void WildRemeshingND<WMTKMesh>::set_fixed(
 		const std::vector<bool> &fixed)
 	{
 		assert(fixed.size() == WMTKMesh::vert_capacity());
@@ -199,8 +196,8 @@ namespace polyfem::mesh
 			vertex_attrs[t.vid(*this)].fixed = fixed[t.vid(*this)];
 	}
 
-	template <class WMTKMesh, int DIM>
-	void WildRemeshingND<WMTKMesh, DIM>::set_boundary_ids(
+	template <class WMTKMesh>
+	void WildRemeshingND<WMTKMesh>::set_boundary_ids(
 		const BoundaryMap<int> &boundary_to_id)
 	{
 		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
@@ -232,8 +229,8 @@ namespace polyfem::mesh
 		}
 	}
 
-	template <class WMTKMesh, int DIM>
-	void WildRemeshingND<WMTKMesh, DIM>::set_body_ids(
+	template <class WMTKMesh>
+	void WildRemeshingND<WMTKMesh>::set_body_ids(
 		const std::vector<int> &body_ids)
 	{
 		const std::vector<Tuple> elements = get_elements();
@@ -248,8 +245,8 @@ namespace polyfem::mesh
 
 	// -------------------------------------------------------------------------
 
-	template <class WMTKMesh, int DIM>
-	bool WildRemeshingND<WMTKMesh, DIM>::invariants(const std::vector<Tuple> &new_tris)
+	template <class WMTKMesh>
+	bool WildRemeshingND<WMTKMesh>::invariants(const std::vector<Tuple> &new_tris)
 	{
 		// for (auto &t : new_tris)
 		for (auto &t : get_elements())
@@ -266,16 +263,16 @@ namespace polyfem::mesh
 	// -------------------------------------------------------------------------
 	// Utils
 
-	template <class WMTKMesh, int DIM>
-	double WildRemeshingND<WMTKMesh, DIM>::edge_length(const Tuple &e) const
+	template <class WMTKMesh>
+	double WildRemeshingND<WMTKMesh>::edge_length(const Tuple &e) const
 	{
 		const auto &e0 = vertex_attrs[e.vid(*this)].position;
 		const auto &e1 = vertex_attrs[e.switch_vertex(*this).vid(*this)].position;
 		return (e1 - e0).norm();
 	}
 
-	template <class WMTKMesh, int DIM>
-	double WildRemeshingND<WMTKMesh, DIM>::element_volume(const Tuple &e) const
+	template <class WMTKMesh>
+	double WildRemeshingND<WMTKMesh>::element_volume(const Tuple &e) const
 	{
 		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
 		{
@@ -299,7 +296,7 @@ namespace polyfem::mesh
 	// -------------------------------------------------------------------------
 	// Template specializations
 
-	template class WildRemeshingND<wmtk::TriMesh, 2>;
-	template class WildRemeshingND<wmtk::TetMesh, 3>;
+	template class WildRemeshingND<wmtk::TriMesh>;
+	template class WildRemeshingND<wmtk::TetMesh>;
 
 } // namespace polyfem::mesh

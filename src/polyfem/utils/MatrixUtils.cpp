@@ -342,6 +342,9 @@ void polyfem::utils::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 // Flatten rowwises
 Eigen::VectorXd polyfem::utils::flatten(const Eigen::MatrixXd &X)
 {
+	if (X.size() == 0)
+		return Eigen::VectorXd();
+
 	Eigen::VectorXd x(X.size());
 	for (int i = 0; i < X.rows(); ++i)
 	{
@@ -358,6 +361,9 @@ Eigen::VectorXd polyfem::utils::flatten(const Eigen::MatrixXd &X)
 // Unflatten rowwises, so every dim elements in x become a row.
 Eigen::MatrixXd polyfem::utils::unflatten(const Eigen::VectorXd &x, int dim)
 {
+	if (x.size() == 0)
+		return Eigen::MatrixXd(0, dim);
+
 	assert(x.size() % dim == 0);
 	Eigen::MatrixXd X(x.size() / dim, dim);
 	for (int i = 0; i < x.size(); ++i)

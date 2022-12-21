@@ -23,10 +23,14 @@ namespace polyfem::mesh
 		constexpr bool free_boundary = true;
 
 		// 1. Get the n-ring of triangles around the vertex.
+		using This = std::remove_pointer<decltype(this)>::type;
 		// LocalMesh local_mesh = LocalMesh::n_ring(
 		// 	*this, t, n_ring, /*include_global_boundary=*/free_boundary);
-		LocalMesh local_mesh = LocalMesh::flood_fill_n_ring(
-			*this, t, flood_fill_rel_area * total_area, /*include_global_boundary=*/free_boundary);
+		// LocalMesh<This> local_mesh = LocalMesh<This>::flood_fill_n_ring(
+		// 	*this, t, flood_fill_rel_area * total_area, /*include_global_boundary=*/free_boundary);
+		LocalMesh<This> local_mesh = LocalMesh<This>::ball_selection(
+			*this, vertex_attrs[t.vid(*this)].rest_position,
+			flood_fill_rel_area, /*include_global_boundary=*/free_boundary);
 		// LocalMesh local_mesh(*this, get_faces(), /*include_global_boundary=*/free_boundary);
 
 		std::vector<polyfem::basis::ElementBases> bases;

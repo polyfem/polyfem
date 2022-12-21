@@ -1,14 +1,21 @@
 #include "LocalMesh.hpp"
 
+#include <polyfem/mesh/remesh/WildRemeshing2D.hpp>
+#include <polyfem/mesh/remesh/WildRemeshing3D.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
 #include <igl/boundary_facets.h>
 
+#include <ipc/distance/point_triangle.hpp>
+
+#include <BVH.hpp>
+
 namespace polyfem::mesh
 {
-	LocalMesh::LocalMesh(
-		const WildRemeshing2D &m,
+	template <typename M>
+	LocalMesh<M>::LocalMesh(
+		const M &m,
 		const std::vector<Tuple> &triangle_tuples,
 		const bool include_global_boundary)
 	{
@@ -121,9 +128,10 @@ namespace polyfem::mesh
 		}
 	}
 
-	LocalMesh LocalMesh::n_ring(
-		const WildRemeshing2D &m,
-		const WildRemeshing2D::Tuple &center,
+	template <typename M>
+	LocalMesh<M> LocalMesh<M>::n_ring(
+		const M &m,
+		const Tuple &center,
 		const int n,
 		const bool include_global_boundary)
 	{
@@ -167,9 +175,10 @@ namespace polyfem::mesh
 		return LocalMesh(m, triangles, include_global_boundary);
 	}
 
-	LocalMesh LocalMesh::flood_fill_n_ring(
-		const WildRemeshing2D &m,
-		const WildRemeshing2D::Tuple &center,
+	template <typename M>
+	LocalMesh<M> LocalMesh<M>::flood_fill_n_ring(
+		const M &m,
+		const Tuple &center,
 		const double area,
 		const bool include_global_boundary)
 	{
@@ -221,14 +230,73 @@ namespace polyfem::mesh
 		return LocalMesh(m, triangles, include_global_boundary);
 	}
 
-	void LocalMesh::remove_duplicate_fixed_vertices()
+	template <typename M>
+	LocalMesh<M> LocalMesh<M>::ball_selection(
+		const M &m,
+		VectorNd center,
+		const double rel_radius,
+		const bool include_global_boundary)
+	{
+		POLYFEM_SCOPED_TIMER(m.timings.create_local_mesh);
+
+		const int dim = m.dim();
+
+		if (center.size() == 2)
+		{
+			center.conservativeResize(3);
+			center[2] = 0;
+		}
+
+		Eigen::MatrixXd V = m.rest_positions();
+		const double radius = rel_radius * (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm();
+		if (V.cols() == 2)
+		{
+			V.conservativeResize(V.rows(), 3);
+			V.col(2).setZero();
+		}
+
+		const Eigen::MatrixXi F = m.elements();
+
+		// Use a AABB tree to find all intersecting elements then loop over only those pairs
+		std::vector<std::array<Eigen::Vector3d, 2>> boxes(F.rows());
+		for (int i = 0; i < F.rows(); i++)
+		{
+			boxes[i][0] = V(F.row(i), Eigen::all).colwise().minCoeff();
+			boxes[i][1] = V(F.row(i), Eigen::all).colwise().maxCoeff();
+		}
+
+		BVH::BVH bvh;
+		bvh.init(boxes);
+
+		std::vector<unsigned int> candidates;
+		bvh.intersect_box(
+			center.array() - radius, center.array() + radius, candidates);
+
+		std::vector<Tuple> elements;
+		for (unsigned int fi : candidates)
+		{
+			const double distance = ipc::point_triangle_distance(
+				center.transpose(), V.row(F(fi, 0)), V.row(F(fi, 1)), V.row(F(fi, 2)));
+
+			if (distance <= radius)
+			{
+				elements.push_back(m.tuple_from_tri(fi));
+			}
+		}
+
+		return LocalMesh<M>(m, elements, include_global_boundary);
+	}
+
+	template <typename M>
+	void LocalMesh<M>::remove_duplicate_fixed_vertices()
 	{
 		std::sort(m_fixed_vertices.begin(), m_fixed_vertices.end());
 		auto new_end = std::unique(m_fixed_vertices.begin(), m_fixed_vertices.end());
 		m_fixed_vertices.erase(new_end, m_fixed_vertices.end());
 	}
 
-	void LocalMesh::init_local_to_global()
+	template <typename M>
+	void LocalMesh<M>::init_local_to_global()
 	{
 		m_local_to_global.resize(m_global_to_local.size(), -1);
 		for (const auto &[glob_vi, loc_vi] : m_global_to_local)
@@ -238,15 +306,16 @@ namespace polyfem::mesh
 		}
 	}
 
-	void LocalMesh::init_vertex_attributes(const WildRemeshing2D &m)
+	template <typename M>
+	void LocalMesh<M>::init_vertex_attributes(const M &m)
 	{
 		const int num_vertices = m_global_to_local.size();
-		m_rest_positions.resize(num_vertices, DIM);
-		m_positions.resize(num_vertices, DIM);
-		m_prev_displacements.resize(num_vertices, DIM);
-		m_prev_velocities.resize(num_vertices, DIM);
-		m_prev_accelerations.resize(num_vertices, DIM);
-		m_friction_gradient.resize(num_vertices, DIM);
+		m_rest_positions.resize(num_vertices, m.dim());
+		m_positions.resize(num_vertices, m.dim());
+		m_prev_displacements.resize(num_vertices, m.dim());
+		m_prev_velocities.resize(num_vertices, m.dim());
+		m_prev_accelerations.resize(num_vertices, m.dim());
+		m_friction_gradient.resize(num_vertices, m.dim());
 		for (const auto &[glob_vi, loc_vi] : m_global_to_local)
 		{
 			m_rest_positions.row(loc_vi) = m.vertex_attrs[glob_vi].rest_position;
@@ -261,7 +330,8 @@ namespace polyfem::mesh
 		}
 	}
 
-	void LocalMesh::reorder_vertices(const Eigen::VectorXi &permutation)
+	template <typename M>
+	void LocalMesh<M>::reorder_vertices(const Eigen::VectorXi &permutation)
 	{
 		assert(permutation.size() == num_vertices());
 		m_rest_positions = utils::reorder_matrix(m_rest_positions, permutation);
@@ -287,4 +357,10 @@ namespace polyfem::mesh
 		for (int &vi : m_fixed_vertices)
 			vi = permutation[vi];
 	}
+
+	// -------------------------------------------------------------------------
+	// Template specializations
+
+	template class LocalMesh<WildRemeshing2D>;
+	// template class LocalMesh<WildRemeshing3D>;
 } // namespace polyfem::mesh

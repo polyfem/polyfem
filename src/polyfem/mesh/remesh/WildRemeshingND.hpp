@@ -2,12 +2,16 @@
 
 #include <polyfem/mesh/remesh/WildRemeshing.hpp>
 
+#include <wmtk/TriMesh.h>
+#include <wmtk/TetMesh.h>
+
 namespace polyfem::mesh
 {
-	template <class WMTKMesh, int DIM>
+	template <class WMTKMesh>
 	class WildRemeshingND : public WildRemeshing, public WMTKMesh
 	{
 	public:
+		static constexpr int DIM = [] { if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>) return 2; else return 3; }();
 		using Tuple = typename WMTKMesh::Tuple;
 		using VertexAttributes = WildRemeshing::VertexAttributes<DIM>;
 		using BoundaryAttributes = WildRemeshing::BoundaryAttributes;
@@ -58,8 +62,6 @@ namespace polyfem::mesh
 		Eigen::MatrixXd positions() const override;
 		/// @brief Exports edges of the stored mesh
 		Eigen::MatrixXi edges() const override;
-		/// @brief Exports triangles of the stored mesh
-		Eigen::MatrixXi faces() const;
 		/// @brief Exports triangles of the stored mesh
 		Eigen::MatrixXi elements() const override;
 		/// @brief Exports projected quantities of the stored mesh

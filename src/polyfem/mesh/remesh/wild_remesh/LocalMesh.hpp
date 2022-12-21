@@ -1,33 +1,41 @@
 #pragma once
 
-#include <polyfem/mesh/remesh/WildRemeshing2D.hpp>
+#include <polyfem/utils/Types.hpp>
+
+#include <Eigen/Core>
 
 namespace polyfem::mesh
 {
+	template <typename M>
 	class LocalMesh
 	{
 	protected:
-		using Tuple = WildRemeshing2D::Tuple;
-		static constexpr int DIM = 2;
+		using Tuple = typename M::Tuple;
 
 	public:
 		LocalMesh(
-			const WildRemeshing2D &m,
+			const M &m,
 			const std::vector<Tuple> &triangle_tuples,
 			const bool include_global_boundary);
 
 		/// @brief Construct a local mesh as an n-ring around a vertex.
-		static LocalMesh n_ring(
-			const WildRemeshing2D &m,
+		static LocalMesh<M> n_ring(
+			const M &m,
 			const Tuple &center,
 			const int n,
 			const bool include_global_boundary);
 
 		/// @brief Construct a local mesh as an n-ring around a vertex.
-		static LocalMesh flood_fill_n_ring(
-			const WildRemeshing2D &m,
+		static LocalMesh<M> flood_fill_n_ring(
+			const M &m,
 			const Tuple &center,
 			const double area,
+			const bool include_global_boundary);
+
+		static LocalMesh<M> ball_selection(
+			const M &m,
+			VectorNd center,
+			const double rel_radius,
 			const bool include_global_boundary);
 
 		int num_triangles() const { return m_triangles.rows(); }
@@ -59,7 +67,7 @@ namespace polyfem::mesh
 	protected:
 		void remove_duplicate_fixed_vertices();
 		void init_local_to_global();
-		void init_vertex_attributes(const WildRemeshing2D &m);
+		void init_vertex_attributes(const M &m);
 
 		Eigen::MatrixXd m_rest_positions;
 		Eigen::MatrixXd m_positions;
