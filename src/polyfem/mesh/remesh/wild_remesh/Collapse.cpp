@@ -66,16 +66,12 @@ namespace polyfem::mesh
 			assert(v1_id == new_vid); // should be the new vertex because it has a larger id
 
 			std::pair<int, int> old_edge(std::min(v0_id, old_v0_id), std::max(v0_id, old_v0_id));
-			if (old_edges.find(old_edge) != old_edges.end())
-			{
-				edge_attrs[e_id] = old_edges.at(old_edge);
-			}
-			else
+			if (old_edges.find(old_edge) == old_edges.end())
 			{
 				old_edge = std::make_pair(std::min(v0_id, old_v1_id), std::max(v0_id, old_v1_id));
 				assert(old_edges.find(old_edge) != old_edges.end());
-				edge_attrs[e_id] = old_edges.at(old_edge);
 			}
+			edge_attrs[e_id] = old_edges.at(old_edge);
 		}
 
 		// Nothing to do for the face attributes because no new faces are created.

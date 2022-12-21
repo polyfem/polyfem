@@ -48,14 +48,12 @@ namespace polyfem::mesh
 
 		void map_edge_split_face_attributes(
 			WildRemeshing2D &m,
-			const WildRemeshing2D::Tuple &new_vertex,
+			const WildRemeshing2D::Tuple &t,
 			const std::vector<WildRemeshing2D::FaceAttributes> &old_faces)
 		{
-			using Tuple = WildRemeshing2D::Tuple;
-
-			Tuple nav = new_vertex.switch_face(m).value();
+			WildRemeshing2D::Tuple nav = t.switch_vertex(m);
 			m.face_attrs[nav.fid(m)] = old_faces[0];
-			nav = nav.switch_face(m).value();
+			nav = nav.switch_edge(m).switch_face(m).value();
 			m.face_attrs[nav.fid(m)] = old_faces[0];
 			nav = nav.switch_edge(m);
 			if (nav.switch_face(m))
@@ -64,24 +62,23 @@ namespace polyfem::mesh
 				m.face_attrs[nav.fid(m)] = old_faces[1];
 				nav = nav.switch_edge(m).switch_face(m).value();
 				m.face_attrs[nav.fid(m)] = old_faces[1];
-
-#ifndef NDEBUG
-				nav = nav.switch_edge(m).switch_face(m).value();
-				assert(m.face_attrs[nav.fid(m)].body_id == old_faces[0].body_id);
-#endif
 			}
+		}
+
+		template <typename T>
+		inline T lerp(const T &a, const T &b, double t)
+		{
+			return a + t * (b - a);
 		}
 	} // namespace
 
 	bool WildRemeshing2D::split_edge_before(const Tuple &e)
 	{
-		if (!wmtk::TriMesh::split_edge_before(e))
-			return false;
-
-		// Dont split if the edge is too small
 		double min_edge_length = 1e-6;
 		if (!e.switch_face(*this).has_value() && state.has_dhat)
 			min_edge_length = std::max(min_edge_length, 1.01 * state.args["contact"]["dhat"].get<double>());
+
+		// Dont split if the edge is too small
 		if (edge_length(e) < min_edge_length)
 			return false;
 
@@ -96,21 +93,24 @@ namespace polyfem::mesh
 		// 0) perform operation (done before this function)
 
 		// 1a) Update rest position of new vertex
-		VertexAttributes &new_vertex_attr = vertex_attrs[t.vid(*this)];
+		const Tuple new_vertex = t.switch_vertex(*this);
+		VertexAttributes &new_vertex_attr = vertex_attrs[new_vertex.vid(*this)];
 		const auto &[old_v0_id, v0] = op_cache.v0();
 		const auto &[old_v1_id, v1] = op_cache.v1();
-		new_vertex_attr.rest_position = (v0.rest_position + v1.rest_position) / 2.0;
+		// TODO: maybe we want to use a different barycentric coordinate?
+		const double alpha = 0.5;
+		new_vertex_attr.rest_position = lerp(v0.rest_position, v1.rest_position, alpha);
 		new_vertex_attr.fixed = v0.fixed && v1.fixed;
 		new_vertex_attr.partition_id = v0.partition_id; // TODO: what should this be?
 
 		// 1b) Assign edge attributes to the new edges
-		map_edge_split_edge_attributes(*this, t, op_cache.edges(), old_v0_id, old_v1_id);
+		map_edge_split_edge_attributes(*this, new_vertex, op_cache.edges(), old_v0_id, old_v1_id);
 		map_edge_split_face_attributes(*this, t, op_cache.faces());
 
 		// 2) Project quantities so to minimize the L2 error
-		new_vertex_attr.position = (v0.position + v1.position) / 2.0;
+		new_vertex_attr.position = lerp(v0.position, v1.position, alpha);
 		new_vertex_attr.projection_quantities =
-			(v0.projection_quantities + v1.projection_quantities) / 2.0;
+			lerp(v0.projection_quantities, v1.projection_quantities, alpha);
 		if (!v0.fixed || !v1.fixed)
 		{
 			// NOTE: this assumes friction gradient is the last column of the projection matrix,
@@ -120,7 +120,7 @@ namespace polyfem::mesh
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
-		return local_relaxation(t, n_ring_size);
+		return local_relaxation(new_vertex, n_ring_size);
 	}
 
 } // namespace polyfem::mesh

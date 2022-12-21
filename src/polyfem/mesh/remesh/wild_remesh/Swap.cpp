@@ -4,9 +4,6 @@ namespace polyfem::mesh
 {
 	bool WildRemeshing2D::swap_edge_before(const Tuple &t)
 	{
-		if (!wmtk::TriMesh::swap_edge_before(t))
-			return false;
-
 		const int v0i = t.vid(*this);
 		const int v1i = t.switch_vertex(*this).vid(*this);
 
