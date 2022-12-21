@@ -177,6 +177,9 @@ namespace polyfem::mesh
 
 		executor(*this, collect_all_ops);
 
+		// Remove unused vertices
+		consolidate_mesh();
+
 		return true;
 	}
 

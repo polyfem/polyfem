@@ -44,15 +44,15 @@ namespace polyfem::mesh
 			const bool collapse = false,
 			const bool smooth = false,
 			const bool swap = false,
-			const double max_ops_percent = -1) override;
+			const double max_ops_percent = -1) override { return false; } // TODO: implement me
 
 		// Smoothing
 		// bool smooth_before(const Tuple &t) override;
 		// bool smooth_after(const Tuple &t) override;
 
 		// Edge splitting
-		bool split_edge_before(const Tuple &t) override;
-		bool split_edge_after(const Tuple &t) override;
+		bool split_edge_before(const Tuple &t) override { return false; } // TODO: implement me
+		bool split_edge_after(const Tuple &t) override { return false; }  // TODO: implement me
 
 		// Edge collapse
 		// bool collapse_edge_before(const Tuple &t) override;
@@ -78,20 +78,18 @@ namespace polyfem::mesh
 		void create_mesh(const size_t num_vertices, const Eigen::MatrixXi &elements) override;
 
 	private:
-		/// @brief Compute the average elastic energy of the elements containing an edge.
-		double edge_elastic_energy(const Tuple &e) const;
+		// /// @brief Compute the average elastic energy of the elements containing an edge.
+		// double edge_elastic_energy(const Tuple &e) const;
 
-		/// @brief Relax a local n-ring around a vertex.
-		/// @param t Center of the local n-ring
-		/// @param n_ring Size of the n-ring
-		/// @return If the local relaxation reduced the energy "significantly"
-		bool local_relaxation(const Tuple &t, const int n_ring);
+		// /// @brief Relax a local n-ring around a vertex.
+		// /// @param t Center of the local n-ring
+		// /// @param n_ring Size of the n-ring
+		// /// @return If the local relaxation reduced the energy "significantly"
+		// bool local_relaxation(const Tuple &t, const int n_ring);
 
-		/// @brief Create a vector of all the new edge after an operation.
-		/// @param tris New triangles.
-		std::vector<Tuple> new_edges_after(const std::vector<Tuple> &tris) const;
-
-		double total_volume;
+		// /// @brief Create a vector of all the new edge after an operation.
+		// /// @param tris New triangles.
+		// std::vector<Tuple> new_edges_after(const std::vector<Tuple> &tris) const;
 
 		// TODO: make this thread local
 		OperationCache3D op_cache;

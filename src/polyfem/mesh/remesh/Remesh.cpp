@@ -1,8 +1,8 @@
 #include "Remesh.hpp"
 
-#include <polyfem/mesh/remesh/L2Projection.hpp>
-#include <polyfem/mesh/remesh/MMGRemesh.hpp>
 #include <polyfem/mesh/remesh/WildRemeshing2D.hpp>
+#include <polyfem/mesh/remesh/WildRemeshing3D.hpp>
+#include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/io/OBJWriter.hpp>
@@ -71,6 +71,67 @@ namespace polyfem::mesh
 
 			assert(offset == projected_quantities.cols());
 		}
+
+		WildRemeshing::BoundaryMap<int> build_boundary_to_id(
+			const std::unique_ptr<mesh::Mesh> &mesh,
+			const Eigen::VectorXi &in_node_to_node)
+		{
+			if (mesh->dimension() == 2)
+			{
+				WildRemeshing2D::EdgeMap<int> edge_to_boundary_id;
+				for (int i = 0; i < mesh->n_edges(); i++)
+				{
+					size_t e0 = in_node_to_node[mesh->edge_vertex(i, 0)];
+					size_t e1 = in_node_to_node[mesh->edge_vertex(i, 1)];
+					if (e1 < e0)
+						std::swap(e0, e1);
+					edge_to_boundary_id[std::make_pair(e0, e1)] = mesh->get_boundary_id(i);
+				}
+				return edge_to_boundary_id;
+			}
+			else
+			{
+				assert(mesh->dimension() == 3);
+				WildRemeshing2D::FaceMap<int> face_to_boundary_id;
+				for (int i = 0; i < mesh->n_faces(); i++)
+				{
+					std::vector<size_t> f =
+						{{(size_t)in_node_to_node[mesh->face_vertex(i, 0)],
+						  (size_t)in_node_to_node[mesh->face_vertex(i, 1)],
+						  (size_t)in_node_to_node[mesh->face_vertex(i, 1)]}};
+					std::sort(f.begin(), f.end());
+					face_to_boundary_id[f] = mesh->get_boundary_id(i);
+				}
+				return face_to_boundary_id;
+			}
+		}
+
+		std::shared_ptr<WildRemeshing> create_wild_remeshing(
+			State &state,
+			const Eigen::VectorXd &obstacle_sol,
+			const Eigen::MatrixXd &obstacle_projection_quantities,
+			const double time,
+			const double current_energy)
+		{
+			const int dim = state.mesh->dimension();
+
+			std::shared_ptr<WildRemeshing> remeshing;
+			if (dim == 2)
+				remeshing = std::make_shared<WildRemeshing2D>(
+					state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
+					time, current_energy);
+			else
+				remeshing = std::make_shared<WildRemeshing3D>(
+					state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
+					time, current_energy);
+
+			remeshing->energy_relative_tolerance = state.args["space"]["remesh"]["rel_tol"];
+			remeshing->energy_absolute_tolerance = state.args["space"]["remesh"]["abs_tol"];
+			remeshing->n_ring_size = state.args["space"]["remesh"]["n_ring_size"];
+			remeshing->flood_fill_rel_area = state.args["space"]["remesh"]["flood_fill_rel_area"];
+
+			return remeshing;
+		}
 	} // namespace
 
 	bool remesh(State &state, Eigen::MatrixXd &sol, const double time, const double dt)
@@ -87,15 +148,7 @@ namespace polyfem::mesh
 		state.build_mesh_matrices(rest_positions, elements);
 		assert(rest_positions.size() == ndof_mesh);
 
-		WildRemeshing2D::EdgeMap<int> edge_to_boundary_id;
-		for (int ei = 0; ei < state.mesh->n_edges(); ei++)
-		{
-			size_t e0 = state.in_node_to_node[state.mesh->edge_vertex(ei, 0)];
-			size_t e1 = state.in_node_to_node[state.mesh->edge_vertex(ei, 1)];
-			if (e1 < e0)
-				std::swap(e0, e1);
-			edge_to_boundary_id[std::make_pair(e0, e1)] = state.mesh->get_boundary_id(ei);
-		}
+		WildRemeshing::BoundaryMap<int> boundary_to_id = build_boundary_to_id(state.mesh, state.in_node_to_node);
 
 		const std::vector<int> body_ids = state.mesh->has_body_ids() ? state.mesh->get_body_ids() : std::vector<int>(elements.rows(), 0);
 		assert(body_ids.size() == elements.rows());
@@ -122,45 +175,59 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd obstacle_projection_quantities = projection_quantities.bottomRows(ndof_obstacle);
 		projection_quantities.conservativeResize(ndof_mesh, Eigen::NoChange);
 
-		assert(!state.mesh->is_volume());
-		WildRemeshing2D remeshing(state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities, time, state.solve_data.nl_problem->value(sol));
-		remeshing.energy_relative_tolerance = state.args["space"]["remesh"]["rel_tol"];
-		remeshing.energy_absolute_tolerance = state.args["space"]["remesh"]["abs_tol"];
-		remeshing.n_ring_size = state.args["space"]["remesh"]["n_ring_size"];
-		remeshing.flood_fill_rel_area = state.args["space"]["remesh"]["flood_fill_rel_area"];
-		remeshing.init(rest_positions, positions, elements, projection_quantities, edge_to_boundary_id, body_ids);
+		// --------------------------------------------------------------------
+		// remesh
 
-		const bool made_change = remeshing.execute(
+		std::shared_ptr<WildRemeshing> remeshing = create_wild_remeshing(
+			state, obstacle_sol, obstacle_projection_quantities, time, state.solve_data.nl_problem->value(sol));
+		remeshing->init(rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids);
+
+		const bool made_change = remeshing->execute(
 			/*split=*/true, /*collapse=*/false, /*smooth=*/false, /*swap=*/false,
 			/*max_ops_percent=*/-1);
-		remeshing.timings.log();
+		remeshing->timings.log();
 		if (!made_change)
 			return false;
 
-		remeshing.consolidate_mesh();
+		// NOTE: Assumes only split ops were performed
+		if (remeshing->rest_positions().rows() == state.mesh->n_vertices())
+			return false;
 
 		// --------------------------------------------------------------------
 		// create new mesh
 
-		// NOTE: Assumes only split ops were performed
-		if (remeshing.rest_positions().rows() == state.mesh->n_vertices())
-			return false;
-
-		state.mesh = mesh::Mesh::create(remeshing.rest_positions(), remeshing.elements(), /*non_conforming=*/false);
+		state.mesh = mesh::Mesh::create(remeshing->rest_positions(), remeshing->elements(), /*non_conforming=*/false);
 
 		// set body ids
-		state.mesh->set_body_ids(remeshing.body_ids());
+		state.mesh->set_body_ids(remeshing->body_ids());
 
 		// set boundary ids
-		const WildRemeshing2D::EdgeMap<int> remesh_boundary_ids = std::get<WildRemeshing2D::EdgeMap<int>>(remeshing.boundary_ids());
-		std::vector<int> boundary_ids(state.mesh->n_edges(), -1);
-		for (int i = 0; i < state.mesh->n_edges(); i++)
+		std::vector<int> boundary_ids;
+		if (dim == 2)
 		{
-			size_t e0 = state.mesh->edge_vertex(i, 0);
-			size_t e1 = state.mesh->edge_vertex(i, 1);
-			if (e1 < e0)
-				std::swap(e0, e1);
-			boundary_ids[i] = remesh_boundary_ids.at(std::make_pair(e0, e1));
+			const WildRemeshing2D::EdgeMap<int> remesh_boundary_ids = std::get<WildRemeshing2D::EdgeMap<int>>(remeshing->boundary_ids());
+			boundary_ids = std::vector<int>(state.mesh->n_edges(), -1);
+			for (int i = 0; i < state.mesh->n_edges(); i++)
+			{
+				size_t e0 = state.mesh->edge_vertex(i, 0);
+				size_t e1 = state.mesh->edge_vertex(i, 1);
+				if (e1 < e0)
+					std::swap(e0, e1);
+				boundary_ids[i] = remesh_boundary_ids.at(std::make_pair(e0, e1));
+			}
+		}
+		else
+		{
+			const WildRemeshing2D::FaceMap<int> remesh_boundary_ids = std::get<WildRemeshing2D::FaceMap<int>>(remeshing->boundary_ids());
+			boundary_ids = std::vector<int>(state.mesh->n_faces(), -1);
+			for (int i = 0; i < state.mesh->n_faces(); i++)
+			{
+				std::vector<size_t> f = {{(size_t)state.mesh->face_vertex(i, 0),
+										  (size_t)state.mesh->face_vertex(i, 1),
+										  (size_t)state.mesh->face_vertex(i, 2)}};
+				std::sort(f.begin(), f.end());
+				boundary_ids[i] = remesh_boundary_ids.at(f);
+			}
 		}
 		state.mesh->set_boundary_ids(boundary_ids);
 
@@ -187,7 +254,7 @@ namespace polyfem::mesh
 
 		sol.resize(ndof, 1);
 		sol.topRows(ndof_mesh) = utils::flatten(utils::reorder_matrix(
-			remeshing.displacements(), state.in_node_to_node));
+			remeshing->displacements(), state.in_node_to_node));
 		if (ndof_obstacle > 0)
 			sol.bottomRows(ndof_obstacle) = obstacle_sol;
 
@@ -198,7 +265,7 @@ namespace polyfem::mesh
 		{
 			assert(state.solve_data.time_integrator != nullptr);
 
-			Eigen::MatrixXd projected_quantities = remeshing.projected_quantities();
+			Eigen::MatrixXd projected_quantities = remeshing->projected_quantities();
 			assert(projected_quantities.rows() == ndof_mesh);
 			assert(projected_quantities.cols() == projection_quantities.cols());
 			projected_quantities.conservativeResize(ndof, Eigen::NoChange);
