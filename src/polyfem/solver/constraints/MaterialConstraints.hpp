@@ -37,6 +37,8 @@ namespace polyfem
                 }
             }
 
+            logger().info("{} objects found!", n);
+
             apply_log = type.find("log") != std::string::npos;
             use_E_nu = type.find("E_nu") != std::string::npos;
 
@@ -51,13 +53,6 @@ namespace polyfem
                 reduced_size_ = full_size_;
                 per_body = false;
             }
-        }
-
-        void update_state(std::shared_ptr<State> state, const Eigen::VectorXd &reduced) override
-        {
-            Eigen::VectorXd x = reduced_to_full(reduced);
-            
-            state->assembler.update_lame_params(x.segment(0, n_elem), x.segment(n_elem, n_elem));
         }
 
 		Eigen::VectorXd reduced_to_full(const Eigen::VectorXd &reduced) const

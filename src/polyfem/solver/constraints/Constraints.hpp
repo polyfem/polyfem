@@ -14,8 +14,6 @@ namespace polyfem
 		Constraints(const json &constraint_params, int full_size, int reduced_size) : constraint_params_(constraint_params), full_size_(full_size), reduced_size_(reduced_size) {}
 		virtual ~Constraints() = default;
 
-		virtual void update_state(std::shared_ptr<State> state, const Eigen::VectorXd &reduced) = 0;
-
 		virtual int get_optimization_dim() { return reduced_size_; }
 
 	protected:
