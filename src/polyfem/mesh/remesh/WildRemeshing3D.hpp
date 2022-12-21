@@ -3,16 +3,16 @@
 #include <polyfem/mesh/remesh/WildRemeshingND.hpp>
 #include <polyfem/mesh/remesh/wild_remesh/OperationCache.hpp>
 
-#include <wmtk/TriMesh.h>
+#include <wmtk/TetMesh.h>
 
 namespace polyfem::mesh
 {
-	class WildRemeshing2D : public WildRemeshingND<wmtk::TriMesh, 2>
+	class WildRemeshing3D : public WildRemeshingND<wmtk::TetMesh, 3>
 	{
 	public:
-		/// @brief Construct a new WildRemeshing2D object
+		/// @brief Construct a new WildRemeshing3D object
 		/// @param state Simulation current state
-		WildRemeshing2D(
+		WildRemeshing3D(
 			const State &state,
 			const Eigen::MatrixXd &obstacle_displacements,
 			const Eigen::MatrixXd &obstacle_vals,
@@ -22,12 +22,12 @@ namespace polyfem::mesh
 		{
 		}
 
-		virtual ~WildRemeshing2D(){};
+		virtual ~WildRemeshing3D(){};
 
 		// ---------------------------------------------------------------------
 
 		/// @brief Collect all boundary edge tuples.
-		std::vector<Tuple> boundary_edges() const;
+		std::vector<Tuple> boundary_faces() const;
 
 		// ---------------------------------------------------------------------
 		// Remeshing operations
@@ -47,22 +47,30 @@ namespace polyfem::mesh
 			const double max_ops_percent = -1) override;
 
 		// Smoothing
-		bool smooth_before(const Tuple &t) override;
-		bool smooth_after(const Tuple &t) override;
+		// bool smooth_before(const Tuple &t) override;
+		// bool smooth_after(const Tuple &t) override;
 
 		// Edge splitting
 		bool split_edge_before(const Tuple &t) override;
 		bool split_edge_after(const Tuple &t) override;
 
 		// Edge collapse
-		bool collapse_edge_before(const Tuple &t) override;
-		bool collapse_edge_after(const Tuple &t) override;
+		// bool collapse_edge_before(const Tuple &t) override;
+		// bool collapse_edge_after(const Tuple &t) override;
 
-		// Edge swap
-		bool swap_edge_before(const Tuple &t) override;
-		bool swap_edge_after(const Tuple &t) override;
+		// 3-2 Edge swap
+		// bool swap_edge_before(const Tuple &t) override;
+		// bool swap_edge_after(const Tuple &t) override;
 
-		/// @brief Check if a triangle is inverted
+		// 4-4 Edge swap
+		// bool swap_edge_44_before(const Tuple &t) override;
+		// bool swap_edge_44_after(const Tuple &t) override;
+
+		// 2-3 Face swap
+		// bool swap_face_before(const Tuple &t) override;
+		// bool swap_face_after(const Tuple &t) override;
+
+		/// @brief Check if a tetrahedron is inverted
 		bool is_inverted(const Tuple &loc) const override;
 
 	protected:
@@ -70,7 +78,7 @@ namespace polyfem::mesh
 		void create_mesh(const size_t num_vertices, const Eigen::MatrixXi &elements) override;
 
 	private:
-		/// @brief Compute the average elastic energy of the faces containing an edge.
+		/// @brief Compute the average elastic energy of the elements containing an edge.
 		double edge_elastic_energy(const Tuple &e) const;
 
 		/// @brief Relax a local n-ring around a vertex.
@@ -83,10 +91,10 @@ namespace polyfem::mesh
 		/// @param tris New triangles.
 		std::vector<Tuple> new_edges_after(const std::vector<Tuple> &tris) const;
 
-		double total_area;
+		double total_volume;
 
 		// TODO: make this thread local
-		OperationCache2D op_cache;
+		OperationCache3D op_cache;
 	};
 
 } // namespace polyfem::mesh

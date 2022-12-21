@@ -7,12 +7,12 @@ namespace polyfem::mesh
 		void map_edge_split_edge_attributes(
 			WildRemeshing2D &m,
 			const WildRemeshing2D::Tuple &new_vertex,
-			const WildRemeshing2D::EdgeMap<WildRemeshing2D::EdgeAttributes> &old_edges,
+			const WildRemeshing2D::EdgeMap<WildRemeshing2D::BoundaryAttributes> &old_edges,
 			const size_t old_v0_id,
 			const size_t old_v1_id)
 		{
 			using Tuple = WildRemeshing2D::Tuple;
-			using EdgeAttributes = WildRemeshing2D::EdgeAttributes;
+			using EdgeAttributes = WildRemeshing2D::BoundaryAttributes;
 
 			const EdgeAttributes old_split_edge = old_edges.at(std::make_pair(
 				std::min(old_v0_id, old_v1_id), std::max(old_v0_id, old_v1_id)));
@@ -35,12 +35,12 @@ namespace polyfem::mesh
 					assert(v0_id != new_vid); // new_vid should have a higher id than any other vertex
 					if (v1_id == new_vid)
 					{
-						m.edge_attrs[e.eid(m)] =
+						m.boundary_attrs[e.eid(m)] =
 							(v0_id == old_v0_id || v0_id == old_v1_id) ? old_split_edge : interior_edge;
 					}
 					else
 					{
-						m.edge_attrs[e.eid(m)] = old_edges.at(std::make_pair(v0_id, v1_id));
+						m.boundary_attrs[e.eid(m)] = old_edges.at(std::make_pair(v0_id, v1_id));
 					}
 				}
 			}
@@ -49,19 +49,19 @@ namespace polyfem::mesh
 		void map_edge_split_face_attributes(
 			WildRemeshing2D &m,
 			const WildRemeshing2D::Tuple &t,
-			const std::vector<WildRemeshing2D::FaceAttributes> &old_faces)
+			const std::vector<WildRemeshing2D::ElementAttributes> &old_faces)
 		{
 			WildRemeshing2D::Tuple nav = t.switch_vertex(m);
-			m.face_attrs[nav.fid(m)] = old_faces[0];
+			m.element_attrs[nav.fid(m)] = old_faces[0];
 			nav = nav.switch_edge(m).switch_face(m).value();
-			m.face_attrs[nav.fid(m)] = old_faces[0];
+			m.element_attrs[nav.fid(m)] = old_faces[0];
 			nav = nav.switch_edge(m);
 			if (nav.switch_face(m))
 			{
 				nav = nav.switch_face(m).value();
-				m.face_attrs[nav.fid(m)] = old_faces[1];
+				m.element_attrs[nav.fid(m)] = old_faces[1];
 				nav = nav.switch_edge(m).switch_face(m).value();
-				m.face_attrs[nav.fid(m)] = old_faces[1];
+				m.element_attrs[nav.fid(m)] = old_faces[1];
 			}
 		}
 

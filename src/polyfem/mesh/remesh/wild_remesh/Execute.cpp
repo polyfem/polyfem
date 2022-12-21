@@ -11,13 +11,6 @@
 
 namespace polyfem::mesh
 {
-	double WildRemeshing2D::edge_length(const Tuple &e) const
-	{
-		const Eigen::Vector2d &e0 = vertex_attrs[e.vid(*this)].position;
-		const Eigen::Vector2d &e1 = vertex_attrs[e.switch_vertex(*this).vid(*this)].position;
-		return (e1 - e0).norm();
-	}
-
 	double WildRemeshing2D::edge_elastic_energy(const Tuple &e) const
 	{
 		std::vector<Tuple> tris{{e}};

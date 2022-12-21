@@ -152,7 +152,7 @@ namespace polyfem::mesh
 		state.mesh->set_body_ids(remeshing.body_ids());
 
 		// set boundary ids
-		const WildRemeshing2D::EdgeMap<int> remesh_boundary_ids = remeshing.boundary_ids();
+		const WildRemeshing2D::EdgeMap<int> remesh_boundary_ids = std::get<WildRemeshing2D::EdgeMap<int>>(remeshing.boundary_ids());
 		std::vector<int> boundary_ids(state.mesh->n_edges(), -1);
 		for (int i = 0; i < state.mesh->n_edges(); i++)
 		{

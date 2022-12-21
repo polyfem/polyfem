@@ -21,7 +21,7 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd &positions,
 		const Eigen::MatrixXi &elements,
 		const Eigen::MatrixXd &projection_quantities,
-		const EdgeMap<int> &edge_to_boundary_id,
+		const BoundaryMap<int> &boundary_to_id,
 		const std::vector<int> &body_ids)
 	{
 		assert(elements.size() > 0);
@@ -65,7 +65,7 @@ namespace polyfem::mesh
 		set_positions(positions);
 		set_projected_quantities(projection_quantities);
 		set_fixed(is_boundary_vertex);
-		set_boundary_ids(edge_to_boundary_id);
+		set_boundary_ids(boundary_to_id);
 		set_body_ids(body_ids);
 	}
 

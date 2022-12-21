@@ -29,7 +29,7 @@ namespace polyfem::mesh
 				m_triangles(fi, i) = m_global_to_local[vi];
 			}
 
-			m_body_ids.push_back(m.face_attrs[t.fid(m)].body_id);
+			m_body_ids.push_back(m.element_attrs[t.fid(m)].body_id);
 		}
 		// The above puts local vertices at front
 		m_num_local_vertices = m_global_to_local.size();
@@ -75,7 +75,7 @@ namespace polyfem::mesh
 						m_fixed_vertices.push_back(m_boundary_edges(ei, i));
 				}
 
-				m_boundary_ids.push_back(m.edge_attrs[e.eid(m)].boundary_id);
+				m_boundary_ids.push_back(m.boundary_attrs[e.eid(m)].boundary_id);
 			}
 		}
 		else
@@ -88,7 +88,7 @@ namespace polyfem::mesh
 					m_fixed_vertices.push_back(m_boundary_edges(i, j));
 				}
 				// TODO:
-				// m_boundary_ids.push_back(m.edge_attrs[e.eid(m)].boundary_id);
+				// m_boundary_ids.push_back(m.boundary_attrs[e.eid(m)].boundary_id);
 			}
 		}
 
@@ -192,7 +192,7 @@ namespace polyfem::mesh
 			std::vector<Tuple> new_new_triangles;
 			for (const auto &t : new_triangles)
 			{
-				current_area += m.triangle_area(t);
+				current_area += m.element_volume(t);
 				const std::array<Tuple, 3> vs = m.oriented_tri_vertices(t);
 				for (int vi = 0; vi < 3; vi++)
 				{

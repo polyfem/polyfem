@@ -41,18 +41,18 @@ namespace polyfem::mesh
 
 				if (old_edges.find(edge) != old_edges.end())
 				{
-					edge_attrs[e.eid(*this)] = old_edges.at(edge);
+					boundary_attrs[e.eid(*this)] = old_edges.at(edge);
 				}
 				else
 				{
 					assert(e.switch_face(*this));
-					edge_attrs[e.eid(*this)] = EdgeAttributes(); // interior edge
+					boundary_attrs[e.eid(*this)] = BoundaryAttributes(); // interior edge
 				}
 			}
 		}
 
-		face_attrs[t.fid(*this)] = op_cache.faces()[0];
-		face_attrs[t.switch_face(*this)->fid(*this)] = op_cache.faces()[1];
+		element_attrs[t.fid(*this)] = op_cache.faces()[0];
+		element_attrs[t.switch_face(*this)->fid(*this)] = op_cache.faces()[1];
 
 		// 2) Project quantities so to minimize the L2 error
 		project_quantities(); // also projects positions

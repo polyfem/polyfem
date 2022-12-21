@@ -71,7 +71,7 @@ namespace polyfem::mesh
 				old_edge = std::make_pair(std::min(v0_id, old_v1_id), std::max(v0_id, old_v1_id));
 				assert(old_edges.find(old_edge) != old_edges.end());
 			}
-			edge_attrs[e_id] = old_edges.at(old_edge);
+			boundary_attrs[e_id] = old_edges.at(old_edge);
 		}
 
 		// Nothing to do for the face attributes because no new faces are created.

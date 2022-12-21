@@ -10,7 +10,7 @@ namespace polyfem::mesh
 		void insert_edges_of_face(
 			WildRemeshing2D &m,
 			const WildRemeshing2D::Tuple &t,
-			WildRemeshing2D::EdgeMap<WildRemeshing2D::EdgeAttributes> &edge_map)
+			WildRemeshing2D::EdgeMap<OperationCache2D::EdgeAttributes> &edge_map)
 		{
 			for (auto i = 0; i < 3; i++)
 			{
@@ -19,7 +19,7 @@ namespace polyfem::mesh
 				size_t v1 = e.switch_vertex(m).vid(m);
 				if (v0 > v1)
 					std::swap(v0, v1);
-				edge_map[std::make_pair(v0, v1)] = m.edge_attrs[e.eid(m)];
+				edge_map[std::make_pair(v0, v1)] = m.boundary_attrs[e.eid(m)];
 			}
 		}
 	} // namespace
@@ -35,13 +35,13 @@ namespace polyfem::mesh
 		cache.m_v1.second = m.vertex_attrs[cache.m_v1.first];
 
 		insert_edges_of_face(m, t, cache.m_edges);
-		cache.m_faces.push_back(m.face_attrs[t.fid(m)]);
+		cache.m_faces.push_back(m.element_attrs[t.fid(m)]);
 
 		if (t.switch_face(m))
 		{
 			const Tuple t1 = t.switch_face(m).value();
 			insert_edges_of_face(m, t1, cache.m_edges);
-			cache.m_faces.push_back(m.face_attrs[t1.fid(m)]);
+			cache.m_faces.push_back(m.element_attrs[t1.fid(m)]);
 		}
 
 		return cache;
@@ -69,9 +69,9 @@ namespace polyfem::mesh
 		}
 
 		// Cache the faces adjacent to the edge
-		cache.m_faces.push_back(m.face_attrs[t.fid(m)]);
+		cache.m_faces.push_back(m.element_attrs[t.fid(m)]);
 		if (t.switch_face(m))
-			cache.m_faces.push_back(m.face_attrs[t.switch_face(m)->fid(m)]);
+			cache.m_faces.push_back(m.element_attrs[t.switch_face(m)->fid(m)]);
 
 		return cache;
 	}
@@ -87,12 +87,12 @@ namespace polyfem::mesh
 		cache.m_v1.second = m.vertex_attrs[cache.m_v1.first];
 
 		insert_edges_of_face(m, t, cache.m_edges);
-		cache.m_faces.push_back(m.face_attrs[t.fid(m)]);
+		cache.m_faces.push_back(m.element_attrs[t.fid(m)]);
 
 		assert(t.switch_face(m));
 		const Tuple t1 = t.switch_face(m).value();
 		insert_edges_of_face(m, t1, cache.m_edges);
-		cache.m_faces.push_back(m.face_attrs[t1.fid(m)]);
+		cache.m_faces.push_back(m.element_attrs[t1.fid(m)]);
 
 		return cache;
 	}

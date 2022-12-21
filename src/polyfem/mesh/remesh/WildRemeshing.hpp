@@ -38,6 +38,8 @@ namespace polyfem::mesh
 		/// @brief Map from a (sorted) edge to an integer (ID)
 		template <typename T>
 		using FaceMap = std::unordered_map<std::vector<size_t>, T, polyfem::utils::HashVector>;
+		template <typename T>
+		using BoundaryMap = std::variant<EdgeMap<T>, FaceMap<T>>;
 
 		/// @brief Initialize the mesh
 		/// @param rest_positions Rest positions of the mesh (|V| × dim)
@@ -51,7 +53,7 @@ namespace polyfem::mesh
 			const Eigen::MatrixXd &positions,
 			const Eigen::MatrixXi &elements,
 			const Eigen::MatrixXd &projection_quantities,
-			const EdgeMap<int> &edge_to_boundary_id, // TODO: this has to change for 3D
+			const BoundaryMap<int> &boundary_to_id,
 			const std::vector<int> &body_ids);
 
 		/// @brief Dimension of the mesh
@@ -70,8 +72,7 @@ namespace polyfem::mesh
 		/// @brief Exports projected quantities of the stored mesh
 		virtual Eigen::MatrixXd projected_quantities() const = 0;
 		/// @brief Exports boundary ids of the stored mesh
-		/// @todo This has to change for 3D. Use a FaceMap<int>.
-		virtual EdgeMap<int> boundary_ids() const = 0;
+		virtual BoundaryMap<int> boundary_ids() const = 0;
 		/// @brief Exports body ids of the stored mesh
 		virtual std::vector<int> body_ids() const = 0;
 
@@ -92,8 +93,7 @@ namespace polyfem::mesh
 		/// @brief Set if a vertex is fixed
 		virtual void set_fixed(const std::vector<bool> &fixed) = 0;
 		/// @brief Set the boundary IDs of all edges
-		/// @todo This has to change for 3D. Use a FaceMap<int>.
-		virtual void set_boundary_ids(const EdgeMap<int> &edge_to_boundary_id) = 0;
+		virtual void set_boundary_ids(const BoundaryMap<int> &boundary_to_id) = 0;
 		/// @brief Set the body IDs of all elements
 		virtual void set_body_ids(const std::vector<int> &body_ids) = 0;
 

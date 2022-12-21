@@ -7,8 +7,11 @@ set(SOURCES
 	Remesh.cpp
 	WildRemeshing.cpp
 	WildRemeshing.hpp
+	WildRemeshingND.cpp
+	WildRemeshingND.hpp
 	WildRemeshing2D.cpp
 	WildRemeshing2D.hpp
+	WildRemeshing3D.cpp
 	WildRemeshing3D.hpp
 )
 
