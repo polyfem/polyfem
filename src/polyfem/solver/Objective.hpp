@@ -4,6 +4,8 @@
 
 #include <polyfem/solver/forms/ContactForm.hpp>
 
+// #include <polyfem/utils/CubicInterpolationMatrices.hpp>
+
 #include <nanospline/BSpline.h>
 #include <polyfem/io/OBJWriter.hpp>
 
@@ -304,23 +306,31 @@ namespace polyfem::solver
 			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
 			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 
-			bicubic_mat.resize(16, 16);
-			bicubic_mat << 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				-3, 3, 0, 0, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				2, -2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 0, -3, 3, 0, 0, -2, -1, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 0, 2, -2, 0, 0, 1, 1, 0, 0,
-				-3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, -3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0,
-				9, -9, -9, 9, 6, 3, -6, -3, 6, -6, 3, -3, 4, 2, 2, 1,
-				-6, 6, 6, -6, -3, -3, 3, 3, -4, 4, -2, 2, -2, -2, -1, -1,
-				2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0,
-				-6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1,
-				4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1;
+			if (state.mesh->dimension() == 2)
+			{
+				cubic_mat.resize(16, 16);
+				cubic_mat << 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					-3, 3, 0, 0, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					2, -2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+					0, 0, 0, 0, 0, 0, 0, 0, -3, 3, 0, 0, -2, -1, 0, 0,
+					0, 0, 0, 0, 0, 0, 0, 0, 2, -2, 0, 0, 1, 1, 0, 0,
+					-3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, -3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0,
+					9, -9, -9, 9, 6, 3, -6, -3, 6, -6, 3, -3, 4, 2, 2, 1,
+					-6, 6, 6, -6, -3, -3, 3, 3, -4, 4, -2, 2, -2, -2, -1, -1,
+					2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, 2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0,
+					-6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1,
+					4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1;
+				// cubic_mat = utils::get_bicubic_mat();
+			}
+			else if (state.mesh->dimension() == 3)
+			{
+				// cubic_mat = utils::get_tricubic_mat();
+			}
 		}
 
 		~SDFTargetObjective() = default;
@@ -332,7 +342,7 @@ namespace polyfem::solver
 			assert(false);
 		}
 
-		void set_bspline_target(const Eigen::MatrixXd &control_points, const Eigen::VectorXd &knots, const Eigen::MatrixXd &delta)
+		void set_bspline_target(const Eigen::MatrixXd &control_points, const Eigen::VectorXd &knots, const double delta)
 		{
 			control_points_ = control_points;
 			knots_ = knots;
@@ -355,17 +365,19 @@ namespace polyfem::solver
 		}
 
 		void evaluate(const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad);
-		void compute_distance(const Eigen::MatrixXd &point, double &distance, Eigen::MatrixXd &grad);
-		void bicubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad);
+		void compute_distance(const Eigen::MatrixXd &point, double &distance);
+		void compute_distances(const Eigen::MatrixXd &point, Eigen::VectorXd &distances, double h);
+		void bicubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad, const double h);
+		void tricubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad);
 
 	protected:
 		int dim;
 		double t_cached;
-		Eigen::MatrixXd delta_;
+		double delta_;
 		std::unordered_map<std::string, double> implicit_function_distance;
-		std::unordered_map<std::string, Eigen::MatrixXd> implicit_function_grad;
+		std::unordered_map<std::string, Eigen::VectorXd> implicit_function_grads;
 
-		Eigen::MatrixXd bicubic_mat;
+		Eigen::MatrixXd cubic_mat;
 
 		Eigen::MatrixXd control_points_;
 		Eigen::VectorXd knots_;
@@ -375,7 +387,8 @@ namespace polyfem::solver
 
 		nanospline::BSpline<double, 2, 3> curve;
 
-		mutable std::shared_mutex mutex_;
+		mutable std::shared_mutex distance_mutex_;
+		mutable std::shared_mutex grad_mutex_;
 	};
 
 	class NodeTargetObjective : public StaticObjective
@@ -430,7 +443,7 @@ namespace polyfem::solver
 		double value() override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
-	
+
 	protected:
 		std::shared_ptr<const Parameter> shape_param_;
 

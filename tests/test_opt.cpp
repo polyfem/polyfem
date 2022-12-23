@@ -41,6 +41,18 @@ namespace
 			return std::filesystem::weakly_canonical(std::filesystem::path(output_dir) / path).string();
 	}
 
+	bool save_mat(const Eigen::MatrixXd &mat, const std::string &file_name)
+	{
+		std::ofstream file(file_name);
+		if (!file.is_open())
+			return false;
+
+		file << fmt::format("matrix size {} x {}\n", mat.rows(), mat.cols());
+		file << mat;
+
+		return true;
+	}
+
 	std::vector<double> read_energy(const std::string &file)
 	{
 		std::ifstream energy_out(file);
@@ -231,9 +243,92 @@ TEST_CASE("multiparameter-sdf-trajectory-surface-opt", "[optimization]")
 	run_opt_new("multiparameter-sdf-trajectory-surface-opt");
 	auto energies = read_energy("multiparameter-sdf-trajectory-surface-opt");
 
-	REQUIRE(energies[0] == Approx(0.185975).epsilon(1e-3));
-	REQUIRE(energies[energies.size() - 1] == Approx(0.145893).epsilon(1e-3));
+	REQUIRE(energies[0] == Approx(0.153687).epsilon(1e-3));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.113011).epsilon(1e-3));
 }
+
+// TEST_CASE("sdf-test", "[optimization]")
+// {
+// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../optimizations/multiparameter-sdf-trajectory-surface-opt");
+
+// 	json in_args;
+// 	load_json(path + "/state.json", in_args);
+// 	auto state = create_state(in_args);
+// 	json args = R"(
+// 		{
+// 			"surface_selection": [3, 4]
+// 		}
+// 	)"_json;
+// 	SDFTargetObjective sdf(*state, nullptr, args);
+// 	Eigen::MatrixXd control_points(4, 2);
+// 	control_points << 0, 1,
+// 		0.5, 0.7,
+// 		0.5, 0.3,
+// 		0, 0;
+// 	Eigen::VectorXd knots(8);
+// 	knots << 0, 0, 0, 0, 1, 1, 1, 1;
+// 	Eigen::MatrixXd delta(2, 1);
+// 	delta << 0.1, 0.1;
+// 	sdf.set_bspline_target(control_points, knots, delta(0));
+
+// 	int sampling = (int)(3 / delta(0));
+// 	int upsampling = 1000;
+// 	Eigen::MatrixXd distance(sampling, sampling);
+// 	Eigen::MatrixXd grad_x;
+// 	Eigen::MatrixXd grad_y;
+// 	grad_x.setZero(sampling, sampling);
+// 	grad_y.setZero(sampling, sampling);
+// 	Eigen::MatrixXd bounds(2, 2);
+// 	bounds << -1, 2,
+// 		-1, 2;
+// 	for (int i = 0; i < sampling; ++i)
+// 		for (int j = 0; j < sampling; ++j)
+// 		{
+// 			double x = bounds(0, 0) + j * (bounds(0, 1) - bounds(0, 0)) / (double)sampling;
+// 			double y = bounds(1, 1) - i * (bounds(1, 1) - bounds(1, 0)) / (double)sampling;
+// 			Eigen::MatrixXd point(2, 1);
+// 			point << x, y;
+// 			double d;
+// 			Eigen::MatrixXd g;
+// 			sdf.compute_distance(point, d);
+// 			distance(i, j) = d;
+// 			grad_x(i, j) = 0;
+// 			grad_y(i, j) = 0;
+// 		}
+// 	for (int i = 1; i < sampling - 1; ++i)
+// 		for (int j = 1; j < sampling - 1; ++j)
+// 		{
+// 			grad_x(i, j) = (1. / 2. / delta(0)) * (distance(i, j + 1) - distance(i, j - 1));
+// 			grad_y(i, j) = (1. / 2. / delta(0)) * (distance(i - 1, j) - distance(i + 1, j));
+// 		}
+
+// 	save_mat(distance, "orig_distance.txt");
+// 	save_mat(grad_x, "orig_grad_x.txt");
+// 	save_mat(grad_y, "orig_grad_y.txt");
+
+// 	distance.resize(upsampling, upsampling);
+// 	grad_x.resize(upsampling, upsampling);
+// 	grad_y.resize(upsampling, upsampling);
+// 	for (int i = 0; i < upsampling; ++i)
+// 		for (int j = 0; j < upsampling; ++j)
+// 		{
+// 			double x = bounds(0, 0) + j * (bounds(0, 1) - bounds(0, 0)) / (double)upsampling;
+// 			double y = bounds(1, 1) - i * (bounds(1, 1) - bounds(1, 0)) / (double)upsampling;
+// 			Eigen::MatrixXd point(2, 1);
+// 			point << x, y;
+// 			double d;
+// 			Eigen::MatrixXd g;
+// 			sdf.evaluate(point, d, g);
+// 			// sdf.compute_distance(point, d);
+// 			distance(i, j) = d;
+// 			grad_x(i, j) = g(0);
+// 			grad_y(i, j) = g(1);
+// 		}
+
+// 	save_mat(distance, "distance.txt");
+// 	save_mat(grad_x, "grad_x.txt");
+// 	save_mat(grad_y, "grad_y.txt");
+// }
 
 // TEST_CASE("3d-bspline-shape-trajectory-opt", "[optimization]")
 // {

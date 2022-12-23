@@ -74,10 +74,17 @@ namespace polyfem
 
 			const auto path = std::filesystem::path(expr);
 
-			if (std::filesystem::is_regular_file(path))
+			try
 			{
-				read_matrix(expr, mat_);
-				return;
+				/* code */
+				if (std::filesystem::is_regular_file(path))
+				{
+					read_matrix(expr, mat_);
+					return;
+				}
+			}
+			catch (const std::filesystem::filesystem_error &e)
+			{
 			}
 
 			expr_ = expr;
@@ -193,7 +200,7 @@ namespace polyfem
 					t_index_[std::round(t[i].get<double>() * 1000.) / 1000.] = i;
 				}
 
-				if (mat_.size() != t_index_.size())
+				if (mat_.size() != t_index_.size() && mat_expr_.size() != t_index_.size())
 					logger().error("Specifying varying dirichlet over time, however 'time_reference' does not match dirichlet boundary conditions.");
 			}
 		}

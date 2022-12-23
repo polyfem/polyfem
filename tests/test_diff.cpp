@@ -653,7 +653,7 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 	std::shared_ptr<StaticObjective> func_aux;
 	auto sdf_aux = std::make_shared<SDFTargetObjective>(state, shape_param, opt_args["parameters"][0]);
 	json functional_args = opt_args["functionals"][0];
-	sdf_aux->set_bspline_target(control_points, knots, delta);
+	sdf_aux->set_bspline_target(control_points, knots, delta(0));
 	func_aux = sdf_aux;
 	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], functional_args["transient_integral_type"], func_aux);
 
@@ -866,7 +866,7 @@ TEST_CASE("dirichlet-sdf-new", "[adjoint_method]")
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
 	std::shared_ptr<ControlParameter> control_param = std::make_shared<ControlParameter>(states_ptr, opt_args["parameters"][0]);
 	auto sdf_aux = std::make_shared<SDFTargetObjective>(state, nullptr, opt_args["functionals"][0]);
-	sdf_aux->set_bspline_target(control_points, knots, delta);
+	sdf_aux->set_bspline_target(control_points, knots, delta(0));
 	std::shared_ptr<StaticObjective> func_aux = sdf_aux;
 	json functional_args = opt_args["functionals"][0];
 
