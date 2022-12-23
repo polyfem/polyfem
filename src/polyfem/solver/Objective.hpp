@@ -77,6 +77,8 @@ namespace polyfem::solver
 
 		virtual IntegrableFunctional get_integral_functional() = 0;
 
+		const State &get_state() { return state_; }
+
 	protected:
 		const State &state_;
 		std::shared_ptr<const Parameter> shape_param_;

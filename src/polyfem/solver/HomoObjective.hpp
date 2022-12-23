@@ -4,6 +4,7 @@
 #include "Objective.hpp"
 
 #include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/assembler/Multiscale.hpp>
 
 #include <shared_mutex>
 #include <array>
@@ -45,6 +46,8 @@ namespace polyfem::solver
 		std::vector<int> id;
 		std::string formulation_;
 
+		double microstructure_volume;
+
 		std::shared_ptr<const Parameter> elastic_param_; // stress depends on elastic param
 	};
 
@@ -76,22 +79,25 @@ namespace polyfem::solver
 		IntegrableFunctional get_integral_functional() override;
 	};
 
-	class NaiveNegativePoissonObjective : public Objective
+	class HomogenizedStiffnessObjective : public StaticObjective
 	{
 	public:
-		NaiveNegativePoissonObjective(const State &state1, const json &args);
-		~NaiveNegativePoissonObjective() = default;
+		HomogenizedStiffnessObjective(std::shared_ptr<State> state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args);
+		~HomogenizedStiffnessObjective() = default;
 
 		double value() override;
-		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
+
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const State &state) override;
+
+		void set_time_step(int time_step) { time_step_ = time_step; }
 
 	protected:
-		const State &state1_;
+		std::vector<int> id;
+		std::string formulation_;
 
-		int v1 = -1;
-		int v2 = -1;
-
-		double power_ = 2;
+		std::shared_ptr<assembler::Multiscale> multiscale_assembler;
+		std::shared_ptr<const Parameter> elastic_param_, shape_param_;
 	};
+
 } // namespace polyfem::solver

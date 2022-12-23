@@ -75,6 +75,18 @@ namespace polyfem::assembler
 	{
 	}
 
+	Multiscale::Multiscale(std::shared_ptr<State> state_ptr)
+	{
+		state = state_ptr;
+		
+		state->assemble_rhs();
+		state->assemble_stiffness_mat(true);
+
+		RowVectorNd min, max;
+		state->mesh->bounding_box(min, max);
+		microstructure_volume = (max - min).prod();
+	}
+
 	Multiscale::~Multiscale()
 	{
 		
@@ -158,7 +170,7 @@ namespace polyfem::assembler
 		avg_stiffness.setZero(size()*size(), size()*size());
 
 		Eigen::MatrixXd CB;
-		CB.setZero(size()*size(), state->ndof());
+		CB.setZero(state->ndof(), size()*size());
 		for (int e = 0; e < bases.size(); ++e)
 		{
 			assembler::ElementAssemblyValues vals;
@@ -181,7 +193,7 @@ namespace polyfem::assembler
 				for (int k = 0; k < size(); k++)
 				{
 					int X = a * size() + b;
-					CB(X, v.global[0].index * size() + k) += dot(stiffnesses.block(0, X * size() * size() + k * size(), da.size(), size()), v.grad_t_m);
+					CB(v.global[0].index * size() + k, X) += dot(stiffnesses.block(0, X * size() * size() + k * size(), da.size(), size()), v.grad_t_m);
 				}
 			}
 		}
@@ -193,10 +205,12 @@ namespace polyfem::assembler
 
 		stiffness = avg_stiffness;
 
-		for (int i = 0; i < CB.rows(); i++)
+		Eigen::MatrixXd adjoints = state->solve_adjoint(CB);
+		for (int i = 0; i < CB.cols(); i++)
 		{
 			Eigen::VectorXd b;
-			solver::AdjointForm::dJ_macro_strain_adjoint_term(*state, x, state->solve_adjoint(CB.row(i).transpose()), b);
+			// Eigen::MatrixXd adjoints = state->solve_adjoint(CB.col(i));
+			solver::AdjointForm::dJ_macro_strain_adjoint_term(*state, x, adjoints.col(i), b);
 			stiffness.row(i) += b;
 		}
 
