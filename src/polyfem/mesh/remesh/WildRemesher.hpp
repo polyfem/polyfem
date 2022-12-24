@@ -142,6 +142,10 @@ namespace polyfem::mesh
 		/// @brief Get the one ring of elements around a vertex.
 		virtual std::vector<Tuple> get_one_ring_elements_for_vertex(const Tuple &t) const = 0;
 
+		virtual size_t facet_id(const Tuple &t) const = 0;
+		virtual size_t element_id(const Tuple &t) const = 0;
+		virtual Tuple tuple_from_facet(size_t elem_id, int local_facet_id) const = 0;
+
 	protected:
 		/// @brief Cache the split edge operation
 		virtual void cache_split_edge(const Tuple &e) = 0;

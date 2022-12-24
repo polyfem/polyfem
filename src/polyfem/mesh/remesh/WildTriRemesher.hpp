@@ -86,7 +86,7 @@ namespace polyfem::mesh
 		/// @brief Is the given tuple on the boundary of the mesh?
 		bool is_on_boundary(const Tuple &t) const override
 		{
-			return t.switch_face(*this).has_value();
+			return !t.switch_face(*this).has_value();
 		}
 
 		/// @brief Get the boundary facets of the mesh
@@ -114,6 +114,14 @@ namespace polyfem::mesh
 		std::vector<Tuple> get_one_ring_elements_for_vertex(const Tuple &t) const override
 		{
 			return get_one_ring_tris_for_vertex(t);
+		}
+
+		size_t facet_id(const Tuple &t) const { return t.eid(*this); }
+		size_t element_id(const Tuple &t) const { return t.fid(*this); }
+
+		Tuple tuple_from_facet(size_t elem_id, int local_facet_id) const
+		{
+			return tuple_from_edge(elem_id, local_facet_id);
 		}
 
 	protected:

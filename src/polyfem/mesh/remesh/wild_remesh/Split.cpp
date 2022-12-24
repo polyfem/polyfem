@@ -22,7 +22,7 @@ namespace polyfem::mesh
 	bool WildRemesher<WMTKMesh>::split_edge_before(const Tuple &e)
 	{
 		double min_edge_length = this->min_edge_length;
-		if (!is_on_boundary(e) && state.has_dhat)
+		if (is_on_boundary(e) && state.has_dhat)
 			min_edge_length = std::max(min_edge_length, 1.01 * state.args["contact"]["dhat"].get<double>());
 
 		// Dont split if the edge is too small

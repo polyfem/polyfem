@@ -7,7 +7,6 @@
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/LinearForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
-#include <polyfem/io/VTUWriter.hpp>
 
 #define POLYFEM_REMESH_USE_FRICTION_FORM
 
@@ -25,11 +24,11 @@ namespace polyfem::mesh
 		using This = typename std::remove_pointer<decltype(this)>::type;
 		// LocalMesh local_mesh = LocalMesh::n_ring(
 		// 	*this, t, n_ring, /*include_global_boundary=*/free_boundary);
-		// LocalMesh<This> local_mesh = LocalMesh<This>::flood_fill_n_ring(
-		// 	*this, t, flood_fill_rel_area * total_area, /*include_global_boundary=*/free_boundary);
-		LocalMesh<This> local_mesh = LocalMesh<This>::ball_selection(
-			*this, vertex_attrs[t.vid(*this)].rest_position,
-			flood_fill_rel_area, /*include_global_boundary=*/free_boundary);
+		LocalMesh<This> local_mesh = LocalMesh<This>::flood_fill_n_ring(
+			*this, t, flood_fill_rel_area * total_volume, /*include_global_boundary=*/free_boundary);
+		// LocalMesh<This> local_mesh = LocalMesh<This>::ball_selection(
+		// 	*this, vertex_attrs[t.vid(*this)].rest_position,
+		// 	flood_fill_rel_area, /*include_global_boundary=*/free_boundary);
 		// LocalMesh local_mesh(*this, get_faces(), /*include_global_boundary=*/free_boundary);
 
 		std::vector<polyfem::basis::ElementBases> bases;
@@ -57,21 +56,6 @@ namespace polyfem::mesh
 			local_mesh.reorder_vertices(vertex_to_basis);
 		}
 		const int ndof = n_bases * dim();
-
-		// VTUWriter writer;
-		// writer.write_mesh(
-		// 	state.resolve_output_path("local_rest_mesh_before_local_relaxation.obj"),
-		// 	local_mesh.rest_positions(), local_mesh.elements());
-		// writer.write_mesh(
-		// 	state.resolve_output_path("local_deformed_mesh_before_local_relaxation.obj"),
-		// 	local_mesh.positions(), local_mesh.elements());
-
-		// write_rest_obj(state.resolve_output_path("rest_mesh_before_local_relaxation.vtu"));
-		// write_deformed_obj(state.resolve_output_path("deformed_mesh_before_local_relaxation.vtu"));
-
-		// io::OBJWriter::write(
-		// 	state.resolve_output_path("fixed_vertices.obj"),
-		// 	local_mesh.positions()(local_mesh.fixed_vertices(), Eigen::all), Eigen::MatrixXi());
 
 		// --------------------------------------------------------------------
 
@@ -156,8 +140,11 @@ namespace polyfem::mesh
 			std::vector<Eigen::VectorXd> x_prevs;
 			std::vector<Eigen::VectorXd> v_prevs;
 			std::vector<Eigen::VectorXd> a_prevs;
+			const auto &project_quantities = local_mesh.projection_quantities();
 			split_time_integrator_quantities(
-				local_mesh.projection_quantities(), dim(), x_prevs, v_prevs, a_prevs);
+				// Drop the last column of projection_quantities, which is the friction gradient.
+				project_quantities.leftCols(project_quantities.cols() - 1),
+				dim(), x_prevs, v_prevs, a_prevs);
 			solve_data.time_integrator->init(
 				x_prevs, v_prevs, a_prevs, state.args["time"]["dt"]);
 		}
@@ -285,6 +272,10 @@ namespace polyfem::mesh
 		// Update positions only on acceptance
 		if (accept)
 		{
+			static int save_i = 0;
+			local_mesh.write_mesh(state.resolve_output_path(fmt::format("local_mesh_{:04d}.vtu", save_i)), target_x);
+			write_deformed_mesh(state.resolve_output_path(fmt::format("split_{:04d}.vtu", save_i++)));
+
 #ifndef POLYFEM_REMESH_USE_FRICTION_FORM
 			Eigen::VectorXd friction_gradient = Eigen::VectorXd::Zero(target_x.rows());
 			if (solve_data.friction_form)
@@ -323,9 +314,6 @@ namespace polyfem::mesh
 			}
 #endif
 
-			static int save_i = 0;
-			write_deformed_mesh(state.resolve_output_path(fmt::format("split_{:04d}.vtu", save_i++)));
-
 			for (const auto &[glob_vi, loc_vi] : local_mesh.global_to_local())
 			{
 				const auto u = sol.middleRows(dim() * loc_vi, dim());
@@ -336,7 +324,9 @@ namespace polyfem::mesh
 				const auto f = friction_gradient.segment(dim() * loc_vi, dim());
 				const auto f_old = vertex_attrs[glob_vi].projection_quantities.rightCols(1);
 				if (f_old.norm() != 0)
-					logger().critical("(f_old⋅f)/(‖f_old‖‖f‖)={:g} ‖f_old‖/‖f‖={:g} ‖u_old - u‖={:g}", (f_old / f_old.norm()).dot(f / f.norm()), f.norm() / f_old.norm(), (u_old - u).norm());
+					logger().critical(
+						"(f_old⋅f)/(‖f_old‖‖f‖)={:g} ‖f_old‖/‖f‖={:g} ‖u_old - u‖={:g}",
+						(f_old / f_old.norm()).dot(f / f.norm()), f.norm() / f_old.norm(), (u_old - u).norm());
 				vertex_attrs[glob_vi].projection_quantities.rightCols(1) = f;
 #endif
 			}
@@ -345,6 +335,7 @@ namespace polyfem::mesh
 			m_obstacle_vals.rightCols(1) = friction_gradient.tail(m_obstacle_vals.rows());
 #endif
 
+			local_mesh.write_mesh(state.resolve_output_path(fmt::format("local_mesh_{:04d}.vtu", save_i)), sol);
 			write_deformed_mesh(state.resolve_output_path(fmt::format("split_{:04d}.vtu", save_i++)));
 		}
 

@@ -34,7 +34,7 @@ namespace polyfem::mesh
 
 		static LocalMesh<M> ball_selection(
 			const M &m,
-			VectorNd center,
+			const VectorNd &center,
 			const double rel_radius,
 			const bool include_global_boundary);
 
@@ -64,6 +64,8 @@ namespace polyfem::mesh
 		/// @brief Get a reference to the boundary facets (edges in 2D or faces in 3D).
 		/// @todo Make this const.
 		Eigen::MatrixXi &boundary_facets();
+
+		void write_mesh(const std::string &path, const Eigen::MatrixXd &sol) const;
 
 	protected:
 		void remove_duplicate_fixed_vertices();

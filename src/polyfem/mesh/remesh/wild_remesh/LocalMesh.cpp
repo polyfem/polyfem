@@ -4,6 +4,7 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/io/VTUWriter.hpp>
 
 #include <igl/boundary_facets.h>
 #include <igl/edges.h>
@@ -26,10 +27,10 @@ namespace polyfem::mesh
 		m_elements.resize(element_tuples.size(), m.dim() + 1);
 		for (int fi = 0; fi < num_elements(); fi++)
 		{
-			const Tuple &t = element_tuples[fi];
-			global_element_ids.insert(t.fid(m));
+			const Tuple &elem = element_tuples[fi];
+			global_element_ids.insert(m.element_id(elem));
 
-			const auto vids = m.element_vids(t);
+			const auto vids = m.element_vids(elem);
 
 			for (int i = 0; i < vids.size(); ++i)
 			{
@@ -38,38 +39,34 @@ namespace polyfem::mesh
 				m_elements(fi, i) = m_global_to_local[vids[i]];
 			}
 
-			m_body_ids.push_back(m.element_attrs[t.fid(m)].body_id);
+			m_body_ids.push_back(m.element_attrs[m.element_id(elem)].body_id);
 		}
 		// The above puts local vertices at front
 		m_num_local_vertices = m_global_to_local.size();
 
 		for (int fi = 0; fi < num_elements(); fi++)
 		{
-			const Tuple &t = element_tuples[fi];
+			const Tuple &elem = element_tuples[fi];
 
 			for (int i = 0; i < M::DIM + 1; ++i)
 			{
-				Tuple t;
-				if constexpr (std::is_same_v<M, TriMesh>)
-					t = m.tuple_from_edge(t.fid(m), i);
-				else
-					t = m.tuple_from_face(t.tid(m), i);
+				const Tuple facet = m.tuple_from_facet(m.element_id(elem), i);
 
 				// Only fix internal facets
-				if (m.is_on_boundary(t))
+				if (m.is_on_boundary(facet))
 					continue;
 
 				size_t adjacent_eid;
 				if constexpr (std::is_same_v<M, TriMesh>)
-					adjacent_eid = t.switch_face(m)->fid(m);
+					adjacent_eid = facet.switch_face(m)->fid(m);
 				else
-					adjacent_eid = t.switch_tetrahedron(m)->tid(m);
+					adjacent_eid = facet.switch_tetrahedron(m)->tid(m);
 
 				// Only fix internal facets that do not have a neighbor in the local mesh
 				if (global_element_ids.find(adjacent_eid) != global_element_ids.end())
 					continue;
 
-				for (const size_t &vid : m.boundary_facet_vids(t))
+				for (const size_t &vid : m.boundary_facet_vids(facet))
 					m_fixed_vertices.push_back(m_global_to_local[vid]);
 			}
 		}
@@ -84,8 +81,8 @@ namespace polyfem::mesh
 			boundary_facets().resize(global_boundary_facets.size(), 2);
 			for (int i = 0; i < global_boundary_facets.size(); i++)
 			{
-				const Tuple &t = global_boundary_facets[i];
-				const auto vids = m.boundary_facet_vids(t);
+				const Tuple &facet = global_boundary_facets[i];
+				const auto vids = m.boundary_facet_vids(facet);
 
 				const bool is_new_facet = std::any_of(vids.begin(), vids.end(), [&](size_t vid) {
 					return prev_global_to_local.find(vid) == prev_global_to_local.end();
@@ -102,10 +99,7 @@ namespace polyfem::mesh
 						m_fixed_vertices.push_back(boundary_facets()(i, j));
 				}
 
-				if constexpr (std::is_same_v<M, TriMesh>)
-					m_boundary_ids.push_back(m.boundary_attrs[t.eid(m)].boundary_id);
-				else
-					m_boundary_ids.push_back(m.boundary_attrs[t.fid(m)].boundary_id);
+				m_boundary_ids.push_back(m.boundary_attrs[m.facet_id(facet)].boundary_id);
 			}
 		}
 		else
@@ -163,16 +157,18 @@ namespace polyfem::mesh
 		std::unordered_set<size_t> visited_vertices{{center.vid(m)}};
 		std::unordered_set<size_t> visited_faces;
 		for (const auto &element : elements)
-			visited_faces.insert(element.fid(m));
+		{
+			visited_faces.insert(m.element_id(element));
+		}
 
 		std::vector<Tuple> new_elements = elements;
 
 		for (int i = 1; i < n; i++)
 		{
 			std::vector<Tuple> new_new_elements;
-			for (const auto &t : new_elements)
+			for (const auto &elem : new_elements)
 			{
-				const auto vs = m.element_vertices(t);
+				const auto vs = m.element_vertices(elem);
 				for (const Tuple &v : vs)
 				{
 					if (visited_vertices.find(v.vid(m)) != visited_vertices.end())
@@ -222,10 +218,10 @@ namespace polyfem::mesh
 		{
 			n_ring++;
 			std::vector<Tuple> new_new_elements;
-			for (const auto &t : new_elements)
+			for (const auto &elem : new_elements)
 			{
-				current_area += m.element_volume(t);
-				const auto vs = m.element_vertices(t);
+				current_area += m.element_volume(elem);
+				const auto vs = m.element_vertices(elem);
 				for (int vi = 0; vi < 3; vi++)
 				{
 					const Tuple &v = vs[vi];
@@ -256,7 +252,7 @@ namespace polyfem::mesh
 	template <typename M>
 	LocalMesh<M> LocalMesh<M>::ball_selection(
 		const M &m,
-		VectorNd center,
+		const VectorNd &center,
 		const double rel_radius,
 		const bool include_global_boundary)
 	{
@@ -264,37 +260,29 @@ namespace polyfem::mesh
 
 		const int dim = m.dim();
 
-		if (center.size() == 2)
-		{
-			center.conservativeResize(3);
-			center[2] = 0;
-		}
+		Eigen::Array3d center3D = Eigen::Array3d::Zero();
+		center3D.head(dim) = center;
 
 		Eigen::MatrixXd V = m.rest_positions();
 		const double radius = rel_radius * (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm();
-		if (V.cols() == 2)
-		{
-			V.conservativeResize(V.rows(), 3);
-			V.col(2).setZero();
-		}
 
 		const std::vector<Tuple> elements = m.get_elements();
 
 		// Use a AABB tree to find all intersecting elements then loop over only those pairs
-		std::vector<std::array<Eigen::Vector3d, 2>> boxes(elements.size());
+		std::vector<std::array<Eigen::Vector3d, 2>> boxes(
+			elements.size(), {{Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero()}});
 		for (int i = 0; i < elements.size(); i++)
 		{
 			const auto vids = m.element_vids(elements[i]);
-			boxes[i][0] = V(vids, Eigen::all).colwise().minCoeff();
-			boxes[i][1] = V(vids, Eigen::all).colwise().maxCoeff();
+			boxes[i][0].head(dim) = V(vids, Eigen::all).colwise().minCoeff();
+			boxes[i][1].head(dim) = V(vids, Eigen::all).colwise().maxCoeff();
 		}
 
 		BVH::BVH bvh;
 		bvh.init(boxes);
 
 		std::vector<unsigned int> candidates;
-		bvh.intersect_box(
-			center.array() - radius, center.array() + radius, candidates);
+		bvh.intersect_box(center3D - radius, center3D + radius, candidates);
 
 		std::vector<Tuple> intersecting_elements;
 		for (unsigned int fi : candidates)
@@ -303,9 +291,9 @@ namespace polyfem::mesh
 			const auto vids = m.element_vids(elements[fi]);
 			if constexpr (std::is_same_v<M, TriMesh>)
 			{
-				is_intersecting = utils::tiangle_intersects_disk(
+				is_intersecting = utils::triangle_intersects_disk(
 					V.row(vids[0]), V.row(vids[1]), V.row(vids[2]),
-					center.head<2>(), radius);
+					center, radius);
 			}
 			else
 			{
@@ -394,6 +382,19 @@ namespace polyfem::mesh
 
 		for (int &vi : m_fixed_vertices)
 			vi = permutation[vi];
+	}
+
+	template <typename M>
+	void LocalMesh<M>::write_mesh(
+		const std::string &path, const Eigen::MatrixXd &sol) const
+	{
+		Eigen::VectorXd is_free = Eigen::VectorXd::Ones(num_vertices());
+		is_free(fixed_vertices()) = Eigen::VectorXd::Zero(fixed_vertices().size());
+
+		io::VTUWriter writer;
+		writer.add_field("is_free", is_free);
+		writer.add_field("displacement", utils::unflatten(sol, M::DIM));
+		writer.write_mesh(path, rest_positions(), elements());
 	}
 
 	// -------------------------------------------------------------------------

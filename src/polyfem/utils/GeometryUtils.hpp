@@ -71,7 +71,7 @@ namespace polyfem::utils
 	/// @param center Center of the disk.
 	/// @param radius Radius of the disk.
 	/// @return True if the triangle intersects the disk, false otherwise.
-	bool tiangle_intersects_disk(
+	bool triangle_intersects_disk(
 		const Eigen::Vector2d &t0,
 		const Eigen::Vector2d &t1,
 		const Eigen::Vector2d &t2,

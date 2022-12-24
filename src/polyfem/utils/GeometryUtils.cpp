@@ -1,5 +1,7 @@
 #include "GeometryUtils.hpp"
 
+#include <polyfem/utils/Logger.hpp>
+
 #include <Eigen/Geometry>
 
 #include <igl/barycentric_coordinates.h>
@@ -102,23 +104,23 @@ namespace polyfem::utils
 		return bc;
 	}
 
-	bool tiangle_intersects_disk(
+	bool triangle_intersects_disk(
 		const Eigen::Vector2d &t0,
 		const Eigen::Vector2d &t1,
 		const Eigen::Vector2d &t2,
 		const Eigen::Vector2d &center,
 		const double radius)
 	{
-		Eigen::RowVector3d bc;
-		igl::barycentric_coordinates(
-			center.transpose(), t0.transpose(), t1.transpose(), t2.transpose(),
-			bc);
+		// Eigen::RowVector3d bc;
+		// igl::barycentric_coordinates(
+		// 	center.transpose(), t0.transpose(), t1.transpose(), t2.transpose(),
+		// 	bc);
 
-		if (bc.minCoeff() >= 0)
-		{
-			assert(bc.maxCoeff() <= 1); // bc.sum() == 1
-			return true;
-		}
+		// if (bc.minCoeff() >= 0)
+		// {
+		// 	assert(bc.maxCoeff() <= 1); // bc.sum() == 1
+		// 	return true;
+		// }
 
 		const std::array<std::array<const Eigen::Vector2d *, 2>, 3> edges = {{
 			{{&t0, &t1}},
@@ -126,8 +128,10 @@ namespace polyfem::utils
 			{{&t2, &t0}},
 		}};
 
+		const double radius_sqr = radius * radius;
+
 		for (const auto &e : edges)
-			if (ipc::point_edge_distance(center, *e[0], *e[1]) <= radius)
+			if (ipc::point_edge_distance(center, *e[0], *e[1]) <= radius_sqr)
 				return true;
 
 		return false;
@@ -141,16 +145,16 @@ namespace polyfem::utils
 		const Eigen::Vector3d &center,
 		const double radius)
 	{
-		Eigen::RowVector4d bc;
-		igl::barycentric_coordinates(
-			center.transpose(), t0.transpose(), t1.transpose(),
-			t2.transpose(), t3.transpose(), bc);
+		// Eigen::RowVector4d bc;
+		// igl::barycentric_coordinates(
+		// 	center.transpose(), t0.transpose(), t1.transpose(),
+		// 	t2.transpose(), t3.transpose(), bc);
 
-		if (bc.minCoeff() >= 0)
-		{
-			assert(bc.maxCoeff() <= 1); // bc.sum() == 1
-			return true;
-		}
+		// if (bc.minCoeff() >= 0)
+		// {
+		// 	assert(bc.maxCoeff() <= 1); // bc.sum() == 1
+		// 	return true;
+		// }
 
 		const std::array<std::array<const Eigen::Vector3d *, 3>, 4> faces = {{
 			{{&t0, &t1, &t2}},
@@ -159,8 +163,10 @@ namespace polyfem::utils
 			{{&t1, &t2, &t3}},
 		}};
 
+		const double radius_sqr = radius * radius;
+
 		for (const auto &f : faces)
-			if (ipc::point_triangle_distance(center, *f[0], *f[1], *f[2]) <= radius)
+			if (ipc::point_triangle_distance(center, *f[0], *f[1], *f[2]) <= radius_sqr)
 				return true;
 
 		return false;
