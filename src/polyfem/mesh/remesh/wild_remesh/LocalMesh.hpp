@@ -15,7 +15,7 @@ namespace polyfem::mesh
 	public:
 		LocalMesh(
 			const M &m,
-			const std::vector<Tuple> &triangle_tuples,
+			const std::vector<Tuple> &element_tuples,
 			const bool include_global_boundary);
 
 		/// @brief Construct a local mesh as an n-ring around a vertex.
@@ -38,7 +38,7 @@ namespace polyfem::mesh
 			const double rel_radius,
 			const bool include_global_boundary);
 
-		int num_triangles() const { return m_triangles.rows(); }
+		int num_elements() const { return m_elements.rows(); }
 		int num_local_vertices() const { return m_num_local_vertices; }
 		int num_vertices() const { return m_rest_positions.rows(); }
 
@@ -46,14 +46,11 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd &positions() const { return m_positions; }
 		Eigen::MatrixXd displacements() const { return m_positions - m_rest_positions; }
 
-		const Eigen::MatrixXd &prev_displacements() const { return m_prev_displacements; }
-		const Eigen::MatrixXd &prev_velocities() const { return m_prev_velocities; }
-		const Eigen::MatrixXd &prev_accelerations() const { return m_prev_accelerations; }
+		const Eigen::MatrixXd &projection_quantities() const { return m_projection_quantities; }
 
-		const Eigen::MatrixXd &friction_gradient() const { return m_friction_gradient; }
-
+		const Eigen::MatrixXi &elements() const { return m_elements; }
 		const Eigen::MatrixXi &boundary_edges() const { return m_boundary_edges; }
-		const Eigen::MatrixXi &triangles() const { return m_triangles; }
+		const Eigen::MatrixXi &boundary_faces() const { return m_boundary_faces; }
 
 		const std::unordered_map<int, int> &global_to_local() const { return m_global_to_local; }
 		const std::vector<int> &local_to_global() const { return m_local_to_global; }
@@ -64,6 +61,10 @@ namespace polyfem::mesh
 
 		void reorder_vertices(const Eigen::VectorXi &permutation);
 
+		/// @brief Get a reference to the boundary facets (edges in 2D or faces in 3D).
+		/// @todo Make this const.
+		Eigen::MatrixXi &boundary_facets();
+
 	protected:
 		void remove_duplicate_fixed_vertices();
 		void init_local_to_global();
@@ -72,22 +73,18 @@ namespace polyfem::mesh
 		Eigen::MatrixXd m_rest_positions;
 		Eigen::MatrixXd m_positions;
 
-		// TODO: replace this with a time integrator object
-		Eigen::MatrixXd m_prev_displacements;
-		Eigen::MatrixXd m_prev_velocities;
-		Eigen::MatrixXd m_prev_accelerations;
+		Eigen::MatrixXd m_projection_quantities;
 
-		Eigen::MatrixXd m_friction_gradient;
-
+		Eigen::MatrixXi m_elements;
 		Eigen::MatrixXi m_boundary_edges;
-		Eigen::MatrixXi m_triangles;
+		Eigen::MatrixXi m_boundary_faces;
 
 		int m_num_local_vertices;
 		std::unordered_map<int, int> m_global_to_local;
 		std::vector<int> m_local_to_global;
 
 		std::vector<int> m_fixed_vertices;
-		std::vector<int> m_boundary_ids; // only for boundary edges
+		std::vector<int> m_boundary_ids; // only for boundary facets
 		std::vector<int> m_body_ids;
 	};
 } // namespace polyfem::mesh

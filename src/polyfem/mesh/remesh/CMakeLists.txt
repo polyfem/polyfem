@@ -5,14 +5,14 @@ set(SOURCES
 	MMGRemesh.hpp
 	Remesh.hpp
 	Remesh.cpp
-	WildRemeshing.cpp
-	WildRemeshing.hpp
-	WildRemeshingND.cpp
-	WildRemeshingND.hpp
-	WildRemeshing2D.cpp
-	WildRemeshing2D.hpp
-	WildRemeshing3D.cpp
-	WildRemeshing3D.hpp
+	Remesher.cpp
+	Remesher.hpp
+	WildRemesher.cpp
+	WildRemesher.hpp
+	WildTetRemesher.cpp
+	WildTetRemesher.hpp
+	WildTriRemesher.cpp
+	WildTriRemesher.hpp
 )
 
 prepend_current_path(SOURCES)

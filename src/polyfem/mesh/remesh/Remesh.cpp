@@ -1,7 +1,7 @@
 #include "Remesh.hpp"
 
-#include <polyfem/mesh/remesh/WildRemeshing2D.hpp>
-#include <polyfem/mesh/remesh/WildRemeshing3D.hpp>
+#include <polyfem/mesh/remesh/WildTriRemesher.hpp>
+#include <polyfem/mesh/remesh/WildTetRemesher.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
@@ -14,99 +14,38 @@ namespace polyfem::mesh
 {
 	namespace
 	{
-		Eigen::MatrixXd combine_projection_quantities(const State &state, const Eigen::MatrixXd &sol)
-		{
-			if (state.solve_data.time_integrator == nullptr)
-				return Eigen::MatrixXd();
-
-			// not including current displacement as this will be handled as positions
-			Eigen::MatrixXd projection_quantities(
-				state.solve_data.time_integrator->x_prev().size(),
-				3 * state.solve_data.time_integrator->steps());
-			int i = 0;
-			for (const Eigen::VectorXd &x : state.solve_data.time_integrator->x_prevs())
-				projection_quantities.col(i++) = x;
-			for (const Eigen::VectorXd &v : state.solve_data.time_integrator->v_prevs())
-				projection_quantities.col(i++) = v;
-			for (const Eigen::VectorXd &a : state.solve_data.time_integrator->a_prevs())
-				projection_quantities.col(i++) = a;
-			assert(i == projection_quantities.cols());
-
-			return projection_quantities;
-		}
-
-		void split_projection_quantities(
-			const State &state,
-			const Eigen::MatrixXd &projected_quantities,
-			std::vector<Eigen::VectorXd> &x_prevs,
-			std::vector<Eigen::VectorXd> &v_prevs,
-			std::vector<Eigen::VectorXd> &a_prevs)
-		{
-			if (projected_quantities.size() == 0)
-				return;
-
-			const int n_vertices = state.mesh->n_vertices();
-			const int dim = state.mesh->dimension();
-			const int ndof = state.n_bases * dim;
-			const int ndof_mesh = n_vertices * dim;
-			const int ndof_obstacle = state.obstacle.n_vertices() * dim;
-			assert(projected_quantities.rows() == ndof);
-
-			const std::array<std::vector<Eigen::VectorXd> *, 3> all_prevs{{&x_prevs, &v_prevs, &a_prevs}};
-			const int n_steps = projected_quantities.cols() / 3;
-			assert(projected_quantities.cols() % 3 == 0);
-
-			int offset = 0;
-			for (std::vector<Eigen::VectorXd> *prevs : all_prevs)
-			{
-				prevs->clear();
-				for (int i = 0; i < n_steps; ++i)
-				{
-					prevs->push_back(projected_quantities.col(offset + i));
-					prevs->back().head(ndof_mesh) = utils::reorder_matrix(
-						prevs->back().head(ndof_mesh), state.in_node_to_node, n_vertices, dim);
-				}
-				offset += n_steps;
-			}
-
-			assert(offset == projected_quantities.cols());
-		}
-
-		WildRemeshing::BoundaryMap<int> build_boundary_to_id(
+		Remesher::BoundaryMap<int> build_boundary_to_id(
 			const std::unique_ptr<mesh::Mesh> &mesh,
 			const Eigen::VectorXi &in_node_to_node)
 		{
 			if (mesh->dimension() == 2)
 			{
-				WildRemeshing2D::EdgeMap<int> edge_to_boundary_id;
+				Remesher::EdgeMap<int> edge_to_boundary_id;
 				for (int i = 0; i < mesh->n_edges(); i++)
 				{
-					size_t e0 = in_node_to_node[mesh->edge_vertex(i, 0)];
-					size_t e1 = in_node_to_node[mesh->edge_vertex(i, 1)];
-					if (e1 < e0)
-						std::swap(e0, e1);
-					edge_to_boundary_id[std::make_pair(e0, e1)] = mesh->get_boundary_id(i);
+					const size_t e0 = in_node_to_node[mesh->edge_vertex(i, 0)];
+					const size_t e1 = in_node_to_node[mesh->edge_vertex(i, 1)];
+					edge_to_boundary_id[{{e0, e1}}] = mesh->get_boundary_id(i);
 				}
 				return edge_to_boundary_id;
 			}
 			else
 			{
 				assert(mesh->dimension() == 3);
-				WildRemeshing2D::FaceMap<int> face_to_boundary_id;
+				Remesher::FaceMap<int> face_to_boundary_id;
 				for (int i = 0; i < mesh->n_faces(); i++)
 				{
-					std::vector<size_t> f =
+					std::array<size_t, 3> f =
 						{{(size_t)in_node_to_node[mesh->face_vertex(i, 0)],
 						  (size_t)in_node_to_node[mesh->face_vertex(i, 1)],
 						  (size_t)in_node_to_node[mesh->face_vertex(i, 1)]}};
-					std::sort(f.begin(), f.end());
 					face_to_boundary_id[f] = mesh->get_boundary_id(i);
 				}
 				return face_to_boundary_id;
 			}
 		}
 
-		std::shared_ptr<WildRemeshing> create_wild_remeshing(
+		std::shared_ptr<Remesher> create_wild_remeshing(
 			State &state,
 			const Eigen::VectorXd &obstacle_sol,
 			const Eigen::MatrixXd &obstacle_projection_quantities,
@@ -115,13 +54,13 @@ namespace polyfem::mesh
 		{
 			const int dim = state.mesh->dimension();
 
-			std::shared_ptr<WildRemeshing> remeshing;
+			std::shared_ptr<Remesher> remeshing;
 			if (dim == 2)
-				remeshing = std::make_shared<WildRemeshing2D>(
+				remeshing = std::make_shared<WildTriRemesher>(
 					state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
 					time, current_energy);
 			else
-				remeshing = std::make_shared<WildRemeshing3D>(
+				remeshing = std::make_shared<WildTetRemesher>(
 					state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
 					time, current_energy);
 
@@ -148,7 +87,7 @@ namespace polyfem::mesh
 		state.build_mesh_matrices(rest_positions, elements);
 		assert(rest_positions.size() == ndof_mesh);
 
-		WildRemeshing::BoundaryMap<int> boundary_to_id = build_boundary_to_id(state.mesh, state.in_node_to_node);
+		Remesher::BoundaryMap<int> boundary_to_id = build_boundary_to_id(state.mesh, state.in_node_to_node);
 
 		const std::vector<int> body_ids = state.mesh->has_body_ids() ? state.mesh->get_body_ids() : std::vector<int>(elements.rows(), 0);
 		assert(body_ids.size() == elements.rows());
@@ -160,7 +99,8 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd positions = rest_positions + utils::unflatten(mesh_sol, dim);
 
 		// not including current displacement as this will be handled as positions
-		Eigen::MatrixXd projection_quantities = combine_projection_quantities(state, sol);
+		Eigen::MatrixXd projection_quantities = Remesher::combine_time_integrator_quantities(
+			state.solve_data.time_integrator);
 		assert(projection_quantities.rows() == ndof);
 
 		Eigen::VectorXd friction_gradient;
@@ -178,7 +118,7 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 		// remesh
 
-		std::shared_ptr<WildRemeshing> remeshing = create_wild_remeshing(
+		std::shared_ptr<Remesher> remeshing = create_wild_remeshing(
 			state, obstacle_sol, obstacle_projection_quantities, time, state.solve_data.nl_problem->value(sol));
 		remeshing->init(rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids);
 
@@ -205,27 +145,24 @@ namespace polyfem::mesh
 		std::vector<int> boundary_ids;
 		if (dim == 2)
 		{
-			const WildRemeshing2D::EdgeMap<int> remesh_boundary_ids = std::get<WildRemeshing2D::EdgeMap<int>>(remeshing->boundary_ids());
+			const auto remesh_boundary_ids = std::get<Remesher::EdgeMap<int>>(remeshing->boundary_ids());
 			boundary_ids = std::vector<int>(state.mesh->n_edges(), -1);
 			for (int i = 0; i < state.mesh->n_edges(); i++)
 			{
-				size_t e0 = state.mesh->edge_vertex(i, 0);
-				size_t e1 = state.mesh->edge_vertex(i, 1);
-				if (e1 < e0)
-					std::swap(e0, e1);
-				boundary_ids[i] = remesh_boundary_ids.at(std::make_pair(e0, e1));
+				const size_t e0 = state.mesh->edge_vertex(i, 0);
+				const size_t e1 = state.mesh->edge_vertex(i, 1);
+				boundary_ids[i] = remesh_boundary_ids.at({{e0, e1}});
 			}
 		}
 		else
 		{
-			const WildRemeshing2D::FaceMap<int> remesh_boundary_ids = std::get<WildRemeshing2D::FaceMap<int>>(remeshing->boundary_ids());
+			const auto remesh_boundary_ids = std::get<Remesher::FaceMap<int>>(remeshing->boundary_ids());
 			boundary_ids = std::vector<int>(state.mesh->n_faces(), -1);
 			for (int i = 0; i < state.mesh->n_faces(); i++)
 			{
-				std::vector<size_t> f = {{(size_t)state.mesh->face_vertex(i, 0),
-										  (size_t)state.mesh->face_vertex(i, 1),
-										  (size_t)state.mesh->face_vertex(i, 2)}};
-				std::sort(f.begin(), f.end());
+				std::array<size_t, 3> f = {{(size_t)state.mesh->face_vertex(i, 0),
+											(size_t)state.mesh->face_vertex(i, 1),
+											(size_t)state.mesh->face_vertex(i, 2)}};
 				boundary_ids[i] = remesh_boundary_ids.at(f);
 			}
 		}
@@ -265,16 +202,19 @@ namespace polyfem::mesh
 		{
 			assert(state.solve_data.time_integrator != nullptr);
 
-			Eigen::MatrixXd projected_quantities = remeshing->projected_quantities();
+			Eigen::MatrixXd projected_quantities = remeshing->projection_quantities();
 			assert(projected_quantities.rows() == ndof_mesh);
 			assert(projected_quantities.cols() == projection_quantities.cols());
+			projected_quantities = utils::reorder_matrix(
+				projected_quantities, state.in_node_to_node, /*out_blocks=*/-1, dim);
 			projected_quantities.conservativeResize(ndof, Eigen::NoChange);
 			projected_quantities.bottomRows(ndof_obstacle) = obstacle_projection_quantities;
 			// drop the last column (the friction gradient)
 			projected_quantities.conservativeResize(Eigen::NoChange, projected_quantities.cols() - 1);
 
 			std::vector<Eigen::VectorXd> x_prevs, v_prevs, a_prevs;
-			split_projection_quantities(state, projected_quantities, x_prevs, v_prevs, a_prevs);
+			Remesher::split_time_integrator_quantities(
+				projected_quantities, dim, x_prevs, v_prevs, a_prevs);
 			state.solve_data.time_integrator->init(x_prevs, v_prevs, a_prevs, dt);
 		}
 

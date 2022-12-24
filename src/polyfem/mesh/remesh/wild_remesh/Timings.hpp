@@ -5,7 +5,7 @@
 
 namespace polyfem::mesh
 {
-	struct WildRemeshingTimings
+	struct RemesherTimings
 	{
 		double total = 0;
 		double create_local_mesh = 0;

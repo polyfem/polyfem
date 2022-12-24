@@ -1,4 +1,6 @@
-#include "WildRemeshing2D.hpp"
+#include "WildTriRemesher.hpp"
+
+#include <polyfem/utils/GeometryUtils.hpp>
 
 #include <wmtk/utils/TupleUtils.hpp>
 
@@ -6,7 +8,18 @@
 
 namespace polyfem::mesh
 {
-	void WildRemeshing2D::create_mesh(const size_t num_vertices, const Eigen::MatrixXi &triangles)
+	WildTriRemesher::WildTriRemesher(
+		const State &state,
+		const Eigen::MatrixXd &obstacle_displacements,
+		const Eigen::MatrixXd &obstacle_vals,
+		const double current_time,
+		const double starting_energy)
+		: Super(state, obstacle_displacements, obstacle_vals, current_time, starting_energy)
+	{
+	}
+
+	void WildTriRemesher::init_attributes_and_connectivity(
+		const size_t num_vertices, const Eigen::MatrixXi &triangles)
 	{
 		// Register attributes
 		p_vertex_attrs = &vertex_attrs;
@@ -23,9 +36,17 @@ namespace polyfem::mesh
 		wmtk::TriMesh::create_mesh(num_vertices, tri);
 	}
 
-	// -------------------------------------------------------------------------
+	// execute in wild_remesh/Execute.cpp
 
-	bool WildRemeshing2D::is_inverted(const Tuple &loc) const
+	// smooth_before/smooth_after in wild_remesh/Smooth.cpp
+
+	// split_edge_after in wild_remesh/Split.cpp
+
+	// collapse_edge_before/collapse_edge_after in wild_remesh/Collapse.cpp
+
+	// swap_edge_before/swap_edge_after in wild_remesh/Swap.cpp
+
+	bool WildTriRemesher::is_inverted(const Tuple &loc) const
 	{
 		// Get the vertices ids
 		const std::array<size_t, 3> vids = oriented_tri_vids(loc);
@@ -47,9 +68,29 @@ namespace polyfem::mesh
 			   || deformed_orientation != igl::predicates::Orientation::POSITIVE;
 	}
 
-	// -------------------------------------------------------------------------
+	double WildTriRemesher::element_volume(const Tuple &e) const
+	{
+		const std::array<size_t, 3> vids = oriented_tri_vids(e);
+		return utils::triangle_area_2D(
+			vertex_attrs[vids[0]].rest_position,
+			vertex_attrs[vids[1]].rest_position,
+			vertex_attrs[vids[2]].rest_position);
+	}
 
-	std::vector<WildRemeshing2D::Tuple> WildRemeshing2D::new_edges_after(
+	std::vector<WildTriRemesher::Tuple> WildTriRemesher::boundary_facets() const
+	{
+		std::vector<Tuple> boundary_edges;
+		for (const Tuple &e : get_edges())
+			if (!e.switch_face(*this))
+				boundary_edges.push_back(e);
+		return boundary_edges;
+	}
+
+	// map_edge_split_boundary_attributes/map_edge_split_element_attributes in wild_remesh/Split.cpp
+
+	// edge_elastic_energy in wild_remesh/Execute.cpp
+
+	std::vector<WildTriRemesher::Tuple> WildTriRemesher::new_edges_after(
 		const std::vector<Tuple> &tris) const
 	{
 		std::vector<Tuple> new_edges;
@@ -63,17 +104,6 @@ namespace polyfem::mesh
 		}
 		wmtk::unique_edge_tuples(*this, new_edges);
 		return new_edges;
-	}
-
-	// -------------------------------------------------------------------------
-
-	std::vector<WildRemeshing2D::Tuple> WildRemeshing2D::boundary_edges() const
-	{
-		std::vector<Tuple> boundary_edges;
-		for (const Tuple &e : get_edges())
-			if (!e.switch_face(*this))
-				boundary_edges.push_back(e);
-		return boundary_edges;
 	}
 
 } // namespace polyfem::mesh

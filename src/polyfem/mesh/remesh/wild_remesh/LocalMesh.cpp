@@ -1,38 +1,41 @@
 #include "LocalMesh.hpp"
 
-#include <polyfem/mesh/remesh/WildRemeshing2D.hpp>
-#include <polyfem/mesh/remesh/WildRemeshing3D.hpp>
+#include <polyfem/mesh/remesh/WildRemesher.hpp>
 #include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
 #include <igl/boundary_facets.h>
-
-#include <ipc/distance/point_triangle.hpp>
+#include <igl/edges.h>
 
 #include <BVH.hpp>
 
 namespace polyfem::mesh
 {
+	using TriMesh = WildRemesher<wmtk::TriMesh>;
+	using TetMesh = WildRemesher<wmtk::TetMesh>;
+
 	template <typename M>
 	LocalMesh<M>::LocalMesh(
 		const M &m,
-		const std::vector<Tuple> &triangle_tuples,
+		const std::vector<Tuple> &element_tuples,
 		const bool include_global_boundary)
 	{
-		std::unordered_set<size_t> global_triangle_ids;
+		std::unordered_set<size_t> global_element_ids;
 
-		m_triangles.resize(triangle_tuples.size(), 3);
-		for (int fi = 0; fi < num_triangles(); fi++)
+		m_elements.resize(element_tuples.size(), m.dim() + 1);
+		for (int fi = 0; fi < num_elements(); fi++)
 		{
-			const Tuple &t = triangle_tuples[fi];
-			global_triangle_ids.insert(t.fid(m));
+			const Tuple &t = element_tuples[fi];
+			global_element_ids.insert(t.fid(m));
 
-			const std::array<size_t, 3> vids = m.oriented_tri_vids(t);
-			for (int i = 0; i < 3; ++i)
+			const auto vids = m.element_vids(t);
+
+			for (int i = 0; i < vids.size(); ++i)
 			{
 				if (m_global_to_local.find(vids[i]) == m_global_to_local.end())
 					m_global_to_local[vids[i]] = m_global_to_local.size();
-				m_triangles(fi, i) = m_global_to_local[vids[i]];
+				m_elements(fi, i) = m_global_to_local[vids[i]];
 			}
 
 			m_body_ids.push_back(m.element_attrs[t.fid(m)].body_id);
@@ -40,18 +43,34 @@ namespace polyfem::mesh
 		// The above puts local vertices at front
 		m_num_local_vertices = m_global_to_local.size();
 
-		for (int fi = 0; fi < num_triangles(); fi++)
+		for (int fi = 0; fi < num_elements(); fi++)
 		{
-			const Tuple &t = triangle_tuples[fi];
+			const Tuple &t = element_tuples[fi];
 
-			for (int ei = 0; ei < 3; ++ei)
+			for (int i = 0; i < M::DIM + 1; ++i)
 			{
-				const Tuple e = m.tuple_from_edge(t.fid(m), ei);
-				if (e.switch_face(m) && global_triangle_ids.find(e.switch_face(m)->fid(m)) == global_triangle_ids.end())
-				{
-					m_fixed_vertices.push_back(m_global_to_local[e.vid(m)]);
-					m_fixed_vertices.push_back(m_global_to_local[e.switch_vertex(m).vid(m)]);
-				}
+				Tuple t;
+				if constexpr (std::is_same_v<M, TriMesh>)
+					t = m.tuple_from_edge(t.fid(m), i);
+				else
+					t = m.tuple_from_face(t.tid(m), i);
+
+				// Only fix internal facets
+				if (m.is_on_boundary(t))
+					continue;
+
+				size_t adjacent_eid;
+				if constexpr (std::is_same_v<M, TriMesh>)
+					adjacent_eid = t.switch_face(m)->fid(m);
+				else
+					adjacent_eid = t.switch_tetrahedron(m)->tid(m);
+
+				// Only fix internal facets that do not have a neighbor in the local mesh
+				if (global_element_ids.find(adjacent_eid) != global_element_ids.end())
+					continue;
+
+				for (const size_t &vid : m.boundary_facet_vids(t))
+					m_fixed_vertices.push_back(m_global_to_local[vid]);
 			}
 		}
 
@@ -61,42 +80,46 @@ namespace polyfem::mesh
 		{
 			const std::unordered_map<int, int> prev_global_to_local = m_global_to_local;
 
-			const std::vector<Tuple> global_boundary_edges = m.boundary_edges();
-			m_boundary_edges.resize(global_boundary_edges.size(), 2);
-			for (int ei = 0; ei < global_boundary_edges.size(); ei++)
+			const std::vector<Tuple> global_boundary_facets = m.boundary_facets();
+			boundary_facets().resize(global_boundary_facets.size(), 2);
+			for (int i = 0; i < global_boundary_facets.size(); i++)
 			{
-				const Tuple &e = global_boundary_edges[ei];
-				const std::array<size_t, 2> vs = {{e.vid(m), e.switch_vertex(m).vid(m)}};
+				const Tuple &t = global_boundary_facets[i];
+				const auto vids = m.boundary_facet_vids(t);
 
-				const bool is_new_edge =
-					prev_global_to_local.find(vs[0]) == prev_global_to_local.end()
-					|| prev_global_to_local.find(vs[1]) == prev_global_to_local.end();
+				const bool is_new_facet = std::any_of(vids.begin(), vids.end(), [&](size_t vid) {
+					return prev_global_to_local.find(vid) == prev_global_to_local.end();
+				});
 
-				for (int i = 0; i < 2; ++i)
+				for (int j = 0; j < vids.size(); ++j)
 				{
-					if (m_global_to_local.find(vs[i]) == m_global_to_local.end())
-						m_global_to_local[vs[i]] = m_global_to_local.size();
-					m_boundary_edges(ei, i) = m_global_to_local[vs[i]];
-					if (is_new_edge)
-						m_fixed_vertices.push_back(m_boundary_edges(ei, i));
+					if (m_global_to_local.find(vids[j]) == m_global_to_local.end())
+						m_global_to_local[vids[j]] = m_global_to_local.size();
+
+					boundary_facets()(i, j) = m_global_to_local[vids[j]];
+
+					if (is_new_facet)
+						m_fixed_vertices.push_back(boundary_facets()(i, j));
 				}
 
-				m_boundary_ids.push_back(m.boundary_attrs[e.eid(m)].boundary_id);
+				if constexpr (std::is_same_v<M, TriMesh>)
+					m_boundary_ids.push_back(m.boundary_attrs[t.eid(m)].boundary_id);
+				else
+					m_boundary_ids.push_back(m.boundary_attrs[t.fid(m)].boundary_id);
 			}
 		}
 		else
 		{
-			igl::boundary_facets(m_triangles, m_boundary_edges);
-			for (int i = 0; i < m_boundary_edges.rows(); i++)
-			{
-				for (int j = 0; j < m_boundary_edges.cols(); j++)
-				{
-					m_fixed_vertices.push_back(m_boundary_edges(i, j));
-				}
-				// TODO:
-				// m_boundary_ids.push_back(m.boundary_attrs[e.eid(m)].boundary_id);
-			}
+			igl::boundary_facets(m_elements, boundary_facets());
+			m_fixed_vertices.insert(
+				m_fixed_vertices.end(), boundary_facets().data(),
+				boundary_facets().data() + boundary_facets().size());
+			// TODO:
+			// m_boundary_ids.push_back(m.boundary_attrs[e.eid(m)].boundary_id);
 		}
+
+		if (m_boundary_faces.rows() > 0)
+			igl::edges(m_boundary_faces, m_boundary_edges);
 
 		remove_duplicate_fixed_vertices();
 
@@ -113,17 +136,19 @@ namespace polyfem::mesh
 			const Obstacle &obstacle = m.obstacle();
 			utils::append_rows(m_rest_positions, obstacle.v());
 			utils::append_rows(m_positions, obstacle.v() + m.obstacle_displacements());
-			utils::append_rows(m_prev_displacements, m.obstacle_prev_displacement());
-			utils::append_rows(m_prev_velocities, m.obstacle_prev_velocities());
-			utils::append_rows(m_prev_accelerations, m.obstacle_prev_accelerations());
-			utils::append_rows(m_friction_gradient, m.obstacle_friction_gradient());
+			utils::append_rows(m_projection_quantities, m.obstacle_quantities());
 			utils::append_rows(m_boundary_edges, obstacle.e().array() + tmp_num_vertices);
+			utils::append_rows(m_boundary_faces, obstacle.f().array() + tmp_num_vertices);
 
 			for (int i = 0; i < obstacle.n_vertices(); i++)
 				m_fixed_vertices.push_back(i + tmp_num_vertices);
 
-			for (int i = 0; i < obstacle.n_edges(); i++)
-				m_boundary_ids.push_back(std::numeric_limits<int>::max());
+			if constexpr (std::is_same_v<M, TriMesh>)
+				for (int i = 0; i < obstacle.n_edges(); i++)
+					m_boundary_ids.push_back(std::numeric_limits<int>::max());
+			else
+				for (int i = 0; i < obstacle.n_faces(); i++)
+					m_boundary_ids.push_back(std::numeric_limits<int>::max());
 		}
 	}
 
@@ -134,44 +159,43 @@ namespace polyfem::mesh
 		const int n,
 		const bool include_global_boundary)
 	{
-		std::vector<Tuple> triangles = m.get_one_ring_tris_for_vertex(center);
+		std::vector<Tuple> elements = m.get_one_ring_elements_for_vertex(center);
 		std::unordered_set<size_t> visited_vertices{{center.vid(m)}};
 		std::unordered_set<size_t> visited_faces;
-		for (const auto &triangle : triangles)
-			visited_faces.insert(triangle.fid(m));
+		for (const auto &element : elements)
+			visited_faces.insert(element.fid(m));
 
-		std::vector<Tuple> new_triangles = triangles;
+		std::vector<Tuple> new_elements = elements;
 
 		for (int i = 1; i < n; i++)
 		{
-			std::vector<Tuple> new_new_triangles;
-			for (const auto &t : new_triangles)
+			std::vector<Tuple> new_new_elements;
+			for (const auto &t : new_elements)
 			{
-				const std::array<Tuple, 3> vs = m.oriented_tri_vertices(t);
-				for (int vi = 0; vi < 3; vi++)
+				const auto vs = m.element_vertices(t);
+				for (const Tuple &v : vs)
 				{
-					const Tuple &v = vs[vi];
 					if (visited_vertices.find(v.vid(m)) != visited_vertices.end())
 						continue;
 					visited_vertices.insert(v.vid(m));
 
-					std::vector<wmtk::TriMesh::Tuple> tmp = m.get_one_ring_tris_for_vertex(v);
+					std::vector<Tuple> tmp = m.get_one_ring_elements_for_vertex(v);
 					for (auto &t1 : tmp)
 					{
 						if (visited_faces.find(t1.fid(m)) != visited_faces.end())
 							continue;
 						visited_faces.insert(t1.fid(m));
-						triangles.push_back(t1);
-						new_new_triangles.push_back(t1);
+						elements.push_back(t1);
+						new_new_elements.push_back(t1);
 					}
 				}
 			}
-			new_triangles = new_new_triangles;
-			if (new_triangles.empty())
+			new_elements = new_new_elements;
+			if (new_elements.empty())
 				break;
 		}
 
-		return LocalMesh(m, triangles, include_global_boundary);
+		return LocalMesh(m, elements, include_global_boundary);
 	}
 
 	template <typename M>
@@ -185,23 +209,23 @@ namespace polyfem::mesh
 
 		double current_area = 0;
 
-		std::vector<Tuple> triangles = m.get_one_ring_tris_for_vertex(center);
+		std::vector<Tuple> elements = m.get_one_ring_elements_for_vertex(center);
 		std::unordered_set<size_t> visited_vertices{{center.vid(m)}};
 		std::unordered_set<size_t> visited_faces;
-		for (const auto &triangle : triangles)
-			visited_faces.insert(triangle.fid(m));
+		for (const auto &element : elements)
+			visited_faces.insert(element.fid(m));
 
-		std::vector<Tuple> new_triangles = triangles;
+		std::vector<Tuple> new_elements = elements;
 
 		int n_ring = 0;
 		while (current_area < area)
 		{
 			n_ring++;
-			std::vector<Tuple> new_new_triangles;
-			for (const auto &t : new_triangles)
+			std::vector<Tuple> new_new_elements;
+			for (const auto &t : new_elements)
 			{
 				current_area += m.element_volume(t);
-				const std::array<Tuple, 3> vs = m.oriented_tri_vertices(t);
+				const auto vs = m.element_vertices(t);
 				for (int vi = 0; vi < 3; vi++)
 				{
 					const Tuple &v = vs[vi];
@@ -209,24 +233,24 @@ namespace polyfem::mesh
 						continue;
 					visited_vertices.insert(v.vid(m));
 
-					std::vector<wmtk::TriMesh::Tuple> tmp = m.get_one_ring_tris_for_vertex(v);
+					std::vector<Tuple> tmp = m.get_one_ring_elements_for_vertex(v);
 					for (auto &t1 : tmp)
 					{
 						if (visited_faces.find(t1.fid(m)) != visited_faces.end())
 							continue;
 						visited_faces.insert(t1.fid(m));
-						triangles.push_back(t1);
-						new_new_triangles.push_back(t1);
+						elements.push_back(t1);
+						new_new_elements.push_back(t1);
 					}
 				}
 			}
-			new_triangles = new_new_triangles;
-			if (new_triangles.empty())
+			new_elements = new_new_elements;
+			if (new_elements.empty())
 				break;
 		}
 		// logger().critical("target_area={:g} area={:g} n_ring={}", area, current_area, n_ring);
 
-		return LocalMesh(m, triangles, include_global_boundary);
+		return LocalMesh(m, elements, include_global_boundary);
 	}
 
 	template <typename M>
@@ -260,11 +284,7 @@ namespace polyfem::mesh
 		std::vector<std::array<Eigen::Vector3d, 2>> boxes(elements.size());
 		for (int i = 0; i < elements.size(); i++)
 		{
-			std::array<size_t, M::DIM + 1> vids;
-			if constexpr (std::is_same_v<M, WildRemeshing2D>)
-				vids = m.oriented_tri_vids(elements[i]);
-			else
-				vids = m.oriented_tet_vids(elements[i]);
+			const auto vids = m.element_vids(elements[i]);
 			boxes[i][0] = V(vids, Eigen::all).colwise().minCoeff();
 			boxes[i][1] = V(vids, Eigen::all).colwise().maxCoeff();
 		}
@@ -279,20 +299,36 @@ namespace polyfem::mesh
 		std::vector<Tuple> intersecting_elements;
 		for (unsigned int fi : candidates)
 		{
-			std::array<size_t, M::DIM + 1> vids;
-			static_assert(std::is_same_v<M, WildRemeshing2D>);
-			vids = m.oriented_tri_vids(elements[fi]);
-
-			const double distance = ipc::point_triangle_distance(
-				center.transpose(), V.row(vids[0]), V.row(vids[1]), V.row(vids[2]));
-
-			if (distance <= radius)
+			bool is_intersecting;
+			const auto vids = m.element_vids(elements[fi]);
+			if constexpr (std::is_same_v<M, TriMesh>)
 			{
-				intersecting_elements.push_back(elements[fi]);
+				is_intersecting = utils::tiangle_intersects_disk(
+					V.row(vids[0]), V.row(vids[1]), V.row(vids[2]),
+					center.head<2>(), radius);
 			}
+			else
+			{
+				static_assert(std::is_same_v<M, TetMesh>);
+				is_intersecting = utils::tetrahedron_intersects_ball(
+					V.row(vids[0]), V.row(vids[1]), V.row(vids[2]), V.row(vids[3]),
+					center, radius);
+			}
+
+			if (is_intersecting)
+				intersecting_elements.push_back(elements[fi]);
 		}
 
 		return LocalMesh<M>(m, intersecting_elements, include_global_boundary);
+	}
+
+	template <typename M>
+	Eigen::MatrixXi &LocalMesh<M>::boundary_facets()
+	{
+		if constexpr (std::is_same_v<M, TriMesh>)
+			return m_boundary_edges;
+		else
+			return m_boundary_faces;
 	}
 
 	template <typename M>
@@ -318,23 +354,18 @@ namespace polyfem::mesh
 	void LocalMesh<M>::init_vertex_attributes(const M &m)
 	{
 		const int num_vertices = m_global_to_local.size();
-		m_rest_positions.resize(num_vertices, m.dim());
-		m_positions.resize(num_vertices, m.dim());
-		m_prev_displacements.resize(num_vertices, m.dim());
-		m_prev_velocities.resize(num_vertices, m.dim());
-		m_prev_accelerations.resize(num_vertices, m.dim());
-		m_friction_gradient.resize(num_vertices, m.dim());
+		const int dim = m.dim();
+
+		m_rest_positions.resize(num_vertices, dim);
+		m_positions.resize(num_vertices, dim);
+		m_projection_quantities.resize(num_vertices * dim, m.n_quantities());
+
 		for (const auto &[glob_vi, loc_vi] : m_global_to_local)
 		{
 			m_rest_positions.row(loc_vi) = m.vertex_attrs[glob_vi].rest_position;
 			m_positions.row(loc_vi) = m.vertex_attrs[glob_vi].position;
-
-			assert(m.vertex_attrs[glob_vi].projection_quantities.cols() == 4);
-
-			m_prev_displacements.row(loc_vi) = m.vertex_attrs[glob_vi].prev_displacement();
-			m_prev_velocities.row(loc_vi) = m.vertex_attrs[glob_vi].prev_velocity();
-			m_prev_accelerations.row(loc_vi) = m.vertex_attrs[glob_vi].prev_acceleration();
-			m_friction_gradient.row(loc_vi) = m.vertex_attrs[glob_vi].friction_gradient();
+			m_projection_quantities.middleRows(dim * loc_vi, dim) =
+				m.vertex_attrs[glob_vi].projection_quantities;
 		}
 	}
 
@@ -345,14 +376,13 @@ namespace polyfem::mesh
 		m_rest_positions = utils::reorder_matrix(m_rest_positions, permutation);
 		m_positions = utils::reorder_matrix(m_positions, permutation);
 
-		m_prev_displacements = utils::reorder_matrix(m_prev_displacements, permutation);
-		m_prev_velocities = utils::reorder_matrix(m_prev_velocities, permutation);
-		m_prev_accelerations = utils::reorder_matrix(m_prev_accelerations, permutation);
+		m_projection_quantities = utils::reorder_matrix(
+			m_projection_quantities, permutation, /*out_blocks=*/-1,
+			/*block_size=*/M::DIM);
 
-		m_friction_gradient = utils::reorder_matrix(m_friction_gradient, permutation);
-
+		m_elements = utils::map_index_matrix(m_elements, permutation);
 		m_boundary_edges = utils::map_index_matrix(m_boundary_edges, permutation);
-		m_triangles = utils::map_index_matrix(m_triangles, permutation);
+		m_boundary_faces = utils::map_index_matrix(m_boundary_faces, permutation);
 
 		for (auto &[glob_vi, loc_vi] : m_global_to_local)
 			loc_vi = permutation[loc_vi];
@@ -369,6 +399,6 @@ namespace polyfem::mesh
 	// -------------------------------------------------------------------------
 	// Template specializations
 
-	template class LocalMesh<WildRemeshing2D>;
-	// template class LocalMesh<WildRemeshing3D>;
+	template class LocalMesh<TriMesh>;
+	template class LocalMesh<TetMesh>;
 } // namespace polyfem::mesh

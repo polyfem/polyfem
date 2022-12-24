@@ -1,10 +1,8 @@
-#include "WildRemeshingND.hpp"
-
-#include <polyfem/utils/GeometryUtils.hpp>
+#include "WildRemesher.hpp"
 
 #define VERTEX_ATTRIBUTE_GETTER(name, attribute)                                                     \
 	template <class WMTKMesh>                                                                        \
-	Eigen::MatrixXd WildRemeshingND<WMTKMesh>::name() const                                          \
+	Eigen::MatrixXd WildRemesher<WMTKMesh>::name() const                                             \
 	{                                                                                                \
 		Eigen::MatrixXd attributes = Eigen::MatrixXd::Constant(WMTKMesh::vert_capacity(), DIM, NaN); \
 		for (const Tuple &t : WMTKMesh::get_vertices())                                              \
@@ -14,7 +12,7 @@
 
 #define VERTEX_ATTRIBUTE_SETTER(name, attribute)                                 \
 	template <class WMTKMesh>                                                    \
-	void WildRemeshingND<WMTKMesh>::name(const Eigen::MatrixXd &attributes)      \
+	void WildRemesher<WMTKMesh>::name(const Eigen::MatrixXd &attributes)         \
 	{                                                                            \
 		for (const Tuple &t : WMTKMesh::get_vertices())                          \
 			vertex_attrs[t.vid(*this)].attribute = attributes.row(t.vid(*this)); \
@@ -25,7 +23,19 @@ namespace polyfem::mesh
 	static constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
 
 	template <class WMTKMesh>
-	void WildRemeshingND<WMTKMesh>::init(
+	WildRemesher<WMTKMesh>::WildRemesher(
+		const State &state,
+		const Eigen::MatrixXd &obstacle_displacements,
+		const Eigen::MatrixXd &obstacle_vals,
+		const double current_time,
+		const double starting_energy)
+		: Remesher(state, obstacle_displacements, obstacle_vals, current_time, starting_energy),
+		  WMTKMesh()
+	{
+	}
+
+	template <class WMTKMesh>
+	void WildRemesher<WMTKMesh>::init(
 		const Eigen::MatrixXd &rest_positions,
 		const Eigen::MatrixXd &positions,
 		const Eigen::MatrixXi &triangles,
@@ -33,7 +43,7 @@ namespace polyfem::mesh
 		const BoundaryMap<int> &boundary_to_id,
 		const std::vector<int> &body_ids)
 	{
-		WildRemeshing::init(rest_positions, positions, triangles, projection_quantities, boundary_to_id, body_ids);
+		Remesher::init(rest_positions, positions, triangles, projection_quantities, boundary_to_id, body_ids);
 
 		total_volume = 0;
 		for (const Tuple &t : get_elements())
@@ -43,21 +53,49 @@ namespace polyfem::mesh
 	// -------------------------------------------------------------------------
 	// Getters
 
-	template <class WMTKMesh>
-	std::vector<typename WildRemeshingND<WMTKMesh>::Tuple> WildRemeshingND<WMTKMesh>::get_elements() const
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// 2D (Triangle mesh)
+
+	template <>
+	void WildRemesher<wmtk::TriMesh>::set_boundary_ids(const BoundaryMap<int> &boundary_to_id)
 	{
-		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
-			return WMTKMesh::get_faces();
-		else
-			return WMTKMesh::get_tets();
+		assert(std::holds_alternative<EdgeMap<int>>(boundary_to_id));
+		const EdgeMap<int> &edge_to_boundary_id = std::get<EdgeMap<int>>(boundary_to_id);
+		for (const Tuple &edge : get_edges())
+		{
+			const size_t e0 = edge.vid(*this);
+			const size_t e1 = edge.switch_vertex(*this).vid(*this);
+			boundary_attrs[edge.eid(*this)].boundary_id = edge_to_boundary_id.at({{e0, e1}});
+		}
 	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// 3D (Tetrahedron mesh)
+
+	template <>
+	void WildRemesher<wmtk::TetMesh>::set_boundary_ids(const BoundaryMap<int> &boundary_to_id)
+	{
+		assert(std::holds_alternative<FaceMap<int>>(boundary_to_id));
+		const FaceMap<int> &face_to_boundary_id = std::get<FaceMap<int>>(boundary_to_id);
+		for (const Tuple &face : get_faces())
+		{
+			const size_t f0 = face.vid(*this);
+			const size_t f1 = face.switch_vertex(*this).vid(*this);
+			const size_t f2 = face.switch_edge(*this).switch_vertex(*this).vid(*this);
+
+			boundary_attrs[face.fid(*this)].boundary_id = face_to_boundary_id.at({{f0, f1, f2}});
+		}
+	}
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// ND
 
 	VERTEX_ATTRIBUTE_GETTER(rest_positions, rest_position)
 	VERTEX_ATTRIBUTE_GETTER(positions, position)
 	VERTEX_ATTRIBUTE_GETTER(displacements, displacement())
 
 	template <class WMTKMesh>
-	Eigen::MatrixXi WildRemeshingND<WMTKMesh>::edges() const
+	Eigen::MatrixXi WildRemesher<WMTKMesh>::edges() const
 	{
 		const std::vector<Tuple> edges = WMTKMesh::get_edges();
 		Eigen::MatrixXi E = Eigen::MatrixXi::Constant(edges.size(), 2, -1);
@@ -71,17 +109,13 @@ namespace polyfem::mesh
 	}
 
 	template <class WMTKMesh>
-	Eigen::MatrixXi WildRemeshingND<WMTKMesh>::elements() const
+	Eigen::MatrixXi WildRemesher<WMTKMesh>::elements() const
 	{
 		const std::vector<Tuple> elements = get_elements();
 		Eigen::MatrixXi F = Eigen::MatrixXi::Constant(elements.size(), dim() + 1, -1);
 		for (size_t i = 0; i < elements.size(); i++)
 		{
-			std::array<size_t, DIM + 1> vids;
-			if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
-				vids = WMTKMesh::oriented_tri_vids(elements[i]);
-			else
-				vids = WMTKMesh::oriented_tet_vids(elements[i]);
+			const auto vids = element_vids(elements[i]);
 
 			for (int j = 0; j < vids.size(); j++)
 			{
@@ -92,38 +126,36 @@ namespace polyfem::mesh
 	}
 
 	template <class WMTKMesh>
-	Eigen::MatrixXd WildRemeshingND<WMTKMesh>::projected_quantities() const
+	Eigen::MatrixXd WildRemesher<WMTKMesh>::projection_quantities() const
 	{
-		Eigen::MatrixXd projected_quantities =
+		Eigen::MatrixXd projection_quantities =
 			Eigen::MatrixXd::Constant(dim() * WMTKMesh::vert_capacity(), n_quantities(), NaN);
 
 		for (const Tuple &t : WMTKMesh::get_vertices())
 		{
 			const int vi = t.vid(*this);
-			projected_quantities.middleRows(dim() * vi, dim()) = vertex_attrs[vi].projection_quantities;
+			projection_quantities.middleRows(dim() * vi, dim()) = vertex_attrs[vi].projection_quantities;
 		}
 
-		return projected_quantities;
+		return projection_quantities;
 	}
 
 	template <>
-	WildRemeshingND<wmtk::TriMesh>::BoundaryMap<int> WildRemeshingND<wmtk::TriMesh>::boundary_ids() const
+	WildRemesher<wmtk::TriMesh>::BoundaryMap<int> WildRemesher<wmtk::TriMesh>::boundary_ids() const
 	{
 		const std::vector<Tuple> edges = get_edges();
 		EdgeMap<int> boundary_ids;
 		for (const Tuple &edge : edges)
 		{
-			size_t e0 = edge.vid(*this);
-			size_t e1 = edge.switch_vertex(*this).vid(*this);
-			if (e1 < e0)
-				std::swap(e0, e1);
-			boundary_ids[std::make_pair(e0, e1)] = boundary_attrs[edge.eid(*this)].boundary_id;
+			const size_t e0 = edge.vid(*this);
+			const size_t e1 = edge.switch_vertex(*this).vid(*this);
+			boundary_ids[{{e0, e1}}] = boundary_attrs[edge.eid(*this)].boundary_id;
 		}
 		return boundary_ids;
 	}
 
 	template <>
-	WildRemeshingND<wmtk::TetMesh>::BoundaryMap<int> WildRemeshingND<wmtk::TetMesh>::boundary_ids() const
+	WildRemesher<wmtk::TetMesh>::BoundaryMap<int> WildRemesher<wmtk::TetMesh>::boundary_ids() const
 	{
 		const std::vector<Tuple> faces = get_faces();
 		FaceMap<int> boundary_ids;
@@ -133,16 +165,13 @@ namespace polyfem::mesh
 			const size_t f1 = face.switch_vertex(*this).vid(*this);
 			const size_t f2 = face.switch_edge(*this).switch_vertex(*this).vid(*this);
 
-			std::vector<size_t> f_ids = {f0, f1, f2};
-			std::sort(f_ids.begin(), f_ids.end());
-
-			boundary_ids[f_ids] = boundary_attrs[face.fid(*this)].boundary_id;
+			boundary_ids[{{f0, f1, f2}}] = boundary_attrs[face.fid(*this)].boundary_id;
 		}
 		return boundary_ids;
 	}
 
 	template <class WMTKMesh>
-	std::vector<int> WildRemeshingND<WMTKMesh>::body_ids() const
+	std::vector<int> WildRemesher<WMTKMesh>::body_ids() const
 	{
 		const std::vector<Tuple> elements = get_elements();
 		std::vector<int> body_ids(elements.size(), -1);
@@ -157,7 +186,7 @@ namespace polyfem::mesh
 	}
 
 	template <class WMTKMesh>
-	std::vector<int> WildRemeshingND<WMTKMesh>::boundary_nodes() const
+	std::vector<int> WildRemesher<WMTKMesh>::boundary_nodes() const
 	{
 		std::vector<int> boundary_nodes;
 		for (const Tuple &t : WMTKMesh::get_vertices())
@@ -173,22 +202,22 @@ namespace polyfem::mesh
 	VERTEX_ATTRIBUTE_SETTER(set_positions, position)
 
 	template <class WMTKMesh>
-	void WildRemeshingND<WMTKMesh>::set_projected_quantities(
-		const Eigen::MatrixXd &projected_quantities)
+	void WildRemesher<WMTKMesh>::set_projection_quantities(
+		const Eigen::MatrixXd &projection_quantities)
 	{
-		assert(projected_quantities.rows() == dim() * WMTKMesh::vert_capacity());
-		m_n_quantities = projected_quantities.cols();
+		assert(projection_quantities.rows() == dim() * WMTKMesh::vert_capacity());
+		m_n_quantities = projection_quantities.cols();
 
 		for (const Tuple &t : WMTKMesh::get_vertices())
 		{
 			const int vi = t.vid(*this);
 			vertex_attrs[vi].projection_quantities =
-				projected_quantities.middleRows(dim() * vi, dim());
+				projection_quantities.middleRows(dim() * vi, dim());
 		}
 	}
 
 	template <class WMTKMesh>
-	void WildRemeshingND<WMTKMesh>::set_fixed(
+	void WildRemesher<WMTKMesh>::set_fixed(
 		const std::vector<bool> &fixed)
 	{
 		assert(fixed.size() == WMTKMesh::vert_capacity());
@@ -197,40 +226,7 @@ namespace polyfem::mesh
 	}
 
 	template <class WMTKMesh>
-	void WildRemeshingND<WMTKMesh>::set_boundary_ids(
-		const BoundaryMap<int> &boundary_to_id)
-	{
-		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
-		{
-			assert(std::holds_alternative<EdgeMap<int>>(boundary_to_id));
-			const EdgeMap<int> &edge_to_boundary_id = std::get<EdgeMap<int>>(boundary_to_id);
-			for (const Tuple &edge : WMTKMesh::get_edges())
-			{
-				size_t e0 = edge.vid(*this);
-				size_t e1 = edge.switch_vertex(*this).vid(*this);
-				if (e1 < e0)
-					std::swap(e0, e1);
-				boundary_attrs[edge.eid(*this)].boundary_id = edge_to_boundary_id.at(std::make_pair(e0, e1));
-			}
-		}
-		else
-		{
-			assert(std::holds_alternative<FaceMap<int>>(boundary_to_id));
-			const FaceMap<int> &face_to_boundary_id = std::get<FaceMap<int>>(boundary_to_id);
-			for (const Tuple &face : WMTKMesh::get_faces())
-			{
-				size_t f0 = face.vid(*this);
-				size_t f1 = face.switch_vertex(*this).vid(*this);
-				size_t f2 = face.switch_edge(*this).switch_vertex(*this).vid(*this);
-				std::vector<size_t> f_ids = {{f0, f1, f2}};
-				std::sort(f_ids.begin(), f_ids.end());
-				boundary_attrs[face.fid(*this)].boundary_id = face_to_boundary_id.at(f_ids);
-			}
-		}
-	}
-
-	template <class WMTKMesh>
-	void WildRemeshingND<WMTKMesh>::set_body_ids(
+	void WildRemesher<WMTKMesh>::set_body_ids(
 		const std::vector<int> &body_ids)
 	{
 		const std::vector<Tuple> elements = get_elements();
@@ -246,7 +242,7 @@ namespace polyfem::mesh
 	// -------------------------------------------------------------------------
 
 	template <class WMTKMesh>
-	bool WildRemeshingND<WMTKMesh>::invariants(const std::vector<Tuple> &new_tris)
+	bool WildRemesher<WMTKMesh>::invariants(const std::vector<Tuple> &new_tris)
 	{
 		// for (auto &t : new_tris)
 		for (auto &t : get_elements())
@@ -264,39 +260,17 @@ namespace polyfem::mesh
 	// Utils
 
 	template <class WMTKMesh>
-	double WildRemeshingND<WMTKMesh>::edge_length(const Tuple &e) const
+	double WildRemesher<WMTKMesh>::edge_length(const Tuple &e) const
 	{
 		const auto &e0 = vertex_attrs[e.vid(*this)].position;
 		const auto &e1 = vertex_attrs[e.switch_vertex(*this).vid(*this)].position;
 		return (e1 - e0).norm();
 	}
 
-	template <class WMTKMesh>
-	double WildRemeshingND<WMTKMesh>::element_volume(const Tuple &e) const
-	{
-		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
-		{
-			const std::array<size_t, 3> vids = WMTKMesh::oriented_tri_vids(e);
-			return utils::triangle_area_2D(
-				vertex_attrs[vids[0]].rest_position,
-				vertex_attrs[vids[1]].rest_position,
-				vertex_attrs[vids[2]].rest_position);
-		}
-		else
-		{
-			const std::array<size_t, 4> vids = WMTKMesh::oriented_tet_vids(e);
-			return utils::tetrahedron_volume(
-				vertex_attrs[vids[0]].rest_position,
-				vertex_attrs[vids[1]].rest_position,
-				vertex_attrs[vids[2]].rest_position,
-				vertex_attrs[vids[3]].rest_position);
-		}
-	}
-
 	// -------------------------------------------------------------------------
 	// Template specializations
 
-	template class WildRemeshingND<wmtk::TriMesh>;
-	template class WildRemeshingND<wmtk::TetMesh>;
+	template class WildRemesher<wmtk::TriMesh>;
+	template class WildRemesher<wmtk::TetMesh>;
 
 } // namespace polyfem::mesh

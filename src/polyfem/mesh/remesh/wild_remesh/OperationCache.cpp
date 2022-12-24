@@ -1,32 +1,43 @@
 #include "OperationCache.hpp"
 
-#include <polyfem/mesh/remesh/WildRemeshing2D.hpp>
-#include <polyfem/mesh/remesh/WildRemeshing3D.hpp>
+#include <polyfem/mesh/remesh/WildTriRemesher.hpp>
+#include <polyfem/mesh/remesh/WildTetRemesher.hpp>
 
 namespace polyfem::mesh
 {
 	namespace
 	{
 		void insert_edges_of_face(
-			WildRemeshing2D &m,
-			const WildRemeshing2D::Tuple &t,
-			WildRemeshing2D::EdgeMap<OperationCache2D::EdgeAttributes> &edge_map)
+			WildTriRemesher &m,
+			const WildTriRemesher::Tuple &t,
+			WildTriRemesher::EdgeMap<TriOperationCache::EdgeAttributes> &edge_map)
 		{
 			for (auto i = 0; i < 3; i++)
 			{
-				WildRemeshing2D::Tuple e = m.tuple_from_edge(t.fid(m), i);
-				size_t v0 = e.vid(m);
-				size_t v1 = e.switch_vertex(m).vid(m);
-				if (v0 > v1)
-					std::swap(v0, v1);
-				edge_map[std::make_pair(v0, v1)] = m.boundary_attrs[e.eid(m)];
+				WildTriRemesher::Tuple e = m.tuple_from_edge(t.fid(m), i);
+				const size_t v0 = e.vid(m);
+				const size_t v1 = e.switch_vertex(m).vid(m);
+				edge_map[{{v0, v1}}] = m.boundary_attrs[e.eid(m)];
+			}
+		}
+
+		void insert_faces_of_tet(
+			WildTetRemesher &m,
+			const WildTetRemesher::Tuple &t,
+			WildTetRemesher::FaceMap<TetOperationCache::FaceAttributes> &face_map)
+		{
+			for (auto i = 0; i < 4; i++)
+			{
+				WildTetRemesher::Tuple f = m.tuple_from_face(t.tid(m), i);
+				std::array<WildTetRemesher::Tuple, 3> vs = m.get_face_vertices(f);
+				face_map[{{vs[0].vid(m), vs[1].vid(m), vs[2].vid(m)}}] = m.boundary_attrs[f.fid(m)];
 			}
 		}
 	} // namespace
 
-	OperationCache2D OperationCache2D::split(WildRemeshing2D &m, const Tuple &t)
+	TriOperationCache TriOperationCache::split_edge(WildTriRemesher &m, const Tuple &t)
 	{
-		OperationCache2D cache;
+		TriOperationCache cache;
 
 		cache.m_v0.first = t.vid(m);
 		cache.m_v1.first = t.switch_vertex(m).vid(m);
@@ -47,9 +58,9 @@ namespace polyfem::mesh
 		return cache;
 	}
 
-	OperationCache2D OperationCache2D::collapse(WildRemeshing2D &m, const Tuple &t)
+	TriOperationCache TriOperationCache::collapse_edge(WildTriRemesher &m, const Tuple &t)
 	{
-		OperationCache2D cache;
+		TriOperationCache cache;
 
 		cache.m_v0.first = t.vid(m);
 		cache.m_v1.first = t.switch_vertex(m).vid(m);
@@ -76,9 +87,9 @@ namespace polyfem::mesh
 		return cache;
 	}
 
-	OperationCache2D OperationCache2D::swap(WildRemeshing2D &m, const Tuple &t)
+	TriOperationCache TriOperationCache::swap_edge(WildTriRemesher &m, const Tuple &t)
 	{
-		OperationCache2D cache;
+		TriOperationCache cache;
 
 		cache.m_v0.first = t.vid(m);
 		cache.m_v1.first = t.switch_vertex(m).vid(m);
@@ -93,6 +104,28 @@ namespace polyfem::mesh
 		const Tuple t1 = t.switch_face(m).value();
 		insert_edges_of_face(m, t1, cache.m_edges);
 		cache.m_faces.push_back(m.element_attrs[t1.fid(m)]);
+
+		return cache;
+	}
+
+	TetOperationCache TetOperationCache::split_edge(WildTetRemesher &m, const Tuple &e)
+	{
+		TetOperationCache cache;
+
+		cache.m_v0.first = e.vid(m);
+		cache.m_v1.first = e.switch_vertex(m).vid(m);
+
+		cache.m_v0.second = m.vertex_attrs[cache.m_v0.first];
+		cache.m_v1.second = m.vertex_attrs[cache.m_v1.first];
+
+		const std::vector<Tuple> tets = m.get_incident_tets_for_edge(e);
+		assert(tets.size() >= 1);
+		cache.m_tets.reserve(tets.size());
+		for (const Tuple &t : tets)
+		{
+			insert_faces_of_tet(m, t, cache.m_faces);
+			cache.m_tets[m.oriented_tet_vids(t)] = m.element_attrs[t.tid(m)];
+		}
 
 		return cache;
 	}

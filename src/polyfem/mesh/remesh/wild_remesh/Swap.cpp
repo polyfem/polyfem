@@ -1,8 +1,8 @@
-#include <polyfem/mesh/remesh/WildRemeshing2D.hpp>
+#include <polyfem/mesh/remesh/WildTriRemesher.hpp>
 
 namespace polyfem::mesh
 {
-	bool WildRemeshing2D::swap_edge_before(const Tuple &t)
+	bool WildTriRemesher::swap_edge_before(const Tuple &t)
 	{
 		const int v0i = t.vid(*this);
 		const int v1i = t.switch_vertex(*this).vid(*this);
@@ -12,12 +12,12 @@ namespace polyfem::mesh
 
 		cache_before();
 		// Cache necessary local data
-		op_cache = OperationCache2D::swap(*this, t);
+		op_cache = TriOperationCache::swap_edge(*this, t);
 
 		return true;
 	}
 
-	bool WildRemeshing2D::swap_edge_after(const Tuple &t)
+	bool WildTriRemesher::swap_edge_after(const Tuple &t)
 	{
 		// 0) perform operation (done before this function)
 
@@ -35,13 +35,12 @@ namespace polyfem::mesh
 
 				size_t v0_id = e.vid(*this);
 				size_t v1_id = e.switch_vertex(*this).vid(*this);
-				if (v0_id > v1_id)
-					std::swap(v0_id, v1_id);
-				std::pair<size_t, size_t> edge(v0_id, v1_id);
 
-				if (old_edges.find(edge) != old_edges.end())
+				const auto iter = old_edges.find({{v0_id, v1_id}});
+
+				if (iter != old_edges.end())
 				{
-					boundary_attrs[e.eid(*this)] = old_edges.at(edge);
+					boundary_attrs[e.eid(*this)] = iter->second;
 				}
 				else
 				{

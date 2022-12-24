@@ -1,11 +1,11 @@
-#include <polyfem/mesh/remesh/WildRemeshing2D.hpp>
+#include <polyfem/mesh/remesh/WildTriRemesher.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <wmtk/ExecutionScheduler.hpp>
 
 namespace polyfem::mesh
 {
-	bool WildRemeshing2D::collapse_edge_before(const Tuple &t)
+	bool WildTriRemesher::collapse_edge_before(const Tuple &t)
 	{
 		if (!wmtk::TriMesh::collapse_edge_before(t))
 			return false;
@@ -17,12 +17,12 @@ namespace polyfem::mesh
 			return false;
 
 		cache_before();
-		op_cache = OperationCache2D::collapse(*this, t);
+		op_cache = TriOperationCache::collapse_edge(*this, t);
 
 		return true;
 	}
 
-	bool WildRemeshing2D::collapse_edge_after(const Tuple &t)
+	bool WildTriRemesher::collapse_edge_after(const Tuple &t)
 	{
 		// 0) perform operation (done before this function)
 
@@ -65,10 +65,10 @@ namespace polyfem::mesh
 				std::swap(v0_id, v1_id);
 			assert(v1_id == new_vid); // should be the new vertex because it has a larger id
 
-			std::pair<int, int> old_edge(std::min(v0_id, old_v0_id), std::max(v0_id, old_v0_id));
+			std::array<size_t, 2> old_edge{{v0_id, old_v0_id}};
 			if (old_edges.find(old_edge) == old_edges.end())
 			{
-				old_edge = std::make_pair(std::min(v0_id, old_v1_id), std::max(v0_id, old_v1_id));
+				old_edge = {{v0_id, old_v1_id}};
 				assert(old_edges.find(old_edge) != old_edges.end());
 			}
 			boundary_attrs[e_id] = old_edges.at(old_edge);

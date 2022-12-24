@@ -1,4 +1,4 @@
-#include <polyfem/mesh/remesh/WildRemeshing2D.hpp>
+#include <polyfem/mesh/remesh/WildTriRemesher.hpp>
 #include <polyfem/mesh/remesh/wild_remesh/AMIPSForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
@@ -13,7 +13,7 @@ namespace polyfem::mesh
 {
 	using namespace polyfem::solver;
 
-	bool WildRemeshing2D::smooth_before(const Tuple &t)
+	bool WildTriRemesher::smooth_before(const Tuple &t)
 	{
 		if (vertex_attrs[t.vid(*this)].fixed)
 			return false;
@@ -23,7 +23,7 @@ namespace polyfem::mesh
 		return true;
 	}
 
-	bool WildRemeshing2D::smooth_after(const Tuple &t)
+	bool WildTriRemesher::smooth_after(const Tuple &t)
 	{
 		const size_t vid = t.vid(*this);
 

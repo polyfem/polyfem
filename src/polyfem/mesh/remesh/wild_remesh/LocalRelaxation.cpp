@@ -1,4 +1,4 @@
-#include <polyfem/mesh/remesh/WildRemeshing2D.hpp>
+#include <polyfem/mesh/remesh/WildRemesher.hpp>
 
 #include <polyfem/mesh/remesh/wild_remesh/LocalMesh.hpp>
 #include <polyfem/mesh/remesh/L2Projection.hpp>
@@ -7,23 +7,22 @@
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/LinearForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
-#include <polyfem/io/OBJWriter.hpp>
-
-#include <igl/boundary_facets.h>
+#include <polyfem/io/VTUWriter.hpp>
 
 #define POLYFEM_REMESH_USE_FRICTION_FORM
 
 namespace polyfem::mesh
 {
-	bool WildRemeshing2D::local_relaxation(const Tuple &t, const int n_ring)
+	template <class WMTKMesh>
+	bool WildRemesher<WMTKMesh>::local_relaxation(const Tuple &t, const int n_ring)
 	{
 		using namespace polyfem::solver;
 		using namespace polyfem::time_integrator;
 
 		constexpr bool free_boundary = true;
 
-		// 1. Get the n-ring of triangles around the vertex.
-		using This = std::remove_pointer<decltype(this)>::type;
+		// 1. Get the n-ring of elements around the vertex.
+		using This = typename std::remove_pointer<decltype(this)>::type;
 		// LocalMesh local_mesh = LocalMesh::n_ring(
 		// 	*this, t, n_ring, /*include_global_boundary=*/free_boundary);
 		// LocalMesh<This> local_mesh = LocalMesh<This>::flood_fill_n_ring(
@@ -38,8 +37,8 @@ namespace polyfem::mesh
 		{
 			POLYFEM_SCOPED_TIMER(timings.build_bases);
 			Eigen::VectorXi vertex_to_basis;
-			n_bases = WildRemeshing2D::build_bases(
-				local_mesh.rest_positions(), local_mesh.triangles(),
+			n_bases = Remesher::build_bases(
+				local_mesh.rest_positions(), local_mesh.elements(),
 				state.formulation(), bases, vertex_to_basis);
 
 			assert(n_bases == local_mesh.num_local_vertices());
@@ -59,15 +58,16 @@ namespace polyfem::mesh
 		}
 		const int ndof = n_bases * dim();
 
-		// io::OBJWriter::write(
+		// VTUWriter writer;
+		// writer.write_mesh(
 		// 	state.resolve_output_path("local_rest_mesh_before_local_relaxation.obj"),
-		// 	local_mesh.rest_positions(), local_mesh.triangles());
-		// io::OBJWriter::write(
+		// 	local_mesh.rest_positions(), local_mesh.elements());
+		// writer.write_mesh(
 		// 	state.resolve_output_path("local_deformed_mesh_before_local_relaxation.obj"),
-		// 	local_mesh.positions(), local_mesh.triangles());
+		// 	local_mesh.positions(), local_mesh.elements());
 
-		// write_rest_obj(state.resolve_output_path("rest_mesh_before_local_relaxation.obj"));
-		// write_deformed_obj(state.resolve_output_path("deformed_mesh_before_local_relaxation.obj"));
+		// write_rest_obj(state.resolve_output_path("rest_mesh_before_local_relaxation.vtu"));
+		// write_deformed_obj(state.resolve_output_path("deformed_mesh_before_local_relaxation.vtu"));
 
 		// io::OBJWriter::write(
 		// 	state.resolve_output_path("fixed_vertices.obj"),
@@ -89,15 +89,17 @@ namespace polyfem::mesh
 
 			if (free_boundary)
 			{
-				// TODO: handle the correct DBC
-				for (int ei = 0; ei < local_mesh.boundary_edges().rows(); ei++)
+				const Eigen::MatrixXi &BF = local_mesh.boundary_facets();
+				for (int i = 0; i < BF.rows(); i++)
 				{
-					const int boundary_id = local_mesh.boundary_ids()[ei];
-					if (boundary_id == 2 || boundary_id == 4)
-					{
-						add_vertex_to_boundary_nodes(local_mesh.boundary_edges()(ei, 0));
-						add_vertex_to_boundary_nodes(local_mesh.boundary_edges()(ei, 1));
-					}
+					const int boundary_id = local_mesh.boundary_ids()[i];
+
+					// TODO: handle the correct DBC
+					if (boundary_id != 2 && boundary_id != 4)
+						continue;
+
+					for (int j = 0; j < BF.cols(); ++j)
+						add_vertex_to_boundary_nodes(BF(i, j));
 				}
 			}
 
@@ -141,7 +143,7 @@ namespace polyfem::mesh
 			POLYFEM_SCOPED_TIMER(timings.create_collision_mesh);
 			collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
 				local_mesh.rest_positions(), local_mesh.boundary_edges(),
-				/*boundary_faces=*/Eigen::MatrixXi());
+				local_mesh.boundary_faces());
 		}
 
 		SolveData solve_data;
@@ -151,11 +153,13 @@ namespace polyfem::mesh
 		{
 			solve_data.time_integrator =
 				ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
+			std::vector<Eigen::VectorXd> x_prevs;
+			std::vector<Eigen::VectorXd> v_prevs;
+			std::vector<Eigen::VectorXd> a_prevs;
+			split_time_integrator_quantities(
+				local_mesh.projection_quantities(), dim(), x_prevs, v_prevs, a_prevs);
 			solve_data.time_integrator->init(
-				utils::flatten(local_mesh.prev_displacements()),
-				utils::flatten(local_mesh.prev_velocities()),
-				utils::flatten(local_mesh.prev_accelerations()),
-				state.args["time"]["dt"]);
+				x_prevs, v_prevs, a_prevs, state.args["time"]["dt"]);
 		}
 
 		// TODO: initialize solve_data.rhs_assembler
@@ -265,6 +269,7 @@ namespace polyfem::mesh
 
 			const double abs_diff = local_energy_before - local_energy_after; // > 0 if energy decreased
 			// TODO: compute global_energy_before
+			// Right now using: starting_energy = state.solve_data.nl_problem->value(sol)
 			const double global_energy_before = starting_energy;
 			const double rel_diff = abs_diff / global_energy_before;
 
@@ -323,13 +328,13 @@ namespace polyfem::mesh
 
 			for (const auto &[glob_vi, loc_vi] : local_mesh.global_to_local())
 			{
-				const Eigen::Vector2d u = sol.middleRows(dim() * loc_vi, dim());
-				const Eigen::Vector2d u_old = vertex_attrs[glob_vi].displacement();
+				const auto u = sol.middleRows(dim() * loc_vi, dim());
+				const auto u_old = vertex_attrs[glob_vi].displacement();
 				vertex_attrs[glob_vi].position = vertex_attrs[glob_vi].rest_position + u;
 
 #ifndef POLYFEM_REMESH_USE_FRICTION_FORM
-				const Eigen::Vector2d f = friction_gradient.segment(dim() * loc_vi, dim());
-				const Eigen::Vector2d f_old = vertex_attrs[glob_vi].projection_quantities.rightCols(1);
+				const auto f = friction_gradient.segment(dim() * loc_vi, dim());
+				const auto f_old = vertex_attrs[glob_vi].projection_quantities.rightCols(1);
 				if (f_old.norm() != 0)
 					logger().critical("(f_old⋅f)/(‖f_old‖‖f‖)={:g} ‖f_old‖/‖f‖={:g} ‖u_old - u‖={:g}", (f_old / f_old.norm()).dot(f / f.norm()), f.norm() / f_old.norm(), (u_old - u).norm());
 				vertex_attrs[glob_vi].projection_quantities.rightCols(1) = f;
@@ -346,4 +351,8 @@ namespace polyfem::mesh
 		return accept;
 	}
 
+	// ----------------------------------------------------------------------------------------------
+	// Template specializations
+	template class WildRemesher<wmtk::TriMesh>;
+	template class WildRemesher<wmtk::TetMesh>;
 } // namespace polyfem::mesh

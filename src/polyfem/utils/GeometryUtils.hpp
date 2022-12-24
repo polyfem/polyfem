@@ -63,4 +63,34 @@ namespace polyfem::utils
 	Eigen::VectorXd barycentric_coordinates(
 		const Eigen::VectorXd &p,
 		const Eigen::MatrixXd &V);
+
+	/// @brief Determine if a 2D triangle intersects a 2D disk.
+	/// @param t0 Triangle first vertex.
+	/// @param t1 Triangle second vertex.
+	/// @param t2 Triangle third vertex.
+	/// @param center Center of the disk.
+	/// @param radius Radius of the disk.
+	/// @return True if the triangle intersects the disk, false otherwise.
+	bool tiangle_intersects_disk(
+		const Eigen::Vector2d &t0,
+		const Eigen::Vector2d &t1,
+		const Eigen::Vector2d &t2,
+		const Eigen::Vector2d &center,
+		const double radius);
+
+	/// @brief Determine if a 3D tetrahedron intersects a 3D ball.
+	/// @param t0 Tetrahedron first vertex.
+	/// @param t1 Tetrahedron second vertex.
+	/// @param t2 Tetrahedron third vertex.
+	/// @param t3 Tetrahedron fourth vertex.
+	/// @param center Center of the ball.
+	/// @param radius Radius of the ball.
+	/// @return True if the tetrahedron intersects the ball, false otherwise.
+	bool tetrahedron_intersects_ball(
+		const Eigen::Vector3d &t0,
+		const Eigen::Vector3d &t1,
+		const Eigen::Vector3d &t2,
+		const Eigen::Vector3d &t3,
+		const Eigen::Vector3d &center,
+		const double radius);
 } // namespace polyfem::utils
