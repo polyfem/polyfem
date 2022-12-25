@@ -6,6 +6,7 @@
 
 #include <nanospline/BSpline.h>
 #include <polyfem/io/OBJWriter.hpp>
+#include <polyfem/utils/ExpressionValue.hpp>
 
 #include <shared_mutex>
 #include <array>
@@ -286,15 +287,26 @@ namespace polyfem::solver
 			spatial_integral_type_ = AdjointForm::SpatialIntegralType::SURFACE;
 			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
 			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+			active_dimension_mask.assign(true, state_.mesh->dimension());
 		}
 		~TargetObjective() = default;
 
 		IntegrableFunctional get_integral_functional() override;
-		void set_reference(const std::shared_ptr<const State> &target_state, const std::set<int> &reference_cached_body_ids);
+		void set_reference(const std::shared_ptr<const State> &target_state, const std::set<int> &reference_cached_body_ids); // target is another simulation solution
+		void set_reference(const Eigen::VectorXd &disp) { target_disp = disp; } // target is a constant displacement
+		void set_reference(const json &func, const json &grad_func); // target is a lambda function depending on deformed position
+		void set_active_dimension(const std::vector<bool> &mask) { active_dimension_mask = mask; }
 
 	protected:
 		std::shared_ptr<const State> target_state_;
 		std::map<int, int> e_to_ref_e_;
+
+		std::vector<bool> active_dimension_mask;
+		Eigen::VectorXd target_disp;
+
+		bool have_target_func = false;
+		utils::ExpressionValue target_func;
+		std::array<utils::ExpressionValue, 3> target_func_grad;
 	};
 
 	class SDFTargetObjective : public SpatialIntegralObjective
