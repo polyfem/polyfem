@@ -147,7 +147,7 @@ namespace polyfem::solver
 				}
 
 				auto target_obj = std::make_shared<SDFTargetObjective>(state, shape_param, args);
-				target_obj->set_bspline_target(control_points, knots, delta);
+				target_obj->set_bspline_target(control_points, knots, delta(0));
 				static_obj = target_obj;
 			}
 			else if (matching == "marker-data" || matching == "exact-marker")
@@ -1690,85 +1690,92 @@ namespace polyfem::solver
 		return Eigen::VectorXd::Zero(param.optimization_dim());
 	}
 
-	void SDFTargetObjective::compute_distance(const Eigen::MatrixXd &point, double &distance, Eigen::MatrixXd &grad)
+	void SDFTargetObjective::compute_distance(const Eigen::MatrixXd &point, double &distance)
 	{
+		distance = DBL_MAX;
 		Eigen::MatrixXd p = point.transpose();
-		int nearest_point = 0;
-		double t_optimal = t_sampling(nearest_point);
-		distance = (p - point_sampling.row(nearest_point)).squaredNorm();
-		for (int i = 1; i < t_sampling.size(); ++i)
-		{
-			auto cur_dist = (p - point_sampling.row(i)).squaredNorm();
-			if (cur_dist < distance)
-			{
-				distance = cur_dist;
-				t_optimal = t_sampling(i);
-				nearest_point = i;
-			}
-		}
 
-		if (nearest_point != 0)
+		for (int i = 0; i < t_sampling.size() - 1; ++i)
 		{
-			// Check the segment left of the point
-			int i = nearest_point;
-			const double l = (point_sampling.row(i) - point_sampling.row(i - 1)).squaredNorm();
-			assert(l > 0);
-			const float t = std::max(0., std::min(1., ((p - point_sampling.row(i - 1)) * (point_sampling.row(i) - point_sampling.row(i - 1)).transpose())(0) / l));
-			const auto project = point_sampling.row(i - 1) * (1 - t) + point_sampling.row(i) * t;
-			const double project_distance = (p - project).squaredNorm();
-			if (project_distance < distance)
-			{
-				t_optimal = t_sampling(nearest_point) - (1. - t) / (t_sampling.size() - 1);
-				// distance = (p - curve.evaluate(t_optimal)).squaredNorm();
-				distance = project_distance;
-			}
-		}
-		else if (nearest_point != t_sampling.size() - 1)
-		{
-			// Check the segment right of the point
-			int i = nearest_point;
-			const double l = (point_sampling.row(i + 1) - point_sampling.row(i)).squaredNorm();
-			assert(l > 0);
-			const float t = std::max(0., std::min(1., ((p - point_sampling.row(i)) * (point_sampling.row(i + 1) - point_sampling.row(i)).transpose())(0) / l));
+			const double l = (point_sampling.row(i + 1) - point_sampling.row(i)).norm();
+			double distance_to_perpendicular = ((p - point_sampling.row(i)) * (point_sampling.row(i + 1) - point_sampling.row(i)).transpose())(0) / l;
+			const float t = std::max(0., std::min(1., distance_to_perpendicular));
 			const auto project = point_sampling.row(i) * (1 - t) + point_sampling.row(i + 1) * t;
-			const double project_distance = (p - project).squaredNorm();
+			const double project_distance = (p - project).norm();
 			if (project_distance < distance)
 			{
-				t_optimal = t_sampling(nearest_point) + t / (t_sampling.size() - 1);
-				// distance = (p - curve.evaluate(t_optimal)).squaredNorm();
 				distance = project_distance;
 			}
 		}
-
-		Eigen::VectorXd point_on_curve = curve.evaluate(t_optimal).transpose();
-		distance = (point - point_on_curve).squaredNorm();
-		distance = pow(distance, 1. / 2.);
-
-		grad.setZero(3, 1);
-		if (distance < 1e-8)
-			return;
-
-		grad.block(0, 0, 2, 1) = (point - point_on_curve) / distance;
-		assert(!std::isnan(grad(0)) && !std::isnan(grad(1)));
-		assert(abs(1 - grad.col(0).segment(0, 2).norm()) < 1e-6);
 	}
 
-	void SDFTargetObjective::bicubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad)
+	void SDFTargetObjective::compute_distances(const Eigen::MatrixXd &point, Eigen::VectorXd &distances, double h = 1e-6)
+	{
+		std::vector<double> eps = {-delta_, 0, delta_};
+		Eigen::MatrixXi bin(dim, 1);
+		for (int k = 0; k < dim; ++k)
+			bin(k) = (int)std::floor(point(k) / delta_);
+		if (point.size() == 2)
+		{
+			distances.setZero(eps.size() * eps.size());
+			int index = 0;
+			for (int i = 0; i < eps.size(); ++i)
+				for (int j = 0; j < eps.size(); ++j)
+				{
+					Eigen::MatrixXd new_point = point;
+					new_point(0) += eps[i];
+					new_point(1) += eps[j];
+					double distance;
+					compute_distance(new_point, distance);
+					distances(index++) = distance;
+				}
+		}
+		else if (point.size() == 3)
+		{
+			distances.setZero(eps.size() * eps.size() * eps.size());
+			int index = 0;
+			for (int i = 0; i < eps.size(); ++i)
+				for (int j = 0; j < eps.size(); ++j)
+					for (int l = 0; l < eps.size(); ++l)
+					{
+						Eigen::MatrixXd new_point = point;
+						new_point(0) += eps[i];
+						new_point(1) += eps[j];
+						new_point(2) += eps[l];
+						double distance;
+						compute_distance(new_point, distance);
+						distances(index++) = distance;
+					}
+		}
+	}
+
+	void SDFTargetObjective::bicubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad, const double h = 1e-6)
 	{
 		Eigen::MatrixXd corner_val(4, 1);
-		Eigen::MatrixXd corner_grad(4, 3);
+		Eigen::MatrixXd corner_grad(4, 2);
+		Eigen::MatrixXd corner_grad_grad(4, 1);
 		for (int i = 0; i < 4; ++i)
 		{
-			corner_val(i) = implicit_function_distance.at(keys[i]);
-			corner_grad.row(i) = implicit_function_grad.at(keys[i]).transpose();
+			{
+				std::shared_lock distance_lock(distance_mutex_);
+				corner_val(i) = implicit_function_distance.at(keys[i]);
+			}
+			{
+				std::shared_lock grad_lock(grad_mutex_);
+				auto mixed_grads = implicit_function_grads.at(keys[i]);
+				corner_grad(i, 0) = mixed_grads(0);
+				corner_grad(i, 1) = mixed_grads(1);
+				corner_grad_grad(i, 0) = mixed_grads(2);
+			}
 		}
+
 		Eigen::MatrixXd x(16, 1);
 		x << corner_val(0), corner_val(1), corner_val(2), corner_val(3),
-			delta_(0) * corner_grad(0, 0), delta_(0) * corner_grad(1, 0), delta_(0) * corner_grad(2, 0), delta_(0) * corner_grad(3, 0),
-			delta_(1) * corner_grad(0, 1), delta_(1) * corner_grad(1, 1), delta_(1) * corner_grad(2, 1), delta_(1) * corner_grad(3, 1),
-			delta_(0) * delta_(1) * corner_grad(0, 2), delta_(0) * delta_(1) * corner_grad(1, 2), delta_(0) * delta_(1) * corner_grad(2, 2), delta_(0) * delta_(1) * corner_grad(3, 2);
+			delta_ * corner_grad(0, 0), delta_ * corner_grad(1, 0), delta_ * corner_grad(2, 0), delta_ * corner_grad(3, 0),
+			delta_ * corner_grad(0, 1), delta_ * corner_grad(1, 1), delta_ * corner_grad(2, 1), delta_ * corner_grad(3, 1),
+			delta_ * delta_ * corner_grad_grad(0, 0), delta_ * delta_ * corner_grad_grad(1, 0), delta_ * delta_ * corner_grad_grad(2, 0), delta_ * delta_ * corner_grad_grad(3, 0);
 
-		Eigen::MatrixXd coeffs = bicubic_mat * x;
+		Eigen::MatrixXd coeffs = cubic_mat * x;
 
 		auto bar_x = [&corner_point](double x_) { return (x_ - corner_point(0, 0)) / (corner_point(1, 0) - corner_point(0, 0)); };
 		auto bar_y = [&corner_point](double y_) { return (y_ - corner_point(0, 1)) / (corner_point(2, 1) - corner_point(0, 1)); };
@@ -1789,52 +1796,191 @@ namespace polyfem::solver
 		assert(!std::isnan(grad(0)) && !std::isnan(grad(1)));
 	}
 
+	void SDFTargetObjective::tricubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad)
+	{
+		Eigen::MatrixXd corner_val(8, 1);
+		Eigen::MatrixXd corner_grad(8, 3);
+		Eigen::MatrixXd corner_grad_grad(8, 3);
+		Eigen::MatrixXd corner_grad_grad_grad(8, 1);
+		for (int i = 0; i < 4; ++i)
+		{
+			{
+				std::shared_lock distance_lock(distance_mutex_);
+				corner_val(i) = implicit_function_distance.at(keys[i]);
+			}
+			{
+				std::shared_lock grad_lock(grad_mutex_);
+				auto mixed_grads = implicit_function_grads.at(keys[i]);
+				corner_grad(i, 0) = mixed_grads(0);
+				corner_grad(i, 1) = mixed_grads(1);
+				corner_grad(i, 2) = mixed_grads(2);
+				corner_grad_grad(i, 0) = mixed_grads(3);
+				corner_grad_grad(i, 1) = mixed_grads(4);
+				corner_grad_grad(i, 2) = mixed_grads(5);
+				corner_grad_grad_grad(i, 0) = mixed_grads(6);
+			}
+		}
+		Eigen::MatrixXd x(64, 1);
+		x << corner_val(0), corner_val(1), corner_val(2), corner_val(3), corner_val(4), corner_val(5), corner_val(6), corner_val(7),
+			delta_ * corner_grad(0, 0), delta_ * corner_grad(1, 0), delta_ * corner_grad(2, 0), delta_ * corner_grad(3, 0),
+			delta_ * corner_grad(0, 1), delta_ * corner_grad(1, 1), delta_ * corner_grad(2, 1), delta_ * corner_grad(3, 1),
+			delta_ * corner_grad(0, 2), delta_ * corner_grad(1, 2), delta_ * corner_grad(2, 2), delta_ * corner_grad(3, 2),
+			delta_ * delta_ * corner_grad_grad(0, 0), delta_ * delta_ * corner_grad_grad(1, 0), delta_ * delta_ * corner_grad_grad(2, 0), delta_ * delta_ * corner_grad_grad(3, 0),
+			delta_ * delta_ * corner_grad_grad(0, 1), delta_ * delta_ * corner_grad_grad(1, 1), delta_ * delta_ * corner_grad_grad(2, 1), delta_ * delta_ * corner_grad_grad(3, 1),
+			delta_ * delta_ * corner_grad_grad(0, 2), delta_ * delta_ * corner_grad_grad(1, 2), delta_ * delta_ * corner_grad_grad(2, 2), delta_ * delta_ * corner_grad_grad(3, 2),
+			delta_ * delta_ * delta_ * corner_grad_grad_grad(0, 0), delta_ * delta_ * delta_ * corner_grad_grad_grad(1, 0), delta_ * delta_ * delta_ * corner_grad_grad_grad(2, 0), delta_ * delta_ * delta_ * corner_grad_grad_grad(3, 0);
+
+		Eigen::MatrixXd coeffs = cubic_mat * x;
+
+		auto bar_x = [&corner_point](double x_) { return (x_ - corner_point(0, 0)) / (corner_point(1, 0) - corner_point(0, 0)); };
+		auto bar_y = [&corner_point](double y_) { return (y_ - corner_point(0, 1)) / (corner_point(2, 1) - corner_point(0, 1)); };
+		auto bar_z = [&corner_point](double z_) { return (z_ - corner_point(0, 2)) / (corner_point(4, 2) - corner_point(0, 2)); };
+
+		val = 0;
+		grad.setZero(3, 1);
+		for (int i = 0; i < 4; ++i)
+			for (int j = 0; j < 4; ++j)
+				for (int l = 0; l < 4; ++l)
+				{
+					val += coeffs(i + j * 4 + l * 16) * pow(bar_x(point(0)), i) * pow(bar_y(point(1)), j) * pow(bar_z(point(2)), l);
+					grad(0) += i == 0 ? 0 : (coeffs(i + j * 4 + l * 16) * i * pow(bar_x(point(0)), i - 1) * pow(bar_y(point(1)), j)) * pow(bar_z(point(2)), l);
+					grad(1) += j == 0 ? 0 : coeffs(i + j * 4 + l * 16) * pow(bar_x(point(0)), i) * j * pow(bar_y(point(1)), j - 1) * pow(bar_z(point(2)), l);
+					grad(2) += l == 0 ? 0 : coeffs(i + j * 4 + l * 16) * pow(bar_x(point(0)), i) * pow(bar_y(point(1)), j) * l * pow(bar_z(point(2)), l - 1);
+				}
+
+		grad(0) /= (corner_point(1, 0) - corner_point(0, 0));
+		grad(1) /= (corner_point(2, 1) - corner_point(0, 1));
+		grad(2) /= (corner_point(4, 2) - corner_point(0, 2));
+
+		assert(!std::isnan(grad(0)) && !std::isnan(grad(1)) && !std::isnan(grad(2)));
+	}
+
 	void SDFTargetObjective::evaluate(const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad)
 	{
 		grad.setZero(dim, 1);
-		int num_points = dim == 2 ? 4 : 8;
-		Eigen::MatrixXd A(num_points, num_points);
-		Eigen::VectorXd b(num_points);
+		int num_corner_points = dim == 2 ? 4 : 8;
+		Eigen::MatrixXi bin(dim, 1);
+		Eigen::MatrixXi keys(num_corner_points, dim);
+		std::vector<std::string> keys_string;
+		for (int k = 0; k < dim; ++k)
+			bin(k) = (int)std::floor(point(k) / delta_);
 		if (dim == 2)
 		{
-			Eigen::MatrixXi bin(dim, 1);
-			for (int k = 0; k < dim; ++k)
-				bin(k, 0) = (int)std::floor(point(k) / delta_(k));
-			Eigen::MatrixXd keys(4, dim);
 			keys << bin(0), bin(1),
 				bin(0) + 1, bin(1),
 				bin(0), bin(1) + 1,
 				bin(0) + 1, bin(1) + 1;
-			std::vector<std::string> keys_string;
-			keys_string.push_back(std::to_string(bin(0)) + "," + std::to_string(bin(1)));
-			keys_string.push_back(std::to_string(bin(0) + 1) + "," + std::to_string(bin(1)));
-			keys_string.push_back(std::to_string(bin(0)) + "," + std::to_string(bin(1) + 1));
-			keys_string.push_back(std::to_string(bin(0) + 1) + "," + std::to_string(bin(1) + 1));
-			Eigen::MatrixXd corner_point(4, 2);
-			for (int i = 0; i < 4; ++i)
-			{
-				Eigen::MatrixXd clamped_point = keys.row(i).cwiseProduct(delta_).transpose();
-				corner_point.row(i) = clamped_point.transpose();
-				bool written;
-				{
-					std::shared_lock lock(mutex_);
-					written = implicit_function_distance.count(keys_string[i]) == 0;
-				}
-				if (written)
-				{
-					std::unique_lock lock(mutex_);
-					compute_distance(clamped_point, implicit_function_distance[keys_string[i]], implicit_function_grad[keys_string[i]]);
-				}
-			}
-			{
-				std::shared_lock lock(mutex_);
-				bicubic_interpolation(corner_point, keys_string, point, val, grad);
-			}
 		}
-		else
+		else if (dim == 3)
 		{
-			logger().error("Don't yet support 3D SDF.");
+			keys << bin(0), bin(1), bin(2),
+				bin(0) + 1, bin(1), bin(2),
+				bin(0), bin(1) + 1, bin(2),
+				bin(0) + 1, bin(1) + 1, bin(2),
+				bin(0), bin(1), bin(2) + 1,
+				bin(0) + 1, bin(1), bin(2) + 1,
+				bin(0), bin(1) + 1, bin(2) + 1,
+				bin(0) + 1, bin(1) + 1, bin(2) + 1;
 		}
+		auto safe_compute_distance = [this](const Eigen::MatrixXd &clamped_point, const std::string &key_string) {
+			std::unique_lock lock(distance_mutex_);
+			if (implicit_function_distance.count(key_string) == 0)
+				compute_distance(clamped_point, implicit_function_distance[key_string]);
+		};
+		auto setup_key = [this](const Eigen::VectorXi &key, std::string &key_string, Eigen::MatrixXd &clamped_point) {
+			key_string = "";
+			clamped_point.setZero(dim, 1);
+			for (int k = 0; k < dim; ++k)
+			{
+				key_string += fmt::format("{:d},", key(k));
+				clamped_point(k) = (double)key(k) * delta_;
+			}
+		};
+		auto safe_distance = [this, setup_key, safe_compute_distance](const Eigen::VectorXi &key) {
+			Eigen::MatrixXd point;
+			std::string key_string;
+			double distance;
+			setup_key(key, key_string, point);
+			safe_compute_distance(point, key_string);
+			{
+				std::shared_lock lock(distance_mutex_);
+				distance = implicit_function_distance[key_string];
+			}
+			return distance;
+		};
+		auto centered_fd = [this, safe_distance](const Eigen::VectorXi &key, const int k) {
+			Eigen::MatrixXi key_plus, key_minus;
+			double distance_plus, distance_minus;
+			key_plus = key;
+			key_plus(k) += 1;
+			distance_plus = safe_distance(key_plus);
+			key_minus = key;
+			key_minus(k) -= 1;
+			distance_minus = safe_distance(key_minus);
+			return (1. / 2. / delta_) * (distance_plus - distance_minus);
+		};
+		auto centered_mixed_fd = [this, centered_fd](const Eigen::VectorXi &key, const int k1, const int k2) {
+			Eigen::VectorXi key_plus, key_minus;
+			key_plus = key;
+			key_plus(k1) += 1;
+			key_minus = key;
+			key_minus(k1) -= 1;
+			return (1. / 2. / delta_) * (centered_fd(key_plus, k2) - centered_fd(key_minus, k2));
+		};
+		auto centered_mixed_fd_3d = [this, centered_mixed_fd](const Eigen::VectorXi &key) {
+			Eigen::VectorXi key_plus, key_minus;
+			key_plus = key;
+			key_plus(0) += 1;
+			key_minus = key;
+			key_minus(0) -= 1;
+			return (1. / 2. / delta_) * (centered_mixed_fd(key_plus, 1, 2) - centered_mixed_fd(key_minus, 1, 2));
+		};
+		auto compute_grad = [this, centered_fd, centered_mixed_fd, centered_mixed_fd_3d](const Eigen::VectorXi &key) {
+			Eigen::VectorXd mixed_grads(dim == 2 ? 3 : 7);
+			if (dim == 2)
+			{
+				mixed_grads(0) = centered_fd(key, 0);
+				mixed_grads(1) = centered_fd(key, 1);
+				mixed_grads(2) = centered_mixed_fd(key, 0, 1);
+			}
+			else if (dim == 3)
+			{
+				mixed_grads(0) = centered_fd(key, 0);
+				mixed_grads(1) = centered_fd(key, 1);
+				mixed_grads(2) = centered_fd(key, 2);
+				mixed_grads(3) = centered_mixed_fd(key, 0, 1);
+				mixed_grads(4) = centered_mixed_fd(key, 0, 2);
+				mixed_grads(5) = centered_mixed_fd(key, 1, 2);
+				mixed_grads(6) = centered_mixed_fd_3d(key);
+			}
+			return mixed_grads;
+		};
+		auto safe_compute_grad = [this, setup_key, compute_grad](const Eigen::VectorXi &key) {
+			std::string key_string;
+			Eigen::MatrixXd point;
+			setup_key(key, key_string, point);
+			{
+				std::unique_lock lock(grad_mutex_);
+				if (implicit_function_grads.count(key_string) == 0)
+				{
+					Eigen::MatrixXd grad = compute_grad(key);
+					implicit_function_grads[key_string] = grad;
+				}
+			}
+		};
+		Eigen::MatrixXd corner_point(num_corner_points, dim);
+		for (int i = 0; i < num_corner_points; ++i)
+		{
+			std::string key_string;
+			Eigen::MatrixXd clamped_point;
+			setup_key(keys.row(i), key_string, clamped_point);
+			safe_compute_distance(clamped_point, key_string);
+			keys_string.push_back(key_string);
+			corner_point.row(i) = clamped_point.transpose();
+			safe_compute_grad(keys.row(i));
+		}
+
+		bicubic_interpolation(corner_point, keys_string, point, val, grad);
 
 		for (int i = 0; i < dim; ++i)
 			if (std::isnan(grad(i)))

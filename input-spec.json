@@ -2923,6 +2923,11 @@
         "doc": "Values of Dirichlet boundary condition for each dimension over time"
     },
     {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*/*",
+        "type": "string",
+        "doc": "Values of Dirichlet boundary condition for each dimension over time"
+    },
+    {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension",
         "type": "list",
         "default": [

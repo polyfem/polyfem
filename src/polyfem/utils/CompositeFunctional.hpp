@@ -69,8 +69,8 @@ namespace polyfem
 			functional_name = "SDFTrajectory";
 			surface_integral = true;
 
-			bicubic_mat.resize(16, 16);
-			bicubic_mat << 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			bicubic_mat_.resize(16, 16);
+			bicubic_mat_ << 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				-3, 3, 0, 0, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				2, -2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -112,7 +112,7 @@ namespace polyfem
 		std::unordered_map<std::string, double> implicit_function_distance;
 		std::unordered_map<std::string, Eigen::MatrixXd> implicit_function_grad;
 
-		Eigen::MatrixXd bicubic_mat;
+		Eigen::MatrixXd bicubic_mat_;
 
 		Eigen::MatrixXd control_points_;
 		Eigen::MatrixXd tangents_;
