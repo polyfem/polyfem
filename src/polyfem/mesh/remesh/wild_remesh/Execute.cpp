@@ -58,17 +58,12 @@ namespace polyfem::mesh
 		const std::vector<Tuple> starting_edges = WMTKMesh::get_edges();
 		for (const Tuple &e : starting_edges)
 		{
-			// TODO: move this check to the _before function
-			if (edge_elastic_energy(e) >= energy_absolute_tolerance)
-			{
-				// TODO: move this check to the _before function
-				if (split && edge_length(e) >= min_edge_length)
-					collect_all_ops.emplace_back("edge_split", e);
-				if (collapse)
-					collect_all_ops.emplace_back("edge_collapse", e);
-				if (swap)
-					collect_all_ops.emplace_back("edge_swap", e);
-			}
+			if (split)
+				collect_all_ops.emplace_back("edge_split", e);
+			if (collapse)
+				collect_all_ops.emplace_back("edge_collapse", e);
+			if (swap)
+				collect_all_ops.emplace_back("edge_swap", e);
 		}
 
 		const std::vector<Tuple> starting_vertices = WMTKMesh::get_vertices();
@@ -84,7 +79,6 @@ namespace polyfem::mesh
 		if (collect_all_ops.empty())
 			return false;
 
-		wmtk::ExecutePass<WildRemesher, EXECUTION_POLICY> executor;
 		// if (NUM_THREADS > 0)
 		// {
 		// 	executor.lock_vertices = [&](WildRemesher &m, const Tuple &e, int task_id) -> bool {
@@ -100,20 +94,17 @@ namespace polyfem::mesh
 		};
 
 		executor.renew_neighbor_tuples = [&](const WildRemesher &m, std::string op, const std::vector<Tuple> &tris) -> Operations {
+			// TODO: return all edges affected by local relaxation
 			auto edges = m.new_edges_after(tris);
 			Operations new_ops;
 			for (auto &e : edges)
 			{
-				// TODO: move this check to the _before function
-				if (m.edge_elastic_energy(e) >= energy_absolute_tolerance)
-				{
-					if (split && edge_length(e) >= min_edge_length)
-						new_ops.emplace_back("edge_split", e);
-					if (collapse)
-						new_ops.emplace_back("edge_collapse", e);
-					if (swap)
-						new_ops.emplace_back("edge_swap", e);
-				}
+				if (split && edge_length(e) >= min_edge_length)
+					new_ops.emplace_back("edge_split", e);
+				if (collapse)
+					new_ops.emplace_back("edge_collapse", e);
+				if (swap)
+					new_ops.emplace_back("edge_swap", e);
 			}
 
 			if (smooth)
@@ -142,7 +133,13 @@ namespace polyfem::mesh
 		// Remove unused vertices
 		WMTKMesh::consolidate_mesh();
 
-		return true;
+		// if (executor.cnt_success() > 10)
+		// {
+		// 	logger().critical("exiting now for debugging purposes");
+		// 	exit(0);
+		// }
+
+		return executor.cnt_success() > 0;
 	}
 
 	// ------------------------------------------------------------------------

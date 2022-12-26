@@ -301,6 +301,95 @@ namespace polyfem::mesh
 		return new_edges;
 	}
 
+	template <class WMTKMesh>
+	void WildRemesher<WMTKMesh>::write_priority_queue_mesh(const std::string &path, const Tuple &e)
+	{
+		constexpr double tol = 1e-16; // tolerance allowed in recomputed values
+
+		// Save the edge energy and its position in the priority queue
+		std::unordered_map<size_t, std::pair<double, int>> edge_to_fields;
+
+		// The current tuple was popped from the queue, so we need to recompute its energy
+		const double current_edge_energy = edge_elastic_energy(e);
+		edge_to_fields[e.eid(*this)] = std::make_pair(current_edge_energy, 0);
+
+		// NOTE: this is not thread-safe
+		auto queue = executor.serial_queue();
+
+		// Also check that the energy is consistent with the priority queue values
+		bool energies_match = true;
+
+		for (int i = 1; !queue.empty(); ++i)
+		{
+			std::tuple<double, std::string, Tuple, size_t> tmp;
+			bool pop_success = queue.try_pop(tmp);
+			assert(pop_success);
+			const auto &[energy, op, t, _] = tmp;
+
+			assert(t.eid(*this) != e.eid(*this)); // this should have been popped
+
+			// Some tuple in the queue might not be valid anymore
+			if (!t.is_valid(*this))
+				continue;
+
+			// Check that the energy is consistent with the priority queue values
+			const double recomputed_energy = edge_elastic_energy(t);
+			if (abs(energy - recomputed_energy) >= tol)
+			{
+				logger().error("Energy mismatch: {} vs {}", energy, recomputed_energy);
+				energies_match = false;
+			}
+
+			// Check that the current edge has the highes priority
+			assert(current_edge_energy - energy >= -tol); // account for numerical error
+
+			// Save the edge energy and its position in the priority queue
+			edge_to_fields[t.eid(*this)] = std::make_pair(energy, i);
+		}
+		assert(energies_match);
+
+		const std::vector<Tuple> edges = WMTKMesh::get_edges();
+
+		// Create two vertices per edge to get per edge values.
+		const int n_vertices = 2 * edges.size();
+
+		std::vector<std::vector<int>> elements(edges.size(), std::vector<int>(2));
+		Eigen::MatrixXd rest_positions(n_vertices, dim());
+		Eigen::MatrixXd displacements(n_vertices, dim());
+		Eigen::VectorXd edge_energies(n_vertices);
+		Eigen::VectorXd edge_orders(n_vertices);
+
+		for (int ei = 0; ei < edges.size(); ei++)
+		{
+			const std::array<size_t, 2> vids = {{
+				edges[ei].vid(*this),
+				edges[ei].switch_vertex(*this).vid(*this),
+			}};
+
+			double edge_energy, edge_order;
+			const auto &itr = edge_to_fields.find(edges[ei].eid(*this));
+			if (itr != edge_to_fields.end())
+				std::tie(edge_energy, edge_order) = itr->second;
+			else
+				edge_energy = edge_order = std::numeric_limits<double>::quiet_NaN();
+
+			for (int vi = 0; vi < vids.size(); ++vi)
+			{
+				elements[ei][vi] = 2 * ei + vi;
+				rest_positions.row(elements[ei][vi]) = vertex_attrs[vids[vi]].rest_position;
+				displacements.row(elements[ei][vi]) = vertex_attrs[vids[vi]].displacement();
+				edge_energies(elements[ei][vi]) = edge_energy;
+				edge_orders(elements[ei][vi]) = edge_order;
+			}
+		}
+
+		io::VTUWriter writer;
+		writer.add_field("displacement", displacements);
+		writer.add_field("edge_energy", edge_energies);
+		writer.add_field("operation_order", edge_orders);
+		writer.write_mesh(path, rest_positions, elements, /*is_simplicial=*/true);
+	}
+
 	// -------------------------------------------------------------------------
 	// Template specializations
 

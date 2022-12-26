@@ -129,10 +129,6 @@ namespace polyfem::mesh
 		if (!made_change)
 			return false;
 
-		// NOTE: Assumes only split ops were performed
-		if (remeshing->rest_positions().rows() == state.mesh->n_vertices())
-			return false;
-
 		// --------------------------------------------------------------------
 		// create new mesh
 

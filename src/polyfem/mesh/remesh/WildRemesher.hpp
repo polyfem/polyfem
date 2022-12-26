@@ -180,6 +180,10 @@ namespace polyfem::mesh
 		/// @brief Cache the split edge operation
 		virtual void cache_split_edge(const Tuple &e) = 0;
 
+		/// @brief Write a visualization mesh of the priority queue
+		/// @param e current edge tuple to be split
+		void write_priority_queue_mesh(const std::string &path, const Tuple &e);
+
 		// --------------------------------------------------------------------
 		// members
 	public:
@@ -202,6 +206,8 @@ namespace polyfem::mesh
 		struct BoundaryAttributes
 		{
 			int boundary_id = -1;
+			// TODO: add a field to inidicate if the marked edge was skipped
+			// bool skipped = false;
 		};
 
 		struct ElementAttributes
@@ -214,6 +220,8 @@ namespace polyfem::mesh
 		wmtk::AttributeCollection<ElementAttributes> element_attrs;
 
 	protected:
+		wmtk::ExecutePass<WildRemesher, EXECUTION_POLICY> executor;
+		int vis_counter = 0;
 		int m_n_quantities;
 		double total_volume;
 	};

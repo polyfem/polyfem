@@ -32,10 +32,16 @@ namespace polyfem::mesh
 		// Cache necessary local data
 		cache_split_edge(e);
 
-		// TODO:
-		// for all edges:
-		// 	min(current, edge_elastic_energy(e))
-		// assert(current == ...)
+#ifndef NDEBUG
+		write_priority_queue_mesh(
+			state.resolve_output_path(
+				fmt::format("split_edge_before_{:04d}.vtu", vis_counter++)),
+			e);
+#endif
+
+		// Do not split if the energy of the edges is too small
+		if (edge_elastic_energy(e) <= energy_absolute_tolerance)
+			return false;
 
 		return true;
 	}
