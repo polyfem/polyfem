@@ -257,7 +257,7 @@ namespace polyfem::mesh
 			const double abs_diff = local_energy_before - local_energy_after; // > 0 if energy decreased
 			// TODO: compute global_energy_before
 			// Right now using: starting_energy = state.solve_data.nl_problem->value(sol)
-			const double global_energy_before = starting_energy;
+			const double global_energy_before = abs(starting_energy);
 			const double rel_diff = abs_diff / global_energy_before;
 
 			accept = rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance;

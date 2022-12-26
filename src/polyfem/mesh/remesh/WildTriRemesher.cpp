@@ -2,8 +2,6 @@
 
 #include <polyfem/utils/GeometryUtils.hpp>
 
-#include <wmtk/utils/TupleUtils.hpp>
-
 #include <igl/predicates/predicates.h>
 
 namespace polyfem::mesh
@@ -35,8 +33,6 @@ namespace polyfem::mesh
 		// Initialize the trimesh class which handles connectivity
 		wmtk::TriMesh::create_mesh(num_vertices, tri);
 	}
-
-	// execute in wild_remesh/Execute.cpp
 
 	// smooth_before/smooth_after in wild_remesh/Smooth.cpp
 
@@ -87,23 +83,5 @@ namespace polyfem::mesh
 	}
 
 	// map_edge_split_boundary_attributes/map_edge_split_element_attributes in wild_remesh/Split.cpp
-
-	// edge_elastic_energy in wild_remesh/Execute.cpp
-
-	std::vector<WildTriRemesher::Tuple> WildTriRemesher::new_edges_after(
-		const std::vector<Tuple> &tris) const
-	{
-		std::vector<Tuple> new_edges;
-
-		for (auto t : tris)
-		{
-			for (auto j = 0; j < 3; j++)
-			{
-				new_edges.push_back(tuple_from_edge(t.fid(*this), j));
-			}
-		}
-		wmtk::unique_edge_tuples(*this, new_edges);
-		return new_edges;
-	}
 
 } // namespace polyfem::mesh

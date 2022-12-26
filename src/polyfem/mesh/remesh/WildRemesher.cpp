@@ -1,5 +1,9 @@
 #include "WildRemesher.hpp"
 
+#include <polyfem/utils/GeometryUtils.hpp>
+
+#include <wmtk/utils/TupleUtils.hpp>
+
 #define VERTEX_ATTRIBUTE_GETTER(name, attribute)                                                     \
 	template <class WMTKMesh>                                                                        \
 	Eigen::MatrixXd WildRemesher<WMTKMesh>::name() const                                             \
@@ -38,16 +42,23 @@ namespace polyfem::mesh
 	void WildRemesher<WMTKMesh>::init(
 		const Eigen::MatrixXd &rest_positions,
 		const Eigen::MatrixXd &positions,
-		const Eigen::MatrixXi &triangles,
+		const Eigen::MatrixXi &elements,
 		const Eigen::MatrixXd &projection_quantities,
 		const BoundaryMap<int> &boundary_to_id,
 		const std::vector<int> &body_ids)
 	{
-		Remesher::init(rest_positions, positions, triangles, projection_quantities, boundary_to_id, body_ids);
+		Remesher::init(rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids);
 
 		total_volume = 0;
 		for (const Tuple &t : get_elements())
 			total_volume += element_volume(t);
+		assert(total_volume > 0);
+
+#ifndef NDEBUG
+		assert(get_elements().size() == elements.rows());
+		for (const Tuple &t : get_elements())
+			assert(!is_inverted(t));
+#endif
 	}
 
 	// -------------------------------------------------------------------------
@@ -249,7 +260,7 @@ namespace polyfem::mesh
 		{
 			if (is_inverted(t))
 			{
-				log_and_throw_error("Inverted triangle found, invariants violated");
+				log_and_throw_error("Inverted element found, invariants violated");
 				return false;
 			}
 		}
@@ -265,6 +276,29 @@ namespace polyfem::mesh
 		const auto &e0 = vertex_attrs[e.vid(*this)].position;
 		const auto &e1 = vertex_attrs[e.switch_vertex(*this).vid(*this)].position;
 		return (e1 - e0).norm();
+	}
+
+	template <class WMTKMesh>
+	std::vector<typename WMTKMesh::Tuple> WildRemesher<WMTKMesh>::new_edges_after(
+		const std::vector<Tuple> &elements) const
+	{
+		constexpr int EDGES_IN_ELEMENT = [] {
+			if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
+				return 3;
+			else
+				return 6;
+		}();
+
+		std::vector<Tuple> new_edges;
+		for (const Tuple &t : elements)
+		{
+			for (auto j = 0; j < EDGES_IN_ELEMENT; j++)
+			{
+				new_edges.push_back(WMTKMesh::tuple_from_edge(element_id(t), j));
+			}
+		}
+		wmtk::unique_edge_tuples(*this, new_edges);
+		return new_edges;
 	}
 
 	// -------------------------------------------------------------------------

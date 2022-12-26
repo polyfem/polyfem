@@ -78,7 +78,7 @@ namespace polyfem::mesh
 			const std::unordered_map<int, int> prev_global_to_local = m_global_to_local;
 
 			const std::vector<Tuple> global_boundary_facets = m.boundary_facets();
-			boundary_facets().resize(global_boundary_facets.size(), 2);
+			boundary_facets().resize(global_boundary_facets.size(), m_elements.cols() - 1);
 			for (int i = 0; i < global_boundary_facets.size(); i++)
 			{
 				const Tuple &facet = global_boundary_facets[i];

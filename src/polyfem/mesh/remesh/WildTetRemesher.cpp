@@ -38,32 +38,26 @@ namespace polyfem::mesh
 		wmtk::TetMesh::init(num_vertices, tets);
 	}
 
-	// execute in wild_remesh/Execute.cpp
-
 	// smooth_before/smooth_after in wild_remesh/Smooth.cpp
 
 	bool WildTetRemesher::is_inverted(const Tuple &loc) const
 	{
 		// Get the vertices ids
-		const std::array<Tuple, 4> vs = oriented_tet_vertices(loc);
+		const std::array<size_t, 4> vids = oriented_tet_vids(loc);
 
 		igl::predicates::exactinit();
 
 		// Use igl for checking orientation
 		igl::predicates::Orientation rest_orientation = igl::predicates::orient3d(
-			vertex_attrs[vs[0].vid(*this)].rest_position,
-			vertex_attrs[vs[1].vid(*this)].rest_position,
-			vertex_attrs[vs[2].vid(*this)].rest_position,
-			vertex_attrs[vs[3].vid(*this)].rest_position);
+			vertex_attrs[vids[0]].rest_position, vertex_attrs[vids[1]].rest_position,
+			vertex_attrs[vids[2]].rest_position, vertex_attrs[vids[3]].rest_position);
 		igl::predicates::Orientation deformed_orientation = igl::predicates::orient3d(
-			vertex_attrs[vs[0].vid(*this)].position,
-			vertex_attrs[vs[1].vid(*this)].position,
-			vertex_attrs[vs[2].vid(*this)].position,
-			vertex_attrs[vs[3].vid(*this)].position);
+			vertex_attrs[vids[0]].position, vertex_attrs[vids[1]].position,
+			vertex_attrs[vids[2]].position, vertex_attrs[vids[3]].position);
 
-		// The element is inverted if it not positive (i.e. it is negative or it is degenerate)
-		return rest_orientation != igl::predicates::Orientation::POSITIVE
-			   || deformed_orientation != igl::predicates::Orientation::POSITIVE;
+		// neg result == pos tet (tet origin from geogram delaunay)
+		return rest_orientation != igl::predicates::Orientation::NEGATIVE
+			   || deformed_orientation != igl::predicates::Orientation::NEGATIVE;
 	}
 
 	double WildTetRemesher::element_volume(const Tuple &e) const

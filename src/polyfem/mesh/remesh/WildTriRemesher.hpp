@@ -35,21 +35,6 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 		// main functions
-	public:
-		/// @brief Execute the remeshing
-		/// @param split Perform splitting operations
-		/// @param collapse Perform collapsing operations
-		/// @param smooth Perform smoothing operations
-		/// @param swap Perform edge swapping operations
-		/// @param max_ops Maximum number of operations to perform (default: unlimited)
-		/// @return True if any operation was performed.
-		bool execute(
-			const bool split = true,
-			const bool collapse = false,
-			const bool smooth = false,
-			const bool swap = false,
-			const double max_ops_percent = -1) override;
-
 	protected:
 		// Smoothing
 		bool smooth_before(const Tuple &t) override;
@@ -116,12 +101,25 @@ namespace polyfem::mesh
 			return get_one_ring_tris_for_vertex(t);
 		}
 
+		/// @brief Get the id of a facet (edge for triangle, triangle for tetrahedra)
 		size_t facet_id(const Tuple &t) const { return t.eid(*this); }
+
+		/// @brief Get the id of an element (triangle or tetrahedra)
 		size_t element_id(const Tuple &t) const { return t.fid(*this); }
 
+		/// @brief Get a tuple of a element with a local facet
 		Tuple tuple_from_facet(size_t elem_id, int local_facet_id) const
 		{
 			return tuple_from_edge(elem_id, local_facet_id);
+		}
+
+		/// @brief Get the incident elements for an edge
+		std::vector<Tuple> get_incident_elements_for_edge(const Tuple &t) const override
+		{
+			std::vector<Tuple> tris{{t}};
+			if (t.switch_face(*this))
+				tris.push_back(t.switch_face(*this).value());
+			return tris;
 		}
 
 	protected:
@@ -139,13 +137,6 @@ namespace polyfem::mesh
 		void map_edge_split_element_attributes(
 			const Tuple &t,
 			const std::vector<ElementAttributes> &old_elements);
-
-		/// @brief Compute the average elastic energy of the faces containing an edge.
-		double edge_elastic_energy(const Tuple &e) const;
-
-		/// @brief Create a vector of all the new edge after an operation.
-		/// @param tris New triangles.
-		std::vector<Tuple> new_edges_after(const std::vector<Tuple> &tris) const;
 
 		// --------------------------------------------------------------------
 		// parameters

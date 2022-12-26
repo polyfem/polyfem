@@ -38,7 +38,7 @@ namespace polyfem::mesh
 					std::array<size_t, 3> f =
 						{{(size_t)in_node_to_node[mesh->face_vertex(i, 0)],
 						  (size_t)in_node_to_node[mesh->face_vertex(i, 1)],
-						  (size_t)in_node_to_node[mesh->face_vertex(i, 1)]}};
+						  (size_t)in_node_to_node[mesh->face_vertex(i, 2)]}};
 					face_to_boundary_id[f] = mesh->get_boundary_id(i);
 				}
 				return face_to_boundary_id;

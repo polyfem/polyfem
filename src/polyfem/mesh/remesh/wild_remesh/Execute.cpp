@@ -1,4 +1,4 @@
-#include <polyfem/mesh/remesh/WildTriRemesher.hpp>
+#include <polyfem/mesh/remesh/WildRemesher.hpp>
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
@@ -11,17 +11,16 @@
 
 namespace polyfem::mesh
 {
-	double WildTriRemesher::edge_elastic_energy(const Tuple &e) const
+	template <class WMTKMesh>
+	double WildRemesher<WMTKMesh>::edge_elastic_energy(const Tuple &e) const
 	{
-		std::vector<Tuple> tris{{e}};
-		if (e.switch_face(*this))
-			tris.push_back(e.switch_face(*this).value());
-		const auto local_mesh =
-			LocalMesh<Super>(*this, tris, /*include_global_boundary=*/false);
+		const std::vector<Tuple> elements = get_incident_elements_for_edge(e);
+
+		const LocalMesh local_mesh(*this, elements, /*include_global_boundary=*/false);
 
 		std::vector<polyfem::basis::ElementBases> bases;
 		Eigen::VectorXi vertex_to_basis;
-		WildTriRemesher::build_bases(
+		Remesher::build_bases(
 			local_mesh.rest_positions(), local_mesh.elements(), state.formulation(),
 			bases, vertex_to_basis);
 
@@ -35,10 +34,11 @@ namespace polyfem::mesh
 			state.formulation(), is_volume(), bases, /*gbases=*/bases, cache,
 			/*dt=*/-1, displacements, /*displacement_prev=*/Eigen::MatrixXd());
 		assert(std::isfinite(energy));
-		return energy / local_mesh.num_elements(); // average energy per face
+		return energy / local_mesh.num_elements(); // average energy
 	}
 
-	bool WildTriRemesher::execute(
+	template <class WMTKMesh>
+	bool WildRemesher<WMTKMesh>::execute(
 		const bool split,
 		const bool collapse,
 		const bool smooth,
@@ -52,7 +52,10 @@ namespace polyfem::mesh
 		wmtk::logger().set_level(logger().level());
 
 		Operations collect_all_ops;
-		const std::vector<Tuple> starting_edges = get_edges();
+
+		// TODO: implement face swaps for tet meshes
+
+		const std::vector<Tuple> starting_edges = WMTKMesh::get_edges();
 		for (const Tuple &e : starting_edges)
 		{
 			// TODO: move this check to the _before function
@@ -68,7 +71,7 @@ namespace polyfem::mesh
 			}
 		}
 
-		const std::vector<Tuple> starting_vertices = get_vertices();
+		const std::vector<Tuple> starting_vertices = WMTKMesh::get_vertices();
 		if (smooth)
 		{
 			for (const Tuple &loc : starting_vertices)
@@ -81,22 +84,22 @@ namespace polyfem::mesh
 		if (collect_all_ops.empty())
 			return false;
 
-		wmtk::ExecutePass<WildTriRemesher, EXECUTION_POLICY> executor;
+		wmtk::ExecutePass<WildRemesher, EXECUTION_POLICY> executor;
 		// if (NUM_THREADS > 0)
 		// {
-		// 	executor.lock_vertices = [&](WildTriRemesher &m, const Tuple &e, int task_id) -> bool {
+		// 	executor.lock_vertices = [&](WildRemesher &m, const Tuple &e, int task_id) -> bool {
 		// 		return m.try_set_edge_mutex_n_ring(e, task_id, n_ring_size);
 		// 	};
 		// 	executor.num_threads = NUM_THREADS;
 		// }
 
-		executor.priority = [](const WildTriRemesher &m, std::string op, const Tuple &t) -> double {
+		executor.priority = [](const WildRemesher &m, std::string op, const Tuple &t) -> double {
 			// NOTE: this code compute the edge length
 			// return m.edge_length(t);
 			return m.edge_elastic_energy(t);
 		};
 
-		executor.renew_neighbor_tuples = [&](const WildTriRemesher &m, std::string op, const std::vector<Tuple> &tris) -> Operations {
+		executor.renew_neighbor_tuples = [&](const WildRemesher &m, std::string op, const std::vector<Tuple> &tris) -> Operations {
 			auto edges = m.new_edges_after(tris);
 			Operations new_ops;
 			for (auto &e : edges)
@@ -129,7 +132,7 @@ namespace polyfem::mesh
 				? size_t(std::round(max_ops_percent * starting_edges.size()))
 				: std::numeric_limits<size_t>::max();
 		assert(max_ops > 0);
-		executor.stopping_criterion = [&](const WildTriRemesher &m) -> bool {
+		executor.stopping_criterion = [&](const WildRemesher &m) -> bool {
 			return (++num_ops) > max_ops;
 		};
 		executor.stopping_criterion_checking_frequency = 1;
@@ -137,9 +140,14 @@ namespace polyfem::mesh
 		executor(*this, collect_all_ops);
 
 		// Remove unused vertices
-		consolidate_mesh();
+		WMTKMesh::consolidate_mesh();
 
 		return true;
 	}
+
+	// ------------------------------------------------------------------------
+	// Template specializations
+	template class WildRemesher<wmtk::TriMesh>;
+	template class WildRemesher<wmtk::TetMesh>;
 
 } // namespace polyfem::mesh

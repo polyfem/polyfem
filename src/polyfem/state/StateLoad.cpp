@@ -150,21 +150,23 @@ namespace polyfem
 
 	void State::build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F)
 	{
-		assert(in_node_to_node.size() == mesh->n_vertices());
+		assert(bases.size() == mesh->n_elements());
+		const size_t n_vertices = n_bases - obstacle.n_vertices();
+		const int dim = mesh->dimension();
 
-		V.resize(mesh->n_vertices(), mesh->dimension());
-		for (int i = 0; i < mesh->n_vertices(); ++i)
-		{
-			V.row(in_node_to_node[i]) = mesh->point(i);
-		}
+		V.resize(n_vertices, dim);
+		F.resize(bases.size(), dim + 1); // TODO: this only works for triangles and tetrahedra
 
-		// TODO: this only works for triangles and tetrahedra
-		F.resize(mesh->n_elements(), mesh->dimension() + 1);
-		for (int i = 0; i < F.rows(); ++i)
+		for (int i = 0; i < bases.size(); i++)
 		{
-			for (int j = 0; j < F.cols(); ++j)
+			const basis::ElementBases &element = bases[i];
+			assert(element.bases.size() == F.cols());
+			for (int j = 0; j < element.bases.size(); j++)
 			{
-				F(i, j) = in_node_to_node[mesh->element_vertex(i, j)];
+				const basis::Basis &basis = element.bases[j];
+				assert(basis.global().size() == 1);
+				V.row(basis.global()[0].index) = basis.global()[0].node;
+				F(i, j) = basis.global()[0].index;
 			}
 		}
 	}

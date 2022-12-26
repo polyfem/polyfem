@@ -227,13 +227,13 @@ namespace polyfem::mesh
 
 			const bool contains_old_v0 = contains(vids, old_v0_id);
 			assert(contains_old_v0 ^ contains(vids, old_v1_id));
-			*new_v_itr = contains_old_v0 ? old_v0_id : old_v1_id;
+			*new_v_itr = contains_old_v0 ? old_v1_id : old_v0_id;
 
 			element_attrs[t.tid(*this)] = old_elements.at(vids);
 		}
 	}
 
-	// ----------------------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 	// Template specializations
 	template class WildRemesher<wmtk::TriMesh>;
 	template class WildRemesher<wmtk::TetMesh>;
