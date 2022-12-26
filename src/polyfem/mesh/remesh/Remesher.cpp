@@ -256,16 +256,29 @@ namespace polyfem::mesh
 				utils::append_rows(prev_displacements, utils::unflatten(obstacle_quantities().leftCols(1), dim()));
 				utils::append_rows(friction_gradient, utils::unflatten(obstacle_quantities().leftCols(1), dim()));
 
-				const Eigen::MatrixXi obstacle_edges = obstacle().e().array() + offset;
-				all_elements.resize(all_elements.size() + obstacle().n_edges());
-				for (int i = 0; i < obstacle().n_edges(); i++)
+				if (obstacle().n_edges() > 0)
 				{
-					all_elements[i + elements.rows()] = std::vector<int>(2);
-					for (int j = 0; j < 2; j++)
-						all_elements[i + elements.rows()][j] = obstacle_edges(i, j);
+					const Eigen::MatrixXi obstacle_edges = obstacle().e().array() + offset;
+					all_elements.resize(all_elements.size() + obstacle_edges.rows());
+					for (int i = 0; i < obstacle().n_edges(); i++)
+					{
+						all_elements[i + elements.rows()] = std::vector<int>(obstacle_edges.cols());
+						for (int j = 0; j < obstacle_edges.cols(); j++)
+							all_elements[i + elements.rows()][j] = obstacle_edges(i, j);
+					}
 				}
 
-				// TODO: add obstacle triangles
+				if (obstacle().n_faces() > 0)
+				{
+					const Eigen::MatrixXi obstacle_faces = obstacle().f().array() + offset;
+					all_elements.resize(all_elements.size() + obstacle_faces.rows());
+					for (int i = 0; i < obstacle().n_edges(); i++)
+					{
+						all_elements[i + elements.rows()] = std::vector<int>(obstacle_faces.cols());
+						for (int j = 0; j < obstacle_faces.cols(); j++)
+							all_elements[i + elements.rows()][j] = obstacle_faces(i, j);
+					}
+				}
 			}
 
 			writer.add_field("prev_displacement", prev_displacements);

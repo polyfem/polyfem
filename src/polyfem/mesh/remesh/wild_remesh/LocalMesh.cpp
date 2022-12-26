@@ -131,8 +131,10 @@ namespace polyfem::mesh
 			utils::append_rows(m_rest_positions, obstacle.v());
 			utils::append_rows(m_positions, obstacle.v() + m.obstacle_displacements());
 			utils::append_rows(m_projection_quantities, m.obstacle_quantities());
-			utils::append_rows(m_boundary_edges, obstacle.e().array() + tmp_num_vertices);
-			utils::append_rows(m_boundary_faces, obstacle.f().array() + tmp_num_vertices);
+			if (obstacle.n_edges() > 0)
+				utils::append_rows(m_boundary_edges, obstacle.e().array() + tmp_num_vertices);
+			if (obstacle.n_faces() > 0)
+				utils::append_rows(m_boundary_faces, obstacle.f().array() + tmp_num_vertices);
 
 			for (int i = 0; i < obstacle.n_vertices(); i++)
 				m_fixed_vertices.push_back(i + tmp_num_vertices);
