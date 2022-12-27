@@ -296,7 +296,8 @@ namespace polyfem
 		}
 
 		// Save output directory and resolve output paths dynamically
-		const std::string output_dir = this->args["output"]["directory"];
+		const std::string output_dir = resolve_input_path(this->args["output"]["directory"]);
+		logger().info("Saving output to {}", output_dir);
 		if (!output_dir.empty())
 		{
 			std::filesystem::create_directories(output_dir);
