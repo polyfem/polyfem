@@ -4,6 +4,7 @@
 #include <igl/predicates/ear_clipping.h>
 
 #include <igl/edges.h>
+#include <igl/boundary_loop.h>
 #include <igl/doublearea.h>
 #include <igl/upsample.h>
 
@@ -364,7 +365,7 @@ namespace polyfem
 			}
 		}
 
-		void RefElementSampler::sample_polygon(const Eigen::MatrixXd &poly, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces) const
+		void RefElementSampler::sample_polygon(const Eigen::MatrixXd &poly, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXi &edges) const
 		{
 
 #ifdef POLYFEM_WITH_TRIANGLE
@@ -396,13 +397,21 @@ namespace polyfem
 
 			faces = new_faces;
 #endif
+			std::vector<int> loop;
+			igl::default_num_threads(1);
+			igl::boundary_loop(faces, loop);
+			igl::default_num_threads(0);
+			edges.resize(loop.size(), 2);
+			for (int i = 0; i < loop.size(); ++i)
+				edges.row(i) << loop[i], loop[(i + 1) % loop.size()];
 		}
 
-		void RefElementSampler::sample_polyhedron(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &f, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces) const
+		void RefElementSampler::sample_polyhedron(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &f, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXi &edges) const
 		{
 			// TODO
 			pts = vertices;
 			faces = f;
+			throw "Not implemented";
 		}
 	} // namespace utils
 } // namespace polyfem
