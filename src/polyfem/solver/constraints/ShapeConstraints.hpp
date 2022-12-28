@@ -10,16 +10,6 @@ namespace polyfem
 	class ShapeConstraints : public Constraints
 	{
 	public:
-		void update_state(std::shared_ptr<State> state, const Eigen::VectorXd &reduced) override
-		{
-			Eigen::MatrixXd V_rest, V_full;
-			Eigen::MatrixXi F;
-			state->get_vf(V_rest, F);
-			reduced_to_full(reduced, V_rest, V_full);
-			state->set_mesh_vertices(V_full);
-			state->build_basis();
-		}
-
 		ShapeConstraints(const json &constraint_params, const Eigen::MatrixXd &V_start, const std::map<int, std::vector<int>> &optimization_boundary_to_node_ids)
 			: Constraints(constraint_params, V_start.size(), 0), num_vertices_(V_start.rows()), dim_(V_start.cols()), optimization_boundary_to_node_ids_(optimization_boundary_to_node_ids)
 		{
