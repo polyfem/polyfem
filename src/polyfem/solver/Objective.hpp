@@ -4,9 +4,9 @@
 
 #include <polyfem/solver/forms/ContactForm.hpp>
 
-// #include <polyfem/utils/CubicInterpolationMatrices.hpp>
-
+#include <polyfem/utils/UnsignedDistanceFunction.hpp>
 #include <nanospline/BSpline.h>
+#include <nanospline/BSplinePatch.h>
 #include <polyfem/io/OBJWriter.hpp>
 
 #include <shared_mutex>
@@ -307,32 +307,6 @@ namespace polyfem::solver
 			spatial_integral_type_ = AdjointForm::SpatialIntegralType::SURFACE;
 			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
 			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
-
-			if (state.mesh->dimension() == 2)
-			{
-				cubic_mat.resize(16, 16);
-				cubic_mat << 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-					0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-					-3, 3, 0, 0, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-					2, -2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-					0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-					0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
-					0, 0, 0, 0, 0, 0, 0, 0, -3, 3, 0, 0, -2, -1, 0, 0,
-					0, 0, 0, 0, 0, 0, 0, 0, 2, -2, 0, 0, 1, 1, 0, 0,
-					-3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0, 0, 0, 0, 0,
-					0, 0, 0, 0, -3, 0, 3, 0, 0, 0, 0, 0, -2, 0, -1, 0,
-					9, -9, -9, 9, 6, 3, -6, -3, 6, -6, 3, -3, 4, 2, 2, 1,
-					-6, 6, 6, -6, -3, -3, 3, 3, -4, 4, -2, 2, -2, -2, -1, -1,
-					2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0,
-					0, 0, 0, 0, 2, 0, -2, 0, 0, 0, 0, 0, 1, 0, 1, 0,
-					-6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1,
-					4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1;
-				// cubic_mat = utils::get_bicubic_mat();
-			}
-			else if (state.mesh->dimension() == 3)
-			{
-				// cubic_mat = utils::get_tricubic_mat();
-			}
 		}
 
 		~SDFTargetObjective() = default;
@@ -346,51 +320,74 @@ namespace polyfem::solver
 
 		void set_bspline_target(const Eigen::MatrixXd &control_points, const Eigen::VectorXd &knots, const double delta)
 		{
-			control_points_ = control_points;
-			knots_ = knots;
 			dim = control_points.cols();
-			if (dim != 2)
-				logger().error("Only support 2d sdf at the moment.");
 			delta_ = delta;
+			assert(dim == 2);
+
+			samples = 100;
+
+			nanospline::BSpline<double, 2, 3> curve;
 			curve.set_control_points(control_points);
 			curve.set_knots(knots);
 
-			t_sampling = Eigen::VectorXd::LinSpaced(100, 0, 1);
-			point_sampling.setZero(100, 2);
-			for (int i = 0; i < t_sampling.size(); ++i)
-				point_sampling.row(i) = curve.evaluate(t_sampling(i));
+			t_or_uv_sampling = Eigen::VectorXd::LinSpaced(samples, 0, 1);
+			point_sampling.setZero(samples, 2);
+			for (int i = 0; i < t_or_uv_sampling.size(); ++i)
+				point_sampling.row(i) = curve.evaluate(t_or_uv_sampling(i));
 
 			Eigen::MatrixXi edges(100, 2);
-			edges.col(0) = Eigen::VectorXi::LinSpaced(100, 1, 100);
-			edges.col(1) = Eigen::VectorXi::LinSpaced(100, 2, 101);
+			edges.col(0) = Eigen::VectorXi::LinSpaced(samples, 1, samples);
+			edges.col(1) = Eigen::VectorXi::LinSpaced(samples, 2, samples + 1);
 			io::OBJWriter::write(state_.resolve_output_path(fmt::format("spline_target_{:d}.obj", rand() % 100)), point_sampling, edges);
+
+			distance_fn = std::make_unique<UnsignedDistanceFunction>(dim, delta_);
 		}
 
-		void evaluate(const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad);
+		void set_bspline_target(const Eigen::MatrixXd &control_points, const Eigen::VectorXd &knots_u, const Eigen::VectorXd &knots_v, const double delta)
+		{
+
+			dim = control_points.cols();
+			delta_ = delta;
+			assert(dim == 3);
+
+			samples = 100;
+
+			nanospline::BSplinePatch<double, 3, 3, 3> patch;
+			patch.set_control_grid(control_points);
+			patch.set_knots_u(knots_u);
+			patch.set_knots_v(knots_v);
+			patch.initialize();
+
+			t_or_uv_sampling.resize(samples * samples, 2);
+			for (int i = 0; i < samples; ++i)
+			{
+				t_or_uv_sampling.block(i * samples, 0, samples, 1) = Eigen::VectorXd::LinSpaced(samples, 0, 1);
+				t_or_uv_sampling.block(i * samples, 1, samples, 1) = (double)i / (samples - 1) * Eigen::VectorXd::Ones(samples);
+			}
+			point_sampling.setZero(samples * samples, 3);
+			for (int i = 0; i < t_or_uv_sampling.rows(); ++i)
+			{
+				point_sampling.row(i) = patch.evaluate(t_or_uv_sampling(i, 0), t_or_uv_sampling(i, 1));
+			}
+
+			distance_fn = std::make_unique<UnsignedDistanceFunction>(dim, delta_);
+		}
+
+		inline void evaluate(const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad)
+		{
+			distance_fn->evaluate([this](const Eigen::MatrixXd &point, double &distance) { compute_distance(point, distance); }, point, val, grad);
+		}
 		void compute_distance(const Eigen::MatrixXd &point, double &distance);
-		void compute_distances(const Eigen::MatrixXd &point, Eigen::VectorXd &distances, double h);
-		void bicubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad, const double h);
-		void tricubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad);
 
 	protected:
 		int dim;
-		double t_cached;
 		double delta_;
-		std::unordered_map<std::string, double> implicit_function_distance;
-		std::unordered_map<std::string, Eigen::VectorXd> implicit_function_grads;
 
-		Eigen::MatrixXd cubic_mat;
-
-		Eigen::MatrixXd control_points_;
-		Eigen::VectorXd knots_;
-
-		Eigen::VectorXd t_sampling;
+		Eigen::MatrixXd t_or_uv_sampling;
 		Eigen::MatrixXd point_sampling;
+		int samples;
 
-		nanospline::BSpline<double, 2, 3> curve;
-
-		mutable std::shared_mutex distance_mutex_;
-		mutable std::shared_mutex grad_mutex_;
+		std::unique_ptr<UnsignedDistanceFunction> distance_fn;
 	};
 
 	class NodeTargetObjective : public StaticObjective
