@@ -8,6 +8,7 @@
 
 #include <igl/boundary_facets.h>
 #include <igl/edges.h>
+#include <igl/PI.h>
 
 #include <BVH.hpp>
 
@@ -149,11 +150,8 @@ namespace polyfem::mesh
 	}
 
 	template <typename M>
-	LocalMesh<M> LocalMesh<M>::n_ring(
-		const M &m,
-		const Tuple &center,
-		const int n,
-		const bool include_global_boundary)
+	std::vector<typename M::Tuple> LocalMesh<M>::n_ring(
+		const M &m, const Tuple &center, const int n)
 	{
 		std::vector<Tuple> elements = m.get_one_ring_elements_for_vertex(center);
 		std::unordered_set<size_t> visited_vertices{{center.vid(m)}};
@@ -193,15 +191,12 @@ namespace polyfem::mesh
 				break;
 		}
 
-		return LocalMesh(m, elements, include_global_boundary);
+		return elements;
 	}
 
 	template <typename M>
-	LocalMesh<M> LocalMesh<M>::flood_fill_n_ring(
-		const M &m,
-		const Tuple &center,
-		const double area,
-		const bool include_global_boundary)
+	std::vector<typename M::Tuple> LocalMesh<M>::flood_fill_n_ring(
+		const M &m, const Tuple &center, const double area)
 	{
 		POLYFEM_SCOPED_TIMER(m.timings.create_local_mesh);
 
@@ -248,25 +243,23 @@ namespace polyfem::mesh
 		}
 		// logger().critical("target_area={:g} area={:g} n_ring={}", area, current_area, n_ring);
 
-		return LocalMesh(m, elements, include_global_boundary);
+		return elements;
 	}
 
 	template <typename M>
-	LocalMesh<M> LocalMesh<M>::ball_selection(
-		const M &m,
-		const VectorNd &center,
-		const double rel_radius,
-		const bool include_global_boundary)
+	std::vector<typename M::Tuple> LocalMesh<M>::ball_selection(
+		const M &m, const VectorNd &center, const double volume)
 	{
 		POLYFEM_SCOPED_TIMER(m.timings.create_local_mesh);
 
 		const int dim = m.dim();
 
+		const double radius = dim == 2 ? std::sqrt(volume / igl::PI) : std::cbrt(0.75 * volume / igl::PI);
+
 		Eigen::Array3d center3D = Eigen::Array3d::Zero();
 		center3D.head(dim) = center;
 
 		Eigen::MatrixXd V = m.rest_positions();
-		const double radius = rel_radius * (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm();
 
 		const std::vector<Tuple> elements = m.get_elements();
 
@@ -287,6 +280,8 @@ namespace polyfem::mesh
 		bvh.intersect_box(center3D - radius, center3D + radius, candidates);
 
 		std::vector<Tuple> intersecting_elements;
+		std::unordered_set<size_t> intersecting_fid;
+		double intersecting_volume = 0;
 		for (unsigned int fi : candidates)
 		{
 			bool is_intersecting;
@@ -306,10 +301,32 @@ namespace polyfem::mesh
 			}
 
 			if (is_intersecting)
+			{
 				intersecting_elements.push_back(elements[fi]);
+				intersecting_fid.insert(m.element_id(elements[fi]));
+				intersecting_volume += m.element_volume(elements[fi]);
+			}
 		}
 
-		return LocalMesh<M>(m, intersecting_elements, include_global_boundary);
+		// Flood fill to fill out the desired volume
+		for (int i = 0; intersecting_volume < volume && i < intersecting_elements.size(); ++i)
+		{
+			std::optional<Tuple> neighbor;
+			if constexpr (std::is_same_v<M, TriMesh>)
+				neighbor = intersecting_elements[i].switch_face(m);
+			else
+				neighbor = intersecting_elements[i].switch_tetrahedron(m);
+
+			if (!neighbor.has_value() || intersecting_fid.find(m.element_id(neighbor.value())) != intersecting_fid.end())
+				continue;
+
+			intersecting_elements.push_back(neighbor.value());
+			intersecting_fid.insert(m.element_id(neighbor.value()));
+			intersecting_volume += m.element_volume(neighbor.value());
+		}
+		assert(intersecting_volume >= volume);
+
+		return intersecting_elements;
 	}
 
 	template <typename M>

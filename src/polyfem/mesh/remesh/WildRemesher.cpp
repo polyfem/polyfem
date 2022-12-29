@@ -1,5 +1,6 @@
 #include "WildRemesher.hpp"
 
+#include <polyfem/mesh/remesh/wild_remesh/LocalMesh.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
 
 #include <wmtk/utils/TupleUtils.hpp>
@@ -282,13 +283,6 @@ namespace polyfem::mesh
 	std::vector<typename WMTKMesh::Tuple> WildRemesher<WMTKMesh>::new_edges_after(
 		const std::vector<Tuple> &elements) const
 	{
-		constexpr int EDGES_IN_ELEMENT = [] {
-			if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
-				return 3;
-			else
-				return 6;
-		}();
-
 		std::vector<Tuple> new_edges;
 		for (const Tuple &t : elements)
 		{
@@ -302,16 +296,104 @@ namespace polyfem::mesh
 	}
 
 	template <class WMTKMesh>
+	void WildRemesher<WMTKMesh>::extend_local_patch(std::vector<Tuple> &patch) const
+	{
+		const size_t starting_size = patch.size();
+
+		std::unordered_set<size_t> element_ids;
+		for (const Tuple &t : patch)
+			element_ids.insert(element_id(t));
+
+		for (size_t i = 0; i < starting_size; ++i)
+		{
+			const size_t id = element_id(patch[i]);
+			for (int j = 0; j < EDGES_IN_ELEMENT; ++j)
+			{
+				const Tuple e = WMTKMesh::tuple_from_edge(id, j);
+
+				for (const Tuple &t : get_incident_elements_for_edge(e))
+				{
+					const size_t t_id = element_id(t);
+					if (element_ids.find(t_id) == element_ids.end())
+					{
+						patch.push_back(t);
+						element_ids.insert(t_id);
+					}
+				}
+			}
+		}
+	}
+
+	template <class WMTKMesh>
+	std::vector<typename WMTKMesh::Tuple>
+	WildRemesher<WMTKMesh>::local_mesh_tuples(const Tuple &t) const
+	{
+		// return LocalMesh::n_ring(*this, t, n_ring);
+
+		// return LocalMesh<WildRemesher<WMTKMesh>>::flood_fill_n_ring(
+		// 	*this, t, flood_fill_rel_area * total_volume);
+
+		return LocalMesh<WildRemesher<WMTKMesh>>::ball_selection(
+			*this, vertex_attrs[t.vid(*this)].rest_position,
+			flood_fill_rel_area * total_volume);
+
+		// return get_faces();;
+	}
+
+	template <class WMTKMesh>
+	typename WildRemesher<WMTKMesh>::Operations
+	WildRemesher<WMTKMesh>::renew_neighbor_tuples(
+		const std::string &op,
+		const std::vector<Tuple> &tris,
+		const bool split,
+		const bool collapse,
+		const bool smooth,
+		const bool swap) const
+	{
+		assert(op == "edge_split");
+
+#ifndef NDEBUG
+		const size_t new_vid = tris[0].vid(*this);
+		for (const Tuple &t : tris)
+			assert(t.vid(*this) == new_vid); // tris shouls be a one ring of the new vertex
+#endif
+
+		// return all edges affected by local relaxation
+		std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(tris[0]);
+		extend_local_patch(local_mesh_tuples);
+
+		const std::vector<Tuple> edges = new_edges_after(local_mesh_tuples);
+
+		Operations new_ops;
+		for (auto &e : edges)
+		{
+			if (split)
+				new_ops.emplace_back("edge_split", e);
+			if (collapse)
+				new_ops.emplace_back("edge_collapse", e);
+			if (swap)
+				new_ops.emplace_back("edge_swap", e);
+		}
+
+		if (smooth)
+		{
+			assert(false);
+		}
+
+		return new_ops;
+	}
+
+	template <class WMTKMesh>
 	void WildRemesher<WMTKMesh>::write_priority_queue_mesh(const std::string &path, const Tuple &e)
 	{
-		constexpr double tol = 1e-16; // tolerance allowed in recomputed values
+		constexpr double tol = 1e-14; // tolerance allowed in recomputed values
 
 		// Save the edge energy and its position in the priority queue
-		std::unordered_map<size_t, std::pair<double, int>> edge_to_fields;
+		std::unordered_map<size_t, std::tuple<double, double, int>> edge_to_fields;
 
 		// The current tuple was popped from the queue, so we need to recompute its energy
 		const double current_edge_energy = edge_elastic_energy(e);
-		edge_to_fields[e.eid(*this)] = std::make_pair(current_edge_energy, 0);
+		edge_to_fields[e.eid(*this)] = std::make_tuple(current_edge_energy, 0, 0);
 
 		// NOTE: this is not thread-safe
 		auto queue = executor.serial_queue();
@@ -326,17 +408,23 @@ namespace polyfem::mesh
 			assert(pop_success);
 			const auto &[energy, op, t, _] = tmp;
 
-			assert(t.eid(*this) != e.eid(*this)); // this should have been popped
-
 			// Some tuple in the queue might not be valid anymore
 			if (!t.is_valid(*this))
+			{
+				--i; // don't count this tuple
 				continue;
+			}
+
+			assert(t.eid(*this) != e.eid(*this)); // this should have been popped
 
 			// Check that the energy is consistent with the priority queue values
 			const double recomputed_energy = edge_elastic_energy(t);
-			if (abs(energy - recomputed_energy) >= tol)
+			const double diff = energy - recomputed_energy;
+			if (abs(diff) >= tol)
 			{
-				logger().error("Energy mismatch: {} vs {}", energy, recomputed_energy);
+				logger().error(
+					"Energy mismatch: {} vs {}; diff={:g}",
+					energy, recomputed_energy, diff);
 				energies_match = false;
 			}
 
@@ -344,7 +432,7 @@ namespace polyfem::mesh
 			assert(current_edge_energy - energy >= -tol); // account for numerical error
 
 			// Save the edge energy and its position in the priority queue
-			edge_to_fields[t.eid(*this)] = std::make_pair(energy, i);
+			edge_to_fields[t.eid(*this)] = std::make_tuple(energy, abs(diff), i);
 		}
 		assert(energies_match);
 
@@ -357,6 +445,7 @@ namespace polyfem::mesh
 		Eigen::MatrixXd rest_positions(n_vertices, dim());
 		Eigen::MatrixXd displacements(n_vertices, dim());
 		Eigen::VectorXd edge_energies(n_vertices);
+		Eigen::VectorXd edge_energy_diffs(n_vertices);
 		Eigen::VectorXd edge_orders(n_vertices);
 
 		for (int ei = 0; ei < edges.size(); ei++)
@@ -366,12 +455,12 @@ namespace polyfem::mesh
 				edges[ei].switch_vertex(*this).vid(*this),
 			}};
 
-			double edge_energy, edge_order;
+			double edge_energy, edge_energy_diff, edge_order;
 			const auto &itr = edge_to_fields.find(edges[ei].eid(*this));
 			if (itr != edge_to_fields.end())
-				std::tie(edge_energy, edge_order) = itr->second;
+				std::tie(edge_energy, edge_energy_diff, edge_order) = itr->second;
 			else
-				edge_energy = edge_order = std::numeric_limits<double>::quiet_NaN();
+				edge_energy = edge_energy_diff = edge_order = NaN;
 
 			for (int vi = 0; vi < vids.size(); ++vi)
 			{
@@ -379,6 +468,7 @@ namespace polyfem::mesh
 				rest_positions.row(elements[ei][vi]) = vertex_attrs[vids[vi]].rest_position;
 				displacements.row(elements[ei][vi]) = vertex_attrs[vids[vi]].displacement();
 				edge_energies(elements[ei][vi]) = edge_energy;
+				edge_energy_diffs(elements[ei][vi]) = edge_energy_diff;
 				edge_orders(elements[ei][vi]) = edge_order;
 			}
 		}
@@ -386,6 +476,7 @@ namespace polyfem::mesh
 		io::VTUWriter writer;
 		writer.add_field("displacement", displacements);
 		writer.add_field("edge_energy", edge_energies);
+		writer.add_field("edge_energy_diff", edge_energy_diffs);
 		writer.add_field("operation_order", edge_orders);
 		writer.write_mesh(path, rest_positions, elements, /*is_simplicial=*/true);
 	}

@@ -866,15 +866,23 @@ namespace polyfem
 
 		if (is_contact_enabled())
 		{
-			if (!has_dhat && args["contact"]["dhat"] > stats.min_edge_length)
+			double min_boundary_edge_length = std::numeric_limits<double>::max();
+			for (const auto &edge : collision_mesh.edges().rowwise())
 			{
-				args["contact"]["dhat"] = double(args["contact"]["dhat_percentage"]) * stats.min_edge_length;
+				const VectorNd v0 = collision_mesh.vertices_at_rest().row(edge(0));
+				const VectorNd v1 = collision_mesh.vertices_at_rest().row(edge(1));
+				min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
+			}
+
+			if (!has_dhat && args["contact"]["dhat"] > min_boundary_edge_length)
+			{
+				args["contact"]["dhat"] = double(args["contact"]["dhat_percentage"]) * min_boundary_edge_length;
 				logger().info("dhat set to {}", double(args["contact"]["dhat"]));
 			}
 			else
 			{
-				if (args["contact"]["dhat"] > stats.min_edge_length)
-					logger().warn("dhat larger than min edge, {} > {}", double(args["contact"]["dhat"]), stats.min_edge_length);
+				if (args["contact"]["dhat"] > min_boundary_edge_length)
+					logger().warn("dhat larger than min boundary edge, {} > {}", double(args["contact"]["dhat"]), min_boundary_edge_length);
 			}
 		}
 

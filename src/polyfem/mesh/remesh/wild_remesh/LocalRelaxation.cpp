@@ -13,24 +13,15 @@
 namespace polyfem::mesh
 {
 	template <class WMTKMesh>
-	bool WildRemesher<WMTKMesh>::local_relaxation(const Tuple &t, const int n_ring)
+	bool WildRemesher<WMTKMesh>::local_relaxation(const Tuple &t)
 	{
 		using namespace polyfem::solver;
 		using namespace polyfem::time_integrator;
 
-		constexpr bool free_boundary = true;
-
 		// 1. Get the n-ring of elements around the vertex.
-		using This = typename std::remove_pointer<decltype(this)>::type;
-		// LocalMesh local_mesh = LocalMesh::n_ring(
-		// 	*this, t, n_ring, /*include_global_boundary=*/free_boundary);
-		// TODO: update hash off all triangle in local mesh
-		LocalMesh<This> local_mesh = LocalMesh<This>::flood_fill_n_ring(
-			*this, t, flood_fill_rel_area * total_volume, /*include_global_boundary=*/free_boundary);
-		// LocalMesh<This> local_mesh = LocalMesh<This>::ball_selection(
-		// 	*this, vertex_attrs[t.vid(*this)].rest_position,
-		// 	flood_fill_rel_area, /*include_global_boundary=*/free_boundary);
-		// LocalMesh local_mesh(*this, get_faces(), /*include_global_boundary=*/free_boundary);
+		std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(t);
+		LocalMesh<WildRemesher<WMTKMesh>> local_mesh(
+			*this, local_mesh_tuples, /*include_global_boundary=*/FREE_BOUNDARY);
 
 		std::vector<polyfem::basis::ElementBases> bases;
 		int n_bases;
@@ -72,7 +63,7 @@ namespace polyfem::mesh
 			for (const int vi : local_mesh.fixed_vertices())
 				add_vertex_to_boundary_nodes(vi);
 
-			if (free_boundary)
+			if constexpr (FREE_BOUNDARY)
 			{
 				const Eigen::MatrixXi &BF = local_mesh.boundary_facets();
 				for (int i = 0; i < BF.rows(); i++)
@@ -122,7 +113,7 @@ namespace polyfem::mesh
 		ass_vals_cache.init(is_volume(), bases, /*gbases=*/bases, /*is_mass=*/false);
 
 		ipc::CollisionMesh collision_mesh; // This has to stay alive
-		const bool contact_enabled = state.args["contact"]["enabled"] && free_boundary;
+		const bool contact_enabled = state.args["contact"]["enabled"] && FREE_BOUNDARY;
 		if (contact_enabled)
 		{
 			POLYFEM_SCOPED_TIMER(timings.create_collision_mesh);
@@ -338,6 +329,21 @@ namespace polyfem::mesh
 
 			local_mesh.write_mesh(state.resolve_output_path(fmt::format("local_mesh_{:04d}.vtu", save_i)), sol);
 			write_deformed_mesh(state.resolve_output_path(fmt::format("split_{:04d}.vtu", save_i++)));
+
+			// Increase the hash of the triangles that have been modified
+			// to invalidate all tuples that point to them.
+			extend_local_patch(local_mesh_tuples);
+			for (Tuple &t : local_mesh_tuples)
+			{
+				assert(t.is_valid(*this));
+				if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
+					this->m_tri_connectivity[t.fid(*this)].hash++;
+				else
+					this->m_tet_connectivity[t.tid(*this)].hash++;
+				assert(!t.is_valid(*this));
+				t.update_hash(*this);
+				assert(t.is_valid(*this));
+			}
 		}
 
 		return accept;

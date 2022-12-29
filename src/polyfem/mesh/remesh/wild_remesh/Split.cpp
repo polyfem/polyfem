@@ -21,17 +21,6 @@ namespace polyfem::mesh
 	template <class WMTKMesh>
 	bool WildRemesher<WMTKMesh>::split_edge_before(const Tuple &e)
 	{
-		double min_edge_length = this->min_edge_length;
-		if (is_on_boundary(e) && state.has_dhat)
-			min_edge_length = std::max(min_edge_length, 1.01 * state.args["contact"]["dhat"].get<double>());
-
-		// Dont split if the edge is too small
-		if (edge_length(e) < min_edge_length)
-			return false;
-
-		// Cache necessary local data
-		cache_split_edge(e);
-
 #ifndef NDEBUG
 		write_priority_queue_mesh(
 			state.resolve_output_path(
@@ -39,9 +28,19 @@ namespace polyfem::mesh
 			e);
 #endif
 
+		// Dont split if the edge is too small
+		double min_edge_length = this->min_edge_length;
+		if (is_on_boundary(e) && state.is_contact_enabled())
+			min_edge_length = std::max(min_edge_length, 2.01 * state.args["contact"]["dhat"].get<double>());
+		if (edge_length(e) < min_edge_length)
+			return false;
+
 		// Do not split if the energy of the edges is too small
 		if (edge_elastic_energy(e) <= energy_absolute_tolerance)
 			return false;
+
+		// Cache necessary local data
+		cache_split_edge(e);
 
 		return true;
 	}
@@ -81,7 +80,7 @@ namespace polyfem::mesh
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
-		return local_relaxation(new_vertex, n_ring_size);
+		return local_relaxation(new_vertex);
 	}
 
 	void WildTriRemesher::map_edge_split_boundary_attributes(
@@ -173,7 +172,7 @@ namespace polyfem::mesh
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
-		return local_relaxation(t, n_ring_size);
+		return local_relaxation(t);
 	}
 
 	void WildTetRemesher::map_edge_split_boundary_attributes(

@@ -115,7 +115,7 @@ namespace polyfem::mesh
 		// ---------------------------------------------------------------------
 		// 3. perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
-		return local_relaxation(t, n_ring_size);
+		return local_relaxation(t);
 	}
 
 } // namespace polyfem::mesh

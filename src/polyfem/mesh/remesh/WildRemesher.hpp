@@ -15,12 +15,26 @@ namespace polyfem::mesh
 		// typedefs
 	public:
 		// NOTE: This assumes triangle meshes are only used in 2D.
-		static constexpr int DIM = [] { if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>) return 2; else return 3; }();
+		static constexpr int DIM = [] {
+			if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
+				return 2;
+			else
+				return 3;
+		}();
+
+		static constexpr int EDGES_IN_ELEMENT = [] {
+			if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
+				return 3;
+			else
+				return 6;
+		}();
 
 		using Tuple = typename WMTKMesh::Tuple;
 
 		/// @brief Current execuation policy (sequencial or parallel)
 		static constexpr wmtk::ExecutionPolicy EXECUTION_POLICY = wmtk::ExecutionPolicy::kSeq;
+
+		static constexpr bool FREE_BOUNDARY = true;
 
 		// --------------------------------------------------------------------
 		// constructors
@@ -79,9 +93,8 @@ namespace polyfem::mesh
 
 		/// @brief Relax a local n-ring around a vertex.
 		/// @param t Center of the local n-ring
-		/// @param n_ring Size of the n-ring
 		/// @return If the local relaxation reduced the energy "significantly"
-		bool local_relaxation(const Tuple &t, const int n_ring);
+		bool local_relaxation(const Tuple &t);
 
 		// --------------------------------------------------------------------
 		// getters
@@ -176,6 +189,10 @@ namespace polyfem::mesh
 		/// @param tris New elements.
 		std::vector<Tuple> new_edges_after(const std::vector<Tuple> &elements) const;
 
+		void extend_local_patch(std::vector<Tuple> &patch) const;
+
+		std::vector<Tuple> local_mesh_tuples(const Tuple &t) const;
+
 	protected:
 		/// @brief Cache the split edge operation
 		virtual void cache_split_edge(const Tuple &e) = 0;
@@ -183,6 +200,15 @@ namespace polyfem::mesh
 		/// @brief Write a visualization mesh of the priority queue
 		/// @param e current edge tuple to be split
 		void write_priority_queue_mesh(const std::string &path, const Tuple &e);
+
+		using Operations = std::vector<std::pair<std::string, Tuple>>;
+		Operations renew_neighbor_tuples(
+			const std::string &op,
+			const std::vector<Tuple> &tris,
+			const bool split,
+			const bool collapse,
+			const bool smooth,
+			const bool swap) const;
 
 		// --------------------------------------------------------------------
 		// members
@@ -224,6 +250,7 @@ namespace polyfem::mesh
 		int vis_counter = 0;
 		int m_n_quantities;
 		double total_volume;
+		std::vector<Tuple> modified_tuples;
 	};
 
 } // namespace polyfem::mesh

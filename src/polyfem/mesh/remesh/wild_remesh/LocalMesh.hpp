@@ -19,24 +19,21 @@ namespace polyfem::mesh
 			const bool include_global_boundary);
 
 		/// @brief Construct a local mesh as an n-ring around a vertex.
-		static LocalMesh<M> n_ring(
+		static std::vector<Tuple> n_ring(
 			const M &m,
 			const Tuple &center,
-			const int n,
-			const bool include_global_boundary);
+			const int n);
 
 		/// @brief Construct a local mesh as an n-ring around a vertex.
-		static LocalMesh<M> flood_fill_n_ring(
+		static std::vector<Tuple> flood_fill_n_ring(
 			const M &m,
 			const Tuple &center,
-			const double area,
-			const bool include_global_boundary);
+			const double area);
 
-		static LocalMesh<M> ball_selection(
+		static std::vector<Tuple> ball_selection(
 			const M &m,
 			const VectorNd &center,
-			const double rel_radius,
-			const bool include_global_boundary);
+			const double rel_radius);
 
 		int num_elements() const { return m_elements.rows(); }
 		int num_local_vertices() const { return m_num_local_vertices; }

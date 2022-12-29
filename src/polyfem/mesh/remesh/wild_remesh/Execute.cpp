@@ -16,6 +16,11 @@ namespace polyfem::mesh
 	{
 		const std::vector<Tuple> elements = get_incident_elements_for_edge(e);
 
+		double volume = 0;
+		for (const auto &t : elements)
+			volume += element_volume(t);
+		assert(volume > 0);
+
 		const LocalMesh local_mesh(*this, elements, /*include_global_boundary=*/false);
 
 		std::vector<polyfem::basis::ElementBases> bases;
@@ -34,7 +39,7 @@ namespace polyfem::mesh
 			state.formulation(), is_volume(), bases, /*gbases=*/bases, cache,
 			/*dt=*/-1, displacements, /*displacement_prev=*/Eigen::MatrixXd());
 		assert(std::isfinite(energy));
-		return energy / local_mesh.num_elements(); // average energy
+		return energy / volume; // average energy
 	}
 
 	template <class WMTKMesh>
@@ -94,25 +99,7 @@ namespace polyfem::mesh
 		};
 
 		executor.renew_neighbor_tuples = [&](const WildRemesher &m, std::string op, const std::vector<Tuple> &tris) -> Operations {
-			// TODO: return all edges affected by local relaxation
-			auto edges = m.new_edges_after(tris);
-			Operations new_ops;
-			for (auto &e : edges)
-			{
-				if (split && edge_length(e) >= min_edge_length)
-					new_ops.emplace_back("edge_split", e);
-				if (collapse)
-					new_ops.emplace_back("edge_collapse", e);
-				if (swap)
-					new_ops.emplace_back("edge_swap", e);
-			}
-
-			if (smooth)
-			{
-				assert(false);
-			}
-
-			return new_ops;
+			return m.renew_neighbor_tuples(op, tris, split, collapse, smooth, swap);
 		};
 
 		// Split x% of edges
