@@ -46,6 +46,8 @@ set(SOURCES
 	ExpressionValue.hpp
 	Timer.hpp
 	Types.hpp
+	UnsignedDistanceFunction.cpp
+	UnsignedDistanceFunction.hpp
 )
 
 prepend_current_path(SOURCES)

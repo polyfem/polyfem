@@ -1079,6 +1079,45 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/functionals/*/control_points_grid",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/control_points_grid/*",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/control_points_grid/*/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/knots_u",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/knots_u/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/knots_v",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/knots_v/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
         "pointer": "/functionals/*/delta",
         "type": "list",
         "default": [],

@@ -243,8 +243,8 @@ TEST_CASE("multiparameter-sdf-trajectory-surface-opt", "[optimization]")
 	run_opt_new("multiparameter-sdf-trajectory-surface-opt");
 	auto energies = read_energy("multiparameter-sdf-trajectory-surface-opt");
 
-	REQUIRE(energies[0] == Approx(0.153687).epsilon(1e-3));
-	REQUIRE(energies[energies.size() - 1] == Approx(0.113011).epsilon(1e-3));
+	REQUIRE(energies[0] == Approx(0.15327).epsilon(1e-3));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.11259).epsilon(1e-3));
 }
 
 // TEST_CASE("sdf-test", "[optimization]")
