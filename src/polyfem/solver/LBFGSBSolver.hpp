@@ -28,6 +28,7 @@ namespace cppoptlib
 		LBFGSBSolver(const json &solver_params)
 			: Superclass(solver_params)
 		{
+			m_history_size = solver_params.value("history_size", 6);
 		}
 
 		std::string name() const override { return "L-BFGS-B"; }
@@ -87,7 +88,7 @@ namespace cppoptlib
 			m_prev_grad.resize(ndof);
 
 			// Use gradient descent for first iteration
-			this->descent_strategy = 2;
+			this->descent_strategy = 1;
 		}
 
 		void remesh_reset(const ProblemType &objFunc, const TVector &x) override
@@ -105,6 +106,13 @@ namespace cppoptlib
 		{
 			TVector lower_bound = objFunc.get_lower_bound(x);
 			TVector upper_bound = objFunc.get_upper_bound(x);
+
+			for (int i = 0; i < x.size(); i++)
+				if (lower_bound(i) > x(i) || upper_bound(i) < x(i))
+				{
+					polyfem::logger().error("Entry {} value {} exceeds bound [{}, {}]!", i, x(i), lower_bound(i), upper_bound(i));
+					polyfem::log_and_throw_error("Variable bound exceeded!");
+				}
 
 			TVector cauchy_point(x.size()), vecc;
 			std::vector<int> newact_set, fv_set;
