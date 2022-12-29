@@ -437,6 +437,7 @@ namespace polyfem::solver
 		std::shared_ptr<const Parameter> elastic_param_;
 
 		const bool is_volume;
+		std::set<int> volume_selections;
 
 		double min_E = 0, max_E = 0;
 		double kappa_E = 0, dhat_E = 0;

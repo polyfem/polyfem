@@ -524,6 +524,11 @@
     },
     {
         "pointer": "/parameters/*/volume_selection",
+        "type": "file",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/volume_selection",
         "type": "list",
         "default": [],
         "doc": "TODO"
@@ -928,6 +933,11 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/functionals/*/volume_selection",
+        "type": "file",
+        "doc": "TODO"
+    },
+    {
         "pointer": "/functionals/*/volume_selection/*",
         "type": "int",
         "doc": "TODO"
@@ -1288,7 +1298,8 @@
             "bounds"
         ],
         "optional": [
-            "material_parameter"
+            "material_parameter",
+            "volume_selection"
         ],
         "doc": "TODO"
     },

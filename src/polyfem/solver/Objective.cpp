@@ -2026,6 +2026,20 @@ namespace polyfem::solver
 
 	MaterialBoundObjective::MaterialBoundObjective(const std::shared_ptr<const Parameter> elastic_param, const json &args) : elastic_param_(elastic_param), is_volume(elastic_param->get_state().mesh->is_volume())
 	{
+		volume_selections.clear();
+		if (args["volume_selection"].is_array())
+		{
+			for (int body : args["volume_selection"])
+				volume_selections.insert(body);
+		}
+		else if (args["volume_selection"].is_string())
+		{
+			Eigen::MatrixXi tmp;
+			io::read_matrix(args["volume_selection"].get<std::string>(), tmp);
+			for (int i = 0; i < tmp.size(); i++)
+				volume_selections.insert(tmp(i));
+		}
+
 		for (const auto &arg : args["bounds"])
 		{
 			if (arg["type"] == "E")
@@ -2067,6 +2081,9 @@ namespace polyfem::solver
 		double val = 0;
 		for (int e = 0; e < lambdas.size(); e++)
 		{
+			const int body_id = elastic_param_->get_state().mesh->get_body_id(e);
+			if (!volume_selections.empty() && volume_selections.count(body_id) == 0)
+				continue;
 			const double lambda = lambdas(e);
 			const double mu = mus(e);
 			const double E = convert_to_E(is_volume, lambda, mu);
@@ -2116,6 +2133,9 @@ namespace polyfem::solver
 		assert(grad.size() == lambdas.size() + mus.size());
 		for (int e = 0; e < lambdas.size(); e++)
 		{
+			const int body_id = elastic_param_->get_state().mesh->get_body_id(e);
+			if (!volume_selections.empty() && volume_selections.count(body_id) == 0)
+				continue;
 			const double lambda = lambdas(e);
 			const double mu = mus(e);
 			const double E = convert_to_E(is_volume, lambda, mu);
