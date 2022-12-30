@@ -40,6 +40,8 @@ set(SOURCES
 	Objective.hpp
 	HomoObjective.hpp
 	HomoObjective.cpp
+	IntegralObjective.hpp
+	IntegralObjective.cpp
 	AdjointNLProblem.hpp
 	AdjointNLProblem.cpp
 	Parameter.hpp

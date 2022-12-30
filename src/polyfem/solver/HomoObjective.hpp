@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AdjointForm.hpp"
-#include "Objective.hpp"
+#include "IntegralObjective.hpp"
 
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/assembler/Multiscale.hpp>
