@@ -363,8 +363,8 @@ namespace polyfem::mesh
 		{
 			const size_t t_id = element_id(t);
 
-			// if (element_attrs[t_id].excluded)
-			// 	continue;
+			if (element_attrs[t_id].excluded)
+				continue;
 
 			for (auto j = 0; j < EDGES_IN_ELEMENT; j++)
 			{
