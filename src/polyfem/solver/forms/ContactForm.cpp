@@ -6,6 +6,7 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 #include <polyfem/io/OBJWriter.hpp>
 
@@ -123,6 +124,56 @@ namespace polyfem::solver
 	double ContactForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		return ipc::compute_barrier_potential(collision_mesh_, compute_displaced_surface(x), constraint_set_, dhat_);
+	}
+
+	Eigen::VectorXd ContactForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
+	{
+		const Eigen::MatrixXd V = compute_displaced_surface(x);
+		assert(V.rows() == collision_mesh_.num_vertices());
+
+		const size_t num_vertices = collision_mesh_.num_vertices();
+
+		if (constraint_set_.empty())
+		{
+			return Eigen::VectorXd::Zero(collision_mesh_.full_num_vertices());
+		}
+
+		const Eigen::MatrixXi &E = collision_mesh_.edges();
+		const Eigen::MatrixXi &F = collision_mesh_.faces();
+
+		auto storage = utils::create_thread_storage<Eigen::VectorXd>(Eigen::VectorXd::Zero(num_vertices));
+
+		utils::maybe_parallel_for(constraint_set_.size(), [&](int start, int end, int thread_id) {
+			Eigen::VectorXd &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+			for (size_t i = start; i < end; i++)
+			{
+				// Quadrature weight is premultiplied by compute_potential
+				const double potential = constraint_set_[i].compute_potential(V, E, F, dhat_);
+
+				const int n_v = constraint_set_[i].num_vertices();
+				const std::array<long, 4> vis = constraint_set_[i].vertex_indices(E, F);
+				for (int j = 0; j < n_v; j++)
+				{
+					assert(0 <= vis[j] && vis[j] < num_vertices);
+					local_storage[vis[j]] += potential / n_v;
+				}
+			}
+		});
+
+		Eigen::VectorXd out = Eigen::VectorXd::Zero(num_vertices);
+		for (const auto &local_potential : storage)
+		{
+			out += local_potential;
+		}
+
+		Eigen::VectorXd out_full = Eigen::VectorXd::Zero(collision_mesh_.full_num_vertices());
+		for (int i = 0; i < out.size(); i++)
+			out_full[collision_mesh_.to_full_vertex_id(i)] = out[i];
+
+		assert(std::abs(value_unweighted(x) - out_full.sum()) < 1e-10);
+
+		return out_full;
 	}
 
 	void ContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const

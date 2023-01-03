@@ -99,6 +99,17 @@ namespace polyfem
 								   const Eigen::MatrixXd &displacement,
 								   const Eigen::MatrixXd &displacement_prev) const;
 
+			// Non linear energy, assembler is the name of the formulation
+			void assemble_energy_per_element(const std::string &assembler,
+											 const bool is_volume,
+											 const std::vector<basis::ElementBases> &bases,
+											 const std::vector<basis::ElementBases> &gbases,
+											 const AssemblyValsCache &cache,
+											 const double dt,
+											 const Eigen::MatrixXd &displacement,
+											 const Eigen::MatrixXd &displacement_prev,
+											 Eigen::VectorXd &out) const;
+
 			// non linear gradient, assembler is the name of the formulation
 			void assemble_energy_gradient(const std::string &assembler,
 										  const bool is_volume,

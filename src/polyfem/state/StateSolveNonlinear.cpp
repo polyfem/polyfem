@@ -79,9 +79,14 @@ namespace polyfem
 		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
 		const double remesh_t0 = args["space"]["remesh"]["t0"];
 
+		igl::Timer timer;
+
 		for (int t = 1; t <= time_steps; ++t)
 		{
+			timer.start();
 			solve_tensor_nonlinear(sol, t);
+			timer.stop();
+			logger().critical("Forward time step {} took {}s", t, timer.getElapsedTimeInSec());
 
 			save_energy(save_i);
 			save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
@@ -92,7 +97,9 @@ namespace polyfem
 				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
 				const Eigen::MatrixXd loc_relax_sol = sol;
-				solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
+				timer.start();
+				timer.stop();
+				logger().critical("Global relaxation took {}s", timer.getElapsedTimeInSec());
 				relax_diff_file << fmt::format("{},{}\n", (loc_relax_sol - sol).norm(), (loc_relax_sol - sol).lpNorm<Eigen::Infinity>());
 				relax_diff_file.flush();
 

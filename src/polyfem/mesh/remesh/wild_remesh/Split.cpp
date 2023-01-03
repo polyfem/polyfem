@@ -36,8 +36,11 @@ namespace polyfem::mesh
 			return false;
 
 		// Do not split if the energy of the edges is too small
-		if (edge_elastic_energy(e) <= energy_absolute_tolerance)
+		const double edge_energy = edge_elastic_energy(e);
+		if (edge_energy <= energy_absolute_tolerance)
 			return false;
+
+		// logger().debug("edge_energy: {}", edge_energy);
 
 		// Cache necessary local data
 		cache_split_edge(e);

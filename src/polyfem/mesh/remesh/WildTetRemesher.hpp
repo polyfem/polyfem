@@ -150,10 +150,6 @@ namespace polyfem::mesh
 			const size_t old_v0_id,
 			const size_t old_v1_id);
 
-		/// @brief Create a vector of all the new edge after an operation.
-		/// @param tris New triangles.
-		// std::vector<Tuple> new_edges_after(const std::vector<Tuple> &tets) const;
-
 		// --------------------------------------------------------------------
 		// parameters
 

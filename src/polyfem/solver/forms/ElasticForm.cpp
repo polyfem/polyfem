@@ -34,6 +34,16 @@ namespace polyfem::solver
 			ass_vals_cache_, dt_, x, x_prev_);
 	}
 
+	Eigen::VectorXd ElasticForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd out;
+		assembler_.assemble_energy_per_element(
+			formulation_, is_volume_, bases_, geom_bases_,
+			ass_vals_cache_, dt_, x, x_prev_, out);
+		assert(abs(out.sum() - value_unweighted(x)) < 1e-10);
+		return out;
+	}
+
 	void ElasticForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		Eigen::MatrixXd grad;

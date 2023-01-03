@@ -280,22 +280,6 @@ namespace polyfem::mesh
 	}
 
 	template <class WMTKMesh>
-	std::vector<typename WMTKMesh::Tuple> WildRemesher<WMTKMesh>::new_edges_after(
-		const std::vector<Tuple> &elements) const
-	{
-		std::vector<Tuple> new_edges;
-		for (const Tuple &t : elements)
-		{
-			for (auto j = 0; j < EDGES_IN_ELEMENT; j++)
-			{
-				new_edges.push_back(WMTKMesh::tuple_from_edge(element_id(t), j));
-			}
-		}
-		wmtk::unique_edge_tuples(*this, new_edges);
-		return new_edges;
-	}
-
-	template <class WMTKMesh>
 	void WildRemesher<WMTKMesh>::extend_local_patch(std::vector<Tuple> &patch) const
 	{
 		const size_t starting_size = patch.size();
@@ -344,7 +328,7 @@ namespace polyfem::mesh
 	typename WildRemesher<WMTKMesh>::Operations
 	WildRemesher<WMTKMesh>::renew_neighbor_tuples(
 		const std::string &op,
-		const std::vector<Tuple> &tris,
+		const std::vector<Tuple> &elements,
 		const bool split,
 		const bool collapse,
 		const bool smooth,
@@ -353,16 +337,29 @@ namespace polyfem::mesh
 		assert(op == "edge_split");
 
 #ifndef NDEBUG
-		const size_t new_vid = tris[0].vid(*this);
-		for (const Tuple &t : tris)
-			assert(t.vid(*this) == new_vid); // tris shouls be a one ring of the new vertex
+		const size_t new_vid = elements[0].vid(*this);
+		for (const Tuple &t : elements)
+			assert(t.vid(*this) == new_vid); // elements should be a one ring of the new vertex
 #endif
 
 		// return all edges affected by local relaxation
-		std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(tris[0]);
+		std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(elements[0]);
 		extend_local_patch(local_mesh_tuples);
 
-		const std::vector<Tuple> edges = new_edges_after(local_mesh_tuples);
+		std::vector<Tuple> edges;
+		for (const Tuple &t : elements)
+		{
+			const size_t t_id = element_id(t);
+
+			if (element_attrs[t_id].excluded)
+				continue;
+
+			for (auto j = 0; j < EDGES_IN_ELEMENT; j++)
+			{
+				edges.push_back(WMTKMesh::tuple_from_edge(element_id(t), j));
+			}
+		}
+		wmtk::unique_edge_tuples(*this, edges);
 
 		Operations new_ops;
 		for (auto &e : edges)

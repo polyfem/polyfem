@@ -339,6 +339,15 @@ namespace polyfem::mesh
 	}
 
 	template <typename M>
+	const Eigen::MatrixXi &LocalMesh<M>::boundary_facets() const
+	{
+		if constexpr (std::is_same_v<M, TriMesh>)
+			return m_boundary_edges;
+		else
+			return m_boundary_faces;
+	}
+
+	template <typename M>
 	void LocalMesh<M>::remove_duplicate_fixed_vertices()
 	{
 		std::sort(m_fixed_vertices.begin(), m_fixed_vertices.end());

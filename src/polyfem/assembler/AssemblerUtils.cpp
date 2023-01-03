@@ -241,6 +241,35 @@ namespace polyfem
 				return 0;
 		}
 
+		void AssemblerUtils::assemble_energy_per_element(const std::string &assembler,
+														 const bool is_volume,
+														 const std::vector<ElementBases> &bases,
+														 const std::vector<ElementBases> &gbases,
+														 const AssemblyValsCache &cache,
+														 const double dt,
+														 const Eigen::MatrixXd &displacement,
+														 const Eigen::MatrixXd &displacement_prev,
+														 Eigen::VectorXd &out) const
+		{
+			if (assembler == "SaintVenant")
+				return saint_venant_elasticity_.assemble_per_element(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, out);
+			else if (assembler == "NeoHookean")
+				return neo_hookean_elasticity_.assemble_per_element(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, out);
+			else if (assembler == "MooneyRivlin")
+				return mooney_rivlin_elasticity_.assemble_per_element(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, out);
+			else if (assembler == "MultiModels")
+				return multi_models_elasticity_.assemble_per_element(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, out);
+			else if (assembler == "Damping")
+				return damping_.assemble_per_element(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, out);
+
+			else if (assembler == "Ogden")
+				return ogden_elasticity_.assemble_per_element(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, out);
+			else if (assembler == "LinearElasticity")
+				return linear_elasticity_energy_.assemble_per_element(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, out);
+			else
+				return;
+		}
+
 		void AssemblerUtils::assemble_energy_gradient(const std::string &assembler,
 													  const bool is_volume,
 													  const int n_basis,

@@ -25,6 +25,7 @@
 #include <spdlog/sinks/ostream_sink.h>
 
 #include <ipc/utils/logger.hpp>
+#include <wmtk/utils/Logger.hpp>
 
 #include <sstream>
 
@@ -153,6 +154,9 @@ namespace polyfem
 
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
 		ipc::logger().set_level(log_level);
+
+		wmtk::set_logger(std::make_shared<spdlog::logger>("wmtk", sinks.begin(), sinks.end()));
+		wmtk::logger().set_level(log_level);
 	}
 
 	void State::init(const json &p_args_in, const bool strict_validation)
@@ -217,6 +221,14 @@ namespace polyfem
 				this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
 			}
 		}
+
+		// Save output directory and resolve output paths dynamically
+		const std::string output_dir = this->args["output"]["directory"];
+		if (!output_dir.empty())
+		{
+			std::filesystem::create_directories(output_dir);
+		}
+		this->output_dir = output_dir;
 
 		std::string out_path_log = this->args["output"]["log"]["path"];
 		if (!out_path_log.empty())
@@ -294,14 +306,6 @@ namespace polyfem
 			// important for the BC
 			problem->set_parameters(args["preset_problem"]);
 		}
-
-		// Save output directory and resolve output paths dynamically
-		const std::string output_dir = this->args["output"]["directory"];
-		if (!output_dir.empty())
-		{
-			std::filesystem::create_directories(output_dir);
-		}
-		this->output_dir = output_dir;
 	}
 
 	void State::set_max_threads(const unsigned int max_threads)

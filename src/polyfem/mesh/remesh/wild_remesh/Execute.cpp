@@ -3,17 +3,21 @@
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
 #include <polyfem/mesh/remesh/wild_remesh/LocalMesh.hpp>
+#include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 
 #include <wmtk/utils/ExecutorUtils.hpp>
+#include <wmtk/utils/TupleUtils.hpp>
 
 namespace polyfem::mesh
 {
 	template <class WMTKMesh>
 	double WildRemesher<WMTKMesh>::edge_elastic_energy(const Tuple &e) const
 	{
+		using namespace polyfem::solver;
+
 		const std::vector<Tuple> elements = get_incident_elements_for_edge(e);
 
 		double volume = 0;
@@ -21,25 +25,23 @@ namespace polyfem::mesh
 			volume += element_volume(t);
 		assert(volume > 0);
 
-		const LocalMesh local_mesh(*this, elements, /*include_global_boundary=*/false);
+		LocalMesh local_mesh(*this, elements, /*include_global_boundary=*/false);
 
-		std::vector<polyfem::basis::ElementBases> bases;
-		Eigen::VectorXi vertex_to_basis;
-		Remesher::build_bases(
-			local_mesh.rest_positions(), local_mesh.elements(), state.formulation(),
-			bases, vertex_to_basis);
-
-		const Eigen::VectorXd displacements = utils::flatten(utils::reorder_matrix(
-			local_mesh.displacements(), vertex_to_basis));
-
+		const std::vector<polyfem::basis::ElementBases> bases = local_bases(local_mesh);
+		const std::vector<int> boundary_nodes; // no boundary nodes
 		assembler::AssemblerUtils assembler = create_assembler(local_mesh.body_ids());
+		SolveData solve_data;
+		assembler::AssemblyValsCache ass_vals_cache;
+		Eigen::SparseMatrix<double> mass;
+		ipc::CollisionMesh collision_mesh;
 
-		assembler::AssemblyValsCache cache;
-		const double energy = assembler.assemble_energy(
-			state.formulation(), is_volume(), bases, /*gbases=*/bases, cache,
-			/*dt=*/-1, displacements, /*displacement_prev=*/Eigen::MatrixXd());
-		assert(std::isfinite(energy));
-		return energy / volume; // average energy
+		local_solve_data(
+			local_mesh, bases, boundary_nodes, assembler,
+			solve_data, ass_vals_cache, mass, collision_mesh);
+
+		const Eigen::MatrixXd sol = utils::flatten(local_mesh.displacements());
+
+		return solve_data.nl_problem->value(sol) / volume; // average energy
 	}
 
 	template <class WMTKMesh>
@@ -60,8 +62,24 @@ namespace polyfem::mesh
 
 		// TODO: implement face swaps for tet meshes
 
+		const std::vector<Tuple> starting_elements = get_elements();
+		std::vector<Tuple> included_edges;
+		for (const Tuple &t : starting_elements)
+		{
+			const size_t t_id = element_id(t);
+
+			if (element_attrs[t_id].excluded)
+				continue;
+
+			for (int ei = 0; ei < EDGES_IN_ELEMENT; ++ei)
+			{
+				included_edges.push_back(WMTKMesh::tuple_from_edge(t_id, ei));
+			}
+		}
+		wmtk::unique_edge_tuples(*this, included_edges);
+
 		const std::vector<Tuple> starting_edges = WMTKMesh::get_edges();
-		for (const Tuple &e : starting_edges)
+		for (const Tuple &e : included_edges)
 		{
 			if (split)
 				collect_all_ops.emplace_back("edge_split", e);
@@ -120,7 +138,7 @@ namespace polyfem::mesh
 		// Remove unused vertices
 		WMTKMesh::consolidate_mesh();
 
-		// if (executor.cnt_success() > 10)
+		// if (executor.cnt_success() > 40)
 		// {
 		// 	logger().critical("exiting now for debugging purposes");
 		// 	exit(0);

@@ -61,6 +61,7 @@ namespace polyfem::mesh
 		/// @brief Get a reference to the boundary facets (edges in 2D or faces in 3D).
 		/// @todo Make this const.
 		Eigen::MatrixXi &boundary_facets();
+		const Eigen::MatrixXi &boundary_facets() const;
 
 		void write_mesh(const std::string &path, const Eigen::MatrixXd &sol) const;
 

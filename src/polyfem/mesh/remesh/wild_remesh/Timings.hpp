@@ -44,7 +44,7 @@ namespace polyfem::mesh
 			logger().critical("Assemble mass matrix: {:.3g}s {:.1f}%", assemble_mass_matrix, (assemble_mass_matrix) / total * 100);
 			logger().critical("Create collision mesh: {:.3g}s {:.1f}%", create_collision_mesh, (create_collision_mesh) / total * 100);
 			logger().critical("Init forms: {:.3g}s {:.1f}%", init_forms, (init_forms) / total * 100);
-			logger().critical("Local relaxation solve: {:.3g}s {:.1f}%", local_relaxation_solve, (local_relaxation_solve) / total * 100);
+			logger().critical("Local relaxation solve ({:d} in total): {:.3g}s {:.1f}%", n_solves, local_relaxation_solve, (local_relaxation_solve) / total * 100);
 			logger().critical("Acceptance check: {:.3g}s {:.1f}%", acceptance_check, (acceptance_check) / total * 100);
 			logger().critical("Miscellaneous: {:.3g}s {:.1f}%", total - sum(), (total - sum()) / total * 100);
 			if (n_solves > 0)

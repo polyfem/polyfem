@@ -666,6 +666,46 @@ namespace polyfem::assembler
 		return res;
 	}
 
+	template <class LocalAssembler>
+	void NLAssembler<LocalAssembler>::assemble_per_element(
+		const bool is_volume,
+		const std::vector<ElementBases> &bases,
+		const std::vector<ElementBases> &gbases,
+		const AssemblyValsCache &cache,
+		const double dt,
+		const Eigen::MatrixXd &displacement,
+		const Eigen::MatrixXd &displacement_prev,
+		Eigen::VectorXd &out) const
+	{
+		auto storage = create_thread_storage(LocalThreadScalarStorage());
+		const int n_bases = int(bases.size());
+		out.resize(bases.size());
+
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
+			ElementAssemblyValues &vals = local_storage.vals;
+
+			for (int e = start; e < end; ++e)
+			{
+				cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+				const Quadrature &quadrature = vals.quadrature;
+
+				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+				local_storage.da = vals.det.array() * quadrature.weights.array();
+
+				const double val = local_assembler_.compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				out[e] = val;
+			}
+		});
+
+#ifndef NDEBUG
+		const double assemble_val = assemble(
+			is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+		assert(std::abs(assemble_val - out.sum()) < 1e-10);
+#endif
+	}
+
 	// template instantiation
 	template class Assembler<Mass>;
 

@@ -1,16 +1,22 @@
 #pragma once
 
 #include <polyfem/mesh/remesh/Remesher.hpp>
+#include <polyfem/mesh/remesh/wild_remesh/LocalMesh.hpp>
+#include <polyfem/solver/SolveData.hpp>
 
 #include <wmtk/TriMesh.h>
 #include <wmtk/TetMesh.h>
 #include <wmtk/ExecutionScheduler.hpp>
+
+#include <ipc/collision_mesh.hpp>
 
 namespace polyfem::mesh
 {
 	template <class WMTKMesh>
 	class WildRemesher : public Remesher, public WMTKMesh
 	{
+		using This = WildRemesher<WMTKMesh>;
+
 		// --------------------------------------------------------------------
 		// typedefs
 	public:
@@ -185,10 +191,6 @@ namespace polyfem::mesh
 		/// @brief Get the incident elements for an edge
 		virtual std::vector<Tuple> get_incident_elements_for_edge(const Tuple &t) const = 0;
 
-		/// @brief Create a vector of all the new edge after an operation.
-		/// @param tris New elements.
-		std::vector<Tuple> new_edges_after(const std::vector<Tuple> &elements) const;
-
 		void extend_local_patch(std::vector<Tuple> &patch) const;
 
 		std::vector<Tuple> local_mesh_tuples(const Tuple &t) const;
@@ -209,6 +211,21 @@ namespace polyfem::mesh
 			const bool collapse,
 			const bool smooth,
 			const bool swap) const;
+
+		std::vector<polyfem::basis::ElementBases> local_bases(
+			LocalMesh<This> &local_mesh) const;
+
+		std::vector<int> local_boundary_nodes(const LocalMesh<This> &local_mesh) const;
+
+		void local_solve_data(
+			const LocalMesh<This> &local_mesh,
+			const std::vector<polyfem::basis::ElementBases> &bases,
+			const std::vector<int> &boundary_nodes,
+			const assembler::AssemblerUtils &assembler,
+			solver::SolveData &solve_data,
+			assembler::AssemblyValsCache &ass_vals_cache,
+			Eigen::SparseMatrix<double> &mass,
+			ipc::CollisionMesh &collision_mesh) const;
 
 		// --------------------------------------------------------------------
 		// members
@@ -239,6 +256,7 @@ namespace polyfem::mesh
 		struct ElementAttributes
 		{
 			int body_id = 0;
+			bool excluded = false;
 		};
 
 		wmtk::AttributeCollection<VertexAttributes> vertex_attrs;

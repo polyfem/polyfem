@@ -3,6 +3,8 @@
 #include <polyfem/mesh/remesh/WildTriRemesher.hpp>
 #include <polyfem/mesh/remesh/WildTetRemesher.hpp>
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/forms/ElasticForm.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/io/OBJWriter.hpp>
@@ -87,6 +89,44 @@ namespace polyfem::mesh
 		state.build_mesh_matrices(rest_positions, elements);
 		assert(rest_positions.size() == ndof_mesh);
 
+		// --------------------------------------------------------------------
+		{
+			const size_t n_out_vertices = elements.size();
+
+			const Eigen::VectorXd elastic_energy_per_element = state.solve_data.elastic_form->value_per_element(sol);
+			const Eigen::VectorXd contact_energy_per_element = state.solve_data.contact_form->value_per_element(sol);
+
+			std::vector<std::vector<int>> F(elements.rows(), std::vector<int>(elements.cols()));
+			Eigen::MatrixXd V = Eigen::MatrixXd::Zero(n_out_vertices, dim);
+			Eigen::MatrixXd U = Eigen::MatrixXd::Zero(n_out_vertices, dim);
+			Eigen::VectorXd elastic_energy = Eigen::VectorXd::Zero(n_out_vertices);
+			Eigen::VectorXd contact_energy = Eigen::VectorXd::Zero(n_out_vertices);
+
+			for (int i = 0; i < elements.rows(); i++)
+			{
+				for (int j = 0; j < elements.cols(); j++)
+				{
+					F[i][j] = elements.cols() * i + j;
+					V.row(F[i][j]) = rest_positions.row(elements(i, j));
+					U.row(F[i][j]) = sol.middleRows(dim * elements(i, j), dim).transpose();
+					elastic_energy[F[i][j]] = elastic_energy_per_element[i];
+					contact_energy[F[i][j]] = contact_energy_per_element[elements(i, j)];
+				}
+			}
+
+			// TODO: append obstacle values
+
+			io::VTUWriter writer;
+			writer.add_field("displacement", U);
+			writer.add_field("elastic_energy", elastic_energy);
+			writer.add_field("contact_energy", contact_energy);
+			writer.add_field("total_energy", elastic_energy + contact_energy);
+			writer.write_mesh(
+				state.resolve_output_path(fmt::format("energy_vis_{:03d}.vtu", int(time / dt))),
+				V, F, /*is_simplicial=*/true);
+		}
+		// --------------------------------------------------------------------
+
 		Remesher::BoundaryMap<int> boundary_to_id = build_boundary_to_id(state.mesh, state.in_node_to_node);
 
 		const std::vector<int> body_ids = state.mesh->has_body_ids() ? state.mesh->get_body_ids() : std::vector<int>(elements.rows(), 0);
@@ -126,6 +166,11 @@ namespace polyfem::mesh
 			/*split=*/true, /*collapse=*/false, /*smooth=*/false, /*swap=*/false,
 			/*max_ops_percent=*/-1);
 		remeshing->timings.log();
+
+		remeshing->write_mesh(
+			state.resolve_output_path(fmt::format("post_vis_{:03d}.vtu", int(time / dt))),
+			false);
+
 		if (!made_change)
 			return false;
 

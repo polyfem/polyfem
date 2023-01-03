@@ -107,6 +107,16 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev) const;
 
+		void assemble_per_element(
+			const bool is_volume,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double dt,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev,
+			Eigen::VectorXd &out) const;
+
 		inline LocalAssembler &local_assembler() { return local_assembler_; }
 		inline const LocalAssembler &local_assembler() const { return local_assembler_; }
 
