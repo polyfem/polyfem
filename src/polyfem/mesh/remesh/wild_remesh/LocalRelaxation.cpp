@@ -316,8 +316,9 @@ namespace polyfem::mesh
 			std::vector<bool> is_vertex_fixed(local_mesh.num_vertices(), false);
 			for (const int vi : local_mesh.fixed_vertices())
 				is_vertex_fixed[vi] = true;
-			collision_mesh.can_collide = [is_vertex_fixed](size_t vi, size_t vj) {
-				return !is_vertex_fixed[vi] || !is_vertex_fixed[vj];
+			collision_mesh.can_collide = [is_vertex_fixed, &collision_mesh](size_t vi, size_t vj) {
+				return !is_vertex_fixed[collision_mesh.to_full_vertex_id(vi)]
+					   || !is_vertex_fixed[collision_mesh.to_full_vertex_id(vj)];
 			};
 		}
 

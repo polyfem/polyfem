@@ -46,9 +46,10 @@ namespace polyfem::mesh
 		const Eigen::MatrixXi &elements,
 		const Eigen::MatrixXd &projection_quantities,
 		const BoundaryMap<int> &boundary_to_id,
-		const std::vector<int> &body_ids)
+		const std::vector<int> &body_ids,
+		const Eigen::VectorXd &element_energies)
 	{
-		Remesher::init(rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids);
+		Remesher::init(rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids, element_energies);
 
 		total_volume = 0;
 		for (const Tuple &t : get_elements())
@@ -60,6 +61,23 @@ namespace polyfem::mesh
 		for (const Tuple &t : get_elements())
 			assert(!is_inverted(t));
 #endif
+
+		// const double percent = 0;
+		// const double min_energy = element_energies.minCoeff();
+		// const double max_energy = element_energies.maxCoeff();
+		// const double energy_threshold = (max_energy - min_energy) * percent + min_energy;
+		// auto sorted_element_energies = element_energies;
+		// std::sort(sorted_element_energies.data(), sorted_element_energies.data() + sorted_element_energies.size());
+		// const double element_threshold = sorted_element_energies[int(sorted_element_energies.size() * percent)];
+		// const double threshold = std::min(energy_threshold, element_threshold);
+
+		// logger().critical("min energy: {}, max energy: {}, threshold: {}", min_energy, max_energy, threshold);
+
+		// const std::vector<Tuple> element_tuples = get_elements();
+		// for (int i = 0; i < element_tuples.size(); ++i)
+		// {
+		// 	element_attrs[element_id(element_tuples[i])].excluded = element_energies[i] < threshold;
+		// }
 	}
 
 	// -------------------------------------------------------------------------
@@ -189,10 +207,7 @@ namespace polyfem::mesh
 		std::vector<int> body_ids(elements.size(), -1);
 		for (size_t i = 0; i < elements.size(); i++)
 		{
-			if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
-				body_ids[i] = element_attrs[elements[i].fid(*this)].body_id;
-			else
-				body_ids[i] = element_attrs[elements[i].tid(*this)].body_id;
+			body_ids[i] = element_attrs[element_id(elements[i])].body_id;
 		}
 		return body_ids;
 	}
@@ -244,10 +259,7 @@ namespace polyfem::mesh
 		const std::vector<Tuple> elements = get_elements();
 		for (int i = 0; i < elements.size(); ++i)
 		{
-			if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
-				element_attrs[elements[i].fid(*this)].body_id = body_ids.at(i);
-			else
-				element_attrs[elements[i].tid(*this)].body_id = body_ids.at(i);
+			element_attrs[element_id(elements[i])].body_id = body_ids.at(i);
 		}
 	}
 
@@ -347,16 +359,16 @@ namespace polyfem::mesh
 		extend_local_patch(local_mesh_tuples);
 
 		std::vector<Tuple> edges;
-		for (const Tuple &t : elements)
+		for (const Tuple &t : local_mesh_tuples)
 		{
 			const size_t t_id = element_id(t);
 
-			if (element_attrs[t_id].excluded)
-				continue;
+			// if (element_attrs[t_id].excluded)
+			// 	continue;
 
 			for (auto j = 0; j < EDGES_IN_ELEMENT; j++)
 			{
-				edges.push_back(WMTKMesh::tuple_from_edge(element_id(t), j));
+				edges.push_back(WMTKMesh::tuple_from_edge(t_id, j));
 			}
 		}
 		wmtk::unique_edge_tuples(*this, edges);

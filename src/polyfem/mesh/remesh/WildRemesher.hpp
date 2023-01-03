@@ -69,7 +69,8 @@ namespace polyfem::mesh
 			const Eigen::MatrixXi &elements,
 			const Eigen::MatrixXd &projection_quantities,
 			const BoundaryMap<int> &boundary_to_id,
-			const std::vector<int> &body_ids) override;
+			const std::vector<int> &body_ids,
+			const Eigen::VectorXd &element_energies) override;
 
 		// --------------------------------------------------------------------
 		// main functions

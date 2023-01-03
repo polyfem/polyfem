@@ -63,7 +63,8 @@ namespace polyfem::mesh
 			const Eigen::MatrixXi &elements,
 			const Eigen::MatrixXd &projection_quantities,
 			const BoundaryMap<int> &boundary_to_id,
-			const std::vector<int> &body_ids);
+			const std::vector<int> &body_ids,
+			const Eigen::VectorXd &element_energies);
 
 	protected:
 		/// @brief Create an internal mesh representation and associate attributes

@@ -90,11 +90,14 @@ namespace polyfem::mesh
 		assert(rest_positions.size() == ndof_mesh);
 
 		// --------------------------------------------------------------------
+		Eigen::VectorXd element_energies = Eigen::VectorXd::Zero(elements.rows());
 		{
 			const size_t n_out_vertices = elements.size();
 
 			const Eigen::VectorXd elastic_energy_per_element = state.solve_data.elastic_form->value_per_element(sol);
 			const Eigen::VectorXd contact_energy_per_element = state.solve_data.contact_form->value_per_element(sol);
+
+			element_energies = elastic_energy_per_element;
 
 			std::vector<std::vector<int>> F(elements.rows(), std::vector<int>(elements.cols()));
 			Eigen::MatrixXd V = Eigen::MatrixXd::Zero(n_out_vertices, dim);
@@ -111,6 +114,8 @@ namespace polyfem::mesh
 					U.row(F[i][j]) = sol.middleRows(dim * elements(i, j), dim).transpose();
 					elastic_energy[F[i][j]] = elastic_energy_per_element[i];
 					contact_energy[F[i][j]] = contact_energy_per_element[elements(i, j)];
+
+					element_energies[i] += contact_energy_per_element[elements(i, j)];
 				}
 			}
 
@@ -160,7 +165,7 @@ namespace polyfem::mesh
 
 		std::shared_ptr<Remesher> remeshing = create_wild_remeshing(
 			state, obstacle_sol, obstacle_projection_quantities, time, state.solve_data.nl_problem->value(sol));
-		remeshing->init(rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids);
+		remeshing->init(rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids, element_energies);
 
 		const bool made_change = remeshing->execute(
 			/*split=*/true, /*collapse=*/false, /*smooth=*/false, /*swap=*/false,

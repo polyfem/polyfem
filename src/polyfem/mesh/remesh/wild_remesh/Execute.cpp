@@ -79,7 +79,7 @@ namespace polyfem::mesh
 		wmtk::unique_edge_tuples(*this, included_edges);
 
 		const std::vector<Tuple> starting_edges = WMTKMesh::get_edges();
-		for (const Tuple &e : included_edges)
+		for (const Tuple &e : starting_edges)
 		{
 			if (split)
 				collect_all_ops.emplace_back("edge_split", e);
