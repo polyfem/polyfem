@@ -21,6 +21,20 @@ namespace polyfem::mesh
 			}
 		}
 
+		void insert_edges_of_tet(
+			WildTetRemesher &m,
+			const WildTetRemesher::Tuple &t,
+			WildTriRemesher::EdgeMap<TetOperationCache::EdgeAttributes> &edge_map)
+		{
+			for (auto i = 0; i < 6; i++)
+			{
+				WildTetRemesher::Tuple e = m.tuple_from_edge(t.tid(m), i);
+				const size_t v0 = e.vid(m);
+				const size_t v1 = e.switch_vertex(m).vid(m);
+				edge_map[{{v0, v1}}] = m.edge_attrs[e.eid(m)];
+			}
+		}
+
 		void insert_faces_of_tet(
 			WildTetRemesher &m,
 			const WildTetRemesher::Tuple &t,
@@ -123,6 +137,7 @@ namespace polyfem::mesh
 		cache.m_tets.reserve(tets.size());
 		for (const Tuple &t : tets)
 		{
+			insert_edges_of_tet(m, t, cache.m_edges);
 			insert_faces_of_tet(m, t, cache.m_faces);
 			cache.m_tets[m.oriented_tet_vids(t)] = m.element_attrs[t.tid(m)];
 		}

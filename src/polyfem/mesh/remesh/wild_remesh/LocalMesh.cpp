@@ -309,20 +309,28 @@ namespace polyfem::mesh
 		}
 
 		// Flood fill to fill out the desired volume
+		constexpr int n_facets_in_element = std::is_same_v<M, TriMesh> ? 3 : 4;
 		for (int i = 0; intersecting_volume < volume && i < intersecting_elements.size(); ++i)
 		{
-			std::optional<Tuple> neighbor;
-			if constexpr (std::is_same_v<M, TriMesh>)
-				neighbor = intersecting_elements[i].switch_face(m);
-			else
-				neighbor = intersecting_elements[i].switch_tetrahedron(m);
+			const size_t element_id = m.element_id(intersecting_elements[i]);
 
-			if (!neighbor.has_value() || intersecting_fid.find(m.element_id(neighbor.value())) != intersecting_fid.end())
-				continue;
+			for (int j = 0; j < n_facets_in_element; ++j)
+			{
+				const Tuple facet = m.tuple_from_facet(element_id, j);
 
-			intersecting_elements.push_back(neighbor.value());
-			intersecting_fid.insert(m.element_id(neighbor.value()));
-			intersecting_volume += m.element_volume(neighbor.value());
+				std::optional<Tuple> neighbor;
+				if constexpr (std::is_same_v<M, TriMesh>)
+					neighbor = facet.switch_face(m);
+				else
+					neighbor = facet.switch_tetrahedron(m);
+
+				if (!neighbor.has_value() || intersecting_fid.find(m.element_id(neighbor.value())) != intersecting_fid.end())
+					continue;
+
+				intersecting_elements.push_back(neighbor.value());
+				intersecting_fid.insert(m.element_id(neighbor.value()));
+				intersecting_volume += m.element_volume(neighbor.value());
+			}
 		}
 		assert(intersecting_volume >= volume);
 

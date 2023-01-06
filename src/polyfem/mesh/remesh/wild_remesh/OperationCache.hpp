@@ -38,6 +38,7 @@ namespace polyfem::mesh
 	{
 	public:
 		using VertexAttributes = WildRemesher<wmtk::TetMesh>::VertexAttributes;
+		using EdgeAttributes = WildRemesher<wmtk::TetMesh>::EdgeAttributes;
 		using FaceAttributes = WildRemesher<wmtk::TetMesh>::BoundaryAttributes;
 		using TetAttributes = WildRemesher<wmtk::TetMesh>::ElementAttributes;
 		using Tuple = wmtk::TetMesh::Tuple;
@@ -51,6 +52,7 @@ namespace polyfem::mesh
 		const std::pair<size_t, VertexAttributes> &v0() const { return m_v0; }
 		const std::pair<size_t, VertexAttributes> &v1() const { return m_v1; }
 		const std::optional<std::pair<size_t, VertexAttributes>> &v2() const { return m_v2; }
+		const Remesher::EdgeMap<EdgeAttributes> &edges() const { return m_edges; }
 		const Remesher::FaceMap<FaceAttributes> &faces() const { return m_faces; }
 		const Remesher::TetMap<TetAttributes> &tets() const { return m_tets; }
 
@@ -58,6 +60,7 @@ namespace polyfem::mesh
 		std::pair<size_t, VertexAttributes> m_v0;
 		std::pair<size_t, VertexAttributes> m_v1;
 		std::optional<std::pair<size_t, VertexAttributes>> m_v2;
+		Remesher::EdgeMap<EdgeAttributes> m_edges;
 		Remesher::FaceMap<FaceAttributes> m_faces;
 		Remesher::TetMap<TetAttributes> m_tets;
 	};

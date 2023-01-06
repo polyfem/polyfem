@@ -28,6 +28,18 @@ namespace polyfem::mesh
 			e);
 #endif
 
+		const int max_split_attempts = 1;
+		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
+		{
+			if (boundary_attrs[e.eid(*this)].split_attempts++ >= max_split_attempts)
+				return false;
+		}
+		else
+		{
+			if (edge_attrs[e.eid(*this)].split_attempts++ >= max_split_attempts)
+				return false;
+		}
+
 		// Dont split if the edge is too small
 		double min_edge_length = this->min_edge_length;
 		if (is_on_boundary(e) && state.is_contact_enabled())
@@ -38,6 +50,15 @@ namespace polyfem::mesh
 		// Do not split if the energy of the edges is too small
 		const double edge_energy = edge_elastic_energy(e);
 		if (edge_energy <= energy_absolute_tolerance)
+			return false;
+
+		// TODO: Implement this for 3D
+		int split_depth;
+		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
+			split_depth = boundary_attrs[e.eid(*this)].split_depth;
+		else
+			split_depth = edge_attrs[e.eid(*this)].split_depth;
+		if (split_depth >= max_split_depth)
 			return false;
 
 		// logger().debug("edge_energy: {}", edge_energy);
@@ -92,8 +113,10 @@ namespace polyfem::mesh
 		const size_t old_v0_id,
 		const size_t old_v1_id)
 	{
-		const BoundaryAttributes old_split_edge = old_edges.at({{old_v0_id, old_v1_id}});
-		const BoundaryAttributes interior_edge; // default
+		BoundaryAttributes old_split_edge = old_edges.at({{old_v0_id, old_v1_id}});
+		old_split_edge.split_attempts = 0;
+		BoundaryAttributes interior_edge; // default
+		interior_edge.split_depth = old_split_edge.split_depth;
 
 		const size_t new_vid = new_vertex.vid(*this);
 
@@ -114,6 +137,7 @@ namespace polyfem::mesh
 				{
 					boundary_attrs[e.eid(*this)] =
 						(v0_id == old_v0_id || v0_id == old_v1_id) ? old_split_edge : interior_edge;
+					boundary_attrs[e.eid(*this)].split_depth++;
 				}
 				else
 				{
@@ -159,6 +183,7 @@ namespace polyfem::mesh
 		new_vertex_attr.partition_id = v0.partition_id; // TODO: what should this be?
 
 		// 1b) Assign edge attributes to the new edges
+		map_edge_split_edge_attributes(t, op_cache.edges(), old_v0_id, old_v1_id);
 		map_edge_split_boundary_attributes(t, op_cache.faces(), old_v0_id, old_v1_id);
 		map_edge_split_element_attributes(t, op_cache.tets(), old_v0_id, old_v1_id);
 
@@ -176,6 +201,46 @@ namespace polyfem::mesh
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
 		return local_relaxation(t);
+	}
+
+	void WildTetRemesher::map_edge_split_edge_attributes(
+		const Tuple &new_vertex,
+		const EdgeMap<EdgeAttributes> &old_edges,
+		const size_t old_v0_id,
+		const size_t old_v1_id)
+	{
+		EdgeAttributes old_split_edge = old_edges.at({{old_v0_id, old_v1_id}});
+		old_split_edge.split_attempts = 0;
+		EdgeAttributes interior_edge; // default
+		interior_edge.split_depth = old_split_edge.split_depth;
+
+		const size_t new_vid = new_vertex.vid(*this);
+
+		const std::vector<Tuple> new_tets = get_one_ring_tets_for_vertex(new_vertex);
+		for (const auto &t : new_tets)
+		{
+			for (int i = 0; i < 6; i++)
+			{
+				const Tuple e = tuple_from_edge(t.tid(*this), i);
+
+				size_t v0_id = e.vid(*this);
+				size_t v1_id = e.switch_vertex(*this).vid(*this);
+				if (v0_id > v1_id)
+					std::swap(v0_id, v1_id);
+
+				assert(v0_id != new_vid); // new_vid should have a higher id than any other vertex
+				if (v1_id == new_vid)
+				{
+					edge_attrs[e.eid(*this)] =
+						(v0_id == old_v0_id || v0_id == old_v1_id) ? old_split_edge : interior_edge;
+					edge_attrs[e.eid(*this)].split_depth++;
+				}
+				else
+				{
+					edge_attrs[e.eid(*this)] = old_edges.at({{v0_id, v1_id}});
+				}
+			}
+		}
 	}
 
 	void WildTetRemesher::map_edge_split_boundary_attributes(

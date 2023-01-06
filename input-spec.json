@@ -1037,7 +1037,9 @@
             "rel_tol",
             "abs_tol",
             "n_ring_size",
-            "flood_fill_rel_area"
+            "flood_fill_rel_area",
+            "threshold",
+            "max_split_depth"
         ],
         "doc": "Settings for adaptive remeshing"
     },
@@ -1067,15 +1069,30 @@
     },
     {
         "pointer": "/space/remesh/n_ring_size",
-        "default": 3,
+        "default": 2,
         "type": "int",
         "doc": "size of n-ring for local relaxation"
     },
     {
         "pointer": "/space/remesh/flood_fill_rel_area",
-        "default": 0.1,
+        "default": 0.01,
         "type": "float",
         "doc": "minimum size of the flood fill n-ring for local relaxation"
+    },
+    {
+        "pointer": "/space/remesh/threshold",
+        "default": 0,
+        "type": "float",
+        "min": 0,
+        "max": 1,
+        "doc": "remeshing threshold on energy"
+    },
+    {
+        "pointer": "/space/remesh/max_split_depth",
+        "default": 3,
+        "type": "int",
+        "min": 1,
+        "doc": "maximum depth split per time-step"
     },
     {
         "pointer": "/space/advanced",

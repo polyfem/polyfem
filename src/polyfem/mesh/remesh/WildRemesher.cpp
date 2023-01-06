@@ -62,22 +62,21 @@ namespace polyfem::mesh
 			assert(!is_inverted(t));
 #endif
 
-		// const double percent = 0;
-		// const double min_energy = element_energies.minCoeff();
-		// const double max_energy = element_energies.maxCoeff();
-		// const double energy_threshold = (max_energy - min_energy) * percent + min_energy;
-		// auto sorted_element_energies = element_energies;
-		// std::sort(sorted_element_energies.data(), sorted_element_energies.data() + sorted_element_energies.size());
-		// const double element_threshold = sorted_element_energies[int(sorted_element_energies.size() * percent)];
-		// const double threshold = std::min(energy_threshold, element_threshold);
+		const double min_energy = element_energies.minCoeff();
+		const double max_energy = element_energies.maxCoeff();
+		const double energy_threshold = (max_energy - min_energy) * threshold + min_energy;
+		auto sorted_element_energies = element_energies;
+		std::sort(sorted_element_energies.data(), sorted_element_energies.data() + sorted_element_energies.size());
+		const double element_threshold = sorted_element_energies[int(sorted_element_energies.size() * threshold)];
+		const double threshold = std::min(energy_threshold, element_threshold);
 
-		// logger().critical("min energy: {}, max energy: {}, threshold: {}", min_energy, max_energy, threshold);
+		logger().info("min energy: {}, max energy: {}, threshold: {}", min_energy, max_energy, threshold);
 
-		// const std::vector<Tuple> element_tuples = get_elements();
-		// for (int i = 0; i < element_tuples.size(); ++i)
-		// {
-		// 	element_attrs[element_id(element_tuples[i])].excluded = element_energies[i] < threshold;
-		// }
+		const std::vector<Tuple> element_tuples = get_elements();
+		for (int i = 0; i < element_tuples.size(); ++i)
+		{
+			element_attrs[element_id(element_tuples[i])].excluded = element_energies[i] < threshold;
+		}
 	}
 
 	// -------------------------------------------------------------------------
@@ -424,7 +423,7 @@ namespace polyfem::mesh
 				continue;
 			}
 
-			assert(t.eid(*this) != e.eid(*this)); // this should have been popped
+			// assert(t.eid(*this) != e.eid(*this)); // this should have been popped
 
 			// Check that the energy is consistent with the priority queue values
 			const double recomputed_energy = edge_elastic_energy(t);

@@ -247,11 +247,15 @@ namespace polyfem::mesh
 			VectorNd displacement() const { return position - rest_position; }
 		};
 
-		struct BoundaryAttributes
+		struct EdgeAttributes
+		{
+			int split_depth = 0;
+			int split_attempts = 0;
+		};
+
+		struct BoundaryAttributes : public EdgeAttributes
 		{
 			int boundary_id = -1;
-			// TODO: add a field to inidicate if the marked edge was skipped
-			// bool skipped = false;
 		};
 
 		struct ElementAttributes
@@ -261,6 +265,7 @@ namespace polyfem::mesh
 		};
 
 		wmtk::AttributeCollection<VertexAttributes> vertex_attrs;
+		wmtk::AttributeCollection<EdgeAttributes> edge_attrs;
 		wmtk::AttributeCollection<BoundaryAttributes> boundary_attrs;
 		wmtk::AttributeCollection<ElementAttributes> element_attrs;
 

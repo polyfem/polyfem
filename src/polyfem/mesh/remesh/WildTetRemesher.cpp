@@ -25,6 +25,7 @@ namespace polyfem::mesh
 	{
 		// Register attributes
 		p_vertex_attrs = &vertex_attrs;
+		p_edge_attrs = &edge_attrs;
 		p_face_attrs = &boundary_attrs;
 		p_tet_attrs = &element_attrs;
 

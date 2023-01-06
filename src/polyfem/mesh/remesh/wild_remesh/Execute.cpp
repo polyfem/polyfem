@@ -144,6 +144,12 @@ namespace polyfem::mesh
 		// 	exit(0);
 		// }
 
+		static int aggregate_cnt_success = 0;
+		static int aggregate_cnt_fail = 0;
+		aggregate_cnt_success += executor.cnt_success();
+		aggregate_cnt_fail += executor.cnt_fail();
+		logger().info("aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_cnt_success, aggregate_cnt_fail);
+
 		return executor.cnt_success() > 0;
 	}
 

@@ -212,6 +212,8 @@ namespace polyfem::mesh
 		int n_ring_size = 3;
 		/// @brief Flood fill relative area
 		double flood_fill_rel_area = 0.1;
+		double threshold = 0;
+		int max_split_depth = 3;
 
 		// --------------------------------------------------------------------
 		// members

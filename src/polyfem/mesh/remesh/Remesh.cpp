@@ -70,6 +70,8 @@ namespace polyfem::mesh
 			remeshing->energy_absolute_tolerance = state.args["space"]["remesh"]["abs_tol"];
 			remeshing->n_ring_size = state.args["space"]["remesh"]["n_ring_size"];
 			remeshing->flood_fill_rel_area = state.args["space"]["remesh"]["flood_fill_rel_area"];
+			remeshing->threshold = state.args["space"]["remesh"]["threshold"];
+			remeshing->max_split_depth = state.args["space"]["remesh"]["max_split_depth"];
 
 			return remeshing;
 		}
@@ -95,7 +97,11 @@ namespace polyfem::mesh
 			const size_t n_out_vertices = elements.size();
 
 			const Eigen::VectorXd elastic_energy_per_element = state.solve_data.elastic_form->value_per_element(sol);
-			const Eigen::VectorXd contact_energy_per_element = state.solve_data.contact_form->value_per_element(sol);
+			Eigen::VectorXd contact_energy_per_element;
+			if (state.solve_data.contact_form)
+				contact_energy_per_element = state.solve_data.contact_form->value_per_element(sol);
+			else
+				contact_energy_per_element = Eigen::VectorXd::Zero(rest_positions.rows());
 
 			element_energies = elastic_energy_per_element;
 

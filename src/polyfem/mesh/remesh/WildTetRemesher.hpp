@@ -138,6 +138,12 @@ namespace polyfem::mesh
 			op_cache = TetOperationCache::split_edge(*this, e);
 		}
 
+		void map_edge_split_edge_attributes(
+			const Tuple &new_vertex,
+			const EdgeMap<EdgeAttributes> &old_edges,
+			const size_t old_v0_id,
+			const size_t old_v1_id);
+
 		void map_edge_split_boundary_attributes(
 			const Tuple &new_vertex,
 			const FaceMap<BoundaryAttributes> &old_faces,
