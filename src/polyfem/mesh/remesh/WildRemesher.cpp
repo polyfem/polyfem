@@ -1,6 +1,7 @@
 #include "WildRemesher.hpp"
 
 #include <polyfem/mesh/remesh/wild_remesh/LocalMesh.hpp>
+#include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
 
 #include <wmtk/utils/TupleUtils.hpp>
@@ -321,18 +322,36 @@ namespace polyfem::mesh
 
 	template <class WMTKMesh>
 	std::vector<typename WMTKMesh::Tuple>
-	WildRemesher<WMTKMesh>::local_mesh_tuples(const Tuple &t) const
+	WildRemesher<WMTKMesh>::local_mesh_tuples(const Eigen::Matrix<double, DIM, 1> &center) const
 	{
-		// return LocalMesh::n_ring(*this, t, n_ring);
-
-		// return LocalMesh<WildRemesher<WMTKMesh>>::flood_fill_n_ring(
-		// 	*this, t, flood_fill_rel_area * total_volume);
-
 		return LocalMesh<WildRemesher<WMTKMesh>>::ball_selection(
-			*this, vertex_attrs[t.vid(*this)].rest_position,
-			flood_fill_rel_area * total_volume);
+			*this, center, flood_fill_rel_area * total_volume);
+	}
 
-		// return get_faces();;
+	template <class WMTKMesh>
+	double WildRemesher<WMTKMesh>::local_mesh_energy(
+		const Eigen::Matrix<double, DIM, 1> &local_mesh_center) const
+	{
+		using namespace polyfem::solver;
+
+		const std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(local_mesh_center);
+		LocalMesh local_mesh(*this, local_mesh_tuples, /*include_global_boundary=*/FREE_BOUNDARY);
+
+		const std::vector<polyfem::basis::ElementBases> bases = local_bases(local_mesh);
+		const std::vector<int> boundary_nodes = local_boundary_nodes(local_mesh);
+		assembler::AssemblerUtils assembler = create_assembler(local_mesh.body_ids());
+		SolveData solve_data;
+		assembler::AssemblyValsCache ass_vals_cache;
+		Eigen::SparseMatrix<double> mass;
+		ipc::CollisionMesh collision_mesh;
+
+		local_solve_data(
+			local_mesh, bases, boundary_nodes, assembler,
+			solve_data, ass_vals_cache, mass, collision_mesh);
+
+		const Eigen::MatrixXd sol = utils::flatten(local_mesh.displacements());
+
+		return solve_data.nl_problem->value(sol);
 	}
 
 	template <class WMTKMesh>

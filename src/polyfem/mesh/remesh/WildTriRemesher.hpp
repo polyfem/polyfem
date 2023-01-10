@@ -123,9 +123,10 @@ namespace polyfem::mesh
 		}
 
 	protected:
-		void cache_split_edge(const Tuple &e) override
+		void cache_split_edge(const Tuple &e, const double local_energy) override
 		{
 			op_cache = TriOperationCache::split_edge(*this, e);
+			op_cache.local_energy = local_energy;
 		}
 
 		void map_edge_split_boundary_attributes(
@@ -143,6 +144,9 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 		// members
+	public:
+		EdgeAttributes &edge_attr(const size_t e_id) override { return boundary_attrs[e_id]; }
+
 	protected:
 		// TODO: make this thread local
 		TriOperationCache op_cache;

@@ -133,9 +133,10 @@ namespace polyfem::mesh
 		}
 
 	protected:
-		void cache_split_edge(const Tuple &e) override
+		void cache_split_edge(const Tuple &e, const double local_energy) override
 		{
 			op_cache = TetOperationCache::split_edge(*this, e);
+			op_cache.local_energy = local_energy;
 		}
 
 		void map_edge_split_edge_attributes(
@@ -161,6 +162,11 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 		// members
+	public:
+		EdgeAttributes &edge_attr(const size_t e_id) override { return edge_attrs[e_id]; }
+
+		wmtk::AttributeCollection<EdgeAttributes> edge_attrs;
+
 	protected:
 		// TODO: make this thread local
 		TetOperationCache op_cache;

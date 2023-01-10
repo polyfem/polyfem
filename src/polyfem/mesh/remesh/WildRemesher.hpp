@@ -101,7 +101,11 @@ namespace polyfem::mesh
 		/// @brief Relax a local n-ring around a vertex.
 		/// @param t Center of the local n-ring
 		/// @return If the local relaxation reduced the energy "significantly"
-		bool local_relaxation(const Tuple &t);
+		bool local_relaxation(
+			const Tuple &t,
+			const double local_energy_before,
+			const double energy_relative_tolerance,
+			const double energy_absolute_tolerance);
 
 		// --------------------------------------------------------------------
 		// getters
@@ -194,11 +198,17 @@ namespace polyfem::mesh
 
 		void extend_local_patch(std::vector<Tuple> &patch) const;
 
-		std::vector<Tuple> local_mesh_tuples(const Tuple &t) const;
+		std::vector<Tuple> local_mesh_tuples(const Eigen::Matrix<double, DIM, 1> &center) const;
+		std::vector<Tuple> local_mesh_tuples(const Tuple &t) const
+		{
+			return local_mesh_tuples(vertex_attrs[t.vid(*this)].rest_position);
+		}
+
+		double local_mesh_energy(const Eigen::Matrix<double, DIM, 1> &local_mesh_center) const;
 
 	protected:
 		/// @brief Cache the split edge operation
-		virtual void cache_split_edge(const Tuple &e) = 0;
+		virtual void cache_split_edge(const Tuple &e, const double local_energy) = 0;
 
 		/// @brief Write a visualization mesh of the priority queue
 		/// @param e current edge tuple to be split
@@ -265,7 +275,7 @@ namespace polyfem::mesh
 		};
 
 		wmtk::AttributeCollection<VertexAttributes> vertex_attrs;
-		wmtk::AttributeCollection<EdgeAttributes> edge_attrs;
+		virtual EdgeAttributes &edge_attr(const size_t e_id) = 0;
 		wmtk::AttributeCollection<BoundaryAttributes> boundary_attrs;
 		wmtk::AttributeCollection<ElementAttributes> element_attrs;
 

@@ -9,6 +9,14 @@ namespace polyfem::mesh
 	class WildTriRemesher;
 	class WildTetRemesher;
 
+	enum class CollapseEdgeTo
+	{
+		V0,
+		V1,
+		MIDPOINT,
+		ILLEGAL
+	};
+
 	class TriOperationCache
 	{
 	public:
@@ -26,6 +34,9 @@ namespace polyfem::mesh
 		const std::pair<size_t, VertexAttributes> &v1() const { return m_v1; }
 		const Remesher::EdgeMap<EdgeAttributes> &edges() const { return m_edges; }
 		const std::vector<FaceAttributes> &faces() const { return m_faces; }
+
+		double local_energy = std::numeric_limits<double>::quiet_NaN();
+		CollapseEdgeTo collapse_to = CollapseEdgeTo::ILLEGAL;
 
 	protected:
 		std::pair<size_t, VertexAttributes> m_v0;
@@ -55,6 +66,9 @@ namespace polyfem::mesh
 		const Remesher::EdgeMap<EdgeAttributes> &edges() const { return m_edges; }
 		const Remesher::FaceMap<FaceAttributes> &faces() const { return m_faces; }
 		const Remesher::TetMap<TetAttributes> &tets() const { return m_tets; }
+
+		double local_energy = std::numeric_limits<double>::quiet_NaN();
+		CollapseEdgeTo collapse_to = CollapseEdgeTo::ILLEGAL;
 
 	protected:
 		std::pair<size_t, VertexAttributes> m_v0;

@@ -66,8 +66,8 @@ namespace polyfem::mesh
 					state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
 					time, current_energy);
 
-			remeshing->energy_relative_tolerance = state.args["space"]["remesh"]["rel_tol"];
-			remeshing->energy_absolute_tolerance = state.args["space"]["remesh"]["abs_tol"];
+			remeshing->split_relative_tolerance = state.args["space"]["remesh"]["rel_tol"];
+			remeshing->split_absolute_tolerance = state.args["space"]["remesh"]["abs_tol"];
 			remeshing->n_ring_size = state.args["space"]["remesh"]["n_ring_size"];
 			remeshing->flood_fill_rel_area = state.args["space"]["remesh"]["flood_fill_rel_area"];
 			remeshing->threshold = state.args["space"]["remesh"]["threshold"];

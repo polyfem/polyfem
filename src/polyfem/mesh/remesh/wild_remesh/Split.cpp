@@ -28,17 +28,13 @@ namespace polyfem::mesh
 			e);
 #endif
 
-		const int max_split_attempts = 1;
-		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
-		{
-			if (boundary_attrs[e.eid(*this)].split_attempts++ >= max_split_attempts)
-				return false;
-		}
-		else
-		{
-			if (edge_attrs[e.eid(*this)].split_attempts++ >= max_split_attempts)
-				return false;
-		}
+		if (edge_attr(e.eid(*this)).split_attempts++ >= max_split_attempts)
+			return false;
+
+		if (edge_attr(e.eid(*this)).split_depth >= max_split_depth)
+			return false;
+
+		// ---------------------------------------------------------------------
 
 		// Dont split if the edge is too small
 		double min_edge_length = this->min_edge_length;
@@ -47,24 +43,19 @@ namespace polyfem::mesh
 		if (edge_length(e) < min_edge_length)
 			return false;
 
-		// Do not split if the energy of the edges is too small
-		const double edge_energy = edge_elastic_energy(e);
-		if (edge_energy <= energy_absolute_tolerance)
+		// ---------------------------------------------------------------------
+
+		const auto &v0 = vertex_attrs[e.vid(*this)].rest_position;
+		const auto &v1 = vertex_attrs[e.switch_vertex(*this).vid(*this)].rest_position;
+		const double local_energy = local_mesh_energy((v0 + v1) / 2);
+		// Do not split if the energy of the local mesh is too small
+		if (local_energy < split_absolute_tolerance)
 			return false;
 
-		// TODO: Implement this for 3D
-		int split_depth;
-		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
-			split_depth = boundary_attrs[e.eid(*this)].split_depth;
-		else
-			split_depth = edge_attrs[e.eid(*this)].split_depth;
-		if (split_depth >= max_split_depth)
-			return false;
-
-		// logger().debug("edge_energy: {}", edge_energy);
+		// ---------------------------------------------------------------------
 
 		// Cache necessary local data
-		cache_split_edge(e);
+		cache_split_edge(e, local_energy);
 
 		return true;
 	}
@@ -104,7 +95,10 @@ namespace polyfem::mesh
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
-		return local_relaxation(new_vertex);
+		return local_relaxation(
+			t, op_cache.local_energy,
+			split_relative_tolerance,
+			split_absolute_tolerance);
 	}
 
 	void WildTriRemesher::map_edge_split_boundary_attributes(
@@ -200,7 +194,10 @@ namespace polyfem::mesh
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
-		return local_relaxation(t);
+		return local_relaxation(
+			t, op_cache.local_energy,
+			split_relative_tolerance,
+			split_absolute_tolerance);
 	}
 
 	void WildTetRemesher::map_edge_split_edge_attributes(

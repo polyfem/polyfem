@@ -12,7 +12,11 @@
 namespace polyfem::mesh
 {
 	template <class WMTKMesh>
-	bool WildRemesher<WMTKMesh>::local_relaxation(const Tuple &t)
+	bool WildRemesher<WMTKMesh>::local_relaxation(
+		const Tuple &t,
+		const double local_energy_before,
+		const double energy_relative_tolerance,
+		const double energy_absolute_tolerance)
 	{
 		using namespace polyfem::solver;
 		using namespace polyfem::time_integrator;
@@ -85,7 +89,6 @@ namespace polyfem::mesh
 		{
 			POLYFEM_SCOPED_TIMER(timings.acceptance_check);
 
-			const double local_energy_before = solve_data.nl_problem->value(target_x);
 			const double local_energy_after = solve_data.nl_problem->value(sol);
 
 			assert(std::isfinite(local_energy_before));
@@ -111,8 +114,8 @@ namespace polyfem::mesh
 		if (accept)
 		{
 			static int save_i = 0;
-			local_mesh.write_mesh(state.resolve_output_path(fmt::format("local_mesh_{:04d}.vtu", save_i)), target_x);
-			write_deformed_mesh(state.resolve_output_path(fmt::format("split_{:04d}.vtu", save_i++)));
+			// local_mesh.write_mesh(state.resolve_output_path(fmt::format("local_mesh_{:04d}.vtu", save_i)), target_x);
+			// write_deformed_mesh(state.resolve_output_path(fmt::format("split_{:04d}.vtu", save_i++)));
 
 #ifndef POLYFEM_REMESH_USE_FRICTION_FORM
 			Eigen::VectorXd friction_gradient = Eigen::VectorXd::Zero(target_x.rows());
@@ -173,8 +176,8 @@ namespace polyfem::mesh
 			m_obstacle_vals.rightCols(1) = friction_gradient.tail(m_obstacle_vals.rows());
 #endif
 
-			local_mesh.write_mesh(state.resolve_output_path(fmt::format("local_mesh_{:04d}.vtu", save_i)), sol);
-			write_deformed_mesh(state.resolve_output_path(fmt::format("split_{:04d}.vtu", save_i++)));
+			// local_mesh.write_mesh(state.resolve_output_path(fmt::format("local_mesh_{:04d}.vtu", save_i)), sol);
+			// write_deformed_mesh(state.resolve_output_path(fmt::format("split_{:04d}.vtu", save_i++)));
 
 			// Increase the hash of the triangles that have been modified
 			// to invalidate all tuples that point to them.

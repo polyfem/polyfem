@@ -204,16 +204,35 @@ namespace polyfem::mesh
 	public:
 		/// @brief Minimum edge length for splitting
 		double min_edge_length = 1e-6;
+
 		/// @brief Accept operation if energy decreased by at least (100 * x)%
-		double energy_relative_tolerance = 1e-3;
+		double split_relative_tolerance = 1e-3;
 		/// @brief Accept operation if energy decreased by at least x
-		double energy_absolute_tolerance = 1e-8;
+		double split_absolute_tolerance = 1e-8;
+
+		/// @brief Accept operation if energy decreased by at least (100 * x)%
+		double collapse_relative_tolerance = -1e-3;
+		/// @brief Accept operation if energy decreased by at least x
+		double collapse_absolute_tolerance = -1e-8;
+
+		/// @brief Accept operation if energy decreased by at least (100 * x)%
+		double swap_relative_tolerance = -1e-3;
+		/// @brief Accept operation if energy decreased by at least x
+		double swap_absolute_tolerance = -1e-8;
+
+		/// @brief Accept operation if energy decreased by at least (100 * x)%
+		double smooth_relative_tolerance = 1e-3;
+		/// @brief Accept operation if energy decreased by at least x
+		double smooth_absolute_tolerance = 1e-8;
+
 		/// @brief Size of n-ring for local relaxation
 		int n_ring_size = 3;
 		/// @brief Flood fill relative area
-		double flood_fill_rel_area = 0.1;
+		double flood_fill_rel_area = 0.01;
+
 		double threshold = 0;
 		int max_split_depth = 3;
+		int max_split_attempts = 1;
 
 		// --------------------------------------------------------------------
 		// members

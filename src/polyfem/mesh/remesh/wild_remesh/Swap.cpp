@@ -53,12 +53,20 @@ namespace polyfem::mesh
 		element_attrs[t.fid(*this)] = op_cache.faces()[0];
 		element_attrs[t.switch_face(*this)->fid(*this)] = op_cache.faces()[1];
 
-		// 2) Project quantities so to minimize the L2 error
-		project_quantities(); // also projects positions
+		// There is no non-inversion check in project_quantities, so check it here.
+		if (!invariants(get_one_ring_elements_for_vertex(t)))
+			return false;
+
+		// ~2) Project quantities so to minimize the L2 error~ (done after all operations)
+		// project_quantities(); // also projects positions
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
-		return local_relaxation(t);
+		assert(false); // TODO: set local_energy in _before
+		return local_relaxation(
+			t, op_cache.local_energy,
+			swap_relative_tolerance,
+			swap_absolute_tolerance);
 	}
 
 } // namespace polyfem::mesh
