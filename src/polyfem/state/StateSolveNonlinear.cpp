@@ -54,7 +54,9 @@ namespace polyfem
 	{
 		init_nonlinear_tensor_solve(sol, t0 + dt);
 
-		const double save_dt = dt / 3; // dt;
+		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
+		const double remesh_t0 = args["space"]["remesh"]["t0"];
+		const double save_dt = remesh_enabled ? (dt / 3) : dt;
 		int save_i = 0;
 
 		save_timestep(t0, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
@@ -76,9 +78,6 @@ namespace polyfem
 		std::ofstream relax_diff_file(resolve_output_path("relax_diff.csv"));
 		relax_diff_file << "L2,Linf" << std::endl;
 
-		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
-		const double remesh_t0 = args["space"]["remesh"]["t0"];
-
 		igl::Timer timer;
 
 		for (int t = 1; t <= time_steps; ++t)
@@ -91,27 +90,31 @@ namespace polyfem
 			save_energy(save_i);
 			save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
-			if (remesh_enabled && t0 + dt * t >= remesh_t0 && mesh::remesh(*this, sol, t0 + dt * (t + 0), dt))
+			if (remesh_enabled)
 			{
-				save_energy(save_i);
-				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+				if (t0 + dt * t >= remesh_t0 && mesh::remesh(*this, sol, t0 + dt * (t + 0), dt))
+				{
+					save_energy(save_i);
+					save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
-				const Eigen::MatrixXd loc_relax_sol = sol;
-				timer.start();
-				timer.stop();
-				logger().critical("Global relaxation took {}s", timer.getElapsedTimeInSec());
-				relax_diff_file << fmt::format("{},{}\n", (loc_relax_sol - sol).norm(), (loc_relax_sol - sol).lpNorm<Eigen::Infinity>());
-				relax_diff_file.flush();
+					const Eigen::MatrixXd loc_relax_sol = sol;
+					timer.start();
+					// solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
+					timer.stop();
+					logger().critical("Global relaxation took {}s", timer.getElapsedTimeInSec());
+					relax_diff_file << fmt::format("{},{}\n", (loc_relax_sol - sol).norm(), (loc_relax_sol - sol).lpNorm<Eigen::Infinity>());
+					relax_diff_file.flush();
 
-				save_energy(save_i);
-				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
-			}
-			else
-			{
-				save_energy(save_i);
-				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
-				save_energy(save_i);
-				save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+					save_energy(save_i);
+					save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+				}
+				else
+				{
+					save_energy(save_i);
+					save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+					save_energy(save_i);
+					save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+				}
 			}
 
 			{

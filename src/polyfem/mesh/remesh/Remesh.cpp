@@ -98,6 +98,7 @@ namespace polyfem::mesh
 
 			const Eigen::VectorXd elastic_energy_per_element = state.solve_data.elastic_form->value_per_element(sol);
 			Eigen::VectorXd contact_energy_per_element;
+			// TODO: turn this off and test
 			if (state.solve_data.contact_form)
 				contact_energy_per_element = state.solve_data.contact_form->value_per_element(sol);
 			else

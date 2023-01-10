@@ -97,6 +97,7 @@ namespace polyfem::mesh
 			const double global_energy_before = abs(starting_energy);
 			const double rel_diff = abs_diff / global_energy_before;
 
+			// TODO: only use abs_diff
 			accept = rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance;
 
 			static int log_i = 0;
@@ -246,14 +247,28 @@ namespace polyfem::mesh
 
 		if constexpr (FREE_BOUNDARY)
 		{
+			// TODO: get this from state rather than building it
+			assert(state.args["boundary_conditions"]["dirichlet_boundary"].is_array());
+			const std::vector<json> bcs = state.args["boundary_conditions"]["dirichlet_boundary"];
+			std::unordered_set<int> bc_ids;
+			for (const json &bc : bcs)
+			{
+				bc_ids.insert(bc["id"].get<int>());
+
+#ifndef NDEBUG
+				// Only all dimensions constrained are supported right now.
+				const std::vector<bool> bc_dim = bc["dimension"];
+				assert(std::all_of(bc_dim.begin(), bc_dim.end(), [](const bool b) { return b; }));
+#endif
+			}
+
 			const Eigen::MatrixXi &BF = local_mesh.boundary_facets();
 			for (int i = 0; i < BF.rows(); i++)
 			{
 				const int boundary_id = local_mesh.boundary_ids()[i];
 
-				// TODO: handle the correct DBC
-				// if (boundary_id != 2 && boundary_id != 4)
-				continue;
+				if (bc_ids.find(boundary_id) == bc_ids.end())
+					continue;
 
 				for (int j = 0; j < BF.cols(); ++j)
 					add_vertex_to_boundary_nodes(BF(i, j));
