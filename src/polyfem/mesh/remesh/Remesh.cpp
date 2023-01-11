@@ -97,14 +97,15 @@ namespace polyfem::mesh
 			const size_t n_out_vertices = elements.size();
 
 			const Eigen::VectorXd elastic_energy_per_element = state.solve_data.elastic_form->value_per_element(sol);
+			element_energies = elastic_energy_per_element;
+
+#if false
 			Eigen::VectorXd contact_energy_per_element;
 			// TODO: turn this off and test
 			if (state.solve_data.contact_form)
 				contact_energy_per_element = state.solve_data.contact_form->value_per_element(sol);
 			else
 				contact_energy_per_element = Eigen::VectorXd::Zero(rest_positions.rows());
-
-			element_energies = elastic_energy_per_element;
 
 			std::vector<std::vector<int>> F(elements.rows(), std::vector<int>(elements.cols()));
 			Eigen::MatrixXd V = Eigen::MatrixXd::Zero(n_out_vertices, dim);
@@ -136,7 +137,9 @@ namespace polyfem::mesh
 			writer.write_mesh(
 				state.resolve_output_path(fmt::format("energy_vis_{:03d}.vtu", int(time / dt))),
 				V, F, /*is_simplicial=*/true);
+#endif
 		}
+
 		// --------------------------------------------------------------------
 
 		Remesher::BoundaryMap<int> boundary_to_id = build_boundary_to_id(state.mesh, state.in_node_to_node);
@@ -175,13 +178,12 @@ namespace polyfem::mesh
 		remeshing->init(rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids, element_energies);
 
 		const bool made_change = remeshing->execute(
-			/*split=*/true, /*collapse=*/false, /*smooth=*/false, /*swap=*/false,
-			/*max_ops_percent=*/-1);
+			/*split=*/true, /*collapse=*/false, /*smooth=*/false, /*swap=*/false);
 		remeshing->timings.log();
 
-		remeshing->write_mesh(
-			state.resolve_output_path(fmt::format("post_vis_{:03d}.vtu", int(time / dt))),
-			false);
+		// remeshing->write_mesh(
+		// 	state.resolve_output_path(fmt::format("post_vis_{:03d}.vtu", int(time / dt))),
+		// 	false);
 
 		if (!made_change)
 			return false;

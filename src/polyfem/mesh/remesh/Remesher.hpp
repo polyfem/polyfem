@@ -86,8 +86,7 @@ namespace polyfem::mesh
 			const bool split = true,
 			const bool collapse = false,
 			const bool smooth = false,
-			const bool swap = false,
-			const double max_ops_percent = -1) = 0;
+			const bool swap = false) = 0;
 
 	protected:
 		/// @brief Update the mesh positions and other projection quantities

@@ -69,7 +69,7 @@ namespace polyfem::mesh
 		auto sorted_element_energies = element_energies;
 		std::sort(sorted_element_energies.data(), sorted_element_energies.data() + sorted_element_energies.size());
 		const double element_threshold = sorted_element_energies[int(sorted_element_energies.size() * threshold)];
-		const double threshold = std::min(energy_threshold, element_threshold);
+		const double threshold = std::max(std::min(energy_threshold, element_threshold), 1e-12);
 
 		logger().info("min energy: {}, max energy: {}, threshold: {}", min_energy, max_energy, threshold);
 
@@ -358,22 +358,37 @@ namespace polyfem::mesh
 	typename WildRemesher<WMTKMesh>::Operations
 	WildRemesher<WMTKMesh>::renew_neighbor_tuples(
 		const std::string &op,
-		const std::vector<Tuple> &elements,
-		const bool split,
-		const bool collapse,
-		const bool smooth,
-		const bool swap) const
+		const std::vector<Tuple> &elements) const
 	{
-		assert(op == "edge_split");
+		assert(elements.size() == 1);
+		assert(op != "vertex_smooth");
 
-#ifndef NDEBUG
-		const size_t new_vid = elements[0].vid(*this);
-		for (const Tuple &t : elements)
-			assert(t.vid(*this) == new_vid); // elements should be a one ring of the new vertex
-#endif
+		Eigen::Matrix<double, DIM, 1> center;
+		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
+		{
+			if (op == "edge_split")
+			{
+				center = vertex_attrs[elements[0].switch_vertex(*this).vid(*this)].rest_position;
+			}
+			else if (op == "edge_swap")
+			{
+				center = (vertex_attrs[elements[0].vid(*this)].rest_position
+						  + vertex_attrs[elements[0].switch_vertex(*this).vid(*this)].rest_position)
+						 / 2.0;
+			}
+			else // if (op == "edge_collapse" || op == "vertex_smooth")
+			{
+				center = vertex_attrs[elements[0].vid(*this)].rest_position;
+			}
+		}
+		else
+		{
+			assert(op == "edge_split");
+			center = vertex_attrs[elements[0].vid(*this)].rest_position;
+		}
 
 		// return all edges affected by local relaxation
-		std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(elements[0]);
+		std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(center);
 		extend_local_patch(local_mesh_tuples);
 
 		std::vector<Tuple> edges;
@@ -393,19 +408,7 @@ namespace polyfem::mesh
 
 		Operations new_ops;
 		for (auto &e : edges)
-		{
-			if (split)
-				new_ops.emplace_back("edge_split", e);
-			if (collapse)
-				new_ops.emplace_back("edge_collapse", e);
-			if (swap)
-				new_ops.emplace_back("edge_swap", e);
-		}
-
-		if (smooth)
-		{
-			assert(false);
-		}
+			new_ops.emplace_back(op, e);
 
 		return new_ops;
 	}

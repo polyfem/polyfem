@@ -49,58 +49,11 @@ namespace polyfem::mesh
 		const bool split,
 		const bool collapse,
 		const bool smooth,
-		const bool swap,
-		const double max_ops_percent)
+		const bool swap)
 	{
-		using Operations = std::vector<std::pair<std::string, Tuple>>;
-
 		POLYFEM_SCOPED_TIMER(timings.total);
 
 		wmtk::logger().set_level(logger().level());
-
-		Operations collect_all_ops;
-
-		// TODO: implement face swaps for tet meshes
-
-		const std::vector<Tuple> starting_elements = get_elements();
-		std::vector<Tuple> included_edges;
-		for (const Tuple &t : starting_elements)
-		{
-			const size_t t_id = element_id(t);
-
-			if (element_attrs[t_id].excluded)
-				continue;
-
-			for (int ei = 0; ei < EDGES_IN_ELEMENT; ++ei)
-			{
-				included_edges.push_back(WMTKMesh::tuple_from_edge(t_id, ei));
-			}
-		}
-		wmtk::unique_edge_tuples(*this, included_edges);
-
-		const std::vector<Tuple> starting_edges = WMTKMesh::get_edges();
-		for (const Tuple &e : included_edges)
-		{
-			if (split)
-				collect_all_ops.emplace_back("edge_split", e);
-			if (collapse)
-				collect_all_ops.emplace_back("edge_collapse", e);
-			if (swap)
-				collect_all_ops.emplace_back("edge_swap", e);
-		}
-
-		const std::vector<Tuple> starting_vertices = WMTKMesh::get_vertices();
-		if (smooth)
-		{
-			for (const Tuple &loc : starting_vertices)
-			{
-				// TODO: check average energy of surrounding faces
-				collect_all_ops.emplace_back("vertex_smooth", loc);
-			}
-		}
-
-		if (collect_all_ops.empty())
-			return false;
 
 		// if (NUM_THREADS > 0)
 		// {
@@ -117,23 +70,41 @@ namespace polyfem::mesh
 		};
 
 		executor.renew_neighbor_tuples = [&](const WildRemesher &m, std::string op, const std::vector<Tuple> &tris) -> Operations {
-			return m.renew_neighbor_tuples(op, tris, split, collapse, smooth, swap);
+			return m.renew_neighbor_tuples(op, tris);
 		};
 
-		// Split x% of edges
-		int num_ops = 0;
-		assert(std::isfinite(max_ops_percent * starting_edges.size()));
-		const size_t max_ops =
-			max_ops_percent >= 0
-				? size_t(std::round(max_ops_percent * starting_edges.size()))
-				: std::numeric_limits<size_t>::max();
-		assert(max_ops > 0);
-		executor.stopping_criterion = [&](const WildRemesher &m) -> bool {
-			return (++num_ops) > max_ops;
-		};
-		executor.stopping_criterion_checking_frequency = 1;
+		static int aggregate_split_cnt_success = 0;
+		static int aggregate_split_cnt_fail = 0;
+		static int aggregate_collapse_cnt_success = 0;
+		static int aggregate_collapse_cnt_fail = 0;
 
-		executor(*this, collect_all_ops);
+		int cnt_success = 0;
+
+		if (split)
+		{
+			split_edges();
+
+			cnt_success += executor.cnt_success();
+
+			aggregate_split_cnt_success += executor.cnt_success();
+			aggregate_split_cnt_fail += executor.cnt_fail();
+		}
+
+		if (collapse)
+		{
+			collapse_edges();
+
+			cnt_success += executor.cnt_success();
+
+			aggregate_collapse_cnt_success += executor.cnt_success();
+			aggregate_collapse_cnt_fail += executor.cnt_fail();
+		}
+
+		assert(!swap);
+		assert(!smooth);
+
+		logger().info("[split]    aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_split_cnt_success, aggregate_split_cnt_fail);
+		logger().info("[collapse] aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_collapse_cnt_success, aggregate_collapse_cnt_fail);
 
 		// Remove unused vertices
 		WMTKMesh::consolidate_mesh();
@@ -144,13 +115,7 @@ namespace polyfem::mesh
 		// 	exit(0);
 		// }
 
-		static int aggregate_cnt_success = 0;
-		static int aggregate_cnt_fail = 0;
-		aggregate_cnt_success += executor.cnt_success();
-		aggregate_cnt_fail += executor.cnt_fail();
-		logger().info("aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_cnt_success, aggregate_cnt_fail);
-
-		return executor.cnt_success() > 0;
+		return cnt_success > 0;
 	}
 
 	// ------------------------------------------------------------------------

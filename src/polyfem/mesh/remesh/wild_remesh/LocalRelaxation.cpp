@@ -89,6 +89,7 @@ namespace polyfem::mesh
 		{
 			POLYFEM_SCOPED_TIMER(timings.acceptance_check);
 
+			// const double local_energy_before = solve_data.nl_problem->value(target_x);
 			const double local_energy_after = solve_data.nl_problem->value(sol);
 
 			assert(std::isfinite(local_energy_before));
@@ -101,7 +102,8 @@ namespace polyfem::mesh
 			const double rel_diff = abs_diff / global_energy_before;
 
 			// TODO: only use abs_diff
-			accept = rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance;
+			// accept = rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance;
+			accept = abs_diff >= energy_absolute_tolerance;
 
 			static int log_i = 0;
 			logger().log(

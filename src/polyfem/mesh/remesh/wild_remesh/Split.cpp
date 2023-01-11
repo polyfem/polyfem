@@ -96,7 +96,7 @@ namespace polyfem::mesh
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
 		return local_relaxation(
-			t, op_cache.local_energy,
+			new_vertex, op_cache.local_energy,
 			split_relative_tolerance,
 			split_absolute_tolerance);
 	}
@@ -301,6 +301,40 @@ namespace polyfem::mesh
 
 			element_attrs[t.tid(*this)] = old_elements.at(vids);
 		}
+	}
+
+	template <class WMTKMesh>
+	void WildRemesher<WMTKMesh>::split_edges()
+	{
+		using Operations = std::vector<std::pair<std::string, Tuple>>;
+
+		std::vector<Tuple> included_edges;
+		{
+			const std::vector<Tuple> starting_elements = get_elements();
+			for (const Tuple &t : starting_elements)
+			{
+				const size_t t_id = element_id(t);
+
+				if (element_attrs[t_id].excluded)
+					continue;
+
+				for (int ei = 0; ei < EDGES_IN_ELEMENT; ++ei)
+				{
+					included_edges.push_back(WMTKMesh::tuple_from_edge(t_id, ei));
+				}
+			}
+			wmtk::unique_edge_tuples(*this, included_edges);
+		}
+
+		if (included_edges.empty())
+			return;
+
+		Operations splits;
+		splits.reserve(included_edges.size());
+		for (const Tuple &e : included_edges)
+			splits.emplace_back("edge_split", e);
+
+		executor(*this, splits);
 	}
 
 	// ------------------------------------------------------------------------

@@ -86,8 +86,12 @@ namespace polyfem::mesh
 			const bool split = true,
 			const bool collapse = false,
 			const bool smooth = false,
-			const bool swap = false,
-			const double max_ops_percent = -1) override;
+			const bool swap = false) override;
+
+		void split_edges();
+		void collapse_edges() { throw std::runtime_error("Not implemented!"); }
+		void smooth_vertices() { throw std::runtime_error("Not implemented!"); }
+		void swap_edges() { throw std::runtime_error("Not implemented!"); }
 
 	protected:
 		bool split_edge_before(const Tuple &t) override;
@@ -217,11 +221,7 @@ namespace polyfem::mesh
 		using Operations = std::vector<std::pair<std::string, Tuple>>;
 		Operations renew_neighbor_tuples(
 			const std::string &op,
-			const std::vector<Tuple> &tris,
-			const bool split,
-			const bool collapse,
-			const bool smooth,
-			const bool swap) const;
+			const std::vector<Tuple> &tris) const;
 
 		std::vector<polyfem::basis::ElementBases> local_bases(
 			LocalMesh<This> &local_mesh) const;
