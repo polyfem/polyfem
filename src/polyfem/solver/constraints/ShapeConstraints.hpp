@@ -257,7 +257,7 @@ namespace polyfem
 					int num_v = knots_v.rows() - 1 - 3;
 					assert(control_points.size() == dim_ * num_u * num_v);
 					reduced_size_ = dim_ * (num_u * num_v - 2 * num_u - 2 * (num_v - 2));
-					b_spline_parametrization = std::make_shared<BSplineParametrization3D>(control_points, knots_u, knots_v, optimization_boundary_to_node_ids_.begin()->first, optimization_boundary_to_node_ids_.begin()->second, V_start);
+					b_spline_parametrization = std::make_shared<BSplineParametrization3D>(control_points, knots_u, knots_v, optimization_boundary_to_node_ids_.begin()->second, V_start);
 					full_to_reduced_ = [this, num_u, num_v](const Eigen::MatrixXd &V_full) {
 						Eigen::VectorXd reduced(reduced_size_);
 						Eigen::MatrixXd control_points;

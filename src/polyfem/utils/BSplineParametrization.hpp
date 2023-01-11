@@ -33,7 +33,7 @@ namespace polyfem
 	class BSplineParametrization2D : public BSplineParametrization
 	{
 	public:
-		BSplineParametrization2D(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &knots, const int boundary_id, const std::vector<int> &node_ids, const Eigen::MatrixXd &V) : BSplineParametrization(V), boundary_id_(boundary_id), node_ids_(node_ids), dim(control_points.cols())
+		BSplineParametrization2D(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &knots, const int boundary_id, const std::vector<int> &node_ids, const Eigen::MatrixXd &V) : BSplineParametrization(V), node_ids_(node_ids), dim(control_points.cols())
 		{
 			assert(dim == 2);
 			// Deduce the t parameter of all of the points in the spline sections
@@ -154,7 +154,6 @@ namespace polyfem
 		}
 
 	private:
-		int boundary_id_;
 		std::vector<int> node_ids_;
 		std::map<int, double> node_id_to_t_;
 		const int dim;
@@ -164,7 +163,7 @@ namespace polyfem
 	class BSplineParametrization3D : public BSplineParametrization
 	{
 	public:
-		BSplineParametrization3D(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &knots_u, const Eigen::MatrixXd &knots_v, const int boundary_id, const std::vector<int> &node_ids, const Eigen::MatrixXd &V) : BSplineParametrization(V), boundary_id_(boundary_id), node_ids_(node_ids), dim(control_points.cols())
+		BSplineParametrization3D(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &knots_u, const Eigen::MatrixXd &knots_v, const std::vector<int> &node_ids, const Eigen::MatrixXd &V) : BSplineParametrization(V), node_ids_(node_ids), dim(control_points.cols())
 		{
 			assert(dim == 3);
 			// Deduce the t parameter of all of the points in the spline sections
@@ -303,7 +302,6 @@ namespace polyfem
 		}
 
 	private:
-		int boundary_id_;
 		std::vector<int> node_ids_;
 		std::map<int, Eigen::MatrixXd> node_id_to_param_;
 		const int dim;

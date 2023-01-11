@@ -221,8 +221,8 @@ namespace polyfem
 		states_ptr_[0]->build_collision_mesh(boundary_nodes_pos, collision_mesh, states_ptr_[0]->n_geom_bases, gbases);
 
 		shape_params = args;
-		if (shape_params.contains("smoothing_paramters"))
-			slim_params = shape_params["smoothing_paramters"];
+		if (shape_params.contains("smoothing_parameters"))
+			slim_params = shape_params["smoothing_parameters"];
 		// TODO: put me in json spec
 		if (slim_params.empty())
 		{
@@ -291,7 +291,7 @@ namespace polyfem
 		if (slim_params["skip"])
 		{
 			new_x = x;
-			return false;
+			return true;
 		}
 
 		Eigen::MatrixXd V, new_V;
@@ -299,7 +299,12 @@ namespace polyfem
 
 		double rate = 2.;
 		bool good_enough = false;
-		Eigen::MatrixXd boundary_constraints = Eigen::MatrixXd::Zero(states_ptr_[0]->boundary_gnodes.size(), dim);
+
+		std::vector<int> slim_constrained_nodes = states_ptr_[0]->boundary_gnodes;
+		// -1 is the key for internal nodes that we want to constrain in slim.
+		if (optimization_boundary_to_node.count(-1) != 0)
+			slim_constrained_nodes.insert(slim_constrained_nodes.end(), optimization_boundary_to_node.at(-1).begin(), optimization_boundary_to_node.at(-1).end());
+		Eigen::MatrixXd slim_constraints = Eigen::MatrixXd::Zero(slim_constrained_nodes.size(), dim);
 
 		do
 		{
@@ -308,10 +313,10 @@ namespace polyfem
 			Eigen::VectorXd tmp_x = (1. - rate) * x + rate * new_x;
 			Eigen::MatrixXd tmp_V;
 			shape_constraints_->reduced_to_full(tmp_x, V_rest, tmp_V);
-			for (int b = 0; b < states_ptr_[0]->boundary_gnodes.size(); ++b)
-				boundary_constraints.row(b) = tmp_V.block(states_ptr_[0]->boundary_gnodes[b], 0, 1, dim);
+			for (int b = 0; b < slim_constrained_nodes.size(); ++b)
+				slim_constraints.row(b) = tmp_V.block(slim_constrained_nodes[b], 0, 1, dim);
 
-			good_enough = internal_smoothing(V, elements, states_ptr_[0]->boundary_gnodes, boundary_constraints, slim_params, new_V);
+			good_enough = internal_smoothing(V, elements, slim_constrained_nodes, slim_constraints, slim_params, new_V);
 		} while (!good_enough || is_flipped(new_V, elements));
 
 		logger().debug("SLIM succeeds with step size {}", rate);
@@ -381,6 +386,10 @@ namespace polyfem
 		if (mesh_flipped)
 		{
 			logger().debug("Mesh Flipped!");
+			Eigen::MatrixXd V_;
+			Eigen::MatrixXi F;
+			states_ptr_[0]->get_vf(V_, F);
+			igl::writeOBJ("flipped.obj", V, F);
 			return false;
 		}
 
@@ -782,6 +791,19 @@ namespace polyfem
 					}
 				}
 			}
+		}
+		else if (shape_params["internal_node_selection"].size() > 0)
+		{
+			const auto &primitive_to_node = get_state().iso_parametric() ? get_state().primitive_to_bases_node : get_state().primitive_to_geom_bases_node;
+			std::vector<int> internal_node_selection(shape_params["internal_node_selection"].size());
+			for (int i = 0; i < shape_params["internal_node_selection"].size(); ++i)
+			{
+				auto node = shape_params["internal_node_selection"][i].get<int>();
+				int loc = primitive_to_node[node];
+				internal_node_selection[i] = loc;
+				active_nodes_mask[loc] = true;
+			}
+			optimization_boundary_to_node[-1] = internal_node_selection;
 		}
 		else
 		{
