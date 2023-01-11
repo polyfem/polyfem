@@ -84,7 +84,7 @@ namespace polyfem::mesh
 
 		// Cache all edges of the faces in the one-ring of the edge
 		std::vector<Tuple> edge_one_ring_faces = m.get_one_ring_tris_for_vertex(t);
-		const std::vector<Tuple> tmp = m.get_one_ring_tris_for_vertex(t);
+		const std::vector<Tuple> tmp = m.get_one_ring_tris_for_vertex(t.switch_vertex(m));
 		edge_one_ring_faces.reserve(edge_one_ring_faces.size() + tmp.size());
 		edge_one_ring_faces.insert(edge_one_ring_faces.end(), tmp.begin(), tmp.end());
 

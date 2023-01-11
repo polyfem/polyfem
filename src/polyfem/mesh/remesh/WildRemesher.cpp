@@ -65,18 +65,30 @@ namespace polyfem::mesh
 
 		const double min_energy = element_energies.minCoeff();
 		const double max_energy = element_energies.maxCoeff();
-		const double energy_threshold = (max_energy - min_energy) * threshold + min_energy;
+
 		auto sorted_element_energies = element_energies;
 		std::sort(sorted_element_energies.data(), sorted_element_energies.data() + sorted_element_energies.size());
-		const double element_threshold = sorted_element_energies[int(sorted_element_energies.size() * threshold)];
-		const double threshold = std::max(std::min(energy_threshold, element_threshold), 1e-12);
 
-		logger().info("min energy: {}, max energy: {}, threshold: {}", min_energy, max_energy, threshold);
+		const double top_energy_threshold = (max_energy - min_energy) * threshold + min_energy;
+		const double bottom_energy_threshold = (max_energy - min_energy) * (1 - threshold) + min_energy;
+
+		const double top_element_threshold = sorted_element_energies[int(sorted_element_energies.size() * threshold)];
+		const double bottom_element_threshold = sorted_element_energies[int(sorted_element_energies.size() * (1 - threshold))];
+
+		const double top_threshold = std::max(std::min(top_energy_threshold, top_element_threshold), 1e-12);
+		const double bottom_threshold = bottom_energy_threshold;
+
+		logger().info("min energy: {}, max energy: {}, thresholds: {}, {}", min_energy, max_energy, bottom_threshold, top_threshold);
 
 		const std::vector<Tuple> element_tuples = get_elements();
 		for (int i = 0; i < element_tuples.size(); ++i)
 		{
-			element_attrs[element_id(element_tuples[i])].excluded = element_energies[i] < threshold;
+			if (element_energies[i] >= top_threshold)
+				element_attrs[element_id(element_tuples[i])].energy_rank = ElementAttributes::EnergyRank::TOP;
+			else if (element_energies[i] <= bottom_threshold)
+				element_attrs[element_id(element_tuples[i])].energy_rank = ElementAttributes::EnergyRank::BOTTOM;
+			else
+				element_attrs[element_id(element_tuples[i])].energy_rank = ElementAttributes::EnergyRank::MIDDLE;
 		}
 	}
 
@@ -273,6 +285,8 @@ namespace polyfem::mesh
 		{
 			if (is_inverted(t))
 			{
+				static int inversion_cnt = 0;
+				write_deformed_mesh(state.resolve_output_path(fmt::format("inversion_{:04d}.vtu", inversion_cnt++)));
 				log_and_throw_error("Inverted element found, invariants violated");
 				return false;
 			}
@@ -396,7 +410,9 @@ namespace polyfem::mesh
 		{
 			const size_t t_id = element_id(t);
 
-			if (element_attrs[t_id].excluded)
+			if (op == "edge_split" && element_attrs[t_id].energy_rank != ElementAttributes::EnergyRank::TOP)
+				continue;
+			else if (op == "edge_collapse" && element_attrs[t_id].energy_rank != ElementAttributes::EnergyRank::BOTTOM)
 				continue;
 
 			for (auto j = 0; j < EDGES_IN_ELEMENT; j++)

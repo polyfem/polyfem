@@ -315,7 +315,7 @@ namespace polyfem::mesh
 			{
 				const size_t t_id = element_id(t);
 
-				if (element_attrs[t_id].excluded)
+				if (element_attrs[t_id].energy_rank != ElementAttributes::EnergyRank::TOP)
 					continue;
 
 				for (int ei = 0; ei < EDGES_IN_ELEMENT; ++ei)
@@ -333,6 +333,12 @@ namespace polyfem::mesh
 		splits.reserve(included_edges.size());
 		for (const Tuple &e : included_edges)
 			splits.emplace_back("edge_split", e);
+
+		executor.priority = [](const WildRemesher &m, std::string op, const Tuple &t) -> double {
+			// NOTE: this code compute the edge length
+			// return m.edge_length(t);
+			return m.edge_elastic_energy(t);
+		};
 
 		executor(*this, splits);
 	}

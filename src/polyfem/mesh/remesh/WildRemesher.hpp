@@ -89,7 +89,7 @@ namespace polyfem::mesh
 			const bool swap = false) override;
 
 		void split_edges();
-		void collapse_edges() { throw std::runtime_error("Not implemented!"); }
+		void collapse_edges();
 		void smooth_vertices() { throw std::runtime_error("Not implemented!"); }
 		void swap_edges() { throw std::runtime_error("Not implemented!"); }
 
@@ -271,7 +271,15 @@ namespace polyfem::mesh
 		struct ElementAttributes
 		{
 			int body_id = 0;
-			bool excluded = false;
+
+			enum class EnergyRank
+			{
+				TOP,
+				MIDDLE,
+				BOTTOM
+			};
+
+			EnergyRank energy_rank = EnergyRank::MIDDLE;
 		};
 
 		wmtk::AttributeCollection<VertexAttributes> vertex_attrs;

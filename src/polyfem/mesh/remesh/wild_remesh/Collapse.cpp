@@ -19,6 +19,7 @@ namespace polyfem::mesh
 			const Eigen::Vector2d &eb,
 			const double tol = 1e-6)
 		{
+			assert(ea.norm() != 0 && eb.norm() != 0);
 			return abs(ea.dot(eb) / (ea.norm() * eb.norm())) > 1 - tol;
 		}
 	} // namespace
@@ -48,7 +49,8 @@ namespace polyfem::mesh
 
 			const std::vector<Tuple> v0_edges = get_one_ring_edges_for_vertex(t);
 			const bool is_v0_collinear = std::any_of(v0_edges.begin(), v0_edges.end(), [&](const Tuple &e) {
-				const Eigen::Vector2d &v2 = vertex_attrs[e.switch_vertex(*this).vid(*this)].rest_position;
+				const size_t v2_id = (e.vid(*this) == v0i ? (e.switch_vertex(*this)) : e).vid(*this);
+				const Eigen::Vector2d &v2 = vertex_attrs[v2_id].rest_position;
 				const size_t other_eid = e.eid(*this);
 				return other_eid != eid && boundary_attrs[other_eid].boundary_id == boundary_id
 					   && is_edge_fixed(*this, e) && are_edges_collinear(v1 - v0, v2 - v0);
@@ -56,7 +58,8 @@ namespace polyfem::mesh
 
 			const std::vector<Tuple> v1_edges = get_one_ring_edges_for_vertex(t.switch_vertex(*this));
 			const bool is_v1_collinear = std::any_of(v1_edges.begin(), v1_edges.end(), [&](const Tuple &e) {
-				const Eigen::Vector2d &v2 = vertex_attrs[e.switch_vertex(*this).vid(*this)].rest_position;
+				const size_t v2_id = (e.vid(*this) == v1i ? (e.switch_vertex(*this)) : e).vid(*this);
+				const Eigen::Vector2d &v2 = vertex_attrs[v2_id].rest_position;
 				const size_t other_eid = e.eid(*this);
 				return other_eid != eid && boundary_attrs[other_eid].boundary_id == boundary_id
 					   && is_edge_fixed(*this, e) && are_edges_collinear(v0 - v1, v2 - v1);
@@ -185,8 +188,9 @@ namespace polyfem::mesh
 			assert(false);
 		}
 
-		// Check the interpolated poisition does not violate invariants
-		if (!invariants(get_one_ring_elements_for_vertex(t)))
+		// Check the interpolated poisition does not cause inversions
+		for (auto &t : get_one_ring_elements_for_vertex(t))
+			if (is_inverted(t))
 			return false;
 
 		// ~2) Project quantities so to minimize the L2 error~ (done after all operations)
@@ -199,5 +203,50 @@ namespace polyfem::mesh
 			collapse_relative_tolerance,
 			collapse_absolute_tolerance);
 	}
+
+	template <class WMTKMesh>
+	void WildRemesher<WMTKMesh>::collapse_edges()
+	{
+		using Operations = std::vector<std::pair<std::string, Tuple>>;
+
+		std::vector<Tuple> included_edges;
+		{
+			const std::vector<Tuple> starting_elements = get_elements();
+			for (const Tuple &t : starting_elements)
+			{
+				const size_t t_id = element_id(t);
+
+				if (element_attrs[t_id].energy_rank != ElementAttributes::EnergyRank::BOTTOM)
+					continue;
+
+				for (int ei = 0; ei < EDGES_IN_ELEMENT; ++ei)
+				{
+					included_edges.push_back(WMTKMesh::tuple_from_edge(t_id, ei));
+				}
+			}
+			wmtk::unique_edge_tuples(*this, included_edges);
+		}
+
+		if (included_edges.empty())
+			return;
+
+		Operations collapses;
+		collapses.reserve(included_edges.size());
+		for (const Tuple &e : included_edges)
+			collapses.emplace_back("edge_collapse", e);
+
+		executor.priority = [](const WildRemesher &m, std::string op, const Tuple &t) -> double {
+			// NOTE: this code compute the edge length
+			// return m.edge_length(t);
+			return -m.edge_elastic_energy(t); // invert the energy to get a reverse ordering
+		};
+
+		executor(*this, collapses);
+	}
+
+	// ------------------------------------------------------------------------
+	// Template specializations
+	template class WildRemesher<wmtk::TriMesh>;
+	template class WildRemesher<wmtk::TetMesh>;
 
 } // namespace polyfem::mesh

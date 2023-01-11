@@ -339,6 +339,14 @@ void polyfem::utils::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 	}
 }
 
+namespace
+{
+	inline bool nanproof_equals(const double x, const double y)
+	{
+		return x == y || (std::isnan(x) == std::isnan(y));
+	}
+} // namespace
+
 // Flatten rowwises
 Eigen::VectorXd polyfem::utils::flatten(const Eigen::MatrixXd &X)
 {
@@ -353,8 +361,8 @@ Eigen::VectorXd polyfem::utils::flatten(const Eigen::MatrixXd &X)
 			x(i * X.cols() + j) = X(i, j);
 		}
 	}
-	assert(X(0, 0) == x(0));
-	assert(X.cols() <= 1 || X(0, 1) == x(1));
+	assert(nanproof_equals(X(0, 0), x(0)));
+	assert(X.cols() <= 1 || nanproof_equals(X(0, 1), x(1)));
 	return x;
 }
 
@@ -370,8 +378,8 @@ Eigen::MatrixXd polyfem::utils::unflatten(const Eigen::VectorXd &x, int dim)
 	{
 		X(i / dim, i % dim) = x(i);
 	}
-	assert(X(0, 0) == x(0));
-	assert(X.cols() <= 1 || X(0, 1) == x(1));
+	assert(nanproof_equals(X(0, 0), x(0)));
+	assert(X.cols() <= 1 || nanproof_equals(X(0, 1), x(1)));
 	return X;
 }
 
