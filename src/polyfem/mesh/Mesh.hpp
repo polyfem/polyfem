@@ -182,6 +182,12 @@ namespace polyfem
 			/// @param[in] f_id *global* face id
 			/// @return  number of vertices
 			virtual int n_face_vertices(const int f_id) const = 0;
+			/// @brief number of vertices of a cell
+			///
+			/// @param[in] c_id *global* cell id (face for 2d meshes)
+			/// @return  number of vertices
+			virtual int n_cell_vertices(const int c_id) const = 0;
+
 			/// @brief id of the face vertex
 			///
 			/// @param[in] f_id *global* face id
