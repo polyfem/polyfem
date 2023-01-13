@@ -6,6 +6,8 @@
 
 #include <wmtk/utils/TupleUtils.hpp>
 
+#include <unordered_map>
+
 #define VERTEX_ATTRIBUTE_GETTER(name, attribute)                                                     \
 	template <class WMTKMesh>                                                                        \
 	Eigen::MatrixXd WildRemesher<WMTKMesh>::name() const                                             \
@@ -77,6 +79,7 @@ namespace polyfem::mesh
 
 		const double top_threshold = std::max(std::min(top_energy_threshold, top_element_threshold), 1e-12);
 		const double bottom_threshold = bottom_energy_threshold;
+		assert(bottom_threshold < top_threshold);
 
 		logger().info("min energy: {}, max energy: {}, thresholds: {}, {}", min_energy, max_energy, bottom_threshold, top_threshold);
 
@@ -228,9 +231,37 @@ namespace polyfem::mesh
 	std::vector<int> WildRemesher<WMTKMesh>::boundary_nodes() const
 	{
 		std::vector<int> boundary_nodes;
-		for (const Tuple &t : WMTKMesh::get_vertices())
-			if (vertex_attrs[t.vid(*this)].fixed)
-				boundary_nodes.push_back(t.vid(*this));
+
+		// TODO: get this from state rather than building it
+		std::unordered_map<int, std::array<bool, DIM>> bc_ids;
+		{
+			assert(state.args["boundary_conditions"]["dirichlet_boundary"].is_array());
+			const std::vector<json> bcs = state.args["boundary_conditions"]["dirichlet_boundary"];
+			for (const json &bc : bcs)
+			{
+				assert(bc["dimension"].size() == dim());
+				bc_ids[bc["id"].get<int>()] = bc["dimension"];
+			}
+		}
+
+		for (const Tuple &t : boundary_facets())
+		{
+			const auto bc = bc_ids.find(boundary_attrs[facet_id(t)].boundary_id);
+
+			if (bc == bc_ids.end())
+				continue;
+
+			for (const size_t vid : boundary_facet_vids(t))
+				for (int d = 0; d < dim(); ++d)
+					if (bc->second[d])
+						boundary_nodes.push_back(dim() * vid + d);
+		}
+
+		// Sort and remove the duplicate boundary_nodes.
+		std::sort(boundary_nodes.begin(), boundary_nodes.end());
+		auto new_end = std::unique(boundary_nodes.begin(), boundary_nodes.end());
+		boundary_nodes.erase(new_end, boundary_nodes.end());
+
 		return boundary_nodes;
 	}
 

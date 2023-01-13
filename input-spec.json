@@ -1034,8 +1034,10 @@
         "optional": [
             "enabled",
             "t0",
-            "rel_tol",
-            "abs_tol",
+            "split_tol",
+            "collapse_tol",
+            "swap_tol",
+            "smooth_tol",
             "n_ring_size",
             "flood_fill_rel_area",
             "threshold",
@@ -1056,16 +1058,28 @@
         "doc": "Time at which to start adaptive remeshing"
     },
     {
-        "pointer": "/space/remesh/rel_tol",
+        "pointer": "/space/remesh/split_tol",
         "default": 1e-3,
         "type": "float",
-        "doc": "energy relative tolerance for adaptive remeshing"
+        "doc": "Accept split operation if energy decreased by at least x"
     },
     {
-        "pointer": "/space/remesh/abs_tol",
-        "default": 1e-8,
+        "pointer": "/space/remesh/collapse_tol",
+        "default": -1e-8,
         "type": "float",
-        "doc": "energy absolute tolerance for adaptive remeshing"
+        "doc": "Accept collapse operation if energy decreased by at least x"
+    },
+    {
+        "pointer": "/space/remesh/swap_tol",
+        "default": -1e-8,
+        "type": "float",
+        "doc": "Accept swap operation if energy decreased by at least x"
+    },
+    {
+        "pointer": "/space/remesh/smooth_tol",
+        "default": 1e-3,
+        "type": "float",
+        "doc": "Accept smooth operation if energy decreased by at least x"
     },
     {
         "pointer": "/space/remesh/n_ring_size",

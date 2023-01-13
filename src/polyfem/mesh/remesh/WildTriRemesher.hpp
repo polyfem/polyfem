@@ -57,6 +57,11 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 		// getters
 
+		/// @brief Exports boundary edges of the stored mesh
+		Eigen::MatrixXi boundary_edges() const override;
+		/// @brief Exports boundary faces of the stored mesh
+		Eigen::MatrixXi boundary_faces() const override { return Eigen::MatrixXi(); }
+
 		std::vector<Tuple> get_elements() const override { return get_faces(); }
 
 		// --------------------------------------------------------------------
@@ -121,6 +126,10 @@ namespace polyfem::mesh
 				tris.push_back(t.switch_face(*this).value());
 			return tris;
 		}
+
+		bool is_edge_on_body_boundary(const Tuple &e) const override;
+		bool is_vertex_on_boundary(const Tuple &v) const override;
+		bool is_vertex_on_body_boundary(const Tuple &v) const override;
 
 	protected:
 		void cache_split_edge(const Tuple &e, const double local_energy) override

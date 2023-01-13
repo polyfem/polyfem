@@ -66,8 +66,10 @@ namespace polyfem::mesh
 					state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
 					time, current_energy);
 
-			remeshing->split_relative_tolerance = state.args["space"]["remesh"]["rel_tol"];
-			remeshing->split_absolute_tolerance = state.args["space"]["remesh"]["abs_tol"];
+			remeshing->split_tolerance = state.args["space"]["remesh"]["split_tol"];
+			remeshing->collapse_tolerance = state.args["space"]["remesh"]["collapse_tol"];
+			remeshing->swap_tolerance = state.args["space"]["remesh"]["swap_tol"];
+			remeshing->smooth_tolerance = state.args["space"]["remesh"]["smooth_tol"];
 			remeshing->n_ring_size = state.args["space"]["remesh"]["n_ring_size"];
 			remeshing->flood_fill_rel_area = state.args["space"]["remesh"]["flood_fill_rel_area"];
 			remeshing->threshold = state.args["space"]["remesh"]["threshold"];
@@ -178,7 +180,7 @@ namespace polyfem::mesh
 		remeshing->init(rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids, element_energies);
 
 		const bool made_change = remeshing->execute(
-			/*split=*/true, /*collapse=*/false, /*smooth=*/false, /*swap=*/false);
+			/*split=*/true, /*collapse=*/dim == 2, /*smooth=*/false, /*swap=*/false);
 		remeshing->timings.log();
 
 		// remeshing->write_mesh(

@@ -15,8 +15,7 @@ namespace polyfem::mesh
 	bool WildRemesher<WMTKMesh>::local_relaxation(
 		const Tuple &t,
 		const double local_energy_before,
-		const double energy_relative_tolerance,
-		const double energy_absolute_tolerance)
+		const double acceptance_tolerance)
 	{
 		using namespace polyfem::solver;
 		using namespace polyfem::time_integrator;
@@ -99,17 +98,15 @@ namespace polyfem::mesh
 			// TODO: compute global_energy_before
 			// Right now using: starting_energy = state.solve_data.nl_problem->value(sol)
 			const double global_energy_before = abs(starting_energy);
-			const double rel_diff = abs_diff / global_energy_before;
+			// const double rel_diff = abs_diff / global_energy_before;
 
 			// TODO: only use abs_diff
 			// accept = rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance;
-			accept = abs_diff >= energy_absolute_tolerance;
+			accept = abs_diff >= acceptance_tolerance;
 
-			static int log_i = 0;
-			logger().log(
-				accept ? spdlog::level::critical : spdlog::level::debug,
-				"{} {:g} | rel_diff={:g} rel_tol={:g} | abs_diff={:g} abs_tol={:g}",
-				log_i++, starting_energy, rel_diff, energy_relative_tolerance, abs_diff, energy_absolute_tolerance);
+			logger().debug(
+				"[{:s}] starting_energy={:g} local_energy_before={:g} local_energy_after={:g} abs_diff={:g} tol={:g}",
+				accept ? "accept" : "reject", starting_energy, local_energy_before, local_energy_after, abs_diff, acceptance_tolerance);
 		}
 
 		// Update positions only on acceptance
@@ -117,7 +114,7 @@ namespace polyfem::mesh
 		{
 			static int save_i = 0;
 			// local_mesh.write_mesh(state.resolve_output_path(fmt::format("local_mesh_{:04d}.vtu", save_i)), target_x);
-			// write_deformed_mesh(state.resolve_output_path(fmt::format("split_{:04d}.vtu", save_i++)));
+			// write_deformed_mesh(state.resolve_output_path(fmt::format("relaxation_{:04d}.vtu", save_i++)));
 
 #ifndef POLYFEM_REMESH_USE_FRICTION_FORM
 			Eigen::VectorXd friction_gradient = Eigen::VectorXd::Zero(target_x.rows());
@@ -179,7 +176,7 @@ namespace polyfem::mesh
 #endif
 
 			// local_mesh.write_mesh(state.resolve_output_path(fmt::format("local_mesh_{:04d}.vtu", save_i)), sol);
-			// write_deformed_mesh(state.resolve_output_path(fmt::format("split_{:04d}.vtu", save_i++)));
+			// write_deformed_mesh(state.resolve_output_path(fmt::format("relaxation_{:04d}.vtu", save_i++)));
 
 			// Increase the hash of the triangles that have been modified
 			// to invalidate all tuples that point to them.

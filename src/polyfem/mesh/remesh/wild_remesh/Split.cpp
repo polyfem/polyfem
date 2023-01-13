@@ -49,7 +49,7 @@ namespace polyfem::mesh
 		const auto &v1 = vertex_attrs[e.switch_vertex(*this).vid(*this)].rest_position;
 		const double local_energy = local_mesh_energy((v0 + v1) / 2);
 		// Do not split if the energy of the local mesh is too small
-		if (local_energy < split_absolute_tolerance)
+		if (local_energy < split_tolerance)
 			return false;
 
 		// ---------------------------------------------------------------------
@@ -95,10 +95,7 @@ namespace polyfem::mesh
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
-		return local_relaxation(
-			new_vertex, op_cache.local_energy,
-			split_relative_tolerance,
-			split_absolute_tolerance);
+		return local_relaxation(new_vertex, op_cache.local_energy, split_tolerance);
 	}
 
 	void WildTriRemesher::map_edge_split_boundary_attributes(
@@ -194,10 +191,7 @@ namespace polyfem::mesh
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
-		return local_relaxation(
-			t, op_cache.local_energy,
-			split_relative_tolerance,
-			split_absolute_tolerance);
+		return local_relaxation(t, op_cache.local_energy, split_tolerance);
 	}
 
 	void WildTetRemesher::map_edge_split_edge_attributes(

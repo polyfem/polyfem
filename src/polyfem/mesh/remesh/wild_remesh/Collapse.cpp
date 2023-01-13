@@ -2,18 +2,12 @@
 #include <polyfem/utils/Logger.hpp>
 
 #include <wmtk/ExecutionScheduler.hpp>
+#include <ipc/ipc.hpp>
 
 namespace polyfem::mesh
 {
 	namespace
 	{
-		bool is_edge_fixed(const WildTriRemesher &m, const WildTriRemesher::Tuple &e)
-		{
-			const int v0i = e.vid(m);
-			const int v1i = e.switch_vertex(m).vid(m);
-			return m.vertex_attrs[v0i].fixed && m.vertex_attrs[v1i].fixed;
-		}
-
 		bool are_edges_collinear(
 			const Eigen::Vector2d &ea,
 			const Eigen::Vector2d &eb,
@@ -36,14 +30,15 @@ namespace polyfem::mesh
 		const Eigen::Vector2d &v0 = vertex_attrs[v0i].rest_position;
 		const Eigen::Vector2d &v1 = vertex_attrs[v1i].rest_position;
 
-		cache_before();
+		// Dont collapse if the edge is large
+		const double max_edge_length = 0.05;
+		if (edge_length(t) > max_edge_length)
+			return false;
+
 		op_cache = TriOperationCache::collapse_edge(*this, t);
 
-		const bool is_v0_fixed = vertex_attrs[v0i].fixed;
-		const bool is_v1_fixed = vertex_attrs[v1i].fixed;
-
 		// boundary edge
-		if (is_v0_fixed && is_v1_fixed)
+		if (is_edge_on_body_boundary(t))
 		{
 			const int boundary_id = boundary_attrs[eid].boundary_id;
 
@@ -53,7 +48,7 @@ namespace polyfem::mesh
 				const Eigen::Vector2d &v2 = vertex_attrs[v2_id].rest_position;
 				const size_t other_eid = e.eid(*this);
 				return other_eid != eid && boundary_attrs[other_eid].boundary_id == boundary_id
-					   && is_edge_fixed(*this, e) && are_edges_collinear(v1 - v0, v2 - v0);
+					   && is_edge_on_body_boundary(e) && are_edges_collinear(v1 - v0, v2 - v0);
 			});
 
 			const std::vector<Tuple> v1_edges = get_one_ring_edges_for_vertex(t.switch_vertex(*this));
@@ -62,7 +57,7 @@ namespace polyfem::mesh
 				const Eigen::Vector2d &v2 = vertex_attrs[v2_id].rest_position;
 				const size_t other_eid = e.eid(*this);
 				return other_eid != eid && boundary_attrs[other_eid].boundary_id == boundary_id
-					   && is_edge_fixed(*this, e) && are_edges_collinear(v0 - v1, v2 - v1);
+					   && is_edge_on_body_boundary(e) && are_edges_collinear(v0 - v1, v2 - v1);
 			});
 
 			// only collapse boundary edges that have collinear neighbors
@@ -76,9 +71,15 @@ namespace polyfem::mesh
 		}
 		else
 		{
+			// NOTE: .fixed here assumed to be equal to is_vertex_on_body_boundary
+
+			// interior edge with both vertices fixed means it spans accross the body
+			if (vertex_attrs[v0i].fixed && vertex_attrs[v1i].fixed)
+				return false;
+
 			op_cache.collapse_to =
-				is_v0_fixed ? CollapseEdgeTo::V0 : //
-					(is_v1_fixed ? CollapseEdgeTo::V1 : CollapseEdgeTo::MIDPOINT);
+				vertex_attrs[v0i].fixed ? CollapseEdgeTo::V0 : //
+					(vertex_attrs[v1i].fixed ? CollapseEdgeTo::V1 : CollapseEdgeTo::MIDPOINT);
 		}
 
 		switch (op_cache.collapse_to)
@@ -149,13 +150,24 @@ namespace polyfem::mesh
 				std::swap(v0_id, v1_id);
 			assert(v1_id == new_vid); // should be the new vertex because it has a larger id
 
-			std::array<size_t, 2> old_edge{{v0_id, old_v0_id}};
-			if (old_edges.find(old_edge) == old_edges.end())
+			const std::array<size_t, 2> old_edge0{{v0_id, old_v0_id}};
+			const std::array<size_t, 2> old_edge1{{v0_id, old_v1_id}};
+			const auto find_old_edge0 = old_edges.find(old_edge0);
+			const auto find_old_edge1 = old_edges.find(old_edge1);
+
+			if (find_old_edge0 != old_edges.end() && find_old_edge1 != old_edges.end())
 			{
-				old_edge = {{v0_id, old_v1_id}};
-				assert(old_edges.find(old_edge) != old_edges.end());
+				// both cannot be boundary edges
+				assert(!(find_old_edge0->second.boundary_id >= 0 && find_old_edge1->second.boundary_id >= 0));
+				boundary_attrs[e_id].boundary_id = std::max(
+					find_old_edge0->second.boundary_id, find_old_edge1->second.boundary_id);
 			}
-			boundary_attrs[e_id] = old_edges.at(old_edge);
+			else if (find_old_edge0 != old_edges.end())
+				boundary_attrs[e_id] = find_old_edge0->second;
+			else if (find_old_edge1 != old_edges.end())
+				boundary_attrs[e_id] = find_old_edge1->second;
+			else
+				assert(false);
 		}
 
 		// Nothing to do for the face attributes because no new faces are created.
@@ -191,17 +203,31 @@ namespace polyfem::mesh
 		// Check the interpolated poisition does not cause inversions
 		for (auto &t : get_one_ring_elements_for_vertex(t))
 			if (is_inverted(t))
-			return false;
+				return false;
+
+		// Check the interpolated poisition does not cause intersections
+		if (state.args["contact"]["enabled"].get<bool>() && is_vertex_on_boundary(t))
+		{
+			POLYFEM_SCOPED_TIMER(timings.create_collision_mesh);
+
+			Eigen::MatrixXd V_rest = rest_positions();
+			utils::append_rows(V_rest, obstacle().v());
+
+			ipc::CollisionMesh collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
+				V_rest, boundary_edges(), boundary_faces());
+
+			Eigen::MatrixXd V = positions();
+			utils::append_rows(V, obstacle().v() + obstacle_displacements());
+			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices(V)))
+				return false;
+		}
 
 		// ~2) Project quantities so to minimize the L2 error~ (done after all operations)
 		// project_quantities(); // also projects positions
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease/increase.
-		return local_relaxation(
-			t, op_cache.local_energy,
-			collapse_relative_tolerance,
-			collapse_absolute_tolerance);
+		return local_relaxation(t, op_cache.local_energy, collapse_tolerance);
 	}
 
 	template <class WMTKMesh>
@@ -237,8 +263,8 @@ namespace polyfem::mesh
 
 		executor.priority = [](const WildRemesher &m, std::string op, const Tuple &t) -> double {
 			// NOTE: this code compute the edge length
-			// return m.edge_length(t);
-			return -m.edge_elastic_energy(t); // invert the energy to get a reverse ordering
+			return -m.edge_length(t);
+			// return -m.edge_elastic_energy(t); // invert the energy to get a reverse ordering
 		};
 
 		executor(*this, collapses);

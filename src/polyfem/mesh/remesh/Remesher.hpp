@@ -204,25 +204,14 @@ namespace polyfem::mesh
 		/// @brief Minimum edge length for splitting
 		double min_edge_length = 1e-6;
 
-		/// @brief Accept operation if energy decreased by at least (100 * x)%
-		double split_relative_tolerance = 1e-3;
-		/// @brief Accept operation if energy decreased by at least x
-		double split_absolute_tolerance = 1e-8;
-
-		/// @brief Accept operation if energy decreased by at least (100 * x)%
-		double collapse_relative_tolerance = -1e-3;
-		/// @brief Accept operation if energy decreased by at least x
-		double collapse_absolute_tolerance = -1e-8;
-
-		/// @brief Accept operation if energy decreased by at least (100 * x)%
-		double swap_relative_tolerance = -1e-3;
-		/// @brief Accept operation if energy decreased by at least x
-		double swap_absolute_tolerance = -1e-8;
-
-		/// @brief Accept operation if energy decreased by at least (100 * x)%
-		double smooth_relative_tolerance = 1e-3;
-		/// @brief Accept operation if energy decreased by at least x
-		double smooth_absolute_tolerance = 1e-8;
+		/// @brief Accept split operation if energy decreased by at least x
+		double split_tolerance = 1e-3;
+		/// @brief Accept collapse operation if energy decreased by at least x
+		double collapse_tolerance = -1e-8;
+		/// @brief Accept swap operation if energy decreased by at least x
+		double swap_tolerance = -1e-8;
+		/// @brief Accept smooth operation if energy decreased by at least x
+		double smooth_tolerance = 1e-3;
 
 		/// @brief Size of n-ring for local relaxation
 		int n_ring_size = 3;
@@ -237,21 +226,17 @@ namespace polyfem::mesh
 		// members
 	protected:
 		// TODO: Drop this and only use a local EdgeOperationCache
-		struct GlobalCache
+		struct GlobalProjectionCache
 		{
 			/// @brief Rest positions of the mesh before an operation
-			Eigen::MatrixXd rest_positions_before;
-			/// @brief Deformed positions of the mesh before an operation
-			Eigen::MatrixXd positions_before;
+			Eigen::MatrixXd rest_positions;
 			/// @brief Elements before an operation
-			Eigen::MatrixXi elements_before;
+			Eigen::MatrixXi elements;
 			/// @brief dim rows per vertex and 1 column per quantity
-			Eigen::MatrixXd projection_quantities_before;
-			/// @brief Energy before an operation
-			double energy_before;
+			Eigen::MatrixXd projection_quantities;
 		};
 
-		GlobalCache global_cache;
+		GlobalProjectionCache global_projection_cache;
 
 		/// @brief Reference to the simulation state.
 		const State &state;

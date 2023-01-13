@@ -63,12 +63,6 @@ namespace polyfem::mesh
 		// 	executor.num_threads = NUM_THREADS;
 		// }
 
-		executor.priority = [](const WildRemesher &m, std::string op, const Tuple &t) -> double {
-			// NOTE: this code compute the edge length
-			// return m.edge_length(t);
-			return m.edge_elastic_energy(t);
-		};
-
 		executor.renew_neighbor_tuples = [&](const WildRemesher &m, std::string op, const std::vector<Tuple> &tris) -> Operations {
 			return m.renew_neighbor_tuples(op, tris);
 		};
@@ -79,6 +73,8 @@ namespace polyfem::mesh
 		static int aggregate_collapse_cnt_fail = 0;
 
 		int cnt_success = 0;
+
+		cache_before();
 
 		if (split)
 		{
@@ -105,6 +101,8 @@ namespace polyfem::mesh
 
 		logger().info("[split]    aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_split_cnt_success, aggregate_split_cnt_fail);
 		logger().info("[collapse] aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_collapse_cnt_success, aggregate_collapse_cnt_fail);
+
+		project_quantities();
 
 		// Remove unused vertices
 		WMTKMesh::consolidate_mesh();

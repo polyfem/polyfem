@@ -18,8 +18,6 @@ namespace polyfem::mesh
 		if (vertex_attrs[t.vid(*this)].fixed)
 			return false;
 
-		cache_before(); // Cache global quantities for projection
-
 		return true;
 	}
 
@@ -116,10 +114,7 @@ namespace polyfem::mesh
 		// 3. perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
 		assert(false); // TODO: set local_energy in _before
-		return local_relaxation(
-			t, op_cache.local_energy,
-			smooth_relative_tolerance,
-			smooth_absolute_tolerance);
+		return local_relaxation(t, op_cache.local_energy, smooth_tolerance);
 	}
 
 } // namespace polyfem::mesh

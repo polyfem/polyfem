@@ -13,6 +13,7 @@
 #include <polyfem/io/VTUWriter.hpp>
 
 #include <igl/boundary_facets.h>
+#include <igl/edges.h>
 
 namespace polyfem::mesh
 {
@@ -80,69 +81,141 @@ namespace polyfem::mesh
 		set_body_ids(body_ids);
 	}
 
+	void Remesher::cache_before()
+	{
+		global_projection_cache.rest_positions = rest_positions();
+		global_projection_cache.elements = elements();
+		global_projection_cache.projection_quantities = projection_quantities();
+	}
+
 	void Remesher::project_quantities()
 	{
-		// Assume the rest positions and elements have been updated
-		const Eigen::MatrixXd proposed_rest_positions = rest_positions();
-		const Eigen::MatrixXi proposed_elements = elements();
+		using namespace polyfem::assembler;
+		using namespace polyfem::basis;
+		using namespace polyfem::utils;
 
-		// --------------------------------------------------------------------
-
-		// Assume isoparametric
-		std::vector<polyfem::basis::ElementBases> bases_before;
-		Eigen::VectorXi vertex_to_basis_before;
-		int n_bases_before = build_bases(
-			global_cache.rest_positions_before, global_cache.elements_before,
-			state.formulation(), bases_before, vertex_to_basis_before);
-		const std::vector<polyfem::basis::ElementBases> &geom_bases_before = bases_before;
-		n_bases_before += state.obstacle.n_vertices();
+		std::vector<ElementBases> from_bases;
+		Eigen::VectorXi from_vertex_to_basis;
+		int n_from_basis = build_bases(
+			global_projection_cache.rest_positions,
+			global_projection_cache.elements,
+			state.formulation(),
+			from_bases,
+			from_vertex_to_basis);
 
 		// Old values of independent variables
-		Eigen::MatrixXd y(n_bases_before * dim(), 1 + n_quantities());
-		y.col(0) = utils::flatten(utils::reorder_matrix(
-			global_cache.positions_before - global_cache.rest_positions_before,
-			vertex_to_basis_before, n_bases_before));
-		y.rightCols(n_quantities()) = utils::reorder_matrix(
-			global_cache.projection_quantities_before, vertex_to_basis_before,
-			n_bases_before, dim());
+		Eigen::MatrixXd from_projection_quantities = reorder_matrix(
+			global_projection_cache.projection_quantities,
+			from_vertex_to_basis, n_from_basis, dim());
+		append_rows(from_projection_quantities, obstacle_quantities());
+		n_from_basis += obstacle().n_vertices();
+		assert(dim() * n_from_basis == from_projection_quantities.rows());
 
 		// --------------------------------------------------------------------
 
-		const int num_vertices = proposed_rest_positions.rows();
+		Eigen::MatrixXd rest_positions = this->rest_positions();
+		Eigen::MatrixXi elements = this->elements();
 
-		std::vector<polyfem::basis::ElementBases> bases;
-		Eigen::VectorXi vertex_to_basis;
-		int n_bases = build_bases(
-			proposed_rest_positions, proposed_elements, state.formulation(),
-			bases, vertex_to_basis);
-		const std::vector<polyfem::basis::ElementBases> &geom_bases = bases;
-		n_bases += state.obstacle.n_vertices();
+		std::vector<ElementBases> to_bases;
+		Eigen::VectorXi to_vertex_to_basis;
+		int n_to_basis = build_bases(
+			rest_positions, elements, state.formulation(),
+			to_bases, to_vertex_to_basis);
 
-		const Eigen::MatrixXd target_x = utils::flatten(utils::reorder_matrix(
-			displacements(), vertex_to_basis, n_bases));
+		utils::reorder_matrix(rest_positions, to_vertex_to_basis);
+		utils::map_index_matrix(elements, to_vertex_to_basis);
 
-		std::vector<int> boundary_nodes = this->boundary_nodes();
-		for (int &boundary_node : boundary_nodes)
-			boundary_node = vertex_to_basis[boundary_node];
-		std::sort(boundary_nodes.begin(), boundary_nodes.end());
-
-		// --------------------------------------------------------------------
-
-		// L2 Projection
-		Eigen::MatrixXd x;
-		L2_projection(
-			is_volume(), /*size=*/dim(),
-			n_bases_before, bases_before, geom_bases_before, // from
-			n_bases, bases, geom_bases,                      // to
-			boundary_nodes, state.obstacle, target_x,
-			y, x, /*lump_mass_matrix=*/false);
+		// Interpolated values of independent variables
+		Eigen::MatrixXd to_projection_quantities = reorder_matrix(
+			projection_quantities(), to_vertex_to_basis, n_to_basis, dim());
+		append_rows(to_projection_quantities, obstacle_quantities());
+		n_to_basis += obstacle().n_vertices();
+		assert(dim() * n_to_basis == to_projection_quantities.rows());
 
 		// --------------------------------------------------------------------
 
-		set_positions(proposed_rest_positions + utils::unreorder_matrix( //
-						  utils::unflatten(x.col(0), dim()), vertex_to_basis, num_vertices));
-		set_projection_quantities(utils::unreorder_matrix(
-			x.rightCols(n_quantities()), vertex_to_basis, num_vertices, dim()));
+		// solve M x = A y for x where M is the mass matrix and A is the cross mass matrix.
+		Eigen::SparseMatrix<double> M, A;
+		{
+			MassMatrixAssembler assembler;
+			Density no_density; // Density of one (i.e., no scaling of mass matrix)
+			AssemblyValsCache cache;
+
+			assembler.assemble(
+				is_volume(), dim(),
+				n_to_basis, no_density, to_bases, to_bases,
+				cache, M);
+			assert(M.rows() == to_projection_quantities.rows());
+
+			// if (lump_mass_matrix)
+			// 	M = lump_matrix(M);
+
+			assembler.assemble_cross(
+				is_volume(), dim(),
+				n_from_basis, from_bases, from_bases,
+				n_to_basis, to_bases, to_bases,
+				cache, A);
+			assert(A.rows() == to_projection_quantities.rows());
+			assert(A.cols() == from_projection_quantities.rows());
+		}
+
+		// --------------------------------------------------------------------
+
+		Eigen::MatrixXi boundary_facets;
+		igl::boundary_facets(elements, boundary_facets);
+
+		Eigen::MatrixXi boundary_edges;
+		if (boundary_facets.cols() == 3)
+			igl::edges(boundary_facets, boundary_edges);
+
+		if (obstacle().n_edges() > 0)
+			utils::append_rows(boundary_edges, obstacle().e().array() + rest_positions.rows());
+		if (obstacle().n_faces() > 0)
+			utils::append_rows(boundary_edges, obstacle().f().array() + rest_positions.rows());
+
+		utils::append_rows(rest_positions, obstacle().v());
+
+		ipc::CollisionMesh collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
+			rest_positions,
+			boundary_facets.cols() == 3 ? boundary_edges : boundary_facets,
+			boundary_facets.cols() == 3 ? boundary_facets : Eigen::MatrixXi());
+
+		// --------------------------------------------------------------------
+
+		Eigen::MatrixXd projected_quantities(to_projection_quantities.rows(), n_quantities());
+		const int n_constrained_quantaties = n_quantities() / 3;
+		const int n_unconstrained_quantaties = n_quantities() - n_constrained_quantaties;
+
+		const std::vector<int> boundary_nodes = this->boundary_nodes();
+		for (int i = 0; i < n_constrained_quantaties; ++i)
+		{
+			projected_quantities.col(i) = constrained_L2_projection(
+				// L2 projection form
+				M, A, /*y=*/from_projection_quantities.col(i),
+				// Inversion-free form
+				elements, dim(),
+				// Contact form
+				collision_mesh, state.args["contact"]["dhat"],
+				state.solve_data.contact_form->barrier_stiffness(),
+				state.args["contact"]["use_convergent_formulation"],
+				state.args["solver"]["contact"]["CCD"]["broad_phase"],
+				state.args["solver"]["contact"]["CCD"]["tolerance"],
+				state.args["solver"]["contact"]["CCD"]["max_iterations"],
+				// Augmented lagrangian form
+				boundary_nodes, obstacle(), to_projection_quantities.col(i),
+				// Initial guess
+				to_projection_quantities.col(i));
+		}
+
+		// NOTE: no need for to_projection_quantities.rightCols(n_unconstrained_quantaties)
+		projected_quantities.rightCols(n_unconstrained_quantaties) = unconstrained_L2_projection(
+			M, A, from_projection_quantities.rightCols(n_unconstrained_quantaties));
+
+		// --------------------------------------------------------------------
+
+		assert(projected_quantities.rows() == dim() * n_to_basis);
+		set_projection_quantities(unreorder_matrix(
+			projected_quantities, to_vertex_to_basis, to_vertex_to_basis.size(), dim()));
 	}
 
 	int Remesher::build_bases(
@@ -217,14 +290,6 @@ namespace polyfem::mesh
 		assert(utils::is_param_valid(state.args, "materials"));
 		new_assembler.set_materials(body_ids, state.args["materials"]);
 		return new_assembler;
-	}
-
-	void Remesher::cache_before()
-	{
-		global_cache.rest_positions_before = rest_positions();
-		global_cache.positions_before = positions();
-		global_cache.projection_quantities_before = projection_quantities();
-		global_cache.elements_before = elements();
 	}
 
 	void Remesher::write_mesh(const std::string &path, bool deformed) const

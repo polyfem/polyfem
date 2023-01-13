@@ -4,6 +4,8 @@
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
+#include <polyfem/solver/forms/InversionBarrierForm.hpp>
+#include <polyfem/solver/forms/L2ProjectionForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/LinearForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
@@ -58,15 +60,20 @@ namespace
 					"value": [0, 0]
 				}],
 				"rhs": [10, 10]
+			},
+
+			"output": {
+				"log": {
+					"level": "warning"
+				}
 			}
 
 		})"_json;
 		in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
 
 		auto state = std::make_shared<State>();
-		state->set_max_threads(1);
-		state->init_logger("", spdlog::level::warn, false);
 		state->init(in_args, true);
+		state->set_max_threads(1);
 
 		state->load_mesh();
 
@@ -305,6 +312,31 @@ TEST_CASE("Linear form derivatives", "[form][form_derivatives][linear_form]")
 
 	const Eigen::VectorXd coeffs = Eigen::VectorXd::Random(state_ptr->n_bases * 2);
 	LinearForm form(coeffs);
+
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("Inversion barrier form derivatives", "[form][form_derivatives][inversion_barrier]")
+{
+	const auto state_ptr = get_state();
+
+	const double vhat = 1e-3;
+
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+	state_ptr->build_mesh_matrices(V, F);
+
+	InversionBarrierForm form(F, state_ptr->mesh->dimension(), vhat);
+
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("L2 projection form derivatives", "[form][form_derivatives][L2]")
+{
+	const auto state_ptr = get_state();
+
+	REQUIRE(state_ptr->mass.size() > 0);
+	L2ProjectionForm form(state_ptr->mass, state_ptr->mass, Eigen::VectorXd::Ones(state_ptr->mass.cols()));
 
 	test_form(form, *state_ptr);
 }

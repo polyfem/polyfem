@@ -7,10 +7,10 @@ namespace polyfem::mesh
 		const int v0i = t.vid(*this);
 		const int v1i = t.switch_vertex(*this).vid(*this);
 
+		// TODO: rethink this and make sure the edge is not on boundary
 		if (vertex_attrs[v0i].fixed && vertex_attrs[v1i].fixed)
 			return false;
 
-		cache_before();
 		// Cache necessary local data
 		op_cache = TriOperationCache::swap_edge(*this, t);
 
@@ -63,10 +63,7 @@ namespace polyfem::mesh
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
 		assert(false); // TODO: set local_energy in _before
-		return local_relaxation(
-			t, op_cache.local_energy,
-			swap_relative_tolerance,
-			swap_absolute_tolerance);
+		return local_relaxation(t, op_cache.local_energy, swap_tolerance);
 	}
 
 } // namespace polyfem::mesh

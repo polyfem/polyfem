@@ -108,8 +108,7 @@ namespace polyfem::mesh
 		bool local_relaxation(
 			const Tuple &t,
 			const double local_energy_before,
-			const double energy_relative_tolerance,
-			const double energy_absolute_tolerance);
+			const double acceptance_tolerance);
 
 		// --------------------------------------------------------------------
 		// getters
@@ -127,6 +126,10 @@ namespace polyfem::mesh
 		Eigen::MatrixXi edges() const override;
 		/// @brief Exports elements of the stored mesh
 		Eigen::MatrixXi elements() const override;
+		/// @brief Exports boundary edges of the stored mesh
+		virtual Eigen::MatrixXi boundary_edges() const = 0;
+		/// @brief Exports boundary faces of the stored mesh
+		virtual Eigen::MatrixXi boundary_faces() const = 0;
 		/// @brief Exports projected quantities of the stored mesh
 		Eigen::MatrixXd projection_quantities() const override;
 		/// @brief Exports boundary ids of the stored mesh
@@ -210,6 +213,10 @@ namespace polyfem::mesh
 
 		double local_mesh_energy(const Eigen::Matrix<double, DIM, 1> &local_mesh_center) const;
 
+		virtual bool is_edge_on_body_boundary(const Tuple &e) const = 0;
+		virtual bool is_vertex_on_boundary(const Tuple &v) const = 0;
+		virtual bool is_vertex_on_body_boundary(const Tuple &v) const = 0;
+
 	protected:
 		/// @brief Cache the split edge operation
 		virtual void cache_split_edge(const Tuple &e, const double local_energy) = 0;
@@ -251,6 +258,7 @@ namespace polyfem::mesh
 			/// @brief Quantities to be projected (dim × n_quantities)
 			Eigen::MatrixXd projection_quantities;
 
+			// Can the point be smoothed or moved around by operations?
 			bool fixed = false;
 			size_t partition_id = 0; // Vertices marked as fixed cannot be modified by any local operation
 

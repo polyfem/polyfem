@@ -46,6 +46,11 @@ namespace polyfem::utils
 	/// @return The signed volume of the tetrahedron.
 	double tetrahedron_volume(const Eigen::MatrixXd V);
 
+	void triangle_area_2D_gradient(double ax, double ay, double bx, double by, double cx, double cy, double g[6]);
+	void triangle_area_2D_hessian(double ax, double ay, double bx, double by, double cx, double cy, double H[36]);
+	void tetrahedron_volume_gradient(double ax, double ay, double az, double bx, double by, double bz, double cx, double cy, double cz, double dx, double dy, double dz, double g[12]);
+	void tetrahedron_volume_hessian(double ax, double ay, double az, double bx, double by, double bz, double cx, double cy, double cz, double dx, double dy, double dz, double H[144]);
+
 	/// @brief Reorder the vertices of a triangle so they are in clockwise order.
 	/// @param triangle The vertices of the triangle as rows of a matrix.
 	/// @return The vertices of the triangle in clockwise order as rows of a matrix.

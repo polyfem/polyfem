@@ -5,6 +5,7 @@
 #include <wmtk/utils/TupleUtils.hpp>
 
 #include <igl/predicates/predicates.h>
+#include <igl/edges.h>
 
 namespace polyfem::mesh
 {
@@ -39,7 +40,39 @@ namespace polyfem::mesh
 		wmtk::TetMesh::init(num_vertices, tets);
 	}
 
-	// smooth_before/smooth_after in wild_remesh/Smooth.cpp
+	// split_edge_after in wild_remesh/Split.cpp
+
+	Eigen::MatrixXi WildTetRemesher::boundary_edges() const
+	{
+		const Eigen::MatrixXi BF = boundary_faces();
+		Eigen::MatrixXi BE;
+		igl::edges(BF, BE);
+		if (obstacle().n_edges() > 0)
+			utils::append_rows(BE, obstacle().e().array() + vert_capacity());
+		return BE;
+	}
+
+	Eigen::MatrixXi WildTetRemesher::boundary_faces() const
+	{
+		const std::vector<Tuple> faces = get_faces();
+		int num_boundary_faces = 0;
+		Eigen::MatrixXi BF(faces.size(), 3);
+		for (int i = 0; i < faces.size(); ++i)
+		{
+			const Tuple &f = faces[i];
+			if (f.switch_tetrahedron(*this).has_value()) // not a boundary face
+				continue;
+			const std::array<Tuple, 3> vs = get_face_vertices(f);
+			BF(num_boundary_faces, 0) = vs[0].vid(*this);
+			BF(num_boundary_faces, 1) = vs[1].vid(*this);
+			BF(num_boundary_faces, 2) = vs[2].vid(*this);
+			num_boundary_faces++;
+		}
+		BF.conservativeResize(num_boundary_faces, 3);
+		if (obstacle().n_faces() > 0)
+			utils::append_rows(BF, obstacle().f().array() + vert_capacity());
+		return BF;
+	}
 
 	bool WildTetRemesher::is_inverted(const Tuple &loc) const
 	{
