@@ -17,6 +17,7 @@ namespace polyfem::mesh
 		const Eigen::SparseMatrix<double> &A,
 		const Eigen::VectorXd &y,
 		// Inversion-free form
+		const Eigen::MatrixXd &rest_positions,
 		const Eigen::MatrixXi &elements,
 		const int dim,
 		// Contact form

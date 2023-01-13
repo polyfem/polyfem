@@ -326,7 +326,7 @@ TEST_CASE("Inversion barrier form derivatives", "[form][form_derivatives][invers
 	Eigen::MatrixXi F;
 	state_ptr->build_mesh_matrices(V, F);
 
-	InversionBarrierForm form(F, state_ptr->mesh->dimension(), vhat);
+	InversionBarrierForm form(V, F, state_ptr->mesh->dimension(), vhat);
 
 	test_form(form, *state_ptr);
 }

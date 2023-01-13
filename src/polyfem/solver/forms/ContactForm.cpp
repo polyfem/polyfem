@@ -42,8 +42,7 @@ namespace polyfem::solver
 
 	void ContactForm::init(const Eigen::VectorXd &x)
 	{
-		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
-		update_constraint_set(displaced_surface);
+		update_constraint_set(compute_displaced_surface(x));
 	}
 
 	void ContactForm::update_quantities(const double t, const Eigen::VectorXd &x)
@@ -109,8 +108,8 @@ namespace polyfem::solver
 	{
 		// Store the previous value used to compute the constraint set to avoid duplicate computation.
 		static Eigen::MatrixXd cached_displaced_surface;
-		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
-			return;
+		// if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
+		// 	return;
 
 		if (use_cached_candidates_)
 			constraint_set_.build(

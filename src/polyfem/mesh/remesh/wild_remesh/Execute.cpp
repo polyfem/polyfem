@@ -51,7 +51,8 @@ namespace polyfem::mesh
 		const bool smooth,
 		const bool swap)
 	{
-		POLYFEM_SCOPED_TIMER(timings.total);
+		utils::Timer timer(timings.total);
+		timer.start();
 
 		wmtk::logger().set_level(logger().level());
 
@@ -102,7 +103,8 @@ namespace polyfem::mesh
 		logger().info("[split]    aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_split_cnt_success, aggregate_split_cnt_fail);
 		logger().info("[collapse] aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_collapse_cnt_success, aggregate_collapse_cnt_fail);
 
-		project_quantities();
+		if ((collapse || swap || smooth) && executor.cnt_success() > 0)
+			project_quantities();
 
 		// Remove unused vertices
 		WMTKMesh::consolidate_mesh();
@@ -112,6 +114,9 @@ namespace polyfem::mesh
 		// 	logger().critical("exiting now for debugging purposes");
 		// 	exit(0);
 		// }
+
+		timer.stop();
+		timings.log();
 
 		return cnt_success > 0;
 	}

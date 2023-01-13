@@ -181,7 +181,6 @@ namespace polyfem::mesh
 
 		const bool made_change = remeshing->execute(
 			/*split=*/true, /*collapse=*/dim == 2, /*smooth=*/false, /*swap=*/false);
-		remeshing->timings.log();
 
 		// remeshing->write_mesh(
 		// 	state.resolve_output_path(fmt::format("post_vis_{:03d}.vtu", int(time / dt))),

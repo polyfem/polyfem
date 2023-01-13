@@ -193,7 +193,7 @@ namespace polyfem::mesh
 				// L2 projection form
 				M, A, /*y=*/from_projection_quantities.col(i),
 				// Inversion-free form
-				elements, dim(),
+				rest_positions, elements, dim(),
 				// Contact form
 				collision_mesh, state.args["contact"]["dhat"],
 				state.solve_data.contact_form->barrier_stiffness(),

@@ -36,19 +36,19 @@ namespace polyfem::mesh
 
 		void log()
 		{
-			logger().critical("Total time: {:.3g}s", total);
-			logger().critical("Create local mesh: {:.3g}s {:.1f}%", create_local_mesh, (create_local_mesh) / total * 100);
-			logger().critical("Build bases: {:.3g}s {:.1f}%", build_bases, (build_bases) / total * 100);
-			logger().critical("Create boundary nodes: {:.3g}s {:.1f}%", create_boundary_nodes, (create_boundary_nodes) / total * 100);
-			logger().critical("Create assembler: {:.3g}s {:.1f}%", create_assembler, (create_assembler) / total * 100);
-			logger().critical("Assemble mass matrix: {:.3g}s {:.1f}%", assemble_mass_matrix, (assemble_mass_matrix) / total * 100);
-			logger().critical("Create collision mesh: {:.3g}s {:.1f}%", create_collision_mesh, (create_collision_mesh) / total * 100);
-			logger().critical("Init forms: {:.3g}s {:.1f}%", init_forms, (init_forms) / total * 100);
-			logger().critical("Local relaxation solve ({:d} in total): {:.3g}s {:.1f}%", n_solves, local_relaxation_solve, (local_relaxation_solve) / total * 100);
-			logger().critical("Acceptance check: {:.3g}s {:.1f}%", acceptance_check, (acceptance_check) / total * 100);
-			logger().critical("Miscellaneous: {:.3g}s {:.1f}%", total - sum(), (total - sum()) / total * 100);
+			logger().debug("Total time: {:.3g}s", total);
+			logger().debug("Create local mesh: {:.3g}s {:.1f}%", create_local_mesh, (create_local_mesh) / total * 100);
+			logger().debug("Build bases: {:.3g}s {:.1f}%", build_bases, (build_bases) / total * 100);
+			logger().debug("Create boundary nodes: {:.3g}s {:.1f}%", create_boundary_nodes, (create_boundary_nodes) / total * 100);
+			logger().debug("Create assembler: {:.3g}s {:.1f}%", create_assembler, (create_assembler) / total * 100);
+			logger().debug("Assemble mass matrix: {:.3g}s {:.1f}%", assemble_mass_matrix, (assemble_mass_matrix) / total * 100);
+			logger().debug("Create collision mesh: {:.3g}s {:.1f}%", create_collision_mesh, (create_collision_mesh) / total * 100);
+			logger().debug("Init forms: {:.3g}s {:.1f}%", init_forms, (init_forms) / total * 100);
+			logger().debug("Local relaxation solve ({:d} in total): {:.3g}s {:.1f}%", n_solves, local_relaxation_solve, (local_relaxation_solve) / total * 100);
+			logger().debug("Acceptance check: {:.3g}s {:.1f}%", acceptance_check, (acceptance_check) / total * 100);
+			logger().debug("Miscellaneous: {:.3g}s {:.1f}%", total - sum(), (total - sum()) / total * 100);
 			if (n_solves > 0)
-				logger().critical("Avg. # DOF per solve: {}", total_ndofs / double(n_solves));
+				logger().debug("Avg. # DOF per solve: {}", total_ndofs / double(n_solves));
 		}
 
 		double sum()

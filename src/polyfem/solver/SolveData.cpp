@@ -159,6 +159,7 @@ namespace polyfem::solver
 			else
 			{
 				assert(barrier_stiffness.is_number());
+				assert(barrier_stiffness.get<double>() > 0);
 				contact_form->set_weight(barrier_stiffness);
 				// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
 			}

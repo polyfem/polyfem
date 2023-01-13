@@ -10,14 +10,15 @@
 
 namespace polyfem::solver
 {
-	InversionBarrierForm::InversionBarrierForm(const Eigen::MatrixXi &elements, const int dim, const double vhat)
-		: elements_(elements), dim_(dim), vhat_(vhat)
+	InversionBarrierForm::InversionBarrierForm(
+		const Eigen::MatrixXd &rest_positions, const Eigen::MatrixXi &elements, const int dim, const double vhat)
+		: rest_positions_(rest_positions), elements_(elements), dim_(dim), vhat_(vhat)
 	{
 	}
 
 	double InversionBarrierForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		const Eigen::MatrixXd V = utils::unflatten(x, dim_);
+		const Eigen::MatrixXd V = rest_positions_ + utils::unflatten(x, dim_);
 
 		auto storage = utils::create_thread_storage<double>(0.0);
 
@@ -37,9 +38,9 @@ namespace polyfem::solver
 
 	void InversionBarrierForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		const Eigen::MatrixXd V = utils::unflatten(x, dim_);
+		const Eigen::MatrixXd V = rest_positions_ + utils::unflatten(x, dim_);
 
-		auto storage = utils::create_thread_storage<Eigen::VectorXd>(Eigen::VectorXd::Zero(V.size()));
+		auto storage = utils::create_thread_storage<Eigen::VectorXd>(Eigen::VectorXd::Zero(x.size()));
 
 		utils::maybe_parallel_for(elements_.rows(), [&](int start, int end, int thread_id) {
 			Eigen::VectorXd &grad = utils::get_local_thread_storage(storage, thread_id);
@@ -55,14 +56,14 @@ namespace polyfem::solver
 			}
 		});
 
-		gradv = Eigen::VectorXd::Zero(V.size());
+		gradv = Eigen::VectorXd::Zero(x.size());
 		for (const auto &local_grad : storage)
 			gradv += local_grad;
 	}
 
 	void InversionBarrierForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
-		const Eigen::MatrixXd V = utils::unflatten(x, dim_);
+		const Eigen::MatrixXd V = rest_positions_ + utils::unflatten(x, dim_);
 
 		auto storage = utils::create_thread_storage(std::vector<Eigen::Triplet<double>>());
 
@@ -85,10 +86,10 @@ namespace polyfem::solver
 			}
 		});
 
-		hessian.resize(V.size(), V.size());
+		hessian.resize(x.size(), x.size());
 		for (const auto &local_hess_triplets : storage)
 		{
-			Eigen::SparseMatrix<double> local_hess(V.size(), V.size());
+			Eigen::SparseMatrix<double> local_hess(x.size(), x.size());
 			local_hess.setFromTriplets(
 				local_hess_triplets.begin(), local_hess_triplets.end());
 			hessian += local_hess;

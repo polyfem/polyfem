@@ -10,7 +10,8 @@ namespace polyfem::solver
 	class InversionBarrierForm : public polyfem::solver::Form
 	{
 	public:
-		InversionBarrierForm(const Eigen::MatrixXi &elements, const int dim, const double vhat);
+		InversionBarrierForm(
+			const Eigen::MatrixXd &rest_positions, const Eigen::MatrixXi &elements, const int dim, const double vhat);
 
 	protected:
 		/// @brief Compute the value of the form
@@ -41,6 +42,7 @@ namespace polyfem::solver
 		static Eigen::MatrixXd element_volume_hessian(const Eigen::MatrixXd &element_vertices);
 
 	private:
+		Eigen::MatrixXd rest_positions_;
 		Eigen::MatrixXi elements_;
 		int dim_;
 		double vhat_;

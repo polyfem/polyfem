@@ -104,9 +104,13 @@ namespace polyfem::mesh
 			// accept = rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance;
 			accept = abs_diff >= acceptance_tolerance;
 
+			static const std::string accept_str = fmt::format(fmt::fg(fmt::terminal_color::green), "accept");
+			static const std::string reject_str = fmt::format(fmt::fg(fmt::terminal_color::yellow), "reject");
+
 			logger().debug(
-				"[{:s}] starting_energy={:g} local_energy_before={:g} local_energy_after={:g} abs_diff={:g} tol={:g}",
-				accept ? "accept" : "reject", starting_energy, local_energy_before, local_energy_after, abs_diff, acceptance_tolerance);
+				"[{:s}] E0={:#10g} E1={:#10g} (E1-E0)={:#10g} tol={:g}",
+				accept ? accept_str : reject_str, local_energy_before, local_energy_after,
+				abs_diff, acceptance_tolerance);
 		}
 
 		// Update positions only on acceptance
@@ -387,7 +391,7 @@ namespace polyfem::mesh
 				state.args["contact"]["dhat"],
 				state.avg_mass,
 				state.args["contact"]["use_convergent_formulation"],
-				state.args["solver"]["contact"]["barrier_stiffness"],
+				contact_enabled ? state.solve_data.contact_form->barrier_stiffness() : 0,
 				state.args["solver"]["contact"]["CCD"]["broad_phase"],
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
 				state.args["solver"]["contact"]["CCD"]["max_iterations"],
@@ -409,13 +413,6 @@ namespace polyfem::mesh
 			forms.push_back(solve_data.al_form);
 			assert(state.solve_data.al_form != nullptr);
 			solve_data.al_form->set_weight(state.solve_data.al_form->weight());
-
-			// Contact form
-			if (solve_data.contact_form)
-			{
-				assert(state.solve_data.contact_form != nullptr);
-				solve_data.contact_form->set_weight(state.solve_data.contact_form->weight());
-			}
 
 			// Friction form
 #ifndef POLYFEM_REMESH_USE_FRICTION_FORM
