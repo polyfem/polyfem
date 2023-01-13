@@ -183,8 +183,7 @@ namespace polyfem::mesh
 			/*split=*/true, /*collapse=*/dim == 2, /*smooth=*/false, /*swap=*/false);
 
 		// remeshing->write_mesh(
-		// 	state.resolve_output_path(fmt::format("post_vis_{:03d}.vtu", int(time / dt))),
-		// 	false);
+		// 	state.resolve_output_path(fmt::format("post_vis_{:03d}.vtu", int(time / dt))));
 
 		if (!made_change)
 			return false;

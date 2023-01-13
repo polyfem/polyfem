@@ -157,7 +157,7 @@ namespace polyfem::solver
 
 	bool InversionBarrierForm::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		const Eigen::MatrixXd V = utils::unflatten(x1, dim_);
+		const Eigen::MatrixXd V = rest_positions_ + utils::unflatten(x1, dim_);
 
 		for (size_t i = 0; i < elements_.rows(); ++i)
 		{

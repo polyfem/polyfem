@@ -103,6 +103,8 @@ namespace polyfem::mesh
 		logger().info("[split]    aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_split_cnt_success, aggregate_split_cnt_fail);
 		logger().info("[collapse] aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_collapse_cnt_success, aggregate_collapse_cnt_fail);
 
+		write_mesh(state.resolve_output_path("remeshed.vtu"));
+
 		if ((collapse || swap || smooth) && executor.cnt_success() > 0)
 			project_quantities();
 

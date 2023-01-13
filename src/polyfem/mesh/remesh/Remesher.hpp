@@ -153,16 +153,9 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 		// utilities
 	public:
-		/// @brief Writes a mesh file.
+		/// @brief Writes a VTU mesh file.
 		/// @param path Output path
-		/// @param deformed If true, writes deformed positions, otherwise rest positions
-		void write_mesh(const std::string &path, bool deformed) const;
-		/// @brief Writes a mesh file of the rest mesh.
-		/// @param path Output path
-		void write_rest_mesh(const std::string &path) const { write_mesh(path, false); }
-		/// @brief Writes a mesh file of the deformed mesh.
-		/// @param path Output path
-		void write_deformed_mesh(const std::string &path) const { write_mesh(path, true); }
+		void write_mesh(const std::string &path) const;
 
 		/// @brief Combine the quantities of a time integrator into a single matrix (one column per quantity)
 		static Eigen::MatrixXd combine_time_integrator_quantities(

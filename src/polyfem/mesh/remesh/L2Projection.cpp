@@ -68,12 +68,14 @@ namespace polyfem::mesh
 
 		forms.push_back(std::make_shared<InversionBarrierForm>(rest_positions, elements, dim, /*vhat=*/dhat));
 		forms.back()->set_weight(barrier_stiffness); // use same weight as barrier stiffness
+		assert(forms.back()->is_step_valid(x0, x0));
 
 		forms.push_back(std::make_shared<ContactForm>(
 			collision_mesh, dhat, /*avg_mass=*/1.0, use_convergent_formulation,
 			/*use_adaptive_barrier_stiffness=*/false, /*is_time_dependent=*/true,
 			broad_phase_method, ccd_tolerance, ccd_max_iterations));
 		forms.back()->set_weight(barrier_stiffness);
+		assert(!ipc::has_intersections(collision_mesh, collision_mesh.displace_vertices(utils::unflatten(x0, dim))));
 
 		const int ndof = x0.size();
 		std::shared_ptr<ALForm> al_form = std::make_shared<ALForm>(
@@ -93,10 +95,10 @@ namespace polyfem::mesh
 			// TODO: expose these parameters
 			const json newton_args = R"({
 				"f_delta": 1e-7,
-				"grad_norm": 1e-7,
+				"grad_norm": 1e-5,
 				"use_grad_norm": true,
 				"first_grad_norm_tol": 1e-10,
-				"max_iterations": 100,
+				"max_iterations": 1000,
 				"relative_gradient": false,
 				"line_search": {
 					"method": "backtracking",
@@ -126,6 +128,9 @@ namespace polyfem::mesh
 
 		Eigen::MatrixXd sol = x0;
 		al_solver.solve(problem, sol, force_al);
+
+		assert(forms[1]->is_step_valid(sol, sol));
+		assert(!ipc::has_intersections(collision_mesh, collision_mesh.displace_vertices(utils::unflatten(sol, dim))));
 
 		return sol;
 	}

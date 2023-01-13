@@ -317,7 +317,7 @@ namespace polyfem::mesh
 			if (is_inverted(t))
 			{
 				static int inversion_cnt = 0;
-				write_deformed_mesh(state.resolve_output_path(fmt::format("inversion_{:04d}.vtu", inversion_cnt++)));
+				write_mesh(state.resolve_output_path(fmt::format("inversion_{:04d}.vtu", inversion_cnt++)));
 				log_and_throw_error("Inverted element found, invariants violated");
 				return false;
 			}

@@ -118,7 +118,7 @@ namespace polyfem::mesh
 		{
 			static int save_i = 0;
 			// local_mesh.write_mesh(state.resolve_output_path(fmt::format("local_mesh_{:04d}.vtu", save_i)), target_x);
-			// write_deformed_mesh(state.resolve_output_path(fmt::format("relaxation_{:04d}.vtu", save_i++)));
+			// write_mesh(state.resolve_output_path(fmt::format("relaxation_{:04d}.vtu", save_i++)));
 
 #ifndef POLYFEM_REMESH_USE_FRICTION_FORM
 			Eigen::VectorXd friction_gradient = Eigen::VectorXd::Zero(target_x.rows());
@@ -180,7 +180,7 @@ namespace polyfem::mesh
 #endif
 
 			// local_mesh.write_mesh(state.resolve_output_path(fmt::format("local_mesh_{:04d}.vtu", save_i)), sol);
-			// write_deformed_mesh(state.resolve_output_path(fmt::format("relaxation_{:04d}.vtu", save_i++)));
+			// write_mesh(state.resolve_output_path(fmt::format("relaxation_{:04d}.vtu", save_i++)));
 
 			// Increase the hash of the triangles that have been modified
 			// to invalidate all tuples that point to them.

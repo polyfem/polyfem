@@ -122,8 +122,8 @@ namespace polyfem::mesh
 			rest_positions, elements, state.formulation(),
 			to_bases, to_vertex_to_basis);
 
-		utils::reorder_matrix(rest_positions, to_vertex_to_basis);
-		utils::map_index_matrix(elements, to_vertex_to_basis);
+		rest_positions = reorder_matrix(rest_positions, to_vertex_to_basis, n_to_basis);
+		elements = map_index_matrix(elements, to_vertex_to_basis);
 
 		// Interpolated values of independent variables
 		Eigen::MatrixXd to_projection_quantities = reorder_matrix(
@@ -179,6 +179,8 @@ namespace polyfem::mesh
 			rest_positions,
 			boundary_facets.cols() == 3 ? boundary_edges : boundary_facets,
 			boundary_facets.cols() == 3 ? boundary_facets : Eigen::MatrixXi());
+
+		assert(rest_positions.size() == to_projection_quantities.rows());
 
 		// --------------------------------------------------------------------
 
@@ -292,70 +294,65 @@ namespace polyfem::mesh
 		return new_assembler;
 	}
 
-	void Remesher::write_mesh(const std::string &path, bool deformed) const
+	void Remesher::write_mesh(const std::string &path) const
 	{
-		if (utils::StringUtils::endswith(path, ".obj"))
-		{
-			assert(dim() == 2); // OBJ does not support tets
-			io::OBJWriter::write(path, deformed ? positions() : rest_positions(), elements());
-		}
-		else if (utils::StringUtils::endswith(path, ".vtu"))
-		{
-			io::VTUWriter writer;
-			const Eigen::MatrixXd projection_quantities = this->projection_quantities();
+		assert(utils::StringUtils::endswith(path, ".vtu"));
 
-			Eigen::MatrixXd rest_positions = this->rest_positions();
-			Eigen::MatrixXd displacements = this->displacements();
-			Eigen::MatrixXd prev_displacements = utils::unflatten(projection_quantities.leftCols(1), dim());
-			Eigen::MatrixXd friction_gradient = utils::unflatten(projection_quantities.rightCols(1), dim());
-			Eigen::MatrixXi elements = this->elements();
-			std::vector<std::vector<int>> all_elements(elements.rows(), std::vector<int>(elements.cols()));
-			for (int i = 0; i < elements.rows(); i++)
-				for (int j = 0; j < elements.cols(); j++)
-					all_elements[i][j] = elements(i, j);
+		io::VTUWriter writer;
 
-			const int offset = rest_positions.rows();
-			if (obstacle().n_vertices() > 0)
+		Eigen::MatrixXd rest_positions = this->rest_positions();
+		Eigen::MatrixXd displacements = this->displacements();
+
+		const Eigen::MatrixXd projection_quantities = this->projection_quantities();
+		std::vector<Eigen::MatrixXd> unflattened_projection_quantities;
+		for (const auto &q : projection_quantities.colwise())
+			unflattened_projection_quantities.push_back(utils::unflatten(q, dim()));
+
+		Eigen::MatrixXi elements = this->elements();
+		std::vector<std::vector<int>> all_elements(elements.rows(), std::vector<int>(elements.cols()));
+		for (int i = 0; i < elements.rows(); i++)
+			for (int j = 0; j < elements.cols(); j++)
+				all_elements[i][j] = elements(i, j);
+
+		const int offset = rest_positions.rows();
+		if (obstacle().n_vertices() > 0)
+		{
+			utils::append_rows(rest_positions, obstacle().v());
+			utils::append_rows(displacements, obstacle_displacements());
+			for (int i = 0; i < unflattened_projection_quantities.size(); ++i)
+				utils::append_rows(
+					unflattened_projection_quantities[i],
+					utils::unflatten(obstacle_quantities().col(i), dim()));
+
+			if (obstacle().n_edges() > 0)
 			{
-				utils::append_rows(rest_positions, obstacle().v());
-				utils::append_rows(displacements, obstacle_displacements());
-				utils::append_rows(prev_displacements, utils::unflatten(obstacle_quantities().leftCols(1), dim()));
-				utils::append_rows(friction_gradient, utils::unflatten(obstacle_quantities().leftCols(1), dim()));
-
-				if (obstacle().n_edges() > 0)
+				const Eigen::MatrixXi obstacle_edges = obstacle().e().array() + offset;
+				all_elements.resize(all_elements.size() + obstacle_edges.rows());
+				for (int i = 0; i < obstacle().n_edges(); i++)
 				{
-					const Eigen::MatrixXi obstacle_edges = obstacle().e().array() + offset;
-					all_elements.resize(all_elements.size() + obstacle_edges.rows());
-					for (int i = 0; i < obstacle().n_edges(); i++)
-					{
-						all_elements[i + elements.rows()] = std::vector<int>(obstacle_edges.cols());
-						for (int j = 0; j < obstacle_edges.cols(); j++)
-							all_elements[i + elements.rows()][j] = obstacle_edges(i, j);
-					}
-				}
-
-				if (obstacle().n_faces() > 0)
-				{
-					const Eigen::MatrixXi obstacle_faces = obstacle().f().array() + offset;
-					all_elements.resize(all_elements.size() + obstacle_faces.rows());
-					for (int i = 0; i < obstacle().n_edges(); i++)
-					{
-						all_elements[i + elements.rows()] = std::vector<int>(obstacle_faces.cols());
-						for (int j = 0; j < obstacle_faces.cols(); j++)
-							all_elements[i + elements.rows()][j] = obstacle_faces(i, j);
-					}
+					all_elements[i + elements.rows()] = std::vector<int>(obstacle_edges.cols());
+					for (int j = 0; j < obstacle_edges.cols(); j++)
+						all_elements[i + elements.rows()][j] = obstacle_edges(i, j);
 				}
 			}
 
-			writer.add_field("prev_displacement", prev_displacements);
-			writer.add_field("friction_gradient", friction_gradient);
-			writer.add_field("displacement", displacements);
-			writer.write_mesh(path, rest_positions, all_elements, /*is_simplicial=*/true);
+			if (obstacle().n_faces() > 0)
+			{
+				const Eigen::MatrixXi obstacle_faces = obstacle().f().array() + offset;
+				all_elements.resize(all_elements.size() + obstacle_faces.rows());
+				for (int i = 0; i < obstacle().n_edges(); i++)
+				{
+					all_elements[i + elements.rows()] = std::vector<int>(obstacle_faces.cols());
+					for (int j = 0; j < obstacle_faces.cols(); j++)
+						all_elements[i + elements.rows()][j] = obstacle_faces(i, j);
+				}
+			}
 		}
-		else
-		{
-			log_and_throw_error("Unsupported mesh file format: {}", path);
-		}
+
+		for (int i = 0; i < unflattened_projection_quantities.size(); ++i)
+			writer.add_field(fmt::format("projection_quantity_{:d}", i), unflattened_projection_quantities[i]);
+		writer.add_field("displacement", displacements);
+		writer.write_mesh(path, rest_positions, all_elements, /*is_simplicial=*/true);
 	}
 
 	Eigen::MatrixXd Remesher::combine_time_integrator_quantities(
