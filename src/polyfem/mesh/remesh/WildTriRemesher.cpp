@@ -69,19 +69,21 @@ namespace polyfem::mesh
 
 		igl::predicates::exactinit();
 
-		// Use igl for checking orientation
-		igl::predicates::Orientation rest_orientation = igl::predicates::orient2d(
-			vertex_attrs[vids[0]].rest_position,
-			vertex_attrs[vids[1]].rest_position,
-			vertex_attrs[vids[2]].rest_position);
-		igl::predicates::Orientation deformed_orientation = igl::predicates::orient2d(
-			vertex_attrs[vids[0]].position,
-			vertex_attrs[vids[1]].position,
-			vertex_attrs[vids[2]].position);
+		for (int i = 0; i < n_quantities() / 3 + 2; ++i)
+		{
+			// Use igl for checking orientation
+			const igl::predicates::Orientation orientation =
+				igl::predicates::orient2d(
+					vertex_attrs[vids[0]].position_i(i),
+					vertex_attrs[vids[1]].position_i(i),
+					vertex_attrs[vids[2]].position_i(i));
 
-		// The element is inverted if it not positive (i.e. it is negative or it is degenerate)
-		return rest_orientation != igl::predicates::Orientation::POSITIVE
-			   || deformed_orientation != igl::predicates::Orientation::POSITIVE;
+			// The element is inverted if it not positive (i.e. it is negative or it is degenerate)
+			if (orientation != igl::predicates::Orientation::POSITIVE)
+				return true;
+		}
+
+		return false;
 	}
 
 	double WildTriRemesher::element_volume(const Tuple &e) const

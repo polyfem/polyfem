@@ -31,7 +31,8 @@ namespace polyfem::mesh
 		const Eigen::Vector2d &v1 = vertex_attrs[v1i].rest_position;
 
 		// Dont collapse if the edge is large
-		const double max_edge_length = 0.05;
+		// const double max_edge_length = 0.05;
+		const double max_edge_length = 0.001;
 		if (edge_length(t) > max_edge_length)
 			return false;
 
@@ -201,9 +202,13 @@ namespace polyfem::mesh
 		}
 
 		// Check the interpolated poisition does not cause inversions
-		for (auto &t : get_one_ring_elements_for_vertex(t))
-			if (is_inverted(t))
+		for (const Tuple &t1 : get_one_ring_elements_for_vertex(t))
+		{
+			if (is_inverted(t1))
 				return false;
+			else if (element_volume(t1) < 1e-16)
+				return false;
+		}
 
 		// Check the interpolated poisition does not cause intersections
 		if (state.args["contact"]["enabled"].get<bool>() && is_vertex_on_boundary(t))
@@ -216,10 +221,25 @@ namespace polyfem::mesh
 			ipc::CollisionMesh collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
 				V_rest, boundary_edges(), boundary_faces());
 
+#ifndef NDEBUG
+			// This should never happen because we only collapse collinear edges on the rest mesh boundary.
+			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices_at_rest()))
+			{
+				write_mesh(state.resolve_output_path("collapse_intersects.vtu"));
+				assert(false);
+			}
+#endif
+
 			Eigen::MatrixXd V = positions();
 			utils::append_rows(V, obstacle().v() + obstacle_displacements());
 			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices(V)))
 				return false;
+
+			Eigen::MatrixXd prev_displacements = projection_quantities().leftCols(n_quantities() / 3);
+			utils::append_rows(prev_displacements, obstacle_quantities().leftCols(n_quantities() / 3));
+			for (const auto &u : prev_displacements.colwise())
+				if (ipc::has_intersections(collision_mesh, collision_mesh.displace_vertices(utils::unflatten(u, dim()))))
+					return false;
 		}
 
 		// ~2) Project quantities so to minimize the L2 error~ (done after all operations)

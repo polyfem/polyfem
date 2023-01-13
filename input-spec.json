@@ -3499,6 +3499,7 @@
             "body_ids",
             "contact_forces",
             "friction_forces",
+            "prev_sol",
             "velocity",
             "acceleration"
         ],
@@ -3527,6 +3528,12 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out friction forces for surface"
+    },
+    {
+        "pointer": "/output/paraview/options/prev_sol",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out the previous solution"
     },
     {
         "pointer": "/output/paraview/options/velocity",

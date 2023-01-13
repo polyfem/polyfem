@@ -77,6 +77,9 @@ namespace polyfem::mesh
 			}
 			catch (const std::runtime_error &e)
 			{
+				static int i = 0;
+				write_mesh(state.resolve_output_path(fmt::format("error_mesh_{}.vtu", i++)));
+				// assert(false);
 			}
 			logger().set_level(level_before);
 		}
@@ -108,7 +111,7 @@ namespace polyfem::mesh
 			static const std::string reject_str = fmt::format(fmt::fg(fmt::terminal_color::yellow), "reject");
 
 			logger().debug(
-				"[{:s}] E0={:#10g} E1={:#10g} (E1-E0)={:#10g} tol={:g}",
+				"[{:s}] E0={:<10g} E1={:<10g} (E1-E0)={:<10g} tol={:g}",
 				accept ? accept_str : reject_str, local_energy_before, local_energy_after,
 				abs_diff, acceptance_tolerance);
 		}

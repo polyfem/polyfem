@@ -262,7 +262,32 @@ namespace polyfem::mesh
 			bool fixed = false;
 			size_t partition_id = 0; // Vertices marked as fixed cannot be modified by any local operation
 
+			/// @brief Current displacement from rest position to current position
+			/// @return displacement of the vertex
 			VectorNd displacement() const { return position - rest_position; }
+
+			/// @brief Previous position of the vertex
+			/// @param i in [0, n_quantities()//3) the i-th previous position
+			/// @return previous position i of the vertex
+			VectorNd prev_position(const int i) const
+			{
+				assert(0 <= i && i < projection_quantities.cols() / 3);
+				return rest_position + projection_quantities.col(i);
+			}
+
+			/// @brief Get the position of the vertex at different times
+			/// @param i 0: rest position, 1–(n_quantities()//3): previous position, otherwise: current position
+			/// @return position i of the vertex
+			VectorNd position_i(const int i) const
+			{
+				assert(i >= 0);
+				if (i == 0)
+					return rest_position;
+				else if (i - 1 < projection_quantities.cols() / 3)
+					return prev_position(i - 1);
+				else
+					return position;
+			}
 		};
 
 		struct EdgeAttributes
