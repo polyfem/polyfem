@@ -42,6 +42,50 @@ namespace polyfem::mesh
 	{
 	}
 
+	template <typename WMTKMesh>
+	Remesher::EdgeMap<typename WildRemesher<WMTKMesh>::EdgeAttributes::EnergyRank>
+	rank_edges(const Remesher::EdgeMap<double> &edge_energy, const double threshold)
+	{
+		double min_energy = std::numeric_limits<double>::infinity();
+		double max_energy = -std::numeric_limits<double>::infinity();
+		std::vector<double> sorted_energies;
+		sorted_energies.reserve(edge_energy.size());
+		for (const auto &[edge, energy] : edge_energy)
+		{
+			min_energy = std::min(min_energy, energy);
+			max_energy = std::max(max_energy, energy);
+			sorted_energies.push_back(energy);
+		}
+		std::sort(sorted_energies.begin(), sorted_energies.end());
+
+		assert(0.0 <= threshold && threshold <= 1.0);
+
+		const double top_energy_threshold = (max_energy - min_energy) * threshold + min_energy;
+		const double bottom_energy_threshold = (max_energy - min_energy) * (1 - threshold) + min_energy;
+
+		const double top_element_threshold = sorted_energies[int(sorted_energies.size() * threshold)];
+		const double bottom_element_threshold = sorted_energies[int(sorted_energies.size() * (1 - threshold))];
+
+		const double top_threshold = std::max(std::min(top_energy_threshold, top_element_threshold), 1e-12);
+		const double bottom_threshold = bottom_energy_threshold;
+		assert(bottom_threshold < top_threshold);
+
+		logger().info("min energy: {}, max energy: {}, thresholds: {}, {}", min_energy, max_energy, bottom_threshold, top_threshold);
+
+		Remesher::EdgeMap<typename WildRemesher<WMTKMesh>::EdgeAttributes::EnergyRank> edge_ranks;
+		for (const auto &[edge, energy] : edge_energy)
+		{
+			if (energy >= top_threshold)
+				edge_ranks[edge] = WildRemesher<WMTKMesh>::EdgeAttributes::EnergyRank::TOP;
+			else if (energy <= bottom_threshold)
+				edge_ranks[edge] = WildRemesher<WMTKMesh>::EdgeAttributes::EnergyRank::BOTTOM;
+			else
+				edge_ranks[edge] = WildRemesher<WMTKMesh>::EdgeAttributes::EnergyRank::MIDDLE;
+		}
+
+		return edge_ranks;
+	}
+
 	template <class WMTKMesh>
 	void WildRemesher<WMTKMesh>::init(
 		const Eigen::MatrixXd &rest_positions,
@@ -50,9 +94,12 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd &projection_quantities,
 		const BoundaryMap<int> &boundary_to_id,
 		const std::vector<int> &body_ids,
-		const Eigen::VectorXd &element_energies)
+		const EdgeMap<double> &elastic_energy,
+		const EdgeMap<double> &contact_energy)
 	{
-		Remesher::init(rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids, element_energies);
+		Remesher::init(
+			rest_positions, positions, elements, projection_quantities,
+			boundary_to_id, body_ids, elastic_energy, contact_energy);
 
 		total_volume = 0;
 		for (const Tuple &t : get_elements())
@@ -65,33 +112,14 @@ namespace polyfem::mesh
 			assert(!is_inverted(t));
 #endif
 
-		const double min_energy = element_energies.minCoeff();
-		const double max_energy = element_energies.maxCoeff();
+		const auto edge_ranks = rank_edges<WMTKMesh>(elastic_energy, threshold);
 
-		auto sorted_element_energies = element_energies;
-		std::sort(sorted_element_energies.data(), sorted_element_energies.data() + sorted_element_energies.size());
-
-		const double top_energy_threshold = (max_energy - min_energy) * threshold + min_energy;
-		const double bottom_energy_threshold = (max_energy - min_energy) * (1 - threshold) + min_energy;
-
-		const double top_element_threshold = sorted_element_energies[int(sorted_element_energies.size() * threshold)];
-		const double bottom_element_threshold = sorted_element_energies[int(sorted_element_energies.size() * (1 - threshold))];
-
-		const double top_threshold = std::max(std::min(top_energy_threshold, top_element_threshold), 1e-12);
-		const double bottom_threshold = bottom_energy_threshold;
-		assert(bottom_threshold < top_threshold);
-
-		logger().info("min energy: {}, max energy: {}, thresholds: {}, {}", min_energy, max_energy, bottom_threshold, top_threshold);
-
-		const std::vector<Tuple> element_tuples = get_elements();
-		for (int i = 0; i < element_tuples.size(); ++i)
+		assert(std::holds_alternative<EdgeMap<int>>(boundary_to_id));
+		for (const Tuple &edge : WMTKMesh::get_edges())
 		{
-			if (element_energies[i] >= top_threshold)
-				element_attrs[element_id(element_tuples[i])].energy_rank = ElementAttributes::EnergyRank::TOP;
-			else if (element_energies[i] <= bottom_threshold)
-				element_attrs[element_id(element_tuples[i])].energy_rank = ElementAttributes::EnergyRank::BOTTOM;
-			else
-				element_attrs[element_id(element_tuples[i])].energy_rank = ElementAttributes::EnergyRank::MIDDLE;
+			const size_t e0 = edge.vid(*this);
+			const size_t e1 = edge.switch_vertex(*this).vid(*this);
+			edge_attr(edge.eid(*this)).energy_rank = edge_ranks.at({{e0, e1}});
 		}
 	}
 
@@ -441,14 +469,17 @@ namespace polyfem::mesh
 		{
 			const size_t t_id = element_id(t);
 
-			if (op == "edge_split" && element_attrs[t_id].energy_rank != ElementAttributes::EnergyRank::TOP)
-				continue;
-			else if (op == "edge_collapse" && element_attrs[t_id].energy_rank != ElementAttributes::EnergyRank::BOTTOM)
-				continue;
-
 			for (auto j = 0; j < EDGES_IN_ELEMENT; j++)
 			{
-				edges.push_back(WMTKMesh::tuple_from_edge(t_id, j));
+				const Tuple e = WMTKMesh::tuple_from_edge(t_id, j);
+				const size_t e_id = e.eid(*this);
+
+				if (op == "edge_split" && edge_attr(e_id).energy_rank != EdgeAttributes::EnergyRank::TOP)
+					continue;
+				else if (op == "edge_collapse" && edge_attr(e_id).energy_rank != EdgeAttributes::EnergyRank::BOTTOM)
+					continue;
+
+				edges.push_back(e);
 			}
 		}
 		wmtk::unique_edge_tuples(*this, edges);

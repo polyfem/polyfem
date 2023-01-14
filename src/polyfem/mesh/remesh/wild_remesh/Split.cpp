@@ -304,20 +304,10 @@ namespace polyfem::mesh
 
 		std::vector<Tuple> included_edges;
 		{
-			const std::vector<Tuple> starting_elements = get_elements();
-			for (const Tuple &t : starting_elements)
-			{
-				const size_t t_id = element_id(t);
-
-				if (element_attrs[t_id].energy_rank != ElementAttributes::EnergyRank::TOP)
-					continue;
-
-				for (int ei = 0; ei < EDGES_IN_ELEMENT; ++ei)
-				{
-					included_edges.push_back(WMTKMesh::tuple_from_edge(t_id, ei));
-				}
-			}
-			wmtk::unique_edge_tuples(*this, included_edges);
+			const std::vector<Tuple> edges = WMTKMesh::get_edges();
+			std::copy_if(edges.begin(), edges.end(), std::back_inserter(included_edges), [this](const Tuple &e) {
+				return edge_attr(e.eid(*this)).energy_rank == EdgeAttributes::EnergyRank::TOP;
+			});
 		}
 
 		if (included_edges.empty())

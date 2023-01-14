@@ -37,7 +37,8 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd &projection_quantities,
 		const BoundaryMap<int> &boundary_to_id,
 		const std::vector<int> &body_ids,
-		const Eigen::VectorXd &element_energies)
+		const EdgeMap<double> &elastic_energy,
+		const EdgeMap<double> &contact_energy)
 	{
 		assert(elements.size() > 0);
 

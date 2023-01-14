@@ -11,6 +11,7 @@
 
 #include <igl/PI.h>
 #include <igl/boundary_facets.h>
+#include <igl/edges.h>
 
 namespace polyfem::mesh
 {
@@ -44,6 +45,59 @@ namespace polyfem::mesh
 					face_to_boundary_id[f] = mesh->get_boundary_id(i);
 				}
 				return face_to_boundary_id;
+			}
+		}
+
+		void build_edge_energy_maps(
+			const State &state,
+			const Eigen::MatrixXi &elements,
+			const Eigen::MatrixXd &sol,
+			Remesher::EdgeMap<double> &elastic_energy,
+			Remesher::EdgeMap<double> &contact_energy)
+		{
+			const size_t n_out_vertices = elements.size();
+
+			Eigen::MatrixXi edges;
+			igl::edges(elements, edges);
+			Remesher::EdgeMap<std::vector<double>> elastic_multienergy;
+			for (const auto &edge : edges.rowwise())
+			{
+				elastic_multienergy[{{(size_t)edge(0), (size_t)edge(1)}}] = std::vector<double>();
+			}
+
+			assert(state.solve_data.elastic_form != nullptr);
+			const Eigen::VectorXd elastic_energy_per_element = state.solve_data.elastic_form->value_per_element(sol);
+			for (int i = 0; i < elements.rows(); ++i)
+			{
+				assert(elements.cols() == 3 || elements.cols() == 4);
+				const auto &element = elements.row(i);
+				const double energy = elastic_energy_per_element[i];
+
+				elastic_multienergy[{{(size_t)element(0), (size_t)element(1)}}].push_back(energy);
+				elastic_multienergy[{{(size_t)element(0), (size_t)element(2)}}].push_back(energy);
+				elastic_multienergy[{{(size_t)element(1), (size_t)element(2)}}].push_back(energy);
+				if (elements.cols() == 4)
+				{
+					elastic_multienergy[{{(size_t)element(0), (size_t)element(3)}}].push_back(energy);
+					elastic_multienergy[{{(size_t)element(1), (size_t)element(3)}}].push_back(energy);
+					elastic_multienergy[{{(size_t)element(2), (size_t)element(3)}}].push_back(energy);
+				}
+			}
+
+			// Average the element energies
+			for (const auto &[edge, energies] : elastic_multienergy)
+			{
+				elastic_energy[edge] = std::accumulate(energies.begin(), energies.end(), 0.0) / energies.size();
+			}
+
+			if (state.solve_data.contact_form != nullptr)
+			{
+				const Eigen::VectorXd contact_energy_per_vertex = state.solve_data.contact_form->value_per_element(sol);
+				for (int i = 0; i < edges.rows(); ++i)
+				{
+					contact_energy[{{(size_t)edges(i, 0), (size_t)edges(i, 1)}}] =
+						(contact_energy_per_vertex[edges(i, 0)] + contact_energy_per_vertex[edges(i, 1)]) / 2.0;
+				}
 			}
 		}
 
@@ -94,53 +148,10 @@ namespace polyfem::mesh
 		assert(rest_positions.size() == ndof_mesh);
 
 		// --------------------------------------------------------------------
-		Eigen::VectorXd element_energies = Eigen::VectorXd::Zero(elements.rows());
-		{
-			const size_t n_out_vertices = elements.size();
 
-			const Eigen::VectorXd elastic_energy_per_element = state.solve_data.elastic_form->value_per_element(sol);
-			element_energies = elastic_energy_per_element;
-
-#if false
-			Eigen::VectorXd contact_energy_per_element;
-			// TODO: turn this off and test
-			if (state.solve_data.contact_form)
-				contact_energy_per_element = state.solve_data.contact_form->value_per_element(sol);
-			else
-				contact_energy_per_element = Eigen::VectorXd::Zero(rest_positions.rows());
-
-			std::vector<std::vector<int>> F(elements.rows(), std::vector<int>(elements.cols()));
-			Eigen::MatrixXd V = Eigen::MatrixXd::Zero(n_out_vertices, dim);
-			Eigen::MatrixXd U = Eigen::MatrixXd::Zero(n_out_vertices, dim);
-			Eigen::VectorXd elastic_energy = Eigen::VectorXd::Zero(n_out_vertices);
-			Eigen::VectorXd contact_energy = Eigen::VectorXd::Zero(n_out_vertices);
-
-			for (int i = 0; i < elements.rows(); i++)
-			{
-				for (int j = 0; j < elements.cols(); j++)
-				{
-					F[i][j] = elements.cols() * i + j;
-					V.row(F[i][j]) = rest_positions.row(elements(i, j));
-					U.row(F[i][j]) = sol.middleRows(dim * elements(i, j), dim).transpose();
-					elastic_energy[F[i][j]] = elastic_energy_per_element[i];
-					contact_energy[F[i][j]] = contact_energy_per_element[elements(i, j)];
-
-					element_energies[i] += contact_energy_per_element[elements(i, j)];
-				}
-			}
-
-			// TODO: append obstacle values
-
-			io::VTUWriter writer;
-			writer.add_field("displacement", U);
-			writer.add_field("elastic_energy", elastic_energy);
-			writer.add_field("contact_energy", contact_energy);
-			writer.add_field("total_energy", elastic_energy + contact_energy);
-			writer.write_mesh(
-				state.resolve_output_path(fmt::format("energy_vis_{:03d}.vtu", int(time / dt))),
-				V, F, /*is_simplicial=*/true);
-#endif
-		}
+		Remesher::EdgeMap<double> elastic_energy, contact_energy;
+		build_edge_energy_maps(
+			state, elements, sol, elastic_energy, contact_energy);
 
 		// --------------------------------------------------------------------
 
@@ -177,7 +188,9 @@ namespace polyfem::mesh
 
 		std::shared_ptr<Remesher> remeshing = create_wild_remeshing(
 			state, obstacle_sol, obstacle_projection_quantities, time, state.solve_data.nl_problem->value(sol));
-		remeshing->init(rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids, element_energies);
+		remeshing->init(
+			rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids,
+			elastic_energy, contact_energy);
 
 		const bool made_change = remeshing->execute(
 			/*split=*/true, /*collapse=*/dim == 2, /*smooth=*/false, /*swap=*/false);

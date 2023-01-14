@@ -70,7 +70,8 @@ namespace polyfem::mesh
 			const Eigen::MatrixXd &projection_quantities,
 			const BoundaryMap<int> &boundary_to_id,
 			const std::vector<int> &body_ids,
-			const Eigen::VectorXd &element_energies) override;
+			const EdgeMap<double> &elastic_energy,
+			const EdgeMap<double> &contact_energy) override;
 
 		// --------------------------------------------------------------------
 		// main functions
@@ -294,6 +295,10 @@ namespace polyfem::mesh
 		{
 			int split_depth = 0;
 			int split_attempts = 0;
+			// clang-format off
+			enum class EnergyRank { TOP, MIDDLE, BOTTOM };
+			// clang-format on
+			EnergyRank energy_rank = EnergyRank::MIDDLE;
 		};
 
 		struct BoundaryAttributes : public EdgeAttributes
@@ -304,19 +309,11 @@ namespace polyfem::mesh
 		struct ElementAttributes
 		{
 			int body_id = 0;
-
-			enum class EnergyRank
-			{
-				TOP,
-				MIDDLE,
-				BOTTOM
-			};
-
-			EnergyRank energy_rank = EnergyRank::MIDDLE;
 		};
 
 		wmtk::AttributeCollection<VertexAttributes> vertex_attrs;
 		virtual EdgeAttributes &edge_attr(const size_t e_id) = 0;
+		virtual const EdgeAttributes &edge_attr(const size_t e_id) const = 0;
 		wmtk::AttributeCollection<BoundaryAttributes> boundary_attrs;
 		wmtk::AttributeCollection<ElementAttributes> element_attrs;
 

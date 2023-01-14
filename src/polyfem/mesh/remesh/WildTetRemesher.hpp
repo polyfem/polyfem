@@ -173,6 +173,7 @@ namespace polyfem::mesh
 		// members
 	public:
 		EdgeAttributes &edge_attr(const size_t e_id) override { return edge_attrs[e_id]; }
+		const EdgeAttributes &edge_attr(const size_t e_id) const override { return edge_attrs[e_id]; }
 
 		wmtk::AttributeCollection<EdgeAttributes> edge_attrs;
 
