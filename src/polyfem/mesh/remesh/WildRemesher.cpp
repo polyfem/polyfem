@@ -112,7 +112,20 @@ namespace polyfem::mesh
 			assert(!is_inverted(t));
 #endif
 
-		const auto edge_ranks = rank_edges<WMTKMesh>(elastic_energy, threshold);
+		const auto edge_elastic_ranks = rank_edges<WMTKMesh>(elastic_energy, threshold);
+		const auto edge_contact_ranks = rank_edges<WMTKMesh>(contact_energy, threshold);
+
+		EdgeMap<typename EdgeAttributes::EnergyRank> edge_ranks;
+		for (const auto &[edge, elastic_rank] : edge_elastic_ranks)
+		{
+			const auto contact_rank = edge_contact_ranks.at(edge);
+			if (elastic_rank == EdgeAttributes::EnergyRank::TOP || contact_rank == EdgeAttributes::EnergyRank::TOP)
+				edge_ranks[edge] = EdgeAttributes::EnergyRank::TOP;
+			else if (elastic_rank == EdgeAttributes::EnergyRank::BOTTOM && contact_rank == EdgeAttributes::EnergyRank::BOTTOM)
+				edge_ranks[edge] = EdgeAttributes::EnergyRank::BOTTOM;
+			else
+				edge_ranks[edge] = EdgeAttributes::EnergyRank::MIDDLE;
+		}
 
 		assert(std::holds_alternative<EdgeMap<int>>(boundary_to_id));
 		for (const Tuple &edge : WMTKMesh::get_edges())

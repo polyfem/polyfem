@@ -127,6 +127,7 @@ namespace polyfem::mesh
 			return tris;
 		}
 
+		bool is_edge_on_boundary(const Tuple &e) const override { return e.switch_face(*this).has_value(); }
 		bool is_edge_on_body_boundary(const Tuple &e) const override;
 		bool is_vertex_on_boundary(const Tuple &v) const override;
 		bool is_vertex_on_body_boundary(const Tuple &v) const override;

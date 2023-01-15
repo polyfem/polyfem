@@ -99,7 +99,7 @@ namespace polyfem
 
 					const Eigen::MatrixXd loc_relax_sol = sol;
 					timer.start();
-					solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
+					// solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
 					timer.stop();
 					logger().critical("Global relaxation took {}s", timer.getElapsedTimeInSec());
 					relax_diff_file << fmt::format("{},{}\n", (loc_relax_sol - sol).norm(), (loc_relax_sol - sol).lpNorm<Eigen::Infinity>());

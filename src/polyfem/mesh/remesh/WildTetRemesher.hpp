@@ -162,6 +162,7 @@ namespace polyfem::mesh
 			const size_t old_v0_id,
 			const size_t old_v1_id);
 
+		bool is_edge_on_boundary(const Tuple &e) const override { throw std::runtime_error("Not implemented"); }
 		bool is_edge_on_body_boundary(const Tuple &e) const override { throw std::runtime_error("Not implemented"); }
 		bool is_vertex_on_boundary(const Tuple &v) const override { throw std::runtime_error("Not implemented"); }
 		bool is_vertex_on_body_boundary(const Tuple &v) const override { throw std::runtime_error("Not implemented"); }

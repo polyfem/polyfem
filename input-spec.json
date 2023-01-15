@@ -1041,7 +1041,8 @@
             "n_ring_size",
             "flood_fill_rel_area",
             "threshold",
-            "max_split_depth"
+            "max_split_depth",
+            "max_collapse_edge_length"
         ],
         "doc": "Settings for adaptive remeshing"
     },
@@ -1107,6 +1108,13 @@
         "type": "int",
         "min": 1,
         "doc": "maximum depth split per time-step"
+    },
+    {
+        "pointer": "/space/remesh/max_collapse_edge_length",
+        "default": 1e10,
+        "type": "float",
+        "min": 0,
+        "doc": "maximum edge length to collapse"
     },
     {
         "pointer": "/space/advanced",

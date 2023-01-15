@@ -31,9 +31,7 @@ namespace polyfem::mesh
 		const Eigen::Vector2d &v1 = vertex_attrs[v1i].rest_position;
 
 		// Dont collapse if the edge is large
-		// const double max_edge_length = 0.05;
-		const double max_edge_length = 0.001;
-		if (edge_length(t) > max_edge_length)
+		if (edge_length(t) > max_collapse_edge_length)
 			return false;
 
 		op_cache = TriOperationCache::collapse_edge(*this, t);
@@ -259,7 +257,7 @@ namespace polyfem::mesh
 		{
 			const std::vector<Tuple> edges = WMTKMesh::get_edges();
 			std::copy_if(edges.begin(), edges.end(), std::back_inserter(included_edges), [this](const Tuple &e) {
-				return edge_attr(e.eid(*this)).energy_rank == EdgeAttributes::EnergyRank::BOTTOM;
+				return edge_attr(e.eid(*this)).energy_rank == EdgeAttributes::EnergyRank::BOTTOM; // || is_edge_on_boundary(e);
 			});
 		}
 

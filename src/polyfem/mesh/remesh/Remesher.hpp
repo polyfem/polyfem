@@ -197,6 +197,7 @@ namespace polyfem::mesh
 	public:
 		/// @brief Minimum edge length for splitting
 		double min_edge_length = 1e-6;
+		double max_collapse_edge_length = std::numeric_limits<double>::infinity();
 
 		/// @brief Accept split operation if energy decreased by at least x
 		double split_tolerance = 1e-3;
