@@ -53,28 +53,6 @@ namespace polyfem
 			return mat.determinant();
 		}
 
-		bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
-		{
-			if (F.cols() == 3)
-			{
-				for (int i = 0; i < F.rows(); i++)
-					if (triangle_jacobian(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2))) <= 0)
-						return true;
-			}
-			else if (F.cols() == 4)
-			{
-				for (int i = 0; i < F.rows(); i++)
-					if (tet_determinant(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2)), V.row(F(i, 3))) <= 0)
-						return true;
-			}
-			else
-			{
-				return true;
-			}
-
-			return false;
-		}
-
 		void scaled_jacobian(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::VectorXd &quality)
 		{
 			const int dim = F.cols() - 1;
@@ -133,61 +111,6 @@ namespace polyfem
 					quality(i) = J * sqrt(2) / a;
 				}
 			}
-		}
-
-		bool internal_smoothing(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const std::vector<int> &boundary_indices, const Eigen::MatrixXd &boundary_constraints, const json &slim_params, Eigen::MatrixXd &smooth_field)
-		{
-			const int dim = F.cols() - 1;
-			igl::SLIMData slim_data;
-			double soft_const_p = slim_params["soft_p"];
-			slim_data.exp_factor = slim_params["exp_factor"];
-			Eigen::MatrixXd V_extended;
-			V_extended.setZero(V.rows(), 3);
-			V_extended.block(0, 0, V.rows(), dim) = V;
-			Eigen::VectorXi boundary_indices_ = Eigen::VectorXi::Map(boundary_indices.data(), boundary_indices.size());
-			igl::slim_precompute(
-				V_extended,
-				F,
-				V,
-				slim_data,
-				igl::SYMMETRIC_DIRICHLET,
-				boundary_indices_,
-				boundary_constraints,
-				soft_const_p);
-
-			smooth_field.setZero(V.rows(), V.cols());
-
-			auto is_good_enough = [](const Eigen::MatrixXd &V, const Eigen::VectorXi &b, const Eigen::MatrixXd &C, double &error, double tol = 1e-5) {
-				error = 0.0;
-
-				for (unsigned i = 0; i < b.rows(); i++)
-					error += (C.row(i) - V.row(b(i))).squaredNorm();
-
-				return error < tol;
-			};
-
-			double error = 0;
-			int max_it = dim == 2 ? 20 : 50;
-			int it = 0;
-			bool good_enough = false;
-
-			do
-			{
-				igl::slim_solve(slim_data, slim_params["min_iter"]);
-				good_enough = is_good_enough(slim_data.V_o, boundary_indices_, boundary_constraints, error, slim_params["tol"]);
-				smooth_field = slim_data.V_o.block(0, 0, smooth_field.rows(), dim);
-				it += slim_params["min_iter"].get<int>();
-			} while (it < max_it && !good_enough);
-
-			for (unsigned i = 0; i < boundary_indices_.rows(); i++)
-				smooth_field.row(boundary_indices_(i)) = boundary_constraints.row(i);
-
-			logger().debug("SLIM finished in {} iterations", it);
-
-			if (!good_enough)
-				logger().warn("Slimflator could not inflate correctly.");
-
-			return good_enough;
 		}
 	} // namespace
 
@@ -286,46 +209,12 @@ namespace polyfem
 		return is_valid;
 	}
 
-	bool ShapeParameter::smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x)
+	std::vector<int> ShapeParameter::get_constrained_nodes() const
 	{
-		if (slim_params["skip"])
-		{
-			new_x = x;
-			return true;
-		}
+		if (optimization_boundary_to_node.size() > 1)
+			logger().error("Shape optimization parameter must only control one boundary!");
 
-		Eigen::MatrixXd V, new_V;
-		shape_constraints_->reduced_to_full(x, V_rest, V);
-
-		double rate = 2.;
-		bool good_enough = false;
-
-		std::vector<int> slim_constrained_nodes = states_ptr_[0]->boundary_gnodes;
-		// -1 is the key for internal nodes that we want to constrain in slim.
-		if (optimization_boundary_to_node.count(-1) != 0)
-			slim_constrained_nodes.insert(slim_constrained_nodes.end(), optimization_boundary_to_node.at(-1).begin(), optimization_boundary_to_node.at(-1).end());
-		Eigen::MatrixXd slim_constraints = Eigen::MatrixXd::Zero(slim_constrained_nodes.size(), dim);
-
-		do
-		{
-			rate /= 2;
-			logger().trace("Try SLIM with step size {}", rate);
-			Eigen::VectorXd tmp_x = (1. - rate) * x + rate * new_x;
-			Eigen::MatrixXd tmp_V;
-			shape_constraints_->reduced_to_full(tmp_x, V_rest, tmp_V);
-			for (int b = 0; b < slim_constrained_nodes.size(); ++b)
-				slim_constraints.row(b) = tmp_V.block(slim_constrained_nodes[b], 0, 1, dim);
-
-			good_enough = internal_smoothing(V, elements, slim_constrained_nodes, slim_constraints, slim_params, new_V);
-		} while (!good_enough || is_flipped(new_V, elements));
-
-		logger().debug("SLIM succeeds with step size {}", rate);
-
-		V_rest = new_V;
-		shape_constraints_->full_to_reduced(new_V, new_x);
-		pre_solve(new_x);
-
-		return true;
+		return optimization_boundary_to_node.begin()->second;
 	}
 
 	bool ShapeParameter::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
@@ -386,10 +275,10 @@ namespace polyfem
 		if (mesh_flipped)
 		{
 			logger().debug("Mesh Flipped!");
-			Eigen::MatrixXd V_;
-			Eigen::MatrixXi F;
-			states_ptr_[0]->get_vf(V_, F);
-			igl::writeOBJ("flipped.obj", V, F);
+			// Eigen::MatrixXd V_;
+			// Eigen::MatrixXi F;
+			// states_ptr_[0]->get_vf(V_, F);
+			// igl::writeOBJ("flipped.obj", V, F);
 			return false;
 		}
 
@@ -744,13 +633,18 @@ namespace polyfem
 
 			logger().debug("Optimize shape based on volume selection...");
 
+			optimization_boundary_to_node[-2] = {};
+
 			for (int e = 0; e < gbases.size(); e++)
 			{
 				const int body_id = mesh->get_body_id(e);
 				if (optimize_body_ids.count(body_id))
 					for (const auto &gbs : gbases[e].bases)
 						for (const auto &g : gbs.global())
+						{
 							active_nodes_mask[g.index] = true;
+							optimization_boundary_to_node[-2].push_back(g.index);
+						}
 			}
 		}
 		else if (shape_params["surface_selection"].size() > 0)
@@ -810,6 +704,7 @@ namespace polyfem
 			logger().debug("No volume or surface selection specified, optimize shape of every mesh...");
 
 			active_nodes_mask.assign(active_nodes_mask.size(), true);
+			optimization_boundary_to_node[-2] = get_state().boundary_gnodes;
 		}
 		// fix dirichlet bc
 		if (shape_params["fix_dirichlet"].get<bool>())
@@ -893,4 +788,82 @@ namespace polyfem
 
 		logger().info("Fixed nodes in shape optimization: {}", num);
 	}
+
+	bool ShapeParameter::internal_smoothing(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const std::vector<int> &boundary_indices, const Eigen::MatrixXd &boundary_constraints, const json &slim_params, Eigen::MatrixXd &smooth_field)
+	{
+		const int dim = F.cols() - 1;
+		igl::SLIMData slim_data;
+		double soft_const_p = slim_params["soft_p"];
+		slim_data.exp_factor = slim_params["exp_factor"];
+		Eigen::MatrixXd V_extended;
+		V_extended.setZero(V.rows(), 3);
+		V_extended.block(0, 0, V.rows(), dim) = V;
+		Eigen::VectorXi boundary_indices_ = Eigen::VectorXi::Map(boundary_indices.data(), boundary_indices.size());
+		igl::slim_precompute(
+			V_extended,
+			F,
+			V,
+			slim_data,
+			igl::SYMMETRIC_DIRICHLET,
+			boundary_indices_,
+			boundary_constraints,
+			soft_const_p);
+
+		smooth_field.setZero(V.rows(), V.cols());
+
+		auto is_good_enough = [](const Eigen::MatrixXd &V, const Eigen::VectorXi &b, const Eigen::MatrixXd &C, double &error, double tol = 1e-5) {
+			error = 0.0;
+
+			for (unsigned i = 0; i < b.rows(); i++)
+				error += (C.row(i) - V.row(b(i))).squaredNorm();
+
+			return error < tol;
+		};
+
+		double error = 0;
+		int max_it = dim == 2 ? 20 : 50;
+		int it = 0;
+		bool good_enough = false;
+
+		do
+		{
+			igl::slim_solve(slim_data, slim_params["min_iter"]);
+			good_enough = is_good_enough(slim_data.V_o, boundary_indices_, boundary_constraints, error, slim_params["tol"]);
+			smooth_field = slim_data.V_o.block(0, 0, smooth_field.rows(), dim);
+			it += slim_params["min_iter"].get<int>();
+		} while (it < max_it && !good_enough);
+
+		for (unsigned i = 0; i < boundary_indices_.rows(); i++)
+			smooth_field.row(boundary_indices_(i)) = boundary_constraints.row(i);
+
+		logger().debug("SLIM finished in {} iterations", it);
+
+		if (!good_enough)
+			logger().warn("Slimflator could not inflate correctly. Error: {}", error);
+
+		return good_enough;
+	}
+
+	bool ShapeParameter::is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+	{
+		if (F.cols() == 3)
+		{
+			for (int i = 0; i < F.rows(); i++)
+				if (triangle_jacobian(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2))) <= 0)
+					return true;
+		}
+		else if (F.cols() == 4)
+		{
+			for (int i = 0; i < F.rows(); i++)
+				if (tet_determinant(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2)), V.row(F(i, 3))) <= 0)
+					return true;
+		}
+		else
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 } // namespace polyfem

@@ -262,4 +262,36 @@ namespace polyfem::solver
 		std::shared_ptr<const Parameter> control_param_;
 		int p = 8;
 	};
+
+	class LayerThicknessObjective : public Objective
+	{
+	public:
+		LayerThicknessObjective(const std::shared_ptr<const Parameter> first_shape_param, const std::shared_ptr<const Parameter> second_shape_parameter, const json &args);
+		LayerThicknessObjective(const std::shared_ptr<const Parameter> shape_param, const int adjacent_boundary_id, const json &args);
+		~LayerThicknessObjective() = default;
+
+		double value() override;
+		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
+
+	protected:
+		std::shared_ptr<const Parameter> shape_param_;
+		std::shared_ptr<const Parameter> adjacent_shape_param_;
+		int adjacent_boundary_id_;
+
+		const int dim_ = 2;
+
+		std::vector<int> boundary_node_ids_;
+
+		ipc::CollisionMesh collision_mesh_;
+		ipc::Constraints constraint_set;
+		void build_constraint_set(const Eigen::MatrixXd &displaced_surface);
+
+		Eigen::MatrixXd extract_boundaries(const Eigen::MatrixXd &V, const std::vector<int> &boundary_node_ids);
+		Eigen::MatrixXi get_boundary_edges(const Eigen::MatrixXi &F, const std::vector<int> &boundary_node_ids);
+
+		double dmin;
+		double dhat;
+		ipc::BroadPhaseMethod broad_phase_method;
+	};
 } // namespace polyfem::solver

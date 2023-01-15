@@ -237,11 +237,14 @@ namespace cppoptlib
 			}
 			auto old_x = x;
 			x = old_x + rate * delta_x;
-			if (objFunc.smoothing(old_x, x))
-				objFunc.solution_changed(x);
+			TVector smoothed_x;
+			if (objFunc.smoothing(old_x, x, smoothed_x))
+			{
+				objFunc.solution_changed(smoothed_x);
+				x = smoothed_x;
+			}
 
 			this->m_current.xDelta = (x - old_x).array().abs().maxCoeff();
-			
 
 			// -----------
 			// Post update
@@ -271,10 +274,10 @@ namespace cppoptlib
 			update_solver_info();
 			if (solver_info_log)
 				std::cout << solver_info << std::endl;
-			
+
 			if (objFunc.remesh(x))
 				remesh_reset(objFunc, x);
-			
+
 		} while (objFunc.callback(this->m_current, x) && (this->m_status == Status::Continue));
 
 		timer.stop();

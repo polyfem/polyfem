@@ -27,7 +27,6 @@ namespace polyfem
 		Eigen::MatrixXd map(const Eigen::VectorXd &x) const;
 		Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const override;
 
-		bool smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) override;
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
@@ -42,6 +41,14 @@ namespace polyfem
 		bool remesh(Eigen::VectorXd &x) override;
 		void build_active_nodes();
 		void build_tied_nodes(); // not applied to shape constraints
+
+		std::vector<int> get_constrained_nodes() const;
+		inline Eigen::MatrixXd get_V_rest() { return V_rest; }
+		inline Eigen::MatrixXi get_F() { return elements; }
+		inline void set_V_rest(const Eigen::MatrixXd &V_new) { V_rest = V_new; }
+
+		static bool internal_smoothing(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const std::vector<int> &boundary_indices, const Eigen::MatrixXd &boundary_constraints, const json &slim_params, Eigen::MatrixXd &smooth_field);
+		static bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F);
 
 		std::map<int, std::vector<int>> optimization_boundary_to_node;
 

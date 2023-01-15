@@ -8,7 +8,9 @@
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+#include <igl/adjacency_list.h>
 #include "ControlParameter.hpp"
+#include "ShapeParameter.hpp"
 
 using namespace polyfem::utils;
 
@@ -414,6 +416,22 @@ namespace polyfem::solver
 				shape_param = parameters[args["shape_parameter"]];
 
 			obj = std::make_shared<solver::StrainObjective>(state, shape_param, args);
+		}
+		else if (type == "layer_thickness")
+		{
+			std::shared_ptr<Parameter> first_shape_param = parameters[args["shape_parameter"]];
+			if (args["adjacent_shape_parameter"] >= 0)
+			{
+				std::shared_ptr<Parameter> second_shape_param = parameters[args["adjacent_shape_parameter"]];
+				obj = std::make_shared<solver::LayerThicknessObjective>(first_shape_param, second_shape_param, args);
+			}
+			else if (args["adjacent_boundary_id"] >= 0)
+			{
+				int adjacent_boundary_id = args["adjacent_boundary_id"];
+				obj = std::make_shared<solver::LayerThicknessObjective>(first_shape_param, adjacent_boundary_id, args);
+			}
+			else
+				log_and_throw_error("Invalid specification of boundaries for layer_thickness objective!");
 		}
 		else
 			log_and_throw_error("Unkown functional type {}!", type);
@@ -1401,6 +1419,199 @@ namespace polyfem::solver
 			if (time_step_ > 1)
 				term.segment((time_step_ - 2) * timestep_dim, timestep_dim) = -y;
 			return term;
+		}
+		else
+			return Eigen::VectorXd::Zero(param.optimization_dim());
+	}
+
+	LayerThicknessObjective::LayerThicknessObjective(const std::shared_ptr<const Parameter> first_shape_param, const std::shared_ptr<const Parameter> second_shape_param, const json &args) : shape_param_(first_shape_param), adjacent_shape_param_(second_shape_param)
+	{
+		const auto &state = shape_param_->get_state();
+		Eigen::MatrixXd V;
+		Eigen::MatrixXi F;
+		state.get_vf(V, F);
+
+		if (!shape_param_)
+			log_and_throw_error("LayerThicknessObjective needs non-empty first shape parameter!");
+		else if (shape_param_->name() != "shape")
+			log_and_throw_error("LayerThicknessObjective wrong first parameter type input!");
+
+		auto first_param = std::dynamic_pointer_cast<const ShapeParameter>(shape_param_);
+		auto first_nodes = first_param->get_constrained_nodes();
+		auto first_edges = get_boundary_edges(F, first_nodes);
+
+		if (!adjacent_shape_param_)
+			log_and_throw_error("LayerThicknessObjective needs non-empty second shape parameter!");
+		else if (adjacent_shape_param_->name() != "shape")
+			log_and_throw_error("LayerThicknessObjective wrong second parameter type input!");
+
+		auto second_param = std::dynamic_pointer_cast<const ShapeParameter>(adjacent_shape_param_);
+		auto second_nodes = second_param->get_constrained_nodes();
+		auto second_edges = get_boundary_edges(F, second_nodes);
+
+		boundary_node_ids_ = {};
+		boundary_node_ids_.insert(boundary_node_ids_.end(), first_nodes.begin(), first_nodes.end());
+		boundary_node_ids_.insert(boundary_node_ids_.end(), second_nodes.begin(), second_nodes.end());
+		Eigen::MatrixXd layer_vertices = extract_boundaries(V, boundary_node_ids_);
+
+		Eigen::MatrixXi layer_edges(first_edges.rows() + second_edges.rows(), 2);
+		layer_edges.block(0, 0, first_edges.rows(), 2) = first_edges;
+		second_edges.array() += first_nodes.size();
+		layer_edges.block(first_edges.rows(), 0, second_edges.rows(), 2) = second_edges;
+
+		io::OBJWriter::write("layer_thickness.obj", layer_vertices, layer_edges);
+		collision_mesh_ = ipc::CollisionMesh(layer_vertices, layer_edges, Eigen::MatrixXi::Zero(0, 3));
+
+		dmin = args["dmin"];
+		dhat = args["dhat"];
+		broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+	}
+
+	LayerThicknessObjective::LayerThicknessObjective(const std::shared_ptr<const Parameter> shape_param, const int adjacent_boundary_id, const json &args) : shape_param_(shape_param), adjacent_boundary_id_(adjacent_boundary_id)
+	{
+		const auto &state = shape_param_->get_state();
+		Eigen::MatrixXd V;
+		Eigen::MatrixXi F;
+		state.get_vf(V, F);
+
+		if (!shape_param_)
+			log_and_throw_error("LayerThicknessObjective needs non-empty shape parameter!");
+		else if (shape_param_->name() != "shape")
+			log_and_throw_error("LayerThicknessObjective wrong parameter type input!");
+
+		auto first_param = std::dynamic_pointer_cast<const ShapeParameter>(shape_param_);
+		auto first_nodes = first_param->get_constrained_nodes();
+		auto first_edges = get_boundary_edges(F, first_nodes);
+
+		std::vector<int> second_nodes;
+		{
+			const auto &mesh = state.mesh;
+			const auto &gbases = state.geom_bases();
+
+			for (const auto &lb : state.total_local_boundary)
+			{
+				const int e = lb.element_id();
+				for (int i = 0; i < lb.size(); ++i)
+				{
+					const int primitive_global_id = lb.global_primitive_id(i);
+					const int boundary_id = mesh->get_boundary_id(primitive_global_id);
+					const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
+
+					for (long n = 0; n < nodes.size(); ++n)
+					{
+						const int g_id = gbases[e].bases[nodes(n)].global()[0].index;
+						if ((boundary_id == adjacent_boundary_id) && (std::find(second_nodes.begin(), second_nodes.end(), g_id) == second_nodes.end()))
+							second_nodes.push_back(g_id);
+					}
+				}
+			}
+		}
+		auto second_edges = get_boundary_edges(F, second_nodes);
+
+		boundary_node_ids_ = {};
+		boundary_node_ids_.insert(boundary_node_ids_.end(), first_nodes.begin(), first_nodes.end());
+		boundary_node_ids_.insert(boundary_node_ids_.end(), second_nodes.begin(), second_nodes.end());
+		Eigen::MatrixXd layer_vertices = extract_boundaries(V, boundary_node_ids_);
+
+		Eigen::MatrixXi layer_edges(first_edges.rows() + second_edges.rows(), 2);
+		layer_edges.block(0, 0, first_edges.rows(), 2) = first_edges;
+		second_edges.array() += first_nodes.size();
+		layer_edges.block(first_edges.rows(), 0, second_edges.rows(), 2) = second_edges;
+
+		io::OBJWriter::write("layer_thickness.obj", layer_vertices, layer_edges);
+		collision_mesh_ = ipc::CollisionMesh(layer_vertices, layer_edges, Eigen::MatrixXi::Zero(0, 3));
+
+		dmin = args["dmin"];
+		dhat = args["dhat"];
+		broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+	}
+
+	void LayerThicknessObjective::build_constraint_set(const Eigen::MatrixXd &displaced_surface)
+	{
+		static Eigen::MatrixXd cached_displaced_surface;
+		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
+			return;
+
+		constraint_set.build(collision_mesh_, displaced_surface, dhat, dmin, broad_phase_method);
+
+		cached_displaced_surface = displaced_surface;
+	}
+
+	Eigen::MatrixXd LayerThicknessObjective::extract_boundaries(const Eigen::MatrixXd &V, const std::vector<int> &boundary_node_ids)
+	{
+		Eigen::MatrixXd V_boundary;
+		V_boundary.setZero(boundary_node_ids.size(), V.cols());
+		for (int i = 0; i < boundary_node_ids.size(); ++i)
+			V_boundary.row(i) = V.row(boundary_node_ids[i]);
+		return V_boundary;
+	}
+
+	Eigen::MatrixXi LayerThicknessObjective::get_boundary_edges(const Eigen::MatrixXi &F, const std::vector<int> &boundary_node_ids)
+	{
+		Eigen::MatrixXi boundary_edges;
+		std::vector<std::vector<int>> adjacency_list;
+		igl::adjacency_list(F, adjacency_list);
+		std::vector<int> queue = {0};
+		std::set<int> visited_nodes;
+		while (!queue.empty())
+		{
+			auto node = *queue.begin();
+			queue.erase(queue.begin());
+			visited_nodes.insert(node);
+
+			for (auto adj : adjacency_list[boundary_node_ids[node]])
+			{
+				auto result = std::find(boundary_node_ids.begin(), boundary_node_ids.end(), adj);
+				if (result != boundary_node_ids.end())
+				{
+					int adj_loc = result - boundary_node_ids.begin();
+					boundary_edges.conservativeResize(boundary_edges.rows() + 1, 2);
+					boundary_edges(boundary_edges.rows() - 1, 0) = node;
+					boundary_edges(boundary_edges.rows() - 1, 1) = adj_loc;
+					if (visited_nodes.count(adj_loc) == 0)
+						queue.push_back(adj_loc);
+				}
+			}
+		}
+		return boundary_edges;
+	}
+
+	double LayerThicknessObjective::value()
+	{
+		const auto &state = shape_param_->get_state();
+		Eigen::MatrixXd V;
+		Eigen::MatrixXi F;
+		state.get_vf(V, F);
+		const Eigen::MatrixXd displaced_surface = extract_boundaries(V, boundary_node_ids_);
+		build_constraint_set(displaced_surface);
+
+		return ipc::compute_barrier_potential(collision_mesh_, displaced_surface, constraint_set, dhat);
+	}
+
+	Eigen::MatrixXd LayerThicknessObjective::compute_adjoint_rhs(const State &state)
+	{
+		return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
+	}
+
+	Eigen::VectorXd LayerThicknessObjective::compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value)
+	{
+		if ((&param == shape_param_.get()) || (&param == adjacent_shape_param_.get()))
+		{
+			const auto &state = (&param == shape_param_.get()) ? shape_param_->get_state() : adjacent_shape_param_->get_state();
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			state.get_vf(V, F);
+			const Eigen::MatrixXd displaced_surface = extract_boundaries(V, boundary_node_ids_);
+			build_constraint_set(displaced_surface);
+
+			Eigen::VectorXd grad = ipc::compute_barrier_potential_gradient(collision_mesh_, displaced_surface, constraint_set, dhat);
+
+			Eigen::VectorXd dV;
+			dV.setZero(V.rows() * dim_);
+			for (int i = 0; i < boundary_node_ids_.size(); ++i)
+				for (int j = 0; j < dim_; ++j)
+					dV(boundary_node_ids_[i] * dim_ + j) = grad(i * dim_ + j);
+			return param.map_grad(param_value, dV);
 		}
 		else
 			return Eigen::VectorXd::Zero(param.optimization_dim());

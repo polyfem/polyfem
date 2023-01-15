@@ -23,7 +23,7 @@ namespace polyfem
 
 	namespace assembler
 	{
-		class MultiscaleRB: public Multiscale
+		class MultiscaleRB : public Multiscale
 		{
 		public:
 			MultiscaleRB();
@@ -38,7 +38,6 @@ namespace polyfem
 			void test_reduced_basis(const std::vector<Eigen::MatrixXd> &def_grads, Eigen::VectorXd &energy_errors, Eigen::VectorXd &stress_errors);
 
 		private:
-
 			// microstructure
 			Eigen::MatrixXd reduced_basis; // (n_bases*dim) * N
 			void sample_def_grads(const Eigen::VectorXd &sample_det, const Eigen::VectorXd &sample_amp, const int n_sample_dir, std::vector<Eigen::MatrixXd> &def_grads) const;
@@ -105,14 +104,14 @@ namespace polyfem
 			}
 
 			bool verify_gradient(const TVector &x, const TVector &gradv) { return true; }
-			
+
 			void set_project_to_psd(bool val) {}
 			void save_to_file(const TVector &x0) {}
 			void solution_changed(const TVector &newX) {}
 			void line_search_begin(const TVector &x0, const TVector &x1) {}
 			void line_search_end() {}
 			void post_step(const int iter_num, const TVector &x) {}
-			bool smoothing(const TVector &x, TVector &new_x) { return false; }
+			bool smoothing(const TVector &x, const TVector &new_x, TVector &smoothed_x) { return false; }
 			bool stop(const TVector &x) { return false; }
 			bool remesh(TVector &x) { return false; }
 			double max_step_size(const TVector &x0, const TVector &x1) { return 1; }
@@ -132,7 +131,7 @@ namespace polyfem
 		private:
 			std::shared_ptr<const State> state;
 			double microstructure_volume = 0;
-			
+
 			Eigen::MatrixXd linear_sol_;
 			const Eigen::MatrixXd &reduced_basis_;
 		};

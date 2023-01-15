@@ -19,7 +19,7 @@ namespace polyfem
 				optimization_dim_ += subproblem->optimization_dim();
 		}
 
-		int optimization_dim()  { return optimization_dim_; }
+		int optimization_dim() { return optimization_dim_; }
 
 		TVector component_values(const TVector &x)
 		{
@@ -34,7 +34,7 @@ namespace polyfem
 			return grad;
 		}
 
-		double target_value(const TVector &x) 
+		double target_value(const TVector &x)
 		{
 			double val = 0;
 			int cumulative = 0;
@@ -46,7 +46,7 @@ namespace polyfem
 			return val;
 		}
 
-		double value(const TVector &x) 
+		double value(const TVector &x)
 		{
 			double val = 0;
 			int cumulative = 0;
@@ -58,7 +58,7 @@ namespace polyfem
 			return val;
 		}
 
-		double value(const TVector &x, const bool only_elastic) 
+		double value(const TVector &x, const bool only_elastic)
 		{
 			double val = 0;
 			int cumulative = 0;
@@ -70,7 +70,7 @@ namespace polyfem
 			return val;
 		}
 
-		void target_gradient(const TVector &x, TVector &gradv) 
+		void target_gradient(const TVector &x, TVector &gradv)
 		{
 			gradv.resize(optimization_dim_);
 			int cumulative = 0;
@@ -84,7 +84,7 @@ namespace polyfem
 			}
 		}
 
-		void gradient(const TVector &x, TVector &gradv) 
+		void gradient(const TVector &x, TVector &gradv)
 		{
 			gradv.resize(optimization_dim_);
 			int cumulative = 0;
@@ -98,7 +98,7 @@ namespace polyfem
 			}
 		}
 
-		void gradient(const TVector &x, TVector &gradv, const bool only_elastic) 
+		void gradient(const TVector &x, TVector &gradv, const bool only_elastic)
 		{
 			gradv.resize(optimization_dim_);
 			int cumulative = 0;
@@ -112,8 +112,9 @@ namespace polyfem
 			}
 		}
 
-		bool smoothing(const TVector &x, TVector &new_x) 
+		bool smoothing(const TVector &x, const TVector &new_x, TVector &smoothed_x)
 		{
+			smoothed_x.setZero(new_x.size());
 			int cumulative = 0;
 			bool flag = false;
 			for (const auto &subproblem : subproblems)
@@ -122,13 +123,13 @@ namespace polyfem
 				tmp = new_x.segment(cumulative, subproblem->optimization_dim());
 				flag |= subproblem->smoothing(x.segment(cumulative, subproblem->optimization_dim()), tmp);
 				assert(tmp.size() == subproblem->optimization_dim());
-				new_x.segment(cumulative, subproblem->optimization_dim()) = tmp;
+				smoothed_x.segment(cumulative, subproblem->optimization_dim()) = tmp;
 				cumulative += subproblem->optimization_dim();
 			}
 			return flag;
 		}
 
-		bool is_step_valid(const TVector &x0, const TVector &x1) 
+		bool is_step_valid(const TVector &x0, const TVector &x1)
 		{
 			bool valid = true;
 			int cumulative = 0;
@@ -167,7 +168,7 @@ namespace polyfem
 			return *min;
 		}
 
-		bool remesh(TVector &x) 
+		bool remesh(TVector &x)
 		{
 			bool remesh = false;
 			int cumulative = 0;
@@ -182,7 +183,7 @@ namespace polyfem
 			return remesh;
 		}
 
-		void line_search_begin(const TVector &x0, const TVector &x1) 
+		void line_search_begin(const TVector &x0, const TVector &x1)
 		{
 
 			int cumulative = 0;
@@ -193,7 +194,7 @@ namespace polyfem
 			}
 		}
 
-		void line_search_end() 
+		void line_search_end()
 		{
 
 			int cumulative = 0;
@@ -204,7 +205,7 @@ namespace polyfem
 			}
 		}
 
-		void post_step(const int iter_num, const TVector &x0) 
+		void post_step(const int iter_num, const TVector &x0)
 		{
 			int cumulative = 0;
 			for (const auto &subproblem : subproblems)
@@ -215,7 +216,7 @@ namespace polyfem
 			iter++;
 		}
 
-		bool solution_changed_pre(const TVector &newX) 
+		bool solution_changed_pre(const TVector &newX)
 		{
 			int cumulative = 0;
 			bool flag = true;
@@ -227,7 +228,7 @@ namespace polyfem
 			return flag;
 		}
 
-		void solution_changed_post(const TVector &newX) 
+		void solution_changed_post(const TVector &newX)
 		{
 			cur_x = newX;
 			int cumulative = 0;
@@ -307,7 +308,7 @@ namespace polyfem
 			log_and_throw_error("Exceeding number of inequality constraints!");
 			return 0;
 		}
-		
+
 		TVector inequality_constraint_grad(const TVector &x, const int index)
 		{
 			int num = 0;

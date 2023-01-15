@@ -3,6 +3,8 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <igl/boundary_facets.h>
+#include <igl/writeOBJ.h>
+#include "ShapeParameter.hpp"
 
 namespace polyfem::solver
 {
@@ -53,18 +55,110 @@ namespace polyfem::solver
 		}
 	}
 
-	bool AdjointNLProblem::smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x)
+	bool AdjointNLProblem::smoothing(const Eigen::VectorXd &x, const Eigen::VectorXd &new_x, Eigen::VectorXd &smoothed_x)
 	{
-		int cumulative = 0;
+		smoothed_x.setZero(new_x.size());
 		bool flag = false;
-		for (const auto &p : parameters_)
+
+		auto slim_params = json::parse(R"(
+			{
+				"min_iter" : 2,
+				"tol" : 1e-8,
+				"soft_p" : 1e5,
+				"exp_factor" : 5,
+				"skip": false
+			}
+			)");
+
+		for (auto state_ptr : all_states_)
 		{
-			Eigen::VectorXd tmp = new_x.segment(cumulative, p->optimization_dim());
-			flag |= p->smoothing(x.segment(cumulative, p->optimization_dim()), tmp);
-			assert(tmp.size() == p->optimization_dim());
-			new_x.segment(cumulative, p->optimization_dim()) = tmp;
-			cumulative += p->optimization_dim();
+			std::vector<int> slim_constrained_nodes;
+			Eigen::MatrixXd V_rest;
+			Eigen::MatrixXi F;
+			for (auto p : parameters_)
+				if (p->contains_state(*state_ptr))
+				{
+					if (p->name() == "shape")
+					{
+						auto shape_param = std::dynamic_pointer_cast<ShapeParameter>(p);
+						auto parameter_constrained_nodes = shape_param->get_constrained_nodes();
+						slim_constrained_nodes.insert(slim_constrained_nodes.end(), parameter_constrained_nodes.begin(), parameter_constrained_nodes.end());
+						if (V_rest.size() == 0)
+							V_rest = shape_param->get_V_rest();
+						if (F.size() == 0)
+							F = shape_param->get_F();
+					}
+				}
+
+			if (slim_constrained_nodes.size() == 0)
+				continue;
+
+			for (auto b : state_ptr->boundary_gnodes)
+			{
+				auto result = std::find(slim_constrained_nodes.begin(), slim_constrained_nodes.end(), b);
+				if (result == slim_constrained_nodes.end())
+					slim_constrained_nodes.push_back(b);
+			}
+
+			auto reduced_to_full = [this, state_ptr](const Eigen::VectorXd &x, const Eigen::MatrixXd &V_rest) {
+				Eigen::MatrixXd V = V_rest;
+				int cumulative = 0;
+				std::vector<int> slim_constrained_nodes;
+				for (auto p : parameters_)
+				{
+					if (p->contains_state(*state_ptr))
+					{
+						if (p->name() == "shape")
+						{
+							auto shape_param = std::dynamic_pointer_cast<ShapeParameter>(p);
+							auto parameter_constrained_nodes = shape_param->get_constrained_nodes();
+							slim_constrained_nodes.insert(slim_constrained_nodes.end(), parameter_constrained_nodes.begin(), parameter_constrained_nodes.end());
+							auto V_param = shape_param->map(x.segment(cumulative, p->optimization_dim()));
+							for (auto n : parameter_constrained_nodes)
+								V.row(n) = V_param.row(n);
+						}
+					}
+					cumulative += p->optimization_dim();
+				}
+
+				return V;
+			};
+
+			Eigen::MatrixXd V, new_V;
+			V = reduced_to_full(x, V_rest);
+
+			double rate = 2.;
+			bool good_enough = false;
+
+			const int dim = F.cols() - 1;
+
+			Eigen::MatrixXd slim_constraints = Eigen::MatrixXd::Zero(slim_constrained_nodes.size(), dim);
+
+			do
+			{
+				rate /= 2;
+				logger().trace("Try SLIM with step size {}", rate);
+				Eigen::VectorXd tmp_x = (1. - rate) * x + rate * new_x;
+				Eigen::MatrixXd tmp_V = reduced_to_full(tmp_x, V_rest);
+				for (int b = 0; b < slim_constrained_nodes.size(); ++b)
+					slim_constraints.row(b) = tmp_V.row(slim_constrained_nodes[b]);
+
+				good_enough = ShapeParameter::internal_smoothing(V, F, slim_constrained_nodes, slim_constraints, slim_params, new_V);
+			} while (!good_enough || ShapeParameter::is_flipped(new_V, F));
+
+			logger().debug("SLIM succeeds with step size {}", rate);
+
+			for (auto p : parameters_)
+				if (p->contains_state(*state_ptr))
+					if (p->name() == "shape")
+					{
+						auto shape_param = std::dynamic_pointer_cast<ShapeParameter>(p);
+						shape_param->set_V_rest(new_V);
+					}
+
+			flag = true;
 		}
+		smoothed_x = new_x;
 		return flag;
 	}
 

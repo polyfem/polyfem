@@ -37,7 +37,6 @@ namespace polyfem
 		// from full grad to design dof grad
 		virtual Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const { return full_grad; }
 
-		virtual bool smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x) { return false; }
 		virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
 		virtual bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
 		virtual double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return 1; }

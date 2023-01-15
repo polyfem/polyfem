@@ -104,8 +104,8 @@ namespace polyfem::solver
 
 		IntegrableFunctional get_integral_functional() override;
 		void set_reference(const std::shared_ptr<const State> &target_state, const std::set<int> &reference_cached_body_ids); // target is another simulation solution
-		void set_reference(const Eigen::VectorXd &disp) { target_disp = disp; } // target is a constant displacement
-		void set_reference(const json &func, const json &grad_func); // target is a lambda function depending on deformed position
+		void set_reference(const Eigen::VectorXd &disp) { target_disp = disp; }                                               // target is a constant displacement
+		void set_reference(const json &func, const json &grad_func);                                                          // target is a lambda function depending on deformed position
 		void set_active_dimension(const std::vector<bool> &mask) { active_dimension_mask = mask; }
 
 	protected:
@@ -157,8 +157,8 @@ namespace polyfem::solver
 				point_sampling.row(i) = curve.evaluate(t_or_uv_sampling(i));
 
 			Eigen::MatrixXi edges(100, 2);
-			edges.col(0) = Eigen::VectorXi::LinSpaced(samples, 1, samples);
-			edges.col(1) = Eigen::VectorXi::LinSpaced(samples, 2, samples + 1);
+			edges.col(0) = Eigen::VectorXi::LinSpaced(samples, 0, samples - 1);
+			edges.col(1) = Eigen::VectorXi::LinSpaced(samples, 1, samples);
 			io::OBJWriter::write(state_.resolve_output_path(fmt::format("spline_target_{:d}.obj", rand() % 100)), point_sampling, edges);
 
 			distance_fn = std::make_unique<UnsignedDistanceFunction>(dim, delta_);
@@ -234,4 +234,4 @@ namespace polyfem::solver
 		std::shared_ptr<VolumeObjective> objv;
 		Eigen::MatrixXd target_; // N/1 by 3/2
 	};
-}
+} // namespace polyfem::solver

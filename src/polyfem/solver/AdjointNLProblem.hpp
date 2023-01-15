@@ -9,13 +9,21 @@ namespace polyfem::solver
 	class AdjointNLProblem : public cppoptlib::Problem<double>
 	{
 	public:
-		AdjointNLProblem(const std::shared_ptr<SumObjective> &obj, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &all_states, const json &args) : obj_(obj), parameters_(parameters), all_states_(all_states), better_initial_guess(args["solver"]["nonlinear"]["better_initial_guess"]), solve_log_level(args["output"]["solve_log_level"]), save_freq(args["output"]["save_frequency"]), debug_finite_diff(args["solver"]["nonlinear"]["debug_fd"]), finite_diff_eps(args["solver"]["nonlinear"]["debug_fd_eps"])
+		AdjointNLProblem(const std::shared_ptr<SumObjective> &obj, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
+			: obj_(obj),
+			  parameters_(parameters),
+			  all_states_(all_states),
+			  better_initial_guess(args["solver"]["nonlinear"]["better_initial_guess"]),
+			  solve_log_level(args["output"]["solve_log_level"]),
+			  save_freq(args["output"]["save_frequency"]),
+			  debug_finite_diff(args["solver"]["nonlinear"]["debug_fd"]),
+			  finite_diff_eps(args["solver"]["nonlinear"]["debug_fd_eps"])
 		{
 			cur_x.setZero(0);
 			cur_grad.setZero(0);
 			for (const auto &p : parameters)
 				optimization_dim_ += p->optimization_dim();
-			
+
 			active_state_mask.assign(all_states_.size(), false);
 			int i = 0;
 			for (const auto &state_ptr : all_states_)
@@ -45,7 +53,7 @@ namespace polyfem::solver
 
 		bool verify_gradient(const Eigen::VectorXd &x, const Eigen::VectorXd &gradv);
 
-		bool smoothing(const Eigen::VectorXd &x, Eigen::VectorXd &new_x);
+		bool smoothing(const Eigen::VectorXd &x, const Eigen::VectorXd &new_x, Eigen::VectorXd &smoothed_x);
 		bool remesh(Eigen::VectorXd &x);
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const;
@@ -71,10 +79,10 @@ namespace polyfem::solver
 
 	private:
 		int optimization_dim_ = 0;
-		std::shared_ptr<SumObjective> 				   obj_;
+		std::shared_ptr<SumObjective> obj_;
 		std::vector<std::shared_ptr<Parameter>> parameters_;
-		std::vector<std::shared_ptr<State>>     all_states_;
-		std::vector<bool>						active_state_mask;
+		std::vector<std::shared_ptr<State>> all_states_;
+		std::vector<bool> active_state_mask;
 		Eigen::VectorXd cur_x, cur_grad;
 		int iter = 0;
 
