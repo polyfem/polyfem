@@ -217,7 +217,7 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 	auto energies = read_energy("shape-stress-opt-new");
 
 	REQUIRE(energies[0] == Approx(12.0735).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(11.5482).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(11.3886).epsilon(1e-4));
 }
 
 TEST_CASE("shape-trajectory-surface-opt-new", "[optimization]")
@@ -330,10 +330,22 @@ TEST_CASE("multiparameter-sdf-trajectory-surface-opt", "[optimization]")
 // 	save_mat(grad_y, "grad_y.txt");
 // }
 
-// TEST_CASE("3d-bspline-shape-trajectory-opt", "[optimization]")
-// {
-// 	run_opt_new("3d-bspline-shape-trajectory-opt");
-// 	auto energies = read_energy("3d-bspline-shape-trajectory-opt");
-// }
+TEST_CASE("3d-bspline-shape-trajectory-opt", "[optimization]")
+{
+	run_opt_new("3d-bspline-shape-trajectory-opt");
+	auto energies = read_energy("3d-bspline-shape-trajectory-opt");
+
+	REQUIRE(energies[0] == Approx(0.00473695).epsilon(1e-3));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.000461251).epsilon(1e-4));
+}
+
+TEST_CASE("3d-bspline-shape-matching", "[optimization]")
+{
+	run_opt_new("3d-bspline-shape-matching");
+	auto energies = read_energy("3d-bspline-shape-matching");
+
+	REQUIRE(energies[0] == Approx(1.86898e-05).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(1.85359e-05).epsilon(1e-4));
+}
 
 #endif

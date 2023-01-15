@@ -869,7 +869,8 @@
             "material_smoothing",
             "volume_constraint",
             "naive_negative_poisson",
-            "target_length"
+            "target_length",
+            "layer_thickness"
         ],
         "doc": "TODO"
     },
@@ -1440,6 +1441,38 @@
             "weight",
             "dhat"
         ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "layer_thickness",
+        "optional": [
+            "shape_parameter",
+            "adjacent_shape_parameter",
+            "adjacent_boundary_id",
+            "dmin",
+            "dhat",
+            "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/adjacent_shape_parameter",
+        "type": "int",
+        "default": -1,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/adjacent_boundary_id",
+        "type": "int",
+        "default": -1,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/dmin",
+        "type": "float",
+        "default": 0.0,
         "doc": "TODO"
     },
     {
