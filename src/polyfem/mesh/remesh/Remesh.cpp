@@ -194,7 +194,7 @@ namespace polyfem::mesh
 			elastic_energy, contact_energy);
 
 		const bool made_change = remeshing->execute(
-			/*split=*/true, /*collapse=*/dim == 2, /*smooth=*/false, /*swap=*/false);
+			/*split=*/true, /*collapse=*/true, /*smooth=*/false, /*swap=*/false);
 
 		// remeshing->write_mesh(
 		// 	state.resolve_output_path(fmt::format("post_vis_{:03d}.vtu", int(time / dt))));

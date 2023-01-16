@@ -1,4 +1,5 @@
 #include <polyfem/mesh/remesh/WildTriRemesher.hpp>
+#include <polyfem/mesh/remesh/WildTetRemesher.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <wmtk/ExecutionScheduler.hpp>
@@ -6,138 +7,216 @@
 
 namespace polyfem::mesh
 {
-	namespace
+	template <class WMTKMesh>
+	bool WildRemesher<WMTKMesh>::collapse_edge_before(const Tuple &t)
 	{
-		bool are_edges_collinear(
-			const Eigen::Vector2d &ea,
-			const Eigen::Vector2d &eb,
-			const double tol = 1e-6)
-		{
-			assert(ea.norm() != 0 && eb.norm() != 0);
-			return abs(ea.dot(eb) / (ea.norm() * eb.norm())) > 1 - tol;
-		}
-	} // namespace
-
-	bool WildTriRemesher::collapse_edge_before(const Tuple &t)
-	{
-		if (!wmtk::TriMesh::collapse_edge_before(t))
+		if (!WMTKMesh::collapse_edge_before(t))
 			return false;
-
-		const int eid = t.eid(*this);
-		const int v0i = t.vid(*this);
-		const int v1i = t.switch_vertex(*this).vid(*this);
-
-		const Eigen::Vector2d &v0 = vertex_attrs[v0i].rest_position;
-		const Eigen::Vector2d &v1 = vertex_attrs[v1i].rest_position;
 
 		// Dont collapse if the edge is large
 		if (edge_length(t) > max_collapse_edge_length)
 			return false;
 
-		op_cache = TriOperationCache::collapse_edge(*this, t);
+		const int v0i = t.vid(*this);
+		const int v1i = t.switch_vertex(*this).vid(*this);
 
-		// boundary edge
+		const auto &v0 = vertex_attrs[v0i].rest_position;
+		const auto &v1 = vertex_attrs[v1i].rest_position;
+
+		CollapseEdgeTo collapse_to = CollapseEdgeTo::ILLEGAL;
 		if (is_edge_on_body_boundary(t))
 		{
-			const int boundary_id = boundary_attrs[eid].boundary_id;
-
-			const std::vector<Tuple> v0_edges = get_one_ring_edges_for_vertex(t);
-			const bool is_v0_collinear = std::any_of(v0_edges.begin(), v0_edges.end(), [&](const Tuple &e) {
-				const size_t v2_id = (e.vid(*this) == v0i ? (e.switch_vertex(*this)) : e).vid(*this);
-				const Eigen::Vector2d &v2 = vertex_attrs[v2_id].rest_position;
-				const size_t other_eid = e.eid(*this);
-				return other_eid != eid && boundary_attrs[other_eid].boundary_id == boundary_id
-					   && is_edge_on_body_boundary(e) && are_edges_collinear(v1 - v0, v2 - v0);
-			});
-
-			const std::vector<Tuple> v1_edges = get_one_ring_edges_for_vertex(t.switch_vertex(*this));
-			const bool is_v1_collinear = std::any_of(v1_edges.begin(), v1_edges.end(), [&](const Tuple &e) {
-				const size_t v2_id = (e.vid(*this) == v1i ? (e.switch_vertex(*this)) : e).vid(*this);
-				const Eigen::Vector2d &v2 = vertex_attrs[v2_id].rest_position;
-				const size_t other_eid = e.eid(*this);
-				return other_eid != eid && boundary_attrs[other_eid].boundary_id == boundary_id
-					   && is_edge_on_body_boundary(e) && are_edges_collinear(v0 - v1, v2 - v1);
-			});
-
-			// only collapse boundary edges that have collinear neighbors
-			if (!is_v0_collinear && !is_v1_collinear)
-				return false;
-
-			// collapse to midpoint if both points are collinear
-			op_cache.collapse_to =
-				!is_v0_collinear ? CollapseEdgeTo::V0 : //
-					(!is_v1_collinear ? CollapseEdgeTo::V1 : CollapseEdgeTo::MIDPOINT);
+			collapse_to = collapse_boundary_edge_to(t);
 		}
 		else
 		{
 			// NOTE: .fixed here assumed to be equal to is_vertex_on_body_boundary
-
-			// interior edge with both vertices fixed means it spans accross the body
 			if (vertex_attrs[v0i].fixed && vertex_attrs[v1i].fixed)
-				return false;
-
-			op_cache.collapse_to =
-				vertex_attrs[v0i].fixed ? CollapseEdgeTo::V0 : //
-					(vertex_attrs[v1i].fixed ? CollapseEdgeTo::V1 : CollapseEdgeTo::MIDPOINT);
+				collapse_to = CollapseEdgeTo::ILLEGAL; // interior edge with both vertices fixed means it spans accross the body
+			else if (vertex_attrs[v0i].fixed)
+				collapse_to = CollapseEdgeTo::V0;
+			else if (vertex_attrs[v1i].fixed)
+				collapse_to = CollapseEdgeTo::V1;
+			else
+				collapse_to = CollapseEdgeTo::MIDPOINT;
 		}
 
-		switch (op_cache.collapse_to)
+		if (collapse_to == CollapseEdgeTo::ILLEGAL)
+			return false;
+
+		double local_energy = 0;
+		switch (collapse_to)
 		{
 		case CollapseEdgeTo::V0:
-			op_cache.local_energy = local_mesh_energy(v0);
+			local_energy = local_mesh_energy(v0);
 			break;
 		case CollapseEdgeTo::V1:
-			op_cache.local_energy = local_mesh_energy(v1);
+			local_energy = local_mesh_energy(v1);
 			break;
 		case CollapseEdgeTo::MIDPOINT:
-			op_cache.local_energy = local_mesh_energy((v0 + v1) / 2);
+			local_energy = local_mesh_energy((v0 + v1) / 2);
 			break;
 		default:
 			assert(false);
 		}
 
+		cache_collapse_edge(t, local_energy, collapse_to);
+
 		return true;
 	}
 
-	bool WildTriRemesher::collapse_edge_after(const Tuple &t)
+	// -------------------------------------------------------------------------
+	// 2D
+
+	template <class WMTKMesh>
+	bool WildRemesher<WMTKMesh>::collapse_edge_after(const Tuple &t)
 	{
 		// 0) perform operation (done before this function)
 
-		const auto &[old_v0_id, v0] = op_cache.v0();
-		const auto &[old_v1_id, v1] = op_cache.v1();
-		const auto &old_edges = op_cache.edges();
-		const size_t new_vid = t.vid(*this);
-
 		// 1a) Update rest position of new vertex
-		switch (op_cache.collapse_to)
+		map_edge_collapse_vertex_attributes(t);
+
+		// 1b) Assign edge attributes to the new edges
+
+		map_edge_collapse_boundary_attributes(t);
+		// Nothing to do for the element attributes because no new elements are created.
+
+		// 2) Interpolate quantaties for a good initialization to the local relaxation
+
+		// done by map_edge_collapse_vertex_attributes(t);
+
+		// Check the interpolated position does not cause inversions
+		for (const Tuple &t1 : get_one_ring_elements_for_vertex(t))
+		{
+			if (is_inverted(t1) || element_volume(t1) < 1e-16)
+				return false;
+		}
+
+#ifndef NDEBUG
+		// Check the volume of the rest mesh is preserved
+		double new_total_volume = 0;
+		for (const Tuple &t : get_elements())
+			new_total_volume += element_volume(t);
+		assert(std::abs(new_total_volume - total_volume) < 1e-14);
+#endif
+
+		// Check the interpolated position does not cause intersections
+		if (state.args["contact"]["enabled"].get<bool>()) // && is_vertex_on_boundary(t))
+		{
+			POLYFEM_SCOPED_TIMER(timings.create_collision_mesh);
+
+			Eigen::MatrixXd V_rest = rest_positions();
+			utils::append_rows(V_rest, obstacle().v());
+
+			ipc::CollisionMesh collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
+				V_rest, boundary_edges(), boundary_faces());
+
+#ifndef NDEBUG
+			// This should never happen because we only collapse collinear edges on the rest mesh boundary.
+			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices_at_rest()))
+			{
+				write_mesh(state.resolve_output_path("collapse_intersects.vtu"));
+				assert(false);
+			}
+#endif
+
+			Eigen::MatrixXd V = positions();
+			if (obstacle().n_vertices())
+				utils::append_rows(V, obstacle().v() + obstacle_displacements());
+			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices(V)))
+			{
+				return false;
+			}
+
+			Eigen::MatrixXd prev_displacements = projection_quantities().leftCols(n_quantities() / 3);
+			utils::append_rows(prev_displacements, obstacle_quantities().leftCols(n_quantities() / 3));
+			for (const auto &u : prev_displacements.colwise())
+			{
+				if (ipc::has_intersections(collision_mesh, collision_mesh.displace_vertices(utils::unflatten(u, dim()))))
+				{
+					return false;
+				}
+			}
+		}
+
+		// ~2) Project quantities so to minimize the L2 error~ (done after all operations)
+		// project_quantities(); // also projects positions
+
+		// 3) Perform a local relaxation of the n-ring to get an estimate of the
+		//    energy decrease/increase.
+		return local_relaxation(t, local_energy(), collapse_tolerance);
+	}
+
+	// =========================================================================
+
+	template <class WMTKMesh>
+	typename WildRemesher<WMTKMesh>::VertexAttributes
+	WildRemesher<WMTKMesh>::VertexAttributes::edge_collapse(
+		const VertexAttributes &v0,
+		const VertexAttributes &v1,
+		const CollapseEdgeTo collapse_to)
+	{
+		VertexAttributes v;
+
+		switch (collapse_to)
 		{
 		case CollapseEdgeTo::V0:
 		{
-			vertex_attrs[new_vid].rest_position = v0.rest_position;
-			vertex_attrs[new_vid].partition_id = v0.partition_id;
-			vertex_attrs[new_vid].fixed = v0.fixed;
+			v.rest_position = v0.rest_position;
+			v.position = v0.position;
+			v.projection_quantities = v0.projection_quantities;
+			v.partition_id = v0.partition_id;
+			v.fixed = v0.fixed;
 			break;
 		}
 		case CollapseEdgeTo::V1:
 		{
-			vertex_attrs[new_vid].rest_position = v1.rest_position;
-			vertex_attrs[new_vid].partition_id = v1.partition_id;
-			vertex_attrs[new_vid].fixed = v1.fixed;
+			v.rest_position = v1.rest_position;
+			v.position = v1.position;
+			v.projection_quantities = v1.projection_quantities;
+			v.partition_id = v1.partition_id;
+			v.fixed = v1.fixed;
 			break;
 		}
 		case CollapseEdgeTo::MIDPOINT:
 		{
 			// TODO: using an average midpoint for now
-			vertex_attrs[new_vid].rest_position = (v0.rest_position + v1.rest_position) / 2.0;
-			vertex_attrs[new_vid].partition_id = v0.partition_id; // TODO: what should this be?
-			vertex_attrs[new_vid].fixed = v0.fixed || v1.fixed;
+			v.rest_position = (v0.rest_position + v1.rest_position) / 2.0;
+			v.position = (v0.position + v1.position) / 2.0;
+			v.projection_quantities = (v0.projection_quantities + v1.projection_quantities) / 2.0;
+			v.partition_id = v0.partition_id; // TODO: what should this be?
+			v.fixed = v0.fixed || v1.fixed;
 			break;
 		}
 		default:
 			assert(false);
 		}
 
-		// 1b) Assign edge attributes to the new edges
+		return v;
+	}
+
+	void WildTriRemesher::map_edge_collapse_vertex_attributes(const Tuple &t)
+	{
+		vertex_attrs[t.vid(*this)] = VertexAttributes::edge_collapse(
+			op_cache.v0().second, op_cache.v1().second, op_cache.collapse_to);
+	}
+
+	void WildTetRemesher::map_edge_collapse_vertex_attributes(const Tuple &t)
+	{
+		vertex_attrs[t.vid(*this)] = VertexAttributes::edge_collapse(
+			op_cache.v0().second, op_cache.v1().second, op_cache.collapse_to);
+	}
+
+	// -------------------------------------------------------------------------
+
+	void WildTriRemesher::map_edge_collapse_boundary_attributes(const Tuple &t)
+	{
+		const auto &[old_v0_id, old_v0] = op_cache.v0();
+		const auto &[old_v1_id, old_v1] = op_cache.v1();
+		const auto &old_edges = op_cache.edges();
+
+		const size_t new_vid = t.vid(*this);
+
 		const std::vector<Tuple> one_ring_edges = get_one_ring_edges_for_vertex(t);
 		for (const Tuple &e : one_ring_edges)
 		{
@@ -160,6 +239,8 @@ namespace polyfem::mesh
 				assert(!(find_old_edge0->second.boundary_id >= 0 && find_old_edge1->second.boundary_id >= 0));
 				boundary_attrs[e_id].boundary_id = std::max(
 					find_old_edge0->second.boundary_id, find_old_edge1->second.boundary_id);
+				boundary_attrs[e_id].energy_rank = std::min(
+					find_old_edge0->second.energy_rank, find_old_edge1->second.energy_rank);
 			}
 			else if (find_old_edge0 != old_edges.end())
 				boundary_attrs[e_id] = find_old_edge0->second;
@@ -168,85 +249,91 @@ namespace polyfem::mesh
 			else
 				assert(false);
 		}
-
-		// Nothing to do for the face attributes because no new faces are created.
-
-		// 2) Interpolate quantaties for a good initialization to the local relaxation
-
-		// initial guess for the new vertex position
-		switch (op_cache.collapse_to)
-		{
-		case CollapseEdgeTo::V0:
-		{
-			vertex_attrs[new_vid].position = v0.position;
-			vertex_attrs[new_vid].projection_quantities = v0.projection_quantities;
-			break;
-		}
-		case CollapseEdgeTo::V1:
-		{
-			vertex_attrs[new_vid].position = v1.position;
-			vertex_attrs[new_vid].projection_quantities = v1.projection_quantities;
-			break;
-		}
-		case CollapseEdgeTo::MIDPOINT:
-		{
-			// TODO: using an average midpoint for now
-			vertex_attrs[new_vid].position = (v0.position + v1.position) / 2.0;
-			vertex_attrs[new_vid].projection_quantities = (v0.projection_quantities + v1.projection_quantities) / 2.0;
-			break;
-		}
-		default:
-			assert(false);
-		}
-
-		// Check the interpolated poisition does not cause inversions
-		for (const Tuple &t1 : get_one_ring_elements_for_vertex(t))
-		{
-			if (is_inverted(t1))
-				return false;
-			else if (element_volume(t1) < 1e-16)
-				return false;
-		}
-
-		// Check the interpolated poisition does not cause intersections
-		if (state.args["contact"]["enabled"].get<bool>() && is_vertex_on_boundary(t))
-		{
-			POLYFEM_SCOPED_TIMER(timings.create_collision_mesh);
-
-			Eigen::MatrixXd V_rest = rest_positions();
-			utils::append_rows(V_rest, obstacle().v());
-
-			ipc::CollisionMesh collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
-				V_rest, boundary_edges(), boundary_faces());
-
-#ifndef NDEBUG
-			// This should never happen because we only collapse collinear edges on the rest mesh boundary.
-			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices_at_rest()))
-			{
-				write_mesh(state.resolve_output_path("collapse_intersects.vtu"));
-				assert(false);
-			}
-#endif
-
-			Eigen::MatrixXd V = positions();
-			utils::append_rows(V, obstacle().v() + obstacle_displacements());
-			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices(V)))
-				return false;
-
-			Eigen::MatrixXd prev_displacements = projection_quantities().leftCols(n_quantities() / 3);
-			utils::append_rows(prev_displacements, obstacle_quantities().leftCols(n_quantities() / 3));
-			for (const auto &u : prev_displacements.colwise())
-				if (ipc::has_intersections(collision_mesh, collision_mesh.displace_vertices(utils::unflatten(u, dim()))))
-					return false;
-		}
-
-		// ~2) Project quantities so to minimize the L2 error~ (done after all operations)
-		// project_quantities(); // also projects positions
-
-		// 3) Perform a local relaxation of the n-ring to get an estimate of the
-		//    energy decrease/increase.
-		return local_relaxation(t, op_cache.local_energy, collapse_tolerance);
 	}
+
+	void WildTetRemesher::map_edge_collapse_edge_attributes(const Tuple &t)
+	{
+		const auto &[old_v0_id, old_v0] = op_cache.v0();
+		const auto &[old_v1_id, old_v1] = op_cache.v1();
+		const auto &old_edges = op_cache.edges();
+
+		const size_t new_vid = t.vid(*this);
+
+		for (const Tuple &t : get_one_ring_tets_for_vertex(t))
+		{
+			for (const Tuple &e : tet_edges(t))
+			{
+				std::array<size_t, 2> vids{{e.vid(*this), e.switch_vertex(*this).vid(*this)}};
+				auto iter = std::find(vids.begin(), vids.end(), new_vid);
+
+				if (iter != vids.end())
+				{
+					*iter = old_v0_id;
+					const auto find_old_edge0 = old_edges.find(vids);
+					*iter = old_v1_id;
+					const auto find_old_edge1 = old_edges.find(vids);
+
+					if (find_old_edge0 != old_edges.end() && find_old_edge1 != old_edges.end())
+					{
+						edge_attr(e.eid(*this)).energy_rank = std::min(
+							find_old_edge0->second.energy_rank, find_old_edge1->second.energy_rank);
+					}
+					else if (find_old_edge0 != old_edges.end())
+						edge_attr(e.eid(*this)) = find_old_edge0->second;
+					else if (find_old_edge1 != old_edges.end())
+						edge_attr(e.eid(*this)) = find_old_edge1->second;
+					else
+						assert(false);
+				}
+				else
+				{
+					edge_attr(e.eid(*this)) = old_edges.at(vids);
+				}
+			}
+		}
+	}
+
+	void WildTetRemesher::map_edge_collapse_boundary_attributes(const Tuple &t)
+	{
+		const auto &[old_v0_id, old_v0] = op_cache.v0();
+		const auto &[old_v1_id, old_v1] = op_cache.v1();
+		const auto &old_faces = op_cache.faces();
+
+		const size_t new_vid = t.vid(*this);
+
+		for (const Tuple &f : get_one_ring_boundary_faces_for_vertex(t))
+		{
+			const size_t f_id = f.fid(*this);
+
+			const std::array<Tuple, 3> fv = get_face_vertices(f);
+			std::array<size_t, 3> vids{{fv[0].vid(*this), fv[1].vid(*this), fv[2].vid(*this)}};
+			auto iter = std::find(vids.begin(), vids.end(), new_vid);
+			assert(iter != vids.end());
+
+			*iter = old_v0_id;
+			const auto find_old_edge0 = old_faces.find(vids);
+			*iter = old_v1_id;
+			const auto find_old_edge1 = old_faces.find(vids);
+
+			if (find_old_edge0 != old_faces.end() && find_old_edge1 != old_faces.end())
+			{
+				// both cannot be boundary faces
+				assert(!(find_old_edge0->second.boundary_id >= 0 && find_old_edge1->second.boundary_id >= 0));
+				boundary_attrs[f_id].boundary_id = std::max(
+					find_old_edge0->second.boundary_id, find_old_edge1->second.boundary_id);
+			}
+			else if (find_old_edge0 != old_faces.end())
+				boundary_attrs[f_id] = find_old_edge0->second;
+			else if (find_old_edge1 != old_faces.end())
+				boundary_attrs[f_id] = find_old_edge1->second;
+			else
+				assert(false);
+		}
+
+		map_edge_collapse_edge_attributes(t);
+	}
+
+	// =========================================================================
 
 	template <class WMTKMesh>
 	void WildRemesher<WMTKMesh>::collapse_edges()

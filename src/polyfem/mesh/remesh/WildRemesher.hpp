@@ -12,6 +12,14 @@
 
 namespace polyfem::mesh
 {
+	enum class CollapseEdgeTo
+	{
+		V0,
+		V1,
+		MIDPOINT,
+		ILLEGAL
+	};
+
 	template <class WMTKMesh>
 	class WildRemesher : public Remesher, public WMTKMesh
 	{
@@ -95,7 +103,12 @@ namespace polyfem::mesh
 		void swap_edges() { throw std::runtime_error("Not implemented!"); }
 
 	protected:
+		// Edge splitting
 		bool split_edge_before(const Tuple &t) override;
+
+		// Edge collapse
+		bool collapse_edge_before(const Tuple &t) override;
+		bool collapse_edge_after(const Tuple &t) override;
 
 		/// @brief Check if invariants are satisfied
 		bool invariants(const std::vector<Tuple> &new_tris) override;
@@ -219,21 +232,18 @@ namespace polyfem::mesh
 		virtual bool is_vertex_on_boundary(const Tuple &v) const = 0;
 		virtual bool is_vertex_on_body_boundary(const Tuple &v) const = 0;
 
-	protected:
-		/// @brief Cache the split edge operation
-		virtual void cache_split_edge(const Tuple &e, const double local_energy) = 0;
+		virtual CollapseEdgeTo collapse_boundary_edge_to(const Tuple &e) const = 0;
 
+	protected:
 		/// @brief Write a visualization mesh of the priority queue
 		/// @param e current edge tuple to be split
 		void write_priority_queue_mesh(const std::string &path, const Tuple &e);
 
 		using Operations = std::vector<std::pair<std::string, Tuple>>;
 		Operations renew_neighbor_tuples(
-			const std::string &op,
-			const std::vector<Tuple> &tris) const;
+			const std::string &op, const std::vector<Tuple> &tris) const;
 
-		std::vector<polyfem::basis::ElementBases> local_bases(
-			LocalMesh<This> &local_mesh) const;
+		std::vector<polyfem::basis::ElementBases> local_bases(LocalMesh<This> &local_mesh) const;
 
 		std::vector<int> local_boundary_nodes(const LocalMesh<This> &local_mesh) const;
 
@@ -246,6 +256,34 @@ namespace polyfem::mesh
 			assembler::AssemblyValsCache &ass_vals_cache,
 			Eigen::SparseMatrix<double> &mass,
 			ipc::CollisionMesh &collision_mesh) const;
+
+		virtual double local_energy() const = 0;
+
+		// edge split
+
+		/// @brief Cache the split edge operation
+		/// @param e edge tuple
+		/// @param local_energy local energy
+		virtual void cache_split_edge(const Tuple &e, const double local_energy) = 0;
+
+		// edge collapse
+
+		/// @brief Cache the edge collapse operation
+		/// @param e edge tuple
+		/// @param local_energy local energy
+		/// @param collapse_to collapse to which vertex
+		virtual void cache_collapse_edge(const Tuple &e, const double local_energy, const CollapseEdgeTo collapse_to) = 0;
+
+		/// @brief Map the vertex attributes for edge collapse
+		/// @param t new vertex tuple
+		virtual void map_edge_collapse_vertex_attributes(const Tuple &t) = 0;
+
+		/// @brief Map the edge attributes for edge collapse
+		/// @param t new vertex tuple
+		virtual void map_edge_collapse_boundary_attributes(const Tuple &t) = 0;
+
+		// No need to map boundary attributes for edge collapse because no new boundary is created
+		// No need to map element attributes for edge collapse because no new element is created
 
 		// --------------------------------------------------------------------
 		// members
@@ -290,6 +328,11 @@ namespace polyfem::mesh
 				else
 					return position;
 			}
+
+			static VertexAttributes edge_collapse(
+				const VertexAttributes &v0,
+				const VertexAttributes &v1,
+				const CollapseEdgeTo collapse_to);
 		};
 
 		struct EdgeAttributes
@@ -297,7 +340,7 @@ namespace polyfem::mesh
 			int split_depth = 0;
 			int split_attempts = 0;
 			// clang-format off
-			enum class EnergyRank { TOP, MIDDLE, BOTTOM };
+			enum class EnergyRank { BOTTOM, MIDDLE, TOP };
 			// clang-format on
 			EnergyRank energy_rank = EnergyRank::MIDDLE;
 		};
@@ -312,9 +355,17 @@ namespace polyfem::mesh
 			int body_id = 0;
 		};
 
-		wmtk::AttributeCollection<VertexAttributes> vertex_attrs;
+		/// @brief Get a reference to an edge's attributes
+		/// @param e_id edge id
+		/// @return reference to the edge's attributes
 		virtual EdgeAttributes &edge_attr(const size_t e_id) = 0;
+
+		/// @brief Get a const reference to an edge's attributes
+		/// @param e_id edge id
+		/// @return const reference to the edge's attributes
 		virtual const EdgeAttributes &edge_attr(const size_t e_id) const = 0;
+
+		wmtk::AttributeCollection<VertexAttributes> vertex_attrs;
 		wmtk::AttributeCollection<BoundaryAttributes> boundary_attrs;
 		wmtk::AttributeCollection<ElementAttributes> element_attrs;
 
@@ -323,7 +374,6 @@ namespace polyfem::mesh
 		int vis_counter = 0;
 		int m_n_quantities;
 		double total_volume;
-		std::vector<Tuple> modified_tuples;
 	};
 
 } // namespace polyfem::mesh

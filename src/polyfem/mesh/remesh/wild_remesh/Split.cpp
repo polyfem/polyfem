@@ -108,6 +108,7 @@ namespace polyfem::mesh
 		old_split_edge.split_attempts = 0;
 		BoundaryAttributes interior_edge; // default
 		interior_edge.split_depth = old_split_edge.split_depth;
+		interior_edge.energy_rank = old_split_edge.energy_rank;
 
 		const size_t new_vid = new_vertex.vid(*this);
 
@@ -204,6 +205,7 @@ namespace polyfem::mesh
 		old_split_edge.split_attempts = 0;
 		EdgeAttributes interior_edge; // default
 		interior_edge.split_depth = old_split_edge.split_depth;
+		interior_edge.energy_rank = old_split_edge.energy_rank;
 
 		const size_t new_vid = new_vertex.vid(*this);
 
@@ -296,6 +298,8 @@ namespace polyfem::mesh
 			element_attrs[t.tid(*this)] = old_elements.at(vids);
 		}
 	}
+
+	// =========================================================================
 
 	template <class WMTKMesh>
 	void WildRemesher<WMTKMesh>::split_edges()

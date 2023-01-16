@@ -45,8 +45,6 @@ namespace polyfem::mesh
 		bool split_edge_after(const Tuple &t) override;
 
 		// Edge collapse
-		// bool collapse_edge_before(const Tuple &t) override;
-		// bool collapse_edge_after(const Tuple &t) override;
 
 		// 3-2 Edge swap
 		// bool swap_edge_before(const Tuple &t) override;
@@ -137,7 +135,29 @@ namespace polyfem::mesh
 			return get_incident_tets_for_edge(t);
 		}
 
+		std::vector<Tuple> get_one_ring_boundary_edges_for_vertex(const Tuple &v) const;
+		std::vector<Tuple> get_one_ring_boundary_faces_for_vertex(const Tuple &v) const;
+		std::array<Tuple, 2> get_boundary_faces_for_edge(const Tuple &e) const;
+		Tuple opposite_vertex_on_face(const Tuple &e) const
+		{
+			return e.switch_edge(*this).switch_vertex(*this);
+		}
+
+		bool is_edge_on_boundary(const Tuple &e) const override;
+		bool is_edge_on_body_boundary(const Tuple &e) const override;
+		bool is_vertex_on_boundary(const Tuple &v) const override { throw std::runtime_error("Not implemented"); }
+		bool is_vertex_on_body_boundary(const Tuple &v) const override { throw std::runtime_error("Not implemented"); }
+
+		CollapseEdgeTo collapse_boundary_edge_to(const Tuple &e) const override;
+
 	protected:
+		double local_energy() const override { return op_cache.local_energy; }
+
+		// edge split
+
+		/// @brief Cache the split edge operation
+		/// @param e edge tuple
+		/// @param local_energy local energy
 		void cache_split_edge(const Tuple &e, const double local_energy) override
 		{
 			op_cache = TetOperationCache::split_edge(*this, e);
@@ -162,10 +182,33 @@ namespace polyfem::mesh
 			const size_t old_v0_id,
 			const size_t old_v1_id);
 
-		bool is_edge_on_boundary(const Tuple &e) const override { throw std::runtime_error("Not implemented"); }
-		bool is_edge_on_body_boundary(const Tuple &e) const override { throw std::runtime_error("Not implemented"); }
-		bool is_vertex_on_boundary(const Tuple &v) const override { throw std::runtime_error("Not implemented"); }
-		bool is_vertex_on_body_boundary(const Tuple &v) const override { throw std::runtime_error("Not implemented"); }
+		// edge collapse
+
+		/// @brief Cache the edge collapse operation
+		/// @param e edge tuple
+		/// @param local_energy local energy
+		/// @param collapse_to collapse to which vertex
+		void cache_collapse_edge(const Tuple &e, const double local_energy, const CollapseEdgeTo collapse_to) override
+		{
+			op_cache = TetOperationCache::collapse_edge(*this, e);
+			op_cache.local_energy = local_energy;
+			op_cache.collapse_to = collapse_to;
+		}
+
+		/// @brief Map the vertex attributes for edge collapse
+		/// @param t new vertex tuple
+		void map_edge_collapse_vertex_attributes(const Tuple &t) override;
+
+		/// @brief Map the edge attributes for edge collapse
+		/// @param t new vertex tuple
+		void map_edge_collapse_edge_attributes(const Tuple &t);
+
+		/// @brief Map the boundary attributes for edge collapse
+		/// @param t new vertex tuple
+		void map_edge_collapse_boundary_attributes(const Tuple &t) override;
+
+		// No need to map boundary attributes for edge collapse because no new boundary is created
+		// No need to map element attributes for edge collapse because no new element is created
 
 		// --------------------------------------------------------------------
 		// parameters
@@ -173,7 +216,14 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 		// members
 	public:
+		/// @brief Get a reference to an edge's attributes
+		/// @param e_id edge id
+		/// @return reference to the edge's attributes
 		EdgeAttributes &edge_attr(const size_t e_id) override { return edge_attrs[e_id]; }
+
+		/// @brief Get a const reference to an edge's attributes
+		/// @param e_id edge id
+		/// @return const reference to the edge's attributes
 		const EdgeAttributes &edge_attr(const size_t e_id) const override { return edge_attrs[e_id]; }
 
 		wmtk::AttributeCollection<EdgeAttributes> edge_attrs;

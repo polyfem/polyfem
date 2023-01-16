@@ -287,9 +287,9 @@ namespace polyfem
 #ifndef NDEBUG
 							Eigen::MatrixXd debug;
 							from_element.eval_geom_mapping(from_bc, debug);
-							assert((debug.transpose() - p).norm() < 1e-15);
+							assert((debug.transpose() - p).norm() < 1e-12);
 							to_element.eval_geom_mapping(to_bc, debug);
-							assert((debug.transpose() - p).norm() < 1e-15);
+							assert((debug.transpose() - p).norm() < 1e-12);
 #endif
 
 							for (int n = 0; n < size; ++n)

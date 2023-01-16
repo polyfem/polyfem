@@ -172,6 +172,33 @@ namespace polyfem::utils
 		return false;
 	}
 
+	bool are_edges_collinear(
+		const Eigen::VectorXd &ea0,
+		const Eigen::VectorXd &ea1,
+		const Eigen::VectorXd &eb0,
+		const Eigen::VectorXd &eb1,
+		const double tol)
+	{
+		assert((ea0 - ea1).norm() != 0 && (eb1 - eb0).norm() != 0);
+		const Eigen::VectorXd ea = (ea1 - ea0).normalized();
+		const Eigen::VectorXd eb = (eb1 - eb0).normalized();
+		return abs(ea.dot(eb)) > 1 - tol;
+	}
+
+	bool are_triangles_coplanar(
+		const Eigen::Vector3d &t00,
+		const Eigen::Vector3d &t01,
+		const Eigen::Vector3d &t02,
+		const Eigen::Vector3d &t10,
+		const Eigen::Vector3d &t11,
+		const Eigen::Vector3d &t12,
+		const double tol)
+	{
+		const Eigen::Vector3d n0 = (t01 - t00).cross(t02 - t00).normalized();
+		const Eigen::Vector3d n1 = (t11 - t10).cross(t12 - t10).normalized();
+		return abs(n0.dot(n1)) > 1 - tol;
+	}
+
 	// =========================================================================
 	// The following automatically generated using SymPy
 	// =========================================================================

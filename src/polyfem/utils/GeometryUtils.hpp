@@ -46,9 +46,56 @@ namespace polyfem::utils
 	/// @return The signed volume of the tetrahedron.
 	double tetrahedron_volume(const Eigen::MatrixXd V);
 
+	/// @brief Compute the gradient of the signed area of a 2D triangle defined by three points.
+	/// @param ax First point's x coordinate.
+	/// @param ay First point's y coordinate.
+	/// @param bx Second point's x coordinate.
+	/// @param by Second point's y coordinate.
+	/// @param cx Third point's x coordinate.
+	/// @param cy Third point's y coordinate.
+	/// @param g Output gradient with respect to the three points.
 	void triangle_area_2D_gradient(double ax, double ay, double bx, double by, double cx, double cy, double g[6]);
+
+	/// @brief Compute the Hessian of the signed area of a 2D triangle defined by three points.
+	/// @param ax First point's x coordinate.
+	/// @param ay First point's y coordinate.
+	/// @param bx Second point's x coordinate.
+	/// @param by Second point's y coordinate.
+	/// @param cx Third point's x coordinate.
+	/// @param cy Third point's y coordinate.
+	/// @param g Output flattened Hessian with respect to the three points.
 	void triangle_area_2D_hessian(double ax, double ay, double bx, double by, double cx, double cy, double H[36]);
+
+	/// @brief Compute the gradient of the signed volume of a tetrahedron defined by four points.
+	/// @param ax First point's x coordinate.
+	/// @param ay First point's y coordinate.
+	/// @param ay First point's z coordinate.
+	/// @param bx Second point's x coordinate.
+	/// @param by Second point's y coordinate.
+	/// @param by Second point's z coordinate.
+	/// @param cx Third point's x coordinate.
+	/// @param cy Third point's y coordinate.
+	/// @param cy Third point's z coordinate.
+	/// @param dx Fourth point's x coordinate.
+	/// @param dy Fourth point's y coordinate.
+	/// @param dy Fourth point's z coordinate.
+	/// @param g Output gradient with respect to the four points.
 	void tetrahedron_volume_gradient(double ax, double ay, double az, double bx, double by, double bz, double cx, double cy, double cz, double dx, double dy, double dz, double g[12]);
+
+	/// @brief Compute the gradient of the signed area of a 2D triangle defined by three points.
+	/// @param ax First point's x coordinate.
+	/// @param ay First point's y coordinate.
+	/// @param ay First point's z coordinate.
+	/// @param bx Second point's x coordinate.
+	/// @param by Second point's y coordinate.
+	/// @param by Second point's z coordinate.
+	/// @param cx Third point's x coordinate.
+	/// @param cy Third point's y coordinate.
+	/// @param cy Third point's z coordinate.
+	/// @param dx Fourth point's x coordinate.
+	/// @param dy Fourth point's y coordinate.
+	/// @param dy Fourth point's z coordinate.
+	/// @param g Output flattened Hessian with respect to the four points.
 	void tetrahedron_volume_hessian(double ax, double ay, double az, double bx, double by, double bz, double cx, double cy, double cz, double dx, double dy, double dz, double H[144]);
 
 	/// @brief Reorder the vertices of a triangle so they are in clockwise order.
@@ -98,4 +145,36 @@ namespace polyfem::utils
 		const Eigen::Vector3d &t3,
 		const Eigen::Vector3d &center,
 		const double radius);
+
+	/// @brief Determine if two edges are collinear.
+	/// @param ea0 First vertex of the first edge.
+	/// @param ea1 Second vertex of the first edge.
+	/// @param eb0 First vertex of the second edge.
+	/// @param eb1 Second vertex of the second edge.
+	/// @param tol Tolerance for collinearity.
+	/// @return True if the edges are collinear, false otherwise.
+	bool are_edges_collinear(
+		const Eigen::VectorXd &ea0,
+		const Eigen::VectorXd &ea1,
+		const Eigen::VectorXd &eb0,
+		const Eigen::VectorXd &eb1,
+		const double tol = 1e-10);
+
+	/// @brief Determine if two triangles are coplanar.
+	/// @param t00 First vertex of the first triangle.
+	/// @param t01 Second vertex of the first triangle.
+	/// @param t02 Third vertex of the first triangle.
+	/// @param t10 First vertex of the second triangle.
+	/// @param t11 Second vertex of the second triangle.
+	/// @param t12 Third vertex of the second triangle.
+	/// @param tol Tolerance for coplanarity.
+	/// @return True if the triangles are coplanar, false otherwise.
+	bool are_triangles_coplanar(
+		const Eigen::Vector3d &t00,
+		const Eigen::Vector3d &t01,
+		const Eigen::Vector3d &t02,
+		const Eigen::Vector3d &t10,
+		const Eigen::Vector3d &t11,
+		const Eigen::Vector3d &t12,
+		const double tol = 1e-10);
 } // namespace polyfem::utils

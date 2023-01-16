@@ -9,14 +9,6 @@ namespace polyfem::mesh
 	class WildTriRemesher;
 	class WildTetRemesher;
 
-	enum class CollapseEdgeTo
-	{
-		V0,
-		V1,
-		MIDPOINT,
-		ILLEGAL
-	};
-
 	class TriOperationCache
 	{
 	public:
@@ -58,7 +50,7 @@ namespace polyfem::mesh
 		// static TetOperationCache swap_32(WildTetRemesher &m, const Tuple &t);
 		// static TetOperationCache swap_23(WildTetRemesher &m, const Tuple &t);
 		// static TetOperationCache swap_44(WildTetRemesher &m, const Tuple &t);
-		// static TetOperationCache collapse_edge(WildTetRemesher &m, const Tuple &t);
+		static TetOperationCache collapse_edge(WildTetRemesher &m, const Tuple &t);
 
 		const std::pair<size_t, VertexAttributes> &v0() const { return m_v0; }
 		const std::pair<size_t, VertexAttributes> &v1() const { return m_v1; }

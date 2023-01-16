@@ -144,4 +144,27 @@ namespace polyfem::mesh
 
 		return cache;
 	}
+
+	TetOperationCache TetOperationCache::collapse_edge(WildTetRemesher &m, const Tuple &e)
+	{
+		TetOperationCache cache;
+
+		cache.m_v0.first = e.vid(m);
+		cache.m_v1.first = e.switch_vertex(m).vid(m);
+
+		cache.m_v0.second = m.vertex_attrs[cache.m_v0.first];
+		cache.m_v1.second = m.vertex_attrs[cache.m_v1.first];
+
+		const std::vector<Tuple> tets = m.get_one_ring_tets_for_edge(e);
+		assert(tets.size() >= 1);
+		cache.m_tets.reserve(tets.size());
+		for (const Tuple &t : tets)
+		{
+			insert_edges_of_tet(m, t, cache.m_edges);
+			insert_faces_of_tet(m, t, cache.m_faces);
+			cache.m_tets[m.oriented_tet_vids(t)] = m.element_attrs[t.tid(m)];
+		}
+
+		return cache;
+	}
 } // namespace polyfem::mesh

@@ -127,7 +127,6 @@ namespace polyfem::mesh
 				edge_ranks[edge] = EdgeAttributes::EnergyRank::MIDDLE;
 		}
 
-		assert(std::holds_alternative<EdgeMap<int>>(boundary_to_id));
 		for (const Tuple &edge : WMTKMesh::get_edges())
 		{
 			const size_t e0 = edge.vid(*this);
@@ -469,7 +468,7 @@ namespace polyfem::mesh
 		}
 		else
 		{
-			assert(op == "edge_split");
+			assert(op == "edge_split" || op == "edge_collapse");
 			center = vertex_attrs[elements[0].vid(*this)].rest_position;
 		}
 

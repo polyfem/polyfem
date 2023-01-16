@@ -44,8 +44,6 @@ namespace polyfem::mesh
 		bool split_edge_after(const Tuple &t) override;
 
 		// Edge collapse
-		bool collapse_edge_before(const Tuple &t) override;
-		bool collapse_edge_after(const Tuple &t) override;
 
 		// Edge swap
 		bool swap_edge_before(const Tuple &t) override;
@@ -132,7 +130,16 @@ namespace polyfem::mesh
 		bool is_vertex_on_boundary(const Tuple &v) const override;
 		bool is_vertex_on_body_boundary(const Tuple &v) const override;
 
+		CollapseEdgeTo collapse_boundary_edge_to(const Tuple &e) const override;
+
 	protected:
+		double local_energy() const override { return op_cache.local_energy; }
+
+		// edge split
+
+		/// @brief Cache the split edge operation
+		/// @param e edge tuple
+		/// @param local_energy local energy
 		void cache_split_edge(const Tuple &e, const double local_energy) override
 		{
 			op_cache = TriOperationCache::split_edge(*this, e);
@@ -149,13 +156,41 @@ namespace polyfem::mesh
 			const Tuple &t,
 			const std::vector<ElementAttributes> &old_elements);
 
+		// edge collapse
+
+		/// @brief Cache the edge collapse operation
+		/// @param e edge tuple
+		/// @param local_energy local energy
+		/// @param collapse_to collapse to which vertex
+		void cache_collapse_edge(const Tuple &e, const double local_energy, const CollapseEdgeTo collapse_to) override
+		{
+			op_cache = TriOperationCache::collapse_edge(*this, e);
+			op_cache.local_energy = local_energy;
+			op_cache.collapse_to = collapse_to;
+		}
+
+		/// @brief Map the vertex attributes for edge collapse
+		/// @param t new vertex tuple
+		void map_edge_collapse_vertex_attributes(const Tuple &t) override;
+
+		/// @brief Map the edge attributes for edge collapse
+		/// @param t new vertex tuple
+		void map_edge_collapse_boundary_attributes(const Tuple &t) override;
+
 		// --------------------------------------------------------------------
 		// parameters
 
 		// --------------------------------------------------------------------
 		// members
 	public:
+		/// @brief Get a reference to an edge's attributes
+		/// @param e_id edge id
+		/// @return reference to the edge's attributes
 		EdgeAttributes &edge_attr(const size_t e_id) override { return boundary_attrs[e_id]; }
+
+		/// @brief Get a const reference to an edge's attributes
+		/// @param e_id edge id
+		/// @return const reference to the edge's attributes
 		const EdgeAttributes &edge_attr(const size_t e_id) const override { return boundary_attrs[e_id]; }
 
 	protected:

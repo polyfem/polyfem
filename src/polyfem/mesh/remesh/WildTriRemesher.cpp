@@ -132,6 +132,45 @@ namespace polyfem::mesh
 		return false;
 	}
 
+	CollapseEdgeTo WildTriRemesher::collapse_boundary_edge_to(const Tuple &e) const
+	{
+		const int eid = e.eid(*this);
+		const int v0i = e.vid(*this);
+		const int v1i = e.switch_vertex(*this).vid(*this);
+
+		const Eigen::Vector2d &v0 = vertex_attrs[v0i].rest_position;
+		const Eigen::Vector2d &v1 = vertex_attrs[v1i].rest_position;
+
+		const int boundary_id = boundary_attrs[eid].boundary_id;
+
+		const auto is_collinear = [&](const Tuple &e0) {
+			const size_t e0_id = e0.eid(*this);
+			const size_t v2_id = e0.vid(*this);
+			const size_t v3_id = e0.switch_vertex(*this).vid(*this);
+			return e0_id != eid
+				   && boundary_attrs[e0_id].boundary_id == boundary_id
+				   && is_edge_on_body_boundary(e0)
+				   && utils::are_edges_collinear(
+					   v0, v1, vertex_attrs[v2_id].rest_position,
+					   vertex_attrs[v3_id].rest_position);
+		};
+
+		const std::vector<Tuple> v0_edges = get_one_ring_edges_for_vertex(e);
+		const bool is_v0_collinear = std::any_of(v0_edges.begin(), v0_edges.end(), is_collinear);
+
+		const std::vector<Tuple> v1_edges = get_one_ring_edges_for_vertex(e.switch_vertex(*this));
+		const bool is_v1_collinear = std::any_of(v1_edges.begin(), v1_edges.end(), is_collinear);
+
+		if (!is_v0_collinear && !is_v1_collinear)
+			return CollapseEdgeTo::ILLEGAL; // only collapse boundary edges that have collinear neighbors
+		else if (!is_v0_collinear)
+			return CollapseEdgeTo::V0;
+		else if (!is_v1_collinear)
+			return CollapseEdgeTo::V1;
+		else
+			return CollapseEdgeTo::MIDPOINT; // collapse to midpoint if both points are collinear
+	}
+
 	// map_edge_split_boundary_attributes/map_edge_split_element_attributes in wild_remesh/Split.cpp
 
 } // namespace polyfem::mesh
