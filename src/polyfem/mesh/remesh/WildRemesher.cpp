@@ -46,6 +46,9 @@ namespace polyfem::mesh
 	Remesher::EdgeMap<typename WildRemesher<WMTKMesh>::EdgeAttributes::EnergyRank>
 	rank_edges(const Remesher::EdgeMap<double> &edge_energy, const double threshold)
 	{
+		if (edge_energy.empty())
+			return Remesher::EdgeMap<typename WildRemesher<WMTKMesh>::EdgeAttributes::EnergyRank>();
+
 		double min_energy = std::numeric_limits<double>::infinity();
 		double max_energy = -std::numeric_limits<double>::infinity();
 		std::vector<double> sorted_energies;
@@ -118,7 +121,7 @@ namespace polyfem::mesh
 		EdgeMap<typename EdgeAttributes::EnergyRank> edge_ranks;
 		for (const auto &[edge, elastic_rank] : edge_elastic_ranks)
 		{
-			const auto contact_rank = edge_contact_ranks.at(edge);
+			const auto contact_rank = edge_contact_ranks.empty() ? elastic_rank : edge_contact_ranks.at(edge);
 			if (elastic_rank == EdgeAttributes::EnergyRank::TOP || contact_rank == EdgeAttributes::EnergyRank::TOP)
 				edge_ranks[edge] = EdgeAttributes::EnergyRank::TOP;
 			else if (elastic_rank == EdgeAttributes::EnergyRank::BOTTOM && contact_rank == EdgeAttributes::EnergyRank::BOTTOM)

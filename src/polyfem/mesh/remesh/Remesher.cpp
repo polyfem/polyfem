@@ -199,7 +199,9 @@ namespace polyfem::mesh
 				rest_positions, elements, dim(),
 				// Contact form
 				collision_mesh, state.args["contact"]["dhat"],
-				state.solve_data.contact_form->barrier_stiffness(),
+				state.solve_data.contact_form
+					? state.solve_data.contact_form->barrier_stiffness()
+					: 1.0,
 				state.args["contact"]["use_convergent_formulation"],
 				state.args["solver"]["contact"]["CCD"]["broad_phase"],
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
