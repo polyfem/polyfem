@@ -154,7 +154,7 @@ jobs:
       fail-fast: false
       matrix:
         config: [Debug]
-        threading: [TBB, NONE]
+        threading: [NONE]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
