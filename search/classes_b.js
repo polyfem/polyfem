@@ -17,6 +17,7 @@ var searchData=
   ['mooneyrivlinelasticity_14',['MooneyRivlinElasticity',['../classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html',1,'polyfem::assembler']]],
   ['morethuentelinesearch_15',['MoreThuenteLineSearch',['../classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search.html',1,'polyfem::solver::line_search']]],
   ['mshreader_16',['MshReader',['../classpolyfem_1_1io_1_1_msh_reader.html',1,'polyfem::io']]],
-  ['multimodel_17',['MultiModel',['../classpolyfem_1_1assembler_1_1_multi_model.html',1,'polyfem::assembler']]],
-  ['mvpolygonalbasis2d_18',['MVPolygonalBasis2d',['../classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html',1,'polyfem::basis']]]
+  ['mshwriter_17',['MshWriter',['../classpolyfem_1_1io_1_1_msh_writer.html',1,'polyfem::io']]],
+  ['multimodel_18',['MultiModel',['../classpolyfem_1_1assembler_1_1_multi_model.html',1,'polyfem::assembler']]],
+  ['mvpolygonalbasis2d_19',['MVPolygonalBasis2d',['../classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html',1,'polyfem::basis']]]
 ];

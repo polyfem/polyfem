@@ -16,6 +16,7 @@ var classpolyfem_1_1mesh_1_1_mesh2_d =
     [ "get_index_from_face", "classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111", null ],
     [ "is_boundary_face", "classpolyfem_1_1mesh_1_1_mesh2_d.html#a05f1a1ffd74c2651e1c92836b8cdb736", null ],
     [ "is_volume", "classpolyfem_1_1mesh_1_1_mesh2_d.html#a6c29651fa089917c4230422725299bd5", null ],
+    [ "n_cell_vertices", "classpolyfem_1_1mesh_1_1_mesh2_d.html#ab2a7353c953350931ca9de7bd1a3bd17", null ],
     [ "n_cells", "classpolyfem_1_1mesh_1_1_mesh2_d.html#a9dfaccca839ea4aa95da045bb161d207", null ],
     [ "next_around_face", "classpolyfem_1_1mesh_1_1_mesh2_d.html#a655514850b93a4d71b22c5a301c8984b", null ],
     [ "next_around_vertex", "classpolyfem_1_1mesh_1_1_mesh2_d.html#a61b06dff45269d1802eccd079802d7a1", null ],

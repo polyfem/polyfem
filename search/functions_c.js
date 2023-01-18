@@ -27,5 +27,6 @@ var searchData=
   ['minsurfproblem_24',['MinSurfProblem',['../classpolyfem_1_1problem_1_1_min_surf_problem.html#a14a753826f8ea8d4a4eed093567dfd34',1,'polyfem::problem::MinSurfProblem']]],
   ['mixedassemblerdata_25',['MixedAssemblerData',['../classpolyfem_1_1assembler_1_1_mixed_assembler_data.html#a461f33c3d3c0aef99efb0641b20b59bc',1,'polyfem::assembler::MixedAssemblerData']]],
   ['mooneyrivlinelasticity_26',['MooneyRivlinElasticity',['../classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#aa1faac837f786dac98abbe3f3d50d052',1,'polyfem::assembler::MooneyRivlinElasticity']]],
-  ['mus_27',['mus',['../classpolyfem_1_1assembler_1_1_ogden_elasticity.html#a52d339a616fa52dab7df30ad88003733',1,'polyfem::assembler::OgdenElasticity']]]
+  ['mshwriter_27',['MshWriter',['../classpolyfem_1_1io_1_1_msh_writer.html#a96c2111d5c06dcaec3129aac05166290',1,'polyfem::io::MshWriter']]],
+  ['mus_28',['mus',['../classpolyfem_1_1assembler_1_1_ogden_elasticity.html#a52d339a616fa52dab7df30ad88003733',1,'polyfem::assembler::OgdenElasticity']]]
 ];

@@ -145,6 +145,7 @@ var hierarchy =
     [ "polyfem::assembler::MixedAssemblerData", "classpolyfem_1_1assembler_1_1_mixed_assembler_data.html", null ],
     [ "polyfem::assembler::MooneyRivlinElasticity", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html", null ],
     [ "polyfem::io::MshReader", "classpolyfem_1_1io_1_1_msh_reader.html", null ],
+    [ "polyfem::io::MshWriter", "classpolyfem_1_1io_1_1_msh_writer.html", null ],
     [ "polyfem::assembler::MultiModel", "classpolyfem_1_1assembler_1_1_multi_model.html", null ],
     [ "polyfem::basis::MVPolygonalBasis2d", "classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html", null ],
     [ "polyfem::solver::NavierStokesSolver", "classpolyfem_1_1solver_1_1_navier_stokes_solver.html", null ],

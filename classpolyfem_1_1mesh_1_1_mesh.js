@@ -72,6 +72,7 @@ var classpolyfem_1_1mesh_1_1_mesh =
     [ "load", "classpolyfem_1_1mesh_1_1_mesh.html#ab8cf908389fe077868331f225c115be7", null ],
     [ "load_boundary_ids", "classpolyfem_1_1mesh_1_1_mesh.html#a6df16c11beccf98404d2a29fb55b93e7", null ],
     [ "n_boundary_elements", "classpolyfem_1_1mesh_1_1_mesh.html#ad45e1e9607532dbcfe63d08ed334b85c", null ],
+    [ "n_cell_vertices", "classpolyfem_1_1mesh_1_1_mesh.html#af8681d00e208c5075fa415a49e42471d", null ],
     [ "n_cells", "classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697", null ],
     [ "n_edges", "classpolyfem_1_1mesh_1_1_mesh.html#aeda3afe06090b4cccbbf7f5d9440de69", null ],
     [ "n_elements", "classpolyfem_1_1mesh_1_1_mesh.html#a0140181b551c7bf0c162d6898155f294", null ],

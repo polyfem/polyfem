@@ -6,6 +6,8 @@ var dir_734cdad6c925c4f361e29f2a6d60e23c =
     [ "MatrixIO.hpp", "_matrix_i_o_8hpp.html", "_matrix_i_o_8hpp" ],
     [ "MshReader.cpp", "_msh_reader_8cpp.html", "_msh_reader_8cpp" ],
     [ "MshReader.hpp", "_msh_reader_8hpp.html", "_msh_reader_8hpp" ],
+    [ "MshWriter.cpp", "_msh_writer_8cpp.html", null ],
+    [ "MshWriter.hpp", "_msh_writer_8hpp.html", "_msh_writer_8hpp" ],
     [ "OBJReader.cpp", "_o_b_j_reader_8cpp.html", null ],
     [ "OBJReader.hpp", "_o_b_j_reader_8hpp.html", "_o_b_j_reader_8hpp" ],
     [ "OBJWriter.cpp", "_o_b_j_writer_8cpp.html", null ],

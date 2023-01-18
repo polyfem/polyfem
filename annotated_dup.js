@@ -85,6 +85,7 @@ var annotated_dup =
       [ "io", "namespacepolyfem_1_1io.html", [
         [ "Evaluator", "classpolyfem_1_1io_1_1_evaluator.html", "classpolyfem_1_1io_1_1_evaluator" ],
         [ "MshReader", "classpolyfem_1_1io_1_1_msh_reader.html", null ],
+        [ "MshWriter", "classpolyfem_1_1io_1_1_msh_writer.html", "classpolyfem_1_1io_1_1_msh_writer" ],
         [ "OBJReader", "classpolyfem_1_1io_1_1_o_b_j_reader.html", "classpolyfem_1_1io_1_1_o_b_j_reader" ],
         [ "OBJWriter", "classpolyfem_1_1io_1_1_o_b_j_writer.html", "classpolyfem_1_1io_1_1_o_b_j_writer" ],
         [ "OutGeometryData", "classpolyfem_1_1io_1_1_out_geometry_data.html", "classpolyfem_1_1io_1_1_out_geometry_data" ],
