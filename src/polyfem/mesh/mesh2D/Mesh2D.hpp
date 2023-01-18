@@ -25,6 +25,7 @@ namespace polyfem
 			bool is_volume() const override { return false; }
 
 			int n_cells() const override { return 0; }
+			inline int n_cell_vertices(const int c_id) const override { return n_face_vertices(c_id); }
 
 			bool is_boundary_face(const int face_global_id) const override
 			{
