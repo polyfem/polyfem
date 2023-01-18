@@ -145,27 +145,6 @@ namespace cppoptlib
 				break;
 			}
 
-			objFunc.save_to_file(x);
-			if (outfile.is_open())
-			{
-				Eigen::VectorXd values = objFunc.component_values(x);
-				Eigen::MatrixXd grads = objFunc.component_gradients(x);
-				assert(values.size() == grads.cols());
-				outfile << std::setprecision(12) << energy << ", " << grad_norm;
-				if (export_energy_components)
-				{
-					outfile << ", ";
-					for (int i = 0; i < values.size(); i++)
-					{
-						outfile << std::setprecision(12) << values(i) << ", " << grads.col(i).norm();
-						if (i < values.size() - 1)
-							outfile << ", ";
-					}
-				}
-				outfile << "\n";
-				outfile.flush();
-			}
-
 			// ------------------------
 			// Compute update direction
 			// ------------------------
@@ -277,6 +256,27 @@ namespace cppoptlib
 
 			if (objFunc.remesh(x))
 				remesh_reset(objFunc, x);
+
+			objFunc.save_to_file(x);
+			if (outfile.is_open())
+			{
+				Eigen::VectorXd values = objFunc.component_values(x);
+				Eigen::MatrixXd grads = objFunc.component_gradients(x);
+				assert(values.size() == grads.cols());
+				outfile << std::setprecision(12) << energy << ", " << grad_norm;
+				if (export_energy_components)
+				{
+					outfile << ", ";
+					for (int i = 0; i < values.size(); i++)
+					{
+						outfile << std::setprecision(12) << values(i) << ", " << grads.col(i).norm();
+						if (i < values.size() - 1)
+							outfile << ", ";
+					}
+				}
+				outfile << "\n";
+				outfile.flush();
+			}
 
 		} while (objFunc.callback(this->m_current, x) && (this->m_status == Status::Continue));
 
