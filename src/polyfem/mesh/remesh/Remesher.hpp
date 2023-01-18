@@ -123,7 +123,7 @@ namespace polyfem::mesh
 		/// @brief Exports body ids of the stored mesh
 		virtual std::vector<int> body_ids() const = 0;
 		/// @brief Get the boundary nodes of the stored mesh
-		virtual std::vector<int> boundary_nodes() const = 0;
+		virtual std::vector<int> boundary_nodes(const Eigen::VectorXi &vertex_to_basis) const = 0;
 
 		/// @brief Number of projection quantities (not including the position)
 		virtual int n_quantities() const = 0;
@@ -177,7 +177,7 @@ namespace polyfem::mesh
 		/// @brief Create an assembler object
 		/// @param body_ids One body ID per element.
 		/// @return Assembler object
-		assembler::AssemblerUtils create_assembler(const std::vector<int> &body_ids) const;
+		assembler::AssemblerUtils &init_assembler(const std::vector<int> &body_ids) const;
 
 		/// @brief Build bases for a given mesh (V, F)
 		/// @param V Matrix of vertex (rest) positions
@@ -243,6 +243,8 @@ namespace polyfem::mesh
 		const double current_time;
 		/// @brief Starting energy
 		const double starting_energy;
+		/// @brief copy of the assembler
+		mutable assembler::AssemblerUtils assembler;
 	};
 
 } // namespace polyfem::mesh

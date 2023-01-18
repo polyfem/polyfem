@@ -271,7 +271,8 @@ namespace polyfem::mesh
 	}
 
 	template <class WMTKMesh>
-	std::vector<int> WildRemesher<WMTKMesh>::boundary_nodes() const
+	std::vector<int> WildRemesher<WMTKMesh>::boundary_nodes(
+		const Eigen::VectorXi &vertex_to_basis) const
 	{
 		std::vector<int> boundary_nodes;
 
@@ -297,7 +298,7 @@ namespace polyfem::mesh
 			for (const size_t vid : boundary_facet_vids(t))
 				for (int d = 0; d < dim(); ++d)
 					if (bc->second[d])
-						boundary_nodes.push_back(dim() * vid + d);
+						boundary_nodes.push_back(dim() * vertex_to_basis[vid] + d);
 		}
 
 		// Sort and remove the duplicate boundary_nodes.
@@ -391,7 +392,7 @@ namespace polyfem::mesh
 		for (size_t i = 0; i < starting_size; ++i)
 		{
 			const size_t id = element_id(patch[i]);
-			for (int j = 0; j < EDGES_IN_ELEMENT; ++j)
+			for (int j = 0; j < EDGES_PER_ELEMENT; ++j)
 			{
 				const Tuple e = WMTKMesh::tuple_from_edge(id, j);
 
@@ -423,18 +424,29 @@ namespace polyfem::mesh
 		using namespace polyfem::solver;
 
 		const std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(local_mesh_center);
-		LocalMesh local_mesh(*this, local_mesh_tuples, /*include_global_boundary=*/FREE_BOUNDARY);
+
+		const bool include_global_boundary =
+			state.args["contact"]["enabled"].get<bool>()
+			&& std::any_of(local_mesh_tuples.begin(), local_mesh_tuples.end(), [&](const Tuple &t) {
+				   const size_t tid = element_id(t);
+				   for (int i = 0; i < FACETS_PER_ELEMENT; ++i)
+					   if (is_on_boundary(tuple_from_facet(tid, i)))
+						   return true;
+				   return false;
+			   });
+
+		LocalMesh local_mesh(*this, local_mesh_tuples, include_global_boundary);
 
 		const std::vector<polyfem::basis::ElementBases> bases = local_bases(local_mesh);
 		const std::vector<int> boundary_nodes = local_boundary_nodes(local_mesh);
-		assembler::AssemblerUtils assembler = create_assembler(local_mesh.body_ids());
+		assembler::AssemblerUtils &assembler = init_assembler(local_mesh.body_ids());
 		SolveData solve_data;
 		assembler::AssemblyValsCache ass_vals_cache;
 		Eigen::SparseMatrix<double> mass;
 		ipc::CollisionMesh collision_mesh;
 
 		local_solve_data(
-			local_mesh, bases, boundary_nodes, assembler,
+			local_mesh, bases, boundary_nodes, assembler, include_global_boundary,
 			solve_data, ass_vals_cache, mass, collision_mesh);
 
 		const Eigen::MatrixXd sol = utils::flatten(local_mesh.displacements());
@@ -448,6 +460,7 @@ namespace polyfem::mesh
 		const std::string &op,
 		const std::vector<Tuple> &elements) const
 	{
+		// POLYFEM_REMESHER_SCOPED_TIMER("Renew neighbor tuples");
 		assert(elements.size() == 1);
 		assert(op != "vertex_smooth");
 
@@ -484,7 +497,7 @@ namespace polyfem::mesh
 		{
 			const size_t t_id = element_id(t);
 
-			for (auto j = 0; j < EDGES_IN_ELEMENT; j++)
+			for (auto j = 0; j < EDGES_PER_ELEMENT; j++)
 			{
 				const Tuple e = WMTKMesh::tuple_from_edge(t_id, j);
 				const size_t e_id = e.eid(*this);

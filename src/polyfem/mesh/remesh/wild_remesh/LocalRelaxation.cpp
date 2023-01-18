@@ -24,8 +24,19 @@ namespace polyfem::mesh
 		// 1. Get the n-ring of elements around the vertex.
 
 		std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(t);
+
+		const bool include_global_boundary =
+			state.args["contact"]["enabled"].get<bool>()
+			&& std::any_of(local_mesh_tuples.begin(), local_mesh_tuples.end(), [&](const Tuple &t) {
+				   const size_t tid = element_id(t);
+				   for (int i = 0; i < FACETS_PER_ELEMENT; ++i)
+					   if (is_on_boundary(tuple_from_facet(tid, i)))
+						   return true;
+				   return false;
+			   });
+
 		LocalMesh<WildRemesher<WMTKMesh>> local_mesh(
-			*this, local_mesh_tuples, /*include_global_boundary=*/FREE_BOUNDARY);
+			*this, local_mesh_tuples, include_global_boundary);
 
 		const int n_bases = local_mesh.num_vertices();
 		const int ndof = n_bases * dim();
@@ -37,26 +48,30 @@ namespace polyfem::mesh
 		const std::vector<polyfem::basis::ElementBases> bases = local_bases(local_mesh);
 		const std::vector<int> boundary_nodes = local_boundary_nodes(local_mesh);
 
+		assert(ndof >= boundary_nodes.size());
+		if (ndof - boundary_nodes.size() == 0)
+			return false;
+
 		timings.total_ndofs += ndof - boundary_nodes.size();
 		timings.n_solves++;
 
 		// These have to stay alive
-		assembler::AssemblerUtils assembler = create_assembler(local_mesh.body_ids());
+		assembler::AssemblerUtils &assembler = init_assembler(local_mesh.body_ids());
 		SolveData solve_data;
 		assembler::AssemblyValsCache ass_vals_cache;
 		Eigen::SparseMatrix<double> mass;
 		ipc::CollisionMesh collision_mesh;
 
 		local_solve_data(
-			local_mesh, bases, boundary_nodes, assembler,
+			local_mesh, bases, boundary_nodes, assembler, include_global_boundary,
 			solve_data, ass_vals_cache, mass, collision_mesh);
 
 		const Eigen::MatrixXd target_x = utils::flatten(local_mesh.displacements());
 		Eigen::MatrixXd sol = target_x;
 		{
-			POLYFEM_SCOPED_TIMER(timings.local_relaxation_solve);
+			POLYFEM_REMESHER_SCOPED_TIMER("Local relaxation solve");
 
-			auto nl_solver = state.make_nl_solver<NLProblem>();
+			auto nl_solver = state.make_nl_solver<NLProblem>("Eigen::LLT");
 			// auto criteria = nl_solver->criteria();
 			// criteria.iterations = 1;
 			// nl_solver->setStopCriteria(criteria);
@@ -77,9 +92,6 @@ namespace polyfem::mesh
 			}
 			catch (const std::runtime_error &e)
 			{
-				static int i = 0;
-				write_mesh(state.resolve_output_path(fmt::format("error_mesh_{}.vtu", i++)));
-				// assert(false);
 			}
 			logger().set_level(level_before);
 		}
@@ -89,7 +101,7 @@ namespace polyfem::mesh
 
 		bool accept;
 		{
-			POLYFEM_SCOPED_TIMER(timings.acceptance_check);
+			POLYFEM_REMESHER_SCOPED_TIMER("Acceptance check");
 
 			// const double local_energy_before = solve_data.nl_problem->value(target_x);
 			const double local_energy_after = solve_data.nl_problem->value(sol);
@@ -111,9 +123,9 @@ namespace polyfem::mesh
 			static const std::string reject_str = fmt::format(fmt::fg(fmt::terminal_color::yellow), "reject");
 
 			logger().debug(
-				"[{:s}] E0={:<10g} E1={:<10g} (E1-E0)={:<10g} tol={:g}",
+				"[{:s}] E0={:<10g} E1={:<10g} (E1-E0)={:<10g} tol={:g} local_ndof={:d}",
 				accept ? accept_str : reject_str, local_energy_before, local_energy_after,
-				abs_diff, acceptance_tolerance);
+				abs_diff, acceptance_tolerance, ndof - boundary_nodes.size());
 		}
 
 		// Update positions only on acceptance
@@ -127,7 +139,7 @@ namespace polyfem::mesh
 			Eigen::VectorXd friction_gradient = Eigen::VectorXd::Zero(target_x.rows());
 			if (solve_data.friction_form)
 			{
-				POLYFEM_SCOPED_TIMER(timings.local_relaxation_solve);
+				POLYFEM_REMESHER_SCOPED_TIMER("Local relaxation solve");
 				forms.back()->disable(); // disable linear form ∇D(x₀)ᵀ x
 				solve_data.friction_form->enable();
 
@@ -208,7 +220,7 @@ namespace polyfem::mesh
 	std::vector<polyfem::basis::ElementBases> WildRemesher<WMTKMesh>::local_bases(
 		LocalMesh<This> &local_mesh) const
 	{
-		POLYFEM_SCOPED_TIMER(timings.build_bases);
+		POLYFEM_REMESHER_SCOPED_TIMER("Build bases");
 
 		std::vector<polyfem::basis::ElementBases> bases;
 
@@ -242,7 +254,7 @@ namespace polyfem::mesh
 	std::vector<int> WildRemesher<WMTKMesh>::local_boundary_nodes(
 		const LocalMesh<This> &local_mesh) const
 	{
-		POLYFEM_SCOPED_TIMER(timings.create_boundary_nodes);
+		POLYFEM_REMESHER_SCOPED_TIMER("Create boundary nodes");
 
 		std::vector<int> boundary_nodes;
 
@@ -254,34 +266,31 @@ namespace polyfem::mesh
 		for (const int vi : local_mesh.fixed_vertices())
 			add_vertex_to_boundary_nodes(vi);
 
-		if constexpr (FREE_BOUNDARY)
+		// TODO: get this from state rather than building it
+		assert(state.args["boundary_conditions"]["dirichlet_boundary"].is_array());
+		const std::vector<json> bcs = state.args["boundary_conditions"]["dirichlet_boundary"];
+		std::unordered_set<int> bc_ids;
+		for (const json &bc : bcs)
 		{
-			// TODO: get this from state rather than building it
-			assert(state.args["boundary_conditions"]["dirichlet_boundary"].is_array());
-			const std::vector<json> bcs = state.args["boundary_conditions"]["dirichlet_boundary"];
-			std::unordered_set<int> bc_ids;
-			for (const json &bc : bcs)
-			{
-				bc_ids.insert(bc["id"].get<int>());
+			bc_ids.insert(bc["id"].get<int>());
 
 #ifndef NDEBUG
-				// Only all dimensions constrained are supported right now.
-				const std::vector<bool> bc_dim = bc["dimension"];
-				assert(std::all_of(bc_dim.begin(), bc_dim.end(), [](const bool b) { return b; }));
+			// Only all dimensions constrained are supported right now.
+			const std::vector<bool> bc_dim = bc["dimension"];
+			assert(std::all_of(bc_dim.begin(), bc_dim.end(), [](const bool b) { return b; }));
 #endif
-			}
+		}
 
-			const Eigen::MatrixXi &BF = local_mesh.boundary_facets();
-			for (int i = 0; i < BF.rows(); i++)
-			{
-				const int boundary_id = local_mesh.boundary_ids()[i];
+		const Eigen::MatrixXi &BF = local_mesh.boundary_facets();
+		for (int i = 0; i < BF.rows(); i++)
+		{
+			const int boundary_id = local_mesh.boundary_ids()[i];
 
-				if (bc_ids.find(boundary_id) == bc_ids.end())
-					continue;
+			if (bc_ids.find(boundary_id) == bc_ids.end())
+				continue;
 
-				for (int j = 0; j < BF.cols(); ++j)
-					add_vertex_to_boundary_nodes(BF(i, j));
-			}
+			for (int j = 0; j < BF.cols(); ++j)
+				add_vertex_to_boundary_nodes(BF(i, j));
 		}
 
 		// Sort and remove the duplicate boundary_nodes.
@@ -298,6 +307,7 @@ namespace polyfem::mesh
 		const std::vector<polyfem::basis::ElementBases> &bases,
 		const std::vector<int> &boundary_nodes,
 		const assembler::AssemblerUtils &assembler,
+		const bool contact_enabled,
 		solver::SolveData &solve_data,
 		assembler::AssemblyValsCache &ass_vals_cache,
 		Eigen::SparseMatrix<double> &mass,
@@ -314,7 +324,7 @@ namespace polyfem::mesh
 
 		// Assemble the mass matrix.
 		{
-			POLYFEM_SCOPED_TIMER(timings.assemble_mass_matrix);
+			POLYFEM_REMESHER_SCOPED_TIMER("Assemble mass matrix");
 			ass_vals_cache.init(is_volume(), bases, /*gbases=*/bases, /*is_mass=*/true);
 			assembler.assemble_mass_matrix(
 				/*assembler_formulation=*/"", is_volume(), n_bases,
@@ -328,10 +338,9 @@ namespace polyfem::mesh
 		ass_vals_cache.init(is_volume(), bases, /*gbases=*/bases, /*is_mass=*/false);
 
 		// Create collision mesh.
-		const bool contact_enabled = state.args["contact"]["enabled"] && FREE_BOUNDARY;
 		if (contact_enabled)
 		{
-			POLYFEM_SCOPED_TIMER(timings.create_collision_mesh);
+			POLYFEM_REMESHER_SCOPED_TIMER("Create collision mesh");
 			collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
 				local_mesh.rest_positions(), local_mesh.boundary_edges(),
 				local_mesh.boundary_faces());
@@ -372,7 +381,7 @@ namespace polyfem::mesh
 
 		std::vector<std::shared_ptr<Form>> forms;
 		{
-			POLYFEM_SCOPED_TIMER(timings.init_forms);
+			POLYFEM_REMESHER_SCOPED_TIMER("Init forms");
 			forms = solve_data.init_forms(
 				// General
 				dim(), current_time,

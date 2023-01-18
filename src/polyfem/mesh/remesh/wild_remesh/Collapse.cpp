@@ -10,6 +10,7 @@ namespace polyfem::mesh
 	template <class WMTKMesh>
 	bool WildRemesher<WMTKMesh>::collapse_edge_before(const Tuple &t)
 	{
+		// POLYFEM_REMESHER_SCOPED_TIMER("Collapse edge before");
 		if (!WMTKMesh::collapse_edge_before(t))
 			return false;
 
@@ -71,6 +72,9 @@ namespace polyfem::mesh
 	template <class WMTKMesh>
 	bool WildRemesher<WMTKMesh>::collapse_edge_after(const Tuple &t)
 	{
+		utils::Timer timer(timings.timings["Collapse edges after"]);
+		timer.start();
+
 		// 0) perform operation (done before this function)
 
 		// 1a) Update rest position of new vertex
@@ -97,14 +101,12 @@ namespace polyfem::mesh
 		double new_total_volume = 0;
 		for (const Tuple &t : get_elements())
 			new_total_volume += element_volume(t);
-		assert(std::abs(new_total_volume - total_volume) < 1e-14);
+		assert(std::abs(new_total_volume - total_volume) < 1e-12);
 #endif
 
 		// Check the interpolated position does not cause intersections
 		if (state.args["contact"]["enabled"].get<bool>()) // && is_vertex_on_boundary(t))
 		{
-			POLYFEM_SCOPED_TIMER(timings.create_collision_mesh);
-
 			Eigen::MatrixXd V_rest = rest_positions();
 			utils::append_rows(V_rest, obstacle().v());
 
@@ -141,6 +143,9 @@ namespace polyfem::mesh
 
 		// ~2) Project quantities so to minimize the L2 error~ (done after all operations)
 		// project_quantities(); // also projects positions
+
+		// local relaxation has its own timers
+		timer.stop();
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease/increase.

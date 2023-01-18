@@ -6,6 +6,8 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/io/VTUWriter.hpp>
 
+#include <wmtk/utils/TupleUtils.hpp>
+
 #include <igl/boundary_facets.h>
 #include <igl/edges.h>
 #include <igl/PI.h>
@@ -23,6 +25,8 @@ namespace polyfem::mesh
 		const std::vector<Tuple> &element_tuples,
 		const bool include_global_boundary)
 	{
+		POLYFEM_SCOPED_TIMER(m.timings.timings["LocalMesh::LocalMesh"]);
+
 		std::unordered_set<size_t> global_element_ids;
 
 		m_elements.resize(element_tuples.size(), m.dim() + 1);
@@ -45,17 +49,21 @@ namespace polyfem::mesh
 		// The above puts local vertices at front
 		m_num_local_vertices = m_global_to_local.size();
 
+		std::vector<Tuple> local_boundary_facets;
 		for (int fi = 0; fi < num_elements(); fi++)
 		{
 			const Tuple &elem = element_tuples[fi];
 
-			for (int i = 0; i < M::DIM + 1; ++i)
+			for (int i = 0; i < M::FACETS_PER_ELEMENT; ++i)
 			{
 				const Tuple facet = m.tuple_from_facet(m.element_id(elem), i);
 
 				// Only fix internal facets
 				if (m.is_on_boundary(facet))
+				{
+					local_boundary_facets.push_back(facet);
 					continue;
+				}
 
 				size_t adjacent_eid;
 				if constexpr (std::is_same_v<M, TriMesh>)
@@ -76,6 +84,7 @@ namespace polyfem::mesh
 
 		if (include_global_boundary)
 		{
+			// Copy the global to local map so we can check if a vertex is new
 			const std::unordered_map<int, int> prev_global_to_local = m_global_to_local;
 
 			const std::vector<Tuple> global_boundary_facets = m.boundary_facets();
@@ -105,12 +114,19 @@ namespace polyfem::mesh
 		}
 		else
 		{
-			igl::boundary_facets(m_elements, boundary_facets());
-			m_fixed_vertices.insert(
-				m_fixed_vertices.end(), boundary_facets().data(),
-				boundary_facets().data() + boundary_facets().size());
-			// TODO:
-			// m_boundary_ids.push_back(m.boundary_attrs[e.eid(m)].boundary_id);
+			if constexpr (std::is_same_v<M, TriMesh>)
+				wmtk::unique_edge_tuples(m, local_boundary_facets);
+			else
+				wmtk::unique_face_tuples(m, local_boundary_facets);
+			boundary_facets().resize(local_boundary_facets.size(), m_elements.cols() - 1);
+			for (int i = 0; i < local_boundary_facets.size(); i++)
+			{
+				const Tuple &facet = local_boundary_facets[i];
+				const auto vids = m.boundary_facet_vids(facet);
+				for (int j = 0; j < vids.size(); ++j)
+					boundary_facets()(i, j) = m_global_to_local[vids[j]];
+				m_boundary_ids.push_back(m.boundary_attrs[m.facet_id(facet)].boundary_id);
+			}
 		}
 
 		if (m_boundary_faces.rows() > 0)
@@ -198,7 +214,7 @@ namespace polyfem::mesh
 	std::vector<typename M::Tuple> LocalMesh<M>::flood_fill_n_ring(
 		const M &m, const Tuple &center, const double area)
 	{
-		POLYFEM_SCOPED_TIMER(m.timings.create_local_mesh);
+		POLYFEM_SCOPED_TIMER(m.timings.timings["Local mesh triplets"]);
 
 		double current_area = 0;
 
@@ -250,7 +266,7 @@ namespace polyfem::mesh
 	std::vector<typename M::Tuple> LocalMesh<M>::ball_selection(
 		const M &m, const VectorNd &center, const double volume)
 	{
-		POLYFEM_SCOPED_TIMER(m.timings.create_local_mesh);
+		POLYFEM_SCOPED_TIMER(m.timings.timings["Local mesh triplets"]);
 
 		const int dim = m.dim();
 
@@ -309,12 +325,11 @@ namespace polyfem::mesh
 		}
 
 		// Flood fill to fill out the desired volume
-		constexpr int n_facets_in_element = std::is_same_v<M, TriMesh> ? 3 : 4;
 		for (int i = 0; intersecting_volume < volume && i < intersecting_elements.size(); ++i)
 		{
 			const size_t element_id = m.element_id(intersecting_elements[i]);
 
-			for (int j = 0; j < n_facets_in_element; ++j)
+			for (int j = 0; j < M::FACETS_PER_ELEMENT; ++j)
 			{
 				const Tuple facet = m.tuple_from_facet(element_id, j);
 

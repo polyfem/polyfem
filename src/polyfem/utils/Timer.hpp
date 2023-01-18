@@ -47,12 +47,16 @@ namespace polyfem
 
 			inline void start()
 			{
+				is_running = true;
 				m_timer.start();
 			}
 
 			inline void stop()
 			{
+				if (!is_running)
+					return;
 				m_timer.stop();
+				is_running = false;
 				log_msg();
 				if (m_total_time)
 				{
@@ -85,6 +89,7 @@ namespace polyfem
 			std::string m_name;
 			igl::Timer m_timer;
 			double *m_total_time;
+			bool is_running = false;
 		};
 	} // namespace utils
 } // namespace polyfem

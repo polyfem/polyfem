@@ -325,7 +325,8 @@ namespace polyfem
 		/// factory to create the nl solver depdending on input
 		/// @return nonlinear solver (eg newton or LBFGS)
 		template <typename ProblemType>
-		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver() const;
+		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(
+			const std::string &linear_solver_type = "") const;
 
 	private:
 		/// @brief Load or compute the initial solution.

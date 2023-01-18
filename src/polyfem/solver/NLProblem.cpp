@@ -51,6 +51,8 @@ namespace polyfem::solver
 		  n_boundary_samples_(n_boundary_samples),
 		  t_(t)
 	{
+		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
+		assert(boundary_nodes.size() == 0 || (boundary_nodes.front() >= 0 && boundary_nodes.back() < full_size_));
 		use_reduced_size();
 	}
 

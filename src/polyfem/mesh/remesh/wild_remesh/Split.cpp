@@ -21,12 +21,14 @@ namespace polyfem::mesh
 	template <class WMTKMesh>
 	bool WildRemesher<WMTKMesh>::split_edge_before(const Tuple &e)
 	{
-#ifndef NDEBUG
-		write_priority_queue_mesh(
-			state.resolve_output_path(
-				fmt::format("split_edge_before_{:04d}.vtu", vis_counter++)),
-			e);
-#endif
+		// POLYFEM_REMESHER_SCOPED_TIMER("Split edges before");
+
+		// #ifndef NDEBUG
+		// write_priority_queue_mesh(
+		// 	state.resolve_output_path(
+		// 		fmt::format("split_edge_before_{:04d}.vtu", vis_counter++)),
+		// 	e);
+		// #endif
 
 		if (edge_attr(e.eid(*this)).split_attempts++ >= max_split_attempts)
 			return false;
@@ -65,6 +67,8 @@ namespace polyfem::mesh
 
 	bool WildTriRemesher::split_edge_after(const Tuple &t)
 	{
+		utils::Timer timer(timings.timings["Split edges after"]);
+		timer.start();
 		// 0) perform operation (done before this function)
 
 		// 1a) Update rest position of new vertex
@@ -92,6 +96,9 @@ namespace polyfem::mesh
 			// so internal points have a gradient of zero.
 			new_vertex_attr.projection_quantities.rightCols(1).setZero();
 		}
+
+		// local relaxation has its own timers
+		timer.stop();
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
@@ -162,6 +169,9 @@ namespace polyfem::mesh
 
 	bool WildTetRemesher::split_edge_after(const Tuple &t)
 	{
+		utils::Timer timer(timings.timings["Split edges after"]);
+		timer.start();
+
 		// 0) perform operation (done before this function)
 
 		// 1a) Update rest position of new vertex
@@ -189,6 +199,9 @@ namespace polyfem::mesh
 			// so internal points have a gradient of zero.
 			new_vertex_attr.projection_quantities.rightCols(1).setZero();
 		}
+
+		// local relaxation has its own timers
+		timer.stop();
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.

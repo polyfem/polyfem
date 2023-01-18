@@ -29,14 +29,15 @@ namespace polyfem::mesh
 
 		const std::vector<polyfem::basis::ElementBases> bases = local_bases(local_mesh);
 		const std::vector<int> boundary_nodes; // no boundary nodes
-		assembler::AssemblerUtils assembler = create_assembler(local_mesh.body_ids());
+		assembler::AssemblerUtils &assembler = init_assembler(local_mesh.body_ids());
 		SolveData solve_data;
 		assembler::AssemblyValsCache ass_vals_cache;
 		Eigen::SparseMatrix<double> mass;
 		ipc::CollisionMesh collision_mesh;
 
+		// TODO: account for contact energy
 		local_solve_data(
-			local_mesh, bases, boundary_nodes, assembler,
+			local_mesh, bases, boundary_nodes, assembler, false,
 			solve_data, ass_vals_cache, mass, collision_mesh);
 
 		const Eigen::MatrixXd sol = utils::flatten(local_mesh.displacements());
@@ -102,8 +103,6 @@ namespace polyfem::mesh
 
 		logger().info("[split]    aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_split_cnt_success, aggregate_split_cnt_fail);
 		logger().info("[collapse] aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_collapse_cnt_success, aggregate_collapse_cnt_fail);
-
-		write_mesh(state.resolve_output_path("remeshed.vtu"));
 
 		if ((collapse || swap || smooth) && executor.cnt_success() > 0)
 			project_quantities();

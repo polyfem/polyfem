@@ -32,13 +32,17 @@ namespace polyfem
 	using namespace utils;
 
 	template <typename ProblemType>
-	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> State::make_nl_solver() const
+	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> State::make_nl_solver(
+		const std::string &linear_solver_type) const
 	{
 		const std::string name = args["solver"]["nonlinear"]["solver"];
 		if (name == "newton" || name == "Newton")
 		{
+			json linear_solver_params = args["solver"]["linear"];
+			if (!linear_solver_type.empty())
+				linear_solver_params["solver"] = linear_solver_type;
 			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
-				args["solver"]["nonlinear"], args["solver"]["linear"]);
+				args["solver"]["nonlinear"], linear_solver_params);
 		}
 		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
 		{
@@ -362,5 +366,5 @@ namespace polyfem
 
 	////////////////////////////////////////////////////////////////////////
 	// Template instantiations
-	template std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> State::make_nl_solver() const;
+	template std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> State::make_nl_solver(const std::string &) const;
 } // namespace polyfem

@@ -26,7 +26,8 @@ namespace polyfem::mesh
 		  m_obstacle_displacements(obstacle_displacements),
 		  m_obstacle_quantities(obstacle_quantities),
 		  current_time(current_time),
-		  starting_energy(starting_energy)
+		  starting_energy(starting_energy),
+		  assembler(state.assembler)
 	{
 	}
 
@@ -91,6 +92,8 @@ namespace polyfem::mesh
 
 	void Remesher::project_quantities()
 	{
+		POLYFEM_REMESHER_SCOPED_TIMER("Project quantities");
+
 		using namespace polyfem::assembler;
 		using namespace polyfem::basis;
 		using namespace polyfem::utils;
@@ -189,7 +192,7 @@ namespace polyfem::mesh
 		const int n_constrained_quantaties = n_quantities() / 3;
 		const int n_unconstrained_quantaties = n_quantities() - n_constrained_quantaties;
 
-		const std::vector<int> boundary_nodes = this->boundary_nodes();
+		const std::vector<int> boundary_nodes = this->boundary_nodes(to_vertex_to_basis);
 		for (int i = 0; i < n_constrained_quantaties; ++i)
 		{
 			projected_quantities.col(i) = constrained_L2_projection(
@@ -287,14 +290,14 @@ namespace polyfem::mesh
 		return n_bases;
 	}
 
-	assembler::AssemblerUtils Remesher::create_assembler(
+	assembler::AssemblerUtils &Remesher::init_assembler(
 		const std::vector<int> &body_ids) const
 	{
-		POLYFEM_SCOPED_TIMER(timings.create_assembler);
-		assembler::AssemblerUtils new_assembler = state.assembler;
+		POLYFEM_REMESHER_SCOPED_TIMER("Create assembler");
+		// assembler::AssemblerUtils new_assembler = state.assembler;
 		assert(utils::is_param_valid(state.args, "materials"));
-		new_assembler.set_materials(body_ids, state.args["materials"]);
-		return new_assembler;
+		assembler.set_materials(body_ids, state.args["materials"]);
+		return assembler;
 	}
 
 	void Remesher::write_mesh(const std::string &path) const

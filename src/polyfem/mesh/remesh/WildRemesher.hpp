@@ -36,19 +36,24 @@ namespace polyfem::mesh
 				return 3;
 		}();
 
-		static constexpr int EDGES_IN_ELEMENT = [] {
+		static constexpr int EDGES_PER_ELEMENT = [] {
 			if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
 				return 3;
 			else
 				return 6;
 		}();
 
+		static constexpr int FACETS_PER_ELEMENT = [] {
+			if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
+				return 3;
+			else
+				return 4;
+		}();
+
 		using Tuple = typename WMTKMesh::Tuple;
 
 		/// @brief Current execuation policy (sequencial or parallel)
 		static constexpr wmtk::ExecutionPolicy EXECUTION_POLICY = wmtk::ExecutionPolicy::kSeq;
-
-		static constexpr bool FREE_BOUNDARY = true;
 
 		// --------------------------------------------------------------------
 		// constructors
@@ -151,7 +156,7 @@ namespace polyfem::mesh
 		/// @brief Exports body ids of the stored mesh
 		std::vector<int> body_ids() const override;
 		/// @brief Get the boundary nodes of the stored mesh
-		std::vector<int> boundary_nodes() const override;
+		std::vector<int> boundary_nodes(const Eigen::VectorXi &vertex_to_basis) const override;
 
 		/// @brief Number of projection quantities (not including the position)
 		int n_quantities() const override { return m_n_quantities; };
@@ -252,6 +257,7 @@ namespace polyfem::mesh
 			const std::vector<polyfem::basis::ElementBases> &bases,
 			const std::vector<int> &boundary_nodes,
 			const assembler::AssemblerUtils &assembler,
+			const bool contact_enabled,
 			solver::SolveData &solve_data,
 			assembler::AssemblyValsCache &ass_vals_cache,
 			Eigen::SparseMatrix<double> &mass,
