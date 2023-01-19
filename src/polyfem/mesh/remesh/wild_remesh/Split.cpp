@@ -30,11 +30,12 @@ namespace polyfem::mesh
 		// 	e);
 		// #endif
 
-		if (edge_attr(e.eid(*this)).split_attempts++ >= max_split_attempts)
+		if (edge_attr(e.eid(*this)).split_attempts++ >= max_split_attempts
+			|| edge_attr(e.eid(*this)).split_depth >= max_split_depth)
+		{
+			executor.m_cnt_fail--; // do not count this as a failed split
 			return false;
-
-		if (edge_attr(e.eid(*this)).split_depth >= max_split_depth)
-			return false;
+		}
 
 		// ---------------------------------------------------------------------
 
