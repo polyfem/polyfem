@@ -186,6 +186,8 @@ namespace polyfem::mesh
 		/// @brief Compute the length of an edge.
 		double edge_length(const Tuple &e) const;
 
+		Eigen::VectorXd edge_adjacent_element_volumes(const Tuple &e) const;
+
 		/// @brief Compute the average elastic energy of the faces containing an edge.
 		double edge_elastic_energy(const Tuple &e) const;
 
@@ -242,7 +244,7 @@ namespace polyfem::mesh
 	protected:
 		/// @brief Write a visualization mesh of the priority queue
 		/// @param e current edge tuple to be split
-		void write_priority_queue_mesh(const std::string &path, const Tuple &e);
+		void write_priority_queue_mesh(const std::string &path, const Tuple &e) const;
 
 		using Operations = std::vector<std::pair<std::string, Tuple>>;
 		Operations renew_neighbor_tuples(
@@ -360,6 +362,10 @@ namespace polyfem::mesh
 		{
 			int body_id = 0;
 		};
+
+		void write_edge_ranks_mesh(
+			const EdgeMap<typename EdgeAttributes::EnergyRank> &elastic_ranks,
+			const EdgeMap<typename EdgeAttributes::EnergyRank> &contact_ranks) const;
 
 		/// @brief Get a reference to an edge's attributes
 		/// @param e_id edge id

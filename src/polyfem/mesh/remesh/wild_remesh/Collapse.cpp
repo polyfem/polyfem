@@ -14,8 +14,15 @@ namespace polyfem::mesh
 		if (!WMTKMesh::collapse_edge_before(t))
 			return false;
 
+		double vol_tol;
+		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
+			vol_tol = std::pow(max_collapse_edge_length, 2) / 2;
+		else
+			vol_tol = std::pow(max_collapse_edge_length, 3) / (6 * sqrt(2));
+
 		// Dont collapse if the edge is large
-		if (edge_length(t) > max_collapse_edge_length)
+		if (edge_adjacent_element_volumes(t).minCoeff() > vol_tol
+			&& edge_length(t) > max_collapse_edge_length)
 			return false;
 
 		const int v0i = t.vid(*this);

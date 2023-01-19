@@ -7,6 +7,7 @@
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
+#include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 
 #include <igl/PI.h>
@@ -50,6 +51,7 @@ namespace polyfem::mesh
 
 		void build_edge_energy_maps(
 			const State &state,
+			const Eigen::MatrixXd &vertices,
 			const Eigen::MatrixXi &elements,
 			const Eigen::MatrixXd &sol,
 			Remesher::EdgeMap<double> &elastic_energy,
@@ -59,10 +61,10 @@ namespace polyfem::mesh
 
 			Eigen::MatrixXi edges;
 			igl::edges(elements, edges);
-			Remesher::EdgeMap<std::vector<double>> elastic_multienergy;
+			Remesher::EdgeMap<std::vector<std::array<double, 2>>> elastic_multienergy;
 			for (const auto &edge : edges.rowwise())
 			{
-				elastic_multienergy[{{(size_t)edge(0), (size_t)edge(1)}}] = std::vector<double>();
+				elastic_multienergy[{{(size_t)edge(0), (size_t)edge(1)}}] = std::vector<std::array<double, 2>>();
 			}
 
 			assert(state.solve_data.elastic_form != nullptr);
@@ -73,21 +75,29 @@ namespace polyfem::mesh
 				const auto &element = elements.row(i);
 				const double energy = elastic_energy_per_element[i];
 
-				elastic_multienergy[{{(size_t)element(0), (size_t)element(1)}}].push_back(energy);
-				elastic_multienergy[{{(size_t)element(0), (size_t)element(2)}}].push_back(energy);
-				elastic_multienergy[{{(size_t)element(1), (size_t)element(2)}}].push_back(energy);
+				const double volume =
+					elements.cols() == 3
+						? utils::triangle_area(vertices(element, Eigen::all))
+						: utils::tetrahedron_volume(vertices(element, Eigen::all));
+
+				elastic_multienergy[{{(size_t)element(0), (size_t)element(1)}}].push_back({{energy, volume}});
+				elastic_multienergy[{{(size_t)element(0), (size_t)element(2)}}].push_back({{energy, volume}});
+				elastic_multienergy[{{(size_t)element(1), (size_t)element(2)}}].push_back({{energy, volume}});
 				if (elements.cols() == 4)
 				{
-					elastic_multienergy[{{(size_t)element(0), (size_t)element(3)}}].push_back(energy);
-					elastic_multienergy[{{(size_t)element(1), (size_t)element(3)}}].push_back(energy);
-					elastic_multienergy[{{(size_t)element(2), (size_t)element(3)}}].push_back(energy);
+					elastic_multienergy[{{(size_t)element(0), (size_t)element(3)}}].push_back({{energy, volume}});
+					elastic_multienergy[{{(size_t)element(1), (size_t)element(3)}}].push_back({{energy, volume}});
+					elastic_multienergy[{{(size_t)element(2), (size_t)element(3)}}].push_back({{energy, volume}});
 				}
 			}
 
 			// Average the element energies
 			for (const auto &[edge, energies] : elastic_multienergy)
 			{
-				elastic_energy[edge] = std::accumulate(energies.begin(), energies.end(), 0.0) / energies.size();
+				elastic_energy[edge] =
+					std::accumulate(energies.begin(), energies.end(), 0.0, [](double a, const std::array<double, 2> &b) { return a + b[0]; })
+					// / std::accumulate(energies.begin(), energies.end(), 0.0, [](double a, const std::array<double, 2> &b) { return a + b[1]; });
+					/ energies.size();
 			}
 
 			if (state.solve_data.contact_form != nullptr)
@@ -152,7 +162,7 @@ namespace polyfem::mesh
 
 		Remesher::EdgeMap<double> elastic_energy, contact_energy;
 		build_edge_energy_maps(
-			state, elements, sol, elastic_energy, contact_energy);
+			state, rest_positions, elements, sol, elastic_energy, contact_energy);
 
 		// --------------------------------------------------------------------
 

@@ -93,14 +93,14 @@ namespace polyfem
 			logger().critical("Forward time step {} took {}s", t, timer.getElapsedTimeInSec());
 
 			save_energy(save_i);
-			save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+			save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
 			if (remesh_enabled)
 			{
-				if (t0 + dt * t >= remesh_t0 && mesh::remesh(*this, sol, t0 + dt * (t + 0), dt))
+				if (t0 + dt * (t - 1) >= remesh_t0 && mesh::remesh(*this, sol, t0 + dt * t, dt))
 				{
 					save_energy(save_i);
-					save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+					save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
 					const Eigen::MatrixXd loc_relax_sol = sol;
 					timer.start();
@@ -111,14 +111,14 @@ namespace polyfem
 					relax_diff_file.flush();
 
 					save_energy(save_i);
-					save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+					save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 				}
 				else
 				{
 					save_energy(save_i);
-					save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+					save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 					save_energy(save_i);
-					save_timestep(t0 + save_dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+					save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 				}
 			}
 

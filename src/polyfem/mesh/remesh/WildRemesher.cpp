@@ -136,6 +136,8 @@ namespace polyfem::mesh
 			const size_t e1 = edge.switch_vertex(*this).vid(*this);
 			edge_attr(edge.eid(*this)).energy_rank = edge_ranks.at({{e0, e1}});
 		}
+
+		write_edge_ranks_mesh(edge_elastic_ranks, edge_contact_ranks);
 	}
 
 	// -------------------------------------------------------------------------
@@ -381,6 +383,30 @@ namespace polyfem::mesh
 	}
 
 	template <class WMTKMesh>
+	Eigen::VectorXd WildRemesher<WMTKMesh>::edge_adjacent_element_volumes(const Tuple &e) const
+	{
+		double vol_tol;
+		std::vector<Tuple> adjacent_elements;
+		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
+		{
+			adjacent_elements = {{e}};
+			const std::optional<Tuple> f = e.switch_face(*this);
+			if (f.has_value())
+				adjacent_elements.push_back(f.value());
+		}
+		else
+		{
+			adjacent_elements = get_incident_elements_for_edge(e);
+		}
+
+		Eigen::VectorXd adjacent_element_volumes(adjacent_elements.size());
+		for (int i = 0; i < adjacent_elements.size(); ++i)
+			adjacent_element_volumes[i] = element_volume(adjacent_elements[i]);
+
+		return adjacent_element_volumes;
+	}
+
+	template <class WMTKMesh>
 	void WildRemesher<WMTKMesh>::extend_local_patch(std::vector<Tuple> &patch) const
 	{
 		const size_t starting_size = patch.size();
@@ -520,7 +546,7 @@ namespace polyfem::mesh
 	}
 
 	template <class WMTKMesh>
-	void WildRemesher<WMTKMesh>::write_priority_queue_mesh(const std::string &path, const Tuple &e)
+	void WildRemesher<WMTKMesh>::write_priority_queue_mesh(const std::string &path, const Tuple &e) const
 	{
 		constexpr double tol = 1e-14; // tolerance allowed in recomputed values
 
@@ -615,6 +641,80 @@ namespace polyfem::mesh
 		writer.add_field("edge_energy_diff", edge_energy_diffs);
 		writer.add_field("operation_order", edge_orders);
 		writer.write_mesh(path, rest_positions, elements, /*is_simplicial=*/true);
+	}
+
+	template <class WMTKMesh>
+	void WildRemesher<WMTKMesh>::write_edge_ranks_mesh(
+		const EdgeMap<typename EdgeAttributes::EnergyRank> &elastic_ranks,
+		const EdgeMap<typename EdgeAttributes::EnergyRank> &contact_ranks) const
+	{
+		const std::vector<Tuple> edges = WMTKMesh::get_edges();
+
+		// Create two vertices per edge to get per edge values.
+		const int n_vertices = 2 * edges.size();
+
+		std::vector<std::vector<int>> elements(edges.size(), std::vector<int>(2));
+		Eigen::MatrixXd rest_positions(n_vertices, dim());
+		Eigen::MatrixXd displacements(n_vertices, dim());
+		Eigen::VectorXd energy_ranks(n_vertices);
+		Eigen::VectorXd elastic_energy_ranks(n_vertices);
+		Eigen::VectorXd contact_energy_ranks(n_vertices);
+
+		for (int ei = 0; ei < edges.size(); ei++)
+		{
+			const std::array<size_t, 2> vids = {{
+				edges[ei].vid(*this),
+				edges[ei].switch_vertex(*this).vid(*this),
+			}};
+
+			for (int vi = 0; vi < vids.size(); ++vi)
+			{
+				elements[ei][vi] = 2 * ei + vi;
+				rest_positions.row(elements[ei][vi]) = vertex_attrs[vids[vi]].rest_position;
+				displacements.row(elements[ei][vi]) = vertex_attrs[vids[vi]].displacement();
+				energy_ranks(elements[ei][vi]) = int(edge_attr(edges[ei].eid(*this)).energy_rank);
+				elastic_energy_ranks(elements[ei][vi]) = int(elastic_ranks.at(vids));
+				contact_energy_ranks(elements[ei][vi]) = int(contact_ranks.at(vids));
+			}
+		}
+
+		const double t0 = state.args["time"]["t0"];
+		const double dt = state.args["time"]["dt"];
+		const double save_dt = dt / 3;
+		// current_time = t0 + t * dt for t = 1, 2, 3, ...
+		// t = (current_time - t0) / dt
+		const int time_steps = int(round((current_time - t0) / save_dt));
+
+		// 0 -> 0 * dt + save_dt
+		// 1 -> 1 * dt + save_dt
+		// 2 -> 2 * dt + save_dt
+
+		const auto vtu_name = [&](int i) -> std::string {
+			return state.resolve_output_path(fmt::format("edge_ranks_{:d}.vtu", i));
+		};
+
+		io::VTUWriter writer;
+		writer.add_field("displacement", displacements);
+		writer.add_field("elastic_energy_rank", elastic_energy_ranks);
+		writer.add_field("contact_energy_rank", contact_energy_ranks);
+		writer.add_field("energy_rank", energy_ranks);
+		writer.write_mesh(vtu_name(time_steps - 3), rest_positions, elements, /*is_simplicial=*/true);
+
+		writer.add_field("displacement", displacements);
+		writer.add_field("elastic_energy_rank", elastic_energy_ranks);
+		writer.add_field("contact_energy_rank", contact_energy_ranks);
+		writer.add_field("energy_rank", energy_ranks);
+		writer.write_mesh(vtu_name(time_steps - 2), rest_positions, elements, /*is_simplicial=*/true);
+
+		writer.add_field("displacement", displacements);
+		writer.add_field("elastic_energy_rank", elastic_energy_ranks);
+		writer.add_field("contact_energy_rank", contact_energy_ranks);
+		writer.add_field("energy_rank", energy_ranks);
+		writer.write_mesh(vtu_name(time_steps - 1), rest_positions, elements, /*is_simplicial=*/true);
+
+		state.out_geom.save_pvd(
+			state.resolve_output_path("edge_ranks.pvd"), vtu_name,
+			time_steps - 1, /*t0=*/save_dt, save_dt);
 	}
 
 	// -------------------------------------------------------------------------
