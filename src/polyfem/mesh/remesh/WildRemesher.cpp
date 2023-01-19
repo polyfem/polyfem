@@ -69,7 +69,7 @@ namespace polyfem::mesh
 		const double top_element_threshold = sorted_energies[int(sorted_energies.size() * threshold)];
 		const double bottom_element_threshold = sorted_energies[int(sorted_energies.size() * (1 - threshold))];
 
-		const double top_threshold = std::max(std::min(top_energy_threshold, top_element_threshold), 1e-12);
+		const double top_threshold = std::max(std::min(top_energy_threshold, top_element_threshold), std::min(1e-12, split_tol));
 		const double bottom_threshold = bottom_energy_threshold;
 		assert(bottom_threshold < top_threshold);
 
