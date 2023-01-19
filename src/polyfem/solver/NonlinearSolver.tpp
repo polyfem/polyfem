@@ -130,9 +130,13 @@ namespace cppoptlib
 				objFunc.gradient(x, grad);
 			}
 
+			Eigen::VectorXd values;
+			Eigen::MatrixXd grads;
 			{
 				POLYFEM_SCOPED_TIMER("verify gradient", grad_time);
 				objFunc.verify_gradient(x, grad);
+				values = objFunc.component_values(x);
+				grads = objFunc.component_gradients(x);
 			}
 
 			const double grad_norm = grad.norm();
@@ -260,8 +264,6 @@ namespace cppoptlib
 			objFunc.save_to_file(x);
 			if (outfile.is_open())
 			{
-				Eigen::VectorXd values = objFunc.component_values(x);
-				Eigen::MatrixXd grads = objFunc.component_gradients(x);
 				assert(values.size() == grads.cols());
 				outfile << std::setprecision(12) << energy << ", " << grad_norm;
 				if (export_energy_components)

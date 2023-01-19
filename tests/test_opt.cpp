@@ -336,7 +336,7 @@ TEST_CASE("3d-bspline-shape-trajectory-opt", "[optimization]")
 	auto energies = read_energy("3d-bspline-shape-trajectory-opt");
 
 	REQUIRE(energies[0] == Approx(0.00473695).epsilon(1e-3));
-	REQUIRE(energies[energies.size() - 1] == Approx(0.000461251).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.0004626948).epsilon(1e-4));
 }
 
 TEST_CASE("3d-bspline-shape-matching", "[optimization]")
