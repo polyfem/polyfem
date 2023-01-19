@@ -528,6 +528,10 @@ namespace polyfem
 		/// @brief computes all errors
 		void compute_errors(const Eigen::MatrixXd &sol);
 
+		/// @brief Save a JSON sim file for restarting the simulation at time t
+		/// @param t current time to restart at
+		void save_restart_json(const double t0, const double dt, const int t) const;
+
 		//-----------PATH management
 		/// Get the root path for the state (e.g., args["root_path"] or ".")
 		/// @return root path

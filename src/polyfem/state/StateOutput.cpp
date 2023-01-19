@@ -177,4 +177,56 @@ namespace polyfem
 			mises_path,
 			is_contact_enabled(), solution_frames);
 	}
+
+	void State::save_restart_json(const double t0, const double dt, const int t) const
+	{
+		const std::string restart_json_path = args["output"]["restart_json"];
+		if (restart_json_path.empty())
+			return;
+
+		json restart_json;
+		restart_json["common"] = root_path();
+		restart_json["time"] = {{"t0", t0 + dt * t}};
+
+		const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
+		if (!rest_mesh_path.empty())
+		{
+			std::vector<json> patch;
+			const std::vector<json> in_geometry = args["geometry"];
+			for (int i = 0; i < in_geometry.size(); ++i)
+			{
+				if (!in_geometry[i]["is_obstacle"].get<bool>())
+				{
+					patch.push_back({
+						{"op", "remove"},
+						{"path", fmt::format("/geometry/{}", i)},
+					});
+				}
+			}
+			const int remaining_geometry = in_geometry.size() - patch.size();
+			assert(remaining_geometry >= 0);
+			patch.push_back({
+				{"op", "add"},
+				{"path", fmt::format("/geometry/{}", remaining_geometry > 0 ? "0" : "-")},
+				{"value",
+				 {
+					 // TODO: this does not set the surface selections
+					 {"mesh", resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t))},
+				 }},
+			});
+			restart_json["patch"] = patch;
+		}
+
+		restart_json["input"] = {{
+			"data",
+			{
+				{"u_path", resolve_output_path(fmt::format(args["output"]["data"]["u_path"], t))},
+				{"v_path", resolve_output_path(fmt::format(args["output"]["data"]["v_path"], t))},
+				{"a_path", resolve_output_path(fmt::format(args["output"]["data"]["a_path"], t))},
+			},
+		}};
+
+		std::ofstream file(resolve_output_path(fmt::format(restart_json_path, t)));
+		file << restart_json;
+	}
 } // namespace polyfem

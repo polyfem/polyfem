@@ -15,6 +15,7 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/SolveData.hpp>
+#include <polyfem/io/MshWriter.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/mesh/remesh/Remesh.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -136,19 +137,17 @@ namespace polyfem
 
 			const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
 			if (!rest_mesh_path.empty())
-			{
-				Eigen::MatrixXd V;
-				Eigen::MatrixXi F;
-				build_mesh_matrices(V, F);
-				if (mesh->dimension() == 2)
-					OBJWriter::write(resolve_output_path(fmt::format(rest_mesh_path, t)), V, F);
-				else
-					log_and_throw_error("Cannot save rest mesh for 3D");
-			}
+				io::MshWriter::write(
+					resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t)),
+					*mesh, /*binary=*/true);
+
 			solve_data.time_integrator->save_raw(
 				resolve_output_path(fmt::format(args["output"]["data"]["u_path"], t)),
 				resolve_output_path(fmt::format(args["output"]["data"]["v_path"], t)),
 				resolve_output_path(fmt::format(args["output"]["data"]["a_path"], t)));
+
+			// save restart file
+			save_restart_json(t0, dt, t);
 		}
 	}
 

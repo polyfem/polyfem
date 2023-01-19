@@ -34,7 +34,7 @@
         "pointer": "/root_path",
         "default": "",
         "type": "string",
-        "doc": "Path for all relative paths, set automatically to the folder containing this json."
+        "doc": "Path for all relative paths, set automatically to the folder containing this JSON."
     },
     {
         "pointer": "/tests",
@@ -3369,6 +3369,7 @@
             "directory",
             "log",
             "json",
+            "restart_json",
             "paraview",
             "data",
             "advanced",
@@ -3431,7 +3432,13 @@
         "pointer": "/output/json",
         "default": "",
         "type": "string",
-        "doc": "File name for json output statistics on time/error/etc."
+        "doc": "File name for JSON output statistics on time/error/etc."
+    },
+    {
+        "pointer": "/output/restart_json",
+        "default": "",
+        "type": "string",
+        "doc": "File name for JSON output to restart the simulation."
     },
     {
         "pointer": "/output/paraview",
@@ -3723,7 +3730,7 @@
         "pointer": "/output/advanced/sol_at_node",
         "default": -1,
         "type": "int",
-        "doc": "Write out solution values at a specific node. the values will be written in the output json file"
+        "doc": "Write out solution values at a specific node. the values will be written in the output JSON file"
     },
     {
         "pointer": "/output/advanced/vis_boundary_only",
@@ -3759,7 +3766,7 @@
         "pointer": "/output/advanced/spectrum",
         "default": false,
         "type": "bool",
-        "doc": "exports the spectrum of the matrix in the output json. Works only if POLYSOLVE_WITH_SPECTRA is enabled"
+        "doc": "exports the spectrum of the matrix in the output JSON. Works only if POLYSOLVE_WITH_SPECTRA is enabled"
     },
     {
         "pointer": "/input",
