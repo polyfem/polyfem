@@ -23,6 +23,10 @@ namespace polyfem::mesh
 			const M &m,
 			const Tuple &center,
 			const int n);
+		static std::vector<Tuple> n_ring(
+			const M &m,
+			const std::vector<Tuple> &one_ring,
+			const int n);
 
 		/// @brief Construct a local mesh as an n-ring around a vertex.
 		static std::vector<Tuple> flood_fill_n_ring(

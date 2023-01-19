@@ -111,16 +111,16 @@ namespace polyfem::utils
 		const Eigen::Vector2d &center,
 		const double radius)
 	{
-		// Eigen::RowVector3d bc;
-		// igl::barycentric_coordinates(
-		// 	center.transpose(), t0.transpose(), t1.transpose(), t2.transpose(),
-		// 	bc);
+		Eigen::RowVector3d bc;
+		igl::barycentric_coordinates(
+			center.transpose(), t0.transpose(), t1.transpose(), t2.transpose(),
+			bc);
 
-		// if (bc.minCoeff() >= 0)
-		// {
-		// 	assert(bc.maxCoeff() <= 1); // bc.sum() == 1
-		// 	return true;
-		// }
+		if (bc.minCoeff() >= 0) // point is inside triangle
+		{
+			assert(bc.maxCoeff() <= 1); // bc.sum() == 1
+			return true;
+		}
 
 		const std::array<std::array<const Eigen::Vector2d *, 2>, 3> edges = {{
 			{{&t0, &t1}},
@@ -145,16 +145,16 @@ namespace polyfem::utils
 		const Eigen::Vector3d &center,
 		const double radius)
 	{
-		// Eigen::RowVector4d bc;
-		// igl::barycentric_coordinates(
-		// 	center.transpose(), t0.transpose(), t1.transpose(),
-		// 	t2.transpose(), t3.transpose(), bc);
+		Eigen::RowVector4d bc;
+		igl::barycentric_coordinates(
+			center.transpose(), t0.transpose(), t1.transpose(),
+			t2.transpose(), t3.transpose(), bc);
 
-		// if (bc.minCoeff() >= 0)
-		// {
-		// 	assert(bc.maxCoeff() <= 1); // bc.sum() == 1
-		// 	return true;
-		// }
+		if (bc.minCoeff() >= 0)
+		{
+			assert(bc.maxCoeff() <= 1); // bc.sum() == 1
+			return true;
+		}
 
 		const std::array<std::array<const Eigen::Vector3d *, 3>, 4> faces = {{
 			{{&t0, &t1, &t2}},

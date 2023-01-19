@@ -169,12 +169,19 @@ namespace polyfem::mesh
 	std::vector<typename M::Tuple> LocalMesh<M>::n_ring(
 		const M &m, const Tuple &center, const int n)
 	{
-		std::vector<Tuple> elements = m.get_one_ring_elements_for_vertex(center);
-		std::unordered_set<size_t> visited_vertices{{center.vid(m)}};
-		std::unordered_set<size_t> visited_faces;
+		return n_ring(m, m.get_one_ring_elements_for_vertex(center), n);
+	}
+
+	template <typename M>
+	std::vector<typename M::Tuple> LocalMesh<M>::n_ring(
+		const M &m, const std::vector<Tuple> &one_ring, const int n)
+	{
+		std::vector<Tuple> elements = one_ring;
+		std::unordered_set<size_t> visited_vertices;
+		std::unordered_set<size_t> visited_elements;
 		for (const auto &element : elements)
 		{
-			visited_faces.insert(m.element_id(element));
+			visited_elements.insert(m.element_id(element));
 		}
 
 		std::vector<Tuple> new_elements = elements;
@@ -184,8 +191,7 @@ namespace polyfem::mesh
 			std::vector<Tuple> new_new_elements;
 			for (const auto &elem : new_elements)
 			{
-				const auto vs = m.element_vertices(elem);
-				for (const Tuple &v : vs)
+				for (const Tuple &v : m.element_vertices(elem))
 				{
 					if (visited_vertices.find(v.vid(m)) != visited_vertices.end())
 						continue;
@@ -194,9 +200,9 @@ namespace polyfem::mesh
 					std::vector<Tuple> tmp = m.get_one_ring_elements_for_vertex(v);
 					for (auto &t1 : tmp)
 					{
-						if (visited_faces.find(t1.fid(m)) != visited_faces.end())
+						if (visited_elements.find(t1.fid(m)) != visited_elements.end())
 							continue;
-						visited_faces.insert(t1.fid(m));
+						visited_elements.insert(t1.fid(m));
 						elements.push_back(t1);
 						new_new_elements.push_back(t1);
 					}
@@ -348,6 +354,47 @@ namespace polyfem::mesh
 			}
 		}
 		assert(intersecting_volume >= volume);
+
+		// small tolerance around the point
+		const double eps_radius = 1e-10;
+		bvh.intersect_box(center3D - eps_radius, center3D + eps_radius, candidates);
+
+		std::vector<Tuple> one_ring;
+		for (unsigned int fi : candidates)
+		{
+			bool is_intersecting;
+			const auto vids = m.element_vids(elements[fi]);
+			if constexpr (std::is_same_v<M, TriMesh>)
+			{
+				is_intersecting = utils::triangle_intersects_disk(
+					V.row(vids[0]), V.row(vids[1]), V.row(vids[2]),
+					center, eps_radius);
+			}
+			else
+			{
+				static_assert(std::is_same_v<M, TetMesh>);
+				is_intersecting = utils::tetrahedron_intersects_ball(
+					V.row(vids[0]), V.row(vids[1]), V.row(vids[2]), V.row(vids[3]),
+					center, eps_radius);
+			}
+
+			if (is_intersecting)
+				one_ring.push_back(elements[fi]);
+		}
+		std::vector<Tuple> two_ring = n_ring(m, one_ring, 2);
+
+		for (const auto &e : two_ring)
+			if (intersecting_fid.find(m.element_id(e)) == intersecting_fid.end())
+				intersecting_elements.push_back(e);
+
+#ifndef NDEBUG
+		std::vector<size_t> ids;
+		for (const auto &e : intersecting_elements)
+			ids.push_back(m.element_id(e));
+		std::sort(ids.begin(), ids.end());
+		ids.erase(std::unique(ids.begin(), ids.end()), ids.end());
+		assert(ids.size() == intersecting_elements.size());
+#endif
 
 		return intersecting_elements;
 	}
