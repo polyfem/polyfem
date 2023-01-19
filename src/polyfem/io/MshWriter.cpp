@@ -60,6 +60,30 @@ namespace polyfem::io
 			block.data.push_back(i + 1);
 			for (int j = 0; j < n_local_v; ++j)
 				block.data.push_back(mesh.cell_vertex(i, j) + 1); // See more detail below.
+
+			block.entity_tag = mesh.get_body_id(i);
+		}
+
+		// Add physical groups based on body ids
+		std::vector<int> body_ids = mesh.get_body_ids();
+		if (body_ids.size() == 0)
+			body_ids.push_back(0); // default body id
+		std::sort(body_ids.begin(), body_ids.end());
+		body_ids.erase(std::unique(body_ids.begin(), body_ids.end()), body_ids.end());
+		for (const int body_id : body_ids)
+		{
+			if (mesh.dimension() == 2)
+			{
+				out.entities.surfaces.emplace_back();
+				out.entities.surfaces.back().tag = body_id;
+				out.entities.surfaces.back().physical_group_tags.push_back(body_id);
+			}
+			else
+			{
+				out.entities.volumes.emplace_back();
+				out.entities.volumes.back().tag = body_id;
+				out.entities.volumes.back().physical_group_tags.push_back(body_id);
+			}
 		}
 
 		mshio::save_msh(path, out);
