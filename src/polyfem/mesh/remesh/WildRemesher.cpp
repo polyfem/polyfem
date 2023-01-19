@@ -44,7 +44,7 @@ namespace polyfem::mesh
 
 	template <typename WMTKMesh>
 	Remesher::EdgeMap<typename WildRemesher<WMTKMesh>::EdgeAttributes::EnergyRank>
-	rank_edges(const Remesher::EdgeMap<double> &edge_energy, const double threshold)
+	rank_edges(const Remesher::EdgeMap<double> &edge_energy, const double threshold, const double split_tolerance)
 	{
 		if (edge_energy.empty())
 			return Remesher::EdgeMap<typename WildRemesher<WMTKMesh>::EdgeAttributes::EnergyRank>();
@@ -115,8 +115,8 @@ namespace polyfem::mesh
 			assert(!is_inverted(t));
 #endif
 
-		const auto edge_elastic_ranks = rank_edges<WMTKMesh>(elastic_energy, threshold);
-		const auto edge_contact_ranks = rank_edges<WMTKMesh>(contact_energy, threshold);
+		const auto edge_elastic_ranks = rank_edges<WMTKMesh>(elastic_energy, threshold, split_tolerance);
+		const auto edge_contact_ranks = rank_edges<WMTKMesh>(contact_energy, threshold, split_tolerance);
 
 		EdgeMap<typename EdgeAttributes::EnergyRank> edge_ranks;
 		for (const auto &[edge, elastic_rank] : edge_elastic_ranks)
