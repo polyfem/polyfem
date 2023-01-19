@@ -28,55 +28,61 @@ namespace polyfem::mesh
 		POLYFEM_SCOPED_TIMER(m.timings.timings["LocalMesh::LocalMesh"]);
 
 		std::unordered_set<size_t> global_element_ids;
-
-		m_elements.resize(element_tuples.size(), m.dim() + 1);
-		for (int fi = 0; fi < num_elements(); fi++)
 		{
-			const Tuple &elem = element_tuples[fi];
-			global_element_ids.insert(m.element_id(elem));
-
-			const auto vids = m.element_vids(elem);
-
-			for (int i = 0; i < vids.size(); ++i)
+			POLYFEM_SCOPED_TIMER(m.timings.timings["LocalMesh::LocalMesh -> init m_elements"]);
+			m_elements.resize(element_tuples.size(), m.dim() + 1);
+			m_body_ids.reserve(element_tuples.size());
+			for (int fi = 0; fi < num_elements(); fi++)
 			{
-				if (m_global_to_local.find(vids[i]) == m_global_to_local.end())
-					m_global_to_local[vids[i]] = m_global_to_local.size();
-				m_elements(fi, i) = m_global_to_local[vids[i]];
-			}
+				const Tuple &elem = element_tuples[fi];
+				global_element_ids.insert(m.element_id(elem));
 
-			m_body_ids.push_back(m.element_attrs[m.element_id(elem)].body_id);
+				const auto vids = m.element_vids(elem);
+
+				for (int i = 0; i < vids.size(); ++i)
+				{
+					if (m_global_to_local.find(vids[i]) == m_global_to_local.end())
+						m_global_to_local[vids[i]] = m_global_to_local.size();
+					m_elements(fi, i) = m_global_to_local[vids[i]];
+				}
+
+				m_body_ids.push_back(m.element_attrs[m.element_id(elem)].body_id);
+			}
 		}
 		// The above puts local vertices at front
 		m_num_local_vertices = m_global_to_local.size();
 
 		std::vector<Tuple> local_boundary_facets;
-		for (int fi = 0; fi < num_elements(); fi++)
 		{
-			const Tuple &elem = element_tuples[fi];
-
-			for (int i = 0; i < M::FACETS_PER_ELEMENT; ++i)
+			POLYFEM_SCOPED_TIMER(m.timings.timings["LocalMesh::LocalMesh -> init m_fixed_vertices"]);
+			for (int fi = 0; fi < num_elements(); fi++)
 			{
-				const Tuple facet = m.tuple_from_facet(m.element_id(elem), i);
+				const Tuple &elem = element_tuples[fi];
 
-				// Only fix internal facets
-				if (m.is_on_boundary(facet))
+				for (int i = 0; i < M::FACETS_PER_ELEMENT; ++i)
 				{
-					local_boundary_facets.push_back(facet);
-					continue;
+					const Tuple facet = m.tuple_from_facet(m.element_id(elem), i);
+
+					// Only fix internal facets
+					if (m.is_on_boundary(facet))
+					{
+						local_boundary_facets.push_back(facet);
+						continue;
+					}
+
+					size_t adjacent_tid;
+					if constexpr (std::is_same_v<M, TriMesh>)
+						adjacent_tid = facet.switch_face(m)->fid(m);
+					else
+						adjacent_tid = facet.switch_tetrahedron(m)->tid(m);
+
+					// Only fix internal facets that do not have a neighbor in the local mesh
+					if (global_element_ids.find(adjacent_tid) != global_element_ids.end())
+						continue;
+
+					for (const size_t &vid : m.boundary_facet_vids(facet))
+						m_fixed_vertices.push_back(m_global_to_local[vid]);
 				}
-
-				size_t adjacent_eid;
-				if constexpr (std::is_same_v<M, TriMesh>)
-					adjacent_eid = facet.switch_face(m)->fid(m);
-				else
-					adjacent_eid = facet.switch_tetrahedron(m)->tid(m);
-
-				// Only fix internal facets that do not have a neighbor in the local mesh
-				if (global_element_ids.find(adjacent_eid) != global_element_ids.end())
-					continue;
-
-				for (const size_t &vid : m.boundary_facet_vids(facet))
-					m_fixed_vertices.push_back(m_global_to_local[vid]);
 			}
 		}
 
@@ -84,6 +90,7 @@ namespace polyfem::mesh
 
 		if (include_global_boundary)
 		{
+			POLYFEM_SCOPED_TIMER(m.timings.timings["LocalMesh::LocalMesh -> include_global_boundary"]);
 			// Copy the global to local map so we can check if a vertex is new
 			const std::unordered_map<int, int> prev_global_to_local = m_global_to_local;
 
@@ -114,6 +121,8 @@ namespace polyfem::mesh
 		}
 		else
 		{
+			POLYFEM_SCOPED_TIMER(m.timings.timings["LocalMesh::LocalMesh -> !include_global_boundary"]);
+
 			if constexpr (std::is_same_v<M, TriMesh>)
 				wmtk::unique_edge_tuples(m, local_boundary_facets);
 			else
@@ -144,6 +153,7 @@ namespace polyfem::mesh
 
 		if (include_global_boundary && m.obstacle().n_vertices() > 0)
 		{
+			POLYFEM_SCOPED_TIMER(m.timings.timings["LocalMesh::LocalMesh -> append obstacles"]);
 			const Obstacle &obstacle = m.obstacle();
 			utils::append_rows(m_rest_positions, obstacle.v());
 			utils::append_rows(m_positions, obstacle.v() + m.obstacle_displacements());

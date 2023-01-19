@@ -323,21 +323,21 @@ namespace polyfem::mesh
 			assert(iter != vids.end());
 
 			*iter = old_v0_id;
-			const auto find_old_edge0 = old_faces.find(vids);
+			const auto find_old_face0 = old_faces.find(vids);
 			*iter = old_v1_id;
-			const auto find_old_edge1 = old_faces.find(vids);
+			const auto find_old_face1 = old_faces.find(vids);
 
-			if (find_old_edge0 != old_faces.end() && find_old_edge1 != old_faces.end())
+			if (find_old_face0 != old_faces.end() && find_old_face1 != old_faces.end())
 			{
 				// both cannot be boundary faces
-				assert(!(find_old_edge0->second.boundary_id >= 0 && find_old_edge1->second.boundary_id >= 0));
+				assert(!(find_old_face0->second.boundary_id >= 0 && find_old_face1->second.boundary_id >= 0));
 				boundary_attrs[f_id].boundary_id = std::max(
-					find_old_edge0->second.boundary_id, find_old_edge1->second.boundary_id);
+					find_old_face0->second.boundary_id, find_old_face1->second.boundary_id);
 			}
-			else if (find_old_edge0 != old_faces.end())
-				boundary_attrs[f_id] = find_old_edge0->second;
-			else if (find_old_edge1 != old_faces.end())
-				boundary_attrs[f_id] = find_old_edge1->second;
+			else if (find_old_face0 != old_faces.end())
+				boundary_attrs[f_id] = find_old_face0->second;
+			else if (find_old_face1 != old_faces.end())
+				boundary_attrs[f_id] = find_old_face1->second;
 			else
 				assert(false);
 		}

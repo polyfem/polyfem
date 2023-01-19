@@ -74,7 +74,7 @@ namespace polyfem::mesh
 		/// @brief Is the given tuple on the boundary of the mesh?
 		bool is_on_boundary(const Tuple &t) const override
 		{
-			return !t.switch_face(*this).has_value();
+			return is_boundary_edge(t);
 		}
 
 		/// @brief Get the boundary facets of the mesh

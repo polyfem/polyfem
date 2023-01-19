@@ -83,7 +83,7 @@ namespace polyfem::mesh
 		/// @brief Is the given tuple on the boundary of the mesh?
 		bool is_on_boundary(const Tuple &t) const override
 		{
-			return !t.switch_tetrahedron(*this).has_value();
+			return t.is_boundary_face(*this);
 		}
 
 		/// @brief Get the boundary facets of the mesh

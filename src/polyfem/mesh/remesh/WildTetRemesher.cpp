@@ -110,7 +110,7 @@ namespace polyfem::mesh
 	{
 		std::vector<Tuple> boundary_faces;
 		for (const Tuple &f : get_faces())
-			if (!f.switch_tetrahedron(*this))
+			if (f.is_boundary_face(*this))
 				boundary_faces.push_back(f);
 		return boundary_faces;
 	}
