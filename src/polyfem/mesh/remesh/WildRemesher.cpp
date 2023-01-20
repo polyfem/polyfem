@@ -63,11 +63,13 @@ namespace polyfem::mesh
 
 		assert(0.0 <= threshold && threshold <= 1.0);
 
+		const double tmp = (1 - threshold);
+
 		const double top_energy_threshold = (max_energy - min_energy) * threshold + min_energy;
-		const double bottom_energy_threshold = (max_energy - min_energy) * (1 - threshold) + min_energy;
+		const double bottom_energy_threshold = (max_energy - min_energy) * tmp + min_energy;
 
 		const double top_element_threshold = sorted_energies[int(sorted_energies.size() * threshold)];
-		const double bottom_element_threshold = sorted_energies[int(sorted_energies.size() * (1 - threshold))];
+		const double bottom_element_threshold = sorted_energies[int(sorted_energies.size() * tmp)];
 
 		const double top_threshold = std::max(std::min(top_energy_threshold, top_element_threshold), std::min(1e-12, split_tolerance));
 		const double bottom_threshold = bottom_energy_threshold;
@@ -383,6 +385,15 @@ namespace polyfem::mesh
 	}
 
 	template <class WMTKMesh>
+	typename WildRemesher<WMTKMesh>::VectorNd
+	WildRemesher<WMTKMesh>::edge_center(const Tuple &e) const
+	{
+		const VectorNd &e0 = vertex_attrs[e.vid(*this)].position;
+		const VectorNd &e1 = vertex_attrs[e.switch_vertex(*this).vid(*this)].position;
+		return (e1 + e0) / 2.0;
+	}
+
+	template <class WMTKMesh>
 	Eigen::VectorXd WildRemesher<WMTKMesh>::edge_adjacent_element_volumes(const Tuple &e) const
 	{
 		double vol_tol;
@@ -437,19 +448,18 @@ namespace polyfem::mesh
 
 	template <class WMTKMesh>
 	std::vector<typename WMTKMesh::Tuple>
-	WildRemesher<WMTKMesh>::local_mesh_tuples(const Eigen::Matrix<double, DIM, 1> &center) const
+	WildRemesher<WMTKMesh>::local_mesh_tuples(const VectorNd &center) const
 	{
 		return LocalMesh<WildRemesher<WMTKMesh>>::ball_selection(
 			*this, center, flood_fill_rel_area * total_volume);
 	}
 
 	template <class WMTKMesh>
-	double WildRemesher<WMTKMesh>::local_mesh_energy(
-		const Eigen::Matrix<double, DIM, 1> &local_mesh_center) const
+	double WildRemesher<WMTKMesh>::local_mesh_energy(const VectorNd &center) const
 	{
 		using namespace polyfem::solver;
 
-		const std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(local_mesh_center);
+		const std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(center);
 
 		const bool include_global_boundary =
 			state.args["contact"]["enabled"].get<bool>()

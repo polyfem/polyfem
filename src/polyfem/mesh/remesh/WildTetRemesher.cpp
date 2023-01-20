@@ -45,12 +45,19 @@ namespace polyfem::mesh
 	std::vector<WildTetRemesher::Tuple> WildTetRemesher::boundary_facets() const
 	{
 		std::vector<Tuple> boundary_faces;
-		for (const Tuple &f : get_faces())
+		for (int tid = 0; tid < boundary_attrs.size() / 4; ++tid)
 		{
-			const bool is_boundary_face = boundary_attrs[f.fid(*this)].boundary_id >= 0;
-			assert(is_boundary_face == f.is_boundary_face(*this));
-			if (is_boundary_face)
-				boundary_faces.push_back(f);
+			const Tuple t = tuple_from_tet(tid);
+			if (!t.is_valid())
+				continue;
+
+			for (int lfid = 0; lfid < 4; ++lfid)
+			{
+				if (boundary_attrs[4 * tid + lfid].boundary_id >= 0)
+				{
+					boundary_faces.push_back(tuple_from_face(tid, lfid));
+				}
+			}
 		}
 		return boundary_faces;
 	}

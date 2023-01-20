@@ -50,6 +50,8 @@ namespace polyfem::mesh
 				return 4;
 		}();
 
+		using VectorNd = Eigen::Matrix<double, DIM, 1>;
+
 		using Tuple = typename WMTKMesh::Tuple;
 
 		/// @brief Current execuation policy (sequencial or parallel)
@@ -186,6 +188,9 @@ namespace polyfem::mesh
 		/// @brief Compute the length of an edge.
 		double edge_length(const Tuple &e) const;
 
+		/// @brief Compute the center of the edge.
+		VectorNd edge_center(const Tuple &e) const;
+
 		Eigen::VectorXd edge_adjacent_element_volumes(const Tuple &e) const;
 
 		/// @brief Compute the average elastic energy of the faces containing an edge.
@@ -226,13 +231,13 @@ namespace polyfem::mesh
 
 		void extend_local_patch(std::vector<Tuple> &patch) const;
 
-		std::vector<Tuple> local_mesh_tuples(const Eigen::Matrix<double, DIM, 1> &center) const;
+		std::vector<Tuple> local_mesh_tuples(const VectorNd &center) const;
 		std::vector<Tuple> local_mesh_tuples(const Tuple &t) const
 		{
 			return local_mesh_tuples(vertex_attrs[t.vid(*this)].rest_position);
 		}
 
-		double local_mesh_energy(const Eigen::Matrix<double, DIM, 1> &local_mesh_center) const;
+		double local_mesh_energy(const VectorNd &local_mesh_center) const;
 
 		virtual bool is_edge_on_body_boundary(const Tuple &e) const = 0;
 		virtual bool is_vertex_on_boundary(const Tuple &v) const = 0;
@@ -297,7 +302,7 @@ namespace polyfem::mesh
 	public:
 		struct VertexAttributes
 		{
-			using VectorNd = Eigen::Matrix<double, DIM, 1>;
+			using VectorNd = WildRemesher<WMTKMesh>::VectorNd;
 
 			VectorNd rest_position;
 			VectorNd position;

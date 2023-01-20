@@ -94,7 +94,11 @@ namespace polyfem::mesh
 			// Copy the global to local map so we can check if a vertex is new
 			const std::unordered_map<int, int> prev_global_to_local = m_global_to_local;
 
-			const std::vector<Tuple> global_boundary_facets = m.boundary_facets();
+			std::vector<Tuple> global_boundary_facets;
+			{
+				POLYFEM_SCOPED_TIMER(m.timings.timings["LocalMesh::LocalMesh -> include_global_boundary -> boundary_facets"]);
+				global_boundary_facets = m.boundary_facets();
+			}
 			boundary_facets().resize(global_boundary_facets.size(), m_elements.cols() - 1);
 			for (int i = 0; i < global_boundary_facets.size(); i++)
 			{
@@ -339,6 +343,7 @@ namespace polyfem::mesh
 				intersecting_volume += m.element_volume(elements[fi]);
 			}
 		}
+		assert(!intersecting_elements.empty());
 
 		// Flood fill to fill out the desired volume
 		for (int i = 0; intersecting_volume < volume && i < intersecting_elements.size(); ++i)
