@@ -1041,7 +1041,7 @@
             "n_ring_size",
             "flood_fill_rel_area",
             "threshold",
-            "max_split_depth",
+            "max_op_depth",
             "max_collapse_edge_length"
         ],
         "doc": "Settings for adaptive remeshing"
@@ -1103,7 +1103,7 @@
         "doc": "remeshing threshold on energy"
     },
     {
-        "pointer": "/space/remesh/max_split_depth",
+        "pointer": "/space/remesh/max_op_depth",
         "default": 3,
         "type": "int",
         "min": 1,

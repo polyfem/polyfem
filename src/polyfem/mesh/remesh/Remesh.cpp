@@ -137,7 +137,7 @@ namespace polyfem::mesh
 			remeshing->n_ring_size = state.args["space"]["remesh"]["n_ring_size"];
 			remeshing->flood_fill_rel_area = state.args["space"]["remesh"]["flood_fill_rel_area"];
 			remeshing->threshold = state.args["space"]["remesh"]["threshold"];
-			remeshing->max_split_depth = state.args["space"]["remesh"]["max_split_depth"];
+			remeshing->max_op_depth = state.args["space"]["remesh"]["max_op_depth"];
 			remeshing->max_collapse_edge_length = state.args["space"]["remesh"]["max_collapse_edge_length"];
 
 			return remeshing;

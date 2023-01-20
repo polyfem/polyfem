@@ -88,6 +88,13 @@ namespace polyfem::mesh
 			aggregate_split_cnt_fail += executor.cnt_fail();
 		}
 
+		// Reset operation attempts and depth counters
+		for (const Tuple e : WMTKMesh::get_edges())
+		{
+			edge_attr(e.eid(*this)).op_attempts = 0;
+			edge_attr(e.eid(*this)).op_depth = 0;
+		}
+
 		if (collapse)
 		{
 			collapse_edges();

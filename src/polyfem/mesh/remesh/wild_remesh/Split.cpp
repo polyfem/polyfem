@@ -30,8 +30,8 @@ namespace polyfem::mesh
 		// 	e);
 		// #endif
 
-		if (edge_attr(e.eid(*this)).split_attempts++ >= max_split_attempts
-			|| edge_attr(e.eid(*this)).split_depth >= max_split_depth)
+		if (edge_attr(e.eid(*this)).op_attempts++ >= max_op_attempts
+			|| edge_attr(e.eid(*this)).op_depth >= max_op_depth)
 		{
 			executor.m_cnt_fail--; // do not count this as a failed split
 			return false;
@@ -113,9 +113,9 @@ namespace polyfem::mesh
 		const size_t old_v1_id)
 	{
 		BoundaryAttributes old_split_edge = old_edges.at({{old_v0_id, old_v1_id}});
-		old_split_edge.split_attempts = 0;
+		old_split_edge.op_attempts = 0;
 		BoundaryAttributes interior_edge; // default
-		interior_edge.split_depth = old_split_edge.split_depth;
+		interior_edge.op_depth = old_split_edge.op_depth;
 		interior_edge.energy_rank = old_split_edge.energy_rank;
 
 		const size_t new_vid = new_vertex.vid(*this);
@@ -137,7 +137,7 @@ namespace polyfem::mesh
 				{
 					boundary_attrs[e.eid(*this)] =
 						(v0_id == old_v0_id || v0_id == old_v1_id) ? old_split_edge : interior_edge;
-					boundary_attrs[e.eid(*this)].split_depth++;
+					boundary_attrs[e.eid(*this)].op_depth++;
 				}
 				else
 				{
@@ -216,9 +216,9 @@ namespace polyfem::mesh
 		const size_t old_v1_id)
 	{
 		EdgeAttributes old_split_edge = old_edges.at({{old_v0_id, old_v1_id}});
-		old_split_edge.split_attempts = 0;
+		old_split_edge.op_attempts = 0;
 		EdgeAttributes interior_edge; // default
-		interior_edge.split_depth = old_split_edge.split_depth;
+		interior_edge.op_depth = old_split_edge.op_depth;
 		interior_edge.energy_rank = old_split_edge.energy_rank;
 
 		const size_t new_vid = new_vertex.vid(*this);
@@ -240,7 +240,7 @@ namespace polyfem::mesh
 				{
 					edge_attrs[e.eid(*this)] =
 						(v0_id == old_v0_id || v0_id == old_v1_id) ? old_split_edge : interior_edge;
-					edge_attrs[e.eid(*this)].split_depth++;
+					edge_attrs[e.eid(*this)].op_depth++;
 				}
 				else
 				{

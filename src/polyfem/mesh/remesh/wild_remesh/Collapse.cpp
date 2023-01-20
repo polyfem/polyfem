@@ -11,8 +11,12 @@ namespace polyfem::mesh
 	bool WildRemesher<WMTKMesh>::collapse_edge_before(const Tuple &t)
 	{
 		// POLYFEM_REMESHER_SCOPED_TIMER("Collapse edge before");
-		if (!WMTKMesh::collapse_edge_before(t))
+		if (edge_attr(t.eid(*this)).op_attempts++ >= max_op_attempts
+			|| edge_attr(t.eid(*this)).op_depth >= max_op_depth)
+		{
+			executor.m_cnt_fail--; // do not count this as a failed split
 			return false;
+		}
 
 		double vol_tol;
 		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
@@ -253,6 +257,8 @@ namespace polyfem::mesh
 					find_old_edge0->second.boundary_id, find_old_edge1->second.boundary_id);
 				boundary_attrs[e_id].energy_rank = std::min(
 					find_old_edge0->second.energy_rank, find_old_edge1->second.energy_rank);
+				boundary_attrs[e_id].op_depth =
+					std::max(find_old_edge0->second.op_depth, find_old_edge1->second.op_depth);
 			}
 			else if (find_old_edge0 != old_edges.end())
 				boundary_attrs[e_id] = find_old_edge0->second;
@@ -260,6 +266,9 @@ namespace polyfem::mesh
 				boundary_attrs[e_id] = find_old_edge1->second;
 			else
 				assert(false);
+
+			boundary_attrs[e_id].op_attempts = 0;
+			boundary_attrs[e_id].op_depth++;
 		}
 	}
 
@@ -289,6 +298,8 @@ namespace polyfem::mesh
 					{
 						edge_attr(e.eid(*this)).energy_rank = std::min(
 							find_old_edge0->second.energy_rank, find_old_edge1->second.energy_rank);
+						edge_attr(e.eid(*this)).op_depth =
+							std::max(find_old_edge0->second.op_depth, find_old_edge1->second.op_depth);
 					}
 					else if (find_old_edge0 != old_edges.end())
 						edge_attr(e.eid(*this)) = find_old_edge0->second;
@@ -296,6 +307,9 @@ namespace polyfem::mesh
 						edge_attr(e.eid(*this)) = find_old_edge1->second;
 					else
 						assert(false);
+
+					edge_attr(e.eid(*this)).op_attempts = 0;
+					edge_attr(e.eid(*this)).op_depth++;
 				}
 				else
 				{

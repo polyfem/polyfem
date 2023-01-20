@@ -214,8 +214,8 @@ namespace polyfem::mesh
 		double flood_fill_rel_area = 0.01;
 
 		double threshold = 0;
-		int max_split_depth = 3;
-		int max_split_attempts = 1;
+		int max_op_depth = 3;
+		int max_op_attempts = 1;
 
 		// --------------------------------------------------------------------
 		// members

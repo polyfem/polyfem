@@ -344,8 +344,8 @@ namespace polyfem::mesh
 
 		struct EdgeAttributes
 		{
-			int split_depth = 0;
-			int split_attempts = 0;
+			int op_depth = 0;
+			int op_attempts = 0;
 			// clang-format off
 			enum class EnergyRank { BOTTOM, MIDDLE, TOP };
 			// clang-format on
