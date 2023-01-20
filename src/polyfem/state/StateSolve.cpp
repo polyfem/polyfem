@@ -42,6 +42,8 @@ namespace polyfem
 		{
 			if (!read_matrix(in_path, solution))
 				log_and_throw_error("Unable to read initial solution from file ({})!", in_path);
+			assert(solution.cols() == 1);
+			solution = utils::reorder_matrix(solution, in_node_to_node, -1, mesh->dimension());
 		}
 		else
 		{
@@ -63,6 +65,8 @@ namespace polyfem
 		{
 			if (!read_matrix(in_path, velocity))
 				log_and_throw_error("Unable to read initial velocity from file ({})!", in_path);
+			assert(velocity.cols() == 1);
+			velocity = utils::reorder_matrix(velocity, in_node_to_node, -1, mesh->dimension());
 		}
 		else
 			solve_data.rhs_assembler->initial_velocity(velocity);
@@ -76,6 +80,8 @@ namespace polyfem
 		{
 			if (!read_matrix(in_path, acceleration))
 				log_and_throw_error("Unable to read initial acceleration from file ({})!", in_path);
+			assert(acceleration.cols() == 1);
+			acceleration = utils::reorder_matrix(acceleration, in_node_to_node, -1, mesh->dimension());
 		}
 		else
 			solve_data.rhs_assembler->initial_acceleration(acceleration);

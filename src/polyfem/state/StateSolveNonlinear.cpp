@@ -137,9 +137,14 @@ namespace polyfem
 
 			const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
 			if (!rest_mesh_path.empty())
+			{
+				Eigen::MatrixXd V;
+				Eigen::MatrixXi F;
+				build_mesh_matrices(V, F);
 				io::MshWriter::write(
 					resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t)),
-					*mesh, /*binary=*/true);
+					V, F, mesh->get_body_ids(), mesh->is_volume(), /*binary=*/true);
+			}
 
 			solve_data.time_integrator->save_raw(
 				resolve_output_path(fmt::format(args["output"]["data"]["u_path"], t)),

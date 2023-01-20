@@ -674,7 +674,8 @@ namespace polyfem::mesh
 				displacements.row(elements[ei][vi]) = vertex_attrs[vids[vi]].displacement();
 				energy_ranks(elements[ei][vi]) = int(edge_attr(edges[ei].eid(*this)).energy_rank);
 				elastic_energy_ranks(elements[ei][vi]) = int(elastic_ranks.at(vids));
-				contact_energy_ranks(elements[ei][vi]) = int(contact_ranks.at(vids));
+				if (!contact_ranks.empty())
+					contact_energy_ranks(elements[ei][vi]) = int(contact_ranks.at(vids));
 			}
 		}
 
@@ -696,19 +697,22 @@ namespace polyfem::mesh
 		io::VTUWriter writer;
 		writer.add_field("displacement", displacements);
 		writer.add_field("elastic_energy_rank", elastic_energy_ranks);
-		writer.add_field("contact_energy_rank", contact_energy_ranks);
+		if (!contact_ranks.empty())
+			writer.add_field("contact_energy_rank", contact_energy_ranks);
 		writer.add_field("energy_rank", energy_ranks);
 		writer.write_mesh(vtu_name(time_steps - 3), rest_positions, elements, /*is_simplicial=*/true);
 
 		writer.add_field("displacement", displacements);
 		writer.add_field("elastic_energy_rank", elastic_energy_ranks);
-		writer.add_field("contact_energy_rank", contact_energy_ranks);
+		if (!contact_ranks.empty())
+			writer.add_field("contact_energy_rank", contact_energy_ranks);
 		writer.add_field("energy_rank", energy_ranks);
 		writer.write_mesh(vtu_name(time_steps - 2), rest_positions, elements, /*is_simplicial=*/true);
 
 		writer.add_field("displacement", displacements);
 		writer.add_field("elastic_energy_rank", elastic_energy_ranks);
-		writer.add_field("contact_energy_rank", contact_energy_ranks);
+		if (!contact_ranks.empty())
+			writer.add_field("contact_energy_rank", contact_energy_ranks);
 		writer.add_field("energy_rank", energy_ranks);
 		writer.write_mesh(vtu_name(time_steps - 1), rest_positions, elements, /*is_simplicial=*/true);
 

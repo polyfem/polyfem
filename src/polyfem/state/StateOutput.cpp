@@ -185,6 +185,7 @@ namespace polyfem
 			return;
 
 		json restart_json;
+		restart_json["root_path"] = root_path();
 		restart_json["common"] = root_path();
 		restart_json["time"] = {{"t0", t0 + dt * t}};
 

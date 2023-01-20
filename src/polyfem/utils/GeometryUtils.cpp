@@ -118,7 +118,7 @@ namespace polyfem::utils
 
 		if (bc.minCoeff() >= 0) // point is inside triangle
 		{
-			assert(bc.maxCoeff() <= 1); // bc.sum() == 1
+			assert(bc.maxCoeff() <= 1 + 1e-12); // bc.sum() == 1
 			return true;
 		}
 
@@ -152,7 +152,7 @@ namespace polyfem::utils
 
 		if (bc.minCoeff() >= 0)
 		{
-			assert(bc.maxCoeff() <= 1); // bc.sum() == 1
+			assert(bc.maxCoeff() <= 1 + 1e-12); // bc.sum() == 1
 			return true;
 		}
 

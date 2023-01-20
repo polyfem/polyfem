@@ -18,7 +18,10 @@ namespace polyfem::io
 		/// @param[in] binary output binary or not
 		static void write(
 			const std::string &path,
-			const mesh::Mesh &mesh,
+			const Eigen::MatrixXd &V,
+			const Eigen::MatrixXi &F,
+			const std::vector<int> &body_ids,
+			const bool is_volume,
 			const bool binary = false);
 	};
 } // namespace polyfem::io
