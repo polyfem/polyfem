@@ -17,8 +17,10 @@ namespace polyfem::io
 		mshio::MshSpec out;
 
 		auto &format = out.mesh_format;
-		format.version = "4.1";            // Only version "2.2" and "4.1" are supported.
-		format.file_type = binary ? 1 : 0; // 0: ASCII, 1: binary.
+		format.version = "4.1"; // Only version "2.2" and "4.1" are supported.
+		format.file_type = 0;   // 0: ASCII, 1: binary.
+		// NOTE: binary is broken on Greene
+		// format.file_type = binary ? 1 : 0; // 0: ASCII, 1: binary.
 		format.data_size = sizeof(size_t); // Size of data, defined as sizeof(size_t) = 8.
 
 		auto &nodes = out.nodes;
