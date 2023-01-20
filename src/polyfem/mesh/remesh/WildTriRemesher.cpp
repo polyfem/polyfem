@@ -42,26 +42,6 @@ namespace polyfem::mesh
 
 	// swap_edge_before/swap_edge_after in wild_remesh/Swap.cpp
 
-	Eigen::MatrixXi WildTriRemesher::boundary_edges() const
-	{
-		const std::vector<Tuple> edges = get_edges();
-		int num_boundary_edges = 0;
-		Eigen::MatrixXi BE(edges.size(), 2);
-		for (int i = 0; i < edges.size(); ++i)
-		{
-			const Tuple &e = edges[i];
-			if (e.switch_face(*this).has_value()) // not a boundary edge
-				continue;
-			BE(num_boundary_edges, 0) = e.vid(*this);
-			BE(num_boundary_edges, 1) = e.switch_vertex(*this).vid(*this);
-			num_boundary_edges++;
-		}
-		BE.conservativeResize(num_boundary_edges, 2);
-		if (obstacle().n_edges() > 0)
-			utils::append_rows(BE, obstacle().e().array() + vert_capacity());
-		return BE;
-	}
-
 	bool WildTriRemesher::is_inverted(const Tuple &loc) const
 	{
 		// Get the vertices ids
@@ -97,11 +77,26 @@ namespace polyfem::mesh
 
 	std::vector<WildTriRemesher::Tuple> WildTriRemesher::boundary_facets() const
 	{
+		const std::vector<Tuple> edges = get_edges();
 		std::vector<Tuple> boundary_edges;
-		for (const Tuple &e : get_edges())
-			if (!e.switch_face(*this))
-				boundary_edges.push_back(e);
+		std::copy_if(edges.begin(), edges.end(), std::back_inserter(boundary_edges), [this](const Tuple &e) {
+			return is_boundary_edge(e);
+		});
 		return boundary_edges;
+	}
+
+	Eigen::MatrixXi WildTriRemesher::boundary_edges() const
+	{
+		const std::vector<Tuple> boundary_edge_tuples = boundary_facets();
+		Eigen::MatrixXi BE(boundary_edge_tuples.size(), 2);
+		for (int i = 0; i < BE.rows(); ++i)
+		{
+			BE(i, 0) = boundary_edge_tuples[i].vid(*this);
+			BE(i, 1) = boundary_edge_tuples[i].switch_vertex(*this).vid(*this);
+		}
+		if (obstacle().n_edges() > 0)
+			utils::append_rows(BE, obstacle().e().array() + vert_capacity());
+		return BE;
 	}
 
 	bool WildTriRemesher::is_edge_on_body_boundary(const Tuple &e) const
@@ -112,23 +107,11 @@ namespace polyfem::mesh
 					  != element_attrs[element_id(*adj_face)].body_id;
 	}
 
-	bool WildTriRemesher::is_vertex_on_boundary(const Tuple &v) const
-	{
-		for (const auto &e : get_one_ring_edges_for_vertex(v))
-		{
-			if (!e.switch_face(*this).has_value())
-				return true;
-		}
-		return false;
-	}
-
 	bool WildTriRemesher::is_vertex_on_body_boundary(const Tuple &v) const
 	{
 		for (const auto &e : get_one_ring_edges_for_vertex(v))
-		{
 			if (is_edge_on_body_boundary(e))
 				return true;
-		}
 		return false;
 	}
 

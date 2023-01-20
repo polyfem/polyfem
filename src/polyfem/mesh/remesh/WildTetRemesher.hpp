@@ -143,7 +143,6 @@ namespace polyfem::mesh
 			return e.switch_edge(*this).switch_vertex(*this);
 		}
 
-		bool is_edge_on_boundary(const Tuple &e) const override;
 		bool is_edge_on_body_boundary(const Tuple &e) const override;
 		bool is_vertex_on_boundary(const Tuple &v) const override { throw std::runtime_error("Not implemented"); }
 		bool is_vertex_on_body_boundary(const Tuple &v) const override { throw std::runtime_error("Not implemented"); }

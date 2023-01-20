@@ -5,7 +5,8 @@
 namespace cppoptlib
 {
 	template <typename ProblemType>
-	NonlinearSolver<ProblemType>::NonlinearSolver(const polyfem::json &solver_params)
+	NonlinearSolver<ProblemType>::NonlinearSolver(const polyfem::json &solver_params, const double dt)
+		: dt(dt)
 	{
 		auto criteria = this->criteria();
 		criteria.fDelta = solver_params["f_delta"];
@@ -155,13 +156,11 @@ namespace cppoptlib
 
 			if (!use_gradient_norm)
 			{
-				// TODO: shold we remove this?
 				// Use the maximum absolute displacement value divided by the timestep,
 				// so the units are in velocity units.
-				// TODO: Set this to the actual timestep
-				double dt = 1;
 				// TODO: Also divide by the world scale to make this criteria scale invariant.
-				this->m_current.gradNorm = delta_x.template lpNorm<Eigen::Infinity>() / dt;
+				// this->m_current.gradNorm = delta_x.template lpNorm<Eigen::Infinity>() / dt;
+				this->m_current.gradNorm = delta_x.norm() / dt;
 			}
 			else
 			{

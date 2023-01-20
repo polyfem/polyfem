@@ -37,17 +37,18 @@ namespace polyfem
 		const std::string &linear_solver_type) const
 	{
 		const std::string name = args["solver"]["nonlinear"]["solver"];
+		const double dt = problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 1.0;
 		if (name == "newton" || name == "Newton")
 		{
 			json linear_solver_params = args["solver"]["linear"];
 			if (!linear_solver_type.empty())
 				linear_solver_params["solver"] = linear_solver_type;
 			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
-				args["solver"]["nonlinear"], linear_solver_params);
+				args["solver"]["nonlinear"], linear_solver_params, dt);
 		}
 		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
 		{
-			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(args["solver"]["nonlinear"]);
+			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(args["solver"]["nonlinear"], dt);
 		}
 		else
 		{

@@ -356,7 +356,7 @@ namespace polyfem::mesh
 		{
 			const std::vector<Tuple> edges = WMTKMesh::get_edges();
 			std::copy_if(edges.begin(), edges.end(), std::back_inserter(included_edges), [this](const Tuple &e) {
-				return edge_attr(e.eid(*this)).energy_rank == EdgeAttributes::EnergyRank::BOTTOM; // || is_edge_on_boundary(e);
+				return edge_attr(e.eid(*this)).energy_rank == EdgeAttributes::EnergyRank::BOTTOM;
 			});
 		}
 

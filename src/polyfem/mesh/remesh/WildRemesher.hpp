@@ -234,7 +234,6 @@ namespace polyfem::mesh
 
 		double local_mesh_energy(const Eigen::Matrix<double, DIM, 1> &local_mesh_center) const;
 
-		virtual bool is_edge_on_boundary(const Tuple &e) const = 0;
 		virtual bool is_edge_on_body_boundary(const Tuple &e) const = 0;
 		virtual bool is_vertex_on_boundary(const Tuple &v) const = 0;
 		virtual bool is_vertex_on_body_boundary(const Tuple &v) const = 0;

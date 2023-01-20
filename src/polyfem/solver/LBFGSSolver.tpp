@@ -7,8 +7,8 @@
 namespace cppoptlib
 {
 	template <typename ProblemType>
-	LBFGSSolver<ProblemType>::LBFGSSolver(const json &solver_params)
-		: Superclass(solver_params)
+	LBFGSSolver<ProblemType>::LBFGSSolver(const json &solver_params, const double dt)
+		: Superclass(solver_params, dt)
 	{
 	}
 

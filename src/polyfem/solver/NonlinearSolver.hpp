@@ -27,7 +27,7 @@ namespace cppoptlib
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		NonlinearSolver(const polyfem::json &solver_params);
+		NonlinearSolver(const polyfem::json &solver_params, const double dt = 1.0);
 
 		virtual std::string name() const = 0;
 
@@ -50,6 +50,7 @@ namespace cppoptlib
 		bool normalize_gradient;
 		double use_grad_norm_tol;
 		double first_grad_norm_tol;
+		double dt;
 
 		// ====================================================================
 		//                           Solver state

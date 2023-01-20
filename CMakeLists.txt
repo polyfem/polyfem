@@ -244,6 +244,10 @@ target_link_libraries(polyfem PUBLIC natsort::natsort)
 include(glob)
 target_link_libraries(polyfem PUBLIC Glob::Glob)
 
+# GLOB library
+# include(tracy)
+# target_link_libraries(polyfem PUBLIC Tracy::TracyClient)
+
 ################################################################################
 # Optional libraries
 ################################################################################

@@ -42,11 +42,37 @@ namespace polyfem::mesh
 
 	// split_edge_after in wild_remesh/Split.cpp
 
+	std::vector<WildTetRemesher::Tuple> WildTetRemesher::boundary_facets() const
+	{
+		std::vector<Tuple> boundary_faces;
+		for (const Tuple &f : get_faces())
+		{
+			const bool is_boundary_face = boundary_attrs[f.fid(*this)].boundary_id >= 0;
+			assert(is_boundary_face == f.is_boundary_face(*this));
+			if (is_boundary_face)
+				boundary_faces.push_back(f);
+		}
+		return boundary_faces;
+	}
+
 	Eigen::MatrixXi WildTetRemesher::boundary_edges() const
 	{
-		const Eigen::MatrixXi BF = boundary_faces();
-		Eigen::MatrixXi BE;
-		igl::edges(BF, BE);
+		const std::vector<Tuple> boundary_face_tuples = boundary_facets();
+		std::vector<Tuple> boundary_edge_tuples;
+		for (const Tuple &f : boundary_face_tuples)
+		{
+			boundary_edge_tuples.push_back(f);
+			boundary_edge_tuples.push_back(f.switch_edge(*this));
+			boundary_edge_tuples.push_back(f.switch_vertex(*this).switch_edge(*this));
+		}
+		wmtk::unique_edge_tuples(*this, boundary_edge_tuples);
+
+		Eigen::MatrixXi BE(boundary_edge_tuples.size(), 2);
+		for (int i = 0; i < BE.rows(); ++i)
+		{
+			BE(i, 0) = boundary_edge_tuples[i].vid(*this);
+			BE(i, 1) = boundary_edge_tuples[i].switch_vertex(*this).vid(*this);
+		}
 		if (obstacle().n_edges() > 0)
 			utils::append_rows(BE, obstacle().e().array() + vert_capacity());
 		return BE;
@@ -54,21 +80,14 @@ namespace polyfem::mesh
 
 	Eigen::MatrixXi WildTetRemesher::boundary_faces() const
 	{
-		const std::vector<Tuple> faces = get_faces();
-		int num_boundary_faces = 0;
-		Eigen::MatrixXi BF(faces.size(), 3);
-		for (int i = 0; i < faces.size(); ++i)
+		const std::vector<Tuple> boundary_face_tuples = boundary_facets();
+		Eigen::MatrixXi BF(boundary_face_tuples.size(), 3);
+		for (int i = 0; i < BF.rows(); ++i)
 		{
-			const Tuple &f = faces[i];
-			if (f.switch_tetrahedron(*this).has_value()) // not a boundary face
-				continue;
-			const std::array<Tuple, 3> vs = get_face_vertices(f);
-			BF(num_boundary_faces, 0) = vs[0].vid(*this);
-			BF(num_boundary_faces, 1) = vs[1].vid(*this);
-			BF(num_boundary_faces, 2) = vs[2].vid(*this);
-			num_boundary_faces++;
+			const std::array<Tuple, 3> vs = get_face_vertices(boundary_face_tuples[i]);
+			for (int j = 0; j < 3; ++j)
+				BF(i, j) = vs[j].vid(*this);
 		}
-		BF.conservativeResize(num_boundary_faces, 3);
 		if (obstacle().n_faces() > 0)
 			utils::append_rows(BF, obstacle().f().array() + vert_capacity());
 		return BF;
@@ -104,26 +123,6 @@ namespace polyfem::mesh
 			vertex_attrs[vids[1]].rest_position,
 			vertex_attrs[vids[2]].rest_position,
 			vertex_attrs[vids[3]].rest_position);
-	}
-
-	std::vector<WildTetRemesher::Tuple> WildTetRemesher::boundary_facets() const
-	{
-		std::vector<Tuple> boundary_faces;
-		for (const Tuple &f : get_faces())
-			if (f.is_boundary_face(*this))
-				boundary_faces.push_back(f);
-		return boundary_faces;
-	}
-
-	bool WildTetRemesher::is_edge_on_boundary(const Tuple &e) const
-	{
-		const size_t tid = e.tid(*this);
-
-		std::optional<Tuple> t = e.switch_tetrahedron(*this);
-		while (t && t->tid(*this) != tid)
-			t = t->switch_face(*this).switch_tetrahedron(*this);
-
-		return !t.has_value();
 	}
 
 	bool WildTetRemesher::is_edge_on_body_boundary(const Tuple &e) const
@@ -201,7 +200,7 @@ namespace polyfem::mesh
 	std::array<WildTetRemesher::Tuple, 2>
 	WildTetRemesher::get_boundary_faces_for_edge(const Tuple &e) const
 	{
-		assert(is_edge_on_boundary(e));
+		assert(e.is_boundary_edge(*this));
 
 		const size_t tid = e.tid(*this);
 
@@ -225,7 +224,7 @@ namespace polyfem::mesh
 	CollapseEdgeTo WildTetRemesher::collapse_boundary_edge_to(const Tuple &e) const
 	{
 		// TODO: handle body boundary edges
-		assert(is_edge_on_boundary(e));
+		assert(e.is_boundary_edge(*this));
 
 		const std::array<Tuple, 2> boundary_faces = get_boundary_faces_for_edge(e);
 
