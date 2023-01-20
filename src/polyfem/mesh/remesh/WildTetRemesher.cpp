@@ -48,7 +48,7 @@ namespace polyfem::mesh
 		for (int tid = 0; tid < boundary_attrs.size() / 4; ++tid)
 		{
 			const Tuple t = tuple_from_tet(tid);
-			if (!t.is_valid())
+			if (!t.is_valid(*this))
 				continue;
 
 			for (int lfid = 0; lfid < 4; ++lfid)
