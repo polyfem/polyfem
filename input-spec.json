@@ -1110,7 +1110,7 @@
             "acceptance_tolerance",
             "culling_threshold",
             "max_depth",
-            "max_edge_length"
+            "rel_max_edge_length"
         ],
         "doc": "Settings for adaptive remeshing edge collapse operations"
     },
@@ -1142,11 +1142,11 @@
         "doc": "Maximum depth collapse per time-step"
     },
     {
-        "pointer": "/space/remesh/collapse/max_edge_length",
-        "default": 1e10,
+        "pointer": "/space/remesh/collapse/rel_max_edge_length",
+        "default": 1,
         "type": "float",
         "min": 0,
-        "doc": "Minimum edge length to collapse"
+        "doc": "Length of maximum edge length to collapse relative to initial minimum edge length"
     },
     {
         "pointer": "/space/remesh/swap",
@@ -3892,7 +3892,8 @@
         "optional": [
             "u_path",
             "v_path",
-            "a_path"
+            "a_path",
+            "reorder"
         ],
         "doc": "input to restart time dependent sim"
     },
@@ -3913,6 +3914,12 @@
         "default": "",
         "type": "file",
         "doc": "input acceleration"
+    },
+    {
+        "pointer": "/input/data/reorder",
+        "default": true,
+        "type": "bool",
+        "doc": "reorder input data"
     },
     {
         "pointer": "/preset_problem",

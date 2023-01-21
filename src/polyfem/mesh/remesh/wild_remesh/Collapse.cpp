@@ -18,7 +18,9 @@ namespace polyfem::mesh
 			return false;
 		}
 
-		const double max_edge_length = args["collapse"]["max_edge_length"];
+		const double max_edge_length =
+			state.starting_min_edge_length
+			* args["collapse"]["rel_max_edge_length"].get<double>();
 
 		double vol_tol;
 		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)

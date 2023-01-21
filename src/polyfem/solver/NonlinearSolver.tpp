@@ -225,8 +225,8 @@ namespace cppoptlib
 		// -----------
 
 		// NOTE: the `this->m_stop.iterations > 1` here allows us to use this code as a linear solver without throwing an error
-		if (this->m_status == Status::IterationLimit && this->m_stop.iterations > 1)
-			log_and_throw_error("[{}] Reached iteration limit (limit={})", name(), this->m_stop.iterations);
+		// if (this->m_status == Status::IterationLimit && this->m_stop.iterations > 1)
+		// 	log_and_throw_error("[{}] Reached iteration limit (limit={})", name(), this->m_stop.iterations);
 		if (this->m_current.iterations == 0)
 			log_and_throw_error("[{}] Unable to take a step", name());
 		if (this->m_status == Status::UserDefined)

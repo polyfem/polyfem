@@ -863,6 +863,10 @@ namespace polyfem
 		const auto &curret_bases = geom_bases();
 		const int n_samples = 10;
 		stats.compute_mesh_size(*mesh, curret_bases, n_samples, args["output"]["advanced"]["curved_mesh_size"]);
+		if (starting_min_edge_length < 0)
+		{
+			starting_min_edge_length = stats.min_edge_length;
+		}
 
 		if (is_contact_enabled())
 		{
@@ -1341,7 +1345,7 @@ namespace polyfem
 			// Pre log the output path for easier watching
 			if (args["output"]["advanced"]["save_time_sequence"])
 			{
-				logger().info("Time sequence of simulation will be written to: {}",
+				logger().info("Time sequence of simulation will be written to: \"{}\"",
 							  resolve_output_path(args["output"]["paraview"]["file_name"]));
 			}
 
