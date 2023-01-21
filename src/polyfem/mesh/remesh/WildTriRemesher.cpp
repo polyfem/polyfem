@@ -75,6 +75,22 @@ namespace polyfem::mesh
 			vertex_attrs[vids[2]].rest_position);
 	}
 
+	bool WildTriRemesher::is_body_boundary_vertex(const Tuple &v) const
+	{
+		for (const auto &e : get_one_ring_edges_for_vertex(v))
+			if (is_body_boundary_edge(e))
+				return true;
+		return false;
+	}
+
+	bool WildTriRemesher::is_body_boundary_edge(const Tuple &e) const
+	{
+		const auto adj_face = e.switch_face(*this);
+		return !adj_face.has_value()
+			   || element_attrs[element_id(e)].body_id
+					  != element_attrs[element_id(*adj_face)].body_id;
+	}
+
 	Eigen::MatrixXi WildTriRemesher::boundary_edges() const
 	{
 		const std::vector<Tuple> boundary_edge_tuples = boundary_facets();
@@ -87,22 +103,6 @@ namespace polyfem::mesh
 		if (obstacle().n_edges() > 0)
 			utils::append_rows(BE, obstacle().e().array() + vert_capacity());
 		return BE;
-	}
-
-	bool WildTriRemesher::is_edge_on_body_boundary(const Tuple &e) const
-	{
-		const auto adj_face = e.switch_face(*this);
-		return !adj_face.has_value()
-			   || element_attrs[element_id(e)].body_id
-					  != element_attrs[element_id(*adj_face)].body_id;
-	}
-
-	bool WildTriRemesher::is_vertex_on_body_boundary(const Tuple &v) const
-	{
-		for (const auto &e : get_one_ring_edges_for_vertex(v))
-			if (is_edge_on_body_boundary(e))
-				return true;
-		return false;
 	}
 
 	CollapseEdgeTo WildTriRemesher::collapse_boundary_edge_to(const Tuple &e) const
@@ -122,7 +122,7 @@ namespace polyfem::mesh
 			const size_t v3_id = e0.switch_vertex(*this).vid(*this);
 			return e0_id != eid
 				   && boundary_attrs[e0_id].boundary_id == boundary_id
-				   && is_edge_on_body_boundary(e0)
+				   && is_body_boundary_edge(e0)
 				   && utils::are_edges_collinear(
 					   v0, v1, vertex_attrs[v2_id].rest_position,
 					   vertex_attrs[v3_id].rest_position);

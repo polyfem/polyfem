@@ -26,6 +26,7 @@ namespace polyfem::mesh
 		const std::pair<size_t, VertexAttributes> &v1() const { return m_v1; }
 		const Remesher::EdgeMap<EdgeAttributes> &edges() const { return m_edges; }
 		const std::vector<FaceAttributes> &faces() const { return m_faces; }
+		bool is_boundary_op() const { return m_is_boundary_op; }
 
 		double local_energy = std::numeric_limits<double>::quiet_NaN();
 		CollapseEdgeTo collapse_to = CollapseEdgeTo::ILLEGAL;
@@ -35,6 +36,7 @@ namespace polyfem::mesh
 		std::pair<size_t, VertexAttributes> m_v1;
 		Remesher::EdgeMap<EdgeAttributes> m_edges;
 		std::vector<FaceAttributes> m_faces;
+		bool m_is_boundary_op = false;
 	};
 
 	class TetOperationCache
@@ -58,6 +60,7 @@ namespace polyfem::mesh
 		const Remesher::EdgeMap<EdgeAttributes> &edges() const { return m_edges; }
 		const Remesher::FaceMap<FaceAttributes> &faces() const { return m_faces; }
 		const Remesher::TetMap<TetAttributes> &tets() const { return m_tets; }
+		bool is_boundary_op() const { return m_is_boundary_op; }
 
 		double local_energy = std::numeric_limits<double>::quiet_NaN();
 		CollapseEdgeTo collapse_to = CollapseEdgeTo::ILLEGAL;
@@ -69,5 +72,6 @@ namespace polyfem::mesh
 		Remesher::EdgeMap<EdgeAttributes> m_edges;
 		Remesher::FaceMap<FaceAttributes> m_faces;
 		Remesher::TetMap<TetAttributes> m_tets;
+		bool m_is_boundary_op = false;
 	};
 } // namespace polyfem::mesh

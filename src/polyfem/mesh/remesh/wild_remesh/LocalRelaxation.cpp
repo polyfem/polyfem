@@ -72,6 +72,8 @@ namespace polyfem::mesh
 		auto nl_solver = state.make_nl_solver<NLProblem>("Eigen::LLT");
 		auto criteria = nl_solver->getStopCriteria();
 		criteria.iterations = args["local_relaxation"]["max_nl_iterations"];
+		if (is_boundary_op())
+			criteria.iterations = std::max(criteria.iterations, 5ul);
 		nl_solver->setStopCriteria(criteria);
 
 		// Create augmented Lagrangian solver

@@ -197,8 +197,18 @@ namespace polyfem::mesh
 		/// @brief Compute the volume (area) of an tetrahedron (triangle) element.
 		virtual double element_volume(const Tuple &e) const = 0;
 
+		/// @brief Is the given vertex tuple on the boundary of the mesh?
+		virtual bool is_boundary_vertex(const Tuple &v) const = 0;
+		/// @brief Is the given vertex tuple on the boundary of a body?
+		virtual bool is_body_boundary_vertex(const Tuple &v) const = 0;
+		/// @brief Is the given edge tuple on the boundary of the mesh?
+		virtual bool is_boundary_edge(const Tuple &e) const = 0;
+		/// @brief Is the given edge tuple on the boundary of a body?
+		virtual bool is_body_boundary_edge(const Tuple &e) const = 0;
 		/// @brief Is the given tuple on the boundary of the mesh?
 		virtual bool is_boundary_facet(const Tuple &t) const = 0;
+		/// @brief Is the currently cached operation a boundary operation?
+		virtual bool is_boundary_op() const = 0;
 
 		/// @brief Get the boundary facets of the mesh
 		std::vector<Tuple> boundary_facets(std::vector<int> *boundary_ids = nullptr) const;
@@ -239,10 +249,6 @@ namespace polyfem::mesh
 		}
 
 		double local_mesh_energy(const VectorNd &local_mesh_center) const;
-
-		virtual bool is_edge_on_body_boundary(const Tuple &e) const = 0;
-		virtual bool is_vertex_on_boundary(const Tuple &v) const = 0;
-		virtual bool is_vertex_on_body_boundary(const Tuple &v) const = 0;
 
 		virtual CollapseEdgeTo collapse_boundary_edge_to(const Tuple &e) const = 0;
 

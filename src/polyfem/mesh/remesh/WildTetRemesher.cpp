@@ -112,7 +112,20 @@ namespace polyfem::mesh
 			vertex_attrs[vids[3]].rest_position);
 	}
 
-	bool WildTetRemesher::is_edge_on_body_boundary(const Tuple &e) const
+	bool WildTetRemesher::is_boundary_vertex(const Tuple &v) const
+	{
+		for (const Tuple &t : get_one_ring_tets_for_vertex(v))
+		{
+			for (int fi = 0; fi < FACETS_PER_ELEMENT; ++fi)
+			{
+				if (is_boundary_facet(tuple_from_facet(t.tid(*this), fi)))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	bool WildTetRemesher::is_body_boundary_edge(const Tuple &e) const
 	{
 		const size_t tid = e.tid(*this);
 		const int body_id = element_attrs[tid].body_id;

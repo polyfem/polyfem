@@ -41,7 +41,7 @@ namespace polyfem::mesh
 		const auto &v1 = vertex_attrs[v1i].rest_position;
 
 		CollapseEdgeTo collapse_to = CollapseEdgeTo::ILLEGAL;
-		if (is_edge_on_body_boundary(t))
+		if (is_body_boundary_edge(t))
 		{
 			collapse_to = collapse_boundary_edge_to(t);
 		}
@@ -124,7 +124,7 @@ namespace polyfem::mesh
 #endif
 
 		// Check the interpolated position does not cause intersections
-		if (state.args["contact"]["enabled"].get<bool>()) // && is_vertex_on_boundary(t))
+		if (state.args["contact"]["enabled"].get<bool>() && is_boundary_op())
 		{
 			Eigen::MatrixXd V_rest = rest_positions();
 			utils::append_rows(V_rest, obstacle().v());

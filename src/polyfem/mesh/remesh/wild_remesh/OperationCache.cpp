@@ -69,6 +69,8 @@ namespace polyfem::mesh
 			cache.m_faces.push_back(m.element_attrs[t1.fid(m)]);
 		}
 
+		cache.m_is_boundary_op = m.is_boundary_edge(t);
+
 		return cache;
 	}
 
@@ -98,6 +100,8 @@ namespace polyfem::mesh
 		if (t.switch_face(m))
 			cache.m_faces.push_back(m.element_attrs[t.switch_face(m)->fid(m)]);
 
+		cache.m_is_boundary_op = m.is_boundary_edge(t);
+
 		return cache;
 	}
 
@@ -118,6 +122,8 @@ namespace polyfem::mesh
 		const Tuple t1 = t.switch_face(m).value();
 		insert_edges_of_face(m, t1, cache.m_edges);
 		cache.m_faces.push_back(m.element_attrs[t1.fid(m)]);
+
+		cache.m_is_boundary_op = m.is_boundary_edge(t);
 
 		return cache;
 	}
@@ -142,6 +148,8 @@ namespace polyfem::mesh
 			cache.m_tets[m.oriented_tet_vids(t)] = m.element_attrs[t.tid(m)];
 		}
 
+		cache.m_is_boundary_op = m.is_boundary_edge(e);
+
 		return cache;
 	}
 
@@ -164,6 +172,8 @@ namespace polyfem::mesh
 			insert_faces_of_tet(m, t, cache.m_faces);
 			cache.m_tets[m.oriented_tet_vids(t)] = m.element_attrs[t.tid(m)];
 		}
+
+		cache.m_is_boundary_op = m.is_boundary_edge(e);
 
 		return cache;
 	}

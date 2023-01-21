@@ -83,11 +83,29 @@ namespace polyfem::mesh
 		/// @brief Compute the volume of a tetrahedron element.
 		double element_volume(const Tuple &e) const override;
 
+		/// @brief Is the given vertex tuple on the boundary of the mesh?
+		bool is_boundary_vertex(const Tuple &v) const override;
+
+		/// @brief Is the given vertex tuple on the boundary of a body?
+		bool is_body_boundary_vertex(const Tuple &v) const override { throw std::runtime_error("Not implemented"); }
+
+		/// @brief Is the given edge tuple on the boundary of the mesh?
+		bool is_boundary_edge(const Tuple &e) const override
+		{
+			return e.is_boundary_edge(*this);
+		}
+
+		/// @brief Is the given edge tuple on the boundary of a body?
+		bool is_body_boundary_edge(const Tuple &e) const override;
+
 		/// @brief Is the given tuple on the boundary of the mesh?
 		bool is_boundary_facet(const Tuple &t) const override
 		{
 			return t.is_boundary_face(*this);
 		}
+
+		/// @brief Is the currently cached operation a boundary operation?
+		bool is_boundary_op() const override { return op_cache.is_boundary_op(); }
 
 		/// @brief Get the tuples of a facet.
 		std::array<Tuple, 3> facet_vertices(const Tuple &t) const override
@@ -154,10 +172,6 @@ namespace polyfem::mesh
 		{
 			return e.switch_edge(*this).switch_vertex(*this);
 		}
-
-		bool is_edge_on_body_boundary(const Tuple &e) const override;
-		bool is_vertex_on_boundary(const Tuple &v) const override { throw std::runtime_error("Not implemented"); }
-		bool is_vertex_on_body_boundary(const Tuple &v) const override { throw std::runtime_error("Not implemented"); }
 
 		CollapseEdgeTo collapse_boundary_edge_to(const Tuple &e) const override;
 
