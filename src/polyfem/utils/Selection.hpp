@@ -104,6 +104,24 @@ namespace polyfem
 
 		// --------------------------------------------------------------------
 
+		class CylinderSelection : public Selection
+		{
+		public:
+			CylinderSelection(
+				const json &selection,
+				const BBox &mesh_bbox);
+
+			bool inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const override;
+
+		protected:
+			RowVectorNd axis_;
+			RowVectorNd point_;
+			double radius2_;
+			double height_;
+		};
+
+		// --------------------------------------------------------------------
+
 		class AxisPlaneSelection : public Selection
 		{
 		public:

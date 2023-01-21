@@ -1,4 +1,5 @@
-[{
+[
+    {
         "pointer": "/",
         "type": "object",
         "required": [
@@ -356,6 +357,22 @@
         "type": "object",
         "required": [
             "id",
+            "radius",
+            "p1",
+            "p2"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "#type_name": "cylinder",
+        "doc": "Assign the ID to all volume elements with barycenters inside a cylinder with specified axis (p1, p2) and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*",
+        "type": "object",
+        "required": [
+            "id",
             "point",
             "normal"
         ],
@@ -398,6 +415,26 @@
     },
     {
         "pointer": "/geometry/*/volume_selection/*/center/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/p1",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/p1/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/p2",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/p2/*",
         "type": "float"
     },
     {
@@ -512,6 +549,22 @@
         "type": "object",
         "required": [
             "id",
+            "radius",
+            "p1",
+            "p2"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "#type_name": "cylinder",
+        "doc": "Assign the ID to all volume elements with barycenters inside a cylinder with specified axis (p1, p2) and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*",
+        "type": "object",
+        "required": [
+            "id",
             "point",
             "normal"
         ],
@@ -567,6 +620,26 @@
     },
     {
         "pointer": "/geometry/*/point_selection/*/center/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/p1",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/p1/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/p2",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/p2/*",
         "type": "float"
     },
     {
@@ -698,6 +771,22 @@
         "type": "object",
         "required": [
             "id",
+            "radius",
+            "p1",
+            "p2"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "#type_name": "cylinder",
+        "doc": "Assign the ID to all volume elements with barycenters inside a cylinder with specified axis (p1, p2) and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*",
+        "type": "object",
+        "required": [
+            "id",
             "point",
             "normal"
         ],
@@ -753,6 +842,26 @@
     },
     {
         "pointer": "/geometry/*/surface_selection/*/center/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/p1",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/p1/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/p2",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/p2/*",
         "type": "float"
     },
     {
@@ -1774,7 +1883,17 @@
         "pointer": "/solver/linear/Pardiso/mtype",
         "default": 11,
         "type": "int",
-        "options": [1, 2, -2, 3, 4, -4, 6, 11, 13],
+        "options": [
+            1,
+            2,
+            -2,
+            3,
+            4,
+            -4,
+            6,
+            11,
+            13
+        ],
         "doc": "Matrix type."
     },
     {
@@ -3057,7 +3176,11 @@
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/dimension",
         "type": "list",
-        "default": [true, true, true],
+        "default": [
+            true,
+            true,
+            true
+        ],
         "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Pressure boundary condition is applied for a particular dimension."
     },
     {
