@@ -31,7 +31,7 @@ namespace polyfem::mesh
 			&& std::any_of(local_mesh_tuples.begin(), local_mesh_tuples.end(), [&](const Tuple &t) {
 				   const size_t tid = element_id(t);
 				   for (int i = 0; i < FACETS_PER_ELEMENT; ++i)
-					   if (is_on_boundary(tuple_from_facet(tid, i)))
+					   if (is_boundary_facet(tuple_from_facet(tid, i)))
 						   return true;
 				   return false;
 			   });

@@ -64,7 +64,7 @@ namespace polyfem::mesh
 					const Tuple facet = m.tuple_from_facet(m.element_id(elem), i);
 
 					// Only fix internal facets
-					if (m.is_on_boundary(facet))
+					if (m.is_boundary_facet(facet))
 					{
 						local_boundary_facets.push_back(facet);
 						continue;

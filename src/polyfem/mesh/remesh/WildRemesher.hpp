@@ -159,7 +159,9 @@ namespace polyfem::mesh
 		/// @brief Number of projection quantities (not including the position)
 		int n_quantities() const override { return m_n_quantities; };
 
-		/// @brief Get a vector of all elements (elements or tetrahedra)
+		/// @brief Get a vector of all facets (edges or triangles)
+		virtual std::vector<Tuple> get_facets() const = 0;
+		/// @brief Get a vector of all elements (triangles or tetrahedra)
 		virtual std::vector<Tuple> get_elements() const = 0;
 
 		// --------------------------------------------------------------------
@@ -196,7 +198,7 @@ namespace polyfem::mesh
 		virtual double element_volume(const Tuple &e) const = 0;
 
 		/// @brief Is the given tuple on the boundary of the mesh?
-		virtual bool is_on_boundary(const Tuple &t) const = 0;
+		virtual bool is_boundary_facet(const Tuple &t) const = 0;
 
 		/// @brief Get the boundary facets of the mesh
 		std::vector<Tuple> boundary_facets(std::vector<int> *boundary_ids = nullptr) const;

@@ -1038,7 +1038,7 @@
             "collapse",
             "swap",
             "smooth",
-            "local_mesh"
+            "local_relaxation"
         ],
         "doc": "Settings for adaptive remeshing"
     },
@@ -1159,7 +1159,7 @@
         "doc": "Settings for adaptive remeshing edge/face swap operations"
     },
     {
-        "pointer": "/space/remesh/collapse/enabled",
+        "pointer": "/space/remesh/swap/enabled",
         "default": false,
         "type": "bool",
         "doc": "Whether to do edge/face swap in adaptive remeshing"
@@ -1181,7 +1181,7 @@
         "doc": "Settings for adaptive remeshing vertex smoothing operations"
     },
     {
-        "pointer": "/space/remesh/collapse/enabled",
+        "pointer": "/space/remesh/smooth/enabled",
         "default": false,
         "type": "bool",
         "doc": "Whether to do vertex smoothing in adaptive remeshing"

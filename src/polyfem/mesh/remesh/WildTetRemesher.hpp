@@ -69,6 +69,9 @@ namespace polyfem::mesh
 		/// @brief Exports boundary faces of the stored mesh
 		Eigen::MatrixXi boundary_faces() const override;
 
+		/// @brief Get a vector of all facets (triangles)
+		std::vector<Tuple> get_facets() const override { return get_faces(); }
+		/// @brief Get a vector of all elements (tetrahedra)
 		std::vector<Tuple> get_elements() const override { return get_tets(); }
 
 		// --------------------------------------------------------------------
@@ -81,11 +84,9 @@ namespace polyfem::mesh
 		double element_volume(const Tuple &e) const override;
 
 		/// @brief Is the given tuple on the boundary of the mesh?
-		bool is_on_boundary(const Tuple &t) const override
+		bool is_boundary_facet(const Tuple &t) const override
 		{
-			const bool res = boundary_attrs[t.fid(*this)].boundary_id >= 0;
-			assert(res == t.is_boundary_face(*this));
-			return res;
+			return t.is_boundary_face(*this);
 		}
 
 		/// @brief Get the vertex ids of a boundary facet.

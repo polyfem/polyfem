@@ -41,8 +41,8 @@ namespace polyfem::mesh
 
 		// Dont split if the edge is too small
 		double min_edge_length = args["split"]["min_edge_length"];
-		if (is_on_boundary(e) && state.is_contact_enabled())
-			min_edge_length = std::max(min_edge_length, 2.01 * state.args["contact"]["dhat"].get<double>());
+		// if (is_boundary_facet(e) && state.is_contact_enabled())
+		min_edge_length = std::max(min_edge_length, 2.01 * state.args["contact"]["dhat"].get<double>());
 		if (edge_length(e) < min_edge_length)
 			return false;
 

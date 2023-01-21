@@ -276,25 +276,47 @@ namespace polyfem::mesh
 	WildRemesher<WMTKMesh>::boundary_facets(std::vector<int> *boundary_ids) const
 	{
 		POLYFEM_REMESHER_SCOPED_TIMER("boundary_facets");
-		std::vector<Tuple> boundary_facets;
-		for (int tid = 0; tid < boundary_attrs.size() / FACETS_PER_ELEMENT; ++tid)
-		{
-			const Tuple t = tuple_from_element(tid);
-			if (!t.is_valid(*this))
-				continue;
 
-			for (int local_fid = 0; local_fid < FACETS_PER_ELEMENT; ++local_fid)
-			{
-				const int boundary_id = boundary_attrs[FACETS_PER_ELEMENT * tid + local_fid].boundary_id;
-				if (boundary_id >= 0)
-				{
-					boundary_facets.push_back(tuple_from_facet(tid, local_fid));
-					if (boundary_ids)
-						boundary_ids->push_back(boundary_id);
-				}
-			}
+		// size_t element_capacity;
+		// if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
+		// 	element_capacity = WMTKMesh::tri_capacity();
+		// else
+		// 	element_capacity = WMTKMesh::tet_capacity();
+
+		// const size_t max_tid = std::min(boundary_attrs.size() / FACETS_PER_ELEMENT, element_capacity);
+
+		// std::vector<Tuple> boundary_facets;
+		// for (int tid = 0; tid < max_tid; ++tid)
+		// {
+		// 	const Tuple t = tuple_from_element(tid);
+		// 	if (!t.is_valid(*this))
+		// 		continue;
+
+		// 	for (int local_fid = 0; local_fid < FACETS_PER_ELEMENT; ++local_fid)
+		// 	{
+		// 		const int boundary_id = boundary_attrs[FACETS_PER_ELEMENT * tid + local_fid].boundary_id;
+		// 		if (boundary_id >= 0)
+		// 		{
+		// 			boundary_facets.push_back(tuple_from_facet(tid, local_fid));
+		// 			assert(is_boundary_facet(boundary_facets.back()));
+		// 			if (boundary_ids)
+		// 				boundary_ids->push_back(boundary_id);
+		// 		}
+		// 	}
+		// }
+
+		// #ifndef NDEBUG
+		std::vector<Tuple> gt_boundary_facets;
+		for (const Tuple &t : get_facets())
+		{
+			if (is_boundary_facet(t))
+				gt_boundary_facets.push_back(t);
 		}
-		return boundary_facets;
+		// 		assert(boundary_facets.size() == gt_boundary_facets.size());
+		// #endif
+
+		// return boundary_facets;
+		return gt_boundary_facets;
 	}
 
 	template <class WMTKMesh>
@@ -495,7 +517,7 @@ namespace polyfem::mesh
 			&& std::any_of(local_mesh_tuples.begin(), local_mesh_tuples.end(), [&](const Tuple &t) {
 				   const size_t tid = element_id(t);
 				   for (int i = 0; i < FACETS_PER_ELEMENT; ++i)
-					   if (is_on_boundary(tuple_from_facet(tid, i)))
+					   if (is_boundary_facet(tuple_from_facet(tid, i)))
 						   return true;
 				   return false;
 			   });
