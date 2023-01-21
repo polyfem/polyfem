@@ -80,8 +80,14 @@ namespace polyfem::mesh
 			return is_boundary_edge(t);
 		}
 
-		/// @brief Get the vertex ids of a boundary facet.
-		std::array<size_t, 2> boundary_facet_vids(const Tuple &t) const override
+		/// @brief Get the tuples of a facet.
+		std::array<Tuple, 2> facet_vertices(const Tuple &t) const override
+		{
+			return {{t, t.switch_vertex(*this)}};
+		}
+
+		/// @brief Get the vertex ids of a facet.
+		std::array<size_t, 2> facet_vids(const Tuple &t) const override
 		{
 			return {{t.vid(*this), t.switch_vertex(*this).vid(*this)}};
 		}

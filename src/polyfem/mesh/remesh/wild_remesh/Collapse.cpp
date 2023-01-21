@@ -29,7 +29,10 @@ namespace polyfem::mesh
 		// Dont collapse if the edge is large
 		if (edge_adjacent_element_volumes(t).minCoeff() > vol_tol
 			&& edge_length(t) > max_edge_length)
+		{
+			executor.m_cnt_fail--; // do not count this as a failed split
 			return false;
+		}
 
 		const int v0i = t.vid(*this);
 		const int v1i = t.switch_vertex(*this).vid(*this);
@@ -56,7 +59,10 @@ namespace polyfem::mesh
 		}
 
 		if (collapse_to == CollapseEdgeTo::ILLEGAL)
+		{
+			executor.m_cnt_fail--; // do not count this as a failed split
 			return false;
+		}
 
 		double local_energy = 0;
 		switch (collapse_to)
@@ -271,6 +277,13 @@ namespace polyfem::mesh
 
 			boundary_attrs[e_id].op_attempts = 0;
 			boundary_attrs[e_id].op_depth++;
+
+#ifndef NDEBUG
+			if (is_boundary_facet(e))
+				assert(boundary_attrs[facet_id(e)].boundary_id >= 0);
+			else
+				assert(boundary_attrs[facet_id(e)].boundary_id == -1);
+#endif
 		}
 	}
 
@@ -331,6 +344,7 @@ namespace polyfem::mesh
 
 		for (const Tuple &f : get_one_ring_boundary_faces_for_vertex(t))
 		{
+			assert(f.is_boundary_face(*this));
 			const size_t f_id = f.fid(*this);
 
 			const std::array<Tuple, 3> fv = get_face_vertices(f);
@@ -356,9 +370,26 @@ namespace polyfem::mesh
 				boundary_attrs[f_id] = find_old_face1->second;
 			else
 				assert(false);
+
+#ifndef NDEBUG
+			if (is_boundary_facet(f))
+				assert(boundary_attrs[facet_id(f)].boundary_id >= 0);
+			else
+				assert(boundary_attrs[facet_id(f)].boundary_id == -1);
+#endif
 		}
 
 		map_edge_collapse_edge_attributes(t);
+
+#ifndef NDEBUG
+		for (const Tuple &f : get_facets())
+		{
+			if (is_boundary_facet(f))
+				assert(boundary_attrs[facet_id(f)].boundary_id >= 0);
+			else
+				assert(boundary_attrs[facet_id(f)].boundary_id == -1);
+		}
+#endif
 	}
 
 	// =========================================================================

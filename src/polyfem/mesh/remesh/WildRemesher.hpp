@@ -203,12 +203,13 @@ namespace polyfem::mesh
 		/// @brief Get the boundary facets of the mesh
 		std::vector<Tuple> boundary_facets(std::vector<int> *boundary_ids = nullptr) const;
 
-		/// @brief Get the vertex ids of a boundary facet.
-		virtual std::array<size_t, DIM> boundary_facet_vids(const Tuple &t) const = 0;
+		/// @brief Get the vertex tuples of a facet.
+		virtual std::array<Tuple, DIM> facet_vertices(const Tuple &t) const = 0;
+		/// @brief Get the vertex ids of a facet.
+		virtual std::array<size_t, DIM> facet_vids(const Tuple &t) const = 0;
 
-		/// @brief Get the vertex ids of an element.
+		/// @brief Get the vertex tuples of an element.
 		virtual std::array<Tuple, DIM + 1> element_vertices(const Tuple &t) const = 0;
-
 		/// @brief Get the vertex ids of an element.
 		virtual std::array<size_t, DIM + 1> element_vids(const Tuple &t) const = 0;
 

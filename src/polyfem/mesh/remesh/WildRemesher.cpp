@@ -142,43 +142,6 @@ namespace polyfem::mesh
 	// -------------------------------------------------------------------------
 	// Getters
 
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// 2D (Triangle mesh)
-
-	template <>
-	void WildRemesher<wmtk::TriMesh>::set_boundary_ids(const BoundaryMap<int> &boundary_to_id)
-	{
-		assert(std::holds_alternative<EdgeMap<int>>(boundary_to_id));
-		const EdgeMap<int> &edge_to_boundary_id = std::get<EdgeMap<int>>(boundary_to_id);
-		for (const Tuple &edge : get_edges())
-		{
-			const size_t e0 = edge.vid(*this);
-			const size_t e1 = edge.switch_vertex(*this).vid(*this);
-			boundary_attrs[edge.eid(*this)].boundary_id = edge_to_boundary_id.at({{e0, e1}});
-		}
-	}
-
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// 3D (Tetrahedron mesh)
-
-	template <>
-	void WildRemesher<wmtk::TetMesh>::set_boundary_ids(const BoundaryMap<int> &boundary_to_id)
-	{
-		assert(std::holds_alternative<FaceMap<int>>(boundary_to_id));
-		const FaceMap<int> &face_to_boundary_id = std::get<FaceMap<int>>(boundary_to_id);
-		for (const Tuple &face : get_faces())
-		{
-			const size_t f0 = face.vid(*this);
-			const size_t f1 = face.switch_vertex(*this).vid(*this);
-			const size_t f2 = face.switch_edge(*this).switch_vertex(*this).vid(*this);
-
-			boundary_attrs[face.fid(*this)].boundary_id = face_to_boundary_id.at({{f0, f1, f2}});
-		}
-	}
-
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// ND
-
 	VERTEX_ATTRIBUTE_GETTER(rest_positions, rest_position)
 	VERTEX_ATTRIBUTE_GETTER(positions, position)
 	VERTEX_ATTRIBUTE_GETTER(displacements, displacement())
@@ -277,46 +240,53 @@ namespace polyfem::mesh
 	{
 		POLYFEM_REMESHER_SCOPED_TIMER("boundary_facets");
 
-		// size_t element_capacity;
-		// if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
-		// 	element_capacity = WMTKMesh::tri_capacity();
-		// else
-		// 	element_capacity = WMTKMesh::tet_capacity();
+		size_t element_capacity;
+		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
+			element_capacity = WMTKMesh::tri_capacity();
+		else
+			element_capacity = WMTKMesh::tet_capacity();
 
-		// const size_t max_tid = std::min(boundary_attrs.size() / FACETS_PER_ELEMENT, element_capacity);
+		const size_t max_tid = std::min(boundary_attrs.size() / FACETS_PER_ELEMENT, element_capacity);
 
-		// std::vector<Tuple> boundary_facets;
-		// for (int tid = 0; tid < max_tid; ++tid)
-		// {
-		// 	const Tuple t = tuple_from_element(tid);
-		// 	if (!t.is_valid(*this))
-		// 		continue;
-
-		// 	for (int local_fid = 0; local_fid < FACETS_PER_ELEMENT; ++local_fid)
-		// 	{
-		// 		const int boundary_id = boundary_attrs[FACETS_PER_ELEMENT * tid + local_fid].boundary_id;
-		// 		if (boundary_id >= 0)
-		// 		{
-		// 			boundary_facets.push_back(tuple_from_facet(tid, local_fid));
-		// 			assert(is_boundary_facet(boundary_facets.back()));
-		// 			if (boundary_ids)
-		// 				boundary_ids->push_back(boundary_id);
-		// 		}
-		// 	}
-		// }
-
-		// #ifndef NDEBUG
-		std::vector<Tuple> gt_boundary_facets;
-		for (const Tuple &t : get_facets())
+		std::vector<Tuple> boundary_facets;
+		for (int tid = 0; tid < max_tid; ++tid)
 		{
-			if (is_boundary_facet(t))
-				gt_boundary_facets.push_back(t);
-		}
-		// 		assert(boundary_facets.size() == gt_boundary_facets.size());
-		// #endif
+			const Tuple t = tuple_from_element(tid);
+			if (!t.is_valid(*this))
+				continue;
 
-		// return boundary_facets;
-		return gt_boundary_facets;
+			for (int local_fid = 0; local_fid < FACETS_PER_ELEMENT; ++local_fid)
+			{
+				const int boundary_id = boundary_attrs[FACETS_PER_ELEMENT * tid + local_fid].boundary_id;
+				assert((boundary_id >= 0) == is_boundary_facet(tuple_from_facet(tid, local_fid)));
+				if (boundary_id >= 0)
+				{
+					boundary_facets.push_back(tuple_from_facet(tid, local_fid));
+					if (boundary_ids)
+						boundary_ids->push_back(boundary_id);
+				}
+			}
+		}
+
+#ifndef NDEBUG
+		{
+			std::vector<size_t> boundary_facet_ids;
+			for (const Tuple &f : boundary_facets)
+				boundary_facet_ids.push_back(facet_id(f));
+			std::sort(boundary_facet_ids.begin(), boundary_facet_ids.end());
+
+			std::vector<size_t> gt_boundary_facet_ids;
+			for (const Tuple &f : get_facets())
+				if (is_boundary_facet(f))
+					gt_boundary_facet_ids.push_back(facet_id(f));
+			std::sort(gt_boundary_facet_ids.begin(), gt_boundary_facet_ids.end());
+
+			assert(boundary_facets.size() == gt_boundary_facet_ids.size());
+			assert(boundary_facet_ids == gt_boundary_facet_ids);
+		}
+#endif
+
+		return boundary_facets;
 	}
 
 	template <class WMTKMesh>
@@ -347,7 +317,7 @@ namespace polyfem::mesh
 			if (bc == bc_ids.end())
 				continue;
 
-			for (const size_t vid : boundary_facet_vids(t))
+			for (const size_t vid : facet_vids(t))
 				for (int d = 0; d < dim(); ++d)
 					if (bc->second[d])
 						boundary_nodes.push_back(dim() * vertex_to_basis[vid] + d);
@@ -399,6 +369,33 @@ namespace polyfem::mesh
 		for (int i = 0; i < elements.size(); ++i)
 		{
 			element_attrs[element_id(elements[i])].body_id = body_ids.at(i);
+		}
+	}
+
+	template <class WMTKMesh>
+	void WildRemesher<WMTKMesh>::set_boundary_ids(const BoundaryMap<int> &boundary_to_id)
+	{
+		for (const Tuple &face : get_facets())
+		{
+			if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
+			{
+				assert(std::holds_alternative<EdgeMap<int>>(boundary_to_id));
+				const EdgeMap<int> &edge_to_boundary_id = std::get<EdgeMap<int>>(boundary_to_id);
+				boundary_attrs[facet_id(face)].boundary_id = edge_to_boundary_id.at(facet_vids(face));
+			}
+			else
+			{
+				assert(std::holds_alternative<FaceMap<int>>(boundary_to_id));
+				const FaceMap<int> &face_to_boundary_id = std::get<FaceMap<int>>(boundary_to_id);
+				boundary_attrs[facet_id(face)].boundary_id = face_to_boundary_id.at(facet_vids(face));
+			}
+
+#ifndef NDEBUG
+			if (is_boundary_facet(face))
+				assert(boundary_attrs[facet_id(face)].boundary_id >= 0);
+			else
+				assert(boundary_attrs[facet_id(face)].boundary_id == -1);
+#endif
 		}
 	}
 

@@ -89,8 +89,14 @@ namespace polyfem::mesh
 			return t.is_boundary_face(*this);
 		}
 
-		/// @brief Get the vertex ids of a boundary facet.
-		std::array<size_t, 3> boundary_facet_vids(const Tuple &t) const override
+		/// @brief Get the tuples of a facet.
+		std::array<Tuple, 3> facet_vertices(const Tuple &t) const override
+		{
+			return get_face_vertices(t);
+		}
+
+		/// @brief Get the vertex ids of a facet.
+		std::array<size_t, 3> facet_vids(const Tuple &t) const override
 		{
 			return {{
 				t.vid(*this),
@@ -99,7 +105,7 @@ namespace polyfem::mesh
 			}};
 		}
 
-		/// @brief Get the vertex ids of an element.
+		/// @brief Get the tuples of an element.
 		std::array<Tuple, 4> element_vertices(const Tuple &t) const override
 		{
 			return oriented_tet_vertices(t);

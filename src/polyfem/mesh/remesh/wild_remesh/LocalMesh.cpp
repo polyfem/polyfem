@@ -80,7 +80,7 @@ namespace polyfem::mesh
 					if (global_element_ids.find(adjacent_tid) != global_element_ids.end())
 						continue;
 
-					for (const size_t &vid : m.boundary_facet_vids(facet))
+					for (const size_t &vid : m.facet_vids(facet))
 						m_fixed_vertices.push_back(m_global_to_local[vid]);
 				}
 			}
@@ -101,7 +101,7 @@ namespace polyfem::mesh
 			for (int i = 0; i < global_boundary_facets.size(); i++)
 			{
 				const Tuple &facet = global_boundary_facets[i];
-				const auto vids = m.boundary_facet_vids(facet);
+				const auto vids = m.facet_vids(facet);
 
 				const bool is_new_facet = std::any_of(vids.begin(), vids.end(), [&](size_t vid) {
 					return prev_global_to_local.find(vid) == prev_global_to_local.end();
@@ -133,7 +133,7 @@ namespace polyfem::mesh
 			for (int i = 0; i < local_boundary_facets.size(); i++)
 			{
 				const Tuple &facet = local_boundary_facets[i];
-				const auto vids = m.boundary_facet_vids(facet);
+				const auto vids = m.facet_vids(facet);
 				for (int j = 0; j < vids.size(); ++j)
 					boundary_facets()(i, j) = m_global_to_local[vids[j]];
 				m_boundary_ids.push_back(m.boundary_attrs[m.facet_id(facet)].boundary_id);

@@ -44,7 +44,10 @@ namespace polyfem::mesh
 		// if (is_boundary_facet(e) && state.is_contact_enabled())
 		min_edge_length = std::max(min_edge_length, 2.01 * state.args["contact"]["dhat"].get<double>());
 		if (edge_length(e) < min_edge_length)
+		{
+			executor.m_cnt_fail--; // do not count this as a failed split
 			return false;
+		}
 
 		// ---------------------------------------------------------------------
 
@@ -120,8 +123,7 @@ namespace polyfem::mesh
 
 		const size_t new_vid = new_vertex.vid(*this);
 
-		const std::vector<Tuple> new_faces = get_one_ring_tris_for_vertex(new_vertex);
-		for (const auto &new_face : new_faces)
+		for (const auto &new_face : get_one_ring_tris_for_vertex(new_vertex))
 		{
 			for (int i = 0; i < 3; i++)
 			{
@@ -143,6 +145,13 @@ namespace polyfem::mesh
 				{
 					boundary_attrs[e.eid(*this)] = old_edges.at({{v0_id, v1_id}});
 				}
+
+#ifndef NDEBUG
+				if (is_boundary_facet(e))
+					assert(boundary_attrs[facet_id(e)].boundary_id >= 0);
+				else
+					assert(boundary_attrs[facet_id(e)].boundary_id == -1);
+#endif
 			}
 		}
 	}
@@ -257,17 +266,13 @@ namespace polyfem::mesh
 		const size_t old_v1_id)
 	{
 		const size_t new_vid = new_vertex.vid(*this);
-		const std::vector<Tuple> new_tets = get_one_ring_tets_for_vertex(new_vertex);
-
-		for (const auto &t : new_tets)
+		for (const auto &t : get_one_ring_tets_for_vertex(new_vertex))
 		{
 			for (int i = 0; i < 4; i++)
 			{
 				const Tuple f = tuple_from_face(t.tid(*this), i);
 
-				std::array<Tuple, 3> vs = get_face_vertices(f);
-				std::array<size_t, 3> vids =
-					{{vs[0].vid(*this), vs[1].vid(*this), vs[2].vid(*this)}};
+				std::array<size_t, 3> vids = facet_vids(f);
 
 				auto new_v_itr = std::find(vids.begin(), vids.end(), new_vid);
 
@@ -277,15 +282,26 @@ namespace polyfem::mesh
 					const bool contains_old_v1 = contains(vids, old_v1_id);
 					assert(!(contains_old_v0 && contains_old_v1));
 
-					// New inerior face, use default boundary attributes
+					// New interior face, use default boundary attributes
 					if (!contains_old_v0 && !contains_old_v1)
+					{
+						assert(!is_boundary_facet(f));
+						boundary_attrs[facet_id(f)].boundary_id = -1;
 						continue;
+					}
 
 					*new_v_itr = contains_old_v0 ? old_v1_id : old_v0_id;
 				}
 				// else: new vertex is not part of this face, so retain the old boundary attributes
 
 				boundary_attrs[f.fid(*this)] = old_faces.at(vids);
+
+#ifndef NDEBUG
+				if (is_boundary_facet(f))
+					assert(boundary_attrs[facet_id(f)].boundary_id >= 0);
+				else
+					assert(boundary_attrs[facet_id(f)].boundary_id == -1);
+#endif
 			}
 		}
 	}
