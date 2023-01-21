@@ -44,6 +44,13 @@ namespace cppoptlib
 		const typename Superclass::TCriteria &getStopCriteria() { return this->m_stop; }
 		// setStopCriteria already in ISolver
 
+		bool converged() const
+		{
+			return this->m_status == Status::XDeltaTolerance
+				   || this->m_status == Status::FDeltaTolerance
+				   || this->m_status == Status::GradNormTolerance;
+		}
+
 	protected:
 		// ====================================================================
 		//                        Solver parameters

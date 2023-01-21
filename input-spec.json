@@ -1198,7 +1198,8 @@
         "type": "object",
         "optional": [
             "local_mesh_n_ring",
-            "local_mesh_rel_area"
+            "local_mesh_rel_area",
+            "max_nl_iterations"
         ],
         "doc": "Settings for adaptive remeshing local relaxation"
     },
@@ -1213,6 +1214,12 @@
         "default": 0.01,
         "type": "float",
         "doc": "Minimum area for local relaxation"
+    },
+    {
+        "pointer": "/space/remesh/local_relaxation/max_nl_iterations",
+        "default": 1,
+        "type": "int",
+        "doc": "Maximum number of nonlinear solver iterations before acceptance check"
     },
     {
         "pointer": "/space/advanced",

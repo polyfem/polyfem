@@ -86,12 +86,17 @@ namespace polyfem
 
 		igl::Timer timer;
 
+		static double forward_solve_time = 0;
+		static double global_relaxation_time = 0;
+
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			timer.start();
 			solve_tensor_nonlinear(sol, t);
 			timer.stop();
 			logger().critical("Forward time step {} took {}s", t, timer.getElapsedTimeInSec());
+			forward_solve_time += timer.getElapsedTimeInSec();
+			logger().critical("Forward time step has taken {}s overall", forward_solve_time);
 
 			save_energy(save_i);
 			save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
@@ -105,9 +110,11 @@ namespace polyfem
 
 					const Eigen::MatrixXd loc_relax_sol = sol;
 					timer.start();
-					// solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
+					solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
 					timer.stop();
 					logger().critical("Global relaxation took {}s", timer.getElapsedTimeInSec());
+					global_relaxation_time += timer.getElapsedTimeInSec();
+					logger().critical("Global relaxation has taken {}s overall", global_relaxation_time);
 					relax_diff_file << fmt::format("{},{}\n", (loc_relax_sol - sol).norm(), (loc_relax_sol - sol).lpNorm<Eigen::Infinity>());
 					relax_diff_file.flush();
 
@@ -155,6 +162,9 @@ namespace polyfem
 			// save restart file
 			save_restart_json(t0, dt, t);
 		}
+
+		logger().critical("Forward time step took {}s overall", forward_solve_time);
+		logger().critical("Global relaxation took {}s overall", global_relaxation_time);
 	}
 
 	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t, const bool init_time_integrator)
@@ -185,11 +195,11 @@ namespace polyfem
 		// Initialize time integrator
 		if (problem->is_time_dependent())
 		{
-			POLYFEM_SCOPED_TIMER("Initialize time integrator");
-			solve_data.time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
-
 			if (init_time_integrator)
 			{
+				POLYFEM_SCOPED_TIMER("Initialize time integrator");
+				solve_data.time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
+
 				Eigen::MatrixXd velocity, acceleration;
 				initial_velocity(velocity);
 				assert(velocity.size() == sol.size());
@@ -199,6 +209,7 @@ namespace polyfem
 				const double dt = args["time"]["dt"];
 				solve_data.time_integrator->init(sol, velocity, acceleration, dt);
 			}
+			assert(solve_data.time_integrator != nullptr);
 		}
 		else
 		{

@@ -263,8 +263,6 @@ namespace polyfem::mesh
 			sol.bottomRows(ndof_obstacle) = obstacle_sol;
 
 		state.solve_data.rhs_assembler = state.build_rhs_assembler();
-		state.init_nonlinear_tensor_solve(sol, time, /*init_time_integrator=*/false);
-
 		if (state.problem->is_time_dependent())
 		{
 			assert(state.solve_data.time_integrator != nullptr);
@@ -284,15 +282,13 @@ namespace polyfem::mesh
 				projected_quantities, dim, x_prevs, v_prevs, a_prevs);
 			state.solve_data.time_integrator->init(x_prevs, v_prevs, a_prevs, dt);
 		}
+		state.init_nonlinear_tensor_solve(sol, time, /*init_time_integrator=*/false);
 
 		// initialize the problem so contact force show up correctly in the output
+		state.solve_data.nl_problem->update_quantities(time, state.solve_data.time_integrator->x_prev());
 		state.solve_data.nl_problem->init(sol);
-		if (state.solve_data.nl_problem->uses_lagging())
-		{
-			state.solve_data.friction_form->init_lagging(state.solve_data.time_integrator->x_prev());
-			state.solve_data.friction_form->update_lagging(sol);
-		}
-		state.solve_data.update_barrier_stiffness(sol); // TODO: remove this
+		state.solve_data.nl_problem->init_lagging(state.solve_data.time_integrator->x_prev());
+		state.solve_data.nl_problem->update_lagging(sol, /*iter_num=*/0);
 
 		return true;
 	}

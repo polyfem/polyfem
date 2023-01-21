@@ -7,8 +7,6 @@
 #include <polyfem/solver/forms/LinearForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
-#define POLYFEM_REMESH_USE_SINGLE_ITER
-
 namespace polyfem::mesh
 {
 	template <class WMTKMesh>
@@ -72,11 +70,9 @@ namespace polyfem::mesh
 
 		// Nonlinear solver
 		auto nl_solver = state.make_nl_solver<NLProblem>("Eigen::LLT");
-#ifdef POLYFEM_REMESH_USE_SINGLE_ITER
 		auto criteria = nl_solver->getStopCriteria();
-		criteria.iterations = 1;
+		criteria.iterations = args["local_relaxation"]["max_nl_iterations"];
 		nl_solver->setStopCriteria(criteria);
-#endif
 
 		// Create augmented Lagrangian solver
 		ALSolver al_solver(
@@ -123,26 +119,27 @@ namespace polyfem::mesh
 			// local_mesh.write_mesh(state.resolve_output_path(fmt::format("local_mesh_{:04d}.vtu", save_i)), target_x);
 			// write_mesh(state.resolve_output_path(fmt::format("relaxation_{:04d}.vtu", save_i++)));
 
-#ifdef POLYFEM_REMESH_USE_SINGLE_ITER
 			// Re-solve with more iterations
-			auto criteria = nl_solver->getStopCriteria();
-			criteria.iterations = 100;
-			nl_solver->setStopCriteria(criteria);
+			if (!nl_solver->converged())
+			{
+				auto criteria = nl_solver->getStopCriteria();
+				criteria.iterations = 100;
+				nl_solver->setStopCriteria(criteria);
 
-			const auto level_before = logger().level();
-			logger().set_level(spdlog::level::warn);
-			try
-			{
-				POLYFEM_REMESHER_SCOPED_TIMER("Local relaxation solve");
-				al_solver.solve(*(solve_data.nl_problem), sol, state.args["solver"]["augmented_lagrangian"]["force"]);
+				const auto level_before = logger().level();
+				logger().set_level(spdlog::level::warn);
+				try
+				{
+					POLYFEM_REMESHER_SCOPED_TIMER("Local relaxation solve");
+					al_solver.solve(*(solve_data.nl_problem), sol, state.args["solver"]["augmented_lagrangian"]["force"]);
+				}
+				catch (const std::runtime_error &e)
+				{
+					assert(false);
+					return false;
+				}
+				logger().set_level(level_before);
 			}
-			catch (const std::runtime_error &e)
-			{
-				assert(false);
-				return false;
-			}
-			logger().set_level(level_before);
-#endif
 
 			for (const auto &[glob_vi, loc_vi] : local_mesh.global_to_local())
 			{
@@ -361,6 +358,7 @@ namespace polyfem::mesh
 			ndof, boundary_nodes, target_x, forms);
 
 		assert(solve_data.time_integrator != nullptr);
+		solve_data.nl_problem->update_quantities(current_time, solve_data.time_integrator->x_prev());
 		solve_data.nl_problem->init(target_x);
 		solve_data.nl_problem->init_lagging(solve_data.time_integrator->x_prev());
 		solve_data.nl_problem->update_lagging(target_x, /*iter_num=*/0);

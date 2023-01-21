@@ -108,8 +108,8 @@ namespace polyfem::solver
 	{
 		// Store the previous value used to compute the constraint set to avoid duplicate computation.
 		static Eigen::MatrixXd cached_displaced_surface;
-		// if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
-		// 	return;
+		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
+			return;
 
 		if (use_cached_candidates_)
 			constraint_set_.build(
