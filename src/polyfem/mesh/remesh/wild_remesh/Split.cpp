@@ -31,7 +31,7 @@ namespace polyfem::mesh
 		// #endif
 
 		if (edge_attr(e.eid(*this)).op_attempts++ >= max_op_attempts
-			|| edge_attr(e.eid(*this)).op_depth >= max_op_depth)
+			|| edge_attr(e.eid(*this)).op_depth >= args["split"]["max_depth"].get<int>())
 		{
 			executor.m_cnt_fail--; // do not count this as a failed split
 			return false;
@@ -40,7 +40,7 @@ namespace polyfem::mesh
 		// ---------------------------------------------------------------------
 
 		// Dont split if the edge is too small
-		double min_edge_length = this->min_edge_length;
+		double min_edge_length = args["split"]["min_edge_length"];
 		if (is_on_boundary(e) && state.is_contact_enabled())
 			min_edge_length = std::max(min_edge_length, 2.01 * state.args["contact"]["dhat"].get<double>());
 		if (edge_length(e) < min_edge_length)
@@ -52,7 +52,7 @@ namespace polyfem::mesh
 		const auto &v1 = vertex_attrs[e.switch_vertex(*this).vid(*this)].rest_position;
 		const double local_energy = local_mesh_energy((v0 + v1) / 2);
 		// Do not split if the energy of the local mesh is too small
-		if (local_energy < split_tolerance)
+		if (local_energy < args["split"]["acceptance_tolerance"].get<double>())
 			return false;
 
 		// ---------------------------------------------------------------------
@@ -103,7 +103,7 @@ namespace polyfem::mesh
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
-		return local_relaxation(new_vertex, op_cache.local_energy, split_tolerance);
+		return local_relaxation(new_vertex, op_cache.local_energy, args["split"]["acceptance_tolerance"]);
 	}
 
 	void WildTriRemesher::map_edge_split_boundary_attributes(
@@ -206,7 +206,7 @@ namespace polyfem::mesh
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
-		return local_relaxation(t, op_cache.local_energy, split_tolerance);
+		return local_relaxation(t, op_cache.local_energy, args["split"]["acceptance_tolerance"]);
 	}
 
 	void WildTetRemesher::map_edge_split_edge_attributes(

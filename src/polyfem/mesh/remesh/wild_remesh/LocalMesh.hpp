@@ -38,7 +38,8 @@ namespace polyfem::mesh
 		static std::vector<Tuple> ball_selection(
 			const M &m,
 			const VectorNd &center,
-			const double rel_radius);
+			const double rel_radius,
+			const int n_ring_size);
 
 		int num_elements() const { return m_elements.rows(); }
 		int num_local_vertices() const { return m_num_local_vertices; }

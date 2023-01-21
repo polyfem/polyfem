@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/State.hpp>
+#include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Timer.hpp>
 
 #include <map>
@@ -194,26 +195,6 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 		// members
 	public:
-		/// @brief Minimum edge length for splitting
-		double min_edge_length = 1e-6;
-		double max_collapse_edge_length = std::numeric_limits<double>::infinity();
-
-		/// @brief Accept split operation if energy decreased by at least x
-		double split_tolerance = 1e-3;
-		/// @brief Accept collapse operation if energy decreased by at least x
-		double collapse_tolerance = -1e-8;
-		/// @brief Accept swap operation if energy decreased by at least x
-		double swap_tolerance = -1e-8;
-		/// @brief Accept smooth operation if energy decreased by at least x
-		double smooth_tolerance = 1e-3;
-
-		/// @brief Size of n-ring for local relaxation
-		int n_ring_size = 3;
-		/// @brief Flood fill relative area
-		double flood_fill_rel_area = 0.01;
-
-		double threshold = 0;
-		int max_op_depth = 3;
 		int max_op_attempts = 1;
 
 	protected:
@@ -232,6 +213,8 @@ namespace polyfem::mesh
 
 		/// @brief Reference to the simulation state.
 		const State &state;
+		/// @brief Copy of remesh args.
+		const json args;
 		/// @brief Collision obstacles' displacements
 		const Eigen::MatrixXd m_obstacle_displacements;
 		/// @brief Collision obstacles' extra quantities

@@ -12,21 +12,23 @@ namespace polyfem::mesh
 	{
 		// POLYFEM_REMESHER_SCOPED_TIMER("Collapse edge before");
 		if (edge_attr(t.eid(*this)).op_attempts++ >= max_op_attempts
-			|| edge_attr(t.eid(*this)).op_depth >= max_op_depth)
+			|| edge_attr(t.eid(*this)).op_depth >= args["collapse"]["max_depth"].get<int>())
 		{
 			executor.m_cnt_fail--; // do not count this as a failed split
 			return false;
 		}
 
+		const double max_edge_length = args["collapse"]["max_edge_length"];
+
 		double vol_tol;
 		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
-			vol_tol = std::pow(max_collapse_edge_length, 2) / 2;
+			vol_tol = std::pow(max_edge_length, 2) / 2;
 		else
-			vol_tol = std::pow(max_collapse_edge_length, 3) / (6 * sqrt(2));
+			vol_tol = std::pow(max_edge_length, 3) / (6 * sqrt(2));
 
 		// Dont collapse if the edge is large
 		if (edge_adjacent_element_volumes(t).minCoeff() > vol_tol
-			&& edge_length(t) > max_collapse_edge_length)
+			&& edge_length(t) > max_edge_length)
 			return false;
 
 		const int v0i = t.vid(*this);
@@ -160,7 +162,7 @@ namespace polyfem::mesh
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease/increase.
-		return local_relaxation(t, local_energy(), collapse_tolerance);
+		return local_relaxation(t, local_energy(), args["collapse"]["acceptance_tolerance"]);
 	}
 
 	// =========================================================================

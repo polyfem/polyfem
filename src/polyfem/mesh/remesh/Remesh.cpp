@@ -129,17 +129,6 @@ namespace polyfem::mesh
 				remeshing = std::make_shared<WildTetRemesher>(
 					state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
 					time, current_energy);
-
-			remeshing->split_tolerance = state.args["space"]["remesh"]["split_tol"];
-			remeshing->collapse_tolerance = state.args["space"]["remesh"]["collapse_tol"];
-			remeshing->swap_tolerance = state.args["space"]["remesh"]["swap_tol"];
-			remeshing->smooth_tolerance = state.args["space"]["remesh"]["smooth_tol"];
-			remeshing->n_ring_size = state.args["space"]["remesh"]["n_ring_size"];
-			remeshing->flood_fill_rel_area = state.args["space"]["remesh"]["flood_fill_rel_area"];
-			remeshing->threshold = state.args["space"]["remesh"]["threshold"];
-			remeshing->max_op_depth = state.args["space"]["remesh"]["max_op_depth"];
-			remeshing->max_collapse_edge_length = state.args["space"]["remesh"]["max_collapse_edge_length"];
-
 			return remeshing;
 		}
 	} // namespace

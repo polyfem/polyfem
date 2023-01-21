@@ -1034,15 +1034,11 @@
         "optional": [
             "enabled",
             "t0",
-            "split_tol",
-            "collapse_tol",
-            "swap_tol",
-            "smooth_tol",
-            "n_ring_size",
-            "flood_fill_rel_area",
-            "threshold",
-            "max_op_depth",
-            "max_collapse_edge_length"
+            "split",
+            "collapse",
+            "swap",
+            "smooth",
+            "local_mesh"
         ],
         "doc": "Settings for adaptive remeshing"
     },
@@ -1059,62 +1055,136 @@
         "doc": "Time at which to start adaptive remeshing"
     },
     {
-        "pointer": "/space/remesh/split_tol",
+        "pointer": "/space/remesh/split",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "acceptance_tolerance",
+            "culling_threshold",
+            "max_depth",
+            "min_edge_length"
+        ],
+        "doc": "Settings for adaptive remeshing edge splitting operations"
+    },
+    {
+        "pointer": "/space/remesh/split/acceptance_tolerance",
         "default": 1e-3,
         "type": "float",
         "doc": "Accept split operation if energy decreased by at least x"
     },
     {
-        "pointer": "/space/remesh/collapse_tol",
+        "pointer": "/space/remesh/split/culling_threshold",
+        "default": 0.95,
+        "type": "float",
+        "min": 0,
+        "max": 1,
+        "doc": "Split operation culling threshold on energy"
+    },
+    {
+        "pointer": "/space/remesh/split/max_depth",
+        "default": 3,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum depth split per time-step"
+    },
+    {
+        "pointer": "/space/remesh/split/min_edge_length",
+        "default": 1e-6,
+        "type": "float",
+        "min": 0,
+        "doc": "Minimum edge length to split"
+    },
+    {
+        "pointer": "/space/remesh/collapse",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "acceptance_tolerance",
+            "culling_threshold",
+            "max_depth",
+            "max_edge_length"
+        ],
+        "doc": "Settings for adaptive remeshing edge collapse operations"
+    },
+    {
+        "pointer": "/space/remesh/collapse/acceptance_tolerance",
         "default": -1e-8,
         "type": "float",
         "doc": "Accept collapse operation if energy decreased by at least x"
     },
     {
-        "pointer": "/space/remesh/swap_tol",
+        "pointer": "/space/remesh/collapse/culling_threshold",
+        "default": 0.01,
+        "type": "float",
+        "min": 0,
+        "max": 1,
+        "doc": "Collapse operation culling threshold on energy"
+    },
+    {
+        "pointer": "/space/remesh/collapse/max_depth",
+        "default": 3,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum depth collapse per time-step"
+    },
+    {
+        "pointer": "/space/remesh/collapse/max_edge_length",
+        "default": 1e10,
+        "type": "float",
+        "min": 0,
+        "doc": "Minimum edge length to collapse"
+    },
+    {
+        "pointer": "/space/remesh/swap",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "acceptance_tolerance"
+        ],
+        "doc": "Settings for adaptive remeshing edge/face swap operations"
+    },
+    {
+        "pointer": "/space/remesh/swap/acceptance_tolerance",
         "default": -1e-8,
         "type": "float",
         "doc": "Accept swap operation if energy decreased by at least x"
     },
     {
-        "pointer": "/space/remesh/smooth_tol",
+        "pointer": "/space/remesh/smooth",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "acceptance_tolerance"
+        ],
+        "doc": "Settings for adaptive remeshing vertex smoothing operations"
+    },
+    {
+        "pointer": "/space/remesh/smooth/acceptance_tolerance",
         "default": 1e-3,
         "type": "float",
         "doc": "Accept smooth operation if energy decreased by at least x"
     },
     {
-        "pointer": "/space/remesh/n_ring_size",
+        "pointer": "/space/remesh/local_relaxation",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "local_mesh_n_ring",
+            "local_mesh_rel_area"
+        ],
+        "doc": "Settings for adaptive remeshing local relaxation"
+    },
+    {
+        "pointer": "/space/remesh/local_relaxation/local_mesh_n_ring",
         "default": 2,
         "type": "int",
-        "doc": "size of n-ring for local relaxation"
+        "doc": "Size of n-ring for local relaxation"
     },
     {
-        "pointer": "/space/remesh/flood_fill_rel_area",
+        "pointer": "/space/remesh/local_relaxation/local_mesh_rel_area",
         "default": 0.01,
         "type": "float",
-        "doc": "minimum size of the flood fill n-ring for local relaxation"
-    },
-    {
-        "pointer": "/space/remesh/threshold",
-        "default": 0,
-        "type": "float",
-        "min": 0,
-        "max": 1,
-        "doc": "remeshing threshold on energy"
-    },
-    {
-        "pointer": "/space/remesh/max_op_depth",
-        "default": 3,
-        "type": "int",
-        "min": 1,
-        "doc": "maximum depth split per time-step"
-    },
-    {
-        "pointer": "/space/remesh/max_collapse_edge_length",
-        "default": 1e10,
-        "type": "float",
-        "min": 0,
-        "doc": "maximum edge length to collapse"
+        "doc": "Minimum area for local relaxation"
     },
     {
         "pointer": "/space/advanced",

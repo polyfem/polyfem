@@ -44,7 +44,7 @@ namespace polyfem::mesh
 
 	template <typename WMTKMesh>
 	Remesher::EdgeMap<typename WildRemesher<WMTKMesh>::EdgeAttributes::EnergyRank>
-	rank_edges(const Remesher::EdgeMap<double> &edge_energy, const double threshold, const double split_tolerance)
+	rank_edges(const Remesher::EdgeMap<double> &edge_energy, const json &args)
 	{
 		if (edge_energy.empty())
 			return Remesher::EdgeMap<typename WildRemesher<WMTKMesh>::EdgeAttributes::EnergyRank>();
@@ -61,20 +61,16 @@ namespace polyfem::mesh
 		}
 		std::sort(sorted_energies.begin(), sorted_energies.end());
 
-		assert(0.0 <= threshold && threshold <= 1.0);
-
-		// const double tmp = (1 - threshold);
-		const double tmp = 0.01;
-
-		const double top_energy_threshold = (max_energy - min_energy) * threshold + min_energy;
-		const double bottom_energy_threshold = (max_energy - min_energy) * tmp + min_energy;
-
-		const double top_element_threshold = sorted_energies[int(sorted_energies.size() * threshold)];
-		const double bottom_element_threshold = sorted_energies[int(sorted_energies.size() * tmp)];
-
+		const double split_threshold = args["split"]["culling_threshold"];
+		const double split_tolerance = args["split"]["acceptance_tolerance"];
+		const double top_energy_threshold = (max_energy - min_energy) * split_threshold + min_energy;
+		const double top_element_threshold = sorted_energies[int(sorted_energies.size() * split_threshold)];
 		const double top_threshold = std::max(std::min(top_energy_threshold, top_element_threshold), std::min(1e-12, split_tolerance));
+
+		const double collapse_threshold = args["collapse"]["culling_threshold"];
+		const double bottom_energy_threshold = (max_energy - min_energy) * collapse_threshold + min_energy;
+		// const double bottom_element_threshold = sorted_energies[int(sorted_energies.size() * collapse_threshold)];
 		const double bottom_threshold = bottom_energy_threshold;
-		assert(bottom_threshold < top_threshold);
 
 		logger().info("min energy: {}, max energy: {}, thresholds: {}, {}", min_energy, max_energy, bottom_threshold, top_threshold);
 
@@ -118,8 +114,8 @@ namespace polyfem::mesh
 			assert(!is_inverted(t));
 #endif
 
-		const auto edge_elastic_ranks = rank_edges<WMTKMesh>(elastic_energy, threshold, split_tolerance);
-		const auto edge_contact_ranks = rank_edges<WMTKMesh>(contact_energy, threshold, split_tolerance);
+		const auto edge_elastic_ranks = rank_edges<WMTKMesh>(elastic_energy, args);
+		const auto edge_contact_ranks = rank_edges<WMTKMesh>(contact_energy, args);
 
 		EdgeMap<typename EdgeAttributes::EnergyRank> edge_ranks;
 		for (const auto &[edge, elastic_rank] : edge_elastic_ranks)
@@ -480,8 +476,10 @@ namespace polyfem::mesh
 	std::vector<typename WMTKMesh::Tuple>
 	WildRemesher<WMTKMesh>::local_mesh_tuples(const VectorNd &center) const
 	{
+		const double rel_area = args["local_relaxation"]["local_mesh_rel_area"];
+		const double n_ring = args["local_relaxation"]["local_mesh_n_ring"];
 		return LocalMesh<WildRemesher<WMTKMesh>>::ball_selection(
-			*this, center, flood_fill_rel_area * total_volume);
+			*this, center, rel_area * total_volume, n_ring);
 	}
 
 	template <class WMTKMesh>

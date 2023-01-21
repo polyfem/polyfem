@@ -63,7 +63,7 @@ namespace polyfem::mesh
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
 		assert(false); // TODO: set local_energy in _before
-		return local_relaxation(t, op_cache.local_energy, swap_tolerance);
+		return local_relaxation(t, op_cache.local_energy, args["swap"]["acceptance_tolerance"]);
 	}
 
 } // namespace polyfem::mesh

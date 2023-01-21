@@ -283,7 +283,7 @@ namespace polyfem::mesh
 
 	template <typename M>
 	std::vector<typename M::Tuple> LocalMesh<M>::ball_selection(
-		const M &m, const VectorNd &center, const double volume)
+		const M &m, const VectorNd &center, const double volume, const int n_ring_size)
 	{
 		POLYFEM_REMESHER_SCOPED_TIMER("LocalMesh::ball_selection");
 
@@ -395,9 +395,7 @@ namespace polyfem::mesh
 			if (is_intersecting)
 				one_ring.push_back(elements[fi]);
 		}
-		std::vector<Tuple> two_ring = n_ring(m, one_ring, 2);
-
-		for (const auto &e : two_ring)
+		for (const auto &e : n_ring(m, one_ring, n_ring_size))
 			if (intersecting_fid.find(m.element_id(e)) == intersecting_fid.end())
 				intersecting_elements.push_back(e);
 

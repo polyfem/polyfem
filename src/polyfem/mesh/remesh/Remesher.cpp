@@ -23,6 +23,7 @@ namespace polyfem::mesh
 					   const double current_time,
 					   const double starting_energy)
 		: state(state),
+		  args(state.args["space"]["remesh"]),
 		  m_obstacle_displacements(obstacle_displacements),
 		  m_obstacle_quantities(obstacle_quantities),
 		  current_time(current_time),
