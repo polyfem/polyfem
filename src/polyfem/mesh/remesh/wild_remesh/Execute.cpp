@@ -17,6 +17,7 @@ namespace polyfem::mesh
 	double WildRemesher<WMTKMesh>::edge_elastic_energy(const Tuple &e) const
 	{
 		using namespace polyfem::solver;
+		using namespace polyfem::basis;
 
 		const std::vector<Tuple> elements = get_incident_elements_for_edge(e);
 
@@ -27,7 +28,7 @@ namespace polyfem::mesh
 
 		LocalMesh local_mesh(*this, elements, /*include_global_boundary=*/false);
 
-		const std::vector<polyfem::basis::ElementBases> bases = local_bases(local_mesh);
+		const std::vector<ElementBases> bases = local_mesh.build_bases(state.formulation());
 		const std::vector<int> boundary_nodes; // no boundary nodes
 		assembler::AssemblerUtils &assembler = init_assembler(local_mesh.body_ids());
 		SolveData solve_data;
@@ -52,7 +53,7 @@ namespace polyfem::mesh
 		const bool smooth,
 		const bool swap)
 	{
-		utils::Timer timer(timings.total);
+		utils::Timer timer(total_time);
 		timer.start();
 
 		wmtk::logger().set_level(logger().level());
@@ -124,7 +125,7 @@ namespace polyfem::mesh
 		// }
 
 		timer.stop();
-		timings.log();
+		log_timings();
 
 		return cnt_success > 0;
 	}

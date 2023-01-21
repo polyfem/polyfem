@@ -25,11 +25,11 @@ namespace polyfem::mesh
 		const std::vector<Tuple> &element_tuples,
 		const bool include_global_boundary)
 	{
-		POLYFEM_SCOPED_TIMER(m.timings.timings["LocalMesh::LocalMesh"]);
+		POLYFEM_SCOPED_TIMER("LocalMesh::LocalMesh");
 
 		std::unordered_set<size_t> global_element_ids;
 		{
-			POLYFEM_SCOPED_TIMER(m.timings.timings["LocalMesh::LocalMesh -> init m_elements"]);
+			POLYFEM_REMESHER_SCOPED_TIMER("LocalMesh::LocalMesh -> init m_elements");
 			m_elements.resize(element_tuples.size(), m.dim() + 1);
 			m_body_ids.reserve(element_tuples.size());
 			for (int fi = 0; fi < num_elements(); fi++)
@@ -54,7 +54,7 @@ namespace polyfem::mesh
 
 		std::vector<Tuple> local_boundary_facets;
 		{
-			POLYFEM_SCOPED_TIMER(m.timings.timings["LocalMesh::LocalMesh -> init m_fixed_vertices"]);
+			POLYFEM_REMESHER_SCOPED_TIMER("LocalMesh::LocalMesh -> init m_fixed_vertices");
 			for (int fi = 0; fi < num_elements(); fi++)
 			{
 				const Tuple &elem = element_tuples[fi];
@@ -90,15 +90,13 @@ namespace polyfem::mesh
 
 		if (include_global_boundary)
 		{
-			POLYFEM_SCOPED_TIMER(m.timings.timings["LocalMesh::LocalMesh -> include_global_boundary"]);
+			POLYFEM_REMESHER_SCOPED_TIMER("LocalMesh::LocalMesh -> include_global_boundary");
 			// Copy the global to local map so we can check if a vertex is new
 			const std::unordered_map<int, int> prev_global_to_local = m_global_to_local;
 
-			std::vector<Tuple> global_boundary_facets;
-			{
-				POLYFEM_SCOPED_TIMER(m.timings.timings["LocalMesh::LocalMesh -> include_global_boundary -> boundary_facets"]);
-				global_boundary_facets = m.boundary_facets();
-			}
+			std::vector<int> boundary_ids;
+			const std::vector<Tuple> global_boundary_facets = m.boundary_facets(&boundary_ids);
+
 			boundary_facets().resize(global_boundary_facets.size(), m_elements.cols() - 1);
 			for (int i = 0; i < global_boundary_facets.size(); i++)
 			{
@@ -119,13 +117,13 @@ namespace polyfem::mesh
 					if (is_new_facet)
 						m_fixed_vertices.push_back(boundary_facets()(i, j));
 				}
-
-				m_boundary_ids.push_back(m.boundary_attrs[m.facet_id(facet)].boundary_id);
 			}
+
+			m_boundary_ids.insert(m_boundary_ids.end(), boundary_ids.begin(), boundary_ids.end());
 		}
 		else
 		{
-			POLYFEM_SCOPED_TIMER(m.timings.timings["LocalMesh::LocalMesh -> !include_global_boundary"]);
+			POLYFEM_REMESHER_SCOPED_TIMER("LocalMesh::LocalMesh -> !include_global_boundary");
 
 			if constexpr (std::is_same_v<M, TriMesh>)
 				wmtk::unique_edge_tuples(m, local_boundary_facets);
@@ -157,7 +155,7 @@ namespace polyfem::mesh
 
 		if (include_global_boundary && m.obstacle().n_vertices() > 0)
 		{
-			POLYFEM_SCOPED_TIMER(m.timings.timings["LocalMesh::LocalMesh -> append obstacles"]);
+			POLYFEM_REMESHER_SCOPED_TIMER("LocalMesh::LocalMesh -> append obstacles");
 			const Obstacle &obstacle = m.obstacle();
 			utils::append_rows(m_rest_positions, obstacle.v());
 			utils::append_rows(m_positions, obstacle.v() + m.obstacle_displacements());
@@ -190,6 +188,7 @@ namespace polyfem::mesh
 	std::vector<typename M::Tuple> LocalMesh<M>::n_ring(
 		const M &m, const std::vector<Tuple> &one_ring, const int n)
 	{
+		POLYFEM_REMESHER_SCOPED_TIMER("LocalMesh::n_ring");
 		std::vector<Tuple> elements = one_ring;
 		std::unordered_set<size_t> visited_vertices;
 		std::unordered_set<size_t> visited_elements;
@@ -234,7 +233,7 @@ namespace polyfem::mesh
 	std::vector<typename M::Tuple> LocalMesh<M>::flood_fill_n_ring(
 		const M &m, const Tuple &center, const double area)
 	{
-		POLYFEM_SCOPED_TIMER(m.timings.timings["Local mesh triplets"]);
+		POLYFEM_REMESHER_SCOPED_TIMER("LocalMesh::flood_fill_n_ring");
 
 		double current_area = 0;
 
@@ -286,7 +285,7 @@ namespace polyfem::mesh
 	std::vector<typename M::Tuple> LocalMesh<M>::ball_selection(
 		const M &m, const VectorNd &center, const double volume)
 	{
-		POLYFEM_SCOPED_TIMER(m.timings.timings["Local mesh triplets"]);
+		POLYFEM_REMESHER_SCOPED_TIMER("LocalMesh::ball_selection");
 
 		const int dim = m.dim();
 
@@ -495,6 +494,38 @@ namespace polyfem::mesh
 
 		for (int &vi : m_fixed_vertices)
 			vi = permutation[vi];
+	}
+
+	template <typename M>
+	std::vector<polyfem::basis::ElementBases> LocalMesh<M>::build_bases(const std::string &formulation)
+	{
+		POLYFEM_REMESHER_SCOPED_TIMER("LocalMesh::build_bases");
+
+		std::vector<polyfem::basis::ElementBases> bases;
+
+		Eigen::VectorXi vertex_to_basis;
+		int n_bases = Remesher::build_bases(
+			rest_positions(), elements(), formulation, bases, vertex_to_basis);
+
+		assert(n_bases == num_local_vertices());
+		n_bases = num_vertices();
+		assert(vertex_to_basis.size() == n_bases);
+
+		const int start_i = num_local_vertices();
+		if (start_i < n_bases)
+		{
+			// set tail to range [start_i, n_bases)
+			std::iota(vertex_to_basis.begin() + start_i, vertex_to_basis.end(), start_i);
+		}
+
+#ifndef NDEBUG
+		for (const int basis_id : vertex_to_basis)
+			assert(basis_id >= 0);
+#endif
+
+		reorder_vertices(vertex_to_basis);
+
+		return bases;
 	}
 
 	template <typename M>

@@ -18,6 +18,7 @@ namespace polyfem::mesh
 		const double acceptance_tolerance)
 	{
 		using namespace polyfem::solver;
+		using namespace polyfem::basis;
 		using namespace polyfem::time_integrator;
 
 		// --------------------------------------------------------------------
@@ -45,15 +46,15 @@ namespace polyfem::mesh
 		// 2. Perform "relaxation" by minimizing the elastic energy of the n-ring
 		// with the internal boundary edges fixed.
 
-		const std::vector<polyfem::basis::ElementBases> bases = local_bases(local_mesh);
+		const std::vector<ElementBases> bases = local_mesh.build_bases(state.formulation());
 		const std::vector<int> boundary_nodes = local_boundary_nodes(local_mesh);
 
 		assert(ndof >= boundary_nodes.size());
 		if (ndof - boundary_nodes.size() == 0)
 			return false;
 
-		timings.total_ndofs += ndof - boundary_nodes.size();
-		timings.n_solves++;
+		total_ndofs += ndof - boundary_nodes.size();
+		num_solves++;
 
 		// These have to stay alive
 		assembler::AssemblerUtils &assembler = init_assembler(local_mesh.body_ids());
@@ -68,6 +69,7 @@ namespace polyfem::mesh
 
 		const Eigen::MatrixXd target_x = utils::flatten(local_mesh.displacements());
 		Eigen::MatrixXd sol = target_x;
+		int n_iters;
 		{
 			POLYFEM_REMESHER_SCOPED_TIMER("Local relaxation solve");
 
@@ -94,6 +96,8 @@ namespace polyfem::mesh
 			{
 			}
 			logger().set_level(level_before);
+
+			n_iters = nl_solver->criteria().iterations;
 		}
 
 		// --------------------------------------------------------------------
@@ -123,9 +127,9 @@ namespace polyfem::mesh
 			static const std::string reject_str = fmt::format(fmt::fg(fmt::terminal_color::yellow), "reject");
 
 			logger().debug(
-				"[{:s}] E0={:<10g} E1={:<10g} (E1-E0)={:<10g} tol={:g} local_ndof={:d}",
+				"[{:s}] E0={:<10g} E1={:<10g} (E1-E0)={:<10g} tol={:g} local_ndof={:d} n_iters={:d}",
 				accept ? accept_str : reject_str, local_energy_before, local_energy_after,
-				abs_diff, acceptance_tolerance, ndof - boundary_nodes.size());
+				abs_diff, acceptance_tolerance, ndof - boundary_nodes.size(), n_iters);
 		}
 
 		// Update positions only on acceptance
@@ -214,40 +218,6 @@ namespace polyfem::mesh
 		}
 
 		return accept;
-	}
-
-	template <class WMTKMesh>
-	std::vector<polyfem::basis::ElementBases> WildRemesher<WMTKMesh>::local_bases(
-		LocalMesh<This> &local_mesh) const
-	{
-		POLYFEM_REMESHER_SCOPED_TIMER("Build bases");
-
-		std::vector<polyfem::basis::ElementBases> bases;
-
-		Eigen::VectorXi vertex_to_basis;
-		int n_bases = Remesher::build_bases(
-			local_mesh.rest_positions(), local_mesh.elements(),
-			state.formulation(), bases, vertex_to_basis);
-
-		assert(n_bases == local_mesh.num_local_vertices());
-		n_bases = local_mesh.num_vertices();
-		assert(vertex_to_basis.size() == n_bases);
-
-		const int start_i = local_mesh.num_local_vertices();
-		if (start_i < n_bases)
-		{
-			// set tail to range [start_i, n_bases)
-			std::iota(vertex_to_basis.begin() + start_i, vertex_to_basis.end(), start_i);
-		}
-
-#ifndef NDEBUG
-		for (const int basis_id : vertex_to_basis)
-			assert(basis_id >= 0);
-#endif
-
-		local_mesh.reorder_vertices(vertex_to_basis);
-
-		return bases;
 	}
 
 	template <class WMTKMesh>

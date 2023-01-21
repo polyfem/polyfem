@@ -63,7 +63,8 @@ namespace polyfem::mesh
 
 		assert(0.0 <= threshold && threshold <= 1.0);
 
-		const double tmp = (1 - threshold);
+		// const double tmp = (1 - threshold);
+		const double tmp = 0.01;
 
 		const double top_energy_threshold = (max_energy - min_energy) * threshold + min_energy;
 		const double bottom_energy_threshold = (max_energy - min_energy) * tmp + min_energy;
@@ -275,6 +276,32 @@ namespace polyfem::mesh
 	}
 
 	template <class WMTKMesh>
+	std::vector<typename WMTKMesh::Tuple>
+	WildRemesher<WMTKMesh>::boundary_facets(std::vector<int> *boundary_ids) const
+	{
+		POLYFEM_REMESHER_SCOPED_TIMER("boundary_facets");
+		std::vector<Tuple> boundary_facets;
+		for (int tid = 0; tid < boundary_attrs.size() / FACETS_PER_ELEMENT; ++tid)
+		{
+			const Tuple t = tuple_from_element(tid);
+			if (!t.is_valid(*this))
+				continue;
+
+			for (int local_fid = 0; local_fid < FACETS_PER_ELEMENT; ++local_fid)
+			{
+				const int boundary_id = boundary_attrs[FACETS_PER_ELEMENT * tid + local_fid].boundary_id;
+				if (boundary_id >= 0)
+				{
+					boundary_facets.push_back(tuple_from_facet(tid, local_fid));
+					if (boundary_ids)
+						boundary_ids->push_back(boundary_id);
+				}
+			}
+		}
+		return boundary_facets;
+	}
+
+	template <class WMTKMesh>
 	std::vector<int> WildRemesher<WMTKMesh>::boundary_nodes(
 		const Eigen::VectorXi &vertex_to_basis) const
 	{
@@ -292,9 +319,12 @@ namespace polyfem::mesh
 			}
 		}
 
-		for (const Tuple &t : boundary_facets())
+		std::vector<int> boundary_ids;
+		const std::vector<Tuple> boundary_facets = this->boundary_facets(&boundary_ids);
+		for (int i = 0; i < boundary_facets.size(); ++i)
 		{
-			const auto bc = bc_ids.find(boundary_attrs[facet_id(t)].boundary_id);
+			const Tuple &t = boundary_facets[i];
+			const auto bc = bc_ids.find(boundary_ids[i]);
 
 			if (bc == bc_ids.end())
 				continue;
@@ -458,6 +488,7 @@ namespace polyfem::mesh
 	double WildRemesher<WMTKMesh>::local_mesh_energy(const VectorNd &center) const
 	{
 		using namespace polyfem::solver;
+		using namespace polyfem::basis;
 
 		const std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(center);
 
@@ -473,7 +504,7 @@ namespace polyfem::mesh
 
 		LocalMesh local_mesh(*this, local_mesh_tuples, include_global_boundary);
 
-		const std::vector<polyfem::basis::ElementBases> bases = local_bases(local_mesh);
+		const std::vector<ElementBases> bases = local_mesh.build_bases(state.formulation());
 		const std::vector<int> boundary_nodes = local_boundary_nodes(local_mesh);
 		assembler::AssemblerUtils &assembler = init_assembler(local_mesh.body_ids());
 		SolveData solve_data;

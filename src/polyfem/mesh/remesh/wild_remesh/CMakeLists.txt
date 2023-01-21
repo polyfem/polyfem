@@ -11,7 +11,6 @@ set(SOURCES
 	Smooth.cpp
 	Split.cpp
 	Swap.cpp
-	Timings.hpp
 )
 
 prepend_current_path(SOURCES)

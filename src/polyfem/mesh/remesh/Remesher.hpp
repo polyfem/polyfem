@@ -1,14 +1,17 @@
 #pragma once
 
-#include <polyfem/mesh/remesh/wild_remesh/Timings.hpp>
 #include <polyfem/State.hpp>
+#include <polyfem/utils/Timer.hpp>
 
+#include <map>
 #include <unordered_map>
 
 namespace polyfem::time_integrator
 {
 	class ImplicitTimeIntegrator;
 } // namespace polyfem::time_integrator
+
+#define POLYFEM_REMESHER_SCOPED_TIMER(name) polyfem::utils::Timer __polyfem_timer(Remesher::timings[name])
 
 namespace polyfem::mesh
 {
@@ -170,10 +173,6 @@ namespace polyfem::mesh
 			std::vector<Eigen::VectorXd> &v_prevs,
 			std::vector<Eigen::VectorXd> &a_prevs);
 
-		/// @brief Timers for the remeshing operations.
-		mutable RemesherTimings timings;
-
-	protected:
 		/// @brief Create an assembler object
 		/// @param body_ids One body ID per element.
 		/// @return Assembler object
@@ -217,8 +216,6 @@ namespace polyfem::mesh
 		int max_op_depth = 3;
 		int max_op_attempts = 1;
 
-		// --------------------------------------------------------------------
-		// members
 	protected:
 		// TODO: Drop this and only use a local EdgeOperationCache
 		struct GlobalProjectionCache
@@ -245,6 +242,17 @@ namespace polyfem::mesh
 		const double starting_energy;
 		/// @brief copy of the assembler
 		mutable assembler::AssemblerUtils assembler;
+
+		// --------------------------------------------------------------------
+		// statistics
+	public:
+		static void log_timings();
+
+		/// @brief Timings for the remeshing operations.
+		static std::map<std::string, double> timings;
+		static double total_time;  // = 0;
+		static size_t num_solves;  // = 0;
+		static size_t total_ndofs; // = 0;
 	};
 
 } // namespace polyfem::mesh

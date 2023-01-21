@@ -83,7 +83,7 @@ namespace polyfem::mesh
 	template <class WMTKMesh>
 	bool WildRemesher<WMTKMesh>::collapse_edge_after(const Tuple &t)
 	{
-		utils::Timer timer(timings.timings["Collapse edges after"]);
+		utils::Timer timer(timings["Collapse edges after"]);
 		timer.start();
 
 		// 0) perform operation (done before this function)

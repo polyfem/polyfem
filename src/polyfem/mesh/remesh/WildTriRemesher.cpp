@@ -75,16 +75,6 @@ namespace polyfem::mesh
 			vertex_attrs[vids[2]].rest_position);
 	}
 
-	std::vector<WildTriRemesher::Tuple> WildTriRemesher::boundary_facets() const
-	{
-		const std::vector<Tuple> edges = get_edges();
-		std::vector<Tuple> boundary_edges;
-		std::copy_if(edges.begin(), edges.end(), std::back_inserter(boundary_edges), [this](const Tuple &e) {
-			return is_boundary_edge(e);
-		});
-		return boundary_edges;
-	}
-
 	Eigen::MatrixXi WildTriRemesher::boundary_edges() const
 	{
 		const std::vector<Tuple> boundary_edge_tuples = boundary_facets();

@@ -88,9 +88,6 @@ namespace polyfem::mesh
 			return res;
 		}
 
-		/// @brief Get the boundary facets of the mesh
-		std::vector<Tuple> boundary_facets() const override;
-
 		/// @brief Get the vertex ids of a boundary facet.
 		std::array<size_t, 3> boundary_facet_vids(const Tuple &t) const override
 		{
@@ -126,7 +123,13 @@ namespace polyfem::mesh
 		size_t element_id(const Tuple &t) const { return t.tid(*this); }
 
 		/// @brief Get a tuple of a element with a local facet
-		Tuple tuple_from_facet(size_t elem_id, int local_facet_id) const
+		Tuple tuple_from_element(size_t elem_id) const override
+		{
+			return tuple_from_tet(elem_id);
+		}
+
+		/// @brief Get a tuple of a element with a local facet
+		Tuple tuple_from_facet(size_t elem_id, int local_facet_id) const override
 		{
 			return tuple_from_face(elem_id, local_facet_id);
 		}

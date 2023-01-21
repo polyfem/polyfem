@@ -68,7 +68,7 @@ namespace polyfem::mesh
 
 	bool WildTriRemesher::split_edge_after(const Tuple &t)
 	{
-		utils::Timer timer(timings.timings["Split edges after"]);
+		utils::Timer timer(timings["Split edges after"]);
 		timer.start();
 		// 0) perform operation (done before this function)
 
@@ -170,7 +170,7 @@ namespace polyfem::mesh
 
 	bool WildTetRemesher::split_edge_after(const Tuple &t)
 	{
-		utils::Timer timer(timings.timings["Split edges after"]);
+		utils::Timer timer(timings["Split edges after"]);
 		timer.start();
 
 		// 0) perform operation (done before this function)

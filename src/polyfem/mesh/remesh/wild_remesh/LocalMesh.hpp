@@ -1,5 +1,6 @@
 #pragma once
 
+#include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Core>
@@ -60,12 +61,16 @@ namespace polyfem::mesh
 		const std::vector<int> &boundary_ids() const { return m_boundary_ids; }
 		const std::vector<int> &body_ids() const { return m_body_ids; }
 
-		void reorder_vertices(const Eigen::VectorXi &permutation);
-
 		/// @brief Get a reference to the boundary facets (edges in 2D or faces in 3D).
 		/// @todo Make this const.
 		Eigen::MatrixXi &boundary_facets();
 		const Eigen::MatrixXi &boundary_facets() const;
+
+		/// @brief Build the ElementBases for the local mesh.
+		/// @note Reorders the vertices to match the order of the ElementBases.
+		/// @param formulation Energy formulation.
+		/// @return ElementBases for the local mesh.
+		std::vector<polyfem::basis::ElementBases> build_bases(const std::string &formulation);
 
 		void write_mesh(const std::string &path, const Eigen::MatrixXd &sol) const;
 
@@ -73,6 +78,7 @@ namespace polyfem::mesh
 		void remove_duplicate_fixed_vertices();
 		void init_local_to_global();
 		void init_vertex_attributes(const M &m);
+		void reorder_vertices(const Eigen::VectorXi &permutation);
 
 		Eigen::MatrixXd m_rest_positions;
 		Eigen::MatrixXd m_positions;

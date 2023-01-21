@@ -203,7 +203,7 @@ namespace polyfem::mesh
 		virtual bool is_on_boundary(const Tuple &t) const = 0;
 
 		/// @brief Get the boundary facets of the mesh
-		virtual std::vector<Tuple> boundary_facets() const = 0;
+		std::vector<Tuple> boundary_facets(std::vector<int> *boundary_ids = nullptr) const;
 
 		/// @brief Get the vertex ids of a boundary facet.
 		virtual std::array<size_t, DIM> boundary_facet_vids(const Tuple &t) const = 0;
@@ -223,7 +223,9 @@ namespace polyfem::mesh
 		/// @brief Get the id of an element (triangle or tetrahedra)
 		virtual size_t element_id(const Tuple &t) const = 0;
 
-		/// @brief Get a tuple of a element with a local facet
+		/// @brief Get a tuple of an element.
+		virtual Tuple tuple_from_element(size_t elem_id) const = 0;
+		/// @brief Get a tuple of an element with a local facet
 		virtual Tuple tuple_from_facet(size_t elem_id, int local_facet_id) const = 0;
 
 		/// @brief Get the incident elements for an edge
@@ -253,8 +255,6 @@ namespace polyfem::mesh
 		using Operations = std::vector<std::pair<std::string, Tuple>>;
 		Operations renew_neighbor_tuples(
 			const std::string &op, const std::vector<Tuple> &tris) const;
-
-		std::vector<polyfem::basis::ElementBases> local_bases(LocalMesh<This> &local_mesh) const;
 
 		std::vector<int> local_boundary_nodes(const LocalMesh<This> &local_mesh) const;
 

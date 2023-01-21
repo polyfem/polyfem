@@ -412,4 +412,24 @@ namespace polyfem::mesh
 		assert(offset == quantities.cols());
 	}
 
+	void Remesher::log_timings()
+	{
+		logger().debug("Total time: {:.3g}s", total_time);
+		double sum = 0;
+		for (const auto &[name, time] : timings)
+		{
+			logger().debug("{}: {:.3g}s {:.1f}%", name, time, time / total_time * 100);
+			sum += time;
+		}
+		logger().debug("Miscellaneous: {:.3g}s {:.1f}%", total_time - sum, (total_time - sum) / total_time * 100);
+		if (num_solves > 0)
+			logger().debug("Avg. # DOF per solve: {}", total_ndofs / double(num_solves));
+	}
+
+	// Static members must be initialized in the source file:
+	std::map<std::string, double> Remesher::timings;
+	double Remesher::total_time = 0;
+	size_t Remesher::num_solves = 0;
+	size_t Remesher::total_ndofs = 0;
+
 } // namespace polyfem::mesh

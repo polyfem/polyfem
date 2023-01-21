@@ -42,26 +42,6 @@ namespace polyfem::mesh
 
 	// split_edge_after in wild_remesh/Split.cpp
 
-	std::vector<WildTetRemesher::Tuple> WildTetRemesher::boundary_facets() const
-	{
-		std::vector<Tuple> boundary_faces;
-		for (int tid = 0; tid < boundary_attrs.size() / 4; ++tid)
-		{
-			const Tuple t = tuple_from_tet(tid);
-			if (!t.is_valid(*this))
-				continue;
-
-			for (int lfid = 0; lfid < 4; ++lfid)
-			{
-				if (boundary_attrs[4 * tid + lfid].boundary_id >= 0)
-				{
-					boundary_faces.push_back(tuple_from_face(tid, lfid));
-				}
-			}
-		}
-		return boundary_faces;
-	}
-
 	Eigen::MatrixXi WildTetRemesher::boundary_edges() const
 	{
 		const std::vector<Tuple> boundary_face_tuples = boundary_facets();
