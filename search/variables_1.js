@@ -26,5 +26,5 @@ var searchData=
   ['average_5fedge_5flength_23',['average_edge_length',['../classpolyfem_1_1io_1_1_out_stats_data.html#a87d671a7fc6da0c88db83ad49768801f',1,'polyfem::io::OutStatsData']]],
   ['avg_5fmass_24',['avg_mass',['../classpolyfem_1_1_state.html#ab1959486b5e566e79059ce2daca3a096',1,'polyfem::State']]],
   ['avg_5fmass_5f_25',['avg_mass_',['../classpolyfem_1_1solver_1_1_contact_form.html#a13bd7941951269f00eb817e59b54072a',1,'polyfem::solver::ContactForm']]],
-  ['axis_5f_26',['axis_',['../classpolyfem_1_1utils_1_1_axis_plane_selection.html#ac865674ee812f0adc22a3e89cc2150e8',1,'polyfem::utils::AxisPlaneSelection']]]
+  ['axis_5f_26',['axis_',['../classpolyfem_1_1utils_1_1_cylinder_selection.html#a358f7bddb345d038890f55813250332c',1,'polyfem::utils::CylinderSelection::axis_()'],['../classpolyfem_1_1utils_1_1_axis_plane_selection.html#ac865674ee812f0adc22a3e89cc2150e8',1,'polyfem::utils::AxisPlaneSelection::axis_()']]]
 ];

@@ -1,7 +1,7 @@
 var searchData=
 [
   ['radius_0',['radius',['../classpolyfem_1_1problem_1_1_stokes_law_problem.html#a63e72992cdaa2e085dc2358c50f2f5ab',1,'polyfem::problem::StokesLawProblem']]],
-  ['radius2_5f_1',['radius2_',['../classpolyfem_1_1utils_1_1_sphere_selection.html#a96ba38f29cce554202b1d2986f3cd5b7',1,'polyfem::utils::SphereSelection']]],
+  ['radius2_5f_1',['radius2_',['../classpolyfem_1_1utils_1_1_sphere_selection.html#a96ba38f29cce554202b1d2986f3cd5b7',1,'polyfem::utils::SphereSelection::radius2_()'],['../classpolyfem_1_1utils_1_1_cylinder_selection.html#af59e5ecb740be6d9048e6cc1d6a59705',1,'polyfem::utils::CylinderSelection::radius2_()']]],
   ['raw_5fdata_5f_2',['raw_data_',['../classpolyfem_1_1problem_1_1_node_values.html#a870bfeca322c416bd8905c2ca8369b06',1,'polyfem::problem::NodeValues']]],
   ['raw_5fdirichlet_5f_3',['raw_dirichlet_',['../classpolyfem_1_1problem_1_1_node_values.html#a3c2970d11c069cb75da125b58156d52f',1,'polyfem::problem::NodeValues']]],
   ['raw_5fids_5f_4',['raw_ids_',['../classpolyfem_1_1problem_1_1_node_values.html#a26cbf1f0b4c195a893f7eebf7fc6bdb7',1,'polyfem::problem::NodeValues']]],

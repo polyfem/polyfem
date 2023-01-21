@@ -8,5 +8,6 @@ var searchData=
   ['contactform_5',['ContactForm',['../classpolyfem_1_1solver_1_1_contact_form.html',1,'polyfem::solver']]],
   ['cornerflow_6',['CornerFlow',['../classpolyfem_1_1problem_1_1_corner_flow.html',1,'polyfem::problem']]],
   ['cppoptarmijolinesearch_7',['CppOptArmijoLineSearch',['../classpolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search.html',1,'polyfem::solver::line_search']]],
-  ['cubicproblem_8',['CubicProblem',['../classpolyfem_1_1problem_1_1_cubic_problem.html',1,'polyfem::problem']]]
+  ['cubicproblem_8',['CubicProblem',['../classpolyfem_1_1problem_1_1_cubic_problem.html',1,'polyfem::problem']]],
+  ['cylinderselection_9',['CylinderSelection',['../classpolyfem_1_1utils_1_1_cylinder_selection.html',1,'polyfem::utils']]]
 ];

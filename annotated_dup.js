@@ -224,6 +224,7 @@ var annotated_dup =
         [ "BoundarySampler", "classpolyfem_1_1utils_1_1_boundary_sampler.html", null ],
         [ "BoxSelection", "classpolyfem_1_1utils_1_1_box_selection.html", "classpolyfem_1_1utils_1_1_box_selection" ],
         [ "BoxSideSelection", "classpolyfem_1_1utils_1_1_box_side_selection.html", "classpolyfem_1_1utils_1_1_box_side_selection" ],
+        [ "CylinderSelection", "classpolyfem_1_1utils_1_1_cylinder_selection.html", "classpolyfem_1_1utils_1_1_cylinder_selection" ],
         [ "EdgeSampler", "classpolyfem_1_1utils_1_1_edge_sampler.html", null ],
         [ "ExpressionValue", "classpolyfem_1_1utils_1_1_expression_value.html", "classpolyfem_1_1utils_1_1_expression_value" ],
         [ "FileSelection", "classpolyfem_1_1utils_1_1_file_selection.html", "classpolyfem_1_1utils_1_1_file_selection" ],
