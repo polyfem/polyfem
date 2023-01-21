@@ -41,6 +41,9 @@ namespace cppoptlib
 
 		ErrorCode error_code() const { return m_error_code; }
 
+		const typename Superclass::TCriteria &getStopCriteria() { return this->m_stop; }
+		// setStopCriteria already in ISolver
+
 	protected:
 		// ====================================================================
 		//                        Solver parameters

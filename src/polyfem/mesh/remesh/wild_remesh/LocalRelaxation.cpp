@@ -7,7 +7,7 @@
 #include <polyfem/solver/forms/LinearForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
-#define POLYFEM_REMESH_USE_FRICTION_FORM
+#define POLYFEM_REMESH_USE_SINGLE_ITER
 
 namespace polyfem::mesh
 {
@@ -69,68 +69,52 @@ namespace polyfem::mesh
 
 		const Eigen::MatrixXd target_x = utils::flatten(local_mesh.displacements());
 		Eigen::MatrixXd sol = target_x;
-		int n_iters;
+
+		// Nonlinear solver
+		auto nl_solver = state.make_nl_solver<NLProblem>("Eigen::LLT");
+#ifdef POLYFEM_REMESH_USE_SINGLE_ITER
+		auto criteria = nl_solver->getStopCriteria();
+		criteria.iterations = 1;
+		nl_solver->setStopCriteria(criteria);
+#endif
+
+		// Create augmented Lagrangian solver
+		ALSolver al_solver(
+			nl_solver, solve_data.al_form,
+			state.args["solver"]["augmented_lagrangian"]["initial_weight"],
+			state.args["solver"]["augmented_lagrangian"]["scaling"],
+			state.args["solver"]["augmented_lagrangian"]["max_steps"],
+			/*update_barrier_stiffness=*/[](const Eigen::VectorXd &) {});
+
+		const auto level_before = logger().level();
+		logger().set_level(spdlog::level::warn);
+		try
 		{
 			POLYFEM_REMESHER_SCOPED_TIMER("Local relaxation solve");
-
-			auto nl_solver = state.make_nl_solver<NLProblem>("Eigen::LLT");
-			// auto criteria = nl_solver->criteria();
-			// criteria.iterations = 1;
-			// nl_solver->setStopCriteria(criteria);
-
-			// Create augmented Lagrangian solver
-			ALSolver al_solver(
-				nl_solver, solve_data.al_form,
-				state.args["solver"]["augmented_lagrangian"]["initial_weight"],
-				state.args["solver"]["augmented_lagrangian"]["scaling"],
-				state.args["solver"]["augmented_lagrangian"]["max_steps"],
-				/*update_barrier_stiffness=*/[](const Eigen::VectorXd &) {});
-
-			const auto level_before = logger().level();
-			logger().set_level(spdlog::level::warn);
-			try
-			{
-				al_solver.solve(*(solve_data.nl_problem), sol, state.args["solver"]["augmented_lagrangian"]["force"]);
-			}
-			catch (const std::runtime_error &e)
-			{
-			}
-			logger().set_level(level_before);
-
-			n_iters = nl_solver->criteria().iterations;
+			al_solver.solve(*(solve_data.nl_problem), sol, state.args["solver"]["augmented_lagrangian"]["force"]);
 		}
+		catch (const std::runtime_error &e)
+		{
+			assert(false);
+			return false;
+		}
+		logger().set_level(level_before);
 
 		// --------------------------------------------------------------------
 		// 3. Determine if we should accept the operation based on a decrease in energy.
 
-		bool accept;
-		{
-			POLYFEM_REMESHER_SCOPED_TIMER("Acceptance check");
+		const double local_energy_after = solve_data.nl_problem->value(sol);
+		assert(std::isfinite(local_energy_before));
+		assert(std::isfinite(local_energy_after));
+		const double abs_diff = local_energy_before - local_energy_after; // > 0 if energy decreased
+		// TODO: compute global_energy_before
+		// Right now using: starting_energy = state.solve_data.nl_problem->value(sol)
+		// const double global_energy_before = abs(starting_energy);
+		// const double rel_diff = abs_diff / global_energy_before;
 
-			// const double local_energy_before = solve_data.nl_problem->value(target_x);
-			const double local_energy_after = solve_data.nl_problem->value(sol);
-
-			assert(std::isfinite(local_energy_before));
-			assert(std::isfinite(local_energy_after));
-
-			const double abs_diff = local_energy_before - local_energy_after; // > 0 if energy decreased
-			// TODO: compute global_energy_before
-			// Right now using: starting_energy = state.solve_data.nl_problem->value(sol)
-			const double global_energy_before = abs(starting_energy);
-			// const double rel_diff = abs_diff / global_energy_before;
-
-			// TODO: only use abs_diff
-			// accept = rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance;
-			accept = abs_diff >= acceptance_tolerance;
-
-			static const std::string accept_str = fmt::format(fmt::fg(fmt::terminal_color::green), "accept");
-			static const std::string reject_str = fmt::format(fmt::fg(fmt::terminal_color::yellow), "reject");
-
-			logger().debug(
-				"[{:s}] E0={:<10g} E1={:<10g} (E1-E0)={:<10g} tol={:g} local_ndof={:d} n_iters={:d}",
-				accept ? accept_str : reject_str, local_energy_before, local_energy_after,
-				abs_diff, acceptance_tolerance, ndof - boundary_nodes.size(), n_iters);
-		}
+		// TODO: only use abs_diff
+		// accept = rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance;
+		const bool accept = abs_diff >= acceptance_tolerance;
 
 		// Update positions only on acceptance
 		if (accept)
@@ -139,42 +123,25 @@ namespace polyfem::mesh
 			// local_mesh.write_mesh(state.resolve_output_path(fmt::format("local_mesh_{:04d}.vtu", save_i)), target_x);
 			// write_mesh(state.resolve_output_path(fmt::format("relaxation_{:04d}.vtu", save_i++)));
 
-#ifndef POLYFEM_REMESH_USE_FRICTION_FORM
-			Eigen::VectorXd friction_gradient = Eigen::VectorXd::Zero(target_x.rows());
-			if (solve_data.friction_form)
+#ifdef POLYFEM_REMESH_USE_SINGLE_ITER
+			// Re-solve with more iterations
+			auto criteria = nl_solver->getStopCriteria();
+			criteria.iterations = 100;
+			nl_solver->setStopCriteria(criteria);
+
+			const auto level_before = logger().level();
+			logger().set_level(spdlog::level::warn);
+			try
 			{
 				POLYFEM_REMESHER_SCOPED_TIMER("Local relaxation solve");
-				forms.back()->disable(); // disable linear form ∇D(x₀)ᵀ x
-				solve_data.friction_form->enable();
-
-				// discard the solution from the solve with the linear form
-				sol = target_x;
-
-				solve_data.nl_problem = std::make_shared<StaticBoundaryNLProblem>(
-					ndof, boundary_nodes, target_x, forms);
-
-				assert(solve_data.nl_problem->uses_lagging());
-				assert(solve_data.time_integrator != nullptr);
-				solve_data.nl_problem->init_lagging(solve_data.time_integrator->x_prev());
-				solve_data.nl_problem->update_lagging(sol, /*iter_num=*/0);
-
-				// Create augmented Lagrangian solver
-				ALSolver al_solver(
-					state.make_nl_solver<NLProblem>(), solve_data.al_form,
-					state.args["solver"]["augmented_lagrangian"]["initial_weight"],
-					state.args["solver"]["augmented_lagrangian"]["scaling"],
-					state.args["solver"]["augmented_lagrangian"]["max_steps"],
-					/*update_barrier_stiffness=*/[](const Eigen::VectorXd &) {});
-
-				const auto level_before = logger().level();
-				logger().set_level(spdlog::level::warn);
 				al_solver.solve(*(solve_data.nl_problem), sol, state.args["solver"]["augmented_lagrangian"]["force"]);
-				logger().set_level(level_before);
-
-				// Update the lagging to get a more accurate friction gradient
-				solve_data.nl_problem->update_lagging(sol, /*iter_num=*/0);
-				solve_data.friction_form->first_derivative(sol, friction_gradient);
 			}
+			catch (const std::runtime_error &e)
+			{
+				assert(false);
+				return false;
+			}
+			logger().set_level(level_before);
 #endif
 
 			for (const auto &[glob_vi, loc_vi] : local_mesh.global_to_local())
@@ -182,21 +149,7 @@ namespace polyfem::mesh
 				const auto u = sol.middleRows(dim() * loc_vi, dim());
 				const auto u_old = vertex_attrs[glob_vi].displacement();
 				vertex_attrs[glob_vi].position = vertex_attrs[glob_vi].rest_position + u;
-
-#ifndef POLYFEM_REMESH_USE_FRICTION_FORM
-				const auto f = friction_gradient.segment(dim() * loc_vi, dim());
-				const auto f_old = vertex_attrs[glob_vi].projection_quantities.rightCols(1);
-				if (f_old.norm() != 0)
-					logger().critical(
-						"(f_old⋅f)/(‖f_old‖‖f‖)={:g} ‖f_old‖/‖f‖={:g} ‖u_old - u‖={:g}",
-						(f_old / f_old.norm()).dot(f / f.norm()), f.norm() / f_old.norm(), (u_old - u).norm());
-				vertex_attrs[glob_vi].projection_quantities.rightCols(1) = f;
-#endif
 			}
-
-#ifndef POLYFEM_REMESH_USE_FRICTION_FORM
-			m_obstacle_vals.rightCols(1) = friction_gradient.tail(m_obstacle_vals.rows());
-#endif
 
 			// local_mesh.write_mesh(state.resolve_output_path(fmt::format("local_mesh_{:04d}.vtu", save_i)), sol);
 			// write_mesh(state.resolve_output_path(fmt::format("relaxation_{:04d}.vtu", save_i++)));
@@ -216,6 +169,13 @@ namespace polyfem::mesh
 				assert(t.is_valid(*this));
 			}
 		}
+
+		static const std::string accept_str = fmt::format(fmt::fg(fmt::terminal_color::green), "accept");
+		static const std::string reject_str = fmt::format(fmt::fg(fmt::terminal_color::yellow), "reject");
+		logger().debug(
+			"[{:s}] E0={:<10g} E1={:<10g} (E1-E0)={:<10g} tol={:g} local_ndof={:d} n_iters={:d}",
+			accept ? accept_str : reject_str, local_energy_before, local_energy_after,
+			abs_diff, acceptance_tolerance, ndof - boundary_nodes.size(), nl_solver->criteria().iterations);
 
 		return accept;
 	}
@@ -395,17 +355,6 @@ namespace polyfem::mesh
 			forms.push_back(solve_data.al_form);
 			assert(state.solve_data.al_form != nullptr);
 			solve_data.al_form->set_weight(state.solve_data.al_form->weight());
-
-			// Friction form
-#ifndef POLYFEM_REMESH_USE_FRICTION_FORM
-			if (solve_data.friction_form)
-			{
-				// add linear form ∇D(x₀)ᵀ x
-				solve_data.friction_form->disable();
-				forms.push_back(std::make_shared<LinearForm>(
-					utils::flatten(utils::reorder_matrix(local_mesh.friction_gradient(), vertex_to_basis))));
-			}
-#endif
 		}
 
 		solve_data.nl_problem = std::make_shared<StaticBoundaryNLProblem>(
