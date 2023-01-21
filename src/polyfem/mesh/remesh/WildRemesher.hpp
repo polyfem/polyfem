@@ -98,11 +98,7 @@ namespace polyfem::mesh
 		/// @param swap Perform edge swapping operations
 		/// @param max_ops Maximum number of operations to perform (default: unlimited)
 		/// @return True if any operation was performed.
-		bool execute(
-			const bool split = true,
-			const bool collapse = false,
-			const bool smooth = false,
-			const bool swap = false) override;
+		bool execute() override;
 
 		void split_edges();
 		void collapse_edges();

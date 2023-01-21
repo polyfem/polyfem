@@ -47,14 +47,15 @@ namespace polyfem::mesh
 	}
 
 	template <class WMTKMesh>
-	bool WildRemesher<WMTKMesh>::execute(
-		const bool split,
-		const bool collapse,
-		const bool smooth,
-		const bool swap)
+	bool WildRemesher<WMTKMesh>::execute()
 	{
 		utils::Timer timer(total_time);
 		timer.start();
+
+		const bool split = args["split"]["enabled"];
+		const bool collapse = args["collapse"]["enabled"];
+		const bool swap = args["swap"]["enabled"];
+		const bool smooth = args["smooth"]["enabled"];
 
 		wmtk::logger().set_level(logger().level());
 

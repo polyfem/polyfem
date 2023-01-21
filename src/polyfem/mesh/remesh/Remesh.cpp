@@ -192,8 +192,7 @@ namespace polyfem::mesh
 			rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids,
 			elastic_energy, contact_energy);
 
-		const bool made_change = remeshing->execute(
-			/*split=*/true, /*collapse=*/true, /*smooth=*/false, /*swap=*/false);
+		const bool made_change = remeshing->execute();
 
 		// remeshing->write_mesh(
 		// 	state.resolve_output_path(fmt::format("post_vis_{:03d}.vtu", int(time / dt))));

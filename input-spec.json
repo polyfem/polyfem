@@ -1059,12 +1059,19 @@
         "default": null,
         "type": "object",
         "optional": [
+            "enabled"
             "acceptance_tolerance",
             "culling_threshold",
             "max_depth",
             "min_edge_length"
         ],
         "doc": "Settings for adaptive remeshing edge splitting operations"
+    },
+    {
+        "pointer": "/space/remesh/split/enabled",
+        "default": true,
+        "type": "bool",
+        "doc": "Whether to do edge splitting in adaptive remeshing"
     },
     {
         "pointer": "/space/remesh/split/acceptance_tolerance",
@@ -1099,12 +1106,19 @@
         "default": null,
         "type": "object",
         "optional": [
+            "enabled",
             "acceptance_tolerance",
             "culling_threshold",
             "max_depth",
             "max_edge_length"
         ],
         "doc": "Settings for adaptive remeshing edge collapse operations"
+    },
+    {
+        "pointer": "/space/remesh/collapse/enabled",
+        "default": true,
+        "type": "bool",
+        "doc": "Whether to do edge collapse in adaptive remeshing"
     },
     {
         "pointer": "/space/remesh/collapse/acceptance_tolerance",
@@ -1139,9 +1153,16 @@
         "default": null,
         "type": "object",
         "optional": [
+            "enabled",
             "acceptance_tolerance"
         ],
         "doc": "Settings for adaptive remeshing edge/face swap operations"
+    },
+    {
+        "pointer": "/space/remesh/collapse/enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to do edge/face swap in adaptive remeshing"
     },
     {
         "pointer": "/space/remesh/swap/acceptance_tolerance",
@@ -1154,9 +1175,16 @@
         "default": null,
         "type": "object",
         "optional": [
+            "enabled",
             "acceptance_tolerance"
         ],
         "doc": "Settings for adaptive remeshing vertex smoothing operations"
+    },
+    {
+        "pointer": "/space/remesh/collapse/enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to do vertex smoothing in adaptive remeshing"
     },
     {
         "pointer": "/space/remesh/smooth/acceptance_tolerance",

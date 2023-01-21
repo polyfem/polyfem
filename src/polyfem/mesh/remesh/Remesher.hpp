@@ -87,11 +87,7 @@ namespace polyfem::mesh
 		/// @param swap Perform edge swapping operations
 		/// @param max_ops_percent Maximum number of operations to perform (default: unlimited)
 		/// @return True if any operation was performed.
-		virtual bool execute(
-			const bool split = true,
-			const bool collapse = false,
-			const bool smooth = false,
-			const bool swap = false) = 0;
+		virtual bool execute() = 0;
 
 	protected:
 		/// @brief Update the mesh positions and other projection quantities
