@@ -1,6 +1,6 @@
 set(SOURCES
+	ALSolver.cpp
 	ALSolver.hpp
-	ALSolver.tpp
 	FullNLProblem.cpp
 	FullNLProblem.hpp
 	LBFGSSolver.hpp

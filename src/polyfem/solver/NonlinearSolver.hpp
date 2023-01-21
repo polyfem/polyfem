@@ -25,6 +25,7 @@ namespace cppoptlib
 	public:
 		using Superclass = ISolver<ProblemType, /*Ord=*/-1>;
 		using typename Superclass::Scalar;
+		using typename Superclass::TCriteria;
 		using typename Superclass::TVector;
 
 		NonlinearSolver(const polyfem::json &solver_params, const double dt = 1.0);
@@ -56,7 +57,6 @@ namespace cppoptlib
 		//                        Solver parameters
 		// ====================================================================
 
-		bool use_gradient_norm;
 		bool normalize_gradient;
 		double use_grad_norm_tol;
 		double first_grad_norm_tol;

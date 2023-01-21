@@ -1,7 +1,7 @@
 #include <polyfem/mesh/remesh/WildRemesher.hpp>
 
-#include <polyfem/mesh/remesh/L2Projection.hpp>
 #include <polyfem/solver/ALSolver.hpp>
+#include <polyfem/solver/problems/StaticBoundaryNLProblem.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/LinearForm.hpp>
@@ -354,7 +354,7 @@ namespace polyfem::mesh
 			solve_data.al_form->set_weight(state.solve_data.al_form->weight());
 		}
 
-		solve_data.nl_problem = std::make_shared<StaticBoundaryNLProblem>(
+		solve_data.nl_problem = std::make_shared<polyfem::solver::StaticBoundaryNLProblem>(
 			ndof, boundary_nodes, target_x, forms);
 
 		assert(solve_data.time_integrator != nullptr);

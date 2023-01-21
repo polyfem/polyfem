@@ -8,17 +8,17 @@ namespace cppoptlib
 	NonlinearSolver<ProblemType>::NonlinearSolver(const polyfem::json &solver_params, const double dt)
 		: dt(dt)
 	{
-		auto criteria = this->criteria();
+		TCriteria criteria = TCriteria::defaults();
+		criteria.xDelta = solver_params["x_delta"];
 		criteria.fDelta = solver_params["f_delta"];
 		criteria.gradNorm = solver_params["grad_norm"];
 		criteria.iterations = solver_params["max_iterations"];
+		// criteria.condition = solver_params["condition"];
+		this->setStopCriteria(criteria);
 
-		use_gradient_norm = solver_params["use_grad_norm"];
 		normalize_gradient = solver_params["relative_gradient"];
 		use_grad_norm_tol = solver_params["line_search"]["use_grad_norm_tol"];
-
 		first_grad_norm_tol = solver_params["first_grad_norm_tol"];
-		this->setStopCriteria(criteria);
 
 		set_line_search(solver_params["line_search"]["method"]);
 	}
@@ -66,8 +66,9 @@ namespace cppoptlib
 			log_and_throw_error("[{}] Initial gradient is nan; stopping", name());
 			return;
 		}
-		this->m_current.gradNorm = first_grad_norm / (normalize_gradient ? first_grad_norm : 1);
+		this->m_current.xDelta = std::nan(""); // we don't know the initial step size
 		this->m_current.fDelta = old_energy;
+		this->m_current.gradNorm = first_grad_norm / (normalize_gradient ? first_grad_norm : 1);
 
 		const auto current_g_norm = this->m_stop.gradNorm;
 		this->m_stop.gradNorm = first_grad_norm_tol;
@@ -77,8 +78,8 @@ namespace cppoptlib
 			POLYFEM_SCOPED_TIMER("compute objective function", obj_fun_time);
 			this->m_current.fDelta = objFunc.value(x);
 			logger().info(
-				"[{}] Not even starting, grad is small enough (f={:g} ||∇f||={:g} g={:g} tol={:g})",
-				name(), this->m_current.fDelta, first_grad_norm, this->m_current.gradNorm, this->m_stop.gradNorm);
+				"[{}] Not even starting, {} (f={:g} ‖∇f‖={:g} g={:g} tol={:g})",
+				name(), this->m_status, this->m_current.fDelta, first_grad_norm, this->m_current.gradNorm, this->m_stop.gradNorm);
 			update_solver_info();
 			return;
 		}
@@ -88,6 +89,12 @@ namespace cppoptlib
 		timer.start();
 
 		m_line_search->use_grad_norm_tol = use_grad_norm_tol;
+
+		logger().debug(
+			"Starting {} solve f₀={:g} ‖∇f₀‖={:g} "
+			"(stopping criteria: max_iters={:d} Δf={:g} ‖∇f‖={:g} ‖Δx‖={:g})",
+			name(), objFunc.value(x), this->m_current.gradNorm, this->m_stop.iterations,
+			this->m_stop.fDelta, this->m_stop.gradNorm, this->m_stop.xDelta);
 
 		do
 		{
@@ -154,20 +161,13 @@ namespace cppoptlib
 				continue;
 			}
 
-			if (!use_gradient_norm)
-			{
-				// Use the maximum absolute displacement value divided by the timestep,
-				// so the units are in velocity units.
-				// TODO: Also divide by the world scale to make this criteria scale invariant.
-				// this->m_current.gradNorm = delta_x.template lpNorm<Eigen::Infinity>() / dt;
-				this->m_current.gradNorm = delta_x.norm() / dt;
-			}
-			else
-			{
-				// if normalize_gradient, use relative to first norm
-				this->m_current.gradNorm = grad_norm / (normalize_gradient ? first_grad_norm : 1);
-			}
+			// Use the maximum absolute displacement value divided by the timestep,
+			// so the units are in velocity units.
+			// TODO: Also divide by the world scale to make this criteria scale invariant.
+			this->m_current.xDelta = delta_x_norm / dt;
 			this->m_current.fDelta = std::abs(old_energy - energy); // / std::abs(old_energy);
+			// if normalize_gradient, use relative to first norm
+			this->m_current.gradNorm = grad_norm / (normalize_gradient ? first_grad_norm : 1);
 
 			this->m_status = checkConvergence(this->m_stop, this->m_current);
 
@@ -209,11 +209,13 @@ namespace cppoptlib
 			objFunc.post_step(this->m_current.iterations, x);
 
 			logger().debug(
-				"[{}] iter={:d} f={:g} ‖∇f‖={:g} ‖Δx‖={:g} Δx⋅∇f(x)={:g} g={:g} tol={:g} rate={:g} ‖step‖={:g}",
-				name(), this->m_current.iterations, energy, grad_norm, delta_x_norm, delta_x.dot(grad),
-				this->m_current.gradNorm, this->m_stop.gradNorm, rate, step);
+				"[{}] iter={:d} f={:g} Δf={:g} ‖∇f‖={:g} ‖Δx‖={:g} Δx⋅∇f(x)={:g} rate={:g} ‖step‖={:g}",
+				name(), this->m_current.iterations, energy, this->m_current.fDelta,
+				this->m_current.gradNorm, this->m_current.xDelta, delta_x.dot(grad), rate, step);
+
 			if (++this->m_current.iterations >= this->m_stop.iterations)
 				this->m_status = Status::IterationLimit;
+
 		} while (objFunc.callback(this->m_current, x) && (this->m_status == Status::Continue));
 
 		timer.stop();
@@ -231,9 +233,9 @@ namespace cppoptlib
 			log_and_throw_error("[{}] Failed to find minimizer", name());
 
 		logger().info(
-			"[{}] Finished, took {:g}s (niters={:d} f={:g} ||∇f||={:g} ||Δx||={:g} Δx⋅∇f(x)={:g} g={:g} tol={:g}). {}",
-			name(), timer.getElapsedTimeInSec(), this->m_current.iterations, old_energy, grad.norm(), delta_x.norm(),
-			delta_x.dot(grad), this->m_current.gradNorm, this->m_stop.gradNorm, this->m_status);
+			"[{}] Finished: {} Took {:g}s (niters={:d} f={:g} Δf={:g} ‖∇f‖={:g} ‖Δx‖={:g})",
+			name(), this->m_status, timer.getElapsedTimeInSec(), this->m_current.iterations,
+			old_energy, this->m_current.fDelta, this->m_current.gradNorm, this->m_current.xDelta);
 
 		log_times();
 		update_solver_info();
@@ -309,7 +311,6 @@ namespace cppoptlib
 		solver_info["fDelta"] = crit.fDelta;
 		solver_info["gradNorm"] = crit.gradNorm;
 		solver_info["condition"] = crit.condition;
-		solver_info["use_gradient_norm"] = use_gradient_norm;
 		solver_info["relative_gradient"] = normalize_gradient;
 
 		double per_iteration = crit.iterations ? crit.iterations : 1;

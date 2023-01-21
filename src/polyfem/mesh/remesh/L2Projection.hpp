@@ -2,6 +2,7 @@
 
 #include <polyfem/assembler/MassMatrixAssembler.hpp>
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/NonlinearSolver.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 
 namespace polyfem::mesh
@@ -12,6 +13,8 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd &y);
 
 	Eigen::VectorXd constrained_L2_projection(
+		// Nonlinear solver
+		std::shared_ptr<cppoptlib::NonlinearSolver<polyfem::solver::NLProblem>> nl_solver,
 		// L2 projection form
 		const Eigen::SparseMatrix<double> &M,
 		const Eigen::SparseMatrix<double> &A,
@@ -33,26 +36,11 @@ namespace polyfem::mesh
 		const Obstacle &obstacle,
 		const Eigen::VectorXd &target_x,
 		// Initial guess
-		const Eigen::VectorXd &x0);
-
-	class StaticBoundaryNLProblem : public polyfem::solver::NLProblem
-	{
-	public:
-		StaticBoundaryNLProblem(
-			const int full_size,
-			const std::vector<int> &boundary_nodes,
-			const Eigen::VectorXd &boundary_values,
-			const std::vector<std::shared_ptr<polyfem::solver::Form>> &forms)
-			: polyfem::solver::NLProblem(full_size, boundary_nodes, forms),
-			  boundary_values_(boundary_values)
-		{
-		}
-
-	protected:
-		Eigen::MatrixXd boundary_values() const override { return boundary_values_; }
-
-	private:
-		const Eigen::MatrixXd boundary_values_;
-	};
+		const Eigen::VectorXd &x0,
+		// AL parameters
+		const double al_initial_weight = 0.5,
+		const double al_scaling = 10.0,
+		const int al_max_steps = 20,
+		const bool force_al = false);
 
 } // namespace polyfem::mesh

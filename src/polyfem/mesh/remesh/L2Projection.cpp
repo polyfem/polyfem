@@ -1,7 +1,7 @@
 #include "L2Projection.hpp"
 
-#include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/solver/ALSolver.hpp>
+#include <polyfem/solver/problems/StaticBoundaryNLProblem.hpp>
 #include <polyfem/solver/forms/ALForm.hpp>
 #include <polyfem/solver/forms/InversionBarrierForm.hpp>
 #include <polyfem/solver/forms/L2ProjectionForm.hpp>
@@ -33,6 +33,8 @@ namespace polyfem::mesh
 	}
 
 	Eigen::VectorXd constrained_L2_projection(
+		// Nonlinear solver
+		std::shared_ptr<cppoptlib::NonlinearSolver<polyfem::solver::NLProblem>> nl_solver,
 		// L2 projection form
 		const Eigen::SparseMatrix<double> &M,
 		const Eigen::SparseMatrix<double> &A,
@@ -54,7 +56,12 @@ namespace polyfem::mesh
 		const Obstacle &obstacle,
 		const Eigen::VectorXd &target_x,
 		// Initial guess
-		const Eigen::VectorXd &x0)
+		const Eigen::VectorXd &x0,
+		// AL parameters
+		const double al_initial_weight,
+		const double al_scaling,
+		const int al_max_steps,
+		const bool force_al)
 	{
 		using namespace polyfem::solver;
 
@@ -88,41 +95,8 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		// Create Newton solver
-		using NLSolver = cppoptlib::NonlinearSolver<decltype(problem)>;
-		std::shared_ptr<NLSolver> nl_solver;
-		{
-			// TODO: expose these parameters
-			const json newton_args = R"({
-				"f_delta": 1e-7,
-				"grad_norm": 1e-5,
-				"use_grad_norm": true,
-				"first_grad_norm_tol": 1e-10,
-				"max_iterations": 1000,
-				"relative_gradient": false,
-				"line_search": {
-					"method": "backtracking",
-					"use_grad_norm_tol": 0.0001
-				}
-			})"_json;
-			const json linear_solver_args = R"({
-				"solver": "Eigen::PardisoLDLT",
-				"precond": "Eigen::IdentityPreconditioner"
-			})"_json;
-			using NewtonSolver = cppoptlib::SparseNewtonDescentSolver<decltype(problem)>;
-			nl_solver = std::make_shared<NewtonSolver>(newton_args, linear_solver_args);
-		}
-
-		// --------------------------------------------------------------------
-
-		// TODO: Make these parameters
-		const double al_initial_weight = 0.5;
-		const double al_scaling = 10.0;
-		const int al_max_steps = 20;
-		const bool force_al = false;
-
 		// Create augmented Lagrangian solver
-		ALSolver<StaticBoundaryNLProblem> al_solver = ALSolver<StaticBoundaryNLProblem>(
+		ALSolver al_solver(
 			nl_solver, al_form, al_initial_weight, al_scaling, al_max_steps,
 			/*update_barrier_stiffness=*/[&](const Eigen::MatrixXd &x) {});
 
