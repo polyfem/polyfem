@@ -3,7 +3,6 @@
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/problems/StaticBoundaryNLProblem.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
-#include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/LinearForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
@@ -41,8 +40,8 @@ namespace polyfem::mesh
 		const int ndof = n_bases * dim();
 
 		// --------------------------------------------------------------------
-		// 2. Perform "relaxation" by minimizing the elastic energy of the n-ring
-		// with the internal boundary edges fixed.
+		// 2. Perform "relaxation" by minimizing the elastic energy of the
+		// n-ring with the internal boundary edges fixed.
 
 		const std::vector<ElementBases> bases = local_mesh.build_bases(state.formulation());
 		const std::vector<int> boundary_nodes = local_boundary_nodes(local_mesh);
@@ -99,7 +98,8 @@ namespace polyfem::mesh
 		logger().set_level(level_before);
 
 		// --------------------------------------------------------------------
-		// 3. Determine if we should accept the operation based on a decrease in energy.
+		// 3. Determine if we should accept the operation based on a decrease in
+		// energy.
 
 		const double local_energy_after = solve_data.nl_problem->value(sol);
 		assert(std::isfinite(local_energy_before));
@@ -133,7 +133,9 @@ namespace polyfem::mesh
 				try
 				{
 					POLYFEM_REMESHER_SCOPED_TIMER("Local relaxation solve");
-					al_solver.solve(*(solve_data.nl_problem), sol, state.args["solver"]["augmented_lagrangian"]["force"]);
+					al_solver.solve(
+						*(solve_data.nl_problem), sol,
+						state.args["solver"]["augmented_lagrangian"]["force"]);
 				}
 				catch (const std::runtime_error &e)
 				{
@@ -169,12 +171,15 @@ namespace polyfem::mesh
 			}
 		}
 
-		static const std::string accept_str = fmt::format(fmt::fg(fmt::terminal_color::green), "accept");
-		static const std::string reject_str = fmt::format(fmt::fg(fmt::terminal_color::yellow), "reject");
+		static const std::string accept_str =
+			fmt::format(fmt::fg(fmt::terminal_color::green), "accept");
+		static const std::string reject_str =
+			fmt::format(fmt::fg(fmt::terminal_color::yellow), "reject");
 		logger().debug(
 			"[{:s}] E0={:<10g} E1={:<10g} (E1-E0)={:<10g} tol={:g} local_ndof={:d} n_iters={:d}",
-			accept ? accept_str : reject_str, local_energy_before, local_energy_after,
-			abs_diff, acceptance_tolerance, ndof - boundary_nodes.size(), nl_solver->criteria().iterations);
+			accept ? accept_str : reject_str, local_energy_before,
+			local_energy_after, abs_diff, acceptance_tolerance,
+			ndof - boundary_nodes.size(), nl_solver->criteria().iterations);
 
 		return accept;
 	}
@@ -292,11 +297,9 @@ namespace polyfem::mesh
 			std::vector<Eigen::VectorXd> x_prevs;
 			std::vector<Eigen::VectorXd> v_prevs;
 			std::vector<Eigen::VectorXd> a_prevs;
-			const auto &project_quantities = local_mesh.projection_quantities();
 			split_time_integrator_quantities(
-				// Drop the last column of projection_quantities, which is the friction gradient.
-				project_quantities.leftCols(project_quantities.cols() - 1),
-				dim(), x_prevs, v_prevs, a_prevs);
+				local_mesh.projection_quantities(), dim(), x_prevs, v_prevs,
+				a_prevs);
 			solve_data.time_integrator->init(
 				x_prevs, v_prevs, a_prevs, state.args["time"]["dt"]);
 		}
@@ -315,10 +318,12 @@ namespace polyfem::mesh
 				// General
 				dim(), current_time,
 				// Elastic form
-				n_bases, bases, /*geom_bases=*/bases, assembler, ass_vals_cache, state.formulation(),
+				n_bases, bases, /*geom_bases=*/bases, assembler, ass_vals_cache,
+				state.formulation(),
 				// Body form
-				/*n_pressure_bases=*/0, boundary_nodes, local_boundary, local_neumann_boundary,
-				state.n_boundary_samples(), rhs, /*sol=*/target_x,
+				/*n_pressure_bases=*/0, boundary_nodes, local_boundary,
+				local_neumann_boundary, state.n_boundary_samples(), rhs,
+				/*sol=*/target_x,
 				// Inertia form
 				state.args["solver"]["ignore_inertia"], mass,
 				// Lagged regularization form
@@ -332,7 +337,9 @@ namespace polyfem::mesh
 				state.args["contact"]["dhat"],
 				state.avg_mass,
 				state.args["contact"]["use_convergent_formulation"],
-				contact_enabled ? state.solve_data.contact_form->barrier_stiffness() : 0,
+				contact_enabled
+					? state.solve_data.contact_form->barrier_stiffness()
+					: 0,
 				state.args["solver"]["contact"]["CCD"]["broad_phase"],
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
 				state.args["solver"]["contact"]["CCD"]["max_iterations"],
@@ -345,7 +352,7 @@ namespace polyfem::mesh
 
 			assert(solve_data.body_form == nullptr);
 
-			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 			// Augmented Lagrangian form
 			assert(solve_data.al_form == nullptr);

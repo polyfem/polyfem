@@ -73,7 +73,8 @@ namespace polyfem::mesh
 
 		forms.push_back(std::make_shared<L2ProjectionForm>(M, A, y));
 
-		forms.push_back(std::make_shared<InversionBarrierForm>(rest_positions, elements, dim, /*vhat=*/1e-12));
+		forms.push_back(std::make_shared<InversionBarrierForm>(
+			rest_positions, elements, dim, /*vhat=*/1e-12));
 		forms.back()->set_weight(barrier_stiffness); // use same weight as barrier stiffness
 		assert(forms.back()->is_step_valid(x0, x0));
 

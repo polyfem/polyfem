@@ -94,12 +94,6 @@ namespace polyfem::mesh
 		new_vertex_attr.position = lerp(v0.position, v1.position, alpha);
 		new_vertex_attr.projection_quantities =
 			lerp(v0.projection_quantities, v1.projection_quantities, alpha);
-		if (!v0.fixed || !v1.fixed)
-		{
-			// NOTE: this assumes friction gradient is the last column of the projection matrix,
-			// so internal points have a gradient of zero.
-			new_vertex_attr.projection_quantities.rightCols(1).setZero();
-		}
 
 		// local relaxation has its own timers
 		timer.stop();
@@ -203,12 +197,6 @@ namespace polyfem::mesh
 		new_vertex_attr.position = lerp(v0.position, v1.position, alpha);
 		new_vertex_attr.projection_quantities =
 			lerp(v0.projection_quantities, v1.projection_quantities, alpha);
-		if (!v0.fixed || !v1.fixed)
-		{
-			// NOTE: this assumes friction gradient is the last column of the projection matrix,
-			// so internal points have a gradient of zero.
-			new_vertex_attr.projection_quantities.rightCols(1).setZero();
-		}
 
 		// local relaxation has its own timers
 		timer.stop();

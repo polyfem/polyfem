@@ -5,7 +5,6 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
-#include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/io/OBJWriter.hpp>
@@ -171,15 +170,6 @@ namespace polyfem::mesh
 			state.solve_data.time_integrator);
 		assert(projection_quantities.rows() == ndof);
 
-		Eigen::VectorXd friction_gradient;
-		if (state.solve_data.friction_form)
-			state.solve_data.friction_form->first_derivative(sol, friction_gradient);
-		else
-			friction_gradient = Eigen::VectorXd::Zero(sol.size());
-		projection_quantities.conservativeResize(Eigen::NoChange, projection_quantities.cols() + 1);
-		assert(friction_gradient.size() == projection_quantities.rows());
-		projection_quantities.rightCols(1) = friction_gradient;
-
 		const Eigen::MatrixXd obstacle_projection_quantities = projection_quantities.bottomRows(ndof_obstacle);
 		projection_quantities.conservativeResize(ndof_mesh, Eigen::NoChange);
 
@@ -274,8 +264,6 @@ namespace polyfem::mesh
 				projected_quantities, state.in_node_to_node, /*out_blocks=*/-1, dim);
 			projected_quantities.conservativeResize(ndof, Eigen::NoChange);
 			projected_quantities.bottomRows(ndof_obstacle) = obstacle_projection_quantities;
-			// drop the last column (the friction gradient)
-			projected_quantities.conservativeResize(Eigen::NoChange, projected_quantities.cols() - 1);
 
 			std::vector<Eigen::VectorXd> x_prevs, v_prevs, a_prevs;
 			Remesher::split_time_integrator_quantities(
