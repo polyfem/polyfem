@@ -7,8 +7,6 @@
 #include <wmtk/TetMesh.h>
 #include <wmtk/ExecutionScheduler.hpp>
 
-#include <ipc/collision_mesh.hpp>
-
 #include <type_traits>
 
 namespace polyfem::mesh

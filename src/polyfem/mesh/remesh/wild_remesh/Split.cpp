@@ -126,8 +126,6 @@ namespace polyfem::mesh
 	template <class WMTKMesh>
 	void PhysicsRemesher<WMTKMesh>::split_edges()
 	{
-		using Operations = std::vector<std::pair<std::string, Tuple>>;
-
 		std::vector<Tuple> included_edges;
 		{
 			const std::vector<Tuple> edges = WMTKMesh::get_edges();
@@ -145,7 +143,6 @@ namespace polyfem::mesh
 			splits.emplace_back("edge_split", e);
 
 		executor.priority = [&](const WildRemesher<WMTKMesh> &, std::string op, const Tuple &t) -> double {
-			// NOTE: this code compute the edge length
 			// return m.edge_length(t);
 			return this->edge_elastic_energy(t);
 		};

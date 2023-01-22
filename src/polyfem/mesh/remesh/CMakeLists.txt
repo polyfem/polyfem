@@ -7,6 +7,8 @@ set(SOURCES
 	Remesh.cpp
 	Remesher.cpp
 	Remesher.hpp
+	SizingFieldRemesher.cpp
+	SizingFieldRemesher.hpp
 	WildRemesher.cpp
 	WildRemesher.hpp
 	WildTetRemesher.cpp

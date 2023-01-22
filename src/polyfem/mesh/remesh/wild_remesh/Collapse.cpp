@@ -200,8 +200,6 @@ namespace polyfem::mesh
 	template <class WMTKMesh>
 	void PhysicsRemesher<WMTKMesh>::collapse_edges()
 	{
-		using Operations = std::vector<std::pair<std::string, Tuple>>;
-
 		std::vector<Tuple> included_edges;
 		{
 			const std::vector<Tuple> edges = WMTKMesh::get_edges();
@@ -219,7 +217,6 @@ namespace polyfem::mesh
 			collapses.emplace_back("edge_collapse", e);
 
 		executor.priority = [](const WildRemesher<WMTKMesh> &m, std::string op, const Tuple &t) -> double {
-			// NOTE: this code compute the edge length
 			return -m.edge_length(t);
 			// return -m.edge_elastic_energy(t); // invert the energy to get a reverse ordering
 		};
