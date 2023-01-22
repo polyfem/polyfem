@@ -213,7 +213,7 @@ namespace polyfem::mesh
 		// TODO: get this from state rather than building it
 		std::unordered_map<int, std::array<bool, DIM>> bc_ids;
 		{
-			assert(state.args["boundary_conditio`ns"]["dirichlet_boundary"].is_array());
+			assert(state.args["boundary_conditions"]["dirichlet_boundary"].is_array());
 			const std::vector<json> bcs = state.args["boundary_conditions"]["dirichlet_boundary"];
 			for (const json &bc : bcs)
 			{

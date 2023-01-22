@@ -72,13 +72,13 @@ namespace polyfem::mesh
 	{
 		// POLYFEM_REMESHER_SCOPED_TIMER("Collapse edge before");
 
-		if (!Super::split_edge_before(t)) // NOTE: also calls cache_split_edge
+		if (!Super::collapse_edge_before(t)) // NOTE: also calls collapse_edge_before
 			return false;
 
 		if (this->edge_attr(t.eid(*this)).op_attempts++ >= this->max_op_attempts
 			|| this->edge_attr(t.eid(*this)).op_depth >= args["collapse"]["max_depth"].template get<int>())
 		{
-			this->executor.m_cnt_fail--; // do not count this as a failed split
+			this->executor.m_cnt_fail--; // do not count this as a failed collapse
 			return false;
 		}
 
@@ -185,7 +185,7 @@ namespace polyfem::mesh
 	{
 		utils::Timer timer(this->timings["Collapse edges after"]);
 		timer.start();
-		if (!Super::split_edge_after(t))
+		if (!Super::collapse_edge_after(t))
 			return false;
 		// local relaxation has its own timers
 		timer.stop();
