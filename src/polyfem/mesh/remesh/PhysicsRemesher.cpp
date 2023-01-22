@@ -6,48 +6,6 @@
 namespace polyfem::mesh
 {
 	template <class WMTKMesh>
-	std::vector<int> PhysicsRemesher<WMTKMesh>::boundary_nodes(
-		const Eigen::VectorXi &vertex_to_basis) const
-	{
-		std::vector<int> boundary_nodes;
-
-		// TODO: get this from state rather than building it
-		std::unordered_map<int, std::array<bool, Super::DIM>> bc_ids;
-		{
-			assert(state.args["boundary_conditio`ns"]["dirichlet_boundary"].is_array());
-			const std::vector<json> bcs = state.args["boundary_conditions"]["dirichlet_boundary"];
-			for (const json &bc : bcs)
-			{
-				assert(bc["dimension"].size() == this->dim());
-				bc_ids[bc["id"].get<int>()] = bc["dimension"];
-			}
-		}
-
-		std::vector<int> boundary_ids;
-		const std::vector<Tuple> boundary_facets = this->boundary_facets(&boundary_ids);
-		for (int i = 0; i < boundary_facets.size(); ++i)
-		{
-			const Tuple &t = boundary_facets[i];
-			const auto bc = bc_ids.find(boundary_ids[i]);
-
-			if (bc == bc_ids.end())
-				continue;
-
-			for (const size_t vid : this->facet_vids(t))
-				for (int d = 0; d < this->dim(); ++d)
-					if (bc->second[d])
-						boundary_nodes.push_back(this->dim() * vertex_to_basis[vid] + d);
-		}
-
-		// Sort and remove the duplicate boundary_nodes.
-		std::sort(boundary_nodes.begin(), boundary_nodes.end());
-		auto new_end = std::unique(boundary_nodes.begin(), boundary_nodes.end());
-		boundary_nodes.erase(new_end, boundary_nodes.end());
-
-		return boundary_nodes;
-	}
-
-	template <class WMTKMesh>
 	std::vector<typename PhysicsRemesher<WMTKMesh>::Tuple>
 	PhysicsRemesher<WMTKMesh>::local_mesh_tuples(const VectorNd &center) const
 	{

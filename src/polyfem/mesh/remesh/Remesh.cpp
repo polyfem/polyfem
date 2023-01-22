@@ -1,6 +1,7 @@
 #include "Remesh.hpp"
 
 #include <polyfem/mesh/remesh/PhysicsRemesher.hpp>
+#include <polyfem/mesh/remesh/SizingFieldRemesher.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
@@ -118,15 +119,30 @@ namespace polyfem::mesh
 		{
 			const int dim = state.mesh->dimension();
 
+			const std::string type = state.args["space"]["remesh"]["type"];
 			std::shared_ptr<Remesher> remeshing;
-			if (dim == 2)
-				remeshing = std::make_shared<PhysicsTriRemesher>(
-					state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
-					time, current_energy);
-			else
-				remeshing = std::make_shared<PhysicsTetRemesher>(
-					state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
-					time, current_energy);
+			if (type == "physics")
+			{
+				if (dim == 2)
+					remeshing = std::make_shared<PhysicsTriRemesher>(
+						state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
+						time, current_energy);
+				else
+					remeshing = std::make_shared<PhysicsTetRemesher>(
+						state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
+						time, current_energy);
+			}
+			else if (type == "sizing_field")
+			{
+				if (dim == 2)
+					remeshing = std::make_shared<SizingFieldTriRemesher>(
+						state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
+						time, current_energy);
+				else
+					remeshing = std::make_shared<SizingFieldTetRemesher>(
+						state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
+						time, current_energy);
+			}
 			return remeshing;
 		}
 	} // namespace

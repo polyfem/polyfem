@@ -1,5 +1,4 @@
-[
-    {
+[{
         "pointer": "/",
         "type": "object",
         "required": [
@@ -1147,7 +1146,8 @@
             "collapse",
             "swap",
             "smooth",
-            "local_relaxation"
+            "local_relaxation",
+            "type"
         ],
         "doc": "Settings for adaptive remeshing"
     },
@@ -1331,6 +1331,12 @@
         "doc": "Maximum number of nonlinear solver iterations before acceptance check"
     },
     {
+        "pointer": "/space/remesh/type",
+        "default": "physics",
+        "type": "string",
+        "options": ["physics", "scaling_field"],
+        "doc": "Type of adaptive remeshing to use."
+    } {
         "pointer": "/space/advanced",
         "default": null,
         "type": "object",

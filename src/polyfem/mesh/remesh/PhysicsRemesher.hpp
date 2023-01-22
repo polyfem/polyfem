@@ -37,9 +37,6 @@ namespace polyfem::mesh
 
 		virtual ~PhysicsRemesher(){};
 
-		/// @brief Get the boundary nodes of the stored mesh
-		std::vector<int> boundary_nodes(const Eigen::VectorXi &vertex_to_basis) const override;
-
 		// Edge splitting
 		void split_edges() override;
 		bool split_edge_before(const Tuple &t) override;

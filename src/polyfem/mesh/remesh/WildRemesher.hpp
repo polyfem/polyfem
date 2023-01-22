@@ -154,6 +154,8 @@ namespace polyfem::mesh
 		BoundaryMap<int> boundary_ids() const override;
 		/// @brief Exports body ids of the stored mesh
 		std::vector<int> body_ids() const override;
+		/// @brief Get the boundary nodes of the stored mesh
+		std::vector<int> boundary_nodes(const Eigen::VectorXi &vertex_to_basis) const override;
 
 		/// @brief Number of projection quantities (not including the position)
 		int n_quantities() const override { return m_n_quantities; };
