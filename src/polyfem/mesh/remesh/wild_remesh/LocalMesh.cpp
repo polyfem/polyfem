@@ -1,6 +1,6 @@
 #include "LocalMesh.hpp"
 
-#include <polyfem/mesh/remesh/WildRemesher.hpp>
+#include <polyfem/mesh/remesh/PhysicsRemesher.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -16,8 +16,8 @@
 
 namespace polyfem::mesh
 {
-	using TriMesh = WildRemesher<wmtk::TriMesh>;
-	using TetMesh = WildRemesher<wmtk::TetMesh>;
+	using TriMesh = PhysicsRemesher<wmtk::TriMesh>;
+	using TetMesh = PhysicsRemesher<wmtk::TetMesh>;
 
 	template <typename M>
 	LocalMesh<M>::LocalMesh(

@@ -1,4 +1,4 @@
-#include <polyfem/mesh/remesh/WildTriRemesher.hpp>
+#include <polyfem/mesh/remesh/PhysicsRemesher.hpp>
 #include <polyfem/mesh/remesh/wild_remesh/AMIPSForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
@@ -13,7 +13,7 @@ namespace polyfem::mesh
 {
 	using namespace polyfem::solver;
 
-	bool WildTriRemesher::smooth_before(const Tuple &t)
+	bool PhysicsTriRemesher::smooth_before(const Tuple &t)
 	{
 		if (vertex_attrs[t.vid(*this)].fixed)
 			return false;
@@ -21,7 +21,7 @@ namespace polyfem::mesh
 		return true;
 	}
 
-	bool WildTriRemesher::smooth_after(const Tuple &t)
+	bool PhysicsTriRemesher::smooth_after(const Tuple &t)
 	{
 		const size_t vid = t.vid(*this);
 
@@ -114,7 +114,7 @@ namespace polyfem::mesh
 		// 3. perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
 		assert(false); // TODO: set local_energy in _before
-		return local_relaxation(t, op_cache.local_energy, args["smooth"]["acceptance_tolerance"]);
+		return local_relaxation(t, args["smooth"]["acceptance_tolerance"]);
 	}
 
 } // namespace polyfem::mesh

@@ -14,39 +14,6 @@
 namespace polyfem::mesh
 {
 	template <class WMTKMesh>
-	double WildRemesher<WMTKMesh>::edge_elastic_energy(const Tuple &e) const
-	{
-		using namespace polyfem::solver;
-		using namespace polyfem::basis;
-
-		const std::vector<Tuple> elements = get_incident_elements_for_edge(e);
-
-		double volume = 0;
-		for (const auto &t : elements)
-			volume += element_volume(t);
-		assert(volume > 0);
-
-		LocalMesh local_mesh(*this, elements, /*include_global_boundary=*/false);
-
-		const std::vector<ElementBases> bases = local_mesh.build_bases(state.formulation());
-		const std::vector<int> boundary_nodes; // no boundary nodes
-		assembler::AssemblerUtils &assembler = init_assembler(local_mesh.body_ids());
-		SolveData solve_data;
-		assembler::AssemblyValsCache ass_vals_cache;
-		Eigen::SparseMatrix<double> mass;
-		ipc::CollisionMesh collision_mesh;
-
-		// TODO: account for contact energy
-		local_solve_data(
-			local_mesh, bases, boundary_nodes, assembler, false,
-			solve_data, ass_vals_cache, mass, collision_mesh);
-
-		const Eigen::MatrixXd sol = utils::flatten(local_mesh.displacements());
-
-		return solve_data.nl_problem->value(sol) / volume; // average energy
-	}
-
-	template <class WMTKMesh>
 	bool WildRemesher<WMTKMesh>::execute()
 	{
 		utils::Timer timer(total_time);

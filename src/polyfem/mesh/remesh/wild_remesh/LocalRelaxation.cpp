@@ -1,4 +1,4 @@
-#include <polyfem/mesh/remesh/WildRemesher.hpp>
+#include <polyfem/mesh/remesh/PhysicsRemesher.hpp>
 
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/problems/StaticBoundaryNLProblem.hpp>
@@ -9,9 +9,8 @@
 namespace polyfem::mesh
 {
 	template <class WMTKMesh>
-	bool WildRemesher<WMTKMesh>::local_relaxation(
+	bool PhysicsRemesher<WMTKMesh>::local_relaxation(
 		const Tuple &t,
-		const double local_energy_before,
 		const double acceptance_tolerance)
 	{
 		using namespace polyfem::solver;
@@ -24,20 +23,19 @@ namespace polyfem::mesh
 		std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(t);
 
 		const bool include_global_boundary =
-			state.args["contact"]["enabled"].get<bool>()
-			&& std::any_of(local_mesh_tuples.begin(), local_mesh_tuples.end(), [&](const Tuple &t) {
-				   const size_t tid = element_id(t);
-				   for (int i = 0; i < FACETS_PER_ELEMENT; ++i)
-					   if (is_boundary_facet(tuple_from_facet(tid, i)))
-						   return true;
-				   return false;
-			   });
+			state.is_contact_enabled() && std::any_of(local_mesh_tuples.begin(), local_mesh_tuples.end(), [&](const Tuple &t) {
+				const size_t tid = this->element_id(t);
+				for (int i = 0; i < Super::FACETS_PER_ELEMENT; ++i)
+					if (this->is_boundary_facet(this->tuple_from_facet(tid, i)))
+						return true;
+				return false;
+			});
 
-		LocalMesh<WildRemesher<WMTKMesh>> local_mesh(
+		LocalMesh<PhysicsRemesher<WMTKMesh>> local_mesh(
 			*this, local_mesh_tuples, include_global_boundary);
 
 		const int n_bases = local_mesh.num_vertices();
-		const int ndof = n_bases * dim();
+		const int ndof = n_bases * this->dim();
 
 		// --------------------------------------------------------------------
 		// 2. Perform "relaxation" by minimizing the elastic energy of the
@@ -50,11 +48,11 @@ namespace polyfem::mesh
 		if (ndof - boundary_nodes.size() == 0)
 			return false;
 
-		total_ndofs += ndof - boundary_nodes.size();
-		num_solves++;
+		this->total_ndofs += ndof - boundary_nodes.size();
+		this->num_solves++;
 
 		// These have to stay alive
-		assembler::AssemblerUtils &assembler = init_assembler(local_mesh.body_ids());
+		assembler::AssemblerUtils &assembler = this->init_assembler(local_mesh.body_ids());
 		SolveData solve_data;
 		assembler::AssemblyValsCache ass_vals_cache;
 		Eigen::SparseMatrix<double> mass;
@@ -68,10 +66,10 @@ namespace polyfem::mesh
 		Eigen::MatrixXd sol = target_x;
 
 		// Nonlinear solver
-		auto nl_solver = state.make_nl_solver<NLProblem>("Eigen::LLT");
+		auto nl_solver = state.template make_nl_solver<NLProblem>("Eigen::LLT");
 		auto criteria = nl_solver->getStopCriteria();
 		criteria.iterations = args["local_relaxation"]["max_nl_iterations"];
-		if (is_boundary_op())
+		if (this->is_boundary_op())
 			criteria.iterations = std::max(criteria.iterations, 5ul);
 		nl_solver->setStopCriteria(criteria);
 
@@ -102,9 +100,9 @@ namespace polyfem::mesh
 		// energy.
 
 		const double local_energy_after = solve_data.nl_problem->value(sol);
-		assert(std::isfinite(local_energy_before));
+		assert(std::isfinite(local_energy_before()));
 		assert(std::isfinite(local_energy_after));
-		const double abs_diff = local_energy_before - local_energy_after; // > 0 if energy decreased
+		const double abs_diff = local_energy_before() - local_energy_after; // > 0 if energy decreased
 		// TODO: compute global_energy_before
 		// Right now using: starting_energy = state.solve_data.nl_problem->value(sol)
 		// const double global_energy_before = abs(starting_energy);
@@ -147,7 +145,7 @@ namespace polyfem::mesh
 
 			for (const auto &[glob_vi, loc_vi] : local_mesh.global_to_local())
 			{
-				const auto u = sol.middleRows(dim() * loc_vi, dim());
+				const auto u = sol.middleRows(this->dim() * loc_vi, this->dim());
 				const auto u_old = vertex_attrs[glob_vi].displacement();
 				vertex_attrs[glob_vi].position = vertex_attrs[glob_vi].rest_position + u;
 			}
@@ -157,7 +155,7 @@ namespace polyfem::mesh
 
 			// Increase the hash of the triangles that have been modified
 			// to invalidate all tuples that point to them.
-			extend_local_patch(local_mesh_tuples);
+			this->extend_local_patch(local_mesh_tuples);
 			for (Tuple &t : local_mesh_tuples)
 			{
 				assert(t.is_valid(*this));
@@ -177,7 +175,7 @@ namespace polyfem::mesh
 			fmt::format(fmt::fg(fmt::terminal_color::yellow), "reject");
 		logger().debug(
 			"[{:s}] E0={:<10g} E1={:<10g} (E1-E0)={:<10g} tol={:g} local_ndof={:d} n_iters={:d}",
-			accept ? accept_str : reject_str, local_energy_before,
+			accept ? accept_str : reject_str, local_energy_before(),
 			local_energy_after, abs_diff, acceptance_tolerance,
 			ndof - boundary_nodes.size(), nl_solver->criteria().iterations);
 
@@ -185,7 +183,7 @@ namespace polyfem::mesh
 	}
 
 	template <class WMTKMesh>
-	std::vector<int> WildRemesher<WMTKMesh>::local_boundary_nodes(
+	std::vector<int> PhysicsRemesher<WMTKMesh>::local_boundary_nodes(
 		const LocalMesh<This> &local_mesh) const
 	{
 		POLYFEM_REMESHER_SCOPED_TIMER("Create boundary nodes");
@@ -193,8 +191,8 @@ namespace polyfem::mesh
 		std::vector<int> boundary_nodes;
 
 		const auto add_vertex_to_boundary_nodes = [&](const int vi) {
-			for (int d = 0; d < dim(); ++d)
-				boundary_nodes.push_back(dim() * vi + d);
+			for (int d = 0; d < this->dim(); ++d)
+				boundary_nodes.push_back(this->dim() * vi + d);
 		};
 
 		for (const int vi : local_mesh.fixed_vertices())
@@ -236,7 +234,7 @@ namespace polyfem::mesh
 	}
 
 	template <class WMTKMesh>
-	void WildRemesher<WMTKMesh>::local_solve_data(
+	void PhysicsRemesher<WMTKMesh>::local_solve_data(
 		const LocalMesh<This> &local_mesh,
 		const std::vector<polyfem::basis::ElementBases> &bases,
 		const std::vector<int> &boundary_nodes,
@@ -251,7 +249,7 @@ namespace polyfem::mesh
 		using namespace polyfem::time_integrator;
 
 		const int n_bases = local_mesh.num_vertices();
-		const int ndof = n_bases * dim();
+		const int ndof = n_bases * this->dim();
 
 		// Current solution.
 		const Eigen::MatrixXd target_x = utils::flatten(local_mesh.displacements());
@@ -259,17 +257,17 @@ namespace polyfem::mesh
 		// Assemble the mass matrix.
 		{
 			POLYFEM_REMESHER_SCOPED_TIMER("Assemble mass matrix");
-			ass_vals_cache.init(is_volume(), bases, /*gbases=*/bases, /*is_mass=*/true);
+			ass_vals_cache.init(this->is_volume(), bases, /*gbases=*/bases, /*is_mass=*/true);
 			assembler.assemble_mass_matrix(
-				/*assembler_formulation=*/"", is_volume(), n_bases,
+				/*assembler_formulation=*/"", this->is_volume(), n_bases,
 				/*use_density=*/true, bases, /*gbases=*/bases, ass_vals_cache, mass);
 			// Set the mass of the codimensional fixed vertices to the average mass.
-			const int local_ndof = dim() * local_mesh.num_local_vertices();
+			const int local_ndof = this->dim() * local_mesh.num_local_vertices();
 			for (int i = local_ndof; i < ndof; ++i)
 				mass.coeffRef(i, i) = state.avg_mass;
 		}
 		// Assemble the stiffness matrix.
-		ass_vals_cache.init(is_volume(), bases, /*gbases=*/bases, /*is_mass=*/false);
+		ass_vals_cache.init(this->is_volume(), bases, /*gbases=*/bases, /*is_mass=*/false);
 
 		// Create collision mesh.
 		if (contact_enabled)
@@ -297,8 +295,8 @@ namespace polyfem::mesh
 			std::vector<Eigen::VectorXd> x_prevs;
 			std::vector<Eigen::VectorXd> v_prevs;
 			std::vector<Eigen::VectorXd> a_prevs;
-			split_time_integrator_quantities(
-				local_mesh.projection_quantities(), dim(), x_prevs, v_prevs,
+			this->split_time_integrator_quantities(
+				local_mesh.projection_quantities(), this->dim(), x_prevs, v_prevs,
 				a_prevs);
 			solve_data.time_integrator->init(
 				x_prevs, v_prevs, a_prevs, state.args["time"]["dt"]);
@@ -316,7 +314,7 @@ namespace polyfem::mesh
 			POLYFEM_REMESHER_SCOPED_TIMER("Init forms");
 			forms = solve_data.init_forms(
 				// General
-				dim(), current_time,
+				this->dim(), this->current_time,
 				// Elastic form
 				n_bases, bases, /*geom_bases=*/bases, assembler, ass_vals_cache,
 				state.formulation(),
@@ -367,7 +365,7 @@ namespace polyfem::mesh
 			ndof, boundary_nodes, target_x, forms);
 
 		assert(solve_data.time_integrator != nullptr);
-		solve_data.nl_problem->update_quantities(current_time, solve_data.time_integrator->x_prev());
+		solve_data.nl_problem->update_quantities(this->current_time, solve_data.time_integrator->x_prev());
 		solve_data.nl_problem->init(target_x);
 		solve_data.nl_problem->init_lagging(solve_data.time_integrator->x_prev());
 		solve_data.nl_problem->update_lagging(target_x, /*iter_num=*/0);
@@ -375,6 +373,6 @@ namespace polyfem::mesh
 
 	// ----------------------------------------------------------------------------------------------
 	// Template specializations
-	template class WildRemesher<wmtk::TriMesh>;
-	template class WildRemesher<wmtk::TetMesh>;
+	template class PhysicsRemesher<wmtk::TriMesh>;
+	template class PhysicsRemesher<wmtk::TetMesh>;
 } // namespace polyfem::mesh

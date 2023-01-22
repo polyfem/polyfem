@@ -1,7 +1,6 @@
 #include "Remesh.hpp"
 
-#include <polyfem/mesh/remesh/WildTriRemesher.hpp>
-#include <polyfem/mesh/remesh/WildTetRemesher.hpp>
+#include <polyfem/mesh/remesh/PhysicsRemesher.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
@@ -121,11 +120,11 @@ namespace polyfem::mesh
 
 			std::shared_ptr<Remesher> remeshing;
 			if (dim == 2)
-				remeshing = std::make_shared<WildTriRemesher>(
+				remeshing = std::make_shared<PhysicsTriRemesher>(
 					state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
 					time, current_energy);
 			else
-				remeshing = std::make_shared<WildTetRemesher>(
+				remeshing = std::make_shared<PhysicsTetRemesher>(
 					state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
 					time, current_energy);
 			return remeshing;

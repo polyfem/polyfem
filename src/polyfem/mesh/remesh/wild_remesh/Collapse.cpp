@@ -1,5 +1,5 @@
-#include <polyfem/mesh/remesh/WildTriRemesher.hpp>
-#include <polyfem/mesh/remesh/WildTetRemesher.hpp>
+#include <polyfem/mesh/remesh/PhysicsRemesher.hpp>
+#include <polyfem/mesh/remesh/wild_remesh/OperationCache.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <wmtk/ExecutionScheduler.hpp>
@@ -8,16 +8,15 @@
 namespace polyfem::mesh
 {
 	template <class WMTKMesh>
+	void WildRemesher<WMTKMesh>::cache_collapse_edge(const Tuple &e, const CollapseEdgeTo collapse_to)
+	{
+		op_cache = decltype(op_cache)::element_type::collapse_edge(*this, e);
+		op_cache->collapse_to = collapse_to;
+	}
+
+	template <class WMTKMesh>
 	bool WildRemesher<WMTKMesh>::collapse_edge_before(const Tuple &t)
 	{
-		// POLYFEM_REMESHER_SCOPED_TIMER("Collapse edge before");
-		if (edge_attr(t.eid(*this)).op_attempts++ >= max_op_attempts
-			|| edge_attr(t.eid(*this)).op_depth >= args["collapse"]["max_depth"].get<int>())
-		{
-			executor.m_cnt_fail--; // do not count this as a failed split
-			return false;
-		}
-
 		const double max_edge_length =
 			state.starting_min_edge_length
 			* args["collapse"]["rel_max_edge_length"].get<double>();
@@ -32,15 +31,12 @@ namespace polyfem::mesh
 		if (edge_adjacent_element_volumes(t).minCoeff() > vol_tol
 			&& edge_length(t) > max_edge_length)
 		{
-			executor.m_cnt_fail--; // do not count this as a failed split
+			executor.m_cnt_fail--; // do not count this as a failed collapse
 			return false;
 		}
 
 		const int v0i = t.vid(*this);
 		const int v1i = t.switch_vertex(*this).vid(*this);
-
-		const auto &v0 = vertex_attrs[v0i].rest_position;
-		const auto &v1 = vertex_attrs[v1i].rest_position;
 
 		CollapseEdgeTo collapse_to = CollapseEdgeTo::ILLEGAL;
 		if (is_body_boundary_edge(t))
@@ -62,47 +58,63 @@ namespace polyfem::mesh
 
 		if (collapse_to == CollapseEdgeTo::ILLEGAL)
 		{
-			executor.m_cnt_fail--; // do not count this as a failed split
+			executor.m_cnt_fail--; // do not count this as a failed collapse
 			return false;
 		}
 
+		cache_collapse_edge(t, collapse_to);
+
+		return true;
+	}
+
+	template <class WMTKMesh>
+	bool PhysicsRemesher<WMTKMesh>::collapse_edge_before(const Tuple &t)
+	{
+		// POLYFEM_REMESHER_SCOPED_TIMER("Collapse edge before");
+
+		if (!Super::split_edge_before(t)) // NOTE: also calls cache_split_edge
+			return false;
+
+		if (this->edge_attr(t.eid(*this)).op_attempts++ >= this->max_op_attempts
+			|| this->edge_attr(t.eid(*this)).op_depth >= args["collapse"]["max_depth"].template get<int>())
+		{
+			this->executor.m_cnt_fail--; // do not count this as a failed split
+			return false;
+		}
+
+		const VectorNd &v0 = vertex_attrs[t.vid(*this)].rest_position;
+		const VectorNd &v1 = vertex_attrs[t.switch_vertex(*this).vid(*this)].rest_position;
+
 		double local_energy = 0;
-		switch (collapse_to)
+		switch (this->op_cache->collapse_to)
 		{
 		case CollapseEdgeTo::V0:
-			local_energy = local_mesh_energy(v0);
+			this->op_cache->local_energy = local_mesh_energy(v0);
 			break;
 		case CollapseEdgeTo::V1:
-			local_energy = local_mesh_energy(v1);
+			this->op_cache->local_energy = local_mesh_energy(v1);
 			break;
 		case CollapseEdgeTo::MIDPOINT:
-			local_energy = local_mesh_energy((v0 + v1) / 2);
+			this->op_cache->local_energy = local_mesh_energy((v0 + v1) / 2);
 			break;
 		default:
 			assert(false);
 		}
 
-		cache_collapse_edge(t, local_energy, collapse_to);
-
 		return true;
 	}
 
 	// -------------------------------------------------------------------------
-	// 2D
 
 	template <class WMTKMesh>
 	bool WildRemesher<WMTKMesh>::collapse_edge_after(const Tuple &t)
 	{
-		utils::Timer timer(timings["Collapse edges after"]);
-		timer.start();
-
 		// 0) perform operation (done before this function)
 
 		// 1a) Update rest position of new vertex
 		map_edge_collapse_vertex_attributes(t);
 
 		// 1b) Assign edge attributes to the new edges
-
 		map_edge_collapse_boundary_attributes(t);
 		// Nothing to do for the element attributes because no new elements are created.
 
@@ -126,7 +138,7 @@ namespace polyfem::mesh
 #endif
 
 		// Check the interpolated position does not cause intersections
-		if (state.args["contact"]["enabled"].get<bool>() && is_boundary_op())
+		if (state.is_contact_enabled() && is_boundary_op())
 		{
 			Eigen::MatrixXd V_rest = rest_positions();
 			utils::append_rows(V_rest, obstacle().v());
@@ -165,14 +177,58 @@ namespace polyfem::mesh
 		// ~2) Project quantities so to minimize the L2 error~ (done after all operations)
 		// project_quantities(); // also projects positions
 
+		return true;
+	}
+
+	template <class WMTKMesh>
+	bool PhysicsRemesher<WMTKMesh>::collapse_edge_after(const Tuple &t)
+	{
+		utils::Timer timer(this->timings["Collapse edges after"]);
+		timer.start();
+		if (!Super::split_edge_after(t))
+			return false;
 		// local relaxation has its own timers
 		timer.stop();
 
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease/increase.
-		return local_relaxation(t, local_energy(), args["collapse"]["acceptance_tolerance"]);
+		return local_relaxation(t, args["collapse"]["acceptance_tolerance"]);
 	}
 
+	// -------------------------------------------------------------------------
+
+	template <class WMTKMesh>
+	void PhysicsRemesher<WMTKMesh>::collapse_edges()
+	{
+		using Operations = std::vector<std::pair<std::string, Tuple>>;
+
+		std::vector<Tuple> included_edges;
+		{
+			const std::vector<Tuple> edges = WMTKMesh::get_edges();
+			std::copy_if(edges.begin(), edges.end(), std::back_inserter(included_edges), [this](const Tuple &e) {
+				return this->edge_attr(e.eid(*this)).energy_rank == Super::EdgeAttributes::EnergyRank::BOTTOM;
+			});
+		}
+
+		if (included_edges.empty())
+			return;
+
+		Operations collapses;
+		collapses.reserve(included_edges.size());
+		for (const Tuple &e : included_edges)
+			collapses.emplace_back("edge_collapse", e);
+
+		executor.priority = [](const WildRemesher<WMTKMesh> &m, std::string op, const Tuple &t) -> double {
+			// NOTE: this code compute the edge length
+			return -m.edge_length(t);
+			// return -m.edge_elastic_energy(t); // invert the energy to get a reverse ordering
+		};
+
+		executor(*this, collapses);
+	}
+
+	// =========================================================================
+	// Map attributes
 	// =========================================================================
 
 	template <class WMTKMesh>
@@ -221,25 +277,81 @@ namespace polyfem::mesh
 		return v;
 	}
 
+	template <>
 	void WildTriRemesher::map_edge_collapse_vertex_attributes(const Tuple &t)
 	{
 		vertex_attrs[t.vid(*this)] = VertexAttributes::edge_collapse(
-			op_cache.v0().second, op_cache.v1().second, op_cache.collapse_to);
+			op_cache->v0().second, op_cache->v1().second, op_cache->collapse_to);
 	}
 
+	template <>
 	void WildTetRemesher::map_edge_collapse_vertex_attributes(const Tuple &t)
 	{
 		vertex_attrs[t.vid(*this)] = VertexAttributes::edge_collapse(
-			op_cache.v0().second, op_cache.v1().second, op_cache.collapse_to);
+			op_cache->v0().second, op_cache->v1().second, op_cache->collapse_to);
 	}
 
 	// -------------------------------------------------------------------------
 
+	template <>
+	void WildTriRemesher::map_edge_collapse_edge_attributes(const Tuple &t) { return; }
+
+	template <>
+	void WildTetRemesher::map_edge_collapse_edge_attributes(const Tuple &t)
+	{
+		const auto &[old_v0_id, old_v0] = op_cache->v0();
+		const auto &[old_v1_id, old_v1] = op_cache->v1();
+		const auto &old_edges = op_cache->edges();
+
+		const size_t new_vid = t.vid(*this);
+
+		for (const Tuple &t : get_one_ring_tets_for_vertex(t))
+		{
+			for (const Tuple &e : tet_edges(t))
+			{
+				std::array<size_t, 2> vids{{e.vid(*this), e.switch_vertex(*this).vid(*this)}};
+				auto iter = std::find(vids.begin(), vids.end(), new_vid);
+
+				if (iter != vids.end())
+				{
+					*iter = old_v0_id;
+					const auto find_old_edge0 = old_edges.find(vids);
+					*iter = old_v1_id;
+					const auto find_old_edge1 = old_edges.find(vids);
+
+					if (find_old_edge0 != old_edges.end() && find_old_edge1 != old_edges.end())
+					{
+						edge_attr(e.eid(*this)).energy_rank = std::min(
+							find_old_edge0->second.energy_rank, find_old_edge1->second.energy_rank);
+						edge_attr(e.eid(*this)).op_depth =
+							std::max(find_old_edge0->second.op_depth, find_old_edge1->second.op_depth);
+					}
+					else if (find_old_edge0 != old_edges.end())
+						edge_attr(e.eid(*this)) = find_old_edge0->second;
+					else if (find_old_edge1 != old_edges.end())
+						edge_attr(e.eid(*this)) = find_old_edge1->second;
+					else
+						assert(false);
+
+					edge_attr(e.eid(*this)).op_attempts = 0;
+					edge_attr(e.eid(*this)).op_depth++;
+				}
+				else
+				{
+					edge_attr(e.eid(*this)) = old_edges.at(vids);
+				}
+			}
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	template <>
 	void WildTriRemesher::map_edge_collapse_boundary_attributes(const Tuple &t)
 	{
-		const auto &[old_v0_id, old_v0] = op_cache.v0();
-		const auto &[old_v1_id, old_v1] = op_cache.v1();
-		const auto &old_edges = op_cache.edges();
+		const auto &[old_v0_id, old_v0] = op_cache->v0();
+		const auto &[old_v1_id, old_v1] = op_cache->v1();
+		const auto &old_edges = op_cache->edges();
 
 		const size_t new_vid = t.vid(*this);
 
@@ -289,58 +401,12 @@ namespace polyfem::mesh
 		}
 	}
 
-	void WildTetRemesher::map_edge_collapse_edge_attributes(const Tuple &t)
-	{
-		const auto &[old_v0_id, old_v0] = op_cache.v0();
-		const auto &[old_v1_id, old_v1] = op_cache.v1();
-		const auto &old_edges = op_cache.edges();
-
-		const size_t new_vid = t.vid(*this);
-
-		for (const Tuple &t : get_one_ring_tets_for_vertex(t))
-		{
-			for (const Tuple &e : tet_edges(t))
-			{
-				std::array<size_t, 2> vids{{e.vid(*this), e.switch_vertex(*this).vid(*this)}};
-				auto iter = std::find(vids.begin(), vids.end(), new_vid);
-
-				if (iter != vids.end())
-				{
-					*iter = old_v0_id;
-					const auto find_old_edge0 = old_edges.find(vids);
-					*iter = old_v1_id;
-					const auto find_old_edge1 = old_edges.find(vids);
-
-					if (find_old_edge0 != old_edges.end() && find_old_edge1 != old_edges.end())
-					{
-						edge_attr(e.eid(*this)).energy_rank = std::min(
-							find_old_edge0->second.energy_rank, find_old_edge1->second.energy_rank);
-						edge_attr(e.eid(*this)).op_depth =
-							std::max(find_old_edge0->second.op_depth, find_old_edge1->second.op_depth);
-					}
-					else if (find_old_edge0 != old_edges.end())
-						edge_attr(e.eid(*this)) = find_old_edge0->second;
-					else if (find_old_edge1 != old_edges.end())
-						edge_attr(e.eid(*this)) = find_old_edge1->second;
-					else
-						assert(false);
-
-					edge_attr(e.eid(*this)).op_attempts = 0;
-					edge_attr(e.eid(*this)).op_depth++;
-				}
-				else
-				{
-					edge_attr(e.eid(*this)) = old_edges.at(vids);
-				}
-			}
-		}
-	}
-
+	template <>
 	void WildTetRemesher::map_edge_collapse_boundary_attributes(const Tuple &t)
 	{
-		const auto &[old_v0_id, old_v0] = op_cache.v0();
-		const auto &[old_v1_id, old_v1] = op_cache.v1();
-		const auto &old_faces = op_cache.faces();
+		const auto &[old_v0_id, old_v0] = op_cache->v0();
+		const auto &[old_v1_id, old_v1] = op_cache->v1();
+		const auto &old_faces = op_cache->faces();
 
 		const size_t new_vid = t.vid(*this);
 
@@ -396,39 +462,12 @@ namespace polyfem::mesh
 
 	// =========================================================================
 
-	template <class WMTKMesh>
-	void WildRemesher<WMTKMesh>::collapse_edges()
-	{
-		using Operations = std::vector<std::pair<std::string, Tuple>>;
-
-		std::vector<Tuple> included_edges;
-		{
-			const std::vector<Tuple> edges = WMTKMesh::get_edges();
-			std::copy_if(edges.begin(), edges.end(), std::back_inserter(included_edges), [this](const Tuple &e) {
-				return edge_attr(e.eid(*this)).energy_rank == EdgeAttributes::EnergyRank::BOTTOM;
-			});
-		}
-
-		if (included_edges.empty())
-			return;
-
-		Operations collapses;
-		collapses.reserve(included_edges.size());
-		for (const Tuple &e : included_edges)
-			collapses.emplace_back("edge_collapse", e);
-
-		executor.priority = [](const WildRemesher &m, std::string op, const Tuple &t) -> double {
-			// NOTE: this code compute the edge length
-			return -m.edge_length(t);
-			// return -m.edge_elastic_energy(t); // invert the energy to get a reverse ordering
-		};
-
-		executor(*this, collapses);
-	}
-
 	// ------------------------------------------------------------------------
 	// Template specializations
+
 	template class WildRemesher<wmtk::TriMesh>;
 	template class WildRemesher<wmtk::TetMesh>;
+	template class PhysicsRemesher<wmtk::TriMesh>;
+	template class PhysicsRemesher<wmtk::TetMesh>;
 
 } // namespace polyfem::mesh

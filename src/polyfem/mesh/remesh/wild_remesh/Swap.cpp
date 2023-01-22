@@ -1,8 +1,8 @@
-#include <polyfem/mesh/remesh/WildTriRemesher.hpp>
+#include <polyfem/mesh/remesh/PhysicsRemesher.hpp>
 
 namespace polyfem::mesh
 {
-	bool WildTriRemesher::swap_edge_before(const Tuple &t)
+	bool PhysicsTriRemesher::swap_edge_before(const Tuple &t)
 	{
 		const int v0i = t.vid(*this);
 		const int v1i = t.switch_vertex(*this).vid(*this);
@@ -17,7 +17,7 @@ namespace polyfem::mesh
 		return true;
 	}
 
-	bool WildTriRemesher::swap_edge_after(const Tuple &t)
+	bool PhysicsTriRemesher::swap_edge_after(const Tuple &t)
 	{
 		// 0) perform operation (done before this function)
 
@@ -25,7 +25,7 @@ namespace polyfem::mesh
 		//     No new vertex, so nothing to do.
 
 		// 1b) Assign edge attributes to the new edges
-		const auto &old_edges = op_cache.edges();
+		const auto &old_edges = op_cache->edges();
 		const std::array<size_t, 2> face_ids{{t.fid(*this), t.switch_face(*this)->fid(*this)}};
 		for (const size_t fid : face_ids)
 		{
@@ -50,8 +50,8 @@ namespace polyfem::mesh
 			}
 		}
 
-		element_attrs[t.fid(*this)] = op_cache.faces()[0];
-		element_attrs[t.switch_face(*this)->fid(*this)] = op_cache.faces()[1];
+		element_attrs[t.fid(*this)] = op_cache->faces()[0];
+		element_attrs[t.switch_face(*this)->fid(*this)] = op_cache->faces()[1];
 
 		// There is no non-inversion check in project_quantities, so check it here.
 		if (!invariants(get_one_ring_elements_for_vertex(t)))
@@ -63,7 +63,7 @@ namespace polyfem::mesh
 		// 3) Perform a local relaxation of the n-ring to get an estimate of the
 		//    energy decrease.
 		assert(false); // TODO: set local_energy in _before
-		return local_relaxation(t, op_cache.local_energy, args["swap"]["acceptance_tolerance"]);
+		return local_relaxation(t, args["swap"]["acceptance_tolerance"]);
 	}
 
 } // namespace polyfem::mesh

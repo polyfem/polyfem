@@ -10,9 +10,9 @@ set(SOURCES
 	WildRemesher.cpp
 	WildRemesher.hpp
 	WildTetRemesher.cpp
-	WildTetRemesher.hpp
 	WildTriRemesher.cpp
-	WildTriRemesher.hpp
+	PhysicsRemesher.cpp
+	PhysicsRemesher.hpp
 )
 
 prepend_current_path(SOURCES)

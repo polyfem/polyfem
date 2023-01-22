@@ -44,7 +44,7 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 		// constructors
 	public:
-		/// @brief Construct a new WildTriRemesher object
+		/// @brief Construct a new Remesher object
 		/// @param state Simulation current state
 		Remesher(const State &state,
 				 const Eigen::MatrixXd &obstacle_displacements,

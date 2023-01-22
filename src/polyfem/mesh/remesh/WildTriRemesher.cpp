@@ -1,21 +1,15 @@
-#include "WildTriRemesher.hpp"
+#include "WildRemesher.hpp"
 
+#include <polyfem/mesh/remesh/wild_remesh/OperationCache.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
 
 #include <igl/predicates/predicates.h>
 
 namespace polyfem::mesh
 {
-	WildTriRemesher::WildTriRemesher(
-		const State &state,
-		const Eigen::MatrixXd &obstacle_displacements,
-		const Eigen::MatrixXd &obstacle_vals,
-		const double current_time,
-		const double starting_energy)
-		: Super(state, obstacle_displacements, obstacle_vals, current_time, starting_energy)
-	{
-	}
+	using Tuple = WildTriRemesher::Tuple;
 
+	template <>
 	void WildTriRemesher::init_attributes_and_connectivity(
 		const size_t num_vertices, const Eigen::MatrixXi &triangles)
 	{
@@ -34,14 +28,21 @@ namespace polyfem::mesh
 		wmtk::TriMesh::create_mesh(num_vertices, tri);
 	}
 
-	// smooth_before/smooth_after in wild_remesh/Smooth.cpp
+	template <>
+	WildTriRemesher::BoundaryMap<int> WildTriRemesher::boundary_ids() const
+	{
+		const std::vector<Tuple> edges = get_edges();
+		EdgeMap<int> boundary_ids;
+		for (const Tuple &edge : edges)
+		{
+			const size_t e0 = edge.vid(*this);
+			const size_t e1 = edge.switch_vertex(*this).vid(*this);
+			boundary_ids[{{e0, e1}}] = boundary_attrs[edge.eid(*this)].boundary_id;
+		}
+		return boundary_ids;
+	}
 
-	// split_edge_after in wild_remesh/Split.cpp
-
-	// collapse_edge_before/collapse_edge_after in wild_remesh/Collapse.cpp
-
-	// swap_edge_before/swap_edge_after in wild_remesh/Swap.cpp
-
+	template <>
 	bool WildTriRemesher::is_inverted(const Tuple &loc) const
 	{
 		// Get the vertices ids
@@ -66,6 +67,7 @@ namespace polyfem::mesh
 		return false;
 	}
 
+	template <>
 	double WildTriRemesher::element_volume(const Tuple &e) const
 	{
 		const std::array<size_t, 3> vids = oriented_tri_vids(e);
@@ -75,14 +77,37 @@ namespace polyfem::mesh
 			vertex_attrs[vids[2]].rest_position);
 	}
 
-	bool WildTriRemesher::is_body_boundary_vertex(const Tuple &v) const
+	template <>
+	size_t WildTriRemesher::facet_id(const Tuple &t) const
 	{
-		for (const auto &e : get_one_ring_edges_for_vertex(v))
-			if (is_body_boundary_edge(e))
-				return true;
-		return false;
+		return t.eid(*this);
 	}
 
+	template <>
+	size_t WildTriRemesher::element_id(const Tuple &t) const
+	{
+		return t.fid(*this);
+	}
+
+	template <>
+	Tuple WildTriRemesher::tuple_from_element(size_t elem_id) const
+	{
+		return tuple_from_tri(elem_id);
+	}
+
+	template <>
+	Tuple WildTriRemesher::tuple_from_facet(size_t elem_id, int local_facet_id) const
+	{
+		return tuple_from_edge(elem_id, local_facet_id);
+	}
+
+	template <>
+	bool WildTriRemesher::is_boundary_edge(const Tuple &e) const
+	{
+		return TriMesh::is_boundary_edge(e);
+	}
+
+	template <>
 	bool WildTriRemesher::is_body_boundary_edge(const Tuple &e) const
 	{
 		const auto adj_face = e.switch_face(*this);
@@ -91,6 +116,34 @@ namespace polyfem::mesh
 					  != element_attrs[element_id(*adj_face)].body_id;
 	}
 
+	template <>
+	bool WildTriRemesher::is_boundary_vertex(const Tuple &v) const
+	{
+		return TriMesh::is_boundary_vertex(v);
+	}
+
+	template <>
+	bool WildTriRemesher::is_body_boundary_vertex(const Tuple &v) const
+	{
+		for (const auto &e : get_one_ring_edges_for_vertex(v))
+			if (is_body_boundary_edge(e))
+				return true;
+		return false;
+	}
+
+	template <>
+	bool WildTriRemesher::is_boundary_facet(const Tuple &t) const
+	{
+		return is_boundary_edge(t);
+	}
+
+	template <>
+	bool WildTriRemesher::is_boundary_op() const
+	{
+		return op_cache->is_boundary_op();
+	}
+
+	template <>
 	Eigen::MatrixXi WildTriRemesher::boundary_edges() const
 	{
 		const std::vector<Tuple> boundary_edge_tuples = boundary_facets();
@@ -105,6 +158,64 @@ namespace polyfem::mesh
 		return BE;
 	}
 
+	template <>
+	Eigen::MatrixXi WildTriRemesher::boundary_faces() const
+	{
+		return Eigen::MatrixXi();
+	}
+
+	template <>
+	std::vector<Tuple> WildTriRemesher::get_facets() const
+	{
+		return get_edges();
+	}
+
+	template <>
+	std::vector<Tuple> WildTriRemesher::get_elements() const
+	{
+		return get_faces();
+	}
+
+	template <>
+	std::array<Tuple, 2> WildTriRemesher::facet_vertices(const Tuple &t) const
+	{
+		return {{t, t.switch_vertex(*this)}};
+	}
+
+	template <>
+	std::array<size_t, 2> WildTriRemesher::facet_vids(const Tuple &t) const
+	{
+		return {{t.vid(*this), t.switch_vertex(*this).vid(*this)}};
+	}
+
+	template <>
+	std::array<Tuple, 3> WildTriRemesher::element_vertices(const Tuple &t) const
+	{
+		return oriented_tri_vertices(t);
+	}
+
+	template <>
+	std::array<size_t, 3> WildTriRemesher::element_vids(const Tuple &t) const
+	{
+		return oriented_tri_vids(t);
+	}
+
+	template <>
+	std::vector<Tuple> WildTriRemesher::get_one_ring_elements_for_vertex(const Tuple &t) const
+	{
+		return get_one_ring_tris_for_vertex(t);
+	}
+
+	template <>
+	std::vector<Tuple> WildTriRemesher::get_incident_elements_for_edge(const Tuple &t) const
+	{
+		std::vector<Tuple> tris{{t}};
+		if (t.switch_face(*this))
+			tris.push_back(t.switch_face(*this).value());
+		return tris;
+	}
+
+	template <>
 	CollapseEdgeTo WildTriRemesher::collapse_boundary_edge_to(const Tuple &e) const
 	{
 		const int eid = e.eid(*this);
@@ -144,6 +255,16 @@ namespace polyfem::mesh
 			return CollapseEdgeTo::MIDPOINT; // collapse to midpoint if both points are collinear
 	}
 
-	// map_edge_split_boundary_attributes/map_edge_split_element_attributes in wild_remesh/Split.cpp
+	template <>
+	WildTriRemesher::EdgeAttributes &WildTriRemesher::edge_attr(const size_t e_id)
+	{
+		return boundary_attrs[e_id];
+	}
+
+	template <>
+	const WildTriRemesher::EdgeAttributes &WildTriRemesher::edge_attr(const size_t e_id) const
+	{
+		return boundary_attrs[e_id];
+	}
 
 } // namespace polyfem::mesh

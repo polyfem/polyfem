@@ -6,21 +6,18 @@
 
 namespace polyfem::mesh
 {
-	class WildTriRemesher;
-	class WildTetRemesher;
-
 	class TriOperationCache
 	{
 	public:
-		using VertexAttributes = WildRemesher<wmtk::TriMesh>::VertexAttributes;
-		using EdgeAttributes = WildRemesher<wmtk::TriMesh>::BoundaryAttributes;
-		using FaceAttributes = WildRemesher<wmtk::TriMesh>::ElementAttributes;
+		using VertexAttributes = WildTriRemesher::VertexAttributes;
+		using EdgeAttributes = WildTriRemesher::BoundaryAttributes;
+		using FaceAttributes = WildTriRemesher::ElementAttributes;
 		using Tuple = wmtk::TriMesh::Tuple;
 
 		/// @brief Construct a local mesh as an n-ring around a vertex.
-		static TriOperationCache split_edge(WildTriRemesher &m, const Tuple &t);
-		static TriOperationCache swap_edge(WildTriRemesher &m, const Tuple &t);
-		static TriOperationCache collapse_edge(WildTriRemesher &m, const Tuple &t);
+		static std::shared_ptr<TriOperationCache> split_edge(WildTriRemesher &m, const Tuple &t);
+		static std::shared_ptr<TriOperationCache> swap_edge(WildTriRemesher &m, const Tuple &t);
+		static std::shared_ptr<TriOperationCache> collapse_edge(WildTriRemesher &m, const Tuple &t);
 
 		const std::pair<size_t, VertexAttributes> &v0() const { return m_v0; }
 		const std::pair<size_t, VertexAttributes> &v1() const { return m_v1; }
@@ -42,17 +39,17 @@ namespace polyfem::mesh
 	class TetOperationCache
 	{
 	public:
-		using VertexAttributes = WildRemesher<wmtk::TetMesh>::VertexAttributes;
-		using EdgeAttributes = WildRemesher<wmtk::TetMesh>::EdgeAttributes;
-		using FaceAttributes = WildRemesher<wmtk::TetMesh>::BoundaryAttributes;
-		using TetAttributes = WildRemesher<wmtk::TetMesh>::ElementAttributes;
+		using VertexAttributes = WildTetRemesher::VertexAttributes;
+		using EdgeAttributes = WildTetRemesher::EdgeAttributes;
+		using FaceAttributes = WildTetRemesher::BoundaryAttributes;
+		using TetAttributes = WildTetRemesher::ElementAttributes;
 		using Tuple = wmtk::TetMesh::Tuple;
 
-		static TetOperationCache split_edge(WildTetRemesher &m, const Tuple &t);
+		static std::shared_ptr<TetOperationCache> split_edge(WildTetRemesher &m, const Tuple &t);
 		// static TetOperationCache swap_32(WildTetRemesher &m, const Tuple &t);
 		// static TetOperationCache swap_23(WildTetRemesher &m, const Tuple &t);
 		// static TetOperationCache swap_44(WildTetRemesher &m, const Tuple &t);
-		static TetOperationCache collapse_edge(WildTetRemesher &m, const Tuple &t);
+		static std::shared_ptr<TetOperationCache> collapse_edge(WildTetRemesher &m, const Tuple &t);
 
 		const std::pair<size_t, VertexAttributes> &v0() const { return m_v0; }
 		const std::pair<size_t, VertexAttributes> &v1() const { return m_v1; }

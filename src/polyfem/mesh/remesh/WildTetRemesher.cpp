@@ -1,5 +1,6 @@
-#include "WildTetRemesher.hpp"
+#include "WildRemesher.hpp"
 
+#include <polyfem/mesh/remesh/wild_remesh/OperationCache.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
 
 #include <wmtk/utils/TupleUtils.hpp>
@@ -9,18 +10,9 @@
 
 namespace polyfem::mesh
 {
-	/// @brief Construct a new WildTetRemesher object
-	/// @param state Simulation current state
-	WildTetRemesher::WildTetRemesher(
-		const State &state,
-		const Eigen::MatrixXd &obstacle_displacements,
-		const Eigen::MatrixXd &obstacle_vals,
-		const double current_time,
-		const double starting_energy)
-		: Super(state, obstacle_displacements, obstacle_vals, current_time, starting_energy)
-	{
-	}
+	using Tuple = WildTetRemesher::Tuple;
 
+	template <>
 	void WildTetRemesher::init_attributes_and_connectivity(
 		const size_t num_vertices, const Eigen::MatrixXi &tetrahedra)
 	{
@@ -40,8 +32,23 @@ namespace polyfem::mesh
 		wmtk::TetMesh::init(num_vertices, tets);
 	}
 
-	// split_edge_after in wild_remesh/Split.cpp
+	template <>
+	WildTetRemesher::BoundaryMap<int> WildTetRemesher::boundary_ids() const
+	{
+		const std::vector<Tuple> faces = get_faces();
+		FaceMap<int> boundary_ids;
+		for (const Tuple &face : faces)
+		{
+			const size_t f0 = face.vid(*this);
+			const size_t f1 = face.switch_vertex(*this).vid(*this);
+			const size_t f2 = face.switch_edge(*this).switch_vertex(*this).vid(*this);
 
+			boundary_ids[{{f0, f1, f2}}] = boundary_attrs[face.fid(*this)].boundary_id;
+		}
+		return boundary_ids;
+	}
+
+	template <>
 	Eigen::MatrixXi WildTetRemesher::boundary_edges() const
 	{
 		const std::vector<Tuple> boundary_face_tuples = boundary_facets();
@@ -65,6 +72,7 @@ namespace polyfem::mesh
 		return BE;
 	}
 
+	template <>
 	Eigen::MatrixXi WildTetRemesher::boundary_faces() const
 	{
 		const std::vector<Tuple> boundary_face_tuples = boundary_facets();
@@ -80,6 +88,19 @@ namespace polyfem::mesh
 		return BF;
 	}
 
+	template <>
+	std::vector<Tuple> WildTetRemesher::get_facets() const
+	{
+		return get_faces();
+	}
+
+	template <>
+	std::vector<Tuple> WildTetRemesher::get_elements() const
+	{
+		return get_tets();
+	}
+
+	template <>
 	bool WildTetRemesher::is_inverted(const Tuple &loc) const
 	{
 		// Get the vertices ids
@@ -102,6 +123,7 @@ namespace polyfem::mesh
 		return false;
 	}
 
+	template <>
 	double WildTetRemesher::element_volume(const Tuple &e) const
 	{
 		const std::array<size_t, 4> vids = oriented_tet_vids(e);
@@ -112,6 +134,37 @@ namespace polyfem::mesh
 			vertex_attrs[vids[3]].rest_position);
 	}
 
+	template <>
+	size_t WildTetRemesher::facet_id(const Tuple &t) const
+	{
+		return t.fid(*this);
+	}
+
+	template <>
+	size_t WildTetRemesher::element_id(const Tuple &t) const
+	{
+		return t.tid(*this);
+	}
+
+	template <>
+	Tuple WildTetRemesher::tuple_from_facet(size_t elem_id, int local_facet_id) const
+	{
+		return tuple_from_face(elem_id, local_facet_id);
+	}
+
+	template <>
+	Tuple WildTetRemesher::tuple_from_element(size_t elem_id) const
+	{
+		return tuple_from_tet(elem_id);
+	}
+
+	template <>
+	bool WildTetRemesher::is_boundary_facet(const Tuple &t) const
+	{
+		return t.is_boundary_face(*this);
+	}
+
+	template <>
 	bool WildTetRemesher::is_boundary_vertex(const Tuple &v) const
 	{
 		for (const Tuple &t : get_one_ring_tets_for_vertex(v))
@@ -125,6 +178,19 @@ namespace polyfem::mesh
 		return false;
 	}
 
+	template <>
+	bool WildTetRemesher::is_body_boundary_vertex(const Tuple &v) const
+	{
+		throw std::runtime_error("Not implemented");
+	}
+
+	template <>
+	bool WildTetRemesher::is_boundary_edge(const Tuple &e) const
+	{
+		return e.is_boundary_edge(*this);
+	}
+
+	template <>
 	bool WildTetRemesher::is_body_boundary_edge(const Tuple &e) const
 	{
 		const size_t tid = e.tid(*this);
@@ -137,8 +203,54 @@ namespace polyfem::mesh
 		return !t.has_value() || element_attrs[t->tid(*this)].body_id != body_id;
 	}
 
-	std::vector<WildTetRemesher::Tuple>
-	WildTetRemesher::get_one_ring_boundary_faces_for_vertex(const Tuple &v) const
+	template <>
+	bool WildTetRemesher::is_boundary_op() const
+	{
+		return op_cache->is_boundary_op();
+	}
+
+	template <>
+	std::array<Tuple, 3> WildTetRemesher::facet_vertices(const Tuple &t) const
+	{
+		return get_face_vertices(t);
+	}
+
+	template <>
+	std::array<size_t, 3> WildTetRemesher::facet_vids(const Tuple &t) const
+	{
+		return {{
+			t.vid(*this),
+			t.switch_vertex(*this).vid(*this),
+			t.switch_edge(*this).switch_vertex(*this).vid(*this),
+		}};
+	}
+
+	template <>
+	std::array<Tuple, 4> WildTetRemesher::element_vertices(const Tuple &t) const
+	{
+		return oriented_tet_vertices(t);
+	}
+
+	template <>
+	std::array<size_t, 4> WildTetRemesher::element_vids(const Tuple &t) const
+	{
+		return oriented_tet_vids(t);
+	}
+
+	template <>
+	std::vector<Tuple> WildTetRemesher::get_one_ring_elements_for_vertex(const Tuple &t) const
+	{
+		return get_one_ring_tets_for_vertex(t);
+	}
+
+	template <>
+	std::vector<Tuple> WildTetRemesher::get_incident_elements_for_edge(const Tuple &t) const
+	{
+		return get_incident_tets_for_edge(t);
+	}
+
+	template <>
+	std::vector<Tuple> WildTetRemesher::get_one_ring_boundary_faces_for_vertex(const Tuple &v) const
 	{
 		const size_t vid = v.vid(*this);
 
@@ -168,8 +280,8 @@ namespace polyfem::mesh
 		return faces;
 	}
 
-	std::vector<WildTetRemesher::Tuple>
-	WildTetRemesher::get_one_ring_boundary_edges_for_vertex(const Tuple &v) const
+	template <>
+	std::vector<Tuple> WildTetRemesher::get_one_ring_boundary_edges_for_vertex(const Tuple &v) const
 	{
 		const size_t vid = v.vid(*this);
 
@@ -197,8 +309,8 @@ namespace polyfem::mesh
 		return edges;
 	}
 
-	std::array<WildTetRemesher::Tuple, 2>
-	WildTetRemesher::get_boundary_faces_for_edge(const Tuple &e) const
+	template <>
+	std::array<Tuple, 2> WildTetRemesher::get_boundary_faces_for_edge(const Tuple &e) const
 	{
 		assert(e.is_boundary_edge(*this));
 
@@ -221,6 +333,7 @@ namespace polyfem::mesh
 		return faces;
 	}
 
+	template <>
 	CollapseEdgeTo WildTetRemesher::collapse_boundary_edge_to(const Tuple &e) const
 	{
 		// TODO: handle body boundary edges
@@ -296,6 +409,16 @@ namespace polyfem::mesh
 			return CollapseEdgeTo::MIDPOINT; // collapse to midpoint if both points are movable
 	}
 
-	// map_edge_split_boundary_attributes/map_edge_split_element_attributes in wild_remesh/Split.cpp
+	template <>
+	WildTetRemesher::EdgeAttributes &WildTetRemesher::edge_attr(const size_t e_id)
+	{
+		return edge_attrs[e_id];
+	}
+
+	template <>
+	const WildTetRemesher::EdgeAttributes &WildTetRemesher::edge_attr(const size_t e_id) const
+	{
+		return edge_attrs[e_id];
+	}
 
 } // namespace polyfem::mesh

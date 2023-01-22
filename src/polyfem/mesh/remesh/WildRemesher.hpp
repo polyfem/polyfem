@@ -1,7 +1,6 @@
 #pragma once
 
 #include <polyfem/mesh/remesh/Remesher.hpp>
-#include <polyfem/mesh/remesh/wild_remesh/LocalMesh.hpp>
 #include <polyfem/solver/SolveData.hpp>
 
 #include <wmtk/TriMesh.h>
@@ -9,6 +8,8 @@
 #include <wmtk/ExecutionScheduler.hpp>
 
 #include <ipc/collision_mesh.hpp>
+
+#include <type_traits>
 
 namespace polyfem::mesh
 {
@@ -19,6 +20,9 @@ namespace polyfem::mesh
 		MIDPOINT,
 		ILLEGAL
 	};
+
+	class TriOperationCache;
+	class TetOperationCache;
 
 	template <class WMTKMesh>
 	class WildRemesher : public Remesher, public WMTKMesh
@@ -88,6 +92,12 @@ namespace polyfem::mesh
 			const EdgeMap<double> &elastic_energy,
 			const EdgeMap<double> &contact_energy) override;
 
+	protected:
+		/// @brief Create an internal mesh representation and associate attributes
+		void init_attributes_and_connectivity(
+			const size_t num_vertices,
+			const Eigen::MatrixXi &elements) override;
+
 		// --------------------------------------------------------------------
 		// main functions
 	public:
@@ -100,32 +110,25 @@ namespace polyfem::mesh
 		/// @return True if any operation was performed.
 		bool execute() override;
 
-		void split_edges();
-		void collapse_edges();
+		virtual void split_edges() = 0;
+		virtual void collapse_edges() = 0;
 		void smooth_vertices() { throw std::runtime_error("Not implemented!"); }
 		void swap_edges() { throw std::runtime_error("Not implemented!"); }
 
 	protected:
 		// Edge splitting
-		bool split_edge_before(const Tuple &t) override;
+		virtual bool split_edge_before(const Tuple &t) override;
+		virtual bool split_edge_after(const Tuple &t) override;
 
 		// Edge collapse
-		bool collapse_edge_before(const Tuple &t) override;
-		bool collapse_edge_after(const Tuple &t) override;
+		virtual bool collapse_edge_before(const Tuple &t) override;
+		virtual bool collapse_edge_after(const Tuple &t) override;
 
 		/// @brief Check if invariants are satisfied
 		bool invariants(const std::vector<Tuple> &new_tris) override;
 
 		/// @brief Check if a triangle is inverted
-		virtual bool is_inverted(const Tuple &loc) const = 0;
-
-		/// @brief Relax a local n-ring around a vertex.
-		/// @param t Center of the local n-ring
-		/// @return If the local relaxation reduced the energy "significantly"
-		bool local_relaxation(
-			const Tuple &t,
-			const double local_energy_before,
-			const double acceptance_tolerance);
+		bool is_inverted(const Tuple &loc) const;
 
 		// --------------------------------------------------------------------
 		// getters
@@ -144,25 +147,23 @@ namespace polyfem::mesh
 		/// @brief Exports elements of the stored mesh
 		Eigen::MatrixXi elements() const override;
 		/// @brief Exports boundary edges of the stored mesh
-		virtual Eigen::MatrixXi boundary_edges() const = 0;
+		Eigen::MatrixXi boundary_edges() const;
 		/// @brief Exports boundary faces of the stored mesh
-		virtual Eigen::MatrixXi boundary_faces() const = 0;
+		Eigen::MatrixXi boundary_faces() const;
 		/// @brief Exports projected quantities of the stored mesh
 		Eigen::MatrixXd projection_quantities() const override;
 		/// @brief Exports boundary ids of the stored mesh
 		BoundaryMap<int> boundary_ids() const override;
 		/// @brief Exports body ids of the stored mesh
 		std::vector<int> body_ids() const override;
-		/// @brief Get the boundary nodes of the stored mesh
-		std::vector<int> boundary_nodes(const Eigen::VectorXi &vertex_to_basis) const override;
 
 		/// @brief Number of projection quantities (not including the position)
 		int n_quantities() const override { return m_n_quantities; };
 
 		/// @brief Get a vector of all facets (edges or triangles)
-		virtual std::vector<Tuple> get_facets() const = 0;
+		std::vector<Tuple> get_facets() const;
 		/// @brief Get a vector of all elements (triangles or tetrahedra)
-		virtual std::vector<Tuple> get_elements() const = 0;
+		std::vector<Tuple> get_elements() const;
 
 		// --------------------------------------------------------------------
 		// setters
@@ -191,113 +192,88 @@ namespace polyfem::mesh
 
 		Eigen::VectorXd edge_adjacent_element_volumes(const Tuple &e) const;
 
-		/// @brief Compute the average elastic energy of the faces containing an edge.
-		double edge_elastic_energy(const Tuple &e) const;
-
 		/// @brief Compute the volume (area) of an tetrahedron (triangle) element.
-		virtual double element_volume(const Tuple &e) const = 0;
+		double element_volume(const Tuple &e) const;
 
 		/// @brief Is the given vertex tuple on the boundary of the mesh?
-		virtual bool is_boundary_vertex(const Tuple &v) const = 0;
+		bool is_boundary_vertex(const Tuple &v) const;
 		/// @brief Is the given vertex tuple on the boundary of a body?
-		virtual bool is_body_boundary_vertex(const Tuple &v) const = 0;
+		bool is_body_boundary_vertex(const Tuple &v) const;
 		/// @brief Is the given edge tuple on the boundary of the mesh?
-		virtual bool is_boundary_edge(const Tuple &e) const = 0;
+		bool is_boundary_edge(const Tuple &e) const;
 		/// @brief Is the given edge tuple on the boundary of a body?
-		virtual bool is_body_boundary_edge(const Tuple &e) const = 0;
+		bool is_body_boundary_edge(const Tuple &e) const;
 		/// @brief Is the given tuple on the boundary of the mesh?
-		virtual bool is_boundary_facet(const Tuple &t) const = 0;
+		bool is_boundary_facet(const Tuple &t) const;
 		/// @brief Is the currently cached operation a boundary operation?
-		virtual bool is_boundary_op() const = 0;
+		bool is_boundary_op() const;
 
 		/// @brief Get the boundary facets of the mesh
 		std::vector<Tuple> boundary_facets(std::vector<int> *boundary_ids = nullptr) const;
 
 		/// @brief Get the vertex tuples of a facet.
-		virtual std::array<Tuple, DIM> facet_vertices(const Tuple &t) const = 0;
+		std::array<Tuple, DIM> facet_vertices(const Tuple &t) const;
 		/// @brief Get the vertex ids of a facet.
-		virtual std::array<size_t, DIM> facet_vids(const Tuple &t) const = 0;
+		std::array<size_t, DIM> facet_vids(const Tuple &t) const;
 
 		/// @brief Get the vertex tuples of an element.
-		virtual std::array<Tuple, DIM + 1> element_vertices(const Tuple &t) const = 0;
+		std::array<Tuple, DIM + 1> element_vertices(const Tuple &t) const;
 		/// @brief Get the vertex ids of an element.
-		virtual std::array<size_t, DIM + 1> element_vids(const Tuple &t) const = 0;
+		std::array<size_t, DIM + 1> element_vids(const Tuple &t) const;
 
 		/// @brief Get the one ring of elements around a vertex.
-		virtual std::vector<Tuple> get_one_ring_elements_for_vertex(const Tuple &t) const = 0;
+		std::vector<Tuple> get_one_ring_elements_for_vertex(const Tuple &t) const;
+		std::vector<Tuple> get_one_ring_boundary_edges_for_vertex(const Tuple &v) const;
+		std::array<Tuple, 2> get_boundary_faces_for_edge(const Tuple &e) const;
+		std::vector<Tuple> get_one_ring_boundary_faces_for_vertex(const Tuple &v) const;
 
 		/// @brief Get the id of a facet (edge for triangle, triangle for tetrahedra)
-		virtual size_t facet_id(const Tuple &t) const = 0;
+		size_t facet_id(const Tuple &t) const;
 
 		/// @brief Get the id of an element (triangle or tetrahedra)
-		virtual size_t element_id(const Tuple &t) const = 0;
+		size_t element_id(const Tuple &t) const;
 
 		/// @brief Get a tuple of an element.
-		virtual Tuple tuple_from_element(size_t elem_id) const = 0;
+		Tuple tuple_from_element(size_t elem_id) const;
 		/// @brief Get a tuple of an element with a local facet
-		virtual Tuple tuple_from_facet(size_t elem_id, int local_facet_id) const = 0;
+		Tuple tuple_from_facet(size_t elem_id, int local_facet_id) const;
 
 		/// @brief Get the incident elements for an edge
-		virtual std::vector<Tuple> get_incident_elements_for_edge(const Tuple &t) const = 0;
+		std::vector<Tuple> get_incident_elements_for_edge(const Tuple &t) const;
 
 		void extend_local_patch(std::vector<Tuple> &patch) const;
 
-		std::vector<Tuple> local_mesh_tuples(const VectorNd &center) const;
-		std::vector<Tuple> local_mesh_tuples(const Tuple &t) const
-		{
-			return local_mesh_tuples(vertex_attrs[t.vid(*this)].rest_position);
-		}
+		Tuple opposite_vertex_on_face(const Tuple &e) const { return e.switch_edge(*this).switch_vertex(*this); }
 
-		double local_mesh_energy(const VectorNd &local_mesh_center) const;
-
-		virtual CollapseEdgeTo collapse_boundary_edge_to(const Tuple &e) const = 0;
+		CollapseEdgeTo collapse_boundary_edge_to(const Tuple &e) const;
 
 	protected:
-		/// @brief Write a visualization mesh of the priority queue
-		/// @param e current edge tuple to be split
-		void write_priority_queue_mesh(const std::string &path, const Tuple &e) const;
-
 		using Operations = std::vector<std::pair<std::string, Tuple>>;
-		Operations renew_neighbor_tuples(
+		virtual Operations renew_neighbor_tuples(
 			const std::string &op, const std::vector<Tuple> &tris) const;
-
-		std::vector<int> local_boundary_nodes(const LocalMesh<This> &local_mesh) const;
-
-		void local_solve_data(
-			const LocalMesh<This> &local_mesh,
-			const std::vector<polyfem::basis::ElementBases> &bases,
-			const std::vector<int> &boundary_nodes,
-			const assembler::AssemblerUtils &assembler,
-			const bool contact_enabled,
-			solver::SolveData &solve_data,
-			assembler::AssemblyValsCache &ass_vals_cache,
-			Eigen::SparseMatrix<double> &mass,
-			ipc::CollisionMesh &collision_mesh) const;
-
-		virtual double local_energy() const = 0;
-
-		// edge split
 
 		/// @brief Cache the split edge operation
 		/// @param e edge tuple
-		/// @param local_energy local energy
-		virtual void cache_split_edge(const Tuple &e, const double local_energy) = 0;
-
-		// edge collapse
+		void cache_split_edge(const Tuple &e);
 
 		/// @brief Cache the edge collapse operation
 		/// @param e edge tuple
-		/// @param local_energy local energy
 		/// @param collapse_to collapse to which vertex
-		virtual void cache_collapse_edge(const Tuple &e, const double local_energy, const CollapseEdgeTo collapse_to) = 0;
+		void cache_collapse_edge(const Tuple &e, const CollapseEdgeTo collapse_to);
 
 		/// @brief Map the vertex attributes for edge collapse
 		/// @param t new vertex tuple
-		virtual void map_edge_collapse_vertex_attributes(const Tuple &t) = 0;
+		void map_edge_collapse_vertex_attributes(const Tuple &t);
 
 		/// @brief Map the edge attributes for edge collapse
 		/// @param t new vertex tuple
-		virtual void map_edge_collapse_boundary_attributes(const Tuple &t) = 0;
+		void map_edge_collapse_boundary_attributes(const Tuple &t);
+
+		void map_edge_collapse_edge_attributes(const Tuple &t);
+
+		void map_edge_split_edge_attributes(const Tuple &t);
+		void map_edge_split_boundary_attributes(const Tuple &t);
+		void map_edge_split_element_attributes(const Tuple &t);
 
 		// No need to map boundary attributes for edge collapse because no new boundary is created
 		// No need to map element attributes for edge collapse because no new element is created
@@ -379,12 +355,12 @@ namespace polyfem::mesh
 		/// @brief Get a reference to an edge's attributes
 		/// @param e_id edge id
 		/// @return reference to the edge's attributes
-		virtual EdgeAttributes &edge_attr(const size_t e_id) = 0;
+		EdgeAttributes &edge_attr(const size_t e_id);
 
 		/// @brief Get a const reference to an edge's attributes
 		/// @param e_id edge id
 		/// @return const reference to the edge's attributes
-		virtual const EdgeAttributes &edge_attr(const size_t e_id) const = 0;
+		const EdgeAttributes &edge_attr(const size_t e_id) const;
 
 		wmtk::AttributeCollection<VertexAttributes> vertex_attrs;
 		wmtk::AttributeCollection<BoundaryAttributes> boundary_attrs;
@@ -395,6 +371,18 @@ namespace polyfem::mesh
 		int vis_counter = 0;
 		int m_n_quantities;
 		double total_volume;
+
+		// TODO: make this thread local
+		typename std::conditional<
+			std::is_same<WMTKMesh, wmtk::TriMesh>::value,
+			std::shared_ptr<TriOperationCache>,
+			std::shared_ptr<TetOperationCache>>::type op_cache;
+
+	private:
+		wmtk::AttributeCollection<EdgeAttributes> edge_attrs; // not used for tri mesh
 	};
+
+	using WildTriRemesher = WildRemesher<wmtk::TriMesh>;
+	using WildTetRemesher = WildRemesher<wmtk::TetMesh>;
 
 } // namespace polyfem::mesh
