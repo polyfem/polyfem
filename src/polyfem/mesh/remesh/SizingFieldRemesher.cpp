@@ -3,6 +3,8 @@
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/hash_grid.hpp>
 
+#include <Eigen/Dense>
+
 namespace polyfem::mesh
 {
 	// Edge splitting
@@ -10,8 +12,7 @@ namespace polyfem::mesh
 	void SizingFieldRemesher<WMTKMesh>::split_edges()
 	{
 		Operations splits;
-		const std::unordered_map<size_t, double> edge_sizings =
-			this->compute_contact_edge_sizings();
+		const std::unordered_map<size_t, double> edge_sizings = this->compute_edge_sizings();
 		for (const Tuple &e : WMTKMesh::get_edges())
 			if (edge_sizings.at(e.eid(*this)) <= 1)
 				splits.emplace_back("edge_split", e);
@@ -31,8 +32,7 @@ namespace polyfem::mesh
 	void SizingFieldRemesher<WMTKMesh>::collapse_edges()
 	{
 		Operations collapses;
-		const std::unordered_map<size_t, double> edge_sizings =
-			this->compute_contact_edge_sizings();
+		const std::unordered_map<size_t, double> edge_sizings = this->compute_edge_sizings();
 		for (const Tuple &e : WMTKMesh::get_edges())
 			if (edge_sizings.at(e.eid(*this)) >= 0.8)
 				collapses.emplace_back("edge_collapse", e);
@@ -153,10 +153,12 @@ namespace polyfem::mesh
 
 	template <class WMTKMesh>
 	std::unordered_map<size_t, double>
-	SizingFieldRemesher<WMTKMesh>::compute_contact_edge_sizings() const
+	SizingFieldRemesher<WMTKMesh>::compute_edge_sizings() const
 	{
 		const SparseSizingField sizing_field =
-			smooth_contact_sizing_field(compute_contact_sizing_field());
+			combine_sizing_fields(
+				compute_elasticity_sizing_field(),
+				smooth_contact_sizing_field(compute_contact_sizing_field()));
 
 		std::unordered_map<size_t, double> edge_sizings;
 		for (const Tuple &e : WMTKMesh::get_edges())
@@ -180,6 +182,106 @@ namespace polyfem::mesh
 			edge_sizings[e.eid(*this)] = xij_bar.transpose() * M * xij_bar;
 		}
 		return edge_sizings;
+	}
+
+	template <class WMTKMesh>
+	typename SizingFieldRemesher<WMTKMesh>::SparseSizingField
+	SizingFieldRemesher<WMTKMesh>::compute_elasticity_sizing_field() const
+	{
+		return SparseSizingField();
+		std::unordered_map<size_t, MatrixNd> Fs, Fs_inv;
+		for (const Tuple &t : this->get_elements())
+		{
+			const auto vids = this->element_vids(t);
+			MatrixNd Dm, Ds;
+			if constexpr (std::is_same_v<WMTKMesh, wmtk::TriMesh>)
+			{
+				Dm.col(0) = vertex_attrs[vids[1]].rest_position - vertex_attrs[vids[0]].rest_position;
+				Dm.col(1) = vertex_attrs[vids[2]].rest_position - vertex_attrs[vids[0]].rest_position;
+				Ds.col(0) = vertex_attrs[vids[1]].position - vertex_attrs[vids[0]].position;
+				Ds.col(1) = vertex_attrs[vids[2]].position - vertex_attrs[vids[0]].position;
+			}
+			else
+			{
+				Dm.col(0) = vertex_attrs[vids[1]].rest_position - vertex_attrs[vids[0]].rest_position;
+				Dm.col(1) = vertex_attrs[vids[2]].rest_position - vertex_attrs[vids[0]].rest_position;
+				Dm.col(2) = vertex_attrs[vids[3]].rest_position - vertex_attrs[vids[0]].rest_position;
+				Ds.col(0) = vertex_attrs[vids[1]].position - vertex_attrs[vids[0]].position;
+				Ds.col(1) = vertex_attrs[vids[2]].position - vertex_attrs[vids[0]].position;
+				Ds.col(2) = vertex_attrs[vids[3]].position - vertex_attrs[vids[0]].position;
+			}
+			Fs[this->element_id(t)] = Ds * Dm.inverse();
+			Fs_inv[this->element_id(t)] = Dm * Ds.inverse();
+		}
+
+		const double k = 1.0;
+
+		std::unordered_map<size_t, VectorNd> element_centers;
+		for (const Tuple &t : this->get_elements())
+		{
+			VectorNd center = VectorNd::Zero();
+			const auto &vids = this->element_vids(t);
+			for (const size_t &vid : vids)
+				center += vertex_attrs[vid].rest_position;
+			element_centers[this->element_id(t)] = center / vids.size();
+		}
+
+		SparseSizingField element_sizing_field;
+		for (const Tuple &t : this->get_elements())
+		{
+			const size_t tid = this->element_id(t);
+
+			std::unordered_set<size_t> adjacent_tids;
+			for (const Tuple &v : this->element_vertices(t))
+				for (const Tuple &adj_t : this->get_one_ring_elements_for_vertex(v))
+					adjacent_tids.insert(this->element_id(adj_t));
+			adjacent_tids.erase(tid);
+
+			const VectorNd t_center = element_centers.at(tid);
+
+			MatrixNd M = MatrixNd::Zero();
+			for (const size_t adj_tid : adjacent_tids)
+			{
+				const VectorNd dt = element_centers.at(adj_tid) - t_center;
+				M += dt * (dt.transpose() / dt.squaredNorm())
+					 * std::max((Fs[tid] * Fs_inv[adj_tid]).norm(),
+								(Fs[adj_tid] * Fs_inv[tid]).norm())
+					 / dt.norm();
+			}
+			M.array() *= k / adjacent_tids.size();
+		}
+
+		SparseSizingField sizing_field;
+		for (const Tuple &t : this->get_elements())
+		{
+			const auto vids = this->element_vids(t);
+			for (const size_t vid : vids)
+			{
+				if (sizing_field.find(vid) == sizing_field.end())
+					sizing_field[vid] = MatrixNd::Zero();
+				sizing_field[vid] +=
+					element_sizing_field[this->element_id(t)] / vids.size();
+			}
+		}
+
+		return sizing_field;
+	}
+
+	template <class WMTKMesh>
+	typename SizingFieldRemesher<WMTKMesh>::SparseSizingField
+	SizingFieldRemesher<WMTKMesh>::combine_sizing_fields(
+		const SparseSizingField &field1,
+		const SparseSizingField &field2)
+	{
+		SparseSizingField field = field1;
+		for (const auto &[vid, M] : field2)
+		{
+			if (field.find(vid) == field.end())
+				field[vid] = M;
+			else
+				field[vid] = (field[vid] + M) / 2;
+		}
+		return field;
 	}
 
 	// -------------------------------------------------------------------------

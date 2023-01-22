@@ -42,10 +42,18 @@ namespace polyfem::mesh
 		void collapse_edges() override;
 
 		using SparseSizingField = std::unordered_map<size_t, MatrixNd>;
+
 		SparseSizingField compute_contact_sizing_field() const;
 		SparseSizingField smooth_contact_sizing_field(
 			const SparseSizingField &sizing_field) const;
-		std::unordered_map<size_t, double> compute_contact_edge_sizings() const;
+
+		SparseSizingField compute_elasticity_sizing_field() const;
+
+		std::unordered_map<size_t, double> compute_edge_sizings() const;
+
+		static SparseSizingField combine_sizing_fields(
+			const SparseSizingField &field1,
+			const SparseSizingField &field2);
 
 	private:
 		template <typename Candidates>
