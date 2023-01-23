@@ -1219,7 +1219,8 @@
             "acceptance_tolerance",
             "culling_threshold",
             "max_depth",
-            "rel_max_edge_length"
+            "rel_max_edge_length",
+            "abs_max_edge_length"
         ],
         "doc": "Settings for adaptive remeshing edge collapse operations"
     },
@@ -1256,6 +1257,13 @@
         "type": "float",
         "min": 0,
         "doc": "Length of maximum edge length to collapse relative to initial minimum edge length"
+    },
+    {
+        "pointer": "/space/remesh/collapse/abs_max_edge_length",
+        "default": 1e100,
+        "type": "float",
+        "min": 0,
+        "doc": "Length of maximum edge length to collapse in absolute units of distance"
     },
     {
         "pointer": "/space/remesh/swap",

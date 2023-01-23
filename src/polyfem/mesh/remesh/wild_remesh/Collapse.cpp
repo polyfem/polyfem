@@ -17,9 +17,10 @@ namespace polyfem::mesh
 	template <class WMTKMesh>
 	bool WildRemesher<WMTKMesh>::collapse_edge_before(const Tuple &t)
 	{
-		const double max_edge_length =
+		const double max_edge_length = std::min(
+			args["collapse"]["abs_max_edge_length"].get<double>(),
 			state.starting_min_edge_length
-			* args["collapse"]["rel_max_edge_length"].get<double>();
+				* args["collapse"]["rel_max_edge_length"].get<double>());
 
 		double vol_tol;
 		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
