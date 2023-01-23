@@ -128,15 +128,13 @@ namespace polyfem::mesh
 			to_bases, to_vertex_to_basis);
 
 		rest_positions = reorder_matrix(rest_positions, to_vertex_to_basis, n_to_basis);
-		append_rows(rest_positions, obstacle().v());
-		n_to_basis += obstacle().n_vertices();
-		assert(rest_positions.rows() == n_to_basis);
-		assert(rest_positions.cols() == dim());
+		elements = map_index_matrix(elements, to_vertex_to_basis);
 
 		// Interpolated values of independent variables
 		Eigen::MatrixXd to_projection_quantities = reorder_matrix(
 			projection_quantities(), to_vertex_to_basis, n_to_basis, dim());
 		append_rows(to_projection_quantities, obstacle_quantities());
+		n_to_basis += obstacle().n_vertices();
 		assert(dim() * n_to_basis == to_projection_quantities.rows());
 
 		// --------------------------------------------------------------------
@@ -170,13 +168,28 @@ namespace polyfem::mesh
 
 		ipc::CollisionMesh collision_mesh;
 		{
-			Eigen::MatrixXd V_rest = this->rest_positions();
-			utils::append_rows(V_rest, obstacle().v());
-			collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
-				V_rest, boundary_edges(), boundary_faces());
-		}
+			Eigen::MatrixXi boundary_edges, boundary_faces;
+			if (dim() == 2)
+			{
+				igl::boundary_facets(elements, boundary_edges);
+			}
+			else
+			{
+				igl::boundary_facets(elements, boundary_faces);
+				igl::edges(boundary_faces, boundary_edges);
+			}
 
-		assert(rest_positions.size() == to_projection_quantities.rows());
+			if (obstacle().n_edges() > 0)
+				utils::append_rows(boundary_edges, obstacle().e().array() + rest_positions.rows());
+			if (obstacle().n_faces() > 0)
+				utils::append_rows(boundary_faces, obstacle().f().array() + rest_positions.rows());
+
+			utils::append_rows(rest_positions, obstacle().v());
+			assert(rest_positions.size() == to_projection_quantities.rows());
+
+			collision_mesh = ipc::CollisionMesh::build_from_full_mesh(
+				rest_positions, boundary_edges, boundary_faces);
+		}
 
 		// --------------------------------------------------------------------
 

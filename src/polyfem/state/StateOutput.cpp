@@ -198,8 +198,8 @@ namespace polyfem
 			}
 		})"_json;
 		restart_json["space"]["remesh"]["collapse"]["abs_max_edge_length"] = std::min(
-			args["collapse"]["abs_max_edge_length"].get<double>(),
-			starting_min_edge_length * args["collapse"]["rel_max_edge_length"].get<double>());
+			args["space"]["remesh"]["collapse"]["abs_max_edge_length"].get<double>(),
+			starting_min_edge_length * args["space"]["remesh"]["collapse"]["rel_max_edge_length"].get<double>());
 		restart_json["space"]["remesh"]["collapse"]["rel_max_edge_length"] = std::numeric_limits<float>::max();
 
 		const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
