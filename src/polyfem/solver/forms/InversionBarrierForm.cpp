@@ -26,7 +26,9 @@ namespace polyfem::solver
 			double &local_potential = utils::get_local_thread_storage(storage, thread_id);
 			for (int i = start; i < end; i++)
 			{
-				local_potential += ipc::barrier(element_volume(V(elements_.row(i), Eigen::all)), vhat_);
+				local_potential +=
+					element_volume(rest_positions_(elements_.row(i), Eigen::all))
+					* ipc::barrier(element_volume(V(elements_.row(i), Eigen::all)), vhat_);
 			}
 		});
 
@@ -49,7 +51,8 @@ namespace polyfem::solver
 				const Eigen::MatrixXd element_vertices = V(elements_.row(i), Eigen::all);
 
 				Eigen::VectorXd local_grad =
-					ipc::barrier_gradient(element_volume(element_vertices), vhat_)
+					(element_volume(rest_positions_(elements_.row(i), Eigen::all))
+					 * ipc::barrier_gradient(element_volume(element_vertices), vhat_))
 					* element_volume_gradient(element_vertices);
 
 				ipc::local_gradient_to_global_gradient(local_grad, elements_.row(i), dim_, grad);
@@ -78,9 +81,11 @@ namespace polyfem::solver
 				const double volume = element_volume(element_vertices);
 				const Eigen::VectorXd volume_grad = element_volume_gradient(element_vertices);
 
+				const double rest_volume = element_volume(rest_positions_(elements_.row(i), Eigen::all));
+
 				const Eigen::MatrixXd local_hess =
-					ipc::barrier_hessian(volume, vhat_) * volume_grad * volume_grad.transpose()
-					+ ipc::barrier_gradient(volume, vhat_) * element_volume_hessian(element_vertices);
+					(rest_volume * ipc::barrier_hessian(volume, vhat_)) * volume_grad * volume_grad.transpose()
+					+ (rest_volume * ipc::barrier_gradient(volume, vhat_)) * element_volume_hessian(element_vertices);
 
 				ipc::local_hessian_to_global_triplets(local_hess, elements_.row(i), dim_, hess_triplets);
 			}
