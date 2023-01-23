@@ -137,7 +137,6 @@ namespace polyfem::mesh
 		Eigen::MatrixXd to_projection_quantities = reorder_matrix(
 			projection_quantities(), to_vertex_to_basis, n_to_basis, dim());
 		append_rows(to_projection_quantities, obstacle_quantities());
-		n_to_basis += obstacle().n_vertices();
 		assert(dim() * n_to_basis == to_projection_quantities.rows());
 
 		// --------------------------------------------------------------------
