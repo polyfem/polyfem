@@ -2648,6 +2648,16 @@
         "doc": "Volume selection ID"
     },
     {
+        "pointer": "/materials/*/id",
+        "type": "list",
+        "doc": "Volume selection IDs"
+    },
+    {
+        "pointer": "/materials/*/id/*",
+        "type": "int",
+        "doc": "Volume selection ID"
+    },
+    {
         "pointer": "/materials/*/E",
         "type": "float",
         "doc": "Young's modulus"

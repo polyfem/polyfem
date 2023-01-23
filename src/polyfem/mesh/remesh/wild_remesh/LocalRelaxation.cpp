@@ -204,6 +204,9 @@ namespace polyfem::mesh
 		std::unordered_set<int> bc_ids;
 		for (const json &bc : bcs)
 		{
+			if (!bc.is_object())
+				log_and_throw_error("Boundary condition is not an object");
+			assert(bc.contains("id") && bc["id"].is_number_integer());
 			bc_ids.insert(bc["id"].get<int>());
 
 #ifndef NDEBUG
