@@ -116,6 +116,10 @@ namespace polyfem::mesh
 		virtual Eigen::MatrixXi edges() const = 0;
 		/// @brief Exports elements of the stored mesh
 		virtual Eigen::MatrixXi elements() const = 0;
+		/// @brief Exports boundary edges of the stored mesh
+		virtual Eigen::MatrixXi boundary_edges() const = 0;
+		/// @brief Exports boundary faces of the stored mesh
+		virtual Eigen::MatrixXi boundary_faces() const = 0;
 		/// @brief Exports projected quantities of the stored mesh
 		virtual Eigen::MatrixXd projection_quantities() const = 0;
 		/// @brief Exports boundary ids of the stored mesh

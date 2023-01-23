@@ -167,7 +167,7 @@ namespace polyfem::solver
 		for (size_t i = 0; i < elements_.rows(); ++i)
 		{
 			// TODO: use exact predicate for this
-			if (element_volume(V(elements_.row(i), Eigen::all)) < 0)
+			if (element_volume(V(elements_.row(i), Eigen::all)) <= 0)
 			{
 				return false;
 			}

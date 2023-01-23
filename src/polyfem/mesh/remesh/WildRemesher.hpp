@@ -145,9 +145,9 @@ namespace polyfem::mesh
 		/// @brief Exports elements of the stored mesh
 		Eigen::MatrixXi elements() const override;
 		/// @brief Exports boundary edges of the stored mesh
-		Eigen::MatrixXi boundary_edges() const;
+		Eigen::MatrixXi boundary_edges() const override;
 		/// @brief Exports boundary faces of the stored mesh
-		Eigen::MatrixXi boundary_faces() const;
+		Eigen::MatrixXi boundary_faces() const override;
 		/// @brief Exports projected quantities of the stored mesh
 		Eigen::MatrixXd projection_quantities() const override;
 		/// @brief Exports boundary ids of the stored mesh
