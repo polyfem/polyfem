@@ -81,6 +81,19 @@ namespace polyfem::mesh
 				if (edge_sizings.at(e.eid(*this)) > 0.8)
 					return false;
 		}
+		else
+		{
+			const std::unordered_map<size_t, double> edge_sizings = this->compute_edge_sizings();
+			for (const Tuple &tet : WMTKMesh::get_one_ring_tets_for_vertex(t))
+			{
+				for (int i = 0; i < 6; ++i)
+				{
+					const Tuple e = WMTKMesh::tuple_from_edge(tet.tid(*this), i);
+					if (edge_sizings.at(e.eid(*this)) > 0.8)
+						return false;
+				}
+			}
+		}
 
 		return true;
 	}
