@@ -392,7 +392,15 @@ namespace polyfem::mesh
 	// Utils
 
 	template <class WMTKMesh>
-	double WildRemesher<WMTKMesh>::edge_length(const Tuple &e) const
+	double WildRemesher<WMTKMesh>::rest_edge_length(const Tuple &e) const
+	{
+		const auto &e0 = vertex_attrs[e.vid(*this)].rest_position;
+		const auto &e1 = vertex_attrs[e.switch_vertex(*this).vid(*this)].rest_position;
+		return (e1 - e0).norm();
+	}
+
+	template <class WMTKMesh>
+	double WildRemesher<WMTKMesh>::deformed_edge_length(const Tuple &e) const
 	{
 		const auto &e0 = vertex_attrs[e.vid(*this)].position;
 		const auto &e1 = vertex_attrs[e.switch_vertex(*this).vid(*this)].position;
@@ -401,7 +409,16 @@ namespace polyfem::mesh
 
 	template <class WMTKMesh>
 	typename WildRemesher<WMTKMesh>::VectorNd
-	WildRemesher<WMTKMesh>::edge_center(const Tuple &e) const
+	WildRemesher<WMTKMesh>::rest_edge_center(const Tuple &e) const
+	{
+		const VectorNd &e0 = vertex_attrs[e.vid(*this)].rest_position;
+		const VectorNd &e1 = vertex_attrs[e.switch_vertex(*this).vid(*this)].rest_position;
+		return (e1 + e0) / 2.0;
+	}
+
+	template <class WMTKMesh>
+	typename WildRemesher<WMTKMesh>::VectorNd
+	WildRemesher<WMTKMesh>::deformed_edge_center(const Tuple &e) const
 	{
 		const VectorNd &e0 = vertex_attrs[e.vid(*this)].position;
 		const VectorNd &e1 = vertex_attrs[e.switch_vertex(*this).vid(*this)].position;

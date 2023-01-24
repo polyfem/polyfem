@@ -143,6 +143,7 @@ namespace polyfem::mesh
 						state, utils::unflatten(obstacle_sol, dim), obstacle_projection_quantities,
 						time, current_energy);
 			}
+			assert(remeshing != nullptr);
 			return remeshing;
 		}
 	} // namespace

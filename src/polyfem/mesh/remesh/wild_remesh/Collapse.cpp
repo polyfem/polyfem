@@ -30,7 +30,7 @@ namespace polyfem::mesh
 
 		// Dont collapse if the edge is large
 		if (edge_adjacent_element_volumes(t).minCoeff() > vol_tol
-			&& edge_length(t) > max_edge_length)
+			|| rest_edge_length(t) > max_edge_length)
 		{
 			executor.m_cnt_fail--; // do not count this as a failed collapse
 			return false;
@@ -114,6 +114,17 @@ namespace polyfem::mesh
 
 		// 1a) Update rest position of new vertex
 		map_edge_collapse_vertex_attributes(t);
+
+		if (state.is_contact_enabled() && is_boundary_vertex(t))
+		{
+			const double dhat = state.args["contact"]["dhat"].get<double>();
+
+			for (const Tuple &e : get_one_ring_boundary_edges_for_vertex(t))
+			{
+				if (rest_edge_length(e) < dhat)
+					return false; // produced too small edge
+			}
+		}
 
 		// 1b) Assign edge attributes to the new edges
 		map_edge_collapse_boundary_attributes(t);
@@ -218,7 +229,7 @@ namespace polyfem::mesh
 			collapses.emplace_back("edge_collapse", e);
 
 		executor.priority = [](const WildRemesher<WMTKMesh> &m, std::string op, const Tuple &t) -> double {
-			return -m.edge_length(t);
+			return -m.rest_edge_length(t);
 			// return -m.edge_elastic_energy(t); // invert the energy to get a reverse ordering
 		};
 

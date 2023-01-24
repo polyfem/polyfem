@@ -13,9 +13,16 @@ namespace polyfem::mesh
 	{
 		Operations splits;
 		const std::unordered_map<size_t, double> edge_sizings = this->compute_edge_sizings();
+		double min = std::numeric_limits<double>::max();
+		double max = std::numeric_limits<double>::min();
 		for (const Tuple &e : WMTKMesh::get_edges())
-			if (edge_sizings.at(e.eid(*this)) <= 1)
+		{
+			min = std::min(min, edge_sizings.at(e.eid(*this)));
+			max = std::max(max, edge_sizings.at(e.eid(*this)));
+			if (edge_sizings.at(e.eid(*this)) >= 1)
 				splits.emplace_back("edge_split", e);
+		}
+		logger().debug("min sij: {}, max sij: {}", min, max);
 
 		if (splits.empty())
 			return;
@@ -34,17 +41,48 @@ namespace polyfem::mesh
 		Operations collapses;
 		const std::unordered_map<size_t, double> edge_sizings = this->compute_edge_sizings();
 		for (const Tuple &e : WMTKMesh::get_edges())
-			if (edge_sizings.at(e.eid(*this)) >= 0.8)
+			if (edge_sizings.at(e.eid(*this)) <= 0.8)
 				collapses.emplace_back("edge_collapse", e);
 
 		if (collapses.empty())
 			return;
 
 		executor.priority = [&](const WildRemesher<WMTKMesh> &m, std::string op, const Tuple &t) -> double {
-			return edge_sizings.at(t.eid(m));
+			// return -edge_sizings.at(t.eid(m));
+			return -m.rest_edge_length(t);
 		};
 
 		executor(*this, collapses);
+	}
+
+	template <class WMTKMesh>
+	bool SizingFieldRemesher<WMTKMesh>::split_edge_before(const Tuple &t)
+	{
+		if (!Super::split_edge_before(t))
+			return false;
+
+		// NOTE: this is a hack to avoid splitting edges that are too short
+		if (this->rest_edge_length(t) < 0.01)
+			return false;
+
+		return true;
+	}
+
+	template <class WMTKMesh>
+	bool SizingFieldRemesher<WMTKMesh>::collapse_edge_after(const Tuple &t)
+	{
+		if (!Super::collapse_edge_after(t))
+			return false;
+
+		if constexpr (Super::DIM == 2)
+		{
+			const std::unordered_map<size_t, double> edge_sizings = this->compute_edge_sizings();
+			for (const Tuple &e : WMTKMesh::get_one_ring_edges_for_vertex(t))
+				if (edge_sizings.at(e.eid(*this)) > 0.8)
+					return false;
+		}
+
+		return true;
 	}
 
 	template <typename WMTKMesh>
@@ -68,6 +106,11 @@ namespace polyfem::mesh
 			const long vi = candidate.vertex_index;
 			if (vi > V.rows() - this->obstacle().n_vertices())
 				continue;
+			// const auto vertices = candidate.vertex_indices(E, F);
+			// if (std::all_of(vertices.begin(), vertices.end(), [&](long idx) { return idx < V.rows() - this->obstacle().n_vertices(); }))
+			// {
+			// 	continue;
+			// }
 			const double distance_sqr = candidate.compute_distance(V, E, F);
 			const double rest_distance_sqr = candidate.compute_distance(V_rest, E, F);
 			if (distance_sqr / rest_distance_sqr < 0.1
@@ -125,6 +168,7 @@ namespace polyfem::mesh
 				candidates.fv_candidates, collision_mesh, V, dhat);
 		}
 	}
+
 	template <class WMTKMesh>
 	typename SizingFieldRemesher<WMTKMesh>::SparseSizingField
 	SizingFieldRemesher<WMTKMesh>::smooth_contact_sizing_field(
@@ -139,12 +183,18 @@ namespace polyfem::mesh
 				if (sizing_field.find(vid) != sizing_field.end())
 					M += sizing_field.at(vid);
 			M /= vids.size(); // average
-			M /= vids.size(); // smooth (re-distibute)
-			for (const size_t vid : vids)
+
+			std::vector<Tuple> edges;
+			if constexpr (Super::DIM == 2)
+				edges.push_back(f);
+			else
+				edges = {{f, f.switch_edge(*this), f.switch_vertex(*this).switch_edge(*this)}};
+
+			for (const Tuple &e : edges)
 			{
-				if (smoothed_sizing_field.find(vid) == smoothed_sizing_field.end())
-					smoothed_sizing_field[vid] = MatrixNd::Zero();
-				smoothed_sizing_field[vid] += M;
+				if (sizing_field.find(e.eid(*this)) == sizing_field.end())
+					smoothed_sizing_field[e.eid(*this)] = MatrixNd::Zero();
+				smoothed_sizing_field[e.eid(*this)] += M / edges.size();
 			}
 		}
 
@@ -171,15 +221,9 @@ namespace polyfem::mesh
 
 			const VectorNd xij_bar = xj_bar - xi_bar;
 
-			auto iter = sizing_field.find(vids[0]);
-			const MatrixNd Mi = iter != sizing_field.end() ? iter->second : MatrixNd::Zero();
+			const MatrixNd M = sizing_field.at(e.eid(*this));
 
-			iter = sizing_field.find(vids[1]);
-			const MatrixNd Mj = iter != sizing_field.end() ? iter->second : MatrixNd::Zero();
-
-			const MatrixNd M = (Mi + Mj) / 2;
-
-			edge_sizings[e.eid(*this)] = xij_bar.transpose() * M * xij_bar;
+			edge_sizings[e.eid(*this)] = sqrt(xij_bar.transpose() * M * xij_bar);
 		}
 		return edge_sizings;
 	}
@@ -188,7 +232,6 @@ namespace polyfem::mesh
 	typename SizingFieldRemesher<WMTKMesh>::SparseSizingField
 	SizingFieldRemesher<WMTKMesh>::compute_elasticity_sizing_field() const
 	{
-		return SparseSizingField();
 		std::unordered_map<size_t, MatrixNd> Fs, Fs_inv;
 		for (const Tuple &t : this->get_elements())
 		{
@@ -231,37 +274,41 @@ namespace polyfem::mesh
 		{
 			const size_t tid = this->element_id(t);
 
-			std::unordered_set<size_t> adjacent_tids;
-			for (const Tuple &v : this->element_vertices(t))
-				for (const Tuple &adj_t : this->get_one_ring_elements_for_vertex(v))
-					adjacent_tids.insert(this->element_id(adj_t));
-			adjacent_tids.erase(tid);
+			// std::unordered_set<size_t> adjacent_tids;
+			// for (const Tuple &v : this->element_vertices(t))
+			// 	for (const Tuple &adj_t : this->get_one_ring_elements_for_vertex(v))
+			// 		adjacent_tids.insert(this->element_id(adj_t));
+			// adjacent_tids.erase(tid);
 
-			const VectorNd t_center = element_centers.at(tid);
+			// const VectorNd &t_center = element_centers.at(tid);
 
-			MatrixNd M = MatrixNd::Zero();
-			for (const size_t adj_tid : adjacent_tids)
-			{
-				const VectorNd dt = element_centers.at(adj_tid) - t_center;
-				M += dt * (dt.transpose() / dt.squaredNorm())
-					 * std::max((Fs[tid] * Fs_inv[adj_tid]).norm(),
-								(Fs[adj_tid] * Fs_inv[tid]).norm())
-					 / dt.norm();
-			}
-			M.array() *= k / adjacent_tids.size();
+			// MatrixNd M = MatrixNd::Zero();
+			// for (const size_t adj_tid : adjacent_tids)
+			// {
+			// 	const VectorNd dt = element_centers.at(adj_tid) - t_center;
+			// 	M += dt * (dt.transpose() / dt.squaredNorm())
+			// 		 * std::max((Fs[tid] * Fs_inv[adj_tid]).norm(),
+			// 					(Fs[adj_tid] * Fs_inv[tid]).norm())
+			// 		 / dt.norm();
+			// }
+			// M.array() *= k / adjacent_tids.size();
+
+			element_sizing_field[tid] = Fs[tid].transpose() * Fs[tid];
 		}
+		assert(!element_sizing_field.empty());
 
 		SparseSizingField sizing_field;
-		for (const Tuple &t : this->get_elements())
+		for (const Tuple &e : this->get_edges())
 		{
-			const auto vids = this->element_vids(t);
-			for (const size_t vid : vids)
+			const size_t eid = e.eid(*this);
+			const auto &incident_elements = this->get_incident_elements_for_edge(e);
+			for (const Tuple &t : incident_elements)
 			{
-				if (sizing_field.find(vid) == sizing_field.end())
-					sizing_field[vid] = MatrixNd::Zero();
-				sizing_field[vid] +=
-					element_sizing_field[this->element_id(t)] / vids.size();
+				if (sizing_field.find(eid) == sizing_field.end())
+					sizing_field[eid] = MatrixNd::Zero();
+				sizing_field[eid] += element_sizing_field[this->element_id(t)];
 			}
+			sizing_field[eid] /= incident_elements.size() * std::pow(state.starting_max_edge_length, 2);
 		}
 
 		return sizing_field;
@@ -274,12 +321,12 @@ namespace polyfem::mesh
 		const SparseSizingField &field2)
 	{
 		SparseSizingField field = field1;
-		for (const auto &[vid, M] : field2)
+		for (const auto &[eid, M] : field2)
 		{
-			if (field.find(vid) == field.end())
-				field[vid] = M;
+			if (field.find(eid) == field.end())
+				field[eid] = M;
 			else
-				field[vid] = (field[vid] + M) / 2;
+				field[eid] = (field[eid] + M) / 2;
 		}
 		return field;
 	}

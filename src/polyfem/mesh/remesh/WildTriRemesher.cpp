@@ -207,6 +207,16 @@ namespace polyfem::mesh
 	}
 
 	template <>
+	std::vector<Tuple> WildTriRemesher::get_one_ring_boundary_edges_for_vertex(const Tuple &v) const
+	{
+		std::vector<Tuple> edges;
+		for (const auto &e : get_one_ring_edges_for_vertex(v))
+			if (is_boundary_edge(e))
+				edges.push_back(e);
+		return edges;
+	}
+
+	template <>
 	std::vector<Tuple> WildTriRemesher::get_incident_elements_for_edge(const Tuple &t) const
 	{
 		std::vector<Tuple> tris{{t}};

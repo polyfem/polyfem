@@ -16,9 +16,9 @@ namespace polyfem::mesh
 		// Dont split if the edge is too small
 		double min_edge_length = args["split"]["min_edge_length"];
 		if (is_boundary_facet(e) && state.is_contact_enabled())
-			min_edge_length = std::max(min_edge_length, 2.01 * state.args["contact"]["dhat"].get<double>());
+			min_edge_length = std::max(min_edge_length, 2.0 * state.args["contact"]["dhat"].get<double>());
 
-		if (edge_length(e) < min_edge_length)
+		if (rest_edge_length(e) < min_edge_length)
 		{
 			executor.m_cnt_fail--; // do not count this as a failed split
 			return false;
@@ -87,6 +87,17 @@ namespace polyfem::mesh
 		new_vertex_attr.fixed = v0.fixed && v1.fixed;
 		new_vertex_attr.partition_id = v0.partition_id; // TODO: what should this be?
 
+		if (state.is_contact_enabled() && is_boundary_vertex(new_vertex))
+		{
+			const double dhat = state.args["contact"]["dhat"].get<double>();
+
+			for (const Tuple &e : get_one_ring_boundary_edges_for_vertex(new_vertex))
+			{
+				if (rest_edge_length(e) < dhat)
+					return false; // produced too small edge
+			}
+		}
+
 		// 1b) Assign edge attributes to the new edges
 		map_edge_split_edge_attributes(new_vertex);
 		map_edge_split_boundary_attributes(new_vertex);
@@ -143,7 +154,6 @@ namespace polyfem::mesh
 			splits.emplace_back("edge_split", e);
 
 		executor.priority = [&](const WildRemesher<WMTKMesh> &, std::string op, const Tuple &t) -> double {
-			// return m.edge_length(t);
 			return this->edge_elastic_energy(t);
 		};
 

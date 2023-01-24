@@ -185,10 +185,12 @@ namespace polyfem::mesh
 		// utilities
 	public:
 		/// @brief Compute the length of an edge.
-		double edge_length(const Tuple &e) const;
+		double rest_edge_length(const Tuple &e) const;
+		double deformed_edge_length(const Tuple &e) const;
 
 		/// @brief Compute the center of the edge.
-		VectorNd edge_center(const Tuple &e) const;
+		VectorNd rest_edge_center(const Tuple &e) const;
+		VectorNd deformed_edge_center(const Tuple &e) const;
 
 		Eigen::VectorXd edge_adjacent_element_volumes(const Tuple &e) const;
 

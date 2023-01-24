@@ -37,9 +37,11 @@ namespace polyfem::mesh
 
 		// Edge splitting
 		void split_edges() override;
+		bool split_edge_before(const Tuple &t) override;
 
 		// Edge collapse
 		void collapse_edges() override;
+		bool collapse_edge_after(const Tuple &t) override;
 
 		using SparseSizingField = std::unordered_map<size_t, MatrixNd>;
 

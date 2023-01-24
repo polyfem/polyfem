@@ -495,6 +495,7 @@ namespace polyfem
 		/// Other statistics
 		io::OutStatsData stats;
 		double starting_min_edge_length = -1;
+		double starting_max_edge_length = -1;
 
 		/// saves all data on the disk according to the input params
 		/// @param[in] sol solution

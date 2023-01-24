@@ -867,6 +867,10 @@ namespace polyfem
 		{
 			starting_min_edge_length = stats.min_edge_length;
 		}
+		if (starting_max_edge_length < 0)
+		{
+			starting_max_edge_length = stats.mesh_size;
+		}
 
 		if (is_contact_enabled())
 		{
