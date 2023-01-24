@@ -10,7 +10,7 @@ namespace polyfem
 	public:
 
 		ControlConstraints(const json &constraint_params, const int time_steps, const int dim, const std::vector<int> &boundary_ids_list, const std::map<int, int> &boundary_id_to_reduced_dim, const Eigen::VectorXd &boundary_nodes_rest)
-			: Constraints(constraint_params, boundary_ids_list_.size(), 0), time_steps_(time_steps), dim_(dim), boundary_ids_list_(boundary_ids_list), boundary_id_to_reduced_dim_(boundary_id_to_reduced_dim), boundary_nodes_rest_(boundary_nodes_rest)
+			: Constraints(constraint_params, boundary_ids_list.size(), 0), time_steps_(time_steps), dim_(dim), boundary_ids_list_(boundary_ids_list), boundary_id_to_reduced_dim_(boundary_id_to_reduced_dim), boundary_nodes_rest_(boundary_nodes_rest)
 		{
 			std::string restriction = constraint_params["restriction"];
 
