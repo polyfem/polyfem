@@ -19,8 +19,11 @@ namespace polyfem
 
 		Eigen::VectorXd initial_guess() const override
 		{
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			states_ptr_[0]->get_vf(V, F);
 			Eigen::VectorXd reduced;
-			shape_constraints_->full_to_reduced(V_rest, reduced);
+			shape_constraints_->full_to_reduced(V, reduced);
 			return reduced;
 		}
 
@@ -28,8 +31,6 @@ namespace polyfem
 		Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const override;
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
-		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
-		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 
 		void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		void line_search_end() override;
@@ -43,9 +44,7 @@ namespace polyfem
 		void build_tied_nodes(); // not applied to shape constraints
 
 		std::vector<int> get_constrained_nodes() const;
-		inline Eigen::MatrixXd get_V_rest() { return V_rest; }
-		inline Eigen::MatrixXi get_F() { return elements; }
-		inline void set_V_rest(const Eigen::MatrixXd &V_new) { V_rest = V_new; }
+		inline void get_updated_nodes(const Eigen::VectorXd &x, const Eigen::MatrixXd &new_V_rest, Eigen::MatrixXd &V) const { return shape_constraints_->reduced_to_full(x, new_V_rest, V); }
 
 		static bool internal_smoothing(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const std::vector<int> &boundary_indices, const Eigen::MatrixXd &boundary_constraints, const json &slim_params, Eigen::MatrixXd &smooth_field);
 		static bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F);
@@ -58,8 +57,6 @@ namespace polyfem
 		int iter = 0;
 		int dim;
 
-		Eigen::MatrixXd V_rest;
-		Eigen::MatrixXi elements;
 
 		std::vector<bool> active_nodes_mask;
 		std::vector<bool> free_dimension; // not applied to shape constraints

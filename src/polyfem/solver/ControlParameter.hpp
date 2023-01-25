@@ -22,7 +22,6 @@ namespace polyfem
 		}
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
-		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override { return true; };
 
 		bool remesh(Eigen::VectorXd &x) override { return false; };
 

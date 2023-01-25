@@ -36,7 +36,7 @@ namespace polyfem::solver
 			adjoints.reserve(all_states_.size());
 			{
 				POLYFEM_SCOPED_TIMER("adjoint solve", adjoint_solve_time);
-				for (auto &state_ptr : all_states_)
+				for (auto state_ptr : all_states_)
 					adjoints.push_back(state_ptr->solve_adjoint(obj_->compute_adjoint_rhs(*state_ptr)));
 			}
 
@@ -75,7 +75,7 @@ namespace polyfem::solver
 			std::vector<int> slim_constrained_nodes;
 			Eigen::MatrixXd V_rest;
 			Eigen::MatrixXi F;
-			for (auto p : parameters_)
+			for (const auto &p : parameters_)
 				if (p->contains_state(*state_ptr))
 				{
 					if (p->name() == "shape")
@@ -84,9 +84,7 @@ namespace polyfem::solver
 						auto parameter_constrained_nodes = shape_param->get_constrained_nodes();
 						slim_constrained_nodes.insert(slim_constrained_nodes.end(), parameter_constrained_nodes.begin(), parameter_constrained_nodes.end());
 						if (V_rest.size() == 0)
-							V_rest = shape_param->get_V_rest();
-						if (F.size() == 0)
-							F = shape_param->get_F();
+							state_ptr->get_vf(V_rest, F);
 					}
 				}
 
@@ -104,7 +102,7 @@ namespace polyfem::solver
 				Eigen::MatrixXd V = V_rest;
 				int cumulative = 0;
 				std::vector<int> slim_constrained_nodes;
-				for (auto p : parameters_)
+				for (const auto &p : parameters_)
 				{
 					if (p->contains_state(*state_ptr))
 					{
@@ -148,14 +146,8 @@ namespace polyfem::solver
 
 			logger().debug("SLIM succeeds with step size {}", rate);
 
-			for (auto p : parameters_)
-				if (p->contains_state(*state_ptr))
-					if (p->name() == "shape")
-					{
-						auto shape_param = std::dynamic_pointer_cast<ShapeParameter>(p);
-						shape_param->set_V_rest(new_V);
-					}
-
+			state_ptr->set_mesh_vertices(new_V);
+			state_ptr->build_basis();
 			flag = true;
 		}
 		smoothed_x = new_x;
@@ -192,47 +184,22 @@ namespace polyfem::solver
 
 	bool AdjointNLProblem::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		int cumulative = 0;
-		bool is_valid = true;
-		for (const auto &p : parameters_)
-		{
-			is_valid &= p->is_step_collision_free(x0.segment(cumulative, p->optimization_dim()), x1.segment(cumulative, p->optimization_dim()));
-			cumulative += p->optimization_dim();
-		}
-		return is_valid;
+		return obj_->is_step_collision_free(x0, x1);
 	}
 
 	double AdjointNLProblem::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		double step = 1;
-		int cumulative = 0;
-		for (const auto &p : parameters_)
-		{
-			step = std::min(step, p->max_step_size(x0.segment(cumulative, p->optimization_dim()), x1.segment(cumulative, p->optimization_dim())));
-			cumulative += p->optimization_dim();
-		}
-		return step;
+		return obj_->max_step_size(x0, x1);
 	}
 
 	void AdjointNLProblem::line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
-		int cumulative = 0;
-		for (const auto &p : parameters_)
-		{
-			p->line_search_begin(x0.segment(cumulative, p->optimization_dim()), x1.segment(cumulative, p->optimization_dim()));
-			cumulative += p->optimization_dim();
-		}
+		obj_->line_search_begin(x0, x1);
 	}
 
 	void AdjointNLProblem::line_search_end()
 	{
-
-		int cumulative = 0;
-		for (const auto &p : parameters_)
-		{
-			p->line_search_end();
-			cumulative += p->optimization_dim();
-		}
+		return obj_->line_search_end();
 	}
 
 	void AdjointNLProblem::post_step(const int iter_num, const Eigen::VectorXd &x)
@@ -248,7 +215,7 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::save_to_file(const Eigen::VectorXd &x0)
 	{
-		logger().info("Iter {}", iter);
+		logger().info("Saving iter {}", iter);
 		int id = 0;
 		if (iter % save_freq != 0)
 			return;
@@ -256,7 +223,7 @@ namespace polyfem::solver
 		{
 			bool save_vtu = false;
 			bool save_rest_mesh = false;
-			for (const auto p : parameters_)
+			for (const auto &p : parameters_)
 				if (p->contains_state(*state))
 				{
 					save_vtu = true;
@@ -397,6 +364,8 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::solution_changed(const Eigen::VectorXd &newX)
 	{
+		// if (cur_x.size() > 0 && abs((newX - cur_x).norm()) < 1e-12)
+		// 	return;
 		// update to new parameter and check if the new parameter is valid to solve
 		bool solve = true;
 		int cumulative = 0;

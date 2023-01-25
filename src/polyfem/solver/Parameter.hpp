@@ -38,14 +38,20 @@ namespace polyfem
 		virtual Eigen::VectorXd map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const { return full_grad; }
 
 		virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
-		virtual bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
-		virtual double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return 1; }
 
 		virtual void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) {}
 		virtual void line_search_end() {}
 		virtual void post_step(const int iter_num, const Eigen::VectorXd &x0) {}
 
 		inline virtual void set_optimization_dim(const int optimization_dim) final { optimization_dim_ = optimization_dim; }
+		inline virtual void set_optimization_variable_position(const int optimization_variable_position) final
+		{
+			optimization_variable_position_ = optimization_variable_position;
+		}
+		inline virtual Eigen::VectorXd get_optimization_variable_part(const Eigen::VectorXd &reduced) const
+		{
+			return reduced.segment(optimization_variable_position_, optimization_dim_);
+		}
 		inline virtual int full_dim() const // dim before projection
 		{
 			return full_dim_;
@@ -93,6 +99,7 @@ namespace polyfem
 		std::vector<std::shared_ptr<State>> states_ptr_;
 		int optimization_dim_;
 		int full_dim_ = 0;
+		int optimization_variable_position_ = 0;
 		std::string parameter_name_;
 		double max_change_;
 	};

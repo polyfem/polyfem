@@ -130,10 +130,10 @@ namespace polyfem::solver
 		double max_step;
 		if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU)
 			max_step = ipc::compute_collision_free_stepsize(
-				candidates_, collision_mesh_, V0, V1, ccd_tolerance_, ccd_max_iterations_);
+				candidates_, collision_mesh_, V0, V1, /*min_distance=*/0.0, ccd_tolerance_, ccd_max_iterations_);
 		else
 			max_step = ipc::compute_collision_free_stepsize(
-				collision_mesh_, V0, V1, broad_phase_method_, ccd_tolerance_, ccd_max_iterations_);
+				collision_mesh_, V0, V1, broad_phase_method_, /*min_distance=*/0.0, ccd_tolerance_, ccd_max_iterations_);
 
 #ifndef NDEBUG
 		// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
@@ -225,13 +225,16 @@ namespace polyfem::solver
 				candidates_, collision_mesh_,
 				displaced0,
 				displaced1,
+				/*min_distance=*/0.0,
 				ccd_tolerance_, ccd_max_iterations_);
 		else
 			is_valid = ipc::is_step_collision_free(
 				collision_mesh_,
 				displaced0,
 				displaced1,
-				broad_phase_method_, ccd_tolerance_, ccd_max_iterations_);
+				broad_phase_method_,
+				/*min_distance=*/0.0,
+				ccd_tolerance_, ccd_max_iterations_);
 
 		return is_valid;
 	}

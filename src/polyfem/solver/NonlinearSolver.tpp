@@ -222,10 +222,7 @@ namespace cppoptlib
 			x = old_x + rate * delta_x;
 			TVector smoothed_x;
 			if (objFunc.smoothing(old_x, x, smoothed_x))
-			{
-				objFunc.solution_changed(smoothed_x);
 				x = smoothed_x;
-			}
 
 			this->m_current.xDelta = (x - old_x).array().abs().maxCoeff();
 

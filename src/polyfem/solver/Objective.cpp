@@ -1374,6 +1374,60 @@ namespace polyfem::solver
 			return Eigen::VectorXd::Zero(param.optimization_dim());
 	}
 
+	bool CollisionBarrierObjective::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
+	{
+		const auto &state = shape_param_->get_state();
+		Eigen::MatrixXd V_rest;
+		Eigen::MatrixXi F;
+		state.get_vf(V_rest, F);
+		auto cast_shape_param = std::dynamic_pointer_cast<const ShapeParameter>(shape_param_);
+		Eigen::MatrixXd V0, V1;
+		cast_shape_param->get_updated_nodes(cast_shape_param->get_optimization_variable_part(x0), V_rest, V0);
+		cast_shape_param->get_updated_nodes(cast_shape_param->get_optimization_variable_part(x1), V_rest, V1);
+
+		// Skip CCD if the displacement is zero.
+		if ((V1 - V0).lpNorm<Eigen::Infinity>() == 0.0)
+			return true;
+
+		bool is_valid;
+		is_valid = ipc::is_step_collision_free(
+			collision_mesh_,
+			collision_mesh_.vertices(V0),
+			collision_mesh_.vertices(V1),
+			broad_phase_method, 0, 1e-6, 1000000);
+
+		return is_valid;
+	}
+
+	double CollisionBarrierObjective::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
+	{
+		const auto &state = shape_param_->get_state();
+		Eigen::MatrixXd V_rest;
+		Eigen::MatrixXi F;
+		state.get_vf(V_rest, F);
+		auto cast_shape_param = std::dynamic_pointer_cast<const ShapeParameter>(shape_param_);
+		Eigen::MatrixXd V0, V1;
+		cast_shape_param->get_updated_nodes(cast_shape_param->get_optimization_variable_part(x0), V_rest, V0);
+		cast_shape_param->get_updated_nodes(cast_shape_param->get_optimization_variable_part(x1), V_rest, V1);
+
+		double max_step = 1;
+		assert(!ShapeParameter::is_flipped(V0, F));
+		while (ShapeParameter::is_flipped(V0 + max_step * (V1 - V0), F))
+			max_step /= 2.;
+
+		// Extract surface only
+		V0 = collision_mesh_.vertices(V0);
+		V1 = collision_mesh_.vertices(V1);
+
+		auto Vmid = V0 + max_step * (V1 - V0);
+		max_step *= ipc::compute_collision_free_stepsize(
+			collision_mesh_, V0, Vmid,
+			broad_phase_method, 0, 1e-6, 1000000);
+		// polyfem::logger().trace("best step {}", max_step);
+
+		return max_step;
+	}
+
 	ControlSmoothingObjective::ControlSmoothingObjective(const std::shared_ptr<const Parameter> control_param, const json &args) : control_param_(control_param)
 	{
 		if (!control_param_)
@@ -1615,6 +1669,80 @@ namespace polyfem::solver
 		}
 		else
 			return Eigen::VectorXd::Zero(param.optimization_dim());
+	}
+
+	bool LayerThicknessObjective::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
+	{
+		const auto &state = shape_param_->get_state();
+		Eigen::MatrixXd V_rest;
+		Eigen::MatrixXi F;
+		state.get_vf(V_rest, F);
+		auto cast_shape_param = std::dynamic_pointer_cast<const ShapeParameter>(shape_param_);
+		Eigen::MatrixXd V0, V1;
+		cast_shape_param->get_updated_nodes(cast_shape_param->get_optimization_variable_part(x0), V_rest, V0);
+		cast_shape_param->get_updated_nodes(cast_shape_param->get_optimization_variable_part(x1), V_rest, V1);
+
+		if (adjacent_shape_param_)
+		{
+			auto cast_adjacent_shape_param = std::dynamic_pointer_cast<const ShapeParameter>(adjacent_shape_param_);
+			Eigen::MatrixXd tmp_V0, tmp_V1;
+			cast_adjacent_shape_param->get_updated_nodes(cast_adjacent_shape_param->get_optimization_variable_part(x0), V0, tmp_V0);
+			cast_adjacent_shape_param->get_updated_nodes(cast_adjacent_shape_param->get_optimization_variable_part(x1), V1, tmp_V1);
+			V0 = tmp_V0;
+			V1 = tmp_V1;
+		}
+
+		// Skip CCD if the displacement is zero.
+		if ((V1 - V0).lpNorm<Eigen::Infinity>() == 0.0)
+			return true;
+
+		bool is_valid;
+		is_valid = ipc::is_step_collision_free(
+			collision_mesh_,
+			extract_boundaries(V0, boundary_node_ids_),
+			extract_boundaries(V1, boundary_node_ids_),
+			broad_phase_method, dmin);
+
+		return is_valid;
+	}
+
+	double LayerThicknessObjective::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
+	{
+		const auto &state = shape_param_->get_state();
+		Eigen::MatrixXd V_rest;
+		Eigen::MatrixXi F;
+		state.get_vf(V_rest, F);
+		auto cast_shape_param = std::dynamic_pointer_cast<const ShapeParameter>(shape_param_);
+		Eigen::MatrixXd V0, V1;
+		cast_shape_param->get_updated_nodes(cast_shape_param->get_optimization_variable_part(x0), V_rest, V0);
+		cast_shape_param->get_updated_nodes(cast_shape_param->get_optimization_variable_part(x1), V_rest, V1);
+
+		if (adjacent_shape_param_)
+		{
+			auto cast_adjacent_shape_param = std::dynamic_pointer_cast<const ShapeParameter>(adjacent_shape_param_);
+			Eigen::MatrixXd tmp_V0, tmp_V1;
+			cast_adjacent_shape_param->get_updated_nodes(cast_adjacent_shape_param->get_optimization_variable_part(x0), V0, tmp_V0);
+			cast_adjacent_shape_param->get_updated_nodes(cast_adjacent_shape_param->get_optimization_variable_part(x1), V1, tmp_V1);
+			V0 = tmp_V0;
+			V1 = tmp_V1;
+		}
+
+		double max_step = 1;
+		assert(!ShapeParameter::is_flipped(V0, F));
+		while (ShapeParameter::is_flipped(V0 + max_step * (V1 - V0), F))
+			max_step /= 2.;
+
+		// Extract surface only
+		V0 = extract_boundaries(V0, boundary_node_ids_);
+		V1 = extract_boundaries(V1, boundary_node_ids_);
+
+		auto Vmid = V0 + max_step * (V1 - V0);
+		max_step *= ipc::compute_collision_free_stepsize(
+			collision_mesh_, V0, Vmid,
+			broad_phase_method, dmin);
+		// polyfem::logger().trace("best step {}", max_step);
+
+		return max_step;
 	}
 
 } // namespace polyfem::solver

@@ -126,7 +126,9 @@ namespace polyfem
 		const auto &gbases = states_ptr_[0]->geom_bases();
 
 		// mesh topology
-		states_ptr_[0]->get_vf(V_rest, elements);
+		Eigen::MatrixXd V;
+		Eigen::MatrixXi F;
+		states_ptr_[0]->get_vf(V, F);
 
 		// contact
 		const auto &opt_contact_params = args["contact"];
@@ -168,15 +170,18 @@ namespace polyfem
 		if (free_dimension.size() != dim)
 			free_dimension.resize(dim, true);
 
-		shape_constraints_ = std::make_unique<ShapeConstraints>(args, V_rest, optimization_boundary_to_node);
+		shape_constraints_ = std::make_unique<ShapeConstraints>(args, V, optimization_boundary_to_node);
 		shape_constraints_->set_active_nodes_mask(active_nodes_mask);
 		optimization_dim_ = shape_constraints_->get_optimization_dim();
 	}
 
 	Eigen::MatrixXd ShapeParameter::map(const Eigen::VectorXd &x) const
 	{
+		Eigen::MatrixXd V;
+		Eigen::MatrixXi F;
+		states_ptr_[0]->get_vf(V, F);
 		Eigen::MatrixXd V_full;
-		shape_constraints_->reduced_to_full(x, V_rest, V_full);
+		shape_constraints_->reduced_to_full(x, V, V_full);
 		return V_full;
 	}
 	Eigen::VectorXd ShapeParameter::map_grad(const Eigen::VectorXd &x, const Eigen::VectorXd &full_grad) const
@@ -184,29 +189,6 @@ namespace polyfem
 		Eigen::VectorXd dreduced;
 		shape_constraints_->dfull_to_dreduced(x, full_grad, dreduced);
 		return dreduced;
-	}
-
-	bool ShapeParameter::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
-	{
-		if (!has_collision)
-			return true;
-
-		Eigen::MatrixXd V0, V1;
-		shape_constraints_->reduced_to_full(x0, V_rest, V0);
-		shape_constraints_->reduced_to_full(x1, V_rest, V1);
-
-		// Skip CCD if the displacement is zero.
-		if ((V1 - V0).lpNorm<Eigen::Infinity>() == 0.0)
-			return true;
-
-		bool is_valid;
-		is_valid = ipc::is_step_collision_free(
-			collision_mesh,
-			collision_mesh.vertices(V0),
-			collision_mesh.vertices(V1),
-			_broad_phase_method, _ccd_tolerance, _ccd_max_iterations);
-
-		return is_valid;
 	}
 
 	std::vector<int> ShapeParameter::get_constrained_nodes() const
@@ -219,39 +201,15 @@ namespace polyfem
 
 	bool ShapeParameter::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
+		Eigen::MatrixXd V;
+		Eigen::MatrixXi F;
+		states_ptr_[0]->get_vf(V, F);
 		Eigen::MatrixXd V1;
-		shape_constraints_->reduced_to_full(x1, V_rest, V1);
-		if (is_flipped(V1, elements))
+		shape_constraints_->reduced_to_full(x1, V, V1);
+		if (is_flipped(V1, F))
 			return false;
 
 		return true;
-	}
-
-	double ShapeParameter::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
-	{
-		Eigen::MatrixXd V0, V1;
-		shape_constraints_->reduced_to_full(x0, V_rest, V0);
-		shape_constraints_->reduced_to_full(x1, V_rest, V1);
-
-		double max_step = 1;
-		assert(!is_flipped(V0, elements));
-		while (is_flipped(V0 + max_step * (V1 - V0), elements))
-			max_step /= 2.;
-
-		if (!has_collision)
-			return max_step;
-
-		// Extract surface only
-		V0 = collision_mesh.vertices(V0);
-		V1 = collision_mesh.vertices(V1);
-
-		auto Vmid = V0 + max_step * (V1 - V0);
-		max_step *= ipc::compute_collision_free_stepsize(
-			collision_mesh, V0, Vmid,
-			_broad_phase_method, _ccd_tolerance, _ccd_max_iterations);
-		// polyfem::logger().trace("best step {}", max_step);
-
-		return max_step;
 	}
 
 	void ShapeParameter::line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
@@ -269,15 +227,22 @@ namespace polyfem
 
 	bool ShapeParameter::pre_solve(const Eigen::VectorXd &newX)
 	{
-		Eigen::MatrixXd V;
-		shape_constraints_->reduced_to_full(newX, V_rest, V);
-		mesh_flipped = is_flipped(V, elements);
+		Eigen::MatrixXd V_rest_new, V;
+		Eigen::MatrixXi F;
+		states_ptr_[0]->get_vf(V_rest_new, F);
+		shape_constraints_->reduced_to_full(newX, V_rest_new, V);
+		mesh_flipped = is_flipped(V, F);
 		if (mesh_flipped)
 		{
 			logger().debug("Mesh Flipped!");
 			// Eigen::MatrixXd V_;
 			// Eigen::MatrixXi F;
 			// states_ptr_[0]->get_vf(V_, F);
+			// if (V_.rows() == 2)
+			// {
+			// 	V_.conservativeResize(V.rows(), 3);
+			// 	V_.col(0) = Eigen::VectorXd::Zero(V.rows());
+			// }
 			// igl::writeOBJ("flipped.obj", V, F);
 			return false;
 		}
@@ -496,6 +461,8 @@ namespace polyfem
 			state->stats.compute_mesh_stats(*state->mesh);
 			state->build_basis();
 		}
+		Eigen::MatrixXd V_rest;
+		Eigen::MatrixXi elements;
 		states_ptr_[0]->get_vf(V_rest, elements);
 		shape_constraints_->full_to_reduced(V_rest, x);
 
@@ -521,6 +488,10 @@ namespace polyfem
 	{
 		const double correspondence_threshold = shape_params.value("correspondence_threshold", 1e-8);
 		const double displace_dist = shape_params.value("displace_dist", 1e-4);
+
+		Eigen::MatrixXd V_rest;
+		Eigen::MatrixXi F;
+		states_ptr_[0]->get_vf(V_rest, F);
 
 		tied_nodes.clear();
 		tied_nodes_mask.assign(V_rest.rows(), false);
@@ -604,7 +575,8 @@ namespace polyfem
 		const auto &gbases = get_state().geom_bases();
 
 		Eigen::MatrixXd V;
-		get_state().get_vf(V, elements);
+		Eigen::MatrixXi F;
+		get_state().get_vf(V, F);
 
 		active_nodes_mask.assign(get_state().n_geom_bases, true);
 		for (const auto &lb : get_state().total_local_boundary)

@@ -45,6 +45,12 @@ namespace polyfem::solver
 
 		virtual Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) = 0; // compute $\partial_q J$
 		static Eigen::VectorXd compute_adjoint_term(const State &state, const Eigen::MatrixXd &adjoints, const Parameter &param);
+
+		virtual bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
+		virtual double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return 1; }
+
+		virtual void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) {}
+		virtual void line_search_end() {}
 	};
 
 	// this objective either depends on solution in one time step, or one static solution
@@ -81,6 +87,34 @@ namespace polyfem::solver
 		int n_objs() const { return objs_.size(); }
 		std::shared_ptr<Objective> get_obj(const int i) const { return objs_[i]; }
 		double get_weight(const int i) const { return weights_[i]; }
+
+		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override
+		{
+			bool collision_free = true;
+			for (const auto &o : objs_)
+				collision_free &= o->is_step_collision_free(x0, x1);
+			return collision_free;
+		}
+
+		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override
+		{
+			double step = 1;
+			for (const auto &o : objs_)
+				step = std::min(step, o->max_step_size(x0, x1));
+			return step;
+		}
+
+		void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override
+		{
+			for (const auto &o : objs_)
+				o->line_search_begin(x0, x1);
+		}
+
+		void line_search_end() override
+		{
+			for (const auto &o : objs_)
+				o->line_search_end();
+		}
 
 	protected:
 		std::vector<std::shared_ptr<Objective>> objs_;
@@ -237,6 +271,9 @@ namespace polyfem::solver
 		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 
+		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
+		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
+
 	protected:
 		std::shared_ptr<const Parameter> shape_param_;
 
@@ -273,6 +310,9 @@ namespace polyfem::solver
 		double value() override;
 		Eigen::MatrixXd compute_adjoint_rhs(const State &state) override;
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
+
+		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
+		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 
 	protected:
 		std::shared_ptr<const Parameter> shape_param_;

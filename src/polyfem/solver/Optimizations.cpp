@@ -449,6 +449,7 @@ namespace polyfem::solver
 		assert(param_args.is_array() && param_args.size() > 0);
 		std::vector<std::shared_ptr<Parameter>> parameters(param_args.size());
 		i = 0;
+		int cumulative_dim = 0;
 		for (const json &args : param_args)
 		{
 			std::vector<std::shared_ptr<State>> some_states;
@@ -456,7 +457,10 @@ namespace polyfem::solver
 			{
 				some_states.push_back(states[id]);
 			}
-			parameters[i++] = Parameter::create(args, some_states);
+			parameters[i] = Parameter::create(args, some_states);
+			parameters[i]->set_optimization_variable_position(cumulative_dim);
+			cumulative_dim += parameters[i]->optimization_dim();
+			i++;
 		}
 
 		// const int cur_log = states[0]->current_log_level;

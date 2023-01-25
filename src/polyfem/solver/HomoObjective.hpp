@@ -90,7 +90,7 @@ namespace polyfem::solver
 		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override;
 		Eigen::VectorXd compute_adjoint_rhs_step(const State &state) override;
 
-		void set_time_step(int time_step) { time_step_ = time_step; }
+		void set_time_step(int time_step) override { time_step_ = time_step; }
 
 	protected:
 		std::vector<int> id;
