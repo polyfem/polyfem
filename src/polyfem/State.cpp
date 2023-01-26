@@ -874,7 +874,7 @@ namespace polyfem
 
 		if (is_contact_enabled())
 		{
-			double min_boundary_edge_length = std::numeric_limits<double>::max();
+			min_boundary_edge_length = std::numeric_limits<double>::max();
 			for (const auto &edge : collision_mesh.edges().rowwise())
 			{
 				const VectorNd v0 = collision_mesh.vertices_at_rest().row(edge(0));

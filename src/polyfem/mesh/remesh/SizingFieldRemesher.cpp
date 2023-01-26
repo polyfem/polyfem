@@ -116,24 +116,21 @@ namespace polyfem::mesh
 		SparseSizingField sizing_field;
 		for (const auto &candidate : candidates)
 		{
-			const long vi = candidate.vertex_index;
-			if (vi > V.rows() - this->obstacle().n_vertices())
-				continue;
-			// const auto vertices = candidate.vertex_indices(E, F);
-			// if (std::all_of(vertices.begin(), vertices.end(), [&](long idx) { return idx < V.rows() - this->obstacle().n_vertices(); }))
-			// {
-			// 	continue;
-			// }
 			const double distance_sqr = candidate.compute_distance(V, E, F);
 			const double rest_distance_sqr = candidate.compute_distance(V_rest, E, F);
-			if (distance_sqr / rest_distance_sqr < 0.1
-				&& distance_sqr < min_distance_per_vertex[vi])
+			const ipc::VectorMax12d distance_grad = candidate.compute_distance_gradient(V, E, F);
+			const auto vertices = candidate.vertex_indices(E, F);
+			for (int i = 0; i < 4; i++)
 			{
-				ipc::VectorMax12d distance_grad = candidate.compute_distance_gradient(V, E, F);
-				distance_grad = distance_grad.head(V.cols()) / (2 * sqrt(distance_sqr));
+				const long vi = vertices[i];
+				if (vi < 0 || vi > V.rows() - this->obstacle().n_vertices())
+					continue;
+				if (distance_sqr / rest_distance_sqr >= 0.1 || distance_sqr > min_distance_per_vertex[vi])
+					continue;
 
-				sizing_field[collision_mesh.to_full_vertex_id(vi)] =
-					distance_grad * (distance_grad.transpose() / distance_sqr);
+				VectorNd g = distance_grad.segment<Super::DIM>(Super::DIM * i) / (2 * sqrt(distance_sqr));
+
+				sizing_field[collision_mesh.to_full_vertex_id(vi)] = g * (g.transpose() / distance_sqr);
 				min_distance_per_vertex[vi] = distance_sqr;
 			}
 		}

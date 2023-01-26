@@ -91,10 +91,14 @@ namespace polyfem::mesh
 		{
 			const double dhat = state.args["contact"]["dhat"].get<double>();
 
-			for (const Tuple &e : get_one_ring_boundary_edges_for_vertex(new_vertex))
+			// only enforce this invariant if it started valid
+			if (state.min_boundary_edge_length >= dhat)
 			{
-				if (rest_edge_length(e) < dhat)
-					return false; // produced too small edge
+				for (const Tuple &e : get_one_ring_boundary_edges_for_vertex(new_vertex))
+				{
+					if (rest_edge_length(e) < dhat)
+						return false; // produced too small edge
+				}
 			}
 		}
 
