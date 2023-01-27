@@ -2,7 +2,7 @@
 
 namespace polyfem::solver
 {
-	FullNLProblem::FullNLProblem(std::vector<std::shared_ptr<Form>> &forms)
+	FullNLProblem::FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms)
 		: forms_(forms)
 	{
 	}

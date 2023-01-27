@@ -15,7 +15,7 @@ namespace polyfem::time_integrator
 	public:
 		ImplicitEuler() {}
 
-		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
+		/// @brief Update the time integration quantities (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
 		/// \f[
 		/// 	v^{t+1} = \frac{1}{\Delta t} (x - x^t)\newline
 		/// 	a^{t+1} = \frac{1}{\Delta t} (v - v^t)

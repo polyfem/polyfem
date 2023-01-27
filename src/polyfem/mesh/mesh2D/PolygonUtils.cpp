@@ -1,8 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "PolygonUtils.hpp"
-#ifdef POLYFEM_WITH_CLIPPER
-#include <clipper.hpp>
-#endif
+#include <polyfem/utils/ClipperUtils.hpp>
 #include <geogram/numerics/predicates.h>
 #include <igl/barycenter.h>
 ////////////////////////////////////////////////////////////////////////////////
@@ -175,71 +173,25 @@ bool polyfem::mesh::is_star_shaped(const Eigen::MatrixXd &IV, Eigen::RowVector3d
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////
-
-namespace
-{
-
-	constexpr int FACTOR = 1 << 23;
-
-#ifdef POLYFEM_WITH_CLIPPER
-	namespace Point
-	{
-		ClipperLib::IntPoint toClipper(const Eigen::RowVector2d &p)
-		{
-			ClipperLib::IntPoint r;
-			r.X = (ClipperLib::cInt)std::round(p.x() * FACTOR);
-			r.Y = (ClipperLib::cInt)std::round(p.y() * FACTOR);
-			return r;
-		}
-
-		Eigen::RowVector2d fromClipper(const ClipperLib::IntPoint &p)
-		{
-			return Eigen::RowVector2d(p.X, p.Y) / FACTOR;
-		}
-	} // namespace Point
-
-	ClipperLib::Path toClipper(const Eigen::MatrixXd &V)
-	{
-		ClipperLib::Path path(V.rows());
-		for (size_t i = 0; i < path.size(); ++i)
-		{
-			path[i] = Point::toClipper(V.row(i));
-		}
-		return path;
-	}
-
-	Eigen::MatrixXd fromClipper(const ClipperLib::Path &path)
-	{
-		Eigen::MatrixXd V(path.size(), 2);
-		for (size_t i = 0; i < path.size(); ++i)
-		{
-			V.row(i) = Point::fromClipper(path[i]);
-		}
-		return V;
-	}
-#endif
-
-} // anonymous namespace
-
 // -----------------------------------------------------------------------------
 
 void polyfem::mesh::offset_polygon(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, double eps)
 {
 #ifdef POLYFEM_WITH_CLIPPER
 	using namespace ClipperLib;
+	using namespace polyfem::utils;
 
 	// Convert input polygon to integer grid
 	ClipperOffset co;
-	co.AddPath(toClipper(IV), jtSquare, etClosedPolygon);
+	co.AddPath(PolygonClipping::toClipperPolygon(IV), jtSquare, etClosedPolygon);
 
 	// Compute offset in the integer grid
 	Paths solution;
-	co.Execute(solution, cInt(eps * FACTOR));
+	co.Execute(solution, cInt(eps * DOUBLE_TO_INT_SCALE_FACTOR));
 	assert(solution.size() == 1);
 
 	// Convert back to double
-	OV = fromClipper(solution.front());
+	OV = PolygonClipping::fromClipperPolygon(solution.front());
 #else
 	throw "Compile with clipper!";
 #endif

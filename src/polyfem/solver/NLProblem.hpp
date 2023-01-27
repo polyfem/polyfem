@@ -13,13 +13,20 @@ namespace polyfem::solver
 		using typename FullNLProblem::THessian;
 		using typename FullNLProblem::TVector;
 
+	protected:
+		NLProblem(
+			const int full_size,
+			const std::vector<int> &boundary_nodes,
+			const std::vector<std::shared_ptr<Form>> &forms);
+
+	public:
 		NLProblem(const int full_size,
-				  const std::string &formulation,
 				  const std::vector<int> &boundary_nodes,
 				  const std::vector<mesh::LocalBoundary> &local_boundary,
 				  const int n_boundary_samples,
 				  const assembler::RhsAssembler &rhs_assembler,
-				  const double t, std::vector<std::shared_ptr<Form>> &forms);
+				  const double t,
+				  const std::vector<std::shared_ptr<Form>> &forms);
 
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
@@ -52,13 +59,10 @@ namespace polyfem::solver
 
 		void set_apply_DBC(const TVector &x, const bool val);
 
-	private:
-		const std::vector<int> &boundary_nodes_;
-		const std::vector<mesh::LocalBoundary> &local_boundary_;
+	protected:
+		virtual Eigen::MatrixXd boundary_values() const;
 
-		const int n_boundary_samples_;
-		const assembler::RhsAssembler &rhs_assembler_;
-		double t_;
+		const std::vector<int> &boundary_nodes_;
 
 		const int full_size_;    ///< Size of the full problem
 		const int reduced_size_; ///< Size of the reduced problem
@@ -73,6 +77,12 @@ namespace polyfem::solver
 		{
 			return current_size_ == CurrentSize::FULL_SIZE ? full_size() : reduced_size();
 		}
+
+	private:
+		const assembler::RhsAssembler *rhs_assembler_;
+		const std::vector<mesh::LocalBoundary> *local_boundary_;
+		const int n_boundary_samples_;
+		double t_;
 
 		template <class FullMat, class ReducedMat>
 		static void full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced);

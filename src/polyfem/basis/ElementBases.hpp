@@ -23,6 +23,9 @@ namespace polyfem
 			// one basis function per node in the element
 			std::vector<Basis> bases;
 
+			// Assemble the global nodal positions of the bases.
+			Eigen::MatrixXd nodes() const;
+
 			// quadrature points to evaluate the basis functions inside the element
 			void compute_quadrature(quadrature::Quadrature &quadrature) const { quadrature_builder_(quadrature); }
 			void compute_mass_quadrature(quadrature::Quadrature &quadrature) const { mass_quadrature_builder_(quadrature); }

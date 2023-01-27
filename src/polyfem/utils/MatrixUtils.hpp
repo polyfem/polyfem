@@ -115,5 +115,59 @@ namespace polyfem
 			const std::vector<int> &removed_vars,
 			const StiffnessMatrix &full,
 			StiffnessMatrix &reduced);
+
+		/// @brief Reorder row blocks in a matrix.
+		/// @param in Input matrix.
+		/// @param in_to_out Mapping from input blocks to output blocks.
+		/// @param out_blocks Number of blocks in the output matrix.
+		/// @param block_size Size of each block.
+		/// @return Reordered matrix.
+		Eigen::MatrixXd reorder_matrix(
+			const Eigen::MatrixXd &in,
+			const Eigen::VectorXi &in_to_out,
+			int out_blocks = -1,
+			const int block_size = 1);
+
+		/// @brief Undo the reordering of row blocks in a matrix.
+		/// @param out Reordered matrix.
+		/// @param in_to_out Mapping from input blocks to output blocks.
+		/// @param in_blocks Number of blocks in the input matrix.
+		/// @param block_size Size of each block.
+		/// @return Unreordered matrix.
+		Eigen::MatrixXd unreorder_matrix(
+			const Eigen::MatrixXd &out,
+			const Eigen::VectorXi &in_to_out,
+			int in_blocks = -1,
+			const int block_size = 1);
+
+		/// @brief Map the entrys of an index matrix to new indices.
+		/// @param in Input index matrix.
+		/// @param index_mapping Mapping from old to new indices.
+		/// @return Mapped index matrix.
+		Eigen::MatrixXi map_index_matrix(
+			const Eigen::MatrixXi &in,
+			const Eigen::VectorXi &index_mapping);
+
+		template <typename DstMat, typename SrcMat>
+		void append_rows(DstMat &dst, const SrcMat &src)
+		{
+			if (src.rows() == 0)
+				return;
+			if (dst.cols() == 0)
+				dst.resize(dst.rows(), src.cols());
+			assert(dst.cols() == src.cols());
+			dst.conservativeResize(dst.rows() + src.rows(), dst.cols());
+			dst.bottomRows(src.rows()) = src;
+		}
+
+		template <typename DstMat>
+		void append_zero_rows(DstMat &dst, const size_t n_zero_rows)
+		{
+			assert(dst.cols() > 0);
+			if (n_zero_rows == 0)
+				return;
+			dst.conservativeResize(dst.rows() + n_zero_rows, dst.cols());
+			dst.bottomRows(n_zero_rows).setZero();
+		}
 	} // namespace utils
 } // namespace polyfem

@@ -23,7 +23,7 @@ namespace cppoptlib
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		LBFGSSolver(const json &solver_params);
+		LBFGSSolver(const json &solver_params, const double dt = 1.0);
 
 		std::string name() const override { return "L-BFGS"; }
 

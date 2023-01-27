@@ -6,6 +6,7 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 #include <polyfem/io/OBJWriter.hpp>
 
@@ -15,16 +16,15 @@
 namespace polyfem::solver
 {
 	ContactForm::ContactForm(const ipc::CollisionMesh &collision_mesh,
-							 const Eigen::MatrixXd &boundary_nodes_pos,
 							 const double dhat,
 							 const double avg_mass,
+							 const bool use_convergent_formulation,
 							 const bool use_adaptive_barrier_stiffness,
 							 const bool is_time_dependent,
 							 const ipc::BroadPhaseMethod broad_phase_method,
 							 const double ccd_tolerance,
 							 const int ccd_max_iterations)
 		: collision_mesh_(collision_mesh),
-		  boundary_nodes_pos_(boundary_nodes_pos),
 		  dhat_(dhat),
 		  avg_mass_(avg_mass),
 		  use_adaptive_barrier_stiffness_(use_adaptive_barrier_stiffness),
@@ -37,12 +37,12 @@ namespace polyfem::solver
 		assert(ccd_tolerance > 0);
 
 		prev_distance_ = -1;
+		constraint_set_.use_convergent_formulation = use_convergent_formulation;
 	}
 
 	void ContactForm::init(const Eigen::VectorXd &x)
 	{
-		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
-		update_constraint_set(displaced_surface);
+		update_constraint_set(compute_displaced_surface(x));
 	}
 
 	void ContactForm::update_quantities(const double t, const Eigen::VectorXd &x)
@@ -52,7 +52,7 @@ namespace polyfem::solver
 
 	Eigen::MatrixXd ContactForm::compute_displaced_surface(const Eigen::VectorXd &x) const
 	{
-		return collision_mesh_.displace_vertices(utils::unflatten(x, boundary_nodes_pos_.cols()));
+		return collision_mesh_.displace_vertices(utils::unflatten(x, collision_mesh_.dim()));
 	}
 
 	void ContactForm::update_barrier_stiffness(
@@ -94,6 +94,12 @@ namespace polyfem::solver
 		weight_ = ipc::initial_barrier_stiffness(
 			ipc::world_bbox_diagonal_length(displaced_surface), dhat_, avg_mass_,
 			grad_energy, grad_barrier, max_barrier_stiffness_);
+		if (use_convergent_formulation())
+		{
+			// cancel out division in barrier potential
+			weight_ *= dhat_ * dhat_;
+			max_barrier_stiffness_ *= dhat_ * dhat_;
+		}
 
 		logger().debug("adaptive barrier form stiffness {}", barrier_stiffness());
 	}
@@ -200,17 +206,17 @@ namespace polyfem::solver
 		{
 			if (is_time_dependent_)
 			{
-				const double prev_barrier_stiffness = weight_;
+				const double prev_barrier_stiffness = barrier_stiffness();
 
 				weight_ = ipc::update_barrier_stiffness(
 					prev_distance_, curr_distance, max_barrier_stiffness_,
-					weight_, ipc::world_bbox_diagonal_length(displaced_surface));
+					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface));
 
-				if (prev_barrier_stiffness != weight_)
+				if (barrier_stiffness() != prev_barrier_stiffness)
 				{
 					polyfem::logger().debug(
 						"updated barrier stiffness from {:g} to {:g}",
-						prev_barrier_stiffness, weight_);
+						prev_barrier_stiffness, barrier_stiffness());
 				}
 			}
 			else

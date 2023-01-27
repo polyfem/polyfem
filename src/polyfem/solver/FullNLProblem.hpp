@@ -16,7 +16,7 @@ namespace polyfem::solver
 		using typename cppoptlib::Problem<double>::TVector;
 		typedef StiffnessMatrix THessian;
 
-		FullNLProblem(std::vector<std::shared_ptr<Form>> &forms);
+		FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms);
 		virtual void init(const TVector &x0);
 
 		virtual double value(const TVector &x) override;

@@ -84,8 +84,7 @@ namespace polyfem
 			}
 			else if (faces.size())
 			{
-				logger().error("Obstacle supports only segments and triangles!");
-				return;
+				log_and_throw_error("Obstacle supports only segments and triangles!");
 			}
 
 			v_.conservativeResize(v_.rows() + vertices.rows(), dim_);

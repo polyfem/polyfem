@@ -25,9 +25,10 @@ namespace cppoptlib
 	public:
 		using Superclass = ISolver<ProblemType, /*Ord=*/-1>;
 		using typename Superclass::Scalar;
+		using typename Superclass::TCriteria;
 		using typename Superclass::TVector;
 
-		NonlinearSolver(const polyfem::json &solver_params);
+		NonlinearSolver(const polyfem::json &solver_params, const double dt = 1.0);
 
 		virtual std::string name() const = 0;
 
@@ -41,15 +42,25 @@ namespace cppoptlib
 
 		ErrorCode error_code() const { return m_error_code; }
 
+		const typename Superclass::TCriteria &getStopCriteria() { return this->m_stop; }
+		// setStopCriteria already in ISolver
+
+		bool converged() const
+		{
+			return this->m_status == Status::XDeltaTolerance
+				   || this->m_status == Status::FDeltaTolerance
+				   || this->m_status == Status::GradNormTolerance;
+		}
+
 	protected:
 		// ====================================================================
 		//                        Solver parameters
 		// ====================================================================
 
-		bool use_gradient_norm;
 		bool normalize_gradient;
 		double use_grad_norm_tol;
 		double first_grad_norm_tol;
+		double dt;
 
 		// ====================================================================
 		//                           Solver state

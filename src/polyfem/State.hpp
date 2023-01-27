@@ -16,8 +16,11 @@
 #include <polyfem/mesh/MeshNodes.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 
+#include <polyfem/solver/SolveData.hpp>
+
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/io/OutData.hpp>
@@ -33,6 +36,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include <ipc/collision_mesh.hpp>
 #include <ipc/utils/logger.hpp>
@@ -51,48 +55,6 @@ namespace polyfem
 		class Mesh2D;
 		class Mesh3D;
 	} // namespace mesh
-
-	namespace solver
-	{
-		class NLProblem;
-
-		class ContactForm;
-		class FrictionForm;
-		class BodyForm;
-		class ALForm;
-		class InertiaForm;
-		class ElasticForm;
-	} // namespace solver
-
-	namespace time_integrator
-	{
-		class ImplicitTimeIntegrator;
-	} // namespace time_integrator
-
-	/// class to store time stepping data
-	class SolveData
-	{
-	public:
-		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
-		std::shared_ptr<solver::NLProblem> nl_problem;
-
-		std::shared_ptr<solver::ContactForm> contact_form;
-		std::shared_ptr<solver::BodyForm> body_form;
-		std::shared_ptr<solver::ALForm> al_form;
-		std::shared_ptr<solver::ElasticForm> damping_form;
-		std::shared_ptr<solver::FrictionForm> friction_form;
-		std::shared_ptr<solver::InertiaForm> inertia_form;
-		std::shared_ptr<solver::ElasticForm> elastic_form;
-
-		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
-
-		/// @brief update the barrier stiffness for the forms
-		/// @param x current solution
-		void update_barrier_stiffness(const Eigen::VectorXd &x);
-
-		/// @brief updates the dt inside the different forms
-		void update_dt();
-	};
 
 	/// main class that contains the polyfem solver and all its state
 	class State
@@ -267,8 +229,17 @@ namespace polyfem
 		/// builds bases for polygons, called inside build_basis
 		void build_polygonal_basis();
 
-		/// set the multimaterial, this is mean for internal usage.
-		void set_materials();
+	public:
+		/// set the multimaterial
+		void set_materials()
+		{
+			if (!utils::is_param_valid(args, "materials"))
+				return;
+			std::vector<int> body_ids(mesh->n_elements());
+			for (int i = 0; i < mesh->n_elements(); ++i)
+				body_ids[i] = mesh->get_body_id(i);
+			assembler.set_materials(body_ids, args["materials"]);
+		}
 
 		//---------------------------------------------------
 		//-----------------solver----------------------------
@@ -303,7 +274,7 @@ namespace polyfem
 		}
 
 		/// timedependent stuff cached
-		SolveData solve_data;
+		solver::SolveData solve_data;
 		/// initialize solver
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
@@ -337,7 +308,7 @@ namespace polyfem
 		/// initialize the nonlinear solver
 		/// @param[out] sol solution
 		/// @param[in] t (optional) initial time
-		void init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t = 1.0);
+		void init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t = 1.0, const bool init_time_integrator = true);
 		/// solves a linear problem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
@@ -349,12 +320,13 @@ namespace polyfem
 		/// solves nonlinear problems
 		/// @param[out] sol solution
 		/// @param[in] t (optional) time step id
-		void solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t = 0);
+		void solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t = 0, const bool init_lagging = true);
 
 		/// factory to create the nl solver depdending on input
 		/// @return nonlinear solver (eg newton or LBFGS)
 		template <typename ProblemType>
-		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver() const;
+		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(
+			const std::string &linear_solver_type = "") const;
 
 	private:
 		/// @brief Load or compute the initial solution.
@@ -474,14 +446,13 @@ namespace polyfem
 		/// Resets the mesh
 		void reset_mesh();
 
+		/// Build the mesh matrices (vertices and elements) from the mesh using the bases node ordering
+		void build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F);
+
 		//---------------------------------------------------
 		//-----------------IPC-------------------------------
 		//---------------------------------------------------
 
-		// boundary mesh used for collision
-		/// @brief Boundary_nodes_pos contains the total number of nodes, the internal ones are zero.
-		/// For high-order fem the faces are triangulated this is currently supported only for tri and tet meshes.
-		Eigen::MatrixXd boundary_nodes_pos;
 		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
 
@@ -493,7 +464,8 @@ namespace polyfem
 		/// @return if vertex is obstalce
 		bool is_obstacle_vertex(const size_t vi) const
 		{
-			return vi >= boundary_nodes_pos.rows() - obstacle.n_vertices();
+			// The obstalce vertices are at the bottom of the collision mesh vertices
+			return vi >= collision_mesh.full_num_vertices() - obstacle.n_vertices();
 		}
 
 		/// @brief does the simulation has contact
@@ -555,6 +527,10 @@ namespace polyfem
 
 		/// @brief computes all errors
 		void compute_errors(const Eigen::MatrixXd &sol);
+
+		/// @brief Save a JSON sim file for restarting the simulation at time t
+		/// @param t current time to restart at
+		void save_restart_json(const double t0, const double dt, const int t) const;
 
 		//-----------PATH management
 		/// Get the root path for the state (e.g., args["root_path"] or ".")

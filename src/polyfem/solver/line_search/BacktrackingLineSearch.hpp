@@ -189,6 +189,11 @@ namespace polyfem
 							"Line search failed to find descent step (f(x)={:g} f(x+αΔx)={:g} α_CCD={:g} α={:g}, ||Δx||={:g} is_step_valid={} use_grad_norm={} iter={:d})",
 							old_energy, cur_energy, starting_step_size, step_size, delta_x.norm(),
 							is_step_valid, use_grad_norm, this->cur_iter);
+#ifndef NDEBUG
+						objFunc.solution_changed(x);
+						// tolerance for rounding error due to multithreading
+						assert(abs(old_energy_in - objFunc.value(x)) < 1e-15);
+#endif
 						objFunc.line_search_end();
 						return std::nan("");
 					}

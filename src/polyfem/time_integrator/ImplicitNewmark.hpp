@@ -19,7 +19,7 @@ namespace polyfem::time_integrator
 		/// @param params json containing `{"gamma": 0.5, "beta": 0.25}`
 		void set_parameters(const json &params) override;
 
-		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
+		/// @brief Update the time integration quantities (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
 		/// @param x new solution vector
 		void update_quantities(const Eigen::VectorXd &x) override;
 
