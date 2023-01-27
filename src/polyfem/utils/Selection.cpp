@@ -25,6 +25,8 @@ namespace polyfem::utils
 			res = std::make_shared<BoxSideSelection>(selection, mesh_bbox);
 		else if (selection.contains("center"))
 			res = std::make_shared<SphereSelection>(selection, mesh_bbox);
+		else if (selection.contains("radius"))
+			res = std::make_shared<CylinderSelection>(selection, mesh_bbox);
 		else if (selection.contains("axis"))
 			res = std::make_shared<AxisPlaneSelection>(selection, mesh_bbox);
 		else if (selection.contains("normal"))
@@ -180,6 +182,47 @@ namespace polyfem::utils
 
 	// ------------------------------------------------------------------------
 
+	CylinderSelection::CylinderSelection(
+		const json &selection,
+		const Selection::BBox &mesh_bbox)
+		: Selection(selection["id"].get<int>())
+	{
+		point_ = selection["p1"];
+		RowVectorNd p2 = selection["p2"];
+		radius2_ = selection["radius"];
+
+		if (selection.value("relative", false))
+		{
+			RowVectorNd mesh_width = mesh_bbox[1] - mesh_bbox[0];
+			point_ = mesh_width.cwiseProduct(point_) + mesh_bbox[0];
+			p2 = mesh_width.cwiseProduct(p2) + mesh_bbox[0];
+			radius2_ = mesh_width.norm() * radius2_;
+		}
+
+		radius2_ *= radius2_;
+		height_ = (point_ - p2).norm();
+		axis_ = (p2 - point_).normalized();
+
+		id_ = selection["id"];
+	}
+
+	bool CylinderSelection::inside(const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p) const
+	{
+		assert(point_.size() == p.size());
+
+		const RowVectorNd v = p - point_;
+		const double proj = axis_.dot(v);
+
+		if (proj < 0)
+			return false;
+		if (proj > height_)
+			return false;
+
+		return (v - axis_ * proj).squaredNorm() <= radius2_;
+	}
+
+	// ------------------------------------------------------------------------
+
 	AxisPlaneSelection::AxisPlaneSelection(
 		const json &selection,
 		const Selection::BBox &mesh_bbox)
@@ -227,7 +270,7 @@ namespace polyfem::utils
 		: Selection(selection["id"].get<int>())
 	{
 		normal_ = selection["normal"];
-		normal_.normalized();
+		normal_.normalize();
 		if (selection.contains("point"))
 		{
 			point_ = selection["point"];

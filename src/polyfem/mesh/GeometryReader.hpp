@@ -62,6 +62,7 @@ namespace polyfem::mesh
 	///
 	/// @param[in]  geometry        geometry JSON object(s)
 	/// @param[in]  displacements   displacements JSON object(s)
+	/// @param[in]  dirichlets    	dirichlet bc JSON object(s)
 	/// @param[in]  root_path       root path of JSON
 	///
 	/// @return created Obstacle object
@@ -69,6 +70,7 @@ namespace polyfem::mesh
 	Obstacle read_obstacle_geometry(
 		const json &geometry,
 		const std::vector<json> &displacements,
+		const std::vector<json> &dirichlets,
 		const std::string &root_path,
 		const int dim,
 		const std::vector<std::string> &names = std::vector<std::string>(),
