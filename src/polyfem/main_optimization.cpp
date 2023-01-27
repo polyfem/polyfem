@@ -57,6 +57,9 @@ int main(int argc, char **argv)
 	std::string log_file = "";
 	command_line.add_option("--log_file", log_file, "Log to a file");
 
+	bool only_compute_energy = false;
+	command_line.add_flag("--only_compute_energy", only_compute_energy, "Compute energy and exit");
+
 	const std::vector<std::pair<std::string, spdlog::level::level_enum>>
 		SPDLOG_LEVEL_NAMES_TO_LEVELS = {
 			{"trace", spdlog::level::trace},
@@ -81,6 +84,16 @@ int main(int argc, char **argv)
 	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nlsolver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 
 	Eigen::VectorXd x = nl_problem->initial_guess();
+
+	if (only_compute_energy)
+	{
+		nl_problem->solution_changed(x);
+		logger().info("Energy is {}", nl_problem->value(x));
+		auto state = nl_problem->get_state(0);
+		state->save_json(state->diff_cached[0].u);
+		state->export_data(state->diff_cached[0].u, Eigen::MatrixXd());
+		return EXIT_SUCCESS;
+	}
 
 	nlsolver->minimize(*nl_problem, x);
 
