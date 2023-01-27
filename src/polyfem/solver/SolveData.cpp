@@ -141,10 +141,6 @@ namespace polyfem::solver
 		if (contact_enabled)
 		{
 			const bool use_adaptive_barrier_stiffness = !barrier_stiffness.is_number();
-			if (use_adaptive_barrier_stiffness)
-				log_and_throw_error("Adaptive barrier stiffness is disabled for this project!");
-			if (!use_convergent_contact_formulation)
-				log_and_throw_error("Non-convergent contact is disabled for this project!");
 
 			contact_form = std::make_shared<ContactForm>(
 				collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
