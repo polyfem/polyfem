@@ -82,7 +82,7 @@ namespace polyfem
 			VTUWriter(bool binary = true);
 
 			bool write_mesh(const std::string &path, const Eigen::MatrixXd &points, const Eigen::MatrixXi &cells);
-			bool write_mesh(const std::string &path, const Eigen::MatrixXd &points, const std::vector<std::vector<int>> &cells, const bool is_simplicial);
+			bool write_mesh(const std::string &path, const Eigen::MatrixXd &points, const std::vector<std::vector<int>> &cells, const bool is_simplicial, const bool has_poly);
 
 			void add_field(const std::string &name, const Eigen::MatrixXd &data);
 			void add_scalar_field(const std::string &name, const Eigen::MatrixXd &data);
@@ -104,7 +104,7 @@ namespace polyfem
 			void write_footer(std::ostream &os);
 			void write_points(const Eigen::MatrixXd &points, std::ostream &os);
 			void write_cells(const Eigen::MatrixXi &cells, std::ostream &os);
-			void write_cells(const std::vector<std::vector<int>> &cells, const bool is_simplex, std::ostream &os);
+			void write_cells(const std::vector<std::vector<int>> &cells, const bool is_simplex, const bool is_poly, std::ostream &os);
 		};
 	} // namespace io
 } // namespace polyfem

@@ -152,7 +152,7 @@ int main(int argc, char **argv)
 				}
 			})"_json;
 
-		tmp["output"]["directory"] = output_dir;
+		tmp["output"]["directory"] = std::filesystem::absolute(output_dir);
 
 		in_args.merge_patch(tmp);
 	}
