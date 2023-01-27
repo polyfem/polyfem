@@ -186,7 +186,6 @@ namespace polyfem
 		// Initialize nonlinear problems
 
 		const int ndof = n_bases * mesh->dimension();
-		logger().critical("# DOF: {}", ndof);
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
 			*solve_data.rhs_assembler, t, forms);
