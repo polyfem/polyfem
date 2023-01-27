@@ -18,9 +18,9 @@ namespace polyfem::mesh
 	bool WildRemesher<WMTKMesh>::collapse_edge_before(const Tuple &t)
 	{
 		const double max_edge_length = std::min(
-			args["collapse"]["abs_max_edge_length"].get<double>(),
+			args["collapse"]["abs_max_edge_length"].template get<double>(),
 			state.starting_min_edge_length
-				* args["collapse"]["rel_max_edge_length"].get<double>());
+				* args["collapse"]["rel_max_edge_length"].template get<double>());
 
 		double vol_tol;
 		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
@@ -117,7 +117,7 @@ namespace polyfem::mesh
 
 		if (state.is_contact_enabled() && is_boundary_vertex(t))
 		{
-			const double dhat = state.args["contact"]["dhat"].get<double>();
+			const double dhat = state.args["contact"]["dhat"].template get<double>();
 
 			// only enforce this invariant if it started valid
 			if (state.min_boundary_edge_length >= dhat)

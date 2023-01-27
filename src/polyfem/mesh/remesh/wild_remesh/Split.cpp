@@ -16,7 +16,7 @@ namespace polyfem::mesh
 		// Dont split if the edge is too small
 		double min_edge_length = args["split"]["min_edge_length"];
 		if (is_boundary_facet(e) && state.is_contact_enabled())
-			min_edge_length = std::max(min_edge_length, 2.0 * state.args["contact"]["dhat"].get<double>());
+			min_edge_length = std::max(min_edge_length, 2.0 * state.args["contact"]["dhat"].template get<double>());
 
 		if (rest_edge_length(e) < min_edge_length)
 		{
@@ -89,7 +89,7 @@ namespace polyfem::mesh
 
 		if (state.is_contact_enabled() && is_boundary_vertex(new_vertex))
 		{
-			const double dhat = state.args["contact"]["dhat"].get<double>();
+			const double dhat = state.args["contact"]["dhat"].template get<double>();
 
 			// only enforce this invariant if it started valid
 			if (state.min_boundary_edge_length >= dhat)
