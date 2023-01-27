@@ -103,7 +103,7 @@ var namespacepolyfem_1_1mesh =
     [ "orient_normals_2d", "namespacepolyfem_1_1mesh.html#a3f115973d5927d123c20eb7941c5169e", null ],
     [ "read_fem_geometry", "namespacepolyfem_1_1mesh.html#afe913b5ef00d49c9ce25b6c414e39129", null ],
     [ "read_fem_mesh", "namespacepolyfem_1_1mesh.html#aa89f56a9f54a72d55430b772c5fd3bc5", null ],
-    [ "read_obstacle_geometry", "namespacepolyfem_1_1mesh.html#a5675a84be23055c84c04d32acd85414c", null ],
+    [ "read_obstacle_geometry", "namespacepolyfem_1_1mesh.html#a7cf3dd6d3ed0fc2c22b2b89a62eaf3dc", null ],
     [ "read_obstacle_mesh", "namespacepolyfem_1_1mesh.html#ab600d90ff9cc84e9d420c36b2ce10681", null ],
     [ "read_surface_mesh", "namespacepolyfem_1_1mesh.html#ad5cb1c08fb1f96a1f0c2bd635457e25f", null ],
     [ "refine_polygonal_mesh", "namespacepolyfem_1_1mesh.html#a9edb1ab6286b5c93e9f2a564ea072559", null ],
