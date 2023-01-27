@@ -139,7 +139,7 @@ namespace polyfem
 			Eigen::MatrixXd _nodes(bases.size(), dim);
 			for (int i = 0; i < bases.size(); ++i)
 			{
-				// TODO: why 0?
+				assert(bases[i].global().size() == 1);
 				_nodes.row(i) = bases[i].global()[0].node;
 			}
 			return _nodes;
