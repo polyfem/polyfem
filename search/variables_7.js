@@ -9,7 +9,7 @@ var searchData=
   ['global_5f_6',['global_',['../classpolyfem_1_1basis_1_1_basis.html#ad4b24c0d8a1e14e5f471f20b7d3119e6',1,'polyfem::basis::Basis']]],
   ['global_5felement_5fid_5f_7',['global_element_id_',['../classpolyfem_1_1mesh_1_1_local_boundary.html#a3243a8c158121e32492682332726f840',1,'polyfem::mesh::LocalBoundary']]],
   ['global_5fids_8',['global_ids',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#a994f3ac144b91ff8dbd134de91fcef8d',1,'polyfem::mesh::NCMesh2D::ncBoundary::global_ids()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#aa35f0c3231416b10814b185e66eb8c7b',1,'polyfem::mesh::NCMesh3D::ncBoundary::global_ids()']]],
-  ['global_5fprimitive_5fid_5f_9',['global_primitive_id_',['../classpolyfem_1_1mesh_1_1_local_boundary.html#a798235b3c3624c42e89a456295ceee6b',1,'polyfem::mesh::LocalBoundary']]],
+  ['global_5fprimitive_5fid_5f_9',['global_primitive_id_',['../classpolyfem_1_1mesh_1_1_local_boundary.html#a85fb30899e6e8c8f78b3edf135ebdcc6',1,'polyfem::mesh::LocalBoundary']]],
   ['grad_10',['grad',['../struct_d_scalar1.html#ab47f13cbffdaff53d8d630a9abba26b0',1,'DScalar1::grad()'],['../struct_d_scalar2.html#ab6a69ad53cc7b6a98f20559e8875a005',1,'DScalar2::grad()'],['../classpolyfem_1_1assembler_1_1_assembly_values.html#ab72eacdc660e8e36a3995eb698c25f5d',1,'polyfem::assembler::AssemblyValues::grad()']]],
   ['grad_5f_11',['grad_',['../classpolyfem_1_1basis_1_1_basis.html#ac9c1076cc0b4631159f5e6d02a07e8cc',1,'polyfem::basis::Basis']]],
   ['grad_5fmax_5ferr_12',['grad_max_err',['../classpolyfem_1_1io_1_1_out_stats_data.html#ac18aadc9857ee84cf1417bc8f626b5d5',1,'polyfem::io::OutStatsData']]],

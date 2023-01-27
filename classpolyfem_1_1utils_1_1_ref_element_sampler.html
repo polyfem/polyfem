@@ -156,10 +156,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af6d85c307864408c637f83caeae86043"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c16d89d5433f08f5bc520f4eb5a4b2a"><td class="memItemLeft" align="right" valign="top">const Eigen::MatrixXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html#a9c16d89d5433f08f5bc520f4eb5a4b2a">simplex_edges</a> () const</td></tr>
 <tr class="separator:a9c16d89d5433f08f5bc520f4eb5a4b2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5fce053a14c3a7fcc6e3e8eab1b9310"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html#ad5fce053a14c3a7fcc6e3e8eab1b9310">sample_polygon</a> (const Eigen::MatrixXd &amp;poly, Eigen::MatrixXd &amp;pts, Eigen::MatrixXi &amp;faces) const</td></tr>
-<tr class="separator:ad5fce053a14c3a7fcc6e3e8eab1b9310"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37fcf816287877394c272fc224b20f2b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html#a37fcf816287877394c272fc224b20f2b">sample_polyhedron</a> (const Eigen::MatrixXd &amp;vertices, const Eigen::MatrixXi &amp;f, Eigen::MatrixXd &amp;pts, Eigen::MatrixXi &amp;faces) const</td></tr>
-<tr class="separator:a37fcf816287877394c272fc224b20f2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f7010c355152a152997097c1543e16f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html#a3f7010c355152a152997097c1543e16f">sample_polygon</a> (const Eigen::MatrixXd &amp;poly, Eigen::MatrixXd &amp;pts, Eigen::MatrixXi &amp;faces, Eigen::MatrixXi &amp;edges) const</td></tr>
+<tr class="separator:a3f7010c355152a152997097c1543e16f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a747e43b420e9ef348218dea62e4a8cf9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html#a747e43b420e9ef348218dea62e4a8cf9">sample_polyhedron</a> (const Eigen::MatrixXd &amp;vertices, const Eigen::MatrixXi &amp;f, Eigen::MatrixXd &amp;pts, Eigen::MatrixXi &amp;faces, Eigen::MatrixXi &amp;edges) const</td></tr>
+<tr class="separator:a747e43b420e9ef348218dea62e4a8cf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f28b1443c2c42b543adc8b8869a905e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html#a1f28b1443c2c42b543adc8b8869a905e">num_samples</a> () const</td></tr>
 <tr class="separator:a1f28b1443c2c42b543adc8b8869a905e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -250,11 +250,11 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8cpp_source.html#l00206">206</a> of file <a class="el" href="_ref_element_sampler_8cpp_source.html">RefElementSampler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">214</a> of file <a class="el" href="_ref_element_sampler_8cpp_source.html">RefElementSampler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00072">area_param_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00062">cube_corners_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00065">cube_edges_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00064">cube_faces_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00063">cube_points_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00059">cube_tets_</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00946">polyfem::mesh::extract_parent_edges()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00073">is_volume_</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00023">polyfem::utils::regular_2d_grid()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00108">polyfem::utils::regular_3d_grid()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00067">simplex_corners_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00070">simplex_edges_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00069">simplex_faces_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00068">simplex_points_</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00060">simplex_tets_</a>.</p>
+<p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00072">area_param_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00062">cube_corners_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00065">cube_edges_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00064">cube_faces_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00063">cube_points_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00059">cube_tets_</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00946">polyfem::mesh::extract_parent_edges()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00073">is_volume_</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00031">polyfem::utils::regular_2d_grid()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00116">polyfem::utils::regular_3d_grid()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00067">simplex_corners_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00070">simplex_edges_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00069">simplex_faces_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00068">simplex_points_</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00060">simplex_tets_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00194">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00202">init()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -297,7 +297,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00062">cube_corners_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l00666">polyfem::io::Evaluator::compute_vertex_values()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l00667">polyfem::io::Evaluator::compute_vertex_values()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -392,7 +392,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00063">cube_points_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l01033">polyfem::io::Evaluator::check_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01118">polyfem::io::Evaluator::compute_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01206">polyfem::io::Evaluator::compute_tensor_value()</a>, and <a class="el" href="_evaluator_8cpp_source.html#l00866">polyfem::io::Evaluator::interpolate_function()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l01034">polyfem::io::Evaluator::check_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01119">polyfem::io::Evaluator::compute_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01207">polyfem::io::Evaluator::compute_tensor_value()</a>, and <a class="el" href="_evaluator_8cpp_source.html#l00867">polyfem::io::Evaluator::interpolate_function()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -463,11 +463,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8cpp_source.html#l00194">194</a> of file <a class="el" href="_ref_element_sampler_8cpp_source.html">RefElementSampler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8cpp_source.html#l00202">202</a> of file <a class="el" href="_ref_element_sampler_8cpp_source.html">RefElementSampler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00072">area_param_</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00206">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00073">is_volume_</a>.</p>
+<p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00072">area_param_</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00073">is_volume_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l02036">polyfem::io::OutGeometryData::init_sampler()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l02100">polyfem::io::OutGeometryData::init_sampler()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -520,8 +520,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="ad5fce053a14c3a7fcc6e3e8eab1b9310" name="ad5fce053a14c3a7fcc6e3e8eab1b9310"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad5fce053a14c3a7fcc6e3e8eab1b9310">&#9670;&#160;</a></span>sample_polygon()</h2>
+<a id="a3f7010c355152a152997097c1543e16f" name="a3f7010c355152a152997097c1543e16f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f7010c355152a152997097c1543e16f">&#9670;&#160;</a></span>sample_polygon()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -542,7 +542,13 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
-          <td class="paramname"><em>faces</em>&#160;</td>
+          <td class="paramname"><em>faces</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>edges</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -552,22 +558,22 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8cpp_source.html#l00360">360</a> of file <a class="el" href="_ref_element_sampler_8cpp_source.html">RefElementSampler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8cpp_source.html#l00368">368</a> of file <a class="el" href="_ref_element_sampler_8cpp_source.html">RefElementSampler.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00072">area_param_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l01033">polyfem::io::Evaluator::check_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01118">polyfem::io::Evaluator::compute_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01206">polyfem::io::Evaluator::compute_tensor_value()</a>, and <a class="el" href="_evaluator_8cpp_source.html#l00866">polyfem::io::Evaluator::interpolate_function()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l01034">polyfem::io::Evaluator::check_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01119">polyfem::io::Evaluator::compute_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01207">polyfem::io::Evaluator::compute_tensor_value()</a>, and <a class="el" href="_evaluator_8cpp_source.html#l00867">polyfem::io::Evaluator::interpolate_function()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_ref_element_sampler_ad5fce053a14c3a7fcc6e3e8eab1b9310_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_ref_element_sampler_a3f7010c355152a152997097c1543e16f_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
 </div>
 </div>
-<a id="a37fcf816287877394c272fc224b20f2b" name="a37fcf816287877394c272fc224b20f2b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37fcf816287877394c272fc224b20f2b">&#9670;&#160;</a></span>sample_polyhedron()</h2>
+<a id="a747e43b420e9ef348218dea62e4a8cf9" name="a747e43b420e9ef348218dea62e4a8cf9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a747e43b420e9ef348218dea62e4a8cf9">&#9670;&#160;</a></span>sample_polyhedron()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -594,7 +600,13 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
-          <td class="paramname"><em>faces</em>&#160;</td>
+          <td class="paramname"><em>faces</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>edges</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -604,13 +616,13 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8cpp_source.html#l00393">393</a> of file <a class="el" href="_ref_element_sampler_8cpp_source.html">RefElementSampler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8cpp_source.html#l00409">409</a> of file <a class="el" href="_ref_element_sampler_8cpp_source.html">RefElementSampler.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l01033">polyfem::io::Evaluator::check_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01118">polyfem::io::Evaluator::compute_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01206">polyfem::io::Evaluator::compute_tensor_value()</a>, and <a class="el" href="_evaluator_8cpp_source.html#l00866">polyfem::io::Evaluator::interpolate_function()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l01034">polyfem::io::Evaluator::check_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01119">polyfem::io::Evaluator::compute_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01207">polyfem::io::Evaluator::compute_tensor_value()</a>, and <a class="el" href="_evaluator_8cpp_source.html#l00867">polyfem::io::Evaluator::interpolate_function()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_ref_element_sampler_a37fcf816287877394c272fc224b20f2b_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_ref_element_sampler_a747e43b420e9ef348218dea62e4a8cf9_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -643,7 +655,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00067">simplex_corners_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l00666">polyfem::io::Evaluator::compute_vertex_values()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l00667">polyfem::io::Evaluator::compute_vertex_values()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -738,7 +750,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00068">simplex_points_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l01033">polyfem::io::Evaluator::check_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01118">polyfem::io::Evaluator::compute_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01206">polyfem::io::Evaluator::compute_tensor_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00866">polyfem::io::Evaluator::interpolate_function()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01808">polyfem::io::OutGeometryData::save_wire()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l01034">polyfem::io::Evaluator::check_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01119">polyfem::io::Evaluator::compute_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01207">polyfem::io::Evaluator::compute_tensor_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00867">polyfem::io::Evaluator::interpolate_function()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01839">polyfem::io::OutGeometryData::save_wire()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -808,7 +820,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8hpp_source.html#l00072">72</a> of file <a class="el" href="_ref_element_sampler_8hpp_source.html">RefElementSampler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00206">build()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00194">init()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00051">num_samples()</a>, and <a class="el" href="_ref_element_sampler_8cpp_source.html#l00360">sample_polygon()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">build()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00202">init()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00051">num_samples()</a>, and <a class="el" href="_ref_element_sampler_8cpp_source.html#l00368">sample_polygon()</a>.</p>
 
 </div>
 </div>
@@ -834,7 +846,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8hpp_source.html#l00062">62</a> of file <a class="el" href="_ref_element_sampler_8hpp_source.html">RefElementSampler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00206">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00036">cube_corners()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00036">cube_corners()</a>.</p>
 
 </div>
 </div>
@@ -860,7 +872,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8hpp_source.html#l00065">65</a> of file <a class="el" href="_ref_element_sampler_8hpp_source.html">RefElementSampler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00206">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00040">cube_edges()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00040">cube_edges()</a>.</p>
 
 </div>
 </div>
@@ -886,7 +898,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8hpp_source.html#l00064">64</a> of file <a class="el" href="_ref_element_sampler_8hpp_source.html">RefElementSampler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00206">build()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00038">cube_faces()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00039">cube_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">build()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00038">cube_faces()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00039">cube_volume()</a>.</p>
 
 </div>
 </div>
@@ -912,7 +924,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8hpp_source.html#l00063">63</a> of file <a class="el" href="_ref_element_sampler_8hpp_source.html">RefElementSampler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00206">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00037">cube_points()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00037">cube_points()</a>.</p>
 
 </div>
 </div>
@@ -938,7 +950,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8hpp_source.html#l00059">59</a> of file <a class="el" href="_ref_element_sampler_8hpp_source.html">RefElementSampler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00206">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00039">cube_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00039">cube_volume()</a>.</p>
 
 </div>
 </div>
@@ -964,7 +976,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8hpp_source.html#l00073">73</a> of file <a class="el" href="_ref_element_sampler_8hpp_source.html">RefElementSampler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00206">build()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00039">cube_volume()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00194">init()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00051">num_samples()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00045">simplex_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">build()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00039">cube_volume()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00202">init()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00051">num_samples()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00045">simplex_volume()</a>.</p>
 
 </div>
 </div>
@@ -990,7 +1002,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8hpp_source.html#l00067">67</a> of file <a class="el" href="_ref_element_sampler_8hpp_source.html">RefElementSampler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00206">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00042">simplex_corners()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00042">simplex_corners()</a>.</p>
 
 </div>
 </div>
@@ -1016,7 +1028,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8hpp_source.html#l00070">70</a> of file <a class="el" href="_ref_element_sampler_8hpp_source.html">RefElementSampler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00206">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00046">simplex_edges()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00046">simplex_edges()</a>.</p>
 
 </div>
 </div>
@@ -1042,7 +1054,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8hpp_source.html#l00069">69</a> of file <a class="el" href="_ref_element_sampler_8hpp_source.html">RefElementSampler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00206">build()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00044">simplex_faces()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00045">simplex_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">build()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00044">simplex_faces()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00045">simplex_volume()</a>.</p>
 
 </div>
 </div>
@@ -1068,7 +1080,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8hpp_source.html#l00068">68</a> of file <a class="el" href="_ref_element_sampler_8hpp_source.html">RefElementSampler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00206">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00043">simplex_points()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00043">simplex_points()</a>.</p>
 
 </div>
 </div>
@@ -1094,7 +1106,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8hpp_source.html#l00060">60</a> of file <a class="el" href="_ref_element_sampler_8hpp_source.html">RefElementSampler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00206">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00045">simplex_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00045">simplex_volume()</a>.</p>
 
 </div>
 </div>

@@ -157,16 +157,14 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a798235b3c3624c42e89a456295ceee6b"><td class="memItemLeft" align="right" valign="top">std::array&lt; int, 6 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html#a798235b3c3624c42e89a456295ceee6b">global_primitive_id_</a> = {{-1, -1, -1, -1, -1, -1}}</td></tr>
-<tr class="separator:a798235b3c3624c42e89a456295ceee6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba893c56393222cb6b548ada02ac51ca"><td class="memItemLeft" align="right" valign="top">std::array&lt; int, 6 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html#aba893c56393222cb6b548ada02ac51ca">local_primitive_id_</a> = {{-1, -1, -1, -1, -1, -1}}</td></tr>
-<tr class="separator:aba893c56393222cb6b548ada02ac51ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85fb30899e6e8c8f78b3edf135ebdcc6"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html#a85fb30899e6e8c8f78b3edf135ebdcc6">global_primitive_id_</a></td></tr>
+<tr class="separator:a85fb30899e6e8c8f78b3edf135ebdcc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a3d0169b9403f606f49e3b09086e97a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html#a8a3d0169b9403f606f49e3b09086e97a">local_primitive_id_</a></td></tr>
+<tr class="separator:a8a3d0169b9403f606f49e3b09086e97a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3243a8c158121e32492682332726f840"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html#a3243a8c158121e32492682332726f840">global_element_id_</a></td></tr>
 <tr class="separator:a3243a8c158121e32492682332726f840"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a14a22a021e572ad7b1ce1deac25a75c5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826">BoundaryType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html#a14a22a021e572ad7b1ce1deac25a75c5">type_</a></td></tr>
 <tr class="separator:a14a22a021e572ad7b1ce1deac25a75c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac988b1b24bcb27c263f3b1e4cca8a34d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html#ac988b1b24bcb27c263f3b1e4cca8a34d">counter_</a></td></tr>
-<tr class="separator:ac988b1b24bcb27c263f3b1e4cca8a34d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -280,7 +278,7 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00037">37</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00106">counter_</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00100">global_primitive_id_</a>, and <a class="el" href="_local_boundary_8hpp_source.html#l00101">local_primitive_id_</a>.</p>
+<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00093">global_primitive_id_</a>, and <a class="el" href="_local_boundary_8hpp_source.html#l00094">local_primitive_id_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00019">polyfem::assembler::Problem::setup_bc()</a>.</p>
 <div class="dynheader">
@@ -315,9 +313,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00048">48</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00046">46</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00103">global_element_id_</a>.</p>
+<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00096">global_element_id_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_boundary_sampler_8cpp_source.html#l00462">polyfem::utils::BoundarySampler::boundary_quadrature()</a>, and <a class="el" href="_boundary_sampler_8cpp_source.html#l00529">polyfem::utils::BoundarySampler::sample_boundary()</a>.</p>
 <div class="dynheader">
@@ -352,11 +350,17 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00046">46</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00044">44</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00106">counter_</a>.</p>
+<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00043">size()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_problem_8cpp_source.html#l00019">polyfem::assembler::Problem::setup_bc()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_local_boundary_a18cf235d4dba3d36fcafc5f6a076f394_cgraph.svg" width="507" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -390,9 +394,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00058">58</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00056">56</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00100">global_primitive_id_</a>.</p>
+<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00093">global_primitive_id_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_boundary_sampler_8cpp_source.html#l00462">polyfem::utils::BoundarySampler::boundary_quadrature()</a>, and <a class="el" href="_boundary_sampler_8cpp_source.html#l00529">polyfem::utils::BoundarySampler::sample_boundary()</a>.</p>
 <div class="dynheader">
@@ -428,9 +432,15 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00052">52</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00050">50</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00106">counter_</a>, and <a class="el" href="_local_boundary_8hpp_source.html#l00101">local_primitive_id_</a>.</p>
+<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00094">local_primitive_id_</a>, and <a class="el" href="_local_boundary_8hpp_source.html#l00043">size()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_local_boundary_a55d593b6f8a30fbcbbeca5e66be7b7c1_cgraph.svg" width="507" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
 
 </div>
 </div>
@@ -458,13 +468,13 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00060">60</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00058">58</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00081">remove_tag_for_index()</a>, and <a class="el" href="_local_boundary_8hpp_source.html#l00045">size()</a>.</p>
+<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00079">remove_tag_for_index()</a>, and <a class="el" href="_local_boundary_8hpp_source.html#l00043">size()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_local_boundary_aa9d2e0cc1dcc42d986944a9a6b3dcbdc_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_local_boundary_aa9d2e0cc1dcc42d986944a9a6b3dcbdc_cgraph.svg" width="507" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -494,17 +504,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00081">81</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00079">79</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00106">counter_</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00100">global_primitive_id_</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00101">local_primitive_id_</a>, and <a class="el" href="_local_boundary_8hpp_source.html#l00045">size()</a>.</p>
+<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00093">global_primitive_id_</a>, and <a class="el" href="_local_boundary_8hpp_source.html#l00094">local_primitive_id_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_local_boundary_8hpp_source.html#l00060">remove_from()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_local_boundary_a6e9f77a7c97e66f73195d78f41124b2d_cgraph.svg" width="507" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-</div>
+<p class="reference">Referenced by <a class="el" href="_local_boundary_8hpp_source.html#l00058">remove_from()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -537,15 +541,15 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00045">45</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00043">43</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00106">counter_</a>.</p>
+<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00094">local_primitive_id_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_boundary_sampler_8cpp_source.html#l00462">polyfem::utils::BoundarySampler::boundary_quadrature()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00060">remove_from()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00081">remove_tag_for_index()</a>, and <a class="el" href="_boundary_sampler_8cpp_source.html#l00529">polyfem::utils::BoundarySampler::sample_boundary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_boundary_sampler_8cpp_source.html#l00462">polyfem::utils::BoundarySampler::boundary_quadrature()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00044">empty()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00050">operator[]()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00058">remove_from()</a>, and <a class="el" href="_boundary_sampler_8cpp_source.html#l00529">polyfem::utils::BoundarySampler::sample_boundary()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_local_boundary_a958c24908487b959468e380dccb42644_icgraph.svg" width="100%" height="522"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1mesh_1_1_local_boundary_a958c24908487b959468e380dccb42644_icgraph.svg" width="100%" height="590"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -574,9 +578,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00050">50</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00048">48</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00104">type_</a>.</p>
+<p class="reference">References <a class="el" href="_local_boundary_8hpp_source.html#l00097">type_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_boundary_sampler_8cpp_source.html#l00462">polyfem::utils::BoundarySampler::boundary_quadrature()</a>, and <a class="el" href="_boundary_sampler_8cpp_source.html#l00529">polyfem::utils::BoundarySampler::sample_boundary()</a>.</p>
 <div class="dynheader">
@@ -623,37 +627,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00092">92</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00085">85</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="ac988b1b24bcb27c263f3b1e4cca8a34d" name="ac988b1b24bcb27c263f3b1e4cca8a34d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac988b1b24bcb27c263f3b1e4cca8a34d">&#9670;&#160;</a></span>counter_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int polyfem::mesh::LocalBoundary::counter_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00106">106</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_local_boundary_8hpp_source.html#l00037">add_boundary_primitive()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00046">empty()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00052">operator[]()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00081">remove_tag_for_index()</a>, and <a class="el" href="_local_boundary_8hpp_source.html#l00045">size()</a>.</p>
-
-</div>
-</div>
 <a id="a3243a8c158121e32492682332726f840" name="a3243a8c158121e32492682332726f840"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3243a8c158121e32492682332726f840">&#9670;&#160;</a></span>global_element_id_</h2>
 
@@ -674,14 +652,14 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00103">103</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00096">96</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_local_boundary_8hpp_source.html#l00048">element_id()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_local_boundary_8hpp_source.html#l00046">element_id()</a>.</p>
 
 </div>
 </div>
-<a id="a798235b3c3624c42e89a456295ceee6b" name="a798235b3c3624c42e89a456295ceee6b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a798235b3c3624c42e89a456295ceee6b">&#9670;&#160;</a></span>global_primitive_id_</h2>
+<a id="a85fb30899e6e8c8f78b3edf135ebdcc6" name="a85fb30899e6e8c8f78b3edf135ebdcc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85fb30899e6e8c8f78b3edf135ebdcc6">&#9670;&#160;</a></span>global_primitive_id_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -690,7 +668,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::array&lt;int, 6&gt; polyfem::mesh::LocalBoundary::global_primitive_id_ = {{-1, -1, -1, -1, -1, -1}}</td>
+          <td class="memname">std::vector&lt;int&gt; polyfem::mesh::LocalBoundary::global_primitive_id_</td>
         </tr>
       </table>
   </td>
@@ -700,14 +678,14 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00100">100</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00093">93</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_local_boundary_8hpp_source.html#l00037">add_boundary_primitive()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00058">global_primitive_id()</a>, and <a class="el" href="_local_boundary_8hpp_source.html#l00081">remove_tag_for_index()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_local_boundary_8hpp_source.html#l00037">add_boundary_primitive()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00056">global_primitive_id()</a>, and <a class="el" href="_local_boundary_8hpp_source.html#l00079">remove_tag_for_index()</a>.</p>
 
 </div>
 </div>
-<a id="aba893c56393222cb6b548ada02ac51ca" name="aba893c56393222cb6b548ada02ac51ca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aba893c56393222cb6b548ada02ac51ca">&#9670;&#160;</a></span>local_primitive_id_</h2>
+<a id="a8a3d0169b9403f606f49e3b09086e97a" name="a8a3d0169b9403f606f49e3b09086e97a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a3d0169b9403f606f49e3b09086e97a">&#9670;&#160;</a></span>local_primitive_id_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -716,7 +694,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::array&lt;int, 6&gt; polyfem::mesh::LocalBoundary::local_primitive_id_ = {{-1, -1, -1, -1, -1, -1}}</td>
+          <td class="memname">std::vector&lt;int&gt; polyfem::mesh::LocalBoundary::local_primitive_id_</td>
         </tr>
       </table>
   </td>
@@ -726,9 +704,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00101">101</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00094">94</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_local_boundary_8hpp_source.html#l00037">add_boundary_primitive()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00052">operator[]()</a>, and <a class="el" href="_local_boundary_8hpp_source.html#l00081">remove_tag_for_index()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_local_boundary_8hpp_source.html#l00037">add_boundary_primitive()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00050">operator[]()</a>, <a class="el" href="_local_boundary_8hpp_source.html#l00079">remove_tag_for_index()</a>, and <a class="el" href="_local_boundary_8hpp_source.html#l00043">size()</a>.</p>
 
 </div>
 </div>
@@ -752,9 +730,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00104">104</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00097">97</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_local_boundary_8hpp_source.html#l00050">type()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_local_boundary_8hpp_source.html#l00048">type()</a>.</p>
 
 </div>
 </div>

@@ -136,8 +136,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a66e1b6e60e44d603e73c4baf1b7be90d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab707baa6e2436c11c6f9a517419463bb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_v_t_u_writer.html#ab707baa6e2436c11c6f9a517419463bb">write_mesh</a> (const std::string &amp;path, const Eigen::MatrixXd &amp;points, const Eigen::MatrixXi &amp;cells)</td></tr>
 <tr class="separator:ab707baa6e2436c11c6f9a517419463bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab362bfcd431ddca0552a0733e3f8de23"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_v_t_u_writer.html#ab362bfcd431ddca0552a0733e3f8de23">write_mesh</a> (const std::string &amp;path, const Eigen::MatrixXd &amp;points, const std::vector&lt; std::vector&lt; int &gt; &gt; &amp;cells, const bool is_simplicial)</td></tr>
-<tr class="separator:ab362bfcd431ddca0552a0733e3f8de23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbd251c0dae7e239dca2e5b8ccd2f353"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_v_t_u_writer.html#afbd251c0dae7e239dca2e5b8ccd2f353">write_mesh</a> (const std::string &amp;path, const Eigen::MatrixXd &amp;points, const std::vector&lt; std::vector&lt; int &gt; &gt; &amp;cells, const bool is_simplicial, const bool has_poly)</td></tr>
+<tr class="separator:afbd251c0dae7e239dca2e5b8ccd2f353"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad81262a6b782af9c3e3734a9f1cd91f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_v_t_u_writer.html#ad81262a6b782af9c3e3734a9f1cd91f1">add_field</a> (const std::string &amp;name, const Eigen::MatrixXd &amp;data)</td></tr>
 <tr class="separator:ad81262a6b782af9c3e3734a9f1cd91f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2771d9ae953be99138d2e6c2f9eb1311"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_v_t_u_writer.html#a2771d9ae953be99138d2e6c2f9eb1311">add_scalar_field</a> (const std::string &amp;name, const Eigen::MatrixXd &amp;data)</td></tr>
@@ -159,8 +159,8 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:a3165af7ff824186d2275b69cb46365ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5405ffa3451e6239efc2d36fb80c567c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_v_t_u_writer.html#a5405ffa3451e6239efc2d36fb80c567c">write_cells</a> (const Eigen::MatrixXi &amp;cells, std::ostream &amp;os)</td></tr>
 <tr class="separator:a5405ffa3451e6239efc2d36fb80c567c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a326970f5622e7d134d02cf2283d21858"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_v_t_u_writer.html#a326970f5622e7d134d02cf2283d21858">write_cells</a> (const std::vector&lt; std::vector&lt; int &gt; &gt; &amp;cells, const bool is_simplex, std::ostream &amp;os)</td></tr>
-<tr class="separator:a326970f5622e7d134d02cf2283d21858"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64ace6b3de44ff383d223dd29fd215f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_v_t_u_writer.html#a64ace6b3de44ff383d223dd29fd215f1">write_cells</a> (const std::vector&lt; std::vector&lt; int &gt; &gt; &amp;cells, const bool is_simplex, const bool is_poly, std::ostream &amp;os)</td></tr>
+<tr class="separator:a64ace6b3de44ff383d223dd29fd215f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -197,7 +197,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00069">69</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00075">75</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
 
 </div>
 </div>
@@ -228,11 +228,11 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00368">368</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00374">374</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_v_t_u_writer_8cpp_source.html#l00384">add_scalar_field()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00391">add_vector_field()</a>.</p>
+<p class="reference">References <a class="el" href="_v_t_u_writer_8cpp_source.html#l00390">add_scalar_field()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00397">add_vector_field()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01955">polyfem::io::OutGeometryData::save_points()</a>, <a class="el" href="_out_data_8cpp_source.html#l01563">polyfem::io::OutGeometryData::save_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l01088">polyfem::io::OutGeometryData::save_volume()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01808">polyfem::io::OutGeometryData::save_wire()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l02019">polyfem::io::OutGeometryData::save_points()</a>, <a class="el" href="_out_data_8cpp_source.html#l01594">polyfem::io::OutGeometryData::save_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l01110">polyfem::io::OutGeometryData::save_volume()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01839">polyfem::io::OutGeometryData::save_wire()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -274,11 +274,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00384">384</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00390">390</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_v_t_u_writer_8hpp_source.html#l00095">binary_</a>, <a class="el" href="_v_t_u_writer_8hpp_source.html#l00099">current_scalar_point_data_</a>, and <a class="el" href="_v_t_u_writer_8hpp_source.html#l00097">point_data_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00368">add_field()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00374">add_field()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -314,11 +314,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00391">391</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00397">397</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_v_t_u_writer_8hpp_source.html#l00095">binary_</a>, <a class="el" href="_v_t_u_writer_8hpp_source.html#l00100">current_vector_point_data_</a>, and <a class="el" href="_v_t_u_writer_8hpp_source.html#l00097">point_data_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00368">add_field()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00374">add_field()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -343,11 +343,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00362">362</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00368">368</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_v_t_u_writer_8hpp_source.html#l00098">cell_data_</a>, and <a class="el" href="_v_t_u_writer_8hpp_source.html#l00097">point_data_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00407">write_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00413">write_mesh()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -391,11 +391,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00157">157</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00163">163</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_v_t_u_writer_8hpp_source.html#l00095">binary_</a>, <a class="el" href="base64_layer_8cpp_source.html#l00099">polyfem::utils::base64Layer::close()</a>, <a class="el" href="_v_t_u_writer_8hpp_source.html#l00094">is_volume_</a>, and <a class="el" href="base64_layer_8cpp_source.html#l00085">polyfem::utils::base64Layer::write()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00407">write_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00413">write_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -411,8 +411,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a326970f5622e7d134d02cf2283d21858" name="a326970f5622e7d134d02cf2283d21858"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a326970f5622e7d134d02cf2283d21858">&#9670;&#160;</a></span>write_cells() <span class="overload">[2/2]</span></h2>
+<a id="a64ace6b3de44ff383d223dd29fd215f1" name="a64ace6b3de44ff383d223dd29fd215f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64ace6b3de44ff383d223dd29fd215f1">&#9670;&#160;</a></span>write_cells() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -435,6 +435,12 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>is_poly</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">std::ostream &amp;&#160;</td>
           <td class="paramname"><em>os</em>&#160;</td>
         </tr>
@@ -451,13 +457,13 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00254">254</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00260">260</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_v_t_u_writer_8hpp_source.html#l00095">binary_</a>, <a class="el" href="base64_layer_8cpp_source.html#l00099">polyfem::utils::base64Layer::close()</a>, <a class="el" href="_v_t_u_writer_8hpp_source.html#l00094">is_volume_</a>, and <a class="el" href="base64_layer_8cpp_source.html#l00085">polyfem::utils::base64Layer::write()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_v_t_u_writer_a326970f5622e7d134d02cf2283d21858_cgraph.svg" width="100%" height="482"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_v_t_u_writer_a64ace6b3de44ff383d223dd29fd215f1_cgraph.svg" width="100%" height="482"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -487,9 +493,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00100">100</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00106">106</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00407">write_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00413">write_mesh()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -539,9 +545,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00093">93</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00099">99</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00407">write_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00413">write_mesh()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -583,11 +589,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00407">407</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00413">413</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_v_t_u_writer_8cpp_source.html#l00362">clear()</a>, <a class="el" href="_v_t_u_writer_8hpp_source.html#l00094">is_volume_</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00157">write_cells()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00100">write_footer()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00093">write_header()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00073">write_point_data()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00107">write_points()</a>.</p>
+<p class="reference">References <a class="el" href="_v_t_u_writer_8cpp_source.html#l00368">clear()</a>, <a class="el" href="_v_t_u_writer_8hpp_source.html#l00094">is_volume_</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00163">write_cells()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00106">write_footer()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00099">write_header()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00079">write_point_data()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00113">write_points()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01955">polyfem::io::OutGeometryData::save_points()</a>, <a class="el" href="_out_data_8cpp_source.html#l01563">polyfem::io::OutGeometryData::save_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l01088">polyfem::io::OutGeometryData::save_volume()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01808">polyfem::io::OutGeometryData::save_wire()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l02019">polyfem::io::OutGeometryData::save_points()</a>, <a class="el" href="_out_data_8cpp_source.html#l01594">polyfem::io::OutGeometryData::save_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l01110">polyfem::io::OutGeometryData::save_volume()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01839">polyfem::io::OutGeometryData::save_wire()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -603,8 +609,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="ab362bfcd431ddca0552a0733e3f8de23" name="ab362bfcd431ddca0552a0733e3f8de23"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab362bfcd431ddca0552a0733e3f8de23">&#9670;&#160;</a></span>write_mesh() <span class="overload">[2/2]</span></h2>
+<a id="afbd251c0dae7e239dca2e5b8ccd2f353" name="afbd251c0dae7e239dca2e5b8ccd2f353"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbd251c0dae7e239dca2e5b8ccd2f353">&#9670;&#160;</a></span>write_mesh() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -631,7 +637,13 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>is_simplicial</em>&#160;</td>
+          <td class="paramname"><em>is_simplicial</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>has_poly</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -641,13 +653,13 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00430">430</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00436">436</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_v_t_u_writer_8cpp_source.html#l00362">clear()</a>, <a class="el" href="_v_t_u_writer_8hpp_source.html#l00094">is_volume_</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00157">write_cells()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00100">write_footer()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00093">write_header()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00073">write_point_data()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00107">write_points()</a>.</p>
+<p class="reference">References <a class="el" href="_v_t_u_writer_8cpp_source.html#l00368">clear()</a>, <a class="el" href="_v_t_u_writer_8hpp_source.html#l00094">is_volume_</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00163">write_cells()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00106">write_footer()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00099">write_header()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00079">write_point_data()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00113">write_points()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_v_t_u_writer_ab362bfcd431ddca0552a0733e3f8de23_cgraph.svg" width="100%" height="597"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_v_t_u_writer_afbd251c0dae7e239dca2e5b8ccd2f353_cgraph.svg" width="100%" height="597"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -677,11 +689,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00073">73</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00079">79</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_v_t_u_writer_8hpp_source.html#l00099">current_scalar_point_data_</a>, <a class="el" href="_v_t_u_writer_8hpp_source.html#l00100">current_vector_point_data_</a>, and <a class="el" href="_v_t_u_writer_8hpp_source.html#l00097">point_data_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00407">write_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00413">write_mesh()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -725,11 +737,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00107">107</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8cpp_source.html#l00113">113</a> of file <a class="el" href="_v_t_u_writer_8cpp_source.html">VTUWriter.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_v_t_u_writer_8hpp_source.html#l00095">binary_</a>, <a class="el" href="base64_layer_8cpp_source.html#l00099">polyfem::utils::base64Layer::close()</a>, <a class="el" href="_v_t_u_writer_8hpp_source.html#l00094">is_volume_</a>, and <a class="el" href="base64_layer_8cpp_source.html#l00085">polyfem::utils::base64Layer::write()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00407">write_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00413">write_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -768,7 +780,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8hpp_source.html#l00095">95</a> of file <a class="el" href="_v_t_u_writer_8hpp_source.html">VTUWriter.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00384">add_scalar_field()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00391">add_vector_field()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00157">write_cells()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00107">write_points()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00390">add_scalar_field()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00397">add_vector_field()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00163">write_cells()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00113">write_points()</a>.</p>
 
 </div>
 </div>
@@ -794,7 +806,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8hpp_source.html#l00098">98</a> of file <a class="el" href="_v_t_u_writer_8hpp_source.html">VTUWriter.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00362">clear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00368">clear()</a>.</p>
 
 </div>
 </div>
@@ -820,7 +832,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8hpp_source.html#l00099">99</a> of file <a class="el" href="_v_t_u_writer_8hpp_source.html">VTUWriter.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00384">add_scalar_field()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00073">write_point_data()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00390">add_scalar_field()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00079">write_point_data()</a>.</p>
 
 </div>
 </div>
@@ -846,7 +858,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8hpp_source.html#l00100">100</a> of file <a class="el" href="_v_t_u_writer_8hpp_source.html">VTUWriter.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00391">add_vector_field()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00073">write_point_data()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00397">add_vector_field()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00079">write_point_data()</a>.</p>
 
 </div>
 </div>
@@ -872,7 +884,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8hpp_source.html#l00094">94</a> of file <a class="el" href="_v_t_u_writer_8hpp_source.html">VTUWriter.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00157">write_cells()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00407">write_mesh()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00107">write_points()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00163">write_cells()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00413">write_mesh()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00113">write_points()</a>.</p>
 
 </div>
 </div>
@@ -898,7 +910,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_v_t_u_writer_8hpp_source.html#l00097">97</a> of file <a class="el" href="_v_t_u_writer_8hpp_source.html">VTUWriter.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00384">add_scalar_field()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00391">add_vector_field()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00362">clear()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00073">write_point_data()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_v_t_u_writer_8cpp_source.html#l00390">add_scalar_field()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00397">add_vector_field()</a>, <a class="el" href="_v_t_u_writer_8cpp_source.html#l00368">clear()</a>, and <a class="el" href="_v_t_u_writer_8cpp_source.html#l00079">write_point_data()</a>.</p>
 
 </div>
 </div>

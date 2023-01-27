@@ -1,7 +1,5 @@
 var NAVTREEINDEX32 =
 {
-"tetrahedron_8py.html#a25c5bf7d54573feb2b7d1c6d109dc6d0":[5,0,1,0,1,0,0,5],
-"tetrahedron_8py.html#a668b9a1147d5e3431070e292760130ad":[5,0,1,0,1,0,0,4],
 "tetrahedron_8py.html#a75c9bafaad4276c08e52bc8a69cdce94":[5,0,1,0,1,0,0,3],
 "tetrahedron_8py.html#a7a30f3081ce9820ed5be706027cb7936":[5,0,1,0,1,0,0,6],
 "tetrahedron_8py.html#ad4d30e972a83032d837f134c5ebbdc3f":[5,0,1,0,1,0,0,7],

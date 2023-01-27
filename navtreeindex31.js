@@ -1,7 +1,5 @@
 var NAVTREEINDEX31 =
 {
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#aaf4c3e0d60e5e2976084bef9ec437f48":[4,0,3,3,14,3,8],
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#aaf4c3e0d60e5e2976084bef9ec437f48":[3,0,6,4,16,3,8],
 "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#ac541ba1d0ddde9e47243de4969e87c9b":[3,0,6,4,16,3,0],
 "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#ac541ba1d0ddde9e47243de4969e87c9b":[4,0,3,3,14,3,0],
 "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#ac97ef9198566e6dbda507c1e2ad22243":[4,0,3,3,14,3,12],
@@ -249,5 +247,7 @@ var NAVTREEINDEX31 =
 "tetrahedron_8py.html":[5,0,1,0,1,0,0],
 "tetrahedron_8py.html#a06d630e86a5d3499521e2013f3325a95":[5,0,1,0,1,0,0,1],
 "tetrahedron_8py.html#a178443be14dbb93bf120d2baf6d61499":[5,0,1,0,1,0,0,0],
-"tetrahedron_8py.html#a17a7bd7db0e17083ba27e5ca1bef1853":[5,0,1,0,1,0,0,2]
+"tetrahedron_8py.html#a17a7bd7db0e17083ba27e5ca1bef1853":[5,0,1,0,1,0,0,2],
+"tetrahedron_8py.html#a25c5bf7d54573feb2b7d1c6d109dc6d0":[5,0,1,0,1,0,0,5],
+"tetrahedron_8py.html#a668b9a1147d5e3431070e292760130ad":[5,0,1,0,1,0,0,4]
 };
