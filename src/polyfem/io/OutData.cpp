@@ -335,7 +335,7 @@ namespace polyfem::io
 					utils::BoundarySampler::sample_parametric_tri_face(lb[k], n_samples, uv, local_pts);
 					break;
 				case BoundaryType::POLYGON:
-					utils::BoundarySampler::normal_for_polygon_edge(lb[k], lb.global_primitive_id(k), mesh, tmp_n);
+					utils::BoundarySampler::normal_for_polygon_edge(lb.element_id(), lb.global_primitive_id(k), mesh, tmp_n);
 					utils::BoundarySampler::sample_polygon_edge(lb.element_id(), lb.global_primitive_id(k), n_samples, mesh, uv, local_pts);
 					break;
 				case BoundaryType::POLYHEDRON:
@@ -527,7 +527,7 @@ namespace polyfem::io
 		int pts_total_size = 0;
 
 		Eigen::MatrixXd vis_pts_poly;
-		Eigen::MatrixXi vis_faces_poly;
+		Eigen::MatrixXi vis_faces_poly, vis_edges_poly;
 
 		for (size_t i = 0; i < current_bases.size(); ++i)
 		{
@@ -550,14 +550,14 @@ namespace polyfem::io
 			{
 				if (mesh.is_volume())
 				{
-					sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, vis_pts_poly, vis_faces_poly);
+					sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, vis_pts_poly, vis_faces_poly, vis_edges_poly);
 
 					tet_total_size += vis_faces_poly.rows();
 					pts_total_size += vis_pts_poly.rows();
 				}
 				else
 				{
-					sampler.sample_polygon(polys.at(i), vis_pts_poly, vis_faces_poly);
+					sampler.sample_polygon(polys.at(i), vis_pts_poly, vis_faces_poly, vis_edges_poly);
 
 					tet_total_size += vis_faces_poly.rows();
 					pts_total_size += vis_pts_poly.rows();
@@ -609,7 +609,7 @@ namespace polyfem::io
 			{
 				if (mesh.is_volume())
 				{
-					sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, vis_pts_poly, vis_faces_poly);
+					sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, vis_pts_poly, vis_faces_poly, vis_edges_poly);
 					bs.eval_geom_mapping(vis_pts_poly, mapped);
 
 					tets.block(tet_index, 0, vis_faces_poly.rows(), tets.cols()) = vis_faces_poly.array() + pts_index;
@@ -622,7 +622,7 @@ namespace polyfem::io
 				}
 				else
 				{
-					sampler.sample_polygon(polys.at(i), vis_pts_poly, vis_faces_poly);
+					sampler.sample_polygon(polys.at(i), vis_pts_poly, vis_faces_poly, vis_edges_poly);
 					bs.eval_geom_mapping(vis_pts_poly, mapped);
 
 					tets.block(tet_index, 0, vis_faces_poly.rows(), tets.cols()) = vis_faces_poly.array() + pts_index;
@@ -685,7 +685,10 @@ namespace polyfem::io
 				else if (mesh.is_cube(i))
 					autogen::q_nodes_2d(disc_orders(i), ref_pts);
 				else
-					continue;
+				{
+					const int n_v = static_cast<const mesh::Mesh2D &>(mesh).n_face_vertices(i);
+					ref_pts.resize(n_v, 2);
+				}
 			}
 
 			pts_total_size += ref_pts.rows();
@@ -767,6 +770,25 @@ namespace polyfem::io
 
 		if (!error_msg.empty())
 			logger().warn(error_msg);
+
+		for (size_t i = 0; i < bases.size(); ++i)
+		{
+			if (!mesh.is_volume() && !mesh.is_polytope(i))
+				continue;
+
+			const auto &mesh2d = static_cast<const mesh::Mesh2D &>(mesh);
+			const int n_v = mesh2d.n_face_vertices(i);
+
+			for (int j = 0; j < n_v; ++j)
+			{
+				points.row(pts_index) = mesh2d.point(mesh2d.face_vertex(i, j));
+				el_id(pts_index) = i;
+				discr(pts_index) = disc_orders(i);
+				elements[i].push_back(pts_index);
+
+				pts_index++;
+			}
+		}
 
 		assert(pts_index == points.rows());
 	}
@@ -1358,7 +1380,7 @@ namespace polyfem::io
 			Eigen::MatrixXd rhos(points.rows(), 1);
 
 			Eigen::MatrixXd local_pts;
-			Eigen::MatrixXi vis_faces_poly;
+			Eigen::MatrixXi vis_faces_poly, vis_edges_poly;
 
 			int index = 0;
 			const auto &sampler = ref_element_sampler;
@@ -1376,9 +1398,9 @@ namespace polyfem::io
 					else
 					{
 						if (mesh.is_volume())
-							sampler.sample_polyhedron(polys_3d.at(e).first, polys_3d.at(e).second, local_pts, vis_faces_poly);
+							sampler.sample_polyhedron(polys_3d.at(e).first, polys_3d.at(e).second, local_pts, vis_faces_poly, vis_edges_poly);
 						else
-							sampler.sample_polygon(polys.at(e), local_pts, vis_faces_poly);
+							sampler.sample_polygon(polys.at(e), local_pts, vis_faces_poly, vis_edges_poly);
 					}
 				}
 				else
@@ -1399,7 +1421,16 @@ namespace polyfem::io
 						else if (mesh.is_cube(e))
 							autogen::q_nodes_2d(disc_orders(e), local_pts);
 						else
-							continue;
+						{
+							const auto &mesh2d = static_cast<const mesh::Mesh2D &>(mesh);
+							const int n_v = mesh2d.n_face_vertices(e);
+							local_pts.resize(n_v, 2);
+
+							for (int j = 0; j < n_v; ++j)
+							{
+								local_pts.row(j) = mesh2d.point(mesh2d.face_vertex(e, j));
+							}
+						}
 					}
 				}
 
@@ -1505,7 +1536,7 @@ namespace polyfem::io
 			if (elements.empty())
 				writer.write_mesh(path, points, tets);
 			else
-				writer.write_mesh(path, points, elements, true);
+				writer.write_mesh(path, points, elements, true, disc_orders.maxCoeff() == 1);
 		}
 		else
 		{
@@ -1812,6 +1843,9 @@ namespace polyfem::io
 			return;
 		const auto &sampler = ref_element_sampler;
 
+		Eigen::MatrixXi vis_faces_poly, vis_edges_poly;
+		Eigen::MatrixXd vis_pts_poly;
+
 		const auto &current_bases = gbases;
 		int seg_total_size = 0;
 		int pts_total_size = 0;
@@ -1831,8 +1865,19 @@ namespace polyfem::io
 			{
 				pts_total_size += sampler.cube_points().rows();
 				seg_total_size += sampler.cube_edges().rows();
+				faces_total_size += sampler.cube_faces().rows();
 			}
-			// TODO add edges for poly
+			else
+			{
+				if (mesh.is_volume())
+					sampler.sample_polyhedron(state.polys_3d.at(i).first, state.polys_3d.at(i).second, vis_pts_poly, vis_faces_poly, vis_edges_poly);
+				else
+					sampler.sample_polygon(state.polys.at(i), vis_pts_poly, vis_faces_poly, vis_edges_poly);
+
+				pts_total_size += vis_pts_poly.rows();
+				seg_total_size += vis_edges_poly.rows();
+				faces_total_size += vis_faces_poly.rows();
+			}
 		}
 
 		Eigen::MatrixXd points(pts_total_size, mesh.dimension());
@@ -1864,8 +1909,27 @@ namespace polyfem::io
 				edges.block(seg_index, 0, sampler.cube_edges().rows(), edges.cols()) = sampler.cube_edges().array() + pts_index;
 				seg_index += sampler.cube_edges().rows();
 
+				faces.block(face_index, 0, sampler.cube_faces().rows(), 3) = sampler.cube_faces().array() + pts_index;
+				face_index += sampler.cube_faces().rows();
+
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
 				pts_index += mapped.rows();
+			}
+			else
+			{
+				if (mesh.is_volume())
+					sampler.sample_polyhedron(state.polys_3d.at(i).first, state.polys_3d.at(i).second, vis_pts_poly, vis_faces_poly, vis_edges_poly);
+				else
+					sampler.sample_polygon(state.polys.at(i), vis_pts_poly, vis_faces_poly, vis_edges_poly);
+
+				edges.block(seg_index, 0, vis_edges_poly.rows(), edges.cols()) = vis_edges_poly.array() + pts_index;
+				seg_index += vis_edges_poly.rows();
+
+				faces.block(face_index, 0, vis_faces_poly.rows(), 3) = vis_faces_poly.array() + pts_index;
+				face_index += vis_faces_poly.rows();
+
+				points.block(pts_index, 0, vis_pts_poly.rows(), points.cols()) = vis_pts_poly;
+				pts_index += vis_pts_poly.rows();
 			}
 		}
 
@@ -1991,7 +2055,7 @@ namespace polyfem::io
 			writer.add_field("sidesets", b_sidesets);
 			// Write the solution last so it is the default for warp-by-vector
 			writer.add_field("solution", fun);
-			writer.write_mesh(path, points, cells, false);
+			writer.write_mesh(path, points, cells, false, false);
 		}
 	}
 

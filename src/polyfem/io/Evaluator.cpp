@@ -625,17 +625,18 @@ namespace polyfem::io
 				else
 					autogen::p_nodes_2d(disc_orders(i), local_pts);
 			}
-			else
+			else if (mesh.is_cube(i))
 			{
 				if (mesh.dimension() == 3)
 					autogen::q_nodes_3d(disc_orders(i), local_pts);
 				else
 					autogen::q_nodes_2d(disc_orders(i), local_pts);
 			}
-			// else if(mesh.is_cube(i))
-			// 	local_pts = sampler.cube_points();
-			// // else
-			// 	// local_pts = vis_pts_poly[i];
+			else
+			{
+				// not supported for polys
+				continue;
+			}
 
 			vals.compute(i, actual_dim == 3, bases[i], gbases[i]);
 			const quadrature::Quadrature &quadrature = vals.quadrature;
@@ -894,7 +895,7 @@ namespace polyfem::io
 
 		int index = 0;
 
-		Eigen::MatrixXi vis_faces_poly;
+		Eigen::MatrixXi vis_faces_poly, vis_edges_poly;
 
 		for (int i = 0; i < int(basis.size()); ++i)
 		{
@@ -913,9 +914,9 @@ namespace polyfem::io
 				else
 				{
 					if (mesh.is_volume())
-						sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, local_pts, vis_faces_poly);
+						sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, local_pts, vis_faces_poly, vis_edges_poly);
 					else
-						sampler.sample_polygon(polys.at(i), local_pts, vis_faces_poly);
+						sampler.sample_polygon(polys.at(i), local_pts, vis_faces_poly, vis_edges_poly);
 				}
 			}
 			else
@@ -1058,7 +1059,7 @@ namespace polyfem::io
 
 		assert(!is_problem_scalar);
 
-		Eigen::MatrixXi vis_faces_poly;
+		Eigen::MatrixXi vis_faces_poly, vis_edges_poly;
 		Eigen::MatrixXd local_val;
 
 		for (int i = 0; i < int(bases.size()); ++i)
@@ -1079,9 +1080,9 @@ namespace polyfem::io
 				else
 				{
 					if (mesh.is_volume())
-						sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, local_pts, vis_faces_poly);
+						sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, local_pts, vis_faces_poly, vis_edges_poly);
 					else
-						sampler.sample_polygon(polys.at(i), local_pts, vis_faces_poly);
+						sampler.sample_polygon(polys.at(i), local_pts, vis_faces_poly, vis_edges_poly);
 				}
 			}
 			else
@@ -1148,7 +1149,7 @@ namespace polyfem::io
 
 		int index = 0;
 
-		Eigen::MatrixXi vis_faces_poly;
+		Eigen::MatrixXi vis_faces_poly, vis_edges_poly;
 		Eigen::MatrixXd local_val;
 
 		for (int i = 0; i < int(bases.size()); ++i)
@@ -1169,9 +1170,9 @@ namespace polyfem::io
 				else
 				{
 					if (mesh.is_volume())
-						sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, local_pts, vis_faces_poly);
+						sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, local_pts, vis_faces_poly, vis_edges_poly);
 					else
-						sampler.sample_polygon(polys.at(i), local_pts, vis_faces_poly);
+						sampler.sample_polygon(polys.at(i), local_pts, vis_faces_poly, vis_edges_poly);
 				}
 			}
 			else
@@ -1237,7 +1238,7 @@ namespace polyfem::io
 
 		int index = 0;
 
-		Eigen::MatrixXi vis_faces_poly;
+		Eigen::MatrixXi vis_faces_poly, vis_edges_poly;
 		Eigen::MatrixXd local_val;
 
 		for (int i = 0; i < int(bases.size()); ++i)
@@ -1258,9 +1259,9 @@ namespace polyfem::io
 				else
 				{
 					if (mesh.is_volume())
-						sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, local_pts, vis_faces_poly);
+						sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, local_pts, vis_faces_poly, vis_edges_poly);
 					else
-						sampler.sample_polygon(polys.at(i), local_pts, vis_faces_poly);
+						sampler.sample_polygon(polys.at(i), local_pts, vis_faces_poly, vis_edges_poly);
 				}
 			}
 			else
