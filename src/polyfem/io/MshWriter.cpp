@@ -48,7 +48,7 @@ namespace polyfem::io
 		const bool is_volume,
 		const bool binary)
 	{
-		assert(body_ids.size() == 0 || body_ids.size() == cells.rows());
+		assert(body_ids.size() == 0 || body_ids.size() == cells.size());
 
 		mshio::MshSpec out;
 
