@@ -6,59 +6,93 @@ namespace polyfem::io
 {
 	void MshWriter::write(
 		const std::string &path,
-		const Eigen::MatrixXd &V,
-		const Eigen::MatrixXi &F,
+		const mesh::Mesh &mesh,
+		const bool binary)
+	{
+		Eigen::MatrixXd points(mesh.n_vertices(), mesh.dimension());
+		for (int i = 0; i < mesh.n_vertices(); ++i)
+			points.col(i) = mesh.point(i);
+
+		std::vector<std::vector<int>> cells(mesh.n_elements());
+		for (int i = 0; i < mesh.n_elements(); ++i)
+		{
+			cells[i].resize(mesh.n_cell_vertices(i));
+			for (int j = 0; j < cells[i].size(); ++j)
+				cells[i][j] = mesh.cell_vertex(i, j);
+		}
+
+		return write(path, points, cells, mesh.get_body_ids(), mesh.is_volume(), binary);
+	}
+
+	void MshWriter::write(
+		const std::string &path,
+		const Eigen::MatrixXd &points,
+		const Eigen::MatrixXi &cells,
 		const std::vector<int> &body_ids,
 		const bool is_volume,
 		const bool binary)
 	{
-		assert(body_ids.size() == 0 || body_ids.size() == F.rows());
+		std::vector<std::vector<int>> cells_vector(cells.rows(), std::vector<int>(cells.cols()));
+		for (int i = 0; i < cells.rows(); ++i)
+			for (int j = 0; j < cells.cols(); ++j)
+				cells_vector[i][j] = cells(i, j);
+
+		return write(path, points, cells_vector, body_ids, is_volume, binary);
+	}
+
+	void MshWriter::write(
+		const std::string &path,
+		const Eigen::MatrixXd &points,
+		const std::vector<std::vector<int>> &cells,
+		const std::vector<int> &body_ids,
+		const bool is_volume,
+		const bool binary)
+	{
+		assert(body_ids.size() == 0 || body_ids.size() == cells.rows());
 
 		mshio::MshSpec out;
 
 		auto &format = out.mesh_format;
-		format.version = "4.1"; // Only version "2.2" and "4.1" are supported.
-		format.file_type = 0;   // 0: ASCII, 1: binary.
-		// NOTE: binary is broken on Greene
-		// format.file_type = binary ? 1 : 0; // 0: ASCII, 1: binary.
+		format.version = "4.1";            // Only version "2.2" and "4.1" are supported.
+		format.file_type = binary ? 1 : 0; // 0: ASCII, 1: binary.
 		format.data_size = sizeof(size_t); // Size of data, defined as sizeof(size_t) = 8.
 
 		auto &nodes = out.nodes;
-		nodes.num_entity_blocks = 1; // Number of node blocks.
-		nodes.num_nodes = V.rows();  // Total number of nodes.
+		nodes.num_entity_blocks = 1;     // Number of node blocks.
+		nodes.num_nodes = points.rows(); // Total number of nodes.
 		nodes.min_node_tag = 1;
-		nodes.max_node_tag = V.rows();
+		nodes.max_node_tag = points.rows();
 		nodes.entity_blocks.resize(1); // A std::vector of node blocks.
 		{
 			auto &block = nodes.entity_blocks[0];
-			block.entity_dim = V.cols();         // The dimension of the entity.
-			block.entity_tag = 1;                // The entity these nodes belongs to.
-			block.parametric = 0;                // 0: non-parametric, 1: parametric.
-			block.num_nodes_in_block = V.rows(); // The number of nodes in block.
+			block.entity_dim = points.cols();         // The dimension of the entity.
+			block.entity_tag = 1;                     // The entity these nodes belongs to.
+			block.parametric = 0;                     // 0: non-parametric, 1: parametric.
+			block.num_nodes_in_block = points.rows(); // The number of nodes in block.
 
-			for (int i = 0; i < V.rows(); ++i)
+			for (int i = 0; i < points.rows(); ++i)
 			{
 				block.tags.push_back(i + 1); // A std::vector of unique, positive node tags.
-				const auto p = V.row(i);
+				const auto p = points.row(i);
 				block.data.push_back(p(0));
-				block.data.push_back(p(1)); // A std::vector of coordinates (x,y,z,<u>,<v>,<w>,...)
+				block.data.push_back(p(1)); // A std::vector of coordinates (x,y,z,<u>,<points>,<w>,...)
 				block.data.push_back(is_volume ? p(2) : 0);
 			}
 		}
 
 		auto &elements = out.elements;
-		elements.num_entity_blocks = F.rows(); // Number of element blocks.
-		elements.num_elements = F.rows();      // Total number of elmeents.
+		elements.num_entity_blocks = cells.size(); // Number of element blocks.
+		elements.num_elements = cells.size();      // Total number of elmeents.
 		elements.min_element_tag = 1;
-		elements.max_element_tag = F.rows();
-		elements.entity_blocks.resize(F.rows()); // A std::vector of element blocks.
+		elements.max_element_tag = cells.size();
+		elements.entity_blocks.resize(cells.size()); // A std::vector of element blocks.
 
-		for (int i = 0; i < F.rows(); ++i)
+		for (int i = 0; i < cells.size(); ++i)
 		{
 			auto &block = elements.entity_blocks[i];
-			block.entity_dim = V.cols(); // The dimension of the elements.
-			block.entity_tag = 1;        // The entity these elements belongs to.
-			const int n_local_v = F.cols();
+			block.entity_dim = points.cols(); // The dimension of the elements.
+			block.entity_tag = 1;             // The entity these elements belongs to.
+			const int n_local_v = cells[i].size();
 			// only tet and tri for the moment
 			assert(n_local_v == 3 || n_local_v == 4);
 
@@ -66,7 +100,7 @@ namespace polyfem::io
 			block.num_elements_in_block = 1;             // The number of elements in this block.
 			block.data.push_back(i + 1);
 			for (int j = 0; j < n_local_v; ++j)
-				block.data.push_back(F(i, j) + 1); // See more detail below.
+				block.data.push_back(cells[i][j] + 1); // See more detail below.
 
 			// block.entity_tag = body_ids.empty() ? 0 : body_ids[i];
 		}
@@ -79,7 +113,7 @@ namespace polyfem::io
 		// unique_body_ids.erase(std::unique(unique_body_ids.begin(), unique_body_ids.end()), unique_body_ids.end());
 		// for (const int body_id : body_ids)
 		// {
-		// 	if (V.cols() == 2)
+		// 	if (points.cols() == 2)
 		// 	{
 		// 		out.entities.surfaces.emplace_back();
 		// 		out.entities.surfaces.back().tag = body_id;

@@ -76,7 +76,7 @@ set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 option(POLYFEM_WITH_REMESHING "Uses VMTK for remeshing"                     OFF)
 option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
-# option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"               OFF)
+option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"               OFF)
 
 #Solver
 option(POLYSOLVE_WITH_CHOLMOD          "Enable Cholmod library"            ON)

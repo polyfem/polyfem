@@ -28,7 +28,10 @@ namespace cppoptlib
 		using typename Superclass::TCriteria;
 		using typename Superclass::TVector;
 
-		NonlinearSolver(const polyfem::json &solver_params, const double dt = 1.0);
+		/// @brief Construct a new Nonlinear Solver object
+		/// @param solver_params JSON of solver parameters (see input spec.)
+		/// @param dt time step size (use 1 if not time-dependent)
+		NonlinearSolver(const polyfem::json &solver_params, const double dt);
 
 		virtual std::string name() const = 0;
 
