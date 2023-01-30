@@ -6,17 +6,16 @@
 
 namespace polyfem::solver
 {
-	FrictionForm::FrictionForm(const ipc::CollisionMesh &collision_mesh,
-							   const Eigen::MatrixXd &boundary_nodes_pos,
-							   const double epsv,
-							   const double mu,
-							   const double dhat,
-							   const ipc::BroadPhaseMethod broad_phase_method,
-							   const double dt,
-							   const ContactForm &contact_form,
-							   const int n_lagging_iters)
+	FrictionForm::FrictionForm(
+		const ipc::CollisionMesh &collision_mesh,
+		const double epsv,
+		const double mu,
+		const double dhat,
+		const ipc::BroadPhaseMethod broad_phase_method,
+		const double dt,
+		const ContactForm &contact_form,
+		const int n_lagging_iters)
 		: collision_mesh_(collision_mesh),
-		  boundary_nodes_pos_(boundary_nodes_pos),
 		  epsv_(epsv),
 		  mu_(mu),
 		  dt_(dt),
@@ -30,17 +29,23 @@ namespace polyfem::solver
 
 	Eigen::MatrixXd FrictionForm::compute_displaced_surface(const Eigen::VectorXd &x) const
 	{
-		return collision_mesh_.displace_vertices(utils::unflatten(x, boundary_nodes_pos_.cols()));
+		return collision_mesh_.displace_vertices(utils::unflatten(x, collision_mesh_.dim()));
 	}
 
 	double FrictionForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
+		assert(displaced_surface_prev_.rows() == collision_mesh_.num_vertices());
+		assert(displaced_surface_prev_.cols() == collision_mesh_.dim());
+
 		return ipc::compute_friction_potential(
 			collision_mesh_, displaced_surface_prev_, compute_displaced_surface(x),
 			friction_constraint_set_, epsv_ * dt_);
 	}
 	void FrictionForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
+		assert(displaced_surface_prev_.rows() == collision_mesh_.num_vertices());
+		assert(displaced_surface_prev_.cols() == collision_mesh_.dim());
+
 		const Eigen::VectorXd grad_friction = ipc::compute_friction_potential_gradient(
 			collision_mesh_, displaced_surface_prev_, compute_displaced_surface(x),
 			friction_constraint_set_, epsv_ * dt_);
@@ -51,6 +56,9 @@ namespace polyfem::solver
 	{
 		POLYFEM_SCOPED_TIMER("friction hessian");
 
+		assert(displaced_surface_prev_.rows() == collision_mesh_.num_vertices());
+		assert(displaced_surface_prev_.cols() == collision_mesh_.dim());
+
 		hessian = ipc::compute_friction_potential_hessian(
 			collision_mesh_, displaced_surface_prev_, compute_displaced_surface(x),
 			friction_constraint_set_, epsv_ * dt_, project_to_psd_);
@@ -58,7 +66,7 @@ namespace polyfem::solver
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
-	// TODO: hanlde lagging with more than one step
+	// TODO: handle lagging with more than one step
 	void FrictionForm::init_lagging(const Eigen::VectorXd &x)
 	{
 		displaced_surface_prev_ = compute_displaced_surface(x);
@@ -70,6 +78,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
 		ipc::Constraints constraint_set;
+		constraint_set.use_convergent_formulation = contact_form_.use_convergent_formulation();
 		constraint_set.build(
 			collision_mesh_, displaced_surface, dhat_,
 			/*dmin=*/0, broad_phase_method_);

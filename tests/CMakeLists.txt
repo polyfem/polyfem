@@ -8,6 +8,7 @@ set(test_sources
 	test_bases.cpp
 	test_matrix.cpp
   test_cmesh.cpp
+  test_geometry_utils.cpp
   test_ncmesh.cpp
 	test_normal.cpp
 	test_problem.cpp

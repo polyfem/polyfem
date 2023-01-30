@@ -2,11 +2,29 @@
 
 #include "Form.hpp"
 
+#include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
 
 #include <ipc/ipc.hpp>
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
+
+// map BroadPhaseMethod values to JSON as strings
+namespace ipc
+{
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		ipc::BroadPhaseMethod,
+		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
+		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}})
+} // namespace ipc
 
 namespace polyfem::solver
 {
@@ -18,17 +36,18 @@ namespace polyfem::solver
 	{
 	public:
 		/// @brief Construct a new Contact Form object
-		/// @param state Reference to the simulation state
+		/// @param collision_mesh Reference to the collision mesh
 		/// @param dhat Barrier activation distance
+		/// @param avg_mass Average mass of the mesh
 		/// @param use_adaptive_barrier_stiffness If true, use an adaptive barrier stiffness
 		/// @param is_time_dependent Is the simulation time dependent?
 		/// @param broad_phase_method Broad phase method to use for distance and CCD evaluations
 		/// @param ccd_tolerance Continuous collision detection tolerance
 		/// @param ccd_max_iterations Continuous collision detection maximum iterations
 		ContactForm(const ipc::CollisionMesh &collision_mesh,
-					const Eigen::MatrixXd &boundary_nodes_pos,
 					const double dhat,
 					const double avg_mass,
+					const bool use_convergent_formulation,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
 					const ipc::BroadPhaseMethod broad_phase_method,
@@ -106,10 +125,10 @@ namespace polyfem::solver
 		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
 
 		inline bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
+		inline bool use_convergent_formulation() const { return constraint_set_.use_convergent_formulation; }
 
 	private:
 		const ipc::CollisionMesh &collision_mesh_;
-		const Eigen::MatrixXd &boundary_nodes_pos_;
 
 		const double dhat_; ///< Barrier activation distance
 

@@ -4,9 +4,8 @@
 
 namespace polyfem::solver
 {
-
 	ALSolver::ALSolver(
-		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver,
+		std::shared_ptr<NLSolver> nl_solver,
 		std::shared_ptr<ALForm> al_form,
 		const double initial_al_weight,
 		const double scaling,
@@ -21,10 +20,7 @@ namespace polyfem::solver
 	{
 	}
 
-	void ALSolver::solve(
-		NLProblem &nl_problem,
-		Eigen::MatrixXd &sol,
-		bool force_al)
+	void ALSolver::solve(NLProblem &nl_problem, Eigen::MatrixXd &sol, bool force_al)
 	{
 		assert(sol.size() == nl_problem.full_size());
 
@@ -84,7 +80,15 @@ namespace polyfem::solver
 
 		nl_problem.init(sol);
 		update_barrier_stiffness(sol);
-		nl_solver->minimize(nl_problem, tmp_sol);
+		try
+		{
+			nl_solver->minimize(nl_problem, tmp_sol);
+		}
+		catch (const std::runtime_error &e)
+		{
+			sol = nl_problem.reduced_to_full(tmp_sol);
+			throw e;
+		}
 		sol = nl_problem.reduced_to_full(tmp_sol);
 
 		post_subsolve(0);

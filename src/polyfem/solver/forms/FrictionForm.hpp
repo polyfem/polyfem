@@ -17,18 +17,16 @@ namespace polyfem::solver
 	{
 	public:
 		/// @brief Construct a new Friction Form object
-		/// @param state Reference to the simulation state
+		/// @param collision_mesh Reference to the collision mesh
 		/// @param epsv Smoothing factor between static and dynamic friction
 		/// @param mu Global coefficient of friction
 		/// @param dhat Barrier activation distance
-		/// @param barrier_stiffness Barrier stiffness multiplier
 		/// @param broad_phase_method Broad-phase method used for distance computation and collision detection
 		/// @param dt Time step size
 		/// @param contact_form Pointer to contact form; necessary to have the barrier stiffnes, maybe clean me
 		/// @param n_lagging_iters Number of lagging iterations
 		FrictionForm(
 			const ipc::CollisionMesh &collision_mesh,
-			const Eigen::MatrixXd &boundary_nodes_pos,
 			const double epsv,
 			const double mu,
 			const double dhat,
@@ -62,6 +60,10 @@ namespace polyfem::solver
 		/// @param x Current solution
 		void update_lagging(const Eigen::VectorXd &x, const int iter_num) override;
 
+		/// @brief Update lagged fields
+		/// @param x Current solution
+		void update_lagging(const Eigen::VectorXd &x) { update_lagging(x, -1); };
+
 		/// @brief Get the maximum number of lagging iteration allowable.
 		int max_lagging_iterations() const override { return n_lagging_iters_; }
 
@@ -73,7 +75,6 @@ namespace polyfem::solver
 
 	private:
 		const ipc::CollisionMesh &collision_mesh_;
-		const Eigen::MatrixXd &boundary_nodes_pos_;
 
 		const double epsv_;                              ///< Smoothing factor between static and dynamic friction
 		const double mu_;                                ///< Global coefficient of friction

@@ -218,6 +218,15 @@ namespace polyfem
 			}
 		}
 
+		// Save output directory and resolve output paths dynamically
+		const std::string output_dir = resolve_input_path(this->args["output"]["directory"]);
+		logger().info("Saving output to {}", output_dir);
+		if (!output_dir.empty())
+		{
+			std::filesystem::create_directories(output_dir);
+		}
+		this->output_dir = output_dir;
+
 		std::string out_path_log = this->args["output"]["log"]["path"];
 		if (!out_path_log.empty())
 		{
@@ -294,15 +303,6 @@ namespace polyfem
 			// important for the BC
 			problem->set_parameters(args["preset_problem"]);
 		}
-
-		// Save output directory and resolve output paths dynamically
-		const std::string output_dir = resolve_input_path(this->args["output"]["directory"]);
-		logger().info("Saving output to {}", output_dir);
-		if (!output_dir.empty())
-		{
-			std::filesystem::create_directories(output_dir);
-		}
-		this->output_dir = output_dir;
 	}
 
 	void State::set_max_threads(const unsigned int max_threads)

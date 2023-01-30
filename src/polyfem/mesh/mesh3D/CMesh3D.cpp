@@ -123,7 +123,7 @@ namespace polyfem
 				p.vs.resize(nw);
 				for (int j = 0; j < nw; j++)
 				{
-					fscanf(f, "%d", &(p.vs[j]));
+					fscanf(f, "%u", &(p.vs[j]));
 				}
 			}
 			mesh_.elements.resize(nh);
@@ -138,7 +138,7 @@ namespace polyfem
 
 				for (int j = 0; j < nf; j++)
 				{
-					fscanf(f, "%d", &(h.fs[j]));
+					fscanf(f, "%u", &(h.fs[j]));
 				}
 
 				for (auto fid : h.fs)

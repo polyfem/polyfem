@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef> // size_t
+#include <array>
 #include <vector>
 
 namespace polyfem::utils
@@ -27,6 +28,33 @@ namespace polyfem::utils
 		h ^= (h >> 32);
 		return h;
 	}
+
+	/// @brief Hash function for an array where the order does not matter.
+	template <typename T, int N>
+	struct HashUnorderedArray
+	{
+		size_t operator()(std::array<T, N> v) const noexcept
+		{
+			std::sort(v.begin(), v.end()); // Sort the array to make the order irrelevant.
+			std::hash<T> hasher;
+			size_t hash = 0;
+			for (int i : v)
+				hash ^= hasher(i) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+			return hash;
+		}
+	};
+
+	template <typename T, int N>
+	struct EqualUnorderedArray
+	{
+		bool operator()(std::array<T, N> v1, std::array<T, N> v2) const noexcept
+		{
+			// Sort the array to make the order irrelevant.
+			std::sort(v1.begin(), v1.end());
+			std::sort(v2.begin(), v2.end());
+			return v1 == v2;
+		}
+	};
 
 	struct HashVector
 	{

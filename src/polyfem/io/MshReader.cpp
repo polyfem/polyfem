@@ -56,10 +56,12 @@ namespace polyfem::io
 		const int max_tag = nodes.max_node_tag;
 		int dim = -1;
 
+		assert(els.entity_blocks.size() > 0);
 		for (const auto &e : els.entity_blocks)
 		{
 			dim = std::max(dim, e.entity_dim);
 		}
+		assert(dim == 2 || dim == 3);
 
 		vertices.resize(n_vertices, dim);
 		std::vector<int> tag_to_index = std::vector<int>(max_tag + 1, -1);

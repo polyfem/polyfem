@@ -114,7 +114,7 @@ namespace polyfem::assembler
 		// #ifdef POLYFEM_WITH_TBB
 		// 		buffer_size /= tbb::task_scheduler_init::default_num_threads();
 		// #endif
-		logger().debug("buffer_size {}", buffer_size);
+		logger().trace("buffer_size {}", buffer_size);
 		try
 		{
 			stiffness.resize(n_basis * local_assembler_.size(), n_basis * local_assembler_.size());
@@ -188,7 +188,7 @@ namespace polyfem::assembler
 											if (local_storage.cache.entries_size() >= max_triplets_size)
 											{
 												local_storage.cache.prune();
-												logger().debug("cleaning memory. Current storage: {}. mat nnz: {}", local_storage.cache.capacity(), local_storage.cache.non_zeros());
+												logger().trace("cleaning memory. Current storage: {}. mat nnz: {}", local_storage.cache.capacity(), local_storage.cache.non_zeros());
 											}
 										}
 									}
@@ -206,7 +206,7 @@ namespace polyfem::assembler
 			});
 
 			timerg.stop();
-			logger().debug("done separate assembly {}s...", timerg.getElapsedTime());
+			logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
 
 			// Assemble the stiffness matrix by concatenating the tuples in each local storage
 			igl::Timer timer1, timer2, timer3;
@@ -226,7 +226,7 @@ namespace polyfem::assembler
 				s->cache.prune();
 			});
 			timerg.stop();
-			logger().debug("done pruning triplets {}s...", timerg.getElapsedTime());
+			logger().trace("done pruning triplets {}s...", timerg.getElapsedTime());
 
 			// Prepares for parallel concatenation
 			std::vector<int> offsets(storage.size());
@@ -256,7 +256,7 @@ namespace polyfem::assembler
 				stiffness.makeCompressed();
 				timerg.stop();
 
-				logger().debug("Serial assembly time: {}s...", timerg.getElapsedTime());
+				logger().trace("Serial assembly time: {}s...", timerg.getElapsedTime());
 			}
 			else
 			{
@@ -264,8 +264,8 @@ namespace polyfem::assembler
 				triplets.resize(triplet_count);
 				timer1.stop();
 
-				logger().debug("done allocate triplets {}s...", timer1.getElapsedTime());
-				logger().debug("Triplets Count: {}", triplet_count);
+				logger().trace("done allocate triplets {}s...", timer1.getElapsedTime());
+				logger().trace("Triplets Count: {}", triplet_count);
 
 				timer2.start();
 				// Parallel copy into triplets
@@ -291,14 +291,14 @@ namespace polyfem::assembler
 				});
 
 				timer2.stop();
-				logger().debug("done concatenate triplets {}s...", timer2.getElapsedTime());
+				logger().trace("done concatenate triplets {}s...", timer2.getElapsedTime());
 
 				timer3.start();
 				// Sort and assemble
 				stiffness.setFromTriplets(triplets.begin(), triplets.end());
 				timer3.stop();
 
-				logger().debug("done setFromTriplets assembly {}s...", timer3.getElapsedTime());
+				logger().trace("done setFromTriplets assembly {}s...", timer3.getElapsedTime());
 			}
 
 			// exit(0);

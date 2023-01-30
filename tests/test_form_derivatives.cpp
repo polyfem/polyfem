@@ -57,15 +57,20 @@ namespace
 					"value": [0, 0]
 				}],
 				"rhs": [10, 10]
+			},
+
+			"output": {
+				"log": {
+					"level": "warning"
+				}
 			}
 
 		})"_json;
 		in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
 
 		auto state = std::make_shared<State>();
-		state->set_max_threads(1);
-		state->init_logger("", spdlog::level::warn, false);
 		state->init(in_args, true);
+		state->set_max_threads(1);
 
 		state->load_mesh();
 
@@ -165,6 +170,7 @@ TEST_CASE("contact form derivatives", "[form][form_derivatives][contact_form]")
 
 	const double dhat = 1e-3;
 	const bool use_adaptive_barrier_stiffness = true; // GENERATE(true, false);
+	const bool use_convergent_formulation = GENERATE(true, false);
 	const double barrier_stiffness = 1e7;
 	const bool is_time_dependent = GENERATE(true, false);
 	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
@@ -173,12 +179,10 @@ TEST_CASE("contact form derivatives", "[form][form_derivatives][contact_form]")
 	const double dt = 1e-3;
 
 	ContactForm form(
-		state_ptr->collision_mesh,
-		state_ptr->boundary_nodes_pos,
-		dhat,
-		state_ptr->avg_mass,
-		use_adaptive_barrier_stiffness,
-		is_time_dependent, broad_phase_method, ccd_tolerance, ccd_max_iterations);
+		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
+		use_convergent_formulation, use_adaptive_barrier_stiffness,
+		is_time_dependent, broad_phase_method, ccd_tolerance,
+		ccd_max_iterations);
 
 	test_form(form, *state_ptr);
 }
@@ -201,6 +205,7 @@ TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]")
 {
 	const auto state_ptr = get_state();
+	const bool use_convergent_formulation = GENERATE(true, false);
 	const double epsv = 1e-3;
 	const double mu = GENERATE(0.0, 0.01, 0.1, 1.0);
 	const double dhat = 1e-3;
@@ -214,17 +219,13 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 	const int ccd_max_iterations = static_cast<int>(1e6);
 
 	const ContactForm contact_form(
-		state_ptr->collision_mesh,
-		state_ptr->boundary_nodes_pos,
-		dhat,
-		state_ptr->avg_mass,
-		use_adaptive_barrier_stiffness,
-		is_time_dependent, broad_phase_method, ccd_tolerance, ccd_max_iterations);
+		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, use_convergent_formulation,
+		use_adaptive_barrier_stiffness, is_time_dependent, broad_phase_method,
+		ccd_tolerance, ccd_max_iterations);
 
 	FrictionForm form(
-		state_ptr->collision_mesh,
-		state_ptr->boundary_nodes_pos,
-		epsv, mu, dhat, broad_phase_method, dt, contact_form, /*n_lagging_iters=*/-1);
+		state_ptr->collision_mesh, epsv, mu, dhat, broad_phase_method, dt,
+		contact_form, /*n_lagging_iters=*/-1);
 
 	test_form(form, *state_ptr);
 }

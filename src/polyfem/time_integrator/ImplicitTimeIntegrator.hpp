@@ -39,7 +39,7 @@ namespace polyfem::time_integrator
 			const std::vector<Eigen::VectorXd> &a_prevs,
 			double dt);
 
-		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
+		/// @brief Update the time integration quantities (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
 		/// @param x new solution vector
 		virtual void update_quantities(const Eigen::VectorXd &x) = 0;
 
