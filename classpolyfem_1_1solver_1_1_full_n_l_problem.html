@@ -149,8 +149,8 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a362855fac2adfd5b6b34f4e96700a9f9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a362855fac2adfd5b6b34f4e96700a9f9">FullNLProblem</a> (std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> &gt; &gt; &amp;<a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a7612662ef357ab012b69ef33f16890fe">forms</a>)</td></tr>
-<tr class="separator:a362855fac2adfd5b6b34f4e96700a9f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a178d12af13034427c7663f534cb22504"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a178d12af13034427c7663f534cb22504">FullNLProblem</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> &gt; &gt; &amp;<a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a7612662ef357ab012b69ef33f16890fe">forms</a>)</td></tr>
+<tr class="separator:a178d12af13034427c7663f534cb22504"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a093eb80c38c650815f30545de870ae49"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a093eb80c38c650815f30545de870ae49">init</a> (const TVector &amp;x0)</td></tr>
 <tr class="separator:a093eb80c38c650815f30545de870ae49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a900930999cb06a34f25216952acdcb62"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a900930999cb06a34f25216952acdcb62">value</a> (const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
@@ -212,8 +212,8 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a362855fac2adfd5b6b34f4e96700a9f9" name="a362855fac2adfd5b6b34f4e96700a9f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a362855fac2adfd5b6b34f4e96700a9f9">&#9670;&#160;</a></span>FullNLProblem()</h2>
+<a id="a178d12af13034427c7663f534cb22504" name="a178d12af13034427c7663f534cb22504"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a178d12af13034427c7663f534cb22504">&#9670;&#160;</a></span>FullNLProblem()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -221,7 +221,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">polyfem::solver::FullNLProblem::FullNLProblem </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> &gt; &gt; &amp;&#160;</td>
           <td class="paramname"><em>forms</em></td><td>)</td>
           <td></td>
         </tr>
@@ -260,7 +260,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_l_solver_8cpp_source.html#l00093">polyfem::solver::ALSolver::set_al_weight()</a>, and <a class="el" href="_a_l_solver_8cpp_source.html#l00024">polyfem::solver::ALSolver::solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_l_solver_8cpp_source.html#l00097">polyfem::solver::ALSolver::set_al_weight()</a>, and <a class="el" href="_a_l_solver_8cpp_source.html#l00023">polyfem::solver::ALSolver::solve()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -310,7 +310,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00085">polyfem::solver::NLProblem::gradient()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00103">polyfem::solver::NLProblem::gradient()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -360,7 +360,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00109">hessian()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_full_n_l_problem_8cpp_source.html#l00109">hessian()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00092">polyfem::solver::NLProblem::hessian()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_full_n_l_problem_8cpp_source.html#l00109">hessian()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00110">polyfem::solver::NLProblem::hessian()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -404,7 +404,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_l_solver_8cpp_source.html#l00024">polyfem::solver::ALSolver::solve()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00341">polyfem::State::solve_tensor_nonlinear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_l_solver_8cpp_source.html#l00023">polyfem::solver::ALSolver::solve()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00198">polyfem::State::solve_tensor_nonlinear()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -444,7 +444,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00041">polyfem::solver::NLProblem::init_lagging()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00059">polyfem::solver::NLProblem::init_lagging()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -494,7 +494,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00074">polyfem::solver::NLProblem::is_step_collision_free()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00092">polyfem::solver::NLProblem::is_step_collision_free()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -544,7 +544,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00069">polyfem::solver::NLProblem::is_step_valid()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00087">polyfem::solver::NLProblem::is_step_valid()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -594,7 +594,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00059">polyfem::solver::NLProblem::line_search_begin()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00077">polyfem::solver::NLProblem::line_search_begin()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -631,7 +631,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_l_solver_8cpp_source.html#l00024">polyfem::solver::ALSolver::solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_l_solver_8cpp_source.html#l00023">polyfem::solver::ALSolver::solve()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -660,7 +660,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>, and <a class="el" href="_full_n_l_problem_8cpp_source.html#l00034">max_lagging_iterations()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_full_n_l_problem_8cpp_source.html#l00034">max_lagging_iterations()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00341">polyfem::State::solve_tensor_nonlinear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_full_n_l_problem_8cpp_source.html#l00034">max_lagging_iterations()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00198">polyfem::State::solve_tensor_nonlinear()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -716,7 +716,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00064">polyfem::solver::NLProblem::max_step_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00082">polyfem::solver::NLProblem::max_step_size()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -766,7 +766,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00106">polyfem::solver::NLProblem::post_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00124">polyfem::solver::NLProblem::post_step()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -836,7 +836,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00101">polyfem::solver::NLProblem::solution_changed()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00119">polyfem::solver::NLProblem::solution_changed()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -886,7 +886,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00046">polyfem::solver::NLProblem::update_lagging()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00064">polyfem::solver::NLProblem::update_lagging()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -915,7 +915,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00341">polyfem::State::solve_tensor_nonlinear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00198">polyfem::State::solve_tensor_nonlinear()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -955,7 +955,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">forms_</a>, <a class="el" href="_assembler_8cpp_source.html#l00091">val</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00079">polyfem::solver::NLProblem::value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00097">polyfem::solver::NLProblem::value()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -988,7 +988,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">46</a> of file <a class="el" href="_full_n_l_problem_8hpp_source.html">FullNLProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_full_n_l_problem_8hpp_source.html#l00043">forms()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00096">gradient()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00109">hessian()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00010">init()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00022">init_lagging()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00079">is_step_collision_free()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00071">is_step_valid()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00050">line_search_begin()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00056">line_search_end()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00034">max_lagging_iterations()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00062">max_step_size()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00128">post_step()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00121">polyfem::solver::NLProblem::set_apply_DBC()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00016">set_project_to_psd()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00122">solution_changed()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00028">update_lagging()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00051">polyfem::solver::NLProblem::update_quantities()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00042">uses_lagging()</a>, and <a class="el" href="_full_n_l_problem_8cpp_source.html#l00087">value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_full_n_l_problem_8hpp_source.html#l00043">forms()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00096">gradient()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00109">hessian()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00010">init()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00022">init_lagging()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00079">is_step_collision_free()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00071">is_step_valid()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00050">line_search_begin()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00056">line_search_end()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00034">max_lagging_iterations()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00062">max_step_size()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00128">post_step()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00139">polyfem::solver::NLProblem::set_apply_DBC()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00016">set_project_to_psd()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00122">solution_changed()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00028">update_lagging()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00069">polyfem::solver::NLProblem::update_quantities()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00042">uses_lagging()</a>, and <a class="el" href="_full_n_l_problem_8cpp_source.html#l00087">value()</a>.</p>
 
 </div>
 </div>

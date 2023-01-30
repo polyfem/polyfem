@@ -46,6 +46,7 @@ var hierarchy =
     [ "polyfem::mesh::Element", "structpolyfem_1_1mesh_1_1_element.html", null ],
     [ "polyfem::assembler::ElementAssemblyValues", "classpolyfem_1_1assembler_1_1_element_assembly_values.html", null ],
     [ "polyfem::basis::ElementBases", "classpolyfem_1_1basis_1_1_element_bases.html", null ],
+    [ "polyfem::utils::EqualUnorderedArray< T, N >", "structpolyfem_1_1utils_1_1_equal_unordered_array.html", null ],
     [ "polyfem::io::Evaluator", "classpolyfem_1_1io_1_1_evaluator.html", null ],
     [ "polyfem::io::OutGeometryData::ExportOptions", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html", null ],
     [ "polyfem::utils::ExpressionValue", "classpolyfem_1_1utils_1_1_expression_value.html", null ],
@@ -74,6 +75,7 @@ var hierarchy =
     [ "polyfem::assembler::GenericMatParam", "classpolyfem_1_1assembler_1_1_generic_mat_param.html", null ],
     [ "polyfem::utils::HashMatrix", "structpolyfem_1_1utils_1_1_hash_matrix.html", null ],
     [ "polyfem::utils::HashPair", "structpolyfem_1_1utils_1_1_hash_pair.html", null ],
+    [ "polyfem::utils::HashUnorderedArray< T, N >", "structpolyfem_1_1utils_1_1_hash_unordered_array.html", null ],
     [ "polyfem::utils::HashVector", "structpolyfem_1_1utils_1_1_hash_vector.html", null ],
     [ "polyfem::assembler::Helmholtz", "classpolyfem_1_1assembler_1_1_helmholtz.html", null ],
     [ "polyfem::quadrature::HexQuadrature", "classpolyfem_1_1quadrature_1_1_hex_quadrature.html", null ],
@@ -272,7 +274,7 @@ var hierarchy =
       [ "polyfem::utils::UniformSelection", "classpolyfem_1_1utils_1_1_uniform_selection.html", null ]
     ] ],
     [ "polyfem::io::SolutionFrame", "classpolyfem_1_1io_1_1_solution_frame.html", null ],
-    [ "polyfem::SolveData", "classpolyfem_1_1_solve_data.html", null ],
+    [ "polyfem::solver::SolveData", "classpolyfem_1_1solver_1_1_solve_data.html", null ],
     [ "polyfem::utils::SpareMatrixCache", "classpolyfem_1_1utils_1_1_spare_matrix_cache.html", null ],
     [ "polyfem::basis::SplineBasis2d", "classpolyfem_1_1basis_1_1_spline_basis2d.html", null ],
     [ "polyfem::basis::SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ],
@@ -289,6 +291,7 @@ var hierarchy =
     [ "polyfem::mesh::Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", null ],
     [ "polyfem::renderer::VertexAttributes", "classpolyfem_1_1renderer_1_1_vertex_attributes.html", null ],
     [ "polyfem::assembler::ViscousDamping", "classpolyfem_1_1assembler_1_1_viscous_damping.html", null ],
+    [ "polyfem::io::VTKDataNode< T >", "classpolyfem_1_1io_1_1_v_t_k_data_node.html", null ],
     [ "polyfem::io::VTUWriter", "classpolyfem_1_1io_1_1_v_t_u_writer.html", null ],
     [ "polyfem::basis::WSPolygonalBasis2d", "classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html", null ]
 ];

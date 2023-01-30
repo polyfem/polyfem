@@ -1,6 +1,6 @@
 var classpolyfem_1_1solver_1_1_contact_form =
 [
-    [ "ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html#a605c35309f3743816a3099fc6d23eca2", null ],
+    [ "ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html#a91a57e4276cdd8ec464f93df6faa29f7", null ],
     [ "barrier_stiffness", "classpolyfem_1_1solver_1_1_contact_form.html#a41dcdd4761553a2e08ed5c44056d0440", null ],
     [ "compute_displaced_surface", "classpolyfem_1_1solver_1_1_contact_form.html#a41111805fab863090ce87259bb024995", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_contact_form.html#ac654311b96207d936de3f8e115d4cd52", null ],
@@ -17,9 +17,9 @@ var classpolyfem_1_1solver_1_1_contact_form =
     [ "update_constraint_set", "classpolyfem_1_1solver_1_1_contact_form.html#a7cb85c21eb5a2f1d04a33865d695d3d6", null ],
     [ "update_quantities", "classpolyfem_1_1solver_1_1_contact_form.html#ae4b7ce02d0f40d3bfef34c5106e22f4e", null ],
     [ "use_adaptive_barrier_stiffness", "classpolyfem_1_1solver_1_1_contact_form.html#ab20e81433681bc3eb20e5a075a447d3e", null ],
+    [ "use_convergent_formulation", "classpolyfem_1_1solver_1_1_contact_form.html#afb889e2d85c746787b9d42eddb1e0cda", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_contact_form.html#a91225a3a50c429d7668cb696f93939c5", null ],
     [ "avg_mass_", "classpolyfem_1_1solver_1_1_contact_form.html#a13bd7941951269f00eb817e59b54072a", null ],
-    [ "boundary_nodes_pos_", "classpolyfem_1_1solver_1_1_contact_form.html#a7c4b0aec5b4a23b81d911a0f836c874a", null ],
     [ "broad_phase_method_", "classpolyfem_1_1solver_1_1_contact_form.html#a868172ec8ad062ce2fca20bf5efb63c4", null ],
     [ "candidates_", "classpolyfem_1_1solver_1_1_contact_form.html#ab69af438592375b855eb3d9800a28a89", null ],
     [ "ccd_max_iterations_", "classpolyfem_1_1solver_1_1_contact_form.html#ab7bdbce32f8352e653eddb3726d449a8", null ],

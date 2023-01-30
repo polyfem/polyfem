@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['paramfunc_0',['ParamFunc',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a9bf585fe7fc81a4b569d0132a7941970',1,'polyfem::assembler::AssemblerUtils']]]
+  ['nlsolver_0',['NLSolver',['../classpolyfem_1_1solver_1_1_a_l_solver.html#a9e3eaf4963618d40f8a68bf53bb209e2',1,'polyfem::solver::ALSolver']]]
 ];

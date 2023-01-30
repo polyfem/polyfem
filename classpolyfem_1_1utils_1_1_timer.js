@@ -10,6 +10,7 @@ var classpolyfem_1_1utils_1_1_timer =
     [ "log_msg", "classpolyfem_1_1utils_1_1_timer.html#aca96b23c274fcdc240e6770ce4462492", null ],
     [ "start", "classpolyfem_1_1utils_1_1_timer.html#ae53a5ca589deb3dc3ac8a562c1aaac96", null ],
     [ "stop", "classpolyfem_1_1utils_1_1_timer.html#a63a21e271660a8fdb06117a933d56ce8", null ],
+    [ "is_running", "classpolyfem_1_1utils_1_1_timer.html#a0d19f638adf8fb144452257c2a5f58b8", null ],
     [ "m_name", "classpolyfem_1_1utils_1_1_timer.html#a5cd43f698482e8b08515c55f0b5d3e7d", null ],
     [ "m_timer", "classpolyfem_1_1utils_1_1_timer.html#ad4dba22e02ca0e4640d2d1fa17e0fd08", null ],
     [ "m_total_time", "classpolyfem_1_1utils_1_1_timer.html#a7f962cc09f34a798ce519394770eecd9", null ]

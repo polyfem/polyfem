@@ -28,7 +28,7 @@ var searchData=
   ['sol_5fon_5fgrid_25',['sol_on_grid',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a4a8fc3968f7782b38809d9bd489906fa',1,'polyfem::io::OutGeometryData::ExportOptions']]],
   ['solution_26',['solution',['../classpolyfem_1_1io_1_1_solution_frame.html#a907a6dbec022c8a779922ba71ee90dd6',1,'polyfem::io::SolutionFrame']]],
   ['solution_5fframes_27',['solution_frames',['../classpolyfem_1_1_state.html#a8847be019d2b3aa502be1e404db71f0d',1,'polyfem::State']]],
-  ['solve_5fdata_28',['solve_data',['../classpolyfem_1_1_state.html#a10f2b8246cb7a19edd5f93ad742a0651',1,'polyfem::State']]],
+  ['solve_5fdata_28',['solve_data',['../classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d',1,'polyfem::State']]],
   ['solve_5fexport_5fto_5ffile_29',['solve_export_to_file',['../classpolyfem_1_1_state.html#af52dc26a1b15cd556c1715c8662b0a8a',1,'polyfem::State::solve_export_to_file()'],['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a8895bcd7f83152e8b309b6b584cdddc4',1,'polyfem::io::OutGeometryData::ExportOptions::solve_export_to_file()']]],
   ['solver_5f_30',['solver_',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#ae3394d956ef1c607b6a5879cfecab4fb',1,'polyfem::assembler::RhsAssembler']]],
   ['solver_5fdiffusion_31',['solver_diffusion',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a4a1d135e1c9e9060855874c29ae9944c',1,'polyfem::solver::OperatorSplittingSolver']]],

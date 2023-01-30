@@ -46,7 +46,7 @@ if (edges && edges.length) {
         </defs>
 
 <script type="text/javascript">
-var viewWidth = 1280;
+var viewWidth = 1462;
 var viewHeight = 855;
 var sectionId = 'dynsection-6';
 </script>
@@ -58,9 +58,9 @@ var sectionId = 'dynsection-6';
 <g id="node1" class="node">
 <title>Node1</title>
 <g id="a_node1"><a xlink:title="Access the time step size.">
-<polygon fill="#999999" stroke="#666666" points="1272,-421 1124,-421 1124,-391 1272,-391 1272,-421"/>
-<text text-anchor="start" x="1132" y="-409" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="middle" x="1198" y="-398" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator::dt</text>
+<polygon fill="#999999" stroke="#666666" points="1454,-421 1306,-421 1306,-391 1454,-391 1454,-421"/>
+<text text-anchor="start" x="1314" y="-409" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="middle" x="1380" y="-398" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator::dt</text>
 </a>
 </g>
 </g>
@@ -68,295 +68,295 @@ var sectionId = 'dynsection-6';
 <g id="node2" class="node">
 <title>Node2</title>
 <g id="a_node2"><a xlink:href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#ad89c12b8bf6489e2fe641e298ba7db52" target="_top" xlink:title="Compute the acceleration scaling used to scale forces when integrating a second order ODE.">
-<polygon fill="white" stroke="#666666" points="851.5,-794 703.5,-794 703.5,-764 851.5,-764 851.5,-794"/>
-<text text-anchor="start" x="711.5" y="-782" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="middle" x="777.5" y="-771" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::acceleration_scaling</text>
+<polygon fill="white" stroke="#666666" points="1033.5,-794 885.5,-794 885.5,-764 1033.5,-764 1033.5,-794"/>
+<text text-anchor="start" x="893.5" y="-782" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="middle" x="959.5" y="-771" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::acceleration_scaling</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
 <g id="edge1" class="edge">
 <title>Node1&#45;&gt;Node2</title>
-<path fill="none" stroke="#63b8ff" d="M1194.27,-431.24C1184.83,-513.1 1150.71,-768.75 1088,-817 1003.04,-882.36 864.36,-823.89 805.88,-794.03"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1197.74,-431.63 1195.39,-421.3 1190.79,-430.84 1197.74,-431.63"/>
+<path fill="none" stroke="#63b8ff" d="M1376.27,-431.24C1366.83,-513.1 1332.71,-768.75 1270,-817 1185.04,-882.36 1046.36,-823.89 987.88,-794.03"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1379.74,-431.63 1377.39,-421.3 1372.79,-430.84 1379.74,-431.63"/>
 </g>
 <!-- Node7 -->
 <g id="node7" class="node">
 <title>Node7</title>
 <g id="a_node7"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a680898bf6872548e340fead0a3b3fc69" target="_top" xlink:title="Compute the acceleration scaling used to scale forces when integrating a second order ODE.">
-<polygon fill="white" stroke="#666666" points="1076.5,-807.5 926.5,-807.5 926.5,-766.5 1076.5,-766.5 1076.5,-807.5"/>
-<text text-anchor="start" x="934.5" y="-795.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="start" x="934.5" y="-784.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitEuler::acceleration</text>
-<text text-anchor="middle" x="1001.5" y="-773.5" font-family="Helvetica,sans-Serif" font-size="10.00">_scaling</text>
+<polygon fill="white" stroke="#666666" points="1258.5,-807.5 1108.5,-807.5 1108.5,-766.5 1258.5,-766.5 1258.5,-807.5"/>
+<text text-anchor="start" x="1116.5" y="-795.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="start" x="1116.5" y="-784.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitEuler::acceleration</text>
+<text text-anchor="middle" x="1183.5" y="-773.5" font-family="Helvetica,sans-Serif" font-size="10.00">_scaling</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node7 -->
 <g id="edge6" class="edge">
 <title>Node1&#45;&gt;Node7</title>
-<path fill="none" stroke="#63b8ff" d="M1196.63,-431.43C1194.31,-495.32 1179.36,-664.17 1088,-758 1084.61,-761.48 1080.79,-764.54 1076.69,-767.24"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1200.14,-431.19 1196.92,-421.09 1193.14,-430.99 1200.14,-431.19"/>
+<path fill="none" stroke="#63b8ff" d="M1378.63,-431.43C1376.31,-495.32 1361.36,-664.17 1270,-758 1266.61,-761.48 1262.79,-764.54 1258.69,-767.24"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1382.14,-431.19 1378.92,-421.09 1375.14,-430.99 1382.14,-431.19"/>
 </g>
 <!-- Node8 -->
 <g id="node8" class="node">
 <title>Node8</title>
 <g id="a_node8"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a19009346a86585458fb56c159c37dc12" target="_top" xlink:title="Compute the acceleration scaling used to scale forces when integrating a second order ODE.">
-<polygon fill="white" stroke="#666666" points="1088,-748.5 915,-748.5 915,-707.5 1088,-707.5 1088,-748.5"/>
-<text text-anchor="start" x="923" y="-736.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="start" x="923" y="-725.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::acceleration</text>
-<text text-anchor="middle" x="1001.5" y="-714.5" font-family="Helvetica,sans-Serif" font-size="10.00">_scaling</text>
+<polygon fill="white" stroke="#666666" points="1270,-748.5 1097,-748.5 1097,-707.5 1270,-707.5 1270,-748.5"/>
+<text text-anchor="start" x="1105" y="-736.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="start" x="1105" y="-725.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::acceleration</text>
+<text text-anchor="middle" x="1183.5" y="-714.5" font-family="Helvetica,sans-Serif" font-size="10.00">_scaling</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node8 -->
 <g id="edge7" class="edge">
 <title>Node1&#45;&gt;Node8</title>
-<path fill="none" stroke="#63b8ff" d="M1194.7,-431.19C1188.27,-487.05 1165.16,-622.36 1088,-698 1084.41,-701.52 1080.37,-704.64 1076.07,-707.38"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1198.19,-431.43 1195.77,-421.12 1191.23,-430.69 1198.19,-431.43"/>
+<path fill="none" stroke="#63b8ff" d="M1376.7,-431.19C1370.27,-487.05 1347.16,-622.36 1270,-698 1266.41,-701.52 1262.37,-704.64 1258.07,-707.38"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1380.19,-431.43 1377.77,-421.12 1373.23,-430.69 1380.19,-431.43"/>
 </g>
 <!-- Node9 -->
 <g id="node9" class="node">
 <title>Node9</title>
 <g id="a_node9"><a xlink:href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#adee1f06a38af8a9dd442ccfcd5f3f11e" target="_top" xlink:title="Compute .">
-<polygon fill="white" stroke="#666666" points="1071,-689 932,-689 932,-659 1071,-659 1071,-689"/>
-<text text-anchor="start" x="940" y="-677" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="middle" x="1001.5" y="-666" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::beta_dt</text>
+<polygon fill="white" stroke="#666666" points="1253,-689 1114,-689 1114,-659 1253,-659 1253,-689"/>
+<text text-anchor="start" x="1122" y="-677" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="middle" x="1183.5" y="-666" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::beta_dt</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node9 -->
 <g id="edge8" class="edge">
 <title>Node1&#45;&gt;Node9</title>
-<path fill="none" stroke="#63b8ff" d="M1193.01,-431.11C1183.8,-480.58 1156.38,-590.97 1088,-650 1082.98,-654.33 1077.24,-657.89 1071.15,-660.8"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1196.46,-431.7 1194.75,-421.25 1189.56,-430.48 1196.46,-431.7"/>
+<path fill="none" stroke="#63b8ff" d="M1375.01,-431.11C1365.8,-480.58 1338.38,-590.97 1270,-650 1264.98,-654.33 1259.24,-657.89 1253.15,-660.8"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1378.46,-431.7 1376.75,-421.25 1371.56,-430.48 1378.46,-431.7"/>
 </g>
 <!-- Node11 -->
 <g id="node11" class="node">
 <title>Node11</title>
 <g id="a_node11"><a xlink:href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#abf301b8b70f17554a716d4d3ade7b27b" target="_top" xlink:title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)...">
-<polygon fill="white" stroke="#666666" points="1079.5,-641 923.5,-641 923.5,-611 1079.5,-611 1079.5,-641"/>
-<text text-anchor="start" x="931.5" y="-629" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="middle" x="1001.5" y="-618" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::compute_acceleration</text>
+<polygon fill="white" stroke="#666666" points="1261.5,-641 1105.5,-641 1105.5,-611 1261.5,-611 1261.5,-641"/>
+<text text-anchor="start" x="1113.5" y="-629" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="middle" x="1183.5" y="-618" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::compute_acceleration</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node11 -->
 <g id="edge10" class="edge">
 <title>Node1&#45;&gt;Node11</title>
-<path fill="none" stroke="#63b8ff" d="M1190.09,-430.8C1177.17,-472.55 1145.32,-556.73 1088,-602 1083.64,-605.44 1078.82,-608.39 1073.75,-610.91"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1193.47,-431.74 1192.97,-421.15 1186.76,-429.73 1193.47,-431.74"/>
+<path fill="none" stroke="#63b8ff" d="M1372.09,-430.8C1359.17,-472.55 1327.32,-556.73 1270,-602 1265.64,-605.44 1260.82,-608.39 1255.75,-610.91"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1375.47,-431.74 1374.97,-421.15 1368.76,-429.73 1375.47,-431.74"/>
 </g>
 <!-- Node13 -->
 <g id="node13" class="node">
 <title>Node13</title>
 <g id="a_node13"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a8091df0cb5b72962c3b9d71edb19c5d8" target="_top" xlink:title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)...">
-<polygon fill="white" stroke="#666666" points="1071,-544.5 932,-544.5 932,-503.5 1071,-503.5 1071,-544.5"/>
-<text text-anchor="start" x="940" y="-532.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="start" x="940" y="-521.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitEuler::compute</text>
-<text text-anchor="middle" x="1001.5" y="-510.5" font-family="Helvetica,sans-Serif" font-size="10.00">_acceleration</text>
+<polygon fill="white" stroke="#666666" points="1253,-544.5 1114,-544.5 1114,-503.5 1253,-503.5 1253,-544.5"/>
+<text text-anchor="start" x="1122" y="-532.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="start" x="1122" y="-521.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitEuler::compute</text>
+<text text-anchor="middle" x="1183.5" y="-510.5" font-family="Helvetica,sans-Serif" font-size="10.00">_acceleration</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node13 -->
 <g id="edge13" class="edge">
 <title>Node1&#45;&gt;Node13</title>
-<path fill="none" stroke="#63b8ff" d="M1174.67,-428.33C1153.79,-448.16 1120.97,-476.73 1088,-495 1082.52,-498.04 1076.66,-500.83 1070.68,-503.39"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1177.29,-430.67 1182.06,-421.2 1172.43,-425.63 1177.29,-430.67"/>
+<path fill="none" stroke="#63b8ff" d="M1356.67,-428.33C1335.79,-448.16 1302.97,-476.73 1270,-495 1264.52,-498.04 1258.66,-500.83 1252.68,-503.39"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1359.29,-430.67 1364.06,-421.2 1354.43,-425.63 1359.29,-430.67"/>
 </g>
 <!-- Node15 -->
 <g id="node15" class="node">
 <title>Node15</title>
 <g id="a_node15"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c" target="_top" xlink:title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)...">
-<polygon fill="white" stroke="#666666" points="1079,-426.5 924,-426.5 924,-385.5 1079,-385.5 1079,-426.5"/>
-<text text-anchor="start" x="932" y="-414.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="start" x="932" y="-403.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::compute</text>
-<text text-anchor="middle" x="1001.5" y="-392.5" font-family="Helvetica,sans-Serif" font-size="10.00">_acceleration</text>
+<polygon fill="white" stroke="#666666" points="1261,-426.5 1106,-426.5 1106,-385.5 1261,-385.5 1261,-426.5"/>
+<text text-anchor="start" x="1114" y="-414.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="start" x="1114" y="-403.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::compute</text>
+<text text-anchor="middle" x="1183.5" y="-392.5" font-family="Helvetica,sans-Serif" font-size="10.00">_acceleration</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node15 -->
 <g id="edge15" class="edge">
 <title>Node1&#45;&gt;Node15</title>
-<path fill="none" stroke="#63b8ff" d="M1113.42,-406C1102.07,-406 1090.47,-406 1079.26,-406"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1113.75,-409.5 1123.75,-406 1113.75,-402.5 1113.75,-409.5"/>
+<path fill="none" stroke="#63b8ff" d="M1295.42,-406C1284.07,-406 1272.47,-406 1261.26,-406"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1295.75,-409.5 1305.75,-406 1295.75,-402.5 1295.75,-409.5"/>
 </g>
 <!-- Node17 -->
 <g id="node17" class="node">
 <title>Node17</title>
 <g id="a_node17"><a xlink:href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#a1b0164a957fe05ad87d21f00f3e521c0" target="_top" xlink:title="Compute the current velocity given the current solution and using the stored previous solution(s).">
-<polygon fill="white" stroke="#666666" points="1071,-593 932,-593 932,-563 1071,-563 1071,-593"/>
-<text text-anchor="start" x="940" y="-581" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="middle" x="1001.5" y="-570" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::compute_velocity</text>
+<polygon fill="white" stroke="#666666" points="1253,-593 1114,-593 1114,-563 1253,-563 1253,-593"/>
+<text text-anchor="start" x="1122" y="-581" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="middle" x="1183.5" y="-570" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::compute_velocity</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node17 -->
 <g id="edge17" class="edge">
 <title>Node1&#45;&gt;Node17</title>
-<path fill="none" stroke="#63b8ff" d="M1185.46,-430.57C1168.67,-463.61 1134.39,-521.93 1088,-554 1082.8,-557.59 1077.07,-560.65 1071.12,-563.26"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1188.81,-431.69 1190.1,-421.18 1182.53,-428.59 1188.81,-431.69"/>
+<path fill="none" stroke="#63b8ff" d="M1367.46,-430.57C1350.67,-463.61 1316.39,-521.93 1270,-554 1264.8,-557.59 1259.07,-560.65 1253.12,-563.26"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1370.81,-431.69 1372.1,-421.18 1364.53,-428.59 1370.81,-431.69"/>
 </g>
 <!-- Node18 -->
 <g id="node18" class="node">
 <title>Node18</title>
 <g id="a_node18"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a0a1cbc1f511599091c4743a7ce089b94" target="_top" xlink:title="Compute the current velocity given the current solution and using the stored previous solution(s).">
-<polygon fill="white" stroke="#666666" points="1071,-485.5 932,-485.5 932,-444.5 1071,-444.5 1071,-485.5"/>
-<text text-anchor="start" x="940" y="-473.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="start" x="940" y="-462.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitEuler::compute</text>
-<text text-anchor="middle" x="1001.5" y="-451.5" font-family="Helvetica,sans-Serif" font-size="10.00">_velocity</text>
+<polygon fill="white" stroke="#666666" points="1253,-485.5 1114,-485.5 1114,-444.5 1253,-444.5 1253,-485.5"/>
+<text text-anchor="start" x="1122" y="-473.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="start" x="1122" y="-462.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitEuler::compute</text>
+<text text-anchor="middle" x="1183.5" y="-451.5" font-family="Helvetica,sans-Serif" font-size="10.00">_velocity</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node18 -->
 <g id="edge19" class="edge">
 <title>Node1&#45;&gt;Node18</title>
-<path fill="none" stroke="#63b8ff" d="M1137.56,-424.03C1116.32,-430.47 1092.23,-437.78 1070.34,-444.42"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1138.86,-427.29 1147.42,-421.04 1136.83,-420.59 1138.86,-427.29"/>
+<path fill="none" stroke="#63b8ff" d="M1319.56,-424.03C1298.32,-430.47 1274.23,-437.78 1252.34,-444.42"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1320.86,-427.29 1329.42,-421.04 1318.83,-420.59 1320.86,-427.29"/>
 </g>
 <!-- Node19 -->
 <g id="node19" class="node">
 <title>Node19</title>
 <g id="a_node19"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55" target="_top" xlink:title="Compute the current velocity given the current solution and using the stored previous solution(s).">
-<polygon fill="white" stroke="#666666" points="1079,-367.5 924,-367.5 924,-326.5 1079,-326.5 1079,-367.5"/>
-<text text-anchor="start" x="932" y="-355.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="start" x="932" y="-344.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::compute</text>
-<text text-anchor="middle" x="1001.5" y="-333.5" font-family="Helvetica,sans-Serif" font-size="10.00">_velocity</text>
+<polygon fill="white" stroke="#666666" points="1261,-367.5 1106,-367.5 1106,-326.5 1261,-326.5 1261,-367.5"/>
+<text text-anchor="start" x="1114" y="-355.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="start" x="1114" y="-344.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::compute</text>
+<text text-anchor="middle" x="1183.5" y="-333.5" font-family="Helvetica,sans-Serif" font-size="10.00">_velocity</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node19 -->
 <g id="edge21" class="edge">
 <title>Node1&#45;&gt;Node19</title>
-<path fill="none" stroke="#63b8ff" d="M1137.56,-387.97C1116.32,-381.53 1092.23,-374.22 1070.34,-367.58"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1136.83,-391.41 1147.42,-390.96 1138.86,-384.71 1136.83,-391.41"/>
+<path fill="none" stroke="#63b8ff" d="M1319.56,-387.97C1298.32,-381.53 1274.23,-374.22 1252.34,-367.58"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1318.83,-391.41 1329.42,-390.96 1320.86,-384.71 1318.83,-391.41"/>
 </g>
 <!-- Node20 -->
 <g id="node20" class="node">
 <title>Node20</title>
 <g id="a_node20"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#affdb55ab50c3210da040bb1c400d61f3" target="_top" xlink:title="Compute the derivative of the velocity with respect to the solution.">
-<polygon fill="white" stroke="#666666" points="1071,-308 932,-308 932,-278 1071,-278 1071,-308"/>
-<text text-anchor="start" x="940" y="-296" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="middle" x="1001.5" y="-285" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitEuler::dv_dx</text>
+<polygon fill="white" stroke="#666666" points="1253,-308 1114,-308 1114,-278 1253,-278 1253,-308"/>
+<text text-anchor="start" x="1122" y="-296" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="middle" x="1183.5" y="-285" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitEuler::dv_dx</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node20 -->
 <g id="edge23" class="edge">
 <title>Node1&#45;&gt;Node20</title>
-<path fill="none" stroke="#63b8ff" d="M1175.25,-383.59C1154.55,-363.47 1121.64,-334.48 1088,-317 1081.43,-313.59 1074.32,-310.61 1067.1,-308.03"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1172.99,-386.28 1182.56,-390.83 1177.92,-381.31 1172.99,-386.28"/>
+<path fill="none" stroke="#63b8ff" d="M1357.25,-383.59C1336.55,-363.47 1303.64,-334.48 1270,-317 1263.43,-313.59 1256.32,-310.61 1249.1,-308.03"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1354.99,-386.28 1364.56,-390.83 1359.92,-381.31 1354.99,-386.28"/>
 </g>
 <!-- Node21 -->
 <g id="node21" class="node">
 <title>Node21</title>
 <g id="a_node21"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#aa1fa3cbf13859811aba33c04ef7db0a5" target="_top" xlink:title="Compute the derivative of the velocity with respect to the solution.">
-<polygon fill="white" stroke="#666666" points="1072.5,-260 930.5,-260 930.5,-230 1072.5,-230 1072.5,-260"/>
-<text text-anchor="start" x="938.5" y="-248" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="middle" x="1001.5" y="-237" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::dv_dx</text>
+<polygon fill="white" stroke="#666666" points="1254.5,-260 1112.5,-260 1112.5,-230 1254.5,-230 1254.5,-260"/>
+<text text-anchor="start" x="1120.5" y="-248" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="middle" x="1183.5" y="-237" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::dv_dx</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node21 -->
 <g id="edge24" class="edge">
 <title>Node1&#45;&gt;Node21</title>
-<path fill="none" stroke="#63b8ff" d="M1184.17,-381.84C1166.58,-351.03 1132.06,-298.26 1088,-269 1082.86,-265.59 1077.24,-262.66 1071.42,-260.14"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1181.16,-383.62 1189.08,-390.65 1187.27,-380.21 1181.16,-383.62"/>
+<path fill="none" stroke="#63b8ff" d="M1366.17,-381.84C1348.58,-351.03 1314.06,-298.26 1270,-269 1264.86,-265.59 1259.24,-262.66 1253.42,-260.14"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1363.16,-383.62 1371.08,-390.65 1369.27,-380.21 1363.16,-383.62"/>
 </g>
 <!-- Node22 -->
 <g id="node22" class="node">
 <title>Node22</title>
 <g id="a_node22"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa19b9d1885d166f24557a23e1612b2af" target="_top" xlink:title="Initialize the time integrator with the previous values for , , and .">
-<polygon fill="white" stroke="#666666" points="854.5,-364 700.5,-364 700.5,-334 854.5,-334 854.5,-364"/>
-<text text-anchor="start" x="708.5" y="-352" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="middle" x="777.5" y="-341" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator::init</text>
+<polygon fill="white" stroke="#666666" points="1036.5,-364 882.5,-364 882.5,-334 1036.5,-334 1036.5,-364"/>
+<text text-anchor="start" x="890.5" y="-352" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="middle" x="959.5" y="-341" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator::init</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node22 -->
 <g id="edge25" class="edge">
 <title>Node1&#45;&gt;Node22</title>
-<path fill="none" stroke="#63b8ff" d="M1190.91,-381.18C1179.13,-339.3 1148.87,-255.78 1088,-221 1021.24,-182.85 978.92,-178.27 915,-221 880.21,-244.25 908.66,-278.48 879,-308 867.51,-319.43 852.4,-327.81 837.4,-333.89"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1187.53,-382.12 1193.51,-390.87 1194.3,-380.31 1187.53,-382.12"/>
+<path fill="none" stroke="#63b8ff" d="M1372.91,-381.18C1361.13,-339.3 1330.87,-255.78 1270,-221 1203.24,-182.85 1160.92,-178.27 1097,-221 1062.21,-244.25 1090.66,-278.48 1061,-308 1049.51,-319.43 1034.4,-327.81 1019.4,-333.89"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1369.53,-382.12 1375.51,-390.87 1376.3,-380.31 1369.53,-382.12"/>
 </g>
 <!-- Node23 -->
 <g id="node23" class="node">
 <title>Node23</title>
 <g id="a_node23"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#aeb1a14e9ef7a9a1f27332d6f80956472" target="_top" xlink:title="Get the stiffness of the form.">
-<polygon fill="white" stroke="#666666" points="1072.5,-174 930.5,-174 930.5,-144 1072.5,-144 1072.5,-174"/>
-<text text-anchor="start" x="938.5" y="-162" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
-<text text-anchor="middle" x="1001.5" y="-151" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::stiffness</text>
+<polygon fill="white" stroke="#666666" points="1254.5,-174 1112.5,-174 1112.5,-144 1254.5,-144 1254.5,-174"/>
+<text text-anchor="start" x="1120.5" y="-162" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
+<text text-anchor="middle" x="1183.5" y="-151" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::stiffness</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node23 -->
 <g id="edge27" class="edge">
 <title>Node1&#45;&gt;Node23</title>
-<path fill="none" stroke="#63b8ff" d="M1191.22,-381.04C1179.52,-336.03 1148.82,-241.03 1088,-188 1081.5,-182.33 1073.85,-177.76 1065.84,-174.08"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1187.85,-382 1193.67,-390.86 1194.64,-380.31 1187.85,-382"/>
-</g>
-<!-- Node31 -->
-<g id="node31" class="node">
-<title>Node31</title>
-<g id="a_node31"><a xlink:href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#af40959a3d993bbe0a575d2412bed1b06" target="_top" xlink:title="Compute the predicted solution to be used in the inertia term .">
-<polygon fill="white" stroke="#666666" points="1071,-126 932,-126 932,-96 1071,-96 1071,-126"/>
-<text text-anchor="start" x="940" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="middle" x="1001.5" y="-103" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::x_tilde</text>
-</a>
-</g>
-</g>
-<!-- Node1&#45;&gt;Node31 -->
-<g id="edge37" class="edge">
-<title>Node1&#45;&gt;Node31</title>
-<path fill="none" stroke="#63b8ff" d="M1194.25,-380.79C1187.04,-327.32 1162.7,-201.99 1088,-135 1083.06,-130.57 1077.37,-126.96 1071.32,-124"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1190.78,-381.29 1195.5,-390.77 1197.73,-380.41 1190.78,-381.29"/>
+<path fill="none" stroke="#63b8ff" d="M1373.22,-381.04C1361.52,-336.03 1330.82,-241.03 1270,-188 1263.5,-182.33 1255.85,-177.76 1247.84,-174.08"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1369.85,-382 1375.67,-390.86 1376.64,-380.31 1369.85,-382"/>
 </g>
 <!-- Node32 -->
 <g id="node32" class="node">
 <title>Node32</title>
-<g id="a_node32"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a8c5e5e5a9a440d0acb2ed8aa03d27264" target="_top" xlink:title="Compute the predicted solution to be used in the inertia term .">
-<polygon fill="white" stroke="#666666" points="1071,-78 932,-78 932,-48 1071,-48 1071,-78"/>
-<text text-anchor="start" x="940" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="middle" x="1001.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitEuler::x_tilde</text>
+<g id="a_node32"><a xlink:href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#af40959a3d993bbe0a575d2412bed1b06" target="_top" xlink:title="Compute the predicted solution to be used in the inertia term .">
+<polygon fill="white" stroke="#666666" points="1253,-126 1114,-126 1114,-96 1253,-96 1253,-126"/>
+<text text-anchor="start" x="1122" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="middle" x="1183.5" y="-103" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::x_tilde</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node32 -->
 <g id="edge38" class="edge">
 <title>Node1&#45;&gt;Node32</title>
-<path fill="none" stroke="#63b8ff" d="M1195.98,-380.61C1192.17,-320.49 1174.06,-168.4 1088,-87 1083.07,-82.34 1077.31,-78.57 1071.15,-75.53"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1192.5,-380.94 1196.54,-390.73 1199.49,-380.55 1192.5,-380.94"/>
+<path fill="none" stroke="#63b8ff" d="M1376.25,-380.79C1369.04,-327.32 1344.7,-201.99 1270,-135 1265.06,-130.57 1259.37,-126.96 1253.32,-124"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1372.78,-381.29 1377.5,-390.77 1379.73,-380.41 1372.78,-381.29"/>
 </g>
 <!-- Node33 -->
 <g id="node33" class="node">
 <title>Node33</title>
-<g id="a_node33"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a97d855c75a16cbf65ad5d6ae70f5b2c7" target="_top" xlink:title="Compute the predicted solution to be used in the inertia term .">
-<polygon fill="white" stroke="#666666" points="1074.5,-30 928.5,-30 928.5,0 1074.5,0 1074.5,-30"/>
-<text text-anchor="start" x="936.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="middle" x="1001.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::x_tilde</text>
+<g id="a_node33"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a8c5e5e5a9a440d0acb2ed8aa03d27264" target="_top" xlink:title="Compute the predicted solution to be used in the inertia term .">
+<polygon fill="white" stroke="#666666" points="1253,-78 1114,-78 1114,-48 1253,-48 1253,-78"/>
+<text text-anchor="start" x="1122" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="middle" x="1183.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitEuler::x_tilde</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node33 -->
 <g id="edge39" class="edge">
 <title>Node1&#45;&gt;Node33</title>
-<path fill="none" stroke="#63b8ff" d="M1197.31,-380.54C1196.69,-314.31 1185.58,-135.12 1088,-39 1084.05,-35.1 1079.51,-31.83 1074.64,-29.08"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1193.81,-380.87 1197.33,-390.86 1200.81,-380.86 1193.81,-380.87"/>
+<path fill="none" stroke="#63b8ff" d="M1377.98,-380.61C1374.17,-320.49 1356.06,-168.4 1270,-87 1265.07,-82.34 1259.31,-78.57 1253.15,-75.53"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1374.5,-380.94 1378.54,-390.73 1381.49,-380.55 1374.5,-380.94"/>
+</g>
+<!-- Node34 -->
+<g id="node34" class="node">
+<title>Node34</title>
+<g id="a_node34"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a97d855c75a16cbf65ad5d6ae70f5b2c7" target="_top" xlink:title="Compute the predicted solution to be used in the inertia term .">
+<polygon fill="white" stroke="#666666" points="1256.5,-30 1110.5,-30 1110.5,0 1256.5,0 1256.5,-30"/>
+<text text-anchor="start" x="1118.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="middle" x="1183.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::x_tilde</text>
+</a>
+</g>
+</g>
+<!-- Node1&#45;&gt;Node34 -->
+<g id="edge40" class="edge">
+<title>Node1&#45;&gt;Node34</title>
+<path fill="none" stroke="#63b8ff" d="M1379.31,-380.54C1378.69,-314.31 1367.58,-135.12 1270,-39 1266.05,-35.1 1261.51,-31.83 1256.64,-29.08"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1375.81,-380.87 1379.33,-390.86 1382.81,-380.86 1375.81,-380.87"/>
 </g>
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
 <g id="a_node3"><a xlink:href="classpolyfem_1_1_state.html#ac42074a324e693f8eef5d7a96a56dc38" target="_top" xlink:title="solves transient navier stokes with FEM">
-<polygon fill="white" stroke="#666666" points="640,-380 502,-380 502,-350 640,-350 640,-380"/>
-<text text-anchor="start" x="510" y="-368" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
-<text text-anchor="middle" x="571" y="-357" font-family="Helvetica,sans-Serif" font-size="10.00">_transient_navier_stokes</text>
+<polygon fill="white" stroke="#666666" points="816.5,-380 678.5,-380 678.5,-350 816.5,-350 816.5,-380"/>
+<text text-anchor="start" x="686.5" y="-368" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
+<text text-anchor="middle" x="747.5" y="-357" font-family="Helvetica,sans-Serif" font-size="10.00">_transient_navier_stokes</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
 <g id="edge2" class="edge">
 <title>Node2&#45;&gt;Node3</title>
-<path fill="none" stroke="#63b8ff" d="M741.52,-758.41C719.83,-744 692.95,-722.91 676,-698 603.08,-590.85 579.4,-430.14 573.59,-380.3"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="739.85,-761.5 750.15,-763.98 743.65,-755.62 739.85,-761.5"/>
+<path fill="none" stroke="#63b8ff" d="M923.65,-758.33C902,-743.88 875.14,-722.78 858,-698 783.92,-590.89 757.18,-430.16 750.39,-380.3"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="921.96,-761.4 932.26,-763.91 925.77,-755.53 921.96,-761.4"/>
 </g>
 <!-- Node4 -->
 <g id="node4" class="node">
@@ -371,8 +371,8 @@ var sectionId = 'dynsection-6';
 <!-- Node3&#45;&gt;Node4 -->
 <g id="edge3" class="edge">
 <title>Node3&#45;&gt;Node4</title>
-<path fill="none" stroke="#63b8ff" d="M491.74,-358.73C441,-354.4 373.5,-348.15 314,-341 302.35,-339.6 289.94,-337.92 278.04,-336.22"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="491.72,-362.24 501.98,-359.59 492.31,-355.26 491.72,-362.24"/>
+<path fill="none" stroke="#63b8ff" d="M668.26,-359.37C561.95,-351.72 374.18,-338.2 278.37,-331.31"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="668.06,-362.86 678.28,-360.09 668.56,-355.88 668.06,-362.86"/>
 </g>
 <!-- Node5 -->
 <g id="node5" class="node">
@@ -408,221 +408,237 @@ var sectionId = 'dynsection-6';
 <g id="node10" class="node">
 <title>Node10</title>
 <g id="a_node10"><a xlink:href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#ad56af985a63f8d2761b6645c25617815" target="_top" xlink:title="Compute the derivative of the velocity with respect to the solution.">
-<polygon fill="white" stroke="#666666" points="847,-689 708,-689 708,-659 847,-659 847,-689"/>
-<text text-anchor="start" x="716" y="-677" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="middle" x="777.5" y="-666" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::dv_dx</text>
+<polygon fill="white" stroke="#666666" points="1029,-689 890,-689 890,-659 1029,-659 1029,-689"/>
+<text text-anchor="start" x="898" y="-677" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="middle" x="959.5" y="-666" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::dv_dx</text>
 </a>
 </g>
 </g>
 <!-- Node9&#45;&gt;Node10 -->
 <g id="edge9" class="edge">
 <title>Node9&#45;&gt;Node10</title>
-<path fill="none" stroke="#63b8ff" d="M921.54,-674C897.28,-674 870.79,-674 847.28,-674"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="921.78,-677.5 931.78,-674 921.78,-670.5 921.78,-677.5"/>
+<path fill="none" stroke="#63b8ff" d="M1103.54,-674C1079.28,-674 1052.79,-674 1029.28,-674"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1103.78,-677.5 1113.78,-674 1103.78,-670.5 1103.78,-677.5"/>
 </g>
 <!-- Node12 -->
 <g id="node12" class="node">
 <title>Node12</title>
-<g id="a_node12"><a xlink:href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#abc79187d3edb8fbf4c8ec1d0866b9abe" target="_top" xlink:title="Update the time integration quantaties (i.e., , , and ).">
-<polygon fill="white" stroke="#666666" points="847,-593 708,-593 708,-563 847,-563 847,-593"/>
-<text text-anchor="start" x="716" y="-581" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="middle" x="777.5" y="-570" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::update_quantities</text>
+<g id="a_node12"><a xlink:href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#abc79187d3edb8fbf4c8ec1d0866b9abe" target="_top" xlink:title="Update the time integration quantities (i.e., , , and ).">
+<polygon fill="white" stroke="#666666" points="1029,-593 890,-593 890,-563 1029,-563 1029,-593"/>
+<text text-anchor="start" x="898" y="-581" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="middle" x="959.5" y="-570" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::update_quantities</text>
 </a>
 </g>
 </g>
 <!-- Node11&#45;&gt;Node12 -->
 <g id="edge11" class="edge">
 <title>Node11&#45;&gt;Node12</title>
-<path fill="none" stroke="#63b8ff" d="M921.02,-608.81C896.85,-603.59 870.51,-597.89 847.12,-592.84"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="920.35,-612.25 930.87,-610.94 921.83,-605.41 920.35,-612.25"/>
+<path fill="none" stroke="#63b8ff" d="M1103.02,-608.81C1078.85,-603.59 1052.51,-597.89 1029.12,-592.84"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1102.35,-612.25 1112.87,-610.94 1103.83,-605.41 1102.35,-612.25"/>
 </g>
 <!-- Node12&#45;&gt;Node3 -->
 <g id="edge12" class="edge">
 <title>Node12&#45;&gt;Node3</title>
-<path fill="none" stroke="#63b8ff" d="M747.65,-556.74C726.8,-540.77 698.47,-517.82 676,-495 638.28,-456.69 600.47,-405.42 582.62,-380.25"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="745.73,-559.67 755.81,-562.92 749.96,-554.09 745.73,-559.67"/>
+<path fill="none" stroke="#63b8ff" d="M929.83,-556.56C909.06,-540.51 880.75,-517.53 858,-495 819,-456.38 778.87,-405.25 759.84,-380.18"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="927.88,-559.48 937.95,-562.78 932.14,-553.93 927.88,-559.48"/>
 </g>
 <!-- Node14 -->
 <g id="node14" class="node">
 <title>Node14</title>
-<g id="a_node14"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a3f43612a9fe0e445cccde6d6af035c5b" target="_top" xlink:title="Update the time integration quantaties (i.e., , , and ).">
-<polygon fill="white" stroke="#666666" points="847,-485.5 708,-485.5 708,-444.5 847,-444.5 847,-485.5"/>
-<text text-anchor="start" x="716" y="-473.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="start" x="716" y="-462.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitEuler::update</text>
-<text text-anchor="middle" x="777.5" y="-451.5" font-family="Helvetica,sans-Serif" font-size="10.00">_quantities</text>
+<g id="a_node14"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a3f43612a9fe0e445cccde6d6af035c5b" target="_top" xlink:title="Update the time integration quantities (i.e., , , and ).">
+<polygon fill="white" stroke="#666666" points="1029,-485.5 890,-485.5 890,-444.5 1029,-444.5 1029,-485.5"/>
+<text text-anchor="start" x="898" y="-473.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="start" x="898" y="-462.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitEuler::update</text>
+<text text-anchor="middle" x="959.5" y="-451.5" font-family="Helvetica,sans-Serif" font-size="10.00">_quantities</text>
 </a>
 </g>
 </g>
 <!-- Node13&#45;&gt;Node14 -->
 <g id="edge14" class="edge">
 <title>Node13&#45;&gt;Node14</title>
-<path fill="none" stroke="#63b8ff" d="M921.86,-503.1C897.52,-496.63 870.9,-489.56 847.28,-483.28"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="921.21,-506.55 931.78,-505.74 923.01,-499.78 921.21,-506.55"/>
+<path fill="none" stroke="#63b8ff" d="M1103.86,-503.1C1079.52,-496.63 1052.9,-489.56 1029.28,-483.28"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1103.21,-506.55 1113.78,-505.74 1105.01,-499.78 1103.21,-506.55"/>
 </g>
 <!-- Node16 -->
 <g id="node16" class="node">
 <title>Node16</title>
-<g id="a_node16"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#af94ad0e8dfab40ecba6c4956e3342860" target="_top" xlink:title="Update the time integration quantaties (i.e., , , and ).">
-<polygon fill="white" stroke="#666666" points="850.5,-425.5 704.5,-425.5 704.5,-384.5 850.5,-384.5 850.5,-425.5"/>
-<text text-anchor="start" x="712.5" y="-413.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
-<text text-anchor="start" x="712.5" y="-402.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::update</text>
-<text text-anchor="middle" x="777.5" y="-391.5" font-family="Helvetica,sans-Serif" font-size="10.00">_quantities</text>
+<g id="a_node16"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#af94ad0e8dfab40ecba6c4956e3342860" target="_top" xlink:title="Update the time integration quantities (i.e., , , and ).">
+<polygon fill="white" stroke="#666666" points="1032.5,-425.5 886.5,-425.5 886.5,-384.5 1032.5,-384.5 1032.5,-425.5"/>
+<text text-anchor="start" x="894.5" y="-413.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
+<text text-anchor="start" x="894.5" y="-402.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::update</text>
+<text text-anchor="middle" x="959.5" y="-391.5" font-family="Helvetica,sans-Serif" font-size="10.00">_quantities</text>
 </a>
 </g>
 </g>
 <!-- Node15&#45;&gt;Node16 -->
 <g id="edge16" class="edge">
 <title>Node15&#45;&gt;Node16</title>
-<path fill="none" stroke="#63b8ff" d="M913.67,-405.61C892.84,-405.52 870.82,-405.42 850.73,-405.33"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="913.77,-409.11 923.79,-405.65 913.81,-402.11 913.77,-409.11"/>
+<path fill="none" stroke="#63b8ff" d="M1095.67,-405.61C1074.84,-405.52 1052.82,-405.42 1032.73,-405.33"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1095.77,-409.11 1105.79,-405.65 1095.81,-402.11 1095.77,-409.11"/>
 </g>
 <!-- Node17&#45;&gt;Node12 -->
 <g id="edge18" class="edge">
 <title>Node17&#45;&gt;Node12</title>
-<path fill="none" stroke="#63b8ff" d="M921.54,-578C897.28,-578 870.79,-578 847.28,-578"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="921.78,-581.5 931.78,-578 921.78,-574.5 921.78,-581.5"/>
+<path fill="none" stroke="#63b8ff" d="M1103.54,-578C1079.28,-578 1052.79,-578 1029.28,-578"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1103.78,-581.5 1113.78,-578 1103.78,-574.5 1103.78,-581.5"/>
 </g>
 <!-- Node18&#45;&gt;Node14 -->
 <g id="edge20" class="edge">
 <title>Node18&#45;&gt;Node14</title>
-<path fill="none" stroke="#63b8ff" d="M921.54,-465C897.28,-465 870.79,-465 847.28,-465"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="921.78,-468.5 931.78,-465 921.78,-461.5 921.78,-468.5"/>
+<path fill="none" stroke="#63b8ff" d="M1103.54,-465C1079.28,-465 1052.79,-465 1029.28,-465"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1103.78,-468.5 1113.78,-465 1103.78,-461.5 1103.78,-468.5"/>
 </g>
 <!-- Node19&#45;&gt;Node16 -->
 <g id="edge22" class="edge">
 <title>Node19&#45;&gt;Node16</title>
-<path fill="none" stroke="#63b8ff" d="M913.96,-369.61C893.04,-375.07 870.91,-380.86 850.73,-386.13"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="915,-372.96 923.79,-367.04 913.23,-366.18 915,-372.96"/>
+<path fill="none" stroke="#63b8ff" d="M1095.96,-369.61C1075.04,-375.07 1052.91,-380.86 1032.73,-386.13"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1097,-372.96 1105.79,-367.04 1095.23,-366.18 1097,-372.96"/>
 </g>
 <!-- Node22&#45;&gt;Node3 -->
 <g id="edge26" class="edge">
 <title>Node22&#45;&gt;Node3</title>
-<path fill="none" stroke="#63b8ff" d="M690.06,-355.76C673.38,-357.07 656.12,-358.42 640.12,-359.67"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="690.66,-359.23 700.35,-354.96 690.11,-352.25 690.66,-359.23"/>
+<path fill="none" stroke="#63b8ff" d="M872.21,-355.57C853.7,-356.98 834.4,-358.46 816.69,-359.8"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="872.68,-359.05 882.39,-354.8 872.15,-352.07 872.68,-359.05"/>
 </g>
 <!-- Node24 -->
 <g id="node24" class="node">
 <title>Node24</title>
 <g id="a_node24"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a1c36fda333a6ed5b32d89a5eac0f0016" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="848.5,-299 706.5,-299 706.5,-269 848.5,-269 848.5,-299"/>
-<text text-anchor="start" x="714.5" y="-287" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
-<text text-anchor="middle" x="777.5" y="-276" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::create</text>
+<polygon fill="white" stroke="#666666" points="1030.5,-299 888.5,-299 888.5,-269 1030.5,-269 1030.5,-299"/>
+<text text-anchor="start" x="896.5" y="-287" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
+<text text-anchor="middle" x="959.5" y="-276" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::create</text>
 </a>
 </g>
 </g>
 <!-- Node23&#45;&gt;Node24 -->
 <g id="edge28" class="edge">
 <title>Node23&#45;&gt;Node24</title>
-<path fill="none" stroke="#63b8ff" d="M930.28,-178.43C924.87,-181.22 919.7,-184.39 915,-188 892.12,-205.57 901.26,-223.65 879,-242 864.92,-253.61 847.17,-262.43 830.53,-268.92"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="931.99,-181.49 939.56,-174.08 929.02,-175.15 931.99,-181.49"/>
-</g>
-<!-- Node27 -->
-<g id="node27" class="node">
-<title>Node27</title>
-<g id="a_node27"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a188aa906affa9b99b01a4875f84a5167" target="_top" xlink:title="Compute the first derivative of the value wrt x.">
-<polygon fill="white" stroke="#666666" points="860,-233.5 695,-233.5 695,-192.5 860,-192.5 860,-233.5"/>
-<text text-anchor="start" x="703" y="-221.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
-<text text-anchor="start" x="703" y="-210.5" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::first_derivative</text>
-<text text-anchor="middle" x="777.5" y="-199.5" font-family="Helvetica,sans-Serif" font-size="10.00">_unweighted</text>
-</a>
-</g>
-</g>
-<!-- Node23&#45;&gt;Node27 -->
-<g id="edge33" class="edge">
-<title>Node23&#45;&gt;Node27</title>
-<path fill="none" stroke="#63b8ff" d="M928.81,-176.44C906.97,-181.75 882.8,-187.63 860.35,-193.09"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="929.77,-179.81 938.66,-174.04 928.12,-173 929.77,-179.81"/>
+<path fill="none" stroke="#63b8ff" d="M1112.28,-178.43C1106.87,-181.22 1101.7,-184.39 1097,-188 1074.12,-205.57 1083.26,-223.65 1061,-242 1046.92,-253.61 1029.17,-262.43 1012.53,-268.92"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1113.99,-181.49 1121.56,-174.08 1111.02,-175.15 1113.99,-181.49"/>
 </g>
 <!-- Node28 -->
 <g id="node28" class="node">
 <title>Node28</title>
-<g id="a_node28"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a0da3092a137963e7dd86a1af18deea65" target="_top" xlink:title="Construct a new Lagged Regularization Form object.">
-<polygon fill="white" stroke="#666666" points="879,-174 676,-174 676,-144 879,-144 879,-174"/>
-<text text-anchor="start" x="684" y="-162" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
-<text text-anchor="middle" x="777.5" y="-151" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::RayleighDampingForm</text>
+<g id="a_node28"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a188aa906affa9b99b01a4875f84a5167" target="_top" xlink:title="Compute the first derivative of the value wrt x.">
+<polygon fill="white" stroke="#666666" points="1042,-233.5 877,-233.5 877,-192.5 1042,-192.5 1042,-233.5"/>
+<text text-anchor="start" x="885" y="-221.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
+<text text-anchor="start" x="885" y="-210.5" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::first_derivative</text>
+<text text-anchor="middle" x="959.5" y="-199.5" font-family="Helvetica,sans-Serif" font-size="10.00">_unweighted</text>
 </a>
 </g>
 </g>
 <!-- Node23&#45;&gt;Node28 -->
 <g id="edge34" class="edge">
 <title>Node23&#45;&gt;Node28</title>
-<path fill="none" stroke="#63b8ff" d="M920.2,-159C906.86,-159 892.87,-159 879.11,-159"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="920.26,-162.5 930.26,-159 920.26,-155.5 920.26,-162.5"/>
+<path fill="none" stroke="#63b8ff" d="M1110.81,-176.44C1088.97,-181.75 1064.8,-187.63 1042.35,-193.09"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1111.77,-179.81 1120.66,-174.04 1110.12,-173 1111.77,-179.81"/>
 </g>
 <!-- Node29 -->
 <g id="node29" class="node">
 <title>Node29</title>
-<g id="a_node29"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a1948ae0fed6e24a8e06b63693b2eedcc" target="_top" xlink:title="Compute the second derivative of the value wrt x.">
-<polygon fill="white" stroke="#666666" points="868,-125.5 687,-125.5 687,-84.5 868,-84.5 868,-125.5"/>
-<text text-anchor="start" x="695" y="-113.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
-<text text-anchor="start" x="695" y="-102.5" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::second_derivative</text>
-<text text-anchor="middle" x="777.5" y="-91.5" font-family="Helvetica,sans-Serif" font-size="10.00">_unweighted</text>
+<g id="a_node29"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a0da3092a137963e7dd86a1af18deea65" target="_top" xlink:title="Construct a new Lagged Regularization Form object.">
+<polygon fill="white" stroke="#666666" points="1061,-174 858,-174 858,-144 1061,-144 1061,-174"/>
+<text text-anchor="start" x="866" y="-162" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
+<text text-anchor="middle" x="959.5" y="-151" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::RayleighDampingForm</text>
 </a>
 </g>
 </g>
 <!-- Node23&#45;&gt;Node29 -->
 <g id="edge35" class="edge">
 <title>Node23&#45;&gt;Node29</title>
-<path fill="none" stroke="#63b8ff" d="M928.84,-141.57C907.79,-136.45 884.58,-130.8 862.82,-125.51"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="928.12,-145 938.66,-143.96 929.77,-138.19 928.12,-145"/>
+<path fill="none" stroke="#63b8ff" d="M1102.2,-159C1088.86,-159 1074.87,-159 1061.11,-159"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1102.26,-162.5 1112.26,-159 1102.26,-155.5 1102.26,-162.5"/>
 </g>
 <!-- Node30 -->
 <g id="node30" class="node">
 <title>Node30</title>
-<g id="a_node30"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a9c5bcdd5e6b4f1a98a9ebdc75900ec92" target="_top" xlink:title="Compute the value of the form.">
-<polygon fill="white" stroke="#666666" points="868,-66 687,-66 687,-36 868,-36 868,-66"/>
-<text text-anchor="start" x="695" y="-54" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
-<text text-anchor="middle" x="777.5" y="-43" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::value_unweighted</text>
+<g id="a_node30"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a1948ae0fed6e24a8e06b63693b2eedcc" target="_top" xlink:title="Compute the second derivative of the value wrt x.">
+<polygon fill="white" stroke="#666666" points="1050,-125.5 869,-125.5 869,-84.5 1050,-84.5 1050,-125.5"/>
+<text text-anchor="start" x="877" y="-113.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
+<text text-anchor="start" x="877" y="-102.5" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::second_derivative</text>
+<text text-anchor="middle" x="959.5" y="-91.5" font-family="Helvetica,sans-Serif" font-size="10.00">_unweighted</text>
 </a>
 </g>
 </g>
 <!-- Node23&#45;&gt;Node30 -->
 <g id="edge36" class="edge">
 <title>Node23&#45;&gt;Node30</title>
-<path fill="none" stroke="#63b8ff" d="M921.38,-139.37C919.17,-138.01 917.04,-136.56 915,-135 890.28,-116.13 904.08,-93.38 879,-75 874.37,-71.61 869.33,-68.69 864.05,-66.18"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="919.76,-142.48 930.22,-144.16 923.1,-136.32 919.76,-142.48"/>
+<path fill="none" stroke="#63b8ff" d="M1110.84,-141.57C1089.79,-136.45 1066.58,-130.8 1044.82,-125.51"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1110.12,-145 1120.66,-143.96 1111.77,-138.19 1110.12,-145"/>
+</g>
+<!-- Node31 -->
+<g id="node31" class="node">
+<title>Node31</title>
+<g id="a_node31"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a9c5bcdd5e6b4f1a98a9ebdc75900ec92" target="_top" xlink:title="Compute the value of the form.">
+<polygon fill="white" stroke="#666666" points="1050,-66 869,-66 869,-36 1050,-36 1050,-66"/>
+<text text-anchor="start" x="877" y="-54" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
+<text text-anchor="middle" x="959.5" y="-43" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::value_unweighted</text>
+</a>
+</g>
+</g>
+<!-- Node23&#45;&gt;Node31 -->
+<g id="edge37" class="edge">
+<title>Node23&#45;&gt;Node31</title>
+<path fill="none" stroke="#63b8ff" d="M1103.38,-139.37C1101.17,-138.01 1099.04,-136.56 1097,-135 1072.28,-116.13 1086.08,-93.38 1061,-75 1056.37,-71.61 1051.33,-68.69 1046.05,-66.18"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1101.76,-142.48 1112.22,-144.16 1105.1,-136.32 1101.76,-142.48"/>
 </g>
 <!-- Node25 -->
 <g id="node25" class="node">
 <title>Node25</title>
-<g id="a_node25"><a xlink:href="classpolyfem_1_1_state.html#ae0c43d17c7df4b804bd5900044a1c8d7" target="_top" xlink:title="initialize the nonlinear solver">
-<polygon fill="white" stroke="#666666" points="638.5,-299 503.5,-299 503.5,-269 638.5,-269 638.5,-299"/>
-<text text-anchor="start" x="511.5" y="-287" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::init</text>
-<text text-anchor="middle" x="571" y="-276" font-family="Helvetica,sans-Serif" font-size="10.00">_nonlinear_tensor_solve</text>
+<g id="a_node25"><a xlink:href="classpolyfem_1_1solver_1_1_solve_data.html#a8abb802436f4459fd7ea7d3c5f43d295" target="_top" xlink:title="Initialize the forms and return a vector of pointers to them.">
+<polygon fill="white" stroke="#666666" points="822,-299 673,-299 673,-269 822,-269 822,-299"/>
+<text text-anchor="start" x="681" y="-287" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::SolveData</text>
+<text text-anchor="middle" x="747.5" y="-276" font-family="Helvetica,sans-Serif" font-size="10.00">::init_forms</text>
 </a>
 </g>
 </g>
 <!-- Node24&#45;&gt;Node25 -->
 <g id="edge29" class="edge">
 <title>Node24&#45;&gt;Node25</title>
-<path fill="none" stroke="#63b8ff" d="M696.23,-284C677.13,-284 656.96,-284 638.55,-284"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="696.41,-287.5 706.41,-284 696.41,-280.5 696.41,-287.5"/>
-</g>
-<!-- Node25&#45;&gt;Node4 -->
-<g id="edge30" class="edge">
-<title>Node25&#45;&gt;Node4</title>
-<path fill="none" stroke="#63b8ff" d="M502.07,-301.22C490.11,-303.81 477.73,-306.21 466,-308 402.21,-317.75 328.36,-322.6 278.04,-324.94"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="502.99,-304.6 511.99,-299.01 501.47,-297.77 502.99,-304.6"/>
+<path fill="none" stroke="#63b8ff" d="M878.19,-284C859.8,-284 840.34,-284 822.25,-284"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="878.28,-287.5 888.28,-284 878.28,-280.5 878.28,-287.5"/>
 </g>
 <!-- Node26 -->
 <g id="node26" class="node">
 <title>Node26</title>
-<g id="a_node26"><a xlink:href="classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" target="_top" xlink:title="solves transient tensor nonlinear problem">
+<g id="a_node26"><a xlink:href="classpolyfem_1_1_state.html#ae0de6ea3bdc69e3e21ddfbcdb144180b" target="_top" xlink:title="initialize the nonlinear solver">
+<polygon fill="white" stroke="#666666" points="637,-299 502,-299 502,-269 637,-269 637,-299"/>
+<text text-anchor="start" x="510" y="-287" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::init</text>
+<text text-anchor="middle" x="569.5" y="-276" font-family="Helvetica,sans-Serif" font-size="10.00">_nonlinear_tensor_solve</text>
+</a>
+</g>
+</g>
+<!-- Node25&#45;&gt;Node26 -->
+<g id="edge30" class="edge">
+<title>Node25&#45;&gt;Node26</title>
+<path fill="none" stroke="#63b8ff" d="M662.8,-284C654.18,-284 645.5,-284 637.09,-284"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="662.88,-287.5 672.88,-284 662.88,-280.5 662.88,-287.5"/>
+</g>
+<!-- Node26&#45;&gt;Node4 -->
+<g id="edge31" class="edge">
+<title>Node26&#45;&gt;Node4</title>
+<path fill="none" stroke="#63b8ff" d="M501.56,-301.23C489.77,-303.82 477.57,-306.21 466,-308 402.22,-317.86 328.37,-322.68 278.05,-324.99"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="502.36,-304.64 511.34,-299.02 500.81,-297.81 502.36,-304.64"/>
+</g>
+<!-- Node27 -->
+<g id="node27" class="node">
+<title>Node27</title>
+<g id="a_node27"><a xlink:href="classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" target="_top" xlink:title="solves transient tensor nonlinear problem">
 <polygon fill="white" stroke="#666666" points="466,-299 314,-299 314,-269 466,-269 466,-299"/>
 <text text-anchor="start" x="322" y="-287" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 <text text-anchor="middle" x="390" y="-276" font-family="Helvetica,sans-Serif" font-size="10.00">_transient_tensor_nonlinear</text>
 </a>
 </g>
 </g>
-<!-- Node25&#45;&gt;Node26 -->
-<g id="edge31" class="edge">
-<title>Node25&#45;&gt;Node26</title>
-<path fill="none" stroke="#63b8ff" d="M493.28,-284C484.29,-284 475.12,-284 466.14,-284"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="493.35,-287.5 503.35,-284 493.35,-280.5 493.35,-287.5"/>
-</g>
-<!-- Node26&#45;&gt;Node4 -->
+<!-- Node26&#45;&gt;Node27 -->
 <g id="edge32" class="edge">
-<title>Node26&#45;&gt;Node4</title>
+<title>Node26&#45;&gt;Node27</title>
+<path fill="none" stroke="#63b8ff" d="M491.63,-284C483.14,-284 474.49,-284 466.02,-284"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="491.9,-287.5 501.9,-284 491.9,-280.5 491.9,-287.5"/>
+</g>
+<!-- Node27&#45;&gt;Node4 -->
+<g id="edge33" class="edge">
+<title>Node27&#45;&gt;Node4</title>
 <path fill="none" stroke="#63b8ff" d="M319.49,-301.53C305.76,-304.99 291.47,-308.6 278.1,-311.97"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="320.53,-304.88 329.37,-299.04 318.82,-298.09 320.53,-304.88"/>
 </g>

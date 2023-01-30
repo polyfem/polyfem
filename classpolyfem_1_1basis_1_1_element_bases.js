@@ -13,6 +13,7 @@ var classpolyfem_1_1basis_1_1_element_bases =
     [ "evaluate_grads_default", "classpolyfem_1_1basis_1_1_element_bases.html#aae3b739e75920739799e866e4b0c448c", null ],
     [ "is_complete", "classpolyfem_1_1basis_1_1_element_bases.html#a6e17ce1a3d515a82126d02a84ff94a49", null ],
     [ "local_nodes_for_primitive", "classpolyfem_1_1basis_1_1_element_bases.html#a9fde226f98331cb0c54e13baa95d5a98", null ],
+    [ "nodes", "classpolyfem_1_1basis_1_1_element_bases.html#a71f1ea2b92e799be2985c5fdf25364bf", null ],
     [ "set_bases_func", "classpolyfem_1_1basis_1_1_element_bases.html#a0a352d6eecadbe30bf82d8cc475dfeef", null ],
     [ "set_grads_func", "classpolyfem_1_1basis_1_1_element_bases.html#aa5af92cc96cae3fdb89dbbaf20524f33", null ],
     [ "set_local_node_from_primitive_func", "classpolyfem_1_1basis_1_1_element_bases.html#a4d8eaf01d57981f0e7449692a742ceb4", null ],

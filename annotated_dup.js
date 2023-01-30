@@ -92,6 +92,7 @@ var annotated_dup =
         [ "OutRuntimeData", "classpolyfem_1_1io_1_1_out_runtime_data.html", "classpolyfem_1_1io_1_1_out_runtime_data" ],
         [ "OutStatsData", "classpolyfem_1_1io_1_1_out_stats_data.html", "classpolyfem_1_1io_1_1_out_stats_data" ],
         [ "SolutionFrame", "classpolyfem_1_1io_1_1_solution_frame.html", "classpolyfem_1_1io_1_1_solution_frame" ],
+        [ "VTKDataNode", "classpolyfem_1_1io_1_1_v_t_k_data_node.html", "classpolyfem_1_1io_1_1_v_t_k_data_node" ],
         [ "VTUWriter", "classpolyfem_1_1io_1_1_v_t_u_writer.html", "classpolyfem_1_1io_1_1_v_t_u_writer" ]
       ] ],
       [ "mesh", "namespacepolyfem_1_1mesh.html", [
@@ -210,6 +211,7 @@ var annotated_dup =
         [ "NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html", "classpolyfem_1_1solver_1_1_n_l_problem" ],
         [ "OperatorSplittingSolver", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html", "classpolyfem_1_1solver_1_1_operator_splitting_solver" ],
         [ "RayleighDampingForm", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html", "classpolyfem_1_1solver_1_1_rayleigh_damping_form" ],
+        [ "SolveData", "classpolyfem_1_1solver_1_1_solve_data.html", "classpolyfem_1_1solver_1_1_solve_data" ],
         [ "TransientNavierStokesSolver", "classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html", "classpolyfem_1_1solver_1_1_transient_navier_stokes_solver" ]
       ] ],
       [ "time_integrator", "namespacepolyfem_1_1time__integrator.html", [
@@ -226,10 +228,12 @@ var annotated_dup =
         [ "BoxSideSelection", "classpolyfem_1_1utils_1_1_box_side_selection.html", "classpolyfem_1_1utils_1_1_box_side_selection" ],
         [ "CylinderSelection", "classpolyfem_1_1utils_1_1_cylinder_selection.html", "classpolyfem_1_1utils_1_1_cylinder_selection" ],
         [ "EdgeSampler", "classpolyfem_1_1utils_1_1_edge_sampler.html", null ],
+        [ "EqualUnorderedArray", "structpolyfem_1_1utils_1_1_equal_unordered_array.html", "structpolyfem_1_1utils_1_1_equal_unordered_array" ],
         [ "ExpressionValue", "classpolyfem_1_1utils_1_1_expression_value.html", "classpolyfem_1_1utils_1_1_expression_value" ],
         [ "FileSelection", "classpolyfem_1_1utils_1_1_file_selection.html", "classpolyfem_1_1utils_1_1_file_selection" ],
         [ "HashMatrix", "structpolyfem_1_1utils_1_1_hash_matrix.html", "structpolyfem_1_1utils_1_1_hash_matrix" ],
         [ "HashPair", "structpolyfem_1_1utils_1_1_hash_pair.html", "structpolyfem_1_1utils_1_1_hash_pair" ],
+        [ "HashUnorderedArray", "structpolyfem_1_1utils_1_1_hash_unordered_array.html", "structpolyfem_1_1utils_1_1_hash_unordered_array" ],
         [ "HashVector", "structpolyfem_1_1utils_1_1_hash_vector.html", "structpolyfem_1_1utils_1_1_hash_vector" ],
         [ "InterpolatedFunction2d", "classpolyfem_1_1utils_1_1_interpolated_function2d.html", "classpolyfem_1_1utils_1_1_interpolated_function2d" ],
         [ "Interpolation", "classpolyfem_1_1utils_1_1_interpolation.html", "classpolyfem_1_1utils_1_1_interpolation" ],
@@ -253,7 +257,6 @@ var annotated_dup =
       ] ],
       [ "AutoDiffAllocator", "classpolyfem_1_1_auto_diff_allocator.html", "classpolyfem_1_1_auto_diff_allocator" ],
       [ "AutoDiffAllocator< double >", "classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html", "classpolyfem_1_1_auto_diff_allocator_3_01double_01_4" ],
-      [ "SolveData", "classpolyfem_1_1_solve_data.html", "classpolyfem_1_1_solve_data" ],
       [ "State", "classpolyfem_1_1_state.html", "classpolyfem_1_1_state" ]
     ] ],
     [ "q_bases", "namespaceq__bases.html", [

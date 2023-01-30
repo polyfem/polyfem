@@ -35,6 +35,7 @@ var classpolyfem_1_1mesh_1_1_mesh =
     [ "edge_vertex", "classpolyfem_1_1mesh_1_1_mesh.html#a9b0565e52cac4ce041bbe6d359e2c73f", null ],
     [ "edges", "classpolyfem_1_1mesh_1_1_mesh.html#a9729b125c2d248aca9566c420266dc70", null ],
     [ "edges_to_ids", "classpolyfem_1_1mesh_1_1_mesh.html#a13548082edfcbe6bc4bc7ca39ee8be4a", null ],
+    [ "element_vertex", "classpolyfem_1_1mesh_1_1_mesh.html#a1e14724f5d2a4e1aa946372a3244e7db", null ],
     [ "elements_boxes", "classpolyfem_1_1mesh_1_1_mesh.html#af1d92506a3031ea11d6c3ba2879c157d", null ],
     [ "elements_tag", "classpolyfem_1_1mesh_1_1_mesh.html#ac2a2887f2bb1ca46c62bb01fcb9efbe6", null ],
     [ "face_barycenter", "classpolyfem_1_1mesh_1_1_mesh.html#a3cb2c64fbd2615052b400fb1dcd63e4e", null ],

@@ -238,7 +238,7 @@ $(document).ready(function(){initNavTree('_assembler_8cpp_source.html',''); init
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="comment">// #ifdef POLYFEM_WITH_TBB</span></div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="comment">//      buffer_size /= tbb::task_scheduler_init::default_num_threads();</span></div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="comment">// #endif</span></div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().debug(<span class="stringliteral">&quot;buffer_size {}&quot;</span>, buffer_size);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().trace(<span class="stringliteral">&quot;buffer_size {}&quot;</span>, buffer_size);</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keywordflow">try</span></div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        {</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            stiffness.resize(n_basis * local_assembler_.size(), n_basis * local_assembler_.size());</div>
@@ -312,7 +312,7 @@ $(document).ready(function(){initNavTree('_assembler_8cpp_source.html',''); init
 <div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                                            <span class="keywordflow">if</span> (local_storage.cache.entries_size() &gt;= max_triplets_size)</div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                                            {</div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                                                local_storage.cache.prune();</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>                                                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().debug(<span class="stringliteral">&quot;cleaning memory. Current storage: {}. mat nnz: {}&quot;</span>, local_storage.cache.capacity(), local_storage.cache.non_zeros());</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>                                                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().trace(<span class="stringliteral">&quot;cleaning memory. Current storage: {}. mat nnz: {}&quot;</span>, local_storage.cache.capacity(), local_storage.cache.non_zeros());</div>
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>                                            }</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                                        }</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                                    }</div>
@@ -330,7 +330,7 @@ $(document).ready(function(){initNavTree('_assembler_8cpp_source.html',''); init
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            });</div>
 <div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
 <div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            timerg.stop();</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().debug(<span class="stringliteral">&quot;done separate assembly {}s...&quot;</span>, timerg.getElapsedTime());</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().trace(<span class="stringliteral">&quot;done separate assembly {}s...&quot;</span>, timerg.getElapsedTime());</div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>            <span class="comment">// Assemble the stiffness matrix by concatenating the tuples in each local storage</span></div>
 <div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>            igl::Timer timer1, timer2, timer3;</div>
@@ -350,7 +350,7 @@ $(document).ready(function(){initNavTree('_assembler_8cpp_source.html',''); init
 <div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>                s-&gt;cache.prune();</div>
 <div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>            });</div>
 <div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>            timerg.stop();</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().debug(<span class="stringliteral">&quot;done pruning triplets {}s...&quot;</span>, timerg.getElapsedTime());</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().trace(<span class="stringliteral">&quot;done pruning triplets {}s...&quot;</span>, timerg.getElapsedTime());</div>
 <div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
 <div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>            <span class="comment">// Prepares for parallel concatenation</span></div>
 <div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>            std::vector&lt;int&gt; offsets(storage.size());</div>
@@ -380,7 +380,7 @@ $(document).ready(function(){initNavTree('_assembler_8cpp_source.html',''); init
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>                stiffness.makeCompressed();</div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>                timerg.stop();</div>
 <div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span> </div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().debug(<span class="stringliteral">&quot;Serial assembly time: {}s...&quot;</span>, timerg.getElapsedTime());</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().trace(<span class="stringliteral">&quot;Serial assembly time: {}s...&quot;</span>, timerg.getElapsedTime());</div>
 <div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>            }</div>
 <div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>            <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>            {</div>
@@ -388,8 +388,8 @@ $(document).ready(function(){initNavTree('_assembler_8cpp_source.html',''); init
 <div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>                triplets.resize(triplet_count);</div>
 <div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>                timer1.stop();</div>
 <div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span> </div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().debug(<span class="stringliteral">&quot;done allocate triplets {}s...&quot;</span>, timer1.getElapsedTime());</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().debug(<span class="stringliteral">&quot;Triplets Count: {}&quot;</span>, triplet_count);</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().trace(<span class="stringliteral">&quot;done allocate triplets {}s...&quot;</span>, timer1.getElapsedTime());</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().trace(<span class="stringliteral">&quot;Triplets Count: {}&quot;</span>, triplet_count);</div>
 <div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span> </div>
 <div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>                timer2.start();</div>
 <div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>                <span class="comment">// Parallel copy into triplets</span></div>
@@ -415,14 +415,14 @@ $(document).ready(function(){initNavTree('_assembler_8cpp_source.html',''); init
 <div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>                });</div>
 <div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span> </div>
 <div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                timer2.stop();</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().debug(<span class="stringliteral">&quot;done concatenate triplets {}s...&quot;</span>, timer2.getElapsedTime());</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().trace(<span class="stringliteral">&quot;done concatenate triplets {}s...&quot;</span>, timer2.getElapsedTime());</div>
 <div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span> </div>
 <div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>                timer3.start();</div>
 <div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>                <span class="comment">// Sort and assemble</span></div>
 <div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>                stiffness.setFromTriplets(triplets.begin(), triplets.end());</div>
 <div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>                timer3.stop();</div>
 <div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span> </div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().debug(<span class="stringliteral">&quot;done setFromTriplets assembly {}s...&quot;</span>, timer3.getElapsedTime());</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().trace(<span class="stringliteral">&quot;done setFromTriplets assembly {}s...&quot;</span>, timer3.getElapsedTime());</div>
 <div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>            }</div>
 <div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span> </div>
 <div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>            <span class="comment">// exit(0);</span></div>

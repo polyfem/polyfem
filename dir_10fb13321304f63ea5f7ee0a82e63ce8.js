@@ -16,6 +16,8 @@ var dir_10fb13321304f63ea5f7ee0a82e63ce8 =
     [ "NonlinearSolver.tpp", "_nonlinear_solver_8tpp.html", null ],
     [ "OperatorSplittingSolver.cpp", "_operator_splitting_solver_8cpp.html", null ],
     [ "OperatorSplittingSolver.hpp", "_operator_splitting_solver_8hpp.html", "_operator_splitting_solver_8hpp" ],
+    [ "SolveData.cpp", "_solve_data_8cpp.html", null ],
+    [ "SolveData.hpp", "_solve_data_8hpp.html", "_solve_data_8hpp" ],
     [ "SparseNewtonDescentSolver.hpp", "_sparse_newton_descent_solver_8hpp.html", "_sparse_newton_descent_solver_8hpp" ],
     [ "SparseNewtonDescentSolver.tpp", "_sparse_newton_descent_solver_8tpp.html", null ],
     [ "TransientNavierStokesSolver.cpp", "_transient_navier_stokes_solver_8cpp.html", null ],

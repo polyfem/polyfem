@@ -12,7 +12,8 @@ var searchData=
   ['element_9',['Element',['../structpolyfem_1_1mesh_1_1_element.html',1,'polyfem::mesh']]],
   ['elementassemblyvalues_10',['ElementAssemblyValues',['../classpolyfem_1_1assembler_1_1_element_assembly_values.html',1,'polyfem::assembler']]],
   ['elementbases_11',['ElementBases',['../classpolyfem_1_1basis_1_1_element_bases.html',1,'polyfem::basis']]],
-  ['evaluator_12',['Evaluator',['../classpolyfem_1_1io_1_1_evaluator.html',1,'polyfem::io']]],
-  ['exportoptions_13',['ExportOptions',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html',1,'polyfem::io::OutGeometryData']]],
-  ['expressionvalue_14',['ExpressionValue',['../classpolyfem_1_1utils_1_1_expression_value.html',1,'polyfem::utils']]]
+  ['equalunorderedarray_12',['EqualUnorderedArray',['../structpolyfem_1_1utils_1_1_equal_unordered_array.html',1,'polyfem::utils']]],
+  ['evaluator_13',['Evaluator',['../classpolyfem_1_1io_1_1_evaluator.html',1,'polyfem::io']]],
+  ['exportoptions_14',['ExportOptions',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html',1,'polyfem::io::OutGeometryData']]],
+  ['expressionvalue_15',['ExpressionValue',['../classpolyfem_1_1utils_1_1_expression_value.html',1,'polyfem::utils']]]
 ];

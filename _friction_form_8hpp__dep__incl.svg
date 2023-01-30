@@ -46,7 +46,7 @@ if (edges && edges.length) {
         </defs>
 
 <script type="text/javascript">
-var viewWidth = 636;
+var viewWidth = 761;
 var viewHeight = 104;
 var sectionId = 'dynsection-1';
 </script>
@@ -58,9 +58,9 @@ var sectionId = 'dynsection-1';
 <g id="node1" class="node">
 <title>Node1</title>
 <g id="a_node1"><a xlink:title=" ">
-<polygon fill="#999999" stroke="#666666" points="376.5,-96 243.5,-96 243.5,-66 376.5,-66 376.5,-96"/>
-<text text-anchor="start" x="251.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="middle" x="310" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/FrictionForm.hpp</text>
+<polygon fill="#999999" stroke="#666666" points="426.5,-96 293.5,-96 293.5,-66 426.5,-66 426.5,-96"/>
+<text text-anchor="start" x="301.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="middle" x="360" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/FrictionForm.hpp</text>
 </a>
 </g>
 </g>
@@ -76,56 +76,72 @@ var sectionId = 'dynsection-1';
 <!-- Node1&#45;&gt;Node2 -->
 <g id="edge1" class="edge">
 <title>Node1&#45;&gt;Node2</title>
-<path fill="none" stroke="#63b8ff" d="M248.63,-63.29C202.94,-50.84 142.47,-34.37 106.27,-24.52"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="247.86,-66.7 258.43,-65.95 249.7,-59.95 247.86,-66.7"/>
+<path fill="none" stroke="#63b8ff" d="M287.65,-63.75C232.02,-51.26 157.38,-34.5 112.93,-24.52"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="286.93,-67.18 297.46,-65.95 288.47,-60.35 286.93,-67.18"/>
 </g>
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="_contact_form_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="302,-30 168,-30 168,0 302,0 302,-30"/>
-<text text-anchor="start" x="176" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="middle" x="235" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/ContactForm.cpp</text>
+<g id="a_node3"><a xlink:href="_solve_data_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="274.5,-30 167.5,-30 167.5,0 274.5,0 274.5,-30"/>
+<text text-anchor="start" x="175.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="middle" x="221" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/SolveData.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
 <g id="edge2" class="edge">
 <title>Node1&#45;&gt;Node3</title>
-<path fill="none" stroke="#63b8ff" d="M285.63,-59.2C274.49,-49.7 261.59,-38.69 251.6,-30.16"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="283.48,-61.97 293.36,-65.8 288.02,-56.64 283.48,-61.97"/>
+<path fill="none" stroke="#63b8ff" d="M320.14,-61.65C298.28,-51.58 271.61,-39.3 251.43,-30.01"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="318.95,-64.95 329.5,-65.95 321.88,-58.59 318.95,-64.95"/>
 </g>
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="_friction_form_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="452,-30 320,-30 320,0 452,0 452,-30"/>
-<text text-anchor="start" x="328" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="middle" x="386" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/FrictionForm.cpp</text>
+<g id="a_node4"><a xlink:href="_contact_form_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="427,-30 293,-30 293,0 427,0 427,-30"/>
+<text text-anchor="start" x="301" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="middle" x="360" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/ContactForm.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
 <g id="edge3" class="edge">
 <title>Node1&#45;&gt;Node4</title>
-<path fill="none" stroke="#63b8ff" d="M334.7,-59.2C345.98,-49.7 359.05,-38.69 369.18,-30.16"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="332.26,-56.68 326.87,-65.8 336.77,-62.03 332.26,-56.68"/>
+<path fill="none" stroke="#63b8ff" d="M360,-55.54C360,-46.96 360,-37.61 360,-30.16"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="356.5,-55.8 360,-65.8 363.5,-55.8 356.5,-55.8"/>
 </g>
 <!-- Node5 -->
 <g id="node5" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="_state_solve_nonlinear_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="628,-30 470,-30 470,0 628,0 628,-30"/>
-<text text-anchor="start" x="478" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/state/StateSolve</text>
-<text text-anchor="middle" x="549" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Nonlinear.cpp</text>
+<g id="a_node5"><a xlink:href="_friction_form_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="577,-30 445,-30 445,0 577,0 577,-30"/>
+<text text-anchor="start" x="453" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="middle" x="511" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/FrictionForm.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node5 -->
 <g id="edge4" class="edge">
 <title>Node1&#45;&gt;Node5</title>
-<path fill="none" stroke="#63b8ff" d="M372.54,-63.25C411.15,-52.91 460.12,-39.8 496.67,-30.01"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="371.2,-59.99 362.45,-65.95 373.01,-66.75 371.2,-59.99"/>
+<path fill="none" stroke="#63b8ff" d="M402.66,-61.92C426.53,-51.8 455.83,-39.38 477.94,-30.01"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="400.98,-58.83 393.14,-65.95 403.71,-65.28 400.98,-58.83"/>
+</g>
+<!-- Node6 -->
+<g id="node6" class="node">
+<title>Node6</title>
+<g id="a_node6"><a xlink:href="_state_solve_nonlinear_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="753,-30 595,-30 595,0 753,0 753,-30"/>
+<text text-anchor="start" x="603" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/state/StateSolve</text>
+<text text-anchor="middle" x="674" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Nonlinear.cpp</text>
+</a>
+</g>
+</g>
+<!-- Node1&#45;&gt;Node6 -->
+<g id="edge5" class="edge">
+<title>Node1&#45;&gt;Node6</title>
+<path fill="none" stroke="#63b8ff" d="M436.66,-64.37C488.11,-53.89 555.3,-40.19 605.06,-30.05"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="435.69,-61 426.59,-66.43 437.09,-67.86 435.69,-61"/>
 </g>
 </g>
 </svg>

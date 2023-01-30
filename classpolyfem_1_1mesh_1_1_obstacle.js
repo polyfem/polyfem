@@ -21,6 +21,8 @@ var classpolyfem_1_1mesh_1_1_obstacle =
     [ "get_edge_connectivity", "classpolyfem_1_1mesh_1_1_obstacle.html#a39075d38314de5925213956c14dd1a04", null ],
     [ "get_face_connectivity", "classpolyfem_1_1mesh_1_1_obstacle.html#a7c8eb9750b6623620ba63039021dd7f4", null ],
     [ "get_vertex_connectivity", "classpolyfem_1_1mesh_1_1_obstacle.html#afb62c18348c6db81422d79834c5797a0", null ],
+    [ "n_edges", "classpolyfem_1_1mesh_1_1_obstacle.html#a86a72387e23ebedc61534463563cfde4", null ],
+    [ "n_faces", "classpolyfem_1_1mesh_1_1_obstacle.html#a55503a453042b831f458fe5db902d8af", null ],
     [ "n_vertices", "classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db", null ],
     [ "ndof", "classpolyfem_1_1mesh_1_1_obstacle.html#a7e4641b4e7d3130e1618237978eee875", null ],
     [ "planes", "classpolyfem_1_1mesh_1_1_obstacle.html#a4547dd5282b65fce078989fd4ddbdc94", null ],

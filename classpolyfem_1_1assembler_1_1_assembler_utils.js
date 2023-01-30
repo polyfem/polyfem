@@ -25,6 +25,7 @@ var classpolyfem_1_1assembler_1_1_assembler_utils =
     [ "kernel", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aac5bf54ebb15b1a41efe23cf78792f4b", null ],
     [ "local_assemble", "classpolyfem_1_1assembler_1_1_assembler_utils.html#af89a5ecea1a6e133a1227d1122305ef8", null ],
     [ "parameters", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a5d9370f37381fd9d5e8f35b3fd25a704", null ],
+    [ "set_materials", "classpolyfem_1_1assembler_1_1_assembler_utils.html#ad37d7c3405aca43305b8ece62c515aa1", null ],
     [ "set_size", "classpolyfem_1_1assembler_1_1_assembler_utils.html#adeca5a0703faf4b814320197d0285fe5", null ],
     [ "bilaplacian_aux_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#ab6c7090b8dc55deb3ec74934592e509f", null ],
     [ "bilaplacian_main_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a76080a4768021893f33047c81a17cab7", null ],

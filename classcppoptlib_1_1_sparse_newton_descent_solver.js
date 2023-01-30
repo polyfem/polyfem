@@ -1,7 +1,7 @@
 var classcppoptlib_1_1_sparse_newton_descent_solver =
 [
     [ "Superclass", "classcppoptlib_1_1_sparse_newton_descent_solver.html#ad981db542a2923317daa1fea9bb3adf9", null ],
-    [ "SparseNewtonDescentSolver", "classcppoptlib_1_1_sparse_newton_descent_solver.html#a438259d535ec4f17a6f5c0eb2573f0a9", null ],
+    [ "SparseNewtonDescentSolver", "classcppoptlib_1_1_sparse_newton_descent_solver.html#ac463250a50b7b6ec94a6d8de10f57d28", null ],
     [ "assemble_hessian", "classcppoptlib_1_1_sparse_newton_descent_solver.html#a6960ea9138a48c2abe63b4d6bc6f2bae", null ],
     [ "check_direction", "classcppoptlib_1_1_sparse_newton_descent_solver.html#ad2cbb46a669d0511c74f2b5dfa7776fa", null ],
     [ "compute_update_direction", "classcppoptlib_1_1_sparse_newton_descent_solver.html#a3b00e1ba274561c475a11baf4d48286d", null ],

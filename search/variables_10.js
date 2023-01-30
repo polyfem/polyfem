@@ -32,13 +32,14 @@ var searchData=
   ['pressure_5fboundary_5fnodes_29',['pressure_boundary_nodes',['../classpolyfem_1_1_state.html#a4230959fa25c50f0dac42f71ad8d8897',1,'polyfem::State']]],
   ['pressures_5f_30',['pressures_',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ac1482f0eb1b15b9972e2c56cb9f79a56',1,'polyfem::assembler::GenericTensorProblem']]],
   ['prev_5fdistance_5f_31',['prev_distance_',['../classpolyfem_1_1solver_1_1_contact_form.html#a79b6fa1277b911e4d87eb081c9ae9539',1,'polyfem::solver::ContactForm']]],
-  ['primitive_5fto_5fnode_5f_32',['primitive_to_node_',['../classpolyfem_1_1mesh_1_1_mesh_nodes.html#a2bb6f0e5bf725a6e151168e142b18d4e',1,'polyfem::mesh::MeshNodes']]],
-  ['problem_33',['problem',['../classpolyfem_1_1_state.html#a799e2a119d49943bab7ca9b0de7c09f6',1,'polyfem::State']]],
-  ['problem_5f_34',['problem_',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#af08d7be34b6adcf4c5a89aacf89e3868',1,'polyfem::assembler::RhsAssembler']]],
-  ['problem_5fnames_5f_35',['problem_names_',['../classpolyfem_1_1problem_1_1_problem_factory.html#a51f2a49c57cea74cd4de1f8291aebac9',1,'polyfem::problem::ProblemFactory']]],
-  ['problems_5f_36',['problems_',['../classpolyfem_1_1problem_1_1_problem_factory.html#a57ec3ee51e2a5f56c8720c8db78409da',1,'polyfem::problem::ProblemFactory']]],
-  ['project_5fto_5fpsd_5f_37',['project_to_psd_',['../classpolyfem_1_1solver_1_1_form.html#af98a7df888dfde558eb2e70aa37e9dd2',1,'polyfem::solver::Form']]],
-  ['psi_5f_38',['psi_',['../classpolyfem_1_1assembler_1_1_viscous_damping.html#a3ac8c1a5d0f5ecef86350819d09a4ed5',1,'polyfem::assembler::ViscousDamping']]],
-  ['psi_5fvals_39',['psi_vals',['../classpolyfem_1_1assembler_1_1_mixed_assembler_data.html#ae0c3b9478b3a57b2a7609e8c0130da3a',1,'polyfem::assembler::MixedAssemblerData']]],
-  ['pts_5f_40',['pts_',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html#a76c0df30347d0589e499ac00ec7b258b',1,'polyfem::utils::InterpolatedFunction2d']]]
+  ['prev_5fsol_32',['prev_sol',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a848cbf2b9869e8bffe607d428471d05b',1,'polyfem::io::OutGeometryData::ExportOptions']]],
+  ['primitive_5fto_5fnode_5f_33',['primitive_to_node_',['../classpolyfem_1_1mesh_1_1_mesh_nodes.html#a2bb6f0e5bf725a6e151168e142b18d4e',1,'polyfem::mesh::MeshNodes']]],
+  ['problem_34',['problem',['../classpolyfem_1_1_state.html#a799e2a119d49943bab7ca9b0de7c09f6',1,'polyfem::State']]],
+  ['problem_5f_35',['problem_',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#af08d7be34b6adcf4c5a89aacf89e3868',1,'polyfem::assembler::RhsAssembler']]],
+  ['problem_5fnames_5f_36',['problem_names_',['../classpolyfem_1_1problem_1_1_problem_factory.html#a51f2a49c57cea74cd4de1f8291aebac9',1,'polyfem::problem::ProblemFactory']]],
+  ['problems_5f_37',['problems_',['../classpolyfem_1_1problem_1_1_problem_factory.html#a57ec3ee51e2a5f56c8720c8db78409da',1,'polyfem::problem::ProblemFactory']]],
+  ['project_5fto_5fpsd_5f_38',['project_to_psd_',['../classpolyfem_1_1solver_1_1_form.html#af98a7df888dfde558eb2e70aa37e9dd2',1,'polyfem::solver::Form']]],
+  ['psi_5f_39',['psi_',['../classpolyfem_1_1assembler_1_1_viscous_damping.html#a3ac8c1a5d0f5ecef86350819d09a4ed5',1,'polyfem::assembler::ViscousDamping']]],
+  ['psi_5fvals_40',['psi_vals',['../classpolyfem_1_1assembler_1_1_mixed_assembler_data.html#ae0c3b9478b3a57b2a7609e8c0130da3a',1,'polyfem::assembler::MixedAssemblerData']]],
+  ['pts_5f_41',['pts_',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html#a76c0df30347d0589e499ac00ec7b258b',1,'polyfem::utils::InterpolatedFunction2d']]]
 ];

@@ -1,16 +1,16 @@
 var classpolyfem_1_1solver_1_1_friction_form =
 [
-    [ "FrictionForm", "classpolyfem_1_1solver_1_1_friction_form.html#a02cfa86efe2b7cf98cff1a0e1e550fc8", null ],
+    [ "FrictionForm", "classpolyfem_1_1solver_1_1_friction_form.html#ae484f85764e1e3821d5b196208adda98", null ],
     [ "compute_displaced_surface", "classpolyfem_1_1solver_1_1_friction_form.html#a813fc2f87b22de23caf3d1cb850fdfac", null ],
     [ "displaced_surface_prev", "classpolyfem_1_1solver_1_1_friction_form.html#a4d742e96947fbeb71807eb6a3895ac45", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_friction_form.html#aba546a5686d184c3f8b9779b4f6f0620", null ],
     [ "init_lagging", "classpolyfem_1_1solver_1_1_friction_form.html#a13496c772de23a6a34114dc4a6a725df", null ],
     [ "max_lagging_iterations", "classpolyfem_1_1solver_1_1_friction_form.html#aa9f29a64cef734a1c61bc8bd36d324d0", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_friction_form.html#a36b081d01bbfca96dfb1ca2e7b37b7ac", null ],
+    [ "update_lagging", "classpolyfem_1_1solver_1_1_friction_form.html#a8eb720667dbcbec459d71e5cc2c85bd0", null ],
     [ "update_lagging", "classpolyfem_1_1solver_1_1_friction_form.html#a2d39d4abbf850fbe702a89befd07da70", null ],
     [ "uses_lagging", "classpolyfem_1_1solver_1_1_friction_form.html#ab6c5ed4c5b1f333f2c49a262994aa76b", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_friction_form.html#a88a9d777ccece8a0e7ed7cac196b10fd", null ],
-    [ "boundary_nodes_pos_", "classpolyfem_1_1solver_1_1_friction_form.html#a39b591ddefa314a0e737be1ce973cbe7", null ],
     [ "broad_phase_method_", "classpolyfem_1_1solver_1_1_friction_form.html#a056d1d09383f5673be6afdd075c201c9", null ],
     [ "collision_mesh_", "classpolyfem_1_1solver_1_1_friction_form.html#a3d4ea44549148c73a90f264b1e2728df", null ],
     [ "contact_form_", "classpolyfem_1_1solver_1_1_friction_form.html#ad00c09711b4c9714bebc095f0c8f2666", null ],

@@ -6,5 +6,7 @@ var searchData=
   ['genericproblem_2ehpp_3',['GenericProblem.hpp',['../_generic_problem_8hpp.html',1,'']]],
   ['geometryreader_2ecpp_4',['GeometryReader.cpp',['../_geometry_reader_8cpp.html',1,'']]],
   ['geometryreader_2ehpp_5',['GeometryReader.hpp',['../_geometry_reader_8hpp.html',1,'']]],
-  ['getrss_2ec_6',['getRSS.c',['../get_r_s_s_8c.html',1,'']]]
+  ['geometryutils_2ecpp_6',['GeometryUtils.cpp',['../_geometry_utils_8cpp.html',1,'']]],
+  ['geometryutils_2ehpp_7',['GeometryUtils.hpp',['../_geometry_utils_8hpp.html',1,'']]],
+  ['getrss_2ec_8',['getRSS.c',['../get_r_s_s_8c.html',1,'']]]
 ];

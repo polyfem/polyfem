@@ -47,7 +47,6 @@ var namespacepolyfem =
     [ "utils", "namespacepolyfem_1_1utils.html", "namespacepolyfem_1_1utils" ],
     [ "AutoDiffAllocator", "classpolyfem_1_1_auto_diff_allocator.html", "classpolyfem_1_1_auto_diff_allocator" ],
     [ "AutoDiffAllocator< double >", "classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html", "classpolyfem_1_1_auto_diff_allocator_3_01double_01_4" ],
-    [ "SolveData", "classpolyfem_1_1_solve_data.html", "classpolyfem_1_1_solve_data" ],
     [ "State", "classpolyfem_1_1_state.html", "classpolyfem_1_1_state" ],
     [ "AutodiffGradPt", "namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4", null ],
     [ "AutodiffHessianPt", "namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c", null ],

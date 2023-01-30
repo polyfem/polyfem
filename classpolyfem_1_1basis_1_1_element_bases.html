@@ -147,6 +147,8 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a71f1ea2b92e799be2985c5fdf25364bf"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a71f1ea2b92e799be2985c5fdf25364bf">nodes</a> () const</td></tr>
+<tr class="separator:a71f1ea2b92e799be2985c5fdf25364bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3fe910141a6dd62e404d5eededafb547"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a3fe910141a6dd62e404d5eededafb547">compute_quadrature</a> (<a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadrature) const</td></tr>
 <tr class="separator:a3fe910141a6dd62e404d5eededafb547"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1eb3299faf0fce0b170d524017874af3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html#a1eb3299faf0fce0b170d524017874af3">compute_mass_quadrature</a> (<a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadrature) const</td></tr>
@@ -287,9 +289,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00028">28</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00031">31</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00101">mass_quadrature_builder_</a>.</p>
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00104">mass_quadrature_builder_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00031">polyfem::assembler::AssemblyValsCache::compute()</a>.</p>
 <div class="dynheader">
@@ -325,9 +327,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00027">27</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00030">30</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00100">quadrature_builder_</a>.</p>
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00103">quadrature_builder_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_element_assembly_values_8cpp_source.html#l00199">polyfem::assembler::ElementAssemblyValues::compute()</a>, and <a class="el" href="_element_assembly_values_8cpp_source.html#l00353">polyfem::assembler::ElementAssemblyValues::is_geom_mapping_positive()</a>.</p>
 <div class="dynheader">
@@ -377,7 +379,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_element_bases_8cpp_source.html#l00019">19</a> of file <a class="el" href="_element_bases_8cpp_source.html">ElementBases.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">bases</a>, <a class="el" href="_element_bases_8hpp_source.html#l00064">evaluate_bases()</a>, <a class="el" href="_basis_8hpp_source.html#l00091">polyfem::basis::Basis::global()</a>, and <a class="el" href="_element_bases_8hpp_source.html#l00033">has_parameterization</a>.</p>
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">bases</a>, <a class="el" href="_element_bases_8hpp_source.html#l00067">evaluate_bases()</a>, <a class="el" href="_basis_8hpp_source.html#l00091">polyfem::basis::Basis::global()</a>, and <a class="el" href="_element_bases_8hpp_source.html#l00036">has_parameterization</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01338">polyfem::solver::OperatorSplittingSolver::calculate_local_pts()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00219">polyfem::assembler::RhsAssembler::lsq_bc()</a>.</p>
 <div class="dynheader">
@@ -432,7 +434,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_element_bases_8cpp_source.html#l00082">82</a> of file <a class="el" href="_element_bases_8cpp_source.html">ElementBases.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">bases</a>, <a class="el" href="_element_bases_8hpp_source.html#l00075">evaluate_grads()</a>, <a class="el" href="_basis_8hpp_source.html#l00091">polyfem::basis::Basis::global()</a>, and <a class="el" href="_element_bases_8hpp_source.html#l00033">has_parameterization</a>.</p>
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">bases</a>, <a class="el" href="_element_bases_8hpp_source.html#l00078">evaluate_grads()</a>, <a class="el" href="_basis_8hpp_source.html#l00091">polyfem::basis::Basis::global()</a>, and <a class="el" href="_element_bases_8hpp_source.html#l00036">has_parameterization</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01338">polyfem::solver::OperatorSplittingSolver::calculate_local_pts()</a>.</p>
 <div class="dynheader">
@@ -484,9 +486,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00064">64</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00067">67</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00098">eval_bases_func_</a>, and <a class="el" href="_element_bases_8cpp_source.html#l00048">evaluate_bases_default()</a>.</p>
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00101">eval_bases_func_</a>, and <a class="el" href="_element_bases_8cpp_source.html#l00048">evaluate_bases_default()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_element_assembly_values_8cpp_source.html#l00205">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00667">polyfem::io::Evaluator::compute_vertex_values()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00019">eval_geom_mapping()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00867">polyfem::io::Evaluator::interpolate_function()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00219">polyfem::assembler::RhsAssembler::lsq_bc()</a>.</p>
 <div class="dynheader">
@@ -542,7 +544,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">bases</a>, and <a class="el" href="_assembler_8cpp_source.html#l00091">val</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_element_bases_8hpp_source.html#l00064">evaluate_bases()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_element_bases_8hpp_source.html#l00067">evaluate_bases()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -586,9 +588,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00075">75</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00078">78</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00099">eval_grads_func_</a>, and <a class="el" href="_element_bases_8cpp_source.html#l00065">evaluate_grads_default()</a>.</p>
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00102">eval_grads_func_</a>, and <a class="el" href="_element_bases_8cpp_source.html#l00065">evaluate_grads_default()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_element_assembly_values_8cpp_source.html#l00205">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00082">eval_geom_mapping_grads()</a>, and <a class="el" href="_element_assembly_values_8cpp_source.html#l00353">polyfem::assembler::ElementAssemblyValues::is_geom_mapping_positive()</a>.</p>
 <div class="dynheader">
@@ -644,7 +646,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">bases</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_element_bases_8hpp_source.html#l00075">evaluate_grads()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_element_bases_8hpp_source.html#l00078">evaluate_grads()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -711,17 +713,38 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00029">29</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00032">32</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00103">local_node_from_primitive_</a>.</p>
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00106">local_node_from_primitive_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l00068">polyfem::io::OutGeometryData::extract_boundary_mesh()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00474">polyfem::assembler::RhsAssembler::integrate_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00407">polyfem::assembler::RhsAssembler::sample_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l00049">polyfem::io::OutGeometryData::extract_boundary_mesh()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00474">polyfem::assembler::RhsAssembler::integrate_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00407">polyfem::assembler::RhsAssembler::sample_bc()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_element_bases_a9fde226f98331cb0c54e13baa95d5a98_icgraph.svg" width="100%" height="448"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
+
+</div>
+</div>
+<a id="a71f1ea2b92e799be2985c5fdf25364bf" name="a71f1ea2b92e799be2985c5fdf25364bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71f1ea2b92e799be2985c5fdf25364bf">&#9670;&#160;</a></span>nodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::basis::ElementBases::nodes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_element_bases_8cpp_source.html#l00134">134</a> of file <a class="el" href="_element_bases_8cpp_source.html">ElementBases.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">bases</a>.</p>
 
 </div>
 </div>
@@ -749,9 +772,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00087">87</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00090">90</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00098">eval_bases_func_</a>.</p>
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00101">eval_bases_func_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00345">polyfem::basis::PolygonalBasis2d::build_bases()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00574">polyfem::basis::PolygonalBasis3d::build_bases()</a>, and <a class="el" href="_barycentric_basis2d_8cpp_source.html#l00116">polyfem::basis::BarycentricBasis2d::build_bases()</a>.</p>
 <div class="dynheader">
@@ -787,9 +810,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00088">88</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00091">91</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00099">eval_grads_func_</a>.</p>
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00102">eval_grads_func_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00345">polyfem::basis::PolygonalBasis2d::build_bases()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00574">polyfem::basis::PolygonalBasis3d::build_bases()</a>, and <a class="el" href="_barycentric_basis2d_8cpp_source.html#l00116">polyfem::basis::BarycentricBasis2d::build_bases()</a>.</p>
 <div class="dynheader">
@@ -825,9 +848,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00091">91</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00094">94</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00103">local_node_from_primitive_</a>.</p>
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00106">local_node_from_primitive_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_spline_basis2d_8cpp_source.html#l00679">polyfem::basis::SplineBasis2d::build_bases()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l01026">polyfem::basis::SplineBasis3d::build_bases()</a>, and <a class="el" href="_barycentric_basis2d_8cpp_source.html#l00116">polyfem::basis::BarycentricBasis2d::build_bases()</a>.</p>
 <div class="dynheader">
@@ -863,9 +886,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00061">61</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00064">64</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00101">mass_quadrature_builder_</a>.</p>
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00104">mass_quadrature_builder_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00345">polyfem::basis::PolygonalBasis2d::build_bases()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00574">polyfem::basis::PolygonalBasis3d::build_bases()</a>, <a class="el" href="_spline_basis2d_8cpp_source.html#l00679">polyfem::basis::SplineBasis2d::build_bases()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l01026">polyfem::basis::SplineBasis3d::build_bases()</a>, and <a class="el" href="_barycentric_basis2d_8cpp_source.html#l00116">polyfem::basis::BarycentricBasis2d::build_bases()</a>.</p>
 <div class="dynheader">
@@ -901,9 +924,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00060">60</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00063">63</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00100">quadrature_builder_</a>.</p>
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00103">quadrature_builder_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00345">polyfem::basis::PolygonalBasis2d::build_bases()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00574">polyfem::basis::PolygonalBasis3d::build_bases()</a>, <a class="el" href="_spline_basis2d_8cpp_source.html#l00679">polyfem::basis::SplineBasis2d::build_bases()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l01026">polyfem::basis::SplineBasis3d::build_bases()</a>, and <a class="el" href="_barycentric_basis2d_8cpp_source.html#l00116">polyfem::basis::BarycentricBasis2d::build_bases()</a>.</p>
 <div class="dynheader">
@@ -950,7 +973,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00051">51</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00054">54</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
 </div>
 </div>
@@ -969,7 +992,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00024">24</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l00571">polyfem::io::Evaluator::average_grad_based_function()</a>, <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00345">polyfem::basis::PolygonalBasis2d::build_bases()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00574">polyfem::basis::PolygonalBasis3d::build_bases()</a>, <a class="el" href="_spline_basis2d_8cpp_source.html#l00679">polyfem::basis::SplineBasis2d::build_bases()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l01026">polyfem::basis::SplineBasis3d::build_bases()</a>, <a class="el" href="_barycentric_basis2d_8cpp_source.html#l00116">polyfem::basis::BarycentricBasis2d::build_bases()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00205">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00203">polyfem::compute_diplacement_grad()</a>, <a class="el" href="_stokes_8cpp_source.html#l00062">polyfem::assembler::StokesVelocity::compute_norm_velocity()</a>, <a class="el" href="_navier_stokes_8cpp_source.html#l00082">polyfem::assembler::NavierStokesVelocity&lt; full_gradient &gt;::compute_stress_tensor()</a>, <a class="el" href="_stokes_8cpp_source.html#l00098">polyfem::assembler::StokesVelocity::compute_stress_tensor()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00667">polyfem::io::Evaluator::compute_vertex_values()</a>, <a class="el" href="_navier_stokes_8cpp_source.html#l00219">polyfem::assembler::NavierStokesVelocity&lt; false &gt;::compute_W()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00019">eval_geom_mapping()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00082">eval_geom_mapping_grads()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00048">evaluate_bases_default()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00065">evaluate_grads_default()</a>, <a class="el" href="_out_data_8cpp_source.html#l00068">polyfem::io::OutGeometryData::extract_boundary_mesh()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00161">polyfem::assembler::ElementAssemblyValues::finalize2d()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00094">polyfem::assembler::ElementAssemblyValues::finalize3d()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00151">polyfem::io::Evaluator::interpolate_boundary_function()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00252">polyfem::io::Evaluator::interpolate_boundary_function_at_vertices()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00867">polyfem::io::Evaluator::interpolate_function()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00009">is_complete()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00353">polyfem::assembler::ElementAssemblyValues::is_geom_mapping_positive()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00219">polyfem::assembler::RhsAssembler::lsq_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00407">polyfem::assembler::RhsAssembler::sample_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00128">polyfem::assembler::RhsAssembler::time_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l00571">polyfem::io::Evaluator::average_grad_based_function()</a>, <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00345">polyfem::basis::PolygonalBasis2d::build_bases()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00574">polyfem::basis::PolygonalBasis3d::build_bases()</a>, <a class="el" href="_spline_basis2d_8cpp_source.html#l00679">polyfem::basis::SplineBasis2d::build_bases()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l01026">polyfem::basis::SplineBasis3d::build_bases()</a>, <a class="el" href="_barycentric_basis2d_8cpp_source.html#l00116">polyfem::basis::BarycentricBasis2d::build_bases()</a>, <a class="el" href="_state_load_8cpp_source.html#l00153">polyfem::State::build_mesh_matrices()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00205">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00203">polyfem::compute_diplacement_grad()</a>, <a class="el" href="_stokes_8cpp_source.html#l00062">polyfem::assembler::StokesVelocity::compute_norm_velocity()</a>, <a class="el" href="_navier_stokes_8cpp_source.html#l00082">polyfem::assembler::NavierStokesVelocity&lt; full_gradient &gt;::compute_stress_tensor()</a>, <a class="el" href="_stokes_8cpp_source.html#l00098">polyfem::assembler::StokesVelocity::compute_stress_tensor()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00667">polyfem::io::Evaluator::compute_vertex_values()</a>, <a class="el" href="_navier_stokes_8cpp_source.html#l00219">polyfem::assembler::NavierStokesVelocity&lt; false &gt;::compute_W()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00019">eval_geom_mapping()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00082">eval_geom_mapping_grads()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00048">evaluate_bases_default()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00065">evaluate_grads_default()</a>, <a class="el" href="_out_data_8cpp_source.html#l00049">polyfem::io::OutGeometryData::extract_boundary_mesh()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00161">polyfem::assembler::ElementAssemblyValues::finalize2d()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00094">polyfem::assembler::ElementAssemblyValues::finalize3d()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00151">polyfem::io::Evaluator::interpolate_boundary_function()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00252">polyfem::io::Evaluator::interpolate_boundary_function_at_vertices()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00867">polyfem::io::Evaluator::interpolate_function()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00009">is_complete()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00353">polyfem::assembler::ElementAssemblyValues::is_geom_mapping_positive()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00219">polyfem::assembler::RhsAssembler::lsq_bc()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00134">nodes()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00407">polyfem::assembler::RhsAssembler::sample_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00128">polyfem::assembler::RhsAssembler::time_bc()</a>.</p>
 
 </div>
 </div>
@@ -993,9 +1016,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00098">98</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00101">101</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_element_bases_8hpp_source.html#l00064">evaluate_bases()</a>, and <a class="el" href="_element_bases_8hpp_source.html#l00087">set_bases_func()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_element_bases_8hpp_source.html#l00067">evaluate_bases()</a>, and <a class="el" href="_element_bases_8hpp_source.html#l00090">set_bases_func()</a>.</p>
 
 </div>
 </div>
@@ -1019,9 +1042,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00099">99</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00102">102</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_element_bases_8hpp_source.html#l00075">evaluate_grads()</a>, and <a class="el" href="_element_bases_8hpp_source.html#l00088">set_grads_func()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_element_bases_8hpp_source.html#l00078">evaluate_grads()</a>, and <a class="el" href="_element_bases_8hpp_source.html#l00091">set_grads_func()</a>.</p>
 
 </div>
 </div>
@@ -1037,7 +1060,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00033">33</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00036">36</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00345">polyfem::basis::PolygonalBasis2d::build_bases()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00574">polyfem::basis::PolygonalBasis3d::build_bases()</a>, <a class="el" href="_barycentric_basis2d_8cpp_source.html#l00116">polyfem::basis::BarycentricBasis2d::build_bases()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00205">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00019">eval_geom_mapping()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00082">eval_geom_mapping_grads()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00161">polyfem::assembler::ElementAssemblyValues::finalize2d()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00094">polyfem::assembler::ElementAssemblyValues::finalize3d()</a>, and <a class="el" href="_element_assembly_values_8cpp_source.html#l00353">polyfem::assembler::ElementAssemblyValues::is_geom_mapping_positive()</a>.</p>
 
@@ -1063,9 +1086,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00103">103</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00106">106</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_element_bases_8hpp_source.html#l00029">local_nodes_for_primitive()</a>, and <a class="el" href="_element_bases_8hpp_source.html#l00091">set_local_node_from_primitive_func()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_element_bases_8hpp_source.html#l00032">local_nodes_for_primitive()</a>, and <a class="el" href="_element_bases_8hpp_source.html#l00094">set_local_node_from_primitive_func()</a>.</p>
 
 </div>
 </div>
@@ -1089,9 +1112,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00101">101</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00104">104</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_element_bases_8hpp_source.html#l00028">compute_mass_quadrature()</a>, and <a class="el" href="_element_bases_8hpp_source.html#l00061">set_mass_quadrature()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_element_bases_8hpp_source.html#l00031">compute_mass_quadrature()</a>, and <a class="el" href="_element_bases_8hpp_source.html#l00064">set_mass_quadrature()</a>.</p>
 
 </div>
 </div>
@@ -1115,9 +1138,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00100">100</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_element_bases_8hpp_source.html#l00103">103</a> of file <a class="el" href="_element_bases_8hpp_source.html">ElementBases.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_element_bases_8hpp_source.html#l00027">compute_quadrature()</a>, and <a class="el" href="_element_bases_8hpp_source.html#l00060">set_quadrature()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_element_bases_8hpp_source.html#l00030">compute_quadrature()</a>, and <a class="el" href="_element_bases_8hpp_source.html#l00063">set_quadrature()</a>.</p>
 
 </div>
 </div>

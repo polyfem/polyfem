@@ -148,6 +148,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_edge_sampler.html">EdgeSampler</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1utils_1_1_equal_unordered_array.html">EqualUnorderedArray</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">ExpressionValue</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_file_selection.html">FileSelection</a></td></tr>
@@ -155,6 +157,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1utils_1_1_hash_matrix.html">HashMatrix</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1utils_1_1_hash_pair.html">HashPair</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1utils_1_1_hash_unordered_array.html">HashUnorderedArray</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hash function for an array where the order does not matter.  <a href="structpolyfem_1_1utils_1_1_hash_unordered_array.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1utils_1_1_hash_vector.html">HashVector</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -199,6 +204,54 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ad647a82910f18529f06f18eed887e262"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#ad647a82910f18529f06f18eed887e262">triangle_area_2D</a> (const Eigen::Vector2d &amp;a, const Eigen::Vector2d &amp;b, const Eigen::Vector2d &amp;c)</td></tr>
+<tr class="memdesc:ad647a82910f18529f06f18eed887e262"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the signed area of a 2D triangle defined by three points.  <a href="namespacepolyfem_1_1utils.html#ad647a82910f18529f06f18eed887e262">More...</a><br /></td></tr>
+<tr class="separator:ad647a82910f18529f06f18eed887e262"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d3394d6da8e1a1d864ff5ed4f90e746"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a9d3394d6da8e1a1d864ff5ed4f90e746">triangle_area_3D</a> (const Eigen::Vector3d &amp;a, const Eigen::Vector3d &amp;b, const Eigen::Vector3d &amp;c)</td></tr>
+<tr class="memdesc:a9d3394d6da8e1a1d864ff5ed4f90e746"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the area of a 3D triangle defined by three points.  <a href="namespacepolyfem_1_1utils.html#a9d3394d6da8e1a1d864ff5ed4f90e746">More...</a><br /></td></tr>
+<tr class="separator:a9d3394d6da8e1a1d864ff5ed4f90e746"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4fc877ac33fe3a967cbd280d7a0b6e2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#ad4fc877ac33fe3a967cbd280d7a0b6e2">triangle_area</a> (const Eigen::MatrixXd V)</td></tr>
+<tr class="memdesc:ad4fc877ac33fe3a967cbd280d7a0b6e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the signed area of a triangle defined by three points.  <a href="namespacepolyfem_1_1utils.html#ad4fc877ac33fe3a967cbd280d7a0b6e2">More...</a><br /></td></tr>
+<tr class="separator:ad4fc877ac33fe3a967cbd280d7a0b6e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a72689f8c34fff6ce44d8568d3a5c1e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a8a72689f8c34fff6ce44d8568d3a5c1e">tetrahedron_volume</a> (const Eigen::Vector3d &amp;a, const Eigen::Vector3d &amp;b, const Eigen::Vector3d &amp;c, const Eigen::Vector3d &amp;d)</td></tr>
+<tr class="memdesc:a8a72689f8c34fff6ce44d8568d3a5c1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the signed volume of a tetrahedron defined by four points.  <a href="namespacepolyfem_1_1utils.html#a8a72689f8c34fff6ce44d8568d3a5c1e">More...</a><br /></td></tr>
+<tr class="separator:a8a72689f8c34fff6ce44d8568d3a5c1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac722675794eb1f2ef7ea016c9aceb846"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#ac722675794eb1f2ef7ea016c9aceb846">tetrahedron_volume</a> (const Eigen::MatrixXd V)</td></tr>
+<tr class="memdesc:ac722675794eb1f2ef7ea016c9aceb846"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the signed volume of a tetrahedron defined by four points.  <a href="namespacepolyfem_1_1utils.html#ac722675794eb1f2ef7ea016c9aceb846">More...</a><br /></td></tr>
+<tr class="separator:ac722675794eb1f2ef7ea016c9aceb846"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0e8392d10fa2db5792e3c4fe260a211"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#aa0e8392d10fa2db5792e3c4fe260a211">triangle_to_clockwise_order</a> (const Eigen::MatrixXd &amp;triangle)</td></tr>
+<tr class="memdesc:aa0e8392d10fa2db5792e3c4fe260a211"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reorder the vertices of a triangle so they are in clockwise order.  <a href="namespacepolyfem_1_1utils.html#aa0e8392d10fa2db5792e3c4fe260a211">More...</a><br /></td></tr>
+<tr class="separator:aa0e8392d10fa2db5792e3c4fe260a211"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadc2ec9bb2733534462ec65e99bbe9d9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Eigen::MatrixXd &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#aadc2ec9bb2733534462ec65e99bbe9d9">triangle_fan</a> (const Eigen::MatrixXd &amp;convex_polygon)</td></tr>
+<tr class="memdesc:aadc2ec9bb2733534462ec65e99bbe9d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a convex polygon to a list of triangles fanned around the first vertex.  <a href="namespacepolyfem_1_1utils.html#aadc2ec9bb2733534462ec65e99bbe9d9">More...</a><br /></td></tr>
+<tr class="separator:aadc2ec9bb2733534462ec65e99bbe9d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7587aa934754541bace662011fd3064"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#ac7587aa934754541bace662011fd3064">barycentric_coordinates</a> (const Eigen::VectorXd &amp;p, const Eigen::MatrixXd &amp;V)</td></tr>
+<tr class="memdesc:ac7587aa934754541bace662011fd3064"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute barycentric coordinates for point p with respect to a simplex.  <a href="namespacepolyfem_1_1utils.html#ac7587aa934754541bace662011fd3064">More...</a><br /></td></tr>
+<tr class="separator:ac7587aa934754541bace662011fd3064"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae05141c057d8d87bcc1e8c4ed8318d50"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#ae05141c057d8d87bcc1e8c4ed8318d50">triangle_intersects_disk</a> (const Eigen::Vector2d &amp;t0, const Eigen::Vector2d &amp;t1, const Eigen::Vector2d &amp;t2, const Eigen::Vector2d &amp;center, const double radius)</td></tr>
+<tr class="memdesc:ae05141c057d8d87bcc1e8c4ed8318d50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if a 2D triangle intersects a 2D disk.  <a href="namespacepolyfem_1_1utils.html#ae05141c057d8d87bcc1e8c4ed8318d50">More...</a><br /></td></tr>
+<tr class="separator:ae05141c057d8d87bcc1e8c4ed8318d50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e076b0bb2f5dba6104e2977df78e127"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a0e076b0bb2f5dba6104e2977df78e127">tetrahedron_intersects_ball</a> (const Eigen::Vector3d &amp;t0, const Eigen::Vector3d &amp;t1, const Eigen::Vector3d &amp;t2, const Eigen::Vector3d &amp;t3, const Eigen::Vector3d &amp;center, const double radius)</td></tr>
+<tr class="memdesc:a0e076b0bb2f5dba6104e2977df78e127"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if a 3D tetrahedron intersects a 3D ball.  <a href="namespacepolyfem_1_1utils.html#a0e076b0bb2f5dba6104e2977df78e127">More...</a><br /></td></tr>
+<tr class="separator:a0e076b0bb2f5dba6104e2977df78e127"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8c38f388e888043894cf1bb1b89a53e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#ad8c38f388e888043894cf1bb1b89a53e">are_edges_collinear</a> (const Eigen::VectorXd &amp;ea0, const Eigen::VectorXd &amp;ea1, const Eigen::VectorXd &amp;eb0, const Eigen::VectorXd &amp;eb1, const double tol=1e-10)</td></tr>
+<tr class="memdesc:ad8c38f388e888043894cf1bb1b89a53e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if two edges are collinear.  <a href="namespacepolyfem_1_1utils.html#ad8c38f388e888043894cf1bb1b89a53e">More...</a><br /></td></tr>
+<tr class="separator:ad8c38f388e888043894cf1bb1b89a53e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7792e275b464e2ea5fad474fa7d9c0b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#ab7792e275b464e2ea5fad474fa7d9c0b">are_triangles_coplanar</a> (const Eigen::Vector3d &amp;t00, const Eigen::Vector3d &amp;t01, const Eigen::Vector3d &amp;t02, const Eigen::Vector3d &amp;t10, const Eigen::Vector3d &amp;t11, const Eigen::Vector3d &amp;t12, const double tol=1e-10)</td></tr>
+<tr class="memdesc:ab7792e275b464e2ea5fad474fa7d9c0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if two triangles are coplanar.  <a href="namespacepolyfem_1_1utils.html#ab7792e275b464e2ea5fad474fa7d9c0b">More...</a><br /></td></tr>
+<tr class="separator:ab7792e275b464e2ea5fad474fa7d9c0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9556f5db6bc3fcaa257d71760686edda"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a9556f5db6bc3fcaa257d71760686edda">triangle_area_2D_gradient</a> (double ax, double ay, double bx, double by, double cx, double cy, double g[6])</td></tr>
+<tr class="memdesc:a9556f5db6bc3fcaa257d71760686edda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the gradient of the signed area of a 2D triangle defined by three points.  <a href="namespacepolyfem_1_1utils.html#a9556f5db6bc3fcaa257d71760686edda">More...</a><br /></td></tr>
+<tr class="separator:a9556f5db6bc3fcaa257d71760686edda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a764f4ed874923f0c4007d1fb824c3285"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a764f4ed874923f0c4007d1fb824c3285">triangle_area_2D_hessian</a> (double ax, double ay, double bx, double by, double cx, double cy, double H[36])</td></tr>
+<tr class="memdesc:a764f4ed874923f0c4007d1fb824c3285"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Hessian of the signed area of a 2D triangle defined by three points.  <a href="namespacepolyfem_1_1utils.html#a764f4ed874923f0c4007d1fb824c3285">More...</a><br /></td></tr>
+<tr class="separator:a764f4ed874923f0c4007d1fb824c3285"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7deb3cf37288f5f4935aae85c55bf3dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a7deb3cf37288f5f4935aae85c55bf3dc">tetrahedron_volume_gradient</a> (double ax, double ay, double az, double bx, double by, double bz, double cx, double cy, double cz, double dx, double dy, double dz, double g[12])</td></tr>
+<tr class="memdesc:a7deb3cf37288f5f4935aae85c55bf3dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the gradient of the signed volume of a tetrahedron defined by four points.  <a href="namespacepolyfem_1_1utils.html#a7deb3cf37288f5f4935aae85c55bf3dc">More...</a><br /></td></tr>
+<tr class="separator:a7deb3cf37288f5f4935aae85c55bf3dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a864ce51c3548eaa0b8123e3df4e8e83e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a864ce51c3548eaa0b8123e3df4e8e83e">tetrahedron_volume_hessian</a> (double ax, double ay, double az, double bx, double by, double bz, double cx, double cy, double cz, double dx, double dy, double dz, double H[144])</td></tr>
+<tr class="memdesc:a864ce51c3548eaa0b8123e3df4e8e83e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the gradient of the signed area of a 2D triangle defined by three points.  <a href="namespacepolyfem_1_1utils.html#a864ce51c3548eaa0b8123e3df4e8e83e">More...</a><br /></td></tr>
+<tr class="separator:a864ce51c3548eaa0b8123e3df4e8e83e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d5616d7cdc82efc086156a883922bbf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a3d5616d7cdc82efc086156a883922bbf">NLOHMANN_JSON_SERIALIZE_ENUM</a> (<a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6d">PiecewiseInterpolation::Extend</a>, {{<a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da8d6b5cada83510220f59e00ce86d4d92">PiecewiseInterpolation::Extend::CONSTANT</a>, &quot;constant&quot;}, {<a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da5765f108b8ee77f8e20d0c4815f8a65e">PiecewiseInterpolation::Extend::EXTRAPOLATE</a>, &quot;extrapolate&quot;}, {<a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da5be68175be14dfaa080165456c2e9555">PiecewiseInterpolation::Extend::REPEAT</a>, &quot;repeat&quot;}, {<a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da2ac9d585f564e0ca1ca98bc5f878742c">PiecewiseInterpolation::Extend::REPEAT_OFFSET</a>, &quot;repeat_offset&quot;}})</td></tr>
 <tr class="separator:a3d5616d7cdc82efc086156a883922bbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa79eb723c652651a8079603fba4ebef9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#aa79eb723c652651a8079603fba4ebef9">apply_common_params</a> (<a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args)</td></tr>
@@ -229,6 +282,21 @@ Functions</h2></td></tr>
 <tr class="memitem:af03329969960f2decea3c0752c243b2a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#af03329969960f2decea3c0752c243b2a">full_to_reduced_matrix</a> (const int full_size, const int reduced_size, const std::vector&lt; int &gt; &amp;removed_vars, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;full, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;reduced)</td></tr>
 <tr class="memdesc:af03329969960f2decea3c0752c243b2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map a full size matrix to a reduced one by dropping rows and columns.  <a href="namespacepolyfem_1_1utils.html#af03329969960f2decea3c0752c243b2a">More...</a><br /></td></tr>
 <tr class="separator:af03329969960f2decea3c0752c243b2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d994983e63be19cec7d739baba363a1"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1">reorder_matrix</a> (const Eigen::MatrixXd &amp;in, const Eigen::VectorXi &amp;in_to_out, int out_blocks=-1, const int block_size=1)</td></tr>
+<tr class="memdesc:a4d994983e63be19cec7d739baba363a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reorder row blocks in a matrix.  <a href="namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1">More...</a><br /></td></tr>
+<tr class="separator:a4d994983e63be19cec7d739baba363a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac783c2b2ed8d267c159ea45235b17f4"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#aac783c2b2ed8d267c159ea45235b17f4">unreorder_matrix</a> (const Eigen::MatrixXd &amp;out, const Eigen::VectorXi &amp;in_to_out, int in_blocks=-1, const int block_size=1)</td></tr>
+<tr class="memdesc:aac783c2b2ed8d267c159ea45235b17f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undo the reordering of row blocks in a matrix.  <a href="namespacepolyfem_1_1utils.html#aac783c2b2ed8d267c159ea45235b17f4">More...</a><br /></td></tr>
+<tr class="separator:aac783c2b2ed8d267c159ea45235b17f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea6bd161d2a5a24993e13435a0a2ea52"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#aea6bd161d2a5a24993e13435a0a2ea52">map_index_matrix</a> (const Eigen::MatrixXi &amp;in, const Eigen::VectorXi &amp;index_mapping)</td></tr>
+<tr class="memdesc:aea6bd161d2a5a24993e13435a0a2ea52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map the entrys of an index matrix to new indices.  <a href="namespacepolyfem_1_1utils.html#aea6bd161d2a5a24993e13435a0a2ea52">More...</a><br /></td></tr>
+<tr class="separator:aea6bd161d2a5a24993e13435a0a2ea52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfd143acb03ac1513784509e3185b980"><td class="memTemplParams" colspan="2">template&lt;typename DstMat , typename SrcMat &gt; </td></tr>
+<tr class="memitem:abfd143acb03ac1513784509e3185b980"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#abfd143acb03ac1513784509e3185b980">append_rows</a> (DstMat &amp;dst, const SrcMat &amp;src)</td></tr>
+<tr class="separator:abfd143acb03ac1513784509e3185b980"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7e42b1cb43314d794089f065cf68289"><td class="memTemplParams" colspan="2">template&lt;typename DstMat &gt; </td></tr>
+<tr class="memitem:ad7e42b1cb43314d794089f065cf68289"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#ad7e42b1cb43314d794089f065cf68289">append_zero_rows</a> (DstMat &amp;dst, const size_t n_zero_rows)</td></tr>
+<tr class="separator:ad7e42b1cb43314d794089f065cf68289"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afac51d1fd7878475ff843eef315f510c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">maybe_parallel_for</a> (int size, const std::function&lt; void(int, int, int)&gt; &amp;partial_for)</td></tr>
 <tr class="separator:afac51d1fd7878475ff843eef315f510c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6271a11288e93e85b3d285403b962020"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a6271a11288e93e85b3d285403b962020">maybe_parallel_for</a> (int size, const std::function&lt; void(int)&gt; &amp;body)</td></tr>
@@ -253,6 +321,70 @@ Functions</h2></td></tr>
 <tr class="separator:a4dc2e59d21d66809d2273ae115be0b73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="abfd143acb03ac1513784509e3185b980" name="abfd143acb03ac1513784509e3185b980"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfd143acb03ac1513784509e3185b980">&#9670;&#160;</a></span>append_rows()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DstMat , typename SrcMat &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::append_rows </td>
+          <td>(</td>
+          <td class="paramtype">DstMat &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const SrcMat &amp;&#160;</td>
+          <td class="paramname"><em>src</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00152">152</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ad7e42b1cb43314d794089f065cf68289" name="ad7e42b1cb43314d794089f065cf68289"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7e42b1cb43314d794089f065cf68289">&#9670;&#160;</a></span>append_zero_rows()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DstMat &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::append_zero_rows </td>
+          <td>(</td>
+          <td class="paramtype">DstMat &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>n_zero_rows</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00164">164</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+
+</div>
+</div>
 <a id="aa79eb723c652651a8079603fba4ebef9" name="aa79eb723c652651a8079603fba4ebef9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa79eb723c652651a8079603fba4ebef9">&#9670;&#160;</a></span>apply_common_params()</h2>
 
@@ -286,6 +418,190 @@ Here is the caller graph for this function:</div>
 <div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_aa79eb723c652651a8079603fba4ebef9_icgraph.svg" width="464" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
+
+</div>
+</div>
+<a id="ad8c38f388e888043894cf1bb1b89a53e" name="ad8c38f388e888043894cf1bb1b89a53e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8c38f388e888043894cf1bb1b89a53e">&#9670;&#160;</a></span>are_edges_collinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::utils::are_edges_collinear </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>ea0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>ea1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>eb0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>eb1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>tol</em> = <code>1e-10</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determine if two edges are collinear. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ea0</td><td>First vertex of the first edge. </td></tr>
+    <tr><td class="paramname">ea1</td><td>Second vertex of the first edge. </td></tr>
+    <tr><td class="paramname">eb0</td><td>First vertex of the second edge. </td></tr>
+    <tr><td class="paramname">eb1</td><td>Second vertex of the second edge. </td></tr>
+    <tr><td class="paramname">tol</td><td>Tolerance for collinearity. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the edges are collinear, false otherwise. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00175">175</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ab7792e275b464e2ea5fad474fa7d9c0b" name="ab7792e275b464e2ea5fad474fa7d9c0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7792e275b464e2ea5fad474fa7d9c0b">&#9670;&#160;</a></span>are_triangles_coplanar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::utils::are_triangles_coplanar </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>t00</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>t01</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>t02</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>t10</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>t11</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>t12</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>tol</em> = <code>1e-10</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determine if two triangles are coplanar. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">t00</td><td>First vertex of the first triangle. </td></tr>
+    <tr><td class="paramname">t01</td><td>Second vertex of the first triangle. </td></tr>
+    <tr><td class="paramname">t02</td><td>Third vertex of the first triangle. </td></tr>
+    <tr><td class="paramname">t10</td><td>First vertex of the second triangle. </td></tr>
+    <tr><td class="paramname">t11</td><td>Second vertex of the second triangle. </td></tr>
+    <tr><td class="paramname">t12</td><td>Third vertex of the second triangle. </td></tr>
+    <tr><td class="paramname">tol</td><td>Tolerance for coplanarity. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the triangles are coplanar, false otherwise. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00188">188</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00303">polyfem::assembler::cross()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_ab7792e275b464e2ea5fad474fa7d9c0b_cgraph.svg" width="360" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="ac7587aa934754541bace662011fd3064" name="ac7587aa934754541bace662011fd3064"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7587aa934754541bace662011fd3064">&#9670;&#160;</a></span>barycentric_coordinates()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd polyfem::utils::barycentric_coordinates </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>V</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute barycentric coordinates for point p with respect to a simplex. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td>Query point. </td></tr>
+    <tr><td class="paramname">V</td><td>Verties of the simplex as rows of a matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The barycentric coordinates for point p with respect to the simplex. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00088">88</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
 </div>
 </div>
@@ -419,7 +735,7 @@ Here is the caller graph for this function:</div>
 
 <p>Flatten rowwises. </p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00343">343</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00351">351</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
@@ -481,11 +797,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00391">391</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00405">405</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_timer_8hpp_source.html#l00010">POLYFEM_SCOPED_TIMER</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00092">polyfem::solver::NLProblem::hessian()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00110">polyfem::solver::NLProblem::hessian()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -568,7 +884,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="par__for_8hpp_source.html#l00014">polyfem::utils::NThread::get()</a>, and <a class="el" href="par__for_8hpp_source.html#l00013">polyfem::utils::NThread::num_threads</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="par__for_8cpp_source.html#l00010">par_for()</a>, and <a class="el" href="_out_data_8cpp_source.html#l02603">polyfem::io::OutStatsData::save_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="par__for_8cpp_source.html#l00010">par_for()</a>, and <a class="el" href="_out_data_8cpp_source.html#l02596">polyfem::io::OutStatsData::save_json()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -612,7 +928,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00129">129</a> of file <a class="el" href="_j_s_o_n_utils_8cpp_source.html">JSONUtils.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_init_8cpp_source.html#l00318">polyfem::State::init_time()</a>, <a class="el" href="_state_load_8cpp_source.html#l00096">polyfem::State::load_mesh()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00025">polyfem::mesh::read_fem_mesh()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00380">polyfem::mesh::read_obstacle_geometry()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00293">polyfem::mesh::read_obstacle_mesh()</a>, <a class="el" href="_state_output_8cpp_source.html#l00027">polyfem::State::root_path()</a>, <a class="el" href="_state_8cpp_source.html#l00412">polyfem::State::set_materials()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00657">polyfem::assembler::GenericTensorProblem::set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01160">polyfem::assembler::GenericScalarProblem::set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_init_8cpp_source.html#l00318">polyfem::State::init_time()</a>, <a class="el" href="_state_load_8cpp_source.html#l00096">polyfem::State::load_mesh()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00025">polyfem::mesh::read_fem_mesh()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00380">polyfem::mesh::read_obstacle_geometry()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00293">polyfem::mesh::read_obstacle_mesh()</a>, <a class="el" href="_state_output_8cpp_source.html#l00027">polyfem::State::root_path()</a>, <a class="el" href="_state_8hpp_source.html#l00234">polyfem::State::set_materials()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00657">polyfem::assembler::GenericTensorProblem::set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01160">polyfem::assembler::GenericScalarProblem::set_parameters()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -647,15 +963,55 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Lumped matrix. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00372">372</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00386">386</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00007">polyfem::solver::ALForm::ALForm()</a>, and <a class="el" href="_state_8cpp_source.html#l01141">polyfem::State::assemble_stiffness_mat()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01088">polyfem::State::assemble_stiffness_mat()</a>, and <a class="el" href="_a_l_form_8cpp_source.html#l00044">polyfem::solver::ALForm::init_masked_lumped_mass()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_a2fb8d51756a3b76bee0485fa58e65226_icgraph.svg" width="611" height="132"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_a2fb8d51756a3b76bee0485fa58e65226_icgraph.svg" width="648" height="154"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
+
+</div>
+</div>
+<a id="aea6bd161d2a5a24993e13435a0a2ea52" name="aea6bd161d2a5a24993e13435a0a2ea52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea6bd161d2a5a24993e13435a0a2ea52">&#9670;&#160;</a></span>map_index_matrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXi polyfem::utils::map_index_matrix </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
+          <td class="paramname"><em>index_mapping</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Map the entrys of an index matrix to new indices. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in</td><td>Input index matrix. </td></tr>
+    <tr><td class="paramname">index_mapping</td><td>Mapping from old to new indices. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Mapped index matrix. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00525">525</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
 </div>
 </div>
@@ -955,6 +1311,68 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="a4d994983e63be19cec7d739baba363a1" name="a4d994983e63be19cec7d739baba363a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d994983e63be19cec7d739baba363a1">&#9670;&#160;</a></span>reorder_matrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::utils::reorder_matrix </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
+          <td class="paramname"><em>in_to_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>out_blocks</em> = <code>-1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>block_size</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reorder row blocks in a matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in</td><td>Input matrix. </td></tr>
+    <tr><td class="paramname">in_to_out</td><td>Mapping from input blocks to output blocks. </td></tr>
+    <tr><td class="paramname">out_blocks</td><td>Number of blocks in the output matrix. </td></tr>
+    <tr><td class="paramname">block_size</td><td>Size of each block. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Reordered matrix. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00464">464</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00087">polyfem::State::initial_acceleration()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00037">polyfem::State::initial_solution()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00066">polyfem::State::initial_velocity()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_a4d994983e63be19cec7d739baba363a1_icgraph.svg" width="100%" height="450"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
 <a id="a4dc2e59d21d66809d2273ae115be0b73" name="a4dc2e59d21d66809d2273ae115be0b73"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4dc2e59d21d66809d2273ae115be0b73">&#9670;&#160;</a></span>resolve_path()</h2>
 
@@ -1071,13 +1489,412 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00032">32</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00007">polyfem::solver::ALForm::ALForm()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_l_form_8cpp_source.html#l00044">polyfem::solver::ALForm::init_masked_lumped_mass()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_a691a83ca0c9ab36d64ab2bd56eb394e0_icgraph.svg" width="403" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_a691a83ca0c9ab36d64ab2bd56eb394e0_icgraph.svg" width="658" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
+
+</div>
+</div>
+<a id="a0e076b0bb2f5dba6104e2977df78e127" name="a0e076b0bb2f5dba6104e2977df78e127"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e076b0bb2f5dba6104e2977df78e127">&#9670;&#160;</a></span>tetrahedron_intersects_ball()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::utils::tetrahedron_intersects_ball </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>t0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>t1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>t2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>t3</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determine if a 3D tetrahedron intersects a 3D ball. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">t0</td><td>Tetrahedron first vertex. </td></tr>
+    <tr><td class="paramname">t1</td><td>Tetrahedron second vertex. </td></tr>
+    <tr><td class="paramname">t2</td><td>Tetrahedron third vertex. </td></tr>
+    <tr><td class="paramname">t3</td><td>Tetrahedron fourth vertex. </td></tr>
+    <tr><td class="paramname">center</td><td>Center of the ball. </td></tr>
+    <tr><td class="paramname">radius</td><td>Radius of the ball. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the tetrahedron intersects the ball, false otherwise. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00140">140</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ac722675794eb1f2ef7ea016c9aceb846" name="ac722675794eb1f2ef7ea016c9aceb846"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac722675794eb1f2ef7ea016c9aceb846">&#9670;&#160;</a></span>tetrahedron_volume() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::utils::tetrahedron_volume </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd&#160;</td>
+          <td class="paramname"><em>V</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the signed volume of a tetrahedron defined by four points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">V</td><td>The vertices of the terahedron as rows of a matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The signed volume of the tetrahedron. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00052">52</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_geometry_utils_8cpp_source.html#l00043">tetrahedron_volume()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_ac722675794eb1f2ef7ea016c9aceb846_cgraph.svg" width="451" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a8a72689f8c34fff6ce44d8568d3a5c1e" name="a8a72689f8c34fff6ce44d8568d3a5c1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a72689f8c34fff6ce44d8568d3a5c1e">&#9670;&#160;</a></span>tetrahedron_volume() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::utils::tetrahedron_volume </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>d</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the signed volume of a tetrahedron defined by four points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>First point of the tetrahedron. </td></tr>
+    <tr><td class="paramname">b</td><td>Second point of the tetrahedron. </td></tr>
+    <tr><td class="paramname">c</td><td>Third point of the tetrahedron. </td></tr>
+    <tr><td class="paramname">d</td><td>Fourth point of the tetrahedron. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The signed volume of the tetrahedron. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00043">43</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_geometry_utils_8cpp_source.html#l00052">tetrahedron_volume()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_a8a72689f8c34fff6ce44d8568d3a5c1e_icgraph.svg" width="451" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a7deb3cf37288f5f4935aae85c55bf3dc" name="a7deb3cf37288f5f4935aae85c55bf3dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7deb3cf37288f5f4935aae85c55bf3dc">&#9670;&#160;</a></span>tetrahedron_volume_gradient()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::tetrahedron_volume_gradient </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>ax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>ay</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>az</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>bx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>by</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>bz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>cz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>g</em>[12]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the gradient of the signed volume of a tetrahedron defined by four points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ax</td><td>First point's x coordinate. </td></tr>
+    <tr><td class="paramname">ay</td><td>First point's y coordinate. </td></tr>
+    <tr><td class="paramname">ay</td><td>First point's z coordinate. </td></tr>
+    <tr><td class="paramname">bx</td><td>Second point's x coordinate. </td></tr>
+    <tr><td class="paramname">by</td><td>Second point's y coordinate. </td></tr>
+    <tr><td class="paramname">by</td><td>Second point's z coordinate. </td></tr>
+    <tr><td class="paramname">cx</td><td>Third point's x coordinate. </td></tr>
+    <tr><td class="paramname">cy</td><td>Third point's y coordinate. </td></tr>
+    <tr><td class="paramname">cy</td><td>Third point's z coordinate. </td></tr>
+    <tr><td class="paramname">dx</td><td>Fourth point's x coordinate. </td></tr>
+    <tr><td class="paramname">dy</td><td>Fourth point's y coordinate. </td></tr>
+    <tr><td class="paramname">dy</td><td>Fourth point's z coordinate. </td></tr>
+    <tr><td class="paramname">g</td><td>Output gradient with respect to the four points. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00258">258</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a864ce51c3548eaa0b8123e3df4e8e83e" name="a864ce51c3548eaa0b8123e3df4e8e83e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a864ce51c3548eaa0b8123e3df4e8e83e">&#9670;&#160;</a></span>tetrahedron_volume_hessian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::tetrahedron_volume_hessian </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>ax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>ay</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>az</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>bx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>by</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>bz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>cz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>H</em>[144]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the gradient of the signed area of a 2D triangle defined by three points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ax</td><td>First point's x coordinate. </td></tr>
+    <tr><td class="paramname">ay</td><td>First point's y coordinate. </td></tr>
+    <tr><td class="paramname">ay</td><td>First point's z coordinate. </td></tr>
+    <tr><td class="paramname">bx</td><td>Second point's x coordinate. </td></tr>
+    <tr><td class="paramname">by</td><td>Second point's y coordinate. </td></tr>
+    <tr><td class="paramname">by</td><td>Second point's z coordinate. </td></tr>
+    <tr><td class="paramname">cx</td><td>Third point's x coordinate. </td></tr>
+    <tr><td class="paramname">cy</td><td>Third point's y coordinate. </td></tr>
+    <tr><td class="paramname">cy</td><td>Third point's z coordinate. </td></tr>
+    <tr><td class="paramname">dx</td><td>Fourth point's x coordinate. </td></tr>
+    <tr><td class="paramname">dy</td><td>Fourth point's y coordinate. </td></tr>
+    <tr><td class="paramname">dy</td><td>Fourth point's z coordinate. </td></tr>
+    <tr><td class="paramname">g</td><td>Output flattened Hessian with respect to the four points. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00292">292</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1127,6 +1944,436 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="ad4fc877ac33fe3a967cbd280d7a0b6e2" name="ad4fc877ac33fe3a967cbd280d7a0b6e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4fc877ac33fe3a967cbd280d7a0b6e2">&#9670;&#160;</a></span>triangle_area()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::utils::triangle_area </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd&#160;</td>
+          <td class="paramname"><em>V</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the signed area of a triangle defined by three points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">V</td><td>The vertices of the triangle as rows of a matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The signed area of the triangle. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00030">30</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_geometry_utils_8cpp_source.html#l00014">triangle_area_2D()</a>, and <a class="el" href="_geometry_utils_8cpp_source.html#l00022">triangle_area_3D()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_geometry_utils_8cpp_source.html#l00058">triangle_to_clockwise_order()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_ad4fc877ac33fe3a967cbd280d7a0b6e2_cgraph.svg" width="436" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_ad4fc877ac33fe3a967cbd280d7a0b6e2_icgraph.svg" width="436" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="ad647a82910f18529f06f18eed887e262" name="ad647a82910f18529f06f18eed887e262"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad647a82910f18529f06f18eed887e262">&#9670;&#160;</a></span>triangle_area_2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::utils::triangle_area_2D </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Vector2d &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector2d &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector2d &amp;&#160;</td>
+          <td class="paramname"><em>c</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the signed area of a 2D triangle defined by three points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>First point of the triangle. </td></tr>
+    <tr><td class="paramname">b</td><td>Second point of the triangle. </td></tr>
+    <tr><td class="paramname">c</td><td>Third point of the triangle. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The signed area of the triangle. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00014">14</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_geometry_utils_8cpp_source.html#l00030">triangle_area()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_ad647a82910f18529f06f18eed887e262_icgraph.svg" width="655" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a9556f5db6bc3fcaa257d71760686edda" name="a9556f5db6bc3fcaa257d71760686edda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9556f5db6bc3fcaa257d71760686edda">&#9670;&#160;</a></span>triangle_area_2D_gradient()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::triangle_area_2D_gradient </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>ax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>ay</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>bx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>by</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>g</em>[6]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the gradient of the signed area of a 2D triangle defined by three points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ax</td><td>First point's x coordinate. </td></tr>
+    <tr><td class="paramname">ay</td><td>First point's y coordinate. </td></tr>
+    <tr><td class="paramname">bx</td><td>Second point's x coordinate. </td></tr>
+    <tr><td class="paramname">by</td><td>Second point's y coordinate. </td></tr>
+    <tr><td class="paramname">cx</td><td>Third point's x coordinate. </td></tr>
+    <tr><td class="paramname">cy</td><td>Third point's y coordinate. </td></tr>
+    <tr><td class="paramname">g</td><td>Output gradient with respect to the three points. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00206">206</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a764f4ed874923f0c4007d1fb824c3285" name="a764f4ed874923f0c4007d1fb824c3285"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a764f4ed874923f0c4007d1fb824c3285">&#9670;&#160;</a></span>triangle_area_2D_hessian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::triangle_area_2D_hessian </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>ax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>ay</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>bx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>by</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>H</em>[36]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the Hessian of the signed area of a 2D triangle defined by three points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ax</td><td>First point's x coordinate. </td></tr>
+    <tr><td class="paramname">ay</td><td>First point's y coordinate. </td></tr>
+    <tr><td class="paramname">bx</td><td>Second point's x coordinate. </td></tr>
+    <tr><td class="paramname">by</td><td>Second point's y coordinate. </td></tr>
+    <tr><td class="paramname">cx</td><td>Third point's x coordinate. </td></tr>
+    <tr><td class="paramname">cy</td><td>Third point's y coordinate. </td></tr>
+    <tr><td class="paramname">g</td><td>Output flattened Hessian with respect to the three points. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00218">218</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a9d3394d6da8e1a1d864ff5ed4f90e746" name="a9d3394d6da8e1a1d864ff5ed4f90e746"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d3394d6da8e1a1d864ff5ed4f90e746">&#9670;&#160;</a></span>triangle_area_3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::utils::triangle_area_3D </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>c</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the area of a 3D triangle defined by three points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>First point of the triangle. </td></tr>
+    <tr><td class="paramname">b</td><td>Second point of the triangle. </td></tr>
+    <tr><td class="paramname">c</td><td>Third point of the triangle. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The signed area of the triangle. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00022">22</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_geometry_utils_8cpp_source.html#l00030">triangle_area()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_a9d3394d6da8e1a1d864ff5ed4f90e746_icgraph.svg" width="655" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="aadc2ec9bb2733534462ec65e99bbe9d9" name="aadc2ec9bb2733534462ec65e99bbe9d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadc2ec9bb2733534462ec65e99bbe9d9">&#9670;&#160;</a></span>triangle_fan()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; Eigen::MatrixXd &gt; polyfem::utils::triangle_fan </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>convex_polygon</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert a convex polygon to a list of triangles fanned around the first vertex. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">convex_polygon</td><td>The vertices of the convex polygon as rows of a matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The list of triangles as matrices of rows. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00074">74</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ae05141c057d8d87bcc1e8c4ed8318d50" name="ae05141c057d8d87bcc1e8c4ed8318d50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae05141c057d8d87bcc1e8c4ed8318d50">&#9670;&#160;</a></span>triangle_intersects_disk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::utils::triangle_intersects_disk </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Vector2d &amp;&#160;</td>
+          <td class="paramname"><em>t0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector2d &amp;&#160;</td>
+          <td class="paramname"><em>t1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector2d &amp;&#160;</td>
+          <td class="paramname"><em>t2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector2d &amp;&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determine if a 2D triangle intersects a 2D disk. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">t0</td><td>Triangle first vertex. </td></tr>
+    <tr><td class="paramname">t1</td><td>Triangle second vertex. </td></tr>
+    <tr><td class="paramname">t2</td><td>Triangle third vertex. </td></tr>
+    <tr><td class="paramname">center</td><td>Center of the disk. </td></tr>
+    <tr><td class="paramname">radius</td><td>Radius of the disk. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the triangle intersects the disk, false otherwise. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00107">107</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aa0e8392d10fa2db5792e3c4fe260a211" name="aa0e8392d10fa2db5792e3c4fe260a211"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0e8392d10fa2db5792e3c4fe260a211">&#9670;&#160;</a></span>triangle_to_clockwise_order()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::utils::triangle_to_clockwise_order </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>triangle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reorder the vertices of a triangle so they are in clockwise order. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">triangle</td><td>The vertices of the triangle as rows of a matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The vertices of the triangle in clockwise order as rows of a matrix. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00058">58</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_geometry_utils_8cpp_source.html#l00030">triangle_area()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_aa0e8392d10fa2db5792e3c4fe260a211_cgraph.svg" width="655" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
 <a id="aafdbbff4a81a4fcba11129097b1109e5" name="aafdbbff4a81a4fcba11129097b1109e5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aafdbbff4a81a4fcba11129097b1109e5">&#9670;&#160;</a></span>unflatten()</h2>
 
@@ -1155,17 +2402,71 @@ Here is the caller graph for this function:</div>
 
 <p>Unflatten rowwises, so every dim elements in x become a row. </p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00359">359</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00370">370</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00053">polyfem::solver::ContactForm::compute_displaced_surface()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00031">polyfem::solver::FrictionForm::compute_displaced_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l00815">polyfem::io::OutGeometryData::export_data()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00156">polyfem::utils::PiecewiseCubicInterpolation::init()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00147">polyfem::State::init_nonlinear_tensor_solve()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01594">polyfem::io::OutGeometryData::save_surface()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00053">polyfem::solver::ContactForm::compute_displaced_surface()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00030">polyfem::solver::FrictionForm::compute_displaced_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l00796">polyfem::io::OutGeometryData::export_data()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00156">polyfem::utils::PiecewiseCubicInterpolation::init()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00104">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_out_data_8cpp_source.html#l01578">polyfem::io::OutGeometryData::save_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l01092">polyfem::io::OutGeometryData::save_volume()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01549">polyfem::io::OutGeometryData::save_volume_vector_field()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_aafdbbff4a81a4fcba11129097b1109e5_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
+
+</div>
+</div>
+<a id="aac783c2b2ed8d267c159ea45235b17f4" name="aac783c2b2ed8d267c159ea45235b17f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac783c2b2ed8d267c159ea45235b17f4">&#9670;&#160;</a></span>unreorder_matrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::utils::unreorder_matrix </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
+          <td class="paramname"><em>in_to_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>in_blocks</em> = <code>-1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>block_size</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Undo the reordering of row blocks in a matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td>Reordered matrix. </td></tr>
+    <tr><td class="paramname">in_to_out</td><td>Mapping from input blocks to output blocks. </td></tr>
+    <tr><td class="paramname">in_blocks</td><td>Number of blocks in the input matrix. </td></tr>
+    <tr><td class="paramname">block_size</td><td>Size of each block. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Unreordered matrix. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00495">495</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
 </div>
 </div>

@@ -313,16 +313,21 @@ $(document).ready(function(){initNavTree('_backtracking_line_search_8hpp_source.
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                            <span class="stringliteral">&quot;Line search failed to find descent step (f(x)={:g} f(x+αΔx)={:g} α_CCD={:g} α={:g}, ||Δx||={:g} is_step_valid={} use_grad_norm={} iter={:d})&quot;</span>,</div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                            old_energy, cur_energy, starting_step_size, step_size, delta_x.norm(),</div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>                            is_step_valid, use_grad_norm, this-&gt;cur_iter);</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>                        objFunc.line_search_end();</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                        <span class="keywordflow">return</span> std::nan(<span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                    }</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>                    <span class="keywordflow">return</span> step_size;</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>                }</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>            };</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        } <span class="comment">// namespace line_search</span></div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    }     <span class="comment">// namespace solver</span></div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>} <span class="comment">// namespace polyfem</span></div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span><span class="preprocessor">#ifndef NDEBUG</span></div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                        objFunc.solution_changed(<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                        <span class="comment">// tolerance for rounding error due to multithreading</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>                        assert(abs(old_energy_in - objFunc.value(<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)) &lt; 1e-15);</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>                        objFunc.line_search_end();</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>                        <span class="keywordflow">return</span> std::nan(<span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>                    }</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>                    <span class="keywordflow">return</span> step_size;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                }</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            };</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        } <span class="comment">// namespace line_search</span></div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    }     <span class="comment">// namespace solver</span></div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>} <span class="comment">// namespace polyfem</span></div>
 <div class="ttc" id="a_line_search_8hpp_html"><div class="ttname"><a href="_line_search_8hpp.html">LineSearch.hpp</a></div></div>
 <div class="ttc" id="a_spline_basis3d_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition:</b> <a href="_spline_basis3d_8cpp_source.html#l00055">SplineBasis3d.cpp:55</a></div></div>
 <div class="ttc" id="a_timer_8hpp_html"><div class="ttname"><a href="_timer_8hpp.html">Timer.hpp</a></div></div>

@@ -5,7 +5,9 @@ var classpolyfem_1_1solver_1_1_n_l_problem =
       [ "FULL_SIZE", "classpolyfem_1_1solver_1_1_n_l_problem.html#a826a60dbefdaed8e34377c2c11086197ab69ff8721a4c15de6f2736e3a9e21744", null ],
       [ "REDUCED_SIZE", "classpolyfem_1_1solver_1_1_n_l_problem.html#a826a60dbefdaed8e34377c2c11086197a6aa3a7df66536c0f61893e618e0fd6d2", null ]
     ] ],
-    [ "NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html#aab5c7653e10c4f2102359336856c3f42", null ],
+    [ "NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html#a30654bc9dc046644f0aad7b915836a33", null ],
+    [ "NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html#ae8c8cc7262e836aee528cb30b3c63746", null ],
+    [ "boundary_values", "classpolyfem_1_1solver_1_1_n_l_problem.html#aa7612805538e997b3f4eaa6f3b3cb56a", null ],
     [ "current_size", "classpolyfem_1_1solver_1_1_n_l_problem.html#a4bb4f627d02af65c8b32b50ea19e13c2", null ],
     [ "full_size", "classpolyfem_1_1solver_1_1_n_l_problem.html#a6ca59190bb00c6cb186c3e87f24c6983", null ],
     [ "full_to_reduced", "classpolyfem_1_1solver_1_1_n_l_problem.html#a7000e6d7044be55a8bdb4db462f95d91", null ],
@@ -29,9 +31,9 @@ var classpolyfem_1_1solver_1_1_n_l_problem =
     [ "boundary_nodes_", "classpolyfem_1_1solver_1_1_n_l_problem.html#a255ff494c0fab139c00b87959dc400ae", null ],
     [ "current_size_", "classpolyfem_1_1solver_1_1_n_l_problem.html#af421cb8d4f4449f38ae44c09023e3a6b", null ],
     [ "full_size_", "classpolyfem_1_1solver_1_1_n_l_problem.html#a00077100ef00ba2c93aa6673173244e9", null ],
-    [ "local_boundary_", "classpolyfem_1_1solver_1_1_n_l_problem.html#a91bb690518f4e4973b7a7376b8d1186f", null ],
+    [ "local_boundary_", "classpolyfem_1_1solver_1_1_n_l_problem.html#a549dbfeff5588b3e2cc99143b32bafb1", null ],
     [ "n_boundary_samples_", "classpolyfem_1_1solver_1_1_n_l_problem.html#a58157be27da8a88c9c286a2a3eee575d", null ],
     [ "reduced_size_", "classpolyfem_1_1solver_1_1_n_l_problem.html#a55f5ab69be721b129d5d3243d0d0b3e5", null ],
-    [ "rhs_assembler_", "classpolyfem_1_1solver_1_1_n_l_problem.html#a8956f9b63449756dded30cf38f435203", null ],
+    [ "rhs_assembler_", "classpolyfem_1_1solver_1_1_n_l_problem.html#a5a6c5689b68c045852404b2fb493ac62", null ],
     [ "t_", "classpolyfem_1_1solver_1_1_n_l_problem.html#af891bdb809cef5109b36381803d396a1", null ]
 ];
