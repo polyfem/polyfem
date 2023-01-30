@@ -156,9 +156,9 @@ namespace polyfem::solver
 			for (int i = 0; i < t_or_uv_sampling.size(); ++i)
 				point_sampling.row(i) = curve.evaluate(t_or_uv_sampling(i));
 
-			Eigen::MatrixXi edges(100, 2);
-			edges.col(0) = Eigen::VectorXi::LinSpaced(samples, 0, samples - 1);
-			edges.col(1) = Eigen::VectorXi::LinSpaced(samples, 1, samples);
+			Eigen::MatrixXi edges(samples - 1, 2);
+			edges.col(0) = Eigen::VectorXi::LinSpaced(samples - 1, 0, samples - 2);
+			edges.col(1) = Eigen::VectorXi::LinSpaced(samples - 1, 1, samples - 1);
 			io::OBJWriter::write(state_.resolve_output_path(fmt::format("spline_target_{:d}.obj", rand() % 100)), point_sampling, edges);
 
 			distance_fn = std::make_unique<UnsignedDistanceFunction>(dim, delta_);
