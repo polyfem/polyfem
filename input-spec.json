@@ -2126,7 +2126,7 @@
     },
     {
         "pointer": "/solver/nonlinear/x_delta",
-        "default": 1e-08,
+        "default": 0,
         "type": "float",
         "min": 0,
         "doc": "Stopping criterion: minimal change of the variables x for the iterations to continue. Computed as the L2 norm of x divide by the time step."

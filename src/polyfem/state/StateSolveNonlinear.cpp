@@ -341,7 +341,7 @@ namespace polyfem
 				break;
 			}
 
-			if (delta_x_norm <= 1e-6)
+			if (delta_x_norm <= 1e-12)
 			{
 				logger().warn(
 					"Lagging produced tiny update between iterations {:d} and {:d} (grad_norm={:g} grad_tol={:g} ||Δx||={:g} Δx_tol={:g}); stopping early",
@@ -365,7 +365,7 @@ namespace polyfem
 			nl_problem.init(sol);
 			solve_data.update_barrier_stiffness(sol);
 			nl_solver->minimize(nl_problem, tmp_sol);
-			Eigen::MatrixXd prev_sol = sol;
+			prev_sol = sol;
 			sol = nl_problem.reduced_to_full(tmp_sol);
 
 			// Save the subsolve sequence for debugging and info

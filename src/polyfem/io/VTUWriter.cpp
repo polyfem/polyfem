@@ -15,7 +15,8 @@ namespace polyfem
 			static const int VTK_TRIANGLE = 5;
 			static const int VTK_QUAD = 9;
 			static const int VTK_HEXAHEDRON = 12;
-			// static const int VTK_POLYGON = 7;
+			static const int VTK_POLYGON = 7;
+			static const int VTK_POLYHEDRON = 42;
 
 			static const int VTK_LAGRANGE_TRIANGLE = 69;
 			static const int VTK_LAGRANGE_QUADRILATERAL = 70;
@@ -23,7 +24,7 @@ namespace polyfem
 			static const int VTK_LAGRANGE_TETRAHEDRON = 71;
 			static const int VTK_LAGRANGE_HEXAHEDRON = 72;
 
-			inline static int VTKTagVolume(const int n_vertices, bool is_simplex)
+			inline static int VTKTagVolume(const int n_vertices, bool is_simplex, bool is_poly)
 			{
 				switch (n_vertices)
 				{
@@ -38,6 +39,8 @@ namespace polyfem
 				case 8:
 					return VTK_HEXAHEDRON;
 				default:
+					if (is_poly)
+						return VTK_POLYHEDRON;
 					if (is_simplex)
 						return VTK_LAGRANGE_TETRAHEDRON;
 					else
@@ -45,7 +48,7 @@ namespace polyfem
 				}
 			}
 
-			inline static int VTKTagPlanar(const int n_vertices, bool is_simplex)
+			inline static int VTKTagPlanar(const int n_vertices, bool is_simplex, bool is_poly)
 			{
 				switch (n_vertices)
 				{
@@ -58,6 +61,9 @@ namespace polyfem
 				case 4:
 					return VTK_QUAD;
 				default:
+					if (is_poly)
+						return VTK_POLYGON;
+
 					if (is_simplex)
 						return VTK_LAGRANGE_TRIANGLE;
 					else
@@ -196,7 +202,7 @@ namespace polyfem
 
 			os << "</DataArray>\n";
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			const int int_tag = is_volume_ ? VTKTagVolume(n_cell_vertices, true) : VTKTagPlanar(n_cell_vertices, true);
+			const int int_tag = is_volume_ ? VTKTagVolume(n_cell_vertices, true, false) : VTKTagPlanar(n_cell_vertices, true, false);
 			if (binary_)
 			{
 				os << "<DataArray type=\"Int8\" Name=\"types\" format=\"binary\">\n";
@@ -251,7 +257,7 @@ namespace polyfem
 			os << "</Cells>\n";
 		}
 
-		void VTUWriter::write_cells(const std::vector<std::vector<int>> &cells, const bool is_simplex, std::ostream &os)
+		void VTUWriter::write_cells(const std::vector<std::vector<int>> &cells, const bool is_simplex, const bool is_poly, std::ostream &os)
 		{
 			const int n_cells = cells.size();
 			os << "<Cells>\n";
@@ -314,7 +320,7 @@ namespace polyfem
 
 			for (int i = 0; i < n_cells; ++i)
 			{
-				const int int_tag = is_volume_ ? VTKTagVolume(cells[i].size(), is_simplex) : VTKTagPlanar(cells[i].size(), is_simplex);
+				const int int_tag = is_volume_ ? VTKTagVolume(cells[i].size(), is_simplex, is_poly) : VTKTagPlanar(cells[i].size(), is_simplex, is_poly);
 				const uint8_t tag = int_tag;
 
 				if (binary_)
@@ -427,7 +433,7 @@ namespace polyfem
 			return true;
 		}
 
-		bool VTUWriter::write_mesh(const std::string &path, const Eigen::MatrixXd &points, const std::vector<std::vector<int>> &cells, const bool is_simplicial)
+		bool VTUWriter::write_mesh(const std::string &path, const Eigen::MatrixXd &points, const std::vector<std::vector<int>> &cells, const bool is_simplicial, const bool has_poly)
 		{
 			std::ofstream os;
 			os.open(path.c_str());
@@ -442,7 +448,7 @@ namespace polyfem
 			write_header(points.rows(), cells.size(), os);
 			write_points(points, os);
 			write_point_data(os);
-			write_cells(cells, is_simplicial, os);
+			write_cells(cells, is_simplicial, has_poly, os);
 
 			write_footer(os);
 			os.close();

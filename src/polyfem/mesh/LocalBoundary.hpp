@@ -24,26 +24,24 @@ namespace polyfem
 		{
 		public:
 			LocalBoundary(const int global_id, BoundaryType type)
-				: global_element_id_(global_id), type_(type), counter_(0)
+				: global_element_id_(global_id), type_(type)
 			{
 			}
 
 			LocalBoundary(const LocalBoundary &other)
 				: global_primitive_id_(other.global_primitive_id_), local_primitive_id_(other.local_primitive_id_),
-				  global_element_id_(other.global_element_id_), type_(other.type_), counter_(other.counter_)
+				  global_element_id_(other.global_element_id_), type_(other.type_)
 			{
 			}
 
 			void add_boundary_primitive(const int global_index, const int local_index)
 			{
-				global_primitive_id_[counter_] = global_index;
-				local_primitive_id_[counter_] = local_index;
-
-				++counter_;
+				global_primitive_id_.emplace_back(global_index);
+				local_primitive_id_.emplace_back(local_index);
 			}
 
-			int size() const { return counter_; }
-			bool empty() const { return counter_ <= 0; }
+			int size() const { return local_primitive_id_.size(); }
+			bool empty() const { return size() <= 0; }
 
 			int element_id() const { return global_element_id_; }
 
@@ -51,7 +49,7 @@ namespace polyfem
 
 			inline int operator[](const int index) const
 			{
-				assert(index < counter_);
+				assert(index < size());
 				return local_primitive_id_[index];
 			}
 
@@ -80,13 +78,8 @@ namespace polyfem
 
 			void remove_tag_for_index(const int index)
 			{
-				for (int i = index + 1; i < size(); ++i)
-				{
-					global_primitive_id_[i - 1] = global_primitive_id_[i];
-					local_primitive_id_[i - 1] = local_primitive_id_[i];
-				}
-
-				--counter_;
+				global_primitive_id_.erase(global_primitive_id_.begin() + index);
+				local_primitive_id_.erase(local_primitive_id_.begin() + index);
 			}
 
 			friend std::ostream &operator<<(std::ostream &os, const LocalBoundary &lb)
@@ -97,13 +90,11 @@ namespace polyfem
 			}
 
 		private:
-			std::array<int, 6> global_primitive_id_ = {{-1, -1, -1, -1, -1, -1}};
-			std::array<int, 6> local_primitive_id_ = {{-1, -1, -1, -1, -1, -1}};
+			std::vector<int> global_primitive_id_;
+			std::vector<int> local_primitive_id_;
 
 			const int global_element_id_;
 			const BoundaryType type_;
-
-			int counter_;
 		};
 	} // namespace mesh
 } // namespace polyfem

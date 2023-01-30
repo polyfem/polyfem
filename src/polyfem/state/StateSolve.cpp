@@ -49,7 +49,6 @@ namespace polyfem
 				assert(ndof + obstacle.ndof() == solution.size());
 				// only reorder the first ndof rows
 				solution.topRows(ndof) = utils::reorder_matrix(solution.topRows(ndof), in_node_to_node, -1, mesh->dimension());
-				// solution.bottomRows(obstacle.ndof()).array() *= 0.9; // TODO: remove this hack
 			}
 		}
 		else

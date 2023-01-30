@@ -33,7 +33,7 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24")
 endif()
 
 ################################################################################
-project(PolyFEM DESCRIPTION "A polyvalent C++ FEM library")
+project(PolyFEM DESCRIPTION "A polyvalent C++ FEM library" LANGUAGES C CXX)
 ################################################################################
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -134,6 +134,32 @@ include(sanitizers)
 add_library(polyfem)
 add_library(polyfem::polyfem ALIAS polyfem)
 
+################################################################################
+# CUDA
+################################################################################
+
+if(IPC_TOOLKIT_WITH_CUDA OR POLYSOLVE_WITH_CUSOLVER)
+  include(CheckLanguage)
+  check_language(CUDA)
+  if(CMAKE_CUDA_COMPILER)
+    enable_language(CUDA)
+  else()
+    message(FATAL_ERROR "No CUDA support found!")
+  endif()
+
+  set_target_properties(polyfem PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+
+  # Nvidia RTX8000 -> compute_75
+  # Nvidia V100 -> compute_70
+  # Nvidia 1080/1080Ti -> compute_61
+  # Nvidia 3080Ti -> compute_86
+  if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+    set(CMAKE_CUDA_ARCHITECTURES 70 75 86)
+  endif()
+  set_target_properties(polyfem PROPERTIES CUDA_ARCHITECTURES "70;75;86")
+#   set_target_properties(PolyFEM_bin PROPERTIES CUDA_ARCHITECTURES "70;75;86")
+endif()
+
 # Must be call in the same "CMakeLists.txt" where add_library(polyfem ...) is called
 polyfem_autogen(polyfem eigs.py auto_eigs)
 polyfem_autogen(polyfem p_bases.py auto_p_bases)
@@ -193,6 +219,11 @@ endif()
 include(libigl)
 target_link_libraries(polyfem PUBLIC igl::core)
 
+if(LIBIGL_WITH_TRIANGLE)
+    target_link_libraries(polyfem PUBLIC igl::triangle)
+    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TRIANGLE)
+endif()
+
 # BVH
 include(BVH)
 target_link_libraries(polyfem PUBLIC BVH_lib)
@@ -244,7 +275,7 @@ target_link_libraries(polyfem PUBLIC natsort::natsort)
 include(glob)
 target_link_libraries(polyfem PUBLIC Glob::Glob)
 
-# GLOB library
+# Tracy library
 # include(tracy)
 # target_link_libraries(polyfem PUBLIC Tracy::TracyClient)
 
@@ -275,6 +306,9 @@ endif()
 include(polyclipper)
 target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
 # endif()
+
+# Extra warnings (link this here so it has top priority)
+target_link_libraries(polyfem PRIVATE polyfem::warnings)
 
 # Extra warnings (link this here so it has top priority)
 target_link_libraries(polyfem PRIVATE polyfem::warnings)
@@ -330,30 +364,4 @@ if(POLYFEM_TOPLEVEL_PROJECT)
         enable_testing()
         add_subdirectory(tests)
     endif()
-endif()
-
-################################################################################
-# CUDA
-################################################################################
-
-if(IPC_TOOLKIT_WITH_CUDA)
-  include(CheckLanguage)
-  check_language(CUDA)
-  if(CMAKE_CUDA_COMPILER)
-    enable_language(CUDA)
-  else()
-    message(FATAL_ERROR "No CUDA support found!")
-  endif()
-
-  set_target_properties(polyfem PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-
-  # Nvidia RTX8000 -> compute_75
-  # Nvidia V100 -> compute_70
-  # Nvidia 1080/1080Ti -> compute_61
-  # Nvidia 3080Ti -> compute_86
-  if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-    set(CMAKE_CUDA_ARCHITECTURES 70 75 86)
-  endif()
-  set_target_properties(polyfem PROPERTIES CUDA_ARCHITECTURES "70;75;86")
-  set_target_properties(PolyFEM_bin PROPERTIES CUDA_ARCHITECTURES "70;75;86")
 endif()
