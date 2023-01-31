@@ -77,6 +77,8 @@ namespace polyfem::solver
 		double inequality_constraint_val(const Eigen::VectorXd &x, const int index);
 		Eigen::VectorXd inequality_constraint_grad(const Eigen::VectorXd &x, const int index);
 
+		std::shared_ptr<State> get_state(int id) { return all_states_[id]; }
+
 	private:
 		int optimization_dim_ = 0;
 		std::shared_ptr<SumObjective> obj_;
