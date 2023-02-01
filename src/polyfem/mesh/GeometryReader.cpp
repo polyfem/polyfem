@@ -255,14 +255,7 @@ namespace polyfem::mesh
 		if (geometry.empty())
 			log_and_throw_error("Provided geometry is empty!");
 
-		std::vector<json> geometries;
-		// Note you can add more types here, just add them to geometries
-		if (geometry.is_object())
-			geometries.push_back(geometry);
-		else if (geometry.is_array())
-			geometries = geometry.get<std::vector<json>>();
-		else
-			log_and_throw_error("Invalid JSON geometry type!");
+		std::vector<json> geometries = utils::json_as_array(geometry);
 
 		// --------------------------------------------------------------------
 
@@ -415,16 +408,7 @@ namespace polyfem::mesh
 		if (geometry.empty())
 			return obstacle;
 
-		std::vector<json> geometries;
-		// Note you can add more types here, just add them to geometries
-		if (geometry.is_object())
-		{
-			geometries.push_back(geometry);
-		}
-		else if (geometry.is_array())
-		{
-			geometries = geometry.get<std::vector<json>>();
-		}
+		std::vector<json> geometries = utils::json_as_array(geometry);
 
 		for (const json &geometry : geometries)
 		{

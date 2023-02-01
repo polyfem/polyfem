@@ -53,7 +53,7 @@ json load_sim_json(const std::string filename, const int time_steps)
 		args["time"] = t_args;
 	}
 	args["root_path"] = filename;
-	args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
+	args["/solver/linear/enable_overwrite_solver"_json_pointer] = true;
 	// args["/output/log/level"_json_pointer] = "error";
 
 	return args;
@@ -97,8 +97,7 @@ json run_sim(State &state, const json &args)
 
 TEST_CASE("restart", "[restart]")
 {
-	// const std::string scene_file = POLYFEM_DATA_DIR "/contact/examples/3D/stress-tests/mat-twist.json";
-	const std::string scene_file = POLYFEM_DATA_DIR "/contact/examples/3D/unit-tests/5-cubes-fast.json";
+	const std::string scene_file = POLYFEM_DATA_DIR "/contact/examples/3D/unit-tests/2-cubes.json";
 	constexpr int total_time_steps = 10;
 	REQUIRE(total_time_steps % 2 == 0);
 	constexpr int restart_time_steps = total_time_steps / 2;
