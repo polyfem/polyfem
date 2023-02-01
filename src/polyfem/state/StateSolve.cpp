@@ -40,7 +40,7 @@ namespace polyfem
 		const std::string in_path = resolve_input_path(args["input"]["data"]["u_path"]);
 		if (!in_path.empty())
 		{
-			if (!import_matrix(in_path, args["import"], solution))
+			if (!read_matrix(in_path, solution))
 				log_and_throw_error("Unable to read initial solution from file ({})!", in_path);
 			assert(solution.cols() == 1);
 			if (args["input"]["data"]["reorder"].get<bool>())
@@ -69,7 +69,7 @@ namespace polyfem
 		const std::string in_path = resolve_input_path(args["input"]["data"]["v_path"]);
 		if (!in_path.empty())
 		{
-			if (!import_matrix(in_path, args["import"], velocity))
+			if (!read_matrix(in_path, velocity))
 				log_and_throw_error("Unable to read initial velocity from file ({})!", in_path);
 			assert(velocity.cols() == 1);
 			if (args["input"]["data"]["reorder"].get<bool>())
@@ -90,7 +90,7 @@ namespace polyfem
 		const std::string in_path = resolve_input_path(args["input"]["data"]["a_path"]);
 		if (!in_path.empty())
 		{
-			if (!import_matrix(in_path, args["import"], acceleration))
+			if (!read_matrix(in_path, acceleration))
 				log_and_throw_error("Unable to read initial acceleration from file ({})!", in_path);
 			if (args["input"]["data"]["reorder"].get<bool>())
 			{
