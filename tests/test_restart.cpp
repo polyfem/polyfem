@@ -53,7 +53,7 @@ json load_sim_json(const std::string filename, const int time_steps)
 		args["time"] = t_args;
 	}
 	args["root_path"] = filename;
-	args["/solver/linear/enable_overwrite_solver"_json_pointer] = true;
+	args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
 	// args["/output/log/level"_json_pointer] = "error";
 
 	return args;
