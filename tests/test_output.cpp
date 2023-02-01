@@ -46,7 +46,8 @@ TEST_CASE("full sim", "[full_sim]")
 			"acceleration": true
 		}
 	})"_json;
-	// args["/output/log/level"_json_pointer] = "warning";
+	args["/solver/linear/enable_overwrite_solver"_json_pointer] = true;
+	args["/output/log/level"_json_pointer] = "warning";
 
 	State state;
 
