@@ -773,7 +773,7 @@ namespace polyfem::io
 
 		for (size_t i = 0; i < bases.size(); ++i)
 		{
-			if (!mesh.is_volume() && !mesh.is_polytope(i))
+			if (mesh.is_volume() || !mesh.is_polytope(i))
 				continue;
 
 			const auto &mesh2d = static_cast<const mesh::Mesh2D &>(mesh);
