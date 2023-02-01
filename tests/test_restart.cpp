@@ -26,8 +26,8 @@ json load_sim_json(const std::string filename, const int time_steps)
 	}
 
 	json args = in_args;
-	args["output"] = json({});
-	args["output"]["advanced"]["save_time_sequence"] = false;
+	// args["output"] = json({});
+	// args["output"]["advanced"]["save_time_sequence"] = false;
 	{
 		json t_args = args["time"];
 		if (t_args.contains("tend") && t_args.contains("dt"))
@@ -106,23 +106,29 @@ TEST_CASE("restart", "[restart]")
 	const std::vector<std::string> test_keys =
 		{"err_l2", "err_h1", "err_h1_semi", "err_linf", "err_linf_grad", "err_lp"};
 
+	const std::filesystem::path outdir = std::filesystem::current_path() / "DELETE_ME_restart_test_output";
+	const std::filesystem::path full_outdir = outdir / "full";
+	const std::filesystem::path part1_outdir = outdir / "part1";
+	const std::filesystem::path part2_outdir = outdir / "part2";
+
 	json args = load_sim_json(scene_file, total_time_steps);
 
 	State state;
 
+	args["/output/directory"_json_pointer] = full_outdir.string();
 	const json full_out = run_sim(state, args);
 
+	args["/output/directory"_json_pointer] = part1_outdir.string();
+	args["/output/data/u_path"_json_pointer] = "restart_sol.bin";
+	args["/output/data/v_path"_json_pointer] = "restart_vel.bin";
+	args["/output/data/a_path"_json_pointer] = "restart_acc.bin";
 	args["time"]["time_steps"] = restart_time_steps;
-	const std::filesystem::path cwd = std::filesystem::current_path();
-	args["/output/directory"_json_pointer] = cwd.string();
-	args["/output/data/u_path"_json_pointer] = (cwd / "restart_sol.bin").string();
-	args["/output/data/u_path"_json_pointer] = (cwd / "restart_vel.bin").string();
-	args["/output/data/u_path"_json_pointer] = (cwd / "restart_acc.bin").string();
 	run_sim(state, args); // partial sim
 
-	args["/input/data/u_path"_json_pointer] = args["/output/data/u_path"_json_pointer];
-	args["/input/data/u_path"_json_pointer] = args["/output/data/u_path"_json_pointer];
-	args["/input/data/u_path"_json_pointer] = args["/output/data/u_path"_json_pointer];
+	args["/output/directory"_json_pointer] = part2_outdir.string();
+	args["/input/data/u_path"_json_pointer] = (part1_outdir / "restart_sol.bin").string();
+	args["/input/data/v_path"_json_pointer] = (part1_outdir / "restart_vel.bin").string();
+	args["/input/data/a_path"_json_pointer] = (part1_outdir / "restart_acc.bin").string();
 	args["/time/t0"_json_pointer] = args["/time/dt"_json_pointer].get<double>() * restart_time_steps;
 	const json restart_out = run_sim(state, args);
 
@@ -133,4 +139,6 @@ TEST_CASE("restart", "[restart]")
 		const double relerr = std::abs((restart_val - full_val) / std::max(std::abs(full_val), 1e-5));
 		CHECK(relerr < margin);
 	}
+
+	// std::filesystem::remove_all(outdir);
 }
