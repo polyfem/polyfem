@@ -46,7 +46,8 @@ TEST_CASE("full sim", "[full_sim]")
 			"acceleration": true
 		}
 	})"_json;
-	// args["/output/log/level"_json_pointer] = "warning";
+	args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
+	args["/output/log/level"_json_pointer] = "warning";
 
 	State state;
 
