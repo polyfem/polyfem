@@ -81,10 +81,13 @@ namespace polyfem::solver
 					if (p->name() == "shape")
 					{
 						auto shape_param = std::dynamic_pointer_cast<ShapeParameter>(p);
-						auto parameter_constrained_nodes = shape_param->get_constrained_nodes();
-						slim_constrained_nodes.insert(slim_constrained_nodes.end(), parameter_constrained_nodes.begin(), parameter_constrained_nodes.end());
-						if (V_rest.size() == 0)
-							state_ptr->get_vf(V_rest, F);
+						if (shape_param)
+						{
+							auto parameter_constrained_nodes = shape_param->get_constrained_nodes();
+							slim_constrained_nodes.insert(slim_constrained_nodes.end(), parameter_constrained_nodes.begin(), parameter_constrained_nodes.end());
+							if (V_rest.size() == 0)
+								state_ptr->get_vf(V_rest, F);
+						}
 					}
 				}
 
@@ -109,11 +112,14 @@ namespace polyfem::solver
 						if (p->name() == "shape")
 						{
 							auto shape_param = std::dynamic_pointer_cast<ShapeParameter>(p);
-							auto parameter_constrained_nodes = shape_param->get_constrained_nodes();
-							slim_constrained_nodes.insert(slim_constrained_nodes.end(), parameter_constrained_nodes.begin(), parameter_constrained_nodes.end());
-							auto V_param = shape_param->map(x.segment(cumulative, p->optimization_dim()));
-							for (auto n : parameter_constrained_nodes)
-								V.row(n) = V_param.row(n);
+							if (shape_param)
+							{
+								auto parameter_constrained_nodes = shape_param->get_constrained_nodes();
+								slim_constrained_nodes.insert(slim_constrained_nodes.end(), parameter_constrained_nodes.begin(), parameter_constrained_nodes.end());
+								auto V_param = shape_param->map(x.segment(cumulative, p->optimization_dim()));
+								for (auto n : parameter_constrained_nodes)
+									V.row(n) = V_param.row(n);
+							}
 						}
 					}
 					cumulative += p->optimization_dim();
