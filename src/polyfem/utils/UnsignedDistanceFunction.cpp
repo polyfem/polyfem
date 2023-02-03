@@ -1,4 +1,5 @@
 #include "UnsignedDistanceFunction.hpp"
+#include <mutex>
 
 namespace polyfem
 {
