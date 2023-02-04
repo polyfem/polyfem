@@ -9,6 +9,8 @@ set(SOURCES
 	OBJReader.hpp
 	OBJWriter.cpp
 	OBJWriter.hpp
+	HDF5VTUWriter.cpp
+	HDF5VTUWriter.hpp
 	VTUWriter.cpp
 	VTUWriter.hpp
 	Evaluator.cpp
