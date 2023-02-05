@@ -12,7 +12,7 @@ include(FetchContent)
 FetchContent_Declare(
     paraviewo
     GIT_REPOSITORY https://github.com/polyfem/paraviewo.git
-    GIT_TAG b3a167554c61952d6cc36b7a2ce4b9a5da5e5d6b
+    GIT_TAG e33b4eeecb9bd847fa630f9f12132971076a251d
     GIT_SHALLOW FALSE
 )
 FetchContent_MakeAvailable(paraviewo)
