@@ -8,7 +8,9 @@
 
 #include <polyfem/mesh/Mesh.hpp>
 
-#include <polyfem/io/VTUWriter.hpp>
+#include <paraviewo/ParaviewWriter.hpp>
+#include <paraviewo/VTUWriter.hpp>
+#include <paraviewo/HDF5VTUWriter.hpp>
 
 #include <polyfem/utils/RefElementSampler.hpp>
 
@@ -63,6 +65,8 @@ namespace polyfem::io
 
 			bool solve_export_to_file;
 
+			bool use_hdf5;
+
 			/// @brief initialize the flags based on the input args
 			/// @param[in] args input arguments used to set most of the flags
 			/// @param[in] is_mesh_linear if the mesh is linear
@@ -72,6 +76,10 @@ namespace polyfem::io
 						  const bool is_mesh_linear,
 						  const bool is_problem_scalar,
 						  const bool solve_export_to_file);
+
+			/// @brief return the extension of the output paraview files depending on use_hdf5
+			/// @return either hdf or vtu
+			inline std::string file_extension() const { return use_hdf5 ? ".hdf" : ".vtu"; }
 		};
 
 		/// extracts the boundary mesh
@@ -312,7 +320,7 @@ namespace polyfem::io
 			const ExportOptions &opts,
 			const std::string &name,
 			const Eigen::VectorXd &field,
-			VTUWriter &writer) const;
+			paraviewo::ParaviewWriter &writer) const;
 	};
 
 	/// @brief stores all runtime data
