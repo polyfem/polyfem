@@ -21,13 +21,8 @@ set(SOURCES
 	NonlinearSolver.tpp
 	OperatorSplittingSolver.hpp
 	OperatorSplittingSolver.cpp
-	InitialConditionProblem.hpp
-	InitialConditionProblem.cpp
-	OptimizationProblem.hpp
-	OptimizationProblem.cpp
 	Optimizations.hpp
 	Optimizations.cpp
-	GeneralOptimizationProblem.hpp
 	SolveData.cpp
 	SolveData.hpp
 	SparseNewtonDescentSolver.hpp

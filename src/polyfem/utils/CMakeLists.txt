@@ -13,8 +13,6 @@ set(SOURCES
 	EdgeSampler.hpp
 	ElasticityUtils.cpp
 	ElasticityUtils.hpp
-	CompositeFunctional.cpp
-	CompositeFunctional.hpp
 	EnableWarnings.hpp
 	ExpressionValue.cpp
 	ExpressionValue.hpp

@@ -1,6 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/State.hpp>
-#include <polyfem/utils/CompositeFunctional.hpp>
 #include <polyfem/solver/InitialConditionParameter.hpp>
 #include <polyfem/solver/TopologyOptimizationParameter.hpp>
 #include <polyfem/solver/Objective.hpp>
@@ -765,79 +764,6 @@ TEST_CASE("dirichlet-sdf", "[adjoint_method]")
 	json in_args;
 	load_json(path + "dirichlet-sdf.json", in_args);
 
-	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-	State &state = *state_ptr;
-
-	Eigen::MatrixXd control_points, tangents, delta;
-	control_points.setZero(2, 2);
-	control_points << -2.5, -0.1,
-		2.5, -0.1;
-	tangents.setZero(2, 2);
-	tangents << 1.5, -2,
-		1.5, 2;
-	delta.setZero(1, 2);
-	delta << 0.5, 0.5;
-	SDFTrajectoryFunctional func;
-	func.set_spline_target(control_points, tangents, delta);
-	func.set_interested_ids({}, {4});
-	func.set_surface_integral();
-	func.set_transient_integral_type("step_10");
-
-	const double functional_val = func.energy(state);
-
-	int time_steps = state.args["time"]["time_steps"].get<int>();
-
-	Eigen::VectorXd one_form = func.gradient(state, "dirichlet");
-	// std::cout << "one form " << one_form << std::endl;
-
-	// srand(time(0));
-
-	double derivative;
-	double finite_difference;
-
-	derivative = 0;
-	finite_difference = 0;
-
-	Eigen::MatrixXd velocity_discrete;
-	velocity_discrete.setZero(time_steps, state.mesh->dimension());
-	for (int j = 0; j < time_steps; ++j)
-	{
-		for (int i = 0; i < state.mesh->dimension(); ++i)
-		{
-			double random_val = (rand() % 200) / 100. - 1.;
-			velocity_discrete(j, i) = random_val;
-		}
-	}
-
-	const double step_size = 1e-7;
-
-	json temp_args = in_args;
-	for (int i = 0; i < 2; ++i)
-	{
-		for (int t = 0; t < time_steps; ++t)
-		{
-			temp_args["boundary_conditions"]["dirichlet_boundary"][0]["value"][i][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][0]["value"][i][t].get<double>() + velocity_discrete(t, i) * step_size;
-			temp_args["boundary_conditions"]["dirichlet_boundary"][1]["value"][i][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][1]["value"][i][t].get<double>() + velocity_discrete(t, i) * step_size;
-			temp_args["boundary_conditions"]["dirichlet_boundary"][2]["value"][i][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][2]["value"][i][t].get<double>() + velocity_discrete(t, i) * step_size;
-		}
-	}
-	std::shared_ptr<State> state_fd = create_state_and_solve(temp_args);
-	double next_functional_val = func.energy(*state_fd);
-
-	finite_difference = (next_functional_val - functional_val) / step_size;
-	for (int j = 0; j < time_steps; ++j)
-		for (int i = 0; i < state.boundary_nodes.size(); ++i)
-			derivative += one_form(j * state.boundary_nodes.size() + i) * velocity_discrete(j, i % 2);
-	std::cout << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
-}
-
-TEST_CASE("dirichlet-sdf-new", "[adjoint_method]")
-{
-	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-	json in_args;
-	load_json(path + "dirichlet-sdf.json", in_args);
-
 	json opt_args;
 	load_json(path + "dirichlet-sdf-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
@@ -922,78 +848,6 @@ TEST_CASE("dirichlet-sdf-new", "[adjoint_method]")
 }
 
 TEST_CASE("dirichlet-ref", "[adjoint_method]")
-{
-	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-	json in_args;
-	load_json(path + "dirichlet-ref.json", in_args);
-
-	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-	State &state = *state_ptr;
-
-	int time_steps = state.args["time"]["time_steps"].get<int>();
-
-	json ref_args = in_args;
-	for (int t = 0; t < time_steps; ++t)
-	{
-		ref_args["boundary_conditions"]["dirichlet_boundary"][0]["value"][0][t] = ref_args["boundary_conditions"]["dirichlet_boundary"][0]["value"][0][t].get<double>() - 0.5 * t;
-		ref_args["boundary_conditions"]["dirichlet_boundary"][1]["value"][0][t] = ref_args["boundary_conditions"]["dirichlet_boundary"][1]["value"][0][t].get<double>() + 0.5 * t;
-	}
-	std::shared_ptr<State> state_ref = create_state_and_solve(ref_args);
-
-	TrajectoryFunctional func;
-	func.set_reference(state_ref.get(), state, {2});
-	func.set_interested_ids({}, {4});
-	func.set_surface_integral();
-	func.set_transient_integral_type("uniform");
-
-	const double functional_val = func.energy(state);
-
-	Eigen::VectorXd one_form = func.gradient(state, "dirichlet");
-	// std::cout << "one form " << one_form << std::endl;
-
-	// srand(time(0));
-
-	double derivative;
-	double finite_difference;
-
-	derivative = 0;
-	finite_difference = 0;
-
-	Eigen::MatrixXd velocity_discrete;
-	velocity_discrete.setZero(time_steps, state.mesh->dimension());
-	for (int j = 0; j < time_steps; ++j)
-	{
-		for (int i = 0; i < state.mesh->dimension(); ++i)
-		{
-			double random_val = (rand() % 200) / 100. - 1.;
-			velocity_discrete(j, i) = random_val;
-		}
-	}
-
-	const double step_size = 1e-7;
-
-	json temp_args = in_args;
-	for (int i = 0; i < 2; ++i)
-	{
-		for (int t = 0; t < time_steps; ++t)
-		{
-			temp_args["boundary_conditions"]["dirichlet_boundary"][0]["value"][i][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][0]["value"][i][t].get<double>() + velocity_discrete(t, i) * step_size;
-			temp_args["boundary_conditions"]["dirichlet_boundary"][1]["value"][i][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][1]["value"][i][t].get<double>() + velocity_discrete(t, i) * step_size;
-			temp_args["boundary_conditions"]["dirichlet_boundary"][2]["value"][i][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][2]["value"][i][t].get<double>() + velocity_discrete(t, i) * step_size;
-		}
-	}
-	std::shared_ptr<State> state_fd = create_state_and_solve(temp_args);
-	double next_functional_val = func.energy(*state_fd);
-
-	finite_difference = (next_functional_val - functional_val) / step_size;
-	for (int j = 0; j < time_steps; ++j)
-		for (int i = 0; i < state.boundary_nodes.size(); ++i)
-			derivative += one_form(j * state.boundary_nodes.size() + i) * velocity_discrete(j, i % 2);
-	std::cout << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-4));
-}
-
-TEST_CASE("dirichlet-ref-new", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;

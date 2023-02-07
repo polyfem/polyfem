@@ -1,6 +1,5 @@
 #pragma once
 
-#include "OptimizationProblem.hpp"
 #include "AdjointNLProblem.hpp"
 #include <jse/jse.h>
 
@@ -12,8 +11,6 @@
 
 namespace polyfem::solver
 {
-	void general_optimization(State &state, const std::shared_ptr<CompositeFunctional> j);
-
 	json apply_opt_json_spec(const json &input_args, bool strict_validation);
 
 	template <typename ProblemType>
