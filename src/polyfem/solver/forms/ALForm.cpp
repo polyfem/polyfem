@@ -15,13 +15,37 @@ namespace polyfem::solver
 				   const bool is_time_dependent,
 				   const double t)
 		: boundary_nodes_(boundary_nodes),
-		  local_boundary_(local_boundary),
-		  local_neumann_boundary_(local_neumann_boundary),
+		  local_boundary_(&local_boundary),
+		  local_neumann_boundary_(&local_neumann_boundary),
 		  n_boundary_samples_(n_boundary_samples),
-		  rhs_assembler_(rhs_assembler),
+		  rhs_assembler_(&rhs_assembler),
 		  is_time_dependent_(is_time_dependent)
 	{
+		init_masked_lumped_mass(ndof, mass, obstacle);
+		update_target(t); // initialize target_x_
+	}
 
+	ALForm::ALForm(const int ndof,
+				   const std::vector<int> &boundary_nodes,
+				   const StiffnessMatrix &mass,
+				   const mesh::Obstacle &obstacle,
+				   const Eigen::MatrixXd &target_x)
+		: boundary_nodes_(boundary_nodes),
+		  local_boundary_(nullptr),
+		  local_neumann_boundary_(nullptr),
+		  n_boundary_samples_(0),
+		  rhs_assembler_(nullptr),
+		  is_time_dependent_(false),
+		  target_x_(target_x)
+	{
+		init_masked_lumped_mass(ndof, mass, obstacle);
+	}
+
+	void ALForm::init_masked_lumped_mass(
+		const int ndof,
+		const StiffnessMatrix &mass,
+		const mesh::Obstacle &obstacle)
+	{
 		std::vector<bool> is_boundary_dof(ndof, true);
 		for (const auto bn : boundary_nodes_)
 			is_boundary_dof[bn] = false;
@@ -45,8 +69,6 @@ namespace polyfem::solver
 			assert(row == col); // matrix should be diagonal
 			return !is_boundary_dof[row];
 		});
-
-		update_target(t);
 	}
 
 	double ALForm::value_unweighted(const Eigen::VectorXd &x) const
@@ -59,7 +81,7 @@ namespace polyfem::solver
 		// ∑ -⎷ mₖ λₖᵀ (xₖ - x̂ₖ) = -λᵀ M (x - x̂)
 		// ᵏ
 
-		logger().trace("AL_penalty={}", sqrt(AL_penalty));
+		// logger().trace("AL_penalty={}", sqrt(AL_penalty));
 
 		return AL_penalty;
 	}
@@ -69,7 +91,7 @@ namespace polyfem::solver
 		gradv = masked_lumped_mass_ * (x - target_x_);
 	}
 
-	void ALForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void ALForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		hessian = masked_lumped_mass_;
 	}
@@ -82,7 +104,12 @@ namespace polyfem::solver
 
 	void ALForm::update_target(const double t)
 	{
+		assert(rhs_assembler_ != nullptr);
+		assert(local_boundary_ != nullptr);
+		assert(local_neumann_boundary_ != nullptr);
 		target_x_.setZero(masked_lumped_mass_.rows(), 1);
-		rhs_assembler_.set_bc(local_boundary_, boundary_nodes_, n_boundary_samples_, local_neumann_boundary_, target_x_, Eigen::MatrixXd(), t);
+		rhs_assembler_->set_bc(
+			*local_boundary_, boundary_nodes_, n_boundary_samples_,
+			*local_neumann_boundary_, target_x_, Eigen::MatrixXd(), t);
 	}
 } // namespace polyfem::solver

@@ -142,8 +142,7 @@ namespace polyfem
 			_ccd_max_iterations = opt_contact_params["CCD"]["max_iterations"];
 		}
 
-		Eigen::MatrixXd boundary_nodes_pos;
-		states_ptr_[0]->build_collision_mesh(boundary_nodes_pos, collision_mesh, states_ptr_[0]->n_geom_bases, gbases);
+		states_ptr_[0]->build_collision_mesh(collision_mesh, states_ptr_[0]->n_geom_bases, gbases);
 
 		shape_params = args;
 		if (shape_params.contains("smoothing_parameters"))
@@ -466,8 +465,7 @@ namespace polyfem
 		states_ptr_[0]->get_vf(V_rest, elements);
 		shape_constraints_->full_to_reduced(V_rest, x);
 
-		Eigen::MatrixXd boundary_nodes_pos;
-		states_ptr_[0]->build_collision_mesh(boundary_nodes_pos, collision_mesh, states_ptr_[0]->n_geom_bases, gbases);
+		states_ptr_[0]->build_collision_mesh(collision_mesh, states_ptr_[0]->n_geom_bases, gbases);
 
 		build_active_nodes();
 		build_tied_nodes();
@@ -660,7 +658,7 @@ namespace polyfem
 		}
 		else if (shape_params["internal_node_selection"].size() > 0)
 		{
-			const auto &primitive_to_node = get_state().iso_parametric() ? get_state().primitive_to_bases_node : get_state().primitive_to_geom_bases_node;
+			const auto &primitive_to_node = get_state().iso_parametric() ? get_state().mesh_nodes->primitive_to_node() : get_state().geom_mesh_nodes->primitive_to_node();
 			std::vector<int> internal_node_selection(shape_params["internal_node_selection"].size());
 			for (int i = 0; i < shape_params["internal_node_selection"].size(); ++i)
 			{

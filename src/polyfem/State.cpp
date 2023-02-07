@@ -10,15 +10,16 @@
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 
-#include <polyfem/basis/FEBasis2d.hpp>
-#include <polyfem/basis/FEBasis3d.hpp>
+#include <polyfem/basis/LagrangeBasis2d.hpp>
+#include <polyfem/basis/LagrangeBasis3d.hpp>
 
 #include <polyfem/refinement/APriori.hpp>
 
 #include <polyfem/basis/SplineBasis2d.hpp>
 #include <polyfem/basis/SplineBasis3d.hpp>
 
-#include <polyfem/basis/MVPolygonalBasis2d.hpp>
+#include <polyfem/basis/barycentric/MVPolygonalBasis2d.hpp>
+#include <polyfem/basis/barycentric/WSPolygonalBasis2d.hpp>
 
 #include <polyfem/basis/PolygonalBasis2d.hpp>
 #include <polyfem/basis/PolygonalBasis3d.hpp>
@@ -32,7 +33,6 @@
 #include <polyfem/quadrature/TriQuadrature.hpp>
 
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 
 #include <polysolve/LinearSolver.hpp>
@@ -203,7 +203,7 @@ namespace polyfem
 
 	void State::build_node_mapping()
 	{
-		if (args["space"]["advanced"]["use_spline"])
+		if (args["space"]["basis_type"] == "Spline")
 		{
 			logger().warn("Node ordering disabled, it dosent work for splines!");
 			return;
@@ -413,80 +413,12 @@ namespace polyfem
 
 	void State::set_materials()
 	{
-		if (!is_param_valid(args, "materials"))
+		if (!utils::is_param_valid(args, "materials"))
 			return;
-
-		const auto &body_params = args["materials"];
-
-		if (!body_params.is_array())
-		{
-			assembler.add_multimaterial(0, body_params);
-			const auto &cur_lambdas = assembler.lame_params().lambda_mat_;
-			const auto &cur_mus = assembler.lame_params().mu_mat_;
-			if (cur_lambdas.size() == 0 || cur_mus.size() == 0)
-			{
-				Eigen::MatrixXd lambdas(mesh->n_elements(), 1), mus(mesh->n_elements(), 1);
-				for (int e = 0; e < mesh->n_elements(); e++)
-				{
-					RowVectorNd barycenter;
-					if (!mesh->is_volume())
-					{
-						const auto &mesh2d = *dynamic_cast<Mesh2D *>(mesh.get());
-						barycenter = mesh2d.face_barycenter(e);
-					}
-					else
-					{
-						const auto &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
-						barycenter = mesh3d.cell_barycenter(e);
-					}
-					assembler.lame_params().lambda_mu(/*not used*/ 0, /*not used*/ 0, /*not used*/ 0, barycenter(0), barycenter(1), barycenter.size() < 3 ? 0.0 : barycenter(2), e, lambdas(e), mus(e));
-				}
-				assembler.update_lame_params(lambdas, mus);
-			}
-			return;
-		}
-
-		std::map<int, json> materials;
-		for (int i = 0; i < body_params.size(); ++i)
-		{
-			json mat = body_params[i];
-			json id = mat["id"];
-			if (id.is_array())
-			{
-				for (int j = 0; j < id.size(); ++j)
-					materials[id[j]] = mat;
-			}
-			else
-			{
-				const int mid = id;
-				materials[mid] = mat;
-			}
-		}
-
-		std::set<int> missing;
-
-		std::map<int, int> body_element_count;
-		std::vector<int> eid_to_eid_in_body(mesh->n_elements());
-		for (int e = 0; e < mesh->n_elements(); ++e)
-		{
-			const int bid = mesh->get_body_id(e);
-			body_element_count.try_emplace(bid, 0);
-			eid_to_eid_in_body[e] = body_element_count[bid]++;
-		}
-
-		for (int e = 0; e < mesh->n_elements(); ++e)
-		{
-			const int bid = mesh->get_body_id(e);
-			const auto it = materials.find(bid);
-			if (it == materials.end())
-			{
-				missing.insert(bid);
-				continue;
-			}
-
-			const json &tmp = it->second;
-			assembler.add_multimaterial(e, tmp);
-		}
+		std::vector<int> body_ids(mesh->n_elements());
+		for (int i = 0; i < mesh->n_elements(); ++i)
+			body_ids[i] = mesh->get_body_id(i);
+		assembler.set_materials(body_ids, args["materials"]);
 
 		const auto &cur_lambdas = assembler.lame_params().lambda_mat_;
 		const auto &cur_mus = assembler.lame_params().mu_mat_;
@@ -509,11 +441,6 @@ namespace polyfem
 				assembler.lame_params().lambda_mu(/*not used*/ 0, /*not used*/ 0, /*not used*/ 0, barycenter(0), barycenter(1), barycenter.size() < 3 ? 0.0 : barycenter(2), e, lambdas(e), mus(e));
 			}
 			assembler.update_lame_params(lambdas, mus);
-		}
-
-		for (int bid : missing)
-		{
-			logger().warn("Missing material parameters for body {}", bid);
 		}
 	}
 
@@ -595,7 +522,7 @@ namespace polyfem
 		if (mesh->has_poly())
 			return true;
 
-		if (args["space"]["advanced"]["use_spline"])
+		if (args["space"]["basis_type"] == "Spline")
 			return true;
 
 		if (mesh->is_rational())
@@ -680,6 +607,8 @@ namespace polyfem
 		periodic_dimensions = args["boundary_conditions"]["periodic_boundary"].get<std::vector<bool>>();
 		if (periodic_dimensions.size() != mesh->dimension())
 			periodic_dimensions.resize(mesh->dimension(), false);
+		if (need_periodic_reduction())
+			args["solver"]["augmented_lagrangian"]["initial_weight"] = 0;
 
 		logger().info("Building {} basis...", (iso_parametric() ? "isoparametric" : "not isoparametric"));
 		const bool has_polys = mesh->has_poly();
@@ -791,12 +720,12 @@ namespace polyfem
 		if (mesh->is_volume())
 		{
 			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh.get());
-			if (args["space"]["advanced"]["use_spline"])
+			if (args["space"]["basis_type"] == "Spline")
 			{
 				// if (!iso_parametric())
 				// {
 				// 	logger().error("Splines must be isoparametric, ignoring...");
-				// 	// FEBasis3d::build_bases(tmp_mesh, quadrature_order, geom_disc_orders, has_polys, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				// 	// LagrangeBasis3d::build_bases(tmp_mesh, quadrature_order, geom_disc_orders, has_polys, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 				// 	SplineBasis3d::build_bases(tmp_mesh, quadrature_order, geom_bases_, local_boundary, poly_edge_to_data);
 				// }
 
@@ -808,32 +737,27 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-				{
-					n_geom_bases = basis::FEBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, false, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
-					primitive_to_geom_bases_node = geom_mesh_nodes->primitive_to_node();
-				}
+					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
 
-				n_bases = basis::FEBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
-				primitive_to_bases_node = mesh_nodes->primitive_to_node();
+				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = basis::FEBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
-				primitive_to_pressure_bases_node = pressure_mesh_nodes->primitive_to_node();
+				n_pressure_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
 			}
 		}
 		else
 		{
 			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
-			if (args["space"]["advanced"]["use_spline"])
+			if (args["space"]["basis_type"] == "Spline")
 			{
 				// TODO:
 				// if (!iso_parametric())
 				// {
 				// 	logger().error("Splines must be isoparametric, ignoring...");
-				// 	// FEBasis2d::build_bases(tmp_mesh, quadrature_order, disc_orders, has_polys, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				// 	// LagrangeBasis2d::build_bases(tmp_mesh, quadrature_order, disc_orders, has_polys, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 				// 	n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, geom_bases_, local_boundary, poly_edge_to_data);
 				// }
 
@@ -845,20 +769,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-				{
-					n_geom_bases = basis::FEBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, false, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
-					primitive_to_geom_bases_node = geom_mesh_nodes->primitive_to_node();
-				}
+					n_geom_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
 
-				n_bases = basis::FEBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["advanced"]["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
-				primitive_to_bases_node = mesh_nodes->primitive_to_node();
+				n_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = basis::FEBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
-				primitive_to_pressure_bases_node = pressure_mesh_nodes->primitive_to_node();
+				n_pressure_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
 			}
 		}
 
@@ -1069,7 +988,7 @@ namespace polyfem
 		n_bases += obstacle.n_vertices();
 
 		logger().info("Building collision mesh...");
-		build_collision_mesh(boundary_nodes_pos, collision_mesh, n_bases, bases);
+		build_collision_mesh(collision_mesh, n_bases, bases);
 		logger().info("Done!");
 
 		{
@@ -1202,15 +1121,23 @@ namespace polyfem
 
 		if (is_contact_enabled())
 		{
-			if (!has_dhat && args["contact"]["dhat"] > stats.min_edge_length)
+			double min_boundary_edge_length = std::numeric_limits<double>::max();
+			for (const auto &edge : collision_mesh.edges().rowwise())
 			{
-				args["contact"]["dhat"] = double(args["contact"]["dhat_percentage"]) * stats.min_edge_length;
+				const VectorNd v0 = collision_mesh.vertices_at_rest().row(edge(0));
+				const VectorNd v1 = collision_mesh.vertices_at_rest().row(edge(1));
+				min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
+			}
+
+			if (!has_dhat && args["contact"]["dhat"] > min_boundary_edge_length)
+			{
+				args["contact"]["dhat"] = double(args["contact"]["dhat_percentage"]) * min_boundary_edge_length;
 				logger().info("dhat set to {}", double(args["contact"]["dhat"]));
 			}
 			else
 			{
-				if (args["contact"]["dhat"] > stats.min_edge_length)
-					logger().warn("dhat larger than min edge, {} > {}", double(args["contact"]["dhat"]), stats.min_edge_length);
+				if (args["contact"]["dhat"] > min_boundary_edge_length)
+					logger().warn("dhat larger than min boundary edge, {} > {}", double(args["contact"]["dhat"]), min_boundary_edge_length);
 			}
 		}
 
@@ -1253,11 +1180,6 @@ namespace polyfem
 			logger().error("Load the mesh first!");
 			return;
 		}
-		if (n_bases <= 0)
-		{
-			logger().error("Build the bases first!");
-			return;
-		}
 
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
@@ -1277,15 +1199,31 @@ namespace polyfem
 		{
 			if (mesh->is_volume())
 			{
-				if (args["space"]["advanced"]["poly_bases"] == "MeanValue")
-					logger().error("MeanValue bases not supported in 3D");
+				if (args["space"]["poly_basis_type"] == "MeanValue" || args["space"]["poly_basis_type"] == "Wachspress")
+					logger().error("Barycentric bases not supported in 3D");
 				new_bases = basis::PolygonalBasis3d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, bases, poly_edge_to_data, polys_3d);
 			}
 			else
 			{
-				if (args["space"]["advanced"]["poly_bases"] == "MeanValue")
+				if (args["space"]["poly_basis_type"] == "MeanValue")
 				{
-					new_bases = basis::MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], bases, bases, poly_edge_to_data, local_boundary, polys);
+					new_bases = basis::MVPolygonalBasis2d::build_bases(
+						formulation(),
+						*dynamic_cast<Mesh2D *>(mesh.get()),
+						n_bases,
+						args["space"]["advanced"]["quadrature_order"],
+						args["space"]["advanced"]["mass_quadrature_order"],
+						bases, local_boundary, polys);
+				}
+				else if (args["space"]["poly_basis_type"] == "Wachspress")
+				{
+					new_bases = basis::WSPolygonalBasis2d::build_bases(
+						formulation(),
+						*dynamic_cast<Mesh2D *>(mesh.get()),
+						n_bases,
+						args["space"]["advanced"]["quadrature_order"],
+						args["space"]["advanced"]["mass_quadrature_order"],
+						bases, local_boundary, polys);
 				}
 				else
 					new_bases = basis::PolygonalBasis2d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, bases, poly_edge_to_data, polys);
@@ -1295,17 +1233,33 @@ namespace polyfem
 		{
 			if (mesh->is_volume())
 			{
-				if (args["space"]["advanced"]["poly_bases"] == "MeanValue")
+				if (args["space"]["poly_basis_type"] == "MeanValue" || args["space"]["poly_basis_type"] == "Wachspress")
 				{
-					logger().error("MeanValue bases not supported in 3D");
+					logger().error("Barycentric bases not supported in 3D");
 					throw "not implemented";
 				}
 				new_bases = basis::PolygonalBasis3d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys_3d);
 			}
 			else
 			{
-				if (args["space"]["advanced"]["poly_bases"] == "MeanValue")
-					new_bases = basis::MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], bases, geom_bases_, poly_edge_to_data, local_boundary, polys);
+				if (args["space"]["poly_basis_type"] == "MeanValue")
+				{
+					new_bases = basis::MVPolygonalBasis2d::build_bases(
+						formulation(),
+						*dynamic_cast<Mesh2D *>(mesh.get()),
+						n_bases, args["space"]["advanced"]["quadrature_order"],
+						args["space"]["advanced"]["mass_quadrature_order"],
+						bases, local_boundary, polys);
+				}
+				else if (args["space"]["poly_basis_type"] == "Wachspress")
+				{
+					new_bases = basis::WSPolygonalBasis2d::build_bases(
+						formulation(),
+						*dynamic_cast<Mesh2D *>(mesh.get()),
+						n_bases, args["space"]["advanced"]["quadrature_order"],
+						args["space"]["advanced"]["mass_quadrature_order"],
+						bases, local_boundary, polys);
+				}
 				else
 					new_bases = basis::PolygonalBasis2d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys);
 			}
@@ -1319,23 +1273,30 @@ namespace polyfem
 	}
 
 void State::build_collision_mesh(
-		Eigen::MatrixXd &boundary_nodes_pos_,
 		ipc::CollisionMesh &collision_mesh_, 
 		const int n_bases_, 
 		const std::vector<basis::ElementBases> &bases_) const
 	{
+		Eigen::MatrixXd node_positions;
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
+		std::vector<Eigen::Triplet<double>> displacement_map_entries;
 		io::OutGeometryData::extract_boundary_mesh(*mesh, n_bases_, bases_, total_local_boundary,
-												   boundary_nodes_pos_, boundary_edges, boundary_triangles);
+												   node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
 
 		Eigen::VectorXi codimensional_nodes;
 		if (obstacle.n_vertices() > 0)
 		{
-			// boundary_nodes_pos_ uses n_bases that already contains the obstacle
-			const int n_v = boundary_nodes_pos_.rows() - obstacle.n_vertices();
+			// n_bases already contains the obstacle vertices
+			const int n_v = n_bases_ - obstacle.n_vertices();
 
 			if (obstacle.v().size())
-				boundary_nodes_pos_.bottomRows(obstacle.v().rows()) = obstacle.v();
+				node_positions.block(n_v, 0, obstacle.v().rows(), obstacle.v().cols()) = obstacle.v();
+
+			if (!displacement_map_entries.empty())
+			{
+				for (int k = n_v; k < n_bases_; ++k)
+					displacement_map_entries.emplace_back(k, k, 1);
+			}
 
 			if (obstacle.codim_v().size())
 			{
@@ -1356,13 +1317,24 @@ void State::build_collision_mesh(
 			}
 		}
 
-		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(boundary_nodes_pos_.rows(), boundary_edges);
+		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(node_positions.rows(), boundary_edges);
 		for (int i = 0; i < codimensional_nodes.size(); i++)
 		{
 			is_on_surface[codimensional_nodes[i]] = true;
 		}
 
-		collision_mesh_ = ipc::CollisionMesh(is_on_surface, boundary_nodes_pos_, boundary_edges, boundary_triangles);
+		Eigen::SparseMatrix<double> displacement_map;
+		if (!displacement_map_entries.empty())
+		{
+			displacement_map.resize(node_positions.rows(), n_bases_);
+			displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
+		}
+
+		collision_mesh_ = ipc::CollisionMesh(is_on_surface,
+											node_positions,
+											boundary_edges,
+											boundary_triangles,
+											displacement_map);
 
 		collision_mesh_.can_collide = [&](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles
@@ -1617,7 +1589,7 @@ void State::build_collision_mesh(
 			// Pre log the output path for easier watching
 			if (args["output"]["advanced"]["save_time_sequence"])
 			{
-				logger().info("Time sequence of simulation will be written to: {}",
+				logger().info("Time sequence of simulation will be written to: \"{}\"",
 							  resolve_output_path(args["output"]["paraview"]["file_name"]));
 			}
 

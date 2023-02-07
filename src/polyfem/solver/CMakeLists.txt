@@ -28,6 +28,8 @@ set(SOURCES
 	Optimizations.hpp
 	Optimizations.cpp
 	GeneralOptimizationProblem.hpp
+	SolveData.cpp
+	SolveData.hpp
 	SparseNewtonDescentSolver.hpp
 	SparseNewtonDescentSolver.tpp
 	DenseNewtonDescentSolver.hpp

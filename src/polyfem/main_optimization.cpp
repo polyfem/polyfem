@@ -79,6 +79,34 @@ int main(int argc, char **argv)
 	if (!load_json(json_file, opt_args))
 		log_and_throw_error("Failed to load optimization json file!");
 
+	if (has_arg(command_line, "log_level"))
+	{
+		auto tmp = R"({
+				"output": {
+					"log": {
+						"level": -1
+					}
+				}
+			})"_json;
+
+		tmp["output"]["log"]["level"] = int(log_level);
+
+		opt_args.merge_patch(tmp);
+	}
+
+	if (has_arg(command_line, "max_threads"))
+	{
+		auto tmp = R"({
+				"solver": {
+					"max_threads": -1
+				}
+			})"_json;
+
+		tmp["solver"]["max_threads"] = max_threads;
+
+		opt_args.merge_patch(tmp);
+	}
+
 	auto nl_problem = make_nl_problem(opt_args, log_level);
 
 	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nlsolver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);

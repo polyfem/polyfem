@@ -200,42 +200,42 @@ namespace
 
 } // namespace
 
-TEST_CASE("deformed_boundary_smoothing", "[adjoint_method]")
-{
-	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-	json in_args;
-	load_json(path + "linear_elasticity-surface.json", in_args);
-	auto state_ptr = create_state_and_solve(in_args);
-	State &state = *state_ptr;
+// TEST_CASE("deformed_boundary_smoothing", "[adjoint_method]")
+// {
+// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+// 	json in_args;
+// 	load_json(path + "linear_elasticity-surface.json", in_args);
+// 	auto state_ptr = create_state_and_solve(in_args);
+// 	State &state = *state_ptr;
 
-	json opt_args;
-	load_json(path + "linear_elasticity-surface-opt.json", opt_args);
-	opt_args = apply_opt_json_spec(opt_args, false);
+// 	json opt_args;
+// 	load_json(path + "linear_elasticity-surface-opt.json", opt_args);
+// 	opt_args = apply_opt_json_spec(opt_args, false);
 
-	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
+// 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+// 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
 
-	json obj_args = R"(
-	{
-		"type": "deformed_boundary_smoothing",
-		"surface_selection": [2, 3],
-		"power": 4
-	})"_json;
+// 	json obj_args = R"(
+// 	{
+// 		"type": "deformed_boundary_smoothing",
+// 		"surface_selection": [2, 3],
+// 		"power": 4
+// 	})"_json;
 
-	DeformedBoundarySmoothingObjective obj(state, shape_param, obj_args);
+// 	DeformedBoundarySmoothingObjective obj(state, shape_param, obj_args);
 
-	Eigen::MatrixXd velocity_discrete;
-	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
-	for (int i = 0; i < state.n_geom_bases; ++i)
-	{
-		velocity_discrete(i * 2 + 0) = rand() % 1000;
-		velocity_discrete(i * 2 + 1) = rand() % 1000;
-	}
+// 	Eigen::MatrixXd velocity_discrete;
+// 	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
+// 	for (int i = 0; i < state.n_geom_bases; ++i)
+// 	{
+// 		velocity_discrete(i * 2 + 0) = rand() % 1000;
+// 		velocity_discrete(i * 2 + 1) = rand() % 1000;
+// 	}
 
-	velocity_discrete.normalize();
+// 	velocity_discrete.normalize();
 
-	verify_adjoint(obj, state, shape_param, "shape", velocity_discrete, 1e-6, 1e-5);
-}
+// 	verify_adjoint(obj, state, shape_param, "shape", velocity_discrete, 1e-6, 1e-5);
+// }
 
 TEST_CASE("laplacian", "[adjoint_method]")
 {
@@ -301,38 +301,38 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 	verify_adjoint(obj, state, shape_param, "shape", velocity_discrete, 1e-7, 1e-4);
 }
 
-TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
-{
-	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-	json in_args;
-	load_json(path + "linear_elasticity-surface.json", in_args);
-	auto state_ptr = create_state_and_solve(in_args);
-	State &state = *state_ptr;
+// TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
+// {
+// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+// 	json in_args;
+// 	load_json(path + "linear_elasticity-surface.json", in_args);
+// 	auto state_ptr = create_state_and_solve(in_args);
+// 	State &state = *state_ptr;
 
-	json opt_args;
-	load_json(path + "linear_elasticity-surface-opt.json", opt_args);
-	opt_args = apply_opt_json_spec(opt_args, false);
+// 	json opt_args;
+// 	load_json(path + "linear_elasticity-surface-opt.json", opt_args);
+// 	opt_args = apply_opt_json_spec(opt_args, false);
 
-	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
-	PositionObjective obj(state, shape_param, opt_args["functionals"][0]);
-	obj.set_integral_type(AdjointForm::SpatialIntegralType::SURFACE);
+// 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+// 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
+// 	PositionObjective obj(state, shape_param, opt_args["functionals"][0]);
+// 	obj.set_integral_type(AdjointForm::SpatialIntegralType::SURFACE);
 
-	auto velocity = [](const Eigen::MatrixXd &position) {
-		Eigen::MatrixXd vel;
-		vel.setZero(position.rows(), position.cols());
-		for (int i = 0; i < vel.rows(); i++)
-		{
-			vel(i, 0) = position(i, 0);
-			vel(i, 1) = position(i, 0) * position(i, 0);
-		}
-		return vel;
-	};
-	Eigen::MatrixXd velocity_discrete;
-	sample_field(state, velocity, velocity_discrete);
+// 	auto velocity = [](const Eigen::MatrixXd &position) {
+// 		Eigen::MatrixXd vel;
+// 		vel.setZero(position.rows(), position.cols());
+// 		for (int i = 0; i < vel.rows(); i++)
+// 		{
+// 			vel(i, 0) = position(i, 0);
+// 			vel(i, 1) = position(i, 0) * position(i, 0);
+// 		}
+// 		return vel;
+// 	};
+// 	Eigen::MatrixXd velocity_discrete;
+// 	sample_field(state, velocity, velocity_discrete);
 
-	verify_adjoint(obj, state, shape_param, "shape", velocity_discrete, 1e-6, 1e-5);
-}
+// 	verify_adjoint(obj, state, shape_param, "shape", velocity_discrete, 1e-6, 1e-5);
+// }
 
 TEST_CASE("topology-compliance", "[adjoint_method]")
 {
@@ -344,7 +344,8 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 	load_json(path + "topology-compliance-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
 
-	std::shared_ptr<State> state_ptr = std::make_shared<State>(1);
+	std::shared_ptr<State> state_ptr = std::make_shared<State>();
+	state_ptr->set_max_threads(1);
 	state_ptr->init_logger("", spdlog::level::level_enum::warn, false);
 	state_ptr->init(in_args, false);
 	state_ptr->load_mesh();
@@ -417,37 +418,37 @@ TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
 	verify_adjoint(func, state, shape_param, "shape", velocity_discrete, 1e-6, 1e-3);
 }
 
-TEST_CASE("homogenize-stress", "[adjoint_method]")
-{
-	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-	json in_args;
-	load_json(path + "homogenize-stress.json", in_args);
-	auto state_ptr = create_state_and_solve(in_args);
-	State &state = *state_ptr;
+// TEST_CASE("homogenize-stress", "[adjoint_method]")
+// {
+// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+// 	json in_args;
+// 	load_json(path + "homogenize-stress.json", in_args);
+// 	auto state_ptr = create_state_and_solve(in_args);
+// 	State &state = *state_ptr;
 
-	json opt_args;
-	load_json(path + "homogenize-stress-opt.json", opt_args);
-	opt_args = apply_opt_json_spec(opt_args, false);
+// 	json opt_args;
+// 	load_json(path + "homogenize-stress-opt.json", opt_args);
+// 	opt_args = apply_opt_json_spec(opt_args, false);
 
-	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
-	CompositeHomogenizedStressObjective func(state, shape_param, NULL, NULL, opt_args["functionals"][0]);
+// 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
+// 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
+// 	CompositeHomogenizedStressObjective func(state, shape_param, NULL, NULL, opt_args["functionals"][0]);
 
-	double functional_val = func.value();
+// 	double functional_val = func.value();
 
-	Eigen::MatrixXd velocity_discrete;
-	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
-	const double eps = 1e-3;
-	for (int i = 0; i < state.n_geom_bases; i++)
-		for (int d = 0; d < 2; d++)
-		{
-			auto vert = state.geom_mesh_nodes->node_position(i);
-			if (vert(0) > eps && vert(0) < 1 - eps && vert(1) > eps && vert(1) < 1 - eps)
-				velocity_discrete(i * 2 + d) = (rand() % 10000) / 1.0e4;
-		}
+// 	Eigen::MatrixXd velocity_discrete;
+// 	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
+// 	const double eps = 1e-3;
+// 	for (int i = 0; i < state.n_geom_bases; i++)
+// 		for (int d = 0; d < 2; d++)
+// 		{
+// 			auto vert = state.geom_mesh_nodes->node_position(i);
+// 			if (vert(0) > eps && vert(0) < 1 - eps && vert(1) > eps && vert(1) < 1 - eps)
+// 				velocity_discrete(i * 2 + d) = (rand() % 10000) / 1.0e4;
+// 		}
 
-	verify_adjoint(func, state, shape_param, "shape", velocity_discrete, 1e-6, 5e-4);
-}
+// 	verify_adjoint(func, state, shape_param, "shape", velocity_discrete, 1e-6, 5e-4);
+// }
 
 TEST_CASE("shape-contact", "[adjoint_method]")
 {

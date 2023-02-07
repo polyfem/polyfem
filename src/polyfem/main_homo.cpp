@@ -94,14 +94,42 @@ int main(int argc, char **argv)
 		return command_line.exit(CLI::RequiredError("--json or --hdf5"));
 	}
 
+	if (has_arg(command_line, "max_threads"))
+	{
+		auto tmp = R"({
+				"solver": {
+					"max_threads": -1
+				}
+			})"_json;
+
+		tmp["solver"]["max_threads"] = max_threads;
+
+		in_args.merge_patch(tmp);
+	}
+
+	if (has_arg(command_line, "log_level"))
+	{
+		auto tmp = R"({
+				"output": {
+					"log": {
+						"level": -1
+					}
+				}
+			})"_json;
+
+		tmp["output"]["log"]["level"] = int(log_level);
+
+		in_args.merge_patch(tmp);
+	}
+
 	if (!output_dir.empty())
 	{
 		std::filesystem::create_directories(output_dir);
 	}
 
-	State state(max_threads);
-	state.init_logger(log_file, log_level, is_quiet);
-	state.init(in_args, is_strict, output_dir, fallback_solver);
+	State state;
+	state.set_max_threads(max_threads);
+	state.init(in_args, is_strict);
 	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
 
 	// Mesh was not loaded successfully; load_mesh() logged the error.

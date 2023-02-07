@@ -84,7 +84,8 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading obstacles...");
 		obstacle = mesh::read_obstacle_geometry(
-			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
+			args["geometry"],
+			args["boundary_conditions"]["obstacle_displacements"], args["boundary_conditions"]["dirichlet_boundary"],
 			args["root_path"], mesh->dimension());
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -116,8 +117,7 @@ namespace polyfem
 
 		if (mesh == nullptr)
 		{
-			logger().error("unable to load the mesh!");
-			return;
+			log_and_throw_error("unable to load the mesh!");
 		}
 
 		// if(!flipped_elements.empty())
@@ -143,9 +143,33 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading obstacles...");
 		obstacle = mesh::read_obstacle_geometry(
-			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
+			args["geometry"],
+			args["boundary_conditions"]["obstacle_displacements"], args["boundary_conditions"]["dirichlet_boundary"],
 			args["root_path"], mesh->dimension(), names, vertices, cells);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
+	}
+
+	void State::build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F)
+	{
+		assert(bases.size() == mesh->n_elements());
+		const size_t n_vertices = n_bases - obstacle.n_vertices();
+		const int dim = mesh->dimension();
+
+		V.resize(n_vertices, dim);
+		F.resize(bases.size(), dim + 1); // TODO: this only works for triangles and tetrahedra
+
+		for (int i = 0; i < bases.size(); i++)
+		{
+			const basis::ElementBases &element = bases[i];
+			assert(element.bases.size() == F.cols());
+			for (int j = 0; j < element.bases.size(); j++)
+			{
+				const basis::Basis &basis = element.bases[j];
+				assert(basis.global().size() == 1);
+				V.row(basis.global()[0].index) = basis.global()[0].node;
+				F(i, j) = basis.global()[0].index;
+			}
+		}
 	}
 } // namespace polyfem

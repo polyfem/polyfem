@@ -1,8 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "PolygonalBasis2d.hpp"
+#include "LagrangeBasis2d.hpp"
+
 #include <polyfem/quadrature/PolygonQuadrature.hpp>
 #include <polyfem/mesh/mesh2D/PolygonUtils.hpp>
-#include <polyfem/basis/FEBasis2d.hpp>
 #include "function/RBFWithLinear.hpp"
 #include "function/RBFWithQuadratic.hpp"
 #include "function/RBFWithQuadraticLagrange.hpp"
@@ -64,8 +65,8 @@ namespace polyfem
 
 			void sample_parametric_edge(const Mesh2D &mesh, Navigation::Index index, int n_samples, Eigen::MatrixXd &samples)
 			{
-				// Eigen::MatrixXd endpoints = FEBasis2d::linear_quad_edge_local_nodes_coordinates(mesh, index);
-				const auto indices = FEBasis2d::quad_edge_local_nodes(1, mesh, index);
+				// Eigen::MatrixXd endpoints = LagrangeBasis2d::linear_quad_edge_local_nodes_coordinates(mesh, index);
+				const auto indices = LagrangeBasis2d::quad_edge_local_nodes(1, mesh, index);
 				assert(mesh.is_cube(index.face));
 				assert(indices.size() == 2);
 				Eigen::MatrixXd tmp;

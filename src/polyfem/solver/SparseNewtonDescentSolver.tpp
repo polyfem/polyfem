@@ -7,8 +7,8 @@ namespace cppoptlib
 {
 	template <typename ProblemType>
 	SparseNewtonDescentSolver<ProblemType>::SparseNewtonDescentSolver(
-		const json &solver_params, const json &linear_solver_params)
-		: Superclass(solver_params)
+		const json &solver_params, const json &linear_solver_params, const double dt)
+		: Superclass(solver_params, dt)
 	{
 		linear_solver = polysolve::LinearSolver::create(
 			linear_solver_params["solver"], linear_solver_params["precond"]);

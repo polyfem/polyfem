@@ -368,9 +368,25 @@ namespace polyfem::solver
 
 	std::shared_ptr<State> create_state(const json &args, spdlog::level::level_enum log_level, const int max_threads)
 	{
-		std::shared_ptr<State> state = std::make_shared<State>(max_threads);
-		state->init_logger("", log_level, false);
-		state->init(args, false);
+		std::shared_ptr<State> state = std::make_shared<State>();
+		state->set_max_threads(max_threads);
+
+		json in_args = args;
+		{
+			auto tmp = R"({
+					"output": {
+						"log": {
+							"level": -1
+						}
+					}
+				})"_json;
+
+			tmp["output"]["log"]["level"] = int(log_level);
+
+			in_args.merge_patch(tmp);
+		}
+
+		state->init(in_args, false);
 		state->args["optimization"]["enabled"] = true;
 		state->load_mesh();
 		Eigen::MatrixXd sol, pressure;

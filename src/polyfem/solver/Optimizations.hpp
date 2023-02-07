@@ -23,27 +23,27 @@ namespace polyfem::solver
 		if (name == "GradientDescent" || name == "gradientdescent" || name == "gradient")
 		{
 			return std::make_shared<cppoptlib::GradientDescentSolver<ProblemType>>(
-				solver_params);
+				solver_params, 0.);
 		}
 		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
 		{
 			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(
-				solver_params);
+				solver_params, 0.);
 		}
 		else if (name == "bfgs" || name == "BFGS" || name == "BFGS")
 		{
 			return std::make_shared<cppoptlib::BFGSSolver<ProblemType>>(
-				solver_params);
+				solver_params, 0.);
 		}
 		else if (name == "lbfgsb" || name == "LBFGSB" || name == "L-BFGS-B")
 		{
 			return std::make_shared<cppoptlib::LBFGSBSolver<ProblemType>>(
-				solver_params);
+				solver_params, 0.);
 		}
 		else if (name == "mma" || name == "MMA")
 		{
 			return std::make_shared<cppoptlib::MMASolver<ProblemType>>(
-				solver_params);
+				solver_params, 0.);
 		}
 		else
 		{

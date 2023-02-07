@@ -52,6 +52,10 @@ namespace polyfem::assembler
 			return val;
 		}
 
+		const GenericMatParam &c1() const { return c1_; }
+		const GenericMatParam &c2() const { return c2_; }
+		const GenericMatParam &k() const { return k_; }
+
 	private:
 		GenericMatParam c1_;
 		GenericMatParam c2_;

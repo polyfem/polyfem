@@ -36,7 +36,7 @@
         "pointer": "/root_path",
         "default": "",
         "type": "string",
-        "doc": "Path for all relative paths, set automatically to the folder containing this json."
+        "doc": "Path for all relative paths, set automatically to the folder containing this JSON."
     },
     {
         "pointer": "/tests",
@@ -358,6 +358,22 @@
         "type": "object",
         "required": [
             "id",
+            "radius",
+            "p1",
+            "p2"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "#type_name": "cylinder",
+        "doc": "Assign the ID to all volume elements with barycenters inside a cylinder with specified axis (p1, p2) and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*",
+        "type": "object",
+        "required": [
+            "id",
             "point",
             "normal"
         ],
@@ -400,6 +416,26 @@
     },
     {
         "pointer": "/geometry/*/volume_selection/*/center/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/p1",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/p1/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/p2",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/*/p2/*",
         "type": "float"
     },
     {
@@ -514,6 +550,22 @@
         "type": "object",
         "required": [
             "id",
+            "radius",
+            "p1",
+            "p2"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "#type_name": "cylinder",
+        "doc": "Assign the ID to all volume elements with barycenters inside a cylinder with specified axis (p1, p2) and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*",
+        "type": "object",
+        "required": [
+            "id",
             "point",
             "normal"
         ],
@@ -569,6 +621,26 @@
     },
     {
         "pointer": "/geometry/*/point_selection/*/center/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/p1",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/p1/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/p2",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/p2/*",
         "type": "float"
     },
     {
@@ -700,6 +772,22 @@
         "type": "object",
         "required": [
             "id",
+            "radius",
+            "p1",
+            "p2"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "#type_name": "cylinder",
+        "doc": "Assign the ID to all volume elements with barycenters inside a cylinder with specified axis (p1, p2) and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*",
+        "type": "object",
+        "required": [
+            "id",
             "point",
             "normal"
         ],
@@ -755,6 +843,26 @@
     },
     {
         "pointer": "/geometry/*/surface_selection/*/center/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/p1",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/p1/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/p2",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/p2/*",
         "type": "float"
     },
     {
@@ -938,6 +1046,8 @@
         "optional": [
             "discr_order",
             "pressure_discr_order",
+            "basis_type",
+            "poly_basis_type",
             "use_p_ref",
             "advanced"
         ],
@@ -999,6 +1109,28 @@
         "doc": " Lagrange element order for the space for the pressure unknown, for all elements."
     },
     {
+        "pointer": "/space/basis_type",
+        "default": "Lagrange",
+        "options": [
+            "Lagrange",
+            "Spline",
+            "Serendipity"
+        ],
+        "type": "string",
+        "doc": "Type of basis to use for non polygonal element, one of Lagrange, Spline, or Serendipity. Spline or Serendipity work only for quad/hex meshes"
+    },
+    {
+        "pointer": "/space/poly_basis_type",
+        "default": "MFSHarmonic",
+        "options": [
+            "MFSHarmonic",
+            "MeanValue",
+            "Wachspress"
+        ],
+        "type": "string",
+        "doc": "Type of basis to use for a polygonal element, one of MFSHarmonic, MeanValue, or Wachspress see 'PolySpline..' paper for details."
+    },
+    {
         "pointer": "/space/use_p_ref",
         "default": false,
         "type": "bool",
@@ -1010,15 +1142,12 @@
         "type": "object",
         "optional": [
             "discr_order_max",
-            "serendipity",
             "isoparametric",
             "periodic_basis",
-            "use_spline",
             "bc_method",
             "n_boundary_samples",
             "quadrature_order",
             "mass_quadrature_order",
-            "poly_bases",
             "integral_constraints",
             "n_harmonic_samples",
             "force_no_ref_for_harmonic",
@@ -1035,12 +1164,6 @@
         "doc": "Maximal discretization order in adaptive p-refinement and hp-refinement"
     },
     {
-        "pointer": "/space/advanced/serendipity",
-        "default": false,
-        "type": "bool",
-        "doc": "Use serendipity elements for quad/hex elements of degree 2."
-    },
-    {
         "pointer": "/space/advanced/isoparametric",
         "default": false,
         "type": "bool",
@@ -1052,13 +1175,7 @@
         "type": "bool",
         "doc": "Use periodic basis when periodic boundary condition is applied."
     },
-    {
-        "pointer": "/space/advanced/use_spline",
-        "default": false,
-        "type": "bool",
-        "doc": "Use bi/triquadratic spline basis for quad/hex elements not adjacent to polyhedral elements, see 'PolySpline..' paper for details."
-    },
-    {
+    {        
         "pointer": "/space/advanced/bc_method",
         "default": "sample",
         "options": [
@@ -1085,16 +1202,6 @@
         "default": -1,
         "type": "int",
         "doc": "Minimal quadrature order to use in mass matrix assembler; the actual order is determined as min(2*p+1,quadrature_order)"
-    },
-    {
-        "pointer": "/space/advanced/poly_bases",
-        "default": "MFSHarmonic",
-        "options": [
-            "MFSHarmonic",
-            "MeanValue"
-        ],
-        "type": "string",
-        "doc": "Type of basis to use for a polygonal element, one of MFSHarmonic, MeanValue, see 'PolySpline..' paper for details."
     },
     {
         "pointer": "/space/advanced/integral_constraints",
@@ -1277,7 +1384,8 @@
             "dhat",
             "dhat_percentage",
             "epsv",
-            "friction_coefficient"
+            "friction_coefficient",
+            "use_convergent_formulation"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1314,10 +1422,17 @@
         "doc": "Coefficient of friction (global)"
     },
     {
+        "pointer": "/contact/use_convergent_formulation",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to use the convergent (area weighted) formulation of IPC."
+    },
+    {
         "pointer": "/solver",
         "default": null,
         "type": "object",
         "optional": [
+            "max_threads",
             "linear",
             "nonlinear",
             "augmented_lagrangian",
@@ -1329,10 +1444,18 @@
         "doc": "The settings for the solver including linear solver, nonlinear solver, and some advanced options."
     },
     {
+        "pointer": "/solver/max_threads",
+        "default": 0,
+        "type": "int",
+        "min": 0,
+        "doc": "Maximum number of threads used; 0 is illimited."
+    },
+    {
         "pointer": "/solver/linear",
         "default": null,
         "type": "object",
         "optional": [
+            "enable_overwrite_solver",
             "solver",
             "adjoint_solver",
             "precond",
@@ -1347,6 +1470,12 @@
             "AMGCL"
         ],
         "doc": "Settings for the linear solver."
+    },
+    {
+        "pointer": "/solver/linear/enable_overwrite_solver",
+        "default": false,
+        "type": "bool",
+        "doc": "If solver name is not present, falls back to default"
     },
     {
         "pointer": "/solver/linear/solver",
@@ -1781,7 +1910,6 @@
             "grad_norm",
             "first_grad_norm_tol",
             "max_iterations",
-            "use_grad_norm",
             "relative_gradient",
             "line_search",
             "export_energy",
@@ -1998,18 +2126,21 @@
         "pointer": "/solver/nonlinear/f_delta",
         "default": 1e-10,
         "type": "float",
+        "min": 0,
         "doc": "Stopping criterion: minimal change of the energy f for the iterations to continue."
     },
     {
         "pointer": "/solver/nonlinear/x_delta",
         "default": 0,
         "type": "float",
-        "doc": "Stopping criterion: minimal change of the variable x for the iterations to continue"
+        "min": 0,
+        "doc": "Stopping criterion: minimal change of the variables x for the iterations to continue. Computed as the L2 norm of x divide by the time step."
     },
     {
         "pointer": "/solver/nonlinear/grad_norm",
         "default": 1e-08,
         "type": "float",
+        "min": 0,
         "doc": "Stopping criterion: Minimal gradient norm for the iterations to continue."
     },
     {
@@ -2023,12 +2154,6 @@
         "default": 1000,
         "type": "int",
         "doc": "Maximum number of iterations for a nonlinear solve."
-    },
-    {
-        "pointer": "/solver/nonlinear/use_grad_norm",
-        "default": true,
-        "type": "bool",
-        "doc": "If true, enable gradient-norm stopping criterion, absolute (if relative_gradient is false), or relative to the initial gradient magnitude before the first iteration, otherwise."
     },
     {
         "pointer": "/solver/nonlinear/relative_gradient",
@@ -2686,6 +2811,16 @@
         "pointer": "/materials/*/id",
         "type": "int",
         "default": 0,
+        "doc": "Volume selection ID"
+    },
+    {
+        "pointer": "/materials/*/id",
+        "type": "list",
+        "doc": "Volume selection IDs"
+    },
+    {
+        "pointer": "/materials/*/id/*",
+        "type": "int",
         "doc": "Volume selection ID"
     },
     {
@@ -4338,7 +4473,10 @@
         "default": null,
         "type": "object",
         "optional": [
+            "directory",
+            "log",
             "json",
+            "restart_json",
             "paraview",
             "data",
             "advanced",
@@ -4347,10 +4485,67 @@
         "doc": "output settings"
     },
     {
+        "pointer": "/output/directory",
+        "default": "",
+        "type": "string",
+        "doc": "Directory for output files."
+    },
+    {
+        "pointer": "/output/log",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "level",
+            "path",
+            "quiet"
+        ],
+        "doc": "Setting for the output log."
+    },
+    {
+        "pointer": "/output/log/level",
+        "type": "int",
+        "min": 0,
+        "max": 6,
+        "doc": "Level of logging, 0 trace, 1 debug, 2 info, 3 warning, 4 error, 5 critical, and 6 off."
+    },
+    {
+        "pointer": "/output/log/level",
+        "default": "debug",
+        "type": "string",
+        "options": [
+            "trace",
+            "debug",
+            "info",
+            "warning",
+            "error",
+            "critical",
+            "off"
+        ],
+        "doc": "Level of logging."
+    },
+    {
+        "pointer": "/output/log/path",
+        "default": "",
+        "type": "string",
+        "doc": "File where to save the log; empty string is output to terminal."
+    },
+    {
+        "pointer": "/output/log/quiet",
+        "default": false,
+        "type": "bool",
+        "doc": "Disable cout for logging."
+    },
+    {
         "pointer": "/output/json",
         "default": "",
         "type": "string",
-        "doc": "File name for json output statistics on time/error/etc."
+        "doc": "File name for JSON output statistics on time/error/etc."
+    },
+    {
+        "pointer": "/output/restart_json",
+        "default": "",
+        "type": "string",
+        "doc": "File name for JSON output to restart the simulation."
     },
     {
         "pointer": "/output/paraview",
@@ -4493,6 +4688,7 @@
             "u_path",
             "v_path",
             "a_path",
+            "rest_mesh",
             "mises",
             "nodes",
             "advanced"
@@ -4540,6 +4736,12 @@
         "default": "",
         "type": "string",
         "doc": "Writes the complete acceleration in PolyFEM format, used to restart the sim"
+    },
+    {
+        "pointer": "/output/data/rest_mesh",
+        "default": "",
+        "type": "string",
+        "doc": "Writes the rest mesh in OBJ format, used to restart the sim"
     },
     {
         "pointer": "/output/data/mises",
@@ -4642,7 +4844,7 @@
         "pointer": "/output/advanced/sol_at_node",
         "default": -1,
         "type": "int",
-        "doc": "Write out solution values at a specific node. the values will be written in the output json file"
+        "doc": "Write out solution values at a specific node. the values will be written in the output JSON file"
     },
     {
         "pointer": "/output/advanced/vis_boundary_only",
@@ -4678,7 +4880,7 @@
         "pointer": "/output/advanced/spectrum",
         "default": false,
         "type": "bool",
-        "doc": "exports the spectrum of the matrix in the output json. Works only if POLYSOLVE_WITH_SPECTRA is enabled"
+        "doc": "exports the spectrum of the matrix in the output JSON. Works only if POLYSOLVE_WITH_SPECTRA is enabled"
     },
     {
         "pointer": "/input",
@@ -4696,27 +4898,34 @@
         "optional": [
             "u_path",
             "v_path",
-            "a_path"
+            "a_path",
+            "reorder"
         ],
         "doc": "input to restart time dependent sim"
     },
     {
         "pointer": "/input/data/u_path",
         "default": "",
-        "type": "string",
+        "type": "file",
         "doc": "input solution"
     },
     {
         "pointer": "/input/data/v_path",
         "default": "",
-        "type": "string",
+        "type": "file",
         "doc": "input velocity"
     },
     {
         "pointer": "/input/data/a_path",
         "default": "",
-        "type": "string",
+        "type": "file",
         "doc": "input acceleration"
+    },
+    {
+        "pointer": "/input/data/reorder",
+        "default": true,
+        "type": "bool",
+        "doc": "reorder input data"
     },
     {
         "pointer": "/preset_problem",

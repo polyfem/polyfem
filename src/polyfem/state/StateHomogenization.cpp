@@ -21,23 +21,6 @@
 
 #include <ipc/ipc.hpp>
 
-// map BroadPhaseMethod values to JSON as strings
-namespace ipc
-{
-	NLOHMANN_JSON_SERIALIZE_ENUM(
-		ipc::BroadPhaseMethod,
-		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
-		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
-		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
-		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
-		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
-		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}})
-} // namespace ipc
-
 namespace polyfem {
 
 using namespace assembler;
@@ -55,16 +38,16 @@ namespace
 		if (name == "GradientDescent" || name == "gradientdescent" || name == "gradient")
 		{
 			return std::make_shared<cppoptlib::GradientDescentSolver<ProblemType>>(
-				solver_args["nonlinear"]);
+				solver_args["nonlinear"], 0);
 		}
 		else if (name == "newton" || name == "Newton")
 		{
 			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
-				solver_args["nonlinear"], solver_args["linear"]);
+				solver_args["nonlinear"], solver_args["linear"], 0);
 		}
 		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
 		{
-			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(solver_args["nonlinear"]);
+			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(solver_args["nonlinear"], 0);
 		}
 		else
 		{
@@ -95,9 +78,10 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         const bool use_adaptive_barrier_stiffness = !args["solver"]["contact"]["barrier_stiffness"].is_number();
 
         contact_form = std::make_shared<ContactForm>(
-            collision_mesh, boundary_nodes_pos,
+            collision_mesh,
             args["contact"]["dhat"],
             avg_mass,
+            args["contact"]["use_convergent_formulation"],
             use_adaptive_barrier_stiffness,
             /*is_time_dependent=*/solve_data.time_integrator != nullptr,
             args["solver"]["contact"]["CCD"]["broad_phase"],
@@ -123,7 +107,6 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         {
             friction_form = std::make_shared<FrictionForm>(
                 collision_mesh,
-                boundary_nodes_pos,
                 args["contact"]["epsv"],
                 args["contact"]["friction_coefficient"],
                 args["contact"]["dhat"],
@@ -137,7 +120,6 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
 
     std::shared_ptr<NLHomoProblem> homo_problem = std::make_shared<NLHomoProblem>(
         ndof,
-        formulation(),
         boundary_nodes,
         local_boundary,
         n_boundary_samples(),
@@ -223,9 +205,10 @@ void State::solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_fie
         const bool use_adaptive_barrier_stiffness = !args["solver"]["contact"]["barrier_stiffness"].is_number();
 
         contact_form = std::make_shared<ContactForm>(
-            collision_mesh, boundary_nodes_pos,
+            collision_mesh,
             args["contact"]["dhat"],
             avg_mass,
+            args["contact"]["use_convergent_formulation"],
             use_adaptive_barrier_stiffness,
             /*is_time_dependent=*/solve_data.time_integrator != nullptr,
             args["solver"]["contact"]["CCD"]["broad_phase"],
@@ -251,7 +234,6 @@ void State::solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_fie
         {
             friction_form = std::make_shared<FrictionForm>(
                 collision_mesh,
-                boundary_nodes_pos,
                 args["contact"]["epsv"],
                 args["contact"]["friction_coefficient"],
                 args["contact"]["dhat"],
@@ -265,7 +247,6 @@ void State::solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_fie
 
     std::shared_ptr<NLHomoProblem> homo_problem = std::make_shared<NLHomoProblem>(
         ndof,
-        formulation(),
         boundary_nodes,
         local_boundary,
         n_boundary_samples(),

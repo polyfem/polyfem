@@ -8,6 +8,7 @@ set(test_sources
 	test_bases.cpp
 	test_matrix.cpp
   test_cmesh.cpp
+  test_geometry_utils.cpp
   test_ncmesh.cpp
 	test_normal.cpp
 	test_problem.cpp
@@ -23,6 +24,7 @@ set(test_sources
   test_interpolation.cpp
   test_time_integrators.cpp
   verify_run.cpp
+  test_output.cpp
 )
 
 add_executable(unit_tests ${test_sources})

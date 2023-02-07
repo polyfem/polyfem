@@ -16,8 +16,11 @@
 #include <polyfem/mesh/MeshNodes.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 
+#include <polyfem/solver/SolveData.hpp>
+
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/IntegrableFunctional.hpp>
 
@@ -34,6 +37,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include <ipc/collision_mesh.hpp>
 #include <ipc/utils/logger.hpp>
@@ -54,48 +58,6 @@ namespace polyfem
 		class Mesh3D;
 	} // namespace mesh
 
-	namespace solver
-	{
-		class NLProblem;
-
-		class ContactForm;
-		class FrictionForm;
-		class BodyForm;
-		class ALForm;
-		class InertiaForm;
-		class ElasticForm;
-	} // namespace solver
-
-	namespace time_integrator
-	{
-		class ImplicitTimeIntegrator;
-	} // namespace time_integrator
-
-	/// class to store time stepping data
-	class SolveData
-	{
-	public:
-		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
-		std::shared_ptr<solver::NLProblem> nl_problem;
-
-		std::shared_ptr<solver::ContactForm> contact_form;
-		std::shared_ptr<solver::BodyForm> body_form;
-		std::shared_ptr<solver::ALForm> al_form;
-		std::shared_ptr<solver::ElasticForm> damping_form;
-		std::shared_ptr<solver::FrictionForm> friction_form;
-		std::shared_ptr<solver::InertiaForm> inertia_form;
-		std::shared_ptr<solver::ElasticForm> elastic_form;
-
-		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
-
-		/// @brief update the barrier stiffness for the forms
-		/// @param x current solution
-		void updated_barrier_stiffness(const Eigen::VectorXd &x);
-
-		/// @brief updates the dt inside the different forms
-		void update_dt();
-	};
-
 	/// main class that contains the polyfem solver and all its state
 	class State
 	{
@@ -106,14 +68,15 @@ namespace polyfem
 
 		~State() = default;
 		/// Constructor
+		State();
+
 		/// @param[in] max_threads max number of threads
-		State(const unsigned int max_threads = std::numeric_limits<unsigned int>::max(), const bool skip_thread_initialization = false);
+		void set_max_threads(const unsigned int max_threads = std::numeric_limits<unsigned int>::max(), const bool skip_thread_initialization = false);
 
 		/// initialize the polyfem solver with a json settings
 		/// @param[in] args input arguments
 		/// @param[in] strict_validation strict validation of input
-		/// @param[in] output_dir output directory
-		void init(const json &args, const bool strict_validation, const std::string &output_dir = "", const bool fallback_solver = false);
+		void init(const json &args, const bool strict_validation);
 
 		/// initialize time settings if args contains "time"
 		void init_time();
@@ -186,9 +149,6 @@ namespace polyfem
 		int n_pressure_bases;
 		/// number of geometric bases
 		int n_geom_bases;
-
-		// Mapping from input nodes to FE nodes
-		std::vector<int> primitive_to_bases_node, primitive_to_geom_bases_node, primitive_to_pressure_bases_node;
 
 		/// polygons, used since poly have no geom mapping
 		std::map<int, Eigen::MatrixXd> polys;
@@ -326,7 +286,7 @@ namespace polyfem
 		}
 
 		/// timedependent stuff cached
-		SolveData solve_data;
+		solver::SolveData solve_data;
 		/// initialize solver
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
@@ -360,7 +320,7 @@ namespace polyfem
 		/// initialize the nonlinear solver
 		/// @param[out] sol solution
 		/// @param[in] t (optional) initial time
-		void init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t = 1.0);
+		void init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t = 1.0, const bool init_time_integrator = true);
 		/// initialize the linear solve
 		/// @param[in] t (optional) initial time
 		void init_linear_solve(Eigen::MatrixXd &sol, const double t = 1.0);
@@ -375,12 +335,13 @@ namespace polyfem
 		/// solves nonlinear problems
 		/// @param[out] sol solution
 		/// @param[in] t (optional) time step id
-		void solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t = 0);
+		void solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t = 0, const bool init_lagging = true);
 
 		/// factory to create the nl solver depdending on input
 		/// @return nonlinear solver (eg newton or LBFGS)
 		template <typename ProblemType>
-		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver() const;
+		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(
+			const std::string &linear_solver_type = "") const;
 
 		// under periodic BC, the index map from a restricted node to the node it depends on, -1 otherwise
 		Eigen::VectorXi periodic_reduce_map;
@@ -543,20 +504,18 @@ namespace polyfem
 		/// Resets the mesh
 		void reset_mesh();
 
+		/// Build the mesh matrices (vertices and elements) from the mesh using the bases node ordering
+		void build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F);
+
 		//---------------------------------------------------
 		//-----------------IPC-------------------------------
 		//---------------------------------------------------
 
-		// boundary mesh used for collision
-		/// @brief Boundary_nodes_pos contains the total number of nodes, the internal ones are zero.
-		/// For high-order fem the faces are triangulated this is currently supported only for tri and tet meshes.
-		Eigen::MatrixXd boundary_nodes_pos;
 		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
 
 		/// extracts the boundary mesh for collision, called in build_basis
 		void build_collision_mesh(
-			Eigen::MatrixXd &boundary_nodes_pos_,
 			ipc::CollisionMesh &collision_mesh_, 
 			const int n_bases_, 
 			const std::vector<basis::ElementBases> &bases_) const;
@@ -566,7 +525,8 @@ namespace polyfem
 		/// @return if vertex is obstalce
 		bool is_obstacle_vertex(const size_t vi) const
 		{
-			return vi >= boundary_nodes_pos.rows() - obstacle.n_vertices();
+			// The obstalce vertices are at the bottom of the collision mesh vertices
+			return vi >= collision_mesh.full_num_vertices() - obstacle.n_vertices();
 		}
 
 		/// @brief does the simulation has contact
@@ -640,6 +600,10 @@ namespace polyfem
 
 		/// @brief computes all errors
 		void compute_errors(const Eigen::MatrixXd &sol);
+
+		/// @brief Save a JSON sim file for restarting the simulation at time t
+		/// @param t current time to restart at
+		void save_restart_json(const double t0, const double dt, const int t) const;
 
 		//-----------PATH management
 		/// Get the root path for the state (e.g., args["root_path"] or ".")

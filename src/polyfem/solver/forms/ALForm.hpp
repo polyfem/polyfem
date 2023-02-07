@@ -15,10 +15,17 @@ namespace polyfem::solver
 	class ALForm : public Form
 	{
 	public:
-		/// @brief Construct a new AL Form object
-		/// @param state Reference to the simulation state
-		/// @param rhs_assembler Reference to the right hand side assembler
-		/// @param t current time
+		/// @brief Construct a new ALForm object with a time dependent Dirichlet boundary
+		/// @param ndof Number of degrees of freedom
+		/// @param boundary_nodes DoFs that are part of the Dirichlet boundary
+		/// @param local_boundary
+		/// @param local_neumann_boundary
+		/// @param n_boundary_samples
+		/// @param mass Mass matrix
+		/// @param rhs_assembler Right hand side assembler
+		/// @param obstacle Obstacles
+		/// @param is_time_dependent Whether the problem is time dependent
+		/// @param t Current time
 		ALForm(const int ndof,
 			   const std::vector<int> &boundary_nodes,
 			   const std::vector<mesh::LocalBoundary> &local_boundary,
@@ -30,7 +37,18 @@ namespace polyfem::solver
 			   const bool is_time_dependent,
 			   const double t);
 
-	protected:
+		/// @brief Construct a new ALForm object with a fixed Dirichlet boundary
+		/// @param ndof Number of degrees of freedom
+		/// @param boundary_nodes DoFs that are part of the Dirichlet boundary
+		/// @param mass Mass matrix
+		/// @param obstacle Obstacles
+		/// @param target_x Target values for the boundary DoFs
+		ALForm(const int ndof,
+			   const std::vector<int> &boundary_nodes,
+			   const StiffnessMatrix &mass,
+			   const mesh::Obstacle &obstacle,
+			   const Eigen::MatrixXd &target_x);
+
 		/// @brief Compute the value of the form
 		/// @param x Current solution
 		/// @return Computed value
@@ -44,7 +62,7 @@ namespace polyfem::solver
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
-		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 	public:
 		/// @brief Update time dependent quantities
@@ -54,16 +72,27 @@ namespace polyfem::solver
 
 	private:
 		const std::vector<int> &boundary_nodes_;
-		const std::vector<mesh::LocalBoundary> &local_boundary_;
-		const std::vector<mesh::LocalBoundary> &local_neumann_boundary_;
+		const std::vector<mesh::LocalBoundary> *local_boundary_;
+		const std::vector<mesh::LocalBoundary> *local_neumann_boundary_;
 		const int n_boundary_samples_;
 
-		const assembler::RhsAssembler &rhs_assembler_; ///< Reference to the RHS assembler
+		const assembler::RhsAssembler *rhs_assembler_; ///< Reference to the RHS assembler
 		const bool is_time_dependent_;
 
 		StiffnessMatrix masked_lumped_mass_; ///< mass matrix masked by the AL dofs
 		Eigen::MatrixXd target_x_;           ///< actually a vector with the same size as x with target nodal positions
 
+		/// @brief Initialize the masked lumped mass matrix
+		/// @param ndof Number of degrees of freedom
+		/// @param mass Mass matrix
+		/// @param obstacle Obstacles
+		void init_masked_lumped_mass(
+			const int ndof,
+			const StiffnessMatrix &mass,
+			const mesh::Obstacle &obstacle);
+
+		/// @brief Update target x to the Dirichlet boundary values at time t
+		/// @param t Current time
 		void update_target(const double t);
 	};
 } // namespace polyfem::solver

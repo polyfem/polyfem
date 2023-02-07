@@ -128,7 +128,7 @@ namespace polyfem
 	{
 		assert(vertices.cols() == mesh->dimension());
 
-		const auto &primitive_to_node = iso_parametric() ? primitive_to_bases_node : primitive_to_geom_bases_node;
+		const auto &primitive_to_node = iso_parametric() ? mesh_nodes->primitive_to_node() : geom_mesh_nodes->primitive_to_node();
 		for (int v = 0; v < mesh->n_vertices(); v++)
 			if (primitive_to_node[v] >= 0 && primitive_to_node[v] < vertices.rows())
 				mesh->set_point(v, vertices.block(primitive_to_node[v], 0, 1, mesh->dimension()));
@@ -176,16 +176,8 @@ namespace polyfem
 			{
 				if (solve_data.friction_form)
 				{
-					Eigen::MatrixXd displaced = boundary_nodes_pos + utils::unflatten(sol, mesh->dimension());
-
-					Eigen::MatrixXd displaced_prev;
-					if (diff_cached.size())
-						displaced_prev = boundary_nodes_pos + utils::unflatten(diff_cached.back().u, mesh->dimension());
-					else
-						displaced_prev = displaced;
-
-					Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(displaced_prev - boundary_nodes_pos);
-					Eigen::MatrixXd surface_solution = collision_mesh.vertices(displaced - boundary_nodes_pos);
+					Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(utils::unflatten(diff_cached.back().u, mesh->dimension()));
+					Eigen::MatrixXd surface_solution = collision_mesh.vertices(utils::unflatten(sol, mesh->dimension()));
 
 					hessian_prev = -ipc::compute_friction_force_jacobian(
 						collision_mesh,

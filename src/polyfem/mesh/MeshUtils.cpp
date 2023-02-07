@@ -1122,12 +1122,26 @@ bool polyfem::mesh::read_surface_mesh(
 			codim_edges = cells;
 		else if (cells.cols() == 3)
 			faces = cells;
+		else if (cells.cols() == 4)
+		{
+			if (vertices.cols() == 2)
+			{
+				logger().error("read_surface_mesh not implemented for 2D quad meshes");
+				return false;
+			}
+			else
+			{
+				// TODO: how to distinguish between 3D tet mesh and 3D surface quad mesh?
+				assert(vertices.cols() == 3);
+				Eigen::MatrixXd surface_vertices;
+				extract_triangle_surface_from_tets(vertices, cells, surface_vertices, faces);
+				vertices = surface_vertices;
+			}
+		}
 		else
 		{
-			assert(cells.cols() == 4);
-			Eigen::MatrixXd surface_vertices;
-			extract_triangle_surface_from_tets(vertices, cells, surface_vertices, faces);
-			vertices = surface_vertices;
+			logger().error("read_surface_mesh not implemented for hexahedral and polygonal/polyhedral meshes");
+			return false;
 		}
 	}
 	else if (StringUtils::endswith(lowername, ".obj")) // Use specialized OBJ reader function with polyline support

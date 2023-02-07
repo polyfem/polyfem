@@ -297,7 +297,7 @@ namespace polyfem
         
         assert(node_data_name.size() == node_data.size());
         shape_velocity_.setZero(get_state().n_geom_bases * dim, node_data.size() - 1);
-        const auto &primitive_to_node = get_state().iso_parametric() ? get_state().primitive_to_bases_node : get_state().primitive_to_geom_bases_node;
+        const auto &primitive_to_node = get_state().iso_parametric() ? get_state().mesh_nodes->primitive_to_node() : get_state().geom_mesh_nodes->primitive_to_node();
         for (int j = 0; j < get_state().n_geom_bases; j++) // j is full vertex id
         {
             if (primitive_to_node[j] >= 0 && primitive_to_node[j] < get_state().n_geom_bases)

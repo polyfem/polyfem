@@ -25,8 +25,8 @@ namespace cppoptlib
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		LBFGSBSolver(const json &solver_params)
-			: Superclass(solver_params)
+		LBFGSBSolver(const json &solver_params, const double dt)
+			: Superclass(solver_params, dt)
 		{
 			m_history_size = solver_params.value("history_size", 6);
 		}

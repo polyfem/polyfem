@@ -4,13 +4,12 @@
 namespace polyfem::solver
 {
     NLHomoProblem::NLHomoProblem(const int full_size,
-                const std::string &formulation,
                 const std::vector<int> &boundary_nodes,
                 const std::vector<mesh::LocalBoundary> &local_boundary,
                 const int n_boundary_samples,
                 const assembler::RhsAssembler &rhs_assembler,
                 const State &state,
-                const double t, std::vector<std::shared_ptr<Form>> &forms) : NLProblem(full_size, formulation, boundary_nodes, local_boundary, n_boundary_samples, rhs_assembler, state, t, forms)
+                const double t, const std::vector<std::shared_ptr<Form>> &forms) : NLProblem(full_size, boundary_nodes, local_boundary, n_boundary_samples, rhs_assembler, state, t, forms)
     {
         const int dim = state_.mesh->dimension();
         const int dof2 = macro_reduced_size();

@@ -32,6 +32,8 @@ namespace polyfem::assembler
 		void compute_norm_velocity(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &velocity, Eigen::MatrixXd &norms) const;
 		void compute_stress_tensor(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &velocity, Eigen::MatrixXd &tensor) const;
 
+		double viscosity() const { return viscosity_; }
+
 	private:
 		int size_ = 2;
 		double viscosity_ = 1;

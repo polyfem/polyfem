@@ -23,8 +23,8 @@ namespace cppoptlib
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		BFGSSolver(const json &solver_params)
-			: Superclass(solver_params)
+		BFGSSolver(const json &solver_params, const double dt)
+			: Superclass(solver_params, dt)
 		{
 		}
 

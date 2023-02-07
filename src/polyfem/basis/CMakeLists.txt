@@ -3,10 +3,10 @@ set(SOURCES
 	Basis.hpp
 	ElementBases.cpp
 	ElementBases.hpp
-	FEBasis2d.cpp
-	FEBasis2d.hpp
-	FEBasis3d.cpp
-	FEBasis3d.hpp
+	LagrangeBasis2d.cpp
+	LagrangeBasis2d.hpp
+	LagrangeBasis3d.cpp
+	LagrangeBasis3d.hpp
 	function/QuadraticBSpline.cpp
 	function/QuadraticBSpline.hpp
 	function/QuadraticBSpline2d.cpp
@@ -20,8 +20,6 @@ set(SOURCES
 	function/RBFWithQuadraticLagrange.cpp
 	function/RBFWithQuadraticLagrange.hpp
 	InterfaceData.hpp
-	MVPolygonalBasis2d.cpp
-	MVPolygonalBasis2d.hpp
 	PolygonalBasis2d.cpp
 	PolygonalBasis2d.hpp
 	PolygonalBasis3d.cpp
@@ -30,6 +28,12 @@ set(SOURCES
 	SplineBasis2d.hpp
 	SplineBasis3d.cpp
 	SplineBasis3d.hpp
+	barycentric/BarycentricBasis2d.cpp
+	barycentric/BarycentricBasis2d.hpp
+	barycentric/MVPolygonalBasis2d.cpp
+	barycentric/MVPolygonalBasis2d.hpp
+	barycentric/WSPolygonalBasis2d.cpp
+	barycentric/WSPolygonalBasis2d.hpp
 )
 
 prepend_current_path(SOURCES)

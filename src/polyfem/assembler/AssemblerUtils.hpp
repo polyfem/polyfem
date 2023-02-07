@@ -50,6 +50,8 @@ namespace polyfem
 				POLY
 			};
 
+			typedef std::function<double(const RowVectorNd &, const RowVectorNd &, double, int)> ParamFunc;
+
 			AssemblerUtils();
 
 			// Linear, assembler is the name of the formulation
@@ -222,6 +224,7 @@ namespace polyfem
 			Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const std::string &assembler, const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const;
 
 			// dispaces to all set parameters of the local assemblers
+			void set_materials(const std::vector<int> &body_ids, const json &body_params);
 			void add_multimaterial(const int index, const json &params);
 			void set_size(const std::string &assembler, const int dim);
 			void init_multimodels(const std::vector<std::string> &materials);
@@ -238,7 +241,10 @@ namespace polyfem
 			std::function<void(const int, const double, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&)> get_stress_prev_grad_function(const std::string& assembler) const;
 			std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> get_dstress_dmu_dlambda_function(const std::string& assembler) const;
 
+			std::map<std::string, ParamFunc> parameters(const std::string &assembler) const;
+
 			const Density &density() const { return mass_mat_.local_assembler().density(); }
+
 			// checks if assembler is linear
 			static bool is_linear(const std::string &assembler);
 

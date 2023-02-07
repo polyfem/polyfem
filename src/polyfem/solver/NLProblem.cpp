@@ -18,25 +18,45 @@ M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 
 namespace polyfem::solver
 {
-	NLProblem::NLProblem(const int full_size,
-						 const std::string &formulation,
-						 const std::vector<int> &boundary_nodes,
-						 const std::vector<mesh::LocalBoundary> &local_boundary,
-						 const int n_boundary_samples,
-						 const assembler::RhsAssembler &rhs_assembler,
-						 const State &state,
-						 const double t, std::vector<std::shared_ptr<Form>> &forms)
+	NLProblem::NLProblem(
+		const int full_size,
+		const std::vector<int> &boundary_nodes,
+		const State &state,
+		const std::vector<std::shared_ptr<Form>> &forms)
 		: FullNLProblem(forms),
 		  boundary_nodes_(boundary_nodes),
-		  local_boundary_(local_boundary),
-		  n_boundary_samples_(n_boundary_samples),
-		  rhs_assembler_(rhs_assembler),
-		  state_(state),
-		  t_(t),
 		  full_size_(full_size),
-		  reduced_size_((state.need_periodic_reduction() ? (state.periodic_reduce_map.maxCoeff() + 1) : full_size) - boundary_nodes.size())
+		  reduced_size_(full_size_ - boundary_nodes.size()),
+		  rhs_assembler_(nullptr),
+		  local_boundary_(nullptr),
+		  n_boundary_samples_(0),
+		  t_(0),
+		  state_(state)
 	{
-		// assert(!state.assembler.is_mixed(formulation));
+		use_reduced_size();
+	}
+
+	NLProblem::NLProblem(
+		const int full_size,
+		const std::vector<int> &boundary_nodes,
+		const std::vector<mesh::LocalBoundary> &local_boundary,
+		const int n_boundary_samples,
+		const assembler::RhsAssembler &rhs_assembler,
+		const State &state,
+		const double t,
+		const std::vector<std::shared_ptr<Form>> &forms)
+		: FullNLProblem(forms),
+		  boundary_nodes_(boundary_nodes),
+		  full_size_(full_size),
+		  reduced_size_((state.need_periodic_reduction() ? (state.periodic_reduce_map.maxCoeff() + 1) : full_size) - boundary_nodes.size()),
+		  rhs_assembler_(&rhs_assembler),
+		  local_boundary_(&local_boundary),
+		  n_boundary_samples_(n_boundary_samples),
+		  state_(state),
+		  t_(t)
+	{
+		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
+		assert(boundary_nodes.size() == 0 || (boundary_nodes.front() >= 0 && boundary_nodes.back() < full_size_));
 		use_reduced_size();
 	}
 
@@ -143,15 +163,16 @@ namespace polyfem::solver
 	NLProblem::TVector NLProblem::reduced_to_full(const TVector &reduced) const
 	{
 		TVector full;
-		Eigen::MatrixXd tmp = Eigen::MatrixXd::Zero(full_size(), 1);
-
-		if (boundary_nodes_.size() > 0)
-		{
-			// rhs_assembler.set_bc(local_boundary_, boundary_nodes_, n_boundary_samples_, local_neumann_boundary_, tmp, t_);
-			rhs_assembler_.set_bc(local_boundary_, state_.boundary_nodes, n_boundary_samples_, std::vector<mesh::LocalBoundary>(), tmp, Eigen::MatrixXd(), t_);
-		}
-		reduced_to_full_aux(boundary_nodes_, full_size(), current_size(), reduced, tmp, full);
+		reduced_to_full_aux(boundary_nodes_, full_size(), current_size(), reduced, boundary_values(), full);
 		return full;
+	}
+
+	Eigen::MatrixXd NLProblem::boundary_values() const
+	{
+		Eigen::MatrixXd result = Eigen::MatrixXd::Zero(full_size(), 1);
+		// rhs_assembler->set_bc(*local_boundary_, boundary_nodes_, n_boundary_samples_, local_neumann_boundary_, result, t_);
+		rhs_assembler_->set_bc(*local_boundary_, boundary_nodes_, n_boundary_samples_, std::vector<mesh::LocalBoundary>(), result, Eigen::MatrixXd(), t_);
+		return result;
 	}
 
 	template <class FullMat, class ReducedMat>
@@ -173,6 +194,8 @@ namespace polyfem::solver
 		Eigen::MatrixXd tmp = full;
 		if (state_.need_periodic_reduction())
 			state_.full_to_periodic(tmp, false);
+		
+		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
 
 		long j = 0;
 		size_t k = 0;
@@ -184,6 +207,7 @@ namespace polyfem::solver
 				continue;
 			}
 
+			assert(j < reduced.size());
 			reduced(j++) = tmp(i);
 		}
 	}
@@ -203,6 +227,8 @@ namespace polyfem::solver
 		assert(reduced.size() == reduced_size);
 		assert(reduced.cols() == 1);
 		full.resize(full_size, 1);
+
+		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
 
 		long j = 0;
 		size_t k = 0;

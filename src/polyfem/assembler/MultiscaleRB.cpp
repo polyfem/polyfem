@@ -268,7 +268,7 @@ namespace polyfem::assembler
 		std::shared_ptr<MultiscaleRBProblem> nl_problem = std::make_shared<MultiscaleRBProblem>(state, reduced_basis);
 		nl_problem->set_linear_disp(io::Evaluator::generate_linear_field(state->n_bases, state->mesh_nodes, F));
 		std::shared_ptr<cppoptlib::NonlinearSolver<MultiscaleRBProblem>> nlsolver = std::make_shared<cppoptlib::DenseNewtonDescentSolver<MultiscaleRBProblem>>(
-				state->args["solver"]["nonlinear"], state->args["solver"]["linear"]);
+				state->args["solver"]["nonlinear"], state->args["solver"]["linear"], 0);
 		nlsolver->disable_logging();
 		nlsolver->minimize(*nl_problem, xi);
 		x = nl_problem->coeff_to_field(xi);

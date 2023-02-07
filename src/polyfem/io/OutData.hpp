@@ -8,6 +8,8 @@
 
 #include <polyfem/mesh/Mesh.hpp>
 
+#include <polyfem/io/VTUWriter.hpp>
+
 #include <polyfem/utils/RefElementSampler.hpp>
 
 #include <Eigen/Dense>
@@ -78,17 +80,19 @@ namespace polyfem::io
 		/// @param[in] n_bases number of bases
 		/// @param[in] bases bases
 		/// @param[in] total_local_boundary mesh boundaries
-		/// @param[out] boundary_nodes_pos nodes positions
+		/// @param[out] node_positions nodes positions
 		/// @param[out] boundary_edges edges
 		/// @param[out] boundary_triangles triangles
+		/// @param[out] displacement_map map of collision mesh vertices to nodes, empty if identity
 		static void extract_boundary_mesh(
 			const mesh::Mesh &mesh,
 			const int n_bases,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<mesh::LocalBoundary> &total_local_boundary,
-			Eigen::MatrixXd &boundary_nodes_pos,
+			Eigen::MatrixXd &node_positions,
 			Eigen::MatrixXi &boundary_edges,
-			Eigen::MatrixXi &boundary_triangles);
+			Eigen::MatrixXi &boundary_triangles,
+			std::vector<Eigen::Triplet<double>> &displacement_map_entries);
 
 		/// @brief unitalize the ref element sampler
 		/// @param[in] mesh mesh
@@ -172,6 +176,7 @@ namespace polyfem::io
 		/// @param[in] state state to get the data
 		/// @param[in] sol solution
 		/// @param[in] pressure pressure
+		/// @param[in] t time
 		/// @param[in] dt_in delta_t
 		/// @param[in] opts export options
 		/// @param[in] is_contact_enabled if contact is enabled
@@ -180,6 +185,7 @@ namespace polyfem::io
 						  const State &state,
 						  const Eigen::MatrixXd &sol,
 						  const Eigen::MatrixXd &pressure,
+						  const double t,
 						  const double dt_in,
 						  const ExportOptions &opts,
 						  const bool is_contact_enabled,
@@ -300,6 +306,14 @@ namespace polyfem::io
 			std::vector<std::vector<int>> &elements,
 			Eigen::MatrixXi &el_id,
 			Eigen::MatrixXd &discr) const;
+
+		void save_volume_vector_field(
+			const State &state,
+			const Eigen::MatrixXd &points,
+			const ExportOptions &opts,
+			const std::string &name,
+			const Eigen::VectorXd &field,
+			VTUWriter &writer) const;
 	};
 
 	/// @brief stores all runtime data

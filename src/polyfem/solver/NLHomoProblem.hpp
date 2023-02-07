@@ -12,13 +12,12 @@ namespace polyfem::solver
 		using typename FullNLProblem::TVector;
 
         NLHomoProblem(const int full_size,
-				  const std::string &formulation,
 				  const std::vector<int> &boundary_nodes,
 				  const std::vector<mesh::LocalBoundary> &local_boundary,
 				  const int n_boundary_samples,
 				  const assembler::RhsAssembler &rhs_assembler,
 				  const State &state,
-				  const double t, std::vector<std::shared_ptr<Form>> &forms);
+				  const double t, const std::vector<std::shared_ptr<Form>> &forms);
 
 		void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const override;
 

@@ -21,8 +21,8 @@ namespace cppoptlib
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		MMASolver(const json &solver_params)
-			: Superclass(solver_params)
+		MMASolver(const json &solver_params, const double dt)
+			: Superclass(solver_params, dt)
 		{
 		}
 

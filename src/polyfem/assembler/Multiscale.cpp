@@ -282,8 +282,9 @@ namespace polyfem::assembler
 			json unit_cell_args = params["microstructure"];
 
 			{
-				state = std::make_shared<polyfem::State>(utils::get_n_threads(), true);
-				state->init(unit_cell_args, false, "", false);
+				state = std::make_shared<polyfem::State>();
+				state->set_max_threads(utils::get_n_threads(), true);
+				state->init(unit_cell_args, false);
 				state->load_mesh(false);
 				if (state->mesh == nullptr)
 					log_and_throw_error("No microstructure mesh found!");

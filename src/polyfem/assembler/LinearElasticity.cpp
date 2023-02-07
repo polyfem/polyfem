@@ -6,7 +6,7 @@
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
 #include <polyfem/utils/MatrixUtils.hpp>
-#include <finitediff.hpp>
+// #include <finitediff.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem

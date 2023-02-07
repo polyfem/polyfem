@@ -4,27 +4,23 @@
 
 namespace polyfem::solver
 {
-
 	ALSolver::ALSolver(
-		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver,
+		std::shared_ptr<NLSolver> nl_solver,
 		std::shared_ptr<ALForm> al_form,
 		const double initial_al_weight,
 		const double scaling,
 		const int max_al_steps,
-		const std::function<void(const Eigen::VectorXd &)> &updated_barrier_stiffness)
+		const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness)
 		: nl_solver(nl_solver),
 		  al_form(al_form),
 		  initial_al_weight(initial_al_weight),
 		  scaling(scaling),
 		  max_al_steps(max_al_steps),
-		  updated_barrier_stiffness(updated_barrier_stiffness)
+		  update_barrier_stiffness(update_barrier_stiffness)
 	{
 	}
 
-	void ALSolver::solve(
-		NLProblem &nl_problem,
-		Eigen::MatrixXd &sol,
-		bool force_al)
+	void ALSolver::solve(NLProblem &nl_problem, Eigen::MatrixXd &sol, bool force_al)
 	{
 		assert(sol.size() == nl_problem.full_size());
 
@@ -55,7 +51,7 @@ namespace polyfem::solver
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
 			nl_problem.init(sol);
-			updated_barrier_stiffness(sol);
+			update_barrier_stiffness(sol);
 			tmp_sol = sol;
 			nl_solver->minimize(nl_problem, tmp_sol);
 
@@ -80,9 +76,19 @@ namespace polyfem::solver
 		// --------------------------------------------------------------------
 		// Perform one final solve with the DBC projected out
 
+		logger().debug("Successfully applied boundary conditions; solving in reduced space:");
+
 		nl_problem.init(sol);
-		updated_barrier_stiffness(sol);
-		nl_solver->minimize(nl_problem, tmp_sol);
+		update_barrier_stiffness(sol);
+		try
+		{
+			nl_solver->minimize(nl_problem, tmp_sol);
+		}
+		catch (const std::runtime_error &e)
+		{
+			sol = nl_problem.reduced_to_full(tmp_sol);
+			throw e;
+		}
 		sol = nl_problem.reduced_to_full(tmp_sol);
 
 		post_subsolve(0);

@@ -53,7 +53,7 @@ namespace polyfem::solver
 		gradv = stiffness() * (lagged_stiffness_matrix_ * v);
 	}
 
-	void RayleighDampingForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void RayleighDampingForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		// NOTE: Assumes that v(x) is linear in x, so ∂²v/∂x² = 0
 		hessian = (stiffness() * time_integrator_.dv_dx()) * lagged_stiffness_matrix_;

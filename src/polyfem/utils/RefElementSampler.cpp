@@ -1,8 +1,16 @@
 #include "RefElementSampler.hpp"
 #include <polyfem/mesh/MeshUtils.hpp>
 
+#include <igl/predicates/ear_clipping.h>
+
 #include <igl/edges.h>
+#include <igl/boundary_loop.h>
+#include <igl/doublearea.h>
 #include <igl/upsample.h>
+
+#ifdef POLYFEM_WITH_TRIANGLE
+#include <igl/triangle/triangulate.h>
+#endif
 
 #include <cassert>
 
@@ -216,7 +224,7 @@ namespace polyfem
 						1, 1, 0,
 						1, 0, 0,
 
-						//4
+						// 4
 						0, 0, 1,
 						0, 1, 1,
 						1, 1, 1,
@@ -357,44 +365,53 @@ namespace polyfem
 			}
 		}
 
-		void RefElementSampler::sample_polygon(const Eigen::MatrixXd &poly, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces) const
+		void RefElementSampler::sample_polygon(const Eigen::MatrixXd &poly, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXi &edges) const
 		{
-			pts.resize(poly.rows() + 1, poly.cols());
-			pts.block(0, 0, poly.rows(), poly.cols()) = poly;
-			pts.row(poly.rows()) = poly.colwise().mean();
 
-			faces.resize(poly.rows(), 3);
+#ifdef POLYFEM_WITH_TRIANGLE
+			Eigen::MatrixXi E(poly.rows(), 2);
+			const Eigen::MatrixXd H(0, 2);
+			const std::string flags = "Qzqa" + std::to_string(area_param_ / 10.0);
 
-			double area_avg = 0;
+			for (int i = 0; i < poly.rows(); ++i)
+				E.row(i) << i, (i + 1) % poly.rows();
 
-			for (int e = 0; e < int(poly.rows()); ++e)
-			{
-				faces.row(e) << e, (e + 1) % poly.rows(), poly.rows();
+			igl::triangle::triangulate(poly, E, H, flags, pts, faces);
+#else
 
-				Eigen::Matrix2d tmp;
-				tmp.row(0) = pts.row(e) - pts.row(poly.rows());
-				tmp.row(1) = pts.row((e + 1) % poly.rows()) - pts.row(poly.rows());
-				area_avg += fabs(tmp.determinant());
-			}
+			const Eigen::MatrixXi rt = Eigen::MatrixXi::Zero(poly.rows(), 1);
+			faces.resize(0, 0);
+			Eigen::VectorXi I;
+			Eigen::MatrixXd np, area;
+			igl::predicates::ear_clipping(poly, rt, I, faces, np);
 
-			area_avg /= poly.rows();
+			igl::doublearea(poly, faces, area);
+
+			const double area_avg = area.array().sum() / poly.rows() / 2;
 
 			const int n_refs = area_avg / area_param_ * 40;
 
-			Eigen::MatrixXd new_pts;
 			Eigen::MatrixXi new_faces;
 
-			igl::upsample(pts, faces, new_pts, new_faces, n_refs);
+			igl::upsample(poly, faces, pts, new_faces, n_refs);
 
-			pts = new_pts;
 			faces = new_faces;
+#endif
+			std::vector<int> loop;
+			igl::default_num_threads(1);
+			igl::boundary_loop(faces, loop);
+			igl::default_num_threads(0);
+			edges.resize(loop.size(), 2);
+			for (int i = 0; i < loop.size(); ++i)
+				edges.row(i) << loop[i], loop[(i + 1) % loop.size()];
 		}
 
-		void RefElementSampler::sample_polyhedron(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &f, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces) const
+		void RefElementSampler::sample_polyhedron(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &f, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXi &edges) const
 		{
-			//TODO
+			// TODO
 			pts = vertices;
 			faces = f;
+			throw "Not implemented";
 		}
 	} // namespace utils
 } // namespace polyfem

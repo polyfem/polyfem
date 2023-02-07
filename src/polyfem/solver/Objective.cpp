@@ -530,8 +530,7 @@ namespace polyfem::solver
 		std::vector<Eigen::Triplet<bool>> T_adj;
 
 		ipc::CollisionMesh collision_mesh;
-		Eigen::MatrixXd boundary_nodes_pos;
-		state_.build_collision_mesh(boundary_nodes_pos, collision_mesh, state_.n_geom_bases, state_.geom_bases());
+		state_.build_collision_mesh(collision_mesh, state_.n_geom_bases, state_.geom_bases());
 		for (int e = 0; e < collision_mesh.num_edges(); e++)
 		{
 			int v1 = collision_mesh.to_full_vertex_id(collision_mesh.edges()(e, 0));
@@ -719,8 +718,7 @@ namespace polyfem::solver
 		std::vector<Eigen::Triplet<bool>> T_adj;
 
 		ipc::CollisionMesh collision_mesh;
-		Eigen::MatrixXd boundary_nodes_pos;
-		state_.build_collision_mesh(boundary_nodes_pos, collision_mesh, state_.n_geom_bases, state_.geom_bases());
+		state_.build_collision_mesh(collision_mesh, state_.n_geom_bases, state_.geom_bases());
 		for (int e = 0; e < collision_mesh.num_edges(); e++)
 		{
 			int v1 = collision_mesh.to_full_vertex_id(collision_mesh.edges()(e, 0));
@@ -1321,8 +1319,7 @@ namespace polyfem::solver
 
 		const auto &state = shape_param_->get_state();
 
-		Eigen::MatrixXd boundary_nodes_pos_;
-		state.build_collision_mesh(boundary_nodes_pos_, collision_mesh_, state.n_geom_bases, state.geom_bases());
+		state.build_collision_mesh(collision_mesh_, state.n_geom_bases, state.geom_bases());
 
 		dhat = args["dhat"];
 		broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
@@ -1394,7 +1391,7 @@ namespace polyfem::solver
 			collision_mesh_,
 			collision_mesh_.vertices(V0),
 			collision_mesh_.vertices(V1),
-			broad_phase_method, 0, 1e-6, 1000000);
+			broad_phase_method, 1e-6, 1000000);
 
 		return is_valid;
 	}
@@ -1422,7 +1419,7 @@ namespace polyfem::solver
 		auto Vmid = V0 + max_step * (V1 - V0);
 		max_step *= ipc::compute_collision_free_stepsize(
 			collision_mesh_, V0, Vmid,
-			broad_phase_method, 0, 1e-6, 1000000);
+			broad_phase_method, 1e-6, 1000000);
 		// polyfem::logger().trace("best step {}", max_step);
 
 		return max_step;
