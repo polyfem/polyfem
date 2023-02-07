@@ -808,7 +808,7 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
+					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, false, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
 
 				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
@@ -840,7 +840,7 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					n_geom_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
+					n_geom_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, false, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
 
 				n_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}

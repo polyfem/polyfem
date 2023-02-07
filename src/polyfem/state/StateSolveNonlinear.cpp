@@ -115,7 +115,7 @@ namespace polyfem
 		assert(!problem->is_scalar());                                       // tensor
 		assert(!assembler.is_mixed(formulation()));
 
-		const auto &cur_sol = (pre_sol.size() == sol.size()) ? pre_sol : sol;
+		const auto &cur_sol = ((pre_sol.size() == sol.size()) && !problem->is_time_dependent()) ? pre_sol : sol;
 		///////////////////////////////////////////////////////////////////////
 		// Check for initial intersections
 		if (is_contact_enabled())
@@ -238,7 +238,7 @@ namespace polyfem
 			logger().info("Lagging iteration 1:");
 		}
 
-		if (pre_sol.rows() == sol.rows())
+		if (pre_sol.rows() == sol.rows() && !problem->is_time_dependent())
 		{
 			logger().debug("Use better initial guess...");
 			sol = pre_sol;
