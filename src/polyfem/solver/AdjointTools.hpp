@@ -5,10 +5,10 @@
 
 namespace polyfem::solver
 {
-	class AdjointForm
+	class AdjointTools
 	{
 	public:
-		AdjointForm()
+		AdjointTools()
 		{
 		}
 

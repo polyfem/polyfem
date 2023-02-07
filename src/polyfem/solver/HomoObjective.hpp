@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AdjointForm.hpp"
+#include "AdjointTools.hpp"
 #include "IntegralObjective.hpp"
 
 #include <polyfem/solver/forms/ContactForm.hpp>
@@ -70,7 +70,7 @@ namespace polyfem::solver
 	public:
 		StrainObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
 		{
-			spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
+			spatial_integral_type_ = AdjointTools::SpatialIntegralType::VOLUME;
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 		}

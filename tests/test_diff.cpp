@@ -3,7 +3,7 @@
 #include <polyfem/solver/InitialConditionParameter.hpp>
 #include <polyfem/solver/TopologyOptimizationParameter.hpp>
 #include <polyfem/solver/Objective.hpp>
-#include <polyfem/solver/AdjointForm.hpp>
+#include <polyfem/solver/AdjointTools.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <iostream>
 #include <fstream>
@@ -281,7 +281,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
 	PositionObjective obj(state, shape_param, opt_args["functionals"][0]);
-	obj.set_integral_type(AdjointForm::SpatialIntegralType::SURFACE);
+	obj.set_integral_type(AdjointTools::SpatialIntegralType::SURFACE);
 
 	auto velocity = [](const Eigen::MatrixXd &position) {
 		Eigen::MatrixXd vel;
@@ -315,7 +315,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 // 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
 // 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
 // 	PositionObjective obj(state, shape_param, opt_args["functionals"][0]);
-// 	obj.set_integral_type(AdjointForm::SpatialIntegralType::SURFACE);
+// 	obj.set_integral_type(AdjointTools::SpatialIntegralType::SURFACE);
 
 // 	auto velocity = [](const Eigen::MatrixXd &position) {
 // 		Eigen::MatrixXd vel;

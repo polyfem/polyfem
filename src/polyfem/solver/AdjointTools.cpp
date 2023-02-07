@@ -1,4 +1,4 @@
-#include "AdjointForm.hpp"
+#include "AdjointTools.hpp"
 
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -109,7 +109,7 @@ namespace polyfem::solver
 		};
 	} // namespace
 
-	double AdjointForm::value(
+	double AdjointTools::value(
 		const State &state,
 		const IntegrableFunctional &j,
 		const std::set<int> &interested_ids, // either body id or surface id
@@ -122,7 +122,7 @@ namespace polyfem::solver
 			return integrate_objective(state, j, state.diff_cached[0].u, interested_ids, spatial_integral_type);
 	}
 
-	void AdjointForm::compute_adjoint_term(
+	void AdjointTools::compute_adjoint_term(
 		const State &state,
 		const Eigen::MatrixXd &adjoints, 
 		const std::string &param_name,
@@ -161,7 +161,7 @@ namespace polyfem::solver
 		}
 	}
 
-	void AdjointForm::dJ_macro_strain_adjoint_term(
+	void AdjointTools::dJ_macro_strain_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &sol,
 			const Eigen::MatrixXd &adjoint,
@@ -203,7 +203,7 @@ namespace polyfem::solver
 			one_form += local_storage.vec;
 	}
 
-	void AdjointForm::gradient(
+	void AdjointTools::gradient(
 		State &state,
 		const IntegrableFunctional &j,
 		const std::string &param_name,
@@ -257,7 +257,7 @@ namespace polyfem::solver
 		}
 	}
 
-	double AdjointForm::integrate_objective(
+	double AdjointTools::integrate_objective(
 		const State &state,
 		const IntegrableFunctional &j,
 		const Eigen::MatrixXd &solution,
@@ -390,7 +390,7 @@ namespace polyfem::solver
 		return integral;
 	}
 
-	double AdjointForm::integrate_objective_transient(
+	double AdjointTools::integrate_objective_transient(
 		const State &state,
 		const IntegrableFunctional &j,
 		const std::set<int> &interested_ids,
@@ -413,7 +413,7 @@ namespace polyfem::solver
 		return result;
 	}
 
-	void AdjointForm::compute_shape_derivative_functional_term(
+	void AdjointTools::compute_shape_derivative_functional_term(
 		const State &state,
 		const Eigen::MatrixXd &solution,
 		const IntegrableFunctional &j,
@@ -640,7 +640,7 @@ namespace polyfem::solver
 			term += local_storage.vec;
 	}
 
-	void AdjointForm::compute_macro_strain_derivative_functional_term(
+	void AdjointTools::compute_macro_strain_derivative_functional_term(
 		const State &state,
 		const Eigen::MatrixXd &solution,
 		const IntegrableFunctional &j,
@@ -700,7 +700,7 @@ namespace polyfem::solver
 			term += local_storage.vec;
 	}
 
-	void AdjointForm::dJ_shape_static(
+	void AdjointTools::dJ_shape_static(
 		const State &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &adjoint,
@@ -716,7 +716,7 @@ namespace polyfem::solver
 		one_form += functional_term;
 	}
 
-	void AdjointForm::dJ_shape_static_adjoint_term(
+	void AdjointTools::dJ_shape_static_adjoint_term(
 		const State &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &adjoint,
@@ -745,7 +745,7 @@ namespace polyfem::solver
 		}
 	}
 
-	void AdjointForm::dJ_shape_transient(
+	void AdjointTools::dJ_shape_transient(
 		const State &state,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -775,7 +775,7 @@ namespace polyfem::solver
 		}
 	}
 
-	void AdjointForm::dJ_shape_transient_adjoint_term(
+	void AdjointTools::dJ_shape_transient_adjoint_term(
 		const State &state,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -857,7 +857,7 @@ namespace polyfem::solver
 		one_form += mass_term;
 	}
 
-	void AdjointForm::dJ_material_static(
+	void AdjointTools::dJ_material_static(
 		const State &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &adjoint,
@@ -866,7 +866,7 @@ namespace polyfem::solver
 		state.solve_data.elastic_form->foce_material_derivative(sol, sol, adjoint, one_form);
 	}
 
-	void AdjointForm::dJ_material_transient(
+	void AdjointTools::dJ_material_transient(
 		const State &state,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -901,7 +901,7 @@ namespace polyfem::solver
 			one_form += local_storage.vec;
 	}
 
-	void AdjointForm::dJ_friction_transient(
+	void AdjointTools::dJ_friction_transient(
 		const State &state,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -941,7 +941,7 @@ namespace polyfem::solver
 			one_form(0) += local_storage.val;
 	}
 
-	void AdjointForm::dJ_damping_transient(
+	void AdjointTools::dJ_damping_transient(
 		const State &state,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -976,7 +976,7 @@ namespace polyfem::solver
 			one_form += local_storage.vec;
 	}
 
-	void AdjointForm::dJ_initial_condition(
+	void AdjointTools::dJ_initial_condition(
 		const State &state,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -996,7 +996,7 @@ namespace polyfem::solver
 		}
 	}
 
-	void AdjointForm::dJ_dirichlet_transient(
+	void AdjointTools::dJ_dirichlet_transient(
 		const State &state,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -1017,7 +1017,7 @@ namespace polyfem::solver
 		}
 	}
 
-	void AdjointForm::dJ_du_step(
+	void AdjointTools::dJ_du_step(
 		const State &state,
 		const IntegrableFunctional &j,
 		const Eigen::MatrixXd &solution,
@@ -1214,7 +1214,7 @@ namespace polyfem::solver
 		}
 	}
 
-	void AdjointForm::dJ_du_transient(
+	void AdjointTools::dJ_du_transient(
 		const State &state,
 		const IntegrableFunctional &j,
 		const std::set<int> &interested_ids,

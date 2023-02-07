@@ -1,5 +1,5 @@
 #include "Multiscale.hpp"
-#include <polyfem/solver/AdjointForm.hpp>
+#include <polyfem/solver/AdjointTools.hpp>
 
 #include <polyfem/basis/Basis.hpp>
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
@@ -210,7 +210,7 @@ namespace polyfem::assembler
 		{
 			Eigen::VectorXd b;
 			// Eigen::MatrixXd adjoints = state->solve_adjoint(CB.col(i));
-			solver::AdjointForm::dJ_macro_strain_adjoint_term(*state, x, adjoints.col(i), b);
+			solver::AdjointTools::dJ_macro_strain_adjoint_term(*state, x, adjoints.col(i), b);
 			stiffness.row(i) += b;
 		}
 

@@ -31,8 +31,8 @@ set(SOURCES
 	DenseNewtonDescentSolver.tpp
 	TransientNavierStokesSolver.cpp
 	TransientNavierStokesSolver.hpp
-	AdjointForm.cpp
-	AdjointForm.hpp
+	AdjointTools.cpp
+	AdjointTools.hpp
 	Objective.cpp
 	Objective.hpp
 	HomoObjective.hpp
@@ -71,4 +71,5 @@ target_sources(polyfem PRIVATE ${SOURCES})
 # ###############################################################################
 add_subdirectory(line_search)
 add_subdirectory(forms)
+add_subdirectory(adjoint_forms)
 add_subdirectory(constraints)

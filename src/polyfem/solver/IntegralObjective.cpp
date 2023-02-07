@@ -71,7 +71,7 @@ namespace polyfem::solver
 	double SpatialIntegralObjective::value()
 	{
 		assert(time_step_ < state_.diff_cached.size());
-		return AdjointForm::integrate_objective(state_, get_integral_functional(), state_.diff_cached[time_step_].u, interested_ids_, spatial_integral_type_, time_step_);
+		return AdjointTools::integrate_objective(state_, get_integral_functional(), state_.diff_cached[time_step_].u, interested_ids_, spatial_integral_type_, time_step_);
 	}
 
 	Eigen::VectorXd SpatialIntegralObjective::compute_adjoint_rhs_step(const State &state)
@@ -82,7 +82,7 @@ namespace polyfem::solver
 		assert(time_step_ < state_.diff_cached.size());
 
 		Eigen::VectorXd rhs;
-		AdjointForm::dJ_du_step(state, get_integral_functional(), state.diff_cached[time_step_].u, interested_ids_, spatial_integral_type_, time_step_, rhs);
+		AdjointTools::dJ_du_step(state, get_integral_functional(), state.diff_cached[time_step_].u, interested_ids_, spatial_integral_type_, time_step_, rhs);
 
 		return rhs;
 	}
@@ -93,11 +93,11 @@ namespace polyfem::solver
 		if (&param == shape_param_.get())
 		{
 			assert(time_step_ < state_.diff_cached.size());
-			AdjointForm::compute_shape_derivative_functional_term(state_, state_.diff_cached[time_step_].u, get_integral_functional(), interested_ids_, spatial_integral_type_, term, time_step_);
+			AdjointTools::compute_shape_derivative_functional_term(state_, state_.diff_cached[time_step_].u, get_integral_functional(), interested_ids_, spatial_integral_type_, term, time_step_);
 		}
 		else if (&param == macro_strain_param_.get())
 		{
-			AdjointForm::compute_macro_strain_derivative_functional_term(state_, state_.diff_cached[time_step_].u, get_integral_functional(), interested_ids_, spatial_integral_type_, term, time_step_);
+			AdjointTools::compute_macro_strain_derivative_functional_term(state_, state_.diff_cached[time_step_].u, get_integral_functional(), interested_ids_, spatial_integral_type_, term, time_step_);
 		}
 		else
 			term.setZero(param.full_dim());
@@ -107,7 +107,7 @@ namespace polyfem::solver
 
 	StressObjective::StressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args, bool has_integral_sqrt) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
 	{
-		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
+		spatial_integral_type_ = AdjointTools::SpatialIntegralType::VOLUME;
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 
@@ -238,7 +238,7 @@ namespace polyfem::solver
 
 	PositionObjective::PositionObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
 	{
-		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
+		spatial_integral_type_ = AdjointTools::SpatialIntegralType::VOLUME;
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 	}
@@ -268,7 +268,7 @@ namespace polyfem::solver
 	{
 		if (elastic_param_)
 			assert(elastic_param_->name() == "material");
-		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
+		spatial_integral_type_ = AdjointTools::SpatialIntegralType::VOLUME;
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 
