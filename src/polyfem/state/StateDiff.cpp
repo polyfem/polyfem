@@ -206,11 +206,11 @@ namespace polyfem
 	{
 		if (problem->is_time_dependent())
 		{
-			return solve_transient_adjoint(rhs);
+			adjoint_mat = solve_transient_adjoint(rhs);
 		}
 		else
 		{
-			return solve_static_adjoint(rhs);
+			adjoint_mat = solve_static_adjoint(rhs);
 		}
 	}
 
@@ -241,7 +241,7 @@ namespace polyfem
 				full_to_periodic(tmp, true);
 				b = tmp;
 			}
-			
+
 			for (int i = 0; i < b.cols(); i++)
 			{
 				Eigen::VectorXd x, tmp;
@@ -311,7 +311,7 @@ namespace polyfem
 					beta = std::nan("");
 				beta_dt = beta * dt;
 			}
-			
+
 			{
 				sum_alpha_p.setZero(ndof(), 1);
 				sum_alpha_nu.setZero(ndof(), 1);
@@ -329,33 +329,33 @@ namespace polyfem
 
 			if (i > 0)
 			{
-				Eigen::VectorXd rhs_ = -reduced_mass.transpose() * sum_alpha_nu + (1. / beta_dt) * (diff_cached[i].gradu_h - reduced_mass).transpose() * sum_alpha_p + gradu_h_next.transpose() * adjoints.col((i+1)*2) - adjoint_rhs.col(i);
-				
+				Eigen::VectorXd rhs_ = -reduced_mass.transpose() * sum_alpha_nu + (1. / beta_dt) * (diff_cached[i].gradu_h - reduced_mass).transpose() * sum_alpha_p + gradu_h_next.transpose() * adjoints.col((i + 1) * 2) - adjoint_rhs.col(i);
+
 				// TODO: generalize to BDFn
 				for (const auto &b : boundary_nodes)
 				{
-					rhs_(b) += -2. / beta_dt * adjoints(b, (i+1)*2);
-					if ((i+2)*2 < adjoints.cols())
-						rhs_(b) += (1. / beta_dt) * adjoints(b, (i+2)*2);
+					rhs_(b) += -2. / beta_dt * adjoints(b, (i + 1) * 2);
+					if ((i + 2) * 2 < adjoints.cols())
+						rhs_(b) += (1. / beta_dt) * adjoints(b, (i + 2) * 2);
 				}
-				
+
 				{
 					StiffnessMatrix A = diff_cached[i].gradu_h.transpose();
 					Eigen::VectorXd b_ = rhs_;
 					Eigen::MatrixXd x;
 					solve_zero_dirichlet(args["solver"]["linear"], A, b_, boundary_nodes, x);
-					adjoints.col(2*i+1) = x;
+					adjoints.col(2 * i + 1) = x;
 				}
 
-				Eigen::VectorXd tmp = rhs_ - diff_cached[i].gradu_h.transpose() * adjoints.col(2*i+1);
+				Eigen::VectorXd tmp = rhs_ - diff_cached[i].gradu_h.transpose() * adjoints.col(2 * i + 1);
 				for (const auto &b : boundary_nodes)
-					adjoints(b, 2*i+1) = tmp(b);
-				adjoints.col(2*i) = beta_dt * adjoints.col(2*i+1) - sum_alpha_p;
+					adjoints(b, 2 * i + 1) = tmp(b);
+				adjoints.col(2 * i) = beta_dt * adjoints.col(2 * i + 1) - sum_alpha_p;
 			}
 			else
 			{
-				adjoints.col(2*i) = -reduced_mass.transpose() * sum_alpha_p;
-				adjoints.col(2*i+1) = -adjoint_rhs.col(i) - reduced_mass.transpose() * sum_alpha_nu - gradu_h_next * adjoints.col((i+1)*2); // adjoint_nu[0] actually stores adjoint_mu[0]
+				adjoints.col(2 * i) = -reduced_mass.transpose() * sum_alpha_p;
+				adjoints.col(2 * i + 1) = -adjoint_rhs.col(i) - reduced_mass.transpose() * sum_alpha_nu - gradu_h_next * adjoints.col((i + 1) * 2); // adjoint_nu[0] actually stores adjoint_mu[0]
 			}
 		}
 		return adjoints.block(0, 0, adjoints.rows(), adjoints.cols() - 2);

@@ -365,7 +365,7 @@ namespace polyfem
 		int n_lagrange_multipliers() const;
 		void apply_lagrange_multipliers(StiffnessMatrix &A) const;
 		void apply_lagrange_multipliers(StiffnessMatrix &A, const Eigen::MatrixXd &coeffs) const;
-		
+
 		// compute the matrix/vector under periodic basis, if the size is larger than #periodic_basis, the extra rows are kept
 		int full_to_periodic(StiffnessMatrix &A) const;
 		int full_to_periodic(Eigen::MatrixXd &b, bool accumulate, bool force_dirichlet = true) const;
@@ -516,8 +516,8 @@ namespace polyfem
 
 		/// extracts the boundary mesh for collision, called in build_basis
 		void build_collision_mesh(
-			ipc::CollisionMesh &collision_mesh_, 
-			const int n_bases_, 
+			ipc::CollisionMesh &collision_mesh_,
+			const int n_bases_,
 			const std::vector<basis::ElementBases> &bases_) const;
 
 		/// checks if vertex is obstacle
@@ -629,7 +629,7 @@ namespace polyfem
 		//---------------------------------------------------
 		//-----------------differentiable--------------------
 		//---------------------------------------------------
-public:
+	public:
 		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
 		struct DiffCachedParts
 		{
@@ -641,9 +641,9 @@ public:
 			ipc::FrictionConstraints friction_constraint_set;
 		};
 		std::vector<DiffCachedParts> diff_cached;
-		
+
 		std::unique_ptr<polysolve::LinearSolver> lin_solver_cached; // matrix factorization of last linear solve
-		Eigen::MatrixXd initial_velocity_cache; // initial velocity of last solve
+		Eigen::MatrixXd initial_velocity_cache;                     // initial velocity of last solve
 
 		int n_linear_solves = 0;
 		int n_nonlinear_solves = 0;
@@ -656,7 +656,7 @@ public:
 			else
 				return actual_dim * n_bases + n_pressure_bases;
 		}
-		
+
 		int get_bdf_order() const
 		{
 			if (args["time"]["integrator"]["type"] == "ImplicitEuler")
@@ -671,8 +671,15 @@ public:
 		}
 		// Aux functions for setting up adjoint equations
 		void compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const;
-		// Solves the adjoint PDE for derivatives
-		Eigen::MatrixXd solve_adjoint(const Eigen::MatrixXd &rhs) const;
+		// Solves the adjoint PDE for derivatives and caches
+		void solve_adjoint(const Eigen::MatrixXd &rhs);
+		// Returns cached adjoint solve
+		Eigen::MatrixXd adjoint_mat;
+		inline Eigen::MatrixXd get_adjoint_mat() const
+		{
+			assert(adjoint_mat.size() > 0);
+			return adjoint_mat;
+		}
 		Eigen::MatrixXd solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
 		Eigen::MatrixXd solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
 		// Change geometric node positions
@@ -686,7 +693,7 @@ public:
 		//---------------------------------------------------
 		//-----------------homogenization--------------------
 		//---------------------------------------------------
-public:
+	public:
 		void solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::MatrixXd &sol_, bool for_bistable = false);
 		void solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_field2, Eigen::MatrixXd &macro_field1, Eigen::MatrixXd &sol_);
 	};
