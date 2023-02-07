@@ -372,6 +372,7 @@ namespace polyfem::solver
 		state->set_max_threads(max_threads);
 
 		json in_args = args;
+		in_args["solver"]["max_threads"] = max_threads;
 		{
 			auto tmp = R"({
 					"output": {
