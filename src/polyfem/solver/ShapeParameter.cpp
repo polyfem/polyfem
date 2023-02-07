@@ -162,7 +162,7 @@ namespace polyfem
 		}
 
 		build_active_nodes();
-		build_tied_nodes();
+		// build_tied_nodes();
 
 		if (shape_params["dimensions"].is_array())
 			free_dimension = shape_params["dimensions"].get<std::vector<bool>>();
