@@ -6,12 +6,13 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 
 #include "LinearElasticity.hpp"
-//#include "HookeLinearElasticity.hpp"
+// #include "HookeLinearElasticity.hpp"
 #include "SaintVenantElasticity.hpp"
 #include "NeoHookeanElasticity.hpp"
 #include "GenericElastic.hpp"
 #include "MooneyRivlinElasticity.hpp"
 #include "OgdenElasticity.hpp"
+#include "AMIPSEnergy.hpp"
 
 #include <Eigen/Dense>
 #include <array>

@@ -56,6 +56,8 @@ set(SOURCES
 	GenericProblem.hpp
 	ViscousDamping.cpp
 	ViscousDamping.hpp
+	AMIPSEnergy.hpp
+	AMIPSEnergy.cpp
 )
 
 prepend_current_path(SOURCES)

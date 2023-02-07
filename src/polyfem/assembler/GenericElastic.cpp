@@ -3,6 +3,7 @@
 #include "MooneyRivlinElasticity.hpp"
 #include "OgdenElasticity.hpp"
 #include "NeoHookeanElasticityAutodiff.hpp"
+#include "AMIPSEnergy.hpp"
 
 #include <polyfem/basis/Basis.hpp>
 
@@ -146,6 +147,7 @@ namespace polyfem::assembler
 
 	template class GenericElastic<MooneyRivlinElasticity>;
 	template class GenericElastic<OgdenElasticity>;
+	template class GenericElastic<AMIPSEnergy>;
 	// for testing
 	template class GenericElastic<NeoHookeanAutodiff>;
 } // namespace polyfem::assembler

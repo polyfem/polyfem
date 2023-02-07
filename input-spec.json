@@ -2683,6 +2683,18 @@
         "doc": "Material Parameters including ID, density ($\\rho$)"
     },
     {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "AMIPS",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "id"
+        ],
+        "doc": "Material Parameters including ID"
+    },
+    {
         "pointer": "/materials/*/id",
         "type": "int",
         "default": 0,
@@ -2765,7 +2777,8 @@
             "IncompressibleLinearElasticity",
             "Laplacian",
             "Helmholtz",
-            "Bilaplacian"
+            "Bilaplacian",
+            "AMIPS"
         ],
         "doc": "Type of material"
     },

@@ -36,6 +36,8 @@ namespace polyfem
 			void elements_boxes(std::vector<std::array<Eigen::Vector3d, 2>> &boxes) const override;
 			void barycentric_coords(const RowVectorNd &p, const int el_id, Eigen::MatrixXd &coord) const override;
 
+			void compute_cell_jacobian(const int el_id, const Eigen::MatrixXd &reference_map, Eigen::MatrixXd &jacobian) const;
+
 			virtual RowVectorNd kernel(const int cell_id) const = 0;
 
 			double tri_area(const int gid) const override;
@@ -47,7 +49,7 @@ namespace polyfem
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const override;
 
-			//navigation wrapper
+			// navigation wrapper
 			virtual Navigation3D::Index get_index_from_element(int hi, int lf, int lv) const = 0;
 			virtual Navigation3D::Index get_index_from_element(int hi) const = 0;
 

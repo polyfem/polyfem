@@ -37,6 +37,7 @@ namespace polyfem
 			{"MooneyRivlin",                  {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
 			{"MultiModels",                    {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true,  /*is_linear=*/false}},
 			{"Ogden",                          {/*is_scalar=*/false, /*is_fluid=*/false, /*is_mixed=*/false, /*is_solution_displacement=*/true, /*is_linear=*/false}},
+			{"AMIPS",				           {/*is_scalar=*/false, /*is_fluid=*/false,  /*is_mixed=*/false,  /*is_solution_displacement=*/true, /*is_linear=*/false}},
 			{"Stokes",                         {/*is_scalar=*/false, /*is_fluid=*/true,  /*is_mixed=*/true,  /*is_solution_displacement=*/false, /*is_linear=*/true}},
 			{"NavierStokes",                   {/*is_scalar=*/false, /*is_fluid=*/true,  /*is_mixed=*/true,  /*is_solution_displacement=*/false, /*is_linear=*/false}},
 			{"OperatorSplitting",              {/*is_scalar=*/false, /*is_fluid=*/true,  /*is_mixed=*/true,  /*is_solution_displacement=*/false, /*is_linear=*/false}},
@@ -137,7 +138,9 @@ namespace polyfem
 				return;
 			// else if (assembler == "NavierStokes")
 			// return;
-			else if(assembler == "Ogden")
+			else if (assembler == "Ogden")
+				return;
+			else if (assembler == "AMIPS")
 				return;
 			else if (assembler == "MultiscaleRB" || assembler == "Multiscale")
 				return;
@@ -182,8 +185,10 @@ namespace polyfem
 				return;
 			// else if (assembler == "NavierStokes")
 			// return;
-			//else if(assembler == "Ogden")
+			// else if(assembler == "Ogden")
 			//	return;
+			// else if (assembler == "AMIPS")
+			// 	return;
 			else if (assembler == "MultiscaleRB" || assembler == "Multiscale")
 				return;
 			else
@@ -266,7 +271,7 @@ namespace polyfem
 													const AssemblyValsCache &phi_cache,
 													StiffnessMatrix &stiffness) const
 		{
-			//TODO add cache
+			// TODO add cache
 			if (assembler == "Bilaplacian")
 				bilaplacian_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
 
@@ -340,7 +345,7 @@ namespace polyfem
 											   const double dt,
 											   const Eigen::MatrixXd &displacement,
 											   const Eigen::MatrixXd &displacement_prev,
-								   			   bool serial) const
+											   bool serial) const
 		{
 			if (assembler == "SaintVenant")
 				return saint_venant_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
@@ -359,6 +364,8 @@ namespace polyfem
 
 			else if (assembler == "Ogden")
 				return ogden_elasticity_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
+			else if (assembler == "AMIPS")
+				return amips_energy_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
 			else if (assembler == "LinearElasticity")
 				return linear_elasticity_energy_.assemble(is_volume, bases, gbases, cache, dt, displacement, displacement_prev, serial);
 			else
@@ -396,8 +403,10 @@ namespace polyfem
 				navier_stokes_velocity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
 			else if (assembler == "LinearElasticity")
 				linear_elasticity_energy_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
-			else if(assembler == "Ogden")
+			else if (assembler == "Ogden")
 				ogden_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
+			else if (assembler == "AMIPS")
+				amips_energy_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
 			else
 				return;
 		}
@@ -432,8 +441,10 @@ namespace polyfem
 				navier_stokes_velocity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
 			else if (assembler == "LinearElasticity")
 				linear_elasticity_energy_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
-			else if(assembler == "Ogden")
+			else if (assembler == "Ogden")
 				ogden_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
+			else if (assembler == "AMIPS")
+				amips_energy_.assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, projection, grad);
 			else
 				return;
 		}
@@ -474,8 +485,10 @@ namespace polyfem
 			else if (assembler == "LinearElasticity")
 				linear_elasticity_energy_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
 
-			else if(assembler == "Ogden")
+			else if (assembler == "Ogden")
 				ogden_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			else if (assembler == "AMIPS")
+				amips_energy_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
 			else
 				return;
 		}
@@ -514,8 +527,10 @@ namespace polyfem
 			else if (assembler == "LinearElasticity")
 				linear_elasticity_energy_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
 
-			else if(assembler == "Ogden")
+			else if (assembler == "Ogden")
 				ogden_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
+			else if (assembler == "AMIPS")
+				amips_energy_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, projection, hessian);
 			else
 				return;
 		}
@@ -546,6 +561,8 @@ namespace polyfem
 				multi_models_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "Ogden")
 				ogden_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
+			else if (assembler == "AMIPS")
+				amips_energy_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "MultiscaleRB")
 				multiscale_reduced_basis_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "Multiscale")
@@ -567,10 +584,10 @@ namespace polyfem
 		}
 
 		void AssemblerUtils::compute_stiffness_value(const std::string &assembler,
-												  const ElementAssemblyValues &vals,
-												  const Eigen::MatrixXd &local_pts,
-												  const Eigen::MatrixXd &fun,
-												  Eigen::MatrixXd &result) const
+													 const ElementAssemblyValues &vals,
+													 const Eigen::MatrixXd &local_pts,
+													 const Eigen::MatrixXd &fun,
+													 Eigen::MatrixXd &result) const
 		{
 			if (assembler == "Laplacian")
 				laplacian_.local_assembler().compute_stiffness_tensor(vals, local_pts, fun, result);
@@ -612,6 +629,8 @@ namespace polyfem
 				multi_models_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "Ogden")
 				ogden_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
+			else if (assembler == "AMIPS")
+				amips_energy_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "MultiscaleRB")
 				multiscale_reduced_basis_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 			else if (assembler == "Multiscale")
@@ -758,6 +777,7 @@ namespace polyfem
 			multiscale_reduced_basis_.local_assembler().set_size(dim);
 			multiscale_.local_assembler().set_size(dim);
 			ogden_elasticity_.local_assembler().set_size(dim);
+			amips_energy_.local_assembler().set_size(dim);
 
 			damping_.local_assembler().set_size(dim);
 			damping_prev_.local_assembler().set_size(dim);
@@ -792,7 +812,7 @@ namespace polyfem
 			incompressible_lin_elast_pressure_.local_assembler().set_params(newParams);
 		}
 
-		void AssemblerUtils::update_lame_params(const Eigen::MatrixXd& lambdas, const Eigen::MatrixXd& mus)
+		void AssemblerUtils::update_lame_params(const Eigen::MatrixXd &lambdas, const Eigen::MatrixXd &mus)
 		{
 			linear_elasticity_.local_assembler().lame_params().lambda_mat_ = lambdas;
 			linear_elasticity_energy_.local_assembler().lame_params().lambda_mat_ = lambdas;
@@ -807,7 +827,7 @@ namespace polyfem
 			multiscale_.local_assembler().lame_params().mu_mat_ = mus;
 		}
 
-		Multiscale& AssemblerUtils::get_microstructure_local_assembler(const std::string &assembler)
+		Multiscale &AssemblerUtils::get_microstructure_local_assembler(const std::string &assembler)
 		{
 			if (assembler == "Multiscale")
 				return multiscale_.local_assembler();
@@ -818,7 +838,7 @@ namespace polyfem
 			return multiscale_.local_assembler();
 		}
 
-		std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> AssemblerUtils::get_stress_grad_multiply_mat_function(const std::string& assembler) const
+		std::function<void(const int, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &, Eigen::MatrixXd &)> AssemblerUtils::get_stress_grad_multiply_mat_function(const std::string &assembler) const
 		{
 			if (assembler == "Laplacian")
 				return [&](const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &df_dgradu_mat) {
@@ -832,7 +852,7 @@ namespace polyfem
 				return [&](const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &df_dgradu_mat) {
 					return neo_hookean_elasticity_.local_assembler().compute_stress_grad_multiply_mat(el_id, local_pts, global_pts, grad_u_i, mat, stress, df_dgradu_mat);
 				};
-			else 
+			else
 			{
 				assert(false);
 				return [&](const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &df_dgradu_mat) {
@@ -841,7 +861,7 @@ namespace polyfem
 			}
 		}
 
-		std::function<void(const int, const double, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> AssemblerUtils::get_stress_grad_function(const std::string& assembler) const
+		std::function<void(const int, const double, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &, Eigen::MatrixXd &)> AssemblerUtils::get_stress_grad_function(const std::string &assembler) const
 		{
 			// if (assembler == "Laplacian")
 			// 	return [&](const int el_id, const double dt, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &grad_u_i_prev, Eigen::MatrixXd &df_dgradu) {
@@ -859,13 +879,13 @@ namespace polyfem
 				return [&](const int el_id, const double dt, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &grad_u_i_prev, Eigen::MatrixXd &stress, Eigen::MatrixXd &df_dgradu) {
 					return damping_.local_assembler().compute_stress_grad(el_id, dt, local_pts, global_pts, grad_u_i, grad_u_i_prev, stress, df_dgradu);
 				};
-			else 
+			else
 			{
 				throw std::runtime_error("Unrecognized assembler!");
 			}
 		}
 
-		std::function<void(const int, const double, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&)> AssemblerUtils::get_stress_prev_grad_function(const std::string& assembler) const
+		std::function<void(const int, const double, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> AssemblerUtils::get_stress_prev_grad_function(const std::string &assembler) const
 		{
 			// if (assembler == "Laplacian")
 			// 	return [&](const int el_id, const double dt, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &grad_u_i_prev, Eigen::MatrixXd &df_dgradu) {
@@ -883,13 +903,13 @@ namespace polyfem
 				return [&](const int el_id, const double dt, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &grad_u_i_prev, Eigen::MatrixXd &df_dgradu) {
 					return damping_.local_assembler().compute_stress_prev_grad(el_id, dt, local_pts, global_pts, grad_u_i, grad_u_i_prev, df_dgradu);
 				};
-			else 
+			else
 			{
 				throw std::runtime_error("Unrecognized assembler!");
 			}
 		}
 
-		std::function<double(const Eigen::MatrixXd &, const double, const double)> AssemblerUtils::get_elastic_energy_function(const std::string& assembler) const
+		std::function<double(const Eigen::MatrixXd &, const double, const double)> AssemblerUtils::get_elastic_energy_function(const std::string &assembler) const
 		{
 			if (assembler == "LinearElasticity")
 				return [&](const Eigen::MatrixXd &grad_disp, const double lambda, const double mu) {
@@ -908,7 +928,7 @@ namespace polyfem
 			}
 		}
 
-		std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> AssemblerUtils::get_dstress_dmu_dlambda_function(const std::string& assembler) const
+		std::function<void(const int, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &, Eigen::MatrixXd &)> AssemblerUtils::get_dstress_dmu_dlambda_function(const std::string &assembler) const
 		{
 			if (assembler == "LinearElasticity")
 				return [&](const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &dstress_dmu, Eigen::MatrixXd &dstress_dlambda) {
@@ -954,6 +974,7 @@ namespace polyfem
 			multiscale_reduced_basis_.local_assembler().add_multimaterial(index, params);
 			multiscale_.local_assembler().add_multimaterial(index, params);
 			ogden_elasticity_.local_assembler().add_multimaterial(index, params);
+			amips_energy_.local_assembler().add_multimaterial(index, params);
 
 			damping_.local_assembler().add_multimaterial(index, params);
 			damping_prev_.local_assembler().add_multimaterial(index, params);

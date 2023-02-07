@@ -420,6 +420,73 @@ namespace polyfem
 
 		if (!body_params.is_array())
 		{
+			json transform_params = {};
+			transform_params["canonical_transformation"] = json::array();
+			if (!mesh->is_volume())
+			{
+				Eigen::MatrixXd regular_tri(3, 3);
+				regular_tri << 0, 0, 1,
+					1, 0, 1,
+					1. / 2., std::sqrt(3) / 2., 1;
+				regular_tri.transposeInPlace();
+				Eigen::MatrixXd regular_tri_inv = regular_tri.inverse();
+
+				const auto &mesh2d = *dynamic_cast<Mesh2D *>(mesh.get());
+				for (int e = 0; e < mesh->n_elements(); e++)
+				{
+					Eigen::MatrixXd transform;
+					mesh2d.compute_face_jacobian(e, regular_tri_inv, transform);
+					transform_params["canonical_transformation"].push_back(json({
+						{
+							transform(0, 0),
+							transform(0, 1),
+						},
+						{
+							transform(1, 0),
+							transform(1, 1),
+						},
+					}));
+				}
+			}
+			else
+			{
+				Eigen::MatrixXd regular_tet(4, 4);
+				regular_tet << 0, 0, 0, 1,
+					1, 0, 0, 1,
+					1. / 2., std::sqrt(3) / 2., 0, 1,
+					1. / 2., 1. / 2. / std::sqrt(3), std::sqrt(3) / 2., 1;
+				regular_tet.transposeInPlace();
+				Eigen::MatrixXd regular_tet_inv = regular_tet.inverse();
+
+				const auto &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
+				for (int e = 0; e < mesh->n_elements(); e++)
+				{
+					Eigen::MatrixXd transform;
+					mesh3d.compute_cell_jacobian(e, regular_tet_inv, transform);
+					transform_params["canonical_transformation"].push_back(json({
+						{
+							transform(0, 0),
+							transform(0, 1),
+							transform(0, 2),
+						},
+						{
+							transform(1, 0),
+							transform(1, 1),
+							transform(1, 2),
+						},
+						{
+							transform(2, 0),
+							transform(2, 1),
+							transform(2, 2),
+						},
+					}));
+				}
+			}
+			assembler.add_multimaterial(0, transform_params);
+		}
+
+		if (!body_params.is_array())
+		{
 			assembler.add_multimaterial(0, body_params);
 			const auto &cur_lambdas = assembler.lame_params().lambda_mat_;
 			const auto &cur_mus = assembler.lame_params().mu_mat_;
@@ -603,7 +670,7 @@ namespace polyfem
 
 		if (args["space"]["use_p_ref"])
 			return false;
-		
+
 		if (has_periodic_bc())
 			return false;
 
@@ -901,11 +968,10 @@ namespace polyfem
 						autogen::p_nodes_3d(order, local_pts);
 					else
 						autogen::q_nodes_3d(order, local_pts);
+				else if (mesh->is_simplex(e))
+					autogen::p_nodes_2d(order, local_pts);
 				else
-					if (mesh->is_simplex(e))
-						autogen::p_nodes_2d(order, local_pts);
-					else
-						autogen::q_nodes_2d(order, local_pts);
+					autogen::q_nodes_2d(order, local_pts);
 
 				ElementAssemblyValues vals;
 				vals.compute(e, mesh->is_volume(), local_pts, gbases[e], gbases[e]);
@@ -949,7 +1015,7 @@ namespace polyfem
 
 		const int dim = mesh->dimension();
 		const int problem_dim = problem->is_scalar() ? 1 : dim;
-		
+
 		// handle periodic bc
 		if (has_periodic_bc())
 		{
@@ -969,12 +1035,12 @@ namespace polyfem
 			dependent_map.setConstant(-1);
 
 			// find corresponding periodic boundary nodes
-			Eigen::Vector3i dependent_face({1,2,5}), target_face({3,4,6});
+			Eigen::Vector3i dependent_face({1, 2, 5}), target_face({3, 4, 6});
 			for (int d = 0; d < dim; d++)
 			{
 				if (!periodic_dim[d])
 					continue;
-				
+
 				const int dependent_boundary_id = dependent_face(d);
 				const int target_boundary_id = target_face(d);
 
@@ -1028,7 +1094,7 @@ namespace polyfem
 				for (int i = 0; i < dependent_map.size(); i++)
 					if (dependent_map(i) >= 0 && dependent_map(dependent_map(i)) >= 0)
 						dependent_map(i) = dependent_map(dependent_map(i));
-			
+
 			// new indexing for independent dof
 			int independent_dof = 0;
 			n_periodic_dependent_dofs = 0;
@@ -1318,10 +1384,10 @@ namespace polyfem
 		n_bases += new_bases;
 	}
 
-void State::build_collision_mesh(
+	void State::build_collision_mesh(
 		Eigen::MatrixXd &boundary_nodes_pos_,
-		ipc::CollisionMesh &collision_mesh_, 
-		const int n_bases_, 
+		ipc::CollisionMesh &collision_mesh_,
+		const int n_bases_,
 		const std::vector<basis::ElementBases> &bases_) const
 	{
 		Eigen::MatrixXi boundary_edges, boundary_triangles;

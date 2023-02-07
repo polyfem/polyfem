@@ -21,6 +21,7 @@
 #include "MultiModel.hpp"
 #include "ViscousDamping.hpp"
 #include "OgdenElasticity.hpp"
+#include "AMIPSEnergy.hpp"
 
 #include "Stokes.hpp"
 #include "NavierStokes.hpp"
@@ -34,7 +35,7 @@
 namespace polyfem
 {
 	class State;
-	
+
 	namespace assembler
 	{
 		// factory class that dispaces call to the different assemblers
@@ -68,7 +69,7 @@ namespace polyfem
 								  const std::vector<basis::ElementBases> &gbases,
 								  const AssemblyValsCache &cache,
 								  StiffnessMatrix &stiffness) const;
-			//mass matrix assembler, assembler is the name of the formulation
+			// mass matrix assembler, assembler is the name of the formulation
 			void assemble_mass_matrix(const std::string &assembler,
 									  const bool is_volume,
 									  const int n_basis,
@@ -108,7 +109,7 @@ namespace polyfem
 										const AssemblyValsCache &psi_cache,
 										const AssemblyValsCache &phi_cache,
 										StiffnessMatrix &stiffness) const;
-			//pressure pressure assembler, assembler is the name of the formulation
+			// pressure pressure assembler, assembler is the name of the formulation
 			void assemble_pressure_problem(const std::string &assembler,
 										   const bool is_volume,
 										   const int n_basis,
@@ -202,10 +203,10 @@ namespace polyfem
 									  Eigen::MatrixXd &result) const;
 			// computes tensor, assembler is the name of the formulation
 			void compute_stiffness_value(const std::string &assembler,
-										const ElementAssemblyValues &vals,
-										const Eigen::MatrixXd &local_pts,
-										const Eigen::MatrixXd &fun,
-										Eigen::MatrixXd &result) const;
+										 const ElementAssemblyValues &vals,
+										 const Eigen::MatrixXd &local_pts,
+										 const Eigen::MatrixXd &fun,
+										 Eigen::MatrixXd &result) const;
 
 			// for errors, uses the rhs methods inside local assemblers
 			VectorNd compute_rhs(const std::string &assembler, const AutodiffHessianPt &pt) const;
@@ -229,14 +230,14 @@ namespace polyfem
 			const LameParameters &lame_params() const { return linear_elasticity_.local_assembler().lame_params(); }
 			const DampingParameters &damping_params() const { return damping_.local_assembler().damping_params(); }
 			void update_lame_params(const LameParameters &newParams);
-			void update_lame_params(const Eigen::MatrixXd& lambdas, const Eigen::MatrixXd& mus);
-			Multiscale& get_microstructure_local_assembler(const std::string &assembler);
+			void update_lame_params(const Eigen::MatrixXd &lambdas, const Eigen::MatrixXd &mus);
+			Multiscale &get_microstructure_local_assembler(const std::string &assembler);
 
-			std::function<double(const Eigen::MatrixXd &, const double, const double)> get_elastic_energy_function(const std::string& assembler) const;
-			std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> get_stress_grad_multiply_mat_function(const std::string& assembler) const;
-			std::function<void(const int, const double, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> get_stress_grad_function(const std::string& assembler) const;
-			std::function<void(const int, const double, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&)> get_stress_prev_grad_function(const std::string& assembler) const;
-			std::function<void(const int, const Eigen::MatrixXd&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd&, Eigen::MatrixXd&)> get_dstress_dmu_dlambda_function(const std::string& assembler) const;
+			std::function<double(const Eigen::MatrixXd &, const double, const double)> get_elastic_energy_function(const std::string &assembler) const;
+			std::function<void(const int, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &, Eigen::MatrixXd &)> get_stress_grad_multiply_mat_function(const std::string &assembler) const;
+			std::function<void(const int, const double, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &, Eigen::MatrixXd &)> get_stress_grad_function(const std::string &assembler) const;
+			std::function<void(const int, const double, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> get_stress_prev_grad_function(const std::string &assembler) const;
+			std::function<void(const int, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &, Eigen::MatrixXd &)> get_dstress_dmu_dlambda_function(const std::string &assembler) const;
 
 			const Density &density() const { return mass_mat_.local_assembler().density(); }
 			// checks if assembler is linear
@@ -290,10 +291,12 @@ namespace polyfem
 			NLAssembler<SaintVenantElasticity> saint_venant_elasticity_;
 			NLAssembler<NeoHookeanElasticity> neo_hookean_elasticity_;
 			NLAssembler<MultiscaleRB> multiscale_reduced_basis_;
-			NLAssembler<Multiscale>   multiscale_;
+			NLAssembler<Multiscale> multiscale_;
 			NLAssembler<GenericElastic<MooneyRivlinElasticity>> mooney_rivlin_elasticity_;
 			NLAssembler<MultiModel> multi_models_elasticity_;
 			NLAssembler<GenericElastic<OgdenElasticity>> ogden_elasticity_;
+
+			NLAssembler<GenericElastic<AMIPSEnergy>> amips_energy_;
 
 			NLAssembler<ViscousDamping> damping_;
 			NLAssembler<ViscousDampingPrev> damping_prev_;
