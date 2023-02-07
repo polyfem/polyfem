@@ -20,35 +20,24 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
 	{
-		gradient(x, gradv, false);
-	}
-
-	void AdjointNLProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv, const bool only_elastic)
-	{
 		if (cur_grad.size() == x.size())
 			gradv = cur_grad;
 		else
 		{
-			int cumulative = 0;
 			gradv.setZero(optimization_dim_);
 
-			std::vector<Eigen::MatrixXd> adjoints;
-			adjoints.reserve(all_states_.size());
+			std::vector<Eigen::MatrixXd> rhss;
+			rhss.resize(all_states_.size());
+			obj_->compute_adjoint_rhs(rhss);
 			{
 				POLYFEM_SCOPED_TIMER("adjoint solve", adjoint_solve_time);
 				for (auto state_ptr : all_states_)
-					adjoints.push_back(state_ptr->solve_adjoint(obj_->compute_adjoint_rhs(*state_ptr)));
+					state_ptr->solve_adjoint(rhss[i]); // caches inside state
 			}
 
 			{
 				POLYFEM_SCOPED_TIMER("gradient assembly", grad_assembly_time);
-				for (const auto &p : parameters_)
-				{
-					Eigen::VectorXd gradv_param = obj_->gradient(all_states_, adjoints, *p, x.segment(cumulative, p->optimization_dim()));
-
-					gradv.segment(cumulative, p->optimization_dim()) += gradv_param;
-					cumulative += p->optimization_dim();
-				}
+				obj_->gradient(x, gradv);
 			}
 
 			cur_grad = gradv;
