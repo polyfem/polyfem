@@ -26,3 +26,4 @@ polyfem_set_source_group(${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})
 
 add_subdirectory(parameterization)
+add_subdirectory(adjoint_forms)

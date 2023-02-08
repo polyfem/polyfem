@@ -31,8 +31,8 @@ namespace polyfem::solver
 			obj_->compute_adjoint_rhs(rhss);
 			{
 				POLYFEM_SCOPED_TIMER("adjoint solve", adjoint_solve_time);
-				for (auto state_ptr : all_states_)
-					state_ptr->solve_adjoint(rhss[i]); // caches inside state
+				for (int i = 0; i < all_states_.size(); i++)
+					all_states_[i]->solve_adjoint_cached(rhss[i]); // caches inside state
 			}
 
 			{
