@@ -1,5 +1,6 @@
 set(SOURCES
 	Form.hpp
+	ParameterizationForm.hpp
 	ALForm.hpp
 	ALForm.cpp
 	BodyForm.hpp
@@ -24,3 +25,4 @@ prepend_current_path(SOURCES)
 polyfem_set_source_group(${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})
 
+add_subdirectory(parameterization)
