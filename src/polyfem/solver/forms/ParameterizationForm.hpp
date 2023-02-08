@@ -111,16 +111,18 @@ namespace polyfem::solver
 	private:
 		std::vector<std::shared_ptr<Parameterization>> parameterizations_;
 
-		Eigen::VectorXd apply_parameterizations(const Eigen::VectorXd &full) const
+		Eigen::VectorXd apply_parameterizations(const Eigen::VectorXd &x) const
 		{
 			if (parameterizations_.empty())
-				return full;
+				return x;
 
-			Eigen::VectorXd y = reduced;
+			Eigen::VectorXd y = x;
 			for (const auto &p : parameterizations_)
 			{
 				y = p->eval(y);
 			}
+
+			return y;
 		}
 	};
 } // namespace polyfem::solver
