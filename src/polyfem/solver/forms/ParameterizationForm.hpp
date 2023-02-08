@@ -4,7 +4,7 @@
 
 namespace polyfem::solver
 {
-	class ParameterizationForm
+	class ParameterizationForm : public Form
 	{
 	public:
 		virtual ~ParameterizationForm() {}

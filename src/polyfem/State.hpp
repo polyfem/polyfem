@@ -631,6 +631,7 @@ namespace polyfem
 		//---------------------------------------------------
 	public:
 		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
+		// TODO make this not inside the class
 		struct DiffCachedParts
 		{
 			StiffnessMatrix gradu_h;
@@ -639,6 +640,8 @@ namespace polyfem
 			Eigen::MatrixXd disp_grad;
 			ipc::Constraints contact_set;
 			ipc::FrictionConstraints friction_constraint_set;
+			// TODO: remove from outside
+			Eigen::MatrixXd initial_velocity_cache;
 		};
 		std::vector<DiffCachedParts> diff_cached;
 
