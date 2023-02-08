@@ -202,15 +202,20 @@ namespace polyfem
 		}
 	}
 
+	void State::solve_adjoint_cached(const Eigen::MatrixXd &rhs)
+	{
+		adjoint_mat = solve_adjoint(rhs);
+	}
+
 	Eigen::MatrixXd State::solve_adjoint(const Eigen::MatrixXd &rhs) const
 	{
 		if (problem->is_time_dependent())
 		{
-			adjoint_mat = solve_transient_adjoint(rhs);
+			return solve_transient_adjoint(rhs);
 		}
 		else
 		{
-			adjoint_mat = solve_static_adjoint(rhs);
+			return solve_static_adjoint(rhs);
 		}
 	}
 
