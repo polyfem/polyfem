@@ -3,7 +3,7 @@ set(SOURCES
 	AdjointForm.hpp
 	SpatialIntegralForm.cpp
 	SpatialIntegralForm.hpp
-	VariablesToSimulation.hpp
+	VariableToSimulation.hpp
 )
 
 prepend_current_path(SOURCES)
