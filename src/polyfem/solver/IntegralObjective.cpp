@@ -107,7 +107,7 @@ namespace polyfem::solver
 
 	StressObjective::StressObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args, bool has_integral_sqrt) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
 	{
-		spatial_integral_type_ = AdjointTools::SpatialIntegralType::VOLUME;
+		spatial_integral_type_ = SpatialIntegralType::VOLUME;
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 
@@ -238,7 +238,7 @@ namespace polyfem::solver
 
 	PositionObjective::PositionObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
 	{
-		spatial_integral_type_ = AdjointTools::SpatialIntegralType::VOLUME;
+		spatial_integral_type_ = SpatialIntegralType::VOLUME;
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 	}
@@ -268,7 +268,7 @@ namespace polyfem::solver
 	{
 		if (elastic_param_)
 			assert(elastic_param_->name() == "material");
-		spatial_integral_type_ = AdjointTools::SpatialIntegralType::VOLUME;
+		spatial_integral_type_ = SpatialIntegralType::VOLUME;
 		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 

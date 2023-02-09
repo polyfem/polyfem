@@ -1,5 +1,7 @@
 #include "SpatialIntegralForms.hpp"
 
+using namespace polyfem::utils;
+
 namespace polyfem::solver
 {
 	double SpatialIntegralForm::value_unweighted(const Eigen::VectorXd &x) const
@@ -8,11 +10,11 @@ namespace polyfem::solver
 		return AdjointTools::integrate_objective(state_, get_integral_functional(), state_.diff_cached[time_step_].u, ids_, spatial_integral_type_, time_step_);
 	}
 
-	void SpatialIntegralForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+	void SpatialIntegralForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		assert(time_step_ < state_.diff_cached.size());
 		gradv.setZero(x.size());
-		for (const auto &param_map : *variable_to_simulations)
+		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &parametrization = param_map.get_parameterization();
 			const auto &state = param_map.get_state();
@@ -28,7 +30,7 @@ namespace polyfem::solver
 				AdjointTools::compute_macro_strain_derivative_functional_term(state_, state_.diff_cached[time_step_].u, get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
       
       if (term.size() > 0)
-        gradv += parametrization.apply_jacobian(term);
+        gradv += parametrization.apply_jacobian(term, x);
 		}
 	}
 
@@ -40,13 +42,13 @@ namespace polyfem::solver
 		assert(time_step_ < state_.diff_cached.size());
 
 		Eigen::VectorXd rhs;
-		AdjointTools::dJ_du_step(*state, get_integral_functional(), state.diff_cached[time_step_].u, interested_ids_, spatial_integral_type_, time_step_, rhs);
+		AdjointTools::dJ_du_step(state, get_integral_functional(), state.diff_cached[time_step_].u, ids_, spatial_integral_type_, time_step_, rhs);
 
 		return rhs;
 	}
 
 	// TODO: call local assemblers instead
-	IntegrableFunctional StressForm::get_integral_functional()
+	IntegrableFunctional StressForm::get_integral_functional() const
 	{
 		IntegrableFunctional j;
 
@@ -119,10 +121,10 @@ namespace polyfem::solver
 		return j;
 	}
 
-  void StressForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+  void StressForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
   {
     SpatialIntegralForm::compute_partial_gradient(x, gradv);
-		for (const auto &param_map : *variable_to_simulations)
+		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &parametrization = param_map.get_parameterization();
 			const auto &state = param_map.get_state();
@@ -136,7 +138,7 @@ namespace polyfem::solver
 				log_and_throw_error("Doesn't support stress derivative wrt. material!");
 
       if (term.size() > 0)
-        gradv += parametrization.apply_jacobian(term);
+        gradv += parametrization.apply_jacobian(term, x);
 		}
   }
 } // namespace polyfem::solver

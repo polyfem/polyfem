@@ -15,8 +15,8 @@ namespace polyfem::solver
 		ParameterizationFactory() {}
 
 	public:
-		static std::vector<std::shared_ptr<Parameterization>> build();
-	}
+		static std::vector<std::shared_ptr<Parameterization>> build(const json &params, const int full_size);
+	};
 
 	class ExponentialMap : public Parameterization
 	{

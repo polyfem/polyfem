@@ -246,8 +246,6 @@ namespace polyfem::solver
 				dJ_material_static(state, state.diff_cached[0].u, adjoints, grad);
 			else if (param_name == ParameterType::Shape)
 				dJ_shape_static(state, state.diff_cached[0].u, adjoints, j, interested_ids, spatial_integral_type, grad);
-			else if (param_name == "topology")
-				dJ_material_static(state, state.diff_cached[0].u, adjoints, grad);
 			else if (param_name == ParameterType::FrictionCoeff)
 				log_and_throw_error("Static friction coefficient grad not implemented!");
 			else if (param_name == ParameterType::DirichletBC)

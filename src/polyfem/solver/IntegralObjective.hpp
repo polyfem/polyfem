@@ -36,7 +36,7 @@ namespace polyfem::solver
 		const State &state_;
 		std::shared_ptr<const Parameter> shape_param_;
 		std::shared_ptr<const Parameter> macro_strain_param_;
-		AdjointTools::SpatialIntegralType spatial_integral_type_;
+		SpatialIntegralType spatial_integral_type_;
 		std::set<int> interested_ids_;
 	};
 
@@ -67,7 +67,7 @@ namespace polyfem::solver
 		~PositionObjective() = default;
 
 		void set_dim(const int dim) { dim_ = dim; }
-		void set_integral_type(const AdjointTools::SpatialIntegralType type) { spatial_integral_type_ = type; }
+		void set_integral_type(const SpatialIntegralType type) { spatial_integral_type_ = type; }
 
 		IntegrableFunctional get_integral_functional() override;
 
@@ -95,7 +95,7 @@ namespace polyfem::solver
 	public:
 		TargetObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
 		{
-			spatial_integral_type_ = AdjointTools::SpatialIntegralType::SURFACE;
+			spatial_integral_type_ = SpatialIntegralType::SURFACE;
 			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
 			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 			active_dimension_mask.assign(true, state_.mesh->dimension());
@@ -125,7 +125,7 @@ namespace polyfem::solver
 	public:
 		SDFTargetObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
 		{
-			spatial_integral_type_ = AdjointTools::SpatialIntegralType::SURFACE;
+			spatial_integral_type_ = SpatialIntegralType::SURFACE;
 			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
 			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 		}

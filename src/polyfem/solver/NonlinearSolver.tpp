@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iomanip>
 #include "NonlinearSolver.hpp"
 
 namespace cppoptlib

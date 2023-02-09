@@ -5,13 +5,13 @@ namespace polyfem::solver
     void AdjointForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
     {
         gradv.setZero(x.size());
-        for (const auto &param_map : *variable_to_simulations)
+        for (const auto &param_map : variable_to_simulations_)
         {
             const auto &parametrization = param_map.get_parameterization();
             const auto &state = param_map.get_state();
             const auto &param_type = param_map.get_parameter_type();
 
-            gradv += parametrization.apply_jacobian(x, compute_adjoint_term(*state, param_type));
+            gradv += parametrization.apply_jacobian(x, compute_adjoint_term(state, param_type));
         }
 
         Eigen::VectorXd partial_grad;
@@ -19,7 +19,7 @@ namespace polyfem::solver
         gradv += partial_grad;
     }
 
-    void AdjointForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+    void AdjointForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
     {
         log_and_throw_error("Should override this function in any AdjointForm!");
     }

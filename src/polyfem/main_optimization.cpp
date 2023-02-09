@@ -107,23 +107,23 @@ int main(int argc, char **argv)
 		opt_args.merge_patch(tmp);
 	}
 
-	auto nl_problem = make_nl_problem(opt_args, log_level);
+	// auto nl_problem = make_nl_problem(opt_args, log_level);
 
-	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nlsolver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+	// std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nlsolver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 
-	Eigen::VectorXd x = nl_problem->initial_guess();
+	// Eigen::VectorXd x = nl_problem->initial_guess();
 
-	if (only_compute_energy)
-	{
-		nl_problem->solution_changed(x);
-		logger().info("Energy is {}", nl_problem->value(x));
-		auto state = nl_problem->get_state(0);
-		state->save_json(state->diff_cached[0].u);
-		state->export_data(state->diff_cached[0].u, Eigen::MatrixXd());
-		return EXIT_SUCCESS;
-	}
+	// if (only_compute_energy)
+	// {
+	// 	nl_problem->solution_changed(x);
+	// 	logger().info("Energy is {}", nl_problem->value(x));
+	// 	auto state = nl_problem->get_state(0);
+	// 	state->save_json(state->diff_cached[0].u);
+	// 	state->export_data(state->diff_cached[0].u, Eigen::MatrixXd());
+	// 	return EXIT_SUCCESS;
+	// }
 
-	nlsolver->minimize(*nl_problem, x);
+	// nlsolver->minimize(*nl_problem, x);
 
 	return EXIT_SUCCESS;
 }

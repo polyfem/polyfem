@@ -54,6 +54,7 @@ namespace polyfem::solver
 			Eigen::VectorXd gradv = grad_full;
 
 			std::vector<Eigen::VectorXd> ys;
+			auto y = x;
 			for (const auto &p : parameterizations_)
 			{
 				ys.emplace_back(y);
@@ -64,6 +65,8 @@ namespace polyfem::solver
 			{
 				gradv = parameterizations_[i]->apply_jacobian(gradv, ys[i]);
 			}
+
+			return gradv;
 		}
 	
 	private:

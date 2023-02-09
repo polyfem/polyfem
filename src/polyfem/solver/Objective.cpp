@@ -901,7 +901,7 @@ namespace polyfem::solver
 
 		const State &state = shape_param_->get_state();
 
-		return AdjointTools::integrate_objective(state, j, Eigen::MatrixXd::Zero(state.ndof(), 1), interested_ids_, AdjointTools::SpatialIntegralType::VOLUME, 0);
+		return AdjointTools::integrate_objective(state, j, Eigen::MatrixXd::Zero(state.ndof(), 1), interested_ids_, SpatialIntegralType::VOLUME, 0);
 	}
 
 	Eigen::MatrixXd VolumeObjective::compute_adjoint_rhs(const State &state)
@@ -925,7 +925,7 @@ namespace polyfem::solver
 
 			const State &state = shape_param_->get_state();
 			Eigen::VectorXd term;
-			AdjointTools::compute_shape_derivative_functional_term(state, Eigen::MatrixXd::Zero(state.ndof(), 1), j, interested_ids_, AdjointTools::SpatialIntegralType::VOLUME, term, 0);
+			AdjointTools::compute_shape_derivative_functional_term(state, Eigen::MatrixXd::Zero(state.ndof(), 1), j, interested_ids_, SpatialIntegralType::VOLUME, term, 0);
 			return param.map_grad(param_value, term);
 		}
 		else

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AdjointTools.hpp"
+#include "Parameter.hpp"
 
 #include <polyfem/solver/forms/ContactForm.hpp>
 

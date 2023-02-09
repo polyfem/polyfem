@@ -33,33 +33,8 @@ set(SOURCES
 	TransientNavierStokesSolver.hpp
 	AdjointTools.cpp
 	AdjointTools.hpp
-	Objective.cpp
-	Objective.hpp
-	HomoObjective.hpp
-	HomoObjective.cpp
-	IntegralObjective.hpp
-	IntegralObjective.cpp
 	AdjointNLProblem.hpp
 	AdjointNLProblem.cpp
-	Parameter.hpp
-	Parameter.cpp
-	ControlParameter.hpp
-	ControlParameter.cpp
-	ShapeParameter.hpp
-	ShapeParameter.cpp
-	GraphParameter.hpp
-	GraphParameter.cpp
-	DampingParameter.hpp
-	DampingParameter.cpp
-	FrictionParameter.hpp
-	FrictionParameter.cpp
-	ElasticParameter.hpp
-	ElasticParameter.cpp
-	InitialConditionParameter.hpp
-	TopologyOptimizationParameter.hpp
-	TopologyOptimizationParameter.cpp
-	MacroStrainParameter.hpp
-	MacroStrainParameter.cpp
 )
 
 prepend_current_path(SOURCES)

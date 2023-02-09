@@ -7,15 +7,15 @@ namespace polyfem::solver
     class SpatialIntegralForm : public AdjointForm
     {
     public:
-        SpatialIntegralForm(const State &state, const json &args): state_(state) {}
+        SpatialIntegralForm(const std::vector<VariableToSimulation> &variable_to_simulations, const State &state, const json &args): AdjointForm(variable_to_simulations), state_(state) {}
 
         const State &get_state() { return state_; }
         
     protected:
 
-        virtual IntegrableFunctional get_integral_functional() = 0;
+        virtual IntegrableFunctional get_integral_functional() const = 0;
         double value_unweighted(const Eigen::VectorXd &x) const override;
-        virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
+        virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
         Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) override;
         
         const State &state_;
@@ -28,7 +28,7 @@ namespace polyfem::solver
     class StressForm : public SpatialIntegralForm
     {
     public:
-        StressForm(const State &state, const json &args): SpatialIntegralForm(state, args) 
+        StressForm(const std::vector<VariableToSimulation> &variable_to_simulations, const State &state, const json &args): SpatialIntegralForm(variable_to_simulations, state, args) 
         {
             spatial_integral_type_ = SpatialIntegralType::VOLUME;
 
@@ -37,8 +37,8 @@ namespace polyfem::solver
         }
 
     protected:
-        IntegrableFunctional get_integral_functional() override;
-        void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
+        IntegrableFunctional get_integral_functional() const override;
+        void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
     private:
         int in_power_ = 2;

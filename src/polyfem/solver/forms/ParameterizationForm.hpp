@@ -1,6 +1,9 @@
 #pragma once
 
 #include <polyfem/utils/Types.hpp>
+#include <polyfem/solver/forms/parameterization/Parameterization.hpp>
+#include "Form.hpp"
+#include <polyfem/State.hpp>
 
 namespace polyfem::solver
 {
@@ -14,24 +17,17 @@ namespace polyfem::solver
 			init_with_param(apply_parameterizations(x));
 		}
 
-		inline virtual double value(const Eigen::VectorXd &x) const final override
-		{
-			return weight_ * value_unweighted(x);
-		}
-
 		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
 		{
 			Eigen::VectorXd y = apply_parameterizations(x);
 			first_derivative_unweighted_with_param(y, gradv);
 
-			gradv = apply_jacobian(x, gradv);
+			gradv = parameterizations_.apply_jacobian(x, gradv);
 		}
 
-		inline void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const final override
+		inline virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const final override
 		{
-			log_and_throw("Not implemented");
-			second_derivative_unweighted(x, hessian);
-			hessian *= weight_;
+			log_and_throw_error("Not implemented");
 		}
 
 		virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const final override
@@ -86,8 +82,8 @@ namespace polyfem::solver
 
 	protected:
 		virtual void init_with_param(const Eigen::VectorXd &x) {}
-		virtual bool is_step_valid_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true }
-		virtual double max_step_size_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return 1; }
+		virtual bool is_step_valid_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
+		virtual double max_step_size_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return 1; }
 		virtual void line_search_begin_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) {}
 		virtual void post_step_with_param(const int iter_num, const Eigen::VectorXd &x) {}
 		virtual void solution_changed_with_param(const Eigen::VectorXd &new_x) {}
@@ -95,15 +91,15 @@ namespace polyfem::solver
 		virtual void init_lagging_with_param(const Eigen::VectorXd &x) {}
 		virtual void update_lagging_with_param(const Eigen::VectorXd &x, const int iter_num) {}
 		virtual void set_apply_DBC_with_param(const Eigen::VectorXd &x, bool apply_DBC) {}
-		virtual bool is_step_collision_free_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
+		virtual bool is_step_collision_free_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
 		virtual void first_derivative_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const {}
 
-		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 		{
 			first_derivative_unweighted(x, gradv);
 		}
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) { return Eigen::MatrixXd::Zero(state->ndof(), state->diff_cached.size()); }
+		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) { return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size()); }
 
 	private:
 		CompositeParameterization parameterizations_;

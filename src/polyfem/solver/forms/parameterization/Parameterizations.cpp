@@ -6,34 +6,7 @@ namespace polyfem::solver
 {
 	std::vector<std::shared_ptr<Parameterization>> ParameterizationFactory::build(const json &params, const int full_size)
 	{
-		const std::string type = params["restriction"];
-		const apply_log = type.find("log") != std::string::npos;
-		const use_E_nu = type.find("E_nu") != std::string::npos;
-
-		const int dim = state.mesh->dimension();
-		const n_elem = state.bases.size();
-
-		std::set<int> optimize_body_ids;
-		if (params["volume_selection"].size() > 0)
-		{
-			for (int i : params["volume_selection"])
-				optimize_body_ids.insert(i);
-		}
-		else
-			logger().info("No optimization body specified, optimize material of every mesh...");
-
-		std::vector<std::shared_ptr<Parameterization>> res;
-
-		if (apply_log)
-		{
-			if (use_E_nu)
-				res.emplace_back(std::make_shared<ExponentialMap>(0, full_size_ / 2));
-			else
-				res.emplace_back(std::make_shared<ExponentialMap>());
-		}
-
-		if (use_E_nu)
-			res.emplace_back(std::make_shared<LambdaMu2ENu>(state.mesh->is_volume()));
+		return std::vector<std::shared_ptr<Parameterization>>();
 	}
 
 	ExponentialMap::ExponentialMap(const int from, const int to)
