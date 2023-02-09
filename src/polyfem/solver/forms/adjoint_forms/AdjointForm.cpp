@@ -24,6 +24,11 @@ namespace polyfem::solver
         log_and_throw_error("Should override this function in any AdjointForm!");
     }
 
+    void AdjointForm::compute_adjoint_rhs(std::vector<Eigen::MatrixXd> &rhss)
+    {
+        log_and_throw_error("Should override this function in any AdjointForm!");
+    }
+
     Eigen::VectorXd AdjointForm::compute_adjoint_term(const State &state, const ParameterType &param) const
     {
         Eigen::VectorXd term;
