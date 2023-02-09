@@ -19,23 +19,12 @@ namespace polyfem::solver
 			return weight_ * value_unweighted(apply_parameterizations(x));
 		}
 
-		inline virtual void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override
+		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
 		{
 			Eigen::VectorXd y = apply_parameterizations(x);
-			first_derivative_unweighted(y, gradv);
+			first_derivative_unweighted_with_param(y, gradv);
 
-			std::vector<Eigen::VectorXd> ys;
-			for (const auto &p : parameterizations_)
-			{
-				ys.emplace_back(y);
-				y = p->eval(y);
-			}
-			for (int i = parameterizations_.size() - 1; i >= 0; --i)
-			{
-				gradv = parameterizations_[i]->chain_rule(gradv, ys[i]);
-			}
-
-			gradv *= weight_;
+			gradv = chain_rule(x, gradv);
 		}
 
 		inline void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const final override
@@ -107,22 +96,19 @@ namespace polyfem::solver
 		virtual void update_lagging_with_param(const Eigen::VectorXd &x, const int iter_num) {}
 		virtual void set_apply_DBC_with_param(const Eigen::VectorXd &x, bool apply_DBC) {}
 		virtual bool is_step_collision_free_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
+		virtual void first_derivative_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const {}
+
+		virtual Eigen::VectorXd compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+		{
+			return first_derivative_unweighted(x, gradv);
+		}
 
 	private:
-		std::vector<std::shared_ptr<Parameterization>> parameterizations_;
+		CompositeParameterization parameterizations_;
 
 		Eigen::VectorXd apply_parameterizations(const Eigen::VectorXd &x) const
 		{
-			if (parameterizations_.empty())
-				return x;
-
-			Eigen::VectorXd y = x;
-			for (const auto &p : parameterizations_)
-			{
-				y = p->eval(y);
-			}
-
-			return y;
+			return parameterizations_.eval(x);
 		}
 	};
 } // namespace polyfem::solver

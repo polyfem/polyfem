@@ -38,7 +38,6 @@ namespace polyfem::solver
 			const SpatialIntegralType spatial_integral_type,
 			const std::string &transient_integral_type = "");
 		
-		// assume adjoints are solved and stored in state
 		static void compute_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &adjoints, 
