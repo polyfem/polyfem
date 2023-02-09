@@ -103,6 +103,8 @@ namespace polyfem::solver
 			return first_derivative_unweighted(x, gradv);
 		}
 
+		virtual void compute_adjoint_rhs(std::vector<Eigen::MatrixXd> &rhss) {}
+
 	private:
 		CompositeParameterization parameterizations_;
 

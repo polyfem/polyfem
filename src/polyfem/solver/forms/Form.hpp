@@ -126,8 +126,6 @@ namespace polyfem::solver
 		/// @return True if the step is collision free else false
 		virtual bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs() { return Eigen::MatrixXd(); }
-
 	protected:
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite
 
