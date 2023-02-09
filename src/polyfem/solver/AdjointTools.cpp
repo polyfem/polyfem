@@ -125,7 +125,7 @@ namespace polyfem::solver
 	void AdjointTools::compute_adjoint_term(
 		const State &state,
 		const Eigen::MatrixXd &adjoints, 
-		const std::string &param_name,
+		const ParameterType &param_name,
 		Eigen::VectorXd &term)
 	{
 		if (state.problem->is_time_dependent())
@@ -133,28 +133,28 @@ namespace polyfem::solver
 			Eigen::MatrixXd adjoint_nu, adjoint_p;
 			adjoint_nu = adjoints(Eigen::all, Eigen::seq(1, Eigen::last, 2));
 			adjoint_p = adjoints(Eigen::all, Eigen::seq(0, Eigen::last, 2));
-			if (param_name == "material")
+			if (param_name == ParameterType::Material)
 				dJ_material_transient(state, adjoint_nu, adjoint_p, term);
-			else if (param_name == "shape")
+			else if (param_name == ParameterType::Shape)
 				dJ_shape_transient_adjoint_term(state, adjoint_nu, adjoint_p, term);
-			else if (param_name == "friction")
+			else if (param_name == ParameterType::FrictionCoeff)
 				dJ_friction_transient(state, adjoint_nu, adjoint_p, term);
-			else if (param_name == "damping")
+			else if (param_name == ParameterType::DampingCoeff)
 				dJ_damping_transient(state, adjoint_nu, adjoint_p, term);
-			else if (param_name == "initial")
+			else if (param_name == ParameterType::InitialCondition)
 				dJ_initial_condition(state, adjoint_nu, adjoint_p, term);
-			else if (param_name == "dirichlet")
+			else if (param_name == ParameterType::DirichletBC)
 				dJ_dirichlet_transient(state, adjoint_nu, adjoint_p, term);
 			else
 				log_and_throw_error("Unknown design parameter!");
 		}
 		else
 		{
-			if (param_name == "material" || param_name == "topology")
+			if (param_name == ParameterType::Material)
 				dJ_material_static(state, state.diff_cached[0].u, adjoints, term);
-			else if (param_name == "shape")
+			else if (param_name == ParameterType::Shape)
 				dJ_shape_static_adjoint_term(state, state.diff_cached[0].u, adjoints, term);
-			else if (param_name == "macro_strain")
+			else if (param_name == ParameterType::MacroStrain)
 				dJ_macro_strain_adjoint_term(state, state.diff_cached[0].u, adjoints, term);
 			else
 				log_and_throw_error("Unknown design parameter!");
@@ -206,7 +206,7 @@ namespace polyfem::solver
 	void AdjointTools::gradient(
 		State &state,
 		const IntegrableFunctional &j,
-		const std::string &param_name,
+		const ParameterType &param_name,
 		Eigen::VectorXd &grad,
 		const std::set<int> &interested_ids, // either body id or surface id
 		const SpatialIntegralType spatial_integral_type,
@@ -222,17 +222,17 @@ namespace polyfem::solver
 			adjoint_nu = adjoints(Eigen::all, Eigen::seq(1, Eigen::last, 2));
 			adjoint_p = adjoints(Eigen::all, Eigen::seq(0, Eigen::last, 2));
 
-			if (param_name == "material")
+			if (param_name == ParameterType::Material)
 				dJ_material_transient(state, adjoint_nu, adjoint_p, grad);
-			else if (param_name == "shape")
+			else if (param_name == ParameterType::Shape)
 				dJ_shape_transient(state, adjoint_nu, adjoint_p, j, interested_ids, spatial_integral_type, transient_integral_type, grad);
-			else if (param_name == "friction")
+			else if (param_name == ParameterType::FrictionCoeff)
 				dJ_friction_transient(state, adjoint_nu, adjoint_p, grad);
-			else if (param_name == "damping")
+			else if (param_name == ParameterType::DampingCoeff)
 				dJ_damping_transient(state, adjoint_nu, adjoint_p, grad);
-			else if (param_name == "initial")
+			else if (param_name == ParameterType::InitialCondition)
 				dJ_initial_condition(state, adjoint_nu, adjoint_p, grad);
-			else if (param_name == "dirichlet")
+			else if (param_name == ParameterType::DirichletBC)
 				dJ_dirichlet_transient(state, adjoint_nu, adjoint_p, grad);
 			else
 				log_and_throw_error("Unknown design parameter!");
@@ -242,15 +242,15 @@ namespace polyfem::solver
 			Eigen::VectorXd adjoint_rhs;
 			dJ_du_step(state, j, state.diff_cached[0].u, interested_ids, spatial_integral_type, 0, adjoint_rhs);
 			Eigen::MatrixXd adjoints = state.solve_static_adjoint(adjoint_rhs);
-			if (param_name == "material")
+			if (param_name == ParameterType::Material)
 				dJ_material_static(state, state.diff_cached[0].u, adjoints, grad);
-			else if (param_name == "shape")
+			else if (param_name == ParameterType::Shape)
 				dJ_shape_static(state, state.diff_cached[0].u, adjoints, j, interested_ids, spatial_integral_type, grad);
 			else if (param_name == "topology")
 				dJ_material_static(state, state.diff_cached[0].u, adjoints, grad);
-			else if (param_name == "friction")
+			else if (param_name == ParameterType::FrictionCoeff)
 				log_and_throw_error("Static friction coefficient grad not implemented!");
-			else if (param_name == "dirichlet")
+			else if (param_name == ParameterType::DirichletBC)
 				log_and_throw_error("Static Dirichlet BC grad not implemented!");
 			else
 				log_and_throw_error("Unknown design parameter!");

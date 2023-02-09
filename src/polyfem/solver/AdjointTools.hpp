@@ -1,23 +1,26 @@
 #pragma once
 
 #include <polyfem/State.hpp>
-#include <polyfem/solver/Parameter.hpp>
 
 namespace polyfem::solver
 {
+    enum class ParameterType {
+        Shape, Material, FrictionCoeff, DampingCoeff, InitialCondition, DirichletBC, MacroStrain
+    };
+
+	enum class SpatialIntegralType
+	{
+		VOLUME,
+		SURFACE,
+		VERTEX_SUM
+	};
+
 	class AdjointTools
 	{
 	public:
 		AdjointTools()
 		{
 		}
-
-		enum class SpatialIntegralType
-		{
-			VOLUME,
-			SURFACE,
-			VERTEX_SUM
-		};
 
 		static double value(
 			const State &state,
@@ -29,7 +32,7 @@ namespace polyfem::solver
 		static void gradient(
 			State &state,
 			const IntegrableFunctional &j,
-			const std::string &param_name,
+			const ParameterType &param_name,
 			Eigen::VectorXd &grad,
 			const std::set<int> &interested_ids, // either body id or surface id
 			const SpatialIntegralType spatial_integral_type,
@@ -39,7 +42,7 @@ namespace polyfem::solver
 		static void compute_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &adjoints, 
-			const std::string &param_name,
+			const ParameterType &param_name,
 			Eigen::VectorXd &term);
 
 		static double integrate_objective(
