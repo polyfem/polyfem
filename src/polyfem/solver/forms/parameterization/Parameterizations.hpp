@@ -25,7 +25,7 @@ namespace polyfem::solver
 
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
-		Eigen::VectorXd chain_rule(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:
 		const int from_, to_;
@@ -38,7 +38,7 @@ namespace polyfem::solver
 
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
-		Eigen::VectorXd chain_rule(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:
 		const bool is_volume_;
@@ -51,7 +51,7 @@ namespace polyfem::solver
 
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
-		Eigen::VectorXd chain_rule(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:
 		std::map<int, std::array<int, 2>> body_id_map_; // from body_id to {elem_id, index}

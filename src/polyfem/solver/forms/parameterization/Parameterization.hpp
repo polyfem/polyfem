@@ -22,7 +22,7 @@ namespace polyfem::solver
 
 		virtual int size(const int x_size) const = 0; // just for verification
 		virtual Eigen::VectorXd eval(const Eigen::VectorXd &x) const = 0;
-		virtual Eigen::VectorXd chain_rule(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const = 0;
+		virtual Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const = 0;
 	};
 
 	class CompositeParameterization
@@ -49,7 +49,7 @@ namespace polyfem::solver
 
 			return y;
 		}
-		Eigen::VectorXd chain_rule(const Eigen::VectorXd &x, const Eigen::VectorXd &grad_full) const
+		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &x, const Eigen::VectorXd &grad_full) const
 		{
 			Eigen::VectorXd gradv = grad_full;
 
@@ -62,7 +62,7 @@ namespace polyfem::solver
 
 			for (int i = parameterizations_.size() - 1; i >= 0; --i)
 			{
-				gradv = parameterizations_[i]->chain_rule(gradv, ys[i]);
+				gradv = parameterizations_[i]->apply_jacobian(gradv, ys[i]);
 			}
 		}
 	

@@ -66,7 +66,7 @@ namespace polyfem::solver
 			return x.array().exp();
 	}
 
-	Eigen::VectorXd ExponentialMap::chain_rule(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
+	Eigen::VectorXd ExponentialMap::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
 	{
 		if (from_ >= 0)
 		{
@@ -113,7 +113,7 @@ namespace polyfem::solver
 		return y;
 	}
 
-	Eigen::VectorXd LambdaMu2ENu::chain_rule(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
+	Eigen::VectorXd LambdaMu2ENu::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
 	{
 		const int size = grad.size() / 2;
 		assert(size * 2 == grad.size());
@@ -147,7 +147,7 @@ namespace polyfem::solver
 		return y;
 	}
 
-	Eigen::VectorXd PerBody::chain_rule(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
+	Eigen::VectorXd PerBody::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
 	{
 		assert(grad.size() == full_size_);
 		Eigen::VectorXd grad_body;

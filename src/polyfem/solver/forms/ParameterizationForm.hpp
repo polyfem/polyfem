@@ -24,7 +24,7 @@ namespace polyfem::solver
 			Eigen::VectorXd y = apply_parameterizations(x);
 			first_derivative_unweighted_with_param(y, gradv);
 
-			gradv = chain_rule(x, gradv);
+			gradv = apply_jacobian(x, gradv);
 		}
 
 		inline void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const final override
