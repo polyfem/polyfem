@@ -28,6 +28,8 @@ namespace polyfem::solver
 	class CompositeParameterization
 	{
 	public:
+		CompositeParameterization() {}
+		CompositeParameterization(const std::vector<std::shared_ptr<Parameterization>> &parameterizations): parameterizations_(parameterizations) {}
 		virtual ~CompositeParameterization() {}
 
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const
@@ -51,7 +53,8 @@ namespace polyfem::solver
 		}
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &x, const Eigen::VectorXd &grad_full) const
 		{
-			Eigen::VectorXd gradv = grad_full;
+			if (parameterizations_.empty())
+				return grad_full;
 
 			std::vector<Eigen::VectorXd> ys;
 			auto y = x;
@@ -61,6 +64,7 @@ namespace polyfem::solver
 				y = p->eval(y);
 			}
 
+			Eigen::VectorXd gradv = grad_full;
 			for (int i = parameterizations_.size() - 1; i >= 0; --i)
 			{
 				gradv = parameterizations_[i]->apply_jacobian(gradv, ys[i]);

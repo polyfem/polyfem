@@ -7,9 +7,9 @@ namespace polyfem::solver
         gradv.setZero(x.size());
         for (const auto &param_map : variable_to_simulations_)
         {
-            const auto &parametrization = param_map.get_parameterization();
-            const auto &state = param_map.get_state();
-            const auto &param_type = param_map.get_parameter_type();
+            const auto &parametrization = param_map->get_parameterization();
+            const auto &state = param_map->get_state();
+            const auto &param_type = param_map->get_parameter_type();
 
             gradv += parametrization.apply_jacobian(x, compute_adjoint_term(state, param_type));
         }

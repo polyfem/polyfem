@@ -102,6 +102,6 @@
 // 		double adjoint_solve_time = 0;
 // 		double grad_assembly_time = 0;
 
-// 		std::vector<VariableToSimulation> variables_to_simulation_;
+// 		std::vector<std::shared_ptr<VariableToSimulation>> variables_to_simulation_;
 // 	};
 // } // namespace polyfem::solver

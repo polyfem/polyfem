@@ -16,9 +16,9 @@ namespace polyfem::solver
 		gradv.setZero(x.size());
 		for (const auto &param_map : variable_to_simulations_)
 		{
-			const auto &parametrization = param_map.get_parameterization();
-			const auto &state = param_map.get_state();
-			const auto &param_type = param_map.get_parameter_type();
+			const auto &parametrization = param_map->get_parameterization();
+			const auto &state = param_map->get_state();
+			const auto &param_type = param_map->get_parameter_type();
 
 			if (&state != &state_)
 				continue;
@@ -126,9 +126,9 @@ namespace polyfem::solver
     SpatialIntegralForm::compute_partial_gradient(x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
-			const auto &parametrization = param_map.get_parameterization();
-			const auto &state = param_map.get_state();
-			const auto &param_type = param_map.get_parameter_type();
+			const auto &parametrization = param_map->get_parameterization();
+			const auto &state = param_map->get_state();
+			const auto &param_type = param_map->get_parameter_type();
 
 			if (&state != &state_)
 				continue;

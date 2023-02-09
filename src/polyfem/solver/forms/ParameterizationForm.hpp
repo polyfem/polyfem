@@ -10,6 +10,7 @@ namespace polyfem::solver
 	class ParameterizationForm : public Form
 	{
 	public:
+		ParameterizationForm() {}
 		virtual ~ParameterizationForm() {}
 
 		virtual void init(const Eigen::VectorXd &x) final override
@@ -80,6 +81,8 @@ namespace polyfem::solver
 			return is_step_collision_free_with_param(apply_parameterizations(x0), apply_parameterizations(x1));
 		}
 
+		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) { return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size()); }
+
 	protected:
 		virtual void init_with_param(const Eigen::VectorXd &x) {}
 		virtual bool is_step_valid_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
@@ -98,8 +101,6 @@ namespace polyfem::solver
 		{
 			first_derivative_unweighted(x, gradv);
 		}
-
-		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) { return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size()); }
 
 	private:
 		CompositeParameterization parameterizations_;

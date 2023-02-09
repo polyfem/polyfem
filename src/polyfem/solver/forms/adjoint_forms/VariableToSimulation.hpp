@@ -8,7 +8,7 @@ namespace polyfem::solver
 	class VariableToSimulation
 	{
 	public:
-		VariableToSimulation(std::shared_ptr<State> state_ptr, const CompositeParameterization &parameterization) : state_ptr_(state_ptr), parameterization_(parameterization) {}
+		VariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParameterization &parameterization) : state_ptr_(state_ptr), parameterization_(parameterization) {}
 		virtual ~VariableToSimulation() {}
 
 		inline virtual void update(const Eigen::VectorXd &x) final
@@ -30,6 +30,7 @@ namespace polyfem::solver
 	class ShapeVariableToSimulation : public VariableToSimulation
 	{
 	public:
+		ShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParameterization &parameterization) : VariableToSimulation(state_ptr, parameterization) {}
 		virtual ~ShapeVariableToSimulation() {}
 		
 		ParameterType get_parameter_type() const override { return ParameterType::Shape; }
@@ -43,13 +44,13 @@ namespace polyfem::solver
 			V = utils::unflatten(state_variable, V_rest.cols());
 
 			state_ptr_->set_mesh_vertices(V);
-			state_ptr_->build_basis();
 		}
 	};
 
 	class ElasticVariableToSimulation : public VariableToSimulation
 	{
 	public:
+		ElasticVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParameterization &parameterization) : VariableToSimulation(state_ptr, parameterization) {}
 		virtual ~ElasticVariableToSimulation() {}
 
 		ParameterType get_parameter_type() const override { return ParameterType::Material; }
@@ -64,6 +65,7 @@ namespace polyfem::solver
 	class FrictionCoeffientVariableToSimulation : public VariableToSimulation
 	{
 	public:
+		FrictionCoeffientVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParameterization &parameterization) : VariableToSimulation(state_ptr, parameterization) {}
 		virtual ~FrictionCoeffientVariableToSimulation() {}
 
 		ParameterType get_parameter_type() const override { return ParameterType::FrictionCoeff; }
@@ -77,6 +79,7 @@ namespace polyfem::solver
 	class DampingCoeffientVariableToSimulation : public VariableToSimulation
 	{
 	public:
+		DampingCoeffientVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParameterization &parameterization) : VariableToSimulation(state_ptr, parameterization) {}
 		virtual ~DampingCoeffientVariableToSimulation() {}
 
 		ParameterType get_parameter_type() const override { return ParameterType::DampingCoeff; }
@@ -95,6 +98,7 @@ namespace polyfem::solver
 	class InitialConditionVariableToSimulation : public VariableToSimulation
 	{
 	public:
+		InitialConditionVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParameterization &parameterization) : VariableToSimulation(state_ptr, parameterization) {}
 		virtual ~InitialConditionVariableToSimulation() {}
 
 		ParameterType get_parameter_type() const override { return ParameterType::InitialCondition; }
@@ -107,6 +111,7 @@ namespace polyfem::solver
 	class DirichletVariableToSimulation : public VariableToSimulation
 	{
 	public:
+		DirichletVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParameterization &parameterization) : VariableToSimulation(state_ptr, parameterization) {}
 		virtual ~DirichletVariableToSimulation() {}
 
 		ParameterType get_parameter_type() const override { return ParameterType::DirichletBC; }
@@ -129,6 +134,7 @@ namespace polyfem::solver
 	class MacroStrainVariableToSimulation : public VariableToSimulation
 	{
 	public:
+		MacroStrainVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParameterization &parameterization) : VariableToSimulation(state_ptr, parameterization) {}
 		virtual ~MacroStrainVariableToSimulation() {}
 
 		ParameterType get_parameter_type() const override { return ParameterType::MacroStrain; }
