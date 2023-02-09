@@ -142,7 +142,7 @@ namespace
 		}
 	}
 
-	void verify_adjoint(ParameterizationForm &obj, State &state, const Eigen::VectorXd &x, const std::string &type, const Eigen::MatrixXd &theta, const double dt, const double tol)
+	void verify_adjoint(std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, ParameterizationForm &obj, State &state, const Eigen::VectorXd &x, const std::string &type, const Eigen::MatrixXd &theta, const double dt, const double tol)
 	{
 		double functional_val = obj.value(x);
 
@@ -151,11 +151,13 @@ namespace
 		obj.first_derivative(x, one_form);
 		double derivative = (one_form.array() * theta.array()).sum();
 
-		perturb(state, theta * dt, type);
+		for (auto &v2s : variable_to_simulations)
+			v2s->update(x + theta * dt);
 		solve_pde(state);
 		double next_functional_val = obj.value(x + theta * dt);
 
-		perturb(state, theta * (-2 * dt), type);
+		for (auto &v2s : variable_to_simulations)
+			v2s->update(x - theta * dt);
 		solve_pde(state);
 		double former_functional_val = obj.value(x - theta * dt);
 
@@ -262,8 +264,32 @@ TEST_CASE("laplacian", "[adjoint_method]")
 	auto state_ptr = create_state_and_solve(in_args);
 	State &state = *state_ptr;
 
+	json opt_args;
+	load_json(path + "laplacian-opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
+
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParameterization()));
+
+	StressForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
+
+	auto velocity = [](const Eigen::MatrixXd &position) {
+		auto vel = position;
+		for (int i = 0; i < vel.size(); i++)
+		{
+			vel(i) = vel(i) * cos(vel(i));
+		}
+		return vel;
+	};
+	Eigen::MatrixXd velocity_discrete;
+	sample_field(state, velocity, velocity_discrete);
+
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+	state.get_vf(V, F);
+	Eigen::VectorXd x = utils::flatten(V);
+
+	verify_adjoint(variable_to_simulations, obj, state, x, "shape", velocity_discrete, 1e-7, 3e-5);
 }
 
 // TEST_CASE("laplacian", "[adjoint_method]")

@@ -35,12 +35,12 @@ namespace polyfem::solver
 		
 		ParameterType get_parameter_type() const override { return ParameterType::Shape; }
 	protected:
+		// TODO: should do "+dx" so that different entries of V can be controlled by different VariableToSimulation
 		inline void update_state(const Eigen::VectorXd &state_variable) override
 		{
 			Eigen::MatrixXd V_rest, V;
 			Eigen::MatrixXi F;
 			state_ptr_->get_vf(V_rest, F);
-			// TODO: Insert nodes here
 			V = utils::unflatten(state_variable, V_rest.cols());
 
 			state_ptr_->set_mesh_vertices(V);

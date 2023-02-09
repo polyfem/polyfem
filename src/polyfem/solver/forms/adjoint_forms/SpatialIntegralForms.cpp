@@ -29,8 +29,8 @@ namespace polyfem::solver
 			else if (param_type == ParameterType::MacroStrain)
 				AdjointTools::compute_macro_strain_derivative_functional_term(state_, state_.diff_cached[time_step_].u, get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
       
-      if (term.size() > 0)
-        gradv += parametrization.apply_jacobian(term, x);
+			if (term.size() > 0)
+				gradv += parametrization.apply_jacobian(term, x);
 		}
 	}
 
@@ -137,8 +137,8 @@ namespace polyfem::solver
 			if (param_type == ParameterType::Material)
 				log_and_throw_error("Doesn't support stress derivative wrt. material!");
 
-      if (term.size() > 0)
-        gradv += parametrization.apply_jacobian(term, x);
+			if (term.size() > 0)
+				gradv += parametrization.apply_jacobian(term, x);
 		}
   }
 } // namespace polyfem::solver
