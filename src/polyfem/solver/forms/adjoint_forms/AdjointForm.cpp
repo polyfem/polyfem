@@ -11,7 +11,7 @@ namespace polyfem::solver
             const auto &state = param_map->get_state();
             const auto &param_type = param_map->get_parameter_type();
 
-            gradv += parametrization.apply_jacobian(x, compute_adjoint_term(state, param_type));
+            gradv += parametrization.apply_jacobian(compute_adjoint_term(state, param_type), x);
         }
 
         Eigen::VectorXd partial_grad;

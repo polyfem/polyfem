@@ -51,7 +51,7 @@ namespace polyfem::solver
 
 			return y;
 		}
-		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &x, const Eigen::VectorXd &grad_full) const
+		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const
 		{
 			if (parameterizations_.empty())
 				return grad_full;

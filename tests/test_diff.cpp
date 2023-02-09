@@ -142,7 +142,7 @@ namespace
 		}
 	}
 
-	void verify_adjoint(std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, ParameterizationForm &obj, State &state, const Eigen::VectorXd &x, const std::string &type, const Eigen::MatrixXd &theta, const double dt, const double tol)
+	void verify_adjoint(std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, ParameterizationForm &obj, State &state, const Eigen::VectorXd &x, const Eigen::MatrixXd &theta, const double dt, const double tol)
 	{
 		double functional_val = obj.value(x);
 
@@ -289,7 +289,7 @@ TEST_CASE("laplacian", "[adjoint_method]")
 	state.get_vf(V, F);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	verify_adjoint(variable_to_simulations, obj, state, x, "shape", velocity_discrete, 1e-7, 3e-5);
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 3e-5);
 }
 
 // TEST_CASE("laplacian", "[adjoint_method]")
