@@ -247,32 +247,14 @@ namespace polyfem::solver
 		// if (cur_x.size() > 0 && abs((newX - cur_x).norm()) < 1e-12)
 		// 	return;
 		// update to new parameter and check if the new parameter is valid to solve
-		bool solve = true;
-		int cumulative = 0;
-		for (const auto &p : parameters_)
-		{
-			solve &= p->pre_solve(newX.segment(cumulative, p->optimization_dim()));
-			cumulative += p->optimization_dim();
-		}
 
-		// std::cout << "newX" << std::endl;
-		// std::cout << newX << std::endl;
+		for (const auto &v : variables_to_simulation_)
+			v->update(newX);
 
 		// solve PDE
-		if (solve)
-		{
-			solve_pde();
+		solve_pde();
 
-			// post actions after solving PDE
-			cumulative = 0;
-			for (const auto &p : parameters_)
-			{
-				p->post_solve(newX.segment(cumulative, p->optimization_dim()));
-				cumulative += p->optimization_dim();
-			}
-
-			cur_x = newX;
-		}
+		cur_x = newX;
 	}
 
 	void AdjointNLProblem::solve_pde()
