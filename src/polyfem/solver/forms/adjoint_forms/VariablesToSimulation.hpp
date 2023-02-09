@@ -1,6 +1,7 @@
 #pragma once
 
-#include <polyfem/solver/forms/parametrization/Parametrization.hpp>
+#include <polyfem/solver/forms/parametrization/Parameterization.hpp>
+#include <polyfem/solver/AdjointTools.hpp>
 
 namespace polyfem::solver
 {
@@ -18,7 +19,7 @@ namespace polyfem::solver
 	} // namespace
 	class VariablesToSimulation
 	{
-		VariablesToSimulation(std::shared_ptr<State> state_ptr, const CompositeParametrization &parametrization, const ParameterTypes &parameter_type) : state_ptr_(state_ptr), parametrization_(parametrization), parameter_type_(parameter_type)
+		VariablesToSimulation(std::shared_ptr<State> state_ptr, const CompositeParameterization &parametrization, const ParameterTypes &parameter_type) : state_ptr_(state_ptr), parametrization_(parametrization), parameter_type_(parameter_type)
 		{
 		}
 
@@ -34,9 +35,13 @@ namespace polyfem::solver
 			return parametrization_->apply_jacobian(grad_full, x);
 		}
 
+		inline std::shared_ptr<State> get_state() const { return state_ptr_; }
+		inline CompositeParameterization get_parameterization() const { return parametrization_; }
+		inline ParameterType get_parameter_type() const { return parameter_type_; }
+
 	private:
 		std::shared_ptr<State> state_ptr_;
-		CompositeParametrization parametrization_;
+		CompositeParameterization parametrization_;
 		ParameterType parameter_type_;
 	}
 

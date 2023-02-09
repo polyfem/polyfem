@@ -5,11 +5,11 @@ namespace polyfem::solver
     void AdjointForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
     {
         gradv.setZero(x.size());
-        for (const auto &tuple : variable_to_simulation)
+        for (const auto &param_map : *variable_to_simulations)
         {
-            const auto &parametrization = std::get<0>(tuple);
-            const auto &state = std::get<1>(tuple);
-            const auto &param_type = std::get<2>(tuple);
+            const auto &parametrization = param_map.get_parameterization();
+            const auto &state = param_map.get_state();
+            const auto &param_type = param_map.get_parameter_type();
 
             gradv += parametrization.apply_jacobian(x, compute_adjoint_term(*state, param_type));
         }

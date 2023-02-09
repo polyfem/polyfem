@@ -1,7 +1,7 @@
 #pragma once
 
 #include <polyfem/solver/forms/ParametrizationForm.hpp>
-#include <polyfem/solver/AdjointTools.hpp>
+#include "VariableToSimulation.hpp"
 
 namespace polyfem::solver
 {
@@ -17,6 +17,6 @@ namespace polyfem::solver
         virtual Eigen::VectorXd compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
         virtual void compute_adjoint_rhs(std::vector<Eigen::MatrixXd> &rhss) override;
 
-        std::vector<std::tuple<CompositeParameterization, std::shared_ptr<State>, std::vector<ParameterType>>> variable_to_simulation; // parameterizations that map from opt variables to simulations
+        std::vector<VariablesToSimulation> *variable_to_simulations;
     };
 }
