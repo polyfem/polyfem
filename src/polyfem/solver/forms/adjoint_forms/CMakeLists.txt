@@ -1,6 +1,8 @@
 set(SOURCES
 	AdjointForm.cpp
 	AdjointForm.hpp
+	SpatialIntegralForm.cpp
+	SpatialIntegralForm.hpp
 )
 
 prepend_current_path(SOURCES)
