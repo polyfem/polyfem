@@ -33,6 +33,26 @@ namespace polyfem::solver
 	{
 		inline void update_state(const Eigen::VectorXd &state_variable) override
 		{
+			Eigen::MatrixXd V_rest, V;
+			Eigen::MatrixXi F;
+			state_ptr_->get_vf(V_rest, F);
+			// TODO: Insert nodes here
+			V = V_rest;
+			mesh_flipped = is_flipped(V, F);
+			if (mesh_flipped)
+			{
+				if (V.rows() == 2)
+				{
+					V.conservativeResize(V.rows(), 3);
+					V.col(0) = Eigen::VectorXd::Zero(V.rows());
+				}
+				igl::writeOBJ("flipped.obj", V, F);
+
+				log_and_throw_error("Mesh Flipped!")
+			}
+
+			state_ptr->set_mesh_vertices(V);
+			state_ptr->build_basis();
 		}
 	}
 
@@ -54,6 +74,16 @@ namespace polyfem::solver
 	{
 		inline void update_state(const Eigen::VectorXd &state_variable) override
 		{
+			auto constraint_string = constraint_to_string(state_variable);
+			for (const auto &kv : boundary_id_to_reduced_param)
+			{
+				json dirichlet_bc = constraint_string[kv.first];
+				// Need time_steps + 1 entry, though unused.
+				for (int k = 0; k < states_ptr_[0]->mesh->dimension(); ++k)
+					dirichlet_bc[k].push_back(dirichlet_bc[k][time_steps - 1]);
+				logger().trace("Updating boundary id {} to dirichlet bc {}", kv.first, dirichlet_bc);
+				problem.update_dirichlet_boundary(kv.first, dirichlet_bc, true, true, true, "");
+			}
 		}
 	}
 
