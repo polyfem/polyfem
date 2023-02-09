@@ -5,44 +5,56 @@
 
 namespace polyfem::solver
 {
-	namespace
+	class VariableToSimulation
 	{
+		VariableToSimulation(std::shared_ptr<State> state_ptr, const CompositeParametrization &parametrization) : state_ptr_(state_ptr), parametrization_(parametrization) {}
 
-		void update_shape(std::shared_ptr<State> state_ptr)
+		inline virtual void update(const Eigen::VectorXd &x) final
 		{
+			Eigen::VectorXd state_variable = parametrization.eval(x);
+			update_state(state_variable);
 		}
 
-		void update_material_params(std::shared_ptr<State> state_ptr)
-		{
-		}
-
-	} // namespace
-	class VariablesToSimulation
-	{
-		VariablesToSimulation(std::shared_ptr<State> state_ptr, const CompositeParameterization &parametrization, const ParameterTypes &parameter_type) : state_ptr_(state_ptr), parametrization_(parametrization), parameter_type_(parameter_type)
-		{
-		}
-
-		inline void update(const Eigen::VectorXd &x)
-		{
-			switch (parameter_type)
-			{
-			}
-		}
-
-		inline Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const
+		inline virtual Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const final
 		{
 			return parametrization_->apply_jacobian(grad_full, x);
 		}
 
 		inline std::shared_ptr<State> get_state() const { return state_ptr_; }
 		inline CompositeParameterization get_parameterization() const { return parametrization_; }
-		inline ParameterType get_parameter_type() const { return parameter_type_; }
 
-	private:
+	protected:
+		virtual void update_state(const Eigen::MatrixXd &state_variable) = 0;
 		std::shared_ptr<State> state_ptr_;
-		CompositeParameterization parametrization_;
-		ParameterType parameter_type_;
+		CompositeParametrization parametrization_;
+	}
+
+	class ShapeVariableToSimulation : public VariableToSimulation
+	{
+		inline void update_state(const Eigen::VectorXd &state_variable) override
+		{
+		}
+	}
+
+	class MaterialVariableToSimulation : public VariableToSimulation
+	{
+		inline void update_state(const Eigen::VectorXd &state_variable) override
+		{
+		}
+	}
+
+	class InitialConditionVariableToSimulation : public VariableToSimulation
+	{
+		inline void update_state(const Eigen::VectorXd &state_variable) override
+		{
+		}
+	}
+
+	class DirichletVariableToSimulation : public VariableToSimulation
+	{
+		inline void update_state(const Eigen::VectorXd &state_variable) override
+		{
+		}
 	}
 
 } // namespace polyfem::solver
