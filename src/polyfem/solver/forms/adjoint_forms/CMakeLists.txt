@@ -1,8 +1,8 @@
 set(SOURCES
 	AdjointForm.cpp
 	AdjointForm.hpp
-	SpatialIntegralForm.cpp
-	SpatialIntegralForm.hpp
+	SpatialIntegralForms.cpp
+	SpatialIntegralForms.hpp
 	VariableToSimulation.hpp
 )
 
