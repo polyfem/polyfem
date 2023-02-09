@@ -1,4 +1,5 @@
 set(SOURCES
+	AdjointForm.cpp
 	AdjointForm.hpp
 )
 
