@@ -15,11 +15,6 @@ namespace polyfem::solver
 			update_state(state_variable);
 		}
 
-		inline virtual Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const final
-		{
-			return parametrization_->apply_jacobian(grad_full, x);
-		}
-
 		inline std::shared_ptr<State> get_state() const { return state_ptr_; }
 		inline CompositeParameterization get_parameterization() const { return parametrization_; }
 
@@ -37,7 +32,7 @@ namespace polyfem::solver
 			Eigen::MatrixXi F;
 			state_ptr_->get_vf(V_rest, F);
 			// TODO: Insert nodes here
-			V = V_rest;
+			V = state_variable.resizeLike(V_rest);
 			mesh_flipped = is_flipped(V, F);
 			if (mesh_flipped)
 			{
