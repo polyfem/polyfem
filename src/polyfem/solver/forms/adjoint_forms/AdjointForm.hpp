@@ -12,11 +12,13 @@ namespace polyfem::solver
 
     protected:
         virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
-        virtual Eigen::VectorXd compute_adjoint_term(const State &state, const ParameterType &param) const final;
         
-        virtual Eigen::VectorXd compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
-        virtual void compute_adjoint_rhs(std::vector<Eigen::MatrixXd> &rhss) override;
+        virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
+        virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) override;
 
         std::vector<VariablesToSimulation> *variable_to_simulations;
+
+    private:
+        virtual Eigen::VectorXd compute_adjoint_term(const State &state, const ParameterType &param) const final;
     };
 }

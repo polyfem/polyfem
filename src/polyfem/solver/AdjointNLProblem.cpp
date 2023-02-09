@@ -26,19 +26,10 @@ namespace polyfem::solver
 		{
 			gradv.setZero(optimization_dim_);
 
-			std::vector<Eigen::MatrixXd> rhss;
-			{
-				// compute adjoint rhss
-				rhss.reserve(all_states_.size());
-				for (const auto &state : all_states_)
-					rhss.push_back(Eigen::MatrixXd::Zero(state->ndof(), state->diff_cached.size()));
-				obj_->compute_adjoint_rhs(rhss);
-			}
-
 			{
 				POLYFEM_SCOPED_TIMER("adjoint solve", adjoint_solve_time);
 				for (int i = 0; i < all_states_.size(); i++)
-					all_states_[i]->solve_adjoint_cached(rhss[i]); // caches inside state
+					all_states_[i]->solve_adjoint_cached(obj_->compute_adjoint_rhs(x, all_states_[i])); // caches inside state
 			}
 
 			{

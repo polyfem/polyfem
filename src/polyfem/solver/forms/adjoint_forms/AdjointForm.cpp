@@ -19,14 +19,15 @@ namespace polyfem::solver
         gradv += partial_grad;
     }
 
-    Eigen::VectorXd AdjointForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+    void AdjointForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
     {
         log_and_throw_error("Should override this function in any AdjointForm!");
     }
 
-    void AdjointForm::compute_adjoint_rhs(std::vector<Eigen::MatrixXd> &rhss)
+    Eigen::MatrixXd AdjointForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state)
     {
         log_and_throw_error("Should override this function in any AdjointForm!");
+        return Eigen::MatrixXd();
     }
 
     Eigen::VectorXd AdjointForm::compute_adjoint_term(const State &state, const ParameterType &param) const

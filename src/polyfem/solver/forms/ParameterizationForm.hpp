@@ -16,7 +16,7 @@ namespace polyfem::solver
 
 		inline virtual double value(const Eigen::VectorXd &x) const final override
 		{
-			return weight_ * value_unweighted(apply_parameterizations(x));
+			return weight_ * value_unweighted(x);
 		}
 
 		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
@@ -98,12 +98,12 @@ namespace polyfem::solver
 		virtual bool is_step_collision_free_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) { return true; }
 		virtual void first_derivative_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const {}
 
-		virtual Eigen::VectorXd compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
 		{
-			return first_derivative_unweighted(x, gradv);
+			first_derivative_unweighted(x, gradv);
 		}
 
-		virtual void compute_adjoint_rhs(std::vector<Eigen::MatrixXd> &rhss) {}
+		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) { return Eigen::MatrixXd::Zero(state->ndof(), state->diff_cached.size()); }
 
 	private:
 		CompositeParameterization parameterizations_;
