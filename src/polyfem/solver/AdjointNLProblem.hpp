@@ -6,7 +6,7 @@
 
 namespace polyfem::solver
 {
-	class AdjointNLProblem : public cppoptlib::Problem<double>
+	class AdjointNLProblem : public FullNLProblem
 	{
 	public:
 		AdjointNLProblem(const std::shared_ptr<SumObjective> &obj, const std::vector<std::shared_ptr<Parameter>> &parameters, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
@@ -47,35 +47,40 @@ namespace polyfem::solver
 
 		void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
 		void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv, const bool only_elastic);
+		inline void hessian(const Eigen::VectorXd &x, const StiffnessMatrix &hessian) override
+		{
+			log_and_throw_error("Hessian not supported!");
+		}
 
-		Eigen::VectorXd component_values(const Eigen::VectorXd &x);
-		Eigen::MatrixXd component_gradients(const Eigen::VectorXd &x);
+		Eigen::VectorXd component_values(const Eigen::VectorXd &x) override;
+		Eigen::MatrixXd component_gradients(const Eigen::VectorXd &x) override;
+		bool verify_gradient(const Eigen::VectorXd &x, const Eigen::VectorXd &gradv) override;
 
-		bool verify_gradient(const Eigen::VectorXd &x, const Eigen::VectorXd &gradv);
+		bool smoothing(const Eigen::VectorXd &x, const Eigen::VectorXd &new_x, Eigen::VectorXd &smoothed_x) override;
+		bool remesh(Eigen::VectorXd &x) override;
+		void save_to_file(const Eigen::VectorXd &x0) override;
 
-		bool smoothing(const Eigen::VectorXd &x, const Eigen::VectorXd &new_x, Eigen::VectorXd &smoothed_x);
-		bool remesh(Eigen::VectorXd &x);
+		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
+		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
+		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
-		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const;
-		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const;
-		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const;
+		void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
+		void line_search_end() override;
+		void post_step(const int iter_num, const Eigen::VectorXd &x) override;
 
-		void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1);
-		void line_search_end();
-		void post_step(const int iter_num, const Eigen::VectorXd &x);
-		void save_to_file(const Eigen::VectorXd &x0);
+		virtual void set_project_to_psd(bool val) override;
 
-		void solution_changed(const Eigen::VectorXd &new_x);
+		void solution_changed(const Eigen::VectorXd &new_x) override;
+
 		void solve_pde();
-
 		Eigen::VectorXd initial_guess() const;
 
 		Eigen::VectorXd get_lower_bound(const Eigen::VectorXd &x) const;
 		Eigen::VectorXd get_upper_bound(const Eigen::VectorXd &x) const;
 
-		int n_inequality_constraints();
-		double inequality_constraint_val(const Eigen::VectorXd &x, const int index);
-		Eigen::VectorXd inequality_constraint_grad(const Eigen::VectorXd &x, const int index);
+		virtual int n_inequality_constraints();
+		virtual double inequality_constraint_val(const Eigen::VectorXd &x, const int index);
+		virtual Eigen::VectorXd inequality_constraint_grad(const Eigen::VectorXd &x, const int index);
 
 		std::shared_ptr<State> get_state(int id) { return all_states_[id]; }
 

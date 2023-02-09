@@ -23,9 +23,9 @@ namespace polyfem::solver
 		virtual void gradient(const TVector &x, TVector &gradv) override;
 		virtual void hessian(const TVector &x, THessian &hessian);
 
-		TVector component_values(const TVector &x);
-		Eigen::MatrixXd component_gradients(const TVector &x);
-		bool verify_gradient(const TVector &x, const TVector &gradv) { return true; }
+		virtual TVector component_values(const TVector &x);
+		virtual Eigen::MatrixXd component_gradients(const TVector &x);
+		virtual bool verify_gradient(const TVector &x, const TVector &gradv) { return true; }
 
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) const;
 		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1) const;
@@ -44,21 +44,21 @@ namespace polyfem::solver
 		int max_lagging_iterations() const;
 		bool uses_lagging() const;
 
-		int n_inequality_constraints() { return 0; }
-		double inequality_constraint_val(const TVector &x, const int index)
+		virtual int n_inequality_constraints() { return 0; }
+		virtual double inequality_constraint_val(const TVector &x, const int index)
 		{
 			assert(false);
 			return std::nan("");
 		}
-		TVector inequality_constraint_grad(const TVector &x, const int index)
+		virtual TVector inequality_constraint_grad(const TVector &x, const int index)
 		{
 			assert(false);
 			return TVector();
 		}
 
-		bool remesh(TVector &x) { return false; }
-		bool smoothing(const TVector &x, const TVector &new_x, TVector &smoothed_x) { return false; }
-		void save_to_file(const TVector &x0) {}
+		virtual bool remesh(TVector &x) { return false; }
+		virtual bool smoothing(const TVector &x, const TVector &new_x, TVector &smoothed_x) { return false; }
+		virtual void save_to_file(const TVector &x0) {}
 		std::vector<std::shared_ptr<Form>> &forms() { return forms_; }
 
 	protected:
