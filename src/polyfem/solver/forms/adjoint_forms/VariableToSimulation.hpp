@@ -56,10 +56,33 @@ namespace polyfem::solver
 		}
 	}
 
-	class MaterialVariableToSimulation : public VariableToSimulation
+	class ElasticVariableToSimulation : public VariableToSimulation
 	{
 		inline void update_state(const Eigen::VectorXd &state_variable) override
 		{
+			const int n_elem = state_ptr->bases.size();
+			state_ptr->assembler.update_lame_params(state_variable.segment(0, n_elem), state_variable.segment(n_elem, n_elem));
+		}
+	}
+
+	class FrictionCoeffientVariableToSimulation : public VariableToSimulation
+	{
+		inline void update_state(const Eigen::VectorXd &state_variable) override
+		{
+			state_ptr->args["contact"]["friction_coefficient"] = state_variable(0);
+		}
+	}
+
+	class DampingCoeffientVariableToSimulation : public VariableToSimulation
+	{
+		inline void update_state(const Eigen::VectorXd &state_variable) override
+		{
+			json damping_param = {
+				{"psi", state_variable(0)},
+				{"phi", state_variable(1)},
+			};
+			state_ptr->assembler.add_multimaterial(0, damping_param);
+			logger().info("Current damping params: {}, {}", newX(0), newX(1));
 		}
 	}
 
@@ -84,6 +107,15 @@ namespace polyfem::solver
 				logger().trace("Updating boundary id {} to dirichlet bc {}", kv.first, dirichlet_bc);
 				problem.update_dirichlet_boundary(kv.first, dirichlet_bc, true, true, true, "");
 			}
+		}
+	}
+
+	class MacroStrainVariableToSimulation : public VariableToSimulation
+	{
+		inline void update_state(const Eigen::VectorXd &state_variable) override
+		{
+			Eigen::MatrixXd disp_grad = utils::unflatten(newX, dim);
+			state_ptr->disp_grad = disp_grad;
 		}
 	}
 
