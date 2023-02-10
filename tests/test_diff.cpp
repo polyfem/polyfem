@@ -292,36 +292,6 @@ TEST_CASE("laplacian", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 3e-5);
 }
 
-// TEST_CASE("laplacian", "[adjoint_method]")
-// {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-// 	json in_args;
-// 	load_json(path + "laplacian.json", in_args);
-// 	auto state_ptr = create_state_and_solve(in_args);
-// 	State &state = *state_ptr;
-
-// 	json opt_args;
-// 	load_json(path + "laplacian-opt.json", opt_args);
-// 	opt_args = apply_opt_json_spec(opt_args, false);
-
-// 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-// 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
-// 	StressObjective func(state, shape_param, NULL, opt_args["functionals"][0], false);
-
-// 	auto velocity = [](const Eigen::MatrixXd &position) {
-// 		auto vel = position;
-// 		for (int i = 0; i < vel.size(); i++)
-// 		{
-// 			vel(i) = vel(i) * cos(vel(i));
-// 		}
-// 		return vel;
-// 	};
-// 	Eigen::MatrixXd velocity_discrete;
-// 	sample_field(state, velocity, velocity_discrete);
-
-// 	verify_adjoint(func, state, shape_param, "shape", velocity_discrete, 1e-7, 3e-5);
-// }
-
 // TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 // {
 // 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
@@ -505,39 +475,41 @@ TEST_CASE("laplacian", "[adjoint_method]")
 // 	verify_adjoint(func, state, shape_param, "shape", velocity_discrete, 1e-6, 5e-4);
 // }
 
-// TEST_CASE("shape-contact", "[adjoint_method]")
-// {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-// 	json in_args;
-// 	load_json(path + "shape-contact.json", in_args);
-// 	auto state_ptr = create_state_and_solve(in_args);
-// 	State &state = *state_ptr;
+TEST_CASE("shape-contact", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+	json in_args;
+	load_json(path + "shape-contact.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
 
-// 	json opt_args;
-// 	load_json(path + "shape-contact-opt.json", opt_args);
-// 	opt_args = apply_opt_json_spec(opt_args, false);
+	json opt_args;
+	load_json(path + "shape-contact-opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
 
-// 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-// 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
-// 	StressObjective func(state, shape_param, NULL, opt_args["functionals"][0]);
+	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParameterization()));
 
-// 	state.pre_sol = state.diff_cached[0].u;
-// 	double functional_val = func.value();
+	StressForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
 
-// 	auto velocity = [](const Eigen::MatrixXd &position) {
-// 		auto vel = position;
-// 		for (int i = 0; i < vel.size(); i++)
-// 		{
-// 			vel(i) = (rand() % 10000) / 1.0e4;
-// 		}
-// 		return vel;
-// 	};
+	auto velocity = [](const Eigen::MatrixXd &position) {
+		auto vel = position;
+		for (int i = 0; i < vel.size(); i++)
+		{
+			vel(i) = (rand() % 10000) / 1.0e4;
+		}
+		return vel;
+	};
+	Eigen::MatrixXd velocity_discrete;
+	sample_field(state, velocity, velocity_discrete);
 
-// 	Eigen::MatrixXd velocity_discrete;
-// 	sample_field(state, velocity, velocity_discrete);
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+	state.get_vf(V, F);
+	Eigen::VectorXd x = utils::flatten(V);
 
-// 	verify_adjoint(func, state, shape_param, "shape", velocity_discrete, 1e-6, 5e-4);
-// }
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 5e-4);
+}
 
 // TEST_CASE("node-trajectory", "[adjoint_method]")
 // {
@@ -654,11 +626,10 @@ TEST_CASE("laplacian", "[adjoint_method]")
 // 	load_json(path + "shape-transient-friction-opt.json", opt_args);
 // 	opt_args = apply_opt_json_spec(opt_args, false);
 
-// 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-// 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
-// 	json functional_args = opt_args["functionals"][0];
-// 	std::shared_ptr<StaticObjective> func_aux = std::make_shared<StressObjective>(state, shape_param, std::shared_ptr<Parameter>(), functional_args, false);
-// 	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], functional_args["transient_integral_type"], func_aux);
+// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParameterization()));
+
+// 	StressForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
 
 // 	Eigen::MatrixXd velocity_discrete;
 // 	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
@@ -668,9 +639,12 @@ TEST_CASE("laplacian", "[adjoint_method]")
 // 		velocity_discrete(i * 2 + 1) = rand() % 1000;
 // 	}
 
-// 	velocity_discrete.normalize();
+// 	Eigen::MatrixXd V;
+// 	Eigen::MatrixXi F;
+// 	state.get_vf(V, F);
+// 	Eigen::VectorXd x = utils::flatten(V);
 
-// 	verify_adjoint(func, state, shape_param, "shape", velocity_discrete, 1e-6, 1e-5);
+// 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-5);
 // }
 
 // TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
