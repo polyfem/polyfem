@@ -123,7 +123,7 @@ namespace polyfem::solver
 
   	void StressForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
   {
-    SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
+    	SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &parametrization = param_map->get_parametrization();

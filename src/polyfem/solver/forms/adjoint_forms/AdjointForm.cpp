@@ -13,6 +13,7 @@ namespace polyfem::solver
 
             gradv += parametrization.apply_jacobian(compute_adjoint_term(state, param_type), x);
         }
+		gradv /= weight_;
 
         Eigen::VectorXd partial_grad;
         compute_partial_gradient_unweighted(x, partial_grad);

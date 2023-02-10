@@ -4,8 +4,11 @@ namespace polyfem::solver
 {
 	class SumCompositeForm : public CompositeForm
 	{
+	public:
 		using CompositeForm::CompositeForm;
-
+		~SumCompositeForm() {}
+	
+	private:
 		inline double compose(const Eigen::VectorXd &inputs) const override
 		{
 			return inputs.sum();

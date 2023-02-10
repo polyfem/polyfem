@@ -9,6 +9,7 @@ namespace polyfem::solver
 	class CompositeForm : public AdjointForm
 	{
 	public:
+		CompositeForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const std::vector<std::shared_ptr<ParametrizationForm>> &forms) : AdjointForm(variable_to_simulations, parametrizations), forms_(forms) {}
 		CompositeForm(const std::vector<std::shared_ptr<ParametrizationForm>> &forms) : AdjointForm({}, CompositeParametrization()), forms_(forms) {}
 		virtual ~CompositeForm() {}
 
