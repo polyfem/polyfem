@@ -10,7 +10,7 @@ namespace polyfem::solver
 	class ParametrizationForm : public Form
 	{
 	public:
-		ParametrizationForm() {}
+		ParametrizationForm(const CompositeParametrization &parametrizations) : parametrizations_(parametrizations) {}
 		virtual ~ParametrizationForm() {}
 
 		virtual void init(const Eigen::VectorXd &x) final override
@@ -44,6 +44,11 @@ namespace polyfem::solver
 		virtual void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) final override
 		{
 			line_search_begin_with_param(apply_parametrizations(x0), apply_parametrizations(x1));
+		}
+
+		virtual void line_search_end() final override
+		{
+			line_search_end_with_param();
 		}
 
 		virtual void post_step(const int iter_num, const Eigen::VectorXd &x) final override
@@ -88,6 +93,7 @@ namespace polyfem::solver
 		virtual bool is_step_valid_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
 		virtual double max_step_size_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return 1; }
 		virtual void line_search_begin_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) {}
+		virtual void line_search_end_with_param() {}
 		virtual void post_step_with_param(const int iter_num, const Eigen::VectorXd &x) {}
 		virtual void solution_changed_with_param(const Eigen::VectorXd &new_x) {}
 		virtual void update_quantities_with_param(const double t, const Eigen::VectorXd &x) {}

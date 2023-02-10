@@ -1,106 +1,106 @@
-// ////////////////////////////////////////////////////////////////////////////////
-// #include <polyfem/State.hpp>
+////////////////////////////////////////////////////////////////////////////////
+#include <polyfem/State.hpp>
 
-// #include <polyfem/utils/StringUtils.hpp>
-// #include <polyfem/utils/Logger.hpp>
-// #include <polyfem/utils/JSONUtils.hpp>
-// #include <polyfem/solver/Optimizations.hpp>
-// #include <polyfem/solver/NonlinearSolver.hpp>
+#include <polyfem/utils/StringUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/solver/Optimizations.hpp>
+#include <polyfem/solver/NonlinearSolver.hpp>
 
-// #include <iostream>
-// #include <fstream>
-// #include <catch2/catch.hpp>
-// ////////////////////////////////////////////////////////////////////////////////
+#include <iostream>
+#include <fstream>
+#include <catch2/catch.hpp>
+////////////////////////////////////////////////////////////////////////////////
 
-// using namespace polyfem;
-// using namespace solver;
-// using namespace polysolve;
+using namespace polyfem;
+using namespace solver;
+using namespace polysolve;
 
-// namespace
-// {
-// 	bool load_json(const std::string &json_file, json &out)
-// 	{
-// 		std::ifstream file(json_file);
+namespace
+{
+	// bool load_json(const std::string &json_file, json &out)
+	// {
+	// 	std::ifstream file(json_file);
 
-// 		if (!file.is_open())
-// 			return false;
+	// 	if (!file.is_open())
+	// 		return false;
 
-// 		file >> out;
+	// 	file >> out;
 
-// 		out["root_path"] = json_file;
+	// 	out["root_path"] = json_file;
 
-// 		return true;
-// 	}
+	// 	return true;
+	// }
 
-// 	std::string resolve_output_path(const std::string &output_dir, const std::string &path)
-// 	{
-// 		if (std::filesystem::path(path).is_absolute())
-// 			return path;
-// 		else
-// 			return std::filesystem::weakly_canonical(std::filesystem::path(output_dir) / path).string();
-// 	}
+	// std::string resolve_output_path(const std::string &output_dir, const std::string &path)
+	// {
+	// 	if (std::filesystem::path(path).is_absolute())
+	// 		return path;
+	// 	else
+	// 		return std::filesystem::weakly_canonical(std::filesystem::path(output_dir) / path).string();
+	// }
 
-// 	bool save_mat(const Eigen::MatrixXd &mat, const std::string &file_name)
-// 	{
-// 		std::ofstream file(file_name);
-// 		if (!file.is_open())
-// 			return false;
+	// bool save_mat(const Eigen::MatrixXd &mat, const std::string &file_name)
+	// {
+	// 	std::ofstream file(file_name);
+	// 	if (!file.is_open())
+	// 		return false;
 
-// 		file << fmt::format("matrix size {} x {}\n", mat.rows(), mat.cols());
-// 		file << mat;
+	// 	file << fmt::format("matrix size {} x {}\n", mat.rows(), mat.cols());
+	// 	file << mat;
 
-// 		return true;
-// 	}
+	// 	return true;
+	// }
 
-// 	std::vector<double> read_energy(const std::string &file)
-// 	{
-// 		std::ifstream energy_out(file);
-// 		std::vector<double> energies;
-// 		std::string line;
-// 		if (energy_out.is_open())
-// 		{
-// 			while (getline(energy_out, line))
-// 			{
-// 				energies.push_back(std::stod(line.substr(0, line.find(","))));
-// 			}
-// 		}
-// 		double starting_energy = energies[0];
-// 		double optimized_energy = energies[energies.size() - 1];
+	// std::vector<double> read_energy(const std::string &file)
+	// {
+	// 	std::ifstream energy_out(file);
+	// 	std::vector<double> energies;
+	// 	std::string line;
+	// 	if (energy_out.is_open())
+	// 	{
+	// 		while (getline(energy_out, line))
+	// 		{
+	// 			energies.push_back(std::stod(line.substr(0, line.find(","))));
+	// 		}
+	// 	}
+	// 	double starting_energy = energies[0];
+	// 	double optimized_energy = energies[energies.size() - 1];
 
-// 		for (int i = 0; i < energies.size(); ++i)
-// 		{
-// 			if (i == 0)
-// 				std::cout << "initial " << energies[i] << std::endl;
-// 			else if (i == energies.size() - 1)
-// 				std::cout << "final " << energies[i] << std::endl;
-// 			else
-// 				std::cout << "step " << i << " " << energies[i] << std::endl;
-// 		}
+	// 	for (int i = 0; i < energies.size(); ++i)
+	// 	{
+	// 		if (i == 0)
+	// 			std::cout << "initial " << energies[i] << std::endl;
+	// 		else if (i == energies.size() - 1)
+	// 			std::cout << "final " << energies[i] << std::endl;
+	// 		else
+	// 			std::cout << "step " << i << " " << energies[i] << std::endl;
+	// 	}
 
-// 		return energies;
-// 	}
+	// 	return energies;
+	// }
 
-// 	void run_opt_new(const std::string &name)
-// 	{
-// 		const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + name + "/";
-// 		json opt_args;
-// 		if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-// 			log_and_throw_error("Failed to load optimization json file!");
+	// void run_opt_new(const std::string &name)
+	// {
+	// 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + name + "/";
+	// 	json opt_args;
+	// 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
+	// 		log_and_throw_error("Failed to load optimization json file!");
 
-// 		for (auto &state_arg : opt_args["states"])
-// 			state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
+	// 	for (auto &state_arg : opt_args["states"])
+	// 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
 
-// 		auto nl_problem = make_nl_problem(opt_args, spdlog::level::level_enum::err);
+	// 	auto nl_problem = make_nl_problem(opt_args, spdlog::level::level_enum::err);
 
-// 		Eigen::VectorXd x = nl_problem->initial_guess();
+	// 	Eigen::VectorXd x = nl_problem->initial_guess();
 
-// 		std::shared_ptr<cppoptlib::NonlinearSolver<solver::AdjointNLProblem>> nlsolver = make_nl_solver<solver::AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+	// 	std::shared_ptr<cppoptlib::NonlinearSolver<solver::AdjointNLProblem>> nlsolver = make_nl_solver<solver::AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 
-// 		CHECK_THROWS_WITH(nlsolver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
-// 	}
-// } // namespace
+	// 	CHECK_THROWS_WITH(nlsolver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+	// }
+} // namespace
 
-// #if defined(__linux__)
+#if defined(__linux__)
 
 // TEST_CASE("material-opt", "[optimization]")
 // {
@@ -284,4 +284,4 @@
 // 	REQUIRE(energies[energies.size() - 1] == Approx(1.85359e-05).epsilon(1e-4));
 // }
 
-// #endif
+#endif
