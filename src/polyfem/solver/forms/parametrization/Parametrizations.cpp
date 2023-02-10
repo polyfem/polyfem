@@ -1,12 +1,12 @@
-#include "Parameterizations.hpp"
+#include "Parametrizations.hpp"
 
 #include <polyfem/utils/ElasticityUtils.hpp>
 
 namespace polyfem::solver
 {
-	std::vector<std::shared_ptr<Parameterization>> ParameterizationFactory::build(const json &params, const int full_size)
+	std::vector<std::shared_ptr<Parametrization>> ParametrizationFactory::build(const json &params, const int full_size)
 	{
-		return std::vector<std::shared_ptr<Parameterization>>();
+		return std::vector<std::shared_ptr<Parametrization>>();
 	}
 
 	ExponentialMap::ExponentialMap(const int from, const int to)

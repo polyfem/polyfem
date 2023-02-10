@@ -4,7 +4,7 @@
 
 namespace polyfem::solver
 {
-	class SumForm : public ParameterizationForm
+	class SumForm : public ParametrizationForm
 	{
 	public:
 		virtual ~SumForm() {}

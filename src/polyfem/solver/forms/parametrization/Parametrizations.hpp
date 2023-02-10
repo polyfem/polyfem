@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Parameterization.hpp"
+#include "Parametrization.hpp"
 
 #include <polyfem/mesh/Mesh.hpp>
 
@@ -9,16 +9,16 @@
 
 namespace polyfem::solver
 {
-	class ParameterizationFactory
+	class ParametrizationFactory
 	{
 	private:
-		ParameterizationFactory() {}
+		ParametrizationFactory() {}
 
 	public:
-		static std::vector<std::shared_ptr<Parameterization>> build(const json &params, const int full_size);
+		static std::vector<std::shared_ptr<Parametrization>> build(const json &params, const int full_size);
 	};
 
-	class ExponentialMap : public Parameterization
+	class ExponentialMap : public Parametrization
 	{
 	public:
 		ExponentialMap(const int from = -1, const int to = -1);
@@ -31,7 +31,7 @@ namespace polyfem::solver
 		const int from_, to_;
 	};
 
-	class LambdaMu2ENu : public Parameterization
+	class LambdaMu2ENu : public Parametrization
 	{
 	public:
 		LambdaMu2ENu(const bool is_volume);
@@ -44,7 +44,7 @@ namespace polyfem::solver
 		const bool is_volume_;
 	};
 
-	class PerBody : public Parameterization
+	class PerBody : public Parametrization
 	{
 	public:
 		PerBody(const bool is_volume);

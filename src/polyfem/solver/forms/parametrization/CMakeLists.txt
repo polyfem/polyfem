@@ -1,7 +1,7 @@
 set(SOURCES
-	Parameterization.hpp
-	Parameterizations.hpp
-	Parameterizations.cpp
+	Parametrization.hpp
+	Parametrizations.hpp
+	Parametrizations.cpp
 )
 
 prepend_current_path(SOURCES)

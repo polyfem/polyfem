@@ -9,10 +9,10 @@ namespace polyfem::solver
 	/** This parameterize a function f : x -> y
 	 * and provides the chain rule with respect to previous gradients
 	 */
-	class Parameterization
+	class Parametrization
 	{
 	public:
-		virtual ~Parameterization() {}
+		virtual ~Parametrization() {}
 
 		virtual Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const
 		{
@@ -25,12 +25,12 @@ namespace polyfem::solver
 		virtual Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const = 0;
 	};
 
-	class CompositeParameterization
+	class CompositeParametrization
 	{
 	public:
-		CompositeParameterization() {}
-		CompositeParameterization(const std::vector<std::shared_ptr<Parameterization>> &parameterizations): parameterizations_(parameterizations) {}
-		virtual ~CompositeParameterization() {}
+		CompositeParametrization() {}
+		CompositeParametrization(const std::vector<std::shared_ptr<Parametrization>> &parametrizations): parametrizations_(parametrizations) {}
+		virtual ~CompositeParametrization() {}
 
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const
 		{
@@ -40,11 +40,11 @@ namespace polyfem::solver
 
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const
 		{
-			if (parameterizations_.empty())
+			if (parametrizations_.empty())
 				return x;
 
 			Eigen::VectorXd y = x;
-			for (const auto &p : parameterizations_)
+			for (const auto &p : parametrizations_)
 			{
 				y = p->eval(y);
 			}
@@ -53,27 +53,27 @@ namespace polyfem::solver
 		}
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const
 		{
-			if (parameterizations_.empty())
+			if (parametrizations_.empty())
 				return grad_full;
 
 			std::vector<Eigen::VectorXd> ys;
 			auto y = x;
-			for (const auto &p : parameterizations_)
+			for (const auto &p : parametrizations_)
 			{
 				ys.emplace_back(y);
 				y = p->eval(y);
 			}
 
 			Eigen::VectorXd gradv = grad_full;
-			for (int i = parameterizations_.size() - 1; i >= 0; --i)
+			for (int i = parametrizations_.size() - 1; i >= 0; --i)
 			{
-				gradv = parameterizations_[i]->apply_jacobian(gradv, ys[i]);
+				gradv = parametrizations_[i]->apply_jacobian(gradv, ys[i]);
 			}
 
 			return gradv;
 		}
 	
 	private:
-		std::vector<std::shared_ptr<Parameterization>> parameterizations_;
+		std::vector<std::shared_ptr<Parametrization>> parametrizations_;
 	};
 } // namespace polyfem::solver

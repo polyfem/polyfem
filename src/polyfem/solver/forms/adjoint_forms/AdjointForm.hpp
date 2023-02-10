@@ -1,11 +1,11 @@
 #pragma once
 
-#include <polyfem/solver/forms/ParameterizationForm.hpp>
+#include <polyfem/solver/forms/ParametrizationForm.hpp>
 #include "VariableToSimulation.hpp"
 
 namespace polyfem::solver
 {
-    class AdjointForm : public ParameterizationForm 
+    class AdjointForm : public ParametrizationForm 
     {
     public:
         AdjointForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations) : variable_to_simulations_(variable_to_simulations) {}

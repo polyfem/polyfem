@@ -142,7 +142,7 @@ namespace
 		}
 	}
 
-	void verify_adjoint(std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, ParameterizationForm &obj, State &state, const Eigen::VectorXd &x, const Eigen::MatrixXd &theta, const double dt, const double tol)
+	void verify_adjoint(std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, ParametrizationForm &obj, State &state, const Eigen::VectorXd &x, const Eigen::MatrixXd &theta, const double dt, const double tol)
 	{
 		double functional_val = obj.value(x);
 
@@ -269,7 +269,7 @@ TEST_CASE("laplacian", "[adjoint_method]")
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParameterization()));
+	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 
 	StressForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
 
@@ -488,7 +488,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParameterization()));
+	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 
 	StressForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
 
@@ -627,7 +627,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParameterization()));
+	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 
 	std::shared_ptr<StaticForm> obj_aux = std::make_shared<StressForm>(variable_to_simulations, state, opt_args["functionals"][0]);
 	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
