@@ -7,9 +7,13 @@ namespace polyfem::solver
     class SpatialIntegralForm : public StaticForm
     {
     public:
-        SpatialIntegralForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args): StaticForm(variable_to_simulations), state_(state) {}
+        SpatialIntegralForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args): StaticForm(variable_to_simulations), state_(state) 
+        {
+        }
 
         const State &get_state() { return state_; }
+
+        void set_integral_type(const SpatialIntegralType type) { spatial_integral_type_ = type; }
 
         double value_unweighted(const Eigen::VectorXd &x) const override;
         Eigen::VectorXd compute_adjoint_rhs_step(const Eigen::VectorXd &x, const State &state) override;
@@ -28,7 +32,7 @@ namespace polyfem::solver
     public:
         StressForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args): SpatialIntegralForm(variable_to_simulations, state, args) 
         {
-            spatial_integral_type_ = SpatialIntegralType::VOLUME;
+            set_integral_type(SpatialIntegralType::VOLUME);
 
             auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
             ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -41,5 +45,25 @@ namespace polyfem::solver
 
     private:
         int in_power_ = 2;
+    };
+
+    class PositionForm : public SpatialIntegralForm
+    {
+    public:
+        PositionForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args): SpatialIntegralForm(variable_to_simulations, state, args) 
+        {
+            set_integral_type(SpatialIntegralType::VOLUME);
+
+            auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+            ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+        }
+
+        void set_dim(const int dim) { dim_ = dim; }
+
+    protected:
+        IntegrableFunctional get_integral_functional() const override;
+
+    private:
+        int dim_ = 0;
     };
 }

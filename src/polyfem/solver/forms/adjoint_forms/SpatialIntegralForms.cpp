@@ -121,7 +121,7 @@ namespace polyfem::solver
 		return j;
 	}
 
-  void StressForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+  	void StressForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
   {
     SpatialIntegralForm::compute_partial_gradient(x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
@@ -141,4 +141,26 @@ namespace polyfem::solver
 				gradv += parametrization.apply_jacobian(term, x);
 		}
   }
+
+	IntegrableFunctional PositionForm::get_integral_functional() const
+	{
+		IntegrableFunctional j;
+		const int dim = dim_;
+
+		j.set_j([dim](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val = u.col(dim) + pts.col(dim);
+		});
+
+		j.set_dj_du([dim](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(u.rows(), u.cols());
+			val.col(dim).setOnes();
+		});
+
+		j.set_dj_dx([dim](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(pts.rows(), pts.cols());
+			val.col(dim).setOnes();
+		});
+
+		return j;
+	}
 } // namespace polyfem::solver
