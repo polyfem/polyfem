@@ -604,38 +604,46 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 // 	verify_adjoint(func, state, elastic_param, "material", velocity_discrete, 1e-5, 1e-5);
 // }
 
-// TEST_CASE("damping-transient", "[adjoint_method]")
-// {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-// 	json in_args;
-// 	load_json(path + "damping-transient.json", in_args);
-// 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-// 	State &state = *state_ptr;
+TEST_CASE("damping-transient", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+	json in_args;
+	load_json(path + "damping-transient.json", in_args);
+	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
 
-// 	json opt_args;
-// 	load_json(path + "damping-transient-opt.json", opt_args);
-// 	opt_args = apply_opt_json_spec(opt_args, false);
+	json opt_args;
+	load_json(path + "damping-transient-opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
 
-// 	std::string root_path = "";
-// 	if (utils::is_param_valid(opt_args, "root_path"))
-// 		root_path = opt_args["root_path"].get<std::string>();
+	std::string root_path = "";
+	if (utils::is_param_valid(opt_args, "root_path"))
+		root_path = opt_args["root_path"].get<std::string>();
 
-// 	// compute reference solution
-// 	json in_args_ref;
-// 	load_json(path + "damping-transient-target.json", in_args_ref);
-// 	std::shared_ptr<State> state_reference = create_state_and_solve(in_args_ref);
+	// compute reference solution
+	json in_args_ref;
+	load_json(path + "damping-transient-target.json", in_args_ref);
+	std::shared_ptr<State> state_reference = create_state_and_solve(in_args_ref);
 
-// 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr, state_reference};
-// 	std::shared_ptr<DampingParameter> damping_param = std::make_shared<DampingParameter>(states_ptr, opt_args["parameters"][0]);
-// 	std::vector<std::shared_ptr<Parameter>> parameters = {damping_param};
+	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	variable_to_simulations.push_back(std::make_shared<DampingCoeffientVariableToSimulation>(state_ptr, CompositeParametrization()));
 
-// 	std::shared_ptr<Objective> func = Objective::create(opt_args["functionals"][0], root_path, parameters, states_ptr);
+	auto obj_aux = std::make_shared<TargetForm>(variable_to_simulations, CompositeParametrization(), state, opt_args["functionals"][0]);
 
-// 	Eigen::VectorXd velocity_discrete;
-// 	velocity_discrete.setOnes(2);
+	std::vector<int> tmp_ids = opt_args["functionals"][0]["reference_cached_body_ids"];
+	std::set<int> reference_cached_body_ids = std::set(tmp_ids.begin(), tmp_ids.end());
+	obj_aux->set_reference(state_reference, reference_cached_body_ids);
 
-// 	verify_adjoint(*func, state, damping_param, "damping", velocity_discrete, 1e-5, 1e-4);
-// }
+	TransientForm obj(variable_to_simulations, CompositeParametrization(), state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
+
+	Eigen::VectorXd velocity_discrete;
+	velocity_discrete.setOnes(2);
+
+	Eigen::VectorXd x(2);
+	x << 10, 10;
+
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-5, 1e-4);
+}
 
 // TEST_CASE("material-transient", "[adjoint_method]")
 // {
