@@ -107,7 +107,7 @@ namespace polyfem::solver
 		virtual bool is_step_collision_free_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
 		virtual void first_derivative_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const {}
 
-		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final
 		{
 			compute_partial_gradient_unweighted(x, gradv);
 			gradv *= weight_;

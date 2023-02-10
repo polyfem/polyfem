@@ -1,6 +1,4 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/State.hpp>
-#include <polyfem/solver/AdjointTools.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <iostream>
 #include <fstream>
@@ -11,6 +9,7 @@
 #include <polyfem/autogen/auto_p_bases.hpp>
 
 #include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
+#include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
 
 #include <catch2/catch.hpp>
 #include <math.h>
@@ -326,38 +325,89 @@ TEST_CASE("laplacian", "[adjoint_method]")
 // 	verify_adjoint(obj, state, shape_param, "shape", velocity_discrete, 1e-7, 1e-4);
 // }
 
-// TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
-// {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-// 	json in_args;
-// 	load_json(path + "linear_elasticity-surface.json", in_args);
-// 	auto state_ptr = create_state_and_solve(in_args);
-// 	State &state = *state_ptr;
+TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+	json in_args;
+	load_json(path + "linear_elasticity-surface.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
 
-// 	json opt_args;
-// 	load_json(path + "linear_elasticity-surface-opt.json", opt_args);
-// 	opt_args = apply_opt_json_spec(opt_args, false);
+	json opt_args;
+	load_json(path + "linear_elasticity-surface-opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
 
-// 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-// 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
-// 	PositionObjective obj(state, shape_param, opt_args["functionals"][0]);
-// 	obj.set_integral_type(SpatialIntegralType::SURFACE);
+	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 
-// 	auto velocity = [](const Eigen::MatrixXd &position) {
-// 		Eigen::MatrixXd vel;
-// 		vel.setZero(position.rows(), position.cols());
-// 		for (int i = 0; i < vel.rows(); i++)
-// 		{
-// 			vel(i, 0) = position(i, 0);
-// 			vel(i, 1) = position(i, 0) * position(i, 0);
-// 		}
-// 		return vel;
-// 	};
-// 	Eigen::MatrixXd velocity_discrete;
-// 	sample_field(state, velocity, velocity_discrete);
+	PositionForm obj(variable_to_simulations, CompositeParametrization(), state, opt_args["functionals"][0]);
+	obj.set_integral_type(SpatialIntegralType::SURFACE);
 
-// 	verify_adjoint(obj, state, shape_param, "shape", velocity_discrete, 1e-6, 1e-5);
-// }
+	auto velocity = [](const Eigen::MatrixXd &position) {
+		Eigen::MatrixXd vel;
+		vel.setZero(position.rows(), position.cols());
+		for (int i = 0; i < vel.rows(); i++)
+		{
+			vel(i, 0) = position(i, 0);
+			vel(i, 1) = position(i, 0) * position(i, 0);
+		}
+		return vel;
+	};
+	Eigen::MatrixXd velocity_discrete;
+	sample_field(state, velocity, velocity_discrete);
+
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+	state.get_vf(V, F);
+	Eigen::VectorXd x = utils::flatten(V);
+
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-5);
+}
+
+TEST_CASE("sum-form", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+	json in_args;
+	load_json(path + "sum-form.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
+
+	json opt_args;
+	load_json(path + "sum-form-opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
+
+	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+
+	std::shared_ptr<AdjointForm> obj1 = std::make_shared<PositionForm>(variable_to_simulations, CompositeParametrization(), state, opt_args["functionals"][0]);
+	obj1->set_weight(0.6);
+
+	std::shared_ptr<AdjointForm> obj2 = std::make_shared<StressForm>(variable_to_simulations, CompositeParametrization(), state, opt_args["functionals"][0]);
+	obj2->set_weight(1.5);
+
+	std::vector<std::shared_ptr<ParametrizationForm>> forms({obj1, obj2});
+
+	SumCompositeForm obj(variable_to_simulations, CompositeParametrization(), forms);
+	obj.set_weight(0.1);
+
+	auto velocity = [](const Eigen::MatrixXd &position) {
+		auto vel = position;
+		for (int i = 0; i < vel.size(); i++)
+		{
+			vel(i) = vel(i) * cos(vel(i));
+		}
+		return vel;
+	};
+	Eigen::MatrixXd velocity_discrete;
+	sample_field(state, velocity, velocity_discrete);
+
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+	state.get_vf(V, F);
+	Eigen::VectorXd x = utils::flatten(V);
+
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 1e-5);
+}
 
 // TEST_CASE("topology-compliance", "[adjoint_method]")
 // {
