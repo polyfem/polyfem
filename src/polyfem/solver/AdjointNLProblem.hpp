@@ -1,8 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <polyfem/solver/forms/CompositeForm.hpp>
-#include <polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp>
+#include <polyfem/solver/forms/adjoint_forms/CompositeForm.hpp>
 #include "FullNLProblem.hpp"
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/State.hpp>

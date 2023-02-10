@@ -10,7 +10,7 @@ namespace polyfem::solver
 		return AdjointTools::integrate_objective(state_, get_integral_functional(), state_.diff_cached[time_step_].u, ids_, spatial_integral_type_, time_step_);
 	}
 
-	void SpatialIntegralForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void SpatialIntegralForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		assert(time_step_ < state_.diff_cached.size());
 		gradv.setZero(x.size());
@@ -34,7 +34,7 @@ namespace polyfem::solver
 		}
 	}
 
-	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_step(const Eigen::VectorXd &x, const State &state)
+	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state)
 	{
 		if (&state != &state_)
 			return Eigen::VectorXd::Zero(state.ndof(), state.diff_cached.size());
@@ -121,9 +121,9 @@ namespace polyfem::solver
 		return j;
 	}
 
-  	void StressForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+  	void StressForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
   {
-    SpatialIntegralForm::compute_partial_gradient(x, gradv);
+    SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &parametrization = param_map->get_parametrization();

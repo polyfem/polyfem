@@ -15,16 +15,16 @@ namespace polyfem::solver
         }
 
         Eigen::VectorXd partial_grad;
-        compute_partial_gradient(x, partial_grad);
+        compute_partial_gradient_unweighted(x, partial_grad);
         gradv += partial_grad;
     }
 
-    void AdjointForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+    void AdjointForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
     {
         log_and_throw_error("Should override this function in any AdjointForm!");
     }
 
-    Eigen::MatrixXd AdjointForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state)
+    Eigen::MatrixXd AdjointForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
     {
         log_and_throw_error("Should override this function in any AdjointForm!");
         return Eigen::MatrixXd();
@@ -37,10 +37,10 @@ namespace polyfem::solver
         return term;
     }
 
-    Eigen::MatrixXd StaticForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state)
+    Eigen::MatrixXd StaticForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
     {
 		Eigen::MatrixXd term(state.ndof(), state.diff_cached.size());
-		term.col(time_step_) = compute_adjoint_rhs_step(x, state);
+		term.col(time_step_) = compute_adjoint_rhs_unweighted_step(x, state);
 
 		return term;
     }
@@ -111,7 +111,7 @@ namespace polyfem::solver
 		}
 		return value;
     }
-    Eigen::MatrixXd TransientForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state)
+    Eigen::MatrixXd TransientForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
     {
 		Eigen::MatrixXd terms;
 		terms.setZero(state.ndof(), time_steps_ + 1);
@@ -122,12 +122,12 @@ namespace polyfem::solver
 			if (weights[i] == 0)
 				continue;
 			obj_->set_time_step(i);
-			terms.col(i) = weights[i] * obj_->compute_adjoint_rhs_step(x, state);
+			terms.col(i) = weights[i] * obj_->compute_adjoint_rhs_unweighted_step(x, state);
 		}
 
 		return terms;
     }
-    void TransientForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+    void TransientForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
     {
 		gradv.setZero(x.size());
 
@@ -138,7 +138,7 @@ namespace polyfem::solver
 			if (weights[i] == 0)
 				continue;
 			obj_->set_time_step(i);
-            obj_->compute_partial_gradient(x, tmp);
+            obj_->compute_partial_gradient_unweighted(x, tmp);
 			gradv += weights[i] * tmp;
 		}
     }

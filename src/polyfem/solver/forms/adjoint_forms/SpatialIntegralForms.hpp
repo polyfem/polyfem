@@ -16,8 +16,8 @@ namespace polyfem::solver
 		void set_integral_type(const SpatialIntegralType type) { spatial_integral_type_ = type; }
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
-		Eigen::VectorXd compute_adjoint_rhs_step(const Eigen::VectorXd &x, const State &state) override;
-		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) override;
+		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
 		virtual IntegrableFunctional get_integral_functional() const = 0;
@@ -38,7 +38,7 @@ namespace polyfem::solver
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 		}
 
-		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
 		IntegrableFunctional get_integral_functional() const override;

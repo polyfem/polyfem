@@ -86,9 +86,13 @@ namespace polyfem::solver
 			return is_step_collision_free_with_param(apply_parametrizations(x0), apply_parametrizations(x1));
 		}
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) { return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size()); }
+		Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state)
+		{
+			return compute_adjoint_rhs_unweighted(x, state) * weight_;
+		}
 
-	protected:
+		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) { return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size()); }
+
 		virtual void init_with_param(const Eigen::VectorXd &x) {}
 		virtual bool is_step_valid_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
 		virtual double max_step_size_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return 1; }
@@ -103,7 +107,15 @@ namespace polyfem::solver
 		virtual bool is_step_collision_free_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
 		virtual void first_derivative_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const {}
 
-		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+		{
+			compute_partial_gradient_unweighted(x, gradv);
+			gradv *= weight_;
+		}
+
+	protected:
+
+		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 		{
 			first_derivative_unweighted(x, gradv);
 		}

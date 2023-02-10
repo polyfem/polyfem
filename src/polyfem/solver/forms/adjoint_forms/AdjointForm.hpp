@@ -11,8 +11,8 @@ namespace polyfem::solver
 		AdjointForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations) : ParametrizationForm(parametrizations), variable_to_simulations_(variable_to_simulations) {}
 		virtual ~AdjointForm() {}
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) override;
-		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override;
+		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
 		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
@@ -32,8 +32,8 @@ namespace polyfem::solver
 		virtual void set_time_step(int time_step) { time_step_ = time_step; }
 		int get_time_step() const { return time_step_; }
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) final override;
-		virtual Eigen::VectorXd compute_adjoint_rhs_step(const Eigen::VectorXd &x, const State &state) = 0;
+		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) final override;
+		virtual Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) = 0;
 		virtual double value_unweighted(const Eigen::VectorXd &x) const = 0;
 
 	protected:
@@ -46,8 +46,8 @@ namespace polyfem::solver
 		TransientForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const int time_steps, const double dt, const std::string &transient_integral_type, const std::shared_ptr<StaticForm> &obj) : AdjointForm(variable_to_simulations, parametrizations), time_steps_(time_steps), dt_(dt), transient_integral_type_(transient_integral_type), obj_(obj) {}
 		virtual ~TransientForm() = default;
 
-		Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) override;
-		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override;
+		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
 		std::vector<double> get_transient_quadrature_weights() const;

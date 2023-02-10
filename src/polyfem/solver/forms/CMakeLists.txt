@@ -3,8 +3,6 @@ set(SOURCES
 	ParametrizationForm.hpp
 	ALForm.hpp
 	ALForm.cpp
-	CompositeForm.hpp
-	SumCompositeForm.hpp
 	BodyForm.hpp
 	BodyForm.cpp
 	ElasticForm.hpp
