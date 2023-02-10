@@ -26,7 +26,7 @@ namespace polyfem::solver
 	class StaticForm : public AdjointForm
 	{
 	public:
-		StaticForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations) : AdjointForm(variable_to_simulations, parametrizations) {}
+		using AdjointForm::AdjointForm;
 		virtual ~StaticForm() = default;
 
 		virtual void set_time_step(int time_step) { time_step_ = time_step; }

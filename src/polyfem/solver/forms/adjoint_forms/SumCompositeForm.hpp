@@ -4,9 +4,8 @@ namespace polyfem::solver
 {
 	class SumCompositeForm : public CompositeForm
 	{
-		using CompositeForm::CompositeForm;
 	public:
-		SumCompositeForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const std::vector<std::shared_ptr<ParametrizationForm>> &forms) : CompositeForm(variable_to_simulations, parametrizations, forms) {}
+		using CompositeForm::CompositeForm;
 		~SumCompositeForm() {}
 	
 	private:
