@@ -10,6 +10,7 @@ namespace polyfem::solver
 	{
 	public:
 		CompositeForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const std::vector<std::shared_ptr<ParametrizationForm>> &forms) : AdjointForm(variable_to_simulations, parametrizations), forms_(forms) {}
+		CompositeForm(const std::vector<std::shared_ptr<ParametrizationForm>> &forms) : AdjointForm({}, CompositeParametrization()), forms_(forms) {}
 		virtual ~CompositeForm() {}
 
 		virtual int n_objs() const final { return forms_.size(); }
@@ -41,24 +42,6 @@ namespace polyfem::solver
 		}
 
 	protected:
-
-		// old version
-
-		// virtual double compose(const double first_form_output, const double second_form_output) const = 0;
-		// virtual Eigen::VectorXd compose_derivative(const Eigen::VectorXd &first_form_derivative, const Eigen::VectorXd &second_form_derivative) const = 0;
-
-		// virtual double value_unweighted(const Eigen::VectorXd &x) const override
-		// {
-		// 	double value = 0;
-		// 	for (const auto &f : forms_)
-		// 	{
-		// 		if (!f->enabled())
-		// 			continue;
-		// 		value = compose(value, f->value(x));
-		// 	}
-		// 	return value;
-		// }
-
 		virtual double compose(const Eigen::VectorXd &inputs) const = 0;
 		virtual Eigen::VectorXd compose_grad(const Eigen::VectorXd &inputs) const = 0;
 
@@ -69,7 +52,7 @@ namespace polyfem::solver
 
 			for (int i = 0; i < forms_.size(); i++)
 				values(i) = forms_[i]->value(x);
-			
+
 			return values;
 		}
 
