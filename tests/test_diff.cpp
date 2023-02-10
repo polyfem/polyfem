@@ -614,38 +614,40 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 // 	verify_adjoint(func, state, elastic_param, "material", velocity_discrete, 1e-5, 1e-4);
 // }
 
-// TEST_CASE("shape-transient-friction", "[adjoint_method]")
-// {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-// 	json in_args;
-// 	load_json(path + "shape-transient-friction.json", in_args);
-// 	auto state_ptr = create_state_and_solve(in_args);
-// 	State &state = *state_ptr;
+TEST_CASE("shape-transient-friction", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+	json in_args;
+	load_json(path + "shape-transient-friction.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
 
-// 	json opt_args;
-// 	load_json(path + "shape-transient-friction-opt.json", opt_args);
-// 	opt_args = apply_opt_json_spec(opt_args, false);
+	json opt_args;
+	load_json(path + "shape-transient-friction-opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
 
-// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-// 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParameterization()));
+	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParameterization()));
 
-// 	StressForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
+	std::shared_ptr<StaticForm> obj_aux = std::make_shared<StressForm>(variable_to_simulations, state, opt_args["functionals"][0]);
+	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
 
-// 	Eigen::MatrixXd velocity_discrete;
-// 	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
-// 	for (int i = 0; i < state.n_geom_bases; ++i)
-// 	{
-// 		velocity_discrete(i * 2 + 0) = rand() % 1000;
-// 		velocity_discrete(i * 2 + 1) = rand() % 1000;
-// 	}
+	Eigen::MatrixXd velocity_discrete;
+	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
+	for (int i = 0; i < state.n_geom_bases; ++i)
+	{
+		velocity_discrete(i * 2 + 0) = rand() % 1000;
+		velocity_discrete(i * 2 + 1) = rand() % 1000;
+	}
+	velocity_discrete.normalize();
 
-// 	Eigen::MatrixXd V;
-// 	Eigen::MatrixXi F;
-// 	state.get_vf(V, F);
-// 	Eigen::VectorXd x = utils::flatten(V);
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+	state.get_vf(V, F);
+	Eigen::VectorXd x = utils::flatten(V);
 
-// 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-5);
-// }
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-5);
+}
 
 // TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 // {

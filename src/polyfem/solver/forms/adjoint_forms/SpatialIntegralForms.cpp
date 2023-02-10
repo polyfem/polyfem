@@ -34,7 +34,7 @@ namespace polyfem::solver
 		}
 	}
 
-	Eigen::MatrixXd SpatialIntegralForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state)
+	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_step(const Eigen::VectorXd &x, const State &state)
 	{
 		if (&state != &state_)
 			return Eigen::VectorXd::Zero(state.ndof(), state.diff_cached.size());
