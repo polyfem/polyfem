@@ -78,25 +78,6 @@ option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"               OFF)
 
-#Solver
-option(POLYSOLVE_WITH_CHOLMOD          "Enable Cholmod library"            ON)
-option(POLYSOLVE_WITH_UMFPACK          "Enable UmfPack library"            ON)
-option(POLYSOLVE_WITH_SUPERLU          "Enable SuperLU library"            ON)
-option(POLYSOLVE_WITH_MKL              "Enable MKL library"                ON)
-option(POLYSOLVE_WITH_PARDISO          "Enable Pardiso library"            OFF)
-option(POLYSOLVE_WITH_HYPRE            "Enable hypre"                      ON)
-option(POLYSOLVE_WITH_AMGCL            "Use AMGCL"                         ON)
-option(POLYSOLVE_WITH_SPECTRA          "Enable computing spectrum"         OFF)
-option(POLYSOLVE_LARGE_INDEX           "Build for large indices"           OFF)
-
-if(CMAKE_OSX_ARCHITECTURES STREQUAL arm64)
-    set(POLYSOLVE_WITH_CHOLMOD    OFF CACHE BOOL "Enable Cholmod library"  FORCE)
-    set(POLYSOLVE_WITH_UMFPACK    OFF CACHE BOOL "Enable UmfPack library"  FORCE)
-    set(POLYSOLVE_WITH_SUPERLU    OFF CACHE BOOL "Enable SuperLU library"  FORCE)
-    set(POLYSOLVE_WITH_MKL        OFF CACHE BOOL "Enable MKL library"      FORCE)
-endif()
-
-
 # Options for libigl modules
 option(LIBIGL_USE_STATIC_LIBRARY          "Use libigl as static library" OFF)
 option(LIBIGL_WITH_ANTTWEAKBAR            "Use AntTweakBar"              OFF)
