@@ -105,6 +105,8 @@ namespace polyfem::solver
 	protected:
 		inline void update_state(const Eigen::VectorXd &state_variable) override
 		{
+			state_ptr_->initial_sol_update = state_variable.head(state_ptr_->ndof());
+			state_ptr_->initial_vel_update = state_variable.tail(state_ptr_->ndof());
 		}
 	};
 

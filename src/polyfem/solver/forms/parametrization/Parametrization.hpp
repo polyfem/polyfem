@@ -25,20 +25,37 @@ namespace polyfem::solver
 		virtual Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const = 0;
 	};
 
-	class CompositeParametrization
+	class CompositeParametrization: public Parametrization
 	{
 	public:
 		CompositeParametrization() {}
 		CompositeParametrization(const std::vector<std::shared_ptr<Parametrization>> &parametrizations): parametrizations_(parametrizations) {}
 		virtual ~CompositeParametrization() {}
 
-		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const
+		int size(const int x_size) const override
 		{
-			log_and_throw_error("Not supported");
-			return Eigen::VectorXd();
+			int cur_size = x_size;
+			for (const auto &p : parametrizations_)
+				cur_size = p->size(cur_size);
+			
+			return cur_size;
 		}
 
-		Eigen::VectorXd eval(const Eigen::VectorXd &x) const
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override
+		{
+			if (parametrizations_.empty())
+				return y;
+
+			Eigen::VectorXd x = y;
+			for (int i = parametrizations_.size() - 1; i >= 0; i--)
+			{
+				x = parametrizations_[i]->inverse_eval(x);
+			}
+
+			return x;
+		}
+
+		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override
 		{
 			if (parametrizations_.empty())
 				return x;
@@ -51,7 +68,7 @@ namespace polyfem::solver
 
 			return y;
 		}
-		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const
+		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const override
 		{
 			if (parametrizations_.empty())
 				return grad_full;

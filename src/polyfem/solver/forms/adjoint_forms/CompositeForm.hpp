@@ -15,7 +15,7 @@ namespace polyfem::solver
 
 		virtual int n_objs() const final { return forms_.size(); }
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
+		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) final
 		{
 			Eigen::VectorXd composite_grad = compose_grad(get_inputs(x));
 
@@ -28,7 +28,7 @@ namespace polyfem::solver
 			return term;
 		}
 
-		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final
 		{
 			Eigen::VectorXd composite_grad = compose_grad(get_inputs(x));
 
@@ -56,7 +56,7 @@ namespace polyfem::solver
 			return values;
 		}
 
-		double value_unweighted(const Eigen::VectorXd &x) const override
+		virtual double value_unweighted(const Eigen::VectorXd &x) const final override
 		{
 			return compose(get_inputs(x));
 		}
@@ -143,31 +143,6 @@ namespace polyfem::solver
 					return false;
 			}
 			return true;
-		}
-
-		// TODO: should be user input
-		int max_lagging_iterations() const override
-		{
-			int max_lagging_iterations = 1;
-			for (const auto &f : forms_)
-				max_lagging_iterations = std::max(max_lagging_iterations, f->max_lagging_iterations());
-			return max_lagging_iterations;
-		}
-
-		// TODO: should be user input
-		bool uses_lagging() const override
-		{
-			for (const auto &f : forms_)
-				if (f->uses_lagging())
-					return true;
-			return false;
-		}
-
-		// TODO: should be user input
-		void set_project_to_psd(bool project_to_psd)
-		{
-			for (const auto &f : forms_)
-				f->set_project_to_psd(project_to_psd);
 		}
 
 	private:
