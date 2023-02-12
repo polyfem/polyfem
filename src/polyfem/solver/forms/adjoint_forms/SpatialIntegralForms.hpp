@@ -47,6 +47,23 @@ namespace polyfem::solver
 		int in_power_ = 2;
 	};
 
+	class ComplianceForm : public SpatialIntegralForm
+	{
+	public:
+		ComplianceForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, parametrizations, state, args)
+		{
+			set_integral_type(SpatialIntegralType::VOLUME);
+
+			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+		}
+
+		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+
+	protected:
+		IntegrableFunctional get_integral_functional() const override;
+	};
+
 	class PositionForm : public SpatialIntegralForm
 	{
 	public:
