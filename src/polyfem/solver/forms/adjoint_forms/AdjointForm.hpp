@@ -58,4 +58,22 @@ namespace polyfem::solver
 		std::string transient_integral_type_;
 		std::shared_ptr<StaticForm> obj_;
 	};
+
+	class NodeTargetForm : public StaticForm
+	{
+	public:
+		NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const json &args);
+		NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_);
+		~NodeTargetForm() = default;
+
+		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) override;
+		double value_unweighted(const Eigen::VectorXd &x) const override;
+		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+	
+	protected:
+		const State &state_;
+
+		Eigen::MatrixXd target_vertex_positions;
+		std::vector<int> active_nodes;
+	};
 } // namespace polyfem::solver

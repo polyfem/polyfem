@@ -1,4 +1,5 @@
 #include "AdjointForm.hpp"
+#include <polyfem/io/MatrixIO.hpp>
 
 namespace polyfem::solver
 {
@@ -144,4 +145,81 @@ namespace polyfem::solver
 		}
     }
 
+	NodeTargetForm::NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const json &args): StaticForm(variable_to_simulations, parametrizations), state_(state)
+	{
+		std::string target_data_path = args["target_data_path"];
+		if (!std::filesystem::is_regular_file(target_data_path))
+		{
+			throw std::runtime_error("Marker path invalid!");
+		}
+		Eigen::MatrixXd tmp;
+		io::read_matrix(target_data_path, tmp);
+
+		// markers to nodes
+		Eigen::VectorXi nodes = tmp.col(0).cast<int>();
+		target_vertex_positions.setZero(nodes.size(), state_.mesh->dimension());
+		active_nodes.reserve(nodes.size());
+		for (int s = 0; s < nodes.size(); s++)
+		{
+			const int node_id = state_.in_node_to_node(nodes(s));
+			target_vertex_positions.row(s) = tmp.block(s, 1, 1, tmp.cols() - 1);
+			active_nodes.push_back(node_id);
+		}
+	}
+	NodeTargetForm::NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_): StaticForm(variable_to_simulations, parametrizations), state_(state), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
+	{
+
+	}
+	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state)
+	{
+		Eigen::VectorXd rhs;
+		rhs.setZero(state.diff_cached[0].u.size());
+
+		const int dim = state_.mesh->dimension();
+
+		if (&state == &state_)
+		{
+			int i = 0;
+			for (int v : active_nodes)
+			{
+				RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + state_.diff_cached[time_step_].u.block(v * dim, 0, dim, 1).transpose();
+
+				rhs.segment(v * dim, dim) = 2 * (cur_pos - target_vertex_positions.row(i++));
+			}
+		}
+
+		return rhs;
+	}
+	double NodeTargetForm::value_unweighted(const Eigen::VectorXd &x) const
+	{
+		const int dim = state_.mesh->dimension();
+		double val = 0;
+		int i = 0;
+		for (int v : active_nodes)
+		{
+			RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + state_.diff_cached[time_step_].u.block(v * dim, 0, dim, 1).transpose();
+			val += (cur_pos - target_vertex_positions.row(i++)).squaredNorm();
+		}
+		return val;
+	}
+	void NodeTargetForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		gradv.setZero(x.size());
+		for (const auto &param_map : variable_to_simulations_)
+		{
+			const auto &parametrization = param_map->get_parametrization();
+			const auto &state = param_map->get_state();
+			const auto &param_type = param_map->get_parameter_type();
+
+			if (&state != &state_)
+				continue;
+
+			Eigen::VectorXd term;
+			if (param_type == ParameterType::Shape)
+				throw std::runtime_error("Shape derivative of NodeTargetForm not implemented!");
+      
+			if (term.size() > 0)
+				gradv += parametrization.apply_jacobian(term, x);
+		}
+	}
 }

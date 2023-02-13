@@ -437,44 +437,47 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 5e-4);
 }
 
-// TEST_CASE("node-trajectory", "[adjoint_method]")
-// {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-// 	json in_args;
-// 	load_json(path + "node-trajectory.json", in_args);
-// 	auto state_ptr = create_state_and_solve(in_args);
-// 	State &state = *state_ptr;
+TEST_CASE("node-trajectory", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+	json in_args;
+	load_json(path + "node-trajectory.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
 
-// 	json opt_args;
-// 	load_json(path + "node-trajectory-opt.json", opt_args);
-// 	opt_args = apply_opt_json_spec(opt_args, false);
+	json opt_args;
+	load_json(path + "node-trajectory-opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
 
-// 	Eigen::MatrixXd targets(state.n_bases, state.mesh->dimension());
-// 	std::vector<int> actives;
-// 	for (int i = 0; i < targets.size(); i++)
-// 		targets(i) = (rand() % 10) / 10.;
-// 	for (int i = 0; i < targets.rows(); i++)
-// 		actives.push_back(i);
+	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	variable_to_simulations.push_back(std::make_shared<ElasticVariableToSimulation>(state_ptr, CompositeParametrization()));
 
-// 	NodeTargetObjective func(state, actives, targets);
+	Eigen::MatrixXd targets(state.n_bases, state.mesh->dimension());
+	std::vector<int> actives;
+	for (int i = 0; i < targets.size(); i++)
+		targets(i) = (rand() % 10) / 10.;
+	for (int i = 0; i < targets.rows(); i++)
+		actives.push_back(i);
 
-// 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-// 	std::shared_ptr<ElasticParameter> elastic_param = std::make_shared<ElasticParameter>(states_ptr, opt_args["parameters"][0]);
+	NodeTargetForm obj(state, variable_to_simulations, CompositeParametrization(), actives, targets);
 
-// 	auto velocity = [](const Eigen::MatrixXd &position) {
-// 		auto vel = position;
-// 		for (int i = 0; i < vel.size(); i++)
-// 		{
-// 			vel(i) = (rand() % 10000) / 1.0e4;
-// 		}
-// 		return vel;
-// 	};
+	auto velocity = [](const Eigen::MatrixXd &position) {
+		auto vel = position;
+		for (int i = 0; i < vel.size(); i++)
+		{
+			vel(i) = (rand() % 10000) / 1.0e4;
+		}
+		return vel;
+	};
 
-// 	Eigen::MatrixXd velocity_discrete;
-// 	sample_field(state, velocity, velocity_discrete, 0);
+	Eigen::MatrixXd velocity_discrete;
+	sample_field(state, velocity, velocity_discrete, 0);
 
-// 	verify_adjoint(func, state, elastic_param, "material", velocity_discrete, 1e-5, 1e-5);
-// }
+	Eigen::VectorXd x(velocity_discrete.size());
+	x << state.assembler.lame_params().lambda_mat_, state.assembler.lame_params().mu_mat_;
+
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-5, 1e-5);
+}
 
 TEST_CASE("damping-transient", "[adjoint_method]")
 {
