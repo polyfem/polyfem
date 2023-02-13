@@ -291,9 +291,6 @@ target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
 # Extra warnings (link this here so it has top priority)
 target_link_libraries(polyfem PRIVATE polyfem::warnings)
 
-# Extra warnings (link this here so it has top priority)
-target_link_libraries(polyfem PRIVATE polyfem::warnings)
-
 ################################################################################
 # Polyfem binary
 ################################################################################
