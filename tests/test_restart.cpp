@@ -85,7 +85,11 @@ Eigen::MatrixXd run_sim(State &state, const json &args)
 	return sol;
 }
 
+#ifdef NDEBUG
 TEST_CASE("restart", "[restart]")
+#else
+TEST_CASE("restart", "[.][restart]")
+#endif
 {
 	const std::string scene_file = POLYFEM_DATA_DIR "/contact/examples/3D/unit-tests/2-cubes.json";
 	constexpr int total_time_steps = 10;
