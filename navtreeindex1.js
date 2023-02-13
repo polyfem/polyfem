@@ -15,7 +15,8 @@ var NAVTREEINDEX1 =
 "_j_s_o_n_utils_8cpp.html#aa79eb723c652651a8079603fba4ebef9":[5,0,1,0,11,25,0],
 "_j_s_o_n_utils_8cpp_source.html":[5,0,1,0,11,25],
 "_j_s_o_n_utils_8hpp.html":[5,0,1,0,11,26],
-"_j_s_o_n_utils_8hpp.html#a839770ed1facd0a5f30ef708ddf03b15":[5,0,1,0,11,26,8],
+"_j_s_o_n_utils_8hpp.html#a839770ed1facd0a5f30ef708ddf03b15":[5,0,1,0,11,26,9],
+"_j_s_o_n_utils_8hpp.html#a96bdecaf2191cf4146f7bb0d850c47f3":[5,0,1,0,11,26,8],
 "_j_s_o_n_utils_8hpp.html#a9f16cddaaf4c88645ca864f4e99beb19":[5,0,1,0,11,26,6],
 "_j_s_o_n_utils_8hpp.html#aa57e548cd0726262758fcc6b16fe0b0a":[5,0,1,0,11,26,7],
 "_j_s_o_n_utils_8hpp.html#aa79eb723c652651a8079603fba4ebef9":[5,0,1,0,11,26,5],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "_mooney_rivlin_elasticity_8cpp_source.html":[5,0,1,0,0,30],
 "_mooney_rivlin_elasticity_8hpp.html":[5,0,1,0,0,31],
 "_mooney_rivlin_elasticity_8hpp_source.html":[5,0,1,0,0,31],
-"_more_thuente_line_search_8hpp.html":[5,0,1,0,8,1,5],
-"_more_thuente_line_search_8hpp_source.html":[5,0,1,0,8,1,5]
+"_more_thuente_line_search_8hpp.html":[5,0,1,0,8,1,5]
 };

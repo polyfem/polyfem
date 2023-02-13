@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"_more_thuente_line_search_8hpp_source.html":[5,0,1,0,8,1,5],
 "_msh_reader_8cpp.html":[5,0,1,0,3,4],
 "_msh_reader_8cpp.html#a50d2a67a897e7e93c2891fbf5dd792d0":[5,0,1,0,3,4,0],
 "_msh_reader_8cpp_source.html":[5,0,1,0,3,4],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "_solve_data_8hpp_source.html":[5,0,1,0,8,17],
 "_sparse_newton_descent_solver_8hpp.html":[5,0,1,0,8,18],
 "_sparse_newton_descent_solver_8hpp_source.html":[5,0,1,0,8,18],
-"_sparse_newton_descent_solver_8tpp.html":[5,0,1,0,8,19],
-"_sparse_newton_descent_solver_8tpp_source.html":[5,0,1,0,8,19]
+"_sparse_newton_descent_solver_8tpp.html":[5,0,1,0,8,19]
 };
