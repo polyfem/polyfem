@@ -14,8 +14,10 @@ namespace polyfem
 	{
 		namespace
 		{
-			std::vector<json> flatten_ids(const json &j_boundary_tmp)
+			std::vector<json> flatten_ids(const json &p_j_boundary_tmp)
 			{
+				const std::vector<json> j_boundary_tmp = utils::json_as_array(p_j_boundary_tmp);
+
 				std::vector<json> j_boundary;
 
 				for (size_t i = 0; i < j_boundary_tmp.size(); ++i)
@@ -710,8 +712,7 @@ namespace polyfem
 			{
 				// boundary_ids_.clear();
 				int offset = boundary_ids_.size();
-				auto j_boundary_tmp = params["dirichlet_boundary"];
-				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
+				std::vector<json> j_boundary = flatten_ids(params["dirichlet_boundary"]);
 
 				boundary_ids_.resize(offset + j_boundary.size());
 				displacements_.resize(offset + j_boundary.size());
@@ -1194,8 +1195,7 @@ namespace polyfem
 			{
 				// boundary_ids_.clear();
 				const int offset = boundary_ids_.size();
-				auto j_boundary_tmp = params["dirichlet_boundary"];
-				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
+				std::vector<json> j_boundary = flatten_ids(params["dirichlet_boundary"]);
 
 				boundary_ids_.resize(offset + j_boundary.size());
 				dirichlet_.resize(offset + j_boundary.size());

@@ -24,6 +24,22 @@ namespace polyfem
 		Eigen::Matrix3d to_rotation_matrix(const json &jr, std::string mode = "xyz");
 
 		bool is_param_valid(const json &params, const std::string &key);
+
+		template <typename T = json>
+		std::vector<T> json_as_array(const json &j)
+		{
+			if (j.is_array())
+			{
+				return j.get<std::vector<T>>();
+			}
+			else
+			{
+				if constexpr (std::is_same_v<T, json>)
+					return {j};
+				else
+					return {j.get<T>()};
+			}
+		}
 	} // namespace utils
 } // namespace polyfem
 
