@@ -21,22 +21,6 @@ namespace polyfem::solver
 		AdjointTools()
 		{
 		}
-
-		static double value(
-			const State &state,
-			const IntegrableFunctional &j,
-			const std::set<int> &interested_ids, // either body id or surface id
-			const SpatialIntegralType spatial_integral_type,
-			const std::string &transient_integral_type = "");
-
-		static void gradient(
-			State &state,
-			const IntegrableFunctional &j,
-			const ParameterType &param_name,
-			Eigen::VectorXd &grad,
-			const std::set<int> &interested_ids, // either body id or surface id
-			const SpatialIntegralType spatial_integral_type,
-			const std::string &transient_integral_type = "");
 		
 		static void compute_adjoint_term(
 			const State &state,
@@ -59,19 +43,6 @@ namespace polyfem::solver
 			const SpatialIntegralType spatial_integral_type,
 			const int cur_step,
 			Eigen::VectorXd &term);
-		static double integrate_objective_transient(
-			const State &state,
-			const IntegrableFunctional &j,
-			const std::set<int> &interested_ids,
-			const SpatialIntegralType spatial_integral_type,
-			const std::string &transient_integral_type);
-		static void dJ_du_transient(
-			const State &state,
-			const IntegrableFunctional &j,
-			const std::set<int> &interested_ids,
-			const SpatialIntegralType spatial_integral_type,
-			const std::string &transient_integral_type,
-			Eigen::MatrixXd &terms);
 		static void dJ_macro_strain_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &sol,
@@ -93,27 +64,10 @@ namespace polyfem::solver
 			const SpatialIntegralType spatial_integral_type,
 			Eigen::VectorXd &term,
 			const int cur_time_step);
-		static void dJ_shape_static(
-			const State &state,
-			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd &adjoint,
-			const IntegrableFunctional &j,
-			const std::set<int> &interested_ids,
-			const SpatialIntegralType spatial_integral_type,
-			Eigen::VectorXd &one_form);
 		static void dJ_shape_static_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &sol,
 			const Eigen::MatrixXd &adjoint,
-			Eigen::VectorXd &one_form);
-		static void dJ_shape_transient(
-			const State &state,
-			const Eigen::MatrixXd &adjoint_nu,
-			const Eigen::MatrixXd &adjoint_p,
-			const IntegrableFunctional &j,
-			const std::set<int> &interested_ids,
-			const SpatialIntegralType spatial_integral_type,
-			const std::string &transient_integral_type,
 			Eigen::VectorXd &one_form);
 		static void dJ_shape_transient_adjoint_term(
 			const State &state,
