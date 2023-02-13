@@ -38,6 +38,28 @@ namespace polyfem::solver
 		void update_state(const Eigen::VectorXd &state_variable) override;
 	};
 
+	class SDFShapeVariableToSimulation : public VariableToSimulation
+	{
+	public:
+		SDFShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization, const json &args);
+		virtual ~SDFShapeVariableToSimulation() {}
+		
+		ParameterType get_parameter_type() const override { return ParameterType::Shape; }
+	protected:
+		void update_state(const Eigen::VectorXd &state_variable) override;
+
+		const std::string isosurface_inflator_prefix_, out_velocity_path_, out_msh_path_;
+		Eigen::MatrixXd shape_velocity_;
+
+		// if the mesh is a tiling of unit cells
+		const double unit_size_;
+		std::vector<int> full_to_periodic_;
+		bool periodic_tiling_;
+
+		bool generate_graph_mesh(const Eigen::VectorXd &x);
+		void compute_pattern_period();
+	};
+
 	class ElasticVariableToSimulation : public VariableToSimulation
 	{
 	public:
