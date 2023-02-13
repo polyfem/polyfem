@@ -22,6 +22,8 @@ set(test_sources
   test_interpolation.cpp
   test_time_integrators.cpp
   verify_run.cpp
+  test_output.cpp
+  test_restart.cpp
 )
 
 add_executable(unit_tests ${test_sources})

@@ -773,7 +773,7 @@ namespace polyfem::io
 
 		for (size_t i = 0; i < bases.size(); ++i)
 		{
-			if (!mesh.is_volume() && !mesh.is_polytope(i))
+			if (mesh.is_volume() || !mesh.is_polytope(i))
 				continue;
 
 			const auto &mesh2d = static_cast<const mesh::Mesh2D &>(mesh);
@@ -949,7 +949,6 @@ namespace polyfem::io
 		material_params = args["output"]["paraview"]["options"]["material"];
 		body_ids = args["output"]["paraview"]["options"]["body_ids"];
 		sol_on_grid = args["output"]["advanced"]["sol_on_grid"] > 0;
-		prev_sol = args["output"]["paraview"]["options"]["prev_sol"];
 		velocity = args["output"]["paraview"]["options"]["velocity"];
 		acceleration = args["output"]["paraview"]["options"]["acceleration"];
 
@@ -1237,13 +1236,6 @@ namespace polyfem::io
 		if (problem.is_time_dependent())
 		{
 			bool is_time_integrator_valid = time_integrator != nullptr;
-
-			if (opts.prev_sol)
-			{
-				const Eigen::VectorXd prev_sol =
-					is_time_integrator_valid ? (time_integrator->x_prev()) : Eigen::VectorXd::Zero(sol.size());
-				save_volume_vector_field(state, points, opts, "prev_sol", prev_sol, writer);
-			}
 
 			if (opts.velocity)
 			{

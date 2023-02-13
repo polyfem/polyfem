@@ -224,7 +224,6 @@ namespace polyfem
 
 		// Save output directory and resolve output paths dynamically
 		const std::string output_dir = resolve_input_path(this->args["output"]["directory"]);
-		logger().info("Saving output to {}", output_dir);
 		if (!output_dir.empty())
 		{
 			std::filesystem::create_directories(output_dir);
@@ -239,6 +238,8 @@ namespace polyfem
 
 		spdlog::level::level_enum log_level = this->args["output"]["log"]["level"];
 		init_logger(out_path_log, log_level, this->args["output"]["log"]["quiet"]);
+
+		logger().info("Saving output to {}", output_dir);
 
 		const unsigned int thread_in = this->args["solver"]["max_threads"];
 		set_max_threads(thread_in <= 0 ? std::numeric_limits<unsigned int>::max() : thread_in);
