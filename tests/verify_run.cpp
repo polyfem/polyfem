@@ -31,7 +31,7 @@ bool missing_tests_data(const json &j, const std::string &key)
 	return !j.contains(key) || (j.at(key).size() == 1 && j.at(key).contains("time_steps"));
 }
 
-int authenticate_json(std::string json_file, const bool allow_append)
+int authenticate_json(const std::string &json_file, const bool allow_append)
 {
 	json in_args;
 	if (!load_json(json_file, in_args))
@@ -40,7 +40,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		return 1;
 	}
 
-	std::string tests_key = "tests";
+	const std::string tests_key = "tests";
 	if (missing_tests_data(in_args, tests_key) && !allow_append)
 	{
 		spdlog::error(
@@ -89,28 +89,11 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		}
 		args["root_path"] = json_file;
 	}
-	if (json_file.find("navier") == std::string::npos)
-	{
-		if (args.contains("solver"))
-		{
-			if (args["solver"].contains("linear"))
-			{
-				args["solver"]["linear"]["solver"] = "Eigen::SimplicialLDLT";
-			}
-			else
-			{
-				args["solver"]["linear"] = {};
-				args["solver"]["linear"]["solver"] = "Eigen::SimplicialLDLT";
-			}
-		}
-		else
-		{
-			args["solver"] = R"(
-		{"linear": {
-            "solver": "Eigen::SimplicialLDLT"
-        }})"_json;
-		}
-	}
+
+	args["/solver/linear/solver"_json_pointer] =
+		json_file.find("navier") == std::string::npos
+			? "Eigen::SimplicialLDLT"
+			: "Eigen::SparseLU";
 
 	State state;
 	args["/output/log/level"_json_pointer] = "error";
