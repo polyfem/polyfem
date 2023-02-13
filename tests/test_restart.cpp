@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <catch2/catch.hpp>
 
-#include "polyfem/utils/JSONUtils.hpp"
-#include "polyfem/State.hpp"
-#include "spdlog/spdlog.h"
+#include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 #include <filesystem>
 #include <iostream>
@@ -26,8 +26,8 @@ json load_sim_json(const std::string filename, const int time_steps)
 	}
 
 	json args = in_args;
-	// args["output"] = json({});
-	// args["output"]["advanced"]["save_time_sequence"] = false;
+	args["output"] = json({});
+	args["output"]["advanced"]["save_time_sequence"] = false;
 	{
 		json t_args = args["time"];
 		if (t_args.contains("tend") && t_args.contains("dt"))
@@ -59,7 +59,7 @@ json load_sim_json(const std::string filename, const int time_steps)
 	return args;
 }
 
-json run_sim(State &state, const json &args)
+Eigen::MatrixXd run_sim(State &state, const json &args)
 {
 	state.init(args, true);
 	state.set_max_threads(1);
@@ -82,17 +82,7 @@ json run_sim(State &state, const json &args)
 
 	state.solve_problem(sol, pressure);
 
-	state.compute_errors(sol);
-
-	json out = json({});
-	out["err_l2"] = state.stats.l2_err;
-	out["err_h1"] = state.stats.h1_err;
-	out["err_h1_semi"] = state.stats.h1_semi_err;
-	out["err_linf"] = state.stats.linf_err;
-	out["err_linf_grad"] = state.stats.grad_max_err;
-	out["err_lp"] = state.stats.lp_err;
-
-	return out;
+	return sol;
 }
 
 TEST_CASE("restart", "[restart]")
@@ -101,43 +91,34 @@ TEST_CASE("restart", "[restart]")
 	constexpr int total_time_steps = 10;
 	REQUIRE(total_time_steps % 2 == 0);
 	constexpr int restart_time_steps = total_time_steps / 2;
-	constexpr double margin = 1e-5;
-	const std::vector<std::string> test_keys =
-		{"err_l2", "err_h1", "err_h1_semi", "err_linf", "err_linf_grad", "err_lp"};
+	constexpr double margin = 1e-3;
 
 	const std::filesystem::path outdir = std::filesystem::current_path() / "DELETE_ME_restart_test_output";
 	const std::filesystem::path full_outdir = outdir / "full";
-	const std::filesystem::path part1_outdir = outdir / "part1";
-	const std::filesystem::path part2_outdir = outdir / "part2";
+	const std::filesystem::path restart_outdir = outdir / "restart";
 
 	json args = load_sim_json(scene_file, total_time_steps);
 
 	State state;
 
 	args["/output/directory"_json_pointer] = full_outdir.string();
-	const json full_out = run_sim(state, args);
+	args["/output/data/u_path"_json_pointer] = "restart_sol_{:d}.bin";
+	args["/output/data/v_path"_json_pointer] = "restart_vel_{:d}.bin";
+	args["/output/data/a_path"_json_pointer] = "restart_acc_{:d}.bin";
+	const auto full_sol = run_sim(state, args);
 
-	args["/output/directory"_json_pointer] = part1_outdir.string();
-	args["/output/data/u_path"_json_pointer] = "restart_sol.bin";
-	args["/output/data/v_path"_json_pointer] = "restart_vel.bin";
-	args["/output/data/a_path"_json_pointer] = "restart_acc.bin";
-	args["time"]["time_steps"] = restart_time_steps;
-	run_sim(state, args); // partial sim
-
-	args["/output/directory"_json_pointer] = part2_outdir.string();
-	args["/input/data/u_path"_json_pointer] = (part1_outdir / "restart_sol.bin").string();
-	args["/input/data/v_path"_json_pointer] = (part1_outdir / "restart_vel.bin").string();
-	args["/input/data/a_path"_json_pointer] = (part1_outdir / "restart_acc.bin").string();
+	args["/output/directory"_json_pointer] = restart_outdir.string();
+	args["/input/data/u_path"_json_pointer] = (full_outdir / fmt::format("restart_sol_{:d}.bin", restart_time_steps)).string();
+	args["/input/data/v_path"_json_pointer] = (full_outdir / fmt::format("restart_vel_{:d}.bin", restart_time_steps)).string();
+	args["/input/data/a_path"_json_pointer] = (full_outdir / fmt::format("restart_acc_{:d}.bin", restart_time_steps)).string();
 	args["/time/t0"_json_pointer] = args["/time/dt"_json_pointer].get<double>() * restart_time_steps;
-	const json restart_out = run_sim(state, args);
+	args["time"]["time_steps"] = restart_time_steps;
+	const auto restart_sol = run_sim(state, args);
 
-	for (const std::string &key : test_keys)
-	{
-		const double full_val = full_out[key];
-		const double restart_val = restart_out[key];
-		const double relerr = std::abs((restart_val - full_val) / std::max(std::abs(full_val), 1e-5));
-		CHECK(relerr < margin);
-	}
+	CHECK(full_sol.rows() == restart_sol.rows());
+	CHECK(full_sol.cols() == restart_sol.cols());
+	CAPTURE((full_sol - restart_sol).lpNorm<Eigen::Infinity>());
+	CHECK(full_sol.isApprox(restart_sol, margin));
 
-	// std::filesystem::remove_all(outdir);
+	std::filesystem::remove_all(outdir);
 }
