@@ -5,6 +5,8 @@ set(SOURCES
 	SpatialIntegralForms.hpp
 	VariableToSimulation.hpp
 	CompositeForm.hpp
+	CompositeForms.cpp
+	CompositeForms.hpp
 	SumCompositeForm.hpp
 )
 

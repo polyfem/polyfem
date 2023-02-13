@@ -53,10 +53,9 @@ namespace polyfem::solver
 		std::vector<double> get_transient_quadrature_weights() const;
 		double value_unweighted(const Eigen::VectorXd &x) const override;
 
-		std::shared_ptr<StaticForm> obj_;
-
 		int time_steps_;
 		double dt_;
 		std::string transient_integral_type_;
+		std::shared_ptr<StaticForm> obj_;
 	};
 } // namespace polyfem::solver

@@ -42,8 +42,8 @@ namespace polyfem::solver
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:
-		const int from_, to_;
 		const double power_;
+		const int from_, to_;
 	};
 
 	class ENu2LambdaMu : public Parametrization
