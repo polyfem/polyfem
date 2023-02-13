@@ -283,7 +283,6 @@ namespace polyfem::assembler
 
 			{
 				state = std::make_shared<polyfem::State>();
-				state->set_max_threads(utils::get_n_threads(), true);
 				state->init(unit_cell_args, false);
 				state->load_mesh(false);
 				if (state->mesh == nullptr)

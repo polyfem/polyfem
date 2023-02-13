@@ -162,6 +162,7 @@ namespace polyfem::assembler
 			{
 				// solve fluctuation field
 				Eigen::MatrixXd grad = def_grads[idx] - Eigen::MatrixXd::Identity(size(), size());
+				tmp.setZero();
 				state->solve_homogenized_field(grad, tmp);
 				sols.col(idx) = tmp - io::Evaluator::generate_linear_field(state->n_bases, state->mesh_nodes, grad);
 			}
@@ -728,7 +729,7 @@ namespace polyfem::assembler
 		microstructure_volume = (max - min).prod();
 	}
 
-	double MultiscaleRBProblem::value(const TVector &x, const bool only_elastic)
+	double MultiscaleRBProblem::value(const TVector &x)
 	{
 		Eigen::MatrixXd sol = coeff_to_field(x);
 		return state->assembler.assemble_energy(
@@ -736,7 +737,7 @@ namespace polyfem::assembler
 			state->ass_vals_cache, 0, sol, sol) / microstructure_volume;
 	}
 
-	void MultiscaleRBProblem::gradient(const TVector &x, TVector &gradv, const bool only_elastic)
+	void MultiscaleRBProblem::gradient(const TVector &x, TVector &gradv)
 	{
 		Eigen::MatrixXd sol = coeff_to_field(x);
 		Eigen::MatrixXd grad;
