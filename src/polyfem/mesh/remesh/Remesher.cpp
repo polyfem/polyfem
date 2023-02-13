@@ -364,7 +364,7 @@ namespace polyfem::mesh
 		for (int i = 0; i < unflattened_projection_quantities.size(); ++i)
 			writer.add_field(fmt::format("projection_quantity_{:d}", i), unflattened_projection_quantities[i]);
 		writer.add_field("displacement", displacements);
-		writer.write_mesh(path, rest_positions, all_elements, /*is_simplicial=*/true);
+		writer.write_mesh(path, rest_positions, all_elements, /*is_simplicial=*/true, /*has_poly=*/false);
 	}
 
 	Eigen::MatrixXd Remesher::combine_time_integrator_quantities(

@@ -8,7 +8,11 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
+#ifdef POLYSOLVE_WITH_MKL
 #include <Eigen/PardisoSupport>
+#else
+#include <Eigen/CholmodSupport>
+#endif
 
 namespace polyfem::mesh
 {
@@ -18,7 +22,11 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd &y)
 	{
 		// Construct a linear solver for M
+#ifdef POLYSOLVE_WITH_MKL
 		Eigen::PardisoLDLT<Eigen::SparseMatrix<double>> solver;
+#else
+		Eigen::CholmodSimplicialLDLT<Eigen::SparseMatrix<double>> solver;
+#endif
 		solver.analyzePattern(M);
 		solver.factorize(M);
 

@@ -6,10 +6,7 @@ namespace polyfem::io
 {
 	void MshWriter::write(
 		const std::string &path,
-		const Eigen::MatrixXd &V,
-		const Eigen::MatrixXi &F,
-		const std::vector<int> &body_ids,
-		const bool is_volume,
+		const mesh::Mesh &mesh,
 		const bool binary)
 	{
 		Eigen::MatrixXd points(mesh.n_vertices(), mesh.dimension());

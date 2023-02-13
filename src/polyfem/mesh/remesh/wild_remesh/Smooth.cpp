@@ -81,7 +81,8 @@ namespace polyfem::mesh
 			"precond": "Eigen::IdentityPreconditioner"
 		})"_json;
 		// TODO: This should be dense
-		cppoptlib::SparseNewtonDescentSolver<FullNLProblem> solver(newton_args, linear_solver_args);
+		cppoptlib::SparseNewtonDescentSolver<FullNLProblem> solver(
+			newton_args, linear_solver_args, /*dt=*/1.0);
 
 		Eigen::VectorXd new_rest_pos = old_rest_pos;
 		try
