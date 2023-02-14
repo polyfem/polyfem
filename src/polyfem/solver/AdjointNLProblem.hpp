@@ -46,10 +46,8 @@ namespace polyfem::solver
 		int full_size() const { return optimization_dim_; }
 
 		double value(const Eigen::VectorXd &x) override;
-		double value(const Eigen::VectorXd &x, const bool only_elastic);
 
 		void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
-		void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv, const bool only_elastic);
 		inline void hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override
 		{
 			log_and_throw_error("Hessian not supported!");

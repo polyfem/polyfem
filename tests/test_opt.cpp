@@ -10,6 +10,8 @@
 #include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/AMIPSForm.hpp>
 
+#include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
+
 #include <iostream>
 #include <fstream>
 #include <catch2/catch.hpp>
@@ -105,14 +107,86 @@ namespace
 
 #if defined(__linux__)
 
-// TEST_CASE("material-opt", "[optimization]")
-// {
-// 	run_opt_new("material-opt");
-// 	auto energies = read_energy("material-opt");
+TEST_CASE("material-opt", "[optimization]")
+{
+	const std::string name = "material-opt";
+	// run_opt_new(name);
+	{
+		const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + name + "/";
+		json opt_args;
+		if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
+			log_and_throw_error("Failed to load optimization json file!");
 
-// 	REQUIRE(energies[0] == Approx(5.95421809553).epsilon(1e-3));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(0.00101793422213).epsilon(1e-3));
-// }
+		opt_args = apply_opt_json_spec(opt_args, false);
+
+		for (auto &state_arg : opt_args["states"])
+			state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
+
+		// auto nl_problem = make_nl_problem(opt_args, spdlog::level::level_enum::err);
+		json state_args = opt_args["states"];
+		std::shared_ptr<solver::AdjointNLProblem> nl_problem;
+		std::vector<std::shared_ptr<State>> states(state_args.size());
+		Eigen::VectorXd x;
+		{
+			int i = 0;
+			for (const json &args : state_args)
+			{
+				json cur_args;
+				if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
+					log_and_throw_error("Can't find json for State {}", i);
+
+				states[i++] = create_state(cur_args, spdlog::level::level_enum::debug);
+			}
+
+			const double E = 1e4;
+			const double nu = 0.8;
+			const double lambda = convert_to_lambda(states[0]->mesh->is_volume(), E, nu);
+			const double mu = convert_to_mu(E, nu);
+			x.resize(2);
+			x << lambda, mu;
+			x = x.array().log().eval();
+
+			std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+			{
+				const int n_elem = states[0]->mesh->n_elements();
+				std::vector<std::shared_ptr<Parametrization>> map_list1 = {std::make_shared<ExponentialMap>(), std::make_shared<PerBody>(*(states[0]->mesh))};
+				CompositeParametrization composite_map1(map_list1);
+				// std::vector<std::shared_ptr<Parametrization>> map_list1 = {std::make_shared<SliceMap>(0, 1), std::make_shared<AppendConstantMap>(1, lambda), std::make_shared<ExponentialMap>(), std::make_shared<PerBody>(*(states[0]->mesh))};
+				// CompositeParametrization composite_map1(map_list1);
+				// std::vector<std::shared_ptr<Parametrization>> map_list2 = {std::make_shared<SliceMap>(1, 2), std::make_shared<AppendConstantMap>(1, mu), std::make_shared<ExponentialMap>(), std::make_shared<PerBody>(*(states[0]->mesh))};
+				// CompositeParametrization composite_map2(map_list2);
+
+				variable_to_simulations.push_back(std::make_shared<ElasticVariableToSimulation>(states[0], composite_map1));
+				// variable_to_simulations.push_back(std::make_shared<ElasticVariableToSimulation>(states[0], composite_map2));
+			}
+			
+			for (auto &v2s : variable_to_simulations)
+				v2s->update(x);
+
+			auto obj_aux = std::make_shared<TargetForm>(variable_to_simulations, CompositeParametrization(), *(states[0]), opt_args["functionals"][0]);
+
+			obj_aux->set_reference(states[1], {});
+
+			auto obj = std::make_shared<TransientForm>(variable_to_simulations, CompositeParametrization(), states[0]->args["time"]["time_steps"], states[0]->args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
+
+			obj->set_weight(100.0);
+
+			std::vector<std::shared_ptr<ParametrizationForm>> forms({obj});
+
+			auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, CompositeParametrization(), forms);
+			sum->set_weight(1.0);
+
+			nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+		}
+
+		auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+		CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+	}
+	auto energies = read_energy(name);
+
+	REQUIRE(energies[0] == Approx(5.95421809553).epsilon(1e-3));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.00101793422213).epsilon(1e-3));
+}
 
 // TEST_CASE("friction-opt", "[optimization]")
 // {

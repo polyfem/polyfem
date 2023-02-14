@@ -8,14 +8,9 @@
 
 namespace polyfem::solver
 {
-	double AdjointNLProblem::value(const Eigen::VectorXd &x, const bool only_elastic)
-	{
-		return composite_form_->value(x);
-	}
-
 	double AdjointNLProblem::value(const Eigen::VectorXd &x)
 	{
-		return value(x, false);
+		return composite_form_->value(x);
 	}
 
 	void AdjointNLProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)

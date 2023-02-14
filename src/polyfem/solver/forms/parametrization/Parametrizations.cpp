@@ -141,51 +141,71 @@ namespace polyfem::solver
 		return grad_E_nu;
 	}
 
+	PerBody::PerBody(const mesh::Mesh &mesh): mesh_(mesh), full_size_(mesh_.n_elements())
+	{
+		reduced_size_ = 0;
+		for (int e = 0; e < mesh.n_elements(); e++)
+		{
+			const int body_id = mesh.get_body_id(e);
+			if (!body_id_map_.count(body_id))
+			{
+				body_id_map_[body_id] = {{e, reduced_size_}};
+				reduced_size_++;
+			}
+		}
+		logger().info("{} objects found!", reduced_size_);
+	}
+
 	Eigen::VectorXd PerBody::eval(const Eigen::VectorXd &x) const
 	{
-		assert(x.size() == reduced_size_);
-		Eigen::VectorXd y(full_size_);
+		Eigen::VectorXd y(size(x.size()));
 
-		for (int e = 0; e < n_elem_; e++)
+		for (int e = 0; e < mesh_.n_elements(); e++)
 		{
 			const int body_id = mesh_.get_body_id(e);
 			const auto &entry = body_id_map_.at(body_id);
-			y(e) = x(entry[1]);                                 // lambda or E
-			y(e + n_elem_) = x(entry[1] + body_id_map_.size()); // mu or nu
+			// y(e) = x(entry[1]);
+			y(Eigen::seq(e,y.size()-1,full_size_)) = x(Eigen::seq(entry[1],x.size()-1,reduced_size_));
 		}
 
 		return y;
 	}
 
+	int PerBody::size(const int x_size) const
+	{
+		assert(x_size % reduced_size_ == 0);
+		return (x_size / reduced_size_) * full_size_;
+	}
+
 	Eigen::VectorXd PerBody::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
 	{
-		assert(grad.size() == full_size_);
+		assert(grad.size() == size(x.size()));
 		Eigen::VectorXd grad_body;
-		grad_body.setZero(reduced_size_);
+		grad_body.setZero(x.size());
 
-		for (int e = 0; e < n_elem_; e++)
+		for (int e = 0; e < mesh_.n_elements(); e++)
 		{
 			const int body_id = mesh_.get_body_id(e);
 			const auto &entry = body_id_map_.at(body_id);
-			grad_body(entry[1]) += grad(e);
-			grad_body(entry[1] + body_id_map_.size()) += grad(e + n_elem_);
+			// grad_body(entry[1]) += grad(e);
+			grad_body(Eigen::seq(entry[1],x.size()-1,reduced_size_)) += grad(Eigen::seq(e,grad.size()-1,full_size_));
 		}
 
 		return grad_body;
 	}
 
-	Eigen::VectorXd PerBody::inverse_eval(const Eigen::VectorXd &y) const
+	SliceMap::SliceMap(const int from = -1, const int to = -1): from_(from), to_(to)
 	{
-		assert(y.size() == full_size_);
-		Eigen::VectorXd x(reduced_size_);
-
-		for (auto i : body_id_map_)
-		{
-			x(i.second[1]) = y(i.second[0]);
-			x(i.second[1] + body_id_map_.size()) = y(i.second[0] + n_elem_);
-		}
-
-		return x;
+		if (to_ - from_ <= 0)
+			log_and_throw_error("Invalid Slice Map input!");
+	}
+	Eigen::VectorXd SliceMap::eval(const Eigen::VectorXd &x) const
+	{
+		return x.segment(from_, to_ - from_);
+	}
+	Eigen::VectorXd SliceMap::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
+	{
+		return grad.segment(from_, to_ - from_);
 	}
 
 	AppendConstantMap::AppendConstantMap(const int size, const double val): size_(size), val_(val)
