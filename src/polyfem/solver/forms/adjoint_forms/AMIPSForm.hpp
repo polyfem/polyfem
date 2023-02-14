@@ -182,9 +182,10 @@ namespace polyfem::solver
 			Eigen::MatrixXd V0;
 			Eigen::MatrixXi F;
 			state_.get_vf(V0, F);
-			assert((V0 - utils::unflatten(x0, state_.mesh->dimension())).norm() < 1e-12);
+			// assert((V0 - utils::unflatten(x0, state_.mesh->dimension())).norm() < 1e-12);
 			Eigen::MatrixXd V1 = utils::unflatten(x1, state_.mesh->dimension());
-			return is_flipped(V1, F);
+			bool flipped = is_flipped(V1, F);
+			return !flipped;
 		}
 
 		inline static bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)

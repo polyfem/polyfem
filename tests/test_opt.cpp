@@ -196,7 +196,10 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
 
-	// auto energies = read_energy("shape-stress-opt-new");
+	auto energies = read_energy("shape-stress-opt-new");
+
+	REQUIRE(energies[0] == Approx(8.9795).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(8.75743).epsilon(1e-4));
 
 	// REQUIRE(energies[0] == Approx(12.0735).epsilon(1e-4));
 	// REQUIRE(energies[energies.size() - 1] == Approx(11.3886).epsilon(1e-4));
