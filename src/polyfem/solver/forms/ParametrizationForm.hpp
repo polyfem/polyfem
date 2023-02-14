@@ -18,6 +18,12 @@ namespace polyfem::solver
 			init_with_param(apply_parametrizations(x));
 		}
 
+		virtual double value_unweighted(const Eigen::VectorXd &x) const override
+		{
+			Eigen::VectorXd y = apply_parametrizations(x);
+			return value_unweighted_with_param(y);
+		}
+
 		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
 		{
 			Eigen::VectorXd y = apply_parametrizations(x);
@@ -106,6 +112,7 @@ namespace polyfem::solver
 		virtual void set_apply_DBC_with_param(const Eigen::VectorXd &x, bool apply_DBC) {}
 		virtual bool is_step_collision_free_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
 		virtual void first_derivative_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const {}
+		virtual double value_unweighted_with_param(const Eigen::VectorXd &x) const { return 0; }
 
 		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final
 		{
@@ -114,7 +121,6 @@ namespace polyfem::solver
 		}
 
 	protected:
-
 		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 		{
 			first_derivative_unweighted(x, gradv);

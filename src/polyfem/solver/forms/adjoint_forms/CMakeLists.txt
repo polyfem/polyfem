@@ -9,6 +9,7 @@ set(SOURCES
 	CompositeForms.cpp
 	CompositeForms.hpp
 	SumCompositeForm.hpp
+	AMIPSForm.hpp
 )
 
 prepend_current_path(SOURCES)

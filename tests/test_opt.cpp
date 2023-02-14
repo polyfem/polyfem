@@ -8,6 +8,7 @@
 #include <polyfem/solver/NonlinearSolver.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
+#include <polyfem/solver/forms/adjoint_forms/AMIPSForm.hpp>
 
 #include <iostream>
 #include <fstream>
