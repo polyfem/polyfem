@@ -67,11 +67,8 @@ namespace polyfem
 
 			void set_linear_disp(const Eigen::MatrixXd &linear_sol) { linear_sol_ = linear_sol; }
 
-			double value(const TVector &x) { return value(x, false); }
-			double value(const TVector &x, const bool only_elastic);
-
-			void gradient(const TVector &x, TVector &gradv) { gradient(x, gradv, false); }
-			void gradient(const TVector &x, TVector &gradv, const bool only_elastic);
+			double value(const TVector &x);
+			void gradient(const TVector &x, TVector &gradv);
 			void hessian(const TVector &x, THessian &hessian);
 			void hessian(const TVector &x, Eigen::MatrixXd &hessian);
 

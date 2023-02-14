@@ -27,10 +27,10 @@ namespace polyfem::solver
 		std::set<int> ids_;
 	};
 
-	class StressForm : public SpatialIntegralForm
+	class StressNormForm : public SpatialIntegralForm
 	{
 	public:
-		StressForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, parametrizations, state, args)
+		StressNormForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, parametrizations, state, args)
 		{
 			set_integral_type(SpatialIntegralType::VOLUME);
 
@@ -113,5 +113,26 @@ namespace polyfem::solver
 		bool have_target_func = false;
 		utils::ExpressionValue target_func;
 		std::array<utils::ExpressionValue, 3> target_func_grad;
+	};
+
+	class StressForm : public SpatialIntegralForm
+	{
+	public:
+		StressForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, parametrizations, state, args)
+		{
+			set_integral_type(SpatialIntegralType::VOLUME);
+
+			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+
+			dimensions_ = args["dimensions"].get<std::vector<int>>();
+		}
+
+		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+
+	protected:
+		IntegrableFunctional get_integral_functional() const override;
+
+		std::vector<int> dimensions_;
 	};
 } // namespace polyfem::solver

@@ -3,8 +3,11 @@ set(SOURCES
 	AdjointForm.hpp
 	SpatialIntegralForms.cpp
 	SpatialIntegralForms.hpp
+	VariableToSimulation.cpp
 	VariableToSimulation.hpp
 	CompositeForm.hpp
+	CompositeForms.cpp
+	CompositeForms.hpp
 	SumCompositeForm.hpp
 )
 

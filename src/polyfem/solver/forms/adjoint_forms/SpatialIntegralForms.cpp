@@ -8,6 +8,11 @@ namespace polyfem::solver
 {
 	namespace
 	{
+		bool delta(int i, int j)
+		{
+			return (i == j) ? true : false;
+		}
+		
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 	}
 
@@ -55,7 +60,7 @@ namespace polyfem::solver
 	}
 
 	// TODO: call local assemblers instead
-	IntegrableFunctional StressForm::get_integral_functional() const
+	IntegrableFunctional StressNormForm::get_integral_functional() const
 	{
 		IntegrableFunctional j;
 
@@ -128,7 +133,7 @@ namespace polyfem::solver
 		return j;
 	}
 
-  	void StressForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+  	void StressNormForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
   {
     	SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
@@ -440,4 +445,100 @@ namespace polyfem::solver
 		have_target_func = true;
 	}
 
+	void StressForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+    	SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
+		for (const auto &param_map : variable_to_simulations_)
+		{
+			const auto &parametrization = param_map->get_parametrization();
+			const auto &state = param_map->get_state();
+			const auto &param_type = param_map->get_parameter_type();
+
+			if (&state != &state_)
+				continue;
+
+			Eigen::VectorXd term;
+			if (param_type == ParameterType::Material)
+				log_and_throw_error("Doesn't support stress derivative wrt. material!");
+
+			if (term.size() > 0)
+				gradv += parametrization.apply_jacobian(term, x);
+		}
+	}
+
+	IntegrableFunctional StressForm::get_integral_functional() const
+	{
+		IntegrableFunctional j;
+
+		std::string formulation = state_.formulation();
+		auto dimensions = dimensions_;
+
+		j.set_j([formulation, dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(grad_u.rows(), 1);
+			Eigen::MatrixXd grad_u_q, stress;
+			for (int q = 0; q < grad_u.rows(); q++)
+			{
+				vector2matrix(grad_u.row(q), grad_u_q);
+				if (formulation == "LinearElasticity")
+				{
+					stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
+				}
+				else if (formulation == "NeoHookean")
+				{
+					Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols()) + grad_u_q;
+					Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+					stress = mu(q) * (def_grad - FmT) + lambda(q) * std::log(def_grad.determinant()) * FmT;
+				}
+				else
+					log_and_throw_error("Unknown formulation!");
+				val(q) = stress(dimensions[0], dimensions[1]);
+			}
+		});
+
+		j.set_dj_dgradu([formulation, dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(grad_u.rows(), grad_u.cols());
+			const int dim = sqrt(grad_u.cols());
+			Eigen::MatrixXd grad_u_q, stiffness, stress;
+			for (int q = 0; q < grad_u.rows(); q++)
+			{
+				stiffness.setZero(1, dim * dim * dim * dim);
+				vector2matrix(grad_u.row(q), grad_u_q);
+
+				if (formulation == "LinearElasticity")
+				{
+					stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
+					for (int i = 0, idx = 0; i < dim; i++)
+						for (int j = 0; j < dim; j++)
+							for (int k = 0; k < dim; k++)
+								for (int l = 0; l < dim; l++)
+								{
+									stiffness(idx++) = mu(q) * delta(i, k) * delta(j, l) + mu(q) * delta(i, l) * delta(j, k) + lambda(q) * delta(i, j) * delta(k, l);
+								}
+				}
+				else if (formulation == "NeoHookean")
+				{
+					Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols()) + grad_u_q;
+					Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+					stress = mu(q) * (def_grad - FmT) + lambda(q) * std::log(def_grad.determinant()) * FmT;
+					Eigen::VectorXd FmT_vec = utils::flatten(FmT);
+					double J = def_grad.determinant();
+					double tmp1 = mu(q) - lambda(q) * std::log(J);
+					for (int i = 0, idx = 0; i < dim; i++)
+						for (int j = 0; j < dim; j++)
+							for (int k = 0; k < dim; k++)
+								for (int l = 0; l < dim; l++)
+								{
+									stiffness(idx++) = mu(q) * delta(i, k) * delta(j, l) + tmp1 * FmT(i, l) * FmT(k, j);
+								}
+					stiffness += lambda(q) * utils::flatten(FmT_vec * FmT_vec.transpose()).transpose();
+				}
+				else
+					logger().error("Unknown formulation!");
+
+				val.row(q) = stiffness.block(0, (dimensions[0] * dim + dimensions[1]) * dim * dim, 1, dim * dim);
+			}
+		});
+
+		return j;
+	}
 } // namespace polyfem::solver

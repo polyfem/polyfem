@@ -35,16 +35,29 @@ namespace polyfem::solver
 		
 		ParameterType get_parameter_type() const override { return ParameterType::Shape; }
 	protected:
-		// TODO: should do "+dx" so that different entries of V can be controlled by different VariableToSimulation
-		inline void update_state(const Eigen::VectorXd &state_variable) override
-		{
-			Eigen::MatrixXd V_rest, V;
-			Eigen::MatrixXi F;
-			state_ptr_->get_vf(V_rest, F);
-			V = utils::unflatten(state_variable, V_rest.cols());
+		void update_state(const Eigen::VectorXd &state_variable) override;
+	};
 
-			state_ptr_->set_mesh_vertices(V);
-		}
+	class SDFShapeVariableToSimulation : public VariableToSimulation
+	{
+	public:
+		SDFShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization, const json &args);
+		virtual ~SDFShapeVariableToSimulation() {}
+		
+		ParameterType get_parameter_type() const override { return ParameterType::Shape; }
+	protected:
+		void update_state(const Eigen::VectorXd &state_variable) override;
+
+		const std::string isosurface_inflator_prefix_, out_velocity_path_, out_msh_path_;
+		Eigen::MatrixXd shape_velocity_;
+
+		// if the mesh is a tiling of unit cells
+		const double unit_size_;
+		std::vector<int> full_to_periodic_;
+		bool periodic_tiling_;
+
+		bool generate_graph_mesh(const Eigen::VectorXd &x);
+		void compute_pattern_period();
 	};
 
 	class ElasticVariableToSimulation : public VariableToSimulation
@@ -55,11 +68,7 @@ namespace polyfem::solver
 
 		ParameterType get_parameter_type() const override { return ParameterType::Material; }
 	protected:
-		inline void update_state(const Eigen::VectorXd &state_variable) override
-		{
-			const int n_elem = state_ptr_->bases.size();
-			state_ptr_->assembler.update_lame_params(state_variable.segment(0, n_elem), state_variable.segment(n_elem, n_elem));
-		}
+		void update_state(const Eigen::VectorXd &state_variable) override;
 	};
 
 	class FrictionCoeffientVariableToSimulation : public VariableToSimulation
@@ -70,10 +79,7 @@ namespace polyfem::solver
 
 		ParameterType get_parameter_type() const override { return ParameterType::FrictionCoeff; }
 	protected:
-		inline void update_state(const Eigen::VectorXd &state_variable) override
-		{
-			state_ptr_->args["contact"]["friction_coefficient"] = state_variable(0);
-		}
+		void update_state(const Eigen::VectorXd &state_variable) override;
 	};
 
 	class DampingCoeffientVariableToSimulation : public VariableToSimulation
@@ -84,15 +90,7 @@ namespace polyfem::solver
 
 		ParameterType get_parameter_type() const override { return ParameterType::DampingCoeff; }
 	protected:
-		inline void update_state(const Eigen::VectorXd &state_variable) override
-		{
-			json damping_param = {
-				{"psi", state_variable(0)},
-				{"phi", state_variable(1)},
-			};
-			state_ptr_->assembler.add_multimaterial(0, damping_param);
-			logger().info("Current damping params: {}, {}", state_variable(0), state_variable(1));
-		}
+		void update_state(const Eigen::VectorXd &state_variable) override;
 	};
 
 	class InitialConditionVariableToSimulation : public VariableToSimulation
@@ -103,11 +101,7 @@ namespace polyfem::solver
 
 		ParameterType get_parameter_type() const override { return ParameterType::InitialCondition; }
 	protected:
-		inline void update_state(const Eigen::VectorXd &state_variable) override
-		{
-			state_ptr_->initial_sol_update = state_variable.head(state_ptr_->ndof());
-			state_ptr_->initial_vel_update = state_variable.tail(state_ptr_->ndof());
-		}
+		void update_state(const Eigen::VectorXd &state_variable) override;
 	};
 
 	class DirichletVariableToSimulation : public VariableToSimulation
@@ -118,19 +112,7 @@ namespace polyfem::solver
 
 		ParameterType get_parameter_type() const override { return ParameterType::DirichletBC; }
 	protected:
-		inline void update_state(const Eigen::VectorXd &state_variable) override
-		{
-			// auto constraint_string = constraint_to_string(state_variable);
-			// for (const auto &kv : boundary_id_to_reduced_param)
-			// {
-			// 	json dirichlet_bc = constraint_string[kv.first];
-			// 	// Need time_steps + 1 entry, though unused.
-			// 	for (int k = 0; k < states_ptr_[0]->mesh->dimension(); ++k)
-			// 		dirichlet_bc[k].push_back(dirichlet_bc[k][time_steps - 1]);
-			// 	logger().trace("Updating boundary id {} to dirichlet bc {}", kv.first, dirichlet_bc);
-			// 	problem.update_dirichlet_boundary(kv.first, dirichlet_bc, true, true, true, "");
-			// }
-		}
+		void update_state(const Eigen::VectorXd &state_variable) override;
 	};
 
 	class MacroStrainVariableToSimulation : public VariableToSimulation
@@ -141,10 +123,7 @@ namespace polyfem::solver
 
 		ParameterType get_parameter_type() const override { return ParameterType::MacroStrain; }
 	protected:
-		inline void update_state(const Eigen::VectorXd &state_variable) override
-		{
-			state_ptr_->disp_grad = utils::unflatten(state_variable, state_ptr_->mesh->dimension());
-		}
+		void update_state(const Eigen::VectorXd &state_variable);
 	};
 
 } // namespace polyfem::solver
