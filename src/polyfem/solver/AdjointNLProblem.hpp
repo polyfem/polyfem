@@ -11,9 +11,11 @@ namespace polyfem::solver
 	class AdjointNLProblem : public FullNLProblem
 	{
 	public:
-		AdjointNLProblem(std::shared_ptr<CompositeForm> composite_form, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
+		AdjointNLProblem(std::shared_ptr<CompositeForm> composite_form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
 			: FullNLProblem({composite_form}),
-			  composite_form_(composite_form), all_states_(all_states),
+			  composite_form_(composite_form),
+			  variables_to_simulation_(variables_to_simulation),
+			  all_states_(all_states),
 			  better_initial_guess(args["solver"]["nonlinear"]["better_initial_guess"]),
 			  solve_log_level(args["output"]["solve_log_level"]),
 			  save_freq(args["output"]["save_frequency"]),
@@ -25,20 +27,20 @@ namespace polyfem::solver
 			// for (const auto &p : parameters)
 			// 	optimization_dim_ += p->optimization_dim();
 
-			// active_state_mask.assign(all_states_.size(), false);
-			// int i = 0;
-			// for (const auto &state_ptr : all_states_)
-			// {
-			// 	for (const auto &p : parameters)
-			// 	{
-			// 		if (p->contains_state(*state_ptr))
-			// 		{
-			// 			active_state_mask[i] = true;
-			// 			break;
-			// 		}
-			// 	}
-			// 	i++;
-			// }
+			active_state_mask.assign(all_states_.size(), false);
+			int i = 0;
+			for (const auto &state_ptr : all_states_)
+			{
+				// 	for (const auto &p : parameters)
+				// 	{
+				// 		if (p->contains_state(*state_ptr))
+				// 		{
+				active_state_mask[i] = true;
+				// 			break;
+				// 		}
+				// 	}
+				// 	i++;
+			}
 		}
 
 		int full_size() const { return optimization_dim_; }

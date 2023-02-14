@@ -6,6 +6,8 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/solver/Optimizations.hpp>
 #include <polyfem/solver/NonlinearSolver.hpp>
+#include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
+#include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -18,67 +20,67 @@ using namespace polysolve;
 
 namespace
 {
-	// bool load_json(const std::string &json_file, json &out)
-	// {
-	// 	std::ifstream file(json_file);
+	bool load_json(const std::string &json_file, json &out)
+	{
+		std::ifstream file(json_file);
 
-	// 	if (!file.is_open())
-	// 		return false;
+		if (!file.is_open())
+			return false;
 
-	// 	file >> out;
+		file >> out;
 
-	// 	out["root_path"] = json_file;
+		out["root_path"] = json_file;
 
-	// 	return true;
-	// }
+		return true;
+	}
 
-	// std::string resolve_output_path(const std::string &output_dir, const std::string &path)
-	// {
-	// 	if (std::filesystem::path(path).is_absolute())
-	// 		return path;
-	// 	else
-	// 		return std::filesystem::weakly_canonical(std::filesystem::path(output_dir) / path).string();
-	// }
+	std::string resolve_output_path(const std::string &output_dir, const std::string &path)
+	{
+		if (std::filesystem::path(path).is_absolute())
+			return path;
+		else
+			return std::filesystem::weakly_canonical(std::filesystem::path(output_dir) / path).string();
+	}
 
-	// bool save_mat(const Eigen::MatrixXd &mat, const std::string &file_name)
-	// {
-	// 	std::ofstream file(file_name);
-	// 	if (!file.is_open())
-	// 		return false;
+	bool save_mat(const Eigen::MatrixXd &mat, const std::string &file_name)
+	{
+		std::ofstream file(file_name);
+		if (!file.is_open())
+			return false;
 
-	// 	file << fmt::format("matrix size {} x {}\n", mat.rows(), mat.cols());
-	// 	file << mat;
+		file << fmt::format("matrix size {} x {}\n", mat.rows(), mat.cols());
+		file << mat;
 
-	// 	return true;
-	// }
+		return true;
+	}
 
-	// std::vector<double> read_energy(const std::string &file)
-	// {
-	// 	std::ifstream energy_out(file);
-	// 	std::vector<double> energies;
-	// 	std::string line;
-	// 	if (energy_out.is_open())
-	// 	{
-	// 		while (getline(energy_out, line))
-	// 		{
-	// 			energies.push_back(std::stod(line.substr(0, line.find(","))));
-	// 		}
-	// 	}
-	// 	double starting_energy = energies[0];
-	// 	double optimized_energy = energies[energies.size() - 1];
+	std::vector<double> read_energy(const std::string &file)
+	{
+		std::ifstream energy_out(file);
+		std::vector<double> energies;
+		std::string line;
+		if (energy_out.is_open())
+		{
+			while (getline(energy_out, line))
+			{
+				energies.push_back(std::stod(line.substr(0, line.find(","))));
+			}
+		}
+		double starting_energy = energies[0];
+		double optimized_energy = energies[energies.size() - 1];
 
-	// 	for (int i = 0; i < energies.size(); ++i)
-	// 	{
-	// 		if (i == 0)
-	// 			std::cout << "initial " << energies[i] << std::endl;
-	// 		else if (i == energies.size() - 1)
-	// 			std::cout << "final " << energies[i] << std::endl;
-	// 		else
-	// 			std::cout << "step " << i << " " << energies[i] << std::endl;
-	// 	}
+		for (int i = 0; i < energies.size(); ++i)
+		{
+			if (i == 0)
+				std::cout << "initial " << energies[i] << std::endl;
+			else if (i == energies.size() - 1)
+				std::cout << "final " << energies[i] << std::endl;
+			else
+				std::cout << "step " << i << " " << energies[i] << std::endl;
+		}
 
-	// 	return energies;
-	// }
+		return energies;
+	}
 
 	// void run_opt_new(const std::string &name)
 	// {
@@ -147,14 +149,54 @@ namespace
 // 	REQUIRE(energies[energies.size() - 1] == Approx(1.73135).epsilon(1e-4));
 // }
 
-// TEST_CASE("shape-stress-opt-new", "[optimization]")
-// {
-// 	run_opt_new("shape-stress-opt-new");
-// 	auto energies = read_energy("shape-stress-opt-new");
+TEST_CASE("shape-stress-opt-new", "[optimization]")
+{
+	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + "shape-stress-opt-new" + "/";
+	json opt_args;
+	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
+		log_and_throw_error("Failed to load optimization json file!");
 
-// 	REQUIRE(energies[0] == Approx(12.0735).epsilon(1e-4));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(11.3886).epsilon(1e-4));
-// }
+	for (auto &state_arg : opt_args["states"])
+		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
+
+	json state_args = opt_args["states"];
+	std::vector<std::shared_ptr<State>> states(state_args.size());
+	int i = 0;
+	for (const json &args : state_args)
+	{
+		json cur_args;
+		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
+			log_and_throw_error("Can't find json for State {}", i);
+
+		states[i++] = create_state(cur_args, spdlog::level::level_enum::err);
+	}
+
+	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
+
+	std::shared_ptr<AdjointForm> obj1 = std::make_shared<StressForm>(variable_to_simulations, CompositeParametrization(), *states[0], opt_args["functionals"][0]);
+	obj1->set_weight(1.0);
+
+	std::vector<std::shared_ptr<ParametrizationForm>> forms({obj1});
+
+	auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, CompositeParametrization(), forms);
+	sum->set_weight(1.0);
+
+	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+	states[0]->get_vf(V, F);
+	Eigen::VectorXd x = utils::flatten(V);
+
+	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+	// CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+
+	// auto energies = read_energy("shape-stress-opt-new");
+
+	// REQUIRE(energies[0] == Approx(12.0735).epsilon(1e-4));
+	// REQUIRE(energies[energies.size() - 1] == Approx(11.3886).epsilon(1e-4));
+}
 
 // TEST_CASE("shape-trajectory-surface-opt-new", "[optimization]")
 // {

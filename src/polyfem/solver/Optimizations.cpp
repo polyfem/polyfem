@@ -202,7 +202,7 @@ namespace polyfem::solver
 		auto vec = std::vector<std::shared_ptr<ParametrizationForm>>();
 		std::shared_ptr<SumCompositeForm> sum = std::make_shared<SumCompositeForm>(vec);
 
-		std::shared_ptr<AdjointNLProblem> nl_problem = std::make_shared<AdjointNLProblem>(sum, states, opt_args);
+		std::shared_ptr<AdjointNLProblem> nl_problem; // = std::make_shared<AdjointNLProblem>(sum, states, opt_args);
 
 		return nl_problem;
 	}

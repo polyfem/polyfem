@@ -90,8 +90,8 @@ namespace cppoptlib
 			this->m_current.fDelta = objFunc.value(x);
 			if (!disable_log)
 				logger().info(
-				"[{}] Not even starting, {} (f={:g} ‖∇f‖={:g} g={:g} tol={:g})",
-				name(), this->m_status, this->m_current.fDelta, first_grad_norm, this->m_current.gradNorm, this->m_stop.gradNorm);
+					"[{}] Not even starting, {} (f={:g} ‖∇f‖={:g} g={:g} tol={:g})",
+					name(), this->m_status, this->m_current.fDelta, first_grad_norm, this->m_current.gradNorm, this->m_stop.gradNorm);
 			update_solver_info();
 			return;
 		}
@@ -105,13 +105,13 @@ namespace cppoptlib
 		std::ofstream outfile;
 		if (export_energy_path != "")
 			outfile.open(export_energy_path);
-		
+
 		if (!disable_log)
 			logger().debug(
-			"Starting {} solve f₀={:g} ‖∇f₀‖={:g} "
-			"(stopping criteria: max_iters={:d} Δf={:g} ‖∇f‖={:g} ‖Δx‖={:g})",
-			name(), objFunc.value(x), this->m_current.gradNorm, this->m_stop.iterations,
-			this->m_stop.fDelta, this->m_stop.gradNorm, this->m_stop.xDelta);
+				"Starting {} solve f₀={:g} ‖∇f₀‖={:g} "
+				"(stopping criteria: max_iters={:d} Δf={:g} ‖∇f‖={:g} ‖Δx‖={:g})",
+				name(), objFunc.value(x), this->m_current.gradNorm, this->m_stop.iterations,
+				this->m_stop.fDelta, this->m_stop.gradNorm, this->m_stop.xDelta);
 
 		do
 		{
@@ -173,8 +173,8 @@ namespace cppoptlib
 				increase_descent_strategy();
 				if (!disable_log)
 					logger().debug(
-					"[{}] direction is not a descent direction (Δx⋅g={:g}≥0); reverting to {}",
-					name(), delta_x.dot(grad), descent_strategy_name());
+						"[{}] direction is not a descent direction (Δx⋅g={:g}≥0); reverting to {}",
+						name(), delta_x.dot(grad), descent_strategy_name());
 				this->m_status = Status::Continue;
 				continue;
 			}
@@ -217,9 +217,6 @@ namespace cppoptlib
 			}
 			auto old_x = x;
 			x = old_x + rate * delta_x;
-			TVector smoothed_x;
-			if (objFunc.smoothing(old_x, x, smoothed_x))
-				x = smoothed_x;
 
 			this->m_current.xDelta = (x - old_x).array().abs().maxCoeff();
 
