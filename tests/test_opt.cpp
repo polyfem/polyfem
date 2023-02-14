@@ -175,10 +175,13 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
 
-	std::shared_ptr<AdjointForm> obj1 = std::make_shared<StressForm>(variable_to_simulations, CompositeParametrization(), *states[0], opt_args["functionals"][0]);
+	auto obj1 = std::make_shared<StressNormForm>(variable_to_simulations, CompositeParametrization(), *states[0], opt_args["functionals"][0]);
 	obj1->set_weight(1.0);
 
-	std::vector<std::shared_ptr<ParametrizationForm>> forms({obj1});
+	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, CompositeParametrization(), *states[0], json());
+	obj2->set_weight(1.0);
+
+	std::vector<std::shared_ptr<ParametrizationForm>> forms({obj1, obj2});
 
 	auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, CompositeParametrization(), forms);
 	sum->set_weight(1.0);
@@ -191,7 +194,7 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 	Eigen::VectorXd x = utils::flatten(V);
 
 	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
-	// CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
 
 	// auto energies = read_energy("shape-stress-opt-new");
 
