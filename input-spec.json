@@ -3546,6 +3546,7 @@
         "default": null,
         "type": "object",
         "optional": [
+            "use_hdf5",
             "material",
             "body_ids",
             "contact_forces",
@@ -3554,6 +3555,12 @@
             "acceleration"
         ],
         "doc": "Optional fields in the output"
+    },
+    {
+        "pointer": "/output/paraview/options/use_hdf5",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, export the data as hdf5, compatible with paraview >5.11"
     },
     {
         "pointer": "/output/paraview/options/material",

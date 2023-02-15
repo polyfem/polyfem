@@ -957,8 +957,7 @@ namespace polyfem::io
 
 		reorder_output = args["output"]["data"]["advanced"]["reorder_nodes"];
 
-		// TODO
-		use_hdf5 = false;
+		use_hdf5 = args["output"]["paraview"]["options"]["use_hdf5"];
 
 		this->solve_export_to_file = solve_export_to_file;
 	}
