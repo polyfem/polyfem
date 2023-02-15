@@ -1031,10 +1031,10 @@ namespace polyfem::io
 			vtm.add_dataset("Volume", "data", path_stem + opts.file_extension());
 		if (opts.surface)
 		{
-			vtm.add_dataset("Surface", "surface", path_stem + "_surf" + opts.file_extension());
+			vtm.add_dataset("Surface", "data", path_stem + "_surf" + opts.file_extension());
 
 			if (opts.contact_forces || opts.friction_forces)
-				vtm.add_dataset("Surface", "contact", path_stem + "_surf_contact" + opts.file_extension());
+				vtm.add_dataset("Contact", "data", path_stem + "_surf_contact" + opts.file_extension());
 		}
 		if (opts.wire)
 			vtm.add_dataset("Wireframe", "data", path_stem + "_wire" + opts.file_extension());
