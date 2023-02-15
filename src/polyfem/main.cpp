@@ -116,61 +116,16 @@ int main(int argc, char **argv)
 		return command_line.exit(CLI::RequiredError("--json or --hdf5"));
 	}
 
+	json tmp;
 	if (has_arg(command_line, "log_level"))
-	{
-		auto tmp = R"({
-				"output": {
-					"log": {
-						"level": -1
-					}
-				}
-			})"_json;
-
-		tmp["output"]["log"]["level"] = int(log_level);
-
-		in_args.merge_patch(tmp);
-	}
-
+		tmp["/output/log/level"_json_pointer] = int(log_level);
 	if (has_arg(command_line, "max_threads"))
-	{
-		auto tmp = R"({
-				"solver": {
-					"max_threads": -1
-				}
-			})"_json;
-
-		tmp["solver"]["max_threads"] = max_threads;
-
-		in_args.merge_patch(tmp);
-	}
-
+		tmp["/solver/max_threads"_json_pointer] = max_threads;
 	if (has_arg(command_line, "output_dir"))
-	{
-		auto tmp = R"({
-				"output": {
-					"directory": -1
-				}
-			})"_json;
-
-		tmp["output"]["directory"] = std::filesystem::absolute(output_dir);
-
-		in_args.merge_patch(tmp);
-	}
-
+		tmp["/output/directory"_json_pointer] = std::filesystem::absolute(output_dir);
 	if (has_arg(command_line, "enable_overwrite_solver"))
-	{
-		auto tmp = R"({
-				"solver": {
-					"linear": {
-						"enable_overwrite_solver": false
-					}
-				}
-			})"_json;
-
-		tmp["solver"]["linear"]["enable_overwrite_solver"] = fallback_solver;
-
-		in_args.merge_patch(tmp);
-	}
+		tmp["/solver/linear/enable_overwrite_solver"_json_pointer] = fallback_solver;
+	in_args.merge_patch(tmp);
 
 	State state;
 	state.init(in_args, is_strict);
