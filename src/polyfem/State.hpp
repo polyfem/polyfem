@@ -690,6 +690,10 @@ namespace polyfem
 		void set_mesh_vertices(const Eigen::MatrixXd &vertices);
 		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true) const;
 
+		// Get geometric node indices for surface/volume
+		void compute_surface_node_ids(const int surface_selection, std::vector<int> &node_ids) const;
+		void compute_volume_node_ids(const int volume_selection, std::vector<int> &node_ids) const;
+
 		// to replace the initial condition
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
 		// downsample grad on P2 nodes to grad on P1 nodes, only for P2 contact shape derivative

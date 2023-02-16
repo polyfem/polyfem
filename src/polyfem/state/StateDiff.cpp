@@ -132,7 +132,7 @@ namespace polyfem
 		for (int v = 0; v < mesh->n_vertices(); v++)
 			if (primitive_to_node[v] >= 0 && primitive_to_node[v] < vertices.rows())
 				mesh->set_point(v, vertices.block(primitive_to_node[v], 0, 1, mesh->dimension()));
-		
+
 		build_basis();
 	}
 
@@ -366,6 +366,49 @@ namespace polyfem
 			}
 		}
 		return adjoints.block(0, 0, adjoints.rows(), adjoints.cols() - 2);
+	}
+
+	void State::compute_surface_node_ids(const int surface_selection, std::vector<int> &node_ids) const
+	{
+		node_ids = {};
+
+		const auto &gbases = geom_bases();
+		for (const auto &lb : total_local_boundary)
+		{
+			const int e = lb.element_id();
+			for (int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const int boundary_id = mesh->get_boundary_id(primitive_global_id);
+				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
+
+				if (boundary_id == surface_selection)
+				{
+					for (long n = 0; n < nodes.size(); ++n)
+					{
+						const int g_id = gbases[e].bases[nodes(n)].global()[0].index;
+
+						if (std::count(node_ids.begin(), node_ids.end(), g_id) == 0)
+							node_ids.push_back(g_id);
+					}
+				}
+			}
+		}
+	}
+
+	void State::compute_volume_node_ids(const int volume_selection, std::vector<int> &node_ids) const
+	{
+		node_ids = {};
+
+		const auto &gbases = geom_bases();
+		for (int e = 0; e < gbases.size(); e++)
+		{
+			const int body_id = mesh->get_body_id(e);
+			if (body_id == volume_selection)
+				for (const auto &gbs : gbases[e].bases)
+					for (const auto &g : gbs.global())
+						node_ids.push_back(g.index);
+		}
 	}
 
 } // namespace polyfem
