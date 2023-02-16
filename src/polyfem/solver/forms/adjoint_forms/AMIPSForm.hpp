@@ -87,6 +87,28 @@ namespace polyfem::solver
 				}
 			}
 		}
+
+		bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+		{
+			if (F.cols() == 3)
+			{
+				for (int i = 0; i < F.rows(); i++)
+					if (triangle_jacobian(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2))) <= 0)
+						return true;
+			}
+			else if (F.cols() == 4)
+			{
+				for (int i = 0; i < F.rows(); i++)
+					if (tet_determinant(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2)), V.row(F(i, 3))) <= 0)
+						return true;
+			}
+			else
+			{
+				return true;
+			}
+
+			return false;
+		}
 	} // namespace
 
 	class AMIPSForm : public ParametrizationForm
@@ -182,32 +204,9 @@ namespace polyfem::solver
 			Eigen::MatrixXd V0;
 			Eigen::MatrixXi F;
 			state_.get_vf(V0, F);
-			// assert((V0 - utils::unflatten(x0, state_.mesh->dimension())).norm() < 1e-12);
 			Eigen::MatrixXd V1 = utils::unflatten(x1, state_.mesh->dimension());
 			bool flipped = is_flipped(V1, F);
 			return !flipped;
-		}
-
-		inline static bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
-		{
-			if (F.cols() == 3)
-			{
-				for (int i = 0; i < F.rows(); i++)
-					if (triangle_jacobian(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2))) <= 0)
-						return true;
-			}
-			else if (F.cols() == 4)
-			{
-				for (int i = 0; i < F.rows(); i++)
-					if (tet_determinant(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2)), V.row(F(i, 3))) <= 0)
-						return true;
-			}
-			else
-			{
-				return true;
-			}
-
-			return false;
 		}
 
 	private:

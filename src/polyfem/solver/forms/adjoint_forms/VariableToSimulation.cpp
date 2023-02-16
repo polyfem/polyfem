@@ -5,219 +5,236 @@
 
 namespace polyfem::solver
 {
-    namespace {
-        template <typename T>
-        std::string to_string_with_precision(const T a_value, const int n = 6)
-        {
-            std::ostringstream out;
-            out.precision(n);
-            out << std::fixed << a_value;
-            return out.str();
-        }
+	namespace
+	{
+		template <typename T>
+		std::string to_string_with_precision(const T a_value, const int n = 6)
+		{
+			std::ostringstream out;
+			out.precision(n);
+			out << std::fixed << a_value;
+			return out.str();
+		}
 
-        RowVectorNd get_barycenter(const mesh::Mesh &mesh, int e)
-        {
-            RowVectorNd barycenter;
-            if (!mesh.is_volume())
-            {
-                const auto &mesh2d = dynamic_cast<const mesh::Mesh2D &>(mesh);
-                barycenter = mesh2d.face_barycenter(e);
-            }
-            else
-            {
-                const auto &mesh3d = dynamic_cast<const mesh::Mesh3D &>(mesh);
-                barycenter = mesh3d.cell_barycenter(e);
-            }
-            return barycenter;
-        }
-    }
-    void ShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
-    {
-        Eigen::MatrixXd V_rest, V;
-        Eigen::MatrixXi F;
-        state_ptr_->get_vf(V_rest, F);
-        assert(state_variable.size() == V_rest.size());
-        V = utils::unflatten(state_variable, V_rest.cols());
+		RowVectorNd get_barycenter(const mesh::Mesh &mesh, int e)
+		{
+			RowVectorNd barycenter;
+			if (!mesh.is_volume())
+			{
+				const auto &mesh2d = dynamic_cast<const mesh::Mesh2D &>(mesh);
+				barycenter = mesh2d.face_barycenter(e);
+			}
+			else
+			{
+				const auto &mesh3d = dynamic_cast<const mesh::Mesh3D &>(mesh);
+				barycenter = mesh3d.cell_barycenter(e);
+			}
+			return barycenter;
+		}
+	} // namespace
+	void ShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	{
+		Eigen::MatrixXd V_rest, V;
+		Eigen::MatrixXi F;
+		state_ptr_->get_vf(V_rest, F);
+		assert(state_variable.size() == V_rest.size());
+		V = utils::unflatten(state_variable, V_rest.cols());
 
-        state_ptr_->set_mesh_vertices(V);
-    }
+		state_ptr_->set_mesh_vertices(V);
+	}
 
-    SDFShapeVariableToSimulation::SDFShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization, const json &args) : VariableToSimulation(state_ptr, parametrization), out_velocity_path_("micro-tmp-velocity.msh"), out_msh_path_("micro-tmp.msh"), isosurface_inflator_prefix_(args["isosurface_inflator_prefix"].get<std::string>()), unit_size_(args["unit_size"].get<double>()), periodic_tiling_(unit_size_ > 0)
-    {
-    }
-    void SDFShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
-    {
-        
-    }
-    bool SDFShapeVariableToSimulation::generate_graph_mesh(const Eigen::VectorXd &x)
-    {
-        std::string shape_params = "--params \"";
-        for (int i = 0; i < x.size(); i++)
-            shape_params += to_string_with_precision(x(i), 16) + " ";
-        shape_params += "\" ";
+	SDFShapeVariableToSimulation::SDFShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization, const json &args) : VariableToSimulation(state_ptr, parametrization), out_velocity_path_("micro-tmp-velocity.msh"), out_msh_path_("micro-tmp.msh"), isosurface_inflator_prefix_(args["isosurface_inflator_prefix"].get<std::string>()), unit_size_(args["unit_size"].get<double>()), periodic_tiling_(unit_size_ > 0)
+	{
+	}
+	void SDFShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	{
+	}
+	bool SDFShapeVariableToSimulation::generate_graph_mesh(const Eigen::VectorXd &x)
+	{
+		std::string shape_params = "--params \"";
+		for (int i = 0; i < x.size(); i++)
+			shape_params += to_string_with_precision(x(i), 16) + " ";
+		shape_params += "\" ";
 
-        std::string command = isosurface_inflator_prefix_ + " " + shape_params + " -S " + out_velocity_path_ + " " + out_msh_path_;
+		std::string command = isosurface_inflator_prefix_ + " " + shape_params + " -S " + out_velocity_path_ + " " + out_msh_path_;
 
-        int return_val;
-        try 
-        {
-            return_val = system(command.c_str());
-        }
-        catch (const std::exception &err)
-        {
-            logger().error("remesh command \"{}\" returns {}", command, return_val);
+		int return_val;
+		try
+		{
+			return_val = system(command.c_str());
+		}
+		catch (const std::exception &err)
+		{
+			logger().error("remesh command \"{}\" returns {}", command, return_val);
 
-            return false;
-        }
+			return false;
+		}
 
-        logger().info("remesh command \"{}\" returns {}", command, return_val);
+		logger().info("remesh command \"{}\" returns {}", command, return_val);
 
-        if (periodic_tiling_)
-        {
-            command = "python ../tile.py " + out_msh_path_;
-            try 
-            {
-                return_val = system(command.c_str());
-            }
-            catch (const std::exception &err)
-            {
-                logger().error("tile command \"{}\" returns {}", command, return_val);
+		if (periodic_tiling_)
+		{
+			command = "python ../tile.py " + out_msh_path_;
+			try
+			{
+				return_val = system(command.c_str());
+			}
+			catch (const std::exception &err)
+			{
+				logger().error("tile command \"{}\" returns {}", command, return_val);
 
-                return false;
-            }
+				return false;
+			}
 
-            logger().info("tile command \"{}\" returns {}", command, return_val);
-        }
+			logger().info("tile command \"{}\" returns {}", command, return_val);
+		}
 
-        return true;
-    }
-    void SDFShapeVariableToSimulation::compute_pattern_period()
-    {
-        const mesh::Mesh &mesh = *(get_state().mesh);
-        int elem_period_ = 0;
-        full_to_periodic_.clear();
+		return true;
+	}
+	void SDFShapeVariableToSimulation::compute_pattern_period()
+	{
+		const mesh::Mesh &mesh = *(get_state().mesh);
+		int elem_period_ = 0;
+		full_to_periodic_.clear();
 
-        if (!periodic_tiling_)
-        {
-            full_to_periodic_.reserve(get_state().n_geom_bases);
-            for (int i = 0; i < get_state().n_geom_bases; i++)
-                full_to_periodic_.push_back(i);
-            
-            return;
-        }
-        
-        RowVectorNd min, max;
-        mesh.bounding_box(min, max);
+		if (!periodic_tiling_)
+		{
+			full_to_periodic_.reserve(get_state().n_geom_bases);
+			for (int i = 0; i < get_state().n_geom_bases; i++)
+				full_to_periodic_.push_back(i);
 
-        Eigen::VectorXi nums;
-        nums.setZero(mesh.dimension());
-        for (int d = 0; d < mesh.dimension(); d++)
-        {
-            int tmp = std::lround((max(d) - min(d)) / unit_size_);
-            if (abs(tmp * unit_size_ + min(d) - max(d)) > 1e-8)
-                log_and_throw_error("Mesh size is not periodic!");
-            nums(d) = tmp;
-        }
+			return;
+		}
 
-        for (int e = 0; e < mesh.n_elements(); e++)
-        {
-            if ((get_barycenter(mesh, e) - min).maxCoeff() >= unit_size_)
-            {
-                elem_period_ = e;
-                break;
-            }
-        }
-        if (elem_period_ == 0)
-            elem_period_ = mesh.n_elements();
+		RowVectorNd min, max;
+		mesh.bounding_box(min, max);
 
-        // node correspondence
-        {
-            full_to_periodic_.assign(get_state().n_geom_bases, -1);
+		Eigen::VectorXi nums;
+		nums.setZero(mesh.dimension());
+		for (int d = 0; d < mesh.dimension(); d++)
+		{
+			int tmp = std::lround((max(d) - min(d)) / unit_size_);
+			if (abs(tmp * unit_size_ + min(d) - max(d)) > 1e-8)
+				log_and_throw_error("Mesh size is not periodic!");
+			nums(d) = tmp;
+		}
 
-            utils::maybe_parallel_for(mesh.n_elements(), [&](int start, int end, int thread_id) {
-                for (int e = start; e < end; e++)
-                {
-                    RowVectorNd offset = get_barycenter(mesh, e) - get_barycenter(mesh, e % elem_period_);
-                    
-                    assert(!mesh.is_volume());
-                    for (int lv = 0; lv < mesh.n_face_vertices(e); lv++) // only 2D
-                    {
-                        int vid1 = mesh.face_vertex(e, lv);
-                        auto p1 = mesh.point(vid1);
-                        bool flag = false;
-                        
-                        if (e < elem_period_)
-                        {
-                            flag = true;
-                            full_to_periodic_[vid1] = vid1;
-                        }
-                        else
-                        {
-                            double min_diff = 1e5;
-                            int min_id = -1;
-                            for (int lv2 = 0; lv2 < mesh.n_face_vertices(e % elem_period_); lv2++)
-                            {
-                                int vid2 = mesh.face_vertex(e % elem_period_, lv2);
-                                auto p2 = mesh.point(vid2);
+		for (int e = 0; e < mesh.n_elements(); e++)
+		{
+			if ((get_barycenter(mesh, e) - min).maxCoeff() >= unit_size_)
+			{
+				elem_period_ = e;
+				break;
+			}
+		}
+		if (elem_period_ == 0)
+			elem_period_ = mesh.n_elements();
 
-                                if ((p1 - offset - p2).norm() < min_diff)
-                                {
-                                    min_diff = (p1 - offset - p2).norm();
-                                    min_id = vid2;
-                                }
-                            }
-                            if (min_diff > 1e-5)
-                                log_and_throw_error("Failed to find periodic node in periodic pattern, error = {}!", min_diff);
-                            full_to_periodic_[vid1] = min_id;
-                        }
-                    }
-                }
-            });
-        }
-        
-        logger().info("Number of elements in one period: {}, number of periods: {}", elem_period_, nums.prod());
-    }
+		// node correspondence
+		{
+			full_to_periodic_.assign(get_state().n_geom_bases, -1);
 
-    void ElasticVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
-    {
-        const int n_elem = state_ptr_->bases.size();
-        assert(n_elem * 2 == state_variable.size());
-        state_ptr_->assembler.update_lame_params(state_variable.segment(0, n_elem), state_variable.segment(n_elem, n_elem));
-    }
+			utils::maybe_parallel_for(mesh.n_elements(), [&](int start, int end, int thread_id) {
+				for (int e = start; e < end; e++)
+				{
+					RowVectorNd offset = get_barycenter(mesh, e) - get_barycenter(mesh, e % elem_period_);
 
-    void FrictionCoeffientVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
-    {
-        assert(state_variable.size() == 1);
-        assert(state_variable(0) >= 0);
-        state_ptr_->args["contact"]["friction_coefficient"] = state_variable(0);
-    }
+					assert(!mesh.is_volume());
+					for (int lv = 0; lv < mesh.n_face_vertices(e); lv++) // only 2D
+					{
+						int vid1 = mesh.face_vertex(e, lv);
+						auto p1 = mesh.point(vid1);
+						bool flag = false;
 
-    void DampingCoeffientVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
-    {
-        assert(state_variable.size() == 2);
-        json damping_param = {
-            {"psi", state_variable(0)},
-            {"phi", state_variable(1)},
-        };
-        state_ptr_->assembler.add_multimaterial(0, damping_param);
-        logger().info("Current damping params: {}, {}", state_variable(0), state_variable(1));
-    }
+						if (e < elem_period_)
+						{
+							flag = true;
+							full_to_periodic_[vid1] = vid1;
+						}
+						else
+						{
+							double min_diff = 1e5;
+							int min_id = -1;
+							for (int lv2 = 0; lv2 < mesh.n_face_vertices(e % elem_period_); lv2++)
+							{
+								int vid2 = mesh.face_vertex(e % elem_period_, lv2);
+								auto p2 = mesh.point(vid2);
 
-    void InitialConditionVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
-    {
-        assert(state_variable.size() == state_ptr_->ndof() * 2);
-        state_ptr_->initial_sol_update = state_variable.head(state_ptr_->ndof());
-        state_ptr_->initial_vel_update = state_variable.tail(state_ptr_->ndof());
-    }
+								if ((p1 - offset - p2).norm() < min_diff)
+								{
+									min_diff = (p1 - offset - p2).norm();
+									min_id = vid2;
+								}
+							}
+							if (min_diff > 1e-5)
+								log_and_throw_error("Failed to find periodic node in periodic pattern, error = {}!", min_diff);
+							full_to_periodic_[vid1] = min_id;
+						}
+					}
+				}
+			});
+		}
 
-    void DirichletVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
-    {
-        log_and_throw_error("Dirichlet variable to simulation not implemented!");
-    }
+		logger().info("Number of elements in one period: {}, number of periods: {}", elem_period_, nums.prod());
+	}
 
-    void MacroStrainVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
-    {
-        assert(state_variable.size() == state_ptr_->mesh->dimension() * state_ptr_->mesh->dimension());
-        state_ptr_->disp_grad = utils::unflatten(state_variable, state_ptr_->mesh->dimension());
-    }
-}
+	void ElasticVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	{
+		const int n_elem = state_ptr_->bases.size();
+		assert(n_elem * 2 == state_variable.size());
+		state_ptr_->assembler.update_lame_params(state_variable.segment(0, n_elem), state_variable.segment(n_elem, n_elem));
+	}
+
+	void FrictionCoeffientVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	{
+		assert(state_variable.size() == 1);
+		assert(state_variable(0) >= 0);
+		state_ptr_->args["contact"]["friction_coefficient"] = state_variable(0);
+	}
+
+	void DampingCoeffientVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	{
+		assert(state_variable.size() == 2);
+		json damping_param = {
+			{"psi", state_variable(0)},
+			{"phi", state_variable(1)},
+		};
+		state_ptr_->assembler.add_multimaterial(0, damping_param);
+		logger().info("Current damping params: {}, {}", state_variable(0), state_variable(1));
+	}
+
+	void InitialConditionVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	{
+		assert(state_variable.size() == state_ptr_->ndof() * 2);
+		state_ptr_->initial_sol_update = state_variable.head(state_ptr_->ndof());
+		state_ptr_->initial_vel_update = state_variable.tail(state_ptr_->ndof());
+	}
+
+	void DirichletVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	{
+		log_and_throw_error("Dirichlet variable to simulation not implemented!");
+		// auto &problem = *dynamic_cast<assembler::GenericTensorProblem *>(state_ptr_->problem.get());
+		// // This should eventually update dirichlet boundaries per boundary element, using the shape constraint.
+		// auto constraint_string = control_constraints_->constraint_to_string(state_variable);
+		// for (const auto &kv : boundary_id_to_reduced_param)
+		// {
+		// 	json dirichlet_bc = constraint_string[kv.first];
+		// 	// Need time_steps + 1 entry, though unused.
+		// 	for (int k = 0; k < states_ptr_[0]->mesh->dimension(); ++k)
+		// 		dirichlet_bc[k].push_back(dirichlet_bc[k][time_steps - 1]);
+		// 	logger().trace("Updating boundary id {} to dirichlet bc {}", kv.first, dirichlet_bc);
+		// 	problem.update_dirichlet_boundary(kv.first, dirichlet_bc, true, true, true, "");
+		// }
+	}
+
+	std::string DirichletVariableToSimulation::variable_to_string(const Eigen::VectorXd &variable)
+	{
+		return "";
+	}
+
+	void MacroStrainVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	{
+		assert(state_variable.size() == state_ptr_->mesh->dimension() * state_ptr_->mesh->dimension());
+		state_ptr_->disp_grad = utils::unflatten(state_variable, state_ptr_->mesh->dimension());
+	}
+} // namespace polyfem::solver

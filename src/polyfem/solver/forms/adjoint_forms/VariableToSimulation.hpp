@@ -32,8 +32,9 @@ namespace polyfem::solver
 	public:
 		ShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization) : VariableToSimulation(state_ptr, parametrization) {}
 		virtual ~ShapeVariableToSimulation() {}
-		
+
 		ParameterType get_parameter_type() const override { return ParameterType::Shape; }
+
 	protected:
 		void update_state(const Eigen::VectorXd &state_variable) override;
 	};
@@ -43,8 +44,9 @@ namespace polyfem::solver
 	public:
 		SDFShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization, const json &args);
 		virtual ~SDFShapeVariableToSimulation() {}
-		
+
 		ParameterType get_parameter_type() const override { return ParameterType::Shape; }
+
 	protected:
 		void update_state(const Eigen::VectorXd &state_variable) override;
 
@@ -67,6 +69,7 @@ namespace polyfem::solver
 		virtual ~ElasticVariableToSimulation() {}
 
 		ParameterType get_parameter_type() const override { return ParameterType::Material; }
+
 	protected:
 		void update_state(const Eigen::VectorXd &state_variable) override;
 	};
@@ -78,6 +81,7 @@ namespace polyfem::solver
 		virtual ~FrictionCoeffientVariableToSimulation() {}
 
 		ParameterType get_parameter_type() const override { return ParameterType::FrictionCoeff; }
+
 	protected:
 		void update_state(const Eigen::VectorXd &state_variable) override;
 	};
@@ -89,6 +93,7 @@ namespace polyfem::solver
 		virtual ~DampingCoeffientVariableToSimulation() {}
 
 		ParameterType get_parameter_type() const override { return ParameterType::DampingCoeff; }
+
 	protected:
 		void update_state(const Eigen::VectorXd &state_variable) override;
 	};
@@ -100,6 +105,7 @@ namespace polyfem::solver
 		virtual ~InitialConditionVariableToSimulation() {}
 
 		ParameterType get_parameter_type() const override { return ParameterType::InitialCondition; }
+
 	protected:
 		void update_state(const Eigen::VectorXd &state_variable) override;
 	};
@@ -111,8 +117,12 @@ namespace polyfem::solver
 		virtual ~DirichletVariableToSimulation() {}
 
 		ParameterType get_parameter_type() const override { return ParameterType::DirichletBC; }
+
 	protected:
 		void update_state(const Eigen::VectorXd &state_variable) override;
+
+	private:
+		std::string variable_to_string(const Eigen::VectorXd &variable);
 	};
 
 	class MacroStrainVariableToSimulation : public VariableToSimulation
@@ -122,6 +132,7 @@ namespace polyfem::solver
 		virtual ~MacroStrainVariableToSimulation() {}
 
 		ParameterType get_parameter_type() const override { return ParameterType::MacroStrain; }
+
 	protected:
 		void update_state(const Eigen::VectorXd &state_variable);
 	};

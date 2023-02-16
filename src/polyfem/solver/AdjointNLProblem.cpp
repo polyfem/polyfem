@@ -90,64 +90,64 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::save_to_file(const Eigen::VectorXd &x0)
 	{
-		// logger().info("Saving iter {}", iter);
-		// int id = 0;
-		// if (iter % save_freq != 0)
-		// 	return;
-		// for (const auto &state : all_states_)
-		// {
-		// 	bool save_vtu = false;
-		// 	bool save_rest_mesh = false;
-		// 	for (const auto &p : parameters_)
-		// 		if (p->contains_state(*state))
-		// 		{
-		// 			save_vtu = true;
-		// 			if (p->name() == "shape")
-		// 				save_rest_mesh = true;
-		// 		}
+		logger().info("Saving iter {}", iter);
+		int id = 0;
+		if (iter % save_freq != 0)
+			return;
+		for (const auto &state : all_states_)
+		{
+			bool save_vtu = true;
+			bool save_rest_mesh = true;
+			// for (const auto &p : parameters_)
+			// 	if (p->contains_state(*state))
+			// 	{
+			// 		save_vtu = true;
+			// 		if (p->name() == "shape")
+			// 			save_rest_mesh = true;
+			// 	}
 
-		// 	std::string vis_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter));
-		// 	std::string rest_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.obj", id, iter));
-		// 	id++;
+			std::string vis_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter));
+			std::string rest_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.obj", id, iter));
+			id++;
 
-		// 	if (!save_vtu)
-		// 		continue;
-		// 	logger().debug("Save final vtu to file {} ...", vis_mesh_path);
+			if (!save_vtu)
+				continue;
+			logger().debug("Save final vtu to file {} ...", vis_mesh_path);
 
-		// 	double tend = state->args.value("tend", 1.0);
-		// 	double dt = 1;
-		// 	if (!state->args["time"].is_null())
-		// 		dt = state->args["time"]["dt"];
+			double tend = state->args.value("tend", 1.0);
+			double dt = 1;
+			if (!state->args["time"].is_null())
+				dt = state->args["time"]["dt"];
 
-		// 	Eigen::MatrixXd sol;
-		// 	if (state->args["time"].is_null())
-		// 		sol = state->diff_cached[0].u;
-		// 	else
-		// 		sol = state->diff_cached[state->diff_cached.size() - 1].u;
+			Eigen::MatrixXd sol;
+			if (state->args["time"].is_null())
+				sol = state->diff_cached[0].u;
+			else
+				sol = state->diff_cached[state->diff_cached.size() - 1].u;
 
-		// 	state->out_geom.save_vtu(
-		// 		vis_mesh_path,
-		// 		*state,
-		// 		sol,
-		// 		Eigen::MatrixXd::Zero(state->n_pressure_bases, 1),
-		// 		tend, dt,
-		// 		io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
-		// 		state->is_contact_enabled(),
-		// 		state->solution_frames);
+			state->out_geom.save_vtu(
+				vis_mesh_path,
+				*state,
+				sol,
+				Eigen::MatrixXd::Zero(state->n_pressure_bases, 1),
+				tend, dt,
+				io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
+				state->is_contact_enabled(),
+				state->solution_frames);
 
-		// 	if (!save_rest_mesh)
-		// 		continue;
-		// 	logger().debug("Save rest mesh to file {} ...", rest_mesh_path);
+			if (!save_rest_mesh)
+				continue;
+			logger().debug("Save rest mesh to file {} ...", rest_mesh_path);
 
-		// 	// If shape opt, save rest meshes as well
-		// 	Eigen::MatrixXd V;
-		// 	Eigen::MatrixXi F;
-		// 	state->get_vf(V, F);
-		// 	if (state->mesh->dimension() == 3)
-		// 		F = igl::boundary_facets<Eigen::MatrixXi, Eigen::MatrixXi>(F);
+			// If shape opt, save rest meshes as well
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			state->get_vf(V, F);
+			if (state->mesh->dimension() == 3)
+				F = igl::boundary_facets<Eigen::MatrixXi, Eigen::MatrixXi>(F);
 
-		// 	io::OBJWriter::write(rest_mesh_path, V, F);
-		// }
+			io::OBJWriter::write(rest_mesh_path, V, F);
+		}
 	}
 
 	Eigen::VectorXd AdjointNLProblem::initial_guess() const
