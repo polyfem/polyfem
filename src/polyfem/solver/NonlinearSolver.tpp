@@ -112,11 +112,14 @@ namespace cppoptlib
 			name(), objFunc.value(x), this->m_current.gradNorm, this->m_stop.iterations,
 			this->m_stop.fDelta, this->m_stop.gradNorm, this->m_stop.xDelta);
 
+		bool is_first_iter = true;
+
 		do
 		{
-			{
+			if (!is_first_iter) {
 				POLYFEM_SCOPED_TIMER("constraint set update", constraint_set_update_time);
 				objFunc.solution_changed(x);
+				is_first_iter = false;
 			}
 
 			double energy;
@@ -142,8 +145,8 @@ namespace cppoptlib
 			{
 				POLYFEM_SCOPED_TIMER("verify gradient", grad_time);
 				objFunc.verify_gradient(x, grad);
-				values = objFunc.component_values(x);
-				grads = objFunc.component_gradients(x);
+				// values = objFunc.component_values(x);
+				// grads = objFunc.component_gradients(x);
 			}
 
 			const double grad_norm = grad.norm();
@@ -153,6 +156,24 @@ namespace cppoptlib
 				m_error_code = ErrorCode::NAN_ENCOUNTERED;
 				log_and_throw_error("[{}] Gradient is nan; stopping", name());
 				break;
+			}
+
+			if (outfile.is_open())
+			{
+				assert(values.size() == grads.cols());
+				outfile << std::setprecision(12) << energy << ", " << grad_norm;
+				if (export_energy_components)
+				{
+					outfile << ", ";
+					for (int i = 0; i < values.size(); i++)
+					{
+						outfile << std::setprecision(12) << values(i) << ", " << grads.col(i).norm();
+						if (i < values.size() - 1)
+							outfile << ", ";
+					}
+				}
+				outfile << "\n";
+				outfile.flush();
 			}
 
 			// ------------------------
@@ -257,23 +278,6 @@ namespace cppoptlib
 				remesh_reset(objFunc, x);
 
 			objFunc.save_to_file(x);
-			if (outfile.is_open())
-			{
-				assert(values.size() == grads.cols());
-				outfile << std::setprecision(12) << energy << ", " << grad_norm;
-				if (export_energy_components)
-				{
-					outfile << ", ";
-					for (int i = 0; i < values.size(); i++)
-					{
-						outfile << std::setprecision(12) << values(i) << ", " << grads.col(i).norm();
-						if (i < values.size() - 1)
-							outfile << ", ";
-					}
-				}
-				outfile << "\n";
-				outfile.flush();
-			}
 
 		} while (objFunc.callback(this->m_current, x) && (this->m_status == Status::Continue));
 
