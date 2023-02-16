@@ -411,8 +411,8 @@ namespace polyfem::solver
 				auto state = all_states_[i];
 				if (active_state_mask[i] || state->diff_cached.size() == 0)
 				{
-					if (state->diff_cached.size() == 1 && better_initial_guess)
-						state->pre_sol = state->diff_cached[0].u;
+					// if (state->diff_cached.size() == 1 && better_initial_guess)
+					// 	state->pre_sol = state->diff_cached[0].u;
 					state->assemble_rhs();
 					state->assemble_stiffness_mat();
 					Eigen::MatrixXd sol, pressure; // solution is also cached in state
@@ -464,8 +464,9 @@ namespace polyfem::solver
 	{
 		if (debug_finite_diff)
 		{
-			Eigen::VectorXd x2 = x + gradv * finite_diff_eps;
-			Eigen::VectorXd x1 = x - gradv * finite_diff_eps;
+			Eigen::VectorXd direc = gradv.normalized();
+			Eigen::VectorXd x2 = x + direc * finite_diff_eps;
+			Eigen::VectorXd x1 = x - direc * finite_diff_eps;
 
 			solution_changed(x2);
 			double J2 = value(x2);
@@ -473,17 +474,14 @@ namespace polyfem::solver
 			solution_changed(x1);
 			double J1 = value(x1);
 
-			solution_changed(x);
-
 			double fd = (J2 - J1) / 2 / finite_diff_eps;
-			double analytic = gradv.squaredNorm();
+			double analytic = direc.dot(gradv);
 
 			bool match = abs(fd - analytic) < 1e-8 || abs(fd - analytic) < 1e-1 * abs(analytic);
 
-			if (match)
-				logger().info("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
-			else
-				logger().error("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
+			logger().info("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
+
+			solution_changed(x);
 
 			return match;
 		}

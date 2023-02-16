@@ -2,6 +2,8 @@
 #include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/time_integrator/BDF.hpp>
+#include <polyfem/time_integrator/ImplicitEuler.hpp>
+
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polysolve/FEMSolver.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
@@ -148,9 +150,29 @@ namespace polyfem
 		gradu_h.setZero();
 		replace_rows_by_identity(gradu_h, tmp, boundary_nodes);
 
+		Eigen::MatrixXd vel;
+		if (problem->is_time_dependent())
+		{
+			if (current_step == 0)
+			{
+				if (dynamic_cast<time_integrator::BDF*>(solve_data.time_integrator.get()))
+				{
+					const auto bdf_integrator = dynamic_cast<time_integrator::BDF*>(solve_data.time_integrator.get());
+					vel = bdf_integrator->weighted_sum_v_prevs();
+				}
+				else if (dynamic_cast<time_integrator::ImplicitEuler*>(solve_data.time_integrator.get()))
+				{
+					const auto euler_integrator = dynamic_cast<time_integrator::ImplicitEuler*>(solve_data.time_integrator.get());
+					vel = euler_integrator->v_prev();
+				}
+			}
+			else
+				vel = solve_data.time_integrator->compute_velocity(sol);
+		}
+
 		auto cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::Constraints();
 		auto cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_constraint_set() : ipc::FrictionConstraints();
-		diff_cached.push_back({gradu_h, StiffnessMatrix(sol.size(), sol.size()), sol, disp_grad, cur_contact_set, cur_friction_set});
+		diff_cached.push_back({gradu_h, StiffnessMatrix(sol.size(), sol.size()), sol, vel, disp_grad, cur_contact_set, cur_friction_set});
 	}
 
 	void State::compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const

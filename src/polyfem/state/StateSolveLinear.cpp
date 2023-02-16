@@ -153,20 +153,6 @@ namespace polyfem
 			initial_velocity(acceleration);
 			assert(acceleration.size() == sol.size());
 
-			if (args["optimization"]["enabled"])
-			{
-				if (initial_sol_update.size() > 0)
-					sol = initial_sol_update;
-				else
-					initial_sol_update = sol;
-				if (initial_vel_update.size() > 0)
-					velocity = initial_vel_update;
-				else
-					initial_vel_update = velocity;
-			}
-
-			initial_velocity_cache = velocity;
-
 			const double dt = args["time"]["dt"];
 			solve_data.time_integrator->init(sol, velocity, acceleration, dt);
 		}

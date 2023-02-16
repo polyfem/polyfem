@@ -563,7 +563,7 @@ namespace polyfem
 		for (int i = 0; i < n_shared_edges.size(); i++)
 			if (n_shared_edges(i) > 1)
 				vertex_perturbation(Eigen::seqN(i * dim, dim)) *= displace_dist / vertex_perturbation(Eigen::seqN(i * dim, dim)).norm();
-		states_ptr_[0]->pre_sol = states_ptr_[0]->down_sampling_mat.transpose() * vertex_perturbation;
+		// states_ptr_[0]->pre_sol = states_ptr_[0]->down_sampling_mat.transpose() * vertex_perturbation;
 	}
 
 	void ShapeParameter::build_active_nodes()

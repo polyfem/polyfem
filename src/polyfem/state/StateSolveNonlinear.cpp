@@ -115,7 +115,7 @@ namespace polyfem
 		assert(!problem->is_scalar());                                       // tensor
 		assert(!assembler.is_mixed(formulation()));
 
-		const auto &cur_sol = ((pre_sol.size() == sol.size()) && !problem->is_time_dependent()) ? pre_sol : sol;
+		const auto &cur_sol = sol; // ((pre_sol.size() == sol.size()) && !problem->is_time_dependent()) ? pre_sol : sol;
 		///////////////////////////////////////////////////////////////////////
 		// Check for initial intersections
 		if (is_contact_enabled())
@@ -151,18 +151,16 @@ namespace polyfem
 
 				if (args["optimization"]["enabled"])
 				{
-					if (initial_sol_update.size() > 0)
+					if (initial_sol_update.size() == ndof())
 						sol = initial_sol_update;
 					else
 						initial_sol_update = sol;
-					if (initial_vel_update.size() > 0)
+					if (initial_vel_update.size() == ndof())
 						velocity = initial_vel_update;
 					else
 						initial_vel_update = velocity;
 				}
 
-				initial_velocity_cache = velocity;
-				
 				const double dt = args["time"]["dt"];
 				solve_data.time_integrator->init(sol, velocity, acceleration, dt);
 			}
@@ -238,11 +236,11 @@ namespace polyfem
 			logger().info("Lagging iteration 1:");
 		}
 
-		if (pre_sol.rows() == sol.rows() && !problem->is_time_dependent())
-		{
-			logger().debug("Use better initial guess...");
-			sol = pre_sol;
-		}
+		// if (pre_sol.rows() == sol.rows() && !problem->is_time_dependent())
+		// {
+		// 	logger().debug("Use better initial guess...");
+		// 	sol = pre_sol;
+		// }
 
 		// ---------------------------------------------------------------------
 

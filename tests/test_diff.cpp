@@ -465,7 +465,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
 	StressObjective func(state, shape_param, NULL, opt_args["functionals"][0]);
 
-	state.pre_sol = state.diff_cached[0].u;
+	// state.pre_sol = state.diff_cached[0].u;
 	double functional_val = func.value();
 
 	auto velocity = [](const Eigen::MatrixXd &position) {

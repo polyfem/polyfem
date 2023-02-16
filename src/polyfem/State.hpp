@@ -185,7 +185,7 @@ namespace polyfem
 		Eigen::MatrixXd disp_grad;
 		bool solve_disp_grad = false;
 
-		Eigen::MatrixXd pre_sol;
+		// Eigen::MatrixXd pre_sol;
 
 		/// use average pressure for stokes problem to fix the additional dofs, true by default
 		/// if false, it will fix one pressure node to zero
@@ -636,6 +636,7 @@ public:
 			StiffnessMatrix gradu_h;
 			StiffnessMatrix gradu_h_next;
 			Eigen::MatrixXd u;
+			Eigen::MatrixXd v;
 			Eigen::MatrixXd disp_grad;
 			ipc::Constraints contact_set;
 			ipc::FrictionConstraints friction_constraint_set;
@@ -643,7 +644,6 @@ public:
 		std::vector<DiffCachedParts> diff_cached;
 		
 		std::unique_ptr<polysolve::LinearSolver> lin_solver_cached; // matrix factorization of last linear solve
-		Eigen::MatrixXd initial_velocity_cache; // initial velocity of last solve
 
 		int n_linear_solves = 0;
 		int n_nonlinear_solves = 0;
