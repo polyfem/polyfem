@@ -274,7 +274,7 @@ namespace polyfem::solver
 			if (args["material_parameter"] >= 0)
 				elastic_param = parameters[args["material_parameter"]];
 
-			std::shared_ptr<solver::StaticObjective> tmp = std::make_shared<solver::StressObjective>(state, shape_param, elastic_param, args);
+			std::shared_ptr<solver::StaticObjective> tmp = std::make_shared<solver::StressObjective>(state, shape_param, elastic_param, args, !state.problem->is_time_dependent());
 			if (state.problem->is_time_dependent())
 				obj = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], transient_integral_type, tmp);
 			else
