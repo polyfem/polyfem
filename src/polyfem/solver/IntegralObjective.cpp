@@ -264,6 +264,46 @@ namespace polyfem::solver
 		return j;
 	}
 
+	KineticEnergyObjective::KineticEnergyObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
+	{
+		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
+		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+	}
+
+	IntegrableFunctional KineticEnergyObjective::get_integral_functional()
+	{
+		IntegrableFunctional j;
+
+		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			
+			const int e = params["elem"];
+			Eigen::MatrixXd v, grad_v;
+			io::Evaluator::interpolate_at_local_vals(*(state_.mesh), state_.problem->is_scalar(), state_.bases, state_.geom_bases(), e, local_pts, state_.diff_cached[time_step_].v, v, grad_v);
+
+			val.setZero(u.rows(), 1);
+			for (int q = 0; q < v.rows(); q++)
+			{
+				const double rho = state_.assembler.density()(local_pts.row(q), pts.row(q), e);
+				val(q) = 0.5 * rho * v.row(q).squaredNorm();
+			}
+		});
+
+		j.set_dj_du([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(u.rows(), u.cols());
+			log_and_throw_error("Not implemented!");
+			val.col(this->dim_).setZero();
+		});
+
+		j.set_dj_dx([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(pts.rows(), pts.cols());
+			log_and_throw_error("Not implemented!");
+			val.col(this->dim_).setZero();
+		});
+
+		return j;
+	}
+
 	ComplianceObjective::ComplianceObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const std::shared_ptr<const Parameter> &elastic_param, const json &args) : SpatialIntegralObjective(state, shape_param, args), elastic_param_(elastic_param)
 	{
 		if (elastic_param_)

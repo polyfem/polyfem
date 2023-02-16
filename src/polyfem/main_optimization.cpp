@@ -118,8 +118,11 @@ int main(int argc, char **argv)
 		nl_problem->solution_changed(x);
 		logger().info("Energy is {}", nl_problem->value(x));
 		auto state = nl_problem->get_state(0);
-		state->save_json(state->diff_cached[0].u);
-		state->export_data(state->diff_cached[0].u, Eigen::MatrixXd());
+		if (!state->problem->is_time_dependent())
+		{
+			state->save_json(state->diff_cached[0].u);
+			state->export_data(state->diff_cached[0].u, Eigen::MatrixXd());
+		}
 		return EXIT_SUCCESS;
 	}
 

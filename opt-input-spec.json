@@ -856,6 +856,7 @@
             "trajectory",
             "height",
             "position",
+            "kinetic",
             "stress",
             "homogenized_energy",
             "homogenized_stress",
@@ -1179,6 +1180,23 @@
             "state",
             "type",
             "dim"
+        ],
+        "optional": [
+            "shape_parameter",
+            "weight",
+            "transient_integral_type",
+            "steps",
+            "volume_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "kinetic",
+        "required": [
+            "state",
+            "type"
         ],
         "optional": [
             "shape_parameter",

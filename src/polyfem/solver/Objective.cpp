@@ -299,7 +299,12 @@ namespace polyfem::solver
 			if (args["macro_strain_parameter"] >= 0)
 				macro_strain_param = parameters[args["macro_strain_parameter"]];
 
-			obj = std::make_shared<solver::HomogenizedEnergyObjective>(state, shape_param, macro_strain_param, elastic_param, args);
+			std::shared_ptr<solver::StaticObjective> tmp = std::make_shared<solver::HomogenizedEnergyObjective>(state, shape_param, macro_strain_param, elastic_param, args);
+
+			if (state.problem->is_time_dependent())
+				obj = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], transient_integral_type, tmp);
+			else
+				obj = tmp;
 		}
 		else if (type == "homogenized_stress")
 		{
@@ -336,6 +341,26 @@ namespace polyfem::solver
 				logger().warn("No shape parameter is assigned to functional");
 
 			std::shared_ptr<solver::PositionObjective> tmp = std::make_shared<solver::PositionObjective>(state, shape_param, args);
+			tmp->set_dim(args["dim"]);
+			if (state.problem->is_time_dependent())
+				obj = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], transient_integral_type, tmp);
+			else
+				obj = tmp;
+		}
+		else if (type == "kinetic")
+		{
+			State &state = *(states[args["state"]]);
+			std::shared_ptr<Parameter> shape_param;
+			if (args["shape_parameter"] >= 0)
+			{
+				shape_param = parameters[args["shape_parameter"]];
+				if (!shape_param->contains_state(state))
+					logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
+			}
+			else
+				logger().warn("No shape parameter is assigned to functional");
+
+			std::shared_ptr<solver::KineticEnergyObjective> tmp = std::make_shared<solver::KineticEnergyObjective>(state, shape_param, args);
 			tmp->set_dim(args["dim"]);
 			if (state.problem->is_time_dependent())
 				obj = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], transient_integral_type, tmp);
