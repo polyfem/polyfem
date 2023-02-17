@@ -195,7 +195,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 	state.get_vf(V, F);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 1e-4);
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 1e-5);
 }
 
 TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
@@ -352,7 +352,7 @@ TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
 	state.get_vf(V, F);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 1e-4);
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 1e-5);
 }
 
 TEST_CASE("homogenize-stress", "[adjoint_method]")
@@ -434,7 +434,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	state.get_vf(V, F);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 5e-4);
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-6);
 }
 
 TEST_CASE("node-trajectory", "[adjoint_method]")
@@ -517,7 +517,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	Eigen::VectorXd x(2);
 	x << 10, 10;
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-5, 1e-4);
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-5, 1e-6);
 }
 
 TEST_CASE("material-transient", "[adjoint_method]")
