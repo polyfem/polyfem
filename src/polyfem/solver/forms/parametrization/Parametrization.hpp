@@ -21,10 +21,26 @@ namespace polyfem::solver
 		}
 
 		virtual int size(const int x_size) const = 0; // just for verification
-		virtual Eigen::VectorXd eval(const Eigen::VectorXd &x) const = 0;
-		virtual Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const = 0;
 
-		virtual Eigen::VectorXi get_state_variable_indexing() const { return Eigen::VectorXi(); }
+		virtual Eigen::VectorXd eval(const Eigen::VectorXd &x) const
+		{
+			Eigen::VectorXd y;
+			Eigen::VectorXi ind;
+			eval_with_index(x, y, ind);
+			
+			if (ind.size() == 0)
+				return y;
+			else
+			{
+				assert(ind.size() == y.size());
+				Eigen::VectorXd y_extended;
+				y_extended.setZero(size(x.size()));
+				y_extended(ind) = y;
+				return y_extended;
+			}
+		}
+		virtual void eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const = 0; // derived class should override this, because the last parametrization in the list calls this function
+		virtual Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const = 0;
 	};
 
 	class CompositeParametrization : public Parametrization
@@ -70,6 +86,7 @@ namespace polyfem::solver
 
 			return y;
 		}
+
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const override
 		{
 			if (parametrizations_.empty())
@@ -92,12 +109,23 @@ namespace polyfem::solver
 			return gradv;
 		}
 
-		Eigen::VectorXi get_state_variable_indexing() const override
+		void eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const override
 		{
-			if (parametrizations_.size() == 0)
-				return Eigen::VectorXi();
-			else
-				return parametrizations_.back()->get_state_variable_indexing();
+			y = x;
+			ind.resize(0);
+			if (!parametrizations_.empty())
+			{
+				std::vector<std::shared_ptr<Parametrization>>::const_iterator it;
+				for(it = parametrizations_.begin(); it != parametrizations_.end() - 1; ++it)
+					y = (*it)->eval(y);
+				
+				Eigen::VectorXd tmp;
+				(*it)->eval_with_index(y, tmp, ind);
+				y = std::move(tmp);
+			}
+
+			if (ind.size() == 0)
+				ind.setLinSpaced(y.size(), 0, y.size() - 1);
 		}
 
 	private:

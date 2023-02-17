@@ -32,29 +32,26 @@ namespace polyfem::solver
 			return barycenter;
 		}
 	} // namespace
-	void ShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	void ShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
-		Eigen::MatrixXd V_rest, V;
-		Eigen::MatrixXi F;
-		state_ptr_->get_vf(V_rest, F);
-		assert(state_variable.size() == V_rest.size());
+		const int dim = state_ptr_->mesh->dimension();
 
-		Eigen::VectorXi state_var_indexing = parametrization_.get_state_variable_indexing();
+		// If indices include one vertex entry, we assume it include all entries of this vertex.
+		for (int i = 0; i < indices.size(); i += dim)
+			for (int j = 0; j < dim; j++)
+				assert(indices(i + j) == indices(i) + j);
 
-		V = utils::unflatten(state_variable, V_rest.cols());
-		if (state_var_indexing.size() == 0)
-			V_rest = V;
-		else
-			for (int i = 0; i < state_var_indexing.size(); ++i)
-				V_rest.row(state_var_indexing(i)) = V.row(i);
-
-		state_ptr_->set_mesh_vertices(V_rest);
+		for (int i = 0; i < indices.size(); i += dim)
+			state_ptr_->set_mesh_vertex(indices(i) / dim, state_variable(Eigen::seqN(indices(i), dim)));
+		
+		// TODO: move this to the end of all variable to simulation
+		state_ptr_->build_basis();
 	}
 
 	SDFShapeVariableToSimulation::SDFShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization, const json &args) : VariableToSimulation(state_ptr, parametrization), out_velocity_path_("micro-tmp-velocity.msh"), out_msh_path_("micro-tmp.msh"), isosurface_inflator_prefix_(args["isosurface_inflator_prefix"].get<std::string>()), unit_size_(args["unit_size"].get<double>()), periodic_tiling_(unit_size_ > 0)
 	{
 	}
-	void SDFShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	void SDFShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
 	}
 	bool SDFShapeVariableToSimulation::generate_graph_mesh(const Eigen::VectorXd &x)
@@ -186,21 +183,21 @@ namespace polyfem::solver
 		logger().info("Number of elements in one period: {}, number of periods: {}", elem_period_, nums.prod());
 	}
 
-	void ElasticVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	void ElasticVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
 		const int n_elem = state_ptr_->bases.size();
 		assert(n_elem * 2 == state_variable.size());
 		state_ptr_->assembler.update_lame_params(state_variable.segment(0, n_elem), state_variable.segment(n_elem, n_elem));
 	}
 
-	void FrictionCoeffientVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	void FrictionCoeffientVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
 		assert(state_variable.size() == 1);
 		assert(state_variable(0) >= 0);
 		state_ptr_->args["contact"]["friction_coefficient"] = state_variable(0);
 	}
 
-	void DampingCoeffientVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	void DampingCoeffientVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
 		assert(state_variable.size() == 2);
 		json damping_param = {
@@ -211,14 +208,14 @@ namespace polyfem::solver
 		logger().info("Current damping params: {}, {}", state_variable(0), state_variable(1));
 	}
 
-	void InitialConditionVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	void InitialConditionVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
 		assert(state_variable.size() == state_ptr_->ndof() * 2);
 		state_ptr_->initial_sol_update = state_variable.head(state_ptr_->ndof());
 		state_ptr_->initial_vel_update = state_variable.tail(state_ptr_->ndof());
 	}
 
-	void DirichletVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	void DirichletVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
 		log_and_throw_error("Dirichlet variable to simulation not implemented!");
 		// auto &problem = *dynamic_cast<assembler::GenericTensorProblem *>(state_ptr_->problem.get());
@@ -240,7 +237,7 @@ namespace polyfem::solver
 		return "";
 	}
 
-	void MacroStrainVariableToSimulation::update_state(const Eigen::VectorXd &state_variable)
+	void MacroStrainVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
 		assert(state_variable.size() == state_ptr_->mesh->dimension() * state_ptr_->mesh->dimension());
 		state_ptr_->disp_grad = utils::unflatten(state_variable, state_ptr_->mesh->dimension());

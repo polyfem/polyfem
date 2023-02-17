@@ -13,8 +13,11 @@ namespace polyfem::solver
 
 		inline virtual void update(const Eigen::VectorXd &x) final
 		{
-			Eigen::VectorXd state_variable = parametrization_.eval(x);
-			update_state(state_variable);
+			Eigen::VectorXd state_variable; 
+			Eigen::VectorXi ind;
+			parametrization_.eval_with_index(x, state_variable, ind);
+
+			update_state(state_variable, ind);
 		}
 
 		inline const State &get_state() const { return *state_ptr_; }
@@ -22,7 +25,7 @@ namespace polyfem::solver
 		virtual ParameterType get_parameter_type() const = 0;
 
 	protected:
-		virtual void update_state(const Eigen::VectorXd &state_variable) = 0;
+		virtual void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) = 0;
 		std::shared_ptr<State> state_ptr_;
 		CompositeParametrization parametrization_;
 	};
@@ -36,7 +39,7 @@ namespace polyfem::solver
 		ParameterType get_parameter_type() const override { return ParameterType::Shape; }
 
 	protected:
-		void update_state(const Eigen::VectorXd &state_variable) override;
+		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
 	};
 
 	class SDFShapeVariableToSimulation : public VariableToSimulation
@@ -48,7 +51,7 @@ namespace polyfem::solver
 		ParameterType get_parameter_type() const override { return ParameterType::Shape; }
 
 	protected:
-		void update_state(const Eigen::VectorXd &state_variable) override;
+		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
 
 		const std::string isosurface_inflator_prefix_, out_velocity_path_, out_msh_path_;
 		Eigen::MatrixXd shape_velocity_;
@@ -71,7 +74,7 @@ namespace polyfem::solver
 		ParameterType get_parameter_type() const override { return ParameterType::Material; }
 
 	protected:
-		void update_state(const Eigen::VectorXd &state_variable) override;
+		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
 	};
 
 	class FrictionCoeffientVariableToSimulation : public VariableToSimulation
@@ -83,7 +86,7 @@ namespace polyfem::solver
 		ParameterType get_parameter_type() const override { return ParameterType::FrictionCoeff; }
 
 	protected:
-		void update_state(const Eigen::VectorXd &state_variable) override;
+		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
 	};
 
 	class DampingCoeffientVariableToSimulation : public VariableToSimulation
@@ -95,7 +98,7 @@ namespace polyfem::solver
 		ParameterType get_parameter_type() const override { return ParameterType::DampingCoeff; }
 
 	protected:
-		void update_state(const Eigen::VectorXd &state_variable) override;
+		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
 	};
 
 	class InitialConditionVariableToSimulation : public VariableToSimulation
@@ -107,7 +110,7 @@ namespace polyfem::solver
 		ParameterType get_parameter_type() const override { return ParameterType::InitialCondition; }
 
 	protected:
-		void update_state(const Eigen::VectorXd &state_variable) override;
+		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
 	};
 
 	class DirichletVariableToSimulation : public VariableToSimulation
@@ -119,7 +122,7 @@ namespace polyfem::solver
 		ParameterType get_parameter_type() const override { return ParameterType::DirichletBC; }
 
 	protected:
-		void update_state(const Eigen::VectorXd &state_variable) override;
+		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
 
 	private:
 		std::string variable_to_string(const Eigen::VectorXd &variable);
@@ -134,7 +137,7 @@ namespace polyfem::solver
 		ParameterType get_parameter_type() const override { return ParameterType::MacroStrain; }
 
 	protected:
-		void update_state(const Eigen::VectorXd &state_variable);
+		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices);
 	};
 
 } // namespace polyfem::solver

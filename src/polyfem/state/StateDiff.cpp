@@ -124,16 +124,11 @@ namespace polyfem
 		}
 	}
 
-	void State::set_mesh_vertices(const Eigen::MatrixXd &vertices)
+	void State::set_mesh_vertex(int gbs_id, const Eigen::VectorXd &vertex)
 	{
-		assert(vertices.cols() == mesh->dimension());
-
-		const auto &primitive_to_node = iso_parametric() ? mesh_nodes->primitive_to_node() : geom_mesh_nodes->primitive_to_node();
-		for (int v = 0; v < mesh->n_vertices(); v++)
-			if (primitive_to_node[v] >= 0 && primitive_to_node[v] < vertices.rows())
-				mesh->set_point(v, vertices.block(primitive_to_node[v], 0, 1, mesh->dimension()));
-
-		build_basis();
+		assert(vertex.size() == mesh->dimension());
+		const int v_id = gnode_to_vertex(gbs_id);
+		mesh->set_point(v_id, vertex);
 	}
 
 	void State::cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad)

@@ -25,7 +25,7 @@ namespace polyfem::solver
 
 		int size(const int x_size) const override { return x_size; }
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
-		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+		void eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:
@@ -35,11 +35,11 @@ namespace polyfem::solver
 	class PowerMap : public Parametrization
 	{
 	public:
-		PowerMap(const double power = 1, const int from = -1, const int to = -1) : power_(power), from_(from), to_(to) { assert(from_ < to_); assert(power_ > 0); }
+		PowerMap(const double power = 1, const int from = -1, const int to = -1) : power_(power), from_(from), to_(to) { assert(from_ < to_ || from_ < 0); assert(power_ > 0); }
 
 		int size(const int x_size) const override { return x_size; }
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
-		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+		void eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:
@@ -55,7 +55,7 @@ namespace polyfem::solver
 		int size(const int x_size) const override { return x_size; }
 
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
-		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+		void eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:
@@ -68,7 +68,7 @@ namespace polyfem::solver
 		PerBody(const mesh::Mesh &mesh);
 
 		int size(const int x_size) const override;
-		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+		void eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:
@@ -85,7 +85,7 @@ namespace polyfem::solver
 
 		int size(const int x_size) const override { return from_ - to_; }
 
-		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+		void eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:
@@ -99,7 +99,7 @@ namespace polyfem::solver
 
 		int size(const int x_size) const override;
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
-		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+		void eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:

@@ -27,16 +27,15 @@ namespace polyfem::solver
 			return y.array().log();
 	}
 
-	Eigen::VectorXd ExponentialMap::eval(const Eigen::VectorXd &x) const
+	void ExponentialMap::eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const
 	{
 		if (from_ >= 0)
 		{
-			Eigen::VectorXd res = x;
-			res.segment(from_, to_ - from_) = x.segment(from_, to_ - from_).array().exp();
-			return res;
+			y = x;
+			y.segment(from_, to_ - from_) = x.segment(from_, to_ - from_).array().exp();
 		}
 		else
-			return x.array().exp();
+			y = x.array().exp();
 	}
 
 	Eigen::VectorXd ExponentialMap::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
@@ -64,16 +63,15 @@ namespace polyfem::solver
 			return y.array().pow(1. / power_);
 	}
 
-	Eigen::VectorXd PowerMap::eval(const Eigen::VectorXd &x) const
+	void PowerMap::eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const
 	{
 		if (from_ >= 0)
 		{
-			Eigen::VectorXd res = x;
-			res.segment(from_, to_ - from_) = x.segment(from_, to_ - from_).array().pow(power_);
-			return res;
+			y = x;
+			y.segment(from_, to_ - from_) = x.segment(from_, to_ - from_).array().pow(power_);
 		}
 		else
-			return x.array().pow(power_);
+			y = x.array().pow(power_);
 	}
 
 	Eigen::VectorXd PowerMap::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
@@ -108,19 +106,17 @@ namespace polyfem::solver
 		return x;
 	}
 
-	Eigen::VectorXd ENu2LambdaMu::eval(const Eigen::VectorXd &x) const
+	void ENu2LambdaMu::eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const
 	{
 		const int size = x.size() / 2;
 		assert(size * 2 == x.size());
 
-		Eigen::VectorXd y(x.size());
+		y.setZero(x.size());
 		for (int i = 0; i < size; i++)
 		{
 			y(i) = convert_to_lambda(is_volume_, x(i), x(i + size));
 			y(i + size) = convert_to_mu(x(i), x(i + size));
 		}
-
-		return y;
 	}
 
 	Eigen::VectorXd ENu2LambdaMu::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
@@ -156,9 +152,9 @@ namespace polyfem::solver
 		logger().info("{} objects found!", reduced_size_);
 	}
 
-	Eigen::VectorXd PerBody::eval(const Eigen::VectorXd &x) const
+	void PerBody::eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const
 	{
-		Eigen::VectorXd y(size(x.size()));
+		y.setZero(size(x.size()));
 
 		for (int e = 0; e < mesh_.n_elements(); e++)
 		{
@@ -167,8 +163,6 @@ namespace polyfem::solver
 			// y(e) = x(entry[1]);
 			y(Eigen::seq(e,y.size()-1,full_size_)) = x(Eigen::seq(entry[1],x.size()-1,reduced_size_));
 		}
-
-		return y;
 	}
 
 	int PerBody::size(const int x_size) const
@@ -199,9 +193,9 @@ namespace polyfem::solver
 		if (to_ - from_ <= 0)
 			log_and_throw_error("Invalid Slice Map input!");
 	}
-	Eigen::VectorXd SliceMap::eval(const Eigen::VectorXd &x) const
+	void SliceMap::eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const
 	{
-		return x.segment(from_, to_ - from_);
+		y = x.segment(from_, to_ - from_);
 	}
 	Eigen::VectorXd SliceMap::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
 	{
@@ -224,12 +218,10 @@ namespace polyfem::solver
 		return y.head(y.size() - size_);
 	}
 
-	Eigen::VectorXd AppendConstantMap::eval(const Eigen::VectorXd &x) const
+	void AppendConstantMap::eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const
 	{
-		Eigen::VectorXd y(size(x.size()));
+		y.setZero(size(x.size()));
 		y << x, Eigen::VectorXd::Ones(size_) * val_;
-
-		return y;
 	}
 	Eigen::VectorXd AppendConstantMap::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
 	{
