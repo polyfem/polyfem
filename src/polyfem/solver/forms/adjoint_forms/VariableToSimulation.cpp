@@ -38,9 +38,17 @@ namespace polyfem::solver
 		Eigen::MatrixXi F;
 		state_ptr_->get_vf(V_rest, F);
 		assert(state_variable.size() == V_rest.size());
-		V = utils::unflatten(state_variable, V_rest.cols());
 
-		state_ptr_->set_mesh_vertices(V);
+		Eigen::VectorXi state_var_indexing = parametrization_.get_state_variable_indexing();
+
+		V = utils::unflatten(state_variable, V_rest.cols());
+		if (state_var_indexing.size() == 0)
+			V_rest = V;
+		else
+			for (int i = 0; i < state_var_indexing.size(); ++i)
+				V_rest.row(state_var_indexing(i)) = V.row(i);
+
+		state_ptr_->set_mesh_vertices(V_rest);
 	}
 
 	SDFShapeVariableToSimulation::SDFShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization, const json &args) : VariableToSimulation(state_ptr, parametrization), out_velocity_path_("micro-tmp-velocity.msh"), out_msh_path_("micro-tmp.msh"), isosurface_inflator_prefix_(args["isosurface_inflator_prefix"].get<std::string>()), unit_size_(args["unit_size"].get<double>()), periodic_tiling_(unit_size_ > 0)

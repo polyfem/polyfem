@@ -23,13 +23,15 @@ namespace polyfem::solver
 		virtual int size(const int x_size) const = 0; // just for verification
 		virtual Eigen::VectorXd eval(const Eigen::VectorXd &x) const = 0;
 		virtual Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const = 0;
+
+		virtual Eigen::VectorXi get_state_variable_indexing() const { return Eigen::VectorXi(); }
 	};
 
-	class CompositeParametrization: public Parametrization
+	class CompositeParametrization : public Parametrization
 	{
 	public:
 		CompositeParametrization() {}
-		CompositeParametrization(const std::vector<std::shared_ptr<Parametrization>> &parametrizations): parametrizations_(parametrizations) {}
+		CompositeParametrization(const std::vector<std::shared_ptr<Parametrization>> &parametrizations) : parametrizations_(parametrizations) {}
 		virtual ~CompositeParametrization() {}
 
 		int size(const int x_size) const override
@@ -37,7 +39,7 @@ namespace polyfem::solver
 			int cur_size = x_size;
 			for (const auto &p : parametrizations_)
 				cur_size = p->size(cur_size);
-			
+
 			return cur_size;
 		}
 
@@ -89,7 +91,15 @@ namespace polyfem::solver
 
 			return gradv;
 		}
-	
+
+		Eigen::VectorXi get_state_variable_indexing() const override
+		{
+			if (parametrizations_.size() == 0)
+				return Eigen::VectorXi();
+			else
+				return parametrizations_.back()->get_state_variable_indexing();
+		}
+
 	private:
 		std::vector<std::shared_ptr<Parametrization>> parametrizations_;
 	};
