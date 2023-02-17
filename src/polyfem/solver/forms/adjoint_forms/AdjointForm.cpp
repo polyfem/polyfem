@@ -7,13 +7,8 @@ namespace polyfem::solver
     {
         gradv.setZero(x.size());
         for (const auto &param_map : variable_to_simulations_)
-        {
-            const auto &parametrization = param_map->get_parametrization();
-            const auto &state = param_map->get_state();
-            const auto &param_type = param_map->get_parameter_type();
-
-            gradv += parametrization.apply_jacobian(compute_adjoint_term(state, param_type), x);
-        }
+			gradv += param_map->compute_adjoint_term(x);
+		
 		gradv /= weight_;
 
         Eigen::VectorXd partial_grad;
@@ -30,13 +25,6 @@ namespace polyfem::solver
     {
         log_and_throw_error("Should override this function in any AdjointForm!");
         return Eigen::MatrixXd();
-    }
-
-    Eigen::VectorXd AdjointForm::compute_adjoint_term(const State &state, const ParameterType &param) const
-    {
-        Eigen::VectorXd term;
-        AdjointTools::compute_adjoint_term(state, state.get_adjoint_mat(), param, term);
-        return term;
     }
 
     Eigen::MatrixXd StaticForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)

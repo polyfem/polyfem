@@ -32,6 +32,7 @@ namespace polyfem::solver
 			return barycenter;
 		}
 	} // namespace
+
 	void ShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
 		const int dim = state_ptr_->mesh->dimension();
@@ -47,8 +48,24 @@ namespace polyfem::solver
 		// TODO: move this to the end of all variable to simulation
 		state_ptr_->build_basis();
 	}
+	Eigen::VectorXd ShapeVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd term;
+		if (get_state().problem->is_time_dependent())
+		{
+			Eigen::MatrixXd adjoint_nu, adjoint_p;
+			adjoint_nu = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(get_state().get_adjoint_mat().cols() / 2, get_state().get_adjoint_mat().cols() / 2 - 1));
+			adjoint_p = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(0, get_state().get_adjoint_mat().cols() / 2 - 1));
+			AdjointTools::dJ_shape_transient_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
+		}
+		else
+		{
+			AdjointTools::dJ_shape_static_adjoint_term(get_state(), get_state().diff_cached[0].u, get_state().get_adjoint_mat(), term);
+		}
+		return parametrization_.apply_jacobian(term, x);
+	}
 
-	SDFShapeVariableToSimulation::SDFShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization, const json &args) : VariableToSimulation(state_ptr, parametrization), out_velocity_path_("micro-tmp-velocity.msh"), out_msh_path_("micro-tmp.msh"), isosurface_inflator_prefix_(args["isosurface_inflator_prefix"].get<std::string>()), unit_size_(args["unit_size"].get<double>()), periodic_tiling_(unit_size_ > 0)
+	SDFShapeVariableToSimulation::SDFShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization, const json &args) : ShapeVariableToSimulation(state_ptr, parametrization), out_velocity_path_("micro-tmp-velocity.msh"), out_msh_path_("micro-tmp.msh"), isosurface_inflator_prefix_(args["isosurface_inflator_prefix"].get<std::string>()), unit_size_(args["unit_size"].get<double>()), periodic_tiling_(unit_size_ > 0)
 	{
 	}
 	void SDFShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
@@ -189,12 +206,44 @@ namespace polyfem::solver
 		assert(n_elem * 2 == state_variable.size());
 		state_ptr_->assembler.update_lame_params(state_variable.segment(0, n_elem), state_variable.segment(n_elem, n_elem));
 	}
+	Eigen::VectorXd ElasticVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd term;
+		if (get_state().problem->is_time_dependent())
+		{
+			Eigen::MatrixXd adjoint_nu, adjoint_p;
+			adjoint_nu = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(get_state().get_adjoint_mat().cols() / 2, get_state().get_adjoint_mat().cols() / 2 - 1));
+			adjoint_p = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(0, get_state().get_adjoint_mat().cols() / 2 - 1));
+			AdjointTools::dJ_material_transient_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
+		}
+		else
+		{
+			AdjointTools::dJ_material_static_adjoint_term(get_state(), get_state().diff_cached[0].u, get_state().get_adjoint_mat(), term);
+		}
+		return parametrization_.apply_jacobian(term, x);
+	}
 
 	void FrictionCoeffientVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
 		assert(state_variable.size() == 1);
 		assert(state_variable(0) >= 0);
 		state_ptr_->args["contact"]["friction_coefficient"] = state_variable(0);
+	}
+	Eigen::VectorXd FrictionCoeffientVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd term;
+		if (get_state().problem->is_time_dependent())
+		{
+			Eigen::MatrixXd adjoint_nu, adjoint_p;
+			adjoint_nu = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(get_state().get_adjoint_mat().cols() / 2, get_state().get_adjoint_mat().cols() / 2 - 1));
+			adjoint_p = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(0, get_state().get_adjoint_mat().cols() / 2 - 1));
+			AdjointTools::dJ_friction_transient_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
+		}
+		else
+		{
+			log_and_throw_error("Friction coefficient grad in static simulations not implemented!");
+		}
+		return parametrization_.apply_jacobian(term, x);
 	}
 
 	void DampingCoeffientVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
@@ -207,12 +256,44 @@ namespace polyfem::solver
 		state_ptr_->assembler.add_multimaterial(0, damping_param);
 		logger().info("Current damping params: {}, {}", state_variable(0), state_variable(1));
 	}
+	Eigen::VectorXd DampingCoeffientVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd term;
+		if (get_state().problem->is_time_dependent())
+		{
+			Eigen::MatrixXd adjoint_nu, adjoint_p;
+			adjoint_nu = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(get_state().get_adjoint_mat().cols() / 2, get_state().get_adjoint_mat().cols() / 2 - 1));
+			adjoint_p = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(0, get_state().get_adjoint_mat().cols() / 2 - 1));
+			AdjointTools::dJ_damping_transient_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
+		}
+		else
+		{
+			log_and_throw_error("Static damping not supported!");
+		}
+		return parametrization_.apply_jacobian(term, x);
+	}
 
 	void InitialConditionVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
 		assert(state_variable.size() == state_ptr_->ndof() * 2);
 		state_ptr_->initial_sol_update = state_variable.head(state_ptr_->ndof());
 		state_ptr_->initial_vel_update = state_variable.tail(state_ptr_->ndof());
+	}
+	Eigen::VectorXd InitialConditionVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd term;
+		if (get_state().problem->is_time_dependent())
+		{
+			Eigen::MatrixXd adjoint_nu, adjoint_p;
+			adjoint_nu = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(get_state().get_adjoint_mat().cols() / 2, get_state().get_adjoint_mat().cols() / 2 - 1));
+			adjoint_p = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(0, get_state().get_adjoint_mat().cols() / 2 - 1));
+			AdjointTools::dJ_initial_condition_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
+		}
+		else
+		{
+			log_and_throw_error("Static initial condition not supported!");
+		}
+		return parametrization_.apply_jacobian(term, x);
 	}
 
 	void DirichletVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
@@ -231,7 +312,22 @@ namespace polyfem::solver
 		// 	problem.update_dirichlet_boundary(kv.first, dirichlet_bc, true, true, true, "");
 		// }
 	}
-
+	Eigen::VectorXd DirichletVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd term;
+		if (get_state().problem->is_time_dependent())
+		{
+			Eigen::MatrixXd adjoint_nu, adjoint_p;
+			adjoint_nu = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(get_state().get_adjoint_mat().cols() / 2, get_state().get_adjoint_mat().cols() / 2 - 1));
+			adjoint_p = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(0, get_state().get_adjoint_mat().cols() / 2 - 1));
+			AdjointTools::dJ_dirichlet_transient_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
+		}
+		else
+		{
+			log_and_throw_error("Static dirichlet boundary optimization not supported!");
+		}
+		return parametrization_.apply_jacobian(term, x);
+	}
 	std::string DirichletVariableToSimulation::variable_to_string(const Eigen::VectorXd &variable)
 	{
 		return "";
@@ -241,5 +337,18 @@ namespace polyfem::solver
 	{
 		assert(state_variable.size() == state_ptr_->mesh->dimension() * state_ptr_->mesh->dimension());
 		state_ptr_->disp_grad = utils::unflatten(state_variable, state_ptr_->mesh->dimension());
+	}
+	Eigen::VectorXd MacroStrainVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd term;
+		if (get_state().problem->is_time_dependent())
+		{
+			log_and_throw_error("Transient macro strain optimization not supported!");
+		}
+		else
+		{
+			AdjointTools::dJ_macro_strain_adjoint_term(get_state(), get_state().diff_cached[0].u, get_state().get_adjoint_mat(), term);
+		}
+		return parametrization_.apply_jacobian(term, x);
 	}
 } // namespace polyfem::solver

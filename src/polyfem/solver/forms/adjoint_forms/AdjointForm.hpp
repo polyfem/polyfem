@@ -18,9 +18,6 @@ namespace polyfem::solver
 		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
 
 		std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations_;
-
-	private:
-		virtual Eigen::VectorXd compute_adjoint_term(const State &state, const ParameterType &param) const final;
 	};
 
 	class StaticForm : public AdjointForm

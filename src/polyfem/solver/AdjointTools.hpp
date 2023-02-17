@@ -21,12 +21,6 @@ namespace polyfem::solver
 		AdjointTools()
 		{
 		}
-		
-		static void compute_adjoint_term(
-			const State &state,
-			const Eigen::MatrixXd &adjoints, 
-			const ParameterType &param_name,
-			Eigen::VectorXd &term);
 
 		static double integrate_objective(
 			const State &state,
@@ -74,32 +68,32 @@ namespace polyfem::solver
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
-		static void dJ_material_static(
+		static void dJ_material_static_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &sol,
 			const Eigen::MatrixXd &adjoint,
 			Eigen::VectorXd &one_form);
-		static void dJ_material_transient(
+		static void dJ_material_transient_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
-		static void dJ_friction_transient(
+		static void dJ_friction_transient_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
-		static void dJ_damping_transient(
+		static void dJ_damping_transient_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
-		static void dJ_initial_condition(
+		static void dJ_initial_condition_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
-		static void dJ_dirichlet_transient(
+		static void dJ_dirichlet_transient_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,

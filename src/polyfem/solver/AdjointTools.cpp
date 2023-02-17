@@ -59,45 +59,6 @@ namespace polyfem::solver
 		};
 	} // namespace
 
-	void AdjointTools::compute_adjoint_term(
-		const State &state,
-		const Eigen::MatrixXd &adjoints, 
-		const ParameterType &param_name,
-		Eigen::VectorXd &term)
-	{
-		if (state.problem->is_time_dependent())
-		{
-			Eigen::MatrixXd adjoint_nu, adjoint_p;
-			adjoint_nu = adjoints(Eigen::all, Eigen::seq(1, Eigen::last, 2));
-			adjoint_p = adjoints(Eigen::all, Eigen::seq(0, Eigen::last, 2));
-			if (param_name == ParameterType::Material)
-				dJ_material_transient(state, adjoint_nu, adjoint_p, term);
-			else if (param_name == ParameterType::Shape)
-				dJ_shape_transient_adjoint_term(state, adjoint_nu, adjoint_p, term);
-			else if (param_name == ParameterType::FrictionCoeff)
-				dJ_friction_transient(state, adjoint_nu, adjoint_p, term);
-			else if (param_name == ParameterType::DampingCoeff)
-				dJ_damping_transient(state, adjoint_nu, adjoint_p, term);
-			else if (param_name == ParameterType::InitialCondition)
-				dJ_initial_condition(state, adjoint_nu, adjoint_p, term);
-			else if (param_name == ParameterType::DirichletBC)
-				dJ_dirichlet_transient(state, adjoint_nu, adjoint_p, term);
-			else
-				log_and_throw_error("Unknown design parameter!");
-		}
-		else
-		{
-			if (param_name == ParameterType::Material)
-				dJ_material_static(state, state.diff_cached[0].u, adjoints, term);
-			else if (param_name == ParameterType::Shape)
-				dJ_shape_static_adjoint_term(state, state.diff_cached[0].u, adjoints, term);
-			else if (param_name == ParameterType::MacroStrain)
-				dJ_macro_strain_adjoint_term(state, state.diff_cached[0].u, adjoints, term);
-			else
-				log_and_throw_error("Unknown design parameter!");
-		}
-	}
-
 	void AdjointTools::dJ_macro_strain_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &sol,
@@ -671,7 +632,7 @@ namespace polyfem::solver
 		one_form += mass_term;
 	}
 
-	void AdjointTools::dJ_material_static(
+	void AdjointTools::dJ_material_static_adjoint_term(
 		const State &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &adjoint,
@@ -680,7 +641,7 @@ namespace polyfem::solver
 		state.solve_data.elastic_form->foce_material_derivative(sol, sol, adjoint, one_form);
 	}
 
-	void AdjointTools::dJ_material_transient(
+	void AdjointTools::dJ_material_transient_adjoint_term(
 		const State &state,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -715,7 +676,7 @@ namespace polyfem::solver
 			one_form += local_storage.vec;
 	}
 
-	void AdjointTools::dJ_friction_transient(
+	void AdjointTools::dJ_friction_transient_adjoint_term(
 		const State &state,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -755,7 +716,7 @@ namespace polyfem::solver
 			one_form(0) += local_storage.val;
 	}
 
-	void AdjointTools::dJ_damping_transient(
+	void AdjointTools::dJ_damping_transient_adjoint_term(
 		const State &state,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -790,7 +751,7 @@ namespace polyfem::solver
 			one_form += local_storage.vec;
 	}
 
-	void AdjointTools::dJ_initial_condition(
+	void AdjointTools::dJ_initial_condition_adjoint_term(
 		const State &state,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -810,7 +771,7 @@ namespace polyfem::solver
 		}
 	}
 
-	void AdjointTools::dJ_dirichlet_transient(
+	void AdjointTools::dJ_dirichlet_transient_adjoint_term(
 		const State &state,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
