@@ -1,5 +1,7 @@
 var NAVTREEINDEX31 =
 {
+"structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a8895bcd7f83152e8b309b6b584cdddc4":[4,0,3,2,5,0,10],
+"structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a8895bcd7f83152e8b309b6b584cdddc4":[3,0,6,3,5,0,10],
 "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a9e51bea3166ca250ed6dd6d4bc6d8c78":[3,0,6,3,5,0,11],
 "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a9e51bea3166ca250ed6dd6d4bc6d8c78":[4,0,3,2,5,0,11],
 "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#ab43f215f17671955cc2687c9961f480f":[4,0,3,2,5,0,13],
@@ -247,7 +249,5 @@ var NAVTREEINDEX31 =
 "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#ab47755da6213d7a493ecd5950bd9e862":[4,0,3,3,15,4,9],
 "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#ab47755da6213d7a493ecd5950bd9e862":[3,0,6,4,17,4,9],
 "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#abd2c9455304470577b438941a7767d1b":[3,0,6,4,17,4,14],
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#abd2c9455304470577b438941a7767d1b":[4,0,3,3,15,4,14],
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#aead53b9e8084e2dd8d82d9fd02a545cb":[4,0,3,3,15,4,12],
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#aead53b9e8084e2dd8d82d9fd02a545cb":[3,0,6,4,17,4,12]
+"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#abd2c9455304470577b438941a7767d1b":[4,0,3,3,15,4,14]
 };

@@ -236,6 +236,9 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a11dc255b645616580dba80d84112cb1e"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; polysolve::LinearSolver &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a11dc255b645616580dba80d84112cb1e">linear_solver</a></td></tr>
 <tr class="memdesc:a11dc255b645616580dba80d84112cb1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear solver used to solve the linear system.  <a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a11dc255b645616580dba80d84112cb1e">More...</a><br /></td></tr>
 <tr class="separator:a11dc255b645616580dba80d84112cb1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e4eaefc15cc395fba6c556ac355508d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a2e4eaefc15cc395fba6c556ac355508d">force_psd_projection</a> = false</td></tr>
+<tr class="memdesc:a2e4eaefc15cc395fba6c556ac355508d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to force the Hessian to be positive semi-definite.  <a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#a2e4eaefc15cc395fba6c556ac355508d">More...</a><br /></td></tr>
+<tr class="separator:a2e4eaefc15cc395fba6c556ac355508d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab87d0126a0fb58ad40ccb412d4b50a71"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">reg_weight</a> = 0</td></tr>
 <tr class="memdesc:ab87d0126a0fb58ad40ccb412d4b50a71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Regularization Coefficients.  <a href="classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71">More...</a><br /></td></tr>
 <tr class="separator:ab87d0126a0fb58ad40ccb412d4b50a71"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -513,6 +516,8 @@ template&lt;typename ProblemType &gt; </div>
 <p>Implements <a class="el" href="classcppoptlib_1_1_nonlinear_solver.html#a2a5108b56a7a989b5edc1c455c09d36b">cppoptlib::NonlinearSolver&lt; ProblemType &gt;</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html#l00049">49</a> of file <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html">SparseNewtonDescentSolver.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html#l00061">cppoptlib::SparseNewtonDescentSolver&lt; ProblemType &gt;::force_psd_projection</a>.</p>
 
 </div>
 </div>
@@ -830,6 +835,36 @@ template&lt;typename ProblemType &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a2e4eaefc15cc395fba6c556ac355508d" name="a2e4eaefc15cc395fba6c556ac355508d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e4eaefc15cc395fba6c556ac355508d">&#9670;&#160;</a></span>force_psd_projection</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ProblemType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classcppoptlib_1_1_sparse_newton_descent_solver.html">cppoptlib::SparseNewtonDescentSolver</a>&lt; ProblemType &gt;::force_psd_projection = false</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether to force the Hessian to be positive semi-definite. </p>
+
+<p class="definition">Definition at line <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html#l00061">61</a> of file <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html">SparseNewtonDescentSolver.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html#l00049">cppoptlib::SparseNewtonDescentSolver&lt; ProblemType &gt;::default_descent_strategy()</a>.</p>
+
+</div>
+</div>
 <a id="ab9b46d274066e6e16bdd6ef48a9ae7c8" name="ab9b46d274066e6e16bdd6ef48a9ae7c8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab9b46d274066e6e16bdd6ef48a9ae7c8">&#9670;&#160;</a></span>internal_solver_info</h2>
 
@@ -852,7 +887,7 @@ template&lt;typename ProblemType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html#l00069">69</a> of file <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html">SparseNewtonDescentSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html#l00070">70</a> of file <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html">SparseNewtonDescentSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -908,7 +943,7 @@ template&lt;typename ProblemType &gt; </div>
 
 <p>Regularization Coefficients. </p>
 
-<p class="definition">Definition at line <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html#l00061">61</a> of file <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html">SparseNewtonDescentSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html#l00062">62</a> of file <a class="el" href="_sparse_newton_descent_solver_8hpp_source.html">SparseNewtonDescentSolver.hpp</a>.</p>
 
 </div>
 </div>

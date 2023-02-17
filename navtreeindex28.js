@@ -1,5 +1,7 @@
 var NAVTREEINDEX28 =
 {
+"namespaceelasticity__rhs.html#a3f0474d50037ed8ad5b1d0031dbadcef":[3,0,2,13],
+"namespaceelasticity__rhs.html#a40cac4cd15d87571365bca9e062442d8":[3,0,2,15],
 "namespaceelasticity__rhs.html#a416b4552268173e68a682d8c7ad68124":[3,0,2,9],
 "namespaceelasticity__rhs.html#a58d3488e1b1421e46ba8072a95b6a261":[3,0,2,16],
 "namespaceelasticity__rhs.html#a7571953e9672eeaddc823e763ceec3a7":[3,0,2,21],
@@ -247,7 +249,5 @@ var NAVTREEINDEX28 =
 "namespacepolyfem_1_1mesh.html#a816bc73f845b5cd77603ab5804e15356":[3,0,6,4,61],
 "namespacepolyfem_1_1mesh.html#a8ffb307ad1f47d970021d26cff0653d7":[3,0,6,4,46],
 "namespacepolyfem_1_1mesh.html#a9ad4233b995aa8aba9440009505693d0":[3,0,6,4,31],
-"namespacepolyfem_1_1mesh.html#a9edb1ab6286b5c93e9f2a564ea072559":[3,0,6,4,54],
-"namespacepolyfem_1_1mesh.html#a9f801017db21aa959f16cfc91c986a04":[3,0,6,4,35],
-"namespacepolyfem_1_1mesh.html#aa343729fa98cb887e320f61247db1843":[3,0,6,4,39]
+"namespacepolyfem_1_1mesh.html#a9edb1ab6286b5c93e9f2a564ea072559":[3,0,6,4,54]
 };

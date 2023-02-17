@@ -15,6 +15,7 @@ var classcppoptlib_1_1_sparse_newton_descent_solver =
     [ "reset", "classcppoptlib_1_1_sparse_newton_descent_solver.html#a3acdaff5ac2b80637f7adb32c6b7235a", null ],
     [ "solve_linear_system", "classcppoptlib_1_1_sparse_newton_descent_solver.html#a88682b491723166768066d1024c2b260", null ],
     [ "update_solver_info", "classcppoptlib_1_1_sparse_newton_descent_solver.html#adfee0010a575b6ade54621a7be148e0e", null ],
+    [ "force_psd_projection", "classcppoptlib_1_1_sparse_newton_descent_solver.html#a2e4eaefc15cc395fba6c556ac355508d", null ],
     [ "internal_solver_info", "classcppoptlib_1_1_sparse_newton_descent_solver.html#ab9b46d274066e6e16bdd6ef48a9ae7c8", null ],
     [ "linear_solver", "classcppoptlib_1_1_sparse_newton_descent_solver.html#a11dc255b645616580dba80d84112cb1e", null ],
     [ "reg_weight", "classcppoptlib_1_1_sparse_newton_descent_solver.html#ab87d0126a0fb58ad40ccb412d4b50a71", null ]
