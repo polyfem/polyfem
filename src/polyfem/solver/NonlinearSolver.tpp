@@ -119,8 +119,9 @@ namespace cppoptlib
 			if (!is_first_iter) {
 				POLYFEM_SCOPED_TIMER("constraint set update", constraint_set_update_time);
 				objFunc.solution_changed(x);
-				is_first_iter = false;
 			}
+			else
+				is_first_iter = false;
 
 			double energy;
 			{
