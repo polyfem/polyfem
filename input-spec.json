@@ -3731,6 +3731,7 @@
             "vis_boundary_only",
             "curved_mesh_size",
             "save_solve_sequence_debug",
+            "save_ccd_debug_meshes",
             "save_time_sequence",
             "save_nl_solve_sequence",
             "spectrum"
@@ -3775,6 +3776,12 @@
     },
     {
         "pointer": "/output/advanced/save_solve_sequence_debug",
+        "default": false,
+        "type": "bool",
+        "doc": "saves AL internal steps, for debugging"
+    },
+    {
+        "pointer": "/output/advanced/save_ccd_debug_meshes",
         "default": false,
         "type": "bool",
         "doc": "saves AL internal steps, for debugging"

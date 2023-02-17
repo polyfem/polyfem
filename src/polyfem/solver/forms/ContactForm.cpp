@@ -13,6 +13,8 @@
 #include <ipc/barrier/adaptive_stiffness.hpp>
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
 
+#include <igl/writePLY.h>
+
 namespace polyfem::solver
 {
 	ContactForm::ContactForm(const ipc::CollisionMesh &collision_mesh,
@@ -148,6 +150,14 @@ namespace polyfem::solver
 		// Extract surface only
 		const Eigen::MatrixXd V0 = compute_displaced_surface(x0);
 		const Eigen::MatrixXd V1 = compute_displaced_surface(x1);
+
+		if (save_ccd_debug_meshes)
+		{
+			const Eigen::MatrixXi E = collision_mesh_.dim() == 2 ? Eigen::MatrixXi() : collision_mesh_.edges();
+			const Eigen::MatrixXi &F = collision_mesh_.faces();
+			igl::writePLY(resolve_output_path("debug_ccd_0.ply"), V0, F, E);
+			igl::writePLY(resolve_output_path("debug_ccd_1.ply"), V1, F, E);
+		}
 
 		double max_step;
 		if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU)
