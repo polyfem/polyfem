@@ -13,11 +13,7 @@ namespace polyfem::solver
 
 		inline virtual void update(const Eigen::VectorXd &x) final
 		{
-			Eigen::VectorXd state_variable; 
-			Eigen::VectorXi ind;
-			parametrization_.eval_with_index(x, state_variable, ind);
-
-			update_state(state_variable, ind);
+			update_state(parametrization_.eval(x), parametrization_.get_output_indexing(x));
 		}
 
 		inline const State &get_state() const { return *state_ptr_; }

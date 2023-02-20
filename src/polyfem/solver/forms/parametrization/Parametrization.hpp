@@ -12,6 +12,7 @@ namespace polyfem::solver
 	class Parametrization
 	{
 	public:
+		Parametrization() {}
 		virtual ~Parametrization() {}
 
 		virtual Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const
@@ -21,29 +22,34 @@ namespace polyfem::solver
 		}
 
 		virtual int size(const int x_size) const = 0; // just for verification
-
-		virtual Eigen::VectorXd eval(const Eigen::VectorXd &x) const
-		{
-			Eigen::VectorXd y;
-			Eigen::VectorXi ind;
-			eval_with_index(x, y, ind);
-			
-			if (ind.size() == 0)
-				return y;
-			else
-			{
-				assert(ind.size() == y.size());
-				Eigen::VectorXd y_extended;
-				y_extended.setZero(size(x.size()));
-				y_extended(ind) = y;
-				return y_extended;
-			}
-		}
-		virtual void eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const = 0; // derived class should override this, because the last parametrization in the list calls this function
+		virtual Eigen::VectorXd eval(const Eigen::VectorXd &x) const = 0;
 		virtual Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const = 0;
 	};
 
-	class CompositeParametrization : public Parametrization
+	class IndexedParametrization : public Parametrization
+	{
+	public:
+		IndexedParametrization() {}
+		virtual ~IndexedParametrization() {}
+		Eigen::VectorXi get_output_indexing(const Eigen::VectorXd &x) const 
+		{
+			const int out_size = size(x.size());
+			if (output_indexing_.size() == out_size)
+				return output_indexing_;
+			else
+			{
+				Eigen::VectorXi ind(out_size);
+				for (int i = 0; i < out_size; i++)
+					ind(i) = i;
+				return ind;
+			}
+		}
+
+	protected:
+		Eigen::VectorXi output_indexing_;
+	};
+
+	class CompositeParametrization : public IndexedParametrization
 	{
 	public:
 		CompositeParametrization() {}
@@ -86,7 +92,6 @@ namespace polyfem::solver
 
 			return y;
 		}
-
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const override
 		{
 			if (parametrizations_.empty())
@@ -100,32 +105,16 @@ namespace polyfem::solver
 				y = p->eval(y);
 			}
 
-			Eigen::VectorXd gradv = grad_full;
+			Eigen::VectorXd gradv;
+			Eigen::VectorXi indices = get_output_indexing(x);
+			gradv.setZero(indices.size());
+			for (int i = 0; i < indices.size(); i++)
+				gradv(i) += grad_full(indices(i));
+
 			for (int i = parametrizations_.size() - 1; i >= 0; --i)
-			{
 				gradv = parametrizations_[i]->apply_jacobian(gradv, ys[i]);
-			}
 
 			return gradv;
-		}
-
-		void eval_with_index(const Eigen::VectorXd &x, Eigen::VectorXd &y, Eigen::VectorXi &ind) const override
-		{
-			y = x;
-			ind.resize(0);
-			if (!parametrizations_.empty())
-			{
-				std::vector<std::shared_ptr<Parametrization>>::const_iterator it;
-				for(it = parametrizations_.begin(); it != parametrizations_.end() - 1; ++it)
-					y = (*it)->eval(y);
-				
-				Eigen::VectorXd tmp;
-				(*it)->eval_with_index(y, tmp, ind);
-				y = std::move(tmp);
-			}
-
-			if (ind.size() == 0)
-				ind.setLinSpaced(y.size(), 0, y.size() - 1);
 		}
 
 	private:
