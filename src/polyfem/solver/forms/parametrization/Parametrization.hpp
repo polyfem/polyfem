@@ -38,9 +38,8 @@ namespace polyfem::solver
 				return output_indexing_;
 			else
 			{
-				Eigen::VectorXi ind(out_size);
-				for (int i = 0; i < out_size; i++)
-					ind(i) = i;
+				Eigen::VectorXi ind;
+				ind.setLinSpaced(out_size, 0, out_size - 1);
 				return ind;
 			}
 		}
@@ -105,11 +104,7 @@ namespace polyfem::solver
 				y = p->eval(y);
 			}
 
-			Eigen::VectorXd gradv;
-			Eigen::VectorXi indices = get_output_indexing(x);
-			gradv.setZero(indices.size());
-			for (int i = 0; i < indices.size(); i++)
-				gradv(i) += grad_full(indices(i));
+			Eigen::VectorXd gradv = grad_full(get_output_indexing(x));
 
 			for (int i = parametrizations_.size() - 1; i >= 0; --i)
 				gradv = parametrizations_[i]->apply_jacobian(gradv, ys[i]);
