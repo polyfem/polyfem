@@ -334,4 +334,25 @@ namespace polyfem::solver
 		double dhat;
 		ipc::BroadPhaseMethod broad_phase_method;
 	};
+
+	// not differentiable
+	class MaxStressObjective : public StaticObjective
+	{
+	public:
+		MaxStressObjective(const State &state, const json &args);
+		virtual ~MaxStressObjective() = default;
+
+		double value() override;
+
+		Eigen::VectorXd compute_partial_gradient(const Parameter &param, const Eigen::VectorXd &param_value) override
+		{ log_and_throw_error("Not implemented!"); return Eigen::VectorXd(); }
+		Eigen::VectorXd compute_adjoint_rhs_step(const State &state) override
+		{ log_and_throw_error("Not implemented!"); return Eigen::VectorXd(); }
+
+		const State &get_state() { return state_; }
+
+	protected:
+		const State &state_;
+		std::set<int> interested_ids_;
+	};
 } // namespace polyfem::solver

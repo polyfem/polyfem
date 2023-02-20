@@ -637,6 +637,7 @@ public:
 			StiffnessMatrix gradu_h_next;
 			Eigen::MatrixXd u;
 			Eigen::MatrixXd v;
+			Eigen::MatrixXd acc;
 			Eigen::MatrixXd disp_grad;
 			ipc::Constraints contact_set;
 			ipc::FrictionConstraints friction_constraint_set;

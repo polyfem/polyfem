@@ -75,6 +75,21 @@ namespace polyfem::solver
 		int dim_ = 0; // integrate the "dim" dimension
 	};
 
+	class AccelerationObjective : public SpatialIntegralObjective
+	{
+	public:
+		AccelerationObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args);
+		~AccelerationObjective() = default;
+
+		void set_dim(const int dim) { dim_ = dim; }
+		void set_integral_type(const AdjointForm::SpatialIntegralType type) { spatial_integral_type_ = type; }
+
+		IntegrableFunctional get_integral_functional() override;
+
+	protected:
+		int dim_ = 0; // integrate the "dim" dimension
+	};
+
 	class KineticEnergyObjective : public SpatialIntegralObjective
 	{
 	public:

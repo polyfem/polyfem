@@ -264,6 +264,38 @@ namespace polyfem::solver
 		return j;
 	}
 
+	AccelerationObjective::AccelerationObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
+	{
+		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;
+		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+	}
+
+	IntegrableFunctional AccelerationObjective::get_integral_functional()
+	{
+		IntegrableFunctional j;
+
+		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			const int e = params["elem"];
+			Eigen::MatrixXd acc, grad_acc;
+			io::Evaluator::interpolate_at_local_vals(*(state_.mesh), state_.problem->is_scalar(), state_.bases, state_.geom_bases(), e, local_pts, state_.diff_cached[time_step_].acc, acc, grad_acc);
+
+			val = acc.col(this->dim_);
+		});
+
+		j.set_dj_du([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(u.rows(), u.cols());
+			val.col(this->dim_).setOnes();
+		});
+
+		j.set_dj_dx([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(pts.rows(), pts.cols());
+			val.col(this->dim_).setOnes();
+		});
+
+		return j;
+	}
+
 	KineticEnergyObjective::KineticEnergyObjective(const State &state, const std::shared_ptr<const Parameter> shape_param, const json &args) : SpatialIntegralObjective(state, shape_param, args)
 	{
 		spatial_integral_type_ = AdjointForm::SpatialIntegralType::VOLUME;

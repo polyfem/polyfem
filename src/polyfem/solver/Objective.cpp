@@ -280,6 +280,15 @@ namespace polyfem::solver
 			else
 				obj = tmp;
 		}
+		else if (type == "max-stress")
+		{
+			State &state = *(states[args["state"]]);
+			std::shared_ptr<solver::StaticObjective> tmp = std::make_shared<solver::MaxStressObjective>(state, args);
+			if (state.problem->is_time_dependent())
+				obj = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], transient_integral_type, tmp);
+			else
+				obj = tmp;
+		}
 		else if (type == "homogenized_energy")
 		{
 			State &state = *(states[args["state"]]);
@@ -341,6 +350,26 @@ namespace polyfem::solver
 				logger().warn("No shape parameter is assigned to functional");
 
 			std::shared_ptr<solver::PositionObjective> tmp = std::make_shared<solver::PositionObjective>(state, shape_param, args);
+			tmp->set_dim(args["dim"]);
+			if (state.problem->is_time_dependent())
+				obj = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], transient_integral_type, tmp);
+			else
+				obj = tmp;
+		}
+		else if (type == "acceleration")
+		{
+			State &state = *(states[args["state"]]);
+			std::shared_ptr<Parameter> shape_param;
+			if (args["shape_parameter"] >= 0)
+			{
+				shape_param = parameters[args["shape_parameter"]];
+				if (!shape_param->contains_state(state))
+					logger().error("Shape parameter {} is inconsistent with state {} in functional", args["shape_parameter"], args["state"]);
+			}
+			else
+				logger().warn("No shape parameter is assigned to functional");
+
+			std::shared_ptr<solver::AccelerationObjective> tmp = std::make_shared<solver::AccelerationObjective>(state, shape_param, args);
 			tmp->set_dim(args["dim"]);
 			if (state.problem->is_time_dependent())
 				obj = std::make_shared<solver::TransientObjective>(state.args["time"]["time_steps"], state.args["time"]["dt"], transient_integral_type, tmp);
@@ -507,6 +536,7 @@ namespace polyfem::solver
 		int i = 0;
 		for (const auto &obj : objs_)
 		{
+			// logger().info("Start objective {}", i);
 			val += weights_(i++) * obj->value();
 		}
 		return val;
@@ -1076,7 +1106,9 @@ namespace polyfem::solver
 				continue;
 			obj_->set_time_step(i);
 			value += weights[i] * obj_->value();
+			// std::cout << std::setprecision(12) << obj_->value() << " ";
 		}
+		// std::cout << "\n";
 		return value;
 	}
 
@@ -1765,6 +1797,32 @@ namespace polyfem::solver
 		// polyfem::logger().trace("best step {}", max_step);
 
 		return max_step;
+	}
+
+	MaxStressObjective::MaxStressObjective(const State &state, const json &args) : state_(state)
+	{
+		auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+		interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+	}
+
+	double MaxStressObjective::value()
+	{
+		Eigen::MatrixXd local_vals;
+		assembler::ElementAssemblyValues vals;
+
+		double max_stress = 0;
+		for (int e = 0; e < state_.bases.size(); e++)
+		{
+			if (interested_ids_.size() != 0 && interested_ids_.find(state_.mesh->get_body_id(e)) == interested_ids_.end())
+				continue;
+			
+			state_.ass_vals_cache.compute(e, state_.mesh->is_volume(), state_.bases[e], state_.geom_bases()[e], vals);
+			state_.assembler.compute_tensor_value(state_.formulation(), e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached[time_step_].u, local_vals);
+			Eigen::VectorXd stress_norms = local_vals.rowwise().norm();
+			max_stress = std::max(max_stress, stress_norms.maxCoeff());
+		}
+
+		return max_stress;
 	}
 
 } // namespace polyfem::solver
