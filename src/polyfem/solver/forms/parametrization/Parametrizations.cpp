@@ -12,7 +12,7 @@ namespace polyfem::solver
 	ExponentialMap::ExponentialMap(const int from, const int to)
 		: from_(from), to_(to)
 	{
-		assert(from_ < to_);
+		assert(from_ < to_ || from_ < 0);
 	}
 
 	Eigen::VectorXd ExponentialMap::inverse_eval(const Eigen::VectorXd &y) const
