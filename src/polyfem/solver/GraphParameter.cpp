@@ -114,8 +114,8 @@ namespace polyfem
         {
             full_to_periodic_.assign(mesh->n_vertices(), -1);
 
-            // utils::maybe_parallel_for(n_elem_of_graph_mesh_, [&](int start, int end, int thread_id) {
-                for (int e = 0; e < n_elem_of_graph_mesh_; e++)
+            utils::maybe_parallel_for(n_elem_of_graph_mesh_, [&](int start, int end, int thread_id) {
+                for (int e = start; e < end; e++)
                 {
                     RowVectorNd offset = get_barycenter(*mesh, e) - get_barycenter(*mesh, e % elem_period_);
                     
@@ -152,7 +152,7 @@ namespace polyfem
                         }
                     }
                 }
-            // });
+            });
         }
         
         logger().info("Number of elements in one period: {}, number of periods: {}", elem_period_, nums.prod());
@@ -219,7 +219,7 @@ namespace polyfem
         }
         catch (const std::exception &err)
         {
-            logger().error("remesh command \"{}\" returns {}", command, return_val);
+            log_and_throw_error("remesh command \"{}\" returns {}", command, return_val);
 
             return false;
         }
@@ -235,7 +235,7 @@ namespace polyfem
             }
             catch (const std::exception &err)
             {
-                logger().error("tile command \"{}\" returns {}", command, return_val);
+                log_and_throw_error("tile command \"{}\" returns {}", command, return_val);
 
                 return false;
             }
@@ -330,24 +330,24 @@ namespace polyfem
             }
         }
 
-        for (int i = 1; i < node_data_name.size(); i++) // debug shape velocity
-        {
-            // static int idx = 0;
-            std::vector<io::SolutionFrame> solution_frames;
-            get_state().out_geom.export_data(
-                get_state(),
-                shape_velocity_.col(i - 1), Eigen::MatrixXd(),
-                !get_state().args["time"].is_null(),
-                0, 0,
-                io::OutGeometryData::ExportOptions(get_state().args, get_state().mesh->is_linear(), get_state().problem->is_scalar(), get_state().solve_export_to_file),
-                "shape_vel_" + std::to_string(i) + ".vtu",
-                "", // nodes_path,
-                "", // solution_path,
-                "", // stress_path,
-                "", // mises_path,
-                get_state().is_contact_enabled(), solution_frames);
-            // idx++;
-        }
+        // for (int i = 1; i < node_data_name.size(); i++) // debug shape velocity
+        // {
+        //     // static int idx = 0;
+        //     std::vector<io::SolutionFrame> solution_frames;
+        //     get_state().out_geom.export_data(
+        //         get_state(),
+        //         shape_velocity_.col(i - 1), Eigen::MatrixXd(),
+        //         !get_state().args["time"].is_null(),
+        //         0, 0,
+        //         io::OutGeometryData::ExportOptions(get_state().args, get_state().mesh->is_linear(), get_state().problem->is_scalar(), get_state().solve_export_to_file),
+        //         "shape_vel_" + std::to_string(i) + ".vtu",
+        //         "", // nodes_path,
+        //         "", // solution_path,
+        //         "", // stress_path,
+        //         "", // mises_path,
+        //         get_state().is_contact_enabled(), solution_frames);
+        //     // idx++;
+        // }
         
         return true;
     }
