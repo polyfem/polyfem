@@ -8,6 +8,7 @@ set(SOURCES
 	LBFGSBSolver.hpp
 	BFGSSolver.hpp
 	MMASolver.hpp
+	MMASolver.cpp
 	MMASolverAux.hpp
 	MMASolverAux.cpp
 	GradientDescentSolver.hpp
@@ -25,6 +26,7 @@ set(SOURCES
 	Optimizations.cpp
 	SolveData.cpp
 	SolveData.hpp
+	SolverWithBoxConstraints.hpp
 	SparseNewtonDescentSolver.hpp
 	SparseNewtonDescentSolver.tpp
 	DenseNewtonDescentSolver.hpp

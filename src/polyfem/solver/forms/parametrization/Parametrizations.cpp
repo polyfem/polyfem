@@ -12,7 +12,7 @@ namespace polyfem::solver
 	ExponentialMap::ExponentialMap(const int from, const int to)
 		: from_(from), to_(to)
 	{
-		assert(from_ < to_);
+		assert(from_ < to_ || from_ < 0);
 	}
 
 	Eigen::VectorXd ExponentialMap::inverse_eval(const Eigen::VectorXd &y)
@@ -49,6 +49,49 @@ namespace polyfem::solver
 		}
 		else
 			return x.array().exp() * grad.array();
+	}
+
+	Scaling::Scaling(const double scale, const int from, const int to)
+		: from_(from), to_(to), scale_(scale)
+	{
+		assert(from_ < to_ || from_ < 0);
+		assert(scale_ != 0);
+	}
+
+	Eigen::VectorXd Scaling::inverse_eval(const Eigen::VectorXd &y)
+	{
+		if (from_ >= 0)
+		{
+			Eigen::VectorXd res = y;
+			res.segment(from_, to_ - from_) = y.segment(from_, to_ - from_).array() / scale_;
+			return res;
+		}
+		else
+			return y.array() / scale_;
+	}
+
+	Eigen::VectorXd Scaling::eval(const Eigen::VectorXd &x) const
+	{
+		if (from_ >= 0)
+		{
+			Eigen::VectorXd y = x;
+			y.segment(from_, to_ - from_) = x.segment(from_, to_ - from_).array() * scale_;
+			return y;
+		}
+		else
+			return x.array() * scale_;
+	}
+
+	Eigen::VectorXd Scaling::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
+	{
+		if (from_ >= 0)
+		{
+			Eigen::VectorXd res = grad.array();
+			res.segment(from_, to_ - from_) = scale_ * grad.segment(from_, to_ - from_).array();
+			return res;
+		}
+		else
+			return scale_ * grad.array();
 	}
 
 	Eigen::VectorXd PowerMap::inverse_eval(const Eigen::VectorXd &y)

@@ -113,17 +113,6 @@ namespace polyfem
 			bool remesh(TVector &x) { return false; }
 			double max_step_size(const TVector &x0, const TVector &x1) { return 1; }
 			bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; }
-			int n_inequality_constraints() { return 0; }
-			double inequality_constraint_val(const TVector &x, const int index)
-			{
-				assert(false);
-				return std::nan("");
-			}
-			TVector inequality_constraint_grad(const TVector &x, const int index)
-			{
-				assert(false);
-				return TVector();
-			}
 
 		private:
 			std::shared_ptr<const State> state;

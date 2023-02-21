@@ -68,7 +68,7 @@ namespace polyfem::solver
 	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state)
 	{
 		if (&state != &state_)
-			return Eigen::VectorXd::Zero(state.ndof(), state.diff_cached.size());
+			return Eigen::VectorXd::Zero(state.ndof());
 
 		assert(time_step_ < state_.diff_cached.size());
 

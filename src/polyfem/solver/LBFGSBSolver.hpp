@@ -2,30 +2,22 @@
 
 #pragma once
 
-#include <polyfem/Common.hpp>
-#include "NonlinearSolver.hpp"
-#include <polysolve/LinearSolver.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
-
-#include <polyfem/utils/Logger.hpp>
-
-#include <igl/Timer.h>
-
 #include <LBFGSpp/BFGSMat.h>
 #include <LBFGSpp/Cauchy.h>
 #include <LBFGSpp/SubspaceMin.h>
+#include "SolverWithBoxConstraints.hpp"
 
 namespace cppoptlib
 {
 	template <typename ProblemType>
-	class LBFGSBSolver : public NonlinearSolver<ProblemType>
+	class LBFGSBSolver : public SolverWithBoxConstraints<ProblemType>
 	{
 	public:
-		using Superclass = NonlinearSolver<ProblemType>;
+		using Superclass = SolverWithBoxConstraints<ProblemType>;
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		LBFGSBSolver(const json &solver_params, const double dt)
+		LBFGSBSolver(const polyfem::json &solver_params, const double dt)
 			: Superclass(solver_params, dt)
 		{
 			m_history_size = solver_params.value("history_size", 6);
@@ -104,8 +96,8 @@ namespace cppoptlib
 			const TVector &grad,
 			TVector &direction) override
 		{
-			TVector lower_bound = objFunc.get_lower_bound(x);
-			TVector upper_bound = objFunc.get_upper_bound(x);
+			TVector lower_bound = Superclass::get_lower_bound(x);
+			TVector upper_bound = Superclass::get_upper_bound(x);
 
 			for (int i = 0; i < x.size(); i++)
 				if (lower_bound(i) > x(i) || upper_bound(i) < x(i))

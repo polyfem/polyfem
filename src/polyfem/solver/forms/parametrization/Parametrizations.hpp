@@ -32,6 +32,21 @@ namespace polyfem::solver
 		const int from_, to_;
 	};
 
+	class Scaling : public Parametrization
+	{
+	public:
+		Scaling(const double scale, const int from = -1, const int to = -1);
+
+		int size(const int x_size) const override { return x_size; }
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
+		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
+
+	private:
+		const int from_, to_;
+		const double scale_;
+	};
+
 	class PowerMap : public Parametrization
 	{
 	public:
