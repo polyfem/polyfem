@@ -115,7 +115,6 @@ namespace polyfem
 		assert(!problem->is_scalar());                                       // tensor
 		assert(!assembler.is_mixed(formulation()));
 
-		const auto &cur_sol = ((pre_sol.size() == sol.size()) && !problem->is_time_dependent()) ? pre_sol : sol;
 		///////////////////////////////////////////////////////////////////////
 		// Check for initial intersections
 		if (is_contact_enabled())
@@ -123,7 +122,7 @@ namespace polyfem
 			POLYFEM_SCOPED_TIMER("Check for initial intersections");
 
 			const Eigen::MatrixXd displaced = collision_mesh.displace_vertices(
-				utils::unflatten(cur_sol, mesh->dimension()));
+				utils::unflatten(sol, mesh->dimension()));
 
 			if (ipc::has_intersections(collision_mesh, displaced))
 			{
@@ -236,12 +235,6 @@ namespace polyfem
 				nl_problem.init_lagging(sol); // TODO: this should be u_prev projected
 			}
 			logger().info("Lagging iteration 1:");
-		}
-
-		if (pre_sol.rows() == sol.rows() && !problem->is_time_dependent())
-		{
-			logger().debug("Use better initial guess...");
-			sol = pre_sol;
 		}
 
 		// ---------------------------------------------------------------------

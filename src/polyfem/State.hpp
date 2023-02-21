@@ -185,8 +185,6 @@ namespace polyfem
 		Eigen::MatrixXd disp_grad;
 		bool solve_disp_grad = false;
 
-		Eigen::MatrixXd pre_sol;
-
 		/// use average pressure for stokes problem to fix the additional dofs, true by default
 		/// if false, it will fix one pressure node to zero
 		bool use_avg_pressure;

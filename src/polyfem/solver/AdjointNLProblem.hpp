@@ -11,39 +11,7 @@ namespace polyfem::solver
 	class AdjointNLProblem : public FullNLProblem
 	{
 	public:
-		AdjointNLProblem(std::shared_ptr<CompositeForm> composite_form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
-			: FullNLProblem({composite_form}),
-			  composite_form_(composite_form),
-			  variables_to_simulation_(variables_to_simulation),
-			  all_states_(all_states),
-			  better_initial_guess(args["solver"]["nonlinear"]["better_initial_guess"]),
-			  solve_log_level(args["output"]["solve_log_level"]),
-			  save_freq(args["output"]["save_frequency"]),
-			  debug_finite_diff(args["solver"]["nonlinear"]["debug_fd"]),
-			  finite_diff_eps(args["solver"]["nonlinear"]["debug_fd_eps"])
-		{
-			cur_x.setZero(0);
-			cur_grad.setZero(0);
-			// for (const auto &p : parameters)
-			// 	optimization_dim_ += p->optimization_dim();
-
-			active_state_mask.assign(all_states_.size(), false);
-			int i = 0;
-			for (const auto &state_ptr : all_states_)
-			{
-				// 	for (const auto &p : parameters)
-				// 	{
-				// 		if (p->contains_state(*state_ptr))
-				// 		{
-				active_state_mask[i] = true;
-				// 			break;
-				// 		}
-				// 	}
-				// 	i++;
-			}
-		}
-
-		int full_size() const { return optimization_dim_; }
+		AdjointNLProblem(std::shared_ptr<CompositeForm> composite_form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
 
 		double value(const Eigen::VectorXd &x) override;
 
@@ -79,21 +47,14 @@ namespace polyfem::solver
 		Eigen::VectorXd get_lower_bound(const Eigen::VectorXd &x) const;
 		Eigen::VectorXd get_upper_bound(const Eigen::VectorXd &x) const;
 
-		virtual int n_inequality_constraints();
-		virtual double inequality_constraint_val(const Eigen::VectorXd &x, const int index);
-		virtual Eigen::VectorXd inequality_constraint_grad(const Eigen::VectorXd &x, const int index);
-
 		std::shared_ptr<State> get_state(int id) { return all_states_[id]; }
 
 	private:
-		int optimization_dim_ = 0;
 		std::shared_ptr<CompositeForm> composite_form_;
 		std::vector<std::shared_ptr<State>> all_states_;
 		std::vector<bool> active_state_mask;
-		Eigen::VectorXd cur_x, cur_grad;
+		Eigen::VectorXd cur_grad;
 		int iter = 0;
-
-		const bool better_initial_guess;
 
 		const int solve_log_level;
 		const int save_freq;
@@ -103,6 +64,8 @@ namespace polyfem::solver
 
 		double adjoint_solve_time = 0;
 		double grad_assembly_time = 0;
+
+		Eigen::MatrixXd bounds_;
 
 		std::vector<std::shared_ptr<VariableToSimulation>> variables_to_simulation_;
 	};

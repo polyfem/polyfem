@@ -8,6 +8,25 @@
 
 namespace polyfem::solver
 {
+	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<CompositeForm> composite_form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
+		: FullNLProblem({composite_form}),
+			composite_form_(composite_form),
+			variables_to_simulation_(variables_to_simulation),
+			all_states_(all_states),
+			solve_log_level(args["output"]["solve_log_level"]),
+			save_freq(args["output"]["save_frequency"]),
+			debug_finite_diff(args["solver"]["nonlinear"]["debug_fd"]),
+			finite_diff_eps(args["solver"]["nonlinear"]["debug_fd_eps"])
+	{
+		cur_grad.setZero(0);
+
+		active_state_mask.assign(all_states_.size(), false);
+		for (const auto &v2sim : variables_to_simulation_)
+			for (int i = 0; i < all_states_.size(); i++)
+				if (all_states_[i].get() == &(v2sim->get_state()))
+					active_state_mask[i] = true;
+	}
+	
 	double AdjointNLProblem::value(const Eigen::VectorXd &x)
 	{
 		return composite_form_->value(x);
@@ -19,7 +38,7 @@ namespace polyfem::solver
 			gradv = cur_grad;
 		else
 		{
-			gradv.setZero(optimization_dim_);
+			gradv.setZero(x.size());
 
 			{
 				POLYFEM_SCOPED_TIMER("adjoint solve", adjoint_solve_time);
@@ -153,103 +172,33 @@ namespace polyfem::solver
 	Eigen::VectorXd AdjointNLProblem::initial_guess() const
 	{
 		Eigen::VectorXd x;
-		x.setZero(full_size());
-		// int cumulative = 0;
-		// for (const auto &p : parameters_)
-		// {
-		// 	x.segment(cumulative, p->optimization_dim()) = p->initial_guess();
-		// 	cumulative += p->optimization_dim();
-		// }
+		log_and_throw_error("Initial guess not implemented!");
 		return x;
 	}
 
 	Eigen::VectorXd AdjointNLProblem::get_lower_bound(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd min;
-		min.setZero(optimization_dim_);
-		// int cumulative = 0;
-		// for (const auto &p : parameters_)
-		// {
-		// 	min.segment(cumulative, p->optimization_dim()) = p->get_lower_bound(x.segment(cumulative, p->optimization_dim()));
-		// 	cumulative += p->optimization_dim();
-		// }
+		min.setZero(x.size());
 		return min;
 	}
 	Eigen::VectorXd AdjointNLProblem::get_upper_bound(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd max;
-		max.setZero(optimization_dim_);
-		// int cumulative = 0;
-		// for (const auto &p : parameters_)
-		// {
-		// 	max.segment(cumulative, p->optimization_dim()) = p->get_upper_bound(x.segment(cumulative, p->optimization_dim()));
-		// 	cumulative += p->optimization_dim();
-		// }
+		max.setZero(x.size());
 		return max;
-	}
-
-	int AdjointNLProblem::n_inequality_constraints()
-	{
-		int num = 0;
-		// for (const auto &p : parameters_)
-		// {
-		// 	num += p->n_inequality_constraints();
-		// }
-		return num;
-	}
-
-	double AdjointNLProblem::inequality_constraint_val(const Eigen::VectorXd &x, const int index)
-	{
-		int num = 0;
-		int cumulative = 0;
-		// for (const auto &p : parameters_)
-		// {
-		// 	num += p->n_inequality_constraints();
-		// 	if (num > index)
-		// 	{
-		// 		num -= p->n_inequality_constraints();
-		// 		return p->inequality_constraint_val(x.segment(cumulative, p->optimization_dim()), index - num);
-		// 	}
-		// 	cumulative += p->optimization_dim();
-		// }
-		// log_and_throw_error("Exceeding number of inequality constraints!");
-		return 0;
-	}
-
-	Eigen::VectorXd AdjointNLProblem::inequality_constraint_grad(const Eigen::VectorXd &x, const int index)
-	{
-		int num = 0;
-		int cumulative = 0;
-		Eigen::VectorXd grad;
-		grad.setZero(optimization_dim_);
-		// for (const auto &p : parameters_)
-		// {
-		// 	num += p->n_inequality_constraints();
-		// 	if (num > index)
-		// 	{
-		// 		num -= p->n_inequality_constraints();
-		// 		grad.segment(cumulative, p->optimization_dim()) = p->inequality_constraint_grad(x.segment(cumulative, p->optimization_dim()), index - num);
-		// 		return grad;
-		// 	}
-		// 	cumulative += p->optimization_dim();
-		// }
-		// log_and_throw_error("Exceeding number of inequality constraints!");
-		return grad;
 	}
 
 	void AdjointNLProblem::solution_changed(const Eigen::VectorXd &newX)
 	{
-		// if (cur_x.size() > 0 && abs((newX - cur_x).norm()) < 1e-12)
-		// 	return;
 		// update to new parameter and check if the new parameter is valid to solve
-
 		for (const auto &v : variables_to_simulation_)
 			v->update(newX);
 
 		// solve PDE
 		solve_pde();
 
-		cur_x = newX;
+		composite_form_->solution_changed(newX);
 	}
 
 	void AdjointNLProblem::solve_pde()
@@ -262,8 +211,6 @@ namespace polyfem::solver
 				auto state = all_states_[i];
 				if (active_state_mask[i] || state->diff_cached.size() == 0)
 				{
-					if (state->diff_cached.size() == 1 && better_initial_guess)
-						state->pre_sol = state->diff_cached[0].u;
 					state->assemble_rhs();
 					state->assemble_stiffness_mat();
 					Eigen::MatrixXd sol, pressure; // solution is also cached in state
