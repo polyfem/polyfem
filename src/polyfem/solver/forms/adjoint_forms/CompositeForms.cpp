@@ -49,4 +49,24 @@ namespace polyfem::solver
     {
         return homo_stress_aux_grad(inputs);
     }
+
+	InequalityConstraintForm::InequalityConstraintForm(const std::vector<std::shared_ptr<AdjointForm>> &forms, const Eigen::Vector2d &bounds) : CompositeForm(forms), bounds_(bounds)
+	{
+		assert(bounds_(1) >= bounds_(0));
+	}
+
+    double InequalityConstraintForm::compose(const Eigen::VectorXd &inputs) const
+    {
+        if (inputs.size() != 1)
+            throw std::runtime_error("Invalid input size for HomoCompositeForm!");
+        
+		return pow(std::max(bounds_(0) - inputs(0), 0.0), 2) + pow(std::max(inputs(0) - bounds_(1), 0.0), 2);
+    }
+
+    Eigen::VectorXd InequalityConstraintForm::compose_grad(const Eigen::VectorXd &inputs) const
+    {
+        Eigen::VectorXd grad(1);
+		grad(0) = -2 * std::max(bounds_(0) - inputs(0), 0.0) + 2 * std::max(inputs(0) - bounds_(1), 0.0);
+		return grad;
+    }
 }

@@ -209,7 +209,6 @@ namespace polyfem::solver
 		}
 
 	private:
-		std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations_;
 		const State &state_;
 
 		NLAssembler<GenericElastic<AMIPSEnergy>> amips_energy_;
