@@ -41,21 +41,6 @@ namespace polyfem
 {
 	namespace
 	{
-		void solve_zero_dirichlet(const json &args, StiffnessMatrix &A, Eigen::VectorXd &b, const std::vector<int> &indices, Eigen::MatrixXd &adjoint_solution)
-		{
-			auto solver = polysolve::LinearSolver::create(args["solver"], args["precond"]);
-			solver->setParameters(args);
-			const int precond_num = A.rows();
-
-			for (int i : indices)
-				b(i) = 0;
-
-			Eigen::Vector4d adjoint_spectrum;
-			Eigen::VectorXd x;
-			adjoint_spectrum = dirichlet_solve(*solver, A, b, indices, x, precond_num, "", false, false, false);
-			adjoint_solution = x;
-		}
-
 		void replace_rows_by_identity(StiffnessMatrix &reduced_mat, const StiffnessMatrix &mat, const std::vector<int> &rows)
 		{
 			reduced_mat.resize(mat.rows(), mat.cols());
@@ -371,8 +356,13 @@ namespace polyfem
 				{
 					StiffnessMatrix A = diff_cached[i].gradu_h.transpose();
 					Eigen::VectorXd b_ = rhs_;
-					Eigen::MatrixXd x;
-					solve_zero_dirichlet(args["solver"]["linear"], A, b_, boundary_nodes, x);
+					b_(boundary_nodes).setZero();
+
+					auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["adjoint_solver"], args["solver"]["linear"]["precond"]);
+					solver->setParameters(args["solver"]["linear"]);
+
+					Eigen::VectorXd x;
+					dirichlet_solve(*solver, A, b_, boundary_nodes, x, A.rows(), "", false, false, false);
 					adjoints.col(2*i+1) = x;
 				}
 
