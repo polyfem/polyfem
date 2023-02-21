@@ -142,7 +142,7 @@ namespace polyfem::solver
 		return grad_E_nu;
 	}
 
-	PerBody::PerBody(const mesh::Mesh &mesh): mesh_(mesh), full_size_(mesh_.n_elements())
+	PerBody2PerElem::PerBody2PerElem(const mesh::Mesh &mesh): mesh_(mesh), full_size_(mesh_.n_elements())
 	{
 		reduced_size_ = 0;
 		for (int e = 0; e < mesh.n_elements(); e++)
@@ -157,7 +157,7 @@ namespace polyfem::solver
 		logger().info("{} objects found!", reduced_size_);
 	}
 
-	Eigen::VectorXd PerBody::eval(const Eigen::VectorXd &x) const
+	Eigen::VectorXd PerBody2PerElem::eval(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd y;
 		y.setZero(size(x.size()));
@@ -173,13 +173,13 @@ namespace polyfem::solver
 		return y;
 	}
 
-	int PerBody::size(const int x_size) const
+	int PerBody2PerElem::size(const int x_size) const
 	{
 		assert(x_size % reduced_size_ == 0);
 		return (x_size / reduced_size_) * full_size_;
 	}
 
-	Eigen::VectorXd PerBody::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
+	Eigen::VectorXd PerBody2PerElem::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
 	{
 		assert(grad.size() == size(x.size()));
 		Eigen::VectorXd grad_body;

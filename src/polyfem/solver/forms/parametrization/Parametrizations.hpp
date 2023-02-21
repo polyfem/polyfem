@@ -62,10 +62,10 @@ namespace polyfem::solver
 		const bool is_volume_;
 	};
 
-	class PerBody : public Parametrization
+	class PerBody2PerElem : public Parametrization
 	{
 	public:
-		PerBody(const mesh::Mesh &mesh);
+		PerBody2PerElem(const mesh::Mesh &mesh);
 
 		int size(const int x_size) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;

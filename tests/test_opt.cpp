@@ -149,15 +149,10 @@ TEST_CASE("material-opt", "[optimization]")
 			std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 			{
 				const int n_elem = states[0]->mesh->n_elements();
-				std::vector<std::shared_ptr<Parametrization>> map_list1 = {std::make_shared<ExponentialMap>(), std::make_shared<PerBody>(*(states[0]->mesh))};
+				std::vector<std::shared_ptr<Parametrization>> map_list1 = {std::make_shared<ExponentialMap>(), std::make_shared<PerBody2PerElem>(*(states[0]->mesh))};
 				CompositeParametrization composite_map1(map_list1);
-				// std::vector<std::shared_ptr<Parametrization>> map_list1 = {std::make_shared<SliceMap>(0, 1), std::make_shared<AppendConstantMap>(1, lambda), std::make_shared<ExponentialMap>(), std::make_shared<PerBody>(*(states[0]->mesh))};
-				// CompositeParametrization composite_map1(map_list1);
-				// std::vector<std::shared_ptr<Parametrization>> map_list2 = {std::make_shared<SliceMap>(1, 2), std::make_shared<AppendConstantMap>(1, mu), std::make_shared<ExponentialMap>(), std::make_shared<PerBody>(*(states[0]->mesh))};
-				// CompositeParametrization composite_map2(map_list2);
 
 				variable_to_simulations.push_back(std::make_shared<ElasticVariableToSimulation>(states[0], composite_map1));
-				// variable_to_simulations.push_back(std::make_shared<ElasticVariableToSimulation>(states[0], composite_map2));
 			}
 			
 			for (auto &v2s : variable_to_simulations)
