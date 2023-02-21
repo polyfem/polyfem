@@ -1,6 +1,12 @@
 #include "SpatialIntegralForms.hpp"
-#include <polyfem/utils/CubicHermiteSplineParametrization.hpp>
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/io/OBJWriter.hpp>
+
+#include <nanospline/BSpline.h>
+#include <nanospline/BSplinePatch.h>
+
+#include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/BoundarySampler.hpp>
 
 using namespace polyfem::utils;
 
@@ -12,9 +18,22 @@ namespace polyfem::solver
 		{
 			return (i == j) ? true : false;
 		}
-		
+
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
-	}
+
+		class LocalThreadScalarStorage
+		{
+		public:
+			double val;
+			assembler::ElementAssemblyValues vals;
+			QuadratureVector da;
+
+			LocalThreadScalarStorage()
+			{
+				val = 0;
+			}
+		};
+	} // namespace
 
 	double SpatialIntegralForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
@@ -40,7 +59,7 @@ namespace polyfem::solver
 				AdjointTools::compute_shape_derivative_functional_term(state_, state_.diff_cached[time_step_].u, get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
 			else if (param_type == ParameterType::MacroStrain)
 				AdjointTools::compute_macro_strain_derivative_functional_term(state_, state_.diff_cached[time_step_].u, get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
-      
+
 			if (term.size() > 0)
 				gradv += parametrization.apply_jacobian(term, x);
 		}
@@ -133,9 +152,9 @@ namespace polyfem::solver
 		return j;
 	}
 
-  	void StressNormForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
-  {
-    	SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
+	void StressNormForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &parametrization = param_map->get_parametrization();
@@ -152,7 +171,7 @@ namespace polyfem::solver
 			if (term.size() > 0)
 				gradv += parametrization.apply_jacobian(term, x);
 		}
-  }
+	}
 
 	IntegrableFunctional ComplianceForm::get_integral_functional() const
 	{
@@ -192,7 +211,7 @@ namespace polyfem::solver
 		return j;
 	}
 
-  	void ComplianceForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void ComplianceForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
@@ -447,7 +466,7 @@ namespace polyfem::solver
 
 	void StressForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-    	SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
+		SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &parametrization = param_map->get_parametrization();
@@ -538,6 +557,178 @@ namespace polyfem::solver
 				val.row(q) = stiffness.block(0, (dimensions[0] * dim + dimensions[1]) * dim * dim, 1, dim * dim);
 			}
 		});
+
+		return j;
+	}
+
+	void SDFTargetForm::solution_changed(const Eigen::VectorXd &x)
+	{
+		assert(time_step_ < state_.diff_cached.size());
+
+		const auto &bases = state_.bases;
+		const auto &gbases = state_.geom_bases();
+		const int actual_dim = state_.problem->is_scalar() ? 1 : dim;
+
+		auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
+		utils::maybe_parallel_for(state_.total_local_boundary.size(), [&](int start, int end, int thread_id) {
+			LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+			Eigen::MatrixXd uv, samples, gtmp;
+			Eigen::MatrixXd points, normal;
+			Eigen::VectorXd weights;
+
+			Eigen::MatrixXd u, grad_u;
+
+			for (int lb_id = start; lb_id < end; ++lb_id)
+			{
+				const auto &lb = state_.total_local_boundary[lb_id];
+				const int e = lb.element_id();
+
+				for (int i = 0; i < lb.size(); i++)
+				{
+					const int global_primitive_id = lb.global_primitive_id(i);
+					if (ids_.size() != 0 && ids_.find(state_.mesh->get_boundary_id(global_primitive_id)) == ids_.end())
+						continue;
+
+					utils::BoundarySampler::boundary_quadrature(lb, state_.n_boundary_samples(), *state_.mesh, i, false, uv, points, normal, weights);
+
+					assembler::ElementAssemblyValues &vals = local_storage.vals;
+					vals.compute(e, state_.mesh->is_volume(), points, bases[e], gbases[e]);
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, state_.diff_cached[time_step_].u, u, grad_u);
+
+					normal = normal * vals.jac_it[0]; // assuming linear geometry
+
+					for (int q = 0; q < u.rows(); q++)
+						interpolation_fn->cache_grid([this](const Eigen::MatrixXd &point, double &distance) { compute_distance(point, distance); }, vals.val.row(q) + u.row(q));
+				}
+			}
+		});
+	}
+
+	void SDFTargetForm::set_bspline_target(const Eigen::MatrixXd &control_points, const Eigen::VectorXd &knots, const double delta)
+	{
+		dim = control_points.cols();
+		delta_ = delta;
+		assert(dim == 2);
+
+		samples = 100;
+
+		nanospline::BSpline<double, 2, 3> curve;
+		curve.set_control_points(control_points);
+		curve.set_knots(knots);
+
+		t_or_uv_sampling = Eigen::VectorXd::LinSpaced(samples, 0, 1);
+		point_sampling.setZero(samples, 2);
+		for (int i = 0; i < t_or_uv_sampling.size(); ++i)
+			point_sampling.row(i) = curve.evaluate(t_or_uv_sampling(i));
+
+		Eigen::MatrixXi edges(samples - 1, 2);
+		edges.col(0) = Eigen::VectorXi::LinSpaced(samples - 1, 0, samples - 2);
+		edges.col(1) = Eigen::VectorXi::LinSpaced(samples - 1, 1, samples - 1);
+		io::OBJWriter::write(state_.resolve_output_path(fmt::format("spline_target_{:d}.obj", rand() % 100)), point_sampling, edges);
+
+		interpolation_fn = std::make_unique<LazyCubicInterpolator>(dim, delta_);
+	}
+
+	void SDFTargetForm::set_bspline_target(const Eigen::MatrixXd &control_points, const Eigen::VectorXd &knots_u, const Eigen::VectorXd &knots_v, const double delta)
+	{
+
+		dim = control_points.cols();
+		delta_ = delta;
+		assert(dim == 3);
+
+		samples = 100;
+
+		nanospline::BSplinePatch<double, 3, 3, 3> patch;
+		patch.set_control_grid(control_points);
+		patch.set_knots_u(knots_u);
+		patch.set_knots_v(knots_v);
+		patch.initialize();
+
+		t_or_uv_sampling.resize(samples * samples, 2);
+		for (int i = 0; i < samples; ++i)
+		{
+			t_or_uv_sampling.block(i * samples, 0, samples, 1) = Eigen::VectorXd::LinSpaced(samples, 0, 1);
+			t_or_uv_sampling.block(i * samples, 1, samples, 1) = (double)i / (samples - 1) * Eigen::VectorXd::Ones(samples);
+		}
+		point_sampling.setZero(samples * samples, 3);
+		for (int i = 0; i < t_or_uv_sampling.rows(); ++i)
+		{
+			point_sampling.row(i) = patch.evaluate(t_or_uv_sampling(i, 0), t_or_uv_sampling(i, 1));
+		}
+
+		interpolation_fn = std::make_unique<LazyCubicInterpolator>(dim, delta_);
+	}
+
+	void SDFTargetForm::compute_distance(const Eigen::MatrixXd &point, double &distance) const
+	{
+		distance = DBL_MAX;
+		Eigen::MatrixXd p = point.transpose();
+
+		if (dim == 2)
+			for (int i = 0; i < t_or_uv_sampling.size() - 1; ++i)
+			{
+				const double l = (point_sampling.row(i + 1) - point_sampling.row(i)).squaredNorm();
+				double distance_to_perpendicular = ((p - point_sampling.row(i)) * (point_sampling.row(i + 1) - point_sampling.row(i)).transpose())(0) / l;
+				const double t = std::max(0., std::min(1., distance_to_perpendicular));
+				const auto project = point_sampling.row(i) * (1 - t) + point_sampling.row(i + 1) * t;
+				const double project_distance = (p - project).norm();
+				if (project_distance < distance)
+					distance = project_distance;
+			}
+		else if (dim == 3)
+		{
+			for (int i = 0; i < samples - 1; ++i)
+				for (int j = 0; j < samples - 1; ++j)
+				{
+					int loc = samples * i + j;
+					const double l1 = (point_sampling.row(loc + 1) - point_sampling.row(loc)).squaredNorm();
+					double distance_to_perpendicular = ((p - point_sampling.row(loc)) * (point_sampling.row(loc + 1) - point_sampling.row(loc)).transpose())(0) / l1;
+					const double u = std::max(0., std::min(1., distance_to_perpendicular));
+
+					const double l2 = (point_sampling.row(loc + samples) - point_sampling.row(loc)).squaredNorm();
+					distance_to_perpendicular = ((p - point_sampling.row(loc)) * (point_sampling.row(loc + samples) - point_sampling.row(loc)).transpose())(0) / l2;
+					const double v = std::max(0., std::min(1., distance_to_perpendicular));
+
+					Eigen::MatrixXd project = point_sampling.row(loc) * (1 - u) + point_sampling.row(loc + 1) * u;
+					project += v * (point_sampling.row(loc + samples) - point_sampling.row(loc));
+					const double project_distance = (p - project).norm();
+					if (project_distance < distance)
+						distance = project_distance;
+				}
+		}
+	}
+
+	IntegrableFunctional SDFTargetForm::get_integral_functional() const
+	{
+		IntegrableFunctional j;
+		auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(u.rows(), 1);
+
+			for (int q = 0; q < u.rows(); q++)
+			{
+				double distance;
+				Eigen::MatrixXd unused_grad;
+				interpolation_fn->evaluate(u.row(q) + pts.row(q), distance, unused_grad);
+				val(q) = pow(distance, 2);
+			}
+		};
+
+		auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(u.rows(), u.cols());
+
+			for (int q = 0; q < u.rows(); q++)
+			{
+				double distance;
+				Eigen::MatrixXd grad;
+				interpolation_fn->evaluate(u.row(q) + pts.row(q), distance, grad);
+				val.row(q) = 2 * distance * grad.transpose();
+			}
+		};
+
+		j.set_j(j_func);
+		j.set_dj_du(djdu_func);
+		j.set_dj_dx(djdu_func);
 
 		return j;
 	}

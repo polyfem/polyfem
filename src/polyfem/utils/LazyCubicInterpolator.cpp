@@ -1,9 +1,9 @@
-#include "UnsignedDistanceFunction.hpp"
+#include "LazyCubicInterpolator.hpp"
 #include <mutex>
 
 namespace polyfem
 {
-	void UnsignedDistanceFunction::bicubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad)
+	void LazyCubicInterpolator::bicubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad) const
 	{
 		Eigen::MatrixXd corner_val(4, 1);
 		Eigen::MatrixXd corner_grad(4, 2);
@@ -50,7 +50,7 @@ namespace polyfem
 		assert(!std::isnan(grad(0)) && !std::isnan(grad(1)));
 	}
 
-	void UnsignedDistanceFunction::tricubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad)
+	void LazyCubicInterpolator::tricubic_interpolation(const Eigen::MatrixXd &corner_point, const std::vector<std::string> &keys, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad) const
 	{
 		Eigen::MatrixXd corner_val(8, 1);
 		Eigen::MatrixXd corner_grad(8, 3);
@@ -109,49 +109,18 @@ namespace polyfem
 		assert(!std::isnan(grad(0)) && !std::isnan(grad(1)) && !std::isnan(grad(2)));
 	}
 
-	void UnsignedDistanceFunction::evaluate(std::function<void(const Eigen::MatrixXd &, double &)> compute_distance, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad)
+	void LazyCubicInterpolator::cache_grid(std::function<void(const Eigen::MatrixXd &, double &)> compute_distance, const Eigen::MatrixXd &point)
 	{
-		grad.setZero(dim_, 1);
-		int num_corner_points = dim_ == 2 ? 4 : 8;
-		Eigen::MatrixXi bin(dim_, 1);
-		Eigen::MatrixXi keys(num_corner_points, dim_);
+		Eigen::MatrixXi keys;
+		build_corner_keys(point, keys);
 		std::vector<std::string> keys_string;
-		for (int k = 0; k < dim_; ++k)
-			bin(k) = (int)std::floor(point(k) / delta_);
-		if (dim_ == 2)
-		{
-			keys << bin(0), bin(1),
-				bin(0) + 1, bin(1),
-				bin(0), bin(1) + 1,
-				bin(0) + 1, bin(1) + 1;
-		}
-		else if (dim_ == 3)
-		{
-			keys << bin(0), bin(1), bin(2),
-				bin(0) + 1, bin(1), bin(2),
-				bin(0), bin(1) + 1, bin(2),
-				bin(0) + 1, bin(1) + 1, bin(2),
-				bin(0), bin(1), bin(2) + 1,
-				bin(0) + 1, bin(1), bin(2) + 1,
-				bin(0), bin(1) + 1, bin(2) + 1,
-				bin(0) + 1, bin(1) + 1, bin(2) + 1;
-		}
+
 		auto safe_compute_distance = [this, compute_distance](const Eigen::MatrixXd &clamped_point, const std::string &key_string) {
 			std::unique_lock lock(distance_mutex_);
 			if (implicit_function_distance.count(key_string) == 0)
 				compute_distance(clamped_point, implicit_function_distance[key_string]);
 		};
-		auto setup_key = [this](const Eigen::VectorXi &key, std::string &key_string, Eigen::MatrixXd &clamped_point) {
-			key_string = "";
-			clamped_point.setZero(dim_, 1);
-			for (int k = 0; k < dim_; ++k)
-			{
-				// key_string += fmt::format("{:d},", key(k));
-				key_string += std::to_string(key(k)) + ",";
-				clamped_point(k) = (double)key(k) * delta_;
-			}
-		};
-		auto safe_distance = [this, setup_key, safe_compute_distance](const Eigen::VectorXi &key) {
+		auto safe_distance = [this, safe_compute_distance](const Eigen::VectorXi &key) {
 			Eigen::MatrixXd point;
 			std::string key_string;
 			double distance;
@@ -210,7 +179,7 @@ namespace polyfem
 			}
 			return mixed_grads;
 		};
-		auto safe_compute_grad = [this, setup_key, compute_grad](const Eigen::VectorXi &key) {
+		auto safe_compute_grad = [this, compute_grad](const Eigen::VectorXi &key) {
 			std::string key_string;
 			Eigen::MatrixXd point;
 			setup_key(key, key_string, point);
@@ -223,8 +192,8 @@ namespace polyfem
 				}
 			}
 		};
-		Eigen::MatrixXd corner_point(num_corner_points, dim_);
-		for (int i = 0; i < num_corner_points; ++i)
+		Eigen::MatrixXd corner_point(keys.rows(), dim_);
+		for (int i = 0; i < keys.rows(); ++i)
 		{
 			std::string key_string;
 			Eigen::MatrixXd clamped_point;
@@ -234,7 +203,25 @@ namespace polyfem
 			corner_point.row(i) = clamped_point.transpose();
 			safe_compute_grad(keys.row(i));
 		}
+	}
 
+	void LazyCubicInterpolator::evaluate(const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad) const
+	{
+		Eigen::MatrixXi keys;
+		build_corner_keys(point, keys);
+
+		std::vector<std::string> keys_string;
+		Eigen::MatrixXd corner_point(keys.rows(), dim_);
+		for (int i = 0; i < keys.rows(); ++i)
+		{
+			std::string key_string;
+			Eigen::MatrixXd clamped_point;
+			setup_key(keys.row(i), key_string, clamped_point);
+			keys_string.push_back(key_string);
+			corner_point.row(i) = clamped_point.transpose();
+		}
+
+		grad.setZero(dim_, 1);
 		if (dim_ == 2)
 			bicubic_interpolation(corner_point, keys_string, point, val, grad);
 		else if (dim_ == 3)
@@ -243,6 +230,13 @@ namespace polyfem
 		for (int i = 0; i < dim_; ++i)
 			if (std::isnan(grad(i)))
 				throw std::runtime_error("Nan found in gradient computation.");
+	}
+
+	void LazyCubicInterpolator::lazy_evaluate(std::function<void(const Eigen::MatrixXd &, double &)> compute_distance, const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad)
+	{
+		cache_grid(compute_distance, point);
+
+		evaluate(point, val, grad);
 	}
 
 } // namespace polyfem

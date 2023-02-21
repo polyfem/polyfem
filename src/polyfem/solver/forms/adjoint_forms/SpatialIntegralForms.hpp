@@ -2,6 +2,8 @@
 
 #include "AdjointForm.hpp"
 
+#include <polyfem/utils/LazyCubicInterpolator.hpp>
+
 namespace polyfem::solver
 {
 	class SpatialIntegralForm : public StaticForm
@@ -134,5 +136,37 @@ namespace polyfem::solver
 		IntegrableFunctional get_integral_functional() const override;
 
 		std::vector<int> dimensions_;
+	};
+
+	class SDFTargetForm : public SpatialIntegralForm
+	{
+	public:
+		SDFTargetForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		{
+			set_integral_type(SpatialIntegralType::SURFACE);
+
+			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
+			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+		}
+
+		void set_bspline_target(const Eigen::MatrixXd &control_points, const Eigen::VectorXd &knots, const double delta);
+		void set_bspline_target(const Eigen::MatrixXd &control_points, const Eigen::VectorXd &knots_u, const Eigen::VectorXd &knots_v, const double delta);
+
+	protected:
+		IntegrableFunctional get_integral_functional() const override;
+
+		void solution_changed(const Eigen::VectorXd &x) override;
+
+	private:
+		void compute_distance(const Eigen::MatrixXd &point, double &distance) const;
+
+		int dim;
+		double delta_;
+
+		Eigen::MatrixXd t_or_uv_sampling;
+		Eigen::MatrixXd point_sampling;
+		int samples;
+
+		std::unique_ptr<LazyCubicInterpolator> interpolation_fn;
 	};
 } // namespace polyfem::solver
