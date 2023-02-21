@@ -169,25 +169,6 @@ namespace polyfem::solver
 		}
 	}
 
-	Eigen::VectorXd AdjointNLProblem::initial_guess() const
-	{
-		Eigen::VectorXd x;
-		log_and_throw_error("Initial guess not implemented!");
-		return x;
-	}
-
-	Eigen::VectorXd AdjointNLProblem::get_lower_bound(const Eigen::VectorXd &x) const
-	{
-		Eigen::VectorXd min;
-		min.setZero(x.size());
-		return min;
-	}
-	Eigen::VectorXd AdjointNLProblem::get_upper_bound(const Eigen::VectorXd &x) const
-	{
-		Eigen::VectorXd max;
-		max.setZero(x.size());
-		return max;
-	}
 
 	void AdjointNLProblem::solution_changed(const Eigen::VectorXd &newX)
 	{

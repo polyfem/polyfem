@@ -44,18 +44,6 @@ namespace polyfem::solver
 		int max_lagging_iterations() const;
 		bool uses_lagging() const;
 
-		virtual int n_inequality_constraints() { return 0; }
-		virtual double inequality_constraint_val(const TVector &x, const int index)
-		{
-			assert(false);
-			return std::nan("");
-		}
-		virtual TVector inequality_constraint_grad(const TVector &x, const int index)
-		{
-			assert(false);
-			return TVector();
-		}
-
 		virtual bool remesh(TVector &x) { return false; }
 		virtual bool smoothing(const TVector &x, const TVector &new_x, TVector &smoothed_x) { return false; }
 		virtual void save_to_file(const TVector &x0) {}

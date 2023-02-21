@@ -68,6 +68,7 @@
         "type": "object",
         "optional": [
             "solver",
+            "bounds",
             "f_delta",
             "debug_fd",
             "debug_fd_eps",
@@ -100,6 +101,25 @@
             "gradientdescent"
         ],
         "doc": "Nonlinear solver type"
+    },
+    {
+        "pointer": "/solver/nonlinear/bounds",
+        "type": "file",
+        "extensions": [
+            ".txt"
+        ],
+        "doc": "Box constraints in the optimizations specified in a txt file"
+    },
+    {
+        "pointer": "/solver/nonlinear/bounds",
+        "type": "list",
+        "default": [0, 0],
+        "doc": "Box constraints in the optimizations specified in an array of size 2"
+    },
+    {
+        "pointer": "/solver/nonlinear/bounds/*",
+        "type": "float",
+        "doc": "Box constraint values"
     },
     {
         "pointer": "/solver/nonlinear/export_energy_components",

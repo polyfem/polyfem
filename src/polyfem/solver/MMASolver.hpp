@@ -1,27 +1,19 @@
 #pragma once
 
-#include <polyfem/Common.hpp>
-#include "NonlinearSolver.hpp"
-#include <polysolve/LinearSolver.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
-
-#include <polyfem/utils/Logger.hpp>
-
-#include <igl/Timer.h>
-
 #include "MMASolverAux.hpp"
+#include "SolverWithBoxConstraints.hpp"
 
 namespace cppoptlib
 {
 	template <typename ProblemType>
-	class MMASolver : public NonlinearSolver<ProblemType>
+	class MMASolver : public SolverWithBoxConstraints<ProblemType>
     {
 	public:
-		using Superclass = NonlinearSolver<ProblemType>;
+		using Superclass = SolverWithBoxConstraints<ProblemType>;
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		MMASolver(const json &solver_params, const double dt)
+		MMASolver(const polyfem::json &solver_params, const double dt)
 			: Superclass(solver_params, dt)
 		{
 		}
@@ -70,10 +62,10 @@ namespace cppoptlib
 			const TVector &grad,
 			TVector &direction) override
 		{
-			TVector lower_bound = objFunc.get_lower_bound(x);
-			TVector upper_bound = objFunc.get_upper_bound(x);
+			TVector lower_bound = Superclass::get_lower_bound(x);
+			TVector upper_bound = Superclass::get_upper_bound(x);
 
-			const int m = objFunc.n_inequality_constraints();
+			const int m = 0; // objFunc.n_inequality_constraints();
 
             if (!mma)
                 mma = std::make_shared<MMASolverAux>(x.size(), m);
@@ -81,13 +73,13 @@ namespace cppoptlib
             Eigen::VectorXd g, dg;
             g.setZero(m);
             dg.setZero(m * x.size());
-			for (int i = 0; i < m; i++)
-			{
-				g(i) = objFunc.inequality_constraint_val(x, i);
-				auto gradg = objFunc.inequality_constraint_grad(x, i);
-				for (int j = 0; j < gradg.size(); j++)
-					dg(j * m + i) = gradg(j);
-			}
+			// for (int i = 0; i < m; i++)
+			// {
+			// 	g(i) = objFunc.inequality_constraint_val(x, i);
+			// 	auto gradg = objFunc.inequality_constraint_grad(x, i);
+			// 	for (int j = 0; j < gradg.size(); j++)
+			// 		dg(j * m + i) = gradg(j);
+			// }
 			auto y = x;
 			mma->Update(y.data(), grad.data(), g.data(), dg.data(), lower_bound.data(), upper_bound.data());
             direction = y - x;
