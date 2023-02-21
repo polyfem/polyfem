@@ -163,17 +163,17 @@ TEST_CASE("material-opt", "[optimization]")
 			for (auto &v2s : variable_to_simulations)
 				v2s->update(x);
 
-			auto obj_aux = std::make_shared<TargetForm>(variable_to_simulations, CompositeParametrization(), *(states[0]), opt_args["functionals"][0]);
+			auto obj_aux = std::make_shared<TargetForm>(variable_to_simulations, *(states[0]), opt_args["functionals"][0]);
 
 			obj_aux->set_reference(states[1], {});
 
-			auto obj = std::make_shared<TransientForm>(variable_to_simulations, CompositeParametrization(), states[0]->args["time"]["time_steps"], states[0]->args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
+			auto obj = std::make_shared<TransientForm>(variable_to_simulations, states[0]->args["time"]["time_steps"], states[0]->args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
 
 			obj->set_weight(100.0);
 
-			std::vector<std::shared_ptr<ParametrizationForm>> forms({obj});
+			std::vector<std::shared_ptr<AdjointForm>> forms({obj});
 
-			auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, CompositeParametrization(), forms);
+			auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
 			sum->set_weight(1.0);
 
 			nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
@@ -249,15 +249,15 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
 
-	auto obj1 = std::make_shared<StressNormForm>(variable_to_simulations, CompositeParametrization(), *states[0], opt_args["functionals"][0]);
+	auto obj1 = std::make_shared<StressNormForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
 	obj1->set_weight(1.0);
 
-	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, CompositeParametrization(), *states[0], json());
+	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, variable_to_simulations[0]->get_parametrization(), *states[0], json());
 	obj2->set_weight(1.0);
 
-	std::vector<std::shared_ptr<ParametrizationForm>> forms({obj1, obj2});
+	std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2});
 
-	auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, CompositeParametrization(), forms);
+	auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
 	sum->set_weight(1.0);
 
 	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);

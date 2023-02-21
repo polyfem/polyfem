@@ -1,21 +1,39 @@
 #pragma once
 
-#include <polyfem/solver/forms/ParametrizationForm.hpp>
+#include <polyfem/solver/forms/Form.hpp>
 #include "VariableToSimulation.hpp"
 
 namespace polyfem::solver
 {
-	class AdjointForm : public ParametrizationForm
+	class AdjointForm : public Form
 	{
 	public:
-		AdjointForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations) : ParametrizationForm(parametrizations), variable_to_simulations_(variable_to_simulations) {}
+		AdjointForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations) : variable_to_simulations_(variable_to_simulations) {}
 		virtual ~AdjointForm() {}
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override;
-		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		const auto &get_variable_to_simulations() const { return variable_to_simulations_; }
+
+		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state)
+		{
+			return compute_adjoint_rhs_unweighted(x, state) * weight_;
+		}
+
+		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+		{
+			compute_partial_gradient_unweighted(x, gradv);
+			gradv *= weight_;
+		}
+
+		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state);
+		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const;
+
+		inline virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const final override
+		{
+			log_and_throw_error("Not implemented");
+		}
 
 	protected:
-		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
+		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations_;
 	};
@@ -40,7 +58,7 @@ namespace polyfem::solver
 	class TransientForm : public AdjointForm
 	{
 	public:
-		TransientForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const int time_steps, const double dt, const std::string &transient_integral_type, const std::shared_ptr<StaticForm> &obj) : AdjointForm(variable_to_simulations, parametrizations), time_steps_(time_steps), dt_(dt), transient_integral_type_(transient_integral_type), obj_(obj) {}
+		TransientForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const int time_steps, const double dt, const std::string &transient_integral_type, const std::shared_ptr<StaticForm> &obj) : AdjointForm(variable_to_simulations), time_steps_(time_steps), dt_(dt), transient_integral_type_(transient_integral_type), obj_(obj) {}
 		virtual ~TransientForm() = default;
 
 		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override;
@@ -59,8 +77,8 @@ namespace polyfem::solver
 	class NodeTargetForm : public StaticForm
 	{
 	public:
-		NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const json &args);
-		NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_);
+		NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const json &args);
+		NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_);
 		~NodeTargetForm() = default;
 
 		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) override;

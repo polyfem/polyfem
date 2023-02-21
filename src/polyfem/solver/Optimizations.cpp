@@ -199,8 +199,9 @@ namespace polyfem::solver
 		// 	weights[i] = args["weight"];
 		// 	objs[i++] = Objective::create(args, root_path, parameters, states);
 		// }
-		auto vec = std::vector<std::shared_ptr<ParametrizationForm>>();
-		std::shared_ptr<SumCompositeForm> sum = std::make_shared<SumCompositeForm>(vec);
+		auto vec = std::vector<std::shared_ptr<AdjointForm>>();
+		std::vector<std::shared_ptr<VariableToSimulation>> v2sim;
+		std::shared_ptr<SumCompositeForm> sum = std::make_shared<SumCompositeForm>(v2sim, vec);
 
 		std::shared_ptr<AdjointNLProblem> nl_problem; // = std::make_shared<AdjointNLProblem>(sum, states, opt_args);
 

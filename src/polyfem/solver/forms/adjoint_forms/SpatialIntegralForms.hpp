@@ -7,7 +7,7 @@ namespace polyfem::solver
 	class SpatialIntegralForm : public StaticForm
 	{
 	public:
-		SpatialIntegralForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const State &state, const json &args) : StaticForm(variable_to_simulations, parametrizations), state_(state)
+		SpatialIntegralForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : StaticForm(variable_to_simulations), state_(state)
 		{
 		}
 
@@ -30,7 +30,7 @@ namespace polyfem::solver
 	class StressNormForm : public SpatialIntegralForm
 	{
 	public:
-		StressNormForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, parametrizations, state, args)
+		StressNormForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
 			set_integral_type(SpatialIntegralType::VOLUME);
 
@@ -50,7 +50,7 @@ namespace polyfem::solver
 	class ComplianceForm : public SpatialIntegralForm
 	{
 	public:
-		ComplianceForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, parametrizations, state, args)
+		ComplianceForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
 			set_integral_type(SpatialIntegralType::VOLUME);
 
@@ -67,7 +67,7 @@ namespace polyfem::solver
 	class PositionForm : public SpatialIntegralForm
 	{
 	public:
-		PositionForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, parametrizations, state, args)
+		PositionForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
 			set_integral_type(SpatialIntegralType::VOLUME);
 
@@ -87,7 +87,7 @@ namespace polyfem::solver
 	class TargetForm : public SpatialIntegralForm
 	{
 	public:
-		TargetForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, parametrizations, state, args)
+		TargetForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
 			set_integral_type(SpatialIntegralType::SURFACE);
 
@@ -118,7 +118,7 @@ namespace polyfem::solver
 	class StressForm : public SpatialIntegralForm
 	{
 	public:
-		StressForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, parametrizations, state, args)
+		StressForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
 			set_integral_type(SpatialIntegralType::VOLUME);
 
