@@ -104,14 +104,8 @@ namespace polyfem::solver
 		virtual void first_derivative_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const {}
 		virtual double value_unweighted_with_param(const Eigen::VectorXd &x) const { return 0; }
 
-		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
-		{
-			compute_partial_gradient_unweighted(x, gradv);
-			gradv *= weight_;
-		}
-
 	protected:
-		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
 		{
 			first_derivative_unweighted(x, gradv);
 		}

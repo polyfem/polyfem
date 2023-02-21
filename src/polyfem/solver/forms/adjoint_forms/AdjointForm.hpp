@@ -18,7 +18,7 @@ namespace polyfem::solver
 			return compute_adjoint_rhs_unweighted(x, state) * weight_;
 		}
 
-		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final
 		{
 			compute_partial_gradient_unweighted(x, gradv);
 			gradv *= weight_;
