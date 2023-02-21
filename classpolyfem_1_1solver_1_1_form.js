@@ -16,10 +16,12 @@ var classpolyfem_1_1solver_1_1_form =
     [ "max_lagging_iterations", "classpolyfem_1_1solver_1_1_form.html#aec784f581cc71ef11d739c66cf8c822a", null ],
     [ "max_step_size", "classpolyfem_1_1solver_1_1_form.html#ab9da0c5d97cbb385ffc9b6685d29d06c", null ],
     [ "post_step", "classpolyfem_1_1solver_1_1_form.html#a1db6efac98eb859c4a6f47df7f5a367c", null ],
+    [ "resolve_output_path", "classpolyfem_1_1solver_1_1_form.html#abb6d6737f8ad238f0446866402fc9c5b", null ],
     [ "second_derivative", "classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_form.html#a4313c8af547f3c51a1c8cafd5071b44b", null ],
     [ "set_apply_DBC", "classpolyfem_1_1solver_1_1_form.html#aa3bc1982e0d2a817919eba357e1ccb16", null ],
     [ "set_enabled", "classpolyfem_1_1solver_1_1_form.html#ad66cd4658b7532e2f73380de56cf276f", null ],
+    [ "set_output_dir", "classpolyfem_1_1solver_1_1_form.html#a91f36801ecc871575d13552c8a4f9179", null ],
     [ "set_project_to_psd", "classpolyfem_1_1solver_1_1_form.html#a2847474520e0c403400be6c64423d2e4", null ],
     [ "set_weight", "classpolyfem_1_1solver_1_1_form.html#a6d82bbde92a18b72b0630dd40ff59136", null ],
     [ "solution_changed", "classpolyfem_1_1solver_1_1_form.html#a297e1bb86a754a8240e9c2ef67a169f7", null ],
@@ -30,6 +32,7 @@ var classpolyfem_1_1solver_1_1_form =
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92", null ],
     [ "weight", "classpolyfem_1_1solver_1_1_form.html#a85aceba87c663b1ba6f62f86609e2acd", null ],
     [ "enabled_", "classpolyfem_1_1solver_1_1_form.html#ad3b23922e91c88f9432eb6a0228569ae", null ],
+    [ "output_dir_", "classpolyfem_1_1solver_1_1_form.html#a743891166546a5be4dcafcf3470e6645", null ],
     [ "project_to_psd_", "classpolyfem_1_1solver_1_1_form.html#af98a7df888dfde558eb2e70aa37e9dd2", null ],
     [ "weight_", "classpolyfem_1_1solver_1_1_form.html#a489fc22d15e5e6fdfc4e05c804632339", null ]
 ];

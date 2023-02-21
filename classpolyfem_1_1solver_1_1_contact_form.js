@@ -30,6 +30,7 @@ var classpolyfem_1_1solver_1_1_contact_form =
     [ "is_time_dependent_", "classpolyfem_1_1solver_1_1_contact_form.html#afec9402e40be461c8b303c028dbd3dc5", null ],
     [ "max_barrier_stiffness_", "classpolyfem_1_1solver_1_1_contact_form.html#a6c460cdb21a8fc372635b45b85de154f", null ],
     [ "prev_distance_", "classpolyfem_1_1solver_1_1_contact_form.html#a79b6fa1277b911e4d87eb081c9ae9539", null ],
+    [ "save_ccd_debug_meshes", "classpolyfem_1_1solver_1_1_contact_form.html#ae717b458b25939d4932d7412a3145f49", null ],
     [ "use_adaptive_barrier_stiffness_", "classpolyfem_1_1solver_1_1_contact_form.html#a1ae6235620f6a541213a870d20eeed82", null ],
     [ "use_cached_candidates_", "classpolyfem_1_1solver_1_1_contact_form.html#a301ecabb5109cf149b5da266acdd517a", null ]
 ];
