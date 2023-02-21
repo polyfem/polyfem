@@ -15,7 +15,7 @@ namespace polyfem::solver
 		assert(from_ < to_);
 	}
 
-	Eigen::VectorXd ExponentialMap::inverse_eval(const Eigen::VectorXd &y) const
+	Eigen::VectorXd ExponentialMap::inverse_eval(const Eigen::VectorXd &y)
 	{
 		if (from_ >= 0)
 		{
@@ -51,8 +51,7 @@ namespace polyfem::solver
 			return x.array().exp() * grad.array();
 	}
 
-
-	Eigen::VectorXd PowerMap::inverse_eval(const Eigen::VectorXd &y) const
+	Eigen::VectorXd PowerMap::inverse_eval(const Eigen::VectorXd &y)
 	{
 		if (from_ >= 0)
 		{
@@ -93,7 +92,7 @@ namespace polyfem::solver
 	{
 	}
 
-	Eigen::VectorXd ENu2LambdaMu::inverse_eval(const Eigen::VectorXd &y) const
+	Eigen::VectorXd ENu2LambdaMu::inverse_eval(const Eigen::VectorXd &y)
 	{
 		const int size = y.size() / 2;
 		assert(size * 2 == y.size());
@@ -142,7 +141,7 @@ namespace polyfem::solver
 		return grad_E_nu;
 	}
 
-	PerBody2PerElem::PerBody2PerElem(const mesh::Mesh &mesh): mesh_(mesh), full_size_(mesh_.n_elements())
+	PerBody2PerElem::PerBody2PerElem(const mesh::Mesh &mesh) : mesh_(mesh), full_size_(mesh_.n_elements())
 	{
 		reduced_size_ = 0;
 		for (int e = 0; e < mesh.n_elements(); e++)
@@ -167,7 +166,7 @@ namespace polyfem::solver
 			const int body_id = mesh_.get_body_id(e);
 			const auto &entry = body_id_map_.at(body_id);
 			// y(e) = x(entry[1]);
-			y(Eigen::seq(e,y.size()-1,full_size_)) = x(Eigen::seq(entry[1],x.size()-1,reduced_size_));
+			y(Eigen::seq(e, y.size() - 1, full_size_)) = x(Eigen::seq(entry[1], x.size() - 1, reduced_size_));
 		}
 
 		return y;
@@ -190,13 +189,13 @@ namespace polyfem::solver
 			const int body_id = mesh_.get_body_id(e);
 			const auto &entry = body_id_map_.at(body_id);
 			// grad_body(entry[1]) += grad(e);
-			grad_body(Eigen::seq(entry[1],x.size()-1,reduced_size_)) += grad(Eigen::seq(e,grad.size()-1,full_size_));
+			grad_body(Eigen::seq(entry[1], x.size() - 1, reduced_size_)) += grad(Eigen::seq(e, grad.size() - 1, full_size_));
 		}
 
 		return grad_body;
 	}
 
-	SliceMap::SliceMap(const int from = -1, const int to = -1): from_(from), to_(to)
+	SliceMap::SliceMap(const int from = -1, const int to = -1) : from_(from), to_(to)
 	{
 		if (to_ - from_ <= 0)
 			log_and_throw_error("Invalid Slice Map input!");
@@ -210,18 +209,18 @@ namespace polyfem::solver
 		return grad.segment(from_, to_ - from_);
 	}
 
-	AppendConstantMap::AppendConstantMap(const int size, const double val): size_(size), val_(val)
+	AppendConstantMap::AppendConstantMap(const int size, const double val) : size_(size), val_(val)
 	{
 		if (size_ <= 0)
 			log_and_throw_error("Invalid AppendConstantMap input!");
 	}
 
-	int AppendConstantMap::size(const int x_size) const 
-	{ 
-		return x_size + size_; 
+	int AppendConstantMap::size(const int x_size) const
+	{
+		return x_size + size_;
 	}
 
-	Eigen::VectorXd AppendConstantMap::inverse_eval(const Eigen::VectorXd &y) const
+	Eigen::VectorXd AppendConstantMap::inverse_eval(const Eigen::VectorXd &y)
 	{
 		return y.head(y.size() - size_);
 	}

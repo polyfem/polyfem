@@ -17,7 +17,7 @@ namespace polyfem
 		BSplineParametrization(const Eigen::MatrixXd &V) { num_vertices = V.rows(); }
 		virtual ~BSplineParametrization() = default;
 
-		virtual void reparametrize(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &V, Eigen::MatrixXd &newV) = 0;
+		virtual void reparametrize(const Eigen::MatrixXd &control_points, Eigen::MatrixXd &newV) = 0;
 		virtual void get_parameters(const Eigen::MatrixXd &V, Eigen::MatrixXd &control_points) final
 		{
 			bool mesh_changed = V.rows() != num_vertices;
@@ -33,7 +33,7 @@ namespace polyfem
 	class BSplineParametrization2D : public BSplineParametrization
 	{
 	public:
-		BSplineParametrization2D(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &knots, const int boundary_id, const std::vector<int> &node_ids, const Eigen::MatrixXd &V) : BSplineParametrization(V), node_ids_(node_ids), dim(control_points.cols())
+		BSplineParametrization2D(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &knots, const Eigen::MatrixXd &V) : BSplineParametrization(V), dim(control_points.cols())
 		{
 			assert(dim == 2);
 			// Deduce the t parameter of all of the points in the spline sections
@@ -41,7 +41,9 @@ namespace polyfem
 			curve.set_control_points(control_points);
 			curve.set_knots(knots);
 			std::vector<int> unused;
-			for (const auto &b : node_ids)
+			for (int i = 0; i < V.rows(); ++i)
+				node_ids_.push_back(i);
+			for (const auto &b : node_ids_)
 			{
 				Eigen::MatrixXd point = V.block(b, 0, 1, dim);
 				auto t = curve.approximate_inverse_evaluate(point);
@@ -57,22 +59,25 @@ namespace polyfem
 				node_id_to_t_[b] = t;
 			}
 
+			if (unused.size() > 0)
+				log_and_throw_error("Some nodes do not take part in the spline parametrization!");
+
 			// Remove nodes that do not have a parametrization.
-			for (const auto &i : unused)
-			{
-				auto loc = std::find(node_ids_.begin(), node_ids_.end(), i);
-				if (loc == node_ids_.end())
-					logger().error("Error removing unused node.");
-				node_ids_.erase(loc);
-			}
+			// for (const auto &i : unused)
+			// {
+			// 	auto loc = std::find(node_ids_.begin(), node_ids_.end(), i);
+			// 	if (loc == node_ids_.end())
+			// 		logger().error("Error removing unused node.");
+			// 	node_ids_.erase(loc);
+			// }
 			logger().info("Number of useful boundary nodes in spline parametrization: {}", node_ids_.size());
 		}
 
-		void reparametrize(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &V, Eigen::MatrixXd &newV) override
+		void reparametrize(const Eigen::MatrixXd &control_points, Eigen::MatrixXd &newV) override
 		{
 			// Given new control parameters and the t parameter precomputed, compute new V
 			curve.set_control_points(control_points);
-			newV = V;
+			newV.setZero(node_ids_.size(), 2);
 			for (const auto &b : node_ids_)
 			{
 				auto new_val = curve.evaluate(node_id_to_t_.at(b));
@@ -163,7 +168,7 @@ namespace polyfem
 	class BSplineParametrization3D : public BSplineParametrization
 	{
 	public:
-		BSplineParametrization3D(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &knots_u, const Eigen::MatrixXd &knots_v, const std::vector<int> &node_ids, const Eigen::MatrixXd &V) : BSplineParametrization(V), node_ids_(node_ids), dim(control_points.cols())
+		BSplineParametrization3D(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &knots_u, const Eigen::MatrixXd &knots_v, const Eigen::MatrixXd &V) : BSplineParametrization(V), dim(control_points.cols())
 		{
 			assert(dim == 3);
 			// Deduce the t parameter of all of the points in the spline sections
@@ -173,7 +178,9 @@ namespace polyfem
 			patch.set_knots_v(knots_v);
 			patch.initialize();
 			std::vector<int> unused;
-			for (const auto &b : node_ids)
+			for (int i = 0; i < V.rows(); ++i)
+				node_ids_.push_back(i);
+			for (const auto &b : node_ids_)
 			{
 				Eigen::MatrixXd point = V.block(b, 0, 1, dim);
 				auto uv = patch.approximate_inverse_evaluate(point, 5, 5, 0, 1, 0, 1, 30);
@@ -190,14 +197,17 @@ namespace polyfem
 				node_id_to_param_[b] = uv;
 			}
 
+			if (unused.size() > 0)
+				log_and_throw_error("Some nodes do not take part in the spline parametrization!");
+
 			// Remove nodes that do not have a parametrization.
-			for (const auto &i : unused)
-			{
-				auto loc = std::find(node_ids_.begin(), node_ids_.end(), i);
-				if (loc == node_ids_.end())
-					logger().error("Error removing unused node.");
-				node_ids_.erase(loc);
-			}
+			// for (const auto &i : unused)
+			// {
+			// 	auto loc = std::find(node_ids_.begin(), node_ids_.end(), i);
+			// 	if (loc == node_ids_.end())
+			// 		logger().error("Error removing unused node.");
+			// 	node_ids_.erase(loc);
+			// }
 			logger().info("Number of useful boundary nodes in spline parametrization: {}", node_ids_.size());
 		}
 
@@ -234,10 +244,10 @@ namespace polyfem
 			}
 		}
 
-		void reparametrize(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &V, Eigen::MatrixXd &newV) override
+		void reparametrize(const Eigen::MatrixXd &control_points, Eigen::MatrixXd &newV) override
 		{
 			// Given new control parameters and the t parameter precomputed, compute new V
-			newV = V;
+			newV.setZero(node_ids_.size(), 3);
 			patch.set_control_grid(control_points);
 			patch.initialize();
 			for (const auto &b : node_ids_)
