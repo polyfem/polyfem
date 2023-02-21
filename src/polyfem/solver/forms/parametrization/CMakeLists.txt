@@ -2,6 +2,8 @@ set(SOURCES
 	Parametrization.hpp
 	Parametrizations.hpp
 	Parametrizations.cpp
+	SplineParametrizations.hpp
+	SplineParametrizations.cpp
 )
 
 prepend_current_path(SOURCES)

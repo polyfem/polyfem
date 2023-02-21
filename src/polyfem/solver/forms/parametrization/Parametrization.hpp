@@ -15,7 +15,7 @@ namespace polyfem::solver
 		Parametrization() {}
 		virtual ~Parametrization() {}
 
-		virtual Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const
+		virtual Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y)
 		{
 			log_and_throw_error("Not supported");
 			return Eigen::VectorXd();
@@ -31,7 +31,7 @@ namespace polyfem::solver
 	public:
 		IndexedParametrization() {}
 		virtual ~IndexedParametrization() {}
-		Eigen::VectorXi get_output_indexing(const Eigen::VectorXd &x) const 
+		Eigen::VectorXi get_output_indexing(const Eigen::VectorXd &x) const
 		{
 			const int out_size = size(x.size());
 			if (output_indexing_.size() == out_size)
@@ -64,7 +64,7 @@ namespace polyfem::solver
 			return cur_size;
 		}
 
-		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override
 		{
 			if (parametrizations_.empty())
 				return y;
