@@ -112,7 +112,7 @@ namespace polyfem
 		void evaluate(const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad) const;
 
 	private:
-		inline void build_corner_keys(const Eigen::VectorXd &point, Eigen::MatrixXi &keys) const
+		inline void build_corner_keys(const Eigen::MatrixXd &point, Eigen::MatrixXi &keys) const
 		{
 			int num_corner_points = dim_ == 2 ? 4 : 8;
 			Eigen::MatrixXi bin(dim_, 1);
