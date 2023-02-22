@@ -40,9 +40,13 @@ namespace cppoptlib
         for (int i = 0; i < m; i++)
         {
         	g(i) = constraints_[i]->value(x);
+            for (int j = 0; j < objFunc.n_states(); j++)
+                objFunc.get_state(j)->solve_adjoint_cached(constraints_[i]->compute_adjoint_rhs(x, *(objFunc.get_state(j)))); // caches inside state
+
         	constraints_[i]->first_derivative(x, gradv);
             dg(Eigen::seqN(0, gradv.size(), m)) = gradv;
         }
+        polyfem::logger().info("Constraint values are {}", g.transpose());
         auto y = x;
         mma->Update(y.data(), grad.data(), g.data(), dg.data(), lower_bound.data(), upper_bound.data());
         direction = y - x;

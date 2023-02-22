@@ -43,6 +43,7 @@ namespace polyfem::solver
 
 		void solve_pde();
 
+		int n_states() const { return all_states_.size(); }
 		std::shared_ptr<State> get_state(int id) { return all_states_[id]; }
 
 	private:

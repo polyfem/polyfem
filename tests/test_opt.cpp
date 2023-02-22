@@ -284,7 +284,7 @@ TEST_CASE("topology-opt", "[optimization]")
 	// check if the objective at these steps are correct
 	auto energies = read_energy(name);
 	REQUIRE(energies[0] == Approx(136.013542195).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(0.367727160492).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.418071062268).epsilon(1e-4));
 }
 
 TEST_CASE("shape-stress-opt-new", "[optimization]")
