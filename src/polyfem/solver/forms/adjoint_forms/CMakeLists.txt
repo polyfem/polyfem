@@ -11,6 +11,8 @@ set(SOURCES
 	SumCompositeForm.hpp
 	AMIPSForm.hpp
 	WeightedVolumeForm.hpp
+	TransientForm.hpp
+	TransientForm.cpp
 )
 
 prepend_current_path(SOURCES)

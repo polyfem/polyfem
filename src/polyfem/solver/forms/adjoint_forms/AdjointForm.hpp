@@ -55,25 +55,6 @@ namespace polyfem::solver
 		int time_step_ = 0; // time step to integrate
 	};
 
-	class TransientForm : public AdjointForm
-	{
-	public:
-		TransientForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const int time_steps, const double dt, const std::string &transient_integral_type, const std::shared_ptr<StaticForm> &obj) : AdjointForm(variable_to_simulations), time_steps_(time_steps), dt_(dt), transient_integral_type_(transient_integral_type), obj_(obj) {}
-		virtual ~TransientForm() = default;
-
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override;
-		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
-
-	protected:
-		std::vector<double> get_transient_quadrature_weights() const;
-		double value_unweighted(const Eigen::VectorXd &x) const override;
-
-		int time_steps_;
-		double dt_;
-		std::string transient_integral_type_;
-		std::shared_ptr<StaticForm> obj_;
-	};
-
 	class NodeTargetForm : public StaticForm
 	{
 	public:

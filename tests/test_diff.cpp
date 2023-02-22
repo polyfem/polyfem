@@ -11,6 +11,7 @@
 #include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/CompositeForms.hpp>
+#include <polyfem/solver/forms/adjoint_forms/TransientForm.hpp>
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 
