@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 		return command_line.exit(CLI::RequiredError("--json or --hdf5"));
 	}
 
-	json tmp;
+	json tmp = json::object();
 	if (has_arg(command_line, "log_level"))
 		tmp["/output/log/level"_json_pointer] = int(log_level);
 	if (has_arg(command_line, "max_threads"))
@@ -125,6 +125,7 @@ int main(int argc, char **argv)
 		tmp["/output/directory"_json_pointer] = std::filesystem::absolute(output_dir);
 	if (has_arg(command_line, "enable_overwrite_solver"))
 		tmp["/solver/linear/enable_overwrite_solver"_json_pointer] = fallback_solver;
+	assert(tmp.is_object());
 	in_args.merge_patch(tmp);
 
 	State state;

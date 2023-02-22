@@ -132,6 +132,8 @@ namespace polyfem::solver
 		inline bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
 		inline bool use_convergent_formulation() const { return constraint_set_.use_convergent_formulation; }
 
+		bool save_ccd_debug_meshes = false; ///< If true, output debug files
+
 	private:
 		const ipc::CollisionMesh &collision_mesh_;
 

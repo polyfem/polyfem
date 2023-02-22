@@ -2103,7 +2103,8 @@
             "first_grad_norm_tol",
             "max_iterations",
             "relative_gradient",
-            "line_search"
+            "line_search",
+            "force_psd_projection"
         ],
         "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
     },
@@ -2184,6 +2185,12 @@
         "default": 0.0001,
         "type": "float",
         "doc": "When the energy is smaller than use_grad_norm_tol, line-search uses norm of gradient instead of energy"
+    },
+    {
+        "pointer": "/solver/nonlinear/force_psd_projection",
+        "default": false,
+        "type": "bool",
+        "doc": "Force the Hessian to be PSD when using second order solvers (i.e., Newton's method)."
     },
     {
         "pointer": "/solver/augmented_lagrangian",
@@ -3951,6 +3958,7 @@
             "vis_boundary_only",
             "curved_mesh_size",
             "save_solve_sequence_debug",
+            "save_ccd_debug_meshes",
             "save_time_sequence",
             "save_nl_solve_sequence",
             "spectrum"
@@ -3995,6 +4003,12 @@
     },
     {
         "pointer": "/output/advanced/save_solve_sequence_debug",
+        "default": false,
+        "type": "bool",
+        "doc": "saves AL internal steps, for debugging"
+    },
+    {
+        "pointer": "/output/advanced/save_ccd_debug_meshes",
         "default": false,
         "type": "bool",
         "doc": "saves AL internal steps, for debugging"

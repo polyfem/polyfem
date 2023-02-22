@@ -2,6 +2,8 @@
 
 #include <polyfem/utils/Types.hpp>
 
+#include <filesystem>
+
 namespace polyfem::solver
 {
 	class Form
@@ -134,12 +136,23 @@ namespace polyfem::solver
 		/// @return True if the step is collision free else false
 		virtual bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
 
+		void set_output_dir(const std::string &output_dir) { output_dir_ = output_dir; }
+
 	protected:
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite
 
 		double weight_ = 1; ///< weight of the form, eg barrier stiffness, AL, d^2
 
 		bool enabled_ = true; ///< If true, the form is enabled
+
+		std::string output_dir_;
+
+		std::string resolve_output_path(const std::string &path) const
+		{
+			if (output_dir_.empty() || path.empty() || std::filesystem::path(path).is_absolute())
+				return path;
+			return std::filesystem::weakly_canonical(std::filesystem::path(output_dir_) / path).string();
+		}
 
 		/// @brief Compute the value of the form
 		/// @param x Current solution
