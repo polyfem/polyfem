@@ -125,4 +125,18 @@ namespace polyfem::solver
 		const int size_;
 		const double val_;
 	};
+
+	class LinearFilter : public Parametrization
+	{
+	public:
+		LinearFilter(const mesh::Mesh &mesh, const double radius);
+
+		int size(const int x_size) const override { return x_size; }
+		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
+
+	private:
+		Eigen::SparseMatrix<double> tt_radius_adjacency;
+		Eigen::VectorXd tt_radius_adjacency_row_sum;
+	};
 } // namespace polyfem::solver

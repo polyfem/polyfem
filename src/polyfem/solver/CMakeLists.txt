@@ -8,7 +8,7 @@ set(SOURCES
 	LBFGSBSolver.hpp
 	BFGSSolver.hpp
 	MMASolver.hpp
-	MMASolver.cpp
+	MMASolver.tpp
 	MMASolverAux.hpp
 	MMASolverAux.cpp
 	GradientDescentSolver.hpp

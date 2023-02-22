@@ -280,4 +280,53 @@ namespace polyfem::solver
 	{
 		return grad.head(grad.size() - size_);
 	}
+
+	LinearFilter::LinearFilter(const mesh::Mesh &mesh, const double radius)
+	{
+        std::vector<Eigen::Triplet<double>> tt_adjacency_list;
+
+        Eigen::MatrixXd barycenters;
+        if (mesh.is_volume())
+            mesh.cell_barycenters(barycenters);
+        else
+            mesh.face_barycenters(barycenters);
+
+        RowVectorNd min, max;
+        mesh.bounding_box(min, max);
+        // TODO: more efficient way
+        for (int i = 0; i < barycenters.rows(); i++)
+        {
+            auto center_i = barycenters.row(i);
+            for (int j = 0; j <= i; j++)
+            {
+                auto center_j = barycenters.row(j);
+                double dist = 0;
+                dist = (center_i - center_j).norm();
+                if (dist < radius)
+                {
+                    tt_adjacency_list.emplace_back(i, j, radius - dist);
+                    if (i != j)
+                        tt_adjacency_list.emplace_back(j, i, radius - dist);
+                }
+            }
+        }
+        tt_radius_adjacency.resize(barycenters.rows(), barycenters.rows());
+        tt_radius_adjacency.setFromTriplets(tt_adjacency_list.begin(), tt_adjacency_list.end());
+
+        tt_radius_adjacency_row_sum.setZero(tt_radius_adjacency.rows());
+        for (int i = 0; i < tt_radius_adjacency.rows(); i++)
+            tt_radius_adjacency_row_sum(i) = tt_radius_adjacency.row(i).sum();
+	}
+
+	Eigen::VectorXd LinearFilter::eval(const Eigen::VectorXd &x) const
+    {
+		assert(x.size() == tt_radius_adjacency.rows());
+        return (tt_radius_adjacency * x).array() / tt_radius_adjacency_row_sum.array();
+    }
+
+	Eigen::VectorXd LinearFilter::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
+    {
+		assert(x.size() == tt_radius_adjacency.rows());
+        return (tt_radius_adjacency * grad).array() / tt_radius_adjacency_row_sum.array();
+    }
 } // namespace polyfem::solver
