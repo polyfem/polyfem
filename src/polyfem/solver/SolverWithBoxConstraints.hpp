@@ -18,6 +18,7 @@ namespace cppoptlib
 		SolverWithBoxConstraints(const polyfem::json &solver_params, const double dt)
 			: Superclass(solver_params, dt)
 		{
+			max_change_ = solver_params["max_change"];
 			if (solver_params.contains("bounds"))
 			{
 				if (solver_params["bounds"].is_string())
@@ -39,31 +40,32 @@ namespace cppoptlib
 
 		Eigen::VectorXd get_lower_bound(const Eigen::VectorXd &x) const
 		{
+			Eigen::VectorXd min;
 			if (bounds_.rows() == x.size())
-				return bounds_.col(0);
+				min = bounds_.col(0);
 			else if (bounds_.size() == 2)
-				return Eigen::VectorXd::Constant(x.size(), 1, bounds_(0));
+				min = Eigen::VectorXd::Constant(x.size(), 1, bounds_(0));
 			else
-			{
 				polyfem::log_and_throw_error("Invalid bounds!");
-				return Eigen::VectorXd();
-			}
+			
+			return min.array().max(x.array() - max_change_);
 		}
 		Eigen::VectorXd get_upper_bound(const Eigen::VectorXd &x) const
 		{
+			Eigen::VectorXd max;
 			if (bounds_.rows() == x.size())
-				return bounds_.col(1);
+				max = bounds_.col(1);
 			else if (bounds_.size() == 2)
-				return Eigen::VectorXd::Constant(x.size(), 1, bounds_(1));
+				max = Eigen::VectorXd::Constant(x.size(), 1, bounds_(1));
 			else
-			{
 				polyfem::log_and_throw_error("Invalid bounds!");
-				return Eigen::VectorXd();
-			}
+			
+			return max.array().min(x.array() + max_change_);
 		}
 
 	private:
 		Eigen::MatrixXd bounds_;
+		double max_change_;
 	};
 
 }

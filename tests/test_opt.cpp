@@ -214,14 +214,82 @@ TEST_CASE("material-opt", "[optimization]")
 // // 	REQUIRE(energies[energies.size() - 1] == Approx(0.109971).epsilon(1e-4));
 // // }
 
-// TEST_CASE("topology-opt", "[optimization]")
-// {
-// 	run_opt_new("topology-opt");
-// 	auto energies = read_energy("topology-opt");
+TEST_CASE("topology-opt", "[optimization]")
+{
+	const std::string name = "topology-opt";
+	// run_opt_new(name);
+	{
+		const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + name + "/";
+		json opt_args;
+		if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
+			log_and_throw_error("Failed to load optimization json file!");
 
-// 	REQUIRE(energies[0] == Approx(136.014).epsilon(1e-4));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(1.73135).epsilon(1e-4));
-// }
+		opt_args = apply_opt_json_spec(opt_args, false);
+
+		for (auto &state_arg : opt_args["states"])
+			state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
+
+		// auto nl_problem = make_nl_problem(opt_args, spdlog::level::level_enum::err);
+		json state_args = opt_args["states"];
+		std::shared_ptr<solver::AdjointNLProblem> nl_problem;
+		std::vector<std::shared_ptr<State>> states(state_args.size());
+		Eigen::VectorXd x;
+		{
+			int i = 0;
+			for (const json &args : state_args)
+			{
+				json cur_args;
+				if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
+					log_and_throw_error("Can't find json for State {}", i);
+
+				states[i++] = create_state(cur_args, spdlog::level::level_enum::debug);
+			}
+
+			std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+			{
+				std::vector<std::shared_ptr<Parametrization>> map_list = {std::make_shared<PowerMap>(5), std::make_shared<Scaling>(200), std::make_shared<AppendConstantMap>(states[0]->bases.size(), states[0]->args["materials"]["nu"]), std::make_shared<ENu2LambdaMu>(states[0]->mesh->is_volume())};
+				CompositeParametrization composite_map(map_list);
+
+				variable_to_simulations.push_back(std::make_shared<ElasticVariableToSimulation>(states[0], composite_map));
+				variable_to_simulations.push_back(std::make_shared<ElasticVariableToSimulation>(states[1], composite_map));
+			}
+			
+			Eigen::VectorXd full_material(states[0]->mesh->n_elements() * 2);
+			full_material << states[0]->assembler.lame_params().lambda_mat_, states[0]->assembler.lame_params().mu_mat_;
+			x = variable_to_simulations[0]->get_parametrization().inverse_eval(full_material);
+			for (auto &v2s : variable_to_simulations)
+				v2s->update(x);
+
+			std::shared_ptr<AdjointForm> obj1, obj2, obj3;
+			obj1 = std::make_shared<ComplianceForm>(variable_to_simulations, *(states[0]), opt_args["functionals"][0]);
+			obj2 = std::make_shared<ComplianceForm>(variable_to_simulations, *(states[1]), opt_args["functionals"][1]);
+			
+			{
+				std::vector<std::shared_ptr<Parametrization>> map_list = {std::make_shared<PowerMap>(5)};
+				CompositeParametrization composite_map_aux(map_list);
+				auto obj_tmp = std::make_shared<WeightedVolumeForm>(variable_to_simulations, composite_map_aux, *(states[0]));
+				Eigen::Vector2d bounds(2);
+				bounds << 0., 1.;
+				std::vector<std::shared_ptr<AdjointForm>> forms_aux({obj_tmp});
+				obj3 = std::make_shared<InequalityConstraintForm>(forms_aux, bounds);
+				obj3->set_weight(100);
+			}
+
+			std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2, obj3});
+
+			auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
+
+			nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+		}
+
+		auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+		CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+	}
+	auto energies = read_energy(name);
+
+	REQUIRE(energies[0] == Approx(136.014).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(1.73135).epsilon(1e-4));
+}
 
 TEST_CASE("shape-stress-opt-new", "[optimization]")
 {
