@@ -10,7 +10,7 @@ namespace polyfem::solver
 	class CollisionBarrierForm : public ParametrizationForm
 	{
 	public:
-		CollisionBarrierForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const State &state, const double dhat) : ParametrizationForm(variable_to_simulations, parametrizations), state_(state), dhat_(dhat)
+		CollisionBarrierForm(const CompositeParametrization &parametrizations, const State &state, const double dhat) : ParametrizationForm(parametrizations), state_(state), dhat_(dhat)
 		{
 			state.build_collision_mesh(collision_mesh_, state.n_geom_bases, state.geom_bases());
 

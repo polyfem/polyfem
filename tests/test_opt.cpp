@@ -253,9 +253,9 @@ TEST_CASE("topology-opt", "[optimization]")
 			variable_to_simulations.push_back(std::make_shared<ElasticVariableToSimulation>(states[0], composite_map));
 			variable_to_simulations.push_back(std::make_shared<ElasticVariableToSimulation>(states[1], composite_map));
 		}
-		
+
 		// use the inverse of the mapping defined above to initialize x based on the params in states
-		x.setConstant(states[0]->mesh->n_elements(),1,0.3);
+		x.setConstant(states[0]->mesh->n_elements(), 1, 0.3);
 		for (auto &v2s : variable_to_simulations)
 			v2s->update(x);
 
@@ -266,14 +266,14 @@ TEST_CASE("topology-opt", "[optimization]")
 		std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2});
 		auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
 
-	nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+		nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
 	}
 
 	auto nl_solver = std::make_shared<cppoptlib::MMASolver<solver::AdjointNLProblem>>(opt_args["solver"]["nonlinear"], 0.);
-	
+
 	// nonlinear inequality constraints g(x) < 0
 	{
-		auto obj1 = std::make_shared<WeightedVolumeForm>(variable_to_simulations, CompositeParametrization({std::make_shared<LinearFilter>(*(states[0]->mesh), 0.1), std::make_shared<PowerMap>(5)}), *(states[0]));
+		auto obj1 = std::make_shared<WeightedVolumeForm>(CompositeParametrization({std::make_shared<LinearFilter>(*(states[0]->mesh), 0.1), std::make_shared<PowerMap>(5)}), *(states[0]));
 		auto obj2 = std::make_shared<PlusConstCompositeForm>(obj1, -1.2);
 		nl_solver->set_constraints({obj2});
 	}
@@ -310,12 +310,19 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 	}
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
+	{
+		std::vector<std::shared_ptr<Parametrization>> boundary_map_list = {std::make_shared<SliceMap>(0, 0)};
+		std::vector<std::shared_ptr<Parametrization>> interior_map_list = {std::make_shared<SliceMap>(0, 0)};
 
-	auto obj1 = std::make_shared<StressNormForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
+		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization(boundary_map_list)));
+		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization(interior_map_list)));
+	}
+
+	std::vector<std::shared_ptr<VariableToSimulation>> boundary_variable_to_simulations = {variable_to_simulations[0]};
+	auto obj1 = std::make_shared<StressNormForm>(boundary_variable_to_simulations, *states[0], opt_args["functionals"][0]);
 	obj1->set_weight(1.0);
 
-	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, variable_to_simulations[0]->get_parametrization(), *states[0], json());
+	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations[1]->get_parametrization(), *states[0], json());
 	obj2->set_weight(1.0);
 
 	std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2});

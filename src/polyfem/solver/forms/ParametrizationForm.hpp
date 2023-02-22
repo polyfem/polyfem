@@ -10,7 +10,7 @@ namespace polyfem::solver
 	class ParametrizationForm : public AdjointForm
 	{
 	public:
-		ParametrizationForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations) : AdjointForm(variable_to_simulations), parametrizations_(parametrizations) {}
+		ParametrizationForm(const CompositeParametrization &parametrizations) : AdjointForm({}), parametrizations_(parametrizations) {}
 		virtual ~ParametrizationForm() {}
 
 		virtual void init(const Eigen::VectorXd &x) final override

@@ -114,8 +114,8 @@ namespace polyfem::solver
 	class AMIPSForm : public ParametrizationForm
 	{
 	public:
-		AMIPSForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const State &state, const json &args)
-			: ParametrizationForm(variable_to_simulations, parametrizations),
+		AMIPSForm(const CompositeParametrization &parametrizations, const State &state, const json &args)
+			: ParametrizationForm(parametrizations),
 			  state_(state)
 		{
 			amips_energy_.local_assembler().set_size(state.mesh->dimension());
