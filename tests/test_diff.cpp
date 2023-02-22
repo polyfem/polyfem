@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <iostream>
 #include <fstream>
@@ -97,6 +97,7 @@ namespace
 
 	void verify_adjoint(std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, AdjointForm &obj, State &state, const Eigen::VectorXd &x, const Eigen::MatrixXd &theta, const double dt, const double tol)
 	{
+		obj.solution_changed(x);
 		double functional_val = obj.value(x);
 
 		state.solve_adjoint_cached(obj.compute_adjoint_rhs(x, state));
@@ -107,11 +108,13 @@ namespace
 		for (auto &v2s : variable_to_simulations)
 			v2s->update(x + theta * dt);
 		solve_pde(state);
+		obj.solution_changed(x + theta * dt);
 		double next_functional_val = obj.value(x + theta * dt);
 
 		for (auto &v2s : variable_to_simulations)
 			v2s->update(x - theta * dt);
 		solve_pde(state);
+		obj.solution_changed(x - theta * dt);
 		double former_functional_val = obj.value(x - theta * dt);
 
 		double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
@@ -545,7 +548,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 	auto obj_aux = std::make_shared<TargetForm>(variable_to_simulations, state, opt_args["functionals"][0]);
 
 	std::vector<int> tmp_ids = opt_args["functionals"][0]["reference_cached_body_ids"];
-	obj_aux->set_reference(state_reference, {1,3});
+	obj_aux->set_reference(state_reference, {1, 3});
 
 	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
 
@@ -606,8 +609,12 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 // 	load_json(path + "shape-transient-friction-sdf-opt.json", opt_args);
 // 	opt_args = apply_opt_json_spec(opt_args, false);
 
-// 	Eigen::MatrixXd control_points, delta;
+// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+
+// 	Eigen::MatrixXd control_points;
 // 	Eigen::VectorXd knots;
+// 	double delta;
 // 	control_points.setZero(4, 2);
 // 	control_points << 1, 0.4,
 // 		0.66666667, 0.73333333,
@@ -622,17 +629,11 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 // 		1,
 // 		1,
 // 		1;
-// 	delta.setZero(1, 2);
-// 	delta << 0.05, 0.05;
+// 	delta = 0.05;
 
-// 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-// 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, opt_args["parameters"][0]);
-// 	std::shared_ptr<StaticObjective> func_aux;
-// 	auto sdf_aux = std::make_shared<SDFTargetObjective>(state, shape_param, opt_args["parameters"][0]);
-// 	json functional_args = opt_args["functionals"][0];
-// 	sdf_aux->set_bspline_target(control_points, knots, delta(0));
-// 	func_aux = sdf_aux;
-// 	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], functional_args["transient_integral_type"], func_aux);
+// 	std::shared_ptr<SDFTargetForm> obj_aux = std::make_shared<SDFTargetForm>(variable_to_simulations, state, opt_args["functionals"][0]);
+// 	obj_aux->set_bspline_target(control_points, knots, delta);
+// 	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
 
 // 	Eigen::MatrixXd velocity_discrete;
 // 	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
@@ -644,7 +645,12 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 
 // 	velocity_discrete.normalize();
 
-// 	verify_adjoint(func, state, shape_param, "shape", velocity_discrete, 1e-6, 1e-5);
+// 	Eigen::MatrixXd V;
+// 	Eigen::MatrixXi F;
+// 	state.get_vf(V, F);
+// 	Eigen::VectorXd x = utils::flatten(V);
+
+// 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-5);
 // }
 
 TEST_CASE("initial-contact", "[adjoint_method]")

@@ -5,7 +5,6 @@
 
 #include <polyfem/solver/forms/ContactForm.hpp>
 
-#include <polyfem/utils/UnsignedDistanceFunction.hpp>
 #include <nanospline/BSpline.h>
 #include <nanospline/BSplinePatch.h>
 #include <polyfem/io/OBJWriter.hpp>

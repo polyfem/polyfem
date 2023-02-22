@@ -5,7 +5,7 @@
 
 #include <polyfem/solver/forms/ContactForm.hpp>
 
-#include <polyfem/utils/UnsignedDistanceFunction.hpp>
+#include <polyfem/utils/LazyCubicInterpolator.hpp>
 #include <nanospline/BSpline.h>
 #include <nanospline/BSplinePatch.h>
 #include <polyfem/io/OBJWriter.hpp>
@@ -161,7 +161,7 @@ namespace polyfem::solver
 			edges.col(1) = Eigen::VectorXi::LinSpaced(samples - 1, 1, samples - 1);
 			io::OBJWriter::write(state_.resolve_output_path(fmt::format("spline_target_{:d}.obj", rand() % 100)), point_sampling, edges);
 
-			distance_fn = std::make_unique<UnsignedDistanceFunction>(dim, delta_);
+			distance_fn = std::make_unique<LazyCubicInterpolator>(dim, delta_);
 		}
 
 		void set_bspline_target(const Eigen::MatrixXd &control_points, const Eigen::VectorXd &knots_u, const Eigen::VectorXd &knots_v, const double delta)
@@ -191,7 +191,7 @@ namespace polyfem::solver
 				point_sampling.row(i) = patch.evaluate(t_or_uv_sampling(i, 0), t_or_uv_sampling(i, 1));
 			}
 
-			distance_fn = std::make_unique<UnsignedDistanceFunction>(dim, delta_);
+			distance_fn = std::make_unique<LazyCubicInterpolator>(dim, delta_);
 		}
 
 		inline void evaluate(const Eigen::MatrixXd &point, double &val, Eigen::MatrixXd &grad)
@@ -208,7 +208,7 @@ namespace polyfem::solver
 		Eigen::MatrixXd point_sampling;
 		int samples;
 
-		std::unique_ptr<UnsignedDistanceFunction> distance_fn;
+		std::unique_ptr<LazyCubicInterpolator> distance_fn;
 	};
 
 	class BarycenterTargetObjective : public StaticObjective

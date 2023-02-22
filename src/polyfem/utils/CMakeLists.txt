@@ -48,8 +48,8 @@ set(SOURCES
 	StringUtils.hpp
 	Timer.hpp
 	Types.hpp
-	UnsignedDistanceFunction.cpp
-	UnsignedDistanceFunction.hpp
+	LazyCubicInterpolator.cpp
+	LazyCubicInterpolator.hpp
 )
 
 prepend_current_path(SOURCES)
