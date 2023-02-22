@@ -13,6 +13,7 @@ set(SOURCES
 	WeightedVolumeForm.hpp
 	TransientForm.hpp
 	TransientForm.cpp
+	BarrierForms.hpp
 )
 
 prepend_current_path(SOURCES)

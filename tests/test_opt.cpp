@@ -13,6 +13,7 @@
 #include <polyfem/solver/forms/adjoint_forms/AMIPSForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/WeightedVolumeForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/TransientForm.hpp>
+#include <polyfem/solver/forms/adjoint_forms/BarrierForms.hpp>
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 
@@ -158,7 +159,7 @@ TEST_CASE("material-opt", "[optimization]")
 
 				variable_to_simulations.push_back(std::make_shared<ElasticVariableToSimulation>(states[0], composite_map1));
 			}
-			
+
 			for (auto &v2s : variable_to_simulations)
 				v2s->update(x);
 
