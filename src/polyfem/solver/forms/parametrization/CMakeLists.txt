@@ -4,6 +4,8 @@ set(SOURCES
 	Parametrizations.cpp
 	SplineParametrizations.hpp
 	SplineParametrizations.cpp
+	SDFParametrizations.hpp
+	SDFParametrizations.cpp
 	NodeCompositeParametrizations.hpp
 )
 
