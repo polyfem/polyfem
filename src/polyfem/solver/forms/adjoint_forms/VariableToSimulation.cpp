@@ -43,8 +43,8 @@ namespace polyfem::solver
 				assert(indices(i + j) == indices(i) + j);
 
 		for (int i = 0; i < indices.size(); i += dim)
-			state_ptr_->set_mesh_vertex(indices(i) / dim, state_variable(Eigen::seqN(indices(i), dim)));
-		
+			state_ptr_->set_mesh_vertex(indices(i) / dim, state_variable(Eigen::seqN(i, dim)));
+
 		// TODO: move this to the end of all variable to simulation
 		state_ptr_->build_basis();
 	}

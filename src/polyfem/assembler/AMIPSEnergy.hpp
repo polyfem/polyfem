@@ -32,8 +32,9 @@ namespace polyfem::assembler
 			using std::pow;
 
 			auto def_grad = disp_grad;
-			for (int d = 0; d < size; ++d)
-				def_grad(d, d) += T(1);
+			if (solve_displacement)
+				for (int d = 0; d < size; ++d)
+					def_grad(d, d) += T(1);
 
 			Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> J(size, size);
 			for (int i = 0; i < size; ++i)
@@ -54,5 +55,7 @@ namespace polyfem::assembler
 
 	private:
 		std::vector<Eigen::MatrixXd> canonical_transformation_;
+
+		bool solve_displacement = true;
 	};
 } // namespace polyfem::assembler

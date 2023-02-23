@@ -3,39 +3,42 @@
 
 namespace polyfem::solver
 {
-    void AdjointForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
-    {
-        gradv.setZero(x.size());
-        for (const auto &param_map : variable_to_simulations_)
-			gradv += param_map->compute_adjoint_term(x);
-		
+	void AdjointForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		gradv.setZero(x.size());
+		for (const auto &param_map : variable_to_simulations_)
+		{
+			auto adjoint_term = param_map->compute_adjoint_term(x);
+			gradv += adjoint_term;
+		}
+
 		gradv /= weight_;
 
-        Eigen::VectorXd partial_grad;
-        compute_partial_gradient_unweighted(x, partial_grad);
-        gradv += partial_grad;
-    }
+		Eigen::VectorXd partial_grad;
+		compute_partial_gradient_unweighted(x, partial_grad);
+		gradv += partial_grad;
+	}
 
-    void AdjointForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
-    {
-        log_and_throw_error("Should override this function in any AdjointForm!");
-    }
+	void AdjointForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		log_and_throw_error("Should override this function in any AdjointForm!");
+	}
 
-    Eigen::MatrixXd AdjointForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
-    {
-        log_and_throw_error("Should override this function in any AdjointForm!");
-        return Eigen::MatrixXd();
-    }
+	Eigen::MatrixXd AdjointForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
+	{
+		log_and_throw_error("Should override this function in any AdjointForm!");
+		return Eigen::MatrixXd();
+	}
 
-    Eigen::MatrixXd StaticForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
-    {
+	Eigen::MatrixXd StaticForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
+	{
 		Eigen::MatrixXd term(state.ndof(), state.diff_cached.size());
 		term.col(time_step_) = compute_adjoint_rhs_unweighted_step(x, state);
 
 		return term;
-    }
+	}
 
-	NodeTargetForm::NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const json &args): StaticForm(variable_to_simulations), state_(state)
+	NodeTargetForm::NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const json &args) : StaticForm(variable_to_simulations), state_(state)
 	{
 		std::string target_data_path = args["target_data_path"];
 		if (!std::filesystem::is_regular_file(target_data_path))
@@ -56,9 +59,8 @@ namespace polyfem::solver
 			active_nodes.push_back(node_id);
 		}
 	}
-	NodeTargetForm::NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_): StaticForm(variable_to_simulations), state_(state), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
+	NodeTargetForm::NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_) : StaticForm(variable_to_simulations), state_(state), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
 	{
-
 	}
 	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state)
 	{
@@ -107,9 +109,9 @@ namespace polyfem::solver
 			Eigen::VectorXd term;
 			if (param_type == ParameterType::Shape)
 				throw std::runtime_error("Shape derivative of NodeTargetForm not implemented!");
-      
+
 			if (term.size() > 0)
 				gradv += parametrization.apply_jacobian(term, x);
 		}
 	}
-}
+} // namespace polyfem::solver
