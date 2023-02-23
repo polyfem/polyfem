@@ -4,7 +4,6 @@
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polysolve/LinearSolver.hpp>
 
-#include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <Eigen/Sparse>
