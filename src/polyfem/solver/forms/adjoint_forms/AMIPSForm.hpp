@@ -188,23 +188,18 @@ namespace polyfem::solver
 
 		double value_unweighted(const Eigen::VectorXd &x) const override
 		{
-			Eigen::MatrixXd V;
-			Eigen::MatrixXi F;
-			state_.get_vf(V, F);
-			Eigen::VectorXd X = utils::flatten(V);
+			Eigen::VectorXd X = get_gbases_position();
 
 			return amips_energy_.assemble(state_.mesh->is_volume(), state_.bases, state_.geom_bases(), state_.ass_vals_cache, 0, X, Eigen::VectorXd(), false);
 		}
 
 		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
 		{
-			Eigen::MatrixXd V;
-			Eigen::MatrixXi F;
-			state_.get_vf(V, F);
-			Eigen::VectorXd X = utils::flatten(V);
+			Eigen::VectorXd X = get_gbases_position();
 
 			Eigen::MatrixXd grad;
-			amips_energy_.assemble_grad(state_.mesh->is_volume(), state_.n_bases, state_.bases, state_.geom_bases(), state_.ass_vals_cache, 0, X, Eigen::VectorXd(), grad);
+			amips_energy_.assemble_grad(state_.mesh->is_volume(), state_.n_bases, state_.bases, state_.geom_bases(), state_.ass_vals_cache, 0, X, Eigen::VectorXd(), grad); // grad wrt. gbases
+			grad = utils::flatten(utils::unflatten(grad, state_.mesh->dimension())(state_.primitive_to_node(), Eigen::all)); // grad wrt. vertices
 			assert(grad.cols() == 1);
 
 			gradv.setZero(x.size());
@@ -247,6 +242,23 @@ namespace polyfem::solver
 		}
 
 	private:
+		Eigen::VectorXd get_gbases_position() const
+		{
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			state_.get_vf(V, F);
+
+			const int dim = state_.mesh->dimension();
+			auto primitive_to_node = state_.primitive_to_node();
+
+			Eigen::VectorXd X;
+			X.setZero(V.size());
+			for (int v = 0; v < V.rows(); v++)
+				X.segment(primitive_to_node[v] * dim, dim) = V.row(v);
+
+			return X;
+		}
+
 		const State &state_;
 
 		NLAssembler<GenericElastic<AMIPSEnergy>> amips_energy_;

@@ -367,12 +367,12 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 	HomoCompositeForm obj(variable_to_simulations, forms);
 
 	Eigen::MatrixXd velocity_discrete;
-	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
+	velocity_discrete.setZero(state.mesh->n_vertices() * 2, 1);
 	const double eps = 1e-3;
-	for (int i = 0; i < state.n_geom_bases; i++)
+	for (int i = 0; i < state.mesh->n_vertices(); i++)
 		for (int d = 0; d < 2; d++)
 		{
-			auto vert = state.geom_mesh_nodes->node_position(i);
+			auto vert = state.mesh->point(i);
 			if (vert(0) > eps && vert(0) < 1 - eps && vert(1) > eps && vert(1) < 1 - eps)
 				velocity_discrete(i * 2 + d) = (rand() % 10000) / 1.0e4;
 		}
