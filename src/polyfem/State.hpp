@@ -437,8 +437,13 @@ namespace polyfem
 		Eigen::VectorXi in_node_to_node;
 		/// maps in vertices/edges/faces/cells to polyfem vertices/edges/faces/cells
 		Eigen::VectorXi in_primitive_to_primitive;
-		/// maps polyfem geom bases nodes to mesh vertices, i.e. inverse of primitive_to_node, only for linear geometry
-		Eigen::VectorXi gnode_to_vertex;
+		
+		std::vector<int> primitive_to_node() const
+		{ 
+			auto indices = iso_parametric() ? mesh_nodes->primitive_to_node() : geom_mesh_nodes->primitive_to_node();
+			indices.resize(mesh->n_vertices());
+			return indices;
+		}
 
 	private:
 		/// build the mapping from input nodes to polyfem nodes
@@ -696,8 +701,8 @@ namespace polyfem
 		Eigen::MatrixXd solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
 		Eigen::MatrixXd solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
 		// Change geometric node positions
-		void set_mesh_vertex(int gbs_id, const Eigen::VectorXd &vertex);
-		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric = true) const;
+		void set_mesh_vertex(int v_id, const Eigen::VectorXd &vertex);
+		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces) const;
 
 		// Get geometric node indices for surface/volume
 		void compute_surface_node_ids(const int surface_selection, std::vector<int> &node_ids) const;

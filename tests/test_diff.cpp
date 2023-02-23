@@ -57,41 +57,21 @@ namespace
 
 		if (order >= 1)
 		{
-			const bool use_bases = order > 1;
-			const int n_current_bases = use_bases ? state.n_bases : state.n_geom_bases;
-			const auto &current_bases = use_bases ? state.bases : state.geom_bases();
-			discrete_field.setZero(n_current_bases * actual_dim, 1);
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			state.get_vf(V, F);
 
-			for (int e = 0; e < state.bases.size(); e++)
-			{
-				Eigen::MatrixXd local_pts, pts;
-				if (!state.mesh->is_volume())
-					autogen::p_nodes_2d(current_bases[e].bases.front().order(), local_pts);
-				else
-					autogen::p_nodes_3d(current_bases[e].bases.front().order(), local_pts);
-
-				current_bases[e].eval_geom_mapping(local_pts, pts);
-				Eigen::MatrixXd result = field(pts);
-				for (int i = 0; i < local_pts.rows(); i++)
-				{
-					assert(current_bases[e].bases[i].global().size() == 1);
-					for (int d = 0; d < actual_dim; d++)
-						discrete_field(current_bases[e].bases[i].global()[0].index * actual_dim + d) = result(i, d);
-				}
-			}
+			discrete_field = utils::flatten(field(V));
 		}
 		else if (order == 0)
 		{
-			discrete_field.setZero(state.bases.size() * actual_dim, 1);
 			Eigen::MatrixXd centers;
 			if (state.mesh->is_volume())
 				state.mesh->cell_barycenters(centers);
 			else
 				state.mesh->face_barycenters(centers);
-			Eigen::MatrixXd result = field(centers);
-			for (int e = 0; e < state.bases.size(); e++)
-				for (int d = 0; d < actual_dim; d++)
-					discrete_field(e * actual_dim + d) = result(e, d);
+				
+			discrete_field = utils::flatten(field(centers));
 		}
 	}
 

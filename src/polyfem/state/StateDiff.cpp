@@ -7,11 +7,8 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/io/Evaluator.hpp>
-#include <polyfem/autogen/auto_p_bases.hpp>
-#include <polyfem/autogen/auto_q_bases.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/LBFGSSolver.hpp>
 
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
@@ -103,31 +100,23 @@ namespace polyfem
 		}
 	} // namespace
 
-	void State::get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces, const bool geometric) const
+	void State::get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces) const
 	{
-		const auto &cur_bases = geometric ? geom_bases() : bases;
-		const int n_elements = int(cur_bases.size());
-		vertices = Eigen::MatrixXd::Zero(geometric ? n_geom_bases : n_bases, mesh->dimension());
-		faces = Eigen::MatrixXi::Zero(cur_bases.size(), cur_bases[0].bases.size());
-		assembler::ElementAssemblyValues vals;
-		for (int e = 0; e < n_elements; ++e)
-		{
-			const int n_loc_bases = cur_bases[e].bases.size();
-			for (int i = 0; i < n_loc_bases; ++i)
-			{
-				const auto &v = cur_bases[e].bases[i];
-				assert(v.global().size() == 1);
+		assert(mesh->is_simplicial());
+		vertices.setZero(mesh->n_vertices(), mesh->dimension());
+		faces.setZero(mesh->n_elements(), mesh->dimension() + 1);
 
-				vertices.row(v.global()[0].index) = v.global()[0].node;
-				faces(e, i) = v.global()[0].index;
-			}
-		}
+		for (int e = 0; e < mesh->n_elements(); e++)
+			for (int i = 0; i < mesh->dimension() + 1; i++)
+				faces(e, i) = mesh->element_vertex(e, i);
+
+		for (int v = 0; v < mesh->n_vertices(); v++)
+			vertices.row(v) = mesh->point(v);
 	}
 
-	void State::set_mesh_vertex(int gbs_id, const Eigen::VectorXd &vertex)
+	void State::set_mesh_vertex(int v_id, const Eigen::VectorXd &vertex)
 	{
 		assert(vertex.size() == mesh->dimension());
-		const int v_id = gnode_to_vertex(gbs_id);
 		mesh->set_point(v_id, vertex);
 	}
 

@@ -871,17 +871,6 @@ namespace polyfem
 
 		auto &gbases = geom_bases();
 
-		if (n_geom_bases == mesh->n_vertices())
-		{
-			gnode_to_vertex.resize(n_geom_bases);
-			gnode_to_vertex.setConstant(-1);
-			const auto &primitive_to_node = iso_parametric() ? mesh_nodes->primitive_to_node() : geom_mesh_nodes->primitive_to_node();
-			for (int v_id = 0; v_id < n_geom_bases; v_id++)
-			{
-				gnode_to_vertex(primitive_to_node[v_id]) = v_id;
-			}
-		}
-
 		build_polygonal_basis();
 
 		// if (is_contact_enabled())

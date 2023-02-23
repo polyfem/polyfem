@@ -41,7 +41,9 @@ namespace cppoptlib
         {
         	g(i) = constraints_[i]->value(x);
             for (int j = 0; j < objFunc.n_states(); j++)
+            {
                 objFunc.get_state(j)->solve_adjoint_cached(constraints_[i]->compute_adjoint_rhs(x, *(objFunc.get_state(j)))); // caches inside state
+            }
 
         	constraints_[i]->first_derivative(x, gradv);
             dg(Eigen::seqN(0, gradv.size(), m)) = gradv;

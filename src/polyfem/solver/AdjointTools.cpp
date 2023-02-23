@@ -459,6 +459,8 @@ namespace polyfem::solver
 		}
 		for (const LocalThreadVecStorage &local_storage : storage)
 			term += local_storage.vec;
+
+		term = utils::flatten(utils::unflatten(term, dim)(state.primitive_to_node(), Eigen::all));
 	}
 
 	void AdjointTools::compute_macro_strain_derivative_functional_term(
@@ -548,6 +550,8 @@ namespace polyfem::solver
 				contact_term.setZero(elasticity_term.size());
 			one_form += elasticity_term + rhs_term + contact_term;
 		}
+
+		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
 	}
 
 	void AdjointTools::dJ_shape_transient_adjoint_term(
@@ -630,6 +634,8 @@ namespace polyfem::solver
 		state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, state.initial_velocity_cache, sum_alpha_p, mass_term);
 
 		one_form += mass_term;
+
+		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
 	}
 
 	void AdjointTools::dJ_material_static_adjoint_term(

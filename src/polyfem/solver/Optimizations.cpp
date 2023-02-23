@@ -155,7 +155,7 @@ namespace polyfem::solver
 		}
 		json variables = opt_args["variable"];
 		json variable_to_objective = opt_args["variable_to_objective"];
-		json variable_to_simulation = opt_args["variable_to_objective"];
+		json variable_to_simulation = opt_args["variable_to_simulation"];
 
 		// // create parameters
 		// json param_args = opt_args["parameters"];

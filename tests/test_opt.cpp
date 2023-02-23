@@ -155,10 +155,10 @@ TEST_CASE("material-opt", "[optimization]")
 			std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 			{
 				const int n_elem = states[0]->mesh->n_elements();
-				std::vector<std::shared_ptr<Parametrization>> map_list1 = {std::make_shared<ExponentialMap>(), std::make_shared<PerBody2PerElem>(*(states[0]->mesh))};
-				CompositeParametrization composite_map1(map_list1);
+				std::vector<std::shared_ptr<Parametrization>> map_list = {std::make_shared<ExponentialMap>(), std::make_shared<PerBody2PerElem>(*(states[0]->mesh))};
+				CompositeParametrization composite_map(map_list);
 
-				variable_to_simulations.push_back(std::make_shared<ElasticVariableToSimulation>(states[0], composite_map1));
+				variable_to_simulations.push_back(std::make_shared<ElasticVariableToSimulation>(states[0], composite_map));
 			}
 
 			for (auto &v2s : variable_to_simulations)
@@ -255,7 +255,7 @@ TEST_CASE("topology-opt", "[optimization]")
 			variable_to_simulations.push_back(std::make_shared<ElasticVariableToSimulation>(states[1], composite_map));
 		}
 
-		// use the inverse of the mapping defined above to initialize x based on the params in states
+		// initialize optimization variable and assign elastic parameters to simulators
 		x.setConstant(states[0]->mesh->n_elements(), 1, 0.3);
 		for (auto &v2s : variable_to_simulations)
 			v2s->update(x);
