@@ -194,8 +194,8 @@ namespace polyfem::solver
 			return amips_energy_.assemble(state_.mesh->is_volume(), state_.geom_bases(), state_.geom_bases(), state_.ass_vals_cache, 0, X, Eigen::VectorXd(), false);
 		}
 
-		// void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
-		void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
+		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
+		// void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
 		{
 			Eigen::MatrixXd V;
 			Eigen::MatrixXi F;

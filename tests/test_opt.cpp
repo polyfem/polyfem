@@ -321,15 +321,18 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 		const auto &gbases = states[0]->geom_bases();
 		dim = mesh->dimension();
 
+		std::set<int> node_ids;
 		for (int e = 0; e < gbases.size(); e++)
 		{
 			const int body_id = mesh->get_body_id(e);
 			if (body_id == 1)
 				for (const auto &gbs : gbases[e].bases)
 					for (const auto &g : gbs.global())
-						opt_inodes++;
+						node_ids.insert(g.index);
 		}
+		opt_inodes = node_ids.size();
 
+		node_ids = {};
 		for (const auto &lb : states[0]->total_local_boundary)
 		{
 			const int e = lb.element_id();
@@ -341,9 +344,10 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 
 				if (boundary_id != 10 && boundary_id != 11)
 					for (long n = 0; n < nodes.size(); ++n)
-						opt_bnodes++;
+						node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
 			}
 		}
+		opt_bnodes = node_ids.size();
 	}
 	x.resize((opt_bnodes + opt_inodes) * dim);
 
