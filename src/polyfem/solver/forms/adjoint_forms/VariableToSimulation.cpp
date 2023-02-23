@@ -54,13 +54,13 @@ namespace polyfem::solver
 		if (get_state().problem->is_time_dependent())
 		{
 			Eigen::MatrixXd adjoint_nu, adjoint_p;
-			adjoint_nu = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(get_state().get_adjoint_mat().cols() / 2, get_state().get_adjoint_mat().cols() / 2 - 1));
-			adjoint_p = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(0, get_state().get_adjoint_mat().cols() / 2 - 1));
+			adjoint_nu = get_state().get_adjoint_mat(1);
+			adjoint_p = get_state().get_adjoint_mat(0);
 			AdjointTools::dJ_shape_transient_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
 		}
 		else
 		{
-			AdjointTools::dJ_shape_static_adjoint_term(get_state(), get_state().diff_cached[0].u, get_state().get_adjoint_mat(), term);
+			AdjointTools::dJ_shape_static_adjoint_term(get_state(), get_state().diff_cached[0].u, get_state().get_adjoint_mat(0), term);
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}
@@ -212,13 +212,13 @@ namespace polyfem::solver
 		if (get_state().problem->is_time_dependent())
 		{
 			Eigen::MatrixXd adjoint_nu, adjoint_p;
-			adjoint_nu = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(get_state().get_adjoint_mat().cols() / 2, get_state().get_adjoint_mat().cols() / 2 - 1));
-			adjoint_p = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(0, get_state().get_adjoint_mat().cols() / 2 - 1));
+			adjoint_nu = get_state().get_adjoint_mat(1);
+			adjoint_p = get_state().get_adjoint_mat(0);
 			AdjointTools::dJ_material_transient_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
 		}
 		else
 		{
-			AdjointTools::dJ_material_static_adjoint_term(get_state(), get_state().diff_cached[0].u, get_state().get_adjoint_mat(), term);
+			AdjointTools::dJ_material_static_adjoint_term(get_state(), get_state().diff_cached[0].u, get_state().get_adjoint_mat(0), term);
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}
@@ -235,8 +235,8 @@ namespace polyfem::solver
 		if (get_state().problem->is_time_dependent())
 		{
 			Eigen::MatrixXd adjoint_nu, adjoint_p;
-			adjoint_nu = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(get_state().get_adjoint_mat().cols() / 2, get_state().get_adjoint_mat().cols() / 2 - 1));
-			adjoint_p = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(0, get_state().get_adjoint_mat().cols() / 2 - 1));
+			adjoint_nu = get_state().get_adjoint_mat(1);
+			adjoint_p = get_state().get_adjoint_mat(0);
 			AdjointTools::dJ_friction_transient_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
 		}
 		else
@@ -262,8 +262,8 @@ namespace polyfem::solver
 		if (get_state().problem->is_time_dependent())
 		{
 			Eigen::MatrixXd adjoint_nu, adjoint_p;
-			adjoint_nu = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(get_state().get_adjoint_mat().cols() / 2, get_state().get_adjoint_mat().cols() / 2 - 1));
-			adjoint_p = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(0, get_state().get_adjoint_mat().cols() / 2 - 1));
+			adjoint_nu = get_state().get_adjoint_mat(1);
+			adjoint_p = get_state().get_adjoint_mat(0);
 			AdjointTools::dJ_damping_transient_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
 		}
 		else
@@ -285,8 +285,8 @@ namespace polyfem::solver
 		if (get_state().problem->is_time_dependent())
 		{
 			Eigen::MatrixXd adjoint_nu, adjoint_p;
-			adjoint_nu = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(get_state().get_adjoint_mat().cols() / 2, get_state().get_adjoint_mat().cols() / 2 - 1));
-			adjoint_p = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(0, get_state().get_adjoint_mat().cols() / 2 - 1));
+			adjoint_nu = get_state().get_adjoint_mat(1);
+			adjoint_p = get_state().get_adjoint_mat(0);
 			AdjointTools::dJ_initial_condition_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
 		}
 		else
@@ -318,8 +318,8 @@ namespace polyfem::solver
 		if (get_state().problem->is_time_dependent())
 		{
 			Eigen::MatrixXd adjoint_nu, adjoint_p;
-			adjoint_nu = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(get_state().get_adjoint_mat().cols() / 2, get_state().get_adjoint_mat().cols() / 2 - 1));
-			adjoint_p = get_state().get_adjoint_mat()(Eigen::all, Eigen::seqN(0, get_state().get_adjoint_mat().cols() / 2 - 1));
+			adjoint_nu = get_state().get_adjoint_mat(1);
+			adjoint_p = get_state().get_adjoint_mat(0);
 			AdjointTools::dJ_dirichlet_transient_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
 		}
 		else
@@ -347,7 +347,7 @@ namespace polyfem::solver
 		}
 		else
 		{
-			AdjointTools::dJ_macro_strain_adjoint_term(get_state(), get_state().diff_cached[0].u, get_state().get_adjoint_mat(), term);
+			AdjointTools::dJ_macro_strain_adjoint_term(get_state(), get_state().diff_cached[0].u, get_state().get_adjoint_mat(0), term);
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}

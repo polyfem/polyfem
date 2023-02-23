@@ -678,10 +678,19 @@ namespace polyfem
 		void solve_adjoint_cached(const Eigen::MatrixXd &rhs);
 		Eigen::MatrixXd solve_adjoint(const Eigen::MatrixXd &rhs) const;
 		// Returns cached adjoint solve
-		Eigen::MatrixXd adjoint_mat;
-		inline Eigen::MatrixXd get_adjoint_mat() const
+		Eigen::MatrixXd get_adjoint_mat(int type) const
 		{
 			assert(adjoint_mat.size() > 0);
+			if (problem->is_time_dependent())
+			{
+				if (type == 0)
+					return adjoint_mat.leftCols(adjoint_mat.cols() / 2 - 1);
+				else if (type == 1)
+					return adjoint_mat.middleCols(adjoint_mat.cols() / 2, adjoint_mat.cols() / 2 - 1);
+				else
+					log_and_throw_error("Invalid adjoint type!");
+			}
+			
 			return adjoint_mat;
 		}
 		Eigen::MatrixXd solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
@@ -698,6 +707,10 @@ namespace polyfem
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
 		// downsample grad on P2 nodes to grad on P1 nodes, only for P2 contact shape derivative
 		StiffnessMatrix down_sampling_mat;
+
+	private:
+		Eigen::MatrixXd adjoint_mat;
+
 		//---------------------------------------------------
 		//-----------------homogenization--------------------
 		//---------------------------------------------------
