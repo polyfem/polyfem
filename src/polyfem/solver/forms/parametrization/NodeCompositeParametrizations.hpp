@@ -36,6 +36,21 @@ namespace polyfem::solver
 			const auto &bases = state.bases;
 			const auto &gbases = state.geom_bases();
 
+			std::set<int> total_bnode_ids;
+			for (const auto &lb : state.total_local_boundary)
+			{
+				const int e = lb.element_id();
+				for (int i = 0; i < lb.size(); ++i)
+				{
+					const int primitive_global_id = lb.global_primitive_id(i);
+					const int boundary_id = mesh->get_boundary_id(primitive_global_id);
+					const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
+
+					for (long n = 0; n < nodes.size(); ++n)
+						total_bnode_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+				}
+			}
+
 			std::set<int> node_ids;
 			for (int e = 0; e < gbases.size(); e++)
 			{
@@ -43,7 +58,8 @@ namespace polyfem::solver
 				if (volume_selection == body_id)
 					for (const auto &gbs : gbases[e].bases)
 						for (const auto &g : gbs.global())
-							node_ids.insert(g.index);
+							if (!total_bnode_ids.count(g.index))
+								node_ids.insert(g.index);
 			}
 
 			dim = mesh->dimension();

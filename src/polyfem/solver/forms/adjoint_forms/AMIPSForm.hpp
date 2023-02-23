@@ -205,7 +205,16 @@ namespace polyfem::solver
 			Eigen::MatrixXd grad;
 			amips_energy_.assemble_grad(state_.mesh->is_volume(), state_.n_bases, state_.geom_bases(), state_.geom_bases(), state_.ass_vals_cache, 0, X, Eigen::VectorXd(), grad);
 			assert(grad.cols() == 1);
-			gradv = grad;
+
+			gradv.setZero(x.size());
+			for (auto &p : variable_to_simulations_)
+			{
+				if (&p->get_state() != &state_)
+					continue;
+				if (p->get_parameter_type() != ParameterType::Shape)
+					continue;
+				gradv += p->get_parametrization().apply_jacobian(grad, x);
+			}
 		}
 
 		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
@@ -219,17 +228,17 @@ namespace polyfem::solver
 			Eigen::MatrixXi F;
 			state_.get_vf(V0, F);
 
-			Eigen::VectorXd V1 = V0;
+			Eigen::MatrixXd V1 = V0;
 			for (auto &p : variable_to_simulations_)
 			{
 				if (&p->get_state() != &state_)
 					continue;
 				if (p->get_parameter_type() != ParameterType::Shape)
 					continue;
+				auto state_variable = p->get_parametrization().eval(x1);
 				auto output_indexing = p->get_parametrization().get_output_indexing(x1);
 				for (int i = 0; i < output_indexing.size(); ++i)
-					for (int k = 0; k < state_.mesh->dimension(); ++k)
-						V1(output_indexing(i), k) = x1(i * state_.mesh->dimension() + k);
+					V1(output_indexing(i) / state_.mesh->dimension(), output_indexing(i) % state_.mesh->dimension()) = state_variable(i);
 			}
 
 			bool flipped = is_flipped(V1, F);
