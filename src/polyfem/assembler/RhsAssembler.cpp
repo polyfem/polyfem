@@ -209,15 +209,7 @@ namespace polyfem
 					auto solver = LinearSolver::create(solver_, preconditioner_);
 					solver->setParameters(solver_params_);
 					solver->analyzePattern(mass, mass.rows());
-					try
-					{
-						solver->factorize(mass);
-					}
-					catch (const std::exception &e)
-					{
-						logger().error("Error in mass matrix factorization: {}", e.what());
-						throw e;
-					}
+					solver->factorize(mass);
 
 					for (long i = 0; i < b.cols(); ++i)
 					{
