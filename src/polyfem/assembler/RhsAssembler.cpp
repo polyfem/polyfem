@@ -201,7 +201,10 @@ namespace polyfem
 				if (fabs(mmin) > 1e-8 || fabs(mmax) > 1e-8)
 				{
 					StiffnessMatrix mass;
-					assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, false, bases_, gbases_, ass_vals_cache_, mass);
+					const int n_fe_basis = n_basis_ - obstacle_.n_vertices();
+					assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_fe_basis, false, bases_, gbases_, ass_vals_cache_, mass);
+					assert(mass.rows() == n_basis_ * size_ - obstacle_.ndof() && mass.cols() == n_basis_ * size_ - obstacle_.ndof());
+
 					auto solver = LinearSolver::create(solver_, preconditioner_);
 					solver->setParameters(solver_params_);
 					solver->analyzePattern(mass, mass.rows());
@@ -209,7 +212,7 @@ namespace polyfem
 
 					for (long i = 0; i < b.cols(); ++i)
 					{
-						solver->solve(b.col(i), sol.col(i));
+						solver->solve(b.block(0, i, mass.rows(), 1), sol.block(0, i, mass.rows(), 1));
 					}
 					logger().trace("mass matrix error {}", (mass * sol - b).norm());
 				}
