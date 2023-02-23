@@ -4,6 +4,7 @@ set(SOURCES
 	Parametrizations.cpp
 	SplineParametrizations.hpp
 	SplineParametrizations.cpp
+	NodeCompositeParametrizations.hpp
 )
 
 prepend_current_path(SOURCES)

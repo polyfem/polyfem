@@ -36,12 +36,15 @@ namespace polyfem::solver
 			const int out_size = size(x.size());
 			if (output_indexing_.size() == out_size)
 				return output_indexing_;
-			else
+			else if (output_indexing_.size() == 0)
 			{
 				Eigen::VectorXi ind;
 				ind.setLinSpaced(out_size, 0, out_size - 1);
 				return ind;
 			}
+			else
+				log_and_throw_error("Indexing size and output size of the Parametrization do not match!");
+			return Eigen::VectorXi();
 		}
 
 	protected:

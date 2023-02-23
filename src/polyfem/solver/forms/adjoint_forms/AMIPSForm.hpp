@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/solver/forms/ParametrizationForm.hpp>
+#include <polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp>
 #include "VariableToSimulation.hpp"
 #include <polyfem/State.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
@@ -111,11 +111,11 @@ namespace polyfem::solver
 		}
 	} // namespace
 
-	class AMIPSForm : public ParametrizationForm
+	class AMIPSForm : public AdjointForm
 	{
 	public:
-		AMIPSForm(const CompositeParametrization &parametrizations, const State &state, const json &args)
-			: ParametrizationForm(parametrizations),
+		AMIPSForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state, const json &args)
+			: AdjointForm(variable_to_simulation),
 			  state_(state)
 		{
 			amips_energy_.local_assembler().set_size(state.mesh->dimension());
@@ -185,25 +185,53 @@ namespace polyfem::solver
 			amips_energy_.local_assembler().add_multimaterial(0, transform_params);
 		}
 
-		inline double value_unweighted_with_param(const Eigen::VectorXd &x) const override
+		double value_unweighted(const Eigen::VectorXd &x) const override
 		{
-			return amips_energy_.assemble(state_.mesh->is_volume(), state_.geom_bases(), state_.geom_bases(), state_.ass_vals_cache, 0, x, Eigen::VectorXd(), false);
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			state_.get_vf(V, F);
+			Eigen::VectorXd X = utils::flatten(V);
+			return amips_energy_.assemble(state_.mesh->is_volume(), state_.geom_bases(), state_.geom_bases(), state_.ass_vals_cache, 0, X, Eigen::VectorXd(), false);
 		}
 
-		inline void first_derivative_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
+		// void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
+		void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
 		{
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			state_.get_vf(V, F);
+			Eigen::VectorXd X = utils::flatten(V);
+
 			Eigen::MatrixXd grad;
-			amips_energy_.assemble_grad(state_.mesh->is_volume(), state_.n_bases, state_.geom_bases(), state_.geom_bases(), state_.ass_vals_cache, 0, x, Eigen::VectorXd(), grad);
+			amips_energy_.assemble_grad(state_.mesh->is_volume(), state_.n_bases, state_.geom_bases(), state_.geom_bases(), state_.ass_vals_cache, 0, X, Eigen::VectorXd(), grad);
 			assert(grad.cols() == 1);
 			gradv = grad;
 		}
 
-		inline bool is_step_valid_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override
+		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
+		{
+			return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
+		}
+
+		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override
 		{
 			Eigen::MatrixXd V0;
 			Eigen::MatrixXi F;
 			state_.get_vf(V0, F);
-			Eigen::MatrixXd V1 = utils::unflatten(x1, state_.mesh->dimension());
+
+			Eigen::VectorXd V1 = V0;
+			for (auto &p : variable_to_simulations_)
+			{
+				if (&p->get_state() != &state_)
+					continue;
+				if (p->get_parameter_type() != ParameterType::Shape)
+					continue;
+				auto output_indexing = p->get_parametrization().get_output_indexing(x1);
+				for (int i = 0; i < output_indexing.size(); ++i)
+					for (int k = 0; k < state_.mesh->dimension(); ++k)
+						V1(output_indexing(i), k) = x1(i * state_.mesh->dimension() + k);
+			}
+
 			bool flipped = is_flipped(V1, F);
 			return !flipped;
 		}

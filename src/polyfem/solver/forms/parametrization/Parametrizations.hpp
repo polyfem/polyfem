@@ -3,6 +3,7 @@
 #include "Parametrization.hpp"
 
 #include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/State.hpp>
 
 #include <Eigen/Core>
 #include <map>
@@ -102,7 +103,7 @@ namespace polyfem::solver
 	public:
 		SliceMap(const int from, const int to);
 
-		int size(const int x_size) const override { return from_ - to_; }
+		int size(const int x_size) const override { return to_ - from_; }
 
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
@@ -139,4 +140,5 @@ namespace polyfem::solver
 		Eigen::SparseMatrix<double> tt_radius_adjacency;
 		Eigen::VectorXd tt_radius_adjacency_row_sum;
 	};
+
 } // namespace polyfem::solver
