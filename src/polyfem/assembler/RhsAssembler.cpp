@@ -4,12 +4,10 @@
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polysolve/LinearSolver.hpp>
 
-#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <Eigen/Sparse>
-#include <unsupported/Eigen/SparseExtra>
 
 #include <iostream>
 #include <map>
@@ -227,7 +225,6 @@ namespace polyfem
 					catch (const std::exception &e)
 					{
 						logger().error("Error in mass matrix factorization: {}", e.what());
-						// Eigen::saveMarket(mass_reduced, "mass.mtx");
 						throw e;
 					}
 
