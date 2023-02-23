@@ -64,7 +64,7 @@ namespace polyfem::assembler
 	template <typename ElasticFormulation>
 	void GenericElastic<ElasticFormulation>::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
-		Eigen::MatrixXd displacement_grad(size(), size());
+		Eigen::MatrixXd deformation_grad(size(), size());
 		Eigen::MatrixXd stress_tensor(size(), size());
 
 		typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>> Diff;
@@ -72,7 +72,7 @@ namespace polyfem::assembler
 		assert(displacement.cols() == 1);
 
 		all.resize(local_pts.rows(), all_size);
-		DiffScalarBase::setVariableCount(displacement_grad.size());
+		DiffScalarBase::setVariableCount(deformation_grad.size());
 
 		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(size(), size());
 
@@ -81,19 +81,16 @@ namespace polyfem::assembler
 
 		for (long p = 0; p < local_pts.rows(); ++p)
 		{
-			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
+			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, deformation_grad);
+
+			// Id + grad d
+			for (int d = 0; d < size(); ++d)
+				deformation_grad(d, d) += 1;
 
 			for (int d1 = 0; d1 < size(); ++d1)
 			{
 				for (int d2 = 0; d2 < size(); ++d2)
-					def_grad(d1, d2) = Diff(d1 * size() + d2, displacement_grad(d1, d2));
-			}
-
-			// Id + grad d
-			for (int d = 0; d < size(); ++d)
-			{
-				def_grad(d, d) += Diff(1);
-				displacement_grad(d, d) += 1;
+					def_grad(d1, d2) = Diff(d1 * size() + d2, deformation_grad(d1, d2));
 			}
 
 			const auto val = formulation_.elastic_energy(size(), local_pts.row(p), vals.element_id, def_grad);
@@ -104,7 +101,7 @@ namespace polyfem::assembler
 					stress_tensor(d1, d2) = val.getGradient()(d1 * size() + d2);
 			}
 
-			stress_tensor = 1.0 / displacement_grad.determinant() * stress_tensor * displacement_grad.transpose();
+			stress_tensor = 1.0 / deformation_grad.determinant() * stress_tensor * deformation_grad.transpose();
 
 			all.row(p) = fun(stress_tensor);
 		}
