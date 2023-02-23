@@ -182,6 +182,12 @@ namespace polyfem
 			// Rayleigh damping form
 			args["solver"]["rayleigh_damping"]);
 
+		for (const auto &form : forms)
+			form->set_output_dir(output_dir);
+
+		if (solve_data.contact_form != nullptr)
+			solve_data.contact_form->save_ccd_debug_meshes = args["output"]["advanced"]["save_ccd_debug_meshes"];
+
 		// --------------------------------------------------------------------
 		// Initialize nonlinear problems
 
