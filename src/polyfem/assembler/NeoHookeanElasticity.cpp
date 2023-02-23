@@ -220,24 +220,21 @@ namespace polyfem::assembler
 
 		ElementAssemblyValues vals;
 		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
+		const auto I = Eigen::MatrixXd::Identity(size(), size());
 
 		for (long p = 0; p < local_pts.rows(); ++p)
 		{
 			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
-			const Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(size(), size()) + displacement_grad;
-			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
-			// const double J = def_grad.determinant();
+			const Eigen::MatrixXd def_grad = I + displacement_grad;
+			// const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+			const double J = def_grad.determinant();
+			const Eigen::MatrixXd b = def_grad.transpose() * def_grad;
 
 			double lambda, mu;
 			params_.lambda_mu(local_pts.row(p), vals.val.row(p), vals.element_id, lambda, mu);
 
-			// stress = mu (F - F^{-T}) + lambda ln J F^{-T}
-			// stress = mu * (def_grad - def_grad^{-T}) + lambda ln (det def_grad) def_grad^{-T}
-			Eigen::MatrixXd stress_tensor = mu * (def_grad - FmT) + lambda * std::log(def_grad.determinant()) * FmT;
-
-			// stess = (mu displacement_grad + lambda ln(J) I)/J
-			//  Eigen::MatrixXd stress_tensor = (mu_/J) * displacement_grad + (lambda_/J) * std::log(J)  * Eigen::MatrixXd::Identity(size(), size());
+			Eigen::MatrixXd stress_tensor = (lambda * std::log(J) * I + mu * (b - I)) / J;
 
 			all.row(p) = fun(stress_tensor);
 		}
