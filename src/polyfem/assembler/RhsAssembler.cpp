@@ -128,11 +128,7 @@ namespace polyfem
 
 		void RhsAssembler::time_bc(const std::function<void(const Mesh &, const Eigen::MatrixXi &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &fun, Eigen::MatrixXd &sol) const
 		{
-			const int ndof = n_basis_ * size_;
-			const int obstacle_ndof = obstacle_.ndof();
-			const int fe_ndof = ndof - obstacle_ndof;
-
-			sol = Eigen::MatrixXd::Zero(ndof, 1);
+			sol = Eigen::MatrixXd::Zero(n_basis_ * size_, 1);
 			Eigen::MatrixXd loc_sol;
 
 			const int n_elements = int(bases_.size());
@@ -205,22 +201,17 @@ namespace polyfem
 
 				if (fabs(mmin) > 1e-8 || fabs(mmax) > 1e-8)
 				{
-					StiffnessMatrix mass_full;
-					assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, false, bases_, gbases_, ass_vals_cache_, mass_full);
-
-					// Solve for BC in a reduced system (without obstacles)
-					std::vector<int> obstacle_dof(obstacle_ndof);
-					std::iota(obstacle_dof.begin(), obstacle_dof.end(), fe_ndof);
-
-					StiffnessMatrix mass_reduced;
-					utils::full_to_reduced_matrix(ndof, fe_ndof, obstacle_dof, mass_full, mass_reduced);
+					StiffnessMatrix mass;
+					const int n_fe_basis = n_basis_ - obstacle_.n_vertices();
+					assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_fe_basis, false, bases_, gbases_, ass_vals_cache_, mass);
+					assert(mass.rows() == n_basis_ * size_ - obstacle_.ndof() && mass.cols() == n_basis_ * size_ - obstacle_.ndof());
 
 					auto solver = LinearSolver::create(solver_, preconditioner_);
 					solver->setParameters(solver_params_);
-					solver->analyzePattern(mass_reduced, fe_ndof);
+					solver->analyzePattern(mass, mass.rows());
 					try
 					{
-						solver->factorize(mass_reduced);
+						solver->factorize(mass);
 					}
 					catch (const std::exception &e)
 					{
@@ -230,9 +221,9 @@ namespace polyfem
 
 					for (long i = 0; i < b.cols(); ++i)
 					{
-						solver->solve(b.block(0, i, fe_ndof, 1), sol.block(0, i, fe_ndof, 1));
+						solver->solve(b.block(0, i, mass.rows(), 1), sol.block(0, i, mass.rows(), 1));
 					}
-					logger().trace("mass matrix error {}", (mass_full * sol - b).norm());
+					logger().trace("mass matrix error {}", (mass * sol - b).norm());
 				}
 			}
 		}
