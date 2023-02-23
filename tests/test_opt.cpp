@@ -273,8 +273,9 @@ TEST_CASE("topology-opt", "[optimization]")
 
 	// nonlinear inequality constraints g(x) < 0
 	{
-		auto obj1 = std::make_shared<WeightedVolumeForm>(CompositeParametrization({std::make_shared<LinearFilter>(*(states[0]->mesh), 0.1), std::make_shared<PowerMap>(5)}), *(states[0]));
-		auto obj2 = std::make_shared<PlusConstCompositeForm>(obj1, -1.2);
+		auto obj1 = std::make_shared<WeightedVolumeForm>(CompositeParametrization({std::make_shared<LinearFilter>(*(states[0]->mesh), 0.1)}), *(states[0]));
+		obj1->set_weight(1 / 1.2);
+		auto obj2 = std::make_shared<PlusConstCompositeForm>(obj1, -1);
 		nl_solver->set_constraints({obj2});
 	}
 
@@ -284,7 +285,7 @@ TEST_CASE("topology-opt", "[optimization]")
 	// check if the objective at these steps are correct
 	auto energies = read_energy(name);
 	REQUIRE(energies[0] == Approx(136.013542195).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(0.418071062268).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.726565337285).epsilon(1e-4));
 }
 
 TEST_CASE("shape-stress-opt-new", "[optimization]")
