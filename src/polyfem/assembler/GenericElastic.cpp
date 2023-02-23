@@ -74,7 +74,7 @@ namespace polyfem::assembler
 		all.resize(local_pts.rows(), all_size);
 		DiffScalarBase::setVariableCount(displacement_grad.size());
 
-		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> disp_grad(size(), size());
+		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(size(), size());
 
 		ElementAssemblyValues vals;
 		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
@@ -86,16 +86,25 @@ namespace polyfem::assembler
 			for (int d1 = 0; d1 < size(); ++d1)
 			{
 				for (int d2 = 0; d2 < size(); ++d2)
-					disp_grad(d1, d2) = Diff(d1 * size() + d2, displacement_grad(d1, d2));
+					def_grad(d1, d2) = Diff(d1 * size() + d2, displacement_grad(d1, d2));
 			}
 
-			const auto val = formulation_.elastic_energy(size(), local_pts.row(p), vals.element_id, disp_grad);
+			// Id + grad d
+			for (int d = 0; d < size(); ++d)
+			{
+				def_grad(d, d) += Diff(1);
+				displacement_grad(d, d) += 1;
+			}
+
+			const auto val = formulation_.elastic_energy(size(), local_pts.row(p), vals.element_id, def_grad);
 
 			for (int d1 = 0; d1 < size(); ++d1)
 			{
 				for (int d2 = 0; d2 < size(); ++d2)
 					stress_tensor(d1, d2) = val.getGradient()(d1 * size() + d2);
 			}
+
+			stress_tensor = 1.0 / displacement_grad.determinant() * stress_tensor * displacement_grad.transpose();
 
 			all.row(p) = fun(stress_tensor);
 		}

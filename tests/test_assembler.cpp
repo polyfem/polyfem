@@ -110,10 +110,26 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 
 	Eigen::MatrixXd displacement(state.n_bases, 1);
 
+	ElementAssemblyValues vals;
+	vals.compute(el_id, false, bs, bs);
+
+	const auto &quadrature = vals.quadrature;
+	const auto da = vals.det.array() * quadrature.weights.array();
+
 	for (int rand = 0; rand < 10; ++rand)
 	{
 		displacement.setRandom();
+		NonLinearAssemblerData data(vals, 0, displacement, displacement, da);
 
+		const double ea = autodiff.compute_energy(data);
+		const double e = real.compute_energy(data);
+
+		if (std::isnan(e))
+			REQUIRE(std::isnan(ea));
+		else
+			REQUIRE(ea == Approx(e).margin(1e-12));
+
+		///////////////////////
 		Eigen::MatrixXd stressa, stress;
 		autodiff.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, stressa);
 		real.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, stress);

@@ -27,12 +27,8 @@ namespace polyfem::assembler
 		T elastic_energy(const int size,
 						 const RowVectorNd &p,
 						 const int el_id,
-						 const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &disp_grad) const
+						 const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &def_grad) const
 		{
-			// Id + grad d
-			auto def_grad = disp_grad;
-			for (int d = 0; d < size; ++d)
-				def_grad(d, d) += T(1);
 
 			Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> eigs;
 
