@@ -182,6 +182,7 @@ namespace polyfem::solver
 					}));
 				}
 			}
+			transform_params["solve_displacement"] = false;
 			amips_energy_.local_assembler().add_multimaterial(0, transform_params);
 		}
 
@@ -191,11 +192,11 @@ namespace polyfem::solver
 			Eigen::MatrixXi F;
 			state_.get_vf(V, F);
 			Eigen::VectorXd X = utils::flatten(V);
-			return amips_energy_.assemble(state_.mesh->is_volume(), state_.geom_bases(), state_.geom_bases(), state_.ass_vals_cache, 0, X, Eigen::VectorXd(), false);
+
+			return amips_energy_.assemble(state_.mesh->is_volume(), state_.bases, state_.geom_bases(), state_.ass_vals_cache, 0, X, Eigen::VectorXd(), false);
 		}
 
 		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
-		// void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
 		{
 			Eigen::MatrixXd V;
 			Eigen::MatrixXi F;
@@ -203,7 +204,7 @@ namespace polyfem::solver
 			Eigen::VectorXd X = utils::flatten(V);
 
 			Eigen::MatrixXd grad;
-			amips_energy_.assemble_grad(state_.mesh->is_volume(), state_.n_bases, state_.geom_bases(), state_.geom_bases(), state_.ass_vals_cache, 0, X, Eigen::VectorXd(), grad);
+			amips_energy_.assemble_grad(state_.mesh->is_volume(), state_.n_bases, state_.bases, state_.geom_bases(), state_.ass_vals_cache, 0, X, Eigen::VectorXd(), grad);
 			assert(grad.cols() == 1);
 
 			gradv.setZero(x.size());

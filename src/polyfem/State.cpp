@@ -481,6 +481,7 @@ namespace polyfem
 					}));
 				}
 			}
+			transform_params["solve_displacement"] = true;
 			assembler.set_materials({}, transform_params);
 
 			return;
@@ -870,7 +871,7 @@ namespace polyfem
 
 		auto &gbases = geom_bases();
 
-		if (n_geom_bases == mesh->n_vertices()) 
+		if (n_geom_bases == mesh->n_vertices())
 		{
 			gnode_to_vertex.resize(n_geom_bases);
 			gnode_to_vertex.setConstant(-1);
