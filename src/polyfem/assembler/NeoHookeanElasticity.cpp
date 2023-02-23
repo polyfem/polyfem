@@ -227,9 +227,8 @@ namespace polyfem::assembler
 			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
 			const Eigen::MatrixXd def_grad = I + displacement_grad;
-			// const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
 			const double J = def_grad.determinant();
-			const Eigen::MatrixXd b = def_grad.transpose() * def_grad;
+			const Eigen::MatrixXd b = def_grad * def_grad.transpose();
 
 			double lambda, mu;
 			params_.lambda_mu(local_pts.row(p), vals.val.row(p), vals.element_id, lambda, mu);

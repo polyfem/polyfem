@@ -132,7 +132,7 @@ namespace polyfem
 									  const Eigen::MatrixXd &local_pts,
 									  const Eigen::MatrixXd &fun,
 									  Eigen::MatrixXd &result) const;
-			// computes tensor, assembler is the name of the formulation
+			// computes tensor, assembler is the name of the formulation, Cauchy stress tensor
 			void compute_tensor_value(const std::string &assembler,
 									  const int el_id,
 									  const basis::ElementBases &bs,

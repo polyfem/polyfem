@@ -35,7 +35,7 @@ namespace polyfem::assembler
 			params_.lambda_mu(p, p, el_id, lambda, mu);
 
 			const T log_det_j = log(polyfem::utils::determinant(def_grad));
-			const T val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
+			const T val = mu / 2 * ((def_grad * def_grad.transpose()).trace() - size - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
 
 			return val;
 		}
