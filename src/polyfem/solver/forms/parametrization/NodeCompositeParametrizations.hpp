@@ -36,30 +36,19 @@ namespace polyfem::solver
 			const auto &bases = state.bases;
 			const auto &gbases = state.geom_bases();
 
-			std::set<int> total_bnode_ids;
-			for (const auto &lb : state.total_local_boundary)
-			{
-				const int e = lb.element_id();
-				for (int i = 0; i < lb.size(); ++i)
-				{
-					const int primitive_global_id = lb.global_primitive_id(i);
-					const int boundary_id = mesh->get_boundary_id(primitive_global_id);
-					const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
-
-					for (long n = 0; n < nodes.size(); ++n)
-						total_bnode_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
-				}
-			}
-
 			std::set<int> node_ids;
-			for (int e = 0; e < gbases.size(); e++)
+			for (int e = 0; e < mesh->n_elements(); e++)
 			{
 				const int body_id = mesh->get_body_id(e);
 				if (volume_selection == body_id)
-					for (const auto &gbs : gbases[e].bases)
-						for (const auto &g : gbs.global())
-							if (!total_bnode_ids.count(g.index))
-								node_ids.insert(g.index);
+				{
+					for (int i = 0; i < mesh->dimension() + 1; i++)
+					{
+						const int vid = mesh->element_vertex(e, i);
+						if (!mesh->is_boundary_vertex(vid))
+							node_ids.insert(vid);
+					}
+				}
 			}
 
 			dim = mesh->dimension();
@@ -84,11 +73,10 @@ namespace polyfem::solver
 				{
 					const int primitive_global_id = lb.global_primitive_id(i);
 					const int boundary_id = mesh->get_boundary_id(primitive_global_id);
-					const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
 
 					if (surface_selection == boundary_id)
-						for (long n = 0; n < nodes.size(); ++n)
-							node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+						for (long n = 0; n < mesh->dimension(); ++n)
+							node_ids.insert(mesh->boundary_element_vertex(primitive_global_id, n));
 				}
 			}
 
@@ -115,13 +103,12 @@ namespace polyfem::solver
 				{
 					const int primitive_global_id = lb.global_primitive_id(i);
 					const int boundary_id = mesh->get_boundary_id(primitive_global_id);
-					const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
 
 					if (std::count(exclude_surface_selections.begin(), exclude_surface_selections.end(), boundary_id))
-						for (long n = 0; n < nodes.size(); ++n)
-							excluded_node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
-					for (long n = 0; n < nodes.size(); ++n)
-						all_node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+						for (long n = 0; n < mesh->dimension(); ++n)
+							excluded_node_ids.insert(mesh->boundary_element_vertex(primitive_global_id, n));
+					for (long n = 0; n < mesh->dimension(); ++n)
+						all_node_ids.insert(mesh->boundary_element_vertex(primitive_global_id, n));
 				}
 			}
 

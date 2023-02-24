@@ -445,6 +445,15 @@ namespace polyfem
 			return indices;
 		}
 
+		std::vector<int> node_to_primitive() const
+		{ 
+			auto p2n = primitive_to_node();
+			auto indices = p2n;
+			for (int i = 0; i < p2n.size(); i++)
+				indices[p2n[i]] = i;
+			return indices;
+		}
+
 	private:
 		/// build the mapping from input nodes to polyfem nodes
 		void build_node_mapping();
