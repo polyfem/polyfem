@@ -1,13 +1,6 @@
 #include "Optimizations.hpp"
 
-#include <polyfem/utils/CubicHermiteSplineParametrization.hpp>
-#include <polyfem/assembler/RhsAssembler.hpp>
-
 #include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
-
-#include <polyfem/utils/MaybeParallelFor.hpp>
-
-#include <map>
 
 namespace polyfem::solver
 {
@@ -26,37 +19,6 @@ namespace polyfem::solver
 
 			return true;
 		}
-
-		double cross2(double x, double y)
-		{
-			x = abs(x);
-			y = abs(y);
-			if (x > y)
-				std::swap(x, y);
-
-			if (x < 0.1)
-				return 0.05;
-			return 0.95;
-		}
-
-		double cross3(double x, double y, double z)
-		{
-			x = abs(x);
-			y = abs(y);
-			z = abs(z);
-			if (x > y)
-				std::swap(x, y);
-			if (y > z)
-				std::swap(y, z);
-			if (x > y)
-				std::swap(x, y);
-
-			if (y < 0.2)
-				return 0.001;
-			return 1;
-		}
-
-		double matrix_dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 	} // namespace
 
 	std::shared_ptr<State> create_state(const json &args, spdlog::level::level_enum log_level, const int max_threads)
