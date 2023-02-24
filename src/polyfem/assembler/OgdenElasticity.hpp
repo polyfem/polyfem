@@ -11,7 +11,6 @@
 #include <Eigen/Dense>
 #include <array>
 
-// attempt at Ogden, incomplete, not used, and not working
 namespace polyfem::assembler
 {
 	class OgdenElasticity
