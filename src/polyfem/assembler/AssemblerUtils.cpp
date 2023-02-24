@@ -377,64 +377,96 @@ namespace polyfem
 			if (assembler == "Stokes" || assembler == "OperatorSplitting" || assembler == "NavierStokes")
 				return;
 
-			Eigen::MatrixXd cauchy, pk1;
+			Eigen::MatrixXd cauchy, pk1, pk2, F;
 
 			if (assembler == "LinearElasticity")
 			{
 				linear_elasticity_.local_assembler()
-					.compute_cauchy_stress_tensor(el_id, bs, gbs, local_pts, fun, cauchy);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
 				linear_elasticity_.local_assembler()
-					.compute_pk1_stress_tensor(el_id, bs, gbs, local_pts, fun, pk1);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+				linear_elasticity_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+				linear_elasticity_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
 			}
 			else if (assembler == "HookeLinearElasticity")
 			{
 				hooke_linear_elasticity_.local_assembler()
-					.compute_cauchy_stress_tensor(el_id, bs, gbs, local_pts, fun, cauchy);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
 				hooke_linear_elasticity_.local_assembler()
-					.compute_pk1_stress_tensor(el_id, bs, gbs, local_pts, fun, pk1);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+				hooke_linear_elasticity_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+				hooke_linear_elasticity_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
 			}
 
 			else if (assembler == "SaintVenant")
 			{
 				saint_venant_elasticity_.local_assembler()
-					.compute_cauchy_stress_tensor(el_id, bs, gbs, local_pts, fun, cauchy);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
 				saint_venant_elasticity_.local_assembler()
-					.compute_pk1_stress_tensor(el_id, bs, gbs, local_pts, fun, pk1);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+				saint_venant_elasticity_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+				saint_venant_elasticity_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
 			}
 			else if (assembler == "NeoHookean")
 			{
 				neo_hookean_elasticity_.local_assembler()
-					.compute_cauchy_stress_tensor(el_id, bs, gbs, local_pts, fun, cauchy);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
 				neo_hookean_elasticity_.local_assembler()
-					.compute_pk1_stress_tensor(el_id, bs, gbs, local_pts, fun, pk1);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+				neo_hookean_elasticity_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+				neo_hookean_elasticity_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
 			}
 			else if (assembler == "MooneyRivlin")
 			{
 				mooney_rivlin_elasticity_.local_assembler()
-					.compute_cauchy_stress_tensor(el_id, bs, gbs, local_pts, fun, cauchy);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
 				mooney_rivlin_elasticity_.local_assembler()
-					.compute_pk1_stress_tensor(el_id, bs, gbs, local_pts, fun, pk1);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+				mooney_rivlin_elasticity_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+				mooney_rivlin_elasticity_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
 			}
 			else if (assembler == "MultiModels")
 			{
 				multi_models_elasticity_.local_assembler()
-					.compute_cauchy_stress_tensor(el_id, bs, gbs, local_pts, fun, cauchy);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
 				multi_models_elasticity_.local_assembler()
-					.compute_pk1_stress_tensor(el_id, bs, gbs, local_pts, fun, pk1);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+				multi_models_elasticity_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+				multi_models_elasticity_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
 			}
 			else if (assembler == "Ogden")
 			{
 				ogden_elasticity_.local_assembler()
-					.compute_cauchy_stress_tensor(el_id, bs, gbs, local_pts, fun, cauchy);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
 				ogden_elasticity_.local_assembler()
-					.compute_pk1_stress_tensor(el_id, bs, gbs, local_pts, fun, pk1);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+				ogden_elasticity_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+				ogden_elasticity_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
 			}
 			else if (assembler == "IncompressibleLinearElasticity")
 			{
 				incompressible_lin_elast_displacement_.local_assembler()
-					.compute_cauchy_stress_tensor(el_id, bs, gbs, local_pts, fun, cauchy);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
 				incompressible_lin_elast_displacement_.local_assembler()
-					.compute_pk1_stress_tensor(el_id, bs, gbs, local_pts, fun, pk1);
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+				incompressible_lin_elast_displacement_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+				incompressible_lin_elast_displacement_.local_assembler()
+					.compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
 			}
 
 			else
@@ -446,6 +478,8 @@ namespace polyfem
 
 			result.emplace_back("cauchy_stess", cauchy);
 			result.emplace_back("pk1_stess", pk1);
+			result.emplace_back("pk2_stess", pk2);
+			result.emplace_back("F", F);
 		}
 
 		VectorNd AssemblerUtils::compute_rhs(const std::string &assembler, const AutodiffHessianPt &pt) const

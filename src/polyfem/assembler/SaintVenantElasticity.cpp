@@ -22,17 +22,6 @@ namespace polyfem::assembler
 
 			return mat;
 		}
-
-		// template<int dim>
-		// Eigen::Matrix<double, dim, dim> strain(const Eigen::MatrixXd &grad, const Eigen::MatrixXd &jac_it, int k, int coo)
-		// {
-		// 	Eigen::Matrix<double, dim, dim> jac;
-		// 	jac.setZero();
-		// 	jac.row(coo) = grad.row(k);
-		// 	jac = jac*jac_it;
-
-		// 	return strain_from_disp_grad(jac);
-		// }
 	} // namespace
 
 	SaintVenantElasticity::SaintVenantElasticity()
@@ -143,17 +132,9 @@ namespace polyfem::assembler
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(data); });
 	}
 
-	void SaintVenantElasticity::compute_cauchy_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
+	void SaintVenantElasticity::compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &stresses) const
 	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), false, stresses, [&](const Eigen::MatrixXd &stress) {
-			Eigen::MatrixXd tmp = stress;
-			auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
-			return Eigen::MatrixXd(a);
-		});
-	}
-	void SaintVenantElasticity::compute_pk1_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
-	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), true, stresses, [&](const Eigen::MatrixXd &stress) {
+		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
 			Eigen::MatrixXd tmp = stress;
 			auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
 			return Eigen::MatrixXd(a);
@@ -162,14 +143,14 @@ namespace polyfem::assembler
 
 	void SaintVenantElasticity::compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, false, stresses, [&](const Eigen::MatrixXd &stress) {
+		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, ElasticityTensorType::CAUCHY, stresses, [&](const Eigen::MatrixXd &stress) {
 			Eigen::Matrix<double, 1, 1> res;
 			res.setConstant(von_mises_stress_for_stress_tensor(stress));
 			return res;
 		});
 	}
 
-	void SaintVenantElasticity::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const bool pk1, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	void SaintVenantElasticity::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		Eigen::MatrixXd displacement_grad(size(), size());
 
@@ -183,6 +164,12 @@ namespace polyfem::assembler
 		for (long p = 0; p < local_pts.rows(); ++p)
 		{
 			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
+
+			if (type == ElasticityTensorType::F)
+			{
+				all.row(p) = fun(displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+				continue;
+			}
 
 			Eigen::MatrixXd strain = strain_from_disp_grad(displacement_grad);
 			Eigen::MatrixXd stress_tensor(size(), size());
@@ -213,8 +200,11 @@ namespace polyfem::assembler
 			}
 
 			stress_tensor = (Eigen::MatrixXd::Identity(size(), size()) + displacement_grad) * stress_tensor;
-			if (pk1)
+
+			if (type == ElasticityTensorType::PK1)
 				stress_tensor = pk1_from_cauchy(stress_tensor, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+			else if (type == ElasticityTensorType::PK2)
+				stress_tensor = pk2_from_cauchy(stress_tensor, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
 
 			all.row(p) = fun(stress_tensor);
 		}

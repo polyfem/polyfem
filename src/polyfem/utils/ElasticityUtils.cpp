@@ -252,4 +252,9 @@ namespace polyfem
 	{
 		return F.determinant() * stress * F.inverse().transpose();
 	}
+
+	Eigen::MatrixXd pk2_from_cauchy(const Eigen::MatrixXd &stress, const Eigen::MatrixXd &F)
+	{
+		return F.determinant() * F.inverse() * stress * F.inverse().transpose();
+	}
 } // namespace polyfem

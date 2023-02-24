@@ -73,18 +73,9 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void IncompressibleLinearElasticityDispacement::compute_cauchy_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
+	void IncompressibleLinearElasticityDispacement::compute_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &stresses) const
 	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), false, stresses, [&](const Eigen::MatrixXd &stress) {
-			Eigen::MatrixXd tmp = stress;
-			auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
-			return Eigen::MatrixXd(a);
-		});
-	}
-
-	void IncompressibleLinearElasticityDispacement::compute_pk1_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
-	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), true, stresses, [&](const Eigen::MatrixXd &stress) {
+		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
 			Eigen::MatrixXd tmp = stress;
 			auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
 			return Eigen::MatrixXd(a);
@@ -93,14 +84,14 @@ namespace polyfem::assembler
 
 	void IncompressibleLinearElasticityDispacement::compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, false, stresses, [&](const Eigen::MatrixXd &stress) {
+		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, ElasticityTensorType::CAUCHY, stresses, [&](const Eigen::MatrixXd &stress) {
 			Eigen::Matrix<double, 1, 1> res;
 			res.setConstant(von_mises_stress_for_stress_tensor(stress));
 			return res;
 		});
 	}
 
-	void IncompressibleLinearElasticityDispacement::assign_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const bool pk1, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	void IncompressibleLinearElasticityDispacement::assign_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		assert(size_ == 2 || size_ == 3);
 		all.resize(local_pts.rows(), all_size);
@@ -115,14 +106,22 @@ namespace polyfem::assembler
 		{
 			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
+			if (type == ElasticityTensorType::F)
+			{
+				all.row(p) = fun(displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+				continue;
+			}
+
 			double lambda, mu;
 			params_.lambda_mu(local_pts.row(p), vals.val.row(p), vals.element_id, lambda, mu);
 
 			const Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose()) / 2;
 			Eigen::MatrixXd stress = 2 * mu * strain + lambda * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
 
-			if (pk1)
+			if (type == ElasticityTensorType::PK1)
 				stress = pk1_from_cauchy(stress, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+			else if (type == ElasticityTensorType::PK2)
+				stress = pk2_from_cauchy(stress, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
 
 			all.row(p) = fun(stress);
 		}

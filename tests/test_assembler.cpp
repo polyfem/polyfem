@@ -165,11 +165,26 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 			}
 		}
 
+		// F stress
+		{
+			Eigen::MatrixXd stressa, stress;
+			autodiff.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::F, stressa);
+			real.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::F, stress);
+
+			for (int i = 0; i < stressa.size(); ++i)
+			{
+				if (std::isnan(stress(i)))
+					REQUIRE(std::isnan(stressa(i)));
+				else
+					REQUIRE(stressa(i) == Approx(stress(i)).margin(1e-12));
+			}
+		}
+
 		// cauchy stress
 		{
 			Eigen::MatrixXd stressa, stress;
-			autodiff.compute_cauchy_stress_tensor(el_id, bs, bs, local_pts, displacement, stressa);
-			real.compute_cauchy_stress_tensor(el_id, bs, bs, local_pts, displacement, stress);
+			autodiff.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::CAUCHY, stressa);
+			real.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::CAUCHY, stress);
 
 			for (int i = 0; i < stressa.size(); ++i)
 			{
@@ -183,8 +198,23 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 		// pk1 stress
 		{
 			Eigen::MatrixXd stressa, stress;
-			autodiff.compute_pk1_stress_tensor(el_id, bs, bs, local_pts, displacement, stressa);
-			real.compute_pk1_stress_tensor(el_id, bs, bs, local_pts, displacement, stress);
+			autodiff.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::PK1, stressa);
+			real.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::PK1, stress);
+
+			for (int i = 0; i < stressa.size(); ++i)
+			{
+				if (std::isnan(stress(i)))
+					REQUIRE(std::isnan(stressa(i)));
+				else
+					REQUIRE(stressa(i) == Approx(stress(i)).margin(1e-12));
+			}
+		}
+
+		// pk2 stress
+		{
+			Eigen::MatrixXd stressa, stress;
+			autodiff.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::PK2, stressa);
+			real.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::PK2, stress);
 
 			for (int i = 0; i < stressa.size(); ++i)
 			{
