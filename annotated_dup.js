@@ -91,9 +91,7 @@ var annotated_dup =
         [ "OutGeometryData", "classpolyfem_1_1io_1_1_out_geometry_data.html", "classpolyfem_1_1io_1_1_out_geometry_data" ],
         [ "OutRuntimeData", "classpolyfem_1_1io_1_1_out_runtime_data.html", "classpolyfem_1_1io_1_1_out_runtime_data" ],
         [ "OutStatsData", "classpolyfem_1_1io_1_1_out_stats_data.html", "classpolyfem_1_1io_1_1_out_stats_data" ],
-        [ "SolutionFrame", "classpolyfem_1_1io_1_1_solution_frame.html", "classpolyfem_1_1io_1_1_solution_frame" ],
-        [ "VTKDataNode", "classpolyfem_1_1io_1_1_v_t_k_data_node.html", "classpolyfem_1_1io_1_1_v_t_k_data_node" ],
-        [ "VTUWriter", "classpolyfem_1_1io_1_1_v_t_u_writer.html", "classpolyfem_1_1io_1_1_v_t_u_writer" ]
+        [ "SolutionFrame", "classpolyfem_1_1io_1_1_solution_frame.html", "classpolyfem_1_1io_1_1_solution_frame" ]
       ] ],
       [ "mesh", "namespacepolyfem_1_1mesh.html", [
         [ "Navigation", "namespacepolyfem_1_1mesh_1_1_navigation.html", [
@@ -222,7 +220,6 @@ var annotated_dup =
       ] ],
       [ "utils", "namespacepolyfem_1_1utils.html", [
         [ "AxisPlaneSelection", "classpolyfem_1_1utils_1_1_axis_plane_selection.html", "classpolyfem_1_1utils_1_1_axis_plane_selection" ],
-        [ "base64Layer", "classpolyfem_1_1utils_1_1base64_layer.html", "classpolyfem_1_1utils_1_1base64_layer" ],
         [ "BoundarySampler", "classpolyfem_1_1utils_1_1_boundary_sampler.html", null ],
         [ "BoxSelection", "classpolyfem_1_1utils_1_1_box_selection.html", "classpolyfem_1_1utils_1_1_box_selection" ],
         [ "BoxSideSelection", "classpolyfem_1_1utils_1_1_box_side_selection.html", "classpolyfem_1_1utils_1_1_box_side_selection" ],

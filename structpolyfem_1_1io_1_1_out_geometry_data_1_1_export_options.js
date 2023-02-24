@@ -1,6 +1,7 @@
 var structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options =
 [
     [ "ExportOptions", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a59f8b1bbb6f7b41138b6925941d9b0ef", null ],
+    [ "file_extension", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a3487c2d26a158f1880373386ef1db3a7", null ],
     [ "acceleration", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a7c851855db2ea4c90b6c57e5db552a1a", null ],
     [ "body_ids", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#add57d640c99ac56ced4242571b19e96d", null ],
     [ "boundary_only", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#aeae46aac32e4c278f55665f48b2a102c", null ],
@@ -12,6 +13,7 @@ var structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options =
     [ "sol_on_grid", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a4a8fc3968f7782b38809d9bd489906fa", null ],
     [ "solve_export_to_file", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a8895bcd7f83152e8b309b6b584cdddc4", null ],
     [ "surface", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a9e51bea3166ca250ed6dd6d4bc6d8c78", null ],
+    [ "use_hdf5", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a836e498642f74e5e6b4b6ee2c632b07b", null ],
     [ "use_sampler", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a16b1c6d540f8e91ffb603f7b79b1aa45", null ],
     [ "use_spline", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#ab43f215f17671955cc2687c9961f480f", null ],
     [ "velocity", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#ad3209bf87d9263f8d694b54bda6c90ea", null ],

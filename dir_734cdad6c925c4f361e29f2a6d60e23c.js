@@ -13,7 +13,5 @@ var dir_734cdad6c925c4f361e29f2a6d60e23c =
     [ "OBJWriter.cpp", "_o_b_j_writer_8cpp.html", null ],
     [ "OBJWriter.hpp", "_o_b_j_writer_8hpp.html", "_o_b_j_writer_8hpp" ],
     [ "OutData.cpp", "_out_data_8cpp.html", "_out_data_8cpp" ],
-    [ "OutData.hpp", "_out_data_8hpp.html", "_out_data_8hpp" ],
-    [ "VTUWriter.cpp", "_v_t_u_writer_8cpp.html", null ],
-    [ "VTUWriter.hpp", "_v_t_u_writer_8hpp.html", "_v_t_u_writer_8hpp" ]
+    [ "OutData.hpp", "_out_data_8hpp.html", "_out_data_8hpp" ]
 ];

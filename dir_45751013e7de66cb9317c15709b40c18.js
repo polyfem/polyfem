@@ -2,8 +2,6 @@ var dir_45751013e7de66cb9317c15709b40c18 =
 [
     [ "autodiff.h", "autodiff_8h.html", "autodiff_8h" ],
     [ "AutodiffTypes.hpp", "_autodiff_types_8hpp.html", "_autodiff_types_8hpp" ],
-    [ "base64Layer.cpp", "base64_layer_8cpp.html", null ],
-    [ "base64Layer.hpp", "base64_layer_8hpp.html", "base64_layer_8hpp" ],
     [ "Bessel.hpp", "_bessel_8hpp.html", null ],
     [ "BoundarySampler.cpp", "_boundary_sampler_8cpp.html", null ],
     [ "BoundarySampler.hpp", "_boundary_sampler_8hpp.html", "_boundary_sampler_8hpp" ],

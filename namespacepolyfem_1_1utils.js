@@ -9,7 +9,6 @@ var namespacepolyfem_1_1utils =
       [ "trim", "namespacepolyfem_1_1utils_1_1_string_utils.html#a5ea2c1e360cb00a431694ced69344bea", null ]
     ] ],
     [ "AxisPlaneSelection", "classpolyfem_1_1utils_1_1_axis_plane_selection.html", "classpolyfem_1_1utils_1_1_axis_plane_selection" ],
-    [ "base64Layer", "classpolyfem_1_1utils_1_1base64_layer.html", "classpolyfem_1_1utils_1_1base64_layer" ],
     [ "BoundarySampler", "classpolyfem_1_1utils_1_1_boundary_sampler.html", null ],
     [ "BoxSelection", "classpolyfem_1_1utils_1_1_box_selection.html", "classpolyfem_1_1utils_1_1_box_selection" ],
     [ "BoxSideSelection", "classpolyfem_1_1utils_1_1_box_side_selection.html", "classpolyfem_1_1utils_1_1_box_side_selection" ],

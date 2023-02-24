@@ -10,7 +10,7 @@ var searchData=
   ['global_5felement_5fid_5f_7',['global_element_id_',['../classpolyfem_1_1mesh_1_1_local_boundary.html#a3243a8c158121e32492682332726f840',1,'polyfem::mesh::LocalBoundary']]],
   ['global_5fids_8',['global_ids',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#a994f3ac144b91ff8dbd134de91fcef8d',1,'polyfem::mesh::NCMesh2D::ncBoundary::global_ids()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#aa35f0c3231416b10814b185e66eb8c7b',1,'polyfem::mesh::NCMesh3D::ncBoundary::global_ids()']]],
   ['global_5fprimitive_5fid_5f_9',['global_primitive_id_',['../classpolyfem_1_1mesh_1_1_local_boundary.html#a85fb30899e6e8c8f78b3edf135ebdcc6',1,'polyfem::mesh::LocalBoundary']]],
-  ['grad_10',['grad',['../struct_d_scalar1.html#ab47f13cbffdaff53d8d630a9abba26b0',1,'DScalar1::grad()'],['../struct_d_scalar2.html#ab6a69ad53cc7b6a98f20559e8875a005',1,'DScalar2::grad()'],['../classpolyfem_1_1assembler_1_1_assembly_values.html#ab72eacdc660e8e36a3995eb698c25f5d',1,'polyfem::assembler::AssemblyValues::grad()']]],
+  ['grad_10',['grad',['../classpolyfem_1_1assembler_1_1_assembly_values.html#ab72eacdc660e8e36a3995eb698c25f5d',1,'polyfem::assembler::AssemblyValues::grad()'],['../struct_d_scalar2.html#ab6a69ad53cc7b6a98f20559e8875a005',1,'DScalar2::grad()'],['../struct_d_scalar1.html#ab47f13cbffdaff53d8d630a9abba26b0',1,'DScalar1::grad()']]],
   ['grad_5f_11',['grad_',['../classpolyfem_1_1basis_1_1_basis.html#ac9c1076cc0b4631159f5e6d02a07e8cc',1,'polyfem::basis::Basis']]],
   ['grad_5fmax_5ferr_12',['grad_max_err',['../classpolyfem_1_1io_1_1_out_stats_data.html#ac18aadc9857ee84cf1417bc8f626b5d5',1,'polyfem::io::OutStatsData']]],
   ['grad_5ft_5fm_13',['grad_t_m',['../classpolyfem_1_1assembler_1_1_assembly_values.html#aafc00c4359176133c0d65d930c8918d6',1,'polyfem::assembler::AssemblyValues']]],
@@ -19,7 +19,5 @@ var searchData=
   ['grid_5fcell_5fnum_16',['grid_cell_num',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a921337bef2f24255ff5b7c9f401f1555',1,'polyfem::solver::OperatorSplittingSolver']]],
   ['grid_5fpoints_17',['grid_points',['../classpolyfem_1_1io_1_1_out_geometry_data.html#a21f6f6b8b2aee01fc23ee4b7d3aa09e2',1,'polyfem::io::OutGeometryData']]],
   ['grid_5fpoints_5fbc_18',['grid_points_bc',['../classpolyfem_1_1io_1_1_out_geometry_data.html#a1180446e5cc8941d379a7f663023576d',1,'polyfem::io::OutGeometryData']]],
-  ['grid_5fpoints_5fto_5felements_19',['grid_points_to_elements',['../classpolyfem_1_1io_1_1_out_geometry_data.html#af28fa518b23cc5863f4300deb38caacc',1,'polyfem::io::OutGeometryData']]],
-  ['group_5f_20',['group_',['../classpolyfem_1_1utils_1_1base64_layer.html#aab8d988f19847a2f1925c912bc40d74d',1,'polyfem::utils::base64Layer']]],
-  ['grouplen_5f_21',['groupLen_',['../classpolyfem_1_1utils_1_1base64_layer.html#a8df5f8735638dd57e90a7b9fe5caa977',1,'polyfem::utils::base64Layer']]]
+  ['grid_5fpoints_5fto_5felements_19',['grid_points_to_elements',['../classpolyfem_1_1io_1_1_out_geometry_data.html#af28fa518b23cc5863f4300deb38caacc',1,'polyfem::io::OutGeometryData']]]
 ];
