@@ -9,8 +9,6 @@ set(SOURCES
 	OBJReader.hpp
 	OBJWriter.cpp
 	OBJWriter.hpp
-	VTUWriter.cpp
-	VTUWriter.hpp
 	Evaluator.cpp
 	OutData.cpp
 )
