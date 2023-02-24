@@ -114,15 +114,16 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 	vals.compute(el_id, false, bs, bs);
 
 	const auto &quadrature = vals.quadrature;
-	const auto da = vals.det.array() * quadrature.weights.array();
+	const Eigen::MatrixXd da = vals.det.array() * quadrature.weights.array();
 
 	for (int rand = 0; rand < 10; ++rand)
 	{
 		displacement.setRandom();
-		NonLinearAssemblerData data(vals, 0, displacement, displacement, da);
 
 		// value
 		{
+			const NonLinearAssemblerData data(vals, 0, displacement, displacement, da);
+
 			const double ea = autodiff.compute_energy(data);
 			const double e = real.compute_energy(data);
 
@@ -134,6 +135,8 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 
 		// grad
 		{
+			const NonLinearAssemblerData data(vals, 0, displacement, displacement, da);
+
 			const Eigen::VectorXd grada = autodiff.assemble_grad(data);
 			const Eigen::VectorXd grad = real.assemble_grad(data);
 
@@ -148,6 +151,8 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 
 		// hessian
 		{
+			const NonLinearAssemblerData data(vals, 0, displacement, displacement, da);
+
 			const Eigen::MatrixXd hessiana = autodiff.assemble_hessian(data);
 			const Eigen::MatrixXd hessian = real.assemble_hessian(data);
 
