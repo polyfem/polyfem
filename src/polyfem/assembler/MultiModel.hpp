@@ -6,7 +6,7 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 
 #include "LinearElasticity.hpp"
-//#include "HookeLinearElasticity.hpp"
+// #include "HookeLinearElasticity.hpp"
 #include "SaintVenantElasticity.hpp"
 #include "NeoHookeanElasticity.hpp"
 #include "GenericElastic.hpp"
@@ -37,7 +37,8 @@ namespace polyfem::assembler
 		// compute von mises stress for an element at the local points
 		void compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
 		// compute stress tensor for an element at the local points
-		void compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const;
+		void compute_cauchy_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const;
+		void compute_pk1_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const;
 
 		// size of the problem, this is a tensor problem so the size is the size of the mesh
 		inline int size() const { return size_; }

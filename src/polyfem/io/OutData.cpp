@@ -1297,7 +1297,7 @@ namespace polyfem::io
 
 		if (fun.cols() != 1)
 		{
-			Eigen::MatrixXd vals, tvals;
+			std::vector<assembler::AssemblerUtils::NamedMatrix> vals, tvals;
 			Evaluator::compute_scalar_value(
 				mesh, problem.is_scalar(), bases, gbases,
 				state.disc_orders, state.polys, state.polys_3d,
@@ -1306,14 +1306,20 @@ namespace polyfem::io
 
 			if (obstacle.n_vertices() > 0)
 			{
-				vals.conservativeResize(vals.size() + obstacle.n_vertices(), 1);
-				vals.bottomRows(obstacle.n_vertices()).setZero();
+				for (auto &v : vals)
+				{
+					v.second.conservativeResize(v.second.size() + obstacle.n_vertices(), 1);
+					v.second.bottomRows(obstacle.n_vertices()).setZero();
+				}
 			}
 
 			if (opts.solve_export_to_file)
-				writer.add_field("scalar_value", vals);
-			else
-				solution_frames.back().scalar_value = vals;
+			{
+				for (const auto &v : vals)
+					writer.add_field(v.first, v.second);
+			}
+			else if (vals.size() > 0)
+				solution_frames.back().scalar_value = vals[0].second;
 
 			if (opts.solve_export_to_file)
 			{
@@ -1322,18 +1328,21 @@ namespace polyfem::io
 					state.disc_orders, state.polys, state.polys_3d,
 					state.assembler, state.formulation(),
 					ref_element_sampler, points.rows(), sol, tvals, opts.use_sampler, opts.boundary_only);
-				for (int i = 0; i < tvals.cols(); ++i)
+				for (const auto &v : tvals)
 				{
-					Eigen::MatrixXd tmp = tvals.col(i);
-					if (obstacle.n_vertices() > 0)
+					for (int i = 0; i < v.second.cols(); ++i)
 					{
-						tmp.conservativeResize(tmp.size() + obstacle.n_vertices(), 1);
-						tmp.bottomRows(obstacle.n_vertices()).setZero();
-					}
+						Eigen::MatrixXd tmp = v.second.col(i);
+						if (obstacle.n_vertices() > 0)
+						{
+							tmp.conservativeResize(tmp.size() + obstacle.n_vertices(), 1);
+							tmp.bottomRows(obstacle.n_vertices()).setZero();
+						}
 
-					const int ii = (i / mesh.dimension()) + 1;
-					const int jj = (i % mesh.dimension()) + 1;
-					writer.add_field(fmt::format("tensor_value_{:d}{:d}", ii, jj), tmp);
+						const int ii = (i / mesh.dimension()) + 1;
+						const int jj = (i % mesh.dimension()) + 1;
+						writer.add_field(fmt::format("{:s}_{:d}{:d}", v.first, ii, jj), tmp);
+					}
 				}
 			}
 
@@ -1344,16 +1353,23 @@ namespace polyfem::io
 					state.disc_orders, state.polys, state.polys_3d,
 					state.assembler, state.formulation(),
 					ref_element_sampler, points.rows(), sol, vals, tvals, opts.use_sampler, opts.boundary_only);
+
 				if (obstacle.n_vertices() > 0)
 				{
-					vals.conservativeResize(vals.size() + obstacle.n_vertices(), 1);
-					vals.bottomRows(obstacle.n_vertices()).setZero();
+					for (auto &v : vals)
+					{
+						v.second.conservativeResize(v.second.size() + obstacle.n_vertices(), 1);
+						v.second.bottomRows(obstacle.n_vertices()).setZero();
+					}
 				}
 
 				if (opts.solve_export_to_file)
-					writer.add_field("scalar_value_avg", vals);
-				else
-					solution_frames.back().scalar_value_avg = vals;
+				{
+					for (const auto &v : vals)
+						writer.add_field(fmt::format("{:s}_avg", v.first), v.second);
+				}
+				else if (vals.size() > 0)
+					solution_frames.back().scalar_value_avg = vals[0].second;
 				// for(int i = 0; i < tvals.cols(); ++i){
 				// 	const int ii = (i / mesh.dimension()) + 1;
 				// 	const int jj = (i % mesh.dimension()) + 1;
@@ -1661,12 +1677,14 @@ namespace polyfem::io
 			else
 			{
 				assert(lgrad.size() == actual_dim * actual_dim);
-				Eigen::MatrixXd tensor_flat;
+				std::vector<assembler::AssemblerUtils::NamedMatrix> tensor_flat;
 				const basis::ElementBases &gbs = gbases[el_index];
 				const basis::ElementBases &bs = bases[el_index];
 				assembler.compute_tensor_value(formulation, el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol, tensor_flat);
 				assert(tensor_flat.size() == actual_dim * actual_dim);
-				Eigen::Map<Eigen::MatrixXd> tensor(tensor_flat.data(), actual_dim, actual_dim);
+				// TF computed only from cauchy stress
+				assert(tensor_flat[0].first == "cauchy_stess");
+				Eigen::Map<Eigen::MatrixXd> tensor(tensor_flat[0].second.data(), actual_dim, actual_dim);
 				vect.row(i) = boundary_vis_normals.row(i) * tensor;
 			}
 		}
@@ -1986,13 +2004,14 @@ namespace polyfem::io
 
 		if (fun.cols() != 1)
 		{
-			Eigen::MatrixXd scalar_val;
+			std::vector<assembler::AssemblerUtils::NamedMatrix> scalar_val;
 			Evaluator::compute_scalar_value(
 				mesh, problem.is_scalar(), state.bases, gbases,
 				state.disc_orders, state.polys, state.polys_3d,
 				state.assembler, state.formulation(),
 				ref_element_sampler, pts_index, sol, scalar_val, /*use_sampler*/ true, false);
-			writer.add_field("scalar_value", scalar_val);
+			for (const auto &v : scalar_val)
+				writer.add_field(v.first, v.second);
 		}
 		// Write the solution last so it is the default for warp-by-vector
 		writer.add_field("solution", fun);

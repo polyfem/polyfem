@@ -119,22 +119,45 @@ namespace polyfem::assembler
 		}
 	}
 
-	void MultiModel::compute_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
+	void MultiModel::compute_cauchy_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
 		const std::string model = multi_material_models_[el_id];
 
 		if (model == "SaintVenant")
-			saint_venant_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+			saint_venant_.compute_cauchy_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
 		else if (model == "NeoHookean")
-			neo_hookean_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+			neo_hookean_.compute_cauchy_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
 		else if (model == "LinearElasticity")
-			linear_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+			linear_elasticity_.compute_cauchy_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
 		// else if (model == "HookeLinearElasticity")
-		// return hooke_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+		// return hooke_.compute_cauchy_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
 		else if (model == "MooneyRivlin")
-			return mooney_rivlin_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+			return mooney_rivlin_elasticity_.compute_cauchy_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
 		else if (model == "Ogden")
-			return ogden_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+			return ogden_elasticity_.compute_cauchy_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+		else
+		{
+			assert(false);
+			stresses = Eigen::MatrixXd(0, 0);
+		}
+	}
+
+	void MultiModel::compute_pk1_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
+	{
+		const std::string model = multi_material_models_[el_id];
+
+		if (model == "SaintVenant")
+			saint_venant_.compute_pk1_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+		else if (model == "NeoHookean")
+			neo_hookean_.compute_pk1_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+		else if (model == "LinearElasticity")
+			linear_elasticity_.compute_pk1_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+		// else if (model == "HookeLinearElasticity")
+		// return hooke_.compute_pk1_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+		else if (model == "MooneyRivlin")
+			return mooney_rivlin_elasticity_.compute_pk1_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+		else if (model == "Ogden")
+			return ogden_elasticity_.compute_pk1_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
 		else
 		{
 			assert(false);

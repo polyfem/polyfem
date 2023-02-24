@@ -248,4 +248,8 @@ namespace polyfem
 		return von_mises_stress;
 	}
 
+	Eigen::MatrixXd pk1_from_cauchy(const Eigen::MatrixXd &stress, const Eigen::MatrixXd &F)
+	{
+		return F.determinant() * stress * F.inverse().transpose();
+	}
 } // namespace polyfem
