@@ -181,6 +181,10 @@ target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 include(polysolver)
 target_link_libraries(polyfem PUBLIC polysolve)
 
+# paraviewo
+include(paraviewo)
+target_link_libraries(polyfem PUBLIC paraviewo::paraviewo)
+
 include(ipc_toolkit)
 target_link_libraries(polyfem PUBLIC ipc::toolkit)
 
