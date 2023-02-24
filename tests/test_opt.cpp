@@ -331,7 +331,7 @@ TEST_CASE("shape-stress-opt-debug", "[optimization]")
 	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0], json());
 	obj2->set_weight(1.0);
 
-	std::vector<std::shared_ptr<AdjointForm>> forms({obj1});
+	std::vector<std::shared_ptr<AdjointForm>> forms({obj2});
 
 	auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
 	sum->set_weight(1.0);
@@ -387,14 +387,16 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 				const int boundary_id = mesh->get_boundary_id(primitive_global_id);
 				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
 
-				if (boundary_id != 10 && boundary_id != 11)
+				if (boundary_id == 10 || boundary_id == 11)
 					for (long n = 0; n < nodes.size(); ++n)
 						node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
 				for (long n = 0; n < nodes.size(); ++n)
 					total_bnode_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
 			}
 		}
-		opt_bnodes = node_ids.size();
+		std::vector<int> selected_bnode_ids;
+		std::set_difference(total_bnode_ids.begin(), total_bnode_ids.end(), node_ids.begin(), node_ids.end(), std::back_inserter(selected_bnode_ids));
+		opt_bnodes = selected_bnode_ids.size();
 
 		node_ids = {};
 		for (int e = 0; e < gbases.size(); e++)
