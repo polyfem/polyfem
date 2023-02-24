@@ -106,7 +106,8 @@ namespace polyfem::solver
 			const auto &bases = state.bases;
 			const auto &gbases = state.geom_bases();
 
-			std::set<int> node_ids;
+			std::set<int> excluded_node_ids;
+			std::set<int> all_node_ids;
 			for (const auto &lb : state.total_local_boundary)
 			{
 				const int e = lb.element_id();
@@ -116,14 +117,19 @@ namespace polyfem::solver
 					const int boundary_id = mesh->get_boundary_id(primitive_global_id);
 					const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
 
-					if (!std::count(exclude_surface_selections.begin(), exclude_surface_selections.end(), boundary_id))
+					if (std::count(exclude_surface_selections.begin(), exclude_surface_selections.end(), boundary_id))
 						for (long n = 0; n < nodes.size(); ++n)
-							node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+							excluded_node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+					for (long n = 0; n < nodes.size(); ++n)
+						all_node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
 				}
 			}
 
+			std::vector<int> node_ids;
+			std::set_difference(all_node_ids.begin(), all_node_ids.end(), excluded_node_ids.begin(), excluded_node_ids.end(), std::back_inserter(node_ids));
+
 			dim = mesh->dimension();
-			set_output_indexing(std::vector(node_ids.begin(), node_ids.end()));
+			set_output_indexing(node_ids);
 		}
 	};
 } // namespace polyfem::solver
