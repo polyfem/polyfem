@@ -1681,9 +1681,10 @@ namespace polyfem::io
 				const basis::ElementBases &gbs = gbases[el_index];
 				const basis::ElementBases &bs = bases[el_index];
 				assembler.compute_tensor_value(formulation, el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol, tensor_flat);
-				assert(tensor_flat.size() == actual_dim * actual_dim);
 				// TF computed only from cauchy stress
 				assert(tensor_flat[0].first == "cauchy_stess");
+				assert(tensor_flat[0].second.size() == actual_dim * actual_dim);
+
 				Eigen::Map<Eigen::MatrixXd> tensor(tensor_flat[0].second.data(), actual_dim, actual_dim);
 				vect.row(i) = boundary_vis_normals.row(i) * tensor;
 			}
