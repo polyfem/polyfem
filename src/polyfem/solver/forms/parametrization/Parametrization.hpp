@@ -96,8 +96,10 @@ namespace polyfem::solver
 		}
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const override
 		{
+			Eigen::VectorXd gradv = grad_full(get_output_indexing(x));
+
 			if (parametrizations_.empty())
-				return grad_full;
+				return gradv;
 
 			std::vector<Eigen::VectorXd> ys;
 			auto y = x;
@@ -106,8 +108,6 @@ namespace polyfem::solver
 				ys.emplace_back(y);
 				y = p->eval(y);
 			}
-
-			Eigen::VectorXd gradv = grad_full(get_output_indexing(x));
 
 			for (int i = parametrizations_.size() - 1; i >= 0; --i)
 				gradv = parametrizations_[i]->apply_jacobian(gradv, ys[i]);

@@ -182,24 +182,53 @@ namespace polyfem::solver
 					}));
 				}
 			}
-			transform_params["solve_displacement"] = false;
+			transform_params["solve_displacement"] = true;
 			amips_energy_.local_assembler().add_multimaterial(0, transform_params);
+
+			Eigen::MatrixXd V;
+			state_.get_vf(V, F);
+			X_init = utils::flatten(V);
+			init_geom_bases_ = state_.geom_bases();
+			init_ass_vals_cache_ = state_.ass_vals_cache;
+		}
+
+		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const
+		{
+			Eigen::VectorXd X = X_init;
+
+			for (auto &p : variable_to_simulations_)
+			{
+				if (&p->get_state() != &state_)
+					continue;
+				if (p->get_parameter_type() != ParameterType::Shape)
+					continue;
+				auto state_variable = p->get_parametrization().eval(x);
+				auto output_indexing = p->get_parametrization().get_output_indexing(x);
+				for (int i = 0; i < output_indexing.size(); ++i)
+					X(output_indexing(i)) = state_variable(i);
+			}
+
+			return X;
 		}
 
 		double value_unweighted(const Eigen::VectorXd &x) const override
 		{
-			Eigen::VectorXd X = get_gbases_position();
+			Eigen::VectorXd X = get_updated_mesh_nodes(x);
 
-			return amips_energy_.assemble(state_.mesh->is_volume(), state_.bases, state_.geom_bases(), state_.ass_vals_cache, 0, X, Eigen::VectorXd(), false);
+			double energy = amips_energy_.assemble(state_.mesh->is_volume(), init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, map_primitive_to_node_order(X - X_init), Eigen::VectorXd(), false);
+
+			return energy;
 		}
 
 		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
 		{
-			Eigen::VectorXd X = get_gbases_position();
+			Eigen::VectorXd X = get_updated_mesh_nodes(x);
 
 			Eigen::MatrixXd grad;
-			amips_energy_.assemble_grad(state_.mesh->is_volume(), state_.n_bases, state_.bases, state_.geom_bases(), state_.ass_vals_cache, 0, X, Eigen::VectorXd(), grad); // grad wrt. gbases
-			grad = utils::flatten(utils::unflatten(grad, state_.mesh->dimension())(state_.primitive_to_node(), Eigen::all)); // grad wrt. vertices
+			amips_energy_.assemble_grad(state_.mesh->is_volume(), state_.n_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, map_primitive_to_node_order(X - X_init), Eigen::VectorXd(), grad); // grad wrt. gbases
+			grad = map_primitive_to_node_order(grad);
+			// grad = utils::flatten(utils::unflatten(grad, state_.mesh->dimension())(state_.primitive_to_node(), Eigen::all)); // grad wrt. vertices
+
 			assert(grad.cols() == 1);
 
 			gradv.setZero(x.size());
@@ -220,46 +249,55 @@ namespace polyfem::solver
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override
 		{
-			Eigen::MatrixXd V0;
-			Eigen::MatrixXi F;
-			state_.get_vf(V0, F);
-
-			Eigen::MatrixXd V1 = V0;
-			for (auto &p : variable_to_simulations_)
-			{
-				if (&p->get_state() != &state_)
-					continue;
-				if (p->get_parameter_type() != ParameterType::Shape)
-					continue;
-				auto state_variable = p->get_parametrization().eval(x1);
-				auto output_indexing = p->get_parametrization().get_output_indexing(x1);
-				for (int i = 0; i < output_indexing.size(); ++i)
-					V1(output_indexing(i) / state_.mesh->dimension(), output_indexing(i) % state_.mesh->dimension()) = state_variable(i);
-			}
+			Eigen::VectorXd X = map_primitive_to_node_order(get_updated_mesh_nodes(x1));
+			Eigen::MatrixXd V1 = utils::unflatten(X, state_.mesh->dimension());
 
 			bool flipped = is_flipped(V1, F);
 			return !flipped;
 		}
 
 	private:
-		Eigen::VectorXd get_gbases_position() const
+		// Eigen::VectorXd get_vertex_to_gbasis(const Eigen::VectorXd &x) const
+		// {
+		// 	const int dim = state_.mesh->dimension();
+		// 	auto primitive_to_node = state_.primitive_to_node();
+
+		// 	Eigen::VectorXd X;
+		// 	X.setZero(x.size());
+		// 	for (int v = 0; v < (x.size() / dim); v++)
+		// 		X.segment(primitive_to_node[v] * dim, dim) = x.segment(v * dim, dim);
+
+		// 	return X;
+		// }
+
+		Eigen::VectorXd map_primitive_to_node_order(const Eigen::VectorXd &primitives) const
 		{
-			Eigen::MatrixXd V;
-			Eigen::MatrixXi F;
-			state_.get_vf(V, F);
+			int dim = state_.mesh->dimension();
+			assert(primitives.size() == (state_.n_bases * dim));
+			Eigen::VectorXd nodes(primitives.size());
+			auto map = state_.primitive_to_node();
+			for (int v = 0; v < state_.n_bases; ++v)
+				nodes.segment(map[v] * dim, dim) = primitives.segment(v * dim, dim);
+			return nodes;
+		}
 
-			const int dim = state_.mesh->dimension();
-			auto primitive_to_node = state_.primitive_to_node();
-
-			Eigen::VectorXd X;
-			X.setZero(V.size());
-			for (int v = 0; v < V.rows(); v++)
-				X.segment(primitive_to_node[v] * dim, dim) = V.row(v);
-
-			return X;
+		Eigen::VectorXd map_node_to_primitive_order(const Eigen::VectorXd &nodes) const
+		{
+			int dim = state_.mesh->dimension();
+			assert(nodes.size() == (state_.n_bases * dim));
+			Eigen::VectorXd primitives(nodes.size());
+			auto map = state_.node_to_primitive();
+			for (int v = 0; v < state_.n_bases; ++v)
+				primitives.segment(map[v] * dim, dim) = nodes.segment(v * dim, dim);
+			return primitives;
 		}
 
 		const State &state_;
+
+		Eigen::MatrixXd X_init;
+		Eigen::MatrixXi F;
+		std::vector<polyfem::basis::ElementBases> init_geom_bases_;
+		assembler::AssemblyValsCache init_ass_vals_cache_;
 
 		NLAssembler<GenericElastic<AMIPSEnergy>> amips_energy_;
 	};
