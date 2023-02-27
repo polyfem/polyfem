@@ -28,6 +28,9 @@
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 
+#include <paraviewo/VTMWriter.hpp>
+#include <paraviewo/PVDWriter.hpp>
+
 #include <BVH.hpp>
 
 #include <igl/write_triangle_mesh.h>
@@ -36,8 +39,6 @@
 #include <igl/connected_components.h>
 
 #include <ipc/ipc.hpp>
-
-#include <tinyxml2.h>
 
 #include <filesystem>
 
@@ -956,6 +957,8 @@ namespace polyfem::io
 
 		reorder_output = args["output"]["data"]["advanced"]["reorder_nodes"];
 
+		use_hdf5 = args["output"]["paraview"]["options"]["use_hdf5"];
+
 		this->solve_export_to_file = solve_export_to_file;
 	}
 
@@ -1001,91 +1004,43 @@ namespace polyfem::io
 
 		if (opts.volume)
 		{
-			save_volume(path, state, sol, pressure, t, opts, solution_frames);
+			save_volume(base_path + opts.file_extension(), state, sol, pressure, t, opts, solution_frames);
 		}
 
 		if (opts.surface)
 		{
-			save_surface(base_path + "_surf.vtu", state, sol, pressure, t, dt, opts,
+			save_surface(base_path + "_surf" + opts.file_extension(), state, sol, pressure, t, dt, opts,
 						 is_contact_enabled, solution_frames);
 		}
 
 		if (opts.wire)
 		{
-			save_wire(base_path + "_wire.vtu", state, sol, t, opts, solution_frames);
+			save_wire(base_path + "_wire" + opts.file_extension(), state, sol, t, opts, solution_frames);
 		}
 
 		if (opts.points)
 		{
-			save_points(base_path + "_points.vtu", state, sol, opts, solution_frames);
+			save_points(base_path + "_points" + opts.file_extension(), state, sol, opts, solution_frames);
 		}
 
 		if (!opts.solve_export_to_file)
 			return;
 
-		tinyxml2::XMLDocument vtm;
-		vtm.InsertEndChild(vtm.NewDeclaration());
-
-		tinyxml2::XMLElement *root = vtm.NewElement("VTKFile");
-		vtm.InsertEndChild(root);
-		root->SetAttribute("type", "vtkMultiBlockDataSet");
-		root->SetAttribute("version", "1.0");
-
-		tinyxml2::XMLElement *multiblock = root->InsertNewChildElement("vtkMultiBlockDataSet");
-
+		paraviewo::VTMWriter vtm(t);
 		if (opts.volume)
-		{
-			tinyxml2::XMLElement *block = multiblock->InsertNewChildElement("Block");
-			block->SetAttribute("name", "Volume");
-			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
-			dataset->SetAttribute("name", "data");
-			const std::string tmp(fs_path.filename().string());
-			dataset->SetAttribute("file", tmp.c_str());
-		}
-
+			vtm.add_dataset("Volume", "data", path_stem + opts.file_extension());
 		if (opts.surface)
 		{
-			tinyxml2::XMLElement *block = multiblock->InsertNewChildElement("Block");
-			block->SetAttribute("name", "Surface");
-
-			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
-			dataset->SetAttribute("name", "surface");
-			dataset->SetAttribute("file", (path_stem + "_surf.vtu").c_str());
+			vtm.add_dataset("Surface", "data", path_stem + "_surf" + opts.file_extension());
 
 			if (opts.contact_forces || opts.friction_forces)
-			{
-				tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
-				dataset->SetAttribute("name", "contact");
-				dataset->SetAttribute("file", (path_stem + "_surf_contact.vtu").c_str());
-			}
+				vtm.add_dataset("Contact", "data", path_stem + "_surf_contact" + opts.file_extension());
 		}
-
 		if (opts.wire)
-		{
-			tinyxml2::XMLElement *block = multiblock->InsertNewChildElement("Block");
-			block->SetAttribute("name", "Wireframe");
-
-			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
-			dataset->SetAttribute("name", "data");
-			dataset->SetAttribute("file", (path_stem + "_wire.vtu").c_str());
-		}
-
+			vtm.add_dataset("Wireframe", "data", path_stem + "_wire" + opts.file_extension());
 		if (opts.points)
-		{
-			tinyxml2::XMLElement *block = multiblock->InsertNewChildElement("Block");
-			block->SetAttribute("name", "Points");
-
-			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
-			dataset->SetAttribute("name", "data");
-			dataset->SetAttribute("file", (path_stem + "_points.vtu").c_str());
-		}
-
-		tinyxml2::XMLElement *data_array = root->InsertNewChildElement("FieldData")->InsertNewChildElement("DataArray");
-		data_array->SetAttribute("type", "Float32");
-		data_array->SetAttribute("Name", "TimeValue");
-		data_array->InsertNewText(std::to_string(t).c_str());
-
-		vtm.SaveFile((base_path + ".vtm").c_str());
+			vtm.add_dataset("Points", "data", path_stem + "_points" + opts.file_extension());
+		vtm.save(base_path + ".vtm");
 	}
 
 	void OutGeometryData::save_volume(
@@ -1228,7 +1183,12 @@ namespace polyfem::io
 			}
 		}
 
-		VTUWriter writer;
+		std::shared_ptr<paraviewo::ParaviewWriter> tmpw;
+		if (opts.use_hdf5)
+			tmpw = std::make_shared<paraviewo::HDF5VTUWriter>();
+		else
+			tmpw = std::make_shared<paraviewo::VTUWriter>();
+		paraviewo::ParaviewWriter &writer = *tmpw;
 
 		if (opts.solve_export_to_file)
 			writer.add_field("nodes", node_fun);
@@ -1297,7 +1257,7 @@ namespace polyfem::io
 
 		if (fun.cols() != 1)
 		{
-			Eigen::MatrixXd vals, tvals;
+			std::vector<assembler::AssemblerUtils::NamedMatrix> vals, tvals;
 			Evaluator::compute_scalar_value(
 				mesh, problem.is_scalar(), bases, gbases,
 				state.disc_orders, state.polys, state.polys_3d,
@@ -1306,14 +1266,20 @@ namespace polyfem::io
 
 			if (obstacle.n_vertices() > 0)
 			{
-				vals.conservativeResize(vals.size() + obstacle.n_vertices(), 1);
-				vals.bottomRows(obstacle.n_vertices()).setZero();
+				for (auto &v : vals)
+				{
+					v.second.conservativeResize(v.second.size() + obstacle.n_vertices(), 1);
+					v.second.bottomRows(obstacle.n_vertices()).setZero();
+				}
 			}
 
 			if (opts.solve_export_to_file)
-				writer.add_field("scalar_value", vals);
-			else
-				solution_frames.back().scalar_value = vals;
+			{
+				for (const auto &v : vals)
+					writer.add_field(v.first, v.second);
+			}
+			else if (vals.size() > 0)
+				solution_frames.back().scalar_value = vals[0].second;
 
 			if (opts.solve_export_to_file)
 			{
@@ -1322,18 +1288,21 @@ namespace polyfem::io
 					state.disc_orders, state.polys, state.polys_3d,
 					state.assembler, state.formulation(),
 					ref_element_sampler, points.rows(), sol, tvals, opts.use_sampler, opts.boundary_only);
-				for (int i = 0; i < tvals.cols(); ++i)
+				for (const auto &v : tvals)
 				{
-					Eigen::MatrixXd tmp = tvals.col(i);
-					if (obstacle.n_vertices() > 0)
+					for (int i = 0; i < v.second.cols(); ++i)
 					{
-						tmp.conservativeResize(tmp.size() + obstacle.n_vertices(), 1);
-						tmp.bottomRows(obstacle.n_vertices()).setZero();
-					}
+						Eigen::MatrixXd tmp = v.second.col(i);
+						if (obstacle.n_vertices() > 0)
+						{
+							tmp.conservativeResize(tmp.size() + obstacle.n_vertices(), 1);
+							tmp.bottomRows(obstacle.n_vertices()).setZero();
+						}
 
-					const int ii = (i / mesh.dimension()) + 1;
-					const int jj = (i % mesh.dimension()) + 1;
-					writer.add_field(fmt::format("tensor_value_{:d}{:d}", ii, jj), tmp);
+						const int ii = (i / mesh.dimension()) + 1;
+						const int jj = (i % mesh.dimension()) + 1;
+						writer.add_field(fmt::format("{:s}_{:d}{:d}", v.first, ii, jj), tmp);
+					}
 				}
 			}
 
@@ -1344,16 +1313,23 @@ namespace polyfem::io
 					state.disc_orders, state.polys, state.polys_3d,
 					state.assembler, state.formulation(),
 					ref_element_sampler, points.rows(), sol, vals, tvals, opts.use_sampler, opts.boundary_only);
+
 				if (obstacle.n_vertices() > 0)
 				{
-					vals.conservativeResize(vals.size() + obstacle.n_vertices(), 1);
-					vals.bottomRows(obstacle.n_vertices()).setZero();
+					for (auto &v : vals)
+					{
+						v.second.conservativeResize(v.second.size() + obstacle.n_vertices(), 1);
+						v.second.bottomRows(obstacle.n_vertices()).setZero();
+					}
 				}
 
 				if (opts.solve_export_to_file)
-					writer.add_field("scalar_value_avg", vals);
-				else
-					solution_frames.back().scalar_value_avg = vals;
+				{
+					for (const auto &v : vals)
+						writer.add_field(fmt::format("{:s}_avg", v.first), v.second);
+				}
+				else if (vals.size() > 0)
+					solution_frames.back().scalar_value_avg = vals[0].second;
 				// for(int i = 0; i < tvals.cols(); ++i){
 				// 	const int ii = (i / mesh.dimension()) + 1;
 				// 	const int jj = (i % mesh.dimension()) + 1;
@@ -1544,7 +1520,7 @@ namespace polyfem::io
 		const ExportOptions &opts,
 		const std::string &name,
 		const Eigen::VectorXd &field,
-		VTUWriter &writer) const
+		paraviewo::ParaviewWriter &writer) const
 	{
 		Eigen::MatrixXd inerpolated_field;
 		Evaluator::interpolate_function(
@@ -1661,19 +1637,27 @@ namespace polyfem::io
 			else
 			{
 				assert(lgrad.size() == actual_dim * actual_dim);
-				Eigen::MatrixXd tensor_flat;
+				std::vector<assembler::AssemblerUtils::NamedMatrix> tensor_flat;
 				const basis::ElementBases &gbs = gbases[el_index];
 				const basis::ElementBases &bs = bases[el_index];
 				assembler.compute_tensor_value(formulation, el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol, tensor_flat);
-				assert(tensor_flat.size() == actual_dim * actual_dim);
-				Eigen::Map<Eigen::MatrixXd> tensor(tensor_flat.data(), actual_dim, actual_dim);
+				// TF computed only from cauchy stress
+				assert(tensor_flat[0].first == "cauchy_stess");
+				assert(tensor_flat[0].second.size() == actual_dim * actual_dim);
+
+				Eigen::Map<Eigen::MatrixXd> tensor(tensor_flat[0].second.data(), actual_dim, actual_dim);
 				vect.row(i) = boundary_vis_normals.row(i) * tensor;
 			}
 		}
 
 		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces) && opts.solve_export_to_file)
 		{
-			VTUWriter writer;
+			std::shared_ptr<paraviewo::ParaviewWriter> tmpw;
+			if (opts.use_hdf5)
+				tmpw = std::make_shared<paraviewo::HDF5VTUWriter>();
+			else
+				tmpw = std::make_shared<paraviewo::VTUWriter>();
+			paraviewo::ParaviewWriter &writer = *tmpw;
 
 			const int problem_dim = mesh.dimension();
 			const Eigen::MatrixXd full_displacements = utils::unflatten(sol, problem_dim);
@@ -1744,7 +1728,12 @@ namespace polyfem::io
 				problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges());
 		}
 
-		VTUWriter writer;
+		std::shared_ptr<paraviewo::ParaviewWriter> tmpw;
+		if (opts.use_hdf5)
+			tmpw = std::make_shared<paraviewo::HDF5VTUWriter>();
+		else
+			tmpw = std::make_shared<paraviewo::VTUWriter>();
+		paraviewo::ParaviewWriter &writer = *tmpw;
 
 		if (opts.solve_export_to_file)
 		{
@@ -1977,7 +1966,13 @@ namespace polyfem::io
 			err = (fun - exact_fun).eval().rowwise().norm();
 		}
 
-		VTUWriter writer;
+		std::shared_ptr<paraviewo::ParaviewWriter> tmpw;
+		if (opts.use_hdf5)
+			tmpw = std::make_shared<paraviewo::HDF5VTUWriter>();
+		else
+			tmpw = std::make_shared<paraviewo::VTUWriter>();
+		paraviewo::ParaviewWriter &writer = *tmpw;
+
 		if (problem.has_exact_sol())
 		{
 			writer.add_field("exact", exact_fun);
@@ -1986,13 +1981,14 @@ namespace polyfem::io
 
 		if (fun.cols() != 1)
 		{
-			Eigen::MatrixXd scalar_val;
+			std::vector<assembler::AssemblerUtils::NamedMatrix> scalar_val;
 			Evaluator::compute_scalar_value(
 				mesh, problem.is_scalar(), state.bases, gbases,
 				state.disc_orders, state.polys, state.polys_3d,
 				state.assembler, state.formulation(),
 				ref_element_sampler, pts_index, sol, scalar_val, /*use_sampler*/ true, false);
-			writer.add_field("scalar_value", scalar_val);
+			for (const auto &v : scalar_val)
+				writer.add_field(v.first, v.second);
 		}
 		// Write the solution last so it is the default for warp-by-vector
 		writer.add_field("solution", fun);
@@ -2040,7 +2036,12 @@ namespace polyfem::io
 			cells[i].push_back(i);
 		}
 
-		VTUWriter writer;
+		std::shared_ptr<paraviewo::ParaviewWriter> tmpw;
+		if (opts.use_hdf5)
+			tmpw = std::make_shared<paraviewo::HDF5VTUWriter>();
+		else
+			tmpw = std::make_shared<paraviewo::VTUWriter>();
+		paraviewo::ParaviewWriter &writer = *tmpw;
 
 		if (opts.solve_export_to_file)
 		{
@@ -2056,30 +2057,7 @@ namespace polyfem::io
 		const std::function<std::string(int)> &vtu_names,
 		int time_steps, double t0, double dt, int skip_frame) const
 	{
-		// https://www.paraview.org/Wiki/ParaView/Data_formats#PVD_File_Format
-
-		tinyxml2::XMLDocument pvd;
-		pvd.InsertEndChild(pvd.NewDeclaration());
-
-		tinyxml2::XMLElement *root = pvd.NewElement("VTKFile");
-		pvd.InsertEndChild(root);
-		root->SetAttribute("type", "Collection");
-		root->SetAttribute("version", "0.1");
-		root->SetAttribute("byte_order", "LittleEndian");
-		root->SetAttribute("compressor", "vtkZLibDataCompressor");
-
-		tinyxml2::XMLElement *collection = root->InsertNewChildElement("Collection");
-
-		for (int i = 0; i <= time_steps; i += skip_frame)
-		{
-			tinyxml2::XMLElement *dataset = collection->InsertNewChildElement("DataSet");
-			dataset->SetAttribute("timestep", fmt::format("{:g}", t0 + i * dt).c_str());
-			dataset->SetAttribute("group", "");
-			dataset->SetAttribute("part", "0");
-			dataset->SetAttribute("file", vtu_names(i).c_str());
-		}
-
-		pvd.SaveFile(name.c_str());
+		paraviewo::PVDWriter::save_pvd(name, vtu_names, time_steps, t0, dt, skip_frame);
 	}
 
 	void OutGeometryData::init_sampler(const polyfem::mesh::Mesh &mesh, const double vismesh_rel_area)

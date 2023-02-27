@@ -38,6 +38,8 @@ namespace polyfem
 		class AssemblerUtils
 		{
 		public:
+			typedef std::pair<std::string, Eigen::MatrixXd> NamedMatrix;
+
 			enum class BasisType
 			{
 				SIMPLEX_LAGRANGE,
@@ -131,7 +133,7 @@ namespace polyfem
 									  const basis::ElementBases &gbs,
 									  const Eigen::MatrixXd &local_pts,
 									  const Eigen::MatrixXd &fun,
-									  Eigen::MatrixXd &result) const;
+									  std::vector<NamedMatrix> &result) const;
 			// computes tensor, assembler is the name of the formulation
 			void compute_tensor_value(const std::string &assembler,
 									  const int el_id,
@@ -139,7 +141,7 @@ namespace polyfem
 									  const basis::ElementBases &gbs,
 									  const Eigen::MatrixXd &local_pts,
 									  const Eigen::MatrixXd &fun,
-									  Eigen::MatrixXd &result) const;
+									  std::vector<NamedMatrix> &result) const;
 
 			// for errors, uses the rhs methods inside local assemblers
 			VectorNd compute_rhs(const std::string &assembler, const AutodiffHessianPt &pt) const;

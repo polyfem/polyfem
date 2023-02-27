@@ -35,7 +35,7 @@ namespace polyfem::assembler
 
 		// von mises and stress tensor
 		void compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
-		void compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const;
+		void compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &tensor) const;
 
 		// sets material params
 		void add_multimaterial(const int index, const json &params);
@@ -56,22 +56,26 @@ namespace polyfem::assembler
 			AutoDiffVect local_disp;
 			get_local_disp(data, size(), local_disp);
 
-			AutoDiffGradMat disp_grad(size(), size());
+			AutoDiffGradMat def_grad(size(), size());
 
 			T energy = T(0.0);
 
 			const int n_pts = data.da.size();
 			for (long p = 0; p < n_pts; ++p)
 			{
-				compute_disp_grad_at_quad(data, local_disp, p, size(), disp_grad);
+				compute_disp_grad_at_quad(data, local_disp, p, size(), def_grad);
 
-				const T val = formulation_.elastic_energy(size(), data.vals.val.row(p), data.vals.element_id, disp_grad);
+				// Id + grad d
+				for (int d = 0; d < size(); ++d)
+					def_grad(d, d) += T(1);
+
+				const T val = formulation_.elastic_energy(size(), data.vals.val.row(p), data.vals.element_id, def_grad);
 
 				energy += val * data.da(p);
 			}
 			return energy;
 		}
 
-		void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
+		void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
 	};
 } // namespace polyfem::assembler

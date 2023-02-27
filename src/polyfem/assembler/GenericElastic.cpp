@@ -42,9 +42,9 @@ namespace polyfem::assembler
 	}
 
 	template <typename ElasticFormulation>
-	void GenericElastic<ElasticFormulation>::compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
+	void GenericElastic<ElasticFormulation>::compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &stresses) const
 	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), stresses, [&](const Eigen::MatrixXd &stress) {
+		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
 			Eigen::MatrixXd tmp = stress;
 			auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
 			return Eigen::MatrixXd(a);
@@ -54,7 +54,7 @@ namespace polyfem::assembler
 	template <typename ElasticFormulation>
 	void GenericElastic<ElasticFormulation>::compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, stresses, [&](const Eigen::MatrixXd &stress) {
+		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, ElasticityTensorType::CAUCHY, stresses, [&](const Eigen::MatrixXd &stress) {
 			Eigen::Matrix<double, 1, 1> res;
 			res.setConstant(von_mises_stress_for_stress_tensor(stress));
 			return res;
@@ -62,9 +62,9 @@ namespace polyfem::assembler
 	}
 
 	template <typename ElasticFormulation>
-	void GenericElastic<ElasticFormulation>::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	void GenericElastic<ElasticFormulation>::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
-		Eigen::MatrixXd displacement_grad(size(), size());
+		Eigen::MatrixXd deformation_grad(size(), size());
 		Eigen::MatrixXd stress_tensor(size(), size());
 
 		typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>> Diff;
@@ -72,30 +72,47 @@ namespace polyfem::assembler
 		assert(displacement.cols() == 1);
 
 		all.resize(local_pts.rows(), all_size);
-		DiffScalarBase::setVariableCount(displacement_grad.size());
+		DiffScalarBase::setVariableCount(deformation_grad.size());
 
-		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> disp_grad(size(), size());
+		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(size(), size());
 
 		ElementAssemblyValues vals;
 		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
 
 		for (long p = 0; p < local_pts.rows(); ++p)
 		{
-			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
+			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, deformation_grad);
+
+			// Id + grad d
+			for (int d = 0; d < size(); ++d)
+				deformation_grad(d, d) += 1;
+
+			if (type == ElasticityTensorType::F)
+			{
+				all.row(p) = fun(deformation_grad);
+				continue;
+			}
 
 			for (int d1 = 0; d1 < size(); ++d1)
 			{
 				for (int d2 = 0; d2 < size(); ++d2)
-					disp_grad(d1, d2) = Diff(d1 * size() + d2, displacement_grad(d1, d2));
+					def_grad(d1, d2) = Diff(d1 * size() + d2, deformation_grad(d1, d2));
 			}
 
-			const auto val = formulation_.elastic_energy(size(), local_pts.row(p), vals.element_id, disp_grad);
+			const auto val = formulation_.elastic_energy(size(), local_pts.row(p), vals.element_id, def_grad);
 
 			for (int d1 = 0; d1 < size(); ++d1)
 			{
 				for (int d2 = 0; d2 < size(); ++d2)
 					stress_tensor(d1, d2) = val.getGradient()(d1 * size() + d2);
 			}
+
+			stress_tensor = 1.0 / deformation_grad.determinant() * stress_tensor * deformation_grad.transpose();
+
+			if (type == ElasticityTensorType::PK1)
+				stress_tensor = pk1_from_cauchy(stress_tensor, deformation_grad);
+			else if (type == ElasticityTensorType::PK2)
+				stress_tensor = pk2_from_cauchy(stress_tensor, deformation_grad);
 
 			all.row(p) = fun(stress_tensor);
 		}

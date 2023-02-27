@@ -24,8 +24,7 @@ include(FetchContent)
 FetchContent_Declare(
     high_five
     GIT_REPOSITORY https://github.com/BlueBrain/HighFive.git
-    GIT_TAG v2.4.0
-    GIT_SHALLOW TRUE
+    GIT_TAG v2.6.2
 )
 FetchContent_MakeAvailable(high_five)
 

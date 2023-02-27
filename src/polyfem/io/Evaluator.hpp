@@ -210,7 +210,7 @@ namespace polyfem::io
 			const utils::RefElementSampler &sampler,
 			const int n_points,
 			const Eigen::MatrixXd &fun,
-			Eigen::MatrixXd &result,
+			std::vector<assembler::AssemblerUtils::NamedMatrix> &result,
 			const bool use_sampler,
 			const bool boundary_only);
 
@@ -247,8 +247,8 @@ namespace polyfem::io
 			const utils::RefElementSampler &sampler,
 			const int n_points,
 			const Eigen::MatrixXd &fun,
-			Eigen::MatrixXd &result_scalar,
-			Eigen::MatrixXd &result_tensor,
+			std::vector<assembler::AssemblerUtils::NamedMatrix> &result_scalar,
+			std::vector<assembler::AssemblerUtils::NamedMatrix> &result_tensor,
 			const bool use_sampler,
 			const bool boundary_only);
 
@@ -281,7 +281,7 @@ namespace polyfem::io
 			const utils::RefElementSampler &sampler,
 			const int n_points,
 			const Eigen::MatrixXd &fun,
-			Eigen::MatrixXd &result,
+			std::vector<assembler::AssemblerUtils::NamedMatrix> &result,
 			const bool use_sampler,
 			const bool boundary_only);
 
