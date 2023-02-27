@@ -2214,6 +2214,23 @@
     {
         "pointer": "/materials/*",
         "type": "object",
+        "type_name": "NeoHookean",
+        "required": [
+            "type",
+            "lambda",
+            "mu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
         "type_name": "MooneyRivlin",
         "required": [
             "type",
@@ -2230,19 +2247,19 @@
     {
         "pointer": "/materials/*",
         "type": "object",
-        "type_name": "NeoHookean",
+        "type_name": "Ogden",
         "required": [
             "type",
-            "lambda",
-            "mu"
+            "alphas",
+            "mus",
+            "Ds"
         ],
         "optional": [
             "id",
             "rho",
-            "phi",
-            "psi"
+            "k"
         ],
-        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
+        "doc": "Material Parameters including ID, for Mooney-Rivlin"
     },
     {
         "pointer": "/materials/*",
@@ -2522,6 +2539,7 @@
             "SaintVenant",
             "NeoHookean",
             "MooneyRivlin",
+            "Ogden",
             "Stokes",
             "NavierStokes",
             "IncompressibleLinearElasticity",
@@ -2550,6 +2568,21 @@
         "pointer": "/materials/*/c2",
         "type": "float",
         "doc": "Second Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/alphas",
+        "type": "float",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/mus",
+        "type": "float",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/Ds",
+        "type": "float",
+        "doc": ""
     },
     {
         "pointer": "/boundary_conditions",

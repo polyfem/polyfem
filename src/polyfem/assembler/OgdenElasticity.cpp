@@ -1,6 +1,7 @@
 #include "OgdenElasticity.hpp"
 
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 namespace polyfem::assembler
 {
@@ -30,18 +31,15 @@ namespace polyfem::assembler
 	{
 		if (params.count("alphas"))
 		{
-			const std::vector<double> tmp = params["alphas"];
-			fill_mat_from_vect(tmp, alphas_);
+			alphas_ = params["alphas"].get<Eigen::VectorXd>();
 		}
 		if (params.count("mus"))
 		{
-			const std::vector<double> tmp = params["mus"];
-			fill_mat_from_vect(tmp, mus_);
+			mus_ = params["mus"].get<Eigen::VectorXd>();
 		}
 		if (params.count("Ds"))
 		{
-			const std::vector<double> tmp = params["Ds"];
-			fill_mat_from_vect(tmp, Ds_);
+			Ds_ = params["Ds"].get<Eigen::VectorXd>();
 		}
 
 		assert(alphas_.size() == mus_.size());
