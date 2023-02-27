@@ -110,20 +110,119 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 
 	Eigen::MatrixXd displacement(state.n_bases, 1);
 
+	ElementAssemblyValues vals;
+	vals.compute(el_id, false, bs, bs);
+
+	const auto &quadrature = vals.quadrature;
+	const Eigen::MatrixXd da = vals.det.array() * quadrature.weights.array();
+
 	for (int rand = 0; rand < 10; ++rand)
 	{
 		displacement.setRandom();
 
-		Eigen::MatrixXd stressa, stress;
-		autodiff.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, stressa);
-		real.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, stress);
-
-		for (int i = 0; i < autodiff.size(); ++i)
+		// value
 		{
-			if (std::isnan(stress(i)))
-				REQUIRE(std::isnan(stressa(i)));
+			const NonLinearAssemblerData data(vals, 0, displacement, displacement, da);
+
+			const double ea = autodiff.compute_energy(data);
+			const double e = real.compute_energy(data);
+
+			if (std::isnan(e))
+				REQUIRE(std::isnan(ea));
 			else
-				REQUIRE(stressa(i) == Approx(stress(i)).margin(1e-12));
+				REQUIRE(ea == Approx(e).margin(1e-12));
+		}
+
+		// grad
+		{
+			const NonLinearAssemblerData data(vals, 0, displacement, displacement, da);
+
+			const Eigen::VectorXd grada = autodiff.assemble_grad(data);
+			const Eigen::VectorXd grad = real.assemble_grad(data);
+
+			for (int i = 0; i < grada.size(); ++i)
+			{
+				if (std::isnan(grad(i)))
+					REQUIRE(std::isnan(grada(i)));
+				else
+					REQUIRE(grada(i) == Approx(grad(i)).margin(1e-12));
+			}
+		}
+
+		// hessian
+		{
+			const NonLinearAssemblerData data(vals, 0, displacement, displacement, da);
+
+			const Eigen::MatrixXd hessiana = autodiff.assemble_hessian(data);
+			const Eigen::MatrixXd hessian = real.assemble_hessian(data);
+
+			for (int i = 0; i < hessiana.size(); ++i)
+			{
+				if (std::isnan(hessian(i)))
+					REQUIRE(std::isnan(hessiana(i)));
+				else
+					REQUIRE(hessiana(i) == Approx(hessian(i)).margin(1e-12));
+			}
+		}
+
+		// F stress
+		{
+			Eigen::MatrixXd stressa, stress;
+			autodiff.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::F, stressa);
+			real.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::F, stress);
+
+			for (int i = 0; i < stressa.size(); ++i)
+			{
+				if (std::isnan(stress(i)))
+					REQUIRE(std::isnan(stressa(i)));
+				else
+					REQUIRE(stressa(i) == Approx(stress(i)).margin(1e-12));
+			}
+		}
+
+		// cauchy stress
+		{
+			Eigen::MatrixXd stressa, stress;
+			autodiff.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::CAUCHY, stressa);
+			real.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::CAUCHY, stress);
+
+			for (int i = 0; i < stressa.size(); ++i)
+			{
+				if (std::isnan(stress(i)))
+					REQUIRE(std::isnan(stressa(i)));
+				else
+					REQUIRE(stressa(i) == Approx(stress(i)).margin(1e-12));
+			}
+		}
+
+		// pk1 stress
+		{
+			Eigen::MatrixXd stressa, stress;
+			autodiff.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::PK1, stressa);
+			real.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::PK1, stress);
+
+			for (int i = 0; i < stressa.size(); ++i)
+			{
+				if (std::isnan(stress(i)))
+					REQUIRE(std::isnan(stressa(i)));
+				else
+					REQUIRE(stressa(i) == Approx(stress(i)).margin(1e-12));
+			}
+		}
+
+		// pk2 stress
+		{
+			Eigen::MatrixXd stressa, stress;
+			autodiff.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::PK2, stressa);
+			real.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::PK2, stress);
+
+			for (int i = 0; i < stressa.size(); ++i)
+			{
+				if (std::isnan(stress(i)))
+					REQUIRE(std::isnan(stressa(i)));
+				else
+					REQUIRE(stressa(i) == Approx(stress(i)).margin(1e-12));
+			}
 		}
 	}
 }

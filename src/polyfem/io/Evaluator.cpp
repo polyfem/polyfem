@@ -159,11 +159,6 @@ namespace polyfem::io
 		const bool compute_avg,
 		Eigen::MatrixXd &result)
 	{
-		// if (!mesh)
-		// {
-		// 	logger().error("Load the mesh first!");
-		// 	return;
-		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -259,11 +254,6 @@ namespace polyfem::io
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result)
 	{
-		// if (!mesh)
-		// {
-		// 	logger().error("Load the mesh first!");
-		// 	return;
-		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -399,11 +389,6 @@ namespace polyfem::io
 		Eigen::MatrixXd &mises,
 		bool skip_orientation)
 	{
-		// if (!mesh)
-		// {
-		// 	logger().error("Load the mesh first!");
-		// 	return;
-		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -424,6 +409,8 @@ namespace polyfem::io
 			logger().error("Define a tensor problem!");
 			return;
 		}
+
+		std::vector<std::pair<std::string, Eigen::MatrixXd>> tmp_t, tmp_s;
 
 		assert(mesh.is_volume());
 		assert(!is_problem_scalar);
@@ -532,9 +519,10 @@ namespace polyfem::io
 					tet_n += tmp;
 				}
 
-				Eigen::MatrixXd loc_val, local_mises;
-				assembler.compute_tensor_value(formulation, e, bs, gbs, points, fun, loc_val);
-				assembler.compute_scalar_value(formulation, e, bs, gbs, points, fun, local_mises);
+				assembler.compute_tensor_value(formulation, e, bs, gbs, points, fun, tmp_t);
+				assembler.compute_scalar_value(formulation, e, bs, gbs, points, fun, tmp_s);
+
+				Eigen::MatrixXd loc_val = tmp_t[0].second, local_mises = tmp_s[0].second;
 				Eigen::VectorXd tmp(loc_val.cols());
 				const double tmp_mises = (local_mises.array() * weights.array()).sum();
 
@@ -582,11 +570,13 @@ namespace polyfem::io
 		const utils::RefElementSampler &sampler,
 		const int n_points,
 		const Eigen::MatrixXd &fun,
-		Eigen::MatrixXd &result_scalar,
-		Eigen::MatrixXd &result_tensor,
+		std::vector<assembler::AssemblerUtils::NamedMatrix> &result_scalar,
+		std::vector<assembler::AssemblerUtils::NamedMatrix> &result_tensor,
 		const bool use_sampler,
 		const bool boundary_only)
 	{
+		result_scalar.clear();
+		result_tensor.clear();
 
 		if (fun.size() <= 0)
 		{
@@ -602,13 +592,12 @@ namespace polyfem::io
 		assert(!is_problem_scalar);
 		const int actual_dim = mesh.dimension();
 
-		Eigen::MatrixXd avg_scalar(n_bases, 1);
-		// MatrixXd avg_tensor(n_points * actual_dim*actual_dim, 1);
+		std::vector<Eigen::MatrixXd> avg_scalar;
+
 		Eigen::MatrixXd areas(n_bases, 1);
-		avg_scalar.setZero();
-		// avg_tensor.setZero();
 		areas.setZero();
 
+		std::vector<std::pair<std::string, Eigen::MatrixXd>> tmp_s;
 		Eigen::MatrixXd local_val;
 
 		ElementAssemblyValues vals;
@@ -642,8 +631,10 @@ namespace polyfem::io
 			const quadrature::Quadrature &quadrature = vals.quadrature;
 			const double area = (vals.det.array() * quadrature.weights.array()).sum();
 
-			assembler.compute_scalar_value(formulation, i, bs, gbs, local_pts, fun, local_val);
+			assembler.compute_scalar_value(formulation, i, bs, gbs, local_pts, fun, tmp_s);
+
 			// assembler.compute_tensor_value(formulation, i, bs, gbs, local_pts, fun, local_val);
+			// MatrixXd avg_tensor(n_points * actual_dim*actual_dim, 1);
 
 			for (size_t j = 0; j < bs.bases.size(); ++j)
 			{
@@ -653,14 +644,46 @@ namespace polyfem::io
 
 				auto &global = b.global().front();
 				areas(global.index) += area;
-				avg_scalar(global.index) += local_val(j) * area;
+			}
+
+			if (avg_scalar.empty())
+			{
+				avg_scalar.resize(tmp_s.size());
+				for (auto &m : avg_scalar)
+				{
+					m.resize(n_bases, 1);
+					m.setZero();
+				}
+			}
+
+			for (int k = 0; k < tmp_s.size(); ++k)
+			{
+				local_val = tmp_s[k].second;
+
+				for (size_t j = 0; j < bs.bases.size(); ++j)
+				{
+					const Basis &b = bs.bases[j];
+					if (b.global().size() > 1)
+						continue;
+
+					auto &global = b.global().front();
+					avg_scalar[k](global.index) += local_val(j) * area;
+				}
 			}
 		}
 
-		avg_scalar.array() /= areas.array();
+		for (auto &m : avg_scalar)
+		{
+			m.array() /= areas.array();
+		}
 
-		interpolate_function(mesh, 1, bases, disc_orders, polys, polys_3d, sampler, n_points,
-							 avg_scalar, result_scalar, use_sampler, boundary_only);
+		result_scalar.resize(tmp_s.size());
+		for (int k = 0; k < tmp_s.size(); ++k)
+		{
+			result_scalar[k].first = tmp_s[k].first;
+			interpolate_function(mesh, 1, bases, disc_orders, polys, polys_3d, sampler, n_points,
+								 avg_scalar[k], result_scalar[k].second, use_sampler, boundary_only);
+		}
 		// interpolate_function(n_points, actual_dim*actual_dim, bases, avg_tensor, result_tensor, boundary_only);
 	}
 
@@ -821,10 +844,15 @@ namespace polyfem::io
 				continue;
 			}
 
+			std::vector<std::pair<std::string, Eigen::MatrixXd>> tmp_s, tmp_t;
+
 			assembler.compute_scalar_value(formulation, e, bases[e], gbases[e],
-										   quadr.points, fun, local_mises);
+										   quadr.points, fun, tmp_s);
 			assembler.compute_tensor_value(formulation, e, bases[e], gbases[e],
-										   quadr.points, fun, local_val);
+										   quadr.points, fun, tmp_t);
+
+			local_mises = tmp_s[0].second;
+			local_val = tmp_t[0].second;
 
 			if (num_quadr_pts + local_val.rows() >= result.rows())
 			{
@@ -878,11 +906,6 @@ namespace polyfem::io
 		const bool use_sampler,
 		const bool boundary_only)
 	{
-		// if (!mesh)
-		// {
-		// 	logger().error("Load the mesh first!");
-		// 	return;
-		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -988,11 +1011,6 @@ namespace polyfem::io
 		Eigen::MatrixXd &result,
 		Eigen::MatrixXd &result_grad)
 	{
-		// if (!mesh)
-		// {
-		// 	logger().error("Load the mesh first!");
-		// 	return;
-		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -1046,11 +1064,6 @@ namespace polyfem::io
 		const bool use_sampler,
 		const bool boundary_only)
 	{
-		// if (!mesh)
-		// {
-		// 	logger().error("Load the mesh first!");
-		// 	return true;
-		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -1060,7 +1073,8 @@ namespace polyfem::io
 		assert(!is_problem_scalar);
 
 		Eigen::MatrixXi vis_faces_poly, vis_edges_poly;
-		Eigen::MatrixXd local_val;
+
+		std::vector<std::pair<std::string, Eigen::MatrixXd>> tmp_s;
 
 		for (int i = 0; i < int(bases.size()); ++i)
 		{
@@ -1107,10 +1121,11 @@ namespace polyfem::io
 				}
 			}
 
-			assembler.compute_scalar_value(formulation, i, bs, gbs, local_pts, fun, local_val);
+			assembler.compute_scalar_value(formulation, i, bs, gbs, local_pts, fun, tmp_s);
 
-			if (std::isnan(local_val.norm()))
-				return false;
+			for (const auto &s : tmp_s)
+				if (std::isnan(s.second.norm()))
+					return false;
 		}
 
 		return true;
@@ -1129,28 +1144,24 @@ namespace polyfem::io
 		const utils::RefElementSampler &sampler,
 		const int n_points,
 		const Eigen::MatrixXd &fun,
-		Eigen::MatrixXd &result,
+		std::vector<assembler::AssemblerUtils::NamedMatrix> &result,
 		const bool use_sampler,
 		const bool boundary_only)
 	{
-		// if (!mesh)
-		// {
-		// 	logger().error("Load the mesh first!");
-		// 	return;
-		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
 			return;
 		}
 
-		result.resize(n_points, 1);
+		result.clear();
+
 		assert(!is_problem_scalar);
 
 		int index = 0;
 
 		Eigen::MatrixXi vis_faces_poly, vis_edges_poly;
-		Eigen::MatrixXd local_val;
+		std::vector<std::pair<std::string, Eigen::MatrixXd>> tmp_s;
 
 		for (int i = 0; i < int(bases.size()); ++i)
 		{
@@ -1197,10 +1208,24 @@ namespace polyfem::io
 				}
 			}
 
-			assembler.compute_scalar_value(formulation, i, bs, gbs, local_pts, fun, local_val);
+			assembler.compute_scalar_value(formulation, i, bs, gbs, local_pts, fun, tmp_s);
 
-			result.block(index, 0, local_val.rows(), 1) = local_val;
-			index += local_val.rows();
+			if (result.empty())
+			{
+				result.resize(tmp_s.size());
+				for (int k = 0; k < tmp_s.size(); ++k)
+				{
+					result[k].first = tmp_s[k].first;
+					result[k].second.resize(n_points, 1);
+				}
+			}
+
+			for (int k = 0; k < tmp_s.size(); ++k)
+			{
+				assert(local_pts.rows() == tmp_s[k].second.rows());
+				result[k].second.block(index, 0, tmp_s[k].second.rows(), 1) = tmp_s[k].second;
+			}
+			index += local_pts.rows();
 		}
 	}
 
@@ -1217,29 +1242,25 @@ namespace polyfem::io
 		const utils::RefElementSampler &sampler,
 		const int n_points,
 		const Eigen::MatrixXd &fun,
-		Eigen::MatrixXd &result,
+		std::vector<assembler::AssemblerUtils::NamedMatrix> &result,
 		const bool use_sampler,
 		const bool boundary_only)
 	{
-		// if (!mesh)
-		// {
-		// 	logger().error("Load the mesh first!");
-		// 	return;
-		// }
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
 			return;
 		}
 
+		result.clear();
+
 		const int actual_dim = mesh.dimension();
-		result.resize(n_points, actual_dim * actual_dim);
 		assert(!is_problem_scalar);
 
 		int index = 0;
 
 		Eigen::MatrixXi vis_faces_poly, vis_edges_poly;
-		Eigen::MatrixXd local_val;
+		std::vector<std::pair<std::string, Eigen::MatrixXd>> tmp_t;
 
 		for (int i = 0; i < int(bases.size()); ++i)
 		{
@@ -1286,10 +1307,24 @@ namespace polyfem::io
 				}
 			}
 
-			assembler.compute_tensor_value(formulation, i, bs, gbs, local_pts, fun, local_val);
+			assembler.compute_tensor_value(formulation, i, bs, gbs, local_pts, fun, tmp_t);
 
-			result.block(index, 0, local_val.rows(), local_val.cols()) = local_val;
-			index += local_val.rows();
+			if (result.empty())
+			{
+				result.resize(tmp_t.size());
+				for (int k = 0; k < tmp_t.size(); ++k)
+				{
+					result[k].first = tmp_t[k].first;
+					result[k].second.resize(n_points, actual_dim * actual_dim);
+				}
+			}
+
+			for (int k = 0; k < tmp_t.size(); ++k)
+			{
+				assert(local_pts.rows() == tmp_t[k].second.rows());
+				result[k].second.block(index, 0, tmp_t[k].second.rows(), tmp_t[k].second.cols()) = tmp_t[k].second;
+			}
+			index += local_pts.rows();
 		}
 	}
 } // namespace polyfem::io
