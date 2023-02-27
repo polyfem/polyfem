@@ -4,57 +4,40 @@ namespace polyfem::solver
 {
 	void BoundarySmoothingForm::init_form()
 	{
-		Eigen::MatrixXd V;
-		Eigen::MatrixXi F;
-		state_.get_vf(V, F);
+		const auto &mesh = *(state_.mesh);
+		const int dim = mesh.dimension();
+		const int n_verts = mesh.n_vertices();
+		assert(mesh.is_simplicial());
 
-		const int dim = V.cols();
-		const int n_verts = V.rows();
+		std::vector<int> tmp = {}; // args_["surface_selection"];
+		std::set<int> surface_ids = std::set(tmp.begin(), tmp.end());
 
 		// collect active nodes
 		std::vector<bool> active_mask;
 		active_mask.assign(n_verts, false);
-		std::vector<int> tmp = {}; // args_["surface_selection"];
-		std::set<int> surface_ids = std::set(tmp.begin(), tmp.end());
+		std::vector<Eigen::Triplet<bool>> T_adj;
 
-		const auto &gbases = state_.geom_bases();
-		for (const auto &lb : state_.total_local_boundary)
+		for (int b = 0; b < mesh.n_boundary_elements(); b++)
 		{
-			const int e = lb.element_id();
-			for (int i = 0; i < lb.size(); i++)
+			const int boundary_id = mesh.get_boundary_id(b);
+			if (!surface_ids.empty() && surface_ids.find(boundary_id) == surface_ids.end())
+				continue;
+			
+			for (int lv = 0; lv < dim; lv++)
 			{
-				const int global_primitive_id = lb.global_primitive_id(i);
-				const int boundary_id = state_.mesh->get_boundary_id(global_primitive_id);
-				if (!surface_ids.empty() && surface_ids.find(boundary_id) == surface_ids.end())
-					continue;
-
-				const auto nodes = gbases[e].local_nodes_for_primitive(lb.global_primitive_id(i), *state_.mesh);
-
-				for (int n = 0; n < nodes.size(); n++)
-				{
-					const auto &global = gbases[e].bases[nodes(n)].global();
-					for (int g = 0; g < global.size(); g++)
-						active_mask[global[g].index] = true;
-				}
+				active_mask[mesh.boundary_element_vertex(b, lv)] = true;
 			}
+
+			for (int lv1 = 0; lv1 < dim; lv1++)
+				for (int lv2 = 0; lv2 < lv1; lv2++)
+				{
+					T_adj.emplace_back(mesh.boundary_element_vertex(b, lv2), mesh.boundary_element_vertex(b, lv1), true);
+					T_adj.emplace_back(mesh.boundary_element_vertex(b, lv1), mesh.boundary_element_vertex(b, lv2), true);
+				}
 		}
 
 		adj.setZero();
 		adj.resize(n_verts, n_verts);
-		std::vector<Eigen::Triplet<bool>> T_adj;
-
-		ipc::CollisionMesh collision_mesh;
-		state_.build_collision_mesh(collision_mesh, state_.n_geom_bases, state_.geom_bases());
-		for (int e = 0; e < collision_mesh.num_edges(); e++)
-		{
-			int v1 = collision_mesh.to_full_vertex_id(collision_mesh.edges()(e, 0));
-			int v2 = collision_mesh.to_full_vertex_id(collision_mesh.edges()(e, 1));
-			if (active_mask[v1] && active_mask[v2])
-			{
-				T_adj.emplace_back(v1, v2, true);
-				T_adj.emplace_back(v2, v1, true);
-			}
-		}
 		adj.setFromTriplets(T_adj.begin(), T_adj.end());
 
 		std::vector<int> degrees(n_verts, 0);
@@ -69,7 +52,7 @@ namespace polyfem::solver
 			std::vector<Eigen::Triplet<double>> T_L;
 			for (int k = 0; k < adj.outerSize(); ++k)
 			{
-				if (degrees[k] == 0 || !active_mask[k])
+				if (!active_mask[k])
 					continue;
 				T_L.emplace_back(k, k, degrees[k]);
 				for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, k); it; ++it)
@@ -85,11 +68,9 @@ namespace polyfem::solver
 
 	double BoundarySmoothingForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		Eigen::MatrixXd V;
-		Eigen::MatrixXi F;
-		state_.get_vf(V, F);
-		const int dim = V.cols();
-		const int n_verts = V.rows();
+		const auto &mesh = *(state_.mesh);
+		const int dim = mesh.dimension();
+		const int n_verts = mesh.n_vertices();
 
 		double val = 0;
 		if (scale_invariant_)
@@ -97,14 +78,15 @@ namespace polyfem::solver
 			for (int b = 0; b < adj.rows(); b++)
 			{
 				polyfem::RowVectorNd s;
-				s.setZero(V.cols());
+				s.setZero(dim);
 				double sum_norm = 0;
 				int valence = 0;
 				for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, b); it; ++it)
 				{
 					assert(it.col() != b);
-					s += V.row(b) - V.row(it.col());
-					sum_norm += (V.row(b) - V.row(it.col())).norm();
+					auto x = mesh.point(b) - mesh.point(it.col());
+					s += x;
+					sum_norm += x.norm();
 					valence += 1;
 				}
 				if (valence)
@@ -115,23 +97,27 @@ namespace polyfem::solver
 			}
 		}
 		else
+		{
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			state_.get_vf(V, F);
+
 			val = (L * V).eval().squaredNorm();
+		}
 
 		return val;
 	}
 
 	void BoundarySmoothingForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		Eigen::MatrixXd V;
-		Eigen::MatrixXi F;
-		state_.get_vf(V, F);
-		const int dim = V.cols();
-		const int n_verts = V.rows();
+		const auto &mesh = *(state_.mesh);
+		const int dim = mesh.dimension();
+		const int n_verts = mesh.n_vertices();
 
 		Eigen::VectorXd grad;
 		if (scale_invariant_)
 		{
-			grad.setZero(V.size());
+			grad.setZero(n_verts * dim);
 			for (int b = 0; b < adj.rows(); b++)
 			{
 				polyfem::RowVectorNd s;
@@ -142,7 +128,7 @@ namespace polyfem::solver
 				for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, b); it; ++it)
 				{
 					assert(it.col() != b);
-					auto x = V.row(b) - V.row(it.col());
+					auto x = mesh.point(b) - mesh.point(it.col());
 					s += x;
 					sum_norm += x.norm();
 					sum_normalized += x.normalized();
@@ -151,24 +137,22 @@ namespace polyfem::solver
 				if (valence)
 				{
 					s = s / sum_norm;
+					const double coeff = power_ * pow(s.norm(), power_ - 2.) / sum_norm;
 
-					for (int d = 0; d < dim; d++)
-					{
-						grad(b * dim + d) += (s(d) * valence - s.squaredNorm() * sum_normalized(d)) * power_ * pow(s.norm(), power_ - 2.) / sum_norm;
-					}
-
+					grad.segment(b * dim, dim) += (s * valence - s.squaredNorm() * sum_normalized) * coeff;
 					for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, b); it; ++it)
-					{
-						for (int d = 0; d < dim; d++)
-						{
-							grad(it.col() * dim + d) -= (s(d) + s.squaredNorm() * (V(it.col(), d) - V(b, d)) / (V.row(b) - V.row(it.col())).norm()) * power_ * pow(s.norm(), power_ - 2.) / sum_norm;
-						}
-					}
+						grad.segment(it.col() * dim, dim) -= (s + s.squaredNorm() * (mesh.point(it.col()) - mesh.point(b)).normalized()) * coeff;
 				}
 			}
 		}
 		else
+		{
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			state_.get_vf(V, F);
+			
 			grad = utils::flatten(2 * (L.transpose() * (L * V)));
+		}
 
 		gradv.setZero(x.size());
 		for (auto &p : variable_to_simulations_)

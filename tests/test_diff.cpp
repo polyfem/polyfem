@@ -12,6 +12,7 @@
 #include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/CompositeForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/TransientForm.hpp>
+#include <polyfem/solver/forms/adjoint_forms/SmoothingForms.hpp>
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 
@@ -140,6 +141,34 @@ TEST_CASE("laplacian", "[adjoint_method]")
 	Eigen::VectorXd x = utils::flatten(V);
 
 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 3e-5);
+}
+
+TEST_CASE("boundary-smoothing", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+	json in_args;
+	load_json(path + "laplacian.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
+
+	json opt_args;
+	load_json(path + "laplacian-opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
+
+	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+
+	BoundarySmoothingForm obj(variable_to_simulations, state, true, 3);
+
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+	state.get_vf(V, F);
+	Eigen::VectorXd x = utils::flatten(V);
+
+	Eigen::MatrixXd velocity_discrete;
+	velocity_discrete.setRandom(x.size(), 1);
+
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-6);
 }
 
 TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")

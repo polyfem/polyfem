@@ -24,7 +24,7 @@ namespace polyfem::solver
 
 		const State &state_;
 		const bool scale_invariant_;
-		const int power_;
+		const int power_; // only if scale_invariant_ is true
 		Eigen::SparseMatrix<bool, Eigen::RowMajor> adj;
 		Eigen::SparseMatrix<double, Eigen::RowMajor> L;
 	};
