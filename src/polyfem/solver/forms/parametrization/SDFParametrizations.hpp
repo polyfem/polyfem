@@ -21,4 +21,23 @@ namespace polyfem::solver
 
         mutable Eigen::VectorXd last_x;
     };
+
+    class MeshTiling : public Parametrization
+    {
+    public:
+        MeshTiling(const Eigen::VectorXi &nums, const std::string in_path, const std::string out_path);
+
+        int size(const int x_size) const override;
+
+        Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+        Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
+    
+    private:
+        Eigen::VectorXi nums_;
+        std::string in_path_, out_path_;
+
+        bool tiling(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::MatrixXd &Vnew, Eigen::MatrixXi &Fnew, Eigen::VectorXi &index_map) const;
+
+        mutable Eigen::MatrixXd last_x;
+    };
 }

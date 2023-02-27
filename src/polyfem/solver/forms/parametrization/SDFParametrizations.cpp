@@ -4,6 +4,7 @@
 #include <polyfem/io/MshReader.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+#include <igl/write_triangle_mesh.h>
 
 namespace polyfem::solver
 {
@@ -48,12 +49,10 @@ namespace polyfem::solver
 
         return true;
     }
-
     SDF2Mesh::SDF2Mesh(const std::string inflator_path, const std::string sdf_velocity_path, const std::string msh_path) : inflator_path_(inflator_path), sdf_velocity_path_(sdf_velocity_path), msh_path_(msh_path)
     {
 
-    }
-    
+    } 
     int SDF2Mesh::size(const int x_size) const
     {
         // if (!isosurface_inflator(x))
@@ -76,7 +75,6 @@ namespace polyfem::solver
         log_and_throw_error("Not implemented!");
         return 0;
     }
-    
     Eigen::VectorXd SDF2Mesh::eval(const Eigen::VectorXd &x) const
     {
         if (!isosurface_inflator(x))
@@ -90,14 +88,11 @@ namespace polyfem::solver
         std::vector<std::vector<int>> elements;
         std::vector<std::vector<double>> weights;
         std::vector<int> body_ids;
-        std::vector<std::string> node_data_name;
-        std::vector<std::vector<double>> node_data;
-        io::MshReader::load(sdf_velocity_path_, vertices, cells, elements, weights, body_ids, node_data_name, node_data);
+        io::MshReader::load(sdf_velocity_path_, vertices, cells, elements, weights, body_ids);
         const int dim = vertices.cols();
 
         return utils::flatten(vertices);
-    }
-    
+    } 
     Eigen::VectorXd SDF2Mesh::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
     {
         if (!isosurface_inflator(x))
@@ -134,5 +129,183 @@ namespace polyfem::solver
         //             mapped_grad(i - 1) += node_data[0][j * 3 + d] * node_data[i][j] * grad(j * dim + d);
 
         // return mapped_grad;
+    }
+
+    MeshTiling::MeshTiling(const Eigen::VectorXi &nums, const std::string in_path, const std::string out_path): nums_(nums), in_path_(in_path), out_path_(out_path)
+    {
+        assert(nums_.size() == 2 || nums_.size() == 3);
+        assert(nums.minCoeff() > 0);
+    }
+    int MeshTiling::size(const int x_size) const
+    {
+        log_and_throw_error("Not implemented!");
+        return 0;
+    }
+    Eigen::VectorXd MeshTiling::eval(const Eigen::VectorXd &x) const
+    {
+        Eigen::MatrixXd vertices;
+        Eigen::MatrixXi cells;
+        std::vector<std::vector<int>> elements;
+        std::vector<std::vector<double>> weights;
+        std::vector<int> body_ids;
+        io::MshReader::load(in_path_, vertices, cells, elements, weights, body_ids);
+        const int dim = vertices.cols();
+
+        if (x.size() != vertices.size())
+            log_and_throw_error("Inconsistent input mesh in tiling!");
+        else if ((x - utils::flatten(vertices)).norm() > 1e-6)
+        {
+            logger().error("Diff in input mesh and x is {}", (x - utils::flatten(vertices)).norm());
+            log_and_throw_error("Inconsistent input mesh in tiling!");
+        }
+
+        Eigen::MatrixXd Vout;
+        Eigen::MatrixXi Fout;
+        Eigen::VectorXi index_map;
+        if (!tiling(vertices, cells, Vout, Fout, index_map))
+        {
+            logger().error("Failed to tile mesh!");
+            return Eigen::VectorXd();
+        }
+
+        return utils::flatten(Vout);
+    }
+    Eigen::VectorXd MeshTiling::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
+    {
+        Eigen::MatrixXd vertices;
+        Eigen::MatrixXi cells;
+        std::vector<std::vector<int>> elements;
+        std::vector<std::vector<double>> weights;
+        std::vector<int> body_ids;
+        io::MshReader::load(in_path_, vertices, cells, elements, weights, body_ids);
+        const int dim = vertices.cols();
+
+        if (x.size() != vertices.size())
+            log_and_throw_error("Inconsistent input mesh in tiling!");
+        else if ((x - utils::flatten(vertices)).norm() > 1e-6)
+        {
+            logger().error("Diff in input mesh and x is {}", (x - utils::flatten(vertices)).norm());
+            log_and_throw_error("Inconsistent input mesh in tiling!");
+        }
+
+        Eigen::MatrixXd Vout;
+        Eigen::MatrixXi Fout;
+        Eigen::VectorXi index_map;
+        if (!tiling(vertices, cells, Vout, Fout, index_map))
+        {
+            logger().error("Failed to tile mesh!");
+            return Eigen::VectorXd();
+        }
+
+        Eigen::VectorXd reduced_grad;
+        reduced_grad.setZero(x.size());
+        assert(grad.size() == index_map.size() * dim);
+        for (int i = 0; i < index_map.size(); i++)
+            reduced_grad(Eigen::seqN(index_map(i)*dim, dim)) += grad(Eigen::seqN(i*dim, dim));
+
+        return reduced_grad;
+    }
+    bool MeshTiling::tiling(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::MatrixXd &Vnew, Eigen::MatrixXi &Fnew, Eigen::VectorXi &index_map) const
+    {
+        if (last_x == V)
+            return true;
+        // Eigen::MatrixXd vertices;
+        // Eigen::MatrixXi cells;
+        // std::vector<std::vector<int>> elements;
+        // std::vector<std::vector<double>> weights;
+        // std::vector<int> body_ids;
+        // io::MshReader::load(in_path_, vertices, cells, elements, weights, body_ids);
+
+        assert(nums_.size() == V.cols());
+
+        Eigen::MatrixXd Vtmp;
+        Eigen::MatrixXi Ftmp;
+        Vtmp.setZero(V.rows() * nums_.prod(), V.cols());
+        Ftmp.setZero(F.rows() * nums_.prod(), F.cols());
+
+        Eigen::MatrixXd bbox(V.cols(), 2);
+        bbox.col(0) = V.colwise().minCoeff();
+        bbox.col(1) = V.colwise().maxCoeff();
+        Eigen::VectorXd size = bbox.col(1) - bbox.col(0);
+
+        if (V.cols() == 2)
+        {
+            for (int i = 0, idx = 0; i < nums_(0); i++)
+            {
+                for (int j = 0; j < nums_(1); j++)
+                {
+                    Vtmp.middleRows(idx * V.rows(), V.rows()) = V;
+                    Vtmp.block(idx * V.rows(), 0, V.rows(), 1).array() += bbox(0);
+                    Vtmp.block(idx * V.rows(), 1, V.rows(), 1).array() += bbox(1);
+
+                    Ftmp.middleRows(idx * V.rows(), F.rows()) = F.array() + idx * V.rows();
+                    idx += 1;
+                }
+            }
+        }
+        else
+        {
+            log_and_throw_error("Not implemented!");
+        }
+
+        // clean duplicated vertices
+        const double eps = 1e-6;
+        Eigen::VectorXi indices;
+        {
+            std::vector<int> tmp;
+            for (int i = 0; i < V.rows(); i++)
+            {
+                Eigen::VectorXd p = V.row(i);
+                if ((p - bbox.col(0)).array().abs().minCoeff() < eps || (p - bbox.col(1)).array().abs().minCoeff() < eps)
+                    tmp.push_back(i);
+            }
+
+            indices.resize(tmp.size() * nums_.prod());
+            for (int i = 0; i < nums_.prod(); i++)
+            {
+                indices.segment(i * tmp.size(), tmp.size()) = Eigen::Map<Eigen::VectorXi, Eigen::Unaligned>(tmp.data(), tmp.size());
+                indices.segment(i * tmp.size(), tmp.size()).array() += i * V.rows();
+            }
+        }
+
+        Eigen::VectorXi potentially_duplicate_mask(Vtmp.rows());
+        potentially_duplicate_mask.setZero();
+        potentially_duplicate_mask(indices).array() = 1;
+        Eigen::MatrixXd candidates = Vtmp(indices, Eigen::all);
+
+        Eigen::VectorXi SVI;
+        std::vector<int> SVJ;
+        SVI.setConstant(Vtmp.rows(), -1);
+        int id = 0;
+        for (int i = 0; i < Vtmp.rows(); i++)
+        {
+            if (SVI[i] < 0)
+            {
+                SVI[i] = id;
+                SVJ.push_back(i);
+                if (potentially_duplicate_mask(i))
+                {
+                    Eigen::VectorXd diffs = (candidates.rowwise() - Vtmp.row(i)).rowwise().norm();
+                    for (int j = 0; j < diffs.size(); j++)
+                        if (diffs(j) < eps)
+                            SVI[indices[j]] = id;
+                }
+            }
+        }
+        Vnew = Vtmp(SVJ, Eigen::all);
+
+        index_map.resize(Vtmp.rows());
+        for (int i = 0; i < V.rows(); i++)
+            index_map(Eigen::seq(i, nums_.prod(), V.rows())).array() = i;
+        index_map = index_map(SVJ);
+
+        Fnew.resizeLike(F);
+        for (int d = 0; d < F.cols(); d++)
+            Fnew.col(d) = SVI(F.col(d));
+        
+        igl::write_triangle_mesh(out_path_, Vnew, Fnew);
+
+        last_x = V;
+        return true;
     }
 }
