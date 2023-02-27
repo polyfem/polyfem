@@ -226,7 +226,7 @@ namespace polyfem::solver
 
 			Eigen::MatrixXd grad;
 			amips_energy_.assemble_grad(state_.mesh->is_volume(), state_.n_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, map_primitive_to_node_order(X - X_init), Eigen::VectorXd(), grad); // grad wrt. gbases
-			grad = map_primitive_to_node_order(grad);
+			grad = map_node_to_primitive_order(grad);
 			// grad = utils::flatten(utils::unflatten(grad, state_.mesh->dimension())(state_.primitive_to_node(), Eigen::all)); // grad wrt. vertices
 
 			assert(grad.cols() == 1);
@@ -249,7 +249,7 @@ namespace polyfem::solver
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override
 		{
-			Eigen::VectorXd X = map_primitive_to_node_order(get_updated_mesh_nodes(x1));
+			Eigen::VectorXd X = get_updated_mesh_nodes(x1);
 			Eigen::MatrixXd V1 = utils::unflatten(X, state_.mesh->dimension());
 
 			bool flipped = is_flipped(V1, F);
@@ -273,10 +273,10 @@ namespace polyfem::solver
 		Eigen::VectorXd map_primitive_to_node_order(const Eigen::VectorXd &primitives) const
 		{
 			int dim = state_.mesh->dimension();
-			assert(primitives.size() == (state_.n_bases * dim));
+			assert(primitives.size() == (state_.n_geom_bases * dim));
 			Eigen::VectorXd nodes(primitives.size());
 			auto map = state_.primitive_to_node();
-			for (int v = 0; v < state_.n_bases; ++v)
+			for (int v = 0; v < state_.n_geom_bases; ++v)
 				nodes.segment(map[v] * dim, dim) = primitives.segment(v * dim, dim);
 			return nodes;
 		}
@@ -284,10 +284,10 @@ namespace polyfem::solver
 		Eigen::VectorXd map_node_to_primitive_order(const Eigen::VectorXd &nodes) const
 		{
 			int dim = state_.mesh->dimension();
-			assert(nodes.size() == (state_.n_bases * dim));
+			assert(nodes.size() == (state_.n_geom_bases * dim));
 			Eigen::VectorXd primitives(nodes.size());
 			auto map = state_.node_to_primitive();
-			for (int v = 0; v < state_.n_bases; ++v)
+			for (int v = 0; v < state_.n_geom_bases; ++v)
 				primitives.segment(map[v] * dim, dim) = nodes.segment(v * dim, dim);
 			return primitives;
 		}
