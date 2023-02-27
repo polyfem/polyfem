@@ -2259,7 +2259,7 @@
             "rho",
             "k"
         ],
-        "doc": "Material Parameters including ID, for Mooney-Rivlin"
+        "doc": "Material Parameters including ID, for Ogden"
     },
     {
         "pointer": "/materials/*",
@@ -2571,16 +2571,31 @@
     },
     {
         "pointer": "/materials/*/alphas",
-        "type": "float",
+        "type": "list",
         "doc": ""
     },
     {
         "pointer": "/materials/*/mus",
-        "type": "float",
+        "type": "list",
         "doc": ""
     },
     {
         "pointer": "/materials/*/Ds",
+        "type": "list",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/alphas/*",
+        "type": "float",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/mus/*",
+        "type": "float",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/Ds/*",
         "type": "float",
         "doc": ""
     },
