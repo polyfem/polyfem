@@ -15,6 +15,8 @@ set(SOURCES
 	TransientForm.hpp
 	TransientForm.cpp
 	BarrierForms.hpp
+	SmoothingForms.hpp
+	SmoothingForms.cpp
 )
 
 prepend_current_path(SOURCES)
