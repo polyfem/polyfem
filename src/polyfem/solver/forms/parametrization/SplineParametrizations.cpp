@@ -6,7 +6,8 @@ namespace polyfem::solver
 {
 	Eigen::VectorXd BSplineParametrization1DTo2D::inverse_eval(const Eigen::VectorXd &y)
 	{
-		spline_ = std::make_shared<BSplineParametrization2D>(initial_control_points_, knots_, y);
+		spline_ = std::make_shared<BSplineParametrization2D>(initial_control_points_, knots_, utils::unflatten(y, 2));
+		assert(size_ == spline_->vertex_size());
 		if (exclude_ends_)
 			return utils::flatten(initial_control_points_).segment(2, (initial_control_points_.rows() - 2) * 2);
 		else
@@ -20,7 +21,7 @@ namespace polyfem::solver
 		{
 			new_control_points = initial_control_points_;
 			for (int i = 1; i < new_control_points.rows() - 2; ++i)
-				new_control_points.row(i) = x.segment(i - 2, 2);
+				new_control_points.row(i) = x.segment(2 * i - 2, 2);
 		}
 		else
 		{

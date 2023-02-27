@@ -17,6 +17,7 @@
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
+#include <polyfem/solver/forms/parametrization/SplineParametrizations.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -520,14 +521,282 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 // 	REQUIRE(energies[energies.size() - 1] == Approx(3.6194e-05).epsilon(1e-3));
 // }
 
-// TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
-// {
-// 	run_opt_new("shape-trajectory-surface-opt-bspline");
-// 	auto energies = read_energy("shape-trajectory-surface-opt-bspline");
+TEST_CASE("SplineParametrization-Debug", "[optimization]")
+{
+	Eigen::MatrixXd control_points(4, 2);
+	control_points << 0, -1,
+		0., -0.33333333,
+		0., 0.33333333,
+		0, 1;
 
-// 	REQUIRE(energies[0] == Approx(6.1658e-05).epsilon(1e-3));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(3.6194e-05).epsilon(1e-3));
-// }
+	Eigen::VectorXd knots(8);
+	knots << 0,
+		0,
+		0,
+		0,
+		1,
+		1,
+		1,
+		1;
+
+	Eigen::VectorXd V(20);
+	V << 0., -1.,
+		0., -0.77777778,
+		0., -0.55555556,
+		0., -0.33333333,
+		0., -0.11111111,
+		0., 0.11111111,
+		0., 0.33333333,
+		0., 0.55555556,
+		0., 0.77777778,
+		0., 1.;
+
+	BSplineParametrization1DTo2D parametrization(control_points, knots, 10, false);
+	Eigen::VectorXd x = parametrization.inverse_eval(V);
+
+	Eigen::MatrixXd dydx(control_points.size(), V.size());
+	double eps = 1e-7;
+	for (int i = 0; i < control_points.size(); ++i)
+	{
+		Eigen::VectorXd x_ = x;
+		x_(i) += eps;
+		auto y_plus = parametrization.eval(x_);
+		x_(i) -= 2 * eps;
+		auto y_minus = parametrization.eval(x_);
+		auto fd = (y_plus - y_minus) / (2 * eps);
+		dydx.row(i) = fd;
+	}
+
+	for (int i = 0; i < V.size(); ++i)
+	{
+		Eigen::VectorXd grad_y;
+		grad_y.setZero(V.size());
+		grad_y(i) = 1;
+
+		Eigen::VectorXd grad_x;
+		grad_x = parametrization.apply_jacobian(grad_y, x);
+
+		// REQUIRE((grad_x - dydx * grad_y).norm() == Approx(0).epsilon(1e-3));
+		std::cout << "i: " << i << "\t" << (grad_x).norm() << std::endl;
+		std::cout << "i: " << i << "\t" << (dydx * grad_y).norm() << std::endl;
+		std::cout << "i: " << i << "\t" << (grad_x - dydx * grad_y).norm() << std::endl;
+	}
+}
+
+TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
+{
+	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + "shape-trajectory-surface-opt-bspline" + "/";
+	json opt_args;
+	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
+		log_and_throw_error("Failed to load optimization json file!");
+
+	for (auto &state_arg : opt_args["states"])
+		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
+
+	json state_args = opt_args["states"];
+	std::vector<std::shared_ptr<State>> states(state_args.size());
+	int i = 0;
+	for (const json &args : state_args)
+	{
+		json cur_args;
+		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
+			log_and_throw_error("Can't find json for State {}", i);
+
+		states[i++] = create_state(cur_args, spdlog::level::level_enum::err);
+	}
+
+	Eigen::VectorXd x;
+	int opt_bnodes = 0;
+	int dim;
+	{
+		const auto &mesh = states[0]->mesh;
+		const auto &bases = states[0]->bases;
+		const auto &gbases = states[0]->geom_bases();
+		dim = mesh->dimension();
+
+		std::set<int> node_ids;
+		std::set<int> total_bnode_ids;
+		for (const auto &lb : states[0]->total_local_boundary)
+		{
+			const int e = lb.element_id();
+			for (int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const int boundary_id = mesh->get_boundary_id(primitive_global_id);
+				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
+
+				if (boundary_id == 4)
+					for (long n = 0; n < nodes.size(); ++n)
+						node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+			}
+		}
+		opt_bnodes = node_ids.size();
+	}
+	x.resize(opt_bnodes * dim);
+
+	std::vector<std::shared_ptr<VariableToSimulation>>
+		variable_to_simulations;
+	{
+		std::vector<std::shared_ptr<Parametrization>> spline_boundary_map_list = {};
+
+		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToBoundaryNodes(spline_boundary_map_list, *states[0], {4})));
+	}
+
+	{
+		Eigen::MatrixXd V;
+		Eigen::MatrixXi F;
+		states[0]->get_vf(V, F);
+		Eigen::VectorXd V_flat = utils::flatten(V);
+
+		auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
+		assert(b_idx.size() == (opt_bnodes * dim));
+		for (int i = 0; i < opt_bnodes; ++i)
+			for (int k = 0; k < dim; ++k)
+				x(i * dim + k) = V_flat(b_idx(i * dim + k));
+	}
+	for (auto &v2s : variable_to_simulations)
+		v2s->update(x);
+
+	auto obj1 = std::make_shared<TargetForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
+	obj1->set_reference(states[1], {2});
+	obj1->set_weight(1.0);
+
+	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0], json());
+	obj2->set_weight(1.0);
+
+	std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2});
+
+	auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
+	sum->set_weight(1.0);
+
+	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+
+	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+
+	auto energies = read_energy("shape-trajectory-surface-opt-bspline");
+
+	REQUIRE(energies[0] == Approx(6.1658e-05).epsilon(1e-3));
+	REQUIRE(energies[energies.size() - 1] == Approx(3.6194e-05).epsilon(1e-3));
+}
+
+TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
+{
+	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + "shape-trajectory-surface-opt-bspline" + "/";
+	json opt_args;
+	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
+		log_and_throw_error("Failed to load optimization json file!");
+
+	for (auto &state_arg : opt_args["states"])
+		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
+
+	json state_args = opt_args["states"];
+	std::vector<std::shared_ptr<State>> states(state_args.size());
+	int i = 0;
+	for (const json &args : state_args)
+	{
+		json cur_args;
+		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
+			log_and_throw_error("Can't find json for State {}", i);
+
+		states[i++] = create_state(cur_args, spdlog::level::level_enum::err);
+	}
+
+	Eigen::VectorXd x;
+	int opt_bnodes = 0;
+	int dim;
+	{
+		const auto &mesh = states[0]->mesh;
+		const auto &bases = states[0]->bases;
+		const auto &gbases = states[0]->geom_bases();
+		dim = mesh->dimension();
+
+		std::set<int> node_ids;
+		std::set<int> total_bnode_ids;
+		for (const auto &lb : states[0]->total_local_boundary)
+		{
+			const int e = lb.element_id();
+			for (int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const int boundary_id = mesh->get_boundary_id(primitive_global_id);
+				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
+
+				if (boundary_id == 4)
+					for (long n = 0; n < nodes.size(); ++n)
+						node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+			}
+		}
+		opt_bnodes = node_ids.size();
+	}
+	x.resize(4);
+
+	Eigen::MatrixXd control_points(4, 2);
+	control_points << 0, -1,
+		0.66666667, -0.33333333,
+		0.66666667, 0.33333333,
+		0, 1;
+
+	Eigen::VectorXd knots(8);
+	knots << 0,
+		0,
+		0,
+		0,
+		1,
+		1,
+		1,
+		1;
+
+	std::vector<std::shared_ptr<VariableToSimulation>>
+		variable_to_simulations;
+	{
+		std::vector<std::shared_ptr<Parametrization>> spline_boundary_map_list = {std::make_shared<BSplineParametrization1DTo2D>(control_points, knots, opt_bnodes, true)};
+
+		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToBoundaryNodes(spline_boundary_map_list, *states[0], {4})));
+	}
+
+	{
+		Eigen::MatrixXd V;
+		Eigen::MatrixXi F;
+		states[0]->get_vf(V, F);
+		Eigen::VectorXd V_flat = utils::flatten(V);
+
+		auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
+		assert(b_idx.size() == (opt_bnodes * dim));
+		Eigen::VectorXd y(opt_bnodes * dim);
+		for (int i = 0; i < opt_bnodes; ++i)
+			for (int k = 0; k < dim; ++k)
+				y(i * dim + k) = V_flat(b_idx(i * dim + k));
+
+		x = variable_to_simulations[0]->get_parametrization().inverse_eval(y);
+
+		assert((x.segment(0, 4) - utils::flatten(control_points).segment(2, 4)).norm() < 1e-12);
+	}
+	for (auto &v2s : variable_to_simulations)
+		v2s->update(x);
+
+	auto obj1 = std::make_shared<TargetForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
+	obj1->set_reference(states[1], {2});
+	obj1->set_weight(1.0);
+
+	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0], json());
+	obj2->set_weight(1.0);
+
+	std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2});
+
+	auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
+	sum->set_weight(1.0);
+
+	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+
+	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+
+	auto energies = read_energy("shape-trajectory-surface-opt-bspline");
+
+	REQUIRE(energies[0] == Approx(6.1658e-05).epsilon(1e-3));
+	REQUIRE(energies[energies.size() - 1] == Approx(3.6194e-05).epsilon(1e-3));
+}
 
 // TEST_CASE("multiparameter-sdf-trajectory-surface-opt", "[optimization]")
 // {

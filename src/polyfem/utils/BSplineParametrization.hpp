@@ -17,6 +17,7 @@ namespace polyfem
 		BSplineParametrization(const Eigen::MatrixXd &V) { num_vertices = V.rows(); }
 		virtual ~BSplineParametrization() = default;
 
+		virtual int vertex_size() = 0;
 		virtual void reparametrize(const Eigen::MatrixXd &control_points, Eigen::MatrixXd &newV) = 0;
 		virtual void get_parameters(const Eigen::MatrixXd &V, Eigen::MatrixXd &control_points) final
 		{
@@ -72,6 +73,8 @@ namespace polyfem
 			// }
 			logger().info("Number of useful boundary nodes in spline parametrization: {}", node_ids_.size());
 		}
+
+		int vertex_size() override { return node_id_to_t_.size(); }
 
 		void reparametrize(const Eigen::MatrixXd &control_points, Eigen::MatrixXd &newV) override
 		{
@@ -210,6 +213,8 @@ namespace polyfem
 			// }
 			logger().info("Number of useful boundary nodes in spline parametrization: {}", node_ids_.size());
 		}
+
+		int vertex_size() override { return node_id_to_param_.size(); }
 
 		// Assume the connectivity has not changed. Does not work with remeshing
 		void get_parameters(const Eigen::MatrixXd &V, Eigen::MatrixXd &control_points, const bool mesh_changed) override

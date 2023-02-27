@@ -192,6 +192,51 @@ namespace polyfem::solver
 			init_ass_vals_cache_ = state_.ass_vals_cache;
 		}
 
+		double value_unweighted(const Eigen::VectorXd &x) const override
+		{
+			Eigen::VectorXd X = get_updated_mesh_nodes(x);
+
+			double energy = amips_energy_.assemble(state_.mesh->is_volume(), init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, map_primitive_to_node_order(X - X_init), Eigen::VectorXd(), false);
+
+			return energy;
+		}
+
+		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
+		{
+			Eigen::VectorXd X = get_updated_mesh_nodes(x);
+
+			Eigen::MatrixXd grad;
+			amips_energy_.assemble_grad(state_.mesh->is_volume(), state_.n_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, map_primitive_to_node_order(X - X_init), Eigen::VectorXd(), grad); // grad wrt. gbases
+			grad = map_node_to_primitive_order(grad);                                                                                                                                                             // grad wrt. vertices
+
+			assert(grad.cols() == 1);
+
+			gradv.setZero(x.size());
+			for (auto &p : variable_to_simulations_)
+			{
+				if (&p->get_state() != &state_)
+					continue;
+				if (p->get_parameter_type() != ParameterType::Shape)
+					continue;
+				gradv += p->get_parametrization().apply_jacobian(grad, x);
+			}
+		}
+
+		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override
+		{
+			return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
+		}
+
+		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override
+		{
+			Eigen::VectorXd X = get_updated_mesh_nodes(x1);
+			Eigen::MatrixXd V1 = utils::unflatten(X, state_.mesh->dimension());
+
+			bool flipped = is_flipped(V1, F);
+			return !flipped;
+		}
+
+	private:
 		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const
 		{
 			Eigen::VectorXd X = X_init;
@@ -210,65 +255,6 @@ namespace polyfem::solver
 
 			return X;
 		}
-
-		double value_unweighted(const Eigen::VectorXd &x) const override
-		{
-			Eigen::VectorXd X = get_updated_mesh_nodes(x);
-
-			double energy = amips_energy_.assemble(state_.mesh->is_volume(), init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, map_primitive_to_node_order(X - X_init), Eigen::VectorXd(), false);
-
-			return energy;
-		}
-
-		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
-		{
-			Eigen::VectorXd X = get_updated_mesh_nodes(x);
-
-			Eigen::MatrixXd grad;
-			amips_energy_.assemble_grad(state_.mesh->is_volume(), state_.n_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, map_primitive_to_node_order(X - X_init), Eigen::VectorXd(), grad); // grad wrt. gbases
-			grad = map_node_to_primitive_order(grad);
-			// grad = utils::flatten(utils::unflatten(grad, state_.mesh->dimension())(state_.primitive_to_node(), Eigen::all)); // grad wrt. vertices
-
-			assert(grad.cols() == 1);
-
-			gradv.setZero(x.size());
-			for (auto &p : variable_to_simulations_)
-			{
-				if (&p->get_state() != &state_)
-					continue;
-				if (p->get_parameter_type() != ParameterType::Shape)
-					continue;
-				gradv += p->get_parametrization().apply_jacobian(grad, x);
-			}
-		}
-
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
-		{
-			return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
-		}
-
-		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override
-		{
-			Eigen::VectorXd X = get_updated_mesh_nodes(x1);
-			Eigen::MatrixXd V1 = utils::unflatten(X, state_.mesh->dimension());
-
-			bool flipped = is_flipped(V1, F);
-			return !flipped;
-		}
-
-	private:
-		// Eigen::VectorXd get_vertex_to_gbasis(const Eigen::VectorXd &x) const
-		// {
-		// 	const int dim = state_.mesh->dimension();
-		// 	auto primitive_to_node = state_.primitive_to_node();
-
-		// 	Eigen::VectorXd X;
-		// 	X.setZero(x.size());
-		// 	for (int v = 0; v < (x.size() / dim); v++)
-		// 		X.segment(primitive_to_node[v] * dim, dim) = x.segment(v * dim, dim);
-
-		// 	return X;
-		// }
 
 		Eigen::VectorXd map_primitive_to_node_order(const Eigen::VectorXd &primitives) const
 		{
@@ -294,7 +280,7 @@ namespace polyfem::solver
 
 		const State &state_;
 
-		Eigen::MatrixXd X_init;
+		Eigen::VectorXd X_init;
 		Eigen::MatrixXi F;
 		std::vector<polyfem::basis::ElementBases> init_geom_bases_;
 		assembler::AssemblyValsCache init_ass_vals_cache_;
