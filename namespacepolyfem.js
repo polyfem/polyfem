@@ -58,6 +58,12 @@ var namespacepolyfem =
     [ "RowVectorNd", "namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321", null ],
     [ "StiffnessMatrix", "namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4", null ],
     [ "VectorNd", "namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c", null ],
+    [ "ElasticityTensorType", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1", [
+      [ "CAUCHY", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a9d0e3157464d10e95bff71bbcf0001ad", null ],
+      [ "PK1", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e", null ],
+      [ "PK2", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ab13248d68ac5516c015337b68346fc21", null ],
+      [ "F", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012", null ]
+    ] ],
     [ "compute_diplacement_grad", "namespacepolyfem.html#afe7d5ac326e47bbc47caa5539c4f8172", null ],
     [ "compute_disp_grad_at_quad", "namespacepolyfem.html#a4c7c05580a3be89a6cc9482963513a46", null ],
     [ "compute_integral_constraints", "namespacepolyfem.html#a066ceec9d3e84702a92a3c8d53b5a8ce", null ],
@@ -69,6 +75,8 @@ var namespacepolyfem =
     [ "log_and_throw_error", "namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391", null ],
     [ "log_and_throw_error", "namespacepolyfem.html#ae4cde5432ad6f53159237d00d3c14623", null ],
     [ "logger", "namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd", null ],
+    [ "pk1_from_cauchy", "namespacepolyfem.html#aaf867383bfea72c587035f4e3346bb21", null ],
+    [ "pk2_from_cauchy", "namespacepolyfem.html#a2e0e4c0eef41d449e66abee527fc8e13", null ],
     [ "second_invariant", "namespacepolyfem.html#a9845e724ca91d9f20e3ac9bc558c1176", null ],
     [ "set_logger", "namespacepolyfem.html#ac64c417f742692869f9528d2cd10d569", null ],
     [ "third_invariant", "namespacepolyfem.html#a4d8e2f58cbf23bf646a53391b4fddf57", null ],

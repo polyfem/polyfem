@@ -170,7 +170,7 @@ $(document).ready(function(){initNavTree('_mesh_8cpp_source.html',''); initResiz
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> DerivedT, <span class="keyword">typename</span> DerivedF&gt;</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordtype">void</span> get_faces(</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <span class="keyword">const</span> Eigen::MatrixBase&lt;DerivedT&gt; &amp;T,</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            Eigen::PlainObjectBase&lt;DerivedF&gt; &amp;F)</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            Eigen::PlainObjectBase&lt;DerivedF&gt; &amp;<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>)</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        {</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            assert(T.cols() == 4);</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            assert(T.rows() &gt;= 1);</div>
@@ -180,8 +180,8 @@ $(document).ready(function(){initNavTree('_mesh_8cpp_source.html',''); initResiz
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            igl::oriented_facets(T, OF); <span class="comment">// boundary facets + duplicated interior faces</span></div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            assert((OF.rows() + BF.rows()) % 2 == 0);</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> num_faces = (OF.rows() + BF.rows()) / 2;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            F.resize(num_faces, 3);</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            F.topRows(BF.rows()) = BF;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.resize(num_faces, 3);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.topRows(BF.rows()) = BF;</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            std::unordered_set&lt;std::vector&lt;int&gt;, <a class="code hl_struct" href="structpolyfem_1_1utils_1_1_hash_vector.html">HashVector</a>&gt; processed_faces;</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> fi = 0; fi &lt; BF.rows(); fi++)</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            {</div>
@@ -194,12 +194,12 @@ $(document).ready(function(){initNavTree('_mesh_8cpp_source.html',''); initResiz
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                <span class="keyword">const</span> <span class="keyword">auto</span> iter = processed_faces.find(sorted_face);</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                <span class="keywordflow">if</span> (iter == processed_faces.end())</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                {</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                    F.row(processed_faces.size()) = OF.row(fi);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                    <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.row(processed_faces.size()) = OF.row(fi);</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                    processed_faces.insert(sorted_face);</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                }</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            }</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            assert(F.rows() == processed_faces.size());</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            assert(<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.rows() == processed_faces.size());</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        }</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    } <span class="comment">// namespace</span></div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
@@ -815,6 +815,7 @@ $(document).ready(function(){initNavTree('_mesh_8cpp_source.html',''); initResiz
 <div class="ttc" id="anamespacepolyfem_html_a03f3d75072d2fd19f70cd886a51d10dd"><div class="ttname"><a href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">polyfem::logger</a></div><div class="ttdeci">spdlog::logger &amp; logger()</div><div class="ttdoc">Retrieves the current logger.</div><div class="ttdef"><b>Definition:</b> <a href="_logger_8cpp_source.html#l00021">Logger.cpp:21</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a5d46d4510849a3d306dc60d4f365dc2c"><div class="ttname"><a href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">polyfem::VectorNd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt; VectorNd</div><div class="ttdef"><b>Definition:</b> <a href="_types_8hpp_source.html#l00009">Types.hpp:9</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a9b6c0c90bf84bff37213e17517526dd2"><div class="ttname"><a href="namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2">polyfem::MatrixNd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor, 3, 3 &gt; MatrixNd</div><div class="ttdef"><b>Definition:</b> <a href="_types_8hpp_source.html#l00011">Types.hpp:11</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html_ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012"><div class="ttname"><a href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::ElasticityTensorType::F</a></div><div class="ttdeci">@ F</div></div>
 <div class="ttc" id="anamespacepolyfem_html_abe6f92d10f655cb8c4ded3f58a6dc321"><div class="ttname"><a href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">polyfem::RowVectorNd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 1, Eigen::Dynamic, Eigen::RowMajor, 1, 3 &gt; RowVectorNd</div><div class="ttdef"><b>Definition:</b> <a href="_types_8hpp_source.html#l00010">Types.hpp:10</a></div></div>
 <div class="ttc" id="astructpolyfem_1_1utils_1_1_hash_pair_html"><div class="ttname"><a href="structpolyfem_1_1utils_1_1_hash_pair.html">polyfem::utils::HashPair</a></div><div class="ttdef"><b>Definition:</b> <a href="_hash_utils_8hpp_source.html#l00009">HashUtils.hpp:10</a></div></div>
 <div class="ttc" id="astructpolyfem_1_1utils_1_1_hash_vector_html"><div class="ttname"><a href="structpolyfem_1_1utils_1_1_hash_vector.html">polyfem::utils::HashVector</a></div><div class="ttdef"><b>Definition:</b> <a href="_hash_utils_8hpp_source.html#l00059">HashUtils.hpp:60</a></div></div>

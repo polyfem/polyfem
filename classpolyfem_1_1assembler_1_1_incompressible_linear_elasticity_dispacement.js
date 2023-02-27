@@ -2,9 +2,9 @@ var classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement =
 [
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a2d29b61711a25821db4d32754211894e", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a0794839fd31123f6bde3d4d9160bd0b6", null ],
-    [ "assign_stress_tensor", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a3df07bc56e4808a4ebd5e4888805d28e", null ],
+    [ "assign_stress_tensor", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#ab45042c2730c85c368d0047117fc1824", null ],
     [ "compute_rhs", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#ae7d591453a70e50878b2f8584181e746", null ],
-    [ "compute_stress_tensor", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a49f1719eab13b33206060b9ab62c019e", null ],
+    [ "compute_stress_tensor", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a18d6b29be75f210ab4abdb500b9a418d", null ],
     [ "compute_von_mises_stresses", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a53bf90ebe8521bc75e434a1a9efbcfdb", null ],
     [ "set_params", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a869257ef075dfc355925647c95fb2712", null ],
     [ "set_size", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#af17d57dd06f0bcb73ca8ac3b25db3f8d", null ],

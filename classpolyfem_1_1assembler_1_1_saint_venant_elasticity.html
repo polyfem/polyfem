@@ -158,8 +158,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a85fe43d5ca9d029f06773c2f5e3132e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e77f88163378982ba93c8d90524ff4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a8e77f88163378982ba93c8d90524ff4b">compute_von_mises_stresses</a> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, Eigen::MatrixXd &amp;stresses) const</td></tr>
 <tr class="separator:a8e77f88163378982ba93c8d90524ff4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5bc6fe6f6302e84c761917fcb06bc51a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a5bc6fe6f6302e84c761917fcb06bc51a">compute_stress_tensor</a> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, Eigen::MatrixXd &amp;tensor) const</td></tr>
-<tr class="separator:a5bc6fe6f6302e84c761917fcb06bc51a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a088f087badb1c7f74abd40c47234b1ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a088f087badb1c7f74abd40c47234b1ec">compute_stress_tensor</a> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, const <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1">ElasticityTensorType</a> &amp;type, Eigen::MatrixXd &amp;tensor) const</td></tr>
+<tr class="separator:a088f087badb1c7f74abd40c47234b1ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf97583fc693eca6f42e50998a0fb0f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#abf97583fc693eca6f42e50998a0fb0f8">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
 <tr class="separator:abf97583fc693eca6f42e50998a0fb0f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -171,8 +171,8 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a5fc86f7f739a505a8d337f3fbb1c08da"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a5fc86f7f739a505a8d337f3fbb1c08da"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a5fc86f7f739a505a8d337f3fbb1c08da">compute_energy_aux</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data) const</td></tr>
 <tr class="separator:a5fc86f7f739a505a8d337f3fbb1c08da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa73471bf6a20dca0a677016493a40b06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#aa73471bf6a20dca0a677016493a40b06">assign_stress_tensor</a> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, const int all_size, Eigen::MatrixXd &amp;all, const std::function&lt; Eigen::MatrixXd(const Eigen::MatrixXd &amp;)&gt; &amp;fun) const</td></tr>
-<tr class="separator:aa73471bf6a20dca0a677016493a40b06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bbad20f6021d7f175643f81cbff4695"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a8bbad20f6021d7f175643f81cbff4695">assign_stress_tensor</a> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, const int all_size, const <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1">ElasticityTensorType</a> &amp;type, Eigen::MatrixXd &amp;all, const std::function&lt; Eigen::MatrixXd(const Eigen::MatrixXd &amp;)&gt; &amp;fun) const</td></tr>
+<tr class="separator:a8bbad20f6021d7f175643f81cbff4695"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -200,7 +200,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00038">38</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00027">27</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
 
 </div>
 </div>
@@ -231,7 +231,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00042">42</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00031">31</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00045">elasticity_tensor_</a>, <a class="el" href="_mat_params_8cpp_source.html#l00089">polyfem::assembler::ElasticityTensor::set_from_entries()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00163">polyfem::assembler::ElasticityTensor::set_from_lambda_mu()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00207">polyfem::assembler::ElasticityTensor::set_from_young_poisson()</a>, and <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00043">size_</a>.</p>
 
@@ -267,7 +267,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00105">105</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00094">94</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00012">polyfem::gradient_from_energy()</a>, <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
 
@@ -303,7 +303,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00127">127</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00116">116</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00109">polyfem::hessian_from_energy()</a>, <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
 
@@ -323,8 +323,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="aa73471bf6a20dca0a677016493a40b06" name="aa73471bf6a20dca0a677016493a40b06"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa73471bf6a20dca0a677016493a40b06">&#9670;&#160;</a></span>assign_stress_tensor()</h2>
+<a id="a8bbad20f6021d7f175643f81cbff4695" name="a8bbad20f6021d7f175643f81cbff4695"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bbad20f6021d7f175643f81cbff4695">&#9670;&#160;</a></span>assign_stress_tensor()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -371,6 +371,12 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1">ElasticityTensorType</a> &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
           <td class="paramname"><em>all</em>, </td>
         </tr>
@@ -393,21 +399,21 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00164">164</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00153">153</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00203">polyfem::compute_diplacement_grad()</a>, <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00078">stress()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00203">polyfem::compute_diplacement_grad()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e">polyfem::PK1</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00251">polyfem::pk1_from_cauchy()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ab13248d68ac5516c015337b68346fc21">polyfem::PK2</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00256">polyfem::pk2_from_cauchy()</a>, <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00067">stress()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00146">compute_stress_tensor()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00155">compute_von_mises_stresses()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00135">compute_stress_tensor()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00144">compute_von_mises_stresses()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_saint_venant_elasticity_aa73471bf6a20dca0a677016493a40b06_cgraph.svg" width="100%" height="441"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_saint_venant_elasticity_a8bbad20f6021d7f175643f81cbff4695_cgraph.svg" width="100%" height="515"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_saint_venant_elasticity_aa73471bf6a20dca0a677016493a40b06_icgraph.svg" width="100%" height="408"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_saint_venant_elasticity_a8bbad20f6021d7f175643f81cbff4695_icgraph.svg" width="100%" height="408"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -469,7 +475,7 @@ template&lt;typename T &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00220">220</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00085">polyfem::compute_disp_grad_at_quad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00050">polyfem::get_local_disp()</a>, <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00078">stress()</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00096">polyfem::compute_disp_grad_at_quad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00061">polyfem::get_local_disp()</a>, <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00067">stress()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -495,7 +501,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00089">89</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00078">78</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00045">elasticity_tensor_</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00292">polyfem::autogen::saint_venant_2d_function()</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00382">polyfem::autogen::saint_venant_3d_function()</a>, and <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>.</p>
 <div class="dynheader">
@@ -507,8 +513,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a5bc6fe6f6302e84c761917fcb06bc51a" name="a5bc6fe6f6302e84c761917fcb06bc51a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5bc6fe6f6302e84c761917fcb06bc51a">&#9670;&#160;</a></span>compute_stress_tensor()</h2>
+<a id="a088f087badb1c7f74abd40c47234b1ec" name="a088f087badb1c7f74abd40c47234b1ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a088f087badb1c7f74abd40c47234b1ec">&#9670;&#160;</a></span>compute_stress_tensor()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -546,6 +552,12 @@ Here is the call graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1">ElasticityTensorType</a> &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
           <td class="paramname"><em>tensor</em>&#160;</td>
         </tr>
@@ -557,21 +569,21 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00146">146</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00135">135</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00164">assign_stress_tensor()</a>, <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00078">stress()</a>.</p>
+<p class="reference">References <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00153">assign_stress_tensor()</a>, <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00067">stress()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00122">polyfem::assembler::MultiModel::compute_stress_tensor()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_saint_venant_elasticity_a5bc6fe6f6302e84c761917fcb06bc51a_cgraph.svg" width="100%" height="438"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_saint_venant_elasticity_a088f087badb1c7f74abd40c47234b1ec_cgraph.svg" width="100%" height="515"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_saint_venant_elasticity_a5bc6fe6f6302e84c761917fcb06bc51a_icgraph.svg" width="408" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_saint_venant_elasticity_a088f087badb1c7f74abd40c47234b1ec_icgraph.svg" width="408" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -627,15 +639,15 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00155">155</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00144">144</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00164">assign_stress_tensor()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00078">stress()</a>, and <a class="el" href="_elasticity_utils_8cpp_source.html#l00230">polyfem::von_mises_stress_for_stress_tensor()</a>.</p>
+<p class="reference">References <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00153">assign_stress_tensor()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a9d0e3157464d10e95bff71bbcf0001ad">polyfem::CAUCHY</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00067">stress()</a>, and <a class="el" href="_elasticity_utils_8cpp_source.html#l00230">polyfem::von_mises_stress_for_stress_tensor()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00145">polyfem::assembler::MultiModel::compute_von_mises_stresses()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_saint_venant_elasticity_a8e77f88163378982ba93c8d90524ff4b_cgraph.svg" width="100%" height="476"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_saint_venant_elasticity_a8e77f88163378982ba93c8d90524ff4b_cgraph.svg" width="100%" height="528"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
@@ -663,7 +675,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00071">71</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00060">60</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00045">elasticity_tensor_</a>, <a class="el" href="_mat_params_8cpp_source.html#l00055">polyfem::assembler::ElasticityTensor::resize()</a>, <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>, and <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00043">size_</a>.</p>
 
@@ -744,7 +756,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00043">size_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00105">assemble_grad()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00127">assemble_hessian()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00164">assign_stress_tensor()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00220">compute_energy_aux()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00089">compute_rhs()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00146">compute_stress_tensor()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00071">set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00094">assemble_grad()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00116">assemble_hessian()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00153">assign_stress_tensor()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00220">compute_energy_aux()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00078">compute_rhs()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00135">compute_stress_tensor()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00060">set_size()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -818,11 +830,11 @@ template&lt;typename T , unsigned long N&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00078">78</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00067">67</a> of file <a class="el" href="_saint_venant_elasticity_8cpp_source.html">SaintVenantElasticity.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00045">elasticity_tensor_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00164">assign_stress_tensor()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00220">compute_energy_aux()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00146">compute_stress_tensor()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00155">compute_von_mises_stresses()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00153">assign_stress_tensor()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00220">compute_energy_aux()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00135">compute_stress_tensor()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00144">compute_von_mises_stresses()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -855,7 +867,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00045">45</a> of file <a class="el" href="_saint_venant_elasticity_8hpp_source.html">SaintVenantElasticity.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00042">add_multimaterial()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00089">compute_rhs()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00071">set_size()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00078">stress()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00031">add_multimaterial()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00078">compute_rhs()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00060">set_size()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00067">stress()</a>.</p>
 
 </div>
 </div>
@@ -881,7 +893,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00043">43</a> of file <a class="el" href="_saint_venant_elasticity_8hpp_source.html">SaintVenantElasticity.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00042">add_multimaterial()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00071">set_size()</a>, and <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00031">add_multimaterial()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00060">set_size()</a>, and <a class="el" href="_saint_venant_elasticity_8hpp_source.html#l00031">size()</a>.</p>
 
 </div>
 </div>

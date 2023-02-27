@@ -150,7 +150,7 @@ $(document).ready(function(){initNavTree('_o_b_j_reader_8hpp_source.html',''); i
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            std::vector&lt;std::vector&lt;double&gt;&gt; &amp;V,</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            std::vector&lt;std::vector&lt;double&gt;&gt; &amp;TC,</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            std::vector&lt;std::vector&lt;double&gt;&gt; &amp;N,</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;F,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>,</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;FTC,</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;FN,</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;L);</div>
@@ -160,7 +160,7 @@ $(document).ready(function(){initNavTree('_o_b_j_reader_8hpp_source.html',''); i
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            std::vector&lt;std::vector&lt;double&gt;&gt; &amp;V,</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            std::vector&lt;std::vector&lt;double&gt;&gt; &amp;TC,</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            std::vector&lt;std::vector&lt;double&gt;&gt; &amp;N,</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;F,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>,</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;FTC,</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;FN,</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;L);</div>
@@ -168,20 +168,21 @@ $(document).ready(function(){initNavTree('_o_b_j_reader_8hpp_source.html',''); i
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classpolyfem_1_1io_1_1_o_b_j_reader.html#a5aaf18ddd73e237912d47f2c4a998ec2">read</a>(</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keyword">const</span> std::string obj_file_name,</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            std::vector&lt;std::vector&lt;double&gt;&gt; &amp;V,</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;F,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>,</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            std::vector&lt;std::vector&lt;int&gt;&gt; &amp;L);</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classpolyfem_1_1io_1_1_o_b_j_reader.html#a5aaf18ddd73e237912d47f2c4a998ec2">read</a>(</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keyword">const</span> std::string str,</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            Eigen::MatrixXd &amp;V,</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            Eigen::MatrixXi &amp;E,</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            Eigen::MatrixXi &amp;F);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            Eigen::MatrixXi &amp;<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>);</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    };</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>} <span class="comment">// namespace polyfem::io</span></div>
 <div class="ttc" id="aclasspolyfem_1_1io_1_1_o_b_j_reader_html"><div class="ttname"><a href="classpolyfem_1_1io_1_1_o_b_j_reader.html">polyfem::io::OBJReader</a></div><div class="ttdef"><b>Definition:</b> <a href="_o_b_j_reader_8hpp_source.html#l00019">OBJReader.hpp:20</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1io_1_1_o_b_j_reader_html_a355379bd80f9d347147f2c6ff97efcd6"><div class="ttname"><a href="classpolyfem_1_1io_1_1_o_b_j_reader.html#a355379bd80f9d347147f2c6ff97efcd6">polyfem::io::OBJReader::OBJReader</a></div><div class="ttdeci">OBJReader()=delete</div></div>
 <div class="ttc" id="aclasspolyfem_1_1io_1_1_o_b_j_reader_html_a5aaf18ddd73e237912d47f2c4a998ec2"><div class="ttname"><a href="classpolyfem_1_1io_1_1_o_b_j_reader.html#a5aaf18ddd73e237912d47f2c4a998ec2">polyfem::io::OBJReader::read</a></div><div class="ttdeci">static bool read(const std::string obj_file_name, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;V, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;TC, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;N, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;F, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;FTC, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;FN, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;L)</div><div class="ttdoc">Read a mesh from an ascii obj file.</div><div class="ttdef"><b>Definition:</b> <a href="_o_b_j_reader_8cpp_source.html#l00032">OBJReader.cpp:32</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1io_html"><div class="ttname"><a href="namespacepolyfem_1_1io.html">polyfem::io</a></div><div class="ttdef"><b>Definition:</b> <a href="_evaluator_8cpp_source.html#l00021">Evaluator.cpp:22</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html_ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012"><div class="ttname"><a href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::ElasticityTensorType::F</a></div><div class="ttdeci">@ F</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

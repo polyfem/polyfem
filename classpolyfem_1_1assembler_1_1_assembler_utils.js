@@ -1,5 +1,6 @@
 var classpolyfem_1_1assembler_1_1_assembler_utils =
 [
+    [ "NamedMatrix", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aff6a221902ba651c1390c8d1e06f5ecb", null ],
     [ "ParamFunc", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a9bf585fe7fc81a4b569d0132a7941970", null ],
     [ "BasisType", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93c", [
       [ "SIMPLEX_LAGRANGE", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93caafefc7ae5fe3420e0323b2a46660b139", null ],
@@ -17,8 +18,8 @@ var classpolyfem_1_1assembler_1_1_assembler_utils =
     [ "assemble_pressure_problem", "classpolyfem_1_1assembler_1_1_assembler_utils.html#ab0f2f8fc05b10b7f393e274cfdaf8417", null ],
     [ "assemble_problem", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a884c09d7d1bf0c08a61eaa1dea96ab77", null ],
     [ "compute_rhs", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a74f032d63e9ded58875c38053b8ad0d0", null ],
-    [ "compute_scalar_value", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aa5eb30cf750a18e20c19ecde93fc3bde", null ],
-    [ "compute_tensor_value", "classpolyfem_1_1assembler_1_1_assembler_utils.html#addd752547163ac089167266b4895bf4a", null ],
+    [ "compute_scalar_value", "classpolyfem_1_1assembler_1_1_assembler_utils.html#ab98ba98e47e82ab0ee9d1fe46347b3a8", null ],
+    [ "compute_tensor_value", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a06cd824da607c921bbf8f1629ddad8d2", null ],
     [ "density", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a0acace118edf344b90d3a56691abd115", null ],
     [ "has_damping", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a8e8f0ffad83b13e274fd537b6f8e1e7e", null ],
     [ "init_multimodels", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a0998defe6831960aa8ce69168a866539", null ],

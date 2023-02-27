@@ -1,5 +1,14 @@
 var NAVTREEINDEX2 =
 {
+"_misc_problem_8cpp.html":[5,0,1,0,5,6],
+"_misc_problem_8cpp_source.html":[5,0,1,0,5,6],
+"_misc_problem_8hpp.html":[5,0,1,0,5,7],
+"_misc_problem_8hpp_source.html":[5,0,1,0,5,7],
+"_mooney_rivlin_elasticity_8cpp.html":[5,0,1,0,0,30],
+"_mooney_rivlin_elasticity_8cpp_source.html":[5,0,1,0,0,30],
+"_mooney_rivlin_elasticity_8hpp.html":[5,0,1,0,0,31],
+"_mooney_rivlin_elasticity_8hpp_source.html":[5,0,1,0,0,31],
+"_more_thuente_line_search_8hpp.html":[5,0,1,0,8,1,5],
 "_more_thuente_line_search_8hpp_source.html":[5,0,1,0,8,1,5],
 "_msh_reader_8cpp.html":[5,0,1,0,3,4],
 "_msh_reader_8cpp.html#a50d2a67a897e7e93c2891fbf5dd792d0":[5,0,1,0,3,4,0],
@@ -240,14 +249,5 @@ var NAVTREEINDEX2 =
 "_singularities_8hpp.html":[5,0,1,0,4,0,13],
 "_singularities_8hpp.html#a6c2f88605218d9c84cb80764dd0887db":[5,0,1,0,4,0,13,0],
 "_singularities_8hpp.html#a78a20bc192a325efd376142bae8605c0":[5,0,1,0,4,0,13,3],
-"_singularities_8hpp.html#ad0c1bdc69a7ad16cfa3eeb7d23b60867":[5,0,1,0,4,0,13,1],
-"_singularities_8hpp.html#aeb087429296c4e79bd346db0fce81ec5":[5,0,1,0,4,0,13,2],
-"_singularities_8hpp_source.html":[5,0,1,0,4,0,13],
-"_solve_data_8cpp.html":[5,0,1,0,8,16],
-"_solve_data_8cpp_source.html":[5,0,1,0,8,16],
-"_solve_data_8hpp.html":[5,0,1,0,8,17],
-"_solve_data_8hpp_source.html":[5,0,1,0,8,17],
-"_sparse_newton_descent_solver_8hpp.html":[5,0,1,0,8,18],
-"_sparse_newton_descent_solver_8hpp_source.html":[5,0,1,0,8,18],
-"_sparse_newton_descent_solver_8tpp.html":[5,0,1,0,8,19]
+"_singularities_8hpp.html#ad0c1bdc69a7ad16cfa3eeb7d23b60867":[5,0,1,0,4,0,13,1]
 };

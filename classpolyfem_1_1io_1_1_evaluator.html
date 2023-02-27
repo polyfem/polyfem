@@ -156,15 +156,15 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:aec233b5188dfddbc5256509c1081e547"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_evaluator.html#aec233b5188dfddbc5256509c1081e547">interpolate_at_local_vals</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int actual_dim, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const int el_index, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result, Eigen::MatrixXd &amp;result_grad)</td></tr>
 <tr class="memdesc:aec233b5188dfddbc5256509c1081e547"><td class="mdescLeft">&#160;</td><td class="mdescRight">interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element using bases bases interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)  <a href="classpolyfem_1_1io_1_1_evaluator.html#aec233b5188dfddbc5256509c1081e547">More...</a><br /></td></tr>
 <tr class="separator:aec233b5188dfddbc5256509c1081e547"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a986b570a15726b4b5cd982c0dc37858b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_evaluator.html#a986b570a15726b4b5cd982c0dc37858b">compute_scalar_value</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool is_problem_scalar, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const Eigen::VectorXi &amp;disc_orders, const std::map&lt; int, Eigen::MatrixXd &gt; &amp;polys, const std::map&lt; int, std::pair&lt; Eigen::MatrixXd, Eigen::MatrixXi &gt; &gt; &amp;polys_3d, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;formulation, const <a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html">utils::RefElementSampler</a> &amp;sampler, const int n_points, const Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result, const bool use_sampler, const bool boundary_only)</td></tr>
-<tr class="memdesc:a986b570a15726b4b5cd982c0dc37858b"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)  <a href="classpolyfem_1_1io_1_1_evaluator.html#a986b570a15726b4b5cd982c0dc37858b">More...</a><br /></td></tr>
-<tr class="separator:a986b570a15726b4b5cd982c0dc37858b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa52d1cc4158d9ae80fb7d5bf69700336"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_evaluator.html#aa52d1cc4158d9ae80fb7d5bf69700336">average_grad_based_function</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool is_problem_scalar, const int n_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const Eigen::VectorXi &amp;disc_orders, const std::map&lt; int, Eigen::MatrixXd &gt; &amp;polys, const std::map&lt; int, std::pair&lt; Eigen::MatrixXd, Eigen::MatrixXi &gt; &gt; &amp;polys_3d, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;formulation, const <a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html">utils::RefElementSampler</a> &amp;sampler, const int n_points, const Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result_scalar, Eigen::MatrixXd &amp;result_tensor, const bool use_sampler, const bool boundary_only)</td></tr>
-<tr class="memdesc:aa52d1cc4158d9ae80fb7d5bf69700336"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the scalar value is averaged around every node to make it continuos  <a href="classpolyfem_1_1io_1_1_evaluator.html#aa52d1cc4158d9ae80fb7d5bf69700336">More...</a><br /></td></tr>
-<tr class="separator:aa52d1cc4158d9ae80fb7d5bf69700336"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24e2cae8cea1b4a4f8b0c446886b8953"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_evaluator.html#a24e2cae8cea1b4a4f8b0c446886b8953">compute_tensor_value</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool is_problem_scalar, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const Eigen::VectorXi &amp;disc_orders, const std::map&lt; int, Eigen::MatrixXd &gt; &amp;polys, const std::map&lt; int, std::pair&lt; Eigen::MatrixXd, Eigen::MatrixXi &gt; &gt; &amp;polys_3d, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;formulation, const <a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html">utils::RefElementSampler</a> &amp;sampler, const int n_points, const Eigen::MatrixXd &amp;fun, Eigen::MatrixXd &amp;result, const bool use_sampler, const bool boundary_only)</td></tr>
-<tr class="memdesc:a24e2cae8cea1b4a4f8b0c446886b8953"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute tensor quantity (ie stress tensor or velocy)  <a href="classpolyfem_1_1io_1_1_evaluator.html#a24e2cae8cea1b4a4f8b0c446886b8953">More...</a><br /></td></tr>
-<tr class="separator:a24e2cae8cea1b4a4f8b0c446886b8953"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50d6bffe05b847f6f0f2fe470046dfe3"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_evaluator.html#a50d6bffe05b847f6f0f2fe470046dfe3">compute_scalar_value</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool is_problem_scalar, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const Eigen::VectorXi &amp;disc_orders, const std::map&lt; int, Eigen::MatrixXd &gt; &amp;polys, const std::map&lt; int, std::pair&lt; Eigen::MatrixXd, Eigen::MatrixXi &gt; &gt; &amp;polys_3d, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;formulation, const <a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html">utils::RefElementSampler</a> &amp;sampler, const int n_points, const Eigen::MatrixXd &amp;fun, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#aff6a221902ba651c1390c8d1e06f5ecb">assembler::AssemblerUtils::NamedMatrix</a> &gt; &amp;result, const bool use_sampler, const bool boundary_only)</td></tr>
+<tr class="memdesc:a50d6bffe05b847f6f0f2fe470046dfe3"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)  <a href="classpolyfem_1_1io_1_1_evaluator.html#a50d6bffe05b847f6f0f2fe470046dfe3">More...</a><br /></td></tr>
+<tr class="separator:a50d6bffe05b847f6f0f2fe470046dfe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1a39b96cf454d41e627d86f950fa48c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_evaluator.html#ac1a39b96cf454d41e627d86f950fa48c">average_grad_based_function</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool is_problem_scalar, const int n_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const Eigen::VectorXi &amp;disc_orders, const std::map&lt; int, Eigen::MatrixXd &gt; &amp;polys, const std::map&lt; int, std::pair&lt; Eigen::MatrixXd, Eigen::MatrixXi &gt; &gt; &amp;polys_3d, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;formulation, const <a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html">utils::RefElementSampler</a> &amp;sampler, const int n_points, const Eigen::MatrixXd &amp;fun, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#aff6a221902ba651c1390c8d1e06f5ecb">assembler::AssemblerUtils::NamedMatrix</a> &gt; &amp;result_scalar, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#aff6a221902ba651c1390c8d1e06f5ecb">assembler::AssemblerUtils::NamedMatrix</a> &gt; &amp;result_tensor, const bool use_sampler, const bool boundary_only)</td></tr>
+<tr class="memdesc:ac1a39b96cf454d41e627d86f950fa48c"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the scalar value is averaged around every node to make it continuos  <a href="classpolyfem_1_1io_1_1_evaluator.html#ac1a39b96cf454d41e627d86f950fa48c">More...</a><br /></td></tr>
+<tr class="separator:ac1a39b96cf454d41e627d86f950fa48c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66168451812a6618e1a54cfda56aa2f3"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_evaluator.html#a66168451812a6618e1a54cfda56aa2f3">compute_tensor_value</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool is_problem_scalar, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const Eigen::VectorXi &amp;disc_orders, const std::map&lt; int, Eigen::MatrixXd &gt; &amp;polys, const std::map&lt; int, std::pair&lt; Eigen::MatrixXd, Eigen::MatrixXi &gt; &gt; &amp;polys_3d, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;formulation, const <a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html">utils::RefElementSampler</a> &amp;sampler, const int n_points, const Eigen::MatrixXd &amp;fun, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#aff6a221902ba651c1390c8d1e06f5ecb">assembler::AssemblerUtils::NamedMatrix</a> &gt; &amp;result, const bool use_sampler, const bool boundary_only)</td></tr>
+<tr class="memdesc:a66168451812a6618e1a54cfda56aa2f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute tensor quantity (ie stress tensor or velocy)  <a href="classpolyfem_1_1io_1_1_evaluator.html#a66168451812a6618e1a54cfda56aa2f3">More...</a><br /></td></tr>
+<tr class="separator:a66168451812a6618e1a54cfda56aa2f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a20b3ef05c1ce19dc0494739e877b7b"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_evaluator.html#a8a20b3ef05c1ce19dc0494739e877b7b">interpolate_boundary_function</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const bool is_problem_scalar, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXi &amp;faces, const Eigen::MatrixXd &amp;fun, const bool compute_avg, Eigen::MatrixXd &amp;result)</td></tr>
 <tr class="memdesc:a8a20b3ef05c1ce19dc0494739e877b7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">computes integrated solution (fun) per surface face.  <a href="classpolyfem_1_1io_1_1_evaluator.html#a8a20b3ef05c1ce19dc0494739e877b7b">More...</a><br /></td></tr>
 <tr class="separator:a8a20b3ef05c1ce19dc0494739e877b7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -218,8 +218,8 @@ Private Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="aa52d1cc4158d9ae80fb7d5bf69700336" name="aa52d1cc4158d9ae80fb7d5bf69700336"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa52d1cc4158d9ae80fb7d5bf69700336">&#9670;&#160;</a></span>average_grad_based_function()</h2>
+<a id="ac1a39b96cf454d41e627d86f950fa48c" name="ac1a39b96cf454d41e627d86f950fa48c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1a39b96cf454d41e627d86f950fa48c">&#9670;&#160;</a></span>average_grad_based_function()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -308,13 +308,13 @@ Private Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#aff6a221902ba651c1390c8d1e06f5ecb">assembler::AssemblerUtils::NamedMatrix</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>result_scalar</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#aff6a221902ba651c1390c8d1e06f5ecb">assembler::AssemblerUtils::NamedMatrix</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>result_tensor</em>, </td>
         </tr>
         <tr>
@@ -366,21 +366,21 @@ Private Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00571">571</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00559">559</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00311">polyfem::assembler::AssemblerUtils::compute_scalar_value()</a>, <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_basis_8hpp_source.html#l00091">polyfem::basis::Basis::global()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00845">interpolate_function()</a>, <a class="el" href="_mesh_8cpp_source.html#l00347">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00417">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l00837">polyfem::autogen::p_nodes_2d()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l02805">polyfem::autogen::p_nodes_3d()</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l00937">polyfem::autogen::q_nodes_2d()</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l04279">polyfem::autogen::q_nodes_3d()</a>, <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>.</p>
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00311">polyfem::assembler::AssemblerUtils::compute_scalar_value()</a>, <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_basis_8hpp_source.html#l00091">polyfem::basis::Basis::global()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00873">interpolate_function()</a>, <a class="el" href="_mesh_8cpp_source.html#l00347">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00417">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l00837">polyfem::autogen::p_nodes_2d()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l02805">polyfem::autogen::p_nodes_3d()</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l00937">polyfem::autogen::q_nodes_2d()</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l04279">polyfem::autogen::q_nodes_3d()</a>, <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01046">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_aa52d1cc4158d9ae80fb7d5bf69700336_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_ac1a39b96cf454d41e627d86f950fa48c_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_aa52d1cc4158d9ae80fb7d5bf69700336_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_ac1a39b96cf454d41e627d86f950fa48c_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -499,7 +499,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>if mises are nan </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l01034">1034</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l01052">1052</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_assembler_utils_8cpp_source.html#l00311">polyfem::assembler::AssemblerUtils::compute_scalar_value()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00037">polyfem::utils::RefElementSampler::cube_points()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af71fd4b4fd8eb19cb6315af09263c09c">polyfem::mesh::Mesh::is_boundary_element()</a>, <a class="el" href="_mesh_8cpp_source.html#l00347">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00417">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l00837">polyfem::autogen::p_nodes_2d()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l02805">polyfem::autogen::p_nodes_3d()</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l00937">polyfem::autogen::q_nodes_2d()</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l04279">polyfem::autogen::q_nodes_3d()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00368">polyfem::utils::RefElementSampler::sample_polygon()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00409">polyfem::utils::RefElementSampler::sample_polyhedron()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00043">polyfem::utils::RefElementSampler::simplex_points()</a>.</p>
 <div class="dynheader">
@@ -511,8 +511,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a986b570a15726b4b5cd982c0dc37858b" name="a986b570a15726b4b5cd982c0dc37858b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a986b570a15726b4b5cd982c0dc37858b">&#9670;&#160;</a></span>compute_scalar_value()</h2>
+<a id="a50d6bffe05b847f6f0f2fe470046dfe3" name="a50d6bffe05b847f6f0f2fe470046dfe3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50d6bffe05b847f6f0f2fe470046dfe3">&#9670;&#160;</a></span>compute_scalar_value()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -595,7 +595,7 @@ Here is the call graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#aff6a221902ba651c1390c8d1e06f5ecb">assembler::AssemblerUtils::NamedMatrix</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>result</em>, </td>
         </tr>
         <tr>
@@ -645,21 +645,21 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l01119">1119</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l01134">1134</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_assembler_utils_8cpp_source.html#l00311">polyfem::assembler::AssemblerUtils::compute_scalar_value()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00037">polyfem::utils::RefElementSampler::cube_points()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af71fd4b4fd8eb19cb6315af09263c09c">polyfem::mesh::Mesh::is_boundary_element()</a>, <a class="el" href="_mesh_8cpp_source.html#l00347">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00417">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l00837">polyfem::autogen::p_nodes_2d()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l02805">polyfem::autogen::p_nodes_3d()</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l00937">polyfem::autogen::q_nodes_2d()</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l04279">polyfem::autogen::q_nodes_3d()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00368">polyfem::utils::RefElementSampler::sample_polygon()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00409">polyfem::utils::RefElementSampler::sample_polyhedron()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00043">polyfem::utils::RefElementSampler::simplex_points()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01046">polyfem::io::OutGeometryData::save_volume()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01792">polyfem::io::OutGeometryData::save_wire()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01046">polyfem::io::OutGeometryData::save_volume()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01811">polyfem::io::OutGeometryData::save_wire()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_a986b570a15726b4b5cd982c0dc37858b_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_a50d6bffe05b847f6f0f2fe470046dfe3_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_a986b570a15726b4b5cd982c0dc37858b_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_a50d6bffe05b847f6f0f2fe470046dfe3_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -764,9 +764,9 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00751">751</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00774">774</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8cpp_source.html#l00311">polyfem::assembler::AssemblerUtils::compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00354">polyfem::assembler::AssemblerUtils::compute_tensor_value()</a>, <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_8cpp_source.html#l00347">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00417">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_mesh_8hpp_source.html#l00154">polyfem::mesh::Mesh::n_elements()</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8cpp_source.html#l00311">polyfem::assembler::AssemblerUtils::compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00365">polyfem::assembler::AssemblerUtils::compute_tensor_value()</a>, <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_8cpp_source.html#l00347">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00417">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_mesh_8hpp_source.html#l00154">polyfem::mesh::Mesh::n_elements()</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l00797">polyfem::io::OutGeometryData::export_data()</a>.</p>
 <div class="dynheader">
@@ -784,8 +784,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a24e2cae8cea1b4a4f8b0c446886b8953" name="a24e2cae8cea1b4a4f8b0c446886b8953"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a24e2cae8cea1b4a4f8b0c446886b8953">&#9670;&#160;</a></span>compute_tensor_value()</h2>
+<a id="a66168451812a6618e1a54cfda56aa2f3" name="a66168451812a6618e1a54cfda56aa2f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66168451812a6618e1a54cfda56aa2f3">&#9670;&#160;</a></span>compute_tensor_value()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -868,7 +868,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#aff6a221902ba651c1390c8d1e06f5ecb">assembler::AssemblerUtils::NamedMatrix</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>result</em>, </td>
         </tr>
         <tr>
@@ -918,21 +918,21 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l01207">1207</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l01232">1232</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8cpp_source.html#l00354">polyfem::assembler::AssemblerUtils::compute_tensor_value()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00037">polyfem::utils::RefElementSampler::cube_points()</a>, <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af71fd4b4fd8eb19cb6315af09263c09c">polyfem::mesh::Mesh::is_boundary_element()</a>, <a class="el" href="_mesh_8cpp_source.html#l00347">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00417">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l00837">polyfem::autogen::p_nodes_2d()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l02805">polyfem::autogen::p_nodes_3d()</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l00937">polyfem::autogen::q_nodes_2d()</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l04279">polyfem::autogen::q_nodes_3d()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00368">polyfem::utils::RefElementSampler::sample_polygon()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00409">polyfem::utils::RefElementSampler::sample_polyhedron()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00043">polyfem::utils::RefElementSampler::simplex_points()</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_utils_8cpp_source.html#l00365">polyfem::assembler::AssemblerUtils::compute_tensor_value()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00037">polyfem::utils::RefElementSampler::cube_points()</a>, <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af71fd4b4fd8eb19cb6315af09263c09c">polyfem::mesh::Mesh::is_boundary_element()</a>, <a class="el" href="_mesh_8cpp_source.html#l00347">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00417">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l00837">polyfem::autogen::p_nodes_2d()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l02805">polyfem::autogen::p_nodes_3d()</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l00937">polyfem::autogen::q_nodes_2d()</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l04279">polyfem::autogen::q_nodes_3d()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00368">polyfem::utils::RefElementSampler::sample_polygon()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00409">polyfem::utils::RefElementSampler::sample_polyhedron()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00043">polyfem::utils::RefElementSampler::simplex_points()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01046">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_a24e2cae8cea1b4a4f8b0c446886b8953_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_a66168451812a6618e1a54cfda56aa2f3_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_a24e2cae8cea1b4a4f8b0c446886b8953_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_a66168451812a6618e1a54cfda56aa2f3_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -1009,7 +1009,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00667">667</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00690">690</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00036">polyfem::utils::RefElementSampler::cube_corners()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00067">polyfem::basis::ElementBases::evaluate_bases()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00322">polyfem::mesh::Mesh3D::get_ordered_vertices_from_hex()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00346">polyfem::mesh::Mesh3D::get_ordered_vertices_from_tet()</a>, <a class="el" href="_basis_8hpp_source.html#l00091">polyfem::basis::Basis::global()</a>, <a class="el" href="_mesh_8cpp_source.html#l00347">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00417">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">polyfem::mesh::Mesh::n_vertices()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00042">polyfem::utils::RefElementSampler::simplex_corners()</a>.</p>
 <div class="dynheader">
@@ -1182,11 +1182,11 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00962">962</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00985">985</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, and <a class="el" href="_evaluator_8cpp_source.html#l00962">interpolate_at_local_vals()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, and <a class="el" href="_evaluator_8cpp_source.html#l00985">interpolate_at_local_vals()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l00962">interpolate_at_local_vals()</a>, <a class="el" href="_out_data_8cpp_source.html#l01530">polyfem::io::OutGeometryData::save_surface()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01046">polyfem::io::OutGeometryData::save_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l00985">interpolate_at_local_vals()</a>, <a class="el" href="_out_data_8cpp_source.html#l01546">polyfem::io::OutGeometryData::save_surface()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01046">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1294,7 +1294,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00980">980</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l01003">1003</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_assembler_8cpp_source.html#l00091">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>.</p>
 <div class="dynheader">
@@ -1495,7 +1495,7 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00252">252</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00247">247</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a862d425f30ed31588e17a69f6209d8c7">polyfem::mesh::Mesh3D::cell_face()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a3cb2c64fbd2615052b400fb1dcd63e4e">polyfem::mesh::Mesh::face_barycenter()</a>, <a class="el" href="_basis_8hpp_source.html#l00091">polyfem::basis::Basis::global()</a>, <a class="el" href="_mesh_8cpp_source.html#l00347">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00417">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a7dab62efe81146a8df44713bf07c6302">polyfem::mesh::Mesh3D::n_cell_faces()</a>, <a class="el" href="_mesh_8hpp_source.html#l00154">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l02805">polyfem::autogen::p_nodes_3d()</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l04279">polyfem::autogen::q_nodes_3d()</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00022">polyfem::assembler::AssemblyValues::val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>.</p>
 <div class="dynheader">
@@ -1634,9 +1634,9 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00362">362</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00352">352</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_evaluator_8cpp_source.html#l00385">interpolate_boundary_tensor_function()</a>.</p>
+<p class="reference">References <a class="el" href="_evaluator_8cpp_source.html#l00375">interpolate_boundary_tensor_function()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1780,11 +1780,11 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00385">385</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00375">375</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a862d425f30ed31588e17a69f6209d8c7">polyfem::mesh::Mesh3D::cell_face()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00311">polyfem::assembler::AssemblerUtils::compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00354">polyfem::assembler::AssemblerUtils::compute_tensor_value()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a3cb2c64fbd2615052b400fb1dcd63e4e">polyfem::mesh::Mesh::face_barycenter()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00086">polyfem::utils::BoundarySampler::hex_local_node_coordinates_from_face()</a>, <a class="el" href="_mesh_8cpp_source.html#l00347">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00417">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a7dab62efe81146a8df44713bf07c6302">polyfem::mesh::Mesh3D::n_cell_faces()</a>, <a class="el" href="_mesh_8hpp_source.html#l00154">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00407">polyfem::utils::BoundarySampler::normal_for_quad_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00419">polyfem::utils::BoundarySampler::normal_for_tri_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00149">polyfem::utils::BoundarySampler::quadrature_for_quad_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00184">polyfem::utils::BoundarySampler::quadrature_for_tri_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00071">polyfem::utils::BoundarySampler::tet_local_node_coordinates_from_face()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a862d425f30ed31588e17a69f6209d8c7">polyfem::mesh::Mesh3D::cell_face()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00311">polyfem::assembler::AssemblerUtils::compute_scalar_value()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00365">polyfem::assembler::AssemblerUtils::compute_tensor_value()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a3cb2c64fbd2615052b400fb1dcd63e4e">polyfem::mesh::Mesh::face_barycenter()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00086">polyfem::utils::BoundarySampler::hex_local_node_coordinates_from_face()</a>, <a class="el" href="_mesh_8cpp_source.html#l00347">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00417">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a7dab62efe81146a8df44713bf07c6302">polyfem::mesh::Mesh3D::n_cell_faces()</a>, <a class="el" href="_mesh_8hpp_source.html#l00154">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00407">polyfem::utils::BoundarySampler::normal_for_quad_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00419">polyfem::utils::BoundarySampler::normal_for_tri_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00149">polyfem::utils::BoundarySampler::quadrature_for_quad_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00184">polyfem::utils::BoundarySampler::quadrature_for_tri_face()</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00071">polyfem::utils::BoundarySampler::tet_local_node_coordinates_from_face()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00043">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l00362">interpolate_boundary_tensor_function()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l00352">interpolate_boundary_tensor_function()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1913,11 +1913,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00845">845</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00873">873</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, and <a class="el" href="_evaluator_8cpp_source.html#l00845">interpolate_function()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, and <a class="el" href="_evaluator_8cpp_source.html#l00873">interpolate_function()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l00571">average_grad_based_function()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00845">interpolate_function()</a>, <a class="el" href="_out_data_8cpp_source.html#l01046">polyfem::io::OutGeometryData::save_volume()</a>, <a class="el" href="_out_data_8cpp_source.html#l01501">polyfem::io::OutGeometryData::save_volume_vector_field()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01792">polyfem::io::OutGeometryData::save_wire()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l00559">average_grad_based_function()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00873">interpolate_function()</a>, <a class="el" href="_out_data_8cpp_source.html#l01046">polyfem::io::OutGeometryData::save_volume()</a>, <a class="el" href="_out_data_8cpp_source.html#l01517">polyfem::io::OutGeometryData::save_volume_vector_field()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01811">polyfem::io::OutGeometryData::save_wire()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2046,7 +2046,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00867">867</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l00895">895</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00037">polyfem::utils::RefElementSampler::cube_points()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00067">polyfem::basis::ElementBases::evaluate_bases()</a>, <a class="el" href="_basis_8hpp_source.html#l00091">polyfem::basis::Basis::global()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af71fd4b4fd8eb19cb6315af09263c09c">polyfem::mesh::Mesh::is_boundary_element()</a>, <a class="el" href="_mesh_8cpp_source.html#l00347">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00417">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l00837">polyfem::autogen::p_nodes_2d()</a>, <a class="el" href="auto__p__bases_8cpp_source.html#l02805">polyfem::autogen::p_nodes_3d()</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l00937">polyfem::autogen::q_nodes_2d()</a>, <a class="el" href="auto__q__bases_8cpp_source.html#l04279">polyfem::autogen::q_nodes_3d()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00368">polyfem::utils::RefElementSampler::sample_polygon()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00409">polyfem::utils::RefElementSampler::sample_polyhedron()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00043">polyfem::utils::RefElementSampler::simplex_points()</a>.</p>
 <div class="dynheader">

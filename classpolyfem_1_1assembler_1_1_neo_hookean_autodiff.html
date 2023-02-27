@@ -141,9 +141,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9c7102d6b508c1aba116860b977f0ab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e31fbf5c0f92c28878dd5e089ba5155"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_autodiff.html#a8e31fbf5c0f92c28878dd5e089ba5155">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const int size)</td></tr>
 <tr class="separator:a8e31fbf5c0f92c28878dd5e089ba5155"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a097588dea3cd7a188adc37b59938eb0b"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a097588dea3cd7a188adc37b59938eb0b"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_autodiff.html#a097588dea3cd7a188adc37b59938eb0b">elastic_energy</a> (const int size, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p, const int el_id, const Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3 &gt; &amp;disp_grad) const</td></tr>
-<tr class="separator:a097588dea3cd7a188adc37b59938eb0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b381313a07e0118e9de18b3c4c129cd"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a3b381313a07e0118e9de18b3c4c129cd"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_autodiff.html#a3b381313a07e0118e9de18b3c4c129cd">elastic_energy</a> (const int size, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;p, const int el_id, const Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3 &gt; &amp;def_grad) const</td></tr>
+<tr class="separator:a3b381313a07e0118e9de18b3c4c129cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -208,7 +208,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_autodiff_8cpp_source.html#l00011">11</a> of file <a class="el" href="_neo_hookean_elasticity_autodiff_8cpp_source.html">NeoHookeanElasticityAutodiff.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00310">polyfem::assembler::LameParameters::add_multimaterial()</a>, and <a class="el" href="_neo_hookean_elasticity_autodiff_8hpp_source.html#l00049">params_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00310">polyfem::assembler::LameParameters::add_multimaterial()</a>, and <a class="el" href="_neo_hookean_elasticity_autodiff_8hpp_source.html#l00044">params_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -218,8 +218,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a097588dea3cd7a188adc37b59938eb0b" name="a097588dea3cd7a188adc37b59938eb0b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a097588dea3cd7a188adc37b59938eb0b">&#9670;&#160;</a></span>elastic_energy()</h2>
+<a id="a3b381313a07e0118e9de18b3c4c129cd" name="a3b381313a07e0118e9de18b3c4c129cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b381313a07e0118e9de18b3c4c129cd">&#9670;&#160;</a></span>elastic_energy()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -251,7 +251,7 @@ template&lt;typename T &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3 &gt; &amp;&#160;</td>
-          <td class="paramname"><em>disp_grad</em>&#160;</td>
+          <td class="paramname"><em>def_grad</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -268,11 +268,11 @@ template&lt;typename T &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_autodiff_8hpp_source.html#l00027">27</a> of file <a class="el" href="_neo_hookean_elasticity_autodiff_8hpp_source.html">NeoHookeanElasticityAutodiff.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00017">polyfem::utils::determinant()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00281">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_autodiff_8hpp_source.html#l00049">params_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00091">val</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00017">polyfem::utils::determinant()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00281">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_autodiff_8hpp_source.html#l00044">params_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00091">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_autodiff_a097588dea3cd7a188adc37b59938eb0b_cgraph.svg" width="448" height="102"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_autodiff_a3b381313a07e0118e9de18b3c4c129cd_cgraph.svg" width="448" height="102"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -299,7 +299,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_autodiff_8hpp_source.html#l00049">49</a> of file <a class="el" href="_neo_hookean_elasticity_autodiff_8hpp_source.html">NeoHookeanElasticityAutodiff.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_autodiff_8hpp_source.html#l00044">44</a> of file <a class="el" href="_neo_hookean_elasticity_autodiff_8hpp_source.html">NeoHookeanElasticityAutodiff.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_neo_hookean_elasticity_autodiff_8cpp_source.html#l00011">add_multimaterial()</a>, and <a class="el" href="_neo_hookean_elasticity_autodiff_8hpp_source.html#l00027">elastic_energy()</a>.</p>
 
