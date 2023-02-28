@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AssemblerData.hpp"
+#include "ElasticEnergyMacros.hpp"
 
 #include <polyfem/Common.hpp>
 
@@ -14,11 +15,11 @@
 // non linear NeoHookean material model
 namespace polyfem::assembler
 {
-	template <typename ElasticFormulation>
 	class GenericElastic
 	{
 	public:
 		GenericElastic();
+		virtual ~GenericElastic() = default;
 
 		// energy, gradient, and hessian used in newton method
 		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const;
@@ -31,22 +32,24 @@ namespace polyfem::assembler
 		compute_rhs(const AutodiffHessianPt &pt) const;
 
 		inline int size() const { return size_; }
-		void set_size(const int size);
+		void set_size(const int size) { size_ = size; }
 
 		// von mises and stress tensor
 		void compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
 		void compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &tensor) const;
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params);
+		virtual void add_multimaterial(const int index, const json &params) = 0;
 
-		const ElasticFormulation &formulation() const { return formulation_; }
+		// This macro declares the virtual functions that compute the energy:
+		// template <typename T>
+		// virtual T elastic_energy(const RowVectorNd &p, const int el_id, const DefGradMatrix<T> &def_grad) const = 0;
+		POLYFEM_DECLARE_VIRTUAL_ELASTIC_ENERGY
 
 	private:
 		int size_ = -1;
-		ElasticFormulation formulation_;
 
-		// utulity function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
+		// utility function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
 		template <typename T>
 		T compute_energy_aux(const NonLinearAssemblerData &data) const
 		{
@@ -69,7 +72,7 @@ namespace polyfem::assembler
 				for (int d = 0; d < size(); ++d)
 					def_grad(d, d) += T(1);
 
-				const T val = formulation_.elastic_energy(size(), data.vals.val.row(p), data.vals.element_id, def_grad);
+				const T val = elastic_energy(data.vals.val.row(p), data.vals.element_id, def_grad);
 
 				energy += val * data.da(p);
 			}

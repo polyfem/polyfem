@@ -1,6 +1,5 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/assembler/GenericElastic.hpp>
 #include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
 
 #include <catch2/catch.hpp>
@@ -93,7 +92,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 	// state.compute_mesh_stats();
 	state.build_basis();
 
-	GenericElastic<NeoHookeanAutodiff> autodiff;
+	NeoHookeanAutodiff autodiff;
 	NeoHookeanElasticity real;
 
 	autodiff.set_size(2);

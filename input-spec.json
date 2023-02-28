@@ -2247,7 +2247,7 @@
     {
         "pointer": "/materials/*",
         "type": "object",
-        "type_name": "Ogden",
+        "type_name": "UnconstrainedOgden",
         "required": [
             "type",
             "alphas",
@@ -2256,10 +2256,25 @@
         ],
         "optional": [
             "id",
-            "rho",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for [Ogden](https://en.wikipedia.org/wiki/Ogden_hyperelastic_model)."
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "IncompressibleOgden",
+        "required": [
+            "type",
+            "c",
+            "m",
             "k"
         ],
-        "doc": "Material Parameters including ID, for Ogden"
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for [Ogden](https://en.wikipedia.org/wiki/Ogden_hyperelastic_model)."
     },
     {
         "pointer": "/materials/*",
@@ -2431,12 +2446,12 @@
         "type": "object",
         "type_name": "Helmholtz",
         "required": [
-            "type"
+            "type",
+            "k"
         ],
         "optional": [
             "id",
-            "rho",
-            "k"
+            "rho"
         ],
         "doc": "Material Parameters including ID, k, density ($\\rho$)"
     },
@@ -2527,8 +2542,7 @@
     {
         "pointer": "/materials/*/k",
         "type": "float",
-        "doc": "Scaling for Helmholtz",
-        "default": 1
+        "doc": "Scaling for Helmholtz/Bulk modulus for Ogden"
     },
     {
         "pointer": "/materials/*/type",
@@ -2539,7 +2553,8 @@
             "SaintVenant",
             "NeoHookean",
             "MooneyRivlin",
-            "Ogden",
+            "UnconstrainedOgden",
+            "IncompressibleOgden",
             "Stokes",
             "NavierStokes",
             "IncompressibleLinearElasticity",
@@ -2571,6 +2586,21 @@
     },
     {
         "pointer": "/materials/*/alphas",
+        "type": "float",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/mus",
+        "type": "float",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/Ds",
+        "type": "float",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/alphas",
         "type": "list",
         "doc": ""
     },
@@ -2598,6 +2628,36 @@
         "pointer": "/materials/*/Ds/*",
         "type": "float",
         "doc": ""
+    },
+    {
+        "pointer": "/materials/*/c",
+        "type": "float",
+        "doc": "Coefficient(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/materials/*/m",
+        "type": "float",
+        "doc": "Exponent(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/materials/*/c",
+        "type": "list",
+        "doc": "Coefficient(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/materials/*/m",
+        "type": "list",
+        "doc": "Exponent(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/materials/*/c/*",
+        "type": "float",
+        "doc": "Coefficient of Incompressible Ogden"
+    },
+    {
+        "pointer": "/materials/*/m/*",
+        "type": "float",
+        "doc": "Exponent(s) of Incompressible Ogden"
     },
     {
         "pointer": "/boundary_conditions",

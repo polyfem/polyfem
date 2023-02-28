@@ -65,7 +65,7 @@ namespace polyfem::assembler
 		NeoHookeanElasticity neo_hookean_;
 		LinearElasticity linear_elasticity_;
 		// HookeLinearElasticity hooke_;
-		GenericElastic<MooneyRivlinElasticity> mooney_rivlin_elasticity_;
-		GenericElastic<OgdenElasticity> ogden_elasticity_;
+		MooneyRivlinElasticity mooney_rivlin_elasticity_;
+		UnconstrainedOgdenElasticity ogden_elasticity_;
 	};
 } // namespace polyfem::assembler

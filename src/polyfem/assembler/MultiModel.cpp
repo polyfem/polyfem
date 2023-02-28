@@ -61,7 +61,9 @@ namespace polyfem::assembler
 		// return hooke_.assemble_grad(data);
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.assemble_grad(data);
-		else if (model == "Ogden")
+		else if (model == "UnconstrainedOgden")
+			return ogden_elasticity_.assemble_grad(data);
+		else if (model == "IncompressibleOgden")
 			return ogden_elasticity_.assemble_grad(data);
 		else
 		{
@@ -86,7 +88,9 @@ namespace polyfem::assembler
 		// return hooke_.assemble_hessian(data);
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.assemble_hessian(data);
-		else if (model == "Ogden")
+		else if (model == "UnconstrainedOgden")
+			return ogden_elasticity_.assemble_hessian(data);
+		else if (model == "IncompressibleOgden")
 			return ogden_elasticity_.assemble_hessian(data);
 		else
 		{
@@ -110,7 +114,9 @@ namespace polyfem::assembler
 		// return hooke_.compute_energy(data);
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.compute_energy(data);
-		else if (model == "Ogden")
+		else if (model == "UnconstrainedOgden")
+			return ogden_elasticity_.compute_energy(data);
+		else if (model == "IncompressibleOgden")
 			return ogden_elasticity_.compute_energy(data);
 		else
 		{
@@ -133,7 +139,9 @@ namespace polyfem::assembler
 		// return hooke_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
-		else if (model == "Ogden")
+		else if (model == "UnconstrainedOgden")
+			return ogden_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
+		else if (model == "IncompressibleOgden")
 			return ogden_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
 		else
 		{
@@ -156,7 +164,9 @@ namespace polyfem::assembler
 		// return hooke_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
-		else if (model == "Ogden")
+		else if (model == "UnconstrainedOgden")
+			return ogden_elasticity_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
+		else if (model == "IncompressibleOgden")
 			return ogden_elasticity_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
 		else
 		{
