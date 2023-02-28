@@ -15,6 +15,7 @@
 #include <polyfem/solver/forms/adjoint_forms/SmoothingForms.hpp>
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
+#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 
 #include <catch2/catch.hpp>
 #include <math.h>
@@ -76,7 +77,7 @@ namespace
 		}
 	}
 
-	void verify_adjoint(std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, AdjointForm &obj, State &state, const Eigen::VectorXd &x, const Eigen::MatrixXd &theta, const double dt, const double tol)
+	void verify_adjoint(std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, AdjointForm &obj, State &state, const Eigen::VectorXd &x, const Eigen::MatrixXd &theta, const double dt, const double tol, bool print_grad = false)
 	{
 		obj.solution_changed(x);
 		double functional_val = obj.value(x);
@@ -330,6 +331,49 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 	solve_pde(state);
 
 	verify_adjoint(variable_to_simulations, obj, state, x, theta, 1e-4, 1e-6);
+}
+
+TEST_CASE("isosurface-inflator", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/isosurface-inflator");
+	chdir(path.c_str());
+	json in_args;
+	load_json("state.json", in_args);
+
+	json opt_args;
+	load_json("opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
+
+	std::shared_ptr<State> state_ptr = create_state(in_args, spdlog::level::level_enum::info);
+	State &state = *state_ptr;
+
+	std::vector<std::shared_ptr<Parametrization>> map_list = {
+		std::make_shared<SDF2Mesh>(std::string("~/microstructures/build/isosurface_inflator/isosurface_cli 2D_doubly_periodic bistable.obj -m meshing.json"), std::string("tmp-vel.msh"), std::string("tmp-unit.msh"))
+		//std::make_shared<MeshTiling>(Eigen::Vector2i(2, 2), "tmp-unit.msh", "tmp-tiled.msh")
+		};
+	CompositeParametrization composite_map(map_list);
+
+	json options;
+	options["mesh"] = "tmp-unit.msh";
+	options["mesh_id"] = 0;
+
+	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	variable_to_simulations.push_back(std::make_shared<SDFShapeVariableToSimulation>(state_ptr, composite_map, options));
+
+	VolumeForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
+	// StressNormForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
+
+	Eigen::VectorXd x(28);
+	x << 0.3, 0.10, 0.333333, 0.40, 0.666667, 0.50, 0.50, 0.75, 0.60, 0.666667, 0.90, 0.333333, 0.30, 0.20, 0.05, 0.05, 0.30, 0.20, 0.05, 0.05, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01;
+
+	Eigen::MatrixXd theta;
+	theta.setRandom(28, 1);
+
+	for (auto &v2s : variable_to_simulations)
+		v2s->update(x);
+	solve_pde(state);
+
+	verify_adjoint(variable_to_simulations, obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 5e-4);
 }
 
 TEST_CASE("neohookean-stress-3d", "[adjoint_method]")

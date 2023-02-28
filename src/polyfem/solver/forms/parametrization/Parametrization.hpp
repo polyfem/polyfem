@@ -31,6 +31,8 @@ namespace polyfem::solver
 	public:
 		IndexedParametrization() {}
 		virtual ~IndexedParametrization() {}
+
+		void set_output_indexing(const Eigen::VectorXi &output_indexing) { output_indexing_ = output_indexing; }
 		Eigen::VectorXi get_output_indexing(const Eigen::VectorXd &x) const
 		{
 			const int out_size = size(x.size());

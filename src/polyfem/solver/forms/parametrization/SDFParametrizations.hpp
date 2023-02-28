@@ -7,7 +7,7 @@ namespace polyfem::solver
     class SDF2Mesh : public Parametrization
     {
     public:
-        SDF2Mesh(const std::string inflator_path, const std::string sdf_velocity_path = "micro-tmp-velocity.msh", const std::string msh_path = "micro-tmp.msh");
+        SDF2Mesh(const std::string inflator_path, const std::string sdf_velocity_path = "micro-tmp-velocity.msh", const std::string msh_path = "micro-tmp.msh") : inflator_path_(inflator_path), sdf_velocity_path_(sdf_velocity_path), msh_path_(msh_path) {}
 
         int size(const int x_size) const override;
 

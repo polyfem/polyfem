@@ -20,7 +20,6 @@ namespace polyfem::mesh
 	std::unique_ptr<Mesh> read_fem_mesh(
 		const json &j_mesh,
 		const std::string &root_path,
-		bool &has_surface_selections,
 		const bool non_conforming = false);
 
 	///

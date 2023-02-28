@@ -11,7 +11,7 @@ namespace polyfem::solver
 		VariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization) : state_ptr_(state_ptr), parametrization_(parametrization) {}
 		virtual ~VariableToSimulation() {}
 
-		inline virtual void update(const Eigen::VectorXd &x) final
+		inline virtual void update(const Eigen::VectorXd &x)
 		{
 			update_state(parametrization_.eval(x), parametrization_.get_output_indexing(x));
 		}
@@ -47,19 +47,11 @@ namespace polyfem::solver
 		SDFShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization, const json &args);
 		virtual ~SDFShapeVariableToSimulation() {}
 
+		void update(const Eigen::VectorXd &x) override;
+
 	protected:
-		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
-
-		const std::string isosurface_inflator_prefix_, out_velocity_path_, out_msh_path_;
-		Eigen::MatrixXd shape_velocity_;
-
-		// if the mesh is a tiling of unit cells
-		const double unit_size_;
-		std::vector<int> full_to_periodic_;
-		bool periodic_tiling_;
-
-		bool generate_graph_mesh(const Eigen::VectorXd &x);
-		void compute_pattern_period();
+		const int mesh_id_;
+		const std::string mesh_path_;
 	};
 
 	class ElasticVariableToSimulation : public VariableToSimulation

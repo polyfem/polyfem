@@ -561,6 +561,17 @@ namespace polyfem::solver
 		return j;
 	}
 
+	IntegrableFunctional VolumeForm::get_integral_functional() const
+	{
+		IntegrableFunctional j;
+
+		j.set_j([](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setOnes(grad_u.rows(), 1);
+		});
+
+		return j;
+	}
+
 	void SDFTargetForm::solution_changed(const Eigen::VectorXd &x)
 	{
 		assert(time_step_ < state_.diff_cached.size());

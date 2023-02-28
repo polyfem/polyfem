@@ -2,6 +2,7 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+#include <polyfem/mesh/GeometryReader.hpp>
 
 namespace polyfem::solver
 {
@@ -65,139 +66,57 @@ namespace polyfem::solver
 		return parametrization_.apply_jacobian(term, x);
 	}
 
-	SDFShapeVariableToSimulation::SDFShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization, const json &args) : ShapeVariableToSimulation(state_ptr, parametrization), out_velocity_path_("micro-tmp-velocity.msh"), out_msh_path_("micro-tmp.msh"), isosurface_inflator_prefix_(args["isosurface_inflator_prefix"].get<std::string>()), unit_size_(args["unit_size"].get<double>()), periodic_tiling_(unit_size_ > 0)
+	SDFShapeVariableToSimulation::SDFShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization, const json &args) : ShapeVariableToSimulation(state_ptr, parametrization), mesh_id_(args["mesh_id"]), mesh_path_(args["mesh"])
 	{
+
 	}
-	void SDFShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
+	void SDFShapeVariableToSimulation::update(const Eigen::VectorXd &x)
 	{
-	}
-	bool SDFShapeVariableToSimulation::generate_graph_mesh(const Eigen::VectorXd &x)
-	{
-		std::string shape_params = "--params \"";
-		for (int i = 0; i < x.size(); i++)
-			shape_params += to_string_with_precision(x(i), 16) + " ";
-		shape_params += "\" ";
+		parametrization_.eval(x);
 
-		std::string command = isosurface_inflator_prefix_ + " " + shape_params + " -S " + out_velocity_path_ + " " + out_msh_path_;
+		state_ptr_->args["geometry"][mesh_id_]["mesh"] = mesh_path_;
+		state_ptr_->args["geometry"][mesh_id_]["transformation"] = R"({"dimensions": null, "scale": 1, "rotation": null, "translation": []})"_json;
 
-		int return_val;
-		try
+		state_ptr_->mesh.reset();
+		state_ptr_->mesh = nullptr;
+		state_ptr_->assembler.update_lame_params(Eigen::MatrixXd(), Eigen::MatrixXd());
+
+		int start = 0, end = 0; // start vertex index of the mesh
 		{
-			return_val = system(command.c_str());
-		}
-		catch (const std::exception &err)
-		{
-			logger().error("remesh command \"{}\" returns {}", command, return_val);
+			assert (state_ptr_->args["geometry"].is_array());
+			auto geometries = state_ptr_->args["geometry"].get<std::vector<json>>();
 
-			return false;
-		}
-
-		logger().info("remesh command \"{}\" returns {}", command, return_val);
-
-		if (periodic_tiling_)
-		{
-			command = "python ../tile.py " + out_msh_path_;
-			try
+			int i = 0;
+			for (const json &geometry : geometries)
 			{
-				return_val = system(command.c_str());
-			}
-			catch (const std::exception &err)
-			{
-				logger().error("tile command \"{}\" returns {}", command, return_val);
+				if (!geometry["enabled"].get<bool>() || geometry["is_obstacle"].get<bool>())
+					continue;
 
-				return false;
-			}
+				if (geometry["type"] != "mesh")
+					log_and_throw_error(
+						fmt::format("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]));
+				
+				if (i == mesh_id_)
+					start = state_ptr_->mesh ? state_ptr_->mesh->n_vertices() : 0;
+						
+				if (state_ptr_->mesh == nullptr)
+					state_ptr_->mesh = mesh::read_fem_mesh(geometry, state_ptr_->args["root_path"], false);
+				else
+					state_ptr_->mesh->append(mesh::read_fem_mesh(geometry, state_ptr_->args["root_path"], false));
 
-			logger().info("tile command \"{}\" returns {}", command, return_val);
-		}
+				if (i == mesh_id_)
+					end = state_ptr_->mesh->n_vertices();
 
-		return true;
-	}
-	void SDFShapeVariableToSimulation::compute_pattern_period()
-	{
-		const mesh::Mesh &mesh = *(get_state().mesh);
-		int elem_period_ = 0;
-		full_to_periodic_.clear();
-
-		if (!periodic_tiling_)
-		{
-			full_to_periodic_.reserve(get_state().n_geom_bases);
-			for (int i = 0; i < get_state().n_geom_bases; i++)
-				full_to_periodic_.push_back(i);
-
-			return;
-		}
-
-		RowVectorNd min, max;
-		mesh.bounding_box(min, max);
-
-		Eigen::VectorXi nums;
-		nums.setZero(mesh.dimension());
-		for (int d = 0; d < mesh.dimension(); d++)
-		{
-			int tmp = std::lround((max(d) - min(d)) / unit_size_);
-			if (abs(tmp * unit_size_ + min(d) - max(d)) > 1e-8)
-				log_and_throw_error("Mesh size is not periodic!");
-			nums(d) = tmp;
-		}
-
-		for (int e = 0; e < mesh.n_elements(); e++)
-		{
-			if ((get_barycenter(mesh, e) - min).maxCoeff() >= unit_size_)
-			{
-				elem_period_ = e;
-				break;
+				i++;
 			}
 		}
-		if (elem_period_ == 0)
-			elem_period_ = mesh.n_elements();
 
-		// node correspondence
-		{
-			full_to_periodic_.assign(get_state().n_geom_bases, -1);
+		state_ptr_->load_mesh();
+		state_ptr_->stats.compute_mesh_stats(*state_ptr_->mesh);
+		state_ptr_->build_basis();
 
-			utils::maybe_parallel_for(mesh.n_elements(), [&](int start, int end, int thread_id) {
-				for (int e = start; e < end; e++)
-				{
-					RowVectorNd offset = get_barycenter(mesh, e) - get_barycenter(mesh, e % elem_period_);
-
-					assert(!mesh.is_volume());
-					for (int lv = 0; lv < mesh.n_face_vertices(e); lv++) // only 2D
-					{
-						int vid1 = mesh.face_vertex(e, lv);
-						auto p1 = mesh.point(vid1);
-						bool flag = false;
-
-						if (e < elem_period_)
-						{
-							flag = true;
-							full_to_periodic_[vid1] = vid1;
-						}
-						else
-						{
-							double min_diff = 1e5;
-							int min_id = -1;
-							for (int lv2 = 0; lv2 < mesh.n_face_vertices(e % elem_period_); lv2++)
-							{
-								int vid2 = mesh.face_vertex(e % elem_period_, lv2);
-								auto p2 = mesh.point(vid2);
-
-								if ((p1 - offset - p2).norm() < min_diff)
-								{
-									min_diff = (p1 - offset - p2).norm();
-									min_id = vid2;
-								}
-							}
-							if (min_diff > 1e-5)
-								log_and_throw_error("Failed to find periodic node in periodic pattern, error = {}!", min_diff);
-							full_to_periodic_[vid1] = min_id;
-						}
-					}
-				}
-			});
-		}
-
-		logger().info("Number of elements in one period: {}, number of periods: {}", elem_period_, nums.prod());
+		const int dim = state_ptr_->mesh->dimension();
+		parametrization_.set_output_indexing(Eigen::VectorXi::LinSpaced((end - start) * dim, start * dim, end * dim - 1));
 	}
 
 	void ElasticVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)

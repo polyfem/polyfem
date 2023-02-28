@@ -21,7 +21,7 @@ namespace polyfem::solver
 
     bool SDF2Mesh::isosurface_inflator(const Eigen::VectorXd &x) const
     {
-        if (last_x == x)
+        if (last_x.size() == x.size() && last_x == x)
             return true;
 
         std::string shape_params = "--params \"";
@@ -49,31 +49,15 @@ namespace polyfem::solver
 
         return true;
     }
-    SDF2Mesh::SDF2Mesh(const std::string inflator_path, const std::string sdf_velocity_path, const std::string msh_path) : inflator_path_(inflator_path), sdf_velocity_path_(sdf_velocity_path), msh_path_(msh_path)
-    {
-
-    } 
     int SDF2Mesh::size(const int x_size) const
     {
-        // if (!isosurface_inflator(x))
-        // {
-        //     logger().error("Failed to inflate mesh!");
-        //     return 0;
-        // }
-
-        // Eigen::MatrixXd vertices;
-        // Eigen::MatrixXi cells;
-        // std::vector<std::vector<int>> elements;
-        // std::vector<std::vector<double>> weights;
-        // std::vector<int> body_ids;
-        // std::vector<std::string> node_data_name;
-        // std::vector<std::vector<double>> node_data;
-        // io::MshReader::load(sdf_velocity_path_, vertices, cells, elements, weights, body_ids, node_data_name, node_data);
-        // const int dim = vertices.cols();
-
-        // return vertices.size();
-        log_and_throw_error("Not implemented!");
-        return 0;
+        Eigen::MatrixXd vertices;
+        Eigen::MatrixXi cells;
+        std::vector<std::vector<int>> elements;
+        std::vector<std::vector<double>> weights;
+        std::vector<int> body_ids;
+        io::MshReader::load(sdf_velocity_path_, vertices, cells, elements, weights, body_ids);
+        return vertices.size();
     }
     Eigen::VectorXd SDF2Mesh::eval(const Eigen::VectorXd &x) const
     {
@@ -90,6 +74,11 @@ namespace polyfem::solver
         std::vector<int> body_ids;
         io::MshReader::load(sdf_velocity_path_, vertices, cells, elements, weights, body_ids);
         const int dim = vertices.cols();
+
+        vertices.conservativeResize(vertices.rows(), 3);
+        vertices.col(2).setZero();
+        static int debug_id = 0;
+        igl::write_triangle_mesh("debug_" + std::to_string(debug_id++) + ".obj", vertices, cells);
 
         return utils::flatten(vertices);
     } 
@@ -112,23 +101,15 @@ namespace polyfem::solver
         const int dim = vertices.cols();
         
         assert(node_data_name.size() == node_data.size());
-        Eigen::MatrixXd shape_velocity_;
-        shape_velocity_.setZero(vertices.size(), node_data.size() - 1);
+
+        Eigen::VectorXd mapped_grad;
+        mapped_grad.setZero(node_data.size() - 1);
         for (int j = 0; j < vertices.rows(); j++)
             for (int i = 1; i < node_data_name.size(); i++)
                 for (int d = 0; d < dim; d++)
-                    shape_velocity_(j * dim + d, i - 1) = node_data[0][j * 3 + d] * node_data[i][j];
-    
-        return grad.transpose() * shape_velocity_;
+                    mapped_grad(i - 1) += node_data[0][j * 3 + d] * node_data[i][j] * grad(j * dim + d);
 
-        // Eigen::VectorXd mapped_grad;
-        // mapped_grad.setZero(node_data.size() - 1);
-        // for (int j = 0; j < vertices.rows(); j++)
-        //     for (int i = 1; i < node_data_name.size(); i++)
-        //         for (int d = 0; d < dim; d++)
-        //             mapped_grad(i - 1) += node_data[0][j * 3 + d] * node_data[i][j] * grad(j * dim + d);
-
-        // return mapped_grad;
+        return mapped_grad;
     }
 
     MeshTiling::MeshTiling(const Eigen::VectorXi &nums, const std::string in_path, const std::string out_path): nums_(nums), in_path_(in_path), out_path_(out_path)
@@ -138,8 +119,13 @@ namespace polyfem::solver
     }
     int MeshTiling::size(const int x_size) const
     {
-        log_and_throw_error("Not implemented!");
-        return 0;
+        Eigen::MatrixXd vertices;
+        Eigen::MatrixXi cells;
+        std::vector<std::vector<int>> elements;
+        std::vector<std::vector<double>> weights;
+        std::vector<int> body_ids;
+        io::MshReader::load(out_path_, vertices, cells, elements, weights, body_ids);
+        return vertices.size();
     }
     Eigen::VectorXd MeshTiling::eval(const Eigen::VectorXd &x) const
     {
@@ -207,7 +193,7 @@ namespace polyfem::solver
     }
     bool MeshTiling::tiling(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::MatrixXd &Vnew, Eigen::MatrixXi &Fnew, Eigen::VectorXi &index_map) const
     {
-        if (last_x == V)
+        if (last_x.size() == V.size() && last_x == V)
             return true;
         // Eigen::MatrixXd vertices;
         // Eigen::MatrixXi cells;

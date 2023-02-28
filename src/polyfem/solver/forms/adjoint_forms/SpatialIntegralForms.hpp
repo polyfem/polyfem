@@ -138,6 +138,21 @@ namespace polyfem::solver
 		std::vector<int> dimensions_;
 	};
 
+	class VolumeForm : public SpatialIntegralForm
+	{
+	public:
+		VolumeForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		{
+			set_integral_type(SpatialIntegralType::VOLUME);
+
+			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+		}
+
+	protected:
+		IntegrableFunctional get_integral_functional() const override;
+	};
+
 	class SDFTargetForm : public SpatialIntegralForm
 	{
 	public:
