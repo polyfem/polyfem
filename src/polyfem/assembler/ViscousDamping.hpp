@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assembler.hpp"
 #include "AssemblerData.hpp"
 
 #include <polyfem/Common.hpp>
@@ -13,25 +14,29 @@
 #include <Eigen/Dense>
 #include <array>
 
-//non linear NeoHookean material model
+// non linear NeoHookean material model
 namespace polyfem
 {
 	namespace assembler
 	{
-		class ViscousDamping
+		class ViscousDamping : public NLAssembler
 		{
 		public:
 			ViscousDamping() = default;
 
-			//energy, gradient, and hessian used in newton method
+			// energy, gradient, and hessian used in newton method
 			Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const;
 			Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const;
 
 			double compute_energy(const NonLinearAssemblerData &data) const;
 
-			//sets material params
+			// sets material params
 			void add_multimaterial(const int index, const json &params);
-			void set_params(const double psi, const double phi) { psi_ = psi; phi_ = phi; }
+			void set_params(const double psi, const double phi)
+			{
+				psi_ = psi;
+				phi_ = phi;
+			}
 			double get_psi() const { return psi_; }
 			double get_phi() const { return phi_; }
 
@@ -46,8 +51,8 @@ namespace polyfem
 
 			int size_ = -1;
 
-			void compute_stress_aux(const Eigen::MatrixXd& F, const Eigen::MatrixXd& dFdt, Eigen::MatrixXd& dRdF, Eigen::MatrixXd& dRdFdot) const;
-			void compute_stress_grad_aux(const Eigen::MatrixXd& F, const Eigen::MatrixXd& dFdt, Eigen::MatrixXd& d2RdF2, Eigen::MatrixXd& d2RdFdFdot, Eigen::MatrixXd& d2RdFdot2) const;
+			void compute_stress_aux(const Eigen::MatrixXd &F, const Eigen::MatrixXd &dFdt, Eigen::MatrixXd &dRdF, Eigen::MatrixXd &dRdFdot) const;
+			void compute_stress_grad_aux(const Eigen::MatrixXd &F, const Eigen::MatrixXd &dFdt, Eigen::MatrixXd &d2RdF2, Eigen::MatrixXd &d2RdFdFdot, Eigen::MatrixXd &d2RdFdot2) const;
 		};
-	}
+	} // namespace assembler
 } // namespace polyfem

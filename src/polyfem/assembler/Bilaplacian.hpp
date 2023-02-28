@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assembler.hpp"
 #include "AssemblerData.hpp"
 
 #include <polyfem/Common.hpp>
@@ -18,11 +19,11 @@ namespace polyfem
 		// local assembler for bilaplacian, see laplacian
 		//  0 L
 		//  L M
-		class BilaplacianMain
+		class BilaplacianMain : public ScalarAssembler
 		{
 		public:
 			Eigen::Matrix<double, 1, 1>
-			assemble(const LinearAssemblerData &data) const
+			assemble(const LinearAssemblerData &data) const override
 			{
 				return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
 			}
@@ -35,12 +36,12 @@ namespace polyfem
 			void add_multimaterial(const int index, const json &params) {}
 		};
 
-		class BilaplacianMixed
+		class BilaplacianMixed : public MixedAssembler<Eigen::Matrix<double, 1, 1>>
 		{
 		public:
 			// res is R
 			Eigen::Matrix<double, 1, 1>
-			assemble(const MixedAssemblerData &data) const;
+			assemble(const MixedAssemblerData &data) const override;
 
 			Eigen::Matrix<double, 1, 1>
 			compute_rhs(const AutodiffHessianPt &pt) const
@@ -49,18 +50,18 @@ namespace polyfem
 				return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
 			}
 
-			inline int rows() const { return 1; }
-			inline int cols() const { return 1; }
+			inline int rows() const override { return 1; }
+			inline int cols() const override { return 1; }
 
 			void add_multimaterial(const int index, const json &params) {}
 		};
 
-		class BilaplacianAux
+		class BilaplacianAux : public ScalarAssembler
 		{
 		public:
 			// res is R
 			Eigen::Matrix<double, 1, 1>
-			assemble(const LinearAssemblerData &data) const;
+			assemble(const LinearAssemblerData &data) const override;
 
 			Eigen::Matrix<double, 1, 1>
 			compute_rhs(const AutodiffHessianPt &pt) const

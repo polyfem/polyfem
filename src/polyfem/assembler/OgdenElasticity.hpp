@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assembler.hpp"
 #include "GenericElastic.hpp"
 
 #include <polyfem/Common.hpp>

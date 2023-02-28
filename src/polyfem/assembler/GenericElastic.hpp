@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assembler.hpp"
 #include "AssemblerData.hpp"
 #include "ElasticEnergyMacros.hpp"
 
@@ -15,7 +16,7 @@
 // non linear NeoHookean material model
 namespace polyfem::assembler
 {
-	class GenericElastic
+	class GenericElastic : public NLAssembler
 	{
 	public:
 		GenericElastic();
@@ -31,9 +32,6 @@ namespace polyfem::assembler
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 		compute_rhs(const AutodiffHessianPt &pt) const;
 
-		inline int size() const { return size_; }
-		void set_size(const int size) { size_ = size; }
-
 		// von mises and stress tensor
 		void compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
 		void compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &tensor) const;
@@ -47,8 +45,6 @@ namespace polyfem::assembler
 		POLYFEM_DECLARE_VIRTUAL_ELASTIC_ENERGY
 
 	private:
-		int size_ = -1;
-
 		// utility function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
 		template <typename T>
 		T compute_energy_aux(const NonLinearAssemblerData &data) const

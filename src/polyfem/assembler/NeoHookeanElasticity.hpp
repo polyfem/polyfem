@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assembler.hpp"
 #include "AssemblerData.hpp"
 #include "MatParams.hpp"
 
@@ -17,7 +18,7 @@
 // non linear NeoHookean material model
 namespace polyfem::assembler
 {
-	class NeoHookeanElasticity
+	class NeoHookeanElasticity : public NLAssembler
 	{
 	public:
 		NeoHookeanElasticity();

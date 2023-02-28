@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assembler.hpp"
 #include "AssemblerData.hpp"
 
 #include <polyfem/Common.hpp>
@@ -12,11 +13,11 @@ namespace polyfem
 {
 	namespace assembler
 	{
-		class Laplacian
+		class Laplacian : public ScalarAssembler
 		{
 		public:
 			// computes local stiffness matrix (1x1) for bases i,j
-			Eigen::Matrix<double, 1, 1> assemble(const LinearAssemblerData &data) const;
+			Eigen::Matrix<double, 1, 1> assemble(const LinearAssemblerData &data) const override;
 
 			// uses autodiff to compute the rhs for a fabricated solution
 			// in this case it just return pt.getHessian().trace()

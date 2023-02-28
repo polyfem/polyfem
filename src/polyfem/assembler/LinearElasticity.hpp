@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assembler.hpp"
 #include "AssemblerData.hpp"
 #include "MatParams.hpp"
 
@@ -15,21 +16,21 @@
 // local assembler for linear elasticity
 namespace polyfem::assembler
 {
-	class LinearElasticity
+	class LinearElasticity : public TensorAssembler, NLAssembler
 	{
 	public:
 		/// computes local stiffness matrix is R^{dim²} for bases i,j
 		// vals stores the evaluation for that element
 		// da contains both the quadrature weight and the change of metric in the integral
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-		assemble(const LinearAssemblerData &data) const;
+		assemble(const LinearAssemblerData &data) const override;
 
-		// neccessary for mixing linear model with non-linear collision response
-		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const;
-		// compute gradient of elastic energy, as assembler
-		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const;
 		// compute elastic energy
-		double compute_energy(const NonLinearAssemblerData &data) const;
+		double compute_energy(const NonLinearAssemblerData &data) const override;
+		// neccessary for mixing linear model with non-linear collision response
+		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
+		// compute gradient of elastic energy, as assembler
+		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const override;
 
 		// kernel of the pde, used in kernel problem
 		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const int dim, const AutodiffGradPt &r) const;

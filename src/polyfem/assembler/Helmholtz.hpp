@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assembler.hpp"
 #include "AssemblerData.hpp"
 
 #include <polyfem/Common.hpp>
@@ -10,7 +11,7 @@
 // local assembler for helmolhz equation, see Laplace
 namespace polyfem::assembler
 {
-	class Helmholtz
+	class Helmholtz : public ScalarAssembler
 	{
 	public:
 		Eigen::Matrix<double, 1, 1> assemble(const LinearAssemblerData &data) const;

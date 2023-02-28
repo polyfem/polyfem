@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assembler.hpp"
 #include "AssemblerData.hpp"
 #include "MatParams.hpp"
 
@@ -14,7 +15,7 @@
 // local assembler for HookeLinearElasticity C : (F+F^T)/2, see linear elasticity
 namespace polyfem::assembler
 {
-	class HookeLinearElasticity
+	class HookeLinearElasticity : public TensorAssembler
 	{
 	public:
 		HookeLinearElasticity();

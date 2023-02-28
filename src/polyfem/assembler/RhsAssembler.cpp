@@ -1,4 +1,7 @@
 #include "RhsAssembler.hpp"
+
+#include "MatParams.hpp"
+
 #include <polyfem/utils/MaybeParallelFor.hpp>
 
 #include <polyfem/utils/BoundarySampler.hpp>

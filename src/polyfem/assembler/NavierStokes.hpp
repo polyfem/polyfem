@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assembler.hpp"
 #include "AssemblerData.hpp"
 
 #include <polyfem/Common.hpp>
@@ -14,7 +15,7 @@ namespace polyfem::assembler
 {
 	template <bool full_gradient>
 	// full graidnet used for Picard iteration
-	class NavierStokesVelocity
+	class NavierStokesVelocity : public NLAssembler
 	{
 	public:
 		// res is R^{dim²}

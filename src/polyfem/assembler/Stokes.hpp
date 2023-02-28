@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assembler.hpp"
 #include "AssemblerData.hpp"
 
 #include <polyfem/Common.hpp>
@@ -13,7 +14,7 @@
 namespace polyfem::assembler
 {
 	// stokes local assembler for velocity
-	class StokesVelocity
+	class StokesVelocity : public TensorAssembler
 	{
 	public:
 		// res is R^{dim²}
@@ -40,20 +41,20 @@ namespace polyfem::assembler
 	};
 
 	// stokes mixed assembler (velocity phi and pressure psi)
-	class StokesMixed
+	class StokesMixed : public MixedAssembler<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>>
 	{
 	public:
 		// res is R^{dim}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-		assemble(const MixedAssemblerData &data) const;
+		assemble(const MixedAssemblerData &data) const override;
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 		compute_rhs(const AutodiffHessianPt &pt) const;
 
 		void set_size(const int size);
 
-		inline int rows() const { return size_; }
-		inline int cols() const { return 1; }
+		inline int rows() const override { return size_; }
+		inline int cols() const override { return 1; }
 
 		void add_multimaterial(const int index, const json &params) {}
 
@@ -62,7 +63,7 @@ namespace polyfem::assembler
 	};
 
 	// pressure only for stokes is zero
-	class StokesPressure
+	class StokesPressure : public ScalarAssembler
 	{
 	public:
 		// res is R^{dim²}

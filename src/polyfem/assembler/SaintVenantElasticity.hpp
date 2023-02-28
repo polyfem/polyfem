@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assembler.hpp"
 #include "MatParams.hpp"
 
 #include <polyfem/Common.hpp>
@@ -16,7 +17,7 @@
 namespace polyfem::assembler
 {
 	// Similar to HookeLinear but with non-linear stress strain: C:½(F+Fᵀ+FᵀF)
-	class SaintVenantElasticity
+	class SaintVenantElasticity : public NLAssembler
 	{
 	public:
 		SaintVenantElasticity();

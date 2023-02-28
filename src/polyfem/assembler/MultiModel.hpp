@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assembler.hpp"
 #include "AssemblerData.hpp"
 
 #include <polyfem/Common.hpp>
@@ -18,7 +19,7 @@
 
 namespace polyfem::assembler
 {
-	class MultiModel
+	class MultiModel : public NLAssembler
 	{
 	public:
 		// neccessary for mixing linear model with non-linear collision response

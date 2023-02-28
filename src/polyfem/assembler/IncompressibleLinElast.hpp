@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assembler.hpp"
 #include "AssemblerData.hpp"
 #include "MatParams.hpp"
 
@@ -15,7 +16,7 @@
 namespace polyfem::assembler
 {
 	// displacement assembler
-	class IncompressibleLinearElasticityDispacement
+	class IncompressibleLinearElasticityDispacement : public TensorAssembler
 	{
 	public:
 		// res is R^{dim²}
@@ -43,20 +44,20 @@ namespace polyfem::assembler
 	};
 
 	// mixed, displacement and pressure
-	class IncompressibleLinearElasticityMixed
+	class IncompressibleLinearElasticityMixed : public MixedAssembler<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>>
 	{
 	public:
 		// res is R^{dim}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-		assemble(const MixedAssemblerData &data) const;
+		assemble(const MixedAssemblerData &data) const override;
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 		compute_rhs(const AutodiffHessianPt &pt) const;
 
 		void set_size(const int size);
 
-		inline int rows() const { return size_; }
-		inline int cols() const { return 1; }
+		inline int rows() const override { return size_; }
+		inline int cols() const override { return 1; }
 
 		void add_multimaterial(const int index, const json &params) {}
 		void set_params(const LameParameters &params) {}
@@ -66,7 +67,7 @@ namespace polyfem::assembler
 	};
 
 	// pressure only part
-	class IncompressibleLinearElasticityPressure
+	class IncompressibleLinearElasticityPressure : public ScalarAssembler
 	{
 	public:
 		// res is R^{1}
