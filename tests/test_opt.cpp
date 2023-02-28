@@ -14,6 +14,7 @@
 #include <polyfem/solver/forms/adjoint_forms/WeightedVolumeForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/TransientForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/BarrierForms.hpp>
+#include <polyfem/solver/forms/adjoint_forms/SmoothingForms.hpp>
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
@@ -491,9 +492,18 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 	obj1->set_weight(1.0);
 
 	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0], json());
-	obj2->set_weight(10.0);
+	obj2->set_weight(1.0);
 
-	std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2});
+	auto obj3 = std::make_shared<BoundarySmoothingForm>(variable_to_simulations, *states[0], false, 2);
+	obj3->set_weight(8);
+
+	std::vector<std::shared_ptr<AdjointForm>> volume_form = {std::make_shared<VolumeForm>(variable_to_simulations, *states[0], opt_args["functionals"][0])};
+	Eigen::VectorXd volume_bounds(2);
+	volume_bounds << 0, 2.36226e-1;
+	auto obj4 = std::make_shared<InequalityConstraintForm>(volume_form, volume_bounds);
+	obj4->set_weight(10);
+
+	std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2, obj3, obj4});
 
 	auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
 	sum->set_weight(1.0);
@@ -736,6 +746,7 @@ TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
 		0.66666667, -0.33333333,
 		0.66666667, 0.33333333,
 		0, 1;
+	control_points.col(0).array() += 0.5;
 
 	Eigen::VectorXd knots(8);
 	knots << 0,
@@ -752,7 +763,7 @@ TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
 	{
 		std::vector<std::shared_ptr<Parametrization>> spline_boundary_map_list = {std::make_shared<BSplineParametrization1DTo2D>(control_points, knots, opt_bnodes, true)};
 
-		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToBoundaryNodes(spline_boundary_map_list, *states[0], {4})));
+		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToBoundaryNodes(spline_boundary_map_list, *states[0], 4)));
 	}
 
 	{
