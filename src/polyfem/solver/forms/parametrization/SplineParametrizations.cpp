@@ -20,7 +20,7 @@ namespace polyfem::solver
 		if (exclude_ends_)
 		{
 			new_control_points = initial_control_points_;
-			for (int i = 1; i < new_control_points.rows() - 2; ++i)
+			for (int i = 1; i < new_control_points.rows() - 1; ++i)
 				new_control_points.row(i) = x.segment(2 * i - 2, 2);
 		}
 		else
