@@ -173,7 +173,7 @@ namespace polyfem::solver
     }
     bool MeshTiling::tiling(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::MatrixXd &Vnew, Eigen::MatrixXi &Fnew) const
     {
-        if (last_x.size() == V.size() && last_x == V)
+        if (last_V.size() == V.size() && last_V == V)
         {
             std::vector<std::vector<int>> elements;
             std::vector<std::vector<double>> weights;
@@ -285,7 +285,46 @@ namespace polyfem::solver
             logger().info("Saved tiled mesh to {}", out_path_);
         }
 
-        last_x = V;
+        last_V = V;
         return true;
+    }
+
+    MeshAffine::MeshAffine(const Eigen::MatrixXd &A, const Eigen::VectorXd &b, const std::string in_path, const std::string out_path): A_(A), b_(b), in_path_(in_path), out_path_(out_path)
+    {
+    }
+
+    Eigen::VectorXd MeshAffine::eval(const Eigen::VectorXd &x) const
+    {
+        auto V = utils::unflatten(x, A_.rows());
+        V = ((V * A_.transpose()).eval().rowwise() + b_.transpose()).eval();
+
+        // save to file
+        {
+            Eigen::MatrixXd vertices;
+            Eigen::MatrixXi cells;
+            std::vector<std::vector<int>> elements;
+            std::vector<std::vector<double>> weights;
+            std::vector<int> body_ids;
+            io::MshReader::load(in_path_, vertices, cells, elements, weights, body_ids);
+
+            const int dim = V.cols();
+            Eigen::MatrixXi Tri = (dim == 3) ? Eigen::MatrixXi() : cells;
+            Eigen::MatrixXi Tet = (dim == 3) ? cells : Eigen::MatrixXi();
+
+            Eigen::MatrixXd Vsave;
+            Vsave.setZero(V.rows(), 3);
+            Vsave.leftCols(V.cols()) = V;
+
+            igl::writeMSH(out_path_, Vsave, Tri, Tet, Eigen::MatrixXi::Zero(Tri.rows(), 1), Eigen::MatrixXi::Zero(Tet.rows(), 1), std::vector<std::string>(), std::vector<Eigen::MatrixXd>(), std::vector<std::string>(), std::vector<Eigen::MatrixXd>(), std::vector<Eigen::MatrixXd>());
+
+            logger().info("Saved affined mesh to {}", out_path_);
+        }
+        
+        return utils::flatten(V);
+    }
+    Eigen::VectorXd MeshAffine::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
+    {
+        auto tmp = utils::unflatten(grad, A_.rows());
+        return utils::flatten(tmp * A_.transpose());
     }
 }

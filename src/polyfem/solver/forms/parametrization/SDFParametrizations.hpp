@@ -17,7 +17,7 @@ namespace polyfem::solver
     private:
         bool isosurface_inflator(const Eigen::VectorXd &x) const;
 
-        std::string inflator_path_, sdf_velocity_path_, msh_path_;
+        const std::string inflator_path_, sdf_velocity_path_, msh_path_;
 
         mutable Eigen::VectorXd last_x;
     };
@@ -33,12 +33,28 @@ namespace polyfem::solver
         Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
     
     private:
-        Eigen::VectorXi nums_;
-        std::string in_path_, out_path_;
+        const Eigen::VectorXi nums_;
+        const std::string in_path_, out_path_;
 
         bool tiling(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::MatrixXd &Vnew, Eigen::MatrixXi &Fnew) const;
 
-        mutable Eigen::MatrixXd last_x;
+        mutable Eigen::MatrixXd last_V;
         mutable Eigen::VectorXi index_map;
+    };
+
+    class MeshAffine : public Parametrization
+    {
+    public:
+        MeshAffine(const Eigen::MatrixXd &A, const Eigen::VectorXd &b, const std::string in_path, const std::string out_path);
+
+        int size(const int x_size) const override { return x_size; }
+
+        Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+        Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
+    
+    private:
+        const Eigen::MatrixXd A_;
+        const Eigen::VectorXd b_;
+        const std::string in_path_, out_path_;
     };
 }
