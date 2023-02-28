@@ -353,21 +353,22 @@ namespace polyfem
 					current = tmp;
 				else if (current != tmp)
 				{
-					if (
-						current == "LinearElasticity" || //
-						current == "NeoHookean" ||       //
-						current == "SaintVenant" ||
-						// current == "HookeLinearElasticity" ||
-						current == "MooneyRivlin" || //
-						current == "Ogden" ||        //
-						current == "MultiModels")
+					if (current == "LinearElasticity"
+						|| current == "NeoHookean"
+						|| current == "SaintVenant"
+						// || current == "HookeLinearElasticity"
+						|| current == "MooneyRivlin"
+						|| current == "UnconstrainedOgden"
+						|| current == "IncompressibleOgden"
+						|| current == "MultiModels")
 					{
-						if (tmp == "LinearElasticity" || //
-							tmp == "NeoHookean" ||       //
-							tmp == "SaintVenant" ||
-							// tmp == "HookeLinearElasticity" ||
-							tmp == "MooneyRivlin" || //
-							tmp == "Ogden")
+						if (tmp == "LinearElasticity"
+							|| tmp == "NeoHookean"
+							|| tmp == "SaintVenant"
+							// || tmp == "HookeLinearElasticity"
+							|| tmp == "MooneyRivlin"
+							|| tmp == "UnconstrainedOgden"
+							|| tmp == "IncompressibleOgden")
 							current = "MultiModels";
 						else
 						{

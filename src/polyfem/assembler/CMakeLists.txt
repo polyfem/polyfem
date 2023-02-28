@@ -6,6 +6,7 @@ set(SOURCES
 	AssemblyValues.hpp
 	AssemblyValsCache.cpp
 	AssemblyValsCache.hpp
+	ElasticEnergyMacros.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp
 	Helmholtz.cpp

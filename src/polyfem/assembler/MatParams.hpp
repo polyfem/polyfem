@@ -22,6 +22,23 @@ namespace polyfem::assembler
 	private:
 		const std::string param_name_;
 		std::vector<utils::ExpressionValue> param_;
+
+		friend class GenericMatParams;
+	};
+
+	class GenericMatParams
+	{
+	public:
+		GenericMatParams(const std::string &param_name);
+
+		const GenericMatParam &operator[](const size_t i) const { return params_[i]; }
+		size_t size() const { return params_.size(); }
+
+		void add_multimaterial(const int index, const json &params);
+
+	private:
+		const std::string param_name_;
+		std::vector<GenericMatParam> params_;
 	};
 
 	class ElasticityTensor
