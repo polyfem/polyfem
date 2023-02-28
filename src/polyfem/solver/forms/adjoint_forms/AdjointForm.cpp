@@ -32,7 +32,7 @@ namespace polyfem::solver
 
 	Eigen::MatrixXd StaticForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
 	{
-		Eigen::MatrixXd term(state.ndof(), state.diff_cached.size());
+		Eigen::MatrixXd term = Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
 		term.col(time_step_) = compute_adjoint_rhs_unweighted_step(x, state);
 
 		return term;
