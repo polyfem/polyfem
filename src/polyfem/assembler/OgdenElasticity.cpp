@@ -42,15 +42,20 @@ namespace polyfem::assembler
 		const int el_id,
 		const DefGradMatrix<T> &def_grad) const
 	{
-
 		Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> eigs;
 
 		if (size() == 2)
+		{
+			// No need to symmetrize F to compute eigen values analytically
 			autogen::eigs_2d<T>(def_grad, eigs);
-		else if (size() == 3)
-			autogen::eigs_3d<T>(def_grad, eigs);
+		}
 		else
-			assert(false);
+		{
+			assert(size() == 3);
+			// Symmetrize F to compute eigen values analytically
+			autogen::eigs_3d<T>(def_grad.transpose() * def_grad, eigs);
+			eigs = sqrt(eigs.array());
+		}
 
 		const T J = utils::determinant(def_grad);
 		const T Jdenom = pow(J, -1. / size());
