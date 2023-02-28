@@ -37,19 +37,20 @@ var classpolyfem_1_1assembler_1_1_assembler_utils =
     [ "incompressible_lin_elast_displacement_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a5f88eb46087f5822d0cb1065a77b1c23", null ],
     [ "incompressible_lin_elast_mixed_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a3a0a850f27c38a4d6a8c29bcccc10efe", null ],
     [ "incompressible_lin_elast_pressure_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a6f448f5ac09dd33272bea2f10366f6ba", null ],
+    [ "incompressible_ogden_elasticity_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a77a4ede656da72bddbd78922e201c19a", null ],
     [ "laplacian_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#ac9b1ca490356d93d1d7c0070a833ee33", null ],
     [ "linear_elasticity_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a578d54a40f5dbc4643402a96dc5ef930", null ],
     [ "linear_elasticity_energy_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#ab39c34f05da3fef4d0364aa19c05de59", null ],
     [ "mass_mat_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a1d46a1d0da23f78371c126701af7bb47", null ],
     [ "mass_mat_no_density_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a6c412d14d73ed0aeb266b627321d26e6", null ],
-    [ "mooney_rivlin_elasticity_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#ac089e1cd2e31a007b72ebdc5c2eb3125", null ],
+    [ "mooney_rivlin_elasticity_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aaf3e41667d3ed7c21db308b474131f21", null ],
     [ "multi_models_elasticity_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a2bd3f1bfb62a9a32dccd85e910f1336e", null ],
     [ "navier_stokes_velocity_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a1eb77b20f78c85064ab7455bfbbaa549", null ],
     [ "navier_stokes_velocity_picard_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a524248f8c76017dc4cec40461deca3b0", null ],
     [ "neo_hookean_elasticity_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aa6ac940e98a5788729f86186521debab", null ],
-    [ "ogden_elasticity_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aceff46245845bc02be987a4350730531", null ],
     [ "saint_venant_elasticity_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a9b360246f27fa5be62f8c9daa6d62714", null ],
     [ "stokes_mixed_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aaadc4dd42ef62a63c5e120d22dfa6855", null ],
     [ "stokes_pressure_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a5d3e3b7dd2c5a712228490e9199a8f7c", null ],
-    [ "stokes_velocity_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aaaa6716aa3a940735ada49aabd941599", null ]
+    [ "stokes_velocity_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aaaa6716aa3a940735ada49aabd941599", null ],
+    [ "unconstrained_ogden_elasticity_", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aea86b3c7ddba7ad71eb92c440f2c7841", null ]
 ];

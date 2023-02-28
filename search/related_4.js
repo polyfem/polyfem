@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['log_0',['log',['../struct_d_scalar1.html#adaa855acf7d526bd89b52c51b45e93a8',1,'DScalar1::log()'],['../struct_d_scalar2.html#a8f48d90e88ad1f0a2e1b2a0913f1c778',1,'DScalar2::log()']]]
+  ['inverse_0',['inverse',['../struct_d_scalar1.html#a8a2aa201c26ff9efff664894c44386fa',1,'DScalar1::inverse()'],['../struct_d_scalar2.html#a452415bbc44e4897fe03c061fa65e294',1,'DScalar2::inverse()']]]
 ];

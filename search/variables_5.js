@@ -29,6 +29,7 @@ var searchData=
   ['exact_26',['exact',['../classpolyfem_1_1io_1_1_solution_frame.html#a9cc95f45ac85ed95b3c4c26f16063e38',1,'polyfem::io::SolutionFrame']]],
   ['exact_5f_27',['exact_',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#af8cdcfeee105441905126b4a4f3be33a',1,'polyfem::assembler::GenericTensorProblem::exact_()'],['../classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a6365da4bb42d2c5b47d82682818ffb0b',1,'polyfem::assembler::GenericScalarProblem::exact_()']]],
   ['exact_5fgrad_5f_28',['exact_grad_',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aa829e52d35b06d98c9cf6188204316e6',1,'polyfem::assembler::GenericTensorProblem::exact_grad_()'],['../classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a6eeadd2af638293255d87291f3b77741',1,'polyfem::assembler::GenericScalarProblem::exact_grad_()']]],
-  ['expr_5f_29',['expr_',['../classpolyfem_1_1utils_1_1_expression_value.html#a98484d50dcbca8e955f04ae8f7bd17ee',1,'polyfem::utils::ExpressionValue']]],
-  ['extend_5f_30',['extend_',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#aecb68e2239c1ee24a5221fa931f6247b',1,'polyfem::utils::PiecewiseInterpolation']]]
+  ['expoenents_5f_29',['expoenents_',['../classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html#a7f6ff8116e6ea650e178245feedb8b82',1,'polyfem::assembler::IncompressibleOgdenElasticity']]],
+  ['expr_5f_30',['expr_',['../classpolyfem_1_1utils_1_1_expression_value.html#a98484d50dcbca8e955f04ae8f7bd17ee',1,'polyfem::utils::ExpressionValue']]],
+  ['extend_5f_31',['extend_',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#aecb68e2239c1ee24a5221fa931f6247b',1,'polyfem::utils::PiecewiseInterpolation']]]
 ];

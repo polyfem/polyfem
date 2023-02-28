@@ -29,6 +29,7 @@ var annotated_dup =
         [ "FormulationProperties", "structpolyfem_1_1assembler_1_1_formulation_properties.html", "structpolyfem_1_1assembler_1_1_formulation_properties" ],
         [ "GenericElastic", "classpolyfem_1_1assembler_1_1_generic_elastic.html", "classpolyfem_1_1assembler_1_1_generic_elastic" ],
         [ "GenericMatParam", "classpolyfem_1_1assembler_1_1_generic_mat_param.html", "classpolyfem_1_1assembler_1_1_generic_mat_param" ],
+        [ "GenericMatParams", "classpolyfem_1_1assembler_1_1_generic_mat_params.html", "classpolyfem_1_1assembler_1_1_generic_mat_params" ],
         [ "GenericScalarProblem", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html", "classpolyfem_1_1assembler_1_1_generic_scalar_problem" ],
         [ "GenericTensorProblem", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html", "classpolyfem_1_1assembler_1_1_generic_tensor_problem" ],
         [ "Helmholtz", "classpolyfem_1_1assembler_1_1_helmholtz.html", "classpolyfem_1_1assembler_1_1_helmholtz" ],
@@ -36,6 +37,7 @@ var annotated_dup =
         [ "IncompressibleLinearElasticityDispacement", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement" ],
         [ "IncompressibleLinearElasticityMixed", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed" ],
         [ "IncompressibleLinearElasticityPressure", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure.html", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure" ],
+        [ "IncompressibleOgdenElasticity", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity" ],
         [ "LameParameters", "classpolyfem_1_1assembler_1_1_lame_parameters.html", "classpolyfem_1_1assembler_1_1_lame_parameters" ],
         [ "Laplacian", "classpolyfem_1_1assembler_1_1_laplacian.html", "classpolyfem_1_1assembler_1_1_laplacian" ],
         [ "LinearAssemblerData", "classpolyfem_1_1assembler_1_1_linear_assembler_data.html", "classpolyfem_1_1assembler_1_1_linear_assembler_data" ],
@@ -50,7 +52,6 @@ var annotated_dup =
         [ "NeoHookeanElasticity", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity" ],
         [ "NLAssembler", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", "classpolyfem_1_1assembler_1_1_n_l_assembler" ],
         [ "NonLinearAssemblerData", "classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html", "classpolyfem_1_1assembler_1_1_non_linear_assembler_data" ],
-        [ "OgdenElasticity", "classpolyfem_1_1assembler_1_1_ogden_elasticity.html", "classpolyfem_1_1assembler_1_1_ogden_elasticity" ],
         [ "Problem", "classpolyfem_1_1assembler_1_1_problem.html", "classpolyfem_1_1assembler_1_1_problem" ],
         [ "RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html", "classpolyfem_1_1assembler_1_1_rhs_assembler" ],
         [ "SaintVenantElasticity", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity" ],
@@ -59,6 +60,7 @@ var annotated_dup =
         [ "StokesPressure", "classpolyfem_1_1assembler_1_1_stokes_pressure.html", "classpolyfem_1_1assembler_1_1_stokes_pressure" ],
         [ "StokesVelocity", "classpolyfem_1_1assembler_1_1_stokes_velocity.html", "classpolyfem_1_1assembler_1_1_stokes_velocity" ],
         [ "TensorBCValue", "structpolyfem_1_1assembler_1_1_tensor_b_c_value.html", "structpolyfem_1_1assembler_1_1_tensor_b_c_value" ],
+        [ "UnconstrainedOgdenElasticity", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity" ],
         [ "ViscousDamping", "classpolyfem_1_1assembler_1_1_viscous_damping.html", "classpolyfem_1_1assembler_1_1_viscous_damping" ]
       ] ],
       [ "basis", "namespacepolyfem_1_1basis.html", [

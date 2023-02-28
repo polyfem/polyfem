@@ -29,5 +29,5 @@ var searchData=
   ['mixedassemblerdata_26',['MixedAssemblerData',['../classpolyfem_1_1assembler_1_1_mixed_assembler_data.html#a461f33c3d3c0aef99efb0641b20b59bc',1,'polyfem::assembler::MixedAssemblerData']]],
   ['mooneyrivlinelasticity_27',['MooneyRivlinElasticity',['../classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#aa1faac837f786dac98abbe3f3d50d052',1,'polyfem::assembler::MooneyRivlinElasticity']]],
   ['mshwriter_28',['MshWriter',['../classpolyfem_1_1io_1_1_msh_writer.html#a96c2111d5c06dcaec3129aac05166290',1,'polyfem::io::MshWriter']]],
-  ['mus_29',['mus',['../classpolyfem_1_1assembler_1_1_ogden_elasticity.html#a52d339a616fa52dab7df30ad88003733',1,'polyfem::assembler::OgdenElasticity']]]
+  ['mus_29',['mus',['../classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#a060131c460dc846c7a54dd67bb364076',1,'polyfem::assembler::UnconstrainedOgdenElasticity']]]
 ];

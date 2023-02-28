@@ -9,7 +9,7 @@ var searchData=
   ['all_5fto_5fvalid_5felemmap_6',['all_to_valid_elemMap',['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a160f6751fce5547c47f88fa7601de576',1,'polyfem::mesh::NCMesh3D::all_to_valid_elemMap()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a441a2867a465b75ad7d1150b5cf02662',1,'polyfem::mesh::NCMesh2D::all_to_valid_elemMap()']]],
   ['all_5fto_5fvalid_5ffacemap_7',['all_to_valid_faceMap',['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a98872d39f21398cf8c98a1d5c7c10d37',1,'polyfem::mesh::NCMesh3D']]],
   ['all_5fto_5fvalid_5fvertexmap_8',['all_to_valid_vertexMap',['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#ab79d944ce28ecf37c6ab902faf0537b5',1,'polyfem::mesh::NCMesh2D::all_to_valid_vertexMap()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a71702aab18449a3091b582bc82c892d2',1,'polyfem::mesh::NCMesh3D::all_to_valid_vertexMap()']]],
-  ['alphas_5f_9',['alphas_',['../classpolyfem_1_1assembler_1_1_ogden_elasticity.html#ae45a94a6a17e1535a4d6d97195c3c6f0',1,'polyfem::assembler::OgdenElasticity']]],
+  ['alphas_5f_9',['alphas_',['../classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#a12812b3f1bd84fdea09bfe0daa85382a',1,'polyfem::assembler::UnconstrainedOgdenElasticity']]],
   ['angular_5fv0_5f_10',['angular_v0_',['../classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a3e4075a5d4aba86b9c3811c6021c442f',1,'polyfem::problem::DoubleTorsionElasticProblem']]],
   ['angular_5fv1_5f_11',['angular_v1_',['../classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a58ce4d96db7534496b56e38c4a465f60',1,'polyfem::problem::DoubleTorsionElasticProblem']]],
   ['apply_5fdbc_5f_12',['apply_DBC_',['../classpolyfem_1_1solver_1_1_body_form.html#ac977a5b42c7d8b11f9e75b6c7be45655',1,'polyfem::solver::BodyForm']]],
