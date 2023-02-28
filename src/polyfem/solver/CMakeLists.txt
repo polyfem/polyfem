@@ -48,4 +48,3 @@ target_sources(polyfem PRIVATE ${SOURCES})
 # ###############################################################################
 add_subdirectory(line_search)
 add_subdirectory(forms)
-add_subdirectory(constraints)
