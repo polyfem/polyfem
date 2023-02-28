@@ -19,7 +19,8 @@ namespace polyfem::assembler
 
 		// hooke_.set_size(size);
 		mooney_rivlin_elasticity_.set_size(size);
-		ogden_elasticity_.set_size(size);
+		unconstrained_ogden_elasticity_.set_size(size);
+		incompressible_ogden_elasticity_.set_size(size);
 	}
 
 	void MultiModel::add_multimaterial(const int index, const json &params)
@@ -32,7 +33,8 @@ namespace polyfem::assembler
 
 		// hooke_.add_multimaterial(index, params);
 		mooney_rivlin_elasticity_.add_multimaterial(index, params);
-		ogden_elasticity_.add_multimaterial(index, params);
+		unconstrained_ogden_elasticity_.add_multimaterial(index, params);
+		incompressible_ogden_elasticity_.add_multimaterial(index, params);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
@@ -62,9 +64,9 @@ namespace polyfem::assembler
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.assemble_grad(data);
 		else if (model == "UnconstrainedOgden")
-			return ogden_elasticity_.assemble_grad(data);
+			return unconstrained_ogden_elasticity_.assemble_grad(data);
 		else if (model == "IncompressibleOgden")
-			return ogden_elasticity_.assemble_grad(data);
+			return incompressible_ogden_elasticity_.assemble_grad(data);
 		else
 		{
 			assert(false);
@@ -89,9 +91,9 @@ namespace polyfem::assembler
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.assemble_hessian(data);
 		else if (model == "UnconstrainedOgden")
-			return ogden_elasticity_.assemble_hessian(data);
+			return unconstrained_ogden_elasticity_.assemble_hessian(data);
 		else if (model == "IncompressibleOgden")
-			return ogden_elasticity_.assemble_hessian(data);
+			return incompressible_ogden_elasticity_.assemble_hessian(data);
 		else
 		{
 			assert(false);
@@ -115,9 +117,9 @@ namespace polyfem::assembler
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.compute_energy(data);
 		else if (model == "UnconstrainedOgden")
-			return ogden_elasticity_.compute_energy(data);
+			return unconstrained_ogden_elasticity_.compute_energy(data);
 		else if (model == "IncompressibleOgden")
-			return ogden_elasticity_.compute_energy(data);
+			return incompressible_ogden_elasticity_.compute_energy(data);
 		else
 		{
 			assert(false);
@@ -140,9 +142,9 @@ namespace polyfem::assembler
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
 		else if (model == "UnconstrainedOgden")
-			return ogden_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
+			return unconstrained_ogden_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
 		else if (model == "IncompressibleOgden")
-			return ogden_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
+			return incompressible_ogden_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
 		else
 		{
 			assert(false);
@@ -165,9 +167,9 @@ namespace polyfem::assembler
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
 		else if (model == "UnconstrainedOgden")
-			return ogden_elasticity_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
+			return unconstrained_ogden_elasticity_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
 		else if (model == "IncompressibleOgden")
-			return ogden_elasticity_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
+			return incompressible_ogden_elasticity_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
 		else
 		{
 			assert(false);
