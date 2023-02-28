@@ -5,17 +5,6 @@
 
 namespace polyfem::assembler
 {
-	namespace
-	{
-		void set_from_json(const json &j, Eigen::VectorXd &v)
-		{
-			if (j.is_array())
-				v = j.get<Eigen::VectorXd>();
-			else
-				v.setConstant(1, j.get<double>());
-		}
-	} // namespace
-
 	UnconstrainedOgdenElasticity::UnconstrainedOgdenElasticity()
 	{
 		alphas_.setOnes(1);
@@ -26,11 +15,11 @@ namespace polyfem::assembler
 	void UnconstrainedOgdenElasticity::add_multimaterial(const int index, const json &params)
 	{
 		if (params.contains("alphas"))
-			set_from_json(params["alphas"], alphas_);
+			alphas_ = params["alphas"];
 		if (params.contains("mus"))
-			set_from_json(params["mus"], mus_);
+			mus_ = params["mus"];
 		if (params.contains("mus"))
-			set_from_json(params["Ds"], Ds_);
+			Ds_ = params["Ds"];
 
 		assert(alphas_.size() == mus_.size());
 		assert(alphas_.size() == Ds_.size());
@@ -98,9 +87,9 @@ namespace polyfem::assembler
 	void IncompressibleOgdenElasticity::add_multimaterial(const int index, const json &params)
 	{
 		if (params.contains("c"))
-			set_from_json(params["c"], coefficients_);
+			coefficients_ = params["c"];
 		if (params.contains("m"))
-			set_from_json(params["m"], expoenents_);
+			expoenents_ = params["m"];
 		if (params.contains("k"))
 			bulk_modulus_ = params["k"];
 

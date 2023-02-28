@@ -60,8 +60,20 @@ namespace nlohmann
 
 		static void from_json(const json &j, Vector<T, dim, max_dim> &v)
 		{
-			auto jv = j.get<std::vector<T>>();
-			v = Eigen::Map<Vector<T, dim, max_dim>>(jv.data(), long(jv.size()));
+			if (j.is_array())
+			{
+				auto jv = j.get<std::vector<T>>();
+				v = Eigen::Map<Vector<T, dim, max_dim>>(jv.data(), long(jv.size()));
+			}
+			else if (j.is_number())
+			{
+				assert(dim == 1);
+				v = Vector<T, 1>::Constant(j.get<T>());
+			}
+			else
+			{
+				assert(false);
+			}
 		}
 	};
 
@@ -75,8 +87,20 @@ namespace nlohmann
 
 		static void from_json(const json &j, RowVector<T, dim, max_dim> &v)
 		{
-			auto jv = j.get<std::vector<T>>();
-			v = Eigen::Map<Vector<T, dim, max_dim>>(jv.data(), long(jv.size()));
+			if (j.is_array())
+			{
+				auto jv = j.get<std::vector<T>>();
+				v = Eigen::Map<Vector<T, dim, max_dim>>(jv.data(), long(jv.size()));
+			}
+			else if (j.is_number())
+			{
+				assert(dim == 1);
+				v = RowVector<T, 1>::Constant(j.get<T>());
+			}
+			else
+			{
+				assert(false);
+			}
 		}
 	};
 
