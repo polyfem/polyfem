@@ -36,8 +36,9 @@ namespace polyfem::solver
         Eigen::VectorXi nums_;
         std::string in_path_, out_path_;
 
-        bool tiling(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::MatrixXd &Vnew, Eigen::MatrixXi &Fnew, Eigen::VectorXi &index_map) const;
+        bool tiling(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::MatrixXd &Vnew, Eigen::MatrixXi &Fnew) const;
 
         mutable Eigen::MatrixXd last_x;
+        mutable Eigen::VectorXi index_map;
     };
 }

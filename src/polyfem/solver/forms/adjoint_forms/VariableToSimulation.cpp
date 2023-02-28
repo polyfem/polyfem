@@ -74,12 +74,13 @@ namespace polyfem::solver
 	{
 		parametrization_.eval(x);
 
-		state_ptr_->args["geometry"][mesh_id_]["mesh"] = mesh_path_;
-		state_ptr_->args["geometry"][mesh_id_]["transformation"] = R"({"dimensions": null, "scale": 1, "rotation": null, "translation": []})"_json;
+		state_ptr_->in_args["geometry"][mesh_id_]["mesh"] = mesh_path_;
+		state_ptr_->in_args["geometry"][mesh_id_].erase("transformation");
 
-		state_ptr_->mesh.reset();
 		state_ptr_->mesh = nullptr;
 		state_ptr_->assembler.update_lame_params(Eigen::MatrixXd(), Eigen::MatrixXd());
+
+		state_ptr_->init(state_ptr_->in_args, false);
 
 		int start = 0, end = 0; // start vertex index of the mesh
 		{

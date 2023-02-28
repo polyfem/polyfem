@@ -4,7 +4,7 @@
 #include <polyfem/io/MshReader.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
-#include <igl/write_triangle_mesh.h>
+#include <igl/writeMSH.h>
 
 namespace polyfem::solver
 {
@@ -75,11 +75,6 @@ namespace polyfem::solver
         io::MshReader::load(sdf_velocity_path_, vertices, cells, elements, weights, body_ids);
         const int dim = vertices.cols();
 
-        vertices.conservativeResize(vertices.rows(), 3);
-        vertices.col(2).setZero();
-        static int debug_id = 0;
-        igl::write_triangle_mesh("debug_" + std::to_string(debug_id++) + ".obj", vertices, cells);
-
         return utils::flatten(vertices);
     } 
     Eigen::VectorXd SDF2Mesh::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
@@ -147,8 +142,7 @@ namespace polyfem::solver
 
         Eigen::MatrixXd Vout;
         Eigen::MatrixXi Fout;
-        Eigen::VectorXi index_map;
-        if (!tiling(vertices, cells, Vout, Fout, index_map))
+        if (!tiling(vertices, cells, Vout, Fout))
         {
             logger().error("Failed to tile mesh!");
             return Eigen::VectorXd();
@@ -163,25 +157,11 @@ namespace polyfem::solver
         std::vector<std::vector<int>> elements;
         std::vector<std::vector<double>> weights;
         std::vector<int> body_ids;
-        io::MshReader::load(in_path_, vertices, cells, elements, weights, body_ids);
+        io::MshReader::load(out_path_, vertices, cells, elements, weights, body_ids);
         const int dim = vertices.cols();
 
-        if (x.size() != vertices.size())
-            log_and_throw_error("Inconsistent input mesh in tiling!");
-        else if ((x - utils::flatten(vertices)).norm() > 1e-6)
-        {
-            logger().error("Diff in input mesh and x is {}", (x - utils::flatten(vertices)).norm());
-            log_and_throw_error("Inconsistent input mesh in tiling!");
-        }
-
-        Eigen::MatrixXd Vout;
-        Eigen::MatrixXi Fout;
-        Eigen::VectorXi index_map;
-        if (!tiling(vertices, cells, Vout, Fout, index_map))
-        {
-            logger().error("Failed to tile mesh!");
-            return Eigen::VectorXd();
-        }
+        if (grad.size() != vertices.size())
+            log_and_throw_error("Inconsistent input mesh in tiling jacobian!");
 
         Eigen::VectorXd reduced_grad;
         reduced_grad.setZero(x.size());
@@ -191,16 +171,16 @@ namespace polyfem::solver
 
         return reduced_grad;
     }
-    bool MeshTiling::tiling(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::MatrixXd &Vnew, Eigen::MatrixXi &Fnew, Eigen::VectorXi &index_map) const
+    bool MeshTiling::tiling(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::MatrixXd &Vnew, Eigen::MatrixXi &Fnew) const
     {
         if (last_x.size() == V.size() && last_x == V)
+        {
+            std::vector<std::vector<int>> elements;
+            std::vector<std::vector<double>> weights;
+            std::vector<int> body_ids;
+            io::MshReader::load(out_path_, Vnew, Fnew, elements, weights, body_ids);
             return true;
-        // Eigen::MatrixXd vertices;
-        // Eigen::MatrixXi cells;
-        // std::vector<std::vector<int>> elements;
-        // std::vector<std::vector<double>> weights;
-        // std::vector<int> body_ids;
-        // io::MshReader::load(in_path_, vertices, cells, elements, weights, body_ids);
+        }
 
         assert(nums_.size() == V.cols());
 
@@ -221,10 +201,10 @@ namespace polyfem::solver
                 for (int j = 0; j < nums_(1); j++)
                 {
                     Vtmp.middleRows(idx * V.rows(), V.rows()) = V;
-                    Vtmp.block(idx * V.rows(), 0, V.rows(), 1).array() += bbox(0);
-                    Vtmp.block(idx * V.rows(), 1, V.rows(), 1).array() += bbox(1);
+                    Vtmp.block(idx * V.rows(), 0, V.rows(), 1).array() += size(0) * i;
+                    Vtmp.block(idx * V.rows(), 1, V.rows(), 1).array() += size(1) * j;
 
-                    Ftmp.middleRows(idx * V.rows(), F.rows()) = F.array() + idx * V.rows();
+                    Ftmp.middleRows(idx * F.rows(), F.rows()) = F.array() + idx * V.rows();
                     idx += 1;
                 }
             }
@@ -276,20 +256,34 @@ namespace polyfem::solver
                         if (diffs(j) < eps)
                             SVI[indices[j]] = id;
                 }
+                id++;
             }
         }
         Vnew = Vtmp(SVJ, Eigen::all);
 
-        index_map.resize(Vtmp.rows());
+        index_map.setConstant(Vtmp.rows(), -1);
         for (int i = 0; i < V.rows(); i++)
-            index_map(Eigen::seq(i, nums_.prod(), V.rows())).array() = i;
-        index_map = index_map(SVJ);
+            for (int j = 0; j < nums_.prod(); j++)
+                index_map(j * V.rows() + i) = i;
+        index_map = index_map(SVJ).eval();
 
-        Fnew.resizeLike(F);
-        for (int d = 0; d < F.cols(); d++)
-            Fnew.col(d) = SVI(F.col(d));
-        
-        igl::write_triangle_mesh(out_path_, Vnew, Fnew);
+        Fnew.resizeLike(Ftmp);
+        for (int d = 0; d < Ftmp.cols(); d++)
+            Fnew.col(d) = SVI(Ftmp.col(d));
+
+        {
+            Eigen::MatrixXd Vsave;
+            Vsave.setZero(Vnew.rows(), 3);
+            Vsave.leftCols(Vnew.cols()) = Vnew;
+
+            const int dim = Vnew.cols();
+            Eigen::MatrixXi Tri = (dim == 3) ? Eigen::MatrixXi() : Fnew;
+            Eigen::MatrixXi Tet = (dim == 3) ? Fnew : Eigen::MatrixXi();
+
+            igl::writeMSH(out_path_, Vsave, Tri, Tet, Eigen::MatrixXi::Zero(Tri.rows(), 1), Eigen::MatrixXi::Zero(Tet.rows(), 1), std::vector<std::string>(), std::vector<Eigen::MatrixXd>(), std::vector<std::string>(), std::vector<Eigen::MatrixXd>(), std::vector<Eigen::MatrixXd>());
+
+            logger().info("Saved tiled mesh to {}", out_path_);
+        }
 
         last_x = V;
         return true;

@@ -348,13 +348,13 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 	State &state = *state_ptr;
 
 	std::vector<std::shared_ptr<Parametrization>> map_list = {
-		std::make_shared<SDF2Mesh>(std::string("~/microstructures/build/isosurface_inflator/isosurface_cli 2D_doubly_periodic bistable.obj -m meshing.json"), std::string("tmp-vel.msh"), std::string("tmp-unit.msh"))
-		//std::make_shared<MeshTiling>(Eigen::Vector2i(2, 2), "tmp-unit.msh", "tmp-tiled.msh")
+		std::make_shared<SDF2Mesh>(std::string("~/microstructures/build/isosurface_inflator/isosurface_cli 2D_doubly_periodic bistable.obj -m meshing.json"), std::string("tmp-vel.msh"), std::string("tmp-unit.msh")),
+		std::make_shared<MeshTiling>(Eigen::Vector2i(2, 2), "tmp-unit.msh", "tmp-tiled.msh")
 		};
 	CompositeParametrization composite_map(map_list);
 
 	json options;
-	options["mesh"] = "tmp-unit.msh";
+	options["mesh"] = "tmp-tiled.msh";
 	options["mesh_id"] = 0;
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
