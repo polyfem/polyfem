@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GenericElastic.hpp"
+#include "MatParams.hpp"
 
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
@@ -24,9 +25,9 @@ namespace polyfem::assembler
 		// sets material params
 		void add_multimaterial(const int index, const json &params) override;
 
-		const Eigen::VectorXd &alphas() const { return alphas_; }
-		const Eigen::VectorXd &mus() const { return mus_; }
-		const Eigen::VectorXd &Ds() const { return Ds_; }
+		const GenericMatParams &alphas() const { return alphas_; }
+		const GenericMatParams &mus() const { return mus_; }
+		const GenericMatParams &Ds() const { return Ds_; }
 
 		// This macro defines the overriden functions that compute the energy:
 		// template <typename T>
@@ -40,9 +41,9 @@ namespace polyfem::assembler
 			const int el_id,
 			const DefGradMatrix<T> &def_grad) const;
 
-		Eigen::VectorXd alphas_;
-		Eigen::VectorXd mus_;
-		Eigen::VectorXd Ds_;
+		GenericMatParams alphas_;
+		GenericMatParams mus_;
+		GenericMatParams Ds_;
 	};
 
 	class IncompressibleOgdenElasticity : public GenericElastic
@@ -54,11 +55,11 @@ namespace polyfem::assembler
 		void add_multimaterial(const int index, const json &params) override;
 
 		/// Coefficient of nth term, where n can range from 1 to 6
-		const Eigen::VectorXd &coefficients() const { return coefficients_; }
+		const GenericMatParams &coefficients() const { return coefficients_; }
 		/// Exponent of nth term, where n can range from 1 to 6
-		const Eigen::VectorXd &expoenents() const { return expoenents_; }
+		const GenericMatParams &expoenents() const { return expoenents_; }
 		/// Bulk modulus
-		const double &bulk_modulus() const { return bulk_modulus_; }
+		const GenericMatParam &bulk_modulus() const { return bulk_modulus_; }
 
 		/// Number of terms in the Ogden model
 		int num_terms() const { return coefficients_.size(); }
@@ -75,8 +76,8 @@ namespace polyfem::assembler
 			const int el_id,
 			const DefGradMatrix<T> &def_grad) const;
 
-		Eigen::VectorXd coefficients_;
-		Eigen::VectorXd expoenents_;
-		double bulk_modulus_;
+		GenericMatParams coefficients_;
+		GenericMatParams expoenents_;
+		GenericMatParam bulk_modulus_;
 	};
 } // namespace polyfem::assembler
