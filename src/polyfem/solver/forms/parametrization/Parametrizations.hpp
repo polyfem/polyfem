@@ -105,6 +105,7 @@ namespace polyfem::solver
 
 		int size(const int x_size) const override { return to_ - from_; }
 
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 

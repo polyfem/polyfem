@@ -243,6 +243,12 @@ namespace polyfem::solver
 		if (to_ - from_ <= 0)
 			log_and_throw_error("Invalid Slice Map input!");
 	}
+
+	Eigen::VectorXd SliceMap::inverse_eval(const Eigen::VectorXd &y)
+	{
+		return y;
+	}
+
 	Eigen::VectorXd SliceMap::eval(const Eigen::VectorXd &x) const
 	{
 		return x.segment(from_, to_ - from_);
