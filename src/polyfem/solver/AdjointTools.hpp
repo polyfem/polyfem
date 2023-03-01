@@ -4,9 +4,16 @@
 
 namespace polyfem::solver
 {
-    enum class ParameterType {
-        Shape, Material, FrictionCoeff, DampingCoeff, InitialCondition, DirichletBC, MacroStrain
-    };
+	enum class ParameterType
+	{
+		Shape,
+		Material,
+		FrictionCoeff,
+		DampingCoeff,
+		InitialCondition,
+		DirichletBC,
+		MacroStrain
+	};
 
 	enum class SpatialIntegralType
 	{
@@ -98,5 +105,8 @@ namespace polyfem::solver
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
+
+		static Eigen::VectorXd map_primitive_to_node_order(const State &state, const Eigen::VectorXd &primitives);
+		static Eigen::VectorXd map_node_to_primitive_order(const State &state, const Eigen::VectorXd &nodes);
 	};
 } // namespace polyfem::solver

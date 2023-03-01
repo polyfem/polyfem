@@ -118,7 +118,7 @@ namespace polyfem::solver
 					X(output_indexing(i)) = state_variable(i);
 			}
 
-			return X;
+			return AdjointTools::map_primitive_to_node_order(state_, X);
 		}
 
 		const State &state_;
