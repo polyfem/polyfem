@@ -16,7 +16,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Microstructures)
 
-add_library(Microstructures SHARED)
+add_library(Microstructures INTERFACE)
 include_directories(${Microstructures_SOURCE_DIR}/include)
 # target_include_directories(Microstructures INTERFACE ${Microstructures_SOURCE_DIR}/include)
-target_link_libraries(Microstructures PRIVATE micro_isosurface_inflator)
+target_link_libraries(Microstructures INTERFACE micro_isosurface_inflator)
