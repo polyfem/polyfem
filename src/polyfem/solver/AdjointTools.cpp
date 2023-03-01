@@ -60,16 +60,16 @@ namespace polyfem::solver
 	} // namespace
 
 	void AdjointTools::dJ_macro_strain_adjoint_term(
-			const State &state,
-			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd &adjoint,
-			Eigen::VectorXd &one_form)
+		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &adjoint,
+		Eigen::VectorXd &one_form)
 	{
 		const int dim = state.mesh->dimension();
 		const auto &bases = state.bases;
 		const auto &gbases = state.geom_bases();
 
-		one_form.setZero(dim*dim);
+		one_form.setZero(dim * dim);
 		auto storage = utils::create_thread_storage(LocalThreadVecStorage(one_form.size()));
 		utils::maybe_parallel_for(bases.size(), [&](int start, int end, int thread_id) {
 			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
@@ -89,11 +89,11 @@ namespace polyfem::solver
 				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
 
 				for (int a = 0; a < dim; a++)
-				for (int b = 0; b < dim; b++)
-				{
-					int X = a * dim + b;
-					local_storage.vec(X) -= dot(stiffnesses.block(0, X * dim*dim, local_storage.da.size(), dim*dim), grad_p);
-				}
+					for (int b = 0; b < dim; b++)
+					{
+						int X = a * dim + b;
+						local_storage.vec(X) -= dot(stiffnesses.block(0, X * dim * dim, local_storage.da.size(), dim * dim), grad_p);
+					}
 			}
 		});
 
@@ -479,7 +479,7 @@ namespace polyfem::solver
 
 		const int n_elements = int(bases.size());
 		term.setZero(dim * dim, 1);
-		
+
 		if (!j.depend_on_gradu())
 			return;
 
@@ -516,9 +516,9 @@ namespace polyfem::solver
 				}
 			});
 		}
-		else 
+		else
 			log_and_throw_error("Not implemented!");
-		
+
 		for (const LocalThreadVecStorage &local_storage : storage)
 			term += local_storage.vec;
 	}
@@ -838,7 +838,7 @@ namespace polyfem::solver
 				{
 					if (interested_ids.size() != 0 && interested_ids.find(state.mesh->get_body_id(e)) == interested_ids.end())
 						continue;
-					
+
 					assembler::ElementAssemblyValues &vals = local_storage.vals;
 					state.ass_vals_cache.compute(e, state.mesh->is_volume(), bases[e], gbases[e], vals);
 
@@ -996,5 +996,27 @@ namespace polyfem::solver
 				}
 			}
 		}
+	}
+
+	Eigen::VectorXd AdjointTools::map_primitive_to_node_order(const State &state, const Eigen::VectorXd &primitives)
+	{
+		int dim = state.mesh->dimension();
+		assert(primitives.size() == (state.n_geom_bases * dim));
+		Eigen::VectorXd nodes(primitives.size());
+		auto map = state.primitive_to_node();
+		for (int v = 0; v < state.n_geom_bases; ++v)
+			nodes.segment(map[v] * dim, dim) = primitives.segment(v * dim, dim);
+		return nodes;
+	}
+
+	Eigen::VectorXd AdjointTools::map_node_to_primitive_order(const State &state, const Eigen::VectorXd &nodes)
+	{
+		int dim = state.mesh->dimension();
+		assert(nodes.size() == (state.n_geom_bases * dim));
+		Eigen::VectorXd primitives(nodes.size());
+		auto map = state.node_to_primitive();
+		for (int v = 0; v < state.n_geom_bases; ++v)
+			primitives.segment(map[v] * dim, dim) = nodes.segment(v * dim, dim);
+		return primitives;
 	}
 } // namespace polyfem::solver
