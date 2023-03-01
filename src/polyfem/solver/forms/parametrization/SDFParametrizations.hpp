@@ -20,6 +20,8 @@ namespace polyfem::solver
         const std::string inflator_path_, sdf_velocity_path_, msh_path_;
 
         mutable Eigen::VectorXd last_x;
+        mutable Eigen::MatrixXd Vout, vertex_normals, shape_vel;
+        mutable Eigen::MatrixXi Fout;
     };
 
     class MeshTiling : public Parametrization

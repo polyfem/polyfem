@@ -307,6 +307,10 @@ endif()
 include(finite_diff)
 target_link_libraries(polyfem PUBLIC finitediff::finitediff)
 
+# Microstructures
+include(inflator)
+target_link_libraries(polyfem INTERFACE Microstructures)
+
 # Extra warnings (link this here so it has top priority)
 target_link_libraries(polyfem PRIVATE polyfem::warnings)
 

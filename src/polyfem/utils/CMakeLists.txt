@@ -24,6 +24,8 @@ set(SOURCES
 	InterpolatedFunction.hpp
 	Interpolation.cpp
 	Interpolation.hpp
+	IsosurfaceInflator.cpp
+	IsosurfaceInflator.hpp
 	JSONUtils.cpp
 	JSONUtils.hpp
 	Logger.cpp

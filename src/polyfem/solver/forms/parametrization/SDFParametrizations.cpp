@@ -1,6 +1,6 @@
 #include "SDFParametrizations.hpp"
 
-#include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/IsosurfaceInflator.hpp>
 #include <polyfem/io/MshReader.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
@@ -9,13 +9,17 @@
 namespace polyfem::solver
 {
     namespace {
-        template <typename T>
-        std::string to_string_with_precision(const T a_value, const int n = 6)
+        void write_msh(const std::string &path, const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
         {
-            std::ostringstream out;
-            out.precision(n);
-            out << std::fixed << a_value;
-            return out.str();
+            Eigen::MatrixXd Vsave;
+            Vsave.setZero(V.rows(), 3);
+            Vsave.leftCols(V.cols()) = V;
+
+            const int dim = V.cols();
+            Eigen::MatrixXi Tri = (dim == 3) ? Eigen::MatrixXi() : F;
+            Eigen::MatrixXi Tet = (dim == 3) ? F : Eigen::MatrixXi();
+
+            igl::writeMSH(path, Vsave, Tri, Tet, Eigen::MatrixXi::Zero(Tri.rows(), 1), Eigen::MatrixXi::Zero(Tet.rows(), 1), std::vector<std::string>(), std::vector<Eigen::MatrixXd>(), std::vector<std::string>(), std::vector<Eigen::MatrixXd>(), std::vector<Eigen::MatrixXd>());
         }
     }
 
@@ -24,26 +28,10 @@ namespace polyfem::solver
         if (last_x.size() == x.size() && last_x == x)
             return true;
 
-        std::string shape_params = "--params \"";
-        for (int i = 0; i < x.size(); i++)
-            shape_params += to_string_with_precision(x(i), 16) + " ";
-        shape_params += "\" ";
+        std::vector<double> x_vec(x.data(), x.data() + x.size());
+        utils::inflate(x_vec, Vout, Fout, vertex_normals, shape_vel);
 
-        std::string command = inflator_path_ + " " + shape_params + " -S " + sdf_velocity_path_ + " " + msh_path_;
-
-        int return_val;
-        try 
-        {
-            return_val = system(command.c_str());
-        }
-        catch (const std::exception &err)
-        {
-            logger().error("remesh command \"{}\" returns {}", command, return_val);
-
-            return false;
-        }
-
-        logger().info("remesh command \"{}\" returns {}", command, return_val);
+        write_msh(msh_path_, Vout, Fout);
 
         last_x = x;
 
@@ -51,13 +39,10 @@ namespace polyfem::solver
     }
     int SDF2Mesh::size(const int x_size) const
     {
-        Eigen::MatrixXd vertices;
-        Eigen::MatrixXi cells;
-        std::vector<std::vector<int>> elements;
-        std::vector<std::vector<double>> weights;
-        std::vector<int> body_ids;
-        io::MshReader::load(sdf_velocity_path_, vertices, cells, elements, weights, body_ids);
-        return vertices.size();
+        if (last_x.size() == x_size)
+            return Vout.size();
+        else
+            return 0;
     }
     Eigen::VectorXd SDF2Mesh::eval(const Eigen::VectorXd &x) const
     {
@@ -67,15 +52,7 @@ namespace polyfem::solver
             return Eigen::VectorXd();
         }
 
-        Eigen::MatrixXd vertices;
-        Eigen::MatrixXi cells;
-        std::vector<std::vector<int>> elements;
-        std::vector<std::vector<double>> weights;
-        std::vector<int> body_ids;
-        io::MshReader::load(sdf_velocity_path_, vertices, cells, elements, weights, body_ids);
-        const int dim = vertices.cols();
-
-        return utils::flatten(vertices);
+        return utils::flatten(Vout);
     } 
     Eigen::VectorXd SDF2Mesh::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
     {
@@ -84,25 +61,16 @@ namespace polyfem::solver
             logger().error("Failed to inflate mesh!");
             return Eigen::VectorXd();
         }
-
-        Eigen::MatrixXd vertices;
-        Eigen::MatrixXi cells;
-        std::vector<std::vector<int>> elements;
-        std::vector<std::vector<double>> weights;
-        std::vector<int> body_ids;
-        std::vector<std::string> node_data_name;
-        std::vector<std::vector<double>> node_data;
-        io::MshReader::load(sdf_velocity_path_, vertices, cells, elements, weights, body_ids, node_data_name, node_data);
-        const int dim = vertices.cols();
         
-        assert(node_data_name.size() == node_data.size());
+        assert(x.size() == shape_vel.rows());
 
         Eigen::VectorXd mapped_grad;
-        mapped_grad.setZero(node_data.size() - 1);
-        for (int j = 0; j < vertices.rows(); j++)
-            for (int i = 1; i < node_data_name.size(); i++)
+        mapped_grad.setZero(x.size());
+        const int dim = vertex_normals.cols();
+        for (int j = 0; j < Vout.rows(); j++)
+            for (int i = 0; i < shape_vel.rows(); i++)
                 for (int d = 0; d < dim; d++)
-                    mapped_grad(i - 1) += node_data[0][j * 3 + d] * node_data[i][j] * grad(j * dim + d);
+                    mapped_grad(i) += vertex_normals(j, d) * shape_vel(i, j) * grad(j * dim + d);
 
         return mapped_grad;
     }
@@ -272,15 +240,7 @@ namespace polyfem::solver
             Fnew.col(d) = SVI(Ftmp.col(d));
 
         {
-            Eigen::MatrixXd Vsave;
-            Vsave.setZero(Vnew.rows(), 3);
-            Vsave.leftCols(Vnew.cols()) = Vnew;
-
-            const int dim = Vnew.cols();
-            Eigen::MatrixXi Tri = (dim == 3) ? Eigen::MatrixXi() : Fnew;
-            Eigen::MatrixXi Tet = (dim == 3) ? Fnew : Eigen::MatrixXi();
-
-            igl::writeMSH(out_path_, Vsave, Tri, Tet, Eigen::MatrixXi::Zero(Tri.rows(), 1), Eigen::MatrixXi::Zero(Tet.rows(), 1), std::vector<std::string>(), std::vector<Eigen::MatrixXd>(), std::vector<std::string>(), std::vector<Eigen::MatrixXd>(), std::vector<Eigen::MatrixXd>());
+            write_msh(out_path_, Vnew, Fnew);
 
             logger().info("Saved tiled mesh to {}", out_path_);
         }
@@ -307,15 +267,7 @@ namespace polyfem::solver
             std::vector<int> body_ids;
             io::MshReader::load(in_path_, vertices, cells, elements, weights, body_ids);
 
-            const int dim = V.cols();
-            Eigen::MatrixXi Tri = (dim == 3) ? Eigen::MatrixXi() : cells;
-            Eigen::MatrixXi Tet = (dim == 3) ? cells : Eigen::MatrixXi();
-
-            Eigen::MatrixXd Vsave;
-            Vsave.setZero(V.rows(), 3);
-            Vsave.leftCols(V.cols()) = V;
-
-            igl::writeMSH(out_path_, Vsave, Tri, Tet, Eigen::MatrixXi::Zero(Tri.rows(), 1), Eigen::MatrixXi::Zero(Tet.rows(), 1), std::vector<std::string>(), std::vector<Eigen::MatrixXd>(), std::vector<std::string>(), std::vector<Eigen::MatrixXd>(), std::vector<Eigen::MatrixXd>());
+            write_msh(out_path_, V, cells);
 
             logger().info("Saved affined mesh to {}", out_path_);
         }
