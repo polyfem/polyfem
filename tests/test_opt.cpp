@@ -503,7 +503,9 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 	auto obj4 = std::make_shared<InequalityConstraintForm>(volume_form, volume_bounds);
 	obj4->set_weight(10);
 
-	std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2, obj3, obj4});
+	auto obj5 = std::make_shared<CollisionBarrierForm>(variable_to_simulations, *states[0], 1e-3);
+
+	std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2, obj3, obj4, obj5});
 
 	auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
 	sum->set_weight(1.0);
