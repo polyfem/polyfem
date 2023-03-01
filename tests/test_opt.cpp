@@ -259,8 +259,6 @@ TEST_CASE("topology-opt", "[optimization]")
 
 		// initialize optimization variable and assign elastic parameters to simulators
 		x.setConstant(states[0]->mesh->n_elements(), 1, 0.3);
-		for (auto &v2s : variable_to_simulations)
-			v2s->update(x);
 
 		// define optimization objective -- sum of compliance of the same structure under different loads
 		std::shared_ptr<AdjointForm> obj1, obj2;
@@ -270,6 +268,8 @@ TEST_CASE("topology-opt", "[optimization]")
 		auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
 
 		nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+
+		nl_problem->solution_changed(x);
 	}
 
 	auto nl_solver = std::make_shared<cppoptlib::MMASolver<solver::AdjointNLProblem>>(opt_args["solver"]["nonlinear"], 0.);
@@ -368,9 +368,6 @@ TEST_CASE("shape-stress-opt-debug", "[optimization]")
 		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
 	}
 
-	for (auto &v2s : variable_to_simulations)
-		v2s->update(x);
-
 	auto obj1 = std::make_shared<StressNormForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
 	obj1->set_weight(1.0);
 
@@ -383,6 +380,8 @@ TEST_CASE("shape-stress-opt-debug", "[optimization]")
 	sum->set_weight(1.0);
 
 	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+
+	nl_problem->solution_changed(x);
 
 	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
@@ -485,14 +484,12 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 			for (int k = 0; k < dim; ++k)
 				x(opt_bnodes * dim + i * dim + k) = V_flat(i_idx(i * dim + k));
 	}
-	for (auto &v2s : variable_to_simulations)
-		v2s->update(x);
 
 	auto obj1 = std::make_shared<StressNormForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
 	obj1->set_weight(1.0);
 
 	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0], json());
-	obj2->set_weight(1.0);
+	obj2->set_weight(0.01);
 
 	auto obj3 = std::make_shared<BoundarySmoothingForm>(variable_to_simulations, *states[0], false, 2);
 	obj3->set_weight(8);
@@ -511,6 +508,8 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 	sum->set_weight(1.0);
 
 	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+
+	nl_problem->solution_changed(x);
 
 	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
@@ -604,8 +603,6 @@ TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 			for (int k = 0; k < dim; ++k)
 				x(i * dim + k) = V_flat(b_idx(i * dim + k));
 	}
-	for (auto &v2s : variable_to_simulations)
-		v2s->update(x);
 
 	auto target = std::make_shared<TargetForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
 	target->set_reference(states[1], {2});
@@ -618,6 +615,8 @@ TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 	sum->set_weight(1.0);
 
 	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+
+	nl_problem->solution_changed(x);
 
 	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 	// Expect this simple example to converge
@@ -729,8 +728,6 @@ TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
 
 		assert((x - utils::flatten(initial_control_points).segment(2, 4)).norm() < 1e-12);
 	}
-	for (auto &v2s : variable_to_simulations)
-		v2s->update(x);
 
 	auto target = std::make_shared<TargetForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
 	target->set_reference(states[1], {2});
@@ -743,6 +740,8 @@ TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
 	sum->set_weight(1.0);
 
 	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+
+	nl_problem->solution_changed(x);
 
 	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));

@@ -47,7 +47,7 @@ namespace polyfem::solver
 			state_ptr_->set_mesh_vertex(indices(i) / dim, state_variable(Eigen::seqN(i, dim)));
 
 		// TODO: move this to the end of all variable to simulation
-		state_ptr_->build_basis();
+		// state_ptr_->build_basis();
 	}
 	Eigen::VectorXd ShapeVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
@@ -68,7 +68,6 @@ namespace polyfem::solver
 
 	SDFShapeVariableToSimulation::SDFShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization, const json &args) : ShapeVariableToSimulation(state_ptr, parametrization), mesh_id_(args["mesh_id"]), mesh_path_(args["mesh"])
 	{
-
 	}
 	void SDFShapeVariableToSimulation::update(const Eigen::VectorXd &x)
 	{
@@ -84,7 +83,7 @@ namespace polyfem::solver
 
 		int start = 0, end = 0; // start vertex index of the mesh
 		{
-			assert (state_ptr_->args["geometry"].is_array());
+			assert(state_ptr_->args["geometry"].is_array());
 			auto geometries = state_ptr_->args["geometry"].get<std::vector<json>>();
 
 			int i = 0;
@@ -96,10 +95,10 @@ namespace polyfem::solver
 				if (geometry["type"] != "mesh")
 					log_and_throw_error(
 						fmt::format("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]));
-				
+
 				if (i == mesh_id_)
 					start = state_ptr_->mesh ? state_ptr_->mesh->n_vertices() : 0;
-						
+
 				if (state_ptr_->mesh == nullptr)
 					state_ptr_->mesh = mesh::read_fem_mesh(geometry, state_ptr_->args["root_path"], false);
 				else

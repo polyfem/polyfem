@@ -263,9 +263,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-	for (auto &v2s : variable_to_simulations)
-		v2s->update(x);
-
 	int dim = states[0]->mesh->dimension();
 	Eigen::MatrixXd control_points(opt_args["functionals"][0]["control_points"].size(), dim);
 	for (int i = 0; i < control_points.rows(); ++i)
@@ -292,6 +289,8 @@ int main(int argc, char **argv)
 	sum->set_weight(1.0);
 
 	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+
+	nl_problem->solution_changed(x);
 
 	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 	nl_solver->minimize(*nl_problem, x);

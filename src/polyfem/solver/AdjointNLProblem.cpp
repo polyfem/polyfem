@@ -10,13 +10,13 @@ namespace polyfem::solver
 {
 	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<CompositeForm> composite_form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
 		: FullNLProblem({composite_form}),
-			composite_form_(composite_form),
-			variables_to_simulation_(variables_to_simulation),
-			all_states_(all_states),
-			solve_log_level(args["output"]["solve_log_level"]),
-			save_freq(args["output"]["save_frequency"]),
-			debug_finite_diff(args["solver"]["nonlinear"]["debug_fd"]),
-			finite_diff_eps(args["solver"]["nonlinear"]["debug_fd_eps"])
+		  composite_form_(composite_form),
+		  variables_to_simulation_(variables_to_simulation),
+		  all_states_(all_states),
+		  solve_log_level(args["output"]["solve_log_level"]),
+		  save_freq(args["output"]["save_frequency"]),
+		  debug_finite_diff(args["solver"]["nonlinear"]["debug_fd"]),
+		  finite_diff_eps(args["solver"]["nonlinear"]["debug_fd_eps"])
 	{
 		cur_grad.setZero(0);
 
@@ -26,7 +26,7 @@ namespace polyfem::solver
 				if (all_states_[i].get() == &(v2sim->get_state()))
 					active_state_mask[i] = true;
 	}
-	
+
 	double AdjointNLProblem::value(const Eigen::VectorXd &x)
 	{
 		return composite_form_->value(x);
@@ -169,12 +169,14 @@ namespace polyfem::solver
 		}
 	}
 
-
 	void AdjointNLProblem::solution_changed(const Eigen::VectorXd &newX)
 	{
 		// update to new parameter and check if the new parameter is valid to solve
 		for (const auto &v : variables_to_simulation_)
 			v->update(newX);
+
+		for (const auto &state : all_states_)
+			state->build_basis();
 
 		// solve PDE
 		solve_pde();
@@ -259,8 +261,9 @@ namespace polyfem::solver
 
 			bool match = abs(fd - analytic) < 1e-8 || abs(fd - analytic) < 1e-1 * abs(analytic);
 
+			// Log error in either case to make it more visible in the logs.
 			if (match)
-				logger().info("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
+				logger().error("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
 			else
 				logger().error("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
 
