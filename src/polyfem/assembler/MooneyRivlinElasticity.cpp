@@ -29,7 +29,7 @@ namespace polyfem::assembler
 		const T J = polyfem::utils::determinant(def_grad);
 		const T log_J = log(J);
 
-		const auto F_tilde = def_grad / pow(J, 1 / 3.0);
+		const auto F_tilde = def_grad / pow(J, 1 / size());
 		const auto C_tilde = F_tilde * F_tilde.transpose();
 		const auto I1_tilde = first_invariant(C_tilde);
 		const auto I2_tilde = second_invariant(C_tilde);
