@@ -328,6 +328,14 @@ namespace polyfem
 			// important for the BC
 			problem->set_parameters(args["preset_problem"]);
 		}
+	
+		if (args["optimization"]["enabled"])
+		{
+			if (args.contains("boundary_conditions") && args["boundary_conditions"].contains("rhs"))
+			{
+				logger().warn("Only constant rhs is supported in differentiable code!");
+			}
+		}
 	}
 
 	void State::set_max_threads(const unsigned int max_threads, const bool skip_thread_initialization)

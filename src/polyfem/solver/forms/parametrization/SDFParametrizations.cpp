@@ -29,9 +29,9 @@ namespace polyfem::solver
             return true;
 
         std::vector<double> x_vec(x.data(), x.data() + x.size());
-        utils::inflate(x_vec, Vout, Fout, vertex_normals, shape_vel);
+        utils::inflate(wire_path_, opts_, x_vec, Vout, Fout, vertex_normals, shape_vel);
 
-        write_msh(msh_path_, Vout, Fout);
+        write_msh(out_path_, Vout, Fout);
 
         last_x = x;
 
@@ -64,13 +64,9 @@ namespace polyfem::solver
         
         assert(x.size() == shape_vel.rows());
 
-        Eigen::VectorXd mapped_grad;
-        mapped_grad.setZero(x.size());
         const int dim = vertex_normals.cols();
-        for (int j = 0; j < Vout.rows(); j++)
-            for (int i = 0; i < shape_vel.rows(); i++)
-                for (int d = 0; d < dim; d++)
-                    mapped_grad(i) += vertex_normals(j, d) * shape_vel(i, j) * grad(j * dim + d);
+        
+        Eigen::VectorXd mapped_grad  = shape_vel * (vertex_normals.array() * utils::unflatten(grad, dim).array()).matrix().rowwise().sum();
 
         return mapped_grad;
     }

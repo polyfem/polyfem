@@ -106,6 +106,43 @@ namespace
 		REQUIRE(derivative == Approx(finite_difference).epsilon(tol));
 	}
 
+	void verify_adjoint_expensive(std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, AdjointForm &obj, State &state, const Eigen::VectorXd &x, const double dt)
+	{
+		obj.solution_changed(x);
+		double functional_val = obj.value(x);
+
+		state.solve_adjoint_cached(obj.compute_adjoint_rhs(x, state));
+		Eigen::VectorXd analytic;
+		obj.first_derivative(x, analytic);
+
+		std::cout << std::setprecision(12) << "derivative: " << analytic.transpose() << "\n";
+
+		Eigen::VectorXd fd;
+		fd.setZero(x.size());
+		for (int d = 0; d < x.size(); d++)
+		{
+			Eigen::VectorXd theta;
+			theta.setZero(x.size());
+			theta(d) = 1;
+
+			for (auto &v2s : variable_to_simulations)
+				v2s->update(x + theta * dt);
+			solve_pde(state);
+			obj.solution_changed(x + theta * dt);
+			double next_functional_val = obj.value(x + theta * dt);
+
+			for (auto &v2s : variable_to_simulations)
+				v2s->update(x - theta * dt);
+			solve_pde(state);
+			obj.solution_changed(x - theta * dt);
+			double former_functional_val = obj.value(x - theta * dt);
+
+			fd(d) = (next_functional_val - former_functional_val) / dt / 2;
+		}
+
+		std::cout << "fd: " << fd.transpose() << "\n";
+	}
+
 } // namespace
 
 TEST_CASE("laplacian", "[adjoint_method]")
@@ -350,8 +387,13 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 	Eigen::Matrix2d Affine;
 	Affine << 1.2, 0, 0, 1.5;
 
+	json iso_options;
+	iso_options["maxArea"] = 1e-5;
+	iso_options["dump_shape_velocity"] = "tmp-vel.msh";
+
 	std::vector<std::shared_ptr<Parametrization>> map_list = {
-		std::make_shared<SDF2Mesh>(std::string("~/microstructures/build/isosurface_inflator/isosurface_cli 2D_doubly_periodic bistable.obj -m meshing.json"), std::string("tmp-vel.msh"), std::string("tmp-unit.msh")),
+		std::make_shared<AppendConstantMap>(8, 0.01),
+		std::make_shared<SDF2Mesh>(std::string("bistable.obj"), std::string("tmp-unit.msh"), iso_options),
 		std::make_shared<MeshTiling>(Eigen::Vector2i(2, 2), "tmp-unit.msh", "tmp-tiled.msh"),
 		std::make_shared<MeshAffine>(Affine, Eigen::Vector2d(1.0, 1.0), "tmp-tiled.msh", "tmp-scaled.msh")
 		};
@@ -367,17 +409,18 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 	VolumeForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
 	// StressNormForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
 
-	Eigen::VectorXd x(28);
-	x << 0.3, 0.10, 0.333333, 0.40, 0.666667, 0.50, 0.50, 0.75, 0.60, 0.666667, 0.90, 0.333333, 0.30, 0.20, 0.05, 0.05, 0.30, 0.20, 0.05, 0.05, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01;
+	Eigen::VectorXd x(20);
+	x << 0.3, 0.10, 0.333333, 0.40, 0.666667, 0.50, 0.50, 0.75, 0.60, 0.666667, 0.90, 0.333333, 0.30, 0.20, 0.05, 0.05, 0.30, 0.20, 0.05, 0.05;
 
 	Eigen::MatrixXd theta;
-	theta.setRandom(28, 1);
+	theta.setRandom(x.size(), 1);
 
 	for (auto &v2s : variable_to_simulations)
 		v2s->update(x);
 	solve_pde(state);
 
 	verify_adjoint(variable_to_simulations, obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 5e-4);
+	// verify_adjoint_expensive(variable_to_simulations, obj, state, x, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>());
 }
 
 TEST_CASE("neohookean-stress-3d", "[adjoint_method]")

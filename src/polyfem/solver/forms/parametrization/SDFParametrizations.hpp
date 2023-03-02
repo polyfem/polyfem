@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Parametrization.hpp"
+#include <polyfem/Common.hpp>
 
 namespace polyfem::solver
 {
     class SDF2Mesh : public Parametrization
     {
     public:
-        SDF2Mesh(const std::string inflator_path, const std::string sdf_velocity_path = "micro-tmp-velocity.msh", const std::string msh_path = "micro-tmp.msh") : inflator_path_(inflator_path), sdf_velocity_path_(sdf_velocity_path), msh_path_(msh_path) {}
+        SDF2Mesh(const std::string wire_path, const std::string out_path, const json &opts) : wire_path_(wire_path), out_path_(out_path), opts_(opts) {}
 
         int size(const int x_size) const override;
 
@@ -17,8 +18,9 @@ namespace polyfem::solver
     private:
         bool isosurface_inflator(const Eigen::VectorXd &x) const;
 
-        const std::string inflator_path_, sdf_velocity_path_, msh_path_;
-
+        const std::string wire_path_, out_path_;
+        const json opts_;
+        
         mutable Eigen::VectorXd last_x;
         mutable Eigen::MatrixXd Vout, vertex_normals, shape_vel;
         mutable Eigen::MatrixXi Fout;

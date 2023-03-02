@@ -4,5 +4,5 @@
 
 namespace polyfem::utils
 {
-    void inflate(std::vector<double> &params, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXd &vertex_normals, Eigen::MatrixXd &shape_vel);
+    void inflate(const std::string wire_path, const json &options, std::vector<double> &params, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXd &vertex_normals, Eigen::MatrixXd &shape_vel);
 }
