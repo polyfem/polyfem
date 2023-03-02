@@ -385,7 +385,7 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 	load_json("opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
 
-	std::shared_ptr<State> state_ptr = create_state(in_args, spdlog::level::level_enum::info);
+	std::shared_ptr<State> state_ptr = create_state(in_args, spdlog::level::level_enum::err);
 	State &state = *state_ptr;
 
 	Eigen::Matrix2d Affine;

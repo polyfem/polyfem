@@ -2,8 +2,7 @@
 
 #include <polyfem/utils/IsosurfaceInflator.hpp>
 #include <polyfem/io/MshReader.hpp>
-#include <polyfem/mesh/mesh2D/Mesh2D.hpp>
-#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+#include <polyfem/utils/Timer.hpp>
 #include <igl/writeMSH.h>
 
 namespace polyfem::solver
@@ -28,9 +27,14 @@ namespace polyfem::solver
         if (last_x.size() == x.size() && last_x == x)
             return true;
 
-        std::vector<double> x_vec(x.data(), x.data() + x.size());
-        utils::inflate(wire_path_, opts_, x_vec, Vout, Fout, vertex_normals, shape_vel);
+        double inflation_time = 0, saving_time = 0;
 
+        std::vector<double> x_vec(x.data(), x.data() + x.size());
+        {
+            POLYFEM_SCOPED_TIMER("mesh inflation", inflation_time);
+            utils::inflate(wire_path_, opts_, x_vec, Vout, Fout, vertex_normals, shape_vel);
+        }
+        
         write_msh(out_path_, Vout, Fout);
 
         last_x = x;

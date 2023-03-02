@@ -333,7 +333,7 @@ namespace polyfem
 		{
 			if (args.contains("boundary_conditions") && args["boundary_conditions"].contains("rhs"))
 			{
-				logger().warn("Only constant rhs is supported in differentiable code!");
+				logger().warn("Only constant rhs over space is supported in differentiable code!");
 			}
 		}
 	}
