@@ -72,7 +72,7 @@ namespace
 				state.mesh->cell_barycenters(centers);
 			else
 				state.mesh->face_barycenters(centers);
-				
+
 			discrete_field = utils::flatten(field(centers));
 		}
 	}
@@ -89,12 +89,14 @@ namespace
 
 		for (auto &v2s : variable_to_simulations)
 			v2s->update(x + theta * dt);
+		state.build_basis();
 		solve_pde(state);
 		obj.solution_changed(x + theta * dt);
 		double next_functional_val = obj.value(x + theta * dt);
 
 		for (auto &v2s : variable_to_simulations)
 			v2s->update(x - theta * dt);
+		state.build_basis();
 		solve_pde(state);
 		obj.solution_changed(x - theta * dt);
 		double former_functional_val = obj.value(x - theta * dt);
@@ -395,8 +397,7 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 		std::make_shared<AppendConstantMap>(8, 0.01),
 		std::make_shared<SDF2Mesh>(std::string("bistable.obj"), std::string("tmp-unit.msh"), iso_options),
 		std::make_shared<MeshTiling>(Eigen::Vector2i(2, 2), "tmp-unit.msh", "tmp-tiled.msh"),
-		std::make_shared<MeshAffine>(Affine, Eigen::Vector2d(1.0, 1.0), "tmp-tiled.msh", "tmp-scaled.msh")
-		};
+		std::make_shared<MeshAffine>(Affine, Eigen::Vector2d(1.0, 1.0), "tmp-tiled.msh", "tmp-scaled.msh")};
 	CompositeParametrization composite_map(map_list);
 
 	json options;
