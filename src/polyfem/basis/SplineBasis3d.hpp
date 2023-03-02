@@ -18,6 +18,7 @@ namespace polyfem
 		public:
 			static int build_bases(
 				const mesh::Mesh3D &mesh,
+				const std::string &assembler,
 				const int quadrature_order,
 				const int mass_quadrature_order,
 				std::vector<ElementBases> &bases,

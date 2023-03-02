@@ -48,7 +48,7 @@ namespace polyfem
 			problems_.emplace("QuadraticElasticExact", []() { return std::make_shared<QuadraticElasticProblemExact>("QuadraticElasticExact"); });
 			problems_.emplace("LinearElasticExact", []() { return std::make_shared<LinearElasticProblemExact>("LinearElasticExact"); });
 			problems_.emplace("PointBasedTensor", []() { return std::make_shared<PointBasedTensorProblem>("PointBasedTensor"); });
-			problems_.emplace("Kernel", []() { return std::make_shared<KernelProblem>("Kernel"); });
+			// problems_.emplace("Kernel", []() { return std::make_shared<KernelProblem>("Kernel"); });
 			problems_.emplace("Node", []() { return std::make_shared<NodeProblem>("Node"); });
 
 			problems_.emplace("TimeDependentScalar", []() { return std::make_shared<TimeDependentProblem>("TimeDependentScalar"); });

@@ -27,7 +27,6 @@ namespace polyfem
 
 			inline bool is_volume() const override { return true; }
 
-			virtual int n_cell_vertices(const int c_id) const = 0;
 			virtual int n_cell_edges(const int c_id) const = 0;
 			virtual int n_cell_faces(const int c_id) const = 0;
 			virtual int cell_face(const int c_id, const int lf_id) const = 0;
@@ -47,7 +46,7 @@ namespace polyfem
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const override;
 
-			//navigation wrapper
+			// navigation wrapper
 			virtual Navigation3D::Index get_index_from_element(int hi, int lf, int lv) const = 0;
 			virtual Navigation3D::Index get_index_from_element(int hi) const = 0;
 

@@ -339,9 +339,20 @@ void polyfem::utils::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 	}
 }
 
+namespace
+{
+	inline bool nanproof_equals(const double x, const double y)
+	{
+		return x == y || (std::isnan(x) == std::isnan(y));
+	}
+} // namespace
+
 // Flatten rowwises
 Eigen::VectorXd polyfem::utils::flatten(const Eigen::MatrixXd &X)
 {
+	if (X.size() == 0)
+		return Eigen::VectorXd();
+
 	Eigen::VectorXd x(X.size());
 	for (int i = 0; i < X.rows(); ++i)
 	{
@@ -350,22 +361,25 @@ Eigen::VectorXd polyfem::utils::flatten(const Eigen::MatrixXd &X)
 			x(i * X.cols() + j) = X(i, j);
 		}
 	}
-	assert(X(0, 0) == x(0));
-	assert(X.cols() <= 1 || X(0, 1) == x(1));
+	assert(nanproof_equals(X(0, 0), x(0)));
+	assert(X.cols() <= 1 || nanproof_equals(X(0, 1), x(1)));
 	return x;
 }
 
 // Unflatten rowwises, so every dim elements in x become a row.
 Eigen::MatrixXd polyfem::utils::unflatten(const Eigen::VectorXd &x, int dim)
 {
+	if (x.size() == 0)
+		return Eigen::MatrixXd(0, dim);
+
 	assert(x.size() % dim == 0);
 	Eigen::MatrixXd X(x.size() / dim, dim);
 	for (int i = 0; i < x.size(); ++i)
 	{
 		X(i / dim, i % dim) = x(i);
 	}
-	assert(X(0, 0) == x(0));
-	assert(X.cols() <= 1 || X(0, 1) == x(1));
+	assert(nanproof_equals(X(0, 0), x(0)));
+	assert(X.cols() <= 1 || nanproof_equals(X(0, 1), x(1)));
 	return X;
 }
 
@@ -445,4 +459,80 @@ void polyfem::utils::full_to_reduced_matrix(
 	reduced.resize(reduced_size, reduced_size);
 	reduced.setFromTriplets(entries.begin(), entries.end());
 	reduced.makeCompressed();
+}
+
+Eigen::MatrixXd polyfem::utils::reorder_matrix(
+	const Eigen::MatrixXd &in,
+	const Eigen::VectorXi &in_to_out,
+	int out_blocks,
+	const int block_size)
+{
+	constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
+
+	assert(in.rows() % block_size == 0);
+	assert(in_to_out.size() == in.rows() / block_size);
+
+	if (out_blocks < 0)
+		out_blocks = in.rows() / block_size;
+
+	Eigen::MatrixXd out = Eigen::MatrixXd::Constant(
+		out_blocks * block_size, in.cols(), NaN);
+
+	const int in_blocks = in.rows() / block_size;
+	for (int i = 0; i < in_blocks; ++i)
+	{
+		const int j = in_to_out[i];
+		if (j < 0)
+			continue;
+
+		out.middleRows(block_size * j, block_size) =
+			in.middleRows(block_size * i, block_size);
+	}
+
+	return out;
+}
+
+Eigen::MatrixXd polyfem::utils::unreorder_matrix(
+	const Eigen::MatrixXd &out,
+	const Eigen::VectorXi &in_to_out,
+	int in_blocks,
+	const int block_size)
+{
+	constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
+
+	assert(out.rows() % block_size == 0);
+
+	if (in_blocks < 0)
+		in_blocks = out.rows() / block_size;
+	assert(in_to_out.size() == in_blocks);
+
+	Eigen::MatrixXd in = Eigen::MatrixXd::Constant(
+		in_blocks * block_size, out.cols(), NaN);
+
+	for (int i = 0; i < in_blocks; i++)
+	{
+		const int j = in_to_out[i];
+		if (j < 0)
+			continue;
+
+		in.middleRows(block_size * i, block_size) =
+			out.middleRows(block_size * j, block_size);
+	}
+
+	return in;
+}
+
+Eigen::MatrixXi polyfem::utils::map_index_matrix(
+	const Eigen::MatrixXi &in,
+	const Eigen::VectorXi &index_mapping)
+{
+	Eigen::MatrixXi out(in.rows(), in.cols());
+	for (int i = 0; i < in.rows(); i++)
+	{
+		for (int j = 0; j < in.cols(); j++)
+		{
+			out(i, j) = index_mapping[in(i, j)];
+		}
+	}
+	return out;
 }

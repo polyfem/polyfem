@@ -658,6 +658,20 @@ namespace polyfem
 			}
 		}
 
+		void CMesh2D::compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker)
+		{
+			boundary_ids_.resize(n_edges());
+
+			for (int e = 0; e < n_edges(); ++e)
+			{
+				bool is_boundary = is_boundary_edge(e);
+				const auto p = edge_barycenter(e);
+				std::vector<int> vs = {edge_vertex(e, 0), edge_vertex(e, 1)};
+				std::sort(vs.begin(), vs.end());
+				boundary_ids_[e] = marker(e, vs, p, is_boundary);
+			}
+		}
+
 		void CMesh2D::append(const Mesh &mesh)
 		{
 			assert(typeid(mesh) == typeid(CMesh2D));

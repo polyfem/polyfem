@@ -1,10 +1,12 @@
 
 ////////////////////////////////////////////////////////////////////////////////
-#include "FEBasis3d.hpp"
+#include "LagrangeBasis3d.hpp"
 
 #include <polyfem/mesh/MeshNodes.hpp>
 #include <polyfem/quadrature/TetQuadrature.hpp>
 #include <polyfem/quadrature/HexQuadrature.hpp>
+
+#include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -577,7 +579,7 @@ namespace
 				fv.row(4) << v[0], v[1], v[2], v[3];
 				fv.row(5) << v[4], v[5], v[6], v[7];
 
-				LocalBoundary lb(c, BoundaryType::Quad);
+				LocalBoundary lb(c, BoundaryType::QUAD);
 				for (int i = 0; i < fv.rows(); ++i)
 				{
 					const int f = find_quad_face(mesh, c, fv(i, 0), fv(i, 1), fv(i, 2), fv(i, 3)).face;
@@ -593,7 +595,7 @@ namespace
 			}
 			else if (mesh.is_simplex(c))
 			{
-				// element_nodes_id[c] = polyfem::FEBasis3d::tet_local_to_global(discr_order, mesh, c, discr_orders, nodes);
+				// element_nodes_id[c] = polyfem::LagrangeBasis3d::tet_local_to_global(discr_order, mesh, c, discr_orders, nodes);
 				tet_local_to_global(is_geom_bases, discr_order, mesh, c, discr_orders, edge_orders, face_orders, element_nodes_id[c], nodes, edge_virtual_nodes, face_virtual_nodes);
 
 				auto v = tet_vertices_local_to_global(mesh, c);
@@ -603,7 +605,7 @@ namespace
 				fv.row(2) << v[1], v[2], v[3];
 				fv.row(3) << v[2], v[0], v[3];
 
-				LocalBoundary lb(c, BoundaryType::Tri);
+				LocalBoundary lb(c, BoundaryType::TRI);
 				for (long i = 0; i < fv.rows(); ++i)
 				{
 					const int f = mesh.get_index_from_element_face(c, fv(i, 0), fv(i, 1), fv(i, 2)).face;
@@ -642,11 +644,11 @@ namespace
 				const int discr_order = discr_orders(c2);
 				if (mesh.is_cube(c2))
 				{
-					indices = FEBasis3d::hex_face_local_nodes(serendipity, discr_order, mesh, index2);
+					indices = LagrangeBasis3d::hex_face_local_nodes(serendipity, discr_order, mesh, index2);
 				}
 				else if (mesh.is_simplex(c2))
 				{
-					indices = FEBasis3d::tet_face_local_nodes(discr_order, mesh, index2);
+					indices = LagrangeBasis3d::tet_face_local_nodes(discr_order, mesh, index2);
 				}
 				else
 					continue;
@@ -874,7 +876,7 @@ namespace
 	}
 } // anonymous namespace
 
-Eigen::VectorXi FEBasis3d::tet_face_local_nodes(const int p, const Mesh3D &mesh, Navigation3D::Index index)
+Eigen::VectorXi LagrangeBasis3d::tet_face_local_nodes(const int p, const Mesh3D &mesh, Navigation3D::Index index)
 {
 	const int nn = p > 2 ? (p - 2) : 0;
 	const int n_edge_nodes = (p - 1) * 6;
@@ -1107,7 +1109,7 @@ Eigen::VectorXi FEBasis3d::tet_face_local_nodes(const int p, const Mesh3D &mesh,
 
 		Eigen::MatrixXd nodes;
 		autogen::p_nodes_3d(p, nodes);
-		// auto pos = FEBasis3d::linear_tet_face_local_nodes_coordinates(mesh, index);
+		// auto pos = LagrangeBasis3d::linear_tet_face_local_nodes_coordinates(mesh, index);
 		// Local to global mapping of node indices
 
 		// Extract requested interface
@@ -1185,7 +1187,7 @@ Eigen::VectorXi FEBasis3d::tet_face_local_nodes(const int p, const Mesh3D &mesh,
 	return result;
 }
 
-Eigen::VectorXi FEBasis3d::hex_face_local_nodes(const bool serendipity, const int q, const Mesh3D &mesh, Navigation3D::Index index)
+Eigen::VectorXi LagrangeBasis3d::hex_face_local_nodes(const bool serendipity, const int q, const Mesh3D &mesh, Navigation3D::Index index)
 {
 	const int nn = q - 1;
 	const int n_edge_nodes = nn * 12;
@@ -1297,7 +1299,7 @@ Eigen::VectorXi FEBasis3d::hex_face_local_nodes(const bool serendipity, const in
 	{
 		Eigen::MatrixXd nodes;
 		autogen::q_nodes_3d(q, nodes);
-		// auto pos = FEBasis3d::linear_tet_face_local_nodes_coordinates(mesh, index);
+		// auto pos = LagrangeBasis3d::linear_tet_face_local_nodes_coordinates(mesh, index);
 		// Local to global mapping of node indices
 
 		// Extract requested interface
@@ -1367,8 +1369,9 @@ Eigen::VectorXi FEBasis3d::hex_face_local_nodes(const bool serendipity, const in
 	return result;
 }
 
-int FEBasis3d::build_bases(
+int LagrangeBasis3d::build_bases(
 	const Mesh3D &mesh,
+	const std::string &assembler,
 	const int quadrature_order,
 	const int mass_quadrature_order,
 	const int discr_order,
@@ -1383,11 +1386,12 @@ int FEBasis3d::build_bases(
 	Eigen::VectorXi discr_orders(mesh.n_cells());
 	discr_orders.setConstant(discr_order);
 
-	return build_bases(mesh, quadrature_order, mass_quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_face_to_data, mesh_nodes);
+	return build_bases(mesh, assembler, quadrature_order, mass_quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_face_to_data, mesh_nodes);
 }
 
-int FEBasis3d::build_bases(
+int LagrangeBasis3d::build_bases(
 	const Mesh3D &mesh,
+	const std::string &assembler,
 	const int quadrature_order,
 	const int mass_quadrature_order,
 	const Eigen::VectorXi &discr_orders,
@@ -1464,8 +1468,8 @@ int FEBasis3d::build_bases(
 
 		if (mesh.is_cube(e))
 		{
-			const int real_order = std::max(quadrature_order, (discr_order - 1) * 2 + 1);
-			const int real_mass_order = std::max(mass_quadrature_order, discr_order * 2 + 1);
+			const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::CUBE_LAGRANGE, 3);
+			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::CUBE_LAGRANGE, 3);
 			b.set_quadrature([real_order](Quadrature &quad) {
 				HexQuadrature hex_quadrature;
 				hex_quadrature.get_quadrature(real_order, quad);
@@ -1503,8 +1507,8 @@ int FEBasis3d::build_bases(
 		}
 		else if (mesh.is_simplex(e))
 		{
-			const int real_order = std::max(quadrature_order, (discr_order - 1) * 2 + 1);
-			const int real_mass_order = std::max(mass_quadrature_order, discr_order * 2 + 1);
+			const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 3);
+			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 3);
 
 			b.set_quadrature([real_order](Quadrature &quad) {
 				TetQuadrature tet_quadrature;

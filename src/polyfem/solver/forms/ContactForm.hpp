@@ -2,28 +2,52 @@
 
 #include "Form.hpp"
 
-#include <polyfem/State.hpp>
+#include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
 
 #include <ipc/ipc.hpp>
+#include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
+
+// map BroadPhaseMethod values to JSON as strings
+namespace ipc
+{
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		ipc::BroadPhaseMethod,
+		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
+		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}})
+} // namespace ipc
 
 namespace polyfem::solver
 {
+	class NLProblem;
+	class FrictionForm;
+
 	/// @brief Form representing the contact potential and forces
 	class ContactForm : public Form
 	{
 	public:
 		/// @brief Construct a new Contact Form object
-		/// @param state Reference to the simulation state
+		/// @param collision_mesh Reference to the collision mesh
 		/// @param dhat Barrier activation distance
+		/// @param avg_mass Average mass of the mesh
 		/// @param use_adaptive_barrier_stiffness If true, use an adaptive barrier stiffness
 		/// @param is_time_dependent Is the simulation time dependent?
 		/// @param broad_phase_method Broad phase method to use for distance and CCD evaluations
 		/// @param ccd_tolerance Continuous collision detection tolerance
 		/// @param ccd_max_iterations Continuous collision detection maximum iterations
-		ContactForm(const State &state,
+		ContactForm(const ipc::CollisionMesh &collision_mesh,
 					const double dhat,
+					const double avg_mass,
+					const bool use_convergent_formulation,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
 					const ipc::BroadPhaseMethod broad_phase_method,
@@ -48,7 +72,7 @@ namespace polyfem::solver
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param x Current solution
 		/// @param hessian Output Hessian of the value wrt x
-		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 	public:
 		/// @brief Update time-dependent fields
@@ -89,14 +113,28 @@ namespace polyfem::solver
 
 		/// @brief Update the barrier stiffness based on the current elasticity energy
 		/// @param x Current solution
+		/// @param nl_problem Nonlinear problem to use for computing the gradient
+		/// @param friction_form Pointer to the friction form
+		void update_barrier_stiffness(
+			const Eigen::VectorXd &x,
+			NLProblem &nl_problem,
+			std::shared_ptr<FrictionForm> friction_form);
+
+		/// @brief Update the barrier stiffness based on the current elasticity energy
+		/// @param x Current solution
 		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
 
 		inline bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
+		inline bool use_convergent_formulation() const { return constraint_set_.use_convergent_formulation; }
+
+		bool save_ccd_debug_meshes = false; ///< If true, output debug files
 
 	private:
-		const State &state_; ///< Reference to the simulation state
+		const ipc::CollisionMesh &collision_mesh_;
 
 		const double dhat_; ///< Barrier activation distance
+
+		const double avg_mass_;
 
 		const bool use_adaptive_barrier_stiffness_; ///< If true, use an adaptive barrier stiffness
 		double max_barrier_stiffness_;              ///< Maximum barrier stiffness to use when using adaptive barrier stiffness

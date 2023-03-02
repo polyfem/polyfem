@@ -33,7 +33,7 @@ set(POLYFEM_WARNING_FLAGS
     -Werror=sequence-point
     -Werror=return-type
     -Werror=trigraphs
-    -Werror=array-bounds
+    -Warray-bounds
     -Werror=write-strings
     -Werror=address
     -Werror=int-to-pointer-cast

@@ -15,7 +15,8 @@ namespace polyfem
 		const std::unique_ptr<polysolve::LinearSolver> &solver,
 		StiffnessMatrix &A,
 		Eigen::VectorXd &b,
-		const bool compute_spectrum)
+		const bool compute_spectrum,
+		Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		assert(assembler.is_linear(formulation()) && !is_contact_enabled());
 		assert(solve_data.rhs_assembler != nullptr);
@@ -24,12 +25,12 @@ namespace polyfem
 		const int precond_num = problem_dim * n_bases;
 
 		Eigen::VectorXd x;
-		spectrum = dirichlet_solve(
+		stats.spectrum = dirichlet_solve(
 			*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
 			assembler.is_fluid(formulation()), use_avg_pressure);
 		sol = x; // Explicit copy because sol is a MatrixXd (with one column)
 
-		solver->getInfo(solver_info);
+		solver->getInfo(stats.solver_info);
 
 		const auto error = (A * x - b).norm();
 		if (error > 1e-4)
@@ -38,10 +39,10 @@ namespace polyfem
 			logger().debug("Solver error: {}", error);
 
 		if (assembler.is_mixed(formulation()))
-			sol_to_pressure();
+			sol_to_pressure(sol, pressure);
 	}
 
-	void State::solve_linear()
+	void State::solve_linear(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		assert(!problem->is_time_dependent());
 		assert(assembler.is_linear(formulation()) && !is_contact_enabled());
@@ -64,10 +65,10 @@ namespace polyfem
 
 		// --------------------------------------------------------------------
 
-		solve_linear(solver, A, b, args["output"]["advanced"]["spectrum"]);
+		solve_linear(solver, A, b, args["output"]["advanced"]["spectrum"], sol, pressure);
 	}
 
-	void State::solve_transient_linear(const int time_steps, const double t0, const double dt)
+	void State::solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		assert(problem->is_time_dependent());
 		assert(assembler.is_linear(formulation()) && !is_contact_enabled());
@@ -120,7 +121,7 @@ namespace polyfem
 			if (is_scalar_or_mixed)
 			{
 				solve_data.rhs_assembler->compute_energy_grad(
-					local_boundary, boundary_nodes, density, n_b_samples, local_neumann_boundary, rhs, time,
+					local_boundary, boundary_nodes, assembler.density(), n_b_samples, local_neumann_boundary, rhs, time,
 					current_rhs);
 
 				solve_data.rhs_assembler->set_bc(
@@ -148,7 +149,7 @@ namespace polyfem
 			}
 			else
 			{
-				solve_data.rhs_assembler->assemble(density, current_rhs, time);
+				solve_data.rhs_assembler->assemble(assembler.density(), current_rhs, time);
 
 				current_rhs *= -1;
 
@@ -167,11 +168,11 @@ namespace polyfem
 				compute_spectrum &= t == 1;
 			}
 
-			solve_linear(solver, A, b, compute_spectrum); // solution is stored in sol
+			solve_linear(solver, A, b, compute_spectrum, sol, pressure);
 
 			time_integrator->update_quantities(sol);
 
-			save_timestep(time, t, t0, dt);
+			save_timestep(time, t, t0, dt, sol, pressure);
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}
 

@@ -98,11 +98,11 @@ namespace polyfem
 
 		void NCMesh3D::compute_elements_tag()
 		{
-			elements_tag_.assign(n_cells(), ElementType::Simplex);
+			elements_tag_.assign(n_cells(), ElementType::SIMPLEX);
 		}
 		void NCMesh3D::update_elements_tag()
 		{
-			elements_tag_.assign(n_cells(), ElementType::Simplex);
+			elements_tag_.assign(n_cells(), ElementType::SIMPLEX);
 		}
 		double NCMesh3D::edge_length(const int gid) const
 		{
@@ -259,6 +259,28 @@ namespace polyfem
 				faces[valid_to_all_face(f)].boundary_id = boundary_ids_[f];
 			}
 		}
+
+		void NCMesh3D::compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker)
+		{
+			boundary_ids_.resize(n_faces());
+			std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
+
+			for (int f = 0; f < n_faces(); ++f)
+			{
+				const bool is_boundary = is_boundary_face(f);
+				std::vector<int> vs(n_face_vertices(f));
+				const auto p = face_barycenter(f);
+
+				for (int vid = 0; vid < vs.size(); ++vid)
+					vs[vid] = face_vertex(f, vid);
+
+				std::sort(vs.begin(), vs.end());
+				boundary_ids_[f] = marker(f, vs, p, is_boundary);
+
+				faces[valid_to_all_face(f)].boundary_id = boundary_ids_[f];
+			}
+		}
+
 		void NCMesh3D::compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker)
 		{
 			body_ids_.resize(n_cells());

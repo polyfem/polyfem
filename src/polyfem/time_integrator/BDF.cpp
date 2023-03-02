@@ -4,36 +4,11 @@
 
 namespace polyfem::time_integrator
 {
-	void BDF::set_parameters(const nlohmann::json &params)
+	void BDF::set_parameters(const json &params)
 	{
-		steps = params.at("steps");
-		if (steps < 1 || steps > 6)
-		{
-			logger().warn("BDF steps must be 1 ≤ n ≤ 6}; using default of 1");
-			steps = 1;
-		}
-	}
-
-	void BDF::init(const std::vector<Eigen::VectorXd> &x_prevs,
-				   const std::vector<Eigen::VectorXd> &v_prevs,
-				   const std::vector<Eigen::VectorXd> &a_prevs,
-				   double dt)
-	{
-		assert(x_prevs.size() > 0 && x_prevs.size() <= 6);
-		assert(x_prevs.size() == v_prevs.size());
-		assert(x_prevs.size() == a_prevs.size());
-
-		this->x_prevs.clear();
-		this->v_prevs.clear();
-		this->a_prevs.clear();
-
-		const int n = std::min(int(x_prevs.size()), steps);
-		for (int i = 0; i < n; i++)
-		{
-			this->x_prevs.push_back(x_prevs[i]);
-			this->v_prevs.push_back(v_prevs[i]);
-			this->a_prevs.push_back(a_prevs[i]);
-		}
+		max_steps_ = params.at("steps");
+		if (max_steps_ < 1 || max_steps_ > 6)
+			log_and_throw_error("BDF steps must be 1 ≤ n ≤ 6");
 	}
 
 	const std::vector<double> &BDF::alphas(const int i)
@@ -66,12 +41,12 @@ namespace polyfem::time_integrator
 
 	Eigen::VectorXd BDF::weighted_sum_x_prevs() const
 	{
-		const std::vector<double> &alpha = alphas(x_prevs.size() - 1);
+		const std::vector<double> &alpha = alphas(steps() - 1);
 
 		Eigen::VectorXd sum = Eigen::VectorXd::Zero(x_prev().size());
-		for (int i = 0; i < x_prevs.size(); i++)
+		for (int i = 0; i < steps(); i++)
 		{
-			sum += alpha[i] * x_prevs[i];
+			sum += alpha[i] * x_prevs_[i];
 		}
 
 		return sum;
@@ -79,12 +54,12 @@ namespace polyfem::time_integrator
 
 	Eigen::VectorXd BDF::weighted_sum_v_prevs() const
 	{
-		const std::vector<double> &alpha = alphas(v_prevs.size() - 1);
+		const std::vector<double> &alpha = alphas(steps() - 1);
 
 		Eigen::VectorXd sum = Eigen::VectorXd::Zero(v_prev().size());
-		for (int i = 0; i < v_prevs.size(); i++)
+		for (int i = 0; i < steps(); i++)
 		{
-			sum += alpha[i] * v_prevs[i];
+			sum += alpha[i] * v_prevs_[i];
 		}
 
 		return sum;
@@ -95,50 +70,55 @@ namespace polyfem::time_integrator
 		const Eigen::VectorXd v = compute_velocity(x);
 		const Eigen::VectorXd a = compute_acceleration(v);
 
-		x_prevs.push_front(x);
-		v_prevs.push_front(v);
-		a_prevs.push_front(a);
+		x_prevs_.push_front(x);
+		v_prevs_.push_front(v);
+		a_prevs_.push_front(a);
 
-		if (x_prevs.size() > steps)
+		if (steps() > max_steps())
 		{
-			x_prevs.pop_back();
-			v_prevs.pop_back();
-			a_prevs.pop_back();
+			x_prevs_.pop_back();
+			v_prevs_.pop_back();
+			a_prevs_.pop_back();
 		}
-		assert(x_prevs.size() <= steps);
-		assert(x_prevs.size() == v_prevs.size());
-		assert(x_prevs.size() == a_prevs.size());
+		assert(x_prevs_.size() <= max_steps());
+		assert(x_prevs_.size() == v_prevs_.size());
+		assert(x_prevs_.size() == a_prevs_.size());
 	}
 
 	Eigen::VectorXd BDF::x_tilde() const
 	{
-		const double beta = betas(x_prevs.size() - 1);
+		const double beta = betas(steps() - 1);
 		return weighted_sum_x_prevs() + beta * dt() * weighted_sum_v_prevs();
 	}
 
 	Eigen::VectorXd BDF::compute_velocity(const Eigen::VectorXd &x) const
 	{
 		const Eigen::VectorXd sum_x_prev = weighted_sum_x_prevs();
-		const double beta = betas(x_prevs.size() - 1);
+		const double beta = betas(steps() - 1);
 		return (x - sum_x_prev) / (beta * dt());
 	}
 
 	Eigen::VectorXd BDF::compute_acceleration(const Eigen::VectorXd &v) const
 	{
 		const Eigen::VectorXd sum_v_prev = weighted_sum_v_prevs();
-		const double beta = betas(x_prevs.size() - 1);
+		const double beta = betas(steps() - 1);
 		return (v - sum_v_prev) / (beta * dt());
 	}
 
 	double BDF::acceleration_scaling() const
 	{
-		const double beta = betas(x_prevs.size() - 1);
+		const double beta = betas(steps() - 1);
 		return beta * beta * dt() * dt();
+	}
+
+	double BDF::dv_dx() const
+	{
+		return 1 / beta_dt();
 	}
 
 	double BDF::beta_dt() const
 	{
-		const double beta = betas(x_prevs.size() - 1);
+		const double beta = betas(steps() - 1);
 		return beta * dt();
 	}
 } // namespace polyfem::time_integrator

@@ -108,7 +108,7 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 	{
 		for (index_t f = 0; f < M.facets.nb(); ++f)
 		{
-			if (M.facets.nb_vertices(f) != 4 || (!old_tags.empty() && old_tags[f] == ElementType::InteriorPolytope))
+			if (M.facets.nb_vertices(f) != 4 || (!old_tags.empty() && old_tags[f] == ElementType::INTERIOR_POLYTOPE))
 			{
 				// Vertices incident to polygonal facets (triangles or > 4 vertices) are marked as interface
 				for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
@@ -154,7 +154,7 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 	for (index_t f = 0; f < M.facets.nb(); ++f)
 	{
 		assert(M.facets.nb_vertices(f) > 2);
-		if (!old_tags.empty() && old_tags[f] == ElementType::InteriorPolytope)
+		if (!old_tags.empty() && old_tags[f] == ElementType::INTERIOR_POLYTOPE)
 			continue;
 
 		if (M.facets.nb_vertices(f) == 4)
@@ -197,7 +197,7 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 					{
 						if (!is_regular_vertex[v])
 						{
-							element_tags[f] = ElementType::Undefined;
+							element_tags[f] = ElementType::UNDEFINED;
 							break;
 						}
 					}
@@ -205,15 +205,15 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 
 				if (is_interface_facet)
 				{
-					element_tags[f] = ElementType::InterfaceCube;
+					element_tags[f] = ElementType::INTERFACE_CUBE;
 				}
 				else if (is_singular)
 				{
-					element_tags[f] = ElementType::SimpleSingularBoundaryCube;
+					element_tags[f] = ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE;
 				}
 				else
 				{
-					element_tags[f] = ElementType::RegularBoundaryCube;
+					element_tags[f] = ElementType::REGULAR_BOUNDARY_CUBE;
 				}
 			}
 			else
@@ -230,15 +230,15 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 
 				if (nb_singulars == 0)
 				{
-					element_tags[f] = ElementType::RegularInteriorCube;
+					element_tags[f] = ElementType::REGULAR_INTERIOR_CUBE;
 				}
 				else if (nb_singulars == 1)
 				{
-					element_tags[f] = ElementType::SimpleSingularInteriorCube;
+					element_tags[f] = ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE;
 				}
 				else
 				{
-					element_tags[f] = ElementType::MultiSingularInteriorCube;
+					element_tags[f] = ElementType::MULTI_SINGULAR_INTERIOR_CUBE;
 				}
 			}
 		}
@@ -247,13 +247,13 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 			// Polygonal facet
 
 			// Note: In this function, we consider triangles as polygonal facets
-			ElementType tag = ElementType::InteriorPolytope;
+			ElementType tag = ElementType::INTERIOR_POLYTOPE;
 			GEO::Attribute<bool> boundary_vertices(M.vertices.attributes(), "boundary_vertex");
 			for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
 			{
 				if (boundary_vertices[M.facets.vertex(f, lv)])
 				{
-					tag = ElementType::BoundaryPolytope;
+					tag = ElementType::BOUNDARY_POLYTOPE;
 					// std::cout << "foo" << std::endl;
 					break;
 				}
@@ -269,7 +269,7 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 	{
 		if (M.facets.nb_vertices(f) == 3)
 		{
-			element_tags[f] = ElementType::Simplex;
+			element_tags[f] = ElementType::SIMPLEX;
 		}
 	}
 }
@@ -1122,12 +1122,26 @@ bool polyfem::mesh::read_surface_mesh(
 			codim_edges = cells;
 		else if (cells.cols() == 3)
 			faces = cells;
+		else if (cells.cols() == 4)
+		{
+			if (vertices.cols() == 2)
+			{
+				logger().error("read_surface_mesh not implemented for 2D quad meshes");
+				return false;
+			}
+			else
+			{
+				// TODO: how to distinguish between 3D tet mesh and 3D surface quad mesh?
+				assert(vertices.cols() == 3);
+				Eigen::MatrixXd surface_vertices;
+				extract_triangle_surface_from_tets(vertices, cells, surface_vertices, faces);
+				vertices = surface_vertices;
+			}
+		}
 		else
 		{
-			assert(cells.cols() == 4);
-			Eigen::MatrixXd surface_vertices;
-			extract_triangle_surface_from_tets(vertices, cells, surface_vertices, faces);
-			vertices = surface_vertices;
+			logger().error("read_surface_mesh not implemented for hexahedral and polygonal/polyhedral meshes");
+			return false;
 		}
 	}
 	else if (StringUtils::endswith(lowername, ".obj")) // Use specialized OBJ reader function with polyline support

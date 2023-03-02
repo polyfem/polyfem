@@ -1,7 +1,5 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/io/FEBioReader.hpp>
-
 #include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
@@ -17,7 +15,6 @@ namespace polyfem
 {
 	using namespace basis;
 	using namespace mesh;
-	using namespace io;
 	using namespace utils;
 
 	void State::reset_mesh()
@@ -34,8 +31,6 @@ namespace polyfem
 
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
 
 		n_bases = 0;
 		n_pressure_bases = 0;
@@ -63,7 +58,7 @@ namespace polyfem
 
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
-		assembler.set_size(mesh->dimension());
+		assembler.set_size(formulation(), mesh->dimension());
 
 		// TODO: renable this
 		// int n_refs = args["n_refs"];
@@ -89,12 +84,14 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading obstacles...");
 		obstacle = mesh::read_obstacle_geometry(
-			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
+			args["geometry"],
+			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
+			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
 			args["root_path"], mesh->dimension());
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
-		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["output"]["paraview"]["vismesh_rel_area"]);
+		out_geom.init_sampler(*mesh, args["output"]["paraview"]["vismesh_rel_area"]);
 	}
 
 	void State::load_mesh(bool non_conforming,
@@ -121,15 +118,14 @@ namespace polyfem
 
 		if (mesh == nullptr)
 		{
-			logger().error("unable to load the mesh!");
-			return;
+			log_and_throw_error("unable to load the mesh!");
 		}
 
 		// if(!flipped_elements.empty())
 		// {
 		// 	mesh->compute_elements_tag();
 		// 	for(auto el_id : flipped_elements)
-		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
+		// 		mesh->set_tag(el_id, ElementType::INTERIOR_POLYTOPE);
 		// }
 
 		RowVectorNd min, max;
@@ -137,129 +133,45 @@ namespace polyfem
 
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
-		assembler.set_size(mesh->dimension());
-
+		assembler.set_size(formulation(), mesh->dimension());
 		set_materials();
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
-		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["output"]["paraview"]["vismesh_rel_area"]);
+		out_geom.init_sampler(*mesh, args["output"]["paraview"]["vismesh_rel_area"]);
 
 		timer.start();
 		logger().info("Loading obstacles...");
 		obstacle = mesh::read_obstacle_geometry(
-			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
+			args["geometry"],
+			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
+			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
 			args["root_path"], mesh->dimension(), names, vertices, cells);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}
 
-	void State::load_febio(const std::string &path, const json &args_in)
+	void State::build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F)
 	{
-		FEBioReader::load(path, args_in, *this);
+		assert(bases.size() == mesh->n_elements());
+		const size_t n_vertices = n_bases - obstacle.n_vertices();
+		const int dim = mesh->dimension();
 
-		igl::Timer timer;
-		timer.start();
-		logger().info("Loading obstacles...");
-		obstacle = mesh::read_obstacle_geometry(
-			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
-			args["root_path"], mesh->dimension());
-		timer.stop();
-		logger().info(" took {}s", timer.getElapsedTime());
-	}
+		V.resize(n_vertices, dim);
+		F.resize(bases.size(), dim + 1); // TODO: this only works for triangles and tetrahedra
 
-	void State::compute_mesh_stats()
-	{
-		if (!mesh)
+		for (int i = 0; i < bases.size(); i++)
 		{
-			logger().error("Load the mesh first!");
-			return;
-		}
-
-		bases.clear();
-		pressure_bases.clear();
-		geom_bases_.clear();
-		boundary_nodes.clear();
-		local_boundary.clear();
-		local_neumann_boundary.clear();
-		polys.clear();
-		poly_edge_to_data.clear();
-
-		stiffness.resize(0, 0);
-		rhs.resize(0, 0);
-		sol.resize(0, 0);
-		pressure.resize(0, 0);
-
-		n_bases = 0;
-		n_pressure_bases = 0;
-
-		simplex_count = 0;
-		regular_count = 0;
-		regular_boundary_count = 0;
-		simple_singular_count = 0;
-		multi_singular_count = 0;
-		boundary_count = 0;
-		non_regular_boundary_count = 0;
-		non_regular_count = 0;
-		undefined_count = 0;
-		multi_singular_boundary_count = 0;
-
-		const auto &els_tag = mesh->elements_tag();
-
-		mesh->prepare_mesh();
-
-		for (size_t i = 0; i < els_tag.size(); ++i)
-		{
-			const ElementType type = els_tag[i];
-
-			switch (type)
+			const basis::ElementBases &element = bases[i];
+			assert(element.bases.size() == F.cols());
+			for (int j = 0; j < element.bases.size(); j++)
 			{
-			case ElementType::Simplex:
-				simplex_count++;
-				break;
-			case ElementType::RegularInteriorCube:
-				regular_count++;
-				break;
-			case ElementType::RegularBoundaryCube:
-				regular_boundary_count++;
-				break;
-			case ElementType::SimpleSingularInteriorCube:
-				simple_singular_count++;
-				break;
-			case ElementType::MultiSingularInteriorCube:
-				multi_singular_count++;
-				break;
-			case ElementType::SimpleSingularBoundaryCube:
-				boundary_count++;
-				break;
-			case ElementType::InterfaceCube:
-			case ElementType::MultiSingularBoundaryCube:
-				multi_singular_boundary_count++;
-				break;
-			case ElementType::BoundaryPolytope:
-				non_regular_boundary_count++;
-				break;
-			case ElementType::InteriorPolytope:
-				non_regular_count++;
-				break;
-			case ElementType::Undefined:
-				undefined_count++;
-				break;
+				const basis::Basis &basis = element.bases[j];
+				assert(basis.global().size() == 1);
+				V.row(basis.global()[0].index) = basis.global()[0].node;
+				F(i, j) = basis.global()[0].index;
 			}
 		}
-
-		logger().info("simplex_count: \t{}", simplex_count);
-		logger().info("regular_count: \t{}", regular_count);
-		logger().info("regular_boundary_count: \t{}", regular_boundary_count);
-		logger().info("simple_singular_count: \t{}", simple_singular_count);
-		logger().info("multi_singular_count: \t{}", multi_singular_count);
-		logger().info("boundary_count: \t{}", boundary_count);
-		logger().info("multi_singular_boundary_count: \t{}", multi_singular_boundary_count);
-		logger().info("non_regular_count: \t{}", non_regular_count);
-		logger().info("non_regular_boundary_count: \t{}", non_regular_boundary_count);
-		logger().info("undefined_count: \t{}", undefined_count);
-		logger().info("total count:\t {}", mesh->n_elements());
 	}
-
 } // namespace polyfem

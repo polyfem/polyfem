@@ -6,6 +6,7 @@ set(SOURCES
 	AssemblyValues.hpp
 	AssemblyValsCache.cpp
 	AssemblyValsCache.hpp
+	ElasticEnergyMacros.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp
 	Helmholtz.cpp
@@ -18,14 +19,22 @@ set(SOURCES
 	Laplacian.hpp
 	LinearElasticity.cpp
 	LinearElasticity.hpp
-	MassMatrixAssembler.cpp
-	MassMatrixAssembler.hpp
+	GenericElastic.cpp
+	GenericElastic.hpp
+	Mass.cpp
+	Mass.hpp
+	MatParams.cpp
+	MatParams.hpp
+	MooneyRivlinElasticity.cpp
+	MooneyRivlinElasticity.hpp
 	MultiModel.cpp
 	MultiModel.hpp
 	NeoHookeanElasticity.cpp
 	NeoHookeanElasticity.hpp
-	# OgdenElasticity.cpp
-	# OgdenElasticity.hpp
+	NeoHookeanElasticityAutodiff.cpp
+	NeoHookeanElasticityAutodiff.hpp
+	OgdenElasticity.cpp
+	OgdenElasticity.hpp
 	RhsAssembler.cpp
 	RhsAssembler.hpp
 	SaintVenantElasticity.cpp
@@ -40,6 +49,8 @@ set(SOURCES
 	Problem.hpp
 	GenericProblem.cpp
 	GenericProblem.hpp
+	ViscousDamping.cpp
+	ViscousDamping.hpp
 )
 
 prepend_current_path(SOURCES)

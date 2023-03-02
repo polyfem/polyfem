@@ -26,6 +26,9 @@ int main(int argc, char **argv)
 
 	CLI::App command_line{"polyfem"};
 
+	command_line.ignore_case();
+	command_line.ignore_underscore();
+
 	// Eigen::setNbThreads(1);
 	size_t max_threads = std::numeric_limits<size_t>::max();
 	command_line.add_option("--max_threads", max_threads, "Maximum number of threads");
@@ -39,17 +42,11 @@ int main(int argc, char **argv)
 	std::string output_dir = "";
 	command_line.add_option("-o,--output_dir", output_dir, "Directory for output files")->check(CLI::ExistingDirectory | CLI::NonexistentPath);
 
-	bool is_quiet = false;
-	command_line.add_flag("--quiet", is_quiet, "Disable cout for logging");
-
 	bool is_strict = true;
 	command_line.add_flag("-s,--strict_validation,!--ns,!--no_strict_validation", is_strict, "Disables strict validation of input JSON");
 
 	bool fallback_solver = false;
 	command_line.add_flag("--enable_overwrite_solver", fallback_solver, "If solver in json is not present, falls back to default");
-
-	std::string log_file = "";
-	command_line.add_option("--log_file", log_file, "Log to a file");
 
 	// const std::vector<std::string> solvers = polysolve::LinearSolver::availableSolvers();
 	// std::string solver;
@@ -119,14 +116,20 @@ int main(int argc, char **argv)
 		return command_line.exit(CLI::RequiredError("--json or --hdf5"));
 	}
 
-	if (!output_dir.empty())
-	{
-		std::filesystem::create_directories(output_dir);
-	}
+	json tmp = json::object();
+	if (has_arg(command_line, "log_level"))
+		tmp["/output/log/level"_json_pointer] = int(log_level);
+	if (has_arg(command_line, "max_threads"))
+		tmp["/solver/max_threads"_json_pointer] = max_threads;
+	if (has_arg(command_line, "output_dir"))
+		tmp["/output/directory"_json_pointer] = std::filesystem::absolute(output_dir);
+	if (has_arg(command_line, "enable_overwrite_solver"))
+		tmp["/solver/linear/enable_overwrite_solver"_json_pointer] = fallback_solver;
+	assert(tmp.is_object());
+	in_args.merge_patch(tmp);
 
-	State state(max_threads);
-	state.init_logger(log_file, log_level, is_quiet);
-	state.init(in_args, is_strict, output_dir, fallback_solver);
+	State state;
+	state.init(in_args, is_strict);
 	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
 
 	// Mesh was not loaded successfully; load_mesh() logged the error.
@@ -136,19 +139,24 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	state.compute_mesh_stats();
+	state.stats.compute_mesh_stats(*state.mesh);
 
 	state.build_basis();
 
 	state.assemble_rhs();
 	state.assemble_stiffness_mat();
 
-	state.solve_problem();
+	Eigen::MatrixXd sol;
+	Eigen::MatrixXd pressure;
 
-	state.compute_errors();
+	state.solve_problem(sol, pressure);
 
-	state.save_json();
-	state.export_data();
+	state.compute_errors(sol);
+
+	logger().info("total time: {}s", state.timings.total_time());
+
+	state.save_json(sol);
+	state.export_data(sol, pressure);
 
 	return EXIT_SUCCESS;
 }

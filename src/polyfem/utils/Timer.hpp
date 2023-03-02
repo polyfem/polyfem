@@ -1,6 +1,9 @@
 #pragma once
 
+// clang-format off
+#include <spdlog/fmt/bundled/color.h>
 #include <polyfem/utils/Logger.hpp>
+// clang-format on
 
 #include <igl/Timer.h>
 
@@ -44,12 +47,16 @@ namespace polyfem
 
 			inline void start()
 			{
+				is_running = true;
 				m_timer.start();
 			}
 
 			inline void stop()
 			{
+				if (!is_running)
+					return;
 				m_timer.stop();
+				is_running = false;
 				log_msg();
 				if (m_total_time)
 				{
@@ -64,9 +71,12 @@ namespace polyfem
 
 			inline void log_msg()
 			{
+				const static std::string log_fmt_text =
+					fmt::format("[{}] {{}} {{:.3g}}s", fmt::format(fmt::fg(fmt::terminal_color::magenta), "timing"));
+
 				if (!m_name.empty())
 				{
-					logger().trace("[timing] {} {:.3g}s", m_name, getElapsedTimeInSec());
+					logger().trace(log_fmt_text, m_name, getElapsedTimeInSec());
 				}
 			}
 
@@ -79,6 +89,7 @@ namespace polyfem
 			std::string m_name;
 			igl::Timer m_timer;
 			double *m_total_time;
+			bool is_running = false;
 		};
 	} // namespace utils
 } // namespace polyfem

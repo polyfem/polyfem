@@ -1,7 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "PolygonalBasis3d.hpp"
+#include "LagrangeBasis3d.hpp"
+
 #include <polyfem/quadrature/PolyhedronQuadrature.hpp>
-#include <polyfem/basis/FEBasis3d.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/mesh2D/Refinement.hpp>
 #include <polyfem/utils/RefElementSampler.hpp>
@@ -229,6 +230,7 @@ namespace polyfem
 				const int n_kernels_per_edge,
 				int n_samples_per_edge,
 				const int quadrature_order,
+				const int mass_quadrature_order,
 				const Mesh3D &mesh,
 				const std::map<int, InterfaceData> &poly_face_to_data,
 				const std::vector<ElementBases> &bases,
@@ -241,6 +243,7 @@ namespace polyfem
 				Eigen::MatrixXd &triangulated_vertices,
 				Eigen::MatrixXi &triangulated_faces,
 				Quadrature &quadrature,
+				Quadrature &mass_quadrature,
 				double &scaling,
 				Eigen::RowVector3d &translation)
 			{
@@ -254,8 +257,8 @@ namespace polyfem
 					const auto &v = uv.col(1).array();
 					auto index = mesh.get_index_from_element(element_index, lf, lv0);
 					index = mesh.switch_element(index);
-					// Eigen::MatrixXd abcd = FEBasis3d::linear_hex_face_local_nodes_coordinates(mesh, index);
-					const auto indices = FEBasis3d::hex_face_local_nodes(false, 1, mesh, index);
+					// Eigen::MatrixXd abcd = LagrangeBasis3d::linear_hex_face_local_nodes_coordinates(mesh, index);
+					const auto indices = LagrangeBasis3d::hex_face_local_nodes(false, 1, mesh, index);
 					assert(indices.size() == 4);
 					Eigen::MatrixXd abcd;
 					polyfem::autogen::q_nodes_3d(1, abcd);
@@ -374,6 +377,8 @@ namespace polyfem
 				// NV = (NV.rowwise() - translation) / scaling;
 				PolyhedronQuadrature::get_quadrature(NV, triangulated_faces, mesh.kernel(element_index),
 													 quadrature_order, quadrature);
+				PolyhedronQuadrature::get_quadrature(NV, triangulated_faces, mesh.kernel(element_index),
+													 mass_quadrature_order, mass_quadrature);
 
 				// Normalization
 				// collocation_points = (collocation_points.rowwise() - translation) / scaling;
@@ -600,7 +605,7 @@ namespace polyfem
 					continue;
 				}
 				// No boundary polytope
-				// assert(element_type[e] != ElementType::BoundaryPolytope);
+				// assert(element_type[e] != ElementType::BOUNDARY_POLYTOPE);
 
 				// Kernel distance to polygon boundary
 				const double eps = compute_epsilon(mesh, e);
@@ -613,17 +618,18 @@ namespace polyfem
 				ElementBases &b = bases[e];
 				b.has_parameterization = false;
 
-				Quadrature tmp_quadrature;
+				Quadrature tmp_quadrature, tmp_mass_quadrature;
 				double scaling;
 				Eigen::RowVector3d translation;
-				sample_polyhedra(e, 2, n_kernels_per_edge, n_samples_per_edge, quadrature_order,
+				sample_polyhedra(e, 2, n_kernels_per_edge, n_samples_per_edge,
+								 quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler_name, 2, AssemblerUtils::BasisType::POLY, 3),
+								 mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::POLY, 3),
 								 mesh, poly_face_to_data, bases, gbases, eps, local_to_global,
 								 collocation_points, kernel_centers, rhs, triangulated_vertices,
-								 triangulated_faces, tmp_quadrature, scaling, translation);
+								 triangulated_faces, tmp_quadrature, tmp_mass_quadrature, scaling, translation);
 
 				b.set_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
-				//TODO
-				b.set_mass_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
+				b.set_mass_quadrature([tmp_mass_quadrature](Quadrature &quad) { quad = tmp_mass_quadrature; });
 				// b.scaling_ = scaling;
 				// b.translation_ = translation;
 

@@ -4,7 +4,8 @@
 
 namespace polyfem::solver
 {
-	InertiaForm::InertiaForm(const StiffnessMatrix &mass, const time_integrator::ImplicitTimeIntegrator &time_integrator)
+	InertiaForm::InertiaForm(const StiffnessMatrix &mass,
+							 const time_integrator::ImplicitTimeIntegrator &time_integrator)
 		: mass_(mass), time_integrator_(time_integrator)
 	{
 		assert(mass.size() != 0);
@@ -24,7 +25,7 @@ namespace polyfem::solver
 		gradv = mass_ * (x - time_integrator_.x_tilde());
 	}
 
-	void InertiaForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void InertiaForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		hessian = mass_;
 	}

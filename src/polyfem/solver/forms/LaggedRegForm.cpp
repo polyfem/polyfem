@@ -23,7 +23,7 @@ namespace polyfem::solver
 		gradv = (x - x_lagged_);
 	}
 
-	void LaggedRegForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	void LaggedRegForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		hessian.resize(x.size(), x.size());
 		hessian.setIdentity();
@@ -34,7 +34,7 @@ namespace polyfem::solver
 		update_lagging(x, 0);
 	}
 
-	bool LaggedRegForm::update_lagging(const Eigen::VectorXd &x, const int iter_num)
+	void LaggedRegForm::update_lagging(const Eigen::VectorXd &x, const int iter_num)
 	{
 		x_lagged_ = x;
 
@@ -44,7 +44,5 @@ namespace polyfem::solver
 			logger().debug("Enabling lagged regularization");
 		else if (enabled_before && !enabled())
 			logger().debug("Disabling lagged regularization");
-
-		return true;
 	}
 } // namespace polyfem::solver

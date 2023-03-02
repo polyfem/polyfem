@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <Eigen/Dense>
-using namespace Eigen;
 
 namespace polyfem
 {
@@ -51,14 +50,14 @@ namespace polyfem
 			std::vector<double> v_in_Kernel;
 		};
 
-		enum MeshType
+		enum class MeshType
 		{
-			Tri = 0,
-			Qua,
-			HSur,
-			Tet,
-			Hyb,
-			Hex
+			TRI = 0,
+			QUA,
+			H_SUR,
+			TET,
+			HYB,
+			HEX
 		};
 
 		class Mesh3DStorage
@@ -71,14 +70,14 @@ namespace polyfem
 			std::vector<Face> faces;
 			std::vector<Element> elements;
 
-			Eigen::MatrixXi EV;              //EV(2, ne)
-			Eigen::MatrixXi FV, FE, FH, FHi; //FV (3, nf), FE(3, nf), FH (2, nf), FHi(2, nf)
-			Eigen::MatrixXi HV, HF;          //HV(4, nh), HE(6, nh), HF(4, nh)
+			Eigen::MatrixXi EV;              // EV(2, ne)
+			Eigen::MatrixXi FV, FE, FH, FHi; // FV (3, nf), FE(3, nf), FH (2, nf), FHi(2, nf)
+			Eigen::MatrixXi HV, HF;          // HV(4, nh), HE(6, nh), HF(4, nh)
 
 			void append(const Mesh3DStorage &other)
 			{
 				if (other.type != type)
-					type = MeshType::Hyb;
+					type = MeshType::HYB;
 
 				const int n_v = points.cols();
 				const int n_e = edges.size();
@@ -195,9 +194,9 @@ namespace polyfem
 			double min_Jacobian;
 			double ave_Jacobian;
 			double deviation_Jacobian;
-			VectorXd V_Js;
-			VectorXd H_Js;
-			VectorXd Num_Js;
+			Eigen::VectorXd V_Js;
+			Eigen::VectorXd H_Js;
+			Eigen::VectorXd Num_Js;
 			int32_t V_num, H_num;
 		};
 	} // namespace mesh

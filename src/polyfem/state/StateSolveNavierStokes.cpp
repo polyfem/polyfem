@@ -12,7 +12,7 @@ namespace polyfem
 	using namespace solver;
 	using namespace time_integrator;
 
-	void State::solve_navier_stokes()
+	void State::solve_navier_stokes(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		assert(!problem->is_time_dependent());
 		assert(formulation() == "NavierStokes");
@@ -23,13 +23,24 @@ namespace polyfem
 
 		Eigen::VectorXd x;
 		solver::NavierStokesSolver ns_solver(args["solver"]);
-		ns_solver.minimize(*this, rhs, x);
+		ns_solver.minimize(n_bases, n_pressure_bases,
+						   bases, pressure_bases,
+						   geom_bases(),
+						   assembler,
+						   ass_vals_cache,
+						   pressure_ass_vals_cache,
+						   boundary_nodes,
+						   use_avg_pressure,
+						   formulation(),
+						   mesh->dimension(),
+						   mesh->is_volume(),
+						   rhs, x);
 
 		sol = x;
-		sol_to_pressure();
+		sol_to_pressure(sol, pressure);
 	}
 
-	void State::solve_transient_navier_stokes_split(const int time_steps, const double dt)
+	void State::solve_transient_navier_stokes_split(const int time_steps, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		assert(formulation() == "OperatorSplitting" && problem->is_time_dependent());
 
@@ -71,7 +82,7 @@ namespace polyfem
 		assembler.assemble_problem(
 			"Laplacian", mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, stiffness_viscosity);
 		assembler.assemble_mass_matrix(
-			"Laplacian", mesh->is_volume(), n_bases, density, bases, gbases, ass_vals_cache, mass);
+			"Laplacian", mesh->is_volume(), n_bases, true, bases, gbases, ass_vals_cache, mass);
 
 		// coefficient matrix of pressure projection
 		assembler.assemble_problem(
@@ -83,7 +94,7 @@ namespace polyfem
 			"Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases,
 			pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
 		assembler.assemble_mass_matrix(
-			"Stokes", mesh->is_volume(), n_bases, density, bases, gbases, ass_vals_cache, velocity_mass);
+			"Stokes", mesh->is_volume(), n_bases, true, bases, gbases, ass_vals_cache, velocity_mass);
 		mixed_stiffness = mixed_stiffness.transpose();
 		logger().info("Matrices assembly ends!");
 
@@ -137,11 +148,11 @@ namespace polyfem
 				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, sol, Eigen::MatrixXd(), time);
 
 			/* export to vtu */
-			save_timestep(time, t, 0, dt);
+			save_timestep(time, t, 0, dt, sol, pressure);
 		}
 	}
 
-	void State::solve_transient_navier_stokes(const int time_steps, const double t0, const double dt)
+	void State::solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		assert(formulation() == "NavierStokes" && problem->is_time_dependent());
 
@@ -150,7 +161,7 @@ namespace polyfem
 
 		StiffnessMatrix velocity_mass;
 		assembler.assemble_mass_matrix(
-			formulation(), mesh->is_volume(), n_bases, density, bases, gbases, ass_vals_cache, velocity_mass);
+			formulation(), mesh->is_volume(), n_bases, true, bases, gbases, mass_ass_vals_cache, velocity_mass);
 
 		StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
 
@@ -184,7 +195,7 @@ namespace polyfem
 
 			prev_sol = time_integrator.weighted_sum_x_prevs();
 			solve_data.rhs_assembler->compute_energy_grad(
-				local_boundary, boundary_nodes, density, n_b_samples, local_neumann_boundary, rhs, time, current_rhs);
+				local_boundary, boundary_nodes, assembler.density(), n_b_samples, local_neumann_boundary, rhs, time, current_rhs);
 			solve_data.rhs_assembler->set_bc(
 				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, Eigen::MatrixXd(), time);
 
@@ -197,13 +208,21 @@ namespace polyfem
 
 			Eigen::VectorXd tmp_sol;
 			ns_solver.minimize(
-				*this, sqrt(time_integrator.acceleration_scaling()), prev_sol, velocity_stiffness, mixed_stiffness,
+				n_bases, n_pressure_bases,
+				bases, geom_bases(),
+				assembler, ass_vals_cache,
+				boundary_nodes,
+				use_avg_pressure,
+				formulation(),
+				mesh->dimension(),
+				mesh->is_volume(),
+				sqrt(time_integrator.acceleration_scaling()), prev_sol, velocity_stiffness, mixed_stiffness,
 				pressure_stiffness, velocity_mass, current_rhs, tmp_sol);
 			sol = tmp_sol;
 			time_integrator.update_quantities(sol.topRows(n_bases * mesh->dimension()));
-			sol_to_pressure();
+			sol_to_pressure(sol, pressure);
 
-			save_timestep(time, t, t0, dt);
+			save_timestep(time, t, t0, dt, sol, pressure);
 		}
 	}
 } // namespace polyfem

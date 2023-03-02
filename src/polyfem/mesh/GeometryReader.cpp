@@ -14,6 +14,10 @@
 #include <igl/edges.h>
 #include <igl/boundary_facets.h>
 
+#include <strnatcmp.h>
+#include <glob/glob.h>
+#include <filesystem>
+
 namespace polyfem::mesh
 {
 	using namespace polyfem::utils;
@@ -128,30 +132,47 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		if (!j_mesh["point_selection"].is_null())
-			logger().warn("Geometry point seleections are not implemented nor used!");
+		const std::vector<std::shared_ptr<Selection>> node_selections =
+			is_param_valid(j_mesh, "point_selection") ? Selection::build_selections(j_mesh["point_selection"], bbox, root_path) : std::vector<std::shared_ptr<Selection>>();
+
+		if (!node_selections.empty())
+		{
+			mesh->compute_node_ids([&](const size_t n_id, const RowVectorNd &p, bool is_boundary) {
+				if (!is_boundary)
+					return -1;
+
+				const std::vector<int> tmp = {int(n_id)};
+				for (const auto &selection : node_selections)
+				{
+					if (selection->inside(n_id, tmp, p))
+						return selection->id(n_id, tmp, p);
+				}
+				return std::numeric_limits<int>::max(); // default for no selected boundary
+			});
+		}
 
 		if (!j_mesh["curve_selection"].is_null())
-			logger().warn("Geometry point seleections are not implemented nor used!");
+			log_and_throw_error("Geometry point selections are not implemented nor used!");
 
 		// --------------------------------------------------------------------
 
-		// TODO: renable this
-		// if (!skip_boundary_sideset)
-		// 	mesh->compute_boundary_ids(boundary_marker);
-
 		std::vector<std::shared_ptr<Selection>> surface_selections =
-			Selection::build_selections(j_mesh["surface_selection"], bbox, root_path);
+			is_param_valid(j_mesh, "surface_selection") ? Selection::build_selections(j_mesh["surface_selection"], bbox, root_path) : std::vector<std::shared_ptr<Selection>>();
 
-		mesh->compute_boundary_ids([&](const size_t face_id, const RowVectorNd &p, bool is_boundary) {
-			if (!is_boundary)
-				return -1;
+		if (!surface_selections.empty())
+		{
+			mesh->compute_boundary_ids([&](const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p, bool is_boundary) {
+				if (!is_boundary)
+					return -1;
 
-			for (const auto &selection : surface_selections)
-				if (selection->inside(p))
-					return selection->id(face_id);
-			return std::numeric_limits<int>::max(); // default for no selected boundary
-		});
+				for (const auto &selection : surface_selections)
+				{
+					if (selection->inside(p_id, vs, p))
+						return selection->id(p_id, vs, p);
+				}
+				return std::numeric_limits<int>::max(); // default for no selected boundary
+			});
+		}
 
 		// --------------------------------------------------------------------
 
@@ -162,14 +183,16 @@ namespace polyfem::mesh
 			&& volume_selection.contains("id_offset"))
 		{
 			const int id_offset = volume_selection["id_offset"].get<int>();
-			const int n_body_ids = mesh->n_elements();
-			std::vector<int> body_ids(n_body_ids);
-			for (int i = 0; i < n_body_ids; ++i)
-				body_ids[i] = mesh->get_body_id(i) + id_offset;
-			mesh->set_body_ids(body_ids);
+			if (id_offset != 0)
+			{
+				const int n_body_ids = mesh->n_elements();
+				std::vector<int> body_ids(n_body_ids);
+				for (int i = 0; i < n_body_ids; ++i)
+					body_ids[i] = mesh->get_body_id(i) + id_offset;
+				mesh->set_body_ids(body_ids);
+			}
 		}
-		// Specified negative volume selection are ignored and the default (0 (or MSH stored values) is used instead)
-		else if (!volume_selection.is_number_integer() || volume_selection.get<int>() >= 0)
+		else
 		{
 			// Specified volume selection has priority over mesh's stored ids
 			std::vector<std::shared_ptr<Selection>> volume_selections =
@@ -181,8 +204,11 @@ namespace polyfem::mesh
 
 			mesh->compute_body_ids([&](const size_t cell_id, const RowVectorNd &p) -> int {
 				for (const auto &selection : volume_selections)
-					if (selection->inside(p))
-						return selection->id(cell_id);
+				{
+					// TODO: add vs to compute_body_ids
+					if (selection->inside(cell_id, {}, p))
+						return selection->id(cell_id, {}, p);
+				}
 				return 0;
 			});
 		}
@@ -229,14 +255,7 @@ namespace polyfem::mesh
 		if (geometry.empty())
 			log_and_throw_error("Provided geometry is empty!");
 
-		std::vector<json> geometries;
-		// Note you can add more types here, just add them to geometries
-		if (geometry.is_object())
-			geometries.push_back(geometry);
-		else if (geometry.is_array())
-			geometries = geometry.get<std::vector<json>>();
-		else
-			log_and_throw_error("Invalid JSON geometry type!");
+		std::vector<json> geometries = utils::json_as_array(geometry);
 
 		// --------------------------------------------------------------------
 
@@ -255,16 +274,6 @@ namespace polyfem::mesh
 				mesh = read_fem_mesh(geometry, root_path, non_conforming);
 			else
 				mesh->append(read_fem_mesh(geometry, root_path, non_conforming));
-		}
-
-		// --------------------------------------------------------------------
-
-		// If there where no surface selections, set default boundary ids to
-		// the side of the bounding box of the entire concatenated meshes.
-		if (!mesh->has_boundary_ids())
-		{
-			const double boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
-			mesh->compute_boundary_ids(boundary_id_threshold);
 		}
 
 		// --------------------------------------------------------------------
@@ -321,7 +330,9 @@ namespace polyfem::mesh
 			// points -> vertices (drop edges and faces)
 			codim_edges.resize(0, 0);
 			faces.resize(0, 0);
-			codim_vertices.LinSpaced(0, vertices.rows() - 1, vertices.rows());
+			codim_vertices.resize(vertices.rows());
+			for (int i = 0; i < codim_vertices.size(); ++i)
+				codim_vertices[i] = i;
 		}
 		else if (extract == "edges" && faces.size() != 0)
 		{
@@ -362,6 +373,7 @@ namespace polyfem::mesh
 	Obstacle read_obstacle_geometry(
 		const json &geometry,
 		const std::vector<json> &displacements,
+		const std::vector<json> &dirichlets,
 		const std::string &root_path,
 		const int dim,
 		const std::vector<std::string> &_names,
@@ -396,44 +408,44 @@ namespace polyfem::mesh
 		if (geometry.empty())
 			return obstacle;
 
-		std::vector<json> geometries;
-		// Note you can add more types here, just add them to geometries
-		if (geometry.is_object())
-		{
-			geometries.push_back(geometry);
-		}
-		else if (geometry.is_array())
-		{
-			geometries = geometry.get<std::vector<json>>();
-		}
+		std::vector<json> geometries = utils::json_as_array(geometry);
 
-		for (int i = 0; i < geometries.size(); i++)
+		for (const json &geometry : geometries)
 		{
-			json complete_geometry = geometries[i];
 
-			if (!complete_geometry["is_obstacle"].get<bool>())
+			if (!geometry["is_obstacle"].get<bool>())
 				continue;
 
-			if (!complete_geometry["enabled"].get<bool>())
+			if (!geometry["enabled"].get<bool>())
 				continue;
 
-			if (complete_geometry["type"] == "mesh")
+			if (geometry["type"] == "mesh")
 			{
 				Eigen::MatrixXd vertices;
 				Eigen::VectorXi codim_vertices;
 				Eigen::MatrixXi codim_edges;
 				Eigen::MatrixXi faces;
 				read_obstacle_mesh(
-					complete_geometry, root_path, dim, vertices, codim_vertices,
+					geometry, root_path, dim, vertices, codim_vertices,
 					codim_edges, faces);
 
 				json displacement = "{\"value\":[0, 0, 0]}"_json;
-				if (is_param_valid(complete_geometry, "surface_selection"))
+				if (is_param_valid(geometry, "surface_selection"))
 				{
-					if (!complete_geometry["surface_selection"].is_number())
+					if (!geometry["surface_selection"].is_number())
 						log_and_throw_error("Invalid surface_selection for obstacle, needs to be an integer!");
 
-					const int id = complete_geometry["surface_selection"];
+					const int id = geometry["surface_selection"];
+					for (const json &disp : dirichlets)
+					{
+						// TODO: Add support for array of ints
+						if ((disp["id"].is_string() && disp["id"].get<std::string>() == "all")
+							|| (disp["id"].is_number_integer() && disp["id"].get<int>() == id))
+						{
+							displacement = disp;
+							break;
+						}
+					}
 					for (const json &disp : displacements)
 					{
 						// TODO: Add support for array of ints
@@ -449,14 +461,89 @@ namespace polyfem::mesh
 				obstacle.append_mesh(
 					vertices, codim_vertices, codim_edges, faces, displacement);
 			}
-			else if (complete_geometry["type"] == "plane")
+			else if (geometry["type"] == "plane")
 			{
-				// TODO
+				obstacle.append_plane(geometry["point"], geometry["normal"]);
+			}
+			else if (geometry["type"] == "ground")
+			{
+				VectorNd gravity = VectorNd::Zero(dim); // TODO: Expose as parameter
+				gravity[1] = -9.81;
+				const double height = geometry["height"];
+				assert(gravity.norm() != 0);
+				const VectorNd normal = -gravity.normalized();
+				const VectorNd point = height * normal; // origin + height * normal
+				obstacle.append_plane(point, normal);
+			}
+			else if (geometry["type"] == "mesh_sequence")
+			{
+				namespace fs = std::filesystem;
+				std::vector<fs::path> mesh_files;
+				if (geometry["mesh_sequence"].is_array())
+				{
+					mesh_files = geometry["mesh_sequence"].get<std::vector<fs::path>>();
+				}
+				else
+				{
+					assert(geometry["mesh_sequence"].is_string());
+					const fs::path meshes(resolve_path(geometry["mesh_sequence"], root_path));
+
+					if (fs::is_directory(meshes))
+					{
+						for (const auto &entry : std::filesystem::directory_iterator(meshes))
+						{
+							if (entry.is_regular_file())
+								mesh_files.push_back(entry.path());
+						}
+					}
+					else
+					{
+						mesh_files = glob::rglob(meshes.string());
+					}
+					// Sort the file names naturally
+					std::sort(mesh_files.begin(), mesh_files.end(), [](const fs::path &p1, const fs::path &p2) {
+						return strnatcmp(p1.string().c_str(), p2.string().c_str()) < 0;
+					});
+				}
+
+				std::vector<Eigen::MatrixXd> vertices(mesh_files.size());
+				Eigen::VectorXi codim_vertices;
+				Eigen::MatrixXi codim_edges;
+				Eigen::MatrixXi faces;
+
+				for (int i = 0; i < mesh_files.size(); ++i)
+				{
+					json jmesh = geometry;
+					jmesh["mesh"] = mesh_files[i];
+					jmesh["n_refs"] = 0;
+
+					Eigen::VectorXi tmp_codim_vertices;
+					Eigen::MatrixXi tmp_codim_edges;
+					Eigen::MatrixXi tmp_faces;
+					read_obstacle_mesh(
+						jmesh, root_path, dim, vertices[i],
+						tmp_codim_vertices, tmp_codim_edges, tmp_faces);
+					if (i == 0)
+					{
+						codim_vertices = tmp_codim_vertices;
+						codim_edges = tmp_codim_edges;
+						faces = tmp_faces;
+					}
+					else
+					{
+						assert((codim_vertices.array() == tmp_codim_vertices.array()).all());
+						assert((codim_edges.array() == tmp_codim_edges.array()).all());
+						assert((faces.array() == tmp_faces.array()).all());
+					}
+				}
+
+				obstacle.append_mesh_sequence(
+					vertices, codim_vertices, codim_edges, faces, geometry["fps"]);
 			}
 			else
 			{
 				log_and_throw_error(
-					fmt::format("Invalid geometry type \"{}\" for obstacle!", complete_geometry["type"]));
+					fmt::format("Invalid geometry type \"{}\" for obstacle!", geometry["type"]));
 			}
 		}
 

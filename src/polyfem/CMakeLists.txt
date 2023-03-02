@@ -1,5 +1,6 @@
 set(SOURCES
 	Common.hpp
+	State.cpp
 	State.hpp
 )
 
@@ -20,5 +21,6 @@ add_subdirectory(mesh)
 add_subdirectory(problem)
 add_subdirectory(quadrature)
 add_subdirectory(solver)
+add_subdirectory(refinement)
 add_subdirectory(time_integrator)
 add_subdirectory(utils)

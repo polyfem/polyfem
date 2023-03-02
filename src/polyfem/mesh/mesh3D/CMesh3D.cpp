@@ -25,7 +25,7 @@ namespace polyfem
 
 			// TODO refine high order mesh!
 			orders_.resize(0, 0);
-			if (mesh_.type == MeshType::Tet)
+			if (mesh_.type == MeshType::TET)
 			{
 				MeshProcessing3D::refine_red_refinement_tet(mesh_, n_refinement);
 			}
@@ -33,7 +33,7 @@ namespace polyfem
 			{
 				for (size_t i = 0; i < elements_tag().size(); ++i)
 				{
-					if (elements_tag()[i] == ElementType::InteriorPolytope || elements_tag()[i] == ElementType::BoundaryPolytope)
+					if (elements_tag()[i] == ElementType::INTERIOR_POLYTOPE || elements_tag()[i] == ElementType::BOUNDARY_POLYTOPE)
 						mesh_.elements[i].hex = false;
 				}
 
@@ -123,7 +123,7 @@ namespace polyfem
 				p.vs.resize(nw);
 				for (int j = 0; j < nw; j++)
 				{
-					fscanf(f, "%d", &(p.vs[j]));
+					fscanf(f, "%u", &(p.vs[j]));
 				}
 			}
 			mesh_.elements.resize(nh);
@@ -138,7 +138,7 @@ namespace polyfem
 
 				for (int j = 0; j < nf; j++)
 				{
-					fscanf(f, "%d", &(h.fs[j]));
+					fscanf(f, "%u", &(h.fs[j]));
 				}
 
 				for (auto fid : h.fs)
@@ -300,7 +300,7 @@ namespace polyfem
 					mesh_.elements[i].hex = false;
 				} // FIME me here!
 
-				mesh_.type = M.cells.are_simplices() ? MeshType::Tet : MeshType::Hyb;
+				mesh_.type = M.cells.are_simplices() ? MeshType::TET : MeshType::HYB;
 			}
 			else
 			{
@@ -402,7 +402,7 @@ namespace polyfem
 					mesh_.elements[c].v_in_Kernel.push_back(p[1]);
 					mesh_.elements[c].v_in_Kernel.push_back(p[2]);
 				}
-				mesh_.type = is_hex ? MeshType::Hex : (M.cells.are_simplices() ? MeshType::Tet : MeshType::Hyb);
+				mesh_.type = is_hex ? MeshType::HEX : (M.cells.are_simplices() ? MeshType::TET : MeshType::HYB);
 			}
 
 			Navigation3D::prepare_mesh(mesh_);
@@ -1198,6 +1198,24 @@ namespace polyfem
 			}
 		}
 
+		void CMesh3D::compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker)
+		{
+			boundary_ids_.resize(n_faces());
+
+			for (int f = 0; f < n_faces(); ++f)
+			{
+				const bool is_boundary = is_boundary_face(f);
+				std::vector<int> vs(n_face_vertices(f));
+				for (int vid = 0; vid < vs.size(); ++vid)
+					vs[vid] = face_vertex(f, vid);
+
+				const auto p = face_barycenter(f);
+
+				std::sort(vs.begin(), vs.end());
+				boundary_ids_[f] = marker(f, vs, p, is_boundary);
+			}
+		}
+
 		void CMesh3D::compute_boundary_ids(const double eps)
 		{
 			boundary_ids_.resize(n_faces());
@@ -1274,7 +1292,7 @@ namespace polyfem
 
 			ele_tag.resize(mesh_.elements.size());
 			for (auto &t : ele_tag)
-				t = ElementType::RegularInteriorCube;
+				t = ElementType::REGULAR_INTERIOR_CUBE;
 
 			// boundary flags
 			std::vector<bool> bv_flag(mesh_.vertices.size(), false), be_flag(mesh_.edges.size(), false), bf_flag(mesh_.faces.size(), false);
@@ -1320,13 +1338,13 @@ namespace polyfem
 					}
 					if (attaching_non_hex)
 					{
-						ele_tag[ele.id] = ElementType::InterfaceCube;
+						ele_tag[ele.id] = ElementType::INTERFACE_CUBE;
 						continue;
 					}
 
 					if (on_boundary)
 					{
-						ele_tag[ele.id] = ElementType::MultiSingularBoundaryCube;
+						ele_tag[ele.id] = ElementType::MULTI_SINGULAR_BOUNDARY_CUBE;
 						// has no boundary edge--> singular
 						bool boundary_edge = false, boundary_edge_singular = false, interior_edge_singular = false;
 						int n_interior_edge_singular = 0;
@@ -1399,10 +1417,10 @@ namespace polyfem
 						{
 							if (n_irregular_e == 1)
 							{
-								ele_tag[ele.id] = ElementType::SimpleSingularBoundaryCube;
+								ele_tag[ele.id] = ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE;
 							}
 							else if (n_irregular_e == 0 && n_in_irregular_v == 0 && !has_iregular_v)
-								ele_tag[ele.id] = ElementType::RegularBoundaryCube;
+								ele_tag[ele.id] = ElementType::REGULAR_BOUNDARY_CUBE;
 							else
 								continue;
 						}
@@ -1419,7 +1437,7 @@ namespace polyfem
 						}
 					if (!has_irregular_v)
 					{
-						ele_tag[ele.id] = ElementType::RegularInteriorCube;
+						ele_tag[ele.id] = ElementType::REGULAR_INTERIOR_CUBE;
 						continue;
 					}
 					// type 2
@@ -1443,19 +1461,19 @@ namespace polyfem
 					}
 					if (!has_singular_v && n_irregular_v == 2)
 					{
-						ele_tag[ele.id] = ElementType::SimpleSingularInteriorCube;
+						ele_tag[ele.id] = ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE;
 						continue;
 					}
 
-					ele_tag[ele.id] = ElementType::MultiSingularInteriorCube;
+					ele_tag[ele.id] = ElementType::MULTI_SINGULAR_INTERIOR_CUBE;
 				}
 				else
 				{
-					ele_tag[ele.id] = ElementType::InteriorPolytope;
+					ele_tag[ele.id] = ElementType::INTERIOR_POLYTOPE;
 					for (auto fid : ele.fs)
 						if (mesh_.faces[fid].boundary)
 						{
-							ele_tag[ele.id] = ElementType::BoundaryPolytope;
+							ele_tag[ele.id] = ElementType::BOUNDARY_POLYTOPE;
 							break;
 						}
 				}
@@ -1465,7 +1483,7 @@ namespace polyfem
 			for (auto &ele : mesh_.elements)
 			{
 				if (ele.vs.size() == 4)
-					ele_tag[ele.id] = ElementType::Simplex;
+					ele_tag[ele.id] = ElementType::SIMPLEX;
 			}
 		}
 
@@ -1481,11 +1499,11 @@ namespace polyfem
 			const auto v3 = point(vertices[2]);
 			const auto v4 = point(vertices[3]);
 
-			const Vector3d e0 = (v2 - v1).transpose();
-			const Vector3d e1 = (v3 - v1).transpose();
+			const Eigen::Vector3d e0 = (v2 - v1).transpose();
+			const Eigen::Vector3d e1 = (v3 - v1).transpose();
 
-			const Vector3d e2 = (v2 - v4).transpose();
-			const Vector3d e3 = (v3 - v4).transpose();
+			const Eigen::Vector3d e2 = (v2 - v4).transpose();
+			const Eigen::Vector3d e3 = (v3 - v4).transpose();
 
 			return e0.cross(e1).norm() / 2 + e2.cross(e3).norm() / 2;
 		}
@@ -1549,7 +1567,7 @@ namespace polyfem
 				m.points(2, i) = m.vertices[i].v[2];
 			}
 
-			if (m.type == MeshType::Tri || m.type == MeshType::Qua || m.type == MeshType::HSur)
+			if (m.type == MeshType::TRI || m.type == MeshType::QUA || m.type == MeshType::H_SUR)
 			{
 				for (uint32_t i = 0; i < m.faces.size(); i++)
 				{

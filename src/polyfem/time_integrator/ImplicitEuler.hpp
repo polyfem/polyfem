@@ -15,7 +15,7 @@ namespace polyfem::time_integrator
 	public:
 		ImplicitEuler() {}
 
-		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
+		/// @brief Update the time integration quantities (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
 		/// \f[
 		/// 	v^{t+1} = \frac{1}{\Delta t} (x - x^t)\newline
 		/// 	a^{t+1} = \frac{1}{\Delta t} (v - v^t)
@@ -51,5 +51,11 @@ namespace polyfem::time_integrator
 		/// 	\Delta t^2
 		/// \f]
 		double acceleration_scaling() const override;
+
+		/// @brief Compute the derivative of the velocity with respect to the solution.
+		/// \f[
+		/// 	\frac{\partial v}{\partial x} = \frac{1}{\Delta t}
+		/// \f]
+		double dv_dx() const override;
 	};
 } // namespace polyfem::time_integrator

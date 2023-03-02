@@ -31,7 +31,7 @@ bool missing_tests_data(const json &j, const std::string &key)
 	return !j.contains(key) || (j.at(key).size() == 1 && j.at(key).contains("time_steps"));
 }
 
-int authenticate_json(std::string json_file, const bool allow_append)
+int authenticate_json(const std::string &json_file, const bool allow_append)
 {
 	json in_args;
 	if (!load_json(json_file, in_args))
@@ -40,7 +40,7 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		return 1;
 	}
 
-	std::string tests_key = "tests";
+	const std::string tests_key = "tests";
 	if (missing_tests_data(in_args, tests_key) && !allow_append)
 	{
 		spdlog::error(
@@ -90,10 +90,16 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		args["root_path"] = json_file;
 	}
 
-	State state(/*max_threads=*/1);
-	state.init_logger("", spdlog::level::err, false);
+	args["/solver/linear/solver"_json_pointer] =
+		json_file.find("navier") == std::string::npos
+			? "Eigen::SimplicialLDLT"
+			: "Eigen::SparseLU";
+
+	State state;
+	args["/output/log/level"_json_pointer] = "error";
+	state.init(args, true);
+	state.set_max_threads(1);
 	spdlog::set_level(spdlog::level::info);
-	state.init(args, "");
 	state.load_mesh();
 
 	if (state.mesh == nullptr)
@@ -102,24 +108,27 @@ int authenticate_json(std::string json_file, const bool allow_append)
 		return 1;
 	}
 
-	state.compute_mesh_stats();
+	// state.compute_mesh_stats();
 
 	state.build_basis();
 
 	state.assemble_rhs();
 	state.assemble_stiffness_mat();
 
-	state.solve_problem();
+	Eigen::MatrixXd sol;
+	Eigen::MatrixXd pressure;
 
-	state.compute_errors();
+	state.solve_problem(sol, pressure);
+
+	state.compute_errors(sol);
 
 	json out = json({});
-	out["err_l2"] = state.l2_err;
-	out["err_h1"] = state.h1_err;
-	out["err_h1_semi"] = state.h1_semi_err;
-	out["err_linf"] = state.linf_err;
-	out["err_linf_grad"] = state.grad_max_err;
-	out["err_lp"] = state.lp_err;
+	out["err_l2"] = state.stats.l2_err;
+	out["err_h1"] = state.stats.h1_err;
+	out["err_h1_semi"] = state.stats.h1_semi_err;
+	out["err_linf"] = state.stats.linf_err;
+	out["err_linf_grad"] = state.stats.grad_max_err;
+	out["err_lp"] = state.stats.lp_err;
 	out["margin"] = 1e-5;
 	out["time_steps"] = time_steps;
 

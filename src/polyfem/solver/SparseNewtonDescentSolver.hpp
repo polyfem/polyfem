@@ -18,7 +18,7 @@ namespace cppoptlib
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		SparseNewtonDescentSolver(const json &solver_params, const json &linear_solver_params);
+		SparseNewtonDescentSolver(const json &solver_params, const json &linear_solver_params, const double dt);
 
 		std::string name() const override { return "Newton"; }
 
@@ -46,7 +46,7 @@ namespace cppoptlib
 
 		void reset(const int ndof) override;
 
-		virtual int default_descent_strategy() override { return 0; }
+		virtual int default_descent_strategy() override { return force_psd_projection ? 1 : 0; }
 		void increase_descent_strategy() override;
 
 		using Superclass::descent_strategy_name;
@@ -58,6 +58,7 @@ namespace cppoptlib
 		}
 
 		std::unique_ptr<polysolve::LinearSolver> linear_solver; ///< Linear solver used to solve the linear system
+		bool force_psd_projection = false;                      ///< Whether to force the Hessian to be positive semi-definite
 		double reg_weight = 0;                                  ///< Regularization Coefficients
 
 		// ====================================================================

@@ -328,17 +328,17 @@ namespace polyfem::mesh
 	{
 		if (is_volume())
 		{
-			return elements_tag_[el_id] == ElementType::RegularInteriorCube
-				   || elements_tag_[el_id] == ElementType::RegularBoundaryCube;
-			// || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube
-			// || elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
+			return elements_tag_[el_id] == ElementType::REGULAR_INTERIOR_CUBE
+				   || elements_tag_[el_id] == ElementType::REGULAR_BOUNDARY_CUBE;
+			// || elements_tag_[el_id] == ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE
+			// || elements_tag_[el_id] == ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE;
 		}
 		else
 		{
-			return elements_tag_[el_id] == ElementType::RegularInteriorCube
-				   || elements_tag_[el_id] == ElementType::RegularBoundaryCube;
-			// || elements_tag_[el_id] == ElementType::InterfaceCube
-			// || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube;
+			return elements_tag_[el_id] == ElementType::REGULAR_INTERIOR_CUBE
+				   || elements_tag_[el_id] == ElementType::REGULAR_BOUNDARY_CUBE;
+			// || elements_tag_[el_id] == ElementType::INTERFACE_CUBE
+			// || elements_tag_[el_id] == ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE;
 		}
 	}
 
@@ -346,21 +346,49 @@ namespace polyfem::mesh
 
 	bool Mesh::is_cube(const int el_id) const
 	{
-		return elements_tag_[el_id] == ElementType::InterfaceCube
-			   || elements_tag_[el_id] == ElementType::RegularInteriorCube
-			   || elements_tag_[el_id] == ElementType::RegularBoundaryCube
-			   || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube
-			   || elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube
-			   || elements_tag_[el_id] == ElementType::MultiSingularInteriorCube
-			   || elements_tag_[el_id] == ElementType::MultiSingularBoundaryCube;
+		return elements_tag_[el_id] == ElementType::INTERFACE_CUBE
+			   || elements_tag_[el_id] == ElementType::REGULAR_INTERIOR_CUBE
+			   || elements_tag_[el_id] == ElementType::REGULAR_BOUNDARY_CUBE
+			   || elements_tag_[el_id] == ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE
+			   || elements_tag_[el_id] == ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE
+			   || elements_tag_[el_id] == ElementType::MULTI_SINGULAR_INTERIOR_CUBE
+			   || elements_tag_[el_id] == ElementType::MULTI_SINGULAR_BOUNDARY_CUBE;
 	}
 
 	// -----------------------------------------------------------------------------
 
 	bool Mesh::is_polytope(const int el_id) const
 	{
-		return elements_tag_[el_id] == ElementType::InteriorPolytope
-			   || elements_tag_[el_id] == ElementType::BoundaryPolytope;
+		return elements_tag_[el_id] == ElementType::INTERIOR_POLYTOPE
+			   || elements_tag_[el_id] == ElementType::BOUNDARY_POLYTOPE;
+	}
+
+	void Mesh::update_nodes(const Eigen::VectorXi &in_node_to_node)
+	{
+		if (in_node_to_node.size() <= 0 || node_ids_.empty())
+		{
+			node_ids_.clear();
+			return;
+		}
+
+		const auto tmp = node_ids_;
+
+		for (int n = 0; n < n_vertices(); ++n)
+		{
+			node_ids_[in_node_to_node[n]] = tmp[n];
+		}
+	}
+
+	void Mesh::compute_node_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker)
+	{
+		node_ids_.resize(n_vertices());
+
+		for (int n = 0; n < n_vertices(); ++n)
+		{
+			bool is_boundary = is_boundary_vertex(n);
+			const auto p = point(n);
+			node_ids_[n] = marker(n, p, is_boundary);
+		}
 	}
 
 	void Mesh::load_boundary_ids(const std::string &path)
@@ -388,7 +416,7 @@ namespace polyfem::mesh
 
 	bool Mesh::is_simplex(const int el_id) const
 	{
-		return elements_tag_[el_id] == ElementType::Simplex;
+		return elements_tag_[el_id] == ElementType::SIMPLEX;
 	}
 
 	std::vector<std::pair<int, int>> Mesh::edges() const
@@ -463,6 +491,29 @@ namespace polyfem::mesh
 		const int n_vertices = this->n_vertices();
 
 		elements_tag_.insert(elements_tag_.end(), mesh.elements_tag_.begin(), mesh.elements_tag_.end());
+
+		// --------------------------------------------------------------------
+
+		// Initialize node_ids_ if it is not initialized yet.
+		if (!has_node_ids() && mesh.has_node_ids())
+		{
+			node_ids_.resize(n_vertices);
+			for (int i = 0; i < node_ids_.size(); ++i)
+				node_ids_[i] = get_node_id(i); // results in default if node_ids_ is empty
+		}
+
+		if (mesh.has_node_ids())
+		{
+			node_ids_.insert(node_ids_.end(), mesh.node_ids_.begin(), mesh.node_ids_.end());
+		}
+		else if (has_node_ids()) // && !mesh.has_node_ids()
+		{
+			node_ids_.resize(n_vertices + mesh.n_vertices());
+			for (int i = 0; i < mesh.n_vertices(); ++i)
+				node_ids_[n_vertices + i] = mesh.get_node_id(i); // results in default if node_ids_ is empty
+		}
+
+		assert(node_ids_.empty() || node_ids_.size() == n_vertices + mesh.n_vertices());
 
 		// --------------------------------------------------------------------
 

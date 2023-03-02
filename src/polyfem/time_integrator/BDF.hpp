@@ -17,22 +17,9 @@ namespace polyfem::time_integrator
 
 		/// @brief Set the number of steps parameters from a json object.
 		/// @param params json containing `{"steps": 1}`
-		void set_parameters(const nlohmann::json &params) override;
+		void set_parameters(const json &params) override;
 
-		using ImplicitTimeIntegrator::init;
-
-		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
-		/// @param x_prevs vector of previous solutions
-		/// @param v_prevs vector of previous velocities
-		/// @param a_prevs vector of previous accelerations
-		/// @param dt time step
-		void init(
-			const std::vector<Eigen::VectorXd> &x_prevs,
-			const std::vector<Eigen::VectorXd> &v_prevs,
-			const std::vector<Eigen::VectorXd> &a_prevs,
-			double dt);
-
-		/// @brief Update the time integration quantaties (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
+		/// @brief Update the time integration quantities (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
 		/// @param x new solution vector
 		void update_quantities(const Eigen::VectorXd &x) override;
 
@@ -65,6 +52,12 @@ namespace polyfem::time_integrator
 		/// \f]
 		double acceleration_scaling() const override;
 
+		/// @brief Compute the derivative of the velocity with respect to the solution.
+		/// \f[
+		/// 	\frac{\partial v}{\partial x} = \frac{1}{\beta \Delta t}
+		/// \f]
+		double dv_dx() const override;
+
 		/// @brief Compute \f$\beta\Delta t\f$
 		double beta_dt() const;
 
@@ -81,7 +74,11 @@ namespace polyfem::time_integrator
 		Eigen::VectorXd weighted_sum_v_prevs() const;
 
 	protected:
-		int steps = 1;
+		/// @brief Get the maximum number of steps to use for integration.
+		int max_steps() const override { return max_steps_; }
+
+		/// @brief The maximum number of steps to use for integration.
+		int max_steps_ = 1;
 
 		/// @brief Retrieve the alphas used for BDF with `i` steps.
 		/// @param i number of steps

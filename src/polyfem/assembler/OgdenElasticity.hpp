@@ -1,55 +1,83 @@
 #pragma once
 
+#include "GenericElastic.hpp"
+#include "MatParams.hpp"
+
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
-#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/autogen/auto_eigs.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <Eigen/Dense>
 #include <array>
 
-//attempt at Ogden, incomplete, not used, and not working
-namespace polyfem
+namespace polyfem::assembler
 {
-	namespace assembler
+	class UnconstrainedOgdenElasticity : public GenericElastic
 	{
-		class OgdenElasticity
-		{
-		public:
-			OgdenElasticity();
+	public:
+		UnconstrainedOgdenElasticity();
 
-			Eigen::MatrixXd assemble_hessian(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const;
-			Eigen::VectorXd assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const;
-			double compute_energy(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const;
+		// sets material params
+		void add_multimaterial(const int index, const json &params) override;
 
-			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-			compute_rhs(const AutodiffHessianPt &pt) const;
+		const GenericMatParams &alphas() const { return alphas_; }
+		const GenericMatParams &mus() const { return mus_; }
+		const GenericMatParams &Ds() const { return Ds_; }
 
-			inline int size() const { return size_; }
-			void set_size(const int size);
+		// This macro defines the overriden functions that compute the energy:
+		// template <typename T>
+		// T elastic_energy(const RowVectorNd &p, const int el_id, const DefGradMatrix<T> &def_grad) const override { elastic_energy_T<T>(p, el_id, def_grad); };
+		POLYFEM_OVERRIDE_ELASTIC_ENERGY
 
-			void set_stiffness_tensor(int i, int j, const double val);
-			double stifness_tensor(int i, int j) const;
+	private:
+		template <typename T>
+		T elastic_energy_T(
+			const RowVectorNd &p,
+			const int el_id,
+			const DefGradMatrix<T> &def_grad) const;
 
-			void compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
-			void compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const;
+		GenericMatParams alphas_;
+		GenericMatParams mus_;
+		GenericMatParams Ds_;
+	};
 
-			void add_multimaterial(const int index, const json &params);
+	class IncompressibleOgdenElasticity : public GenericElastic
+	{
+	public:
+		IncompressibleOgdenElasticity();
 
-		private:
-			int size_ = 2;
+		// sets material params
+		void add_multimaterial(const int index, const json &params) override;
 
-			Eigen::VectorXd alphas_;
-			Eigen::VectorXd mus_;
-			Eigen::VectorXd Ds_;
+		/// Coefficient of nth term, where n can range from 1 to 6
+		const GenericMatParams &coefficients() const { return coefficients_; }
+		/// Exponent of nth term, where n can range from 1 to 6
+		const GenericMatParams &expoenents() const { return expoenents_; }
+		/// Bulk modulus
+		const GenericMatParam &bulk_modulus() const { return bulk_modulus_; }
 
-			template <typename T>
-			T compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const;
+		/// Number of terms in the Ogden model
+		int num_terms() const { return coefficients_.size(); }
 
-			void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
-		};
-	} // namespace assembler
-} // namespace polyfem
+		// This macro defines the overriden functions that compute the energy:
+		// template <typename T>
+		// T elastic_energy(const RowVectorNd &p, const int el_id, const DefGradMatrix<T> &def_grad) const override { elastic_energy_T<T>(p, el_id, def_grad); };
+		POLYFEM_OVERRIDE_ELASTIC_ENERGY
+
+	private:
+		template <typename T>
+		T elastic_energy_T(
+			const RowVectorNd &p,
+			const int el_id,
+			const DefGradMatrix<T> &def_grad) const;
+
+		GenericMatParams coefficients_;
+		GenericMatParams expoenents_;
+		GenericMatParam bulk_modulus_;
+	};
+} // namespace polyfem::assembler

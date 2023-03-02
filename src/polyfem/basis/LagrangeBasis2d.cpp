@@ -1,10 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "FEBasis2d.hpp"
+#include "LagrangeBasis2d.hpp"
 
 #include <polyfem/quadrature/TriQuadrature.hpp>
 #include <polyfem/quadrature/QuadQuadrature.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
+
+#include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polyfem/utils/MaybeParallelFor.hpp>
 
@@ -431,7 +433,7 @@ namespace
 			{
 				quad_local_to_global(serendipity, discr_order, mesh, f, discr_orders, element_nodes_id[f], nodes);
 
-				LocalBoundary lb(f, BoundaryType::QuadLine);
+				LocalBoundary lb(f, BoundaryType::QUAD_LINE);
 
 				auto v = quad_vertices_local_to_global(mesh, f);
 				Eigen::Matrix<int, 4, 2> ev;
@@ -465,7 +467,7 @@ namespace
 				ev.row(1) << v[1], v[2];
 				ev.row(2) << v[2], v[0];
 
-				LocalBoundary lb(f, BoundaryType::TriLine);
+				LocalBoundary lb(f, BoundaryType::TRI_LINE);
 
 				for (int i = 0; i < int(ev.rows()); ++i)
 				{
@@ -508,11 +510,11 @@ namespace
 
 					if (mesh.is_cube(f2))
 					{
-						indices = FEBasis2d::quad_edge_local_nodes(discr_order, mesh, index2);
+						indices = LagrangeBasis2d::quad_edge_local_nodes(discr_order, mesh, index2);
 					}
 					else if (mesh.is_simplex(f2))
 					{
-						indices = FEBasis2d::tri_edge_local_nodes(discr_order, mesh, index2);
+						indices = LagrangeBasis2d::tri_edge_local_nodes(discr_order, mesh, index2);
 					}
 					else
 					{
@@ -606,7 +608,7 @@ namespace
 	}
 } // anonymous namespace
 
-Eigen::VectorXi FEBasis2d::tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index)
+Eigen::VectorXi LagrangeBasis2d::tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index)
 {
 	int f = index.face;
 	assert(mesh.is_simplex(f));
@@ -637,7 +639,7 @@ Eigen::VectorXi FEBasis2d::tri_edge_local_nodes(const int p, const Mesh2D &mesh,
 	return result;
 }
 
-Eigen::VectorXi FEBasis2d::quad_edge_local_nodes(const int q, const Mesh2D &mesh, Navigation::Index index)
+Eigen::VectorXi LagrangeBasis2d::quad_edge_local_nodes(const int q, const Mesh2D &mesh, Navigation::Index index)
 {
 	int f = index.face;
 	assert(mesh.is_cube(f));
@@ -670,8 +672,9 @@ Eigen::VectorXi FEBasis2d::quad_edge_local_nodes(const int q, const Mesh2D &mesh
 
 // -----------------------------------------------------------------------------
 
-int FEBasis2d::build_bases(
+int LagrangeBasis2d::build_bases(
 	const Mesh2D &mesh,
+	const std::string &assembler,
 	const int quadrature_order,
 	const int mass_quadrature_order,
 	const int discr_order,
@@ -687,11 +690,12 @@ int FEBasis2d::build_bases(
 	Eigen::VectorXi discr_orders(mesh.n_faces());
 	discr_orders.setConstant(discr_order);
 
-	return build_bases(mesh, quadrature_order, mass_quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+	return build_bases(mesh, assembler, quadrature_order, mass_quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 }
 
-int FEBasis2d::build_bases(
+int LagrangeBasis2d::build_bases(
 	const Mesh2D &mesh,
+	const std::string &assembler,
 	const int quadrature_order,
 	const int mass_quadrature_order,
 	const Eigen::VectorXi &discr_orders,
@@ -753,8 +757,8 @@ int FEBasis2d::build_bases(
 
 		if (mesh.is_cube(e))
 		{
-			const int real_order = std::max(quadrature_order, (discr_order - 1) * 2 + 1);
-			const int real_mass_order = std::max(mass_quadrature_order, discr_order * 2 + 1);
+			const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::CUBE_LAGRANGE, 2);
+			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::CUBE_LAGRANGE, 2);
 			b.set_quadrature([real_order](Quadrature &quad) {
 				QuadQuadrature quad_quadrature;
 				quad_quadrature.get_quadrature(real_order, quad);
@@ -794,8 +798,8 @@ int FEBasis2d::build_bases(
 		}
 		else if (mesh.is_simplex(e))
 		{
-			const int real_order = std::max(quadrature_order, (discr_order - 1) * 2 + 1);
-			const int real_mass_order = std::max(mass_quadrature_order, (discr_order)*2 + 1);
+			const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
+			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
 			b.set_quadrature([real_order](Quadrature &quad) {
 				TriQuadrature tri_quadrature;
 				tri_quadrature.get_quadrature(real_order, quad);
@@ -1147,7 +1151,7 @@ int FEBasis2d::build_bases(
 
 					if (mesh.is_cube(e))
 					{
-						//TODO
+						// TODO
 						assert(false);
 					}
 					else if (mesh.is_simplex(e))

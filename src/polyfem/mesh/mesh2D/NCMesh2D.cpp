@@ -498,7 +498,7 @@ namespace polyfem
 
 			const int n_v = n_vertices();
 			const int n_f = n_faces();
-			
+
 			vertices.reserve(n_v + mesh2d.n_vertices());
 			for (int i = 0; i < mesh2d.n_vertices(); i++)
 			{
@@ -697,11 +697,11 @@ namespace polyfem
 
 		void NCMesh2D::compute_elements_tag()
 		{
-			elements_tag_.assign(n_faces(), ElementType::Simplex);
+			elements_tag_.assign(n_faces(), ElementType::SIMPLEX);
 		}
 		void NCMesh2D::update_elements_tag()
 		{
-			elements_tag_.assign(n_faces(), ElementType::Simplex);
+			elements_tag_.assign(n_faces(), ElementType::SIMPLEX);
 		}
 
 		void NCMesh2D::set_point(const int global_index, const RowVectorNd &p)
@@ -812,7 +812,7 @@ namespace polyfem
 			RowVectorNd min_corner, max_corner;
 			bounding_box(min_corner, max_corner);
 
-			//implement me properly
+			// implement me properly
 			for (int e = 0; e < n_edges(); ++e)
 			{
 				if (!is_boundary_edge(e))
@@ -841,7 +841,7 @@ namespace polyfem
 			boundary_ids_.resize(n_edges());
 			std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
 
-			//implement me properly
+			// implement me properly
 			for (int e = 0; e < n_edges(); ++e)
 			{
 				if (!is_boundary_edge(e))
@@ -893,5 +893,22 @@ namespace polyfem
 				edges[valid_to_all_edge(e)].boundary_id = boundary_ids_[e];
 			}
 		}
+
+		void NCMesh2D::compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker)
+		{
+			boundary_ids_.resize(n_edges());
+
+			for (int e = 0; e < n_edges(); ++e)
+			{
+				bool is_boundary = is_boundary_edge(e);
+				const auto p = edge_barycenter(e);
+
+				std::vector<int> vs = {edge_vertex(e, 0), edge_vertex(e, 1)};
+				std::sort(vs.begin(), vs.end());
+				boundary_ids_[e] = marker(e, vs, p, is_boundary);
+				edges[valid_to_all_edge(e)].boundary_id = boundary_ids_[e];
+			}
+		}
+
 	} // namespace mesh
 } // namespace polyfem

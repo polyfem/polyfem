@@ -2,15 +2,18 @@
 
 #include <Eigen/Dense>
 
-namespace polyfem
+namespace polyfem::quadrature
 {
-	namespace quadrature
+	class Quadrature
 	{
-		class Quadrature
+	public:
+		Eigen::MatrixXd points;
+		Eigen::VectorXd weights;
+
+		int size() const
 		{
-		public:
-			Eigen::MatrixXd points;
-			Eigen::VectorXd weights;
-		};
-	} // namespace quadrature
-} // namespace polyfem
+			assert(points.rows() == weights.size());
+			return points.rows();
+		}
+	};
+} // namespace polyfem::quadrature

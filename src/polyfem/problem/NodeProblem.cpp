@@ -1,5 +1,6 @@
 #include "NodeProblem.hpp"
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -184,7 +185,7 @@ namespace polyfem
 			if (params.contains("dirichlet_boundary"))
 			{
 				boundary_ids_.clear();
-				auto j_boundary = params["dirichlet_boundary"];
+				std::vector<json> j_boundary = utils::json_as_array(params["dirichlet_boundary"]);
 
 				boundary_ids_.resize(j_boundary.size());
 				dirichlet_dimensions_.resize(j_boundary.size());

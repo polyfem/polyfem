@@ -2,8 +2,6 @@
 
 #include "Form.hpp"
 
-#include <polyfem/State.hpp>
-
 #include <polyfem/utils/Types.hpp>
 
 #include <ipc/ipc.hpp>
@@ -19,17 +17,16 @@ namespace polyfem::solver
 	{
 	public:
 		/// @brief Construct a new Friction Form object
-		/// @param state Reference to the simulation state
+		/// @param collision_mesh Reference to the collision mesh
 		/// @param epsv Smoothing factor between static and dynamic friction
 		/// @param mu Global coefficient of friction
 		/// @param dhat Barrier activation distance
-		/// @param barrier_stiffness Barrier stiffness multiplier
 		/// @param broad_phase_method Broad-phase method used for distance computation and collision detection
 		/// @param dt Time step size
 		/// @param contact_form Pointer to contact form; necessary to have the barrier stiffnes, maybe clean me
 		/// @param n_lagging_iters Number of lagging iterations
 		FrictionForm(
-			const State &state,
+			const ipc::CollisionMesh &collision_mesh,
 			const double epsv,
 			const double mu,
 			const double dhat,
@@ -52,7 +49,7 @@ namespace polyfem::solver
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
-		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 	public:
 		/// @brief Initialize lagged fields
@@ -61,8 +58,14 @@ namespace polyfem::solver
 
 		/// @brief Update lagged fields
 		/// @param x Current solution
-		/// @return True able to update the lagged fields
-		bool update_lagging(const Eigen::VectorXd &x, const int iter_num) override;
+		void update_lagging(const Eigen::VectorXd &x, const int iter_num) override;
+
+		/// @brief Update lagged fields
+		/// @param x Current solution
+		void update_lagging(const Eigen::VectorXd &x) { update_lagging(x, -1); };
+
+		/// @brief Get the maximum number of lagging iteration allowable.
+		int max_lagging_iterations() const override { return n_lagging_iters_; }
 
 		/// @brief Does this form require lagging?
 		/// @return True if the form requires lagging
@@ -71,7 +74,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &displaced_surface_prev() const { return displaced_surface_prev_; }
 
 	private:
-		const State &state_; ///< Reference to the simulation state
+		const ipc::CollisionMesh &collision_mesh_;
 
 		const double epsv_;                              ///< Smoothing factor between static and dynamic friction
 		const double mu_;                                ///< Global coefficient of friction

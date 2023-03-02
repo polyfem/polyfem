@@ -14,7 +14,8 @@ namespace polyfem::solver
 		/// @brief Construct a new Inertia Form object
 		/// @param mass Mass matrix
 		/// @param time_integrator Time integrator
-		InertiaForm(const StiffnessMatrix &mass, const time_integrator::ImplicitTimeIntegrator &time_integrator);
+		InertiaForm(const StiffnessMatrix &mass,
+					const time_integrator::ImplicitTimeIntegrator &time_integrator);
 
 	protected:
 		/// @brief Compute the value of the form
@@ -30,7 +31,7 @@ namespace polyfem::solver
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
-		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 	private:
 		const StiffnessMatrix &mass_;                                    ///< Mass matrix

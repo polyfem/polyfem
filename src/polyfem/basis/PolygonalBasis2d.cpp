@@ -1,8 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "PolygonalBasis2d.hpp"
+#include "LagrangeBasis2d.hpp"
+
 #include <polyfem/quadrature/PolygonQuadrature.hpp>
 #include <polyfem/mesh/mesh2D/PolygonUtils.hpp>
-#include <polyfem/basis/FEBasis2d.hpp>
 #include "function/RBFWithLinear.hpp"
 #include "function/RBFWithQuadratic.hpp"
 #include "function/RBFWithQuadraticLagrange.hpp"
@@ -64,8 +65,8 @@ namespace polyfem
 
 			void sample_parametric_edge(const Mesh2D &mesh, Navigation::Index index, int n_samples, Eigen::MatrixXd &samples)
 			{
-				// Eigen::MatrixXd endpoints = FEBasis2d::linear_quad_edge_local_nodes_coordinates(mesh, index);
-				const auto indices = FEBasis2d::quad_edge_local_nodes(1, mesh, index);
+				// Eigen::MatrixXd endpoints = LagrangeBasis2d::linear_quad_edge_local_nodes_coordinates(mesh, index);
+				const auto indices = LagrangeBasis2d::quad_edge_local_nodes(1, mesh, index);
 				assert(mesh.is_cube(index.face));
 				assert(indices.size() == 2);
 				Eigen::MatrixXd tmp;
@@ -366,7 +367,7 @@ namespace polyfem
 					continue;
 				}
 				// No boundary polytope
-				// assert(element_type[e] != ElementType::BoundaryPolytope);
+				// assert(element_type[e] != ElementType::BOUNDARY_POLYTOPE);
 
 				// Kernel distance to polygon boundary
 				const double eps = compute_epsilon(mesh, e);
@@ -403,10 +404,10 @@ namespace polyfem
 
 				// Compute quadrature points for the polygon
 				Quadrature tmp_quadrature;
-				poly_quadr.get_quadrature(collocation_points, quadrature_order, tmp_quadrature);
+				poly_quadr.get_quadrature(collocation_points, quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler_name, 2, AssemblerUtils::BasisType::POLY, 2), tmp_quadrature);
 
 				Quadrature tmp_mass_quadrature;
-				poly_quadr.get_quadrature(collocation_points, quadrature_order, tmp_mass_quadrature);
+				poly_quadr.get_quadrature(collocation_points, mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::POLY, 2), tmp_mass_quadrature);
 
 				b.set_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
 				b.set_mass_quadrature([tmp_mass_quadrature](Quadrature &quad) { quad = tmp_mass_quadrature; });

@@ -2,7 +2,7 @@
 
 namespace polyfem::solver
 {
-	FullNLProblem::FullNLProblem(std::vector<std::shared_ptr<Form>> &forms)
+	FullNLProblem::FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms)
 		: forms_(forms)
 	{
 	}
@@ -25,12 +25,18 @@ namespace polyfem::solver
 			f->init_lagging(x);
 	}
 
-	bool FullNLProblem::update_lagging(const TVector &x, const int iter_num)
+	void FullNLProblem::update_lagging(const TVector &x, const int iter_num)
 	{
 		for (auto &f : forms_)
-			if (!f->update_lagging(x, iter_num))
-				return false;
-		return true;
+			f->update_lagging(x, iter_num);
+	}
+
+	int FullNLProblem::max_lagging_iterations() const
+	{
+		int max_lagging_iterations = 1;
+		for (auto &f : forms_)
+			max_lagging_iterations = std::max(max_lagging_iterations, f->max_lagging_iterations());
+		return max_lagging_iterations;
 	}
 
 	bool FullNLProblem::uses_lagging() const

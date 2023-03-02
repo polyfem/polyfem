@@ -55,6 +55,9 @@
 # option(POLYSOLVE_WITH_SPECTRA      "Enable computing spectrum"                  OFF)
 # option(POLYSOLVE_LARGE_INDEX       "Build for large indices"                    OFF)
 
+# set(POLYFEM_DATA_DIR "" CACHE PATH "Where should polyfem download and look for test data?")
+# option(POLYFEM_USE_EXISTING_DATA_DIR "Use and existing data directory instead of downloading it" OFF)
+
 ################################################################################
 # FetchContent Options
 ################################################################################
@@ -82,7 +85,6 @@
 # set(FETCHCONTENT_SOURCE_DIR_MKL-STATIC "" CACHE PATH "When not empty, overrides where to find pre-populated content for mkl-static")
 # set(FETCHCONTENT_SOURCE_DIR_MSHIO "" CACHE PATH "When not empty, overrides where to find pre-populated content for mshio")
 # set(FETCHCONTENT_SOURCE_DIR_NLOHMANN_JSON "" CACHE PATH "When not empty, overrides where to find pre-populated content for nlohmann_json")
-# set(FETCHCONTENT_SOURCE_DIR_POLYFEM_DATA "" CACHE PATH "When not empty, overrides where to find pre-populated content for polyfem_data")
 # set(FETCHCONTENT_SOURCE_DIR_POLYFEM_GEOGRAM "" CACHE PATH "When not empty, overrides where to find pre-populated content for polyfem_geogram")
 # set(FETCHCONTENT_SOURCE_DIR_POLYSOLVE "" CACHE PATH "When not empty, overrides where to find pre-populated content for polysolve")
 # set(FETCHCONTENT_SOURCE_DIR_SANITIZER "" CACHE PATH "When not empty, overrides where to find pre-populated content for sanitizer")
