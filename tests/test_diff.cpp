@@ -130,12 +130,14 @@ namespace
 
 			for (auto &v2s : variable_to_simulations)
 				v2s->update(x + theta * dt);
+			state.build_basis();
 			solve_pde(state);
 			obj.solution_changed(x + theta * dt);
 			double next_functional_val = obj.value(x + theta * dt);
 
 			for (auto &v2s : variable_to_simulations)
 				v2s->update(x - theta * dt);
+			state.build_basis();
 			solve_pde(state);
 			obj.solution_changed(x - theta * dt);
 			double former_functional_val = obj.value(x - theta * dt);
@@ -385,15 +387,19 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 	load_json("opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
 
-	std::shared_ptr<State> state_ptr = create_state(in_args, spdlog::level::level_enum::info);
+	std::shared_ptr<State> state_ptr = create_state(in_args, spdlog::level::level_enum::err);
 	State &state = *state_ptr;
 
 	Eigen::Matrix2d Affine;
 	Affine << 1.2, 0, 0, 1.5;
 
 	json iso_options;
-	iso_options["maxArea"] = 1e-5;
+	iso_options["maxArea"] = 1e-3;
 	iso_options["dump_shape_velocity"] = "tmp-vel.msh";
+	// iso_options["curveSimplifier"] = "NONE";
+	// iso_options["forceMaxBdryEdgeLen"] = 0.001;
+	iso_options["marchingSquaresGridSize"] = 1024;
+	iso_options["forceMSGridSize"] = true;
 
 	std::vector<std::shared_ptr<Parametrization>> map_list = {
 		std::make_shared<AppendConstantMap>(8, 0.01),
