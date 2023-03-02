@@ -10,7 +10,6 @@ include(ExternalProject)
 set(POLYFEM_DATA_DIR "${PROJECT_SOURCE_DIR}/data/" CACHE PATH "Where should polyfem download and look for test data?")
 option(POLYFEM_USE_EXISTING_DATA_DIR "Use and existing data directory instead of downloading it" OFF)
 
-
 if(POLYFEM_USE_EXISTING_DATA_DIR)
     ExternalProject_Add(
         polyfem_data_download
