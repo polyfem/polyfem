@@ -2217,15 +2217,16 @@
         "type_name": "NeoHookean",
         "required": [
             "type",
-            "alphas",
-            "mus",
-            "Ds"
+            "lambda",
+            "mu"
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "phi",
+            "psi"
         ],
-        "doc": "Material Parameters including ID, for [Ogden](https://en.wikipedia.org/wiki/Ogden_hyperelastic_model)."
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
     },
     {
         "pointer": "/materials/*",
