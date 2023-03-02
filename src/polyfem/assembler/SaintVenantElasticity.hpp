@@ -1,18 +1,9 @@
 #pragma once
 
-#include "Assembler.hpp"
-#include "MatParams.hpp"
-
-#include <polyfem/Common.hpp>
-#include <polyfem/utils/ElasticityUtils.hpp>
-
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
-#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
-#include <polyfem/utils/Types.hpp>
-
-#include <Eigen/Dense>
-#include <array>
+#include <polyfem/utils/ElasticityUtils.hpp>
 
 namespace polyfem::assembler
 {
@@ -22,15 +13,18 @@ namespace polyfem::assembler
 	public:
 		SaintVenantElasticity();
 
-		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const;
-		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const;
-		double compute_energy(const NonLinearAssemblerData &data) const;
+		using NLAssembler::assemble_energy;
+		using NLAssembler::assemble_grad;
+		using NLAssembler::assemble_hessian;
+
+		double compute_energy(const NonLinearAssemblerData &data) const override;
+		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const override;
+		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 		compute_rhs(const AutodiffHessianPt &pt) const;
 
-		inline int size() const { return size_; }
-		void set_size(const int size);
+		void set_size(const int size) override;
 
 		void set_stiffness_tensor(int i, int j, const double val);
 		double stifness_tensor(int i, int j) const;
@@ -41,8 +35,6 @@ namespace polyfem::assembler
 		void add_multimaterial(const int index, const json &params);
 
 	private:
-		int size_ = -1;
-
 		ElasticityTensor elasticity_tensor_;
 
 		template <typename T, unsigned long N>

@@ -2,10 +2,7 @@
 
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
-
 #include <polyfem/utils/ExpressionValue.hpp>
-
-#include <Eigen/Dense>
 
 namespace polyfem::assembler
 {

@@ -1,13 +1,8 @@
 #pragma once
 
-#include "Problem.hpp"
+#include <polyfem/assembler/Problem.hpp>
 #include <polyfem/utils/ExpressionValue.hpp>
 #include <polyfem/utils/Interpolation.hpp>
-
-#include <Eigen/Dense>
-
-#include <array>
-#include <vector>
 
 namespace polyfem
 {

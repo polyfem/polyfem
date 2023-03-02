@@ -1,12 +1,9 @@
 #pragma once
 
-#include <polyfem/Common.hpp>
+#include <polyfem/assembler/AssemblyValsCache.hpp>
+#include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
-
-#include <vector>
-#include <string>
-#include <memory>
 
 namespace polyfem::assembler
 {

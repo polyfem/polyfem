@@ -1,28 +1,20 @@
 #pragma once
 
-#include "AssemblyValsCache.hpp"
-
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/AssemblerData.hpp>
+#include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
-#include <polyfem/utils/ElasticityUtils.hpp>
-
-#include <Eigen/Sparse>
-#include <vector>
-#include <iostream>
-#include <cmath>
-#include <memory>
 
 // this casses are instantiated in the cpp, cannot be used with generic assembler
 // without adding template instantiation
 namespace polyfem::assembler
 {
-	class GenericAssembler
+	class Assembler
 	{
 	public:
-		virtual ~GenericAssembler() = default;
+		virtual ~Assembler() = default;
 
 		int size() const { return size_; }
-		void set_size(const int size) { size_ = size; }
+		virtual void set_size(const int size) { size_ = size; }
 
 	protected:
 		int size_ = -1;
@@ -31,11 +23,11 @@ namespace polyfem::assembler
 	// assemble matrix based on the local assembler
 	// local assembler is eg Laplce, LinearElasticy etc
 	template <typename LocalBlockMatrix>
-	class Assembler : public GenericAssembler // TODO: rename to LinearAssembler
+	class LinearAssembler : virtual public Assembler
 	{
 	public:
-		Assembler();
-		virtual ~Assembler() = default;
+		LinearAssembler();
+		virtual ~LinearAssembler() = default;
 
 		// assembler stiffness matrix, is the mesh is volumetric, number of bases and bases (FE and geom)
 		// gbases and bases can be the same (ie isoparametric)
@@ -52,14 +44,15 @@ namespace polyfem::assembler
 		virtual LocalBlockMatrix assemble(const LinearAssemblerData &data) const = 0;
 	};
 
-	using ScalarAssembler = Assembler<Eigen::Matrix<double, 1, 1>>;
-	using TensorAssembler = Assembler<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>>;
+	using ScalarLinearAssembler = LinearAssembler<Eigen::Matrix<double, 1, 1>>;
+	using TensorLinearAssembler = LinearAssembler<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>>;
 
 	// mixed formulation assembler
 	template <typename LocalBlockMatrix>
-	class MixedAssembler : public GenericAssembler
+	class MixedAssembler : virtual public Assembler
 	{
 	public:
+		MixedAssembler();
 		virtual ~MixedAssembler() = default;
 
 		// this assembler takes two bases: psi_bases are the scalar ones, phi_bases are the tensor ones
@@ -82,14 +75,17 @@ namespace polyfem::assembler
 		virtual LocalBlockMatrix assemble(const MixedAssemblerData &data) const = 0;
 	};
 
+	using ScalarMixedAssembler = MixedAssembler<Eigen::Matrix<double, 1, 1>>;
+	using TensorMixedAssembler = MixedAssembler<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>>;
+
 	// non-linear assembler (eg neohookean elasticity)
-	class NLAssembler : public GenericAssembler
+	class NLAssembler : virtual public Assembler
 	{
 	public:
 		virtual ~NLAssembler() = default;
 
 		// assemble energy
-		double assemble(
+		double assemble_energy(
 			const bool is_volume,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,

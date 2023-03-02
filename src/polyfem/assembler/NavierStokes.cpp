@@ -1,25 +1,16 @@
 #include "NavierStokes.hpp"
 
-#include <polyfem/basis/Basis.hpp>
-#include <polyfem/utils/ElasticityUtils.hpp>
-
 namespace polyfem::assembler
 {
 	template <bool full_gradient>
 	void NavierStokesVelocity<full_gradient>::add_multimaterial(const int index, const json &params)
 	{
-		assert(size_ == 2 || size_ == 3);
+		assert(size() == 2 || size() == 3);
 
 		if (params.count("viscosity"))
 		{
 			viscosity_ = params["viscosity"];
 		}
-	}
-
-	template <bool full_gradient>
-	void NavierStokesVelocity<full_gradient>::set_size(const int size)
-	{
-		size_ = size;
 	}
 
 	template <bool full_gradient>

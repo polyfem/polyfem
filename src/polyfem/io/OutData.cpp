@@ -5,6 +5,7 @@
 #include <polyfem/State.hpp>
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/MatParams.hpp>
 
 #include <polyfem/basis/ElementBases.hpp>
 

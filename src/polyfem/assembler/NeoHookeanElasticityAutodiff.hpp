@@ -1,17 +1,7 @@
 #pragma once
 
-#include "MatParams.hpp"
-#include "GenericElastic.hpp"
-#include <polyfem/utils/Types.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
-
-#include <polyfem/Common.hpp>
-
-#include <Eigen/Dense>
-
-#include <functional>
-#include <iostream>
-#include <vector>
+#include <polyfem/assembler/GenericElastic.hpp>
+#include <polyfem/assembler/MatParams.hpp>
 
 /// Used for test only
 namespace polyfem::assembler

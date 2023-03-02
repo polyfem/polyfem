@@ -1,7 +1,6 @@
 #include "OgdenElasticity.hpp"
 
-#include <polyfem/utils/Logger.hpp>
-#include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/autogen/auto_eigs.hpp>
 
 namespace polyfem::assembler
 {

@@ -1,16 +1,9 @@
 #pragma once
 
-#include "AssemblerUtils.hpp"
-
+#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/mesh/Mesh.hpp>
-
-#include <polyfem/Common.hpp>
-
-#include <vector>
-#include <Eigen/Dense>
-#include <memory>
 
 namespace polyfem
 {

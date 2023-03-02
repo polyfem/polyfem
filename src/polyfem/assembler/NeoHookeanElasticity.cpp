@@ -1,10 +1,6 @@
 #include "NeoHookeanElasticity.hpp"
 
-#include <polyfem/basis/Basis.hpp>
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
-
-#include <polyfem/utils/MatrixUtils.hpp>
-#include <igl/Timer.h>
 
 namespace polyfem::assembler
 {
@@ -14,14 +10,9 @@ namespace polyfem::assembler
 
 	void NeoHookeanElasticity::add_multimaterial(const int index, const json &params)
 	{
-		assert(size_ == 2 || size_ == 3);
+		assert(size() == 2 || size() == 3);
 
-		params_.add_multimaterial(index, params, size_ == 3);
-	}
-
-	void NeoHookeanElasticity::set_size(const int size)
-	{
-		size_ = size;
+		params_.add_multimaterial(index, params, size() == 3);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
@@ -32,7 +23,7 @@ namespace polyfem::assembler
 
 		double lambda, mu;
 		// TODO!
-		params_.lambda_mu(0, 0, 0, pt(0).getValue(), pt(1).getValue(), size_ == 2 ? 0. : pt(2).getValue(), 0, lambda, mu);
+		params_.lambda_mu(0, 0, 0, pt(0).getValue(), pt(1).getValue(), size() == 2 ? 0. : pt(2).getValue(), 0, lambda, mu);
 
 		if (size() == 2)
 			autogen::neo_hookean_2d_function(pt, lambda, mu, res);

@@ -1,9 +1,5 @@
 #include "Bilaplacian.hpp"
 
-#include <polyfem/basis/Basis.hpp>
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
-#include <polyfem/utils/ElasticityUtils.hpp>
-
 namespace polyfem::assembler
 {
 	Eigen::Matrix<double, 1, 1>

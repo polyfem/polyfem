@@ -1,19 +1,9 @@
 #pragma once
 
-#include "Assembler.hpp"
-#include "AssemblerData.hpp"
-#include "MatParams.hpp"
-
-#include <polyfem/Common.hpp>
-#include <polyfem/utils/ElasticityUtils.hpp>
-
-#include <polyfem/basis/ElementBases.hpp>
-
+#include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
-#include <polyfem/utils/Types.hpp>
-
-#include <Eigen/Dense>
-#include <array>
+#include <polyfem/utils/ElasticityUtils.hpp>
 
 // non linear NeoHookean material model
 namespace polyfem::assembler
@@ -23,18 +13,18 @@ namespace polyfem::assembler
 	public:
 		NeoHookeanElasticity();
 
-		// energy, gradient, and hessian used in newton method
-		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const;
-		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const;
+		using NLAssembler::assemble_energy;
+		using NLAssembler::assemble_grad;
+		using NLAssembler::assemble_hessian;
 
-		double compute_energy(const NonLinearAssemblerData &data) const;
+		// energy, gradient, and hessian used in newton method
+		double compute_energy(const NonLinearAssemblerData &data) const override;
+		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const override;
+		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
 
 		// rhs for fabbricated solution, compute with automatic sympy code
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 		compute_rhs(const AutodiffHessianPt &pt) const;
-
-		inline int size() const { return size_; }
-		void set_size(const int size);
 
 		// von mises and stress tensor
 		void compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
@@ -48,8 +38,6 @@ namespace polyfem::assembler
 		void set_params(const LameParameters &params) { params_ = params; }
 
 	private:
-		int size_ = -1;
-
 		LameParameters params_;
 
 		// utility function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian

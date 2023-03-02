@@ -79,14 +79,14 @@ namespace polyfem::assembler
 	} // namespace
 
 	template <typename LocalBlockMatrix>
-	Assembler<LocalBlockMatrix>::Assembler()
+	LinearAssembler<LocalBlockMatrix>::LinearAssembler()
 	{
-		if constexpr (std::is_same<LocalBlockMatrix, Eigen::Matrix<double, 1, 1>>::value())
+		if constexpr (std::is_same<LocalBlockMatrix, Eigen::Matrix<double, 1, 1>>::value)
 			set_size(1);
 	}
 
 	template <typename LocalBlockMatrix>
-	void Assembler<LocalBlockMatrix>::assemble(
+	void LinearAssembler<LocalBlockMatrix>::assemble(
 		const bool is_volume,
 		const int n_basis,
 		const std::vector<ElementBases> &bases,
@@ -300,6 +300,13 @@ namespace polyfem::assembler
 	}
 
 	template <typename LocalBlockMatrix>
+	MixedAssembler<LocalBlockMatrix>::MixedAssembler()
+	{
+		if constexpr (std::is_same<LocalBlockMatrix, Eigen::Matrix<double, 1, 1>>::value)
+			set_size(1);
+	}
+
+	template <typename LocalBlockMatrix>
 	void MixedAssembler<LocalBlockMatrix>::assemble(
 		const bool is_volume,
 		const int n_psi_basis,
@@ -405,6 +412,43 @@ namespace polyfem::assembler
 
 		// stiffness.resize(n_basis*size(), n_basis*size());
 		// stiffness.setFromTriplets(entries.begin(), entries.end());
+	}
+
+	double NLAssembler::assemble_energy(
+		const bool is_volume,
+		const std::vector<ElementBases> &bases,
+		const std::vector<ElementBases> &gbases,
+		const AssemblyValsCache &cache,
+		const double dt,
+		const Eigen::MatrixXd &displacement,
+		const Eigen::MatrixXd &displacement_prev) const
+	{
+		auto storage = create_thread_storage(LocalThreadScalarStorage());
+		const int n_bases = int(bases.size());
+
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
+			ElementAssemblyValues &vals = local_storage.vals;
+
+			for (int e = start; e < end; ++e)
+			{
+				cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+				const Quadrature &quadrature = vals.quadrature;
+
+				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+				local_storage.da = vals.det.array() * quadrature.weights.array();
+
+				const double val = compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				local_storage.val += val;
+			}
+		});
+
+		double res = 0;
+		// Serially merge local storages
+		for (const LocalThreadScalarStorage &local_storage : storage)
+			res += local_storage.val;
+		return res;
 	}
 
 	void NLAssembler::assemble_grad(
@@ -612,40 +656,9 @@ namespace polyfem::assembler
 		logger().trace("done merge assembly {}s...", timerg.getElapsedTime());
 	}
 
-	double NLAssembler::assemble(
-		const bool is_volume,
-		const std::vector<ElementBases> &bases,
-		const std::vector<ElementBases> &gbases,
-		const AssemblyValsCache &cache,
-		const double dt,
-		const Eigen::MatrixXd &displacement,
-		const Eigen::MatrixXd &displacement_prev) const
-	{
-		auto storage = create_thread_storage(LocalThreadScalarStorage());
-		const int n_bases = int(bases.size());
+	template class LinearAssembler<Eigen::Matrix<double, 1, 1>>;
+	template class LinearAssembler<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>>;
+	template class MixedAssembler<Eigen::Matrix<double, 1, 1>>;
+	template class MixedAssembler<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>>;
 
-		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
-			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
-			ElementAssemblyValues &vals = local_storage.vals;
-
-			for (int e = start; e < end; ++e)
-			{
-				cache.compute(e, is_volume, bases[e], gbases[e], vals);
-
-				const Quadrature &quadrature = vals.quadrature;
-
-				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-				local_storage.da = vals.det.array() * quadrature.weights.array();
-
-				const double val = compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
-				local_storage.val += val;
-			}
-		});
-
-		double res = 0;
-		// Serially merge local storages
-		for (const LocalThreadScalarStorage &local_storage : storage)
-			res += local_storage.val;
-		return res;
-	}
 } // namespace polyfem::assembler

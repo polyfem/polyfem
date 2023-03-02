@@ -1,11 +1,5 @@
 #include "GenericElastic.hpp"
 
-#include "MooneyRivlinElasticity.hpp"
-#include "OgdenElasticity.hpp"
-#include "NeoHookeanElasticityAutodiff.hpp"
-
-#include <polyfem/basis/Basis.hpp>
-
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::assembler
@@ -99,6 +93,11 @@ namespace polyfem::assembler
 		}
 	}
 
+	double GenericElastic::compute_energy(const NonLinearAssemblerData &data) const
+	{
+		return compute_energy_aux<double>(data);
+	}
+
 	Eigen::VectorXd GenericElastic::assemble_grad(const NonLinearAssemblerData &data) const
 	{
 		const int n_bases = data.vals.basis_values.size();
@@ -132,10 +131,5 @@ namespace polyfem::assembler
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(data); });
-	}
-
-	double GenericElastic::compute_energy(const NonLinearAssemblerData &data) const
-	{
-		return compute_energy_aux<double>(data);
 	}
 } // namespace polyfem::assembler

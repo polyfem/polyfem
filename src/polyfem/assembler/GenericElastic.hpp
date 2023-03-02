@@ -1,17 +1,8 @@
 #pragma once
 
-#include "Assembler.hpp"
-#include "AssemblerData.hpp"
-#include "ElasticEnergyMacros.hpp"
-
-#include <polyfem/Common.hpp>
-
+#include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/assembler/ElasticEnergyMacros.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
-
-#include <polyfem/utils/AutodiffTypes.hpp>
-
-#include <Eigen/Dense>
-#include <functional>
 
 // non linear NeoHookean material model
 namespace polyfem::assembler
@@ -22,11 +13,14 @@ namespace polyfem::assembler
 		GenericElastic();
 		virtual ~GenericElastic() = default;
 
-		// energy, gradient, and hessian used in newton method
-		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const;
-		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const;
+		using NLAssembler::assemble_energy;
+		using NLAssembler::assemble_grad;
+		using NLAssembler::assemble_hessian;
 
-		double compute_energy(const NonLinearAssemblerData &data) const;
+		// energy, gradient, and hessian used in newton method
+		double compute_energy(const NonLinearAssemblerData &data) const override;
+		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
+		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const override;
 
 		// rhs for fabbricated solution, compute with automatic sympy code
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
