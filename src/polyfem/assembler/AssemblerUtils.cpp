@@ -989,18 +989,46 @@ namespace polyfem
 			{
 				// NOTE: This assumes unconstrained_ogden_elasticity_ will stay alive
 
-				const Eigen::VectorXd &alphas = unconstrained_ogden_elasticity_->alphas();
-				const Eigen::VectorXd &mus = unconstrained_ogden_elasticity_->mus();
-				const Eigen::VectorXd &Ds = unconstrained_ogden_elasticity_->Ds();
+				const auto &alphas = unconstrained_ogden_elasticity_->alphas();
+				const auto &mus = unconstrained_ogden_elasticity_->mus();
+				const auto &Ds = unconstrained_ogden_elasticity_->Ds();
 
 				for (int i = 0; i < alphas.size(); ++i)
-					res[fmt::format("alpha_{}", i)] = [&alphas, i](const RowVectorNd &, const RowVectorNd &, double, int) { return alphas[i]; };
+					res[fmt::format("alpha_{}", i)] = [&alphas, i](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+						return alphas[i](p, t, e);
+					};
 
 				for (int i = 0; i < mus.size(); ++i)
-					res[fmt::format("mu_{}", i)] = [&mus, i](const RowVectorNd &, const RowVectorNd &, double, int) { return mus[i]; };
+					res[fmt::format("mu_{}", i)] = [&mus, i](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+						return mus[i](p, t, e);
+					};
 
 				for (int i = 0; i < Ds.size(); ++i)
-					res[fmt::format("D_{}", i)] = [&Ds, i](const RowVectorNd &, const RowVectorNd &, double, int) { return Ds[i]; };
+					res[fmt::format("D_{}", i)] = [&Ds, i](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+						return Ds[i](p, t, e);
+					};
+			}
+			else if (assembler == "IncompressibleOgden")
+			{
+				// NOTE: This assumes incompressible_ogden_elasticity_.local_assembler() will stay alive
+
+				const auto &coefficients = incompressible_ogden_elasticity_.local_assembler().coefficients();
+				const auto &expoenents = incompressible_ogden_elasticity_.local_assembler().expoenents();
+				const auto &k = incompressible_ogden_elasticity_.local_assembler().bulk_modulus();
+
+				for (int i = 0; i < coefficients.size(); ++i)
+					res[fmt::format("c_{}", i)] = [&coefficients, i](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+						return coefficients[i](p, t, e);
+					};
+
+				for (int i = 0; i < expoenents.size(); ++i)
+					res[fmt::format("m_{}", i)] = [&expoenents, i](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+						return expoenents[i](p, t, e);
+					};
+
+				res["k"] = [&k](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+					return k(p, t, e);
+				};
 			}
 			else if (assembler == "IncompressibleOgden")
 			{

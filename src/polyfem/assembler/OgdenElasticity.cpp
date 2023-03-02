@@ -5,33 +5,16 @@
 
 namespace polyfem::assembler
 {
-	namespace
-	{
-		void set_from_json(const json &j, Eigen::VectorXd &v)
-		{
-			if (j.is_array())
-				v = j.get<Eigen::VectorXd>();
-			else
-				v.setConstant(1, j.get<double>());
-		}
-	} // namespace
-
 	UnconstrainedOgdenElasticity::UnconstrainedOgdenElasticity()
+		: alphas_("alphas"), mus_("mus"), Ds_("Ds")
 	{
-		alphas_.setOnes(1);
-		mus_.setOnes(1);
-		Ds_.setOnes(1);
 	}
 
 	void UnconstrainedOgdenElasticity::add_multimaterial(const int index, const json &params)
 	{
-		if (params.contains("alphas"))
-			set_from_json(params["alphas"], alphas_);
-		if (params.contains("mus"))
-			set_from_json(params["mus"], mus_);
-		if (params.contains("mus"))
-			set_from_json(params["Ds"], Ds_);
-
+		alphas_.add_multimaterial(index, params);
+		mus_.add_multimaterial(index, params);
+		Ds_.add_multimaterial(index, params);
 		assert(alphas_.size() == mus_.size());
 		assert(alphas_.size() == Ds_.size());
 	}
@@ -42,15 +25,22 @@ namespace polyfem::assembler
 		const int el_id,
 		const DefGradMatrix<T> &def_grad) const
 	{
+		constexpr double t = 0; // TODO if we want to allow material that varys over time
 
 		Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> eigs;
 
 		if (size() == 2)
+		{
+			// No need to symmetrize F to compute eigen values analytically
 			autogen::eigs_2d<T>(def_grad, eigs);
-		else if (size() == 3)
-			autogen::eigs_3d<T>(def_grad, eigs);
+		}
 		else
-			assert(false);
+		{
+			assert(size() == 3);
+			// Symmetrize F to compute eigen values analytically
+			autogen::eigs_3d<T>(def_grad.transpose() * def_grad, eigs);
+			eigs = sqrt(eigs.array());
+		}
 
 		const T J = utils::determinant(def_grad);
 		const T Jdenom = pow(J, -1. / size());
@@ -62,8 +52,8 @@ namespace polyfem::assembler
 		for (long N = 0; N < alphas_.size(); ++N)
 		{
 			auto tmp = T(-size());
-			const double alpha = alphas_(N);
-			const double mu = mus_(N);
+			const double alpha = alphas_[N](p, t, el_id);
+			const double mu = mus_[N](p, t, el_id);
 
 			for (long i = 0; i < eigs.size(); ++i)
 				tmp += pow(eigs(i), alpha);
@@ -73,7 +63,7 @@ namespace polyfem::assembler
 
 		for (long N = 0; N < Ds_.size(); ++N)
 		{
-			const double D = Ds_(N);
+			const double D = Ds_[N](p, t, el_id);
 
 			val += 1. / D * pow(J - T(1), 2 * (N + 1));
 		}
@@ -84,21 +74,15 @@ namespace polyfem::assembler
 	// =========================================================================
 
 	IncompressibleOgdenElasticity::IncompressibleOgdenElasticity()
+		: coefficients_("c"), expoenents_("m"), bulk_modulus_("k")
 	{
-		coefficients_.setOnes(1);
-		expoenents_.setOnes(1);
-		bulk_modulus_ = 1.0;
 	}
 
 	void IncompressibleOgdenElasticity::add_multimaterial(const int index, const json &params)
 	{
-		if (params.contains("c"))
-			set_from_json(params["c"], coefficients_);
-		if (params.contains("m"))
-			set_from_json(params["m"], expoenents_);
-		if (params.contains("k"))
-			bulk_modulus_ = params["k"];
-
+		coefficients_.add_multimaterial(index, params);
+		expoenents_.add_multimaterial(index, params);
+		bulk_modulus_.add_multimaterial(index, params);
 		assert(coefficients_.size() == expoenents_.size());
 	}
 
@@ -108,6 +92,8 @@ namespace polyfem::assembler
 		const int el_id,
 		const DefGradMatrix<T> &def_grad) const
 	{
+		constexpr double t = 0; // TODO if we want to allow material that varys over time
+
 		Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> eigs;
 
 		const T J = polyfem::utils::determinant(def_grad);
@@ -127,8 +113,8 @@ namespace polyfem::assembler
 		T val = T(0);
 		for (long i = 0; i < num_terms(); ++i)
 		{
-			const double c = coefficients_[i];
-			const double m = expoenents_[i];
+			const double c = coefficients_[i](p, t, el_id);
+			const double m = expoenents_[i](p, t, el_id);
 
 			auto tmp = T(-size());
 			for (long j = 0; j < eigs.size(); ++j)
@@ -136,7 +122,7 @@ namespace polyfem::assembler
 
 			val += c / (m * m) * tmp;
 		}
-		val += 0.5 * bulk_modulus() * log_J * log_J;
+		val += 0.5 * bulk_modulus_(p, t, el_id) * log_J * log_J;
 
 		return val;
 	}
