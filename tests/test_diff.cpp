@@ -16,6 +16,7 @@
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
+#include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
 
 #include <catch2/catch.hpp>
 #include <math.h>
@@ -367,6 +368,7 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 
 	for (auto &v2s : variable_to_simulations)
 		v2s->update(x);
+	state.build_basis();
 	solve_pde(state);
 
 	verify_adjoint(variable_to_simulations, obj, state, x, theta, 1e-4, 1e-6);
@@ -418,6 +420,7 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 
 	for (auto &v2s : variable_to_simulations)
 		v2s->update(x);
+	state.build_basis();
 	solve_pde(state);
 
 	verify_adjoint(variable_to_simulations, obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 5e-4);
@@ -458,6 +461,44 @@ TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
 	Eigen::VectorXd x = utils::flatten(V);
 
 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 1e-5);
+}
+
+TEST_CASE("shape-neumann-nodes", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+	json in_args;
+	load_json(path + "shape-neumann-nodes.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
+
+	json opt_args;
+	load_json(path + "shape-neumann-nodes-opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
+
+	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	// variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, VariableToBoundaryNodes({}, *state_ptr, 2)));
+
+	std::shared_ptr<StaticForm> obj_aux = std::make_shared<StressNormForm>(variable_to_simulations, state, opt_args["functionals"][0]);
+	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
+
+	auto velocity = [](const Eigen::MatrixXd &position) {
+		auto vel = position;
+		for (int i = 0; i < vel.size(); i++)
+		{
+			vel(i) = (rand() % 1000) / 1000.0;
+		}
+		return vel;
+	};
+	Eigen::MatrixXd velocity_discrete;
+	// sample_field(state, velocity, velocity_discrete);
+
+	Eigen::VectorXd x(4);
+	x << -0.5, 1.06,
+		0.5, 1.06;
+	velocity_discrete = velocity(x);
+
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 1e-3);
 }
 
 TEST_CASE("homogenize-stress", "[adjoint_method]")

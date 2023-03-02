@@ -2,14 +2,18 @@
 
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/BoundarySampler.hpp>
 
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
+#include <polyfem/utils/Logger.hpp>
+
 namespace polyfem::solver
 {
-	namespace {
+	namespace
+	{
 		class LocalThreadVecStorage
 		{
 		public:
@@ -23,7 +27,7 @@ namespace polyfem::solver
 				vec.setZero();
 			}
 		};
-	}
+	} // namespace
 	BodyForm::BodyForm(const int ndof,
 					   const int n_pressure_bases,
 					   const std::vector<int> &boundary_nodes,
@@ -141,6 +145,115 @@ namespace polyfem::solver
 					for (auto &v : gvals.basis_values)
 					{
 						local_storage.vec.block(v.global[0].index * dim, 0, dim, 1) += value * v.grad_t_m.row(q).transpose();
+					}
+				}
+			}
+		});
+
+		utils::maybe_parallel_for(local_neumann_boundary_.size(), [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+			Eigen::MatrixXd uv, points, normals;
+			Eigen::VectorXd weights;
+			Eigen::VectorXi global_primitive_ids;
+			assembler::ElementAssemblyValues vals;
+
+			for (int lb_id = start; lb_id < end; ++lb_id)
+			{
+				const auto &lb = local_neumann_boundary_[lb_id];
+				const int e = lb.element_id();
+
+				utils::BoundarySampler::boundary_quadrature(lb, n_boundary_samples_, rhs_assembler_.mesh(), false, uv, points, normals, weights, global_primitive_ids);
+
+				vals.compute(e, rhs_assembler_.mesh().is_volume(), points, gbases[e], gbases[e]);
+
+				Eigen::MatrixXd neumann_val;
+				rhs_assembler_.problem().neumann_bc(rhs_assembler_.mesh(), global_primitive_ids, uv, vals.val, normals, 0, neumann_val);
+
+				for (int i = 0; i < lb.size(); i++)
+				{
+					const int global_primitive_id = lb.global_primitive_id(i);
+
+					Eigen::MatrixXd p, grad_p;
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint, p, grad_p);
+
+					normals = normals * vals.jac_it[0]; // assuming linear geometry
+
+					const auto nodes = gbases[e].local_nodes_for_primitive(lb.global_primitive_id(i), rhs_assembler_.mesh());
+
+					if (nodes.size() != dim)
+						log_and_throw_error("Only linear geometry is supported in differentiable surface integral functional!");
+
+					for (long n = 0; n < nodes.size(); ++n)
+					{
+						const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
+
+						Eigen::VectorXd value(weights.size());
+						for (int q = 0; q < weights.size(); ++q)
+						{
+							value(q) = p.row(q).dot(neumann_val.row(q)) * vals.det(q) * weights(q);
+						}
+
+						// integrate j * div(gbases) over the whole boundary
+						for (int d = 0; d < dim; d++)
+						{
+							double velocity_div = 0;
+							if (rhs_assembler_.mesh().is_volume())
+							{
+								Eigen::Vector3d dr_du = gbases[e].bases[nodes(1)].global()[0].node - gbases[e].bases[nodes(0)].global()[0].node;
+								Eigen::Vector3d dr_dv = gbases[e].bases[nodes(2)].global()[0].node - gbases[e].bases[nodes(0)].global()[0].node;
+
+								// compute dtheta
+								Eigen::Vector3d dtheta_du, dtheta_dv;
+								dtheta_du.setZero();
+								dtheta_dv.setZero();
+								if (0 == n)
+								{
+									dtheta_du(d) = -1;
+									dtheta_dv(d) = -1;
+								}
+								else if (1 == n)
+									dtheta_du(d) = 1;
+								else if (2 == n)
+									dtheta_dv(d) = 1;
+								else
+									assert(false);
+
+								velocity_div = (dr_du.cross(dr_dv)).dot(dtheta_du.cross(dr_dv) + dr_du.cross(dtheta_dv)) / (dr_du.cross(dr_dv)).squaredNorm();
+							}
+							else
+							{
+								Eigen::VectorXd dr = gbases[e].bases[nodes(1)].global()[0].node - gbases[e].bases[nodes(0)].global()[0].node;
+
+								// compute dtheta
+								Eigen::VectorXd dtheta;
+								dtheta.setZero(dr.rows(), dr.cols());
+								if (0 == n)
+									dtheta(d) = -1;
+								else if (1 == n)
+									dtheta(d) = 1;
+								else
+									assert(false);
+
+								velocity_div = dr.dot(dtheta) / dr.squaredNorm();
+							}
+
+							for (int q = 0; q < weights.size(); ++q)
+							{
+								// local_storage.vec(v.global[0].index * dim + d) += j_val(q) * velocity_div;
+
+								// if (j.depend_on_x())
+								// 	local_storage.vec(v.global[0].index * dim + d) += v.val(q) * dj_dx(q, d);
+
+								const int g_index = v.global[0].index * dim + d;
+								const bool is_neumann = std::find(boundary_nodes_.begin(), boundary_nodes_.end(), g_index) == boundary_nodes_.end();
+
+								if (is_neumann)
+								{
+									local_storage.vec(v.global[0].index * dim + d) += value(q) * velocity_div;
+								}
+							}
+						}
 					}
 				}
 			}
