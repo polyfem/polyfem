@@ -2230,22 +2230,6 @@
     {
         "pointer": "/materials/*",
         "type": "object",
-        "type_name": "IncompressibleOgden",
-        "required": [
-            "type",
-            "c",
-            "m",
-            "k"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, for [Ogden](https://en.wikipedia.org/wiki/Ogden_hyperelastic_model)."
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
         "type_name": "MooneyRivlin",
         "required": [
             "type",
