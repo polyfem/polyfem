@@ -379,7 +379,9 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 TEST_CASE("isosurface-inflator", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/isosurface-inflator");
-	chdir(path.c_str());
+	// chdir(path.c_str());
+	auto work_path = std::filesystem::current_path();
+	std::filesystem::current_path(path);
 	json in_args;
 	load_json("state.json", in_args);
 
@@ -431,6 +433,8 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 
 	verify_adjoint(variable_to_simulations, obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 5e-4);
 	// verify_adjoint_expensive(variable_to_simulations, obj, state, x, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>());
+
+	std::filesystem::current_path(work_path);
 }
 
 TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
