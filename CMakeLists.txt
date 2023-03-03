@@ -299,13 +299,11 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
 
     target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+
+    target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem::polyfem polyfem::warnings)
+
     include(cli11)
-    target_link_libraries(${PROJECT_NAME}_bin
-        PUBLIC
-            polyfem::polyfem
-            polyfem::warnings
-            CLI11::CLI11
-    )
+    polyfem_target_link_system_libraries(${PROJECT_NAME}_bin PUBLIC CLI11::CLI11)
 
     if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
         set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)

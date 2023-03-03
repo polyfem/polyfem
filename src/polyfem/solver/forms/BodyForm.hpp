@@ -64,22 +64,22 @@ namespace polyfem::solver
 		}
 
 	private:
+		double t_;       ///< Current time
+		const int ndof_; ///< Number of degrees of freedom
+		const int n_pressure_bases_;
+
 		const std::vector<int> &boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> &local_boundary_;
 		const std::vector<mesh::LocalBoundary> &local_neumann_boundary_;
 		const int n_boundary_samples_;
 
+		const Eigen::MatrixXd &rhs_;                   ///< static RHS for the current time
 		const assembler::RhsAssembler &rhs_assembler_; ///< Reference to the RHS assembler
 		const assembler::Density &density_;
+
+		bool apply_DBC_;            ///< If true, set the Dirichlet boundary conditions in the RHS
 		bool is_formulation_mixed_; ///< True if the formulation is mixed
 
-		double t_;       ///< Current time
-		const int ndof_; ///< Number of degrees of freedom
-		const int n_pressure_bases_;
-
-		bool apply_DBC_; ///< If true, set the Dirichlet boundary conditions in the RHS
-
-		const Eigen::MatrixXd &rhs_;  ///< static RHS for the current time
 		Eigen::MatrixXd current_rhs_; ///< Cached RHS for the current time
 
 		/// @brief Update current_rhs

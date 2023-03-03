@@ -1,19 +1,7 @@
 #pragma once
 
-#include "GenericElastic.hpp"
-#include "MatParams.hpp"
-
-#include <polyfem/Common.hpp>
-#include <polyfem/utils/ElasticityUtils.hpp>
-
-#include <polyfem/autogen/auto_eigs.hpp>
-#include <polyfem/utils/AutodiffTypes.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
-#include <polyfem/utils/Types.hpp>
-#include <polyfem/utils/Logger.hpp>
-
-#include <Eigen/Dense>
-#include <array>
+#include <polyfem/assembler/GenericElastic.hpp>
+#include <polyfem/assembler/MatParams.hpp>
 
 namespace polyfem::assembler
 {

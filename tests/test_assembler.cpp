@@ -1,5 +1,6 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/assembler/NeoHookeanElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
 
 #include <catch2/catch.hpp>

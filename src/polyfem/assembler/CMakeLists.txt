@@ -1,14 +1,21 @@
 set(SOURCES
 	Assembler.cpp
 	Assembler.hpp
-	Bilaplacian.cpp
-	Bilaplacian.hpp
-	AssemblyValues.hpp
+	AssemblerData.hpp
+	AssemblerUtils.cpp
+	AssemblerUtils.hpp
 	AssemblyValsCache.cpp
 	AssemblyValsCache.hpp
+	AssemblyValues.hpp
+	Bilaplacian.cpp
+	Bilaplacian.hpp
 	ElasticEnergyMacros.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp
+	GenericElastic.cpp
+	GenericElastic.hpp
+	GenericProblem.cpp
+	GenericProblem.hpp
 	Helmholtz.cpp
 	Helmholtz.hpp
 	HookeLinearElasticity.cpp
@@ -19,8 +26,6 @@ set(SOURCES
 	Laplacian.hpp
 	LinearElasticity.cpp
 	LinearElasticity.hpp
-	GenericElastic.cpp
-	GenericElastic.hpp
 	Mass.cpp
 	Mass.hpp
 	MatParams.cpp
@@ -29,26 +34,22 @@ set(SOURCES
 	MooneyRivlinElasticity.hpp
 	MultiModel.cpp
 	MultiModel.hpp
+	NavierStokes.cpp
+	NavierStokes.hpp
 	NeoHookeanElasticity.cpp
 	NeoHookeanElasticity.hpp
 	NeoHookeanElasticityAutodiff.cpp
 	NeoHookeanElasticityAutodiff.hpp
 	OgdenElasticity.cpp
 	OgdenElasticity.hpp
+	Problem.cpp
+	Problem.hpp
 	RhsAssembler.cpp
 	RhsAssembler.hpp
 	SaintVenantElasticity.cpp
 	SaintVenantElasticity.hpp
 	Stokes.cpp
 	Stokes.hpp
-	NavierStokes.cpp
-	NavierStokes.hpp
-	AssemblerUtils.cpp
-	AssemblerUtils.hpp
-	Problem.cpp
-	Problem.hpp
-	GenericProblem.cpp
-	GenericProblem.hpp
 	ViscousDamping.cpp
 	ViscousDamping.hpp
 )

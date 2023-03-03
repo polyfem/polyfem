@@ -355,7 +355,7 @@ namespace polyfem
 				}
 				else
 				{
-					assert(false);
+					throw std::runtime_error("This code should be unreachable!");
 				}
 			}
 			else if (is_param_valid(args["time"], "dt"))
@@ -374,7 +374,7 @@ namespace polyfem
 			else
 			{
 				// tend and dt are already confirmed to be invalid
-				assert(false);
+				throw std::runtime_error("This code should be unreachable!");
 			}
 		}
 		else if (num_valid == 3)
@@ -386,8 +386,7 @@ namespace polyfem
 			// Check that all parameters agree
 			if (abs(t0 + dt * time_steps - tend) > 1e-12)
 			{
-				logger().error("Exactly two of (tend, dt, time_steps) must be specified");
-				throw std::runtime_error("Exactly two of (tend, dt, time_steps) must be specified");
+				log_and_throw_error("Exactly two of (tend, dt, time_steps) must be specified");
 			}
 		}
 

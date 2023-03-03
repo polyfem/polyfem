@@ -1,18 +1,16 @@
-// #define EIGEN_STACK_ALLOCATION_LIMIT 0
-
 #include "MultiModel.hpp"
 
-#include <polyfem/basis/Basis.hpp>
-#include <polyfem/autogen/auto_elasticity_rhs.hpp>
+// #include <polyfem/basis/Basis.hpp>
+// #include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
-#include <igl/Timer.h>
+// #include <igl/Timer.h>
 
 namespace polyfem::assembler
 {
-	using namespace basis;
 	void MultiModel::set_size(const int size)
 	{
-		size_ = size;
+		Assembler::set_size(size);
+
 		saint_venant_.set_size(size);
 		neo_hookean_.set_size(size);
 		linear_elasticity_.set_size(size);
@@ -25,7 +23,7 @@ namespace polyfem::assembler
 
 	void MultiModel::add_multimaterial(const int index, const json &params)
 	{
-		assert(size_ == 2 || size_ == 3);
+		assert(size() == 2 || size() == 3);
 
 		saint_venant_.add_multimaterial(index, params);
 		neo_hookean_.add_multimaterial(index, params);
@@ -127,7 +125,7 @@ namespace polyfem::assembler
 		}
 	}
 
-	void MultiModel::compute_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &stresses) const
+	void MultiModel::compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &stresses) const
 	{
 		const std::string model = multi_material_models_[el_id];
 

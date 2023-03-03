@@ -21,7 +21,7 @@ namespace polyfem
 		/// are tagged as boundary, and vertices incident to a polytope are also considered as boundary.
 		enum class ElementType
 		{
-			SIMPLEX,                       /// Triangle/tet element
+			SIMPLEX = 0,                   /// Triangle/tet element
 			REGULAR_INTERIOR_CUBE,         /// Regular quad/hex inside a 3^n patch
 			SIMPLE_SINGULAR_INTERIOR_CUBE, /// Quad/hex incident to exactly 1 singular vertex (in 2D) or edge (in 3D)
 			MULTI_SINGULAR_INTERIOR_CUBE,  /// Quad/Hex incident to more than 1 singular vertices (should not happen in 2D)

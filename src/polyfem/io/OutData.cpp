@@ -5,6 +5,7 @@
 #include <polyfem/State.hpp>
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/MatParams.hpp>
 
 #include <polyfem/basis/ElementBases.hpp>
 
@@ -2268,46 +2269,21 @@ namespace polyfem::io
 			{
 				++n_flipped;
 
-				std::string type = "";
-				switch (els_tag[i])
-				{
-				case ElementType::SIMPLEX:
-					type = "Simplex";
-					break;
-				case ElementType::REGULAR_INTERIOR_CUBE:
-					type = "RegularInteriorCube";
-					break;
-				case ElementType::REGULAR_BOUNDARY_CUBE:
-					type = "RegularBoundaryCube";
-					break;
-				case ElementType::SIMPLE_SINGULAR_INTERIOR_CUBE:
-					type = "SimpleSingularInteriorCube";
-					break;
-				case ElementType::MULTI_SINGULAR_INTERIOR_CUBE:
-					type = "MultiSingularInteriorCube";
-					break;
-				case ElementType::SIMPLE_SINGULAR_BOUNDARY_CUBE:
-					type = "SimpleSingularBoundaryCube";
-					break;
-				case ElementType::INTERFACE_CUBE:
-					type = "InterfaceCube";
-					break;
-				case ElementType::MULTI_SINGULAR_BOUNDARY_CUBE:
-					type = "MultiSingularBoundaryCube";
-					break;
-				case ElementType::BOUNDARY_POLYTOPE:
-					type = "BoundaryPolytope";
-					break;
-				case ElementType::INTERIOR_POLYTOPE:
-					type = "InteriorPolytope";
-					break;
-				case ElementType::UNDEFINED:
-					type = "Undefined";
-					break;
-				}
+				static const std::vector<std::string> element_type_names{{
+					"Simplex",
+					"RegularInteriorCube",
+					"RegularBoundaryCube",
+					"SimpleSingularInteriorCube",
+					"MultiSingularInteriorCube",
+					"SimpleSingularBoundaryCube",
+					"InterfaceCube",
+					"MultiSingularBoundaryCube",
+					"BoundaryPolytope",
+					"InteriorPolytope",
+					"Undefined",
+				}};
 
-				logger().error("element {} is flipped, type {}", i, type);
-				throw "invalid mesh";
+				log_and_throw_error("element {} is flipped, type {}", i, element_type_names[static_cast<int>(els_tag[i])]);
 			}
 		}
 
@@ -2546,6 +2522,8 @@ namespace polyfem::io
 			case ElementType::UNDEFINED:
 				undefined_count++;
 				break;
+			default:
+				throw std::runtime_error("Unknown element type");
 			}
 		}
 

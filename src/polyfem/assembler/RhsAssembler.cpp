@@ -1,16 +1,11 @@
 #include "RhsAssembler.hpp"
+
+#include <polyfem/assembler/MatParams.hpp>
+#include <polyfem/utils/BoundarySampler.hpp>
+#include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 
-#include <polyfem/utils/BoundarySampler.hpp>
 #include <polysolve/LinearSolver.hpp>
-
-#include <polyfem/utils/Logger.hpp>
-
-#include <Eigen/Sparse>
-
-#include <iostream>
-#include <map>
-#include <memory>
 
 namespace polyfem
 {
@@ -44,14 +39,24 @@ namespace polyfem
 								   const std::string &formulation, const Problem &problem,
 								   const std::string bc_method,
 								   const std::string &solver, const std::string &preconditioner, const json &solver_params)
-			: assembler_(assembler), mesh_(mesh), obstacle_(obstacle),
-			  n_basis_(n_basis), size_(size),
-			  bases_(bases), gbases_(gbases), ass_vals_cache_(ass_vals_cache),
-			  formulation_(formulation), problem_(problem),
+			: assembler_(assembler),
+			  mesh_(mesh),
+			  obstacle_(obstacle),
+			  n_basis_(n_basis),
+			  size_(size),
+			  bases_(bases),
+			  gbases_(gbases),
+			  ass_vals_cache_(ass_vals_cache),
+			  formulation_(formulation),
+			  problem_(problem),
 			  bc_method_(bc_method),
-			  solver_(solver), preconditioner_(preconditioner), solver_params_(solver_params),
-			  dirichlet_nodes_(dirichlet_nodes), neumann_nodes_(neumann_nodes),
-			  dirichlet_nodes_position_(dirichlet_nodes_position), neumann_nodes_position_(neumann_nodes_position)
+			  solver_(solver),
+			  preconditioner_(preconditioner),
+			  solver_params_(solver_params),
+			  dirichlet_nodes_(dirichlet_nodes),
+			  dirichlet_nodes_position_(dirichlet_nodes_position),
+			  neumann_nodes_(neumann_nodes),
+			  neumann_nodes_position_(neumann_nodes_position)
 		{
 			assert(ass_vals_cache_.is_mass());
 		}
