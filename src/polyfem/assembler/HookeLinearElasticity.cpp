@@ -63,6 +63,12 @@ namespace polyfem::assembler
 		}
 	}
 
+	void HookeLinearElasticity::set_size(const int size)
+	{
+		Assembler::set_size(size);
+		elasticity_tensor_.resize(size);
+	}
+
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 	HookeLinearElasticity::assemble(const LinearAssemblerData &data) const
 	{
