@@ -50,6 +50,7 @@ namespace polyfem::assembler
 		typedef std::function<double(const RowVectorNd &, const RowVectorNd &, double, int)> ParamFunc;
 
 		AssemblerUtils();
+		~AssemblerUtils();
 
 		// Linear, assembler is the name of the formulation
 		void assemble_problem(const std::string &assembler,
@@ -201,37 +202,37 @@ namespace polyfem::assembler
 
 	private:
 		// all assemblers
-		std::shared_ptr<Mass> mass_mat_;
-		std::shared_ptr<Mass> mass_mat_no_density_;
+		std::unique_ptr<Mass> mass_mat_;
+		std::unique_ptr<Mass> mass_mat_no_density_;
 
-		std::shared_ptr<Laplacian> laplacian_;
-		std::shared_ptr<Helmholtz> helmholtz_;
+		std::unique_ptr<Laplacian> laplacian_;
+		std::unique_ptr<Helmholtz> helmholtz_;
 
-		std::shared_ptr<BilaplacianMain> bilaplacian_main_;
-		std::shared_ptr<BilaplacianMixed> bilaplacian_mixed_;
-		std::shared_ptr<BilaplacianAux> bilaplacian_aux_;
+		std::unique_ptr<BilaplacianMain> bilaplacian_main_;
+		std::unique_ptr<BilaplacianMixed> bilaplacian_mixed_;
+		std::unique_ptr<BilaplacianAux> bilaplacian_aux_;
 
-		std::shared_ptr<LinearElasticity> linear_elasticity_;
-		std::shared_ptr<HookeLinearElasticity> hooke_linear_elasticity_;
+		std::unique_ptr<LinearElasticity> linear_elasticity_;
+		std::unique_ptr<HookeLinearElasticity> hooke_linear_elasticity_;
 
-		std::shared_ptr<SaintVenantElasticity> saint_venant_elasticity_;
-		std::shared_ptr<NeoHookeanElasticity> neo_hookean_elasticity_;
-		std::shared_ptr<MooneyRivlinElasticity> mooney_rivlin_elasticity_;
-		std::shared_ptr<MultiModel> multi_models_elasticity_;
-		std::shared_ptr<UnconstrainedOgdenElasticity> unconstrained_ogden_elasticity_;
-		std::shared_ptr<IncompressibleOgdenElasticity> incompressible_ogden_elasticity_;
+		std::unique_ptr<SaintVenantElasticity> saint_venant_elasticity_;
+		std::unique_ptr<NeoHookeanElasticity> neo_hookean_elasticity_;
+		std::unique_ptr<MooneyRivlinElasticity> mooney_rivlin_elasticity_;
+		std::unique_ptr<MultiModel> multi_models_elasticity_;
+		std::unique_ptr<UnconstrainedOgdenElasticity> unconstrained_ogden_elasticity_;
+		std::unique_ptr<IncompressibleOgdenElasticity> incompressible_ogden_elasticity_;
 
-		std::shared_ptr<ViscousDamping> damping_;
+		std::unique_ptr<ViscousDamping> damping_;
 
-		std::shared_ptr<StokesVelocity> stokes_velocity_;
-		std::shared_ptr<StokesMixed> stokes_mixed_;
-		std::shared_ptr<StokesPressure> stokes_pressure_;
+		std::unique_ptr<StokesVelocity> stokes_velocity_;
+		std::unique_ptr<StokesMixed> stokes_mixed_;
+		std::unique_ptr<StokesPressure> stokes_pressure_;
 
-		std::shared_ptr<NavierStokesVelocity<false>> navier_stokes_velocity_picard_;
-		std::shared_ptr<NavierStokesVelocity<true>> navier_stokes_velocity_;
+		std::unique_ptr<NavierStokesVelocity<false>> navier_stokes_velocity_picard_;
+		std::unique_ptr<NavierStokesVelocity<true>> navier_stokes_velocity_;
 
-		std::shared_ptr<IncompressibleLinearElasticityDispacement> incompressible_lin_elast_displacement_;
-		std::shared_ptr<IncompressibleLinearElasticityMixed> incompressible_lin_elast_mixed_;
-		std::shared_ptr<IncompressibleLinearElasticityPressure> incompressible_lin_elast_pressure_;
+		std::unique_ptr<IncompressibleLinearElasticityDispacement> incompressible_lin_elast_displacement_;
+		std::unique_ptr<IncompressibleLinearElasticityMixed> incompressible_lin_elast_mixed_;
+		std::unique_ptr<IncompressibleLinearElasticityPressure> incompressible_lin_elast_pressure_;
 	};
 } // namespace polyfem::assembler

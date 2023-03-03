@@ -62,39 +62,41 @@ namespace polyfem
 
 		AssemblerUtils::AssemblerUtils()
 		{
-			mass_mat_ = std::make_shared<Mass>();
-			mass_mat_no_density_ = std::make_shared<Mass>();
+			mass_mat_ = std::make_unique<Mass>();
+			mass_mat_no_density_ = std::make_unique<Mass>();
 
-			laplacian_ = std::make_shared<Laplacian>();
-			helmholtz_ = std::make_shared<Helmholtz>();
+			laplacian_ = std::make_unique<Laplacian>();
+			helmholtz_ = std::make_unique<Helmholtz>();
 
-			bilaplacian_main_ = std::make_shared<BilaplacianMain>();
-			bilaplacian_mixed_ = std::make_shared<BilaplacianMixed>();
-			bilaplacian_aux_ = std::make_shared<BilaplacianAux>();
+			bilaplacian_main_ = std::make_unique<BilaplacianMain>();
+			bilaplacian_mixed_ = std::make_unique<BilaplacianMixed>();
+			bilaplacian_aux_ = std::make_unique<BilaplacianAux>();
 
-			linear_elasticity_ = std::make_shared<LinearElasticity>();
-			hooke_linear_elasticity_ = std::make_shared<HookeLinearElasticity>();
+			linear_elasticity_ = std::make_unique<LinearElasticity>();
+			hooke_linear_elasticity_ = std::make_unique<HookeLinearElasticity>();
 
-			saint_venant_elasticity_ = std::make_shared<SaintVenantElasticity>();
-			neo_hookean_elasticity_ = std::make_shared<NeoHookeanElasticity>();
-			mooney_rivlin_elasticity_ = std::make_shared<MooneyRivlinElasticity>();
-			multi_models_elasticity_ = std::make_shared<MultiModel>();
-			unconstrained_ogden_elasticity_ = std::make_shared<UnconstrainedOgdenElasticity>();
-			incompressible_ogden_elasticity_ = std::make_shared<IncompressibleOgdenElasticity>();
+			saint_venant_elasticity_ = std::make_unique<SaintVenantElasticity>();
+			neo_hookean_elasticity_ = std::make_unique<NeoHookeanElasticity>();
+			mooney_rivlin_elasticity_ = std::make_unique<MooneyRivlinElasticity>();
+			multi_models_elasticity_ = std::make_unique<MultiModel>();
+			unconstrained_ogden_elasticity_ = std::make_unique<UnconstrainedOgdenElasticity>();
+			incompressible_ogden_elasticity_ = std::make_unique<IncompressibleOgdenElasticity>();
 
-			damping_ = std::make_shared<ViscousDamping>();
+			damping_ = std::make_unique<ViscousDamping>();
 
-			stokes_velocity_ = std::make_shared<StokesVelocity>();
-			stokes_mixed_ = std::make_shared<StokesMixed>();
-			stokes_pressure_ = std::make_shared<StokesPressure>();
+			stokes_velocity_ = std::make_unique<StokesVelocity>();
+			stokes_mixed_ = std::make_unique<StokesMixed>();
+			stokes_pressure_ = std::make_unique<StokesPressure>();
 
-			navier_stokes_velocity_picard_ = std::make_shared<NavierStokesVelocity<false>>();
-			navier_stokes_velocity_ = std::make_shared<NavierStokesVelocity<true>>();
+			navier_stokes_velocity_picard_ = std::make_unique<NavierStokesVelocity<false>>();
+			navier_stokes_velocity_ = std::make_unique<NavierStokesVelocity<true>>();
 
-			incompressible_lin_elast_displacement_ = std::make_shared<IncompressibleLinearElasticityDispacement>();
-			incompressible_lin_elast_mixed_ = std::make_shared<IncompressibleLinearElasticityMixed>();
-			incompressible_lin_elast_pressure_ = std::make_shared<IncompressibleLinearElasticityPressure>();
+			incompressible_lin_elast_displacement_ = std::make_unique<IncompressibleLinearElasticityDispacement>();
+			incompressible_lin_elast_mixed_ = std::make_unique<IncompressibleLinearElasticityMixed>();
+			incompressible_lin_elast_pressure_ = std::make_unique<IncompressibleLinearElasticityPressure>();
 		}
+
+		AssemblerUtils::~AssemblerUtils() {}
 
 		std::vector<std::string> AssemblerUtils::scalar_assemblers()
 		{
