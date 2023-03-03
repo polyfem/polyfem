@@ -150,18 +150,16 @@ namespace polyfem
 
 				if (args["optimization"]["enabled"])
 				{
-					if (initial_sol_update.size() > 0)
+					if (initial_sol_update.size() == ndof())
 						sol = initial_sol_update;
 					else
 						initial_sol_update = sol;
-					if (initial_vel_update.size() > 0)
+					if (initial_vel_update.size() == ndof())
 						velocity = initial_vel_update;
 					else
 						initial_vel_update = velocity;
 				}
 
-				initial_velocity_cache = velocity;
-				
 				const double dt = args["time"]["dt"];
 				solve_data.time_integrator->init(sol, velocity, acceleration, dt);
 			}

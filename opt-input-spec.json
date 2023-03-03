@@ -876,7 +876,10 @@
             "trajectory",
             "height",
             "position",
+            "acceleration",
+            "kinetic",
             "stress",
+            "max-stress",
             "homogenized_energy",
             "homogenized_stress",
             "compliance",
@@ -1212,6 +1215,41 @@
     {
         "pointer": "/functionals/*",
         "type": "object",
+        "type_name": "acceleration",
+        "required": [
+            "state",
+            "type",
+            "dim"
+        ],
+        "optional": [
+            "shape_parameter",
+            "weight",
+            "transient_integral_type",
+            "steps",
+            "volume_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "kinetic",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "shape_parameter",
+            "weight",
+            "transient_integral_type",
+            "steps",
+            "volume_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
         "type_name": "stress",
         "required": [
             "state",
@@ -1222,6 +1260,22 @@
             "material_parameter",
             "volume_selection",
             "power",
+            "weight",
+            "steps",
+            "transient_integral_type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "max-stress",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "volume_selection",
             "weight",
             "steps",
             "transient_integral_type"

@@ -574,13 +574,7 @@ namespace polyfem::solver
 			double beta = time_integrator::BDF::betas(real_order - 1);
 			double beta_dt = beta * dt;
 
-			Eigen::MatrixXd velocity;
-			{
-				velocity = state.diff_cached[i].u;
-				for (int o = 1; o <= real_order; o++)
-					velocity -= time_integrator::BDF::alphas(real_order - 1)[o - 1] * state.diff_cached[i - o].u;
-				velocity /= beta_dt;
-			}
+			Eigen::MatrixXd velocity = state.diff_cached[i].v;
 
 			cur_p = adjoint_p.col(i);
 			cur_nu = adjoint_nu.col(i);
@@ -631,7 +625,7 @@ namespace polyfem::solver
 			}
 		}
 		sum_alpha_p(state.boundary_nodes).setZero();
-		state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, state.initial_velocity_cache, sum_alpha_p, mass_term);
+		state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, state.diff_cached[0].v, sum_alpha_p, mass_term);
 
 		one_form += mass_term;
 

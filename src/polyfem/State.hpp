@@ -651,6 +651,8 @@ namespace polyfem
 			StiffnessMatrix gradu_h;
 			StiffnessMatrix gradu_h_next;
 			Eigen::MatrixXd u;
+			Eigen::MatrixXd v;
+			Eigen::MatrixXd acc;
 			Eigen::MatrixXd disp_grad;
 			ipc::Constraints contact_set;
 			ipc::FrictionConstraints friction_constraint_set;
@@ -660,7 +662,6 @@ namespace polyfem
 		std::vector<DiffCachedParts> diff_cached;
 
 		std::unique_ptr<polysolve::LinearSolver> lin_solver_cached; // matrix factorization of last linear solve
-		Eigen::MatrixXd initial_velocity_cache;                     // initial velocity of last solve
 
 		int n_linear_solves = 0;
 		int n_nonlinear_solves = 0;

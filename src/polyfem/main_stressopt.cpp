@@ -147,6 +147,16 @@ int main(int argc, char **argv)
 	auto nl_problem = std::make_shared<AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
 	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 
+	if (only_compute_energy)
+	{
+		nl_problem->solution_changed(x);
+		logger().info("Energy is {}", nl_problem->value(x));
+		// auto state = nl_problem->get_state(0);
+		// state->save_json(state->diff_cached[0].u);
+		// state->export_data(state->diff_cached[0].u, Eigen::MatrixXd());
+		return EXIT_SUCCESS;
+	}
+
 	nl_solver->minimize(*nl_problem, x);
 
 	return EXIT_SUCCESS;
