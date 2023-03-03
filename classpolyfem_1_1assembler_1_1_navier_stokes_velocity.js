@@ -1,16 +1,18 @@
 var classpolyfem_1_1assembler_1_1_navier_stokes_velocity =
 [
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#aba07c6ba3a93a74d0c3adb35a80fc59f", null ],
-    [ "assemble_grad", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a7e29c3929a60a27ece34cb4f8c856892", null ],
-    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a68b8633680bb510ebfc410f601b9a1ba", null ],
-    [ "compute_energy", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a83595a85d7eaf08380149e5a1ec808fc", null ],
+    [ "assemble_energy", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a2095510498c3eeee6c2439ebbf058e38", null ],
+    [ "assemble_grad", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a586a35c3c56fcd6eafd1a6f63e08521c", null ],
+    [ "assemble_grad", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a8f3bf6a1107cca23135670bbd8b6270b", null ],
+    [ "assemble_grad", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#ab670254f9ef1a5e9547faa1793c30d6e", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a03a7dfcc15b75fde2ee4fc6f2bdeba32", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a08c7baca6376bab8e3bc7b07da99955f", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#aa1e5295c0a989f1a74ef29bcf2bef15b", null ],
+    [ "compute_energy", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a31a71bc6f3162a750e1231c49a56d39d", null ],
     [ "compute_N", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a0cab4391539b61d614662a3f1c1acfde", null ],
     [ "compute_norm_velocity", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a061f170aec436b2cd37863298fa20a26", null ],
     [ "compute_rhs", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a48d3b8ccb60c77b9af7a0fc6cd956656", null ],
     [ "compute_stress_tensor", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#ac3b8437e858137a63e9ffea627f49ddb", null ],
     [ "compute_W", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a621cb0ff7f6d3ea35bf888bdcc8633f3", null ],
-    [ "set_size", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#adcd662291f09883f479fcb9b352cc155", null ],
-    [ "size", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a9db2987d012141d11aae95755d23fe34", null ],
-    [ "size_", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a35ea1dd2ed1f6d788b0d81329c7e89c7", null ],
     [ "viscosity_", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#abc7477c8fedccf45649ac4cfd8a88a19", null ]
 ];

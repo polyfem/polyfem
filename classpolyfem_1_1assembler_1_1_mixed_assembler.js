@@ -1,7 +1,9 @@
 var classpolyfem_1_1assembler_1_1_mixed_assembler =
 [
-    [ "assemble", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#aa0db6bf620b821764c4bd3e0c92adb70", null ],
-    [ "local_assembler", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#a664dda4d4aad854b4d53797589992970", null ],
-    [ "local_assembler", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#a22ec956aa521406839f4581422ddc38e", null ],
-    [ "local_assembler_", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#acef576bc41efa72e5f77b9dc627ab7d5", null ]
+    [ "MixedAssembler", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#aed2fd930be8046e9cb48b36ddb2edd7a", null ],
+    [ "~MixedAssembler", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#a0875458f778d93749713b815462a7883", null ],
+    [ "assemble", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#ae5a1db9e76e30cbc523bbc6563937841", null ],
+    [ "assemble", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#a3b7666c7ade03fa6cf914a6022c23c29", null ],
+    [ "cols", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#ab92ebae3617558583deccaccfecce49c", null ],
+    [ "rows", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#a51d9b56bf755d2cd9afdcfcdbded39f8", null ]
 ];

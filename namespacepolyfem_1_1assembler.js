@@ -24,6 +24,7 @@ var namespacepolyfem_1_1assembler =
     [ "IncompressibleOgdenElasticity", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity" ],
     [ "LameParameters", "classpolyfem_1_1assembler_1_1_lame_parameters.html", "classpolyfem_1_1assembler_1_1_lame_parameters" ],
     [ "Laplacian", "classpolyfem_1_1assembler_1_1_laplacian.html", "classpolyfem_1_1assembler_1_1_laplacian" ],
+    [ "LinearAssembler", "classpolyfem_1_1assembler_1_1_linear_assembler.html", "classpolyfem_1_1assembler_1_1_linear_assembler" ],
     [ "LinearAssemblerData", "classpolyfem_1_1assembler_1_1_linear_assembler_data.html", "classpolyfem_1_1assembler_1_1_linear_assembler_data" ],
     [ "LinearElasticity", "classpolyfem_1_1assembler_1_1_linear_elasticity.html", "classpolyfem_1_1assembler_1_1_linear_elasticity" ],
     [ "Mass", "classpolyfem_1_1assembler_1_1_mass.html", "classpolyfem_1_1assembler_1_1_mass" ],
@@ -46,6 +47,10 @@ var namespacepolyfem_1_1assembler =
     [ "TensorBCValue", "structpolyfem_1_1assembler_1_1_tensor_b_c_value.html", "structpolyfem_1_1assembler_1_1_tensor_b_c_value" ],
     [ "UnconstrainedOgdenElasticity", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity" ],
     [ "ViscousDamping", "classpolyfem_1_1assembler_1_1_viscous_damping.html", "classpolyfem_1_1assembler_1_1_viscous_damping" ],
+    [ "ScalarLinearAssembler", "namespacepolyfem_1_1assembler.html#a1166e8ad9062148a077047ae71b81252", null ],
+    [ "ScalarMixedAssembler", "namespacepolyfem_1_1assembler.html#aaeb2b24e99bc07dd7deb72825152cef3", null ],
+    [ "TensorLinearAssembler", "namespacepolyfem_1_1assembler.html#a714081f0b8488ce3c31b4c848d64b107", null ],
+    [ "TensorMixedAssembler", "namespacepolyfem_1_1assembler.html#a9a6d3a5b012ca159bd3200d7da05b823", null ],
     [ "cross", "namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784", null ],
     [ "hat", "namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32", null ]
 ];

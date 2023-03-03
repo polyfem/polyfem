@@ -1,7 +1,7 @@
 var searchData=
 [
   ['da_0',['da',['../classpolyfem_1_1assembler_1_1_linear_assembler_data.html#aabfc44ea835dcbe91f5fd1fcaade0f85',1,'polyfem::assembler::LinearAssemblerData::da()'],['../_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666',1,'da():&#160;Assembler.cpp'],['../classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html#aab2642c1102194c41884c54e0f0453cd',1,'polyfem::assembler::NonLinearAssemblerData::da()'],['../classpolyfem_1_1assembler_1_1_mixed_assembler_data.html#a51c23bcb69c798af184148fa3c85cf54',1,'polyfem::assembler::MixedAssemblerData::da()']]],
-  ['damping_5f_1',['damping_',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#ab4c29f8dd2c47a8eef33f92b3daa5536',1,'polyfem::assembler::AssemblerUtils']]],
+  ['damping_5f_1',['damping_',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a9dca3fb6b5678e403dcd5b348b54b055',1,'polyfem::assembler::AssemblerUtils']]],
   ['damping_5fform_2',['damping_form',['../classpolyfem_1_1solver_1_1_solve_data.html#ac4ee00aa6b7c88f98549248bd76e64d2',1,'polyfem::solver::SolveData']]],
   ['data_5f_3',['data_',['../classpolyfem_1_1problem_1_1_node_values.html#acaaaa320e61d7aaae49f0434dffa64c8',1,'polyfem::problem::NodeValues::data_()'],['../classpolyfem_1_1utils_1_1_file_selection.html#ae41825d8af6aab8302f4e8e189af2155',1,'polyfem::utils::FileSelection::data_()']]],
   ['dbase_4',['dbase',['../namespaceq__bases.html#ae5567cc3ff8c51169b59f2d6fdb8b962',1,'q_bases.dbase()'],['../namespacep__bases.html#a98aea95f6d75db01c5d555965f8000fa',1,'p_bases.dbase()']]],

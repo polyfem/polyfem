@@ -40,6 +40,7 @@ var annotated_dup =
         [ "IncompressibleOgdenElasticity", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity" ],
         [ "LameParameters", "classpolyfem_1_1assembler_1_1_lame_parameters.html", "classpolyfem_1_1assembler_1_1_lame_parameters" ],
         [ "Laplacian", "classpolyfem_1_1assembler_1_1_laplacian.html", "classpolyfem_1_1assembler_1_1_laplacian" ],
+        [ "LinearAssembler", "classpolyfem_1_1assembler_1_1_linear_assembler.html", "classpolyfem_1_1assembler_1_1_linear_assembler" ],
         [ "LinearAssemblerData", "classpolyfem_1_1assembler_1_1_linear_assembler_data.html", "classpolyfem_1_1assembler_1_1_linear_assembler_data" ],
         [ "LinearElasticity", "classpolyfem_1_1assembler_1_1_linear_elasticity.html", "classpolyfem_1_1assembler_1_1_linear_elasticity" ],
         [ "Mass", "classpolyfem_1_1assembler_1_1_mass.html", "classpolyfem_1_1assembler_1_1_mass" ],

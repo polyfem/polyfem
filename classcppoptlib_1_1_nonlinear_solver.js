@@ -13,7 +13,7 @@ var classcppoptlib_1_1_nonlinear_solver =
     [ "increase_descent_strategy", "classcppoptlib_1_1_nonlinear_solver.html#add8f592c83e28ed9b4d7967518248cde", null ],
     [ "line_search", "classcppoptlib_1_1_nonlinear_solver.html#affd4086830d52d7538efdc184fdc9731", null ],
     [ "log_times", "classcppoptlib_1_1_nonlinear_solver.html#ab17c6e91d53cd79ebc45e2bb9a840b0d", null ],
-    [ "minimize", "classcppoptlib_1_1_nonlinear_solver.html#a1a2eac95950c8cf06c7d4eebc1d5568c", null ],
+    [ "minimize", "classcppoptlib_1_1_nonlinear_solver.html#a7537c1ca0d6e6ab64903c1e21fcef5b3", null ],
     [ "name", "classcppoptlib_1_1_nonlinear_solver.html#abe4300acf51ac72a5904c65d091bd8c5", null ],
     [ "reset", "classcppoptlib_1_1_nonlinear_solver.html#a5d761918e6e4e6f5859c732c81c35f84", null ],
     [ "reset_times", "classcppoptlib_1_1_nonlinear_solver.html#af5404ccd80ca403e5b781db58456afc1", null ],

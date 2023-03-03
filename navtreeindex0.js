@@ -23,6 +23,10 @@ var NAVTREEINDEX0 =
 "_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e":[5,0,1,0,0,0,3],
 "_assembler_8cpp_source.html":[5,0,1,0,0,0],
 "_assembler_8hpp.html":[5,0,1,0,0,1],
+"_assembler_8hpp.html#a1166e8ad9062148a077047ae71b81252":[5,0,1,0,0,1,4],
+"_assembler_8hpp.html#a714081f0b8488ce3c31b4c848d64b107":[5,0,1,0,0,1,6],
+"_assembler_8hpp.html#a9a6d3a5b012ca159bd3200d7da05b823":[5,0,1,0,0,1,7],
+"_assembler_8hpp.html#aaeb2b24e99bc07dd7deb72825152cef3":[5,0,1,0,0,1,5],
 "_assembler_8hpp_source.html":[5,0,1,0,0,1],
 "_assembler_data_8hpp.html":[5,0,1,0,0,2],
 "_assembler_data_8hpp_source.html":[5,0,1,0,0,2],
@@ -245,9 +249,5 @@ var NAVTREEINDEX0 =
 "_hooke_linear_elasticity_8hpp_source.html":[5,0,1,0,0,20],
 "_implicit_euler_8cpp.html":[5,0,1,0,10,2],
 "_implicit_euler_8cpp_source.html":[5,0,1,0,10,2],
-"_implicit_euler_8hpp.html":[5,0,1,0,10,3],
-"_implicit_euler_8hpp_source.html":[5,0,1,0,10,3],
-"_implicit_newmark_8cpp.html":[5,0,1,0,10,4],
-"_implicit_newmark_8cpp_source.html":[5,0,1,0,10,4],
-"_implicit_newmark_8hpp.html":[5,0,1,0,10,5]
+"_implicit_euler_8hpp.html":[5,0,1,0,10,3]
 };

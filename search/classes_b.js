@@ -10,14 +10,11 @@ var searchData=
   ['meshnodes_7',['MeshNodes',['../classpolyfem_1_1mesh_1_1_mesh_nodes.html',1,'polyfem::mesh']]],
   ['minsurfproblem_8',['MinSurfProblem',['../classpolyfem_1_1problem_1_1_min_surf_problem.html',1,'polyfem::problem']]],
   ['mixedassembler_9',['MixedAssembler',['../classpolyfem_1_1assembler_1_1_mixed_assembler.html',1,'polyfem::assembler']]],
-  ['mixedassembler_3c_20polyfem_3a_3aassembler_3a_3abilaplacianmixed_20_3e_10',['MixedAssembler&lt; polyfem::assembler::BilaplacianMixed &gt;',['../classpolyfem_1_1assembler_1_1_mixed_assembler.html',1,'polyfem::assembler']]],
-  ['mixedassembler_3c_20polyfem_3a_3aassembler_3a_3aincompressiblelinearelasticitymixed_20_3e_11',['MixedAssembler&lt; polyfem::assembler::IncompressibleLinearElasticityMixed &gt;',['../classpolyfem_1_1assembler_1_1_mixed_assembler.html',1,'polyfem::assembler']]],
-  ['mixedassembler_3c_20polyfem_3a_3aassembler_3a_3astokesmixed_20_3e_12',['MixedAssembler&lt; polyfem::assembler::StokesMixed &gt;',['../classpolyfem_1_1assembler_1_1_mixed_assembler.html',1,'polyfem::assembler']]],
-  ['mixedassemblerdata_13',['MixedAssemblerData',['../classpolyfem_1_1assembler_1_1_mixed_assembler_data.html',1,'polyfem::assembler']]],
-  ['mooneyrivlinelasticity_14',['MooneyRivlinElasticity',['../classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html',1,'polyfem::assembler']]],
-  ['morethuentelinesearch_15',['MoreThuenteLineSearch',['../classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search.html',1,'polyfem::solver::line_search']]],
-  ['mshreader_16',['MshReader',['../classpolyfem_1_1io_1_1_msh_reader.html',1,'polyfem::io']]],
-  ['mshwriter_17',['MshWriter',['../classpolyfem_1_1io_1_1_msh_writer.html',1,'polyfem::io']]],
-  ['multimodel_18',['MultiModel',['../classpolyfem_1_1assembler_1_1_multi_model.html',1,'polyfem::assembler']]],
-  ['mvpolygonalbasis2d_19',['MVPolygonalBasis2d',['../classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html',1,'polyfem::basis']]]
+  ['mixedassemblerdata_10',['MixedAssemblerData',['../classpolyfem_1_1assembler_1_1_mixed_assembler_data.html',1,'polyfem::assembler']]],
+  ['mooneyrivlinelasticity_11',['MooneyRivlinElasticity',['../classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html',1,'polyfem::assembler']]],
+  ['morethuentelinesearch_12',['MoreThuenteLineSearch',['../classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search.html',1,'polyfem::solver::line_search']]],
+  ['mshreader_13',['MshReader',['../classpolyfem_1_1io_1_1_msh_reader.html',1,'polyfem::io']]],
+  ['mshwriter_14',['MshWriter',['../classpolyfem_1_1io_1_1_msh_writer.html',1,'polyfem::io']]],
+  ['multimodel_15',['MultiModel',['../classpolyfem_1_1assembler_1_1_multi_model.html',1,'polyfem::assembler']]],
+  ['mvpolygonalbasis2d_16',['MVPolygonalBasis2d',['../classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html',1,'polyfem::basis']]]
 ];

@@ -1,10 +1,10 @@
 var classpolyfem_1_1assembler_1_1_stokes_mixed =
 [
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_stokes_mixed.html#a5f1433e3dd5d781c8826eaadefaa6a4f", null ],
-    [ "assemble", "classpolyfem_1_1assembler_1_1_stokes_mixed.html#a9e799d8c31afeb0141b05452c29d5acb", null ],
-    [ "cols", "classpolyfem_1_1assembler_1_1_stokes_mixed.html#ab861e092144a21d213998a691716919b", null ],
+    [ "assemble", "classpolyfem_1_1assembler_1_1_stokes_mixed.html#ae5a1db9e76e30cbc523bbc6563937841", null ],
+    [ "assemble", "classpolyfem_1_1assembler_1_1_stokes_mixed.html#a9e409129d3e367270100c861aeb1f334", null ],
+    [ "assemble", "classpolyfem_1_1assembler_1_1_stokes_mixed.html#a89c1484f929eedd41cda81f01015a556", null ],
+    [ "cols", "classpolyfem_1_1assembler_1_1_stokes_mixed.html#ab643a70b6d1aff76a10686dd3c2a8210", null ],
     [ "compute_rhs", "classpolyfem_1_1assembler_1_1_stokes_mixed.html#a0f92fe326a32617e972ed5ade963a329", null ],
-    [ "rows", "classpolyfem_1_1assembler_1_1_stokes_mixed.html#a9e77f7a2115d10d59c1d1804f2ccc0e2", null ],
-    [ "set_size", "classpolyfem_1_1assembler_1_1_stokes_mixed.html#ac1f65e1e1a31122bf9c392eb886d0374", null ],
-    [ "size_", "classpolyfem_1_1assembler_1_1_stokes_mixed.html#a4accf229afcc5827a9996c7c3763ee7d", null ]
+    [ "rows", "classpolyfem_1_1assembler_1_1_stokes_mixed.html#a36d1e4f5eada3f7eaf50a7bcb452381a", null ]
 ];
