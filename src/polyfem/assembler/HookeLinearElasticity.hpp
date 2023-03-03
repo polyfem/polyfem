@@ -8,33 +8,32 @@
 // local assembler for HookeLinearElasticity C : (F+F^T)/2, see linear elasticity
 namespace polyfem::assembler
 {
-	class HookeLinearElasticity : public TensorLinearAssembler
+	class HookeLinearElasticity : public LinearAssembler, ElasticityAssembler
 	{
 	public:
-		HookeLinearElasticity();
+		using LinearAssembler::assemble;
 
-		using TensorLinearAssembler::assemble;
+		HookeLinearElasticity();
 
 		// res is R^{dim²}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const;
-
-		void compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
-		void compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &tensor) const;
-
+		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 		void set_size(const int size) override;
 
 		// sets the elasticty tensor
-		void add_multimaterial(const int index, const json &params);
+		void add_multimaterial(const int index, const json &params) override;
 
 		const ElasticityTensor &elasticity_tensor() const { return elasticity_tensor_; }
 
+		std::string name() const override { return "Hooke"; }
+		std::map<std::string, ParamFunc> parameters() const override;
+
+	protected:
+		void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
+
 	private:
 		ElasticityTensor elasticity_tensor_;
-
-		void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
 	};
 } // namespace polyfem::assembler

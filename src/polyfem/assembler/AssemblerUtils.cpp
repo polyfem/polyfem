@@ -62,38 +62,38 @@ namespace polyfem
 
 		AssemblerUtils::AssemblerUtils()
 		{
-			mass_mat_ = std::make_unique<Mass>();
-			mass_mat_no_density_ = std::make_unique<Mass>();
+			// mass_mat_ = std::make_unique<Mass>();
+			// mass_mat_no_density_ = std::make_unique<Mass>();
 
-			laplacian_ = std::make_unique<Laplacian>();
-			helmholtz_ = std::make_unique<Helmholtz>();
+			// laplacian_ = std::make_unique<Laplacian>();
+			// helmholtz_ = std::make_unique<Helmholtz>();
 
-			bilaplacian_main_ = std::make_unique<BilaplacianMain>();
-			bilaplacian_mixed_ = std::make_unique<BilaplacianMixed>();
-			bilaplacian_aux_ = std::make_unique<BilaplacianAux>();
+			// bilaplacian_main_ = std::make_unique<BilaplacianMain>();
+			// bilaplacian_mixed_ = std::make_unique<BilaplacianMixed>();
+			// bilaplacian_aux_ = std::make_unique<BilaplacianAux>();
 
-			linear_elasticity_ = std::make_unique<LinearElasticity>();
-			hooke_linear_elasticity_ = std::make_unique<HookeLinearElasticity>();
+			// linear_elasticity_ = std::make_unique<LinearElasticity>();
+			// hooke_linear_elasticity_ = std::make_unique<HookeLinearElasticity>();
 
-			saint_venant_elasticity_ = std::make_unique<SaintVenantElasticity>();
-			neo_hookean_elasticity_ = std::make_unique<NeoHookeanElasticity>();
-			mooney_rivlin_elasticity_ = std::make_unique<MooneyRivlinElasticity>();
-			multi_models_elasticity_ = std::make_unique<MultiModel>();
-			unconstrained_ogden_elasticity_ = std::make_unique<UnconstrainedOgdenElasticity>();
-			incompressible_ogden_elasticity_ = std::make_unique<IncompressibleOgdenElasticity>();
+			// saint_venant_elasticity_ = std::make_unique<SaintVenantElasticity>();
+			// neo_hookean_elasticity_ = std::make_unique<NeoHookeanElasticity>();
+			// mooney_rivlin_elasticity_ = std::make_unique<MooneyRivlinElasticity>();
+			// multi_models_elasticity_ = std::make_unique<MultiModel>();
+			// unconstrained_ogden_elasticity_ = std::make_unique<UnconstrainedOgdenElasticity>();
+			// incompressible_ogden_elasticity_ = std::make_unique<IncompressibleOgdenElasticity>();
 
-			damping_ = std::make_unique<ViscousDamping>();
+			// damping_ = std::make_unique<ViscousDamping>();
 
-			stokes_velocity_ = std::make_unique<StokesVelocity>();
-			stokes_mixed_ = std::make_unique<StokesMixed>();
-			stokes_pressure_ = std::make_unique<StokesPressure>();
+			// stokes_velocity_ = std::make_unique<StokesVelocity>();
+			// stokes_mixed_ = std::make_unique<StokesMixed>();
+			// stokes_pressure_ = std::make_unique<StokesPressure>();
 
-			navier_stokes_velocity_picard_ = std::make_unique<NavierStokesVelocity<false>>();
-			navier_stokes_velocity_ = std::make_unique<NavierStokesVelocity<true>>();
+			// navier_stokes_velocity_picard_ = std::make_unique<NavierStokesVelocity<false>>();
+			// navier_stokes_velocity_ = std::make_unique<NavierStokesVelocity<true>>();
 
-			incompressible_lin_elast_displacement_ = std::make_unique<IncompressibleLinearElasticityDispacement>();
-			incompressible_lin_elast_mixed_ = std::make_unique<IncompressibleLinearElasticityMixed>();
-			incompressible_lin_elast_pressure_ = std::make_unique<IncompressibleLinearElasticityPressure>();
+			// incompressible_lin_elast_displacement_ = std::make_unique<IncompressibleLinearElasticityDispacement>();
+			// incompressible_lin_elast_mixed_ = std::make_unique<IncompressibleLinearElasticityMixed>();
+			// incompressible_lin_elast_pressure_ = std::make_unique<IncompressibleLinearElasticityPressure>();
 		}
 
 		AssemblerUtils::~AssemblerUtils() {}
@@ -164,42 +164,42 @@ namespace polyfem
 											  const AssemblyValsCache &cache,
 											  StiffnessMatrix &stiffness) const
 		{
-			if (assembler == "Helmholtz")
-				helmholtz_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
-			else if (assembler == "Laplacian")
-				laplacian_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
-			else if (assembler == "Bilaplacian")
-				bilaplacian_main_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			// if (assembler == "Helmholtz")
+			// 	helmholtz_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			// else if (assembler == "Laplacian")
+			// 	laplacian_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			// else if (assembler == "Bilaplacian")
+			// 	bilaplacian_main_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 
-			else if (assembler == "LinearElasticity")
-				linear_elasticity_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
-			else if (assembler == "HookeLinearElasticity")
-				hooke_linear_elasticity_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
-			else if (assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting")
-				stokes_velocity_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
-			else if (assembler == "IncompressibleLinearElasticity")
-				incompressible_lin_elast_displacement_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			// else if (assembler == "LinearElasticity")
+			// 	linear_elasticity_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			// else if (assembler == "HookeLinearElasticity")
+			// 	hooke_linear_elasticity_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			// else if (assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting")
+			// 	stokes_velocity_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			// else if (assembler == "IncompressibleLinearElasticity")
+			// 	incompressible_lin_elast_displacement_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 
-			else if (assembler == "SaintVenant")
-				return;
-			else if (assembler == "NeoHookean")
-				return;
-			else if (assembler == "MooneyRivlin")
-				return;
-			else if (assembler == "MultiModels")
-				return;
-			// else if (assembler == "NavierStokes")
-			// return;
-			else if (assembler == "UnconstrainedOgden")
-				return;
-			else if (assembler == "IncompressibleOgden")
-				return;
-			else
-			{
-				logger().warn("{} not found, fallback to default", assembler);
-				assert(false);
-				laplacian_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
-			}
+			// else if (assembler == "SaintVenant")
+			// 	return;
+			// else if (assembler == "NeoHookean")
+			// 	return;
+			// else if (assembler == "MooneyRivlin")
+			// 	return;
+			// else if (assembler == "MultiModels")
+			// 	return;
+			// // else if (assembler == "NavierStokes")
+			// // return;
+			// else if (assembler == "UnconstrainedOgden")
+			// 	return;
+			// else if (assembler == "IncompressibleOgden")
+			// 	return;
+			// else
+			// {
+			// 	logger().warn("{} not found, fallback to default", assembler);
+			// 	assert(false);
+			// 	laplacian_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			// }
 		}
 
 		void AssemblerUtils::assemble_mass_matrix(const std::string &assembler,
@@ -229,21 +229,21 @@ namespace polyfem
 													const AssemblyValsCache &phi_cache,
 													StiffnessMatrix &stiffness) const
 		{
-			// TODO add cache
-			if (assembler == "Bilaplacian")
-				bilaplacian_mixed_->assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
+			// // TODO add cache
+			// if (assembler == "Bilaplacian")
+			// 	bilaplacian_mixed_->assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
 
-			else if (assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting")
-				stokes_mixed_->assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
-			else if (assembler == "IncompressibleLinearElasticity")
-				incompressible_lin_elast_mixed_->assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
+			// else if (assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting")
+			// 	stokes_mixed_->assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
+			// else if (assembler == "IncompressibleLinearElasticity")
+			// 	incompressible_lin_elast_mixed_->assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
 
-			else
-			{
-				logger().warn("{} not found, fallback to default", assembler);
-				assert(false);
-				stokes_mixed_->assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
-			}
+			// else
+			// {
+			// 	logger().warn("{} not found, fallback to default", assembler);
+			// 	assert(false);
+			// 	stokes_mixed_->assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
+			// }
 		}
 
 		void AssemblerUtils::assemble_pressure_problem(const std::string &assembler,
@@ -254,20 +254,20 @@ namespace polyfem
 													   const AssemblyValsCache &cache,
 													   StiffnessMatrix &stiffness) const
 		{
-			if (assembler == "Bilaplacian")
-				bilaplacian_aux_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			// if (assembler == "Bilaplacian")
+			// 	bilaplacian_aux_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 
-			else if (assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting")
-				stokes_pressure_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
-			else if (assembler == "IncompressibleLinearElasticity")
-				incompressible_lin_elast_pressure_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			// else if (assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting")
+			// 	stokes_pressure_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			// else if (assembler == "IncompressibleLinearElasticity")
+			// 	incompressible_lin_elast_pressure_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 
-			else
-			{
-				logger().warn("{} not found, fallback to default", assembler);
-				assert(false);
-				stokes_pressure_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
-			}
+			// else
+			// {
+			// 	logger().warn("{} not found, fallback to default", assembler);
+			// 	assert(false);
+			// 	stokes_pressure_->assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
+			// }
 		}
 
 		double AssemblerUtils::assemble_energy(const std::string &assembler,
@@ -311,26 +311,26 @@ namespace polyfem
 													  const Eigen::MatrixXd &displacement_prev,
 													  Eigen::MatrixXd &grad) const
 		{
-			if (assembler == "SaintVenant")
-				saint_venant_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
-			else if (assembler == "NeoHookean")
-				neo_hookean_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
-			else if (assembler == "MooneyRivlin")
-				mooney_rivlin_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
-			else if (assembler == "MultiModels")
-				multi_models_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
-			else if (assembler == "Damping")
-				damping_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
-			else if (assembler == "NavierStokes")
-				navier_stokes_velocity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
-			else if (assembler == "LinearElasticity")
-				linear_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
-			else if (assembler == "UnconstrainedOgden")
-				unconstrained_ogden_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
-			else if (assembler == "IncompressibleOgden")
-				incompressible_ogden_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
-			else
-				return;
+			// if (assembler == "SaintVenant")
+			// 	saint_venant_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
+			// else if (assembler == "NeoHookean")
+			// 	neo_hookean_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
+			// else if (assembler == "MooneyRivlin")
+			// 	mooney_rivlin_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
+			// else if (assembler == "MultiModels")
+			// 	multi_models_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
+			// else if (assembler == "Damping")
+			// 	damping_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
+			// else if (assembler == "NavierStokes")
+			// 	navier_stokes_velocity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
+			// else if (assembler == "LinearElasticity")
+			// 	linear_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
+			// else if (assembler == "UnconstrainedOgden")
+			// 	unconstrained_ogden_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
+			// else if (assembler == "IncompressibleOgden")
+			// 	incompressible_ogden_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
+			// else
+			// 	return;
 		}
 
 		void AssemblerUtils::assemble_energy_hessian(const std::string &assembler,
@@ -346,29 +346,29 @@ namespace polyfem
 													 utils::SpareMatrixCache &mat_cache,
 													 StiffnessMatrix &hessian) const
 		{
-			if (assembler == "SaintVenant")
-				saint_venant_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
-			else if (assembler == "NeoHookean")
-				neo_hookean_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
-			else if (assembler == "MooneyRivlin")
-				mooney_rivlin_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
-			else if (assembler == "MultiModels")
-				multi_models_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
-			else if (assembler == "Damping")
-				damping_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
-			else if (assembler == "NavierStokesPicard")
-				navier_stokes_velocity_picard_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
-			else if (assembler == "NavierStokes")
-				navier_stokes_velocity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
-			else if (assembler == "LinearElasticity")
-				linear_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			// if (assembler == "SaintVenant")
+			// 	saint_venant_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			// else if (assembler == "NeoHookean")
+			// 	neo_hookean_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			// else if (assembler == "MooneyRivlin")
+			// 	mooney_rivlin_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			// else if (assembler == "MultiModels")
+			// 	multi_models_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			// else if (assembler == "Damping")
+			// 	damping_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			// else if (assembler == "NavierStokesPicard")
+			// 	navier_stokes_velocity_picard_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			// else if (assembler == "NavierStokes")
+			// 	navier_stokes_velocity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			// else if (assembler == "LinearElasticity")
+			// 	linear_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
 
-			else if (assembler == "UnconstrainedOgden")
-				unconstrained_ogden_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
-			else if (assembler == "IncompressibleOgden")
-				incompressible_ogden_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
-			else
-				return;
+			// else if (assembler == "UnconstrainedOgden")
+			// 	unconstrained_ogden_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			// else if (assembler == "IncompressibleOgden")
+			// 	incompressible_ogden_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			// else
+			// 	return;
 		}
 
 		void AssemblerUtils::compute_scalar_value(const std::string &assembler,
@@ -379,44 +379,44 @@ namespace polyfem
 												  const Eigen::MatrixXd &fun,
 												  std::vector<NamedMatrix> &result) const
 		{
-			result.resize(0);
+			// result.resize(0);
 
-			if (assembler == "Mass" || assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Bilaplacian")
-				return;
+			// if (assembler == "Mass" || assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Bilaplacian")
+			// 	return;
 
-			if (assembler == "Stokes" || assembler == "OperatorSplitting" || assembler == "NavierStokes")
-				return;
+			// if (assembler == "Stokes" || assembler == "OperatorSplitting" || assembler == "NavierStokes")
+			// 	return;
 
-			Eigen::MatrixXd tmp;
+			// Eigen::MatrixXd tmp;
 
-			if (assembler == "LinearElasticity")
-				linear_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
-			else if (assembler == "HookeLinearElasticity")
-				hooke_linear_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
+			// if (assembler == "LinearElasticity")
+			// 	linear_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
+			// else if (assembler == "HookeLinearElasticity")
+			// 	hooke_linear_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
 
-			else if (assembler == "SaintVenant")
-				saint_venant_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
-			else if (assembler == "NeoHookean")
-				neo_hookean_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
-			else if (assembler == "MooneyRivlin")
-				mooney_rivlin_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
-			else if (assembler == "MultiModels")
-				multi_models_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
-			else if (assembler == "UnconstrainedOgden")
-				unconstrained_ogden_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
-			else if (assembler == "IncompressibleOgden")
-				incompressible_ogden_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
+			// else if (assembler == "SaintVenant")
+			// 	saint_venant_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
+			// else if (assembler == "NeoHookean")
+			// 	neo_hookean_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
+			// else if (assembler == "MooneyRivlin")
+			// 	mooney_rivlin_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
+			// else if (assembler == "MultiModels")
+			// 	multi_models_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
+			// else if (assembler == "UnconstrainedOgden")
+			// 	unconstrained_ogden_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
+			// else if (assembler == "IncompressibleOgden")
+			// 	incompressible_ogden_elasticity_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
 
-			else if (assembler == "IncompressibleLinearElasticity")
-				incompressible_lin_elast_displacement_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
-			else
-			{
-				logger().warn("{} not found, fallback to default", assembler);
-				assert(false);
-				return;
-			}
+			// else if (assembler == "IncompressibleLinearElasticity")
+			// 	incompressible_lin_elast_displacement_->compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
+			// else
+			// {
+			// 	logger().warn("{} not found, fallback to default", assembler);
+			// 	assert(false);
+			// 	return;
+			// }
 
-			result.emplace_back("von_mises", tmp);
+			// result.emplace_back("von_mises", tmp);
 		}
 
 		void AssemblerUtils::compute_tensor_value(const std::string &assembler,
@@ -427,206 +427,210 @@ namespace polyfem
 												  const Eigen::MatrixXd &fun,
 												  std::vector<NamedMatrix> &result) const
 		{
-			result.resize(0);
-			if (assembler == "Mass" || assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Bilaplacian")
-				return;
+			// result.resize(0);
+			// if (assembler == "Mass" || assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Bilaplacian")
+			// 	return;
 
-			if (assembler == "Stokes" || assembler == "OperatorSplitting" || assembler == "NavierStokes")
-				return;
+			// if (assembler == "Stokes" || assembler == "OperatorSplitting" || assembler == "NavierStokes")
+			// 	return;
 
-			Eigen::MatrixXd cauchy, pk1, pk2, F;
+			// Eigen::MatrixXd cauchy, pk1, pk2, F;
 
-			if (assembler == "LinearElasticity")
-			{
-				linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
-				linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
-				linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
-				linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
-			}
-			else if (assembler == "HookeLinearElasticity")
-			{
-				hooke_linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
-				hooke_linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
-				hooke_linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
-				hooke_linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
-			}
+			// if (assembler == "LinearElasticity")
+			// {
+			// 	linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
+			// 	linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+			// 	linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+			// 	linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
+			// }
+			// else if (assembler == "HookeLinearElasticity")
+			// {
+			// 	hooke_linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
+			// 	hooke_linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+			// 	hooke_linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+			// 	hooke_linear_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
+			// }
 
-			else if (assembler == "SaintVenant")
-			{
-				saint_venant_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
-				saint_venant_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
-				saint_venant_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
-				saint_venant_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
-			}
-			else if (assembler == "NeoHookean")
-			{
-				neo_hookean_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
-				neo_hookean_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
-				neo_hookean_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
-				neo_hookean_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
-			}
-			else if (assembler == "MooneyRivlin")
-			{
-				mooney_rivlin_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
-				mooney_rivlin_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
-				mooney_rivlin_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
-				mooney_rivlin_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
-			}
-			else if (assembler == "MultiModels")
-			{
-				multi_models_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
-				multi_models_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
-				multi_models_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
-				multi_models_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
-			}
-			else if (assembler == "UnconstrainedOgden")
-			{
-				unconstrained_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
-				unconstrained_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
-				unconstrained_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
-				unconstrained_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
-			}
-			else if (assembler == "IncompressibleOgden")
-			{
-				incompressible_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
-				incompressible_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
-				incompressible_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
-				incompressible_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
-			}
-			else if (assembler == "IncompressibleLinearElasticity")
-			{
-				incompressible_lin_elast_displacement_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
-				incompressible_lin_elast_displacement_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
-				incompressible_lin_elast_displacement_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
-				incompressible_lin_elast_displacement_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
-			}
+			// else if (assembler == "SaintVenant")
+			// {
+			// 	saint_venant_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
+			// 	saint_venant_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+			// 	saint_venant_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+			// 	saint_venant_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
+			// }
+			// else if (assembler == "NeoHookean")
+			// {
+			// 	neo_hookean_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
+			// 	neo_hookean_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+			// 	neo_hookean_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+			// 	neo_hookean_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
+			// }
+			// else if (assembler == "MooneyRivlin")
+			// {
+			// 	mooney_rivlin_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
+			// 	mooney_rivlin_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+			// 	mooney_rivlin_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+			// 	mooney_rivlin_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
+			// }
+			// else if (assembler == "MultiModels")
+			// {
+			// 	multi_models_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
+			// 	multi_models_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+			// 	multi_models_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+			// 	multi_models_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
+			// }
+			// else if (assembler == "UnconstrainedOgden")
+			// {
+			// 	unconstrained_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
+			// 	unconstrained_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+			// 	unconstrained_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+			// 	unconstrained_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
+			// }
+			// else if (assembler == "IncompressibleOgden")
+			// {
+			// 	incompressible_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
+			// 	incompressible_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+			// 	incompressible_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+			// 	incompressible_ogden_elasticity_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
+			// }
+			// else if (assembler == "IncompressibleLinearElasticity")
+			// {
+			// 	incompressible_lin_elast_displacement_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
+			// 	incompressible_lin_elast_displacement_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
+			// 	incompressible_lin_elast_displacement_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
+			// 	incompressible_lin_elast_displacement_->compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
+			// }
 
-			else
-			{
-				logger().warn("{} not found, fallback to default", assembler);
-				assert(false);
-				return;
-			}
+			// else
+			// {
+			// 	logger().warn("{} not found, fallback to default", assembler);
+			// 	assert(false);
+			// 	return;
+			// }
 
-			result.emplace_back("cauchy_stess", cauchy);
-			result.emplace_back("pk1_stess", pk1);
-			result.emplace_back("pk2_stess", pk2);
-			result.emplace_back("F", F);
+			// result.emplace_back("cauchy_stess", cauchy);
+			// result.emplace_back("pk1_stess", pk1);
+			// result.emplace_back("pk2_stess", pk2);
+			// result.emplace_back("F", F);
 		}
 
-		VectorNd AssemblerUtils::compute_rhs(const std::string &assembler, const AutodiffHessianPt &pt) const
-		{
-			if (assembler == "Laplacian")
-				return laplacian_->compute_rhs(pt);
-			else if (assembler == "Helmholtz")
-				return helmholtz_->compute_rhs(pt);
-			else if (assembler == "Bilaplacian")
-				return bilaplacian_main_->compute_rhs(pt);
+		// VectorNd AssemblerUtils::compute_rhs(const std::string &assembler, const AutodiffHessianPt &pt) const
+		// {
+		// 	// if (assembler == "Laplacian")
+		// 	// 	return laplacian_->compute_rhs(pt);
+		// 	// else if (assembler == "Helmholtz")
+		// 	// 	return helmholtz_->compute_rhs(pt);
+		// 	// else if (assembler == "Bilaplacian")
+		// 	// 	return bilaplacian_main_->compute_rhs(pt);
 
-			else if (assembler == "LinearElasticity")
-				return linear_elasticity_->compute_rhs(pt);
-			else if (assembler == "HookeLinearElasticity")
-				return hooke_linear_elasticity_->compute_rhs(pt);
+		// 	// else if (assembler == "LinearElasticity")
+		// 	// 	return linear_elasticity_->compute_rhs(pt);
+		// 	// else if (assembler == "HookeLinearElasticity")
+		// 	// 	return hooke_linear_elasticity_->compute_rhs(pt);
 
-			else if (assembler == "SaintVenant")
-				return saint_venant_elasticity_->compute_rhs(pt);
-			else if (assembler == "NeoHookean")
-				return neo_hookean_elasticity_->compute_rhs(pt);
-			else if (assembler == "MooneyRivlin")
-				return mooney_rivlin_elasticity_->compute_rhs(pt);
-			else if (assembler == "MultiModels")
-				return multi_models_elasticity_->compute_rhs(pt);
-			else if (assembler == "UnconstrainedOgden")
-				return unconstrained_ogden_elasticity_->compute_rhs(pt);
-			else if (assembler == "IncompressibleOgden")
-				return incompressible_ogden_elasticity_->compute_rhs(pt);
+		// 	// else if (assembler == "SaintVenant")
+		// 	// 	return saint_venant_elasticity_->compute_rhs(pt);
+		// 	// else if (assembler == "NeoHookean")
+		// 	// 	return neo_hookean_elasticity_->compute_rhs(pt);
+		// 	// else if (assembler == "MooneyRivlin")
+		// 	// 	return mooney_rivlin_elasticity_->compute_rhs(pt);
+		// 	// else if (assembler == "MultiModels")
+		// 	// 	return multi_models_elasticity_->compute_rhs(pt);
+		// 	// else if (assembler == "UnconstrainedOgden")
+		// 	// 	return unconstrained_ogden_elasticity_->compute_rhs(pt);
+		// 	// else if (assembler == "IncompressibleOgden")
+		// 	// 	return incompressible_ogden_elasticity_->compute_rhs(pt);
 
-			else if (assembler == "Stokes" || assembler == "OperatorSplitting")
-				return stokes_velocity_->compute_rhs(pt);
-			else if (assembler == "NavierStokes")
-				return navier_stokes_velocity_->compute_rhs(pt);
-			else if (assembler == "IncompressibleLinearElasticity")
-				return incompressible_lin_elast_displacement_->compute_rhs(pt);
+		// 	// else if (assembler == "Stokes" || assembler == "OperatorSplitting")
+		// 	// 	return stokes_velocity_->compute_rhs(pt);
+		// 	// else if (assembler == "NavierStokes")
+		// 	// 	return navier_stokes_velocity_->compute_rhs(pt);
+		// 	// else if (assembler == "IncompressibleLinearElasticity")
+		// 	// 	return incompressible_lin_elast_displacement_->compute_rhs(pt);
 
-			else
-			{
-				logger().warn("{} not found, fallback to default", assembler);
+		// 	// else
+		// 	// {
+		// 	// 	logger().warn("{} not found, fallback to default", assembler);
 
-				assert(false);
-				return laplacian_->compute_rhs(pt);
-			}
-		}
+		// 	// 	assert(false);
+		// 	// 	return laplacian_->compute_rhs(pt);
+		// 	// }
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-		AssemblerUtils::local_assemble(const std::string &assembler, const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
-		{
-			if (assembler == "Laplacian")
-				return laplacian_->assemble(LinearAssemblerData(vals, i, j, da));
-			else if (assembler == "Helmholtz")
-				return helmholtz_->assemble(LinearAssemblerData(vals, i, j, da));
-			else if (assembler == "Bilaplacian")
-				return bilaplacian_main_->assemble(LinearAssemblerData(vals, i, j, da));
+		// 	return VectorNd();
+		// }
 
-			else if (assembler == "LinearElasticity")
-				return linear_elasticity_->assemble(LinearAssemblerData(vals, i, j, da));
-			else if (assembler == "HookeLinearElasticity")
-				return hooke_linear_elasticity_->assemble(LinearAssemblerData(vals, i, j, da));
+		// Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+		// AssemblerUtils::local_assemble(const std::string &assembler, const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
+		// {
+		// 	// if (assembler == "Laplacian")
+		// 	// 	return laplacian_->assemble(LinearAssemblerData(vals, i, j, da));
+		// 	// else if (assembler == "Helmholtz")
+		// 	// 	return helmholtz_->assemble(LinearAssemblerData(vals, i, j, da));
+		// 	// else if (assembler == "Bilaplacian")
+		// 	// 	return bilaplacian_main_->assemble(LinearAssemblerData(vals, i, j, da));
 
-			// else if(assembler == "SaintVenant")
-			// 	return saint_venant_elasticity_->assemble(LinearAssemblerData(vals, i, j, da));
-			// else if(assembler == "NeoHookean")
-			// 	return neo_hookean_elasticity_->assemble(LinearAssemblerData(vals, i, j, da));
-			// else if(assembler == "MultiModels")
-			// 	return multi_models_elasticity_->assemble(LinearAssemblerData(vals, i, j, da));
-			// else if(assembler == "UnconstrainedOgden")
-			// 	return unconstrained_ogden_elasticity_->assemble(LinearAssemblerData(vals, i, j, da));
-			// else if(assembler == "IncompressibleOgden")
-			// 	return incompressible_ogden_elasticity_->assemble(LinearAssemblerData(vals, i, j, da));
+		// 	// else if (assembler == "LinearElasticity")
+		// 	// 	return linear_elasticity_->assemble(LinearAssemblerData(vals, i, j, da));
+		// 	// else if (assembler == "HookeLinearElasticity")
+		// 	// 	return hooke_linear_elasticity_->assemble(LinearAssemblerData(vals, i, j, da));
 
-			else if (assembler == "Stokes" || assembler == "OperatorSplitting")
-				return stokes_velocity_->assemble(LinearAssemblerData(vals, i, j, da));
-			else if (assembler == "IncompressibleLinearElasticity")
-				return incompressible_lin_elast_displacement_->assemble(LinearAssemblerData(vals, i, j, da));
+		// 	// // else if(assembler == "SaintVenant")
+		// 	// // 	return saint_venant_elasticity_->assemble(LinearAssemblerData(vals, i, j, da));
+		// 	// // else if(assembler == "NeoHookean")
+		// 	// // 	return neo_hookean_elasticity_->assemble(LinearAssemblerData(vals, i, j, da));
+		// 	// // else if(assembler == "MultiModels")
+		// 	// // 	return multi_models_elasticity_->assemble(LinearAssemblerData(vals, i, j, da));
+		// 	// // else if(assembler == "UnconstrainedOgden")
+		// 	// // 	return unconstrained_ogden_elasticity_->assemble(LinearAssemblerData(vals, i, j, da));
+		// 	// // else if(assembler == "IncompressibleOgden")
+		// 	// // 	return incompressible_ogden_elasticity_->assemble(LinearAssemblerData(vals, i, j, da));
 
-			else
-			{
-				logger().warn("{} not found, fallback to default", assembler);
+		// 	// else if (assembler == "Stokes" || assembler == "OperatorSplitting")
+		// 	// 	return stokes_velocity_->assemble(LinearAssemblerData(vals, i, j, da));
+		// 	// else if (assembler == "IncompressibleLinearElasticity")
+		// 	// 	return incompressible_lin_elast_displacement_->assemble(LinearAssemblerData(vals, i, j, da));
 
-				assert(false);
-				return laplacian_->assemble(LinearAssemblerData(vals, i, j, da));
-			}
-		}
+		// 	// else
+		// 	// {
+		// 	// 	logger().warn("{} not found, fallback to default", assembler);
 
-		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> AssemblerUtils::kernel(const std::string &assembler, const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const
-		{
-			if (assembler == "Laplacian")
-				return laplacian_->kernel(dim, r);
-			else if (assembler == "Helmholtz")
-				return helmholtz_->kernel(dim, r);
-			else if (assembler == "LinearElasticity")
-				return linear_elasticity_->kernel(dim, rvect);
-			// else if(assembler == "HookeLinearElasticity")
-			// 	return hooke_linear_elasticity_->kernel(dim, r);
+		// 	// 	assert(false);
+		// 	// 	return laplacian_->assemble(LinearAssemblerData(vals, i, j, da));
+		// 	// }
 
-			// else if(assembler == "SaintVenant")
-			// 	return saint_venant_elasticity_->kernel(dim, r);
-			// else if(assembler == "NeoHookean")
-			// 	return neo_hookean_elasticity_->kernel(dim, r);
-			// else if(assembler == "MultiModels")
-			// 	return multi_models_elasticity_->kernel(dim, r);
-			// else if(assembler == "UnconstrainedOgden")
-			// 	return unconstrained_ogden_elasticity_->kernel(dim, r);
-			// else if(assembler == "IncompressibleOgden")
-			// 	return incompressible_ogden_elasticity_->kernel(dim, r);
+		// 	return Eigen::Matrix<double, 1, 1>();
+		// }
 
-			else
-			{
-				logger().warn("{} not found, fallback to default", assembler);
+		// Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> AssemblerUtils::kernel(const std::string &assembler, const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const
+		// {
+		// 	// if (assembler == "Laplacian")
+		// 	// 	return laplacian_->kernel(dim, r);
+		// 	// else if (assembler == "Helmholtz")
+		// 	// 	return helmholtz_->kernel(dim, r);
+		// 	// else if (assembler == "LinearElasticity")
+		// 	// 	return linear_elasticity_->kernel(dim, rvect);
+		// 	// // else if(assembler == "HookeLinearElasticity")
+		// 	// // 	return hooke_linear_elasticity_->kernel(dim, r);
 
-				assert(false);
-				return laplacian_->kernel(dim, r);
-			}
-		}
+		// 	// // else if(assembler == "SaintVenant")
+		// 	// // 	return saint_venant_elasticity_->kernel(dim, r);
+		// 	// // else if(assembler == "NeoHookean")
+		// 	// // 	return neo_hookean_elasticity_->kernel(dim, r);
+		// 	// // else if(assembler == "MultiModels")
+		// 	// // 	return multi_models_elasticity_->kernel(dim, r);
+		// 	// // else if(assembler == "UnconstrainedOgden")
+		// 	// // 	return unconstrained_ogden_elasticity_->kernel(dim, r);
+		// 	// // else if(assembler == "IncompressibleOgden")
+		// 	// // 	return incompressible_ogden_elasticity_->kernel(dim, r);
+
+		// 	// else
+		// 	// {
+		// 	// 	logger().warn("{} not found, fallback to default", assembler);
+
+		// 	// 	assert(false);
+		// 	// 	return laplacian_->kernel(dim, r);
+		// 	// }
+		// }
 
 		void AssemblerUtils::set_size(const std::string &assembler, const int dim)
 		{
@@ -723,37 +727,37 @@ namespace polyfem
 
 		void AssemblerUtils::add_multimaterial(const int index, const json &params)
 		{
-			mass_mat_->add_multimaterial(index, params);
+			// mass_mat_->add_multimaterial(index, params);
 
-			laplacian_->add_multimaterial(index, params);
-			helmholtz_->add_multimaterial(index, params);
+			// laplacian_->add_multimaterial(index, params);
+			// helmholtz_->add_multimaterial(index, params);
 
-			bilaplacian_main_->add_multimaterial(index, params);
-			bilaplacian_mixed_->add_multimaterial(index, params);
-			bilaplacian_aux_->add_multimaterial(index, params);
+			// bilaplacian_main_->add_multimaterial(index, params);
+			// bilaplacian_mixed_->add_multimaterial(index, params);
+			// bilaplacian_aux_->add_multimaterial(index, params);
 
-			linear_elasticity_->add_multimaterial(index, params);
-			hooke_linear_elasticity_->add_multimaterial(index, params);
+			// linear_elasticity_->add_multimaterial(index, params);
+			// hooke_linear_elasticity_->add_multimaterial(index, params);
 
-			saint_venant_elasticity_->add_multimaterial(index, params);
-			neo_hookean_elasticity_->add_multimaterial(index, params);
-			mooney_rivlin_elasticity_->add_multimaterial(index, params);
-			multi_models_elasticity_->add_multimaterial(index, params);
-			unconstrained_ogden_elasticity_->add_multimaterial(index, params);
-			incompressible_ogden_elasticity_->add_multimaterial(index, params);
+			// saint_venant_elasticity_->add_multimaterial(index, params);
+			// neo_hookean_elasticity_->add_multimaterial(index, params);
+			// mooney_rivlin_elasticity_->add_multimaterial(index, params);
+			// multi_models_elasticity_->add_multimaterial(index, params);
+			// unconstrained_ogden_elasticity_->add_multimaterial(index, params);
+			// incompressible_ogden_elasticity_->add_multimaterial(index, params);
 
-			damping_->add_multimaterial(index, params);
+			// damping_->add_multimaterial(index, params);
 
-			stokes_velocity_->add_multimaterial(index, params);
-			stokes_mixed_->add_multimaterial(index, params);
-			stokes_pressure_->add_multimaterial(index, params);
+			// stokes_velocity_->add_multimaterial(index, params);
+			// stokes_mixed_->add_multimaterial(index, params);
+			// stokes_pressure_->add_multimaterial(index, params);
 
-			navier_stokes_velocity_->add_multimaterial(index, params);
-			navier_stokes_velocity_picard_->add_multimaterial(index, params);
+			// navier_stokes_velocity_->add_multimaterial(index, params);
+			// navier_stokes_velocity_picard_->add_multimaterial(index, params);
 
-			incompressible_lin_elast_displacement_->add_multimaterial(index, params);
-			incompressible_lin_elast_mixed_->add_multimaterial(index, params);
-			incompressible_lin_elast_pressure_->add_multimaterial(index, params);
+			// incompressible_lin_elast_displacement_->add_multimaterial(index, params);
+			// incompressible_lin_elast_mixed_->add_multimaterial(index, params);
+			// incompressible_lin_elast_pressure_->add_multimaterial(index, params);
 		}
 
 		void AssemblerUtils::merge_mixed_matrices(

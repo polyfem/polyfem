@@ -54,33 +54,6 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-	IncompressibleLinearElasticityDispacement::compute_rhs(const AutodiffHessianPt &pt) const
-	{
-		assert(pt.size() == size());
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
-		assert(false);
-		return res;
-	}
-
-	void IncompressibleLinearElasticityDispacement::compute_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &stresses) const
-	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
-			Eigen::MatrixXd tmp = stress;
-			auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
-			return Eigen::MatrixXd(a);
-		});
-	}
-
-	void IncompressibleLinearElasticityDispacement::compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
-	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, ElasticityTensorType::CAUCHY, stresses, [&](const Eigen::MatrixXd &stress) {
-			Eigen::Matrix<double, 1, 1> res;
-			res.setConstant(von_mises_stress_for_stress_tensor(stress));
-			return res;
-		});
-	}
-
 	void IncompressibleLinearElasticityDispacement::assign_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		assert(size() == 2 || size() == 3);
@@ -138,15 +111,6 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-	IncompressibleLinearElasticityMixed::compute_rhs(const AutodiffHessianPt &pt) const
-	{
-		assert(pt.size() == rows());
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(rows());
-		assert(false);
-		return res;
-	}
-
 	void IncompressibleLinearElasticityPressure::add_multimaterial(const int index, const json &params)
 	{
 		assert(size() == 2 || size() == 3);
@@ -154,7 +118,7 @@ namespace polyfem::assembler
 		params_.add_multimaterial(index, params, size() == 3);
 	}
 
-	Eigen::Matrix<double, 1, 1>
+	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 	IncompressibleLinearElasticityPressure::assemble(const LinearAssemblerData &data) const
 	{
 		// -1/lambda phi_ * phi_j

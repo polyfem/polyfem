@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 
 #include <polyfem/assembler/Problem.hpp>
@@ -18,7 +18,7 @@ namespace polyfem
 			// size of the problem, bases
 			// formulation, problem
 			// and solver used internally
-			RhsAssembler(const AssemblerUtils &assembler, const mesh::Mesh &mesh, const mesh::Obstacle &obstacle,
+			RhsAssembler(const Assembler &assembler, const mesh::Mesh &mesh, const mesh::Obstacle &obstacle,
 						 const std::vector<int> &dirichlet_nodes, const std::vector<int> &neumann_nodes,
 						 const std::vector<RowVectorNd> &dirichlet_nodes_position, const std::vector<RowVectorNd> &neumann_nodes_position,
 						 const int n_basis, const int size,
@@ -78,7 +78,7 @@ namespace polyfem
 			// they are projected on the FEM bases, it inverts a linear system
 			void time_bc(const std::function<void(const mesh::Mesh &, const Eigen::MatrixXi &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &fun, Eigen::MatrixXd &sol) const;
 
-			const AssemblerUtils &assembler_;
+			const Assembler &assembler_;
 			const mesh::Mesh &mesh_;
 			const mesh::Obstacle &obstacle_;
 			const int n_basis_;

@@ -8,25 +8,19 @@ namespace polyfem
 {
 	namespace assembler
 	{
-		class Laplacian : public ScalarLinearAssembler
+		class Laplacian : public LinearAssembler
 		{
 		public:
-			using ScalarLinearAssembler::assemble;
-
 			// computes local stiffness matrix (1x1) for bases i,j
-			Eigen::Matrix<double, 1, 1> assemble(const LinearAssemblerData &data) const override;
+			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> assemble(const LinearAssemblerData &data) const override;
 
 			// uses autodiff to compute the rhs for a fabricated solution
 			// in this case it just return pt.getHessian().trace()
 			// pt is the evaluation of the solution at a point
-			Eigen::Matrix<double, 1, 1> compute_rhs(const AutodiffHessianPt &pt) const;
+			VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 
 			// kernel of the pde, used in kernel problem
-			Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const int dim, const AutodiffScalarGrad &r) const;
-
-			// laplacian has no parameters.
-			// in case these are passes trough params
-			void add_multimaterial(const int index, const json &params) {}
+			Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const override;
 		};
 	} // namespace assembler
 } // namespace polyfem

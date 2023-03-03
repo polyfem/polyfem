@@ -8,7 +8,7 @@
 namespace polyfem::assembler
 {
 	// Similar to HookeLinear but with non-linear stress strain: C:½(F+Fᵀ+FᵀF)
-	class SaintVenantElasticity : public NLAssembler
+	class SaintVenantElasticity : public NLAssembler, ElasticityAssembler
 	{
 	public:
 		SaintVenantElasticity();
@@ -21,18 +21,20 @@ namespace polyfem::assembler
 		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const override;
 		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const;
+		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 
 		void set_size(const int size) override;
 
 		void set_stiffness_tensor(int i, int j, const double val);
 		double stifness_tensor(int i, int j) const;
 
-		void compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
-		void compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &tensor) const;
+		void add_multimaterial(const int index, const json &params) override;
 
-		void add_multimaterial(const int index, const json &params);
+		std::string name() const override { return "SaintVenant"; }
+		std::map<std::string, ParamFunc> parameters() const override;
+
+	protected:
+		void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
 
 	private:
 		ElasticityTensor elasticity_tensor_;
@@ -42,7 +44,5 @@ namespace polyfem::assembler
 
 		template <typename T>
 		T compute_energy_aux(const NonLinearAssemblerData &data) const;
-
-		void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
 	};
 } // namespace polyfem::assembler

@@ -9,7 +9,7 @@
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/assembler/Problem.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
@@ -126,7 +126,10 @@ namespace polyfem
 		//---------------------------------------------------
 
 		/// assembler, it dispatches call to the different assembers based on the formulation
-		assembler::AssemblerUtils assembler;
+		std::shared_ptr<assembler::Assembler> assembler = nullptr;
+		std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
+		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
+		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
 		/// current problem, it contains rhs and bc
 		std::shared_ptr<assembler::Problem> problem;
 
@@ -238,7 +241,7 @@ namespace polyfem
 			std::vector<int> body_ids(mesh->n_elements());
 			for (int i = 0; i < mesh->n_elements(); ++i)
 				body_ids[i] = mesh->get_body_id(i);
-			assembler.set_materials(body_ids, args["materials"]);
+			assembler->set_materials(body_ids, args["materials"]);
 		}
 
 		//---------------------------------------------------

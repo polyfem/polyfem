@@ -78,15 +78,11 @@ namespace polyfem::assembler
 		};
 	} // namespace
 
-	template <typename LocalBlockMatrix>
-	LinearAssembler<LocalBlockMatrix>::LinearAssembler()
+	LinearAssembler::LinearAssembler()
 	{
-		if constexpr (std::is_same<LocalBlockMatrix, Eigen::Matrix<double, 1, 1>>::value)
-			set_size(1);
 	}
 
-	template <typename LocalBlockMatrix>
-	void LinearAssembler<LocalBlockMatrix>::assemble(
+	void LinearAssembler::assemble(
 		const bool is_volume,
 		const int n_basis,
 		const std::vector<ElementBases> &bases,
@@ -95,6 +91,8 @@ namespace polyfem::assembler
 		StiffnessMatrix &stiffness,
 		const bool is_mass) const
 	{
+		assert(size() > 0);
+
 		const int max_triplets_size = int(1e7);
 		const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * size());
 		// #ifdef POLYFEM_WITH_TBB
@@ -299,15 +297,11 @@ namespace polyfem::assembler
 		// stiffness.setFromTriplets(entries.begin(), entries.end());
 	}
 
-	template <typename LocalBlockMatrix>
-	MixedAssembler<LocalBlockMatrix>::MixedAssembler()
+	MixedAssembler::MixedAssembler()
 	{
-		if constexpr (std::is_same<LocalBlockMatrix, Eigen::Matrix<double, 1, 1>>::value)
-			set_size(1);
 	}
 
-	template <typename LocalBlockMatrix>
-	void MixedAssembler<LocalBlockMatrix>::assemble(
+	void MixedAssembler::assemble(
 		const bool is_volume,
 		const int n_psi_basis,
 		const int n_phi_basis,
@@ -318,6 +312,7 @@ namespace polyfem::assembler
 		const AssemblyValsCache &phi_cache,
 		StiffnessMatrix &stiffness) const
 	{
+		assert(size() > 0);
 		assert(phi_bases.size() == psi_bases.size());
 
 		const int max_triplets_size = int(1e7);
@@ -655,10 +650,5 @@ namespace polyfem::assembler
 		timerg.stop();
 		logger().trace("done merge assembly {}s...", timerg.getElapsedTime());
 	}
-
-	template class LinearAssembler<Eigen::Matrix<double, 1, 1>>;
-	template class LinearAssembler<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>>;
-	template class MixedAssembler<Eigen::Matrix<double, 1, 1>>;
-	template class MixedAssembler<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>>;
 
 } // namespace polyfem::assembler

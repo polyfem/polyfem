@@ -3,7 +3,8 @@
 
 namespace polyfem::assembler
 {
-	Eigen::Matrix<double, 1, 1> Helmholtz::assemble(const LinearAssemblerData &data) const
+	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+	Helmholtz::assemble(const LinearAssemblerData &data) const
 	{
 		const Eigen::MatrixXd &gradi = data.vals.basis_values[data.i].grad_t_m;
 		const Eigen::MatrixXd &gradj = data.vals.basis_values[data.j].grad_t_m;
@@ -19,7 +20,7 @@ namespace polyfem::assembler
 		return Eigen::Matrix<double, 1, 1>::Constant(res);
 	}
 
-	Eigen::Matrix<double, 1, 1> Helmholtz::compute_rhs(const AutodiffHessianPt &pt) const
+	VectorNd Helmholtz::compute_rhs(const AutodiffHessianPt &pt) const
 	{
 		Eigen::Matrix<double, 1, 1> result;
 		assert(pt.size() == 1);
@@ -35,7 +36,7 @@ namespace polyfem::assembler
 		}
 	}
 
-	Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> Helmholtz::kernel(const int dim, const AutodiffScalarGrad &r) const
+	Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> Helmholtz::kernel(const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const
 	{
 		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> res(1);
 

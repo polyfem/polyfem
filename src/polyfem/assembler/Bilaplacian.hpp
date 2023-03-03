@@ -8,61 +8,42 @@ namespace polyfem::assembler
 	// local assembler for bilaplacian, see laplacian
 	//  0 L
 	//  L M
-	class BilaplacianMain : public ScalarLinearAssembler
+	class BilaplacianMain : public LinearAssembler
 	{
 	public:
-		using ScalarLinearAssembler::assemble;
+		using LinearAssembler::assemble;
 
-		Eigen::Matrix<double, 1, 1>
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override
 		{
 			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
 		}
 
-		Eigen::Matrix<double, 1, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const;
-
-		void add_multimaterial(const int index, const json &params) {}
+		std::string name() const override { return "BiLaplacian"; }
 	};
 
-	class BilaplacianMixed : public ScalarMixedAssembler
+	class BilaplacianMixed : public MixedAssembler
 	{
 	public:
-		using ScalarMixedAssembler::assemble;
+		using MixedAssembler::assemble;
 
 		// res is R
-		Eigen::Matrix<double, 1, 1>
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 		assemble(const MixedAssemblerData &data) const override;
-
-		Eigen::Matrix<double, 1, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const
-		{
-			assert(false);
-			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
-		}
 
 		inline int rows() const override { return 1; }
 		inline int cols() const override { return 1; }
-
-		void add_multimaterial(const int index, const json &params) {}
 	};
 
-	class BilaplacianAux : public ScalarLinearAssembler
+	class BilaplacianAux : public LinearAssembler
 	{
 	public:
-		using ScalarLinearAssembler::assemble;
+		using LinearAssembler::assemble;
 
 		// res is R
-		Eigen::Matrix<double, 1, 1>
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;
 
-		Eigen::Matrix<double, 1, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const
-		{
-			assert(false);
-			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
-		}
-
-		void add_multimaterial(const int index, const json &params) {}
+		std::string name() const override { return "BiLaplacianAux"; }
 	};
 } // namespace polyfem::assembler

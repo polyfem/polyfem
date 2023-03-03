@@ -33,15 +33,12 @@ namespace polyfem::assembler
 		assemble_hessian(const NonLinearAssemblerData &data) const override;
 
 		// rhs for fabbricated solution
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const;
+		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 
 		// set viscosity
-		void add_multimaterial(const int index, const json &params);
+		void add_multimaterial(const int index, const json &params) override;
 
-		// return velociry and norm, for compliancy with elasticity
-		void compute_norm_velocity(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &velocity, Eigen::MatrixXd &norms) const;
-		void compute_stress_tensor(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &velocity, Eigen::MatrixXd &tensor) const;
+		bool is_fluid() const override { return true; }
 
 	private:
 		double viscosity_ = 1;
