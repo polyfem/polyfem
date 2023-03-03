@@ -1,8 +1,5 @@
 #include "HookeLinearElasticity.hpp"
 
-#include <polyfem/basis/Basis.hpp>
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
-
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
 namespace polyfem::assembler
@@ -39,7 +36,7 @@ namespace polyfem::assembler
 
 	void HookeLinearElasticity::add_multimaterial(const int index, const json &params)
 	{
-		assert(size_ == 2 || size_ == 3);
+		assert(size() == 2 || size() == 3);
 
 		if (!params.contains("elasticity_tensor") || params["elasticity_tensor"].empty())
 		{
@@ -68,8 +65,8 @@ namespace polyfem::assembler
 
 	void HookeLinearElasticity::set_size(const int size)
 	{
+		Assembler::set_size(size);
 		elasticity_tensor_.resize(size);
-		size_ = size;
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
@@ -89,7 +86,7 @@ namespace polyfem::assembler
 		{
 			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res_k(size() * size());
 
-			if (size_ == 2)
+			if (size() == 2)
 			{
 				const Eigen::Matrix2d eps_x_i = strain<2>(gradi, data.vals.jac_it[k], k, 0);
 				const Eigen::Matrix2d eps_y_i = strain<2>(gradi, data.vals.jac_it[k], k, 1);

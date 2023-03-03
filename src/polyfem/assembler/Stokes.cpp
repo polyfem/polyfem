@@ -1,24 +1,15 @@
 #include "Stokes.hpp"
 
-#include <polyfem/basis/Basis.hpp>
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
-#include <polyfem/utils/ElasticityUtils.hpp>
-
 namespace polyfem::assembler
 {
 	void StokesVelocity::add_multimaterial(const int index, const json &params)
 	{
-		assert(size_ == 2 || size_ == 3);
+		assert(size() == 2 || size() == 3);
 
 		if (params.count("viscosity"))
 		{
 			viscosity_ = params["viscosity"];
 		}
-	}
-
-	void StokesVelocity::set_size(const int size)
-	{
-		size_ = size;
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
@@ -129,11 +120,6 @@ namespace polyfem::assembler
 
 			tensor.row(p) = vel;
 		}
-	}
-
-	void StokesMixed::set_size(const int size)
-	{
-		size_ = size;
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>

@@ -1,11 +1,6 @@
-// #define EIGEN_STACK_ALLOCATION_LIMIT 0
-
 #include "SaintVenantElasticity.hpp"
 
-#include <polyfem/basis/Basis.hpp>
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
-
-#include <igl/Timer.h>
 
 namespace polyfem::assembler
 {
@@ -30,7 +25,7 @@ namespace polyfem::assembler
 
 	void SaintVenantElasticity::add_multimaterial(const int index, const json &params)
 	{
-		assert(size_ == 2 || size_ == 3);
+		assert(size() == 2 || size() == 3);
 
 		if (!params.contains("elasticity_tensor"))
 		{
@@ -59,8 +54,8 @@ namespace polyfem::assembler
 
 	void SaintVenantElasticity::set_size(const int size)
 	{
+		Assembler::set_size(size);
 		elasticity_tensor_.resize(size);
-		size_ = size;
 	}
 
 	template <typename T, unsigned long N>

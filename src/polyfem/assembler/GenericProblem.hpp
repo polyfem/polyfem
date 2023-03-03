@@ -1,13 +1,8 @@
 #pragma once
 
-#include "Problem.hpp"
+#include <polyfem/assembler/Problem.hpp>
 #include <polyfem/utils/ExpressionValue.hpp>
 #include <polyfem/utils/Interpolation.hpp>
-
-#include <Eigen/Dense>
-
-#include <array>
-#include <vector>
 
 namespace polyfem
 {
@@ -46,7 +41,8 @@ namespace polyfem
 
 			double eval(const RowVectorNd &pts, const double t) const
 			{
-				double x = pts(0), y = pts(1), z = pts.size() == 2 ? 0 : pts(2);
+				assert(pts.size() == 2 || pts.size() == 3);
+				double x = pts(0), y = pts(1), z = pts.size() == 3 ? pts(2) : 0.0;
 				return value(x, y, z, t) * interpolation->eval(t);
 			}
 		};

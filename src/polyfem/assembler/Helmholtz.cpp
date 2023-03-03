@@ -1,8 +1,6 @@
 #include "Helmholtz.hpp"
 #include <polyfem/utils/Bessel.hpp>
 
-#include <iostream>
-
 namespace polyfem::assembler
 {
 	Eigen::Matrix<double, 1, 1> Helmholtz::assemble(const LinearAssemblerData &data) const

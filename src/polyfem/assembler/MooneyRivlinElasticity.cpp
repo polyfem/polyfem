@@ -1,7 +1,5 @@
 #include "MooneyRivlinElasticity.hpp"
 
-#include <polyfem/basis/Basis.hpp>
-
 namespace polyfem::assembler
 {
 	MooneyRivlinElasticity::MooneyRivlinElasticity()

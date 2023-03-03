@@ -12,7 +12,6 @@ target_sources(polyfem PRIVATE ${SOURCES})
 # Subfolders
 ################################################################################
 
-add_subdirectory(state)
 add_subdirectory(assembler)
 add_subdirectory(autogen)
 add_subdirectory(basis)
@@ -20,7 +19,8 @@ add_subdirectory(io)
 add_subdirectory(mesh)
 add_subdirectory(problem)
 add_subdirectory(quadrature)
-add_subdirectory(solver)
 add_subdirectory(refinement)
+add_subdirectory(solver)
+add_subdirectory(state)
 add_subdirectory(time_integrator)
 add_subdirectory(utils)

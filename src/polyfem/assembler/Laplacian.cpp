@@ -1,7 +1,5 @@
 #include "Laplacian.hpp"
 
-#include <iostream>
-
 namespace polyfem::assembler
 {
 	Eigen::Matrix<double, 1, 1> Laplacian::assemble(const LinearAssemblerData &data) const

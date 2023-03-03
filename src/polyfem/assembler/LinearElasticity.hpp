@@ -1,35 +1,33 @@
 #pragma once
 
-#include "AssemblerData.hpp"
-#include "MatParams.hpp"
-
-#include <polyfem/Common.hpp>
-
-#include <polyfem/utils/ElasticityUtils.hpp>
-
+#include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
-
-#include <Eigen/Dense>
-#include <functional>
+#include <polyfem/utils/ElasticityUtils.hpp>
 
 // local assembler for linear elasticity
 namespace polyfem::assembler
 {
-	class LinearElasticity
+	class LinearElasticity : public TensorLinearAssembler, NLAssembler
 	{
 	public:
+		using NLAssembler::assemble_energy;
+		using NLAssembler::assemble_grad;
+		using NLAssembler::assemble_hessian;
+		using TensorLinearAssembler::assemble;
+
 		/// computes local stiffness matrix is R^{dim²} for bases i,j
 		// vals stores the evaluation for that element
 		// da contains both the quadrature weight and the change of metric in the integral
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-		assemble(const LinearAssemblerData &data) const;
+		assemble(const LinearAssemblerData &data) const override;
 
-		// neccessary for mixing linear model with non-linear collision response
-		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const;
-		// compute gradient of elastic energy, as assembler
-		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const;
 		// compute elastic energy
-		double compute_energy(const NonLinearAssemblerData &data) const;
+		double compute_energy(const NonLinearAssemblerData &data) const override;
+		// neccessary for mixing linear model with non-linear collision response
+		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
+		// compute gradient of elastic energy, as assembler
+		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const override;
 
 		// kernel of the pde, used in kernel problem
 		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const int dim, const AutodiffGradPt &r) const;
@@ -48,10 +46,6 @@ namespace polyfem::assembler
 		void compute_dstress_dgradu_multiply_mat(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const;
 		void compute_dstress_dmu_dlambda(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &dstress_dmu, Eigen::MatrixXd &dstress_dlambda) const;
 
-		// size of the problem, this is a tensor problem so the size is the size of the mesh
-		void set_size(const int size) { size_ = size; }
-		inline int size() const { return size_; }
-
 		// inialize material parameter
 		void add_multimaterial(const int index, const json &params);
 
@@ -60,7 +54,6 @@ namespace polyfem::assembler
 		void set_params(const LameParameters &params) { params_ = params; }
 
 	private:
-		int size_ = -1;
 		// class that stores and compute lame parameters per point
 		LameParameters params_;
 

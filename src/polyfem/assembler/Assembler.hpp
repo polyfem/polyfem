@@ -1,27 +1,34 @@
 #pragma once
 
-#include "AssemblyValsCache.hpp"
-
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/AssemblerData.hpp>
+#include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
-#include <polyfem/utils/ElasticityUtils.hpp>
-
-#include <Eigen/Sparse>
-#include <vector>
-#include <iostream>
-#include <cmath>
-#include <memory>
 
 // this casses are instantiated in the cpp, cannot be used with generic assembler
 // without adding template instantiation
 namespace polyfem::assembler
 {
-	// assemble matrix based on the local assembler
-	// local assembler is eg Laplce, LinearElasticy etc
-	template <class LocalAssembler>
 	class Assembler
 	{
 	public:
+		virtual ~Assembler() = default;
+
+		int size() const { return size_; }
+		virtual void set_size(const int size) { size_ = size; }
+
+	protected:
+		int size_ = -1;
+	};
+
+	// assemble matrix based on the local assembler
+	// local assembler is eg Laplce, LinearElasticy etc
+	template <typename LocalBlockMatrix>
+	class LinearAssembler : virtual public Assembler
+	{
+	public:
+		LinearAssembler();
+		virtual ~LinearAssembler() = default;
+
 		// assembler stiffness matrix, is the mesh is volumetric, number of bases and bases (FE and geom)
 		// gbases and bases can be the same (ie isoparametric)
 		void assemble(
@@ -33,19 +40,21 @@ namespace polyfem::assembler
 			StiffnessMatrix &stiffness,
 			const bool is_mass = false) const;
 
-		// references to local assemblers
-		inline LocalAssembler &local_assembler() { return local_assembler_; }
-		inline const LocalAssembler &local_assembler() const { return local_assembler_; }
-
-	private:
-		LocalAssembler local_assembler_;
+	protected:
+		virtual LocalBlockMatrix assemble(const LinearAssemblerData &data) const = 0;
 	};
 
+	using ScalarLinearAssembler = LinearAssembler<Eigen::Matrix<double, 1, 1>>;
+	using TensorLinearAssembler = LinearAssembler<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>>;
+
 	// mixed formulation assembler
-	template <class LocalAssembler>
-	class MixedAssembler
+	template <typename LocalBlockMatrix>
+	class MixedAssembler : virtual public Assembler
 	{
 	public:
+		MixedAssembler();
+		virtual ~MixedAssembler() = default;
+
 		// this assembler takes two bases: psi_bases are the scalar ones, phi_bases are the tensor ones
 		// both have the same geometric mapping
 		void assemble(
@@ -59,18 +68,32 @@ namespace polyfem::assembler
 			const AssemblyValsCache &phi_cache,
 			StiffnessMatrix &stiffness) const;
 
-		inline LocalAssembler &local_assembler() { return local_assembler_; }
-		inline const LocalAssembler &local_assembler() const { return local_assembler_; }
+	protected:
+		virtual int rows() const = 0;
+		virtual int cols() const = 0;
 
-	private:
-		LocalAssembler local_assembler_;
+		virtual LocalBlockMatrix assemble(const MixedAssemblerData &data) const = 0;
 	};
 
+	using ScalarMixedAssembler = MixedAssembler<Eigen::Matrix<double, 1, 1>>;
+	using TensorMixedAssembler = MixedAssembler<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>>;
+
 	// non-linear assembler (eg neohookean elasticity)
-	template <class LocalAssembler>
-	class NLAssembler
+	class NLAssembler : virtual public Assembler
 	{
 	public:
+		virtual ~NLAssembler() = default;
+
+		// assemble energy
+		double assemble_energy(
+			const bool is_volume,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double dt,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev) const;
+
 		// assemble gradient of energy (rhs)
 		void assemble_grad(
 			const bool is_volume,
@@ -97,20 +120,10 @@ namespace polyfem::assembler
 			utils::SpareMatrixCache &mat_cache,
 			StiffnessMatrix &grad) const;
 
-		// assemble energy
-		double assemble(
-			const bool is_volume,
-			const std::vector<basis::ElementBases> &bases,
-			const std::vector<basis::ElementBases> &gbases,
-			const AssemblyValsCache &cache,
-			const double dt,
-			const Eigen::MatrixXd &displacement,
-			const Eigen::MatrixXd &displacement_prev) const;
-
-		inline LocalAssembler &local_assembler() { return local_assembler_; }
-		inline const LocalAssembler &local_assembler() const { return local_assembler_; }
-
-	private:
-		LocalAssembler local_assembler_;
+	protected:
+		// energy, gradient, and hessian used in newton method
+		virtual double compute_energy(const NonLinearAssemblerData &data) const = 0;
+		virtual Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const = 0;
+		virtual Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const = 0;
 	};
 } // namespace polyfem::assembler

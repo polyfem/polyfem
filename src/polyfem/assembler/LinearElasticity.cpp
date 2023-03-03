@@ -1,8 +1,5 @@
 #include "LinearElasticity.hpp"
 
-#include <polyfem/basis/Basis.hpp>
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
-
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
 namespace polyfem
@@ -13,9 +10,9 @@ namespace polyfem
 	{
 		void LinearElasticity::add_multimaterial(const int index, const json &params)
 		{
-			assert(size_ == 2 || size_ == 3);
+			assert(size() == 2 || size() == 3);
 
-			params_.add_multimaterial(index, params, size_ == 3);
+			params_.add_multimaterial(index, params, size() == 3);
 		}
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
@@ -132,7 +129,7 @@ namespace polyfem
 
 			double lambda, mu;
 			// TODO!
-			params_.lambda_mu(0, 0, 0, pt(0).getValue(), pt(1).getValue(), size_ == 2 ? 0. : pt(2).getValue(), 0, lambda, mu);
+			params_.lambda_mu(0, 0, 0, pt(0).getValue(), pt(1).getValue(), size() == 2 ? 0. : pt(2).getValue(), 0, lambda, mu);
 
 			if (size() == 2)
 				autogen::linear_elasticity_2d_function(pt, lambda, mu, res);
