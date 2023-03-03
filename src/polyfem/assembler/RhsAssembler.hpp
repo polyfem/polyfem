@@ -4,6 +4,7 @@
 #include <polyfem/mesh/Obstacle.hpp>
 
 #include <polyfem/assembler/Problem.hpp>
+#include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 
 namespace polyfem

@@ -8,6 +8,7 @@
 #include "function/RBFWithQuadratic.hpp"
 #include "function/RBFWithQuadraticLagrange.hpp"
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polyfem/autogen/auto_q_bases.hpp>
 
@@ -172,12 +173,12 @@ namespace polyfem
 		////////////////////////////////////////////////////////////////////////////////
 
 		// Compute the integral constraints for each basis of the mesh
-		void PolygonalBasis2d::compute_integral_constraints(const AssemblerUtils &assembler, const std::string &assembler_name, const Mesh2D &mesh, const int n_bases,
+		void PolygonalBasis2d::compute_integral_constraints(const LinearAssembler &assembler, const Mesh2D &mesh, const int n_bases,
 															const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, Eigen::MatrixXd &basis_integrals)
 		{
 			assert(!mesh.is_volume());
 
-			const int dim = AssemblerUtils::is_tensor(assembler_name) ? 2 : 1;
+			const int dim = assembler.is_tensor() ? 2 : 1;
 
 			basis_integrals.resize(n_bases, RBFWithQuadratic::index_mapping(dim - 1, dim - 1, 4, dim) + 1);
 			basis_integrals.setZero();
@@ -205,7 +206,7 @@ namespace polyfem
 				// add monomials
 				vals.basis_values.resize(n_local_bases + 5);
 				RBFWithQuadratic::setup_monomials_vals_2d(n_local_bases, vals.val, vals);
-				RBFWithQuadratic::setup_monomials_strong_2d(dim, assembler, assembler_name, vals.val, da, strong);
+				RBFWithQuadratic::setup_monomials_strong_2d(dim, assembler, vals.val, da, strong);
 
 				for (int j = 0; j < n_local_bases; ++j)
 				{
@@ -213,7 +214,7 @@ namespace polyfem
 
 					for (int d = 0; d < 5; ++d)
 					{
-						const auto tmp = assembler.local_assemble(assembler_name, vals, n_local_bases + d, j, da);
+						const auto tmp = assembler.assemble(LinearAssemblerData(vals, n_local_bases + d, j, da));
 
 						for (size_t ii = 0; ii < v.global.size(); ++ii)
 						{
@@ -342,7 +343,7 @@ namespace polyfem
 		// } // anonymous namespace
 		// -----------------------------------------------------------------------------
 
-		int PolygonalBasis2d::build_bases(const AssemblerUtils &assembler, const std::string &assembler_name, const int n_samples_per_edge, const Mesh2D &mesh, const int n_bases,
+		int PolygonalBasis2d::build_bases(const LinearAssembler &assembler, const int n_samples_per_edge, const Mesh2D &mesh, const int n_bases,
 										  const int quadrature_order, const int mass_quadrature_order, const int integral_constraints, std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases,
 										  const std::map<int, InterfaceData> &poly_edge_to_data, std::map<int, Eigen::MatrixXd> &mapped_boundary)
 		{
@@ -352,11 +353,11 @@ namespace polyfem
 				return 0;
 			}
 
-			const int dim = AssemblerUtils::is_tensor(assembler_name) ? 2 : 1;
+			const int dim = assembler.is_tensor() ? 2 : 1;
 
 			// Step 1: Compute integral constraints
 			Eigen::MatrixXd basis_integrals;
-			compute_integral_constraints(assembler, assembler_name, mesh, n_bases, bases, gbases, basis_integrals);
+			compute_integral_constraints(assembler, mesh, n_bases, bases, gbases, basis_integrals);
 
 			// Step 2: Compute the rest =)
 			PolygonQuadrature poly_quadr;
@@ -404,7 +405,7 @@ namespace polyfem
 
 				// Compute quadrature points for the polygon
 				Quadrature tmp_quadrature;
-				poly_quadr.get_quadrature(collocation_points, quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler_name, 2, AssemblerUtils::BasisType::POLY, 2), tmp_quadrature);
+				poly_quadr.get_quadrature(collocation_points, quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler.name(), 2, AssemblerUtils::BasisType::POLY, 2), tmp_quadrature);
 
 				Quadrature tmp_mass_quadrature;
 				poly_quadr.get_quadrature(collocation_points, mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::POLY, 2), tmp_mass_quadrature);
@@ -457,7 +458,7 @@ namespace polyfem
 				}
 				else if (integral_constraints == 2)
 				{
-					set_rbf(std::make_shared<RBFWithQuadraticLagrange>(assembler, assembler_name, kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
+					set_rbf(std::make_shared<RBFWithQuadraticLagrange>(assembler, kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
 				}
 				else
 				{

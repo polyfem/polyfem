@@ -974,7 +974,10 @@ namespace polyfem
 						bases, local_boundary, polys);
 				}
 				else
-					new_bases = basis::PolygonalBasis2d::build_bases(*assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, bases, poly_edge_to_data, polys);
+				{
+					assert(assembler->is_linear());
+					new_bases = basis::PolygonalBasis2d::build_bases(static_cast<const LinearAssembler &>(*assembler), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, bases, poly_edge_to_data, polys);
+				}
 			}
 		}
 		else
@@ -986,7 +989,11 @@ namespace polyfem
 					logger().error("Barycentric bases not supported in 3D");
 					throw "not implemented";
 				}
-				new_bases = basis::PolygonalBasis3d::build_bases(*assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys_3d);
+				else
+				{
+					assert(assembler->is_linear());
+					new_bases = basis::PolygonalBasis3d::build_bases(static_cast<const LinearAssembler &>(*assembler), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys_3d);
+				}
 			}
 			else
 			{
@@ -1009,7 +1016,10 @@ namespace polyfem
 						bases, local_boundary, polys);
 				}
 				else
-					new_bases = basis::PolygonalBasis2d::build_bases(*assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys);
+				{
+					assert(assembler->is_linear());
+					new_bases = basis::PolygonalBasis2d::build_bases(static_cast<const LinearAssembler &>(*assembler), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys);
+				}
 			}
 		}
 

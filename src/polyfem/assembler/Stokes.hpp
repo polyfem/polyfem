@@ -9,6 +9,7 @@ namespace polyfem::assembler
 	class StokesVelocity : public LinearAssembler
 	{
 	public:
+		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 		// res is R^{dim²}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;

@@ -160,7 +160,6 @@ namespace polyfem::assembler
 
 		virtual bool is_linear() const override { return true; }
 
-	protected:
 		virtual Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> assemble(const LinearAssemblerData &data) const = 0;
 	};
 

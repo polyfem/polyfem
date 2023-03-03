@@ -125,53 +125,27 @@ namespace polyfem::assembler
 		}
 	}
 
-	void MultiModel::compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &stresses) const
+	void MultiModel::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		const std::string model = multi_material_models_[el_id];
 
 		if (model == "SaintVenant")
-			saint_venant_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
+			saint_venant_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
 		else if (model == "NeoHookean")
-			neo_hookean_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
+			neo_hookean_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
 		else if (model == "LinearElasticity")
-			linear_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
+			linear_elasticity_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
 		// else if (model == "HookeLinearElasticity")
-		// return hooke_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
+		// return hooke_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
 		else if (model == "MooneyRivlin")
-			return mooney_rivlin_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
+			return mooney_rivlin_elasticity_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
 		else if (model == "UnconstrainedOgden")
-			return unconstrained_ogden_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
+			return unconstrained_ogden_elasticity_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
 		else if (model == "IncompressibleOgden")
-			return incompressible_ogden_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, type, stresses);
+			return incompressible_ogden_elasticity_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
 		else
 		{
 			assert(false);
-			stresses = Eigen::MatrixXd(0, 0);
-		}
-	}
-
-	void MultiModel::compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
-	{
-		const std::string model = multi_material_models_[el_id];
-
-		if (model == "SaintVenant")
-			saint_venant_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
-		else if (model == "NeoHookean")
-			neo_hookean_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
-		else if (model == "LinearElasticity")
-			linear_elasticity_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
-		// else if (model == "HookeLinearElasticity")
-		// return hooke_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
-		else if (model == "MooneyRivlin")
-			return mooney_rivlin_elasticity_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
-		else if (model == "UnconstrainedOgden")
-			return unconstrained_ogden_elasticity_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
-		else if (model == "IncompressibleOgden")
-			return incompressible_ogden_elasticity_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
-		else
-		{
-			assert(false);
-			stresses = Eigen::MatrixXd(0, 0);
 		}
 	}
 } // namespace polyfem::assembler

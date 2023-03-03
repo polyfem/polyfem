@@ -1,6 +1,6 @@
 #include "RhsAssembler.hpp"
 
-#include <polyfem/assembler/MatParams.hpp>
+#include <polyfem/assembler/Mass.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
@@ -31,7 +31,7 @@ namespace polyfem
 			};
 		} // namespace
 
-		RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const Obstacle &obstacle,
+		RhsAssembler::RhsAssembler(const Assembler &assembler, const Mesh &mesh, const Obstacle &obstacle,
 								   const std::vector<int> &dirichlet_nodes, const std::vector<int> &neumann_nodes,
 								   const std::vector<RowVectorNd> &dirichlet_nodes_position, const std::vector<RowVectorNd> &neumann_nodes_position,
 								   const int n_basis, const int size,
@@ -205,9 +205,11 @@ namespace polyfem
 
 				if (fabs(mmin) > 1e-8 || fabs(mmax) > 1e-8)
 				{
+					assembler::Mass mass_mat_assembler;
+					mass_mat_assembler.set_size(assembler_.size());
 					StiffnessMatrix mass;
 					const int n_fe_basis = n_basis_ - obstacle_.n_vertices();
-					assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_fe_basis, false, bases_, gbases_, ass_vals_cache_, mass);
+					mass_mat_assembler.assemble(size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, mass, true);
 					assert(mass.rows() == n_basis_ * size_ - obstacle_.ndof() && mass.cols() == n_basis_ * size_ - obstacle_.ndof());
 
 					auto solver = LinearSolver::create(solver_, preconditioner_);

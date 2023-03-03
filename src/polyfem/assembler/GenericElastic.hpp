@@ -30,7 +30,6 @@ namespace polyfem::assembler
 		// virtual T elastic_energy(const RowVectorNd &p, const int el_id, const DefGradMatrix<T> &def_grad) const = 0;
 		POLYFEM_DECLARE_VIRTUAL_ELASTIC_ENERGY
 
-	protected:
 		void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
 
 	private:

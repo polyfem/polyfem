@@ -397,8 +397,7 @@ namespace polyfem
 
 		// Compute the integral constraints for each basis of the mesh
 		void PolygonalBasis3d::compute_integral_constraints(
-			const AssemblerUtils &assembler,
-			const std::string &assembler_name,
+			const Assembler &assembler,
 			const Mesh3D &mesh,
 			const int n_bases,
 			const std::vector<ElementBases> &bases,
@@ -572,8 +571,7 @@ namespace polyfem
 		// -----------------------------------------------------------------------------
 
 		int PolygonalBasis3d::build_bases(
-			const AssemblerUtils &assembler,
-			const std::string &assembler_name,
+			const Assembler &assembler,
 			const int nn_samples_per_edge,
 			const Mesh3D &mesh,
 			const int n_bases,
@@ -595,7 +593,7 @@ namespace polyfem
 
 			// Step 1: Compute integral constraints
 			Eigen::MatrixXd basis_integrals;
-			compute_integral_constraints(assembler, assembler_name, mesh, n_bases, bases, gbases, basis_integrals);
+			compute_integral_constraints(assembler, mesh, n_bases, bases, gbases, basis_integrals);
 
 			// Step 2: Compute the rest =)
 			for (int e = 0; e < mesh.n_elements(); ++e)
@@ -622,7 +620,7 @@ namespace polyfem
 				double scaling;
 				Eigen::RowVector3d translation;
 				sample_polyhedra(e, 2, n_kernels_per_edge, n_samples_per_edge,
-								 quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler_name, 2, AssemblerUtils::BasisType::POLY, 3),
+								 quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler.name(), 2, AssemblerUtils::BasisType::POLY, 3),
 								 mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::POLY, 3),
 								 mesh, poly_face_to_data, bases, gbases, eps, local_to_global,
 								 collocation_points, kernel_centers, rhs, triangulated_vertices,
@@ -716,7 +714,7 @@ namespace polyfem
 				{
 					set_rbf(std::make_shared<RBFWithQuadratic>(
 						// set_rbf(std::make_shared<RBFWithQuadraticLagrange>(
-						assembler, assembler_name, kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
+						assembler, kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
 				}
 				else
 				{

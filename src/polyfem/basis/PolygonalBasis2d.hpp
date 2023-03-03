@@ -30,8 +30,7 @@ namespace polyfem
 			//                              mesh must verify
 			//
 			static void compute_integral_constraints(
-				const assembler::Assembler &assembler,
-				const std::string &assembler_name,
+				const assembler::LinearAssembler &assembler,
 				const mesh::Mesh2D &mesh,
 				const int n_bases,
 				const std::vector<ElementBases> &bases,
@@ -56,8 +55,7 @@ namespace polyfem
 			/// @param[in]  gvalues         Per-element shape functions for the geometric mapping, evaluated over the element (get boundary of the polygon)
 			///
 			static int build_bases(
-				const assembler::Assembler &assembler,
-				const std::string &assembler_name,
+				const assembler::LinearAssembler &assembler,
 				const int n_samples_per_edge,
 				const mesh::Mesh2D &mesh,
 				const int n_bases,
