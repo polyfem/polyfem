@@ -72,4 +72,20 @@ namespace polyfem::solver
 		Eigen::MatrixXd target_vertex_positions;
 		std::vector<int> active_nodes;
 	};
+
+	class MaxStressForm : public StaticForm
+	{
+	public:
+		MaxStressForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : StaticForm(variable_to_simulations), state_(state)
+		{
+			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+		}
+
+		double value_unweighted(const Eigen::VectorXd &x) const override;
+	
+	private:
+		std::set<int> interested_ids_;
+		const State &state_;
+	};
 } // namespace polyfem::solver

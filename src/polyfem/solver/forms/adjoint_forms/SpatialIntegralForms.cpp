@@ -288,6 +288,54 @@ namespace polyfem::solver
 		return j;
 	}
 
+	IntegrableFunctional AccelerationForm::get_integral_functional() const
+	{
+		IntegrableFunctional j;
+		const int dim = this->dim_;
+		const int time_step = this->time_step_;
+
+		j.set_j([dim, time_step, &state = std::as_const(this->state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			const int e = params["elem"];
+			Eigen::MatrixXd acc, grad_acc;
+			io::Evaluator::interpolate_at_local_vals(*(state.mesh), state.problem->is_scalar(), state.bases, state.geom_bases(), e, local_pts, state.diff_cached[time_step].acc, acc, grad_acc);
+
+			val = acc.col(dim);
+		});
+
+		j.set_dj_du([dim](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(u.rows(), u.cols());
+			log_and_throw_error("Not implemented!");
+		});
+
+		return j;
+	}
+
+	IntegrableFunctional KineticForm::get_integral_functional() const
+	{
+		IntegrableFunctional j;
+
+		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			
+			const int e = params["elem"];
+			Eigen::MatrixXd v, grad_v;
+			io::Evaluator::interpolate_at_local_vals(*(state_.mesh), state_.problem->is_scalar(), state_.bases, state_.geom_bases(), e, local_pts, state_.diff_cached[time_step_].v, v, grad_v);
+
+			val.setZero(u.rows(), 1);
+			for (int q = 0; q < v.rows(); q++)
+			{
+				const double rho = state_.assembler.density()(local_pts.row(q), pts.row(q), e);
+				val(q) = 0.5 * rho * v.row(q).squaredNorm();
+			}
+		});
+
+		j.set_dj_du([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(u.rows(), u.cols());
+			log_and_throw_error("Not implemented!");
+		});
+
+		return j;
+	}
+
 	IntegrableFunctional TargetForm::get_integral_functional() const
 	{
 		IntegrableFunctional j;

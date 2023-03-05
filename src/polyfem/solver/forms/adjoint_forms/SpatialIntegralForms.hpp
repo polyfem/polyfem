@@ -86,6 +86,41 @@ namespace polyfem::solver
 		int dim_ = 0;
 	};
 
+	class AccelerationForm : public SpatialIntegralForm
+	{
+	public:
+		AccelerationForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		{
+			set_integral_type(SpatialIntegralType::VOLUME);
+
+			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+		}
+
+		void set_dim(const int dim) { dim_ = dim; }
+
+	protected:
+		IntegrableFunctional get_integral_functional() const override;
+
+	private:
+		int dim_ = 0;
+	};
+
+	class KineticForm : public SpatialIntegralForm
+	{
+	public:
+		KineticForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		{
+			set_integral_type(SpatialIntegralType::VOLUME);
+
+			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+		}
+
+	protected:
+		IntegrableFunctional get_integral_functional() const override;
+	};
+
 	class TargetForm : public SpatialIntegralForm
 	{
 	public:

@@ -114,4 +114,24 @@ namespace polyfem::solver
 				gradv += parametrization.apply_jacobian(term, x);
 		}
 	}
+
+	double MaxStressForm::value_unweighted(const Eigen::VectorXd &x) const
+	{
+		Eigen::MatrixXd local_vals;
+		assembler::ElementAssemblyValues vals;
+
+		double max_stress = 0;
+		for (int e = 0; e < state_.bases.size(); e++)
+		{
+			if (interested_ids_.size() != 0 && interested_ids_.find(state_.mesh->get_body_id(e)) == interested_ids_.end())
+				continue;
+			
+			state_.ass_vals_cache.compute(e, state_.mesh->is_volume(), state_.bases[e], state_.geom_bases()[e], vals);
+			state_.assembler.compute_tensor_value(state_.formulation(), e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached[time_step_].u, local_vals);
+			Eigen::VectorXd stress_norms = local_vals.rowwise().norm();
+			max_stress = std::max(max_stress, stress_norms.maxCoeff());
+		}
+
+		return max_stress;
+	}
 } // namespace polyfem::solver
