@@ -4,6 +4,7 @@
         "type": "object",
         "required": [
             "parameters",
+            "variable_to_simulation",
             "functionals",
             "states"
         ],
@@ -244,512 +245,273 @@
         "doc": "When the energy is smaller than use_grad_norm_tol, line-search uses norm of gradient instead of energy"
     },
     {
-        "pointer": "/parameters/*/contact/enabled",
-        "default": false,
-        "type": "bool",
-        "doc": "collision detection"
+        "pointer": "/variable_to_simulation",
+        "type": "list",
+        "doc": "TODO"
     },
     {
-        "pointer": "/parameters/*/contact/CCD",
-        "default": null,
-        "type": "object",
-        "optional": [
-            "broad_phase",
-            "tolerance",
-            "max_iterations"
-        ],
-        "doc": "CCD options"
-    },
-    {
-        "pointer": "/parameters/*/contact/CCD/broad_phase",
-        "default": "hash_grid",
+        "pointer": "/variable_to_simulation/*/type",
         "type": "string",
         "options": [
-            "hash_grid",
-            "HG",
-            "brute_force",
-            "BF",
-            "spatial_hash",
-            "SH",
-            "sweep_and_tiniest_queue",
-            "STQ",
-            "sweep_and_tiniest_queue_gpu",
-            "STQ_GPU"
-        ],
-        "doc": "Broad phase collision-detection algorithm to use"
-    },
-    {
-        "pointer": "/parameters/*/contact/CCD/tolerance",
-        "default": 1e-06,
-        "type": "float",
-        "doc": "CCD tolerance"
-    },
-    {
-        "pointer": "/parameters/*/contact/CCD/max_iterations",
-        "default": 1000000.0,
-        "type": "float",
-        "doc": "Maximum number of iterations for continuous collision detection"
-    },
-    {
-        "pointer": "/functionals/*/dhat",
-        "type": "float",
-        "default": 1e-3,
-        "doc": "The support size of barrier function"
-    },
-    {
-        "pointer": "/parameters/*",
-        "type": "object",
-        "type_name": "initial",
-        "required": [
-            "states"
-        ],
-        "optional": [
-            "restriction",
-            "constraints"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/constraints",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/constraints/*",
-        "type": "object",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*",
-        "type": "object",
-        "type_name": "topology",
-        "required": [
-            "states"
-        ],
-        "optional": [
-            "power",
-            "bound",
-            "initial",
-            "rand_seed",
-            "filter",
-            "periodic",
-            "max_change"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/max_change",
-        "default": 1e10,
-        "type": "float",
-        "doc": "Max difference in design variables in single iteration"
-    },
-    {
-        "pointer": "/parameters/*/periodic",
-        "type": "int",
-        "default": 0,
-        "doc": "periodicity for periodic topology pattern"
-    },
-    {
-        "pointer": "/parameters/*/filter",
-        "type": "object",
-        "default": null,
-        "doc": "topology optimization filter parameters"
-    },
-    {
-        "pointer": "/parameters/*/fixed_entries",
-        "type": "list",
-        "default": [],
-        "doc": "fixed entries in optimization parameters"
-    },
-    {
-        "pointer": "/parameters/*/initial",
-        "type": "float",
-        "default": 1,
-        "doc": "constant initialization"
-    },
-    {
-        "pointer": "/parameters/*/initial",
-        "type": "list",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/rand_seed",
-        "type": "int",
-        "default": 1,
-        "doc": "seed for random number generator in parameter initialization"
-    },
-    {
-        "pointer": "/parameters/*/type",
-        "type": "string",
-        "options": [
-            "initial",
-            "material",
+            "shape",
+            "elastic",
             "friction",
             "damping",
-            "shape",
-            "graph",
-            "topology",
-            "control",
-            "macro_strain"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/states",
-        "type": "list",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/states/*",
-        "type": "int",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/power",
-        "type": "int",
-        "default": 1,
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*",
-        "type_name": "graph",
-        "type": "object",
-        "required": [
-            "type",
-            "states",
-            "isosurface_inflator_prefix"
-        ],
-        "optional": [
-            "max_change",
-            "lower_bound",
-            "upper_bound",
-            "initial"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/graph_path",
-        "type": "file",
-        "doc": "Path to the graph obj file."
-    },
-    {
-        "pointer": "/parameters/*/graph_exe_path",
-        "type": "file",
-        "doc": "Path to the microstructure binary file."
-    },
-    {
-        "pointer": "/parameters/*/symmetry_type",
-        "type": "string",
-        "options": [
-            "2D_doubly_periodic",
-            "2D_cubic",
-            "2D_orthotropic",
-            "doubly_periodic",
-            "cubic"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/lower_bound",
-        "type": "list",
-        "default": [],
-        "doc": "List of numbers deciding the lower bound of each dimension in graph parameters."
-    },
-    {
-        "pointer": "/parameters/*/upper_bound",
-        "type": "list",
-        "default": [],
-        "doc": "List of numbers deciding the upper bound of each dimension in graph parameters."
-    },
-    {
-        "pointer": "/parameters/*",
-        "type_name": "shape",
-        "type": "object",
-        "required": [
-            "type",
-            "states"
-        ],
-        "optional": [
-            "restriction",
-            "smoothing_parameters",
-            "remesh",
-            "spline_specification",
-            "dimensions",
-            "surface_selection",
-            "fix_dirichlet",
-            "fix_neumann",
-            "contact"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/fix_dirichlet",
-        "type": "bool",
-        "default": true
-    },
-    {
-        "pointer": "/parameters/*/fix_neumann",
-        "type": "bool",
-        "default": true
-    },
-    {
-        "pointer": "/parameters/*/contact",
-        "type": "object",
-        "default": null,
-        "optional": [
-            "CCD",
-            "enabled"
+            "macro-strain",
+            "initial",
+            "sdf-shape"
         ]
     },
     {
-        "pointer": "/parameters/*/remesh",
+        "pointer": "/variable_to_simulation/*/state",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition",
+        "type": "list",
+        "doc": "list of parametrizations that maps raw optimization variables to parameters in simulations"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/type",
+        "type": "object",
+        "options": [
+            "per-body-to-per-elem",
+            "E-nu-to-lambda-mu",
+            "slice",
+            "exp",
+            "scale",
+            "power",
+            "append-const",
+            "linear-filter",
+            "sdf-to-mesh",
+            "periodic-mesh-tile",
+            "mesh-affine"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "append-const",
+        "type": "object",
+        "required": [
+            "values"
+        ],
+        "doc": "Append a list of constants at the end of the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/values",
+        "type": "list"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/values/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "slice",
+        "type": "object",
+        "required": [
+            "from",
+            "to"
+        ],
+        "doc": "Ouputs x[from:to], where x is the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/from",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/to",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "power",
+        "type": "object",
+        "required": [
+            "power"
+        ],
+        "doc": "Ouputs x ^ power, where x is the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/power",
+        "type": "float"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "scale",
+        "type": "object",
+        "required": [
+            "value"
+        ],
+        "doc": "Ouputs x * value, where x is the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/value",
+        "type": "float"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "mesh-affine",
+        "type": "object",
+        "required": [
+            "input_path",
+            "output_path"
+        ],
+        "optional": [
+            "transformation",
+            "translation",
+            "rotation",
+            "rotation_mode",
+            "scale",
+            "dimensions"
+        ],
+        "doc": "Append a list of constants at the end of the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/transformation",
         "type": "object",
         "default": null,
         "optional": [
-            "period",
-            "tolerance",
-            "remesh_exe"
-        ],
-        "doc": "TODO"
+            "translation",
+            "rotation",
+            "rotation_mode",
+            "scale",
+            "dimensions"
+        ]
     },
     {
-        "pointer": "/parameters/*/remesh/remesh_exe",
-        "default": "",
-        "type": "file",
-        "doc": "Remesh every N iterations of optimization"
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/rotation_mode",
+        "type": "string",
+        "default": "xyz",
+        "doc": "Type of rotation, supported are any permutation of [xyz]+, axis_angle, quaternion, or rotation_vector."
     },
     {
-        "pointer": "/parameters/*/remesh/period",
-        "type": "int",
-        "default": 1000000,
-        "doc": "Remesh every N iterations of optimization"
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/translation",
+        "type": "list",
+        "default": [],
+        "doc": "Translate (two entries for 2D problems or three entries for 3D problems)."
     },
     {
-        "pointer": "/parameters/*/remesh/tolerance",
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/rotation",
+        "type": "list",
+        "default": [],
+        "doc": "Rotate, in 2D, one number, the rotation angle, in 3D, three or four Euler angles, axis+angle, or a unit quaternion. Depends on rotation mode."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/scale",
+        "type": "list",
+        "default": [],
+        "doc": "Scale by specified factors along axes (two entries for 2D problems or three entries for 3D problems)."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/dimensions",
         "type": "float",
-        "default": 1e-2,
-        "doc": "Remesh when min scaled jacobian reaches tolerance"
+        "default": 1,
+        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems."
     },
     {
-        "pointer": "/parameters/*/surface_selection",
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/dimensions",
         "type": "list",
-        "default": [],
-        "doc": "TODO"
+        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems."
     },
     {
-        "pointer": "/parameters/*/surface_selection/*",
-        "type": "int",
-        "doc": "TODO"
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/dimensions/*",
+        "type": "float",
+        "default": 0
     },
     {
-        "pointer": "/parameters/*/volume_selection",
-        "type": "file",
-        "doc": "TODO"
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/translation/*",
+        "type": "float",
+        "default": 0
     },
     {
-        "pointer": "/parameters/*/volume_selection",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/rotation/*",
+        "default": 0,
+        "type": "float"
     },
     {
-        "pointer": "/parameters/*/dimensions",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/scale/*",
+        "default": 0,
+        "type": "float"
     },
     {
-        "pointer": "/parameters/*/dimensions/*",
-        "type": "bool",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/spline_specification",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/spline_specification/*",
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "periodic-mesh-tile",
         "type": "object",
         "required": [
-            "id"
+            "input_path",
+            "output_path",
+            "dimensions"
         ],
-        "optional": [
-            "tangent",
-            "control_point",
-            "sampling",
-            "knot",
-            "control_point_grid",
-            "knot_u",
-            "knot_v"
-        ],
-        "doc": "TODO"
+        "doc": "Append a list of constants at the end of the input vector"
     },
     {
-        "pointer": "/parameters/*/spline_specification/*/id",
-        "type": "int",
-        "doc": "TODO"
+        "pointer": "/variable_to_simulation/*/composition/*/dimensions",
+        "type": "list"
     },
     {
-        "pointer": "/parameters/*/spline_specification/*/control_point",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
+        "pointer": "/variable_to_simulation/*/composition/*/dimensions/*",
+        "type": "int"
     },
     {
-        "pointer": "/parameters/*/spline_specification/*/control_point/*",
-        "type": "list",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/spline_specification/*/control_point/*/*",
-        "type": "float",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/spline_specification/*/tangent",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/spline_specification/*/tangent/*",
-        "type": "list",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/spline_specification/*/tangent/*/*",
-        "type": "float",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/spline_specification/*/knot",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/spline_specification/*/knot/*",
-        "type": "float",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/spline_specification/*/knot_u",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/spline_specification/*/knot_v",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/spline_specification/*/control_point_grid",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/spline_specification/*/tangent/*",
-        "type": "float",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/spline_specification/*/sampling",
-        "type": "int",
-        "default": 10,
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/smoothing_parameters",
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "sdf-to-mesh",
         "type": "object",
-        "default": null,
-        "optional": [
-            "exp_factor",
-            "soft_p",
-            "tol",
-            "min_iter",
-            "skip"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/smoothing_parameters/exp_factor",
-        "type": "float",
-        "default": 5,
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/smoothing_parameters/soft_p",
-        "type": "float",
-        "default": 1e5,
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/smoothing_parameters/tol",
-        "type": "float",
-        "default": 1e-8,
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/smoothing_parameters/min_iter",
-        "type": "int",
-        "default": 2,
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/smoothing_parameters/skip",
-        "type": "bool",
-        "default": false,
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*",
-        "type": "object",
-        "type_name": "damping",
         "required": [
-            "type",
-            "states"
+            "wire_path",
+            "output_path"
         ],
         "optional": [
-            "phi_bound",
-            "psi_bound",
-            "max_change"
+            "options"
         ],
-        "doc": "TODO"
+        "doc": "Append a list of constants at the end of the input vector"
     },
     {
-        "pointer": "/parameters/*",
-        "type": "object",
-        "type_name": "macro_strain",
-        "required": [
-            "type",
-            "states"
-        ],
-        "optional": [
-            "max_change",
-            "initial",
-            "fixed_entries"
-        ],
-        "doc": "TODO"
+        "pointer": "/variable_to_simulation/*/composition/*/wire_path",
+        "type": "string"
     },
     {
-        "pointer": "/parameters/*",
+        "pointer": "/variable_to_simulation/*/composition/*/input_path",
+        "type": "string"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/output_path",
+        "type": "string"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/options",
         "type": "object",
-        "type_name": "friction",
-        "required": [
-            "type",
-            "states"
-        ],
+        "default": null
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/options",
+        "type": "object",
         "optional": [
-            "bound",
-            "max_change"
-        ],
-        "doc": "TODO"
+            "maxArea",
+            "dump_shape_velocity",
+            "marchingSquaresGridSize",
+            "forceMSGridSize"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/options/maxArea",
+        "type": "float",
+        "default": 1e-3
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/options/dump_shape_velocity",
+        "type": "string",
+        "default": "velocity.msh"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/options/marchingSquaresGridSize",
+        "type": "float",
+        "default": 256
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/options/forceMSGridSize",
+        "type": "float",
+        "default": false
     },
     {
         "pointer": "/parameters",
@@ -757,112 +519,34 @@
         "doc": "TODO"
     },
     {
-        "pointer": "/parameters/*",
+        "pointer": "/parameters/*/initial",
+        "type": "list",
+        "default": []
+    },
+    {
+        "pointer": "/parameters/*/initial/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/parameters/*/number",
+        "type": "int"
+    },
+    {
+        "pointer": "/parameters/*/number",
         "type": "object",
-        "type_name": "material",
-        "required": [
-            "type",
-            "states"
-        ],
-        "optional": [
-            "restriction",
-            "fix_nu_body",
-            "max_change",
-            "E_bound",
-            "nu_bound",
-            "lambda_bound",
-            "mu_bound",
-            "volume_selection"
-        ],
-        "doc": "TODO"
+        "doc": "Define number of DOFs from existing DOFs in simulations"
     },
     {
-        "pointer": "/parameters/*/fix_nu_body",
-        "type": "file",
-        "default": "",
-        "doc": "fix possion's ratio on some body ids specified in file"
+        "pointer": "/parameters/*/number/state",
+        "type": "int"
     },
     {
-        "pointer": "/parameters/*/E_bound",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/E_bound",
-        "type": "file",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/phi_bound",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/psi_bound",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/bound",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/nu_bound",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/lambda_bound",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/mu_bound",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*/restriction",
+        "pointer": "/parameters/*/number/type",
         "type": "string",
-        "default": "none",
         "options": [
-            "none",
-            "cubic_hermite_spline",
-            "b_spline",
-            "graph_structure",
-            "E_nu",
-            "E_nu_log",
-            "constant_E_nu",
-            "constant_E_nu_log",
-            "lambda_mu",
-            "lambda_mu_log",
-            "constant_lambda_mu",
-            "constant_lambda_mu_log",
-            "rigid"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/parameters/*",
-        "type": "object",
-        "type_name": "control",
-        "required": [
-            "type",
-            "states"
-        ],
-        "optional": [
-            "surface_selection",
-            "restriction"
-        ],
-        "doc": "TODO"
+            "per-vertex",
+            "per-element"
+        ]
     },
     {
         "pointer": "/functionals",
@@ -945,8 +629,7 @@
             "volume_selection",
             "surface_selection",
             "reference_cached_body_ids",
-            "target_state",
-            "shape_parameter"
+            "target_state"
         ],
         "doc": "TODO"
     },
@@ -1158,29 +841,6 @@
         "doc": "TODO"
     },
     {
-        "pointer": "/functionals/*/shape_parameter",
-        "type": "int",
-        "default": -1,
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/functionals/*/material_parameter",
-        "type": "int",
-        "default": -1,
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/functionals/*/macro_strain_parameter",
-        "type": "int",
-        "default": -1,
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/functionals/*/control_parameter",
-        "type": "int",
-        "doc": "TODO"
-    },
-    {
         "pointer": "/functionals/*/matching",
         "type": "string",
         "options": [
@@ -1204,7 +864,6 @@
             "dim"
         ],
         "optional": [
-            "shape_parameter",
             "weight",
             "transient_integral_type",
             "steps",
@@ -1222,7 +881,6 @@
             "dim"
         ],
         "optional": [
-            "shape_parameter",
             "weight",
             "transient_integral_type",
             "steps",
@@ -1239,7 +897,6 @@
             "type"
         ],
         "optional": [
-            "shape_parameter",
             "weight",
             "transient_integral_type",
             "steps",
@@ -1256,8 +913,6 @@
             "type"
         ],
         "optional": [
-            "shape_parameter",
-            "material_parameter",
             "volume_selection",
             "power",
             "weight",
@@ -1291,9 +946,6 @@
             "type"
         ],
         "optional": [
-            "shape_parameter",
-            "material_parameter",
-            "macro_strain_parameter",
             "volume_selection",
             "power",
             "weight",
@@ -1311,9 +963,6 @@
             "type"
         ],
         "optional": [
-            "shape_parameter",
-            "material_parameter",
-            "macro_strain_parameter",
             "volume_selection",
             "power",
             "weight",
@@ -1360,8 +1009,6 @@
             "type"
         ],
         "optional": [
-            "shape_parameter",
-            "material_parameter",
             "volume_selection",
             "weight",
             "steps",
@@ -1378,7 +1025,6 @@
             "type"
         ],
         "optional": [
-            "shape_parameter",
             "volume_selection",
             "weight",
             "steps",
@@ -1395,7 +1041,6 @@
             "type"
         ],
         "optional": [
-            "shape_parameter",
             "volume_selection",
             "weight",
             "steps",
@@ -1412,7 +1057,6 @@
             "bounds"
         ],
         "optional": [
-            "material_parameter",
             "volume_selection"
         ],
         "doc": "TODO"
@@ -1452,7 +1096,6 @@
             "type"
         ],
         "optional": [
-            "shape_parameter",
             "scale_invariant",
             "power",
             "weight",
@@ -1471,7 +1114,6 @@
             "type"
         ],
         "optional": [
-            "shape_parameter",
             "power",
             "weight",
             "surface_selection"
@@ -1486,7 +1128,6 @@
             "type"
         ],
         "optional": [
-            "material_parameter",
             "weight",
             "volume_selection"
         ],
@@ -1497,7 +1138,6 @@
         "type": "object",
         "type_name": "control_smoothing",
         "required": [
-            "control_parameter",
             "state",
             "type"
         ],
@@ -1511,7 +1151,6 @@
         "type": "object",
         "type_name": "collision_barrier",
         "optional": [
-            "shape_parameter",
             "weight",
             "dhat"
         ],
@@ -1522,8 +1161,6 @@
         "type": "object",
         "type_name": "layer_thickness",
         "optional": [
-            "shape_parameter",
-            "adjacent_shape_parameter",
             "adjacent_boundary_id",
             "dmin",
             "dhat",
@@ -1532,10 +1169,10 @@
         "doc": "TODO"
     },
     {
-        "pointer": "/functionals/*/adjacent_shape_parameter",
-        "type": "int",
-        "default": -1,
-        "doc": "TODO"
+        "pointer": "/functionals/*/dhat",
+        "type": "float",
+        "default": 1e-3,
+        "doc": "The support size of barrier function"
     },
     {
         "pointer": "/functionals/*/adjacent_boundary_id",
@@ -1558,7 +1195,6 @@
             "soft_bound"
         ],
         "optional": [
-            "shape_parameter",
             "weight",
             "volume_selection"
         ],

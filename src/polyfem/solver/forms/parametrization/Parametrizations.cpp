@@ -261,33 +261,39 @@ namespace polyfem::solver
 		return grad_full;
 	}
 
-	AppendConstantMap::AppendConstantMap(const int size, const double val) : size_(size), val_(val)
+	AppendConstantMap::AppendConstantMap(const int size, const double val)
 	{
-		if (size_ <= 0)
+		if (size <= 0)
 			log_and_throw_error("Invalid AppendConstantMap input!");
+		values_.setConstant(size, val);
+	}
+
+	AppendConstantMap::AppendConstantMap(const Eigen::VectorXd &values): values_(values)
+	{
+
 	}
 
 	int AppendConstantMap::size(const int x_size) const
 	{
-		return x_size + size_;
+		return x_size + values_.size();
 	}
 
 	Eigen::VectorXd AppendConstantMap::inverse_eval(const Eigen::VectorXd &y)
 	{
-		return y.head(y.size() - size_);
+		return y.head(y.size() - values_.size());
 	}
 
 	Eigen::VectorXd AppendConstantMap::eval(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd y;
 		y.setZero(size(x.size()));
-		y << x, Eigen::VectorXd::Ones(size_) * val_;
+		y << x, values_;
 
 		return y;
 	}
 	Eigen::VectorXd AppendConstantMap::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
 	{
-		return grad.head(grad.size() - size_);
+		return grad.head(grad.size() - values_.size());
 	}
 
 	LinearFilter::LinearFilter(const mesh::Mesh &mesh, const double radius)

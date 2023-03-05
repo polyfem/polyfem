@@ -117,6 +117,7 @@ namespace polyfem::solver
 	{
 	public:
 		AppendConstantMap(const int size = -1, const double val = 0);
+		AppendConstantMap(const Eigen::VectorXd &values);
 
 		int size(const int x_size) const override;
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
@@ -124,8 +125,9 @@ namespace polyfem::solver
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:
-		const int size_;
-		const double val_;
+		// const int size_;
+		// const double val_;
+		Eigen::VectorXd values_;
 	};
 
 	class LinearFilter : public Parametrization
