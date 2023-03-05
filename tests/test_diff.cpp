@@ -158,6 +158,8 @@ TEST_CASE("laplacian", "[adjoint_method]")
 	auto state_ptr = create_state_and_solve(in_args);
 	State &state = *state_ptr;
 
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
 	json opt_args;
 	load_json(path + "laplacian-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
@@ -165,7 +167,7 @@ TEST_CASE("laplacian", "[adjoint_method]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 
-	StressNormForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
+	auto obj = create_form(opt_args["functionals"][0], variable_to_simulations, states);
 
 	auto velocity = [](const Eigen::MatrixXd &position) {
 		auto vel = position;
@@ -183,7 +185,7 @@ TEST_CASE("laplacian", "[adjoint_method]")
 	state.get_vf(V, F);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 3e-5);
+	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 3e-5);
 }
 
 TEST_CASE("boundary-smoothing", "[adjoint_method]")
@@ -445,6 +447,8 @@ TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
 	auto state_ptr = create_state_and_solve(in_args);
 	State &state = *state_ptr;
 
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
 	json opt_args;
 	load_json(path + "neohookean-stress-3d-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
@@ -452,7 +456,7 @@ TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 
-	StressNormForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
+	auto obj = create_form(opt_args["functionals"][0], variable_to_simulations, states);
 
 	auto velocity = [](const Eigen::MatrixXd &position) {
 		auto vel = position;
@@ -470,7 +474,7 @@ TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
 	state.get_vf(V, F);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 1e-5);
+	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 1e-5);
 }
 
 TEST_CASE("shape-neumann-nodes", "[adjoint_method]")
@@ -481,16 +485,16 @@ TEST_CASE("shape-neumann-nodes", "[adjoint_method]")
 	auto state_ptr = create_state_and_solve(in_args);
 	State &state = *state_ptr;
 
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
 	json opt_args;
 	load_json(path + "shape-neumann-nodes-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	// variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, VariableToBoundaryNodes({}, *state_ptr, 2)));
 
-	std::shared_ptr<StaticForm> obj_aux = std::make_shared<StressNormForm>(variable_to_simulations, state, opt_args["functionals"][0]);
-	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
+	auto obj = create_form(opt_args["functionals"][0], variable_to_simulations, states);
 
 	auto velocity = [](const Eigen::MatrixXd &position) {
 		auto vel = position;
@@ -508,7 +512,7 @@ TEST_CASE("shape-neumann-nodes", "[adjoint_method]")
 		0.5, 1.06;
 	velocity_discrete = velocity(x);
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 1e-3);
+	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 1e-3);
 }
 
 TEST_CASE("homogenize-stress", "[adjoint_method]")
@@ -565,6 +569,8 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	auto state_ptr = create_state_and_solve(in_args);
 	State &state = *state_ptr;
 
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
 	json opt_args;
 	load_json(path + "shape-contact-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
@@ -572,7 +578,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 
-	StressNormForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
+	auto obj = create_form(opt_args["functionals"][0], variable_to_simulations, states);
 
 	auto velocity = [](const Eigen::MatrixXd &position) {
 		auto vel = position;
@@ -590,7 +596,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	state.get_vf(V, F);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-6);
+	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-6, 1e-6);
 }
 
 TEST_CASE("node-trajectory", "[adjoint_method]")
@@ -722,6 +728,8 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	auto state_ptr = create_state_and_solve(in_args);
 	State &state = *state_ptr;
 
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
 	json opt_args;
 	load_json(path + "shape-transient-friction-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
@@ -729,8 +737,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 
-	std::shared_ptr<StaticForm> obj_aux = std::make_shared<StressNormForm>(variable_to_simulations, state, opt_args["functionals"][0]);
-	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
+	auto obj = create_form(opt_args["functionals"][0], variable_to_simulations, states);
 
 	Eigen::MatrixXd velocity_discrete;
 	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
@@ -746,7 +753,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	state.get_vf(V, F);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-5);
+	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-6, 1e-5);
 }
 
 TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")

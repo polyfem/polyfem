@@ -1,6 +1,14 @@
 #include "Optimizations.hpp"
 
+#include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
+#include <polyfem/solver/forms/adjoint_forms/CompositeForms.hpp>
+#include <polyfem/solver/forms/adjoint_forms/TransientForm.hpp>
+#include <polyfem/solver/forms/adjoint_forms/SmoothingForms.hpp>
+
+#include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
+#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
+#include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
 
 namespace polyfem::solver
 {
@@ -20,6 +28,61 @@ namespace polyfem::solver
 			return true;
 		}
 	} // namespace
+
+	std::shared_ptr<AdjointForm> create_form(const json &args, const std::vector<std::shared_ptr<VariableToSimulation>> &var2sim, const std::vector<std::shared_ptr<State>> &states)
+	{
+		std::shared_ptr<AdjointForm> obj;
+		if (args.is_array())
+		{
+			std::vector<std::shared_ptr<AdjointForm>> forms;
+			for (const auto &arg : args)
+				forms.push_back(create_form(arg, var2sim, states));
+			
+			obj = std::make_shared<SumCompositeForm>(var2sim, forms);
+		}
+		else
+		{
+			const std::string type = args["type"];
+			if (type == "transient_integral")
+			{
+				std::shared_ptr<StaticForm> static_obj = std::dynamic_pointer_cast<StaticForm>(create_form(args["static_objective"], var2sim, states));
+				const auto &state = states[args["state"]];
+				obj = std::make_shared<TransientForm>(var2sim, state->args["time"]["time_steps"], state->args["time"]["dt"], args["integral_type"], static_obj);
+			}
+			else if (type == "acceleration")
+			{
+				log_and_throw_error("Objective not implemented!");
+			}
+			else if (type == "kinetic")
+			{
+				log_and_throw_error("Objective not implemented!");
+			}
+			else if (type == "position")
+			{
+				obj = std::make_shared<PositionForm>(var2sim, *(states[args["state"]]), args);
+			}
+			else if (type == "stress")
+			{
+				log_and_throw_error("Objective not implemented!");
+			}
+			else if (type == "stress_norm")
+			{
+				obj = std::make_shared<StressNormForm>(var2sim, *(states[args["state"]]), args);
+			}
+			else if (type == "max_stress")
+			{
+				log_and_throw_error("Objective not implemented!");
+			}
+			else if (type == "volume_constraint")
+			{
+				log_and_throw_error("Objective not implemented!");
+			}
+			else
+				log_and_throw_error("Objective not implemented!");
+		}
+
+		return obj;
+	}
 
 	std::shared_ptr<State> create_state(const json &args, spdlog::level::level_enum log_level, const int max_threads)
 	{

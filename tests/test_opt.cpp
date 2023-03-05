@@ -143,7 +143,7 @@ TEST_CASE("material-opt", "[optimization]")
 				if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
 					log_and_throw_error("Can't find json for State {}", i);
 
-				states[i++] = create_state(cur_args, spdlog::level::level_enum::debug);
+				states[i++] = create_state(cur_args);
 			}
 
 			const double E = 1e4;
@@ -166,11 +166,11 @@ TEST_CASE("material-opt", "[optimization]")
 			for (auto &v2s : variable_to_simulations)
 				v2s->update(x);
 
-			auto obj_aux = std::make_shared<TargetForm>(variable_to_simulations, *(states[0]), opt_args["functionals"][0]);
+			auto obj_aux = std::make_shared<TargetForm>(variable_to_simulations, *(states[0]), opt_args["functionals"][0]["static_objective"]);
 
 			obj_aux->set_reference(states[1], {});
 
-			auto obj = std::make_shared<TransientForm>(variable_to_simulations, states[0]->args["time"]["time_steps"], states[0]->args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
+			auto obj = std::make_shared<TransientForm>(variable_to_simulations, states[0]->args["time"]["time_steps"], states[0]->args["time"]["dt"], opt_args["functionals"][0]["integral_type"], obj_aux);
 
 			obj->set_weight(100.0);
 
@@ -245,7 +245,7 @@ TEST_CASE("topology-opt", "[optimization]")
 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
 				log_and_throw_error("Can't find json for State {}", i);
 
-			states[i++] = create_state(cur_args, spdlog::level::level_enum::debug);
+			states[i++] = create_state(cur_args);
 		}
 
 		// define mappings from optimization variable x to material parameters in states

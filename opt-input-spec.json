@@ -557,15 +557,15 @@
         "pointer": "/functionals/*/type",
         "type": "string",
         "options": [
+            "transient_integral",
             "trajectory",
             "height",
             "position",
             "acceleration",
             "kinetic",
             "stress",
-            "max-stress",
-            "homogenized_energy",
-            "homogenized_stress",
+            "stress_norm",
+            "max_stress",
             "compliance",
             "strain_norm",
             "boundary_smoothing",
@@ -575,8 +575,6 @@
             "control_smoothing",
             "material_smoothing",
             "volume_constraint",
-            "naive_negative_poisson",
-            "target_length",
             "layer_thickness"
         ],
         "doc": "TODO"
@@ -623,8 +621,6 @@
             "knots",
             "tangents",
             "delta",
-            "transient_integral_type",
-            "steps",
             "weight",
             "volume_selection",
             "surface_selection",
@@ -684,7 +680,7 @@
         "doc": "TODO"
     },
     {
-        "pointer": "/functionals/*/transient_integral_type",
+        "pointer": "/functionals/*/integral_type",
         "type": "string",
         "default": "uniform",
         "options": [
@@ -865,10 +861,28 @@
         ],
         "optional": [
             "weight",
-            "transient_integral_type",
-            "steps",
             "volume_selection"
         ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "transient_integral",
+        "required": [
+            "static_objective",
+            "state"
+        ],
+        "optional": [
+            "weight",
+            "integral_type",
+            "steps"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/static_objective",
+        "type": "object",
         "doc": "TODO"
     },
     {
@@ -882,8 +896,6 @@
         ],
         "optional": [
             "weight",
-            "transient_integral_type",
-            "steps",
             "volume_selection"
         ],
         "doc": "TODO"
@@ -898,8 +910,6 @@
         ],
         "optional": [
             "weight",
-            "transient_integral_type",
-            "steps",
             "volume_selection"
         ],
         "doc": "TODO"
@@ -914,33 +924,20 @@
         ],
         "optional": [
             "volume_selection",
-            "power",
             "weight",
-            "steps",
-            "transient_integral_type"
+            "dimensions"
         ],
-        "doc": "TODO"
+        "doc": "One entry of elastic stress matrix"
+    },
+    {
+        "pointer": "/functionals/*/dimensions",
+        "default": [],
+        "type": "list"
     },
     {
         "pointer": "/functionals/*",
         "type": "object",
-        "type_name": "max-stress",
-        "required": [
-            "state",
-            "type"
-        ],
-        "optional": [
-            "volume_selection",
-            "weight",
-            "steps",
-            "transient_integral_type"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/functionals/*",
-        "type": "object",
-        "type_name": "homogenized_energy",
+        "type_name": "stress_norm",
         "required": [
             "state",
             "type"
@@ -948,57 +945,23 @@
         "optional": [
             "volume_selection",
             "power",
-            "weight",
-            "steps",
-            "transient_integral_type"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/functionals/*",
-        "type": "object",
-        "type_name": "homogenized_stress",
-        "required": [
-            "state",
-            "type"
-        ],
-        "optional": [
-            "volume_selection",
-            "power",
-            "weight",
-            "steps",
-            "transient_integral_type"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/functionals/*",
-        "type": "object",
-        "type_name": "naive_negative_poisson",
-        "required": [
-            "state",
-            "v1",
-            "v2"
-        ],
-        "optional": [
             "weight"
         ],
-        "doc": "TODO"
+        "doc": "Lp Norm of elastic stress over the volume selection"
     },
     {
         "pointer": "/functionals/*",
         "type": "object",
-        "type_name": "target_length",
+        "type_name": "max_stress",
         "required": [
             "state",
-            "v1",
-            "v2",
-            "target_length"
+            "type"
         ],
         "optional": [
+            "volume_selection",
             "weight"
         ],
-        "doc": "TODO"
+        "doc": "Pointwise max stress over the volume selection"
     },
     {
         "pointer": "/functionals/*",
@@ -1010,9 +973,7 @@
         ],
         "optional": [
             "volume_selection",
-            "weight",
-            "steps",
-            "transient_integral_type"
+            "weight"
         ],
         "doc": "TODO"
     },
@@ -1026,9 +987,7 @@
         ],
         "optional": [
             "volume_selection",
-            "weight",
-            "steps",
-            "transient_integral_type"
+            "weight"
         ],
         "doc": "TODO"
     },
@@ -1042,9 +1001,7 @@
         ],
         "optional": [
             "volume_selection",
-            "weight",
-            "steps",
-            "transient_integral_type"
+            "weight"
         ],
         "doc": "TODO"
     },
