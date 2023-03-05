@@ -25,7 +25,7 @@ namespace polyfem
 				return AutodiffHessianPt(1);
 			}
 
-			void rhs(const assembler::Assembler &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 			void set_parameters(const json &params) override;
 			bool is_scalar() const override;

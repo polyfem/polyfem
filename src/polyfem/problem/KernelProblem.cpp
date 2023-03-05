@@ -200,7 +200,7 @@ namespace polyfem
 			return res;
 		}
 
-		void KernelProblem::rhs(const assembler::Assembler &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void KernelProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			const int size = size_for(pts);
 			val.resize(pts.rows(), size);
@@ -230,7 +230,7 @@ namespace polyfem
 
 		bool KernelProblem::is_scalar() const
 		{
-			return assembler_.is_scalar();
+			return !assembler_.is_tensor();
 		}
 	} // namespace problem
 } // namespace polyfem

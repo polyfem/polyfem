@@ -19,7 +19,7 @@ namespace polyfem
 
 		initial_solution(sol);
 
-		if (assembler.is_mixed(formulation()))
+		if (mixed_assembler != nullptr)
 		{
 			pressure.resize(0, 0);
 			sol.conservativeResize(rhs.size(), sol.cols());
