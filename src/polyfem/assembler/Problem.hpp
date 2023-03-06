@@ -33,6 +33,9 @@ namespace polyfem
 			virtual void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
 			virtual void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const {}
 
+			virtual bool is_boundary_neumann(const int boundary_id) const { return std::find(neumann_boundary_ids_.begin(), neumann_boundary_ids_.end(), boundary_id) != neumann_boundary_ids_.end(); }
+			virtual bool is_boundary_pressure(const int boundary_id) const { return std::find(pressure_boundary_ids_.begin(), pressure_boundary_ids_.end(), boundary_id) != pressure_boundary_ids_.end(); }
+
 			virtual void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val) const {}
 			virtual void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const {}
 			virtual bool is_nodal_dirichlet_boundary(const int n_id, const int tag) { return false; }
@@ -64,7 +67,7 @@ namespace polyfem
 
 			void setup_bc(const mesh::Mesh &mesh,
 						  const int n_bases, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &geom_bases, const std::vector<basis::ElementBases> &pressure_bases,
-						  std::vector<int> &boundary_gnodes, 
+						  std::vector<int> &boundary_gnodes,
 						  std::vector<mesh::LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes,
 						  std::vector<mesh::LocalBoundary> &local_neumann_boundary,
 						  std::vector<int> &pressure_boundary_nodes,

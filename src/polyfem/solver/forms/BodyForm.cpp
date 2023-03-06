@@ -214,8 +214,36 @@ namespace polyfem::solver
 					for (long n = 0; n < nodes.size(); ++n)
 					{
 						const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
-						
-						Eigen::VectorXd value = (p.array() * neumann_val.array()).rowwise().sum() * vals.det.array() * weights.array();
+
+						Eigen::VectorXd value = (p.array() * neumann_val.array()).rowwise().sum() * weights.array();
+
+						Eigen::VectorXd pressure_value = (p.array() * vals.val.array()).rowwise().sum() * weights.array();
+
+						Eigen::VectorXd grad_bc;
+						{
+							if (rhs_assembler_.mesh().is_volume())
+							{
+								Eigen::Vector2d v1 = gbases[e].bases[nodes(0)].global()[0].node;
+								Eigen::Vector2d v2 = gbases[e].bases[nodes(1)].global()[0].node;
+								Eigen::Vector2d v3 = gbases[e].bases[nodes(2)].global()[0].node;
+								grad_bc.setZero(3);
+							}
+							else
+							{
+								Eigen::Vector2d v1 = gbases[e].bases[nodes(0)].global()[0].node;
+								Eigen::Vector2d v2 = gbases[e].bases[nodes(1)].global()[0].node;
+								grad_bc.setZero(2);
+
+								grad_bc(0) += -neumann_val(0, 0) * ((v1(0) - v2(0)) / (v1 - v2).squaredNorm());
+								grad_bc(0) += -neumann_val(0, 0) * ((v1(1) - v2(1)) / (v1 - v2).squaredNorm());
+								grad_bc(0) += -1 / ((v1 - v2).norm());
+								grad_bc(1) += -neumann_val(0, 1) * ((v1(0) - v2(0)) / (v1 - v2).squaredNorm());
+								grad_bc(1) += -neumann_val(0, 1) * ((v1(1) - v2(1)) / (v1 - v2).squaredNorm());
+								grad_bc(1) += 1 / ((v1 - v2).norm());
+								if (n == 1)
+									grad_bc *= -1;
+							}
+						}
 
 						// integrate j * div(gbases) over the whole boundary
 						for (int d = 0; d < dim; d++)
@@ -264,8 +292,11 @@ namespace polyfem::solver
 							assert(v.global.size() == 1);
 							const int g_index = v.global[0].index * dim + d;
 							const bool is_neumann = std::find(boundary_nodes_.begin(), boundary_nodes_.end(), g_index) == boundary_nodes_.end();
+							const bool is_pressure = rhs_assembler_.problem().is_boundary_pressure(rhs_assembler_.mesh().get_boundary_id(global_primitive_id));
 							if (is_neumann)
-								local_storage.vec(v.global[0].index * dim + d) += value.sum() * velocity_div;
+								local_storage.vec(g_index) += value.sum() * velocity_div;
+							if (is_pressure)
+								local_storage.vec(g_index) += grad_bc(d) * pressure_value.sum();
 						}
 					}
 				}
