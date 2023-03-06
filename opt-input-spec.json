@@ -263,6 +263,23 @@
         ]
     },
     {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "sdf-shape",
+        "type": "object",
+        "required": [
+            "mesh",
+            "mesh_id"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*/mesh",
+        "type": "string"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/mesh_id",
+        "type": "int"
+    },
+    {
         "pointer": "/variable_to_simulation/*/state",
         "type": "int"
     },
@@ -273,7 +290,7 @@
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/type",
-        "type": "object",
+        "type": "string",
         "options": [
             "per-body-to-per-elem",
             "E-nu-to-lambda-mu",
@@ -520,17 +537,13 @@
     {
         "pointer": "/variable_to_simulation/*/composition/*/options",
         "type": "object",
-        "default": null
-    },
-    {
-        "pointer": "/variable_to_simulation/*/composition/*/options",
-        "type": "object",
         "optional": [
             "maxArea",
             "dump_shape_velocity",
             "marchingSquaresGridSize",
             "forceMSGridSize"
-        ]
+        ],
+        "default": null
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/options/maxArea",
@@ -544,12 +557,12 @@
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/options/marchingSquaresGridSize",
-        "type": "float",
+        "type": "int",
         "default": 256
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/options/forceMSGridSize",
-        "type": "float",
+        "type": "bool",
         "default": false
     },
     {
@@ -613,7 +626,8 @@
             "collision_barrier",
             "control_smoothing",
             "material_smoothing",
-            "volume_constraint",
+            "volume",
+            "soft_constraint",
             "layer_thickness"
         ],
         "doc": "TODO"
@@ -942,6 +956,29 @@
     {
         "pointer": "/functionals/*",
         "type": "object",
+        "type_name": "soft_constraint",
+        "required": [
+            "objective"
+        ],
+        "optional": [
+            "weight",
+            "soft_bound"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/objective",
+        "type": "object",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/soft_bound",
+        "type": "list",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
         "type_name": "transient_integral",
         "required": [
             "static_objective",
@@ -1178,10 +1215,10 @@
     {
         "pointer": "/functionals/*",
         "type": "object",
-        "type_name": "volume_constraint",
+        "type_name": "volume",
         "required": [
             "type",
-            "soft_bound"
+            "state"
         ],
         "optional": [
             "weight",

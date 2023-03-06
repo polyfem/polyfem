@@ -96,9 +96,16 @@ namespace polyfem::solver
 			{
 				log_and_throw_error("Objective not implemented!");
 			}
-			else if (type == "volume_constraint")
+			else if (type == "volume")
 			{
-				log_and_throw_error("Objective not implemented!");
+				obj = std::make_shared<VolumeForm>(var2sim, *(states[args["state"]]), args);
+			}
+			else if (type == "soft_constraint")
+			{
+				std::vector<std::shared_ptr<AdjointForm>> forms({create_form(args["objective"], var2sim, states)});
+				Eigen::VectorXd bounds;
+				nlohmann::adl_serializer<Eigen::VectorXd>::from_json(args["values"], bounds);
+				obj = std::make_shared<InequalityConstraintForm>(forms, bounds);
 			}
 			else
 				log_and_throw_error("Objective not implemented!");

@@ -167,8 +167,15 @@ TEST_CASE("laplacian", "[adjoint_method]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 
-	auto obj = create_form(opt_args["functionals"][0], variable_to_simulations, states);
+	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+	state.get_vf(V, F);
+	Eigen::VectorXd x = utils::flatten(V);
+
+	// Eigen::MatrixXd velocity_discrete(x.size(), 1);
+	// velocity_discrete.setRandom();
 	auto velocity = [](const Eigen::MatrixXd &position) {
 		auto vel = position;
 		for (int i = 0; i < vel.size(); i++)
@@ -179,11 +186,6 @@ TEST_CASE("laplacian", "[adjoint_method]")
 	};
 	Eigen::MatrixXd velocity_discrete;
 	sample_field(state, velocity, velocity_discrete);
-
-	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	state.get_vf(V, F);
-	Eigen::VectorXd x = utils::flatten(V);
 
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 3e-5);
 }
@@ -234,24 +236,13 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 	PositionForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
 	obj.set_integral_type(SpatialIntegralType::SURFACE);
 
-	auto velocity = [](const Eigen::MatrixXd &position) {
-		Eigen::MatrixXd vel;
-		vel.setZero(position.rows(), position.cols());
-		for (int i = 0; i < vel.rows(); i++)
-		{
-			vel(i, 0) = position(i, 0);
-			vel(i, 1) = position(i, 0) * position(i, 0);
-			vel(i, 2) = position(i, 0);
-		}
-		return vel;
-	};
-	Eigen::MatrixXd velocity_discrete;
-	sample_field(state, velocity, velocity_discrete);
-
 	Eigen::MatrixXd V;
 	Eigen::MatrixXi F;
 	state.get_vf(V, F);
 	Eigen::VectorXd x = utils::flatten(V);
+
+	Eigen::MatrixXd velocity_discrete(x.size(), 1);
+	velocity_discrete.setRandom();
 
 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 1e-5);
 }
@@ -274,23 +265,13 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 	PositionForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
 	obj.set_integral_type(SpatialIntegralType::SURFACE);
 
-	auto velocity = [](const Eigen::MatrixXd &position) {
-		Eigen::MatrixXd vel;
-		vel.setZero(position.rows(), position.cols());
-		for (int i = 0; i < vel.rows(); i++)
-		{
-			vel(i, 0) = position(i, 0);
-			vel(i, 1) = position(i, 0) * position(i, 0);
-		}
-		return vel;
-	};
-	Eigen::MatrixXd velocity_discrete;
-	sample_field(state, velocity, velocity_discrete);
-
 	Eigen::MatrixXd V;
 	Eigen::MatrixXi F;
 	state.get_vf(V, F);
 	Eigen::VectorXd x = utils::flatten(V);
+
+	Eigen::MatrixXd velocity_discrete(x.size(), 1);
+	velocity_discrete.setRandom();
 
 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-5);
 }
@@ -349,22 +330,27 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 	std::shared_ptr<State> state_ptr = create_state(in_args, spdlog::level::level_enum::err);
 	State &state = *state_ptr;
 
-	Eigen::Matrix2d Affine;
-	Affine << 1.2, 0, 0, 1.5;
+	std::vector<std::shared_ptr<State>> states({state_ptr});
 
-	json iso_options;
-	iso_options["maxArea"] = 1e-3;
-	iso_options["dump_shape_velocity"] = "tmp-vel.msh";
-	// iso_options["curveSimplifier"] = "NONE";
-	// iso_options["forceMaxBdryEdgeLen"] = 0.001;
-	iso_options["marchingSquaresGridSize"] = 1024;
-	iso_options["forceMSGridSize"] = true;
+	// Eigen::Matrix2d Affine;
+	// Affine << 1.2, 0, 0, 1.5;
 
-	std::vector<std::shared_ptr<Parametrization>> map_list = {
-		std::make_shared<AppendConstantMap>(8, 0.01),
-		std::make_shared<SDF2Mesh>(std::string("bistable.obj"), std::string("tmp-unit.msh"), iso_options),
-		std::make_shared<MeshTiling>(Eigen::Vector2i(2, 2), "tmp-unit.msh", "tmp-tiled.msh"),
-		std::make_shared<MeshAffine>(Affine, Eigen::Vector2d(1.0, 1.0), "tmp-tiled.msh", "tmp-scaled.msh")};
+	// json iso_options;
+	// iso_options["maxArea"] = 1e-3;
+	// iso_options["dump_shape_velocity"] = "tmp-vel.msh";
+	// // iso_options["curveSimplifier"] = "NONE";
+	// // iso_options["forceMaxBdryEdgeLen"] = 0.001;
+	// iso_options["marchingSquaresGridSize"] = 1024;
+	// iso_options["forceMSGridSize"] = true;
+
+	// std::vector<std::shared_ptr<Parametrization>> map_list = {
+	// 	std::make_shared<AppendConstantMap>(8, 0.01),
+	// 	std::make_shared<SDF2Mesh>(std::string("bistable.obj"), std::string("tmp-unit.msh"), iso_options),
+	// 	std::make_shared<MeshTiling>(Eigen::Vector2i(2, 2), "tmp-unit.msh", "tmp-tiled.msh"),
+	// 	std::make_shared<MeshAffine>(Affine, Eigen::Vector2d(1.0, 1.0), "tmp-tiled.msh", "tmp-scaled.msh")};
+	std::vector<std::shared_ptr<Parametrization>> map_list;
+	for (const auto &arg : opt_args["variable_to_simulation"][0]["composition"])
+		map_list.push_back(create_parametrization(arg, states));
 	CompositeParametrization composite_map(map_list);
 
 	json options;
@@ -374,8 +360,7 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(std::make_shared<SDFShapeVariableToSimulation>(state_ptr, composite_map, options));
 
-	VolumeForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
-	// StressNormForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
+	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
 	Eigen::VectorXd x(20);
 	x << 0.3, 0.10, 0.333333, 0.40, 0.666667, 0.50, 0.50, 0.75, 0.60, 0.666667, 0.90, 0.333333, 0.30, 0.20, 0.05, 0.05, 0.30, 0.20, 0.05, 0.05;
@@ -388,7 +373,7 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 	state.build_basis();
 	solve_pde(state);
 
-	verify_adjoint(variable_to_simulations, obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 5e-4);
+	verify_adjoint(variable_to_simulations, *obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 5e-4);
 	// verify_adjoint_expensive(variable_to_simulations, obj, state, x, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>());
 
 	std::filesystem::current_path(work_path);
@@ -411,23 +396,15 @@ TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 
-	auto obj = create_form(opt_args["functionals"][0], variable_to_simulations, states);
-
-	auto velocity = [](const Eigen::MatrixXd &position) {
-		auto vel = position;
-		for (int i = 0; i < vel.size(); i++)
-		{
-			vel(i) = (rand() % 1000) / 1000.0;
-		}
-		return vel;
-	};
-	Eigen::MatrixXd velocity_discrete;
-	sample_field(state, velocity, velocity_discrete);
+	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
 	Eigen::MatrixXd V;
 	Eigen::MatrixXi F;
 	state.get_vf(V, F);
 	Eigen::VectorXd x = utils::flatten(V);
+
+	Eigen::MatrixXd velocity_discrete(x.size(), 1);
+	velocity_discrete.setRandom();
 
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 1e-5);
 }
@@ -449,7 +426,7 @@ TEST_CASE("shape-neumann-nodes", "[adjoint_method]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, VariableToBoundaryNodes({}, *state_ptr, 2)));
 
-	auto obj = create_form(opt_args["functionals"][0], variable_to_simulations, states);
+	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
 	auto velocity = [](const Eigen::MatrixXd &position) {
 		auto vel = position;
@@ -460,7 +437,6 @@ TEST_CASE("shape-neumann-nodes", "[adjoint_method]")
 		return vel;
 	};
 	Eigen::MatrixXd velocity_discrete;
-	// sample_field(state, velocity, velocity_discrete);
 
 	Eigen::VectorXd x(4);
 	x << -0.5, 1.06,
@@ -533,23 +509,15 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 
-	auto obj = create_form(opt_args["functionals"][0], variable_to_simulations, states);
-
-	auto velocity = [](const Eigen::MatrixXd &position) {
-		auto vel = position;
-		for (int i = 0; i < vel.size(); i++)
-		{
-			vel(i) = (rand() % 10000) / 1.0e4;
-		}
-		return vel;
-	};
-	Eigen::MatrixXd velocity_discrete;
-	sample_field(state, velocity, velocity_discrete);
+	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
 	Eigen::MatrixXd V;
 	Eigen::MatrixXi F;
 	state.get_vf(V, F);
 	Eigen::VectorXd x = utils::flatten(V);
+
+	Eigen::MatrixXd velocity_discrete(x.size(), 1);
+	velocity_discrete.setRandom();
 
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-6, 1e-6);
 }
@@ -578,20 +546,11 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 
 	NodeTargetForm obj(state, variable_to_simulations, actives, targets);
 
-	auto velocity = [](const Eigen::MatrixXd &position) {
-		auto vel = position;
-		for (int i = 0; i < vel.size(); i++)
-		{
-			vel(i) = (rand() % 10000) / 1.0e4;
-		}
-		return vel;
-	};
-
-	Eigen::MatrixXd velocity_discrete;
-	sample_field(state, velocity, velocity_discrete, 0);
-
-	Eigen::VectorXd x(velocity_discrete.size());
+	Eigen::VectorXd x(state.mesh->n_elements() * 2);
 	x << state.assembler.lame_params().lambda_mat_, state.assembler.lame_params().mu_mat_;
+
+	Eigen::MatrixXd velocity_discrete(x.size(), 1);
+	velocity_discrete.setRandom();
 
 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-5, 1e-5);
 }
@@ -692,7 +651,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 
-	auto obj = create_form(opt_args["functionals"][0], variable_to_simulations, states);
+	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
 	Eigen::MatrixXd velocity_discrete;
 	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
