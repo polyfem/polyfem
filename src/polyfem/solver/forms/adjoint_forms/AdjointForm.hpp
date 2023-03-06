@@ -83,6 +83,7 @@ namespace polyfem::solver
 		}
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) override;
 	
 	private:
 		std::set<int> interested_ids_;

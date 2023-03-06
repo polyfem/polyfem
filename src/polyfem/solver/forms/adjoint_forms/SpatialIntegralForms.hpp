@@ -95,6 +95,8 @@ namespace polyfem::solver
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+
+			set_dim(args["dim"].get<int>());
 		}
 
 		void set_dim(const int dim) { dim_ = dim; }

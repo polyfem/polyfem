@@ -134,4 +134,10 @@ namespace polyfem::solver
 
 		return max_stress;
 	}
+	Eigen::VectorXd MaxStressForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state)
+	{
+		log_and_throw_error("MaxStressForm is not differentiable!");
+		return Eigen::VectorXd();
+	}
+	
 } // namespace polyfem::solver

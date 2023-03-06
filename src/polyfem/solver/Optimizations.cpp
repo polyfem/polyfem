@@ -57,11 +57,11 @@ namespace polyfem::solver
 			}
 			else if (type == "acceleration")
 			{
-				log_and_throw_error("Objective not implemented!");
+				obj = std::make_shared<AccelerationForm>(var2sim, *(states[args["state"]]), args);
 			}
 			else if (type == "kinetic")
 			{
-				log_and_throw_error("Objective not implemented!");
+				obj = std::make_shared<AccelerationForm>(var2sim, *(states[args["state"]]), args);
 			}
 			else if (type == "target")
 			{
@@ -94,7 +94,7 @@ namespace polyfem::solver
 			}
 			else if (type == "max_stress")
 			{
-				log_and_throw_error("Objective not implemented!");
+				obj = std::make_shared<MaxStressForm>(var2sim, *(states[args["state"]]), args);
 			}
 			else if (type == "volume")
 			{
