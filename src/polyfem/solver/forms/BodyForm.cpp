@@ -167,6 +167,35 @@ namespace polyfem::solver
 
 				vals.compute(e, rhs_assembler_.mesh().is_volume(), points, gbases[e], gbases[e]);
 
+				for (int n = 0; n < vals.jac_it.size(); ++n)
+				{
+					Eigen::MatrixXd ppp(1, dim);
+					ppp = vals.val.row(n);
+					Eigen::MatrixXd trafo = vals.jac_it[n];
+
+					if (actual_dim == dim)
+					{
+						Eigen::MatrixXd deform_mat(dim, dim);
+						deform_mat.setZero();
+						for (const auto &b : vals.basis_values)
+						{
+							for (const auto &g : b.global)
+							{
+								for (int d = 0; d < dim; ++d)
+								{
+									deform_mat.col(d) += x(g.index * dim + d) * b.grad_t_m.row(n);
+
+									ppp(d) += x(g.index * dim + d) * b.val(n);
+								}
+							}
+						}
+
+						trafo += deform_mat;
+					}
+					normals.row(n) = normals.row(n) * trafo;
+					normals.row(n).normalize();
+				}
+
 				Eigen::MatrixXd neumann_val;
 				rhs_assembler_.problem().neumann_bc(rhs_assembler_.mesh(), global_primitive_ids, uv, vals.val, normals, 0, neumann_val);
 
@@ -176,35 +205,6 @@ namespace polyfem::solver
 
 					Eigen::MatrixXd p, grad_p;
 					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint, p, grad_p);
-
-					for (int n = 0; n < vals.jac_it.size(); ++n)
-					{
-						Eigen::MatrixXd ppp(1, dim);
-						ppp = vals.val.row(n);
-						Eigen::MatrixXd trafo = vals.jac_it[n];
-
-						if (actual_dim == dim)
-						{
-							Eigen::MatrixXd deform_mat(dim, dim);
-							deform_mat.setZero();
-							for (const auto &b : vals.basis_values)
-							{
-								for (const auto &g : b.global)
-								{
-									for (int d = 0; d < dim; ++d)
-									{
-										deform_mat.col(d) += x(g.index * dim + d) * b.grad_t_m.row(n);
-
-										ppp(d) += x(g.index * dim + d) * b.val(n);
-									}
-								}
-							}
-
-							trafo += deform_mat;
-						}
-						normals.row(n) = normals.row(n) * trafo;
-						normals.row(n).normalize();
-					}
 
 					const auto nodes = gbases[e].local_nodes_for_primitive(lb.global_primitive_id(i), rhs_assembler_.mesh());
 
