@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 	CLI::App command_line{"polyfem"};
 
 	// Eigen::setNbThreads(1);
-	size_t max_threads = std::numeric_limits<size_t>::max();
+	int max_threads = std::numeric_limits<int>::max();
 	command_line.add_option("--max_threads", max_threads, "Maximum number of threads");
 
 	std::string json_file = "";
@@ -105,7 +105,8 @@ int main(int argc, char **argv)
 
 	/* variable to simulations */
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
+	for (const auto &arg : opt_args["variable_to_simulation"])
+		variable_to_simulations.push_back(create_variable_to_simulation(arg, states));
 
 	/* forms */
 	std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(create_form(opt_args["functionals"], variable_to_simulations, states));

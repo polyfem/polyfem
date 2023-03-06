@@ -105,7 +105,8 @@ int main(int argc, char **argv)
 
 	/* variable to simulations */
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
+	for (const auto &arg : opt_args["variable_to_simulation"])
+		variable_to_simulations.push_back(create_variable_to_simulation(arg, states));
 
 	/* forms */
 	std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(create_form(opt_args["functionals"], variable_to_simulations, states));
