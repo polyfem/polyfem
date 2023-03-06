@@ -169,10 +169,10 @@ TEST_CASE("laplacian", "[adjoint_method]")
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
-	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	state.get_vf(V, F);
-	Eigen::VectorXd x = utils::flatten(V);
+	// Eigen::MatrixXd V;
+	// Eigen::MatrixXi F;
+	// state.get_vf(V, F);
+	Eigen::VectorXd x = variable_to_simulations[0]->inverse_eval();
 
 	// Eigen::MatrixXd velocity_discrete(x.size(), 1);
 	// velocity_discrete.setRandom();
@@ -343,8 +343,8 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
-	Eigen::VectorXd x(20);
-	x << 0.3, 0.10, 0.333333, 0.40, 0.666667, 0.50, 0.50, 0.75, 0.60, 0.666667, 0.90, 0.333333, 0.30, 0.20, 0.05, 0.05, 0.30, 0.20, 0.05, 0.05;
+	Eigen::VectorXd x;
+	nlohmann::adl_serializer<Eigen::VectorXd>::from_json(opt_args["parameters"][0]["initial"], x);
 
 	Eigen::MatrixXd theta;
 	theta.setRandom(x.size(), 1);

@@ -65,6 +65,23 @@ namespace polyfem::solver
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}
+	Eigen::VectorXd ShapeVariableToSimulation::inverse_eval()
+	{
+		const int dim = state_ptr_->mesh->dimension();
+		const int npts = state_ptr_->mesh->n_vertices();
+
+		Eigen::VectorXd x;
+		Eigen::VectorXi indices = parametrization_.get_output_indexing(x);
+
+		if (indices.size() == 0)
+			indices.setLinSpaced(npts * dim, 0, npts * dim - 1);
+
+		x.setZero(indices.size());
+		for (int i = 0; i < indices.size(); i++)
+			x(i) = state_ptr_->mesh->point(i / dim)(i % dim);
+
+		return parametrization_.inverse_eval(x);
+	}
 
 	SDFShapeVariableToSimulation::SDFShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization, const json &args) : ShapeVariableToSimulation(state_ptr, parametrization), mesh_id_(args["mesh_id"]), mesh_path_(args["mesh"])
 	{
@@ -118,6 +135,11 @@ namespace polyfem::solver
 		const int dim = state_ptr_->mesh->dimension();
 		parametrization_.set_output_indexing(Eigen::VectorXi::LinSpaced((end - start) * dim, start * dim, end * dim - 1));
 	}
+	Eigen::VectorXd SDFShapeVariableToSimulation::inverse_eval()
+	{
+		log_and_throw_error("SDF shape doesn't support inverse evaluation!");
+		return Eigen::VectorXd();
+	}
 
 	void ElasticVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
@@ -141,6 +163,11 @@ namespace polyfem::solver
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}
+	Eigen::VectorXd ElasticVariableToSimulation::inverse_eval()
+	{
+		log_and_throw_error("Not implemented!");
+		return Eigen::VectorXd();
+	}
 
 	void FrictionCoeffientVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
@@ -163,6 +190,11 @@ namespace polyfem::solver
 			log_and_throw_error("Friction coefficient grad in static simulations not implemented!");
 		}
 		return parametrization_.apply_jacobian(term, x);
+	}
+	Eigen::VectorXd FrictionCoeffientVariableToSimulation::inverse_eval()
+	{
+		log_and_throw_error("Not implemented!");
+		return Eigen::VectorXd();
 	}
 
 	void DampingCoeffientVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
@@ -191,6 +223,11 @@ namespace polyfem::solver
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}
+	Eigen::VectorXd DampingCoeffientVariableToSimulation::inverse_eval()
+	{
+		log_and_throw_error("Not implemented!");
+		return Eigen::VectorXd();
+	}
 
 	void InitialConditionVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
@@ -213,6 +250,11 @@ namespace polyfem::solver
 			log_and_throw_error("Static initial condition not supported!");
 		}
 		return parametrization_.apply_jacobian(term, x);
+	}
+	Eigen::VectorXd InitialConditionVariableToSimulation::inverse_eval()
+	{
+		log_and_throw_error("Not implemented!");
+		return Eigen::VectorXd();
 	}
 
 	void DirichletVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
@@ -251,6 +293,11 @@ namespace polyfem::solver
 	{
 		return "";
 	}
+	Eigen::VectorXd DirichletVariableToSimulation::inverse_eval()
+	{
+		log_and_throw_error("Not implemented!");
+		return Eigen::VectorXd();
+	}
 
 	void MacroStrainVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
@@ -269,5 +316,10 @@ namespace polyfem::solver
 			AdjointTools::dJ_macro_strain_adjoint_term(get_state(), get_state().diff_cached[0].u, get_state().get_adjoint_mat(0), term);
 		}
 		return parametrization_.apply_jacobian(term, x);
+	}
+	Eigen::VectorXd MacroStrainVariableToSimulation::inverse_eval()
+	{
+		log_and_throw_error("Not implemented!");
+		return Eigen::VectorXd();
 	}
 } // namespace polyfem::solver

@@ -105,46 +105,34 @@ int main(int argc, char **argv)
 
 	/* variable to simulations */
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	{
-		Eigen::Matrix2d Affine;
-		Affine << 1.2, 0, 0, 1.5;
-
-		json iso_options;
-		iso_options["maxArea"] = 1e-3;
-		iso_options["dump_shape_velocity"] = "tmp-vel.msh";
-		// iso_options["curveSimplifier"] = "NONE";
-		// iso_options["forceMaxBdryEdgeLen"] = 0.001;
-		iso_options["marchingSquaresGridSize"] = 1024;
-		iso_options["forceMSGridSize"] = true;
-
-		std::vector<std::shared_ptr<Parametrization>> map_list = {
-			std::make_shared<AppendConstantMap>(8, 0.01),
-			std::make_shared<SDF2Mesh>(std::string("bistable.obj"), std::string("tmp-unit.msh"), iso_options),
-			std::make_shared<MeshTiling>(Eigen::Vector2i(2, 2), "tmp-unit.msh", "tmp-tiled.msh"),
-			std::make_shared<MeshAffine>(Affine, Eigen::Vector2d(1.0, 1.0), "tmp-tiled.msh", "tmp-scaled.msh")};
-		CompositeParametrization composite_map(map_list);
-
-		json options;
-		options["mesh"] = "tmp-scaled.msh";
-		options["mesh_id"] = 0;
-
-		variable_to_simulations.push_back(std::make_shared<SDFShapeVariableToSimulation>(states[0], composite_map, options));
-	}
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
 
 	/* forms */
-	auto obj = std::make_shared<StressNormForm>(variable_to_simulations, *(states[0]), opt_args["functionals"][0]);
+	std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(create_form(opt_args["functionals"], variable_to_simulations, states));
 
-	Eigen::VectorXd x(20);
-	x << 0.3, 0.10, 0.333333, 0.40, 0.666667, 0.50, 0.50, 0.75, 0.60, 0.666667, 0.90, 0.333333, 0.30, 0.20, 0.05, 0.05, 0.30, 0.20, 0.05, 0.05;// 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01;
+	int ndof = 0;
+	for (const auto &arg : opt_args["parameters"])
+		ndof += arg["number"].get<int>();
+
+	Eigen::VectorXd x;
+	x.setZero(ndof);
+	for (const auto &arg : opt_args["parameters"])
+	{
+		if (arg["initial"].size() == 0)
+		{
+			assert(variable_to_simulations.size() == 1);
+			assert(opt_args["parameters"].size() == 1);
+			x = variable_to_simulations[0]->inverse_eval();
+		}
+		else
+			nlohmann::adl_serializer<Eigen::VectorXd>::from_json(arg["initial"], x);
+	}
 
 	for (auto &v2s : variable_to_simulations)
 		v2s->update(x);
 	solve_pde(*(states[0]));
 
-	std::vector<std::shared_ptr<AdjointForm>> forms({obj});
-	auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
-
-	auto nl_problem = std::make_shared<AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 
 	if (only_compute_energy)
