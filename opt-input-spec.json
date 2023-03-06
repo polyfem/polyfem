@@ -264,6 +264,14 @@
     },
     {
         "pointer": "/variable_to_simulation/*",
+        "type_name": "shape",
+        "type": "object",
+        "required": [
+            "state"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
         "type_name": "sdf-shape",
         "type": "object",
         "required": [

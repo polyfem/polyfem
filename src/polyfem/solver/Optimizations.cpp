@@ -180,6 +180,48 @@ namespace polyfem::solver
 		return map;
 	}
 
+	std::shared_ptr<VariableToSimulation> create_variable_to_simulation(const json &args, const std::vector<std::shared_ptr<State>> &states)
+	{
+		std::shared_ptr<VariableToSimulation> var2sim;
+		const std::string type = args["type"];
+
+		std::vector<std::shared_ptr<Parametrization>> map_list;
+		for (const auto &arg : args["composition"])
+			map_list.push_back(create_parametrization(arg, states));
+		CompositeParametrization composite_map(map_list);
+
+        if (type == "shape")
+		{
+			var2sim = std::make_shared<ShapeVariableToSimulation>(states[args["state"]], composite_map);
+		}
+        else if (type == "elastic")
+		{
+			log_and_throw_error("Not implemented!");
+		}
+        else if (type == "friction")
+		{
+			log_and_throw_error("Not implemented!");
+		}
+        else if (type == "damping")
+		{
+			log_and_throw_error("Not implemented!");
+		}
+        else if (type == "macro-strain")
+		{
+			log_and_throw_error("Not implemented!");
+		}
+        else if (type == "initial")
+		{
+			log_and_throw_error("Not implemented!");
+		}
+        else if (type == "sdf-shape")
+		{
+			var2sim = std::make_shared<SDFShapeVariableToSimulation>(states[args["state"]], composite_map, args);
+		}
+
+		return var2sim;
+	}
+
 	std::shared_ptr<State> create_state(const json &args, spdlog::level::level_enum log_level, const int max_threads)
 	{
 		std::shared_ptr<State> state = std::make_shared<State>();

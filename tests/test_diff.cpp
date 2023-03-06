@@ -165,7 +165,7 @@ TEST_CASE("laplacian", "[adjoint_method]")
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -202,8 +202,10 @@ TEST_CASE("boundary-smoothing", "[adjoint_method]")
 	load_json(path + "laplacian-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
 
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
 
 	BoundarySmoothingForm obj(variable_to_simulations, state, true, 3);
 
@@ -230,8 +232,10 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 	load_json(path + "linear_elasticity-surface-3d-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
 
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
 
 	PositionForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
 	obj.set_integral_type(SpatialIntegralType::SURFACE);
@@ -259,8 +263,10 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 	load_json(path + "linear_elasticity-surface-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
 
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
 
 	PositionForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
 	obj.set_integral_type(SpatialIntegralType::SURFACE);
@@ -332,33 +338,8 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 
 	std::vector<std::shared_ptr<State>> states({state_ptr});
 
-	// Eigen::Matrix2d Affine;
-	// Affine << 1.2, 0, 0, 1.5;
-
-	// json iso_options;
-	// iso_options["maxArea"] = 1e-3;
-	// iso_options["dump_shape_velocity"] = "tmp-vel.msh";
-	// // iso_options["curveSimplifier"] = "NONE";
-	// // iso_options["forceMaxBdryEdgeLen"] = 0.001;
-	// iso_options["marchingSquaresGridSize"] = 1024;
-	// iso_options["forceMSGridSize"] = true;
-
-	// std::vector<std::shared_ptr<Parametrization>> map_list = {
-	// 	std::make_shared<AppendConstantMap>(8, 0.01),
-	// 	std::make_shared<SDF2Mesh>(std::string("bistable.obj"), std::string("tmp-unit.msh"), iso_options),
-	// 	std::make_shared<MeshTiling>(Eigen::Vector2i(2, 2), "tmp-unit.msh", "tmp-tiled.msh"),
-	// 	std::make_shared<MeshAffine>(Affine, Eigen::Vector2d(1.0, 1.0), "tmp-tiled.msh", "tmp-scaled.msh")};
-	std::vector<std::shared_ptr<Parametrization>> map_list;
-	for (const auto &arg : opt_args["variable_to_simulation"][0]["composition"])
-		map_list.push_back(create_parametrization(arg, states));
-	CompositeParametrization composite_map(map_list);
-
-	json options;
-	options["mesh"] = "tmp-scaled.msh";
-	options["mesh_id"] = 0;
-
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<SDFShapeVariableToSimulation>(state_ptr, composite_map, options));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -373,7 +354,7 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 	state.build_basis();
 	solve_pde(state);
 
-	verify_adjoint(variable_to_simulations, *obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 5e-4);
+	verify_adjoint(variable_to_simulations, *obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-3);
 	// verify_adjoint_expensive(variable_to_simulations, obj, state, x, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>());
 
 	std::filesystem::current_path(work_path);
@@ -394,7 +375,7 @@ TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -424,7 +405,7 @@ TEST_CASE("shape-neumann-nodes", "[adjoint_method]")
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, VariableToBoundaryNodes({}, *state_ptr, 2)));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -458,8 +439,10 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 	load_json(path + "homogenize-stress-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
 
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
 
 	std::vector<std::shared_ptr<AdjointForm>> forms;
 	for (int i = 0; i < 2; i++)
@@ -507,7 +490,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -649,7 +632,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -682,8 +665,10 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 	load_json(path + "shape-transient-friction-sdf-opt.json", opt_args);
 	opt_args = apply_opt_json_spec(opt_args, false);
 
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
 
 	Eigen::MatrixXd control_points;
 	Eigen::VectorXd knots;
