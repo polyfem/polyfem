@@ -3,6 +3,7 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/State.hpp>
 
 #include <polyfem/utils/IntegrableFunctional.hpp>
@@ -57,6 +58,59 @@ namespace polyfem::solver
 				vec.setZero();
 			}
 		};
+
+		typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1>> Diff;
+
+		template <typename T>
+		T triangle_area(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V)
+		{
+			Eigen::Matrix<T, Eigen::Dynamic, 1> l1 = V.row(1) - V.row(0);
+			Eigen::Matrix<T, Eigen::Dynamic, 1> l2 = V.row(2) - V.row(0);
+			T area = 0.5 * sqrt(pow(l1(1) * l2(2) - l1(2) * l2(1), 2) + pow(l1(0) * l2(2) - l1(2) * l2(0), 2) + pow(l1(1) * l2(0) - l1(0) * l2(1), 2));
+			return area;
+		}
+
+		Eigen::MatrixXd triangle_area_grad(const Eigen::MatrixXd &F)
+		{
+			DiffScalarBase::setVariableCount(F.size());
+			Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic> full_diff(F.rows(), F.cols());
+			for (int i = 0; i < F.rows(); i++)
+				for (int j = 0; j < F.cols(); j++)
+					full_diff(i, j) = Diff(i + j * F.rows(), F(i, j));
+			auto reduced_diff = triangle_area(full_diff);
+
+			Eigen::MatrixXd grad(F.rows(), F.cols());
+			for (int i = 0; i < F.rows(); ++i)
+				for (int j = 0; j < F.cols(); ++j)
+					grad(i, j) = reduced_diff.getGradient()(i + j * F.rows());
+
+			return grad;
+		}
+
+		template <typename T>
+		T line_length(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &V)
+		{
+			Eigen::Matrix<T, Eigen::Dynamic, 1> L = V.row(1) - V.row(0);
+			T area = L.norm();
+			return area;
+		}
+
+		Eigen::MatrixXd line_length_grad(const Eigen::MatrixXd &F)
+		{
+			DiffScalarBase::setVariableCount(F.size());
+			Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic> full_diff(F.rows(), F.cols());
+			for (int i = 0; i < F.rows(); i++)
+				for (int j = 0; j < F.cols(); j++)
+					full_diff(i, j) = Diff(i + j * F.rows(), F(i, j));
+			auto reduced_diff = line_length(full_diff);
+
+			Eigen::MatrixXd grad(F.rows(), F.cols());
+			for (int i = 0; i < F.rows(); ++i)
+				for (int j = 0; j < F.cols(); ++j)
+					grad(i, j) = reduced_diff.getGradient()(i + j * F.rows());
+
+			return grad;
+		}
 	} // namespace
 
 	void AdjointTools::dJ_macro_strain_adjoint_term(
@@ -376,6 +430,22 @@ namespace polyfem::solver
 						if (nodes.size() != dim)
 							log_and_throw_error("Only linear geometry is supported in differentiable surface integral functional!");
 
+						Eigen::MatrixXd velocity_div_mat;
+						if (state.mesh->is_volume())
+						{
+							Eigen::Matrix3d V;
+							for (int d = 0; d < 3; d++)
+								V.row(d) = gbases[e].bases[nodes(d)].global()[0].node;
+							velocity_div_mat = triangle_area_grad(V) / triangle_area<double>(V);
+						}
+						else
+						{
+							Eigen::Matrix2d V;
+							for (int d = 0; d < 2; d++)
+								V.row(d) = gbases[e].bases[nodes(d)].global()[0].node;
+							velocity_div_mat = line_length_grad(V) / line_length<double>(V);
+						}
+
 						Eigen::MatrixXd grad_u_q, tau_q;
 						for (long n = 0; n < nodes.size(); ++n)
 						{
@@ -383,46 +453,7 @@ namespace polyfem::solver
 							// integrate j * div(gbases) over the whole boundary
 							for (int d = 0; d < dim; d++)
 							{
-								double velocity_div = 0;
-								if (state.mesh->is_volume())
-								{
-									Eigen::Vector3d dr_du = gbases[e].bases[nodes(1)].global()[0].node - gbases[e].bases[nodes(0)].global()[0].node;
-									Eigen::Vector3d dr_dv = gbases[e].bases[nodes(2)].global()[0].node - gbases[e].bases[nodes(0)].global()[0].node;
-
-									// compute dtheta
-									Eigen::Vector3d dtheta_du, dtheta_dv;
-									dtheta_du.setZero();
-									dtheta_dv.setZero();
-									if (0 == n)
-									{
-										dtheta_du(d) = -1;
-										dtheta_dv(d) = -1;
-									}
-									else if (1 == n)
-										dtheta_du(d) = 1;
-									else if (2 == n)
-										dtheta_dv(d) = 1;
-									else
-										assert(false);
-
-									velocity_div = (dr_du.cross(dr_dv)).dot(dtheta_du.cross(dr_dv) + dr_du.cross(dtheta_dv)) / (dr_du.cross(dr_dv)).squaredNorm();
-								}
-								else
-								{
-									Eigen::VectorXd dr = gbases[e].bases[nodes(1)].global()[0].node - gbases[e].bases[nodes(0)].global()[0].node;
-
-									// compute dtheta
-									Eigen::VectorXd dtheta;
-									dtheta.setZero(dr.rows(), dr.cols());
-									if (0 == n)
-										dtheta(d) = -1;
-									else if (1 == n)
-										dtheta(d) = 1;
-									else
-										assert(false);
-
-									velocity_div = dr.dot(dtheta) / dr.squaredNorm();
-								}
+								double velocity_div = velocity_div_mat(n, d);
 
 								for (int q = 0; q < weights.size(); ++q)
 								{

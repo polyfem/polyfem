@@ -209,17 +209,13 @@ namespace polyfem::solver
 					const auto nodes = gbases[e].local_nodes_for_primitive(lb.global_primitive_id(i), rhs_assembler_.mesh());
 
 					if (nodes.size() != dim)
-						log_and_throw_error("Only linear geometry is supported in differentiable surface integral functional!");
+						log_and_throw_error("Only linear geometry is supported in shape derivative!");
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
 						const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
-
-						Eigen::VectorXd value(weights.size());
-						for (int q = 0; q < weights.size(); ++q)
-						{
-							value(q) = p.row(q).dot(neumann_val.row(q)) * vals.det(q) * weights(q);
-						}
+						
+						Eigen::VectorXd value = (p.array() * neumann_val.array()).rowwise().sum() * vals.det.array() * weights.array();
 
 						// integrate j * div(gbases) over the whole boundary
 						for (int d = 0; d < dim; d++)
@@ -265,21 +261,11 @@ namespace polyfem::solver
 								velocity_div = dr.dot(dtheta) / dr.squaredNorm();
 							}
 
-							for (int q = 0; q < weights.size(); ++q)
-							{
-								// local_storage.vec(v.global[0].index * dim + d) += j_val(q) * velocity_div;
-
-								// if (j.depend_on_x())
-								// 	local_storage.vec(v.global[0].index * dim + d) += v.val(q) * dj_dx(q, d);
-
-								const int g_index = v.global[0].index * dim + d;
-								const bool is_neumann = std::find(boundary_nodes_.begin(), boundary_nodes_.end(), g_index) == boundary_nodes_.end();
-
-								if (is_neumann)
-								{
-									local_storage.vec(v.global[0].index * dim + d) += value(q) * velocity_div;
-								}
-							}
+							assert(v.global.size() == 1);
+							const int g_index = v.global[0].index * dim + d;
+							const bool is_neumann = std::find(boundary_nodes_.begin(), boundary_nodes_.end(), g_index) == boundary_nodes_.end();
+							if (is_neumann)
+								local_storage.vec(v.global[0].index * dim + d) += value.sum() * velocity_div;
 						}
 					}
 				}
