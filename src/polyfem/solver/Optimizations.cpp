@@ -1,5 +1,7 @@
 #include "Optimizations.hpp"
 
+#include <polyfem/mesh/GeometryReader.hpp>
+
 #include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/CompositeForms.hpp>
@@ -49,6 +51,10 @@ namespace polyfem::solver
 				const auto &state = states[args["state"]];
 				obj = std::make_shared<TransientForm>(var2sim, state->args["time"]["time_steps"], state->args["time"]["dt"], args["integral_type"], static_obj);
 			}
+			else if (type == "compliance")
+			{
+				obj = std::make_shared<ComplianceForm>(var2sim, *(states[args["state"]]), args);
+			}
 			else if (type == "acceleration")
 			{
 				log_and_throw_error("Objective not implemented!");
@@ -56,6 +62,23 @@ namespace polyfem::solver
 			else if (type == "kinetic")
 			{
 				log_and_throw_error("Objective not implemented!");
+			}
+			else if (type == "target")
+			{
+				std::shared_ptr<TargetForm> tmp = std::make_shared<TargetForm>(var2sim, *(states[args["state"]]), args);
+				auto reference_cached = args["reference_cached_body_ids"].get<std::vector<int>>();
+				tmp->set_reference(states[args["target_state"]], std::set(reference_cached.begin(), reference_cached.end()));
+				obj = tmp;
+			}
+			else if (type == "sdf-target")
+			{
+				log_and_throw_error("Objective not implemented!");
+			}
+			else if (type == "function-target")
+			{
+				std::shared_ptr<TargetForm> tmp = std::make_shared<TargetForm>(var2sim, *(states[args["state"]]), args);
+				tmp->set_reference(args["target_function"], args["target_function_gradient"]);
+				obj = tmp;
 			}
 			else if (type == "position")
 			{
@@ -79,9 +102,75 @@ namespace polyfem::solver
 			}
 			else
 				log_and_throw_error("Objective not implemented!");
+
+			obj->set_weight(args["weight"]);
 		}
 
 		return obj;
+	}
+
+	std::shared_ptr<Parametrization> create_parametrization(const json &args, const std::vector<std::shared_ptr<State>> &states)
+	{
+		std::shared_ptr<Parametrization> map;
+		const std::string type = args["type"];
+		if (type == "per-body-to-per-elem")
+		{
+			map = std::make_shared<PerBody2PerElem>(*(states[args["state"]]->mesh));
+		}
+		else if (type == "E-nu-to-lambda-mu")
+		{
+			map = std::make_shared<ENu2LambdaMu>(args["is_volume"]);
+		}
+		else if (type == "slice")
+		{
+			map = std::make_shared<SliceMap>(args["from"], args["to"]);
+		}
+		else if (type == "exp")
+		{
+			map = std::make_shared<ExponentialMap>();
+		}
+		else if (type == "scale")
+		{
+			map = std::make_shared<Scaling>(args["value"]);
+		}
+		else if (type == "power")
+		{
+			map = std::make_shared<PowerMap>(args["power"]);
+		}
+		else if (type == "append-const")
+		{
+			Eigen::VectorXd vals;
+			nlohmann::adl_serializer<Eigen::VectorXd>::from_json(args["values"], vals);
+			map = std::make_shared<AppendConstantMap>(vals);
+		}
+		else if (type == "linear-filter")
+		{
+			map = std::make_shared<LinearFilter>(*(states[args["state"]]->mesh), args["radius"]);
+		}
+		else if (type == "sdf-to-mesh")
+		{
+			map = std::make_shared<SDF2Mesh>(args["wire_path"], args["output_path"], args["options"]);
+		}
+		else if (type == "periodic-mesh-tile")
+		{
+			Eigen::VectorXi dims;
+			nlohmann::adl_serializer<Eigen::VectorXi>::from_json(args["dimensions"], dims);
+			map = std::make_shared<MeshTiling>(dims, args["input_path"], args["output_path"]);
+		}
+		else if (type == "mesh-affine")
+		{
+			MatrixNd A;
+			VectorNd b;
+			mesh::construct_affine_transformation(
+				args["transformation"],
+				VectorNd::Ones(args["dimension"]),
+				A, b);
+			map = std::make_shared<MeshAffine>(A, b, args["input_path"], args["output_path"]);
+		}
+		else
+			log_and_throw_error("Unkown parametrization!");
+		
+		return map;
 	}
 
 	std::shared_ptr<State> create_state(const json &args, spdlog::level::level_enum log_level, const int max_threads)

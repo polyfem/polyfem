@@ -355,17 +355,17 @@
         "type": "object",
         "required": [
             "input_path",
-            "output_path"
+            "output_path",
+            "dimension"
         ],
         "optional": [
-            "transformation",
-            "translation",
-            "rotation",
-            "rotation_mode",
-            "scale",
-            "dimensions"
+            "transformation"
         ],
         "doc": "Append a list of constants at the end of the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/dimension",
+        "type": "int"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/transformation",
@@ -452,6 +452,45 @@
     {
         "pointer": "/variable_to_simulation/*/composition/*/dimensions/*",
         "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "per-body-to-per-elem",
+        "type": "object",
+        "required": [
+            "state"
+        ],
+        "doc": "From per volume selection to per element."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "E-nu-to-lambda-mu",
+        "type": "object",
+        "required": [
+            "is_volume"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/is_volume",
+        "type": "bool"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "linear-filter",
+        "type": "object",
+        "required": [
+            "state",
+            "radius"
+        ],
+        "doc": "Apply linear smoothing filter on a field per element."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/state",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/radius",
+        "type": "float"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*",
@@ -558,8 +597,10 @@
         "type": "string",
         "options": [
             "transient_integral",
-            "trajectory",
-            "height",
+            "target",
+            "sdf-target",
+            "function-target",
+            "node-target",
             "position",
             "acceleration",
             "kinetic",
@@ -569,8 +610,6 @@
             "compliance",
             "strain_norm",
             "boundary_smoothing",
-            "deformed_boundary_smoothing",
-            "material_bound",
             "collision_barrier",
             "control_smoothing",
             "material_smoothing",
@@ -606,23 +645,62 @@
     {
         "pointer": "/functionals/*",
         "type": "object",
-        "type_name": "trajectory",
+        "type_name": "sdf-target",
         "required": [
             "state",
-            "type",
-            "matching"
+            "type"
         ],
         "optional": [
-            "target_displacement",
-            "target_function",
-            "target_function_gradient",
-            "active_dimension",
             "control_points",
             "knots",
             "tangents",
             "delta",
             "weight",
-            "volume_selection",
+            "surface_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "node-target",
+        "required": [
+            "state",
+            "type",
+            "targets",
+            "node_ids"
+        ],
+        "optional": [
+            "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "function-target",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "weight",
+            "target_function",
+            "target_function_gradient",
+            "surface_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "target",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "weight",
             "surface_selection",
             "reference_cached_body_ids",
             "target_state"
@@ -840,13 +918,9 @@
         "pointer": "/functionals/*/matching",
         "type": "string",
         "options": [
-            "exact-center",
             "exact",
-            "sdf",
             "marker-data",
-            "exact-marker",
-            "target-position",
-            "target-function"
+            "exact-marker"
         ],
         "doc": "TODO"
     },
@@ -980,20 +1054,6 @@
     {
         "pointer": "/functionals/*",
         "type": "object",
-        "type_name": "height",
-        "required": [
-            "state",
-            "type"
-        ],
-        "optional": [
-            "volume_selection",
-            "weight"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/functionals/*",
-        "type": "object",
         "type_name": "strain_norm",
         "required": [
             "state",
@@ -1002,19 +1062,6 @@
         "optional": [
             "volume_selection",
             "weight"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/functionals/*",
-        "type": "object",
-        "type_name": "material_bound",
-        "required": [
-            "type",
-            "bounds"
-        ],
-        "optional": [
-            "volume_selection"
         ],
         "doc": "TODO"
     },
@@ -1058,21 +1105,6 @@
             "weight",
             "adjust_weight_period",
             "adjustment_coeff",
-            "surface_selection"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/functionals/*",
-        "type": "object",
-        "type_name": "deformed_boundary_smoothing",
-        "required": [
-            "state",
-            "type"
-        ],
-        "optional": [
-            "power",
-            "weight",
             "surface_selection"
         ],
         "doc": "TODO"

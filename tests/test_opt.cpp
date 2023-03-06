@@ -166,20 +166,9 @@ TEST_CASE("material-opt", "[optimization]")
 			for (auto &v2s : variable_to_simulations)
 				v2s->update(x);
 
-			auto obj_aux = std::make_shared<TargetForm>(variable_to_simulations, *(states[0]), opt_args["functionals"][0]["static_objective"]);
+			std::shared_ptr<SumCompositeForm> sum = std::dynamic_pointer_cast<SumCompositeForm>(create_form(opt_args["functionals"], variable_to_simulations, states));
 
-			obj_aux->set_reference(states[1], {});
-
-			auto obj = std::make_shared<TransientForm>(variable_to_simulations, states[0]->args["time"]["time_steps"], states[0]->args["time"]["dt"], opt_args["functionals"][0]["integral_type"], obj_aux);
-
-			obj->set_weight(100.0);
-
-			std::vector<std::shared_ptr<AdjointForm>> forms({obj});
-
-			auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
-			sum->set_weight(1.0);
-
-			nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+			nl_problem = std::make_shared<AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
 		}
 
 		auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
@@ -261,11 +250,7 @@ TEST_CASE("topology-opt", "[optimization]")
 		x.setConstant(states[0]->mesh->n_elements(), 1, 0.3);
 
 		// define optimization objective -- sum of compliance of the same structure under different loads
-		std::shared_ptr<AdjointForm> obj1, obj2;
-		obj1 = std::make_shared<ComplianceForm>(variable_to_simulations, *(states[0]), opt_args["functionals"][0]);
-		obj2 = std::make_shared<ComplianceForm>(variable_to_simulations, *(states[1]), opt_args["functionals"][1]);
-		std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2});
-		auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
+		std::shared_ptr<SumCompositeForm> sum = std::dynamic_pointer_cast<SumCompositeForm>(create_form(opt_args["functionals"], variable_to_simulations, states));
 
 		nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
 

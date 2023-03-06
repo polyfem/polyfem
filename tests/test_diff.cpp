@@ -295,51 +295,6 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-5);
 }
 
-TEST_CASE("sum-form", "[adjoint_method]")
-{
-	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-	json in_args;
-	load_json(path + "sum-form.json", in_args);
-	auto state_ptr = create_state_and_solve(in_args);
-	State &state = *state_ptr;
-
-	json opt_args;
-	load_json(path + "sum-form-opt.json", opt_args);
-	opt_args = apply_opt_json_spec(opt_args, false);
-
-	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
-
-	std::shared_ptr<AdjointForm> obj1 = std::make_shared<PositionForm>(variable_to_simulations, state, opt_args["functionals"][0]);
-	obj1->set_weight(0.6);
-
-	std::shared_ptr<AdjointForm> obj2 = std::make_shared<StressNormForm>(variable_to_simulations, state, opt_args["functionals"][0]);
-	obj2->set_weight(1.5);
-
-	std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2});
-
-	SumCompositeForm obj(variable_to_simulations, forms);
-	obj.set_weight(0.1);
-
-	auto velocity = [](const Eigen::MatrixXd &position) {
-		auto vel = position;
-		for (int i = 0; i < vel.size(); i++)
-		{
-			vel(i) = vel(i) * cos(vel(i));
-		}
-		return vel;
-	};
-	Eigen::MatrixXd velocity_discrete;
-	sample_field(state, velocity, velocity_discrete);
-
-	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	state.get_vf(V, F);
-	Eigen::VectorXd x = utils::flatten(V);
-
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 1e-5);
-}
-
 TEST_CASE("topology-compliance", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");

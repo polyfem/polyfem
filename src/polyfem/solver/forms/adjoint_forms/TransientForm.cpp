@@ -65,7 +65,8 @@ namespace polyfem::solver
 			if (weights[i] == 0)
 				continue;
 			obj_->set_time_step(i);
-			value += weights[i] * obj_->value_unweighted(x);
+            const double tmp = obj_->value(x);
+			value += weights[i] * tmp;
 		}
 		return value;
     }
@@ -80,7 +81,7 @@ namespace polyfem::solver
 			if (weights[i] == 0)
 				continue;
 			obj_->set_time_step(i);
-			terms.col(i) = weights[i] * obj_->compute_adjoint_rhs_unweighted_step(x, state);
+			terms.col(i) = weights[i] * obj_->compute_adjoint_rhs_unweighted_step(x, state) * obj_->weight();
 		}
 
 		return terms;
@@ -96,7 +97,7 @@ namespace polyfem::solver
 			if (weights[i] == 0)
 				continue;
 			obj_->set_time_step(i);
-            obj_->compute_partial_gradient_unweighted(x, tmp);
+            obj_->compute_partial_gradient(x, tmp);
 			gradv += weights[i] * tmp;
 		}
     }
