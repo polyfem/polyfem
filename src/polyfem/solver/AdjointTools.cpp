@@ -1067,12 +1067,13 @@ namespace polyfem::solver
 		return primitives;
 	}
 
-	Eigen::MatrixXd AdjointTools::edge_normal_gradient(const Eigen::VectorXd &V)
+	Eigen::MatrixXd AdjointTools::edge_normal_gradient(const Eigen::MatrixXd &V)
 	{
 		DiffScalarBase::setVariableCount(4);
 		Eigen::Matrix<Diff, 4, 1> full_diff(4, 1);
-		for (int i = 0; i < 4; i++)
-			full_diff(i) = Diff(i, V(i));
+		for (int i = 0; i < 2; i++)
+			for (int j = 0; j < 2; j++)
+				full_diff(i * 2 + j) = Diff(i * 2 + j, V(i, j));
 		auto reduced_diff = edge_normal(full_diff);
 
 		Eigen::MatrixXd grad(2, 4);
@@ -1082,12 +1083,13 @@ namespace polyfem::solver
 		return grad;
 	}
 
-	Eigen::MatrixXd AdjointTools::face_normal_gradient(const Eigen::VectorXd &V)
+	Eigen::MatrixXd AdjointTools::face_normal_gradient(const Eigen::MatrixXd &V)
 	{
 		DiffScalarBase::setVariableCount(9);
 		Eigen::Matrix<Diff, 9, 1> full_diff(9, 1);
-		for (int i = 0; i < 9; i++)
-			full_diff(i) = Diff(i, V(i));
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++)
+				full_diff(i * 3 + j) = Diff(i * 3 + j, V(i, j));
 		auto reduced_diff = face_normal(full_diff);
 
 		Eigen::MatrixXd grad(3, 9);

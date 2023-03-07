@@ -114,9 +114,9 @@ namespace polyfem::solver
 			const Eigen::VectorXd &nodes);
 
 		static Eigen::MatrixXd edge_normal_gradient(
-			const Eigen::VectorXd &V);
+			const Eigen::MatrixXd &V);
 		static Eigen::MatrixXd face_normal_gradient(
-			const Eigen::VectorXd &V);
+			const Eigen::MatrixXd &V);
 
 		static Eigen::MatrixXd edge_velocity_divergence(
 			const Eigen::MatrixXd &V);

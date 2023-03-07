@@ -152,6 +152,37 @@ namespace polyfem::solver
 			}
 		});
 
+		// Zero entries in p that correspond to nodes lying between dirichlet and neumann surfaces
+		// DO NOT PARALLELIZE since they both write to the same location
+		Eigen::MatrixXd adjoint_zeroed = adjoint;
+		{
+			assembler::ElementAssemblyValues vals;
+			Eigen::MatrixXd uv, points, normal;
+			Eigen::VectorXd weights;
+			for (const auto &lb : local_neumann_boundary_)
+			{
+				const int e = lb.element_id();
+				for (int i = 0; i < lb.size(); ++i)
+				{
+					utils::BoundarySampler::boundary_quadrature(lb, n_boundary_samples_, rhs_assembler_.mesh(), i, false, uv, points, normal, weights);
+					vals.compute(e, rhs_assembler_.mesh().is_volume(), points, bases[e], gbases[e]);
+					const auto nodes = bases[e].local_nodes_for_primitive(lb.global_primitive_id(i), rhs_assembler_.mesh());
+					for (long n = 0; n < nodes.size(); ++n)
+					{
+						const AssemblyValues &v = vals.basis_values[nodes(n)];
+						for (int d = 0; d < dim; ++d)
+						{
+							assert(v.global.size() == 1);
+							const int g_index = v.global[0].index * dim + d;
+							const bool is_also_dirichlet = std::find(boundary_nodes_.begin(), boundary_nodes_.end(), g_index) != boundary_nodes_.end();
+							if (is_also_dirichlet)
+								adjoint_zeroed(g_index) = 0;
+						}
+					}
+				}
+			}
+		}
+
 		utils::maybe_parallel_for(local_neumann_boundary_.size(), [&](int start, int end, int thread_id) {
 			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
@@ -190,7 +221,7 @@ namespace polyfem::solver
 					rhs_assembler_.problem().neumann_bc(rhs_assembler_.mesh(), global_ids, uv, vals.val, normals, 0, neumann_val);
 
 					Eigen::MatrixXd p, grad_p;
-					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint, p, grad_p);
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint_zeroed, p, grad_p);
 
 					const auto nodes = gbases[e].local_nodes_for_primitive(global_primitive_id, rhs_assembler_.mesh());
 
@@ -211,11 +242,11 @@ namespace polyfem::solver
 							double pressure_bc = neumann_val.row(0).norm();
 							if (rhs_assembler_.mesh().is_volume())
 							{
-								Eigen::VectorXd v(9);
-								v.segment(0, 3) = gbases[e].bases[nodes(0)].global()[0].node;
-								v.segment(3, 3) = gbases[e].bases[nodes(1)].global()[0].node;
-								v.segment(6, 3) = gbases[e].bases[nodes(2)].global()[0].node;
-								auto grad = AdjointTools::face_normal_gradient(v);
+								Eigen::MatrixXd V(3, 3);
+								V.row(0) = gbases[e].bases[nodes(0)].global()[0].node;
+								V.row(1) = gbases[e].bases[nodes(1)].global()[0].node;
+								V.row(2) = gbases[e].bases[nodes(2)].global()[0].node;
+								auto grad = AdjointTools::face_normal_gradient(V);
 								if (n == 0)
 									grad_pressure_bc = grad.block(0, 0, 3, 3).rowwise().sum();
 								else if (n == 1)
@@ -225,15 +256,15 @@ namespace polyfem::solver
 								else
 									assert(false);
 
-								velocity_div_mat = AdjointTools::face_velocity_divergence(utils::unflatten(v, 3));
+								velocity_div_mat = AdjointTools::face_velocity_divergence(V);
 							}
 							else
 							{
-								Eigen::VectorXd v(4);
-								v.segment(0, 2) = gbases[e].bases[nodes(0)].global()[0].node;
-								v.segment(2, 2) = gbases[e].bases[nodes(1)].global()[0].node;
+								Eigen::MatrixXd V(2, 2);
+								V.row(0) = gbases[e].bases[nodes(0)].global()[0].node;
+								V.row(1) = gbases[e].bases[nodes(1)].global()[0].node;
 
-								auto grad = AdjointTools::edge_normal_gradient(v);
+								auto grad = AdjointTools::edge_normal_gradient(V);
 								if (n == 0)
 									grad_pressure_bc = grad.block(0, 0, 2, 2).rowwise().sum();
 								else if (n == 1)
@@ -241,7 +272,7 @@ namespace polyfem::solver
 								else
 									assert(false);
 
-								velocity_div_mat = AdjointTools::edge_velocity_divergence(utils::unflatten(v, 2));
+								velocity_div_mat = AdjointTools::edge_velocity_divergence(V);
 							}
 							grad_pressure_bc *= pressure_bc;
 						}
@@ -252,11 +283,13 @@ namespace polyfem::solver
 							assert(v.global.size() == 1);
 							const int g_index = v.global[0].index * dim + d;
 							const bool is_neumann = std::find(boundary_nodes_.begin(), boundary_nodes_.end(), g_index) == boundary_nodes_.end();
-							const bool is_pressure = rhs_assembler_.problem().is_boundary_pressure(rhs_assembler_.mesh().get_boundary_id(global_primitive_id));
 							if (is_neumann)
+							{
 								local_storage.vec(g_index) += value.sum() * velocity_div_mat(n, d);
-							if (is_pressure)
-								local_storage.vec(g_index) += grad_pressure_bc(d) * pressure_value.sum();
+								const bool is_pressure = rhs_assembler_.problem().is_boundary_pressure(rhs_assembler_.mesh().get_boundary_id(global_primitive_id));
+								if (is_pressure)
+									local_storage.vec(g_index) += grad_pressure_bc(d) * pressure_value.sum();
+							}
 						}
 					}
 				}
