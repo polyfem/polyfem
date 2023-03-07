@@ -106,7 +106,16 @@ namespace polyfem::solver
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
 
-		static Eigen::VectorXd map_primitive_to_node_order(const State &state, const Eigen::VectorXd &primitives);
-		static Eigen::VectorXd map_node_to_primitive_order(const State &state, const Eigen::VectorXd &nodes);
+		static Eigen::VectorXd map_primitive_to_node_order(
+			const State &state,
+			const Eigen::VectorXd &primitives);
+		static Eigen::VectorXd map_node_to_primitive_order(
+			const State &state,
+			const Eigen::VectorXd &nodes);
+
+		static Eigen::MatrixXd edge_normal_gradient(
+			const Eigen::VectorXd &V);
+		static Eigen::MatrixXd face_normal_gradient(
+			const Eigen::VectorXd &V);
 	};
 } // namespace polyfem::solver
