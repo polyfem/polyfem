@@ -150,6 +150,8 @@ namespace polyfem::solver
 			}
 		});
 
+		Eigen::MatrixXd adjoint_zero_dirichlet = adjoint;
+		adjoint_zero_dirichlet(boundary_nodes_, Eigen::all).setZero();
 		utils::maybe_parallel_for(local_neumann_boundary_.size(), [&](int start, int end, int thread_id) {
 			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
@@ -163,69 +165,69 @@ namespace polyfem::solver
 				const auto &lb = local_neumann_boundary_[lb_id];
 				const int e = lb.element_id();
 
-				utils::BoundarySampler::boundary_quadrature(lb, n_boundary_samples_, rhs_assembler_.mesh(), false, uv, points, normals, weights, global_primitive_ids);
-
-				vals.compute(e, rhs_assembler_.mesh().is_volume(), points, gbases[e], gbases[e]);
-
-				for (int n = 0; n < vals.jac_it.size(); ++n)
-				{
-					Eigen::MatrixXd ppp(1, dim);
-					ppp = vals.val.row(n);
-					Eigen::MatrixXd trafo = vals.jac_it[n];
-
-					if (actual_dim == dim)
-					{
-						Eigen::MatrixXd deform_mat(dim, dim);
-						deform_mat.setZero();
-						for (const auto &b : vals.basis_values)
-						{
-							for (const auto &g : b.global)
-							{
-								for (int d = 0; d < dim; ++d)
-								{
-									deform_mat.col(d) += x(g.index * dim + d) * b.grad_t_m.row(n);
-
-									ppp(d) += x(g.index * dim + d) * b.val(n);
-								}
-							}
-						}
-
-						trafo += deform_mat;
-					}
-					normals.row(n) = normals.row(n) * trafo;
-					normals.row(n).normalize();
-				}
-
-				Eigen::MatrixXd neumann_val;
-				rhs_assembler_.problem().neumann_bc(rhs_assembler_.mesh(), global_primitive_ids, uv, vals.val, normals, 0, neumann_val);
-
 				for (int i = 0; i < lb.size(); i++)
 				{
 					const int global_primitive_id = lb.global_primitive_id(i);
 
-					Eigen::MatrixXd p, grad_p;
-					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint, p, grad_p);
+					utils::BoundarySampler::boundary_quadrature(lb, n_boundary_samples_, rhs_assembler_.mesh(), i, false, uv, points, normals, weights);
+					global_primitive_ids.setConstant(points.rows(), 1, global_primitive_id);
 
-					const auto nodes = gbases[e].local_nodes_for_primitive(lb.global_primitive_id(i), rhs_assembler_.mesh());
+					vals.compute(e, rhs_assembler_.mesh().is_volume(), points, gbases[e], gbases[e]);
+
+					for (int n = 0; n < vals.jac_it.size(); ++n)
+					{
+						Eigen::MatrixXd ppp(1, dim);
+						ppp = vals.val.row(n);
+						Eigen::MatrixXd trafo = vals.jac_it[n];
+
+						if (actual_dim == dim)
+						{
+							Eigen::MatrixXd deform_mat(dim, dim);
+							deform_mat.setZero();
+							for (const auto &b : vals.basis_values)
+							{
+								for (const auto &g : b.global)
+								{
+									for (int d = 0; d < dim; ++d)
+									{
+										deform_mat.col(d) += x(g.index * dim + d) * b.grad_t_m.row(n);
+
+										ppp(d) += x(g.index * dim + d) * b.val(n);
+									}
+								}
+							}
+
+							trafo += deform_mat;
+						}
+						normals.row(n) = normals.row(n) * trafo;
+						normals.row(n).normalize();
+					}
+
+					Eigen::MatrixXd neumann_val;
+					rhs_assembler_.problem().neumann_bc(rhs_assembler_.mesh(), global_primitive_ids, uv, vals.val, normals, 0, neumann_val);
+
+					Eigen::MatrixXd p, grad_p;
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint_zero_dirichlet, p, grad_p);
+
+					const auto nodes = gbases[e].local_nodes_for_primitive(global_primitive_id, rhs_assembler_.mesh());
 
 					if (nodes.size() != dim)
 						log_and_throw_error("Only linear geometry is supported in shape derivative!");
+
+					Eigen::VectorXd value = (p.array() * neumann_val.array()).rowwise().sum() * weights.array();
+					Eigen::VectorXd pressure_value = (p.array() * vals.val.array()).rowwise().sum() * weights.array();
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
 						const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
 
-						Eigen::VectorXd value = (p.array() * neumann_val.array()).rowwise().sum() * weights.array();
-
-						Eigen::VectorXd pressure_value = (p.array() * vals.val.array()).rowwise().sum() * weights.array();
-
 						Eigen::VectorXd grad_bc;
 						{
 							if (rhs_assembler_.mesh().is_volume())
 							{
-								Eigen::Vector2d v1 = gbases[e].bases[nodes(0)].global()[0].node;
-								Eigen::Vector2d v2 = gbases[e].bases[nodes(1)].global()[0].node;
-								Eigen::Vector2d v3 = gbases[e].bases[nodes(2)].global()[0].node;
+								Eigen::Vector3d v1 = gbases[e].bases[nodes(0)].global()[0].node;
+								Eigen::Vector3d v2 = gbases[e].bases[nodes(1)].global()[0].node;
+								Eigen::Vector3d v3 = gbases[e].bases[nodes(2)].global()[0].node;
 								grad_bc.setZero(3);
 							}
 							else
@@ -291,12 +293,8 @@ namespace polyfem::solver
 
 							assert(v.global.size() == 1);
 							const int g_index = v.global[0].index * dim + d;
-							const bool is_neumann = std::find(boundary_nodes_.begin(), boundary_nodes_.end(), g_index) == boundary_nodes_.end();
-							const bool is_pressure = rhs_assembler_.problem().is_boundary_pressure(rhs_assembler_.mesh().get_boundary_id(global_primitive_id));
-							if (is_neumann)
-								local_storage.vec(g_index) += value.sum() * velocity_div;
-							if (is_pressure)
-								local_storage.vec(g_index) += grad_bc(d) * pressure_value.sum();
+							local_storage.vec(g_index) += value.sum() * velocity_div;
+							// local_storage.vec(g_index) += grad_bc(d) * pressure_value.sum();
 						}
 					}
 				}
