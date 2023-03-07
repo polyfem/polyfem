@@ -117,5 +117,10 @@ namespace polyfem::solver
 			const Eigen::VectorXd &V);
 		static Eigen::MatrixXd face_normal_gradient(
 			const Eigen::VectorXd &V);
+
+		static Eigen::MatrixXd edge_velocity_divergence(
+			const Eigen::MatrixXd &V);
+		static Eigen::MatrixXd face_velocity_divergence(
+			const Eigen::MatrixXd &V);
 	};
 } // namespace polyfem::solver

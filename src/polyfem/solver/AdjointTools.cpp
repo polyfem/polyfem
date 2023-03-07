@@ -458,14 +458,14 @@ namespace polyfem::solver
 							Eigen::Matrix3d V;
 							for (int d = 0; d < 3; d++)
 								V.row(d) = gbases[e].bases[nodes(d)].global()[0].node;
-							velocity_div_mat = triangle_area_grad(V) / triangle_area<double>(V);
+							velocity_div_mat = face_velocity_divergence(V);
 						}
 						else
 						{
 							Eigen::Matrix2d V;
 							for (int d = 0; d < 2; d++)
 								V.row(d) = gbases[e].bases[nodes(d)].global()[0].node;
-							velocity_div_mat = line_length_grad(V) / line_length<double>(V);
+							velocity_div_mat = edge_velocity_divergence(V);
 						}
 
 						Eigen::MatrixXd grad_u_q, tau_q;
@@ -1095,5 +1095,15 @@ namespace polyfem::solver
 			grad.row(i) = reduced_diff[i].getGradient();
 
 		return grad;
+	}
+
+	Eigen::MatrixXd AdjointTools::edge_velocity_divergence(const Eigen::MatrixXd &V)
+	{
+		return line_length_grad(V) / line_length<double>(V);
+	}
+
+	Eigen::MatrixXd AdjointTools::face_velocity_divergence(const Eigen::MatrixXd &V)
+	{
+		return triangle_area_grad(V) / triangle_area<double>(V);
 	}
 } // namespace polyfem::solver
