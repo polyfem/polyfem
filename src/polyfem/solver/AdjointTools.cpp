@@ -111,6 +111,28 @@ namespace polyfem::solver
 
 			return grad;
 		}
+
+		template <typename T>
+		Eigen::Matrix<T, 2, 1> edge_normal(const Eigen::Matrix<T, 4, 1> &V)
+		{
+			Eigen::Matrix<T, 2, 1> v1 = V.segment(0, 2);
+			Eigen::Matrix<T, 2, 1> v2 = V.segment(2, 2);
+			Eigen::Matrix<T, 2, 1> normal = v1 - v2;
+			normal(0) *= -1;
+			normal = normal / normal.norm();
+			return normal;
+		}
+
+		template <typename T>
+		Eigen::Matrix<T, 3, 1> face_normal(const Eigen::Matrix<T, 9, 1> &V)
+		{
+			Eigen::Matrix<T, 3, 1> v1 = V.segment(0, 3);
+			Eigen::Matrix<T, 3, 1> v2 = V.segment(3, 3);
+			Eigen::Matrix<T, 3, 1> v3 = V.segment(6, 3);
+			Eigen::Matrix<T, 3, 1> normal = (v1 - v2).cross(v1 - v2);
+			normal = normal / normal.norm();
+			return normal;
+		}
 	} // namespace
 
 	void AdjointTools::dJ_macro_strain_adjoint_term(
@@ -436,14 +458,14 @@ namespace polyfem::solver
 							Eigen::Matrix3d V;
 							for (int d = 0; d < 3; d++)
 								V.row(d) = gbases[e].bases[nodes(d)].global()[0].node;
-							velocity_div_mat = triangle_area_grad(V) / triangle_area<double>(V);
+							velocity_div_mat = face_velocity_divergence(V);
 						}
 						else
 						{
 							Eigen::Matrix2d V;
 							for (int d = 0; d < 2; d++)
 								V.row(d) = gbases[e].bases[nodes(d)].global()[0].node;
-							velocity_div_mat = line_length_grad(V) / line_length<double>(V);
+							velocity_div_mat = edge_velocity_divergence(V);
 						}
 
 						Eigen::MatrixXd grad_u_q, tau_q;
@@ -1038,5 +1060,47 @@ namespace polyfem::solver
 		for (int v = 0; v < state.n_geom_bases; ++v)
 			primitives.segment(map[v] * dim, dim) = nodes.segment(v * dim, dim);
 		return primitives;
+	}
+
+	Eigen::MatrixXd AdjointTools::edge_normal_gradient(const Eigen::MatrixXd &V)
+	{
+		DiffScalarBase::setVariableCount(4);
+		Eigen::Matrix<Diff, 4, 1> full_diff(4, 1);
+		for (int i = 0; i < 2; i++)
+			for (int j = 0; j < 2; j++)
+				full_diff(i * 2 + j) = Diff(i * 2 + j, V(i, j));
+		auto reduced_diff = edge_normal(full_diff);
+
+		Eigen::MatrixXd grad(2, 4);
+		for (int i = 0; i < 2; ++i)
+			grad.row(i) = reduced_diff[i].getGradient();
+
+		return grad;
+	}
+
+	Eigen::MatrixXd AdjointTools::face_normal_gradient(const Eigen::MatrixXd &V)
+	{
+		DiffScalarBase::setVariableCount(9);
+		Eigen::Matrix<Diff, 9, 1> full_diff(9, 1);
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++)
+				full_diff(i * 3 + j) = Diff(i * 3 + j, V(i, j));
+		auto reduced_diff = face_normal(full_diff);
+
+		Eigen::MatrixXd grad(3, 9);
+		for (int i = 0; i < 3; ++i)
+			grad.row(i) = reduced_diff[i].getGradient();
+
+		return grad;
+	}
+
+	Eigen::MatrixXd AdjointTools::edge_velocity_divergence(const Eigen::MatrixXd &V)
+	{
+		return line_length_grad(V) / line_length<double>(V);
+	}
+
+	Eigen::MatrixXd AdjointTools::face_velocity_divergence(const Eigen::MatrixXd &V)
+	{
+		return triangle_area_grad(V) / triangle_area<double>(V);
 	}
 } // namespace polyfem::solver

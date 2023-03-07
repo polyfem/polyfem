@@ -8,6 +8,8 @@
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
+#include <polyfem/solver/AdjointTools.hpp>
+
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::solver
@@ -150,14 +152,17 @@ namespace polyfem::solver
 			}
 		});
 
-		Eigen::MatrixXd adjoint_zero_dirichlet = adjoint;
-		adjoint_zero_dirichlet(boundary_nodes_, Eigen::all).setZero();
+		// Zero entries in p that correspond to nodes lying between dirichlet and neumann surfaces
+		// DO NOT PARALLELIZE since they both write to the same location
+		Eigen::MatrixXd adjoint_zeroed = adjoint;
+		adjoint_zeroed(boundary_nodes_, Eigen::all).setZero();
+
 		utils::maybe_parallel_for(local_neumann_boundary_.size(), [&](int start, int end, int thread_id) {
 			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
 			Eigen::MatrixXd uv, points, normals;
 			Eigen::VectorXd weights;
-			Eigen::VectorXi global_primitive_ids;
+			Eigen::VectorXi global_ids;
 			assembler::ElementAssemblyValues vals;
 
 			for (int lb_id = start; lb_id < end; ++lb_id)
@@ -170,7 +175,7 @@ namespace polyfem::solver
 					const int global_primitive_id = lb.global_primitive_id(i);
 
 					utils::BoundarySampler::boundary_quadrature(lb, n_boundary_samples_, rhs_assembler_.mesh(), i, false, uv, points, normals, weights);
-					global_primitive_ids.setConstant(points.rows(), 1, global_primitive_id);
+					global_ids.setConstant(points.rows(), 1, global_primitive_id);
 
 					vals.compute(e, rhs_assembler_.mesh().is_volume(), points, gbases[e], gbases[e]);
 
@@ -204,10 +209,10 @@ namespace polyfem::solver
 					}
 
 					Eigen::MatrixXd neumann_val;
-					rhs_assembler_.problem().neumann_bc(rhs_assembler_.mesh(), global_primitive_ids, uv, vals.val, normals, 0, neumann_val);
+					rhs_assembler_.problem().neumann_bc(rhs_assembler_.mesh(), global_ids, uv, vals.val, normals, 0, neumann_val);
 
 					Eigen::MatrixXd p, grad_p;
-					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint_zero_dirichlet, p, grad_p);
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint_zeroed, p, grad_p);
 
 					const auto nodes = gbases[e].local_nodes_for_primitive(global_primitive_id, rhs_assembler_.mesh());
 
@@ -221,80 +226,56 @@ namespace polyfem::solver
 					{
 						const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
 
-						Eigen::VectorXd grad_bc;
+						Eigen::VectorXd grad_pressure_bc;
+						Eigen::MatrixXd velocity_div_mat;
 						{
+							double pressure_bc = neumann_val.row(0).norm();
 							if (rhs_assembler_.mesh().is_volume())
 							{
-								Eigen::Vector3d v1 = gbases[e].bases[nodes(0)].global()[0].node;
-								Eigen::Vector3d v2 = gbases[e].bases[nodes(1)].global()[0].node;
-								Eigen::Vector3d v3 = gbases[e].bases[nodes(2)].global()[0].node;
-								grad_bc.setZero(3);
+								Eigen::MatrixXd V(3, 3);
+								V.row(0) = gbases[e].bases[nodes(0)].global()[0].node;
+								V.row(1) = gbases[e].bases[nodes(1)].global()[0].node;
+								V.row(2) = gbases[e].bases[nodes(2)].global()[0].node;
+								auto grad = AdjointTools::face_normal_gradient(V);
+								if (n == 0)
+									grad_pressure_bc = grad.block(0, 0, 3, 3).rowwise().sum();
+								else if (n == 1)
+									grad_pressure_bc = grad.block(0, 3, 3, 3).rowwise().sum();
+								else if (n == 2)
+									grad_pressure_bc = grad.block(0, 6, 3, 3).rowwise().sum();
+								else
+									assert(false);
+
+								velocity_div_mat = AdjointTools::face_velocity_divergence(V);
 							}
 							else
 							{
-								Eigen::Vector2d v1 = gbases[e].bases[nodes(0)].global()[0].node;
-								Eigen::Vector2d v2 = gbases[e].bases[nodes(1)].global()[0].node;
-								grad_bc.setZero(2);
+								Eigen::MatrixXd V(2, 2);
+								V.row(0) = gbases[e].bases[nodes(0)].global()[0].node;
+								V.row(1) = gbases[e].bases[nodes(1)].global()[0].node;
 
-								grad_bc(0) += -neumann_val(0, 0) * ((v1(0) - v2(0)) / (v1 - v2).squaredNorm());
-								grad_bc(0) += -neumann_val(0, 0) * ((v1(1) - v2(1)) / (v1 - v2).squaredNorm());
-								grad_bc(0) += -1 / ((v1 - v2).norm());
-								grad_bc(1) += -neumann_val(0, 1) * ((v1(0) - v2(0)) / (v1 - v2).squaredNorm());
-								grad_bc(1) += -neumann_val(0, 1) * ((v1(1) - v2(1)) / (v1 - v2).squaredNorm());
-								grad_bc(1) += 1 / ((v1 - v2).norm());
-								if (n == 1)
-									grad_bc *= -1;
+								auto grad = AdjointTools::edge_normal_gradient(V);
+								if (n == 0)
+									grad_pressure_bc = grad.block(0, 0, 2, 2).rowwise().sum();
+								else if (n == 1)
+									grad_pressure_bc = grad.block(0, 2, 2, 2).rowwise().sum();
+								else
+									assert(false);
+
+								velocity_div_mat = AdjointTools::edge_velocity_divergence(V);
 							}
+							grad_pressure_bc *= pressure_bc;
 						}
 
 						// integrate j * div(gbases) over the whole boundary
 						for (int d = 0; d < dim; d++)
 						{
-							double velocity_div = 0;
-							if (rhs_assembler_.mesh().is_volume())
-							{
-								Eigen::Vector3d dr_du = gbases[e].bases[nodes(1)].global()[0].node - gbases[e].bases[nodes(0)].global()[0].node;
-								Eigen::Vector3d dr_dv = gbases[e].bases[nodes(2)].global()[0].node - gbases[e].bases[nodes(0)].global()[0].node;
-
-								// compute dtheta
-								Eigen::Vector3d dtheta_du, dtheta_dv;
-								dtheta_du.setZero();
-								dtheta_dv.setZero();
-								if (0 == n)
-								{
-									dtheta_du(d) = -1;
-									dtheta_dv(d) = -1;
-								}
-								else if (1 == n)
-									dtheta_du(d) = 1;
-								else if (2 == n)
-									dtheta_dv(d) = 1;
-								else
-									assert(false);
-
-								velocity_div = (dr_du.cross(dr_dv)).dot(dtheta_du.cross(dr_dv) + dr_du.cross(dtheta_dv)) / (dr_du.cross(dr_dv)).squaredNorm();
-							}
-							else
-							{
-								Eigen::VectorXd dr = gbases[e].bases[nodes(1)].global()[0].node - gbases[e].bases[nodes(0)].global()[0].node;
-
-								// compute dtheta
-								Eigen::VectorXd dtheta;
-								dtheta.setZero(dr.rows(), dr.cols());
-								if (0 == n)
-									dtheta(d) = -1;
-								else if (1 == n)
-									dtheta(d) = 1;
-								else
-									assert(false);
-
-								velocity_div = dr.dot(dtheta) / dr.squaredNorm();
-							}
-
 							assert(v.global.size() == 1);
 							const int g_index = v.global[0].index * dim + d;
-							local_storage.vec(g_index) += value.sum() * velocity_div;
-							// local_storage.vec(g_index) += grad_bc(d) * pressure_value.sum();
+							local_storage.vec(g_index) += value.sum() * velocity_div_mat(n, d);
+							const bool is_pressure = rhs_assembler_.problem().is_boundary_pressure(rhs_assembler_.mesh().get_boundary_id(global_primitive_id));
+							if (is_pressure)
+								local_storage.vec(g_index) += grad_pressure_bc(d) * pressure_value.sum();
 						}
 					}
 				}
