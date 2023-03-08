@@ -144,4 +144,14 @@ namespace polyfem::solver
 		Eigen::VectorXd tt_radius_adjacency_row_sum;
 	};
 
+	class CustomSymmetric : public Parametrization
+	{
+	public:
+		CustomSymmetric() {}
+
+		int size(const int x_size) const override;
+		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
+	};
+
 } // namespace polyfem::solver

@@ -344,4 +344,35 @@ namespace polyfem::solver
 		assert(x.size() == tt_radius_adjacency.rows());
 		return (tt_radius_adjacency * grad).array() / tt_radius_adjacency_row_sum.array();
 	}
+
+	int CustomSymmetric::size(const int x_size) const
+	{
+		return x_size;
+	}
+	Eigen::VectorXd CustomSymmetric::eval(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd y = x;
+		y(8) = 1.0 - y(3);
+		y(9) = y(4);
+		y(10) = 1.0 - y(1);
+		y(11) = y(2);
+		y(18) = y(15);
+		y(19) = y(14);
+
+		return y;
+	}
+	Eigen::VectorXd CustomSymmetric::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd grad_new = grad;
+		grad_new(3) -= grad_new(8);
+		grad_new(4) += grad_new(9);
+		grad_new(1) -= grad_new(10);
+		grad_new(2) += grad_new(11);
+		grad_new(15) += grad_new(18);
+		grad_new(14) += grad_new(19);
+
+		grad_new({8,9,10,11,18,19}).setZero();
+
+		return grad_new;
+	}
 } // namespace polyfem::solver

@@ -117,21 +117,23 @@ int main(int argc, char **argv)
 
 	Eigen::VectorXd x;
 	x.setZero(ndof);
+	int accumulative = 0;
 	for (const auto &arg : opt_args["parameters"])
 	{
-		if (arg["initial"].size() == 0)
-		{
-			assert(variable_to_simulations.size() == 1);
-			assert(opt_args["parameters"].size() == 1);
-			x = variable_to_simulations[0]->inverse_eval();
-		}
+		Eigen::VectorXd tmp(arg["number"].get<int>());
+		if (arg["initial"].is_array() && arg["initial"].size() > 0)
+			nlohmann::adl_serializer<Eigen::VectorXd>::from_json(arg["initial"], tmp);
+		else if (arg["initial"].is_number())
+			tmp.setConstant(arg["initial"].get<double>());
 		else
-			nlohmann::adl_serializer<Eigen::VectorXd>::from_json(arg["initial"], x);
+			x = variable_to_simulations[0]->inverse_eval();
+		
+		x.segment(accumulative, tmp.size()) = tmp;
+		accumulative += tmp.size();
 	}
 
 	for (auto &v2s : variable_to_simulations)
 		v2s->update(x);
-	solve_pde(*(states[0]));
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
