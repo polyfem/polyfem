@@ -183,12 +183,6 @@ namespace polyfem::solver
 		igl::normalize_row_sums(complete_bbw_weights, complete_bbw_weights);
 		bbw_weights_ = complete_bbw_weights.block(0, 0, V.rows(), num_control_vertices_).matrix(); // throw away handles on boundary points
 
-		std::cout << "bbw weights" << std::endl;
-		std::cout << bbw_weights_ << std::endl;
-
-		std::cout << "control points" << std::endl;
-		std::cout << control_points_ << std::endl;
-
 		invoked_inverse_eval_ = true;
 
 		return Eigen::VectorXd::Zero(num_control_vertices_ * 3);
