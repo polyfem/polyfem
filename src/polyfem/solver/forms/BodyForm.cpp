@@ -155,40 +155,14 @@ namespace polyfem::solver
 		// Zero entries in p that correspond to nodes lying between dirichlet and neumann surfaces
 		// DO NOT PARALLELIZE since they both write to the same location
 		Eigen::MatrixXd adjoint_zeroed = adjoint;
-		{
-			assembler::ElementAssemblyValues vals;
-			Eigen::MatrixXd uv, points, normal;
-			Eigen::VectorXd weights;
-			for (const auto &lb : local_neumann_boundary_)
-			{
-				const int e = lb.element_id();
-				for (int i = 0; i < lb.size(); ++i)
-				{
-					utils::BoundarySampler::boundary_quadrature(lb, n_boundary_samples_, rhs_assembler_.mesh(), i, false, uv, points, normal, weights);
-					vals.compute(e, rhs_assembler_.mesh().is_volume(), points, bases[e], gbases[e]);
-					const auto nodes = bases[e].local_nodes_for_primitive(lb.global_primitive_id(i), rhs_assembler_.mesh());
-					for (long n = 0; n < nodes.size(); ++n)
-					{
-						const AssemblyValues &v = vals.basis_values[nodes(n)];
-						for (int d = 0; d < dim; ++d)
-						{
-							assert(v.global.size() == 1);
-							const int g_index = v.global[0].index * dim + d;
-							const bool is_also_dirichlet = std::find(boundary_nodes_.begin(), boundary_nodes_.end(), g_index) != boundary_nodes_.end();
-							if (is_also_dirichlet)
-								adjoint_zeroed(g_index) = 0;
-						}
-					}
-				}
-			}
-		}
+		adjoint_zeroed(boundary_nodes_, Eigen::all).setZero();
 
 		utils::maybe_parallel_for(local_neumann_boundary_.size(), [&](int start, int end, int thread_id) {
 			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
-			Eigen::MatrixXd uv, points, normal;
+			Eigen::MatrixXd uv, points, normals;
 			Eigen::VectorXd weights;
-			Eigen::VectorXi global_primitive_ids;
+			Eigen::VectorXi global_ids;
 			assembler::ElementAssemblyValues vals;
 
 			for (int lb_id = start; lb_id < end; ++lb_id)
@@ -200,20 +174,37 @@ namespace polyfem::solver
 				{
 					const int global_primitive_id = lb.global_primitive_id(i);
 
-					utils::BoundarySampler::boundary_quadrature(lb, n_boundary_samples_, rhs_assembler_.mesh(), i, false, uv, points, normal, weights);
+					utils::BoundarySampler::boundary_quadrature(lb, n_boundary_samples_, rhs_assembler_.mesh(), i, false, uv, points, normals, weights);
+					global_ids.setConstant(points.rows(), 1, global_primitive_id);
 
 					vals.compute(e, rhs_assembler_.mesh().is_volume(), points, gbases[e], gbases[e]);
 
-					Eigen::MatrixXi global_ids(vals.val.rows(), 1);
-					for (int g = 0; g < vals.val.rows(); ++g)
-						global_ids(g) = global_primitive_id;
-
-					assert(normal.rows() == 1);
-					Eigen::MatrixXd normals(vals.val.rows(), normal.cols());
-					// assuming linear geometry
-					for (int n = 0; n < vals.val.rows(); ++n)
+					for (int n = 0; n < vals.jac_it.size(); ++n)
 					{
-						normals.row(n) = normal * vals.jac_it[n];
+						Eigen::MatrixXd ppp(1, dim);
+						ppp = vals.val.row(n);
+						Eigen::MatrixXd trafo = vals.jac_it[n];
+
+						if (actual_dim == dim)
+						{
+							Eigen::MatrixXd deform_mat(dim, dim);
+							deform_mat.setZero();
+							for (const auto &b : vals.basis_values)
+							{
+								for (const auto &g : b.global)
+								{
+									for (int d = 0; d < dim; ++d)
+									{
+										deform_mat.col(d) += x(g.index * dim + d) * b.grad_t_m.row(n);
+
+										ppp(d) += x(g.index * dim + d) * b.val(n);
+									}
+								}
+							}
+
+							trafo += deform_mat;
+						}
+						normals.row(n) = normals.row(n) * trafo;
 						normals.row(n).normalize();
 					}
 
@@ -228,13 +219,12 @@ namespace polyfem::solver
 					if (nodes.size() != dim)
 						log_and_throw_error("Only linear geometry is supported in shape derivative!");
 
+					Eigen::VectorXd value = (p.array() * neumann_val.array()).rowwise().sum() * weights.array();
+					Eigen::VectorXd pressure_value = (p.array() * vals.val.array()).rowwise().sum() * weights.array();
+
 					for (long n = 0; n < nodes.size(); ++n)
 					{
 						const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
-
-						Eigen::VectorXd value = (p.array() * neumann_val.array()).rowwise().sum() * weights.array();
-
-						Eigen::VectorXd pressure_value = (p.array() * vals.val.array()).rowwise().sum() * weights.array();
 
 						Eigen::VectorXd grad_pressure_bc;
 						Eigen::MatrixXd velocity_div_mat;
@@ -282,14 +272,10 @@ namespace polyfem::solver
 						{
 							assert(v.global.size() == 1);
 							const int g_index = v.global[0].index * dim + d;
-							const bool is_neumann = std::find(boundary_nodes_.begin(), boundary_nodes_.end(), g_index) == boundary_nodes_.end();
-							if (is_neumann)
-							{
-								local_storage.vec(g_index) += value.sum() * velocity_div_mat(n, d);
-								const bool is_pressure = rhs_assembler_.problem().is_boundary_pressure(rhs_assembler_.mesh().get_boundary_id(global_primitive_id));
-								if (is_pressure)
-									local_storage.vec(g_index) += grad_pressure_bc(d) * pressure_value.sum();
-							}
+							local_storage.vec(g_index) += value.sum() * velocity_div_mat(n, d);
+							const bool is_pressure = rhs_assembler_.problem().is_boundary_pressure(rhs_assembler_.mesh().get_boundary_id(global_primitive_id));
+							if (is_pressure)
+								local_storage.vec(g_index) += grad_pressure_bc(d) * pressure_value.sum();
 						}
 					}
 				}

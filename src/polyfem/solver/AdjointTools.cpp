@@ -472,35 +472,30 @@ namespace polyfem::solver
 						for (long n = 0; n < nodes.size(); ++n)
 						{
 							const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
-							// integrate j * div(gbases) over the whole boundary
-							for (int d = 0; d < dim; d++)
-							{
-								double velocity_div = velocity_div_mat(n, d);
 
+							local_storage.vec.block(v.global[0].index * dim, 0, dim, 1) += j_val.sum() * velocity_div_mat.row(n).transpose();
+
+							if (j.depend_on_x())
+								local_storage.vec.block(v.global[0].index * dim, 0, dim, 1) += dj_dx.transpose() * v.val;
+
+							// integrate j * div(gbases) over the whole boundary
+							if (j.depend_on_gradu())
 								for (int q = 0; q < weights.size(); ++q)
 								{
-									local_storage.vec(v.global[0].index * dim + d) += j_val(q) * velocity_div;
-
-									if (j.depend_on_x())
-										local_storage.vec(v.global[0].index * dim + d) += v.val(q) * dj_dx(q, d);
-
-									if (j.depend_on_gradu())
+									if (dim == actual_dim) // Elasticity PDE
 									{
-										if (dim == actual_dim) // Elasticity PDE
-										{
-											vector2matrix(grad_u.row(q), grad_u_q);
-											vector2matrix(dj_du.row(q), tau_q);
-										}
-										else // Laplacian PDE
-										{
-											grad_u_q = grad_u.row(q);
-											tau_q = dj_du.row(q);
-										}
-
-										local_storage.vec(v.global[0].index * dim + d) += -dot(tau_q, grad_u_q.col(d) * v.grad_t_m.row(q));
+										vector2matrix(grad_u.row(q), grad_u_q);
+										vector2matrix(dj_du.row(q), tau_q);
 									}
+									else // Laplacian PDE
+									{
+										grad_u_q = grad_u.row(q);
+										tau_q = dj_du.row(q);
+									}
+
+									for (int d = 0; d < dim; d++)
+										local_storage.vec(v.global[0].index * dim + d) += -dot(tau_q, grad_u_q.col(d) * v.grad_t_m.row(q));
 								}
-							}
 						}
 					}
 				}
