@@ -81,16 +81,16 @@ namespace polyfem::solver
 		auto min_distance = [&V, &fixed_vertices](const int i, double &min_dist) {
 			min_dist = -1;
 			int min_j = -1;
-			for (int j = 0; j < fixed_vertices.size(); ++j)
+			for (const auto &j : fixed_vertices)
 			{
+				double dist = (V.row(i) - V.row(j)).norm();
 				if (min_j == -1)
 				{
 					min_j = j;
-					min_dist = (V.row(i) - V.row(j)).norm();
+					min_dist = dist;
 					continue;
 				}
 
-				double dist = (V.row(i) - V.row(j)).norm();
 				if (dist < min_dist)
 				{
 					min_dist = dist;
@@ -176,11 +176,12 @@ namespace polyfem::solver
 		igl::BBWData bbw_data;
 		bbw_data.active_set_params.max_iter = 50;
 		bbw_data.verbosity = 2;
-		bool computation = igl::bbw(V, F, b, bc, bbw_data, bbw_weights_);
+		Eigen::MatrixXd complete_bbw_weights;
+		bool computation = igl::bbw(V, F, b, bc, bbw_data, complete_bbw_weights);
 		if (!computation)
 			log_and_throw_error("Bounded Bihamonic Weight computation failed!");
-		igl::normalize_row_sums(bbw_weights_, bbw_weights_);
-		bbw_weights_ = bbw_weights_.block(0, 0, V.rows(), num_control_vertices_); // throw away handles on boundary points
+		igl::normalize_row_sums(complete_bbw_weights, complete_bbw_weights);
+		bbw_weights_ = complete_bbw_weights.block(0, 0, V.rows(), num_control_vertices_).matrix(); // throw away handles on boundary points
 
 		std::cout << "bbw weights" << std::endl;
 		std::cout << bbw_weights_ << std::endl;
