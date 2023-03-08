@@ -238,27 +238,38 @@ TEST_CASE("topology-opt", "[optimization]")
 		}
 
 		// define mappings from optimization variable x to material parameters in states
-		{
-			std::vector<std::shared_ptr<Parametrization>> map_list = {std::make_shared<LinearFilter>(*(states[0]->mesh), 0.1), std::make_shared<PowerMap>(5), std::make_shared<Scaling>(200), std::make_shared<AppendConstantMap>(states[0]->bases.size(), states[0]->args["materials"]["nu"]), std::make_shared<ENu2LambdaMu>(states[0]->mesh->is_volume())};
-			CompositeParametrization composite_map(map_list);
-
-			variable_to_simulations.push_back(std::make_shared<ElasticVariableToSimulation>(states[0], composite_map));
-			variable_to_simulations.push_back(std::make_shared<ElasticVariableToSimulation>(states[1], composite_map));
-		}
+		for (const auto &arg : opt_args["variable_to_simulation"])
+			variable_to_simulations.push_back(create_variable_to_simulation(arg, states));
 
 		// initialize optimization variable and assign elastic parameters to simulators
-		x.setConstant(states[0]->mesh->n_elements(), 1, 0.3);
+		int ndof = 0;
+		for (const auto &arg : opt_args["parameters"])
+			ndof += arg["number"].get<int>();
+
+		x.setZero(ndof);
+		int accumulative = 0;
+		for (const auto &arg : opt_args["parameters"])
+		{
+			Eigen::VectorXd tmp(arg["number"].get<int>());
+			if (arg["initial"].is_array())
+				nlohmann::adl_serializer<Eigen::VectorXd>::from_json(arg["initial"], tmp);
+			else if (arg["initial"].is_number())
+				tmp.setConstant(arg["initial"].get<double>());
+			x.segment(accumulative, tmp.size()) = tmp;
+			accumulative += tmp.size();
+		}
 
 		// define optimization objective -- sum of compliance of the same structure under different loads
-		std::shared_ptr<SumCompositeForm> sum = std::dynamic_pointer_cast<SumCompositeForm>(create_form(opt_args["functionals"], variable_to_simulations, states));
+		std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(create_form(opt_args["functionals"], variable_to_simulations, states));
 
-		nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+		nl_problem = std::make_shared<solver::AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
 		nl_problem->solution_changed(x);
 	}
 
 	auto nl_solver = std::make_shared<cppoptlib::MMASolver<solver::AdjointNLProblem>>(opt_args["solver"]["nonlinear"], 0.);
 
+	// TODO: Define in json interface
 	// nonlinear inequality constraints g(x) < 0
 	{
 		auto obj1 = std::make_shared<WeightedVolumeForm>(CompositeParametrization({std::make_shared<LinearFilter>(*(states[0]->mesh), 0.1)}), *(states[0]));

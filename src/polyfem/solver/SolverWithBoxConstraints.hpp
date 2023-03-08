@@ -4,6 +4,7 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <filesystem>
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 namespace cppoptlib
 {
@@ -29,11 +30,22 @@ namespace cppoptlib
 						assert(bounds_.cols() == 2);
 					}
 				}
-				else if (solver_params["bounds"].is_array())
+				else if (solver_params["bounds"].is_array() && solver_params["bounds"].size() == 2)
 				{
-					assert(solver_params["bounds"].size() == 2);
-					bounds_.setZero(1, 2);
-					bounds_ << solver_params["bounds"][0], solver_params["bounds"][1];
+					if (solver_params["bounds"][0].is_number())
+					{
+						bounds_.setZero(1, 2);
+						bounds_ << solver_params["bounds"][0], solver_params["bounds"][1];
+					}
+					else if (solver_params["bounds"][0].is_array() > 0)
+					{
+						bounds_.setZero(solver_params["bounds"][0].size(), 2);
+						Eigen::VectorXd tmp;
+						nlohmann::adl_serializer<Eigen::VectorXd>::from_json(solver_params["bounds"][0], tmp);
+						bounds_.col(0) = tmp;
+						nlohmann::adl_serializer<Eigen::VectorXd>::from_json(solver_params["bounds"][1], tmp);
+						bounds_.col(1) = tmp;
+					}
 				}
 			}
 		}

@@ -118,8 +118,20 @@ int main(int argc, char **argv)
 
 	Eigen::VectorXd x;
 	x.setZero(ndof);
+	int accumulative = 0;
 	for (const auto &arg : opt_args["parameters"])
-		nlohmann::adl_serializer<Eigen::VectorXd>::from_json(arg["initial"], x); // TODO: might be inverse evaluation from states
+	{
+		Eigen::VectorXd tmp(arg["number"].get<int>());
+		if (arg["initial"].is_array() && arg["initial"].size() > 0)
+			nlohmann::adl_serializer<Eigen::VectorXd>::from_json(arg["initial"], tmp);
+		else if (arg["initial"].is_number())
+			tmp.setConstant(arg["initial"].get<double>());
+		else
+			x = variable_to_simulations[0]->inverse_eval();
+		
+		x.segment(accumulative, tmp.size()) = tmp;
+		accumulative += tmp.size();
+	}
 
 	for (auto &v2s : variable_to_simulations)
 		v2s->update(x);

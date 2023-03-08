@@ -144,15 +144,23 @@ namespace polyfem::solver
 		{
 			map = std::make_shared<PowerMap>(args["power"]);
 		}
-		else if (type == "append-const")
+		else if (type == "append-values")
 		{
 			Eigen::VectorXd vals;
 			nlohmann::adl_serializer<Eigen::VectorXd>::from_json(args["values"], vals);
 			map = std::make_shared<AppendConstantMap>(vals);
 		}
+		else if (type == "append-const")
+		{
+			map = std::make_shared<AppendConstantMap>(args["size"], args["value"]);
+		}
 		else if (type == "linear-filter")
 		{
 			map = std::make_shared<LinearFilter>(*(states[args["state"]]->mesh), args["radius"]);
+		}
+		else if (type == "custom-symmetric")
+		{
+			map = std::make_shared<CustomSymmetric>();
 		}
 		else if (type == "sdf-to-mesh")
 		{
@@ -196,7 +204,7 @@ namespace polyfem::solver
 		}
         else if (type == "elastic")
 		{
-			log_and_throw_error("Not implemented!");
+			var2sim = std::make_shared<ElasticVariableToSimulation>(states[args["state"]], composite_map);
 		}
         else if (type == "friction")
 		{
