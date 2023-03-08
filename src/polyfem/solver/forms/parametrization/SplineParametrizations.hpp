@@ -30,6 +30,8 @@ namespace polyfem::solver
 		const Eigen::MatrixXd initial_control_points_;
 		const Eigen::VectorXd knots_;
 
+		bool invoked_inverse_eval_ = false;
+
 		const int size_;
 
 		std::shared_ptr<BSplineParametrization2D> spline_;
@@ -44,7 +46,7 @@ namespace polyfem::solver
 
 		// Should only be called to initialize the parameter, when the shape matches the initial control points.
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
-		int size(const int x_size) const override { return u_.size() * v_.size(); }
+		int size(const int x_size) const override { return 3 * u_.size() * v_.size(); }
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const override;
 
@@ -58,6 +60,39 @@ namespace polyfem::solver
 		Eigen::VectorXd u_;
 		Eigen::VectorXd v_;
 
+		bool invoked_inverse_eval_ = false;
+
 		const bool exclude_ends_;
 	};
+
+	class BoundedBiharmonicWeights2Dto3D : public Parametrization
+	{
+	public:
+		BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const Eigen::MatrixXd &V_full, const Eigen::MatrixXi &F_full) : num_control_vertices_(num_control_vertices), V_full_(V_full), F_full_(F_full) {}
+
+		// Should only be called to initialize the parameter, when the shape matches the initial control points.
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
+		int size(const int x_size) const override { return control_points_.size(); }
+		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const override;
+
+		Eigen::MatrixXd get_bbw_weights() { return bbw_weights_; }
+
+	private:
+		void compute_faces_for_partial_vertices(const Eigen::MatrixXd &V, Eigen::MatrixXi &F) const;
+
+		int optimal_new_control_point_idx(const Eigen::MatrixXd &V, const Eigen::VectorXi &boundary_loop, const std::vector<int> &existing_points);
+
+		const int num_control_vertices_;
+		Eigen::MatrixXd control_points_;
+		Eigen::MatrixXd bbw_weights_;
+
+		const Eigen::MatrixXd V_full_;
+		const Eigen::MatrixXi F_full_;
+
+		Eigen::VectorXd y_start;
+
+		bool invoked_inverse_eval_ = false;
+	};
+
 } // namespace polyfem::solver
