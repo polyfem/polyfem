@@ -69,7 +69,7 @@ namespace polyfem::solver
 		return Eigen::VectorXd();
 	}
 
-	int BoundedBiharmonicWeights2Dto3D::optimal_new_control_point_idx(const Eigen::MatrixXd &V, const Eigen::VectorXi &boundary_loop, const std::vector<int> &existing_points)
+	int BoundedBiharmonicWeights2Dto3D::optimal_new_control_point_idx(const Eigen::MatrixXd &V, const Eigen::VectorXi &boundary_loop, const std::vector<int> &existing_points) const
 	{
 		std::set<int> fixed_vertices;
 		{
@@ -138,6 +138,7 @@ namespace polyfem::solver
 
 		Eigen::MatrixXd point_handles(num_control_vertices_ + outer_loop.size(), 3);
 		control_points_.resize(num_control_vertices_, 3);
+		std::vector<int> control_indices;
 		{
 			std::set<int> possible_control_vertices;
 			for (int i = 0; i < F.rows(); ++i)
@@ -145,13 +146,23 @@ namespace polyfem::solver
 					possible_control_vertices.insert(F(i, j));
 			for (int i = 0; i < outer_loop.size(); ++i)
 				possible_control_vertices.erase(outer_loop(i));
-			std::vector<int> control_indices;
 			for (int i = 0; i < num_control_vertices_; ++i)
-			{
 				control_indices.push_back(optimal_new_control_point_idx(V, outer_loop, control_indices));
-				control_points_.row(i) = V.row(control_indices.back());
+
+			const int recompute_loops = 5;
+			for (int r = 0; r < recompute_loops; ++r)
+			{
+				for (int i = 0; i < num_control_vertices_; ++i)
+				{
+					std::vector<int> indices = control_indices;
+					indices.erase(indices.begin() + i);
+					int new_idx = optimal_new_control_point_idx(V, outer_loop, indices);
+					control_indices[i] = new_idx;
+				}
 			}
 		}
+		for (int i = 0; i < num_control_vertices_; ++i)
+			control_points_.row(i) = V.row(control_indices[i]);
 		point_handles.block(0, 0, num_control_vertices_, 3) = control_points_;
 		point_handles.block(num_control_vertices_, 0, outer_loop.size(), 3) = V_outer_loop;
 
