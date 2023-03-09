@@ -35,6 +35,8 @@ namespace cppoptlib
 		/// @param dt time step size (use 1 if not time-dependent)
 		NonlinearSolver(const polyfem::json &solver_params, const double dt);
 
+		virtual double compute_grad_norm(const Eigen::VectorXd &x, const Eigen::VectorXd &grad) const;
+
 		virtual std::string name() const = 0;
 
 		void set_line_search(const std::string &line_search_name);

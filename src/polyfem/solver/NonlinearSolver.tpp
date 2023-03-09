@@ -33,6 +33,12 @@ namespace cppoptlib
 	}
 
 	template <typename ProblemType>
+	double NonlinearSolver<ProblemType>::compute_grad_norm(const Eigen::VectorXd &x, const Eigen::VectorXd &grad) const
+	{
+		return grad.norm();
+	}
+
+	template <typename ProblemType>
 	void NonlinearSolver<ProblemType>::set_line_search(const std::string &line_search_name)
 	{
 		m_line_search = polyfem::solver::line_search::LineSearch<ProblemType>::construct_line_search(line_search_name);
@@ -69,7 +75,7 @@ namespace cppoptlib
 			POLYFEM_SCOPED_TIMER("compute gradient", grad_time);
 			objFunc.gradient(x, grad);
 		}
-		double first_grad_norm = grad.norm();
+		double first_grad_norm = compute_grad_norm(x, grad);
 		if (std::isnan(first_grad_norm))
 		{
 			this->m_status = Status::UserDefined;
@@ -147,7 +153,7 @@ namespace cppoptlib
 				// grads = objFunc.component_gradients(x);
 			}
 
-			const double grad_norm = grad.norm();
+			const double grad_norm = compute_grad_norm(x, grad);
 			if (std::isnan(grad_norm))
 			{
 				this->m_status = Status::UserDefined;

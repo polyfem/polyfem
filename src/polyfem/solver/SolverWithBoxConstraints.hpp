@@ -37,7 +37,7 @@ namespace cppoptlib
 						bounds_.setZero(1, 2);
 						bounds_ << solver_params["bounds"][0], solver_params["bounds"][1];
 					}
-					else if (solver_params["bounds"][0].is_array() > 0)
+					else if (solver_params["bounds"][0].is_array())
 					{
 						bounds_.setZero(solver_params["bounds"][0].size(), 2);
 						Eigen::VectorXd tmp;
@@ -50,7 +50,15 @@ namespace cppoptlib
 			}
 		}
 
-		Eigen::VectorXd get_lower_bound(const Eigen::VectorXd &x) const
+		double compute_grad_norm(const Eigen::VectorXd &x, const Eigen::VectorXd &grad) const override
+		{
+			auto min = get_lower_bound(x, true);
+			auto max = get_upper_bound(x, true);
+
+			return ((x - grad).cwiseMax(min).cwiseMin(max) - x).norm();
+		}
+
+		Eigen::VectorXd get_lower_bound(const Eigen::VectorXd &x, bool consider_max_change = true) const
 		{
 			Eigen::VectorXd min;
 			if (bounds_.rows() == x.size())
@@ -60,9 +68,12 @@ namespace cppoptlib
 			else
 				polyfem::log_and_throw_error("Invalid bounds!");
 			
-			return min.array().max(x.array() - max_change_);
+			if (consider_max_change)
+				return min.array().max(x.array() - max_change_);
+			else
+				return min;
 		}
-		Eigen::VectorXd get_upper_bound(const Eigen::VectorXd &x) const
+		Eigen::VectorXd get_upper_bound(const Eigen::VectorXd &x, bool consider_max_change = true) const
 		{
 			Eigen::VectorXd max;
 			if (bounds_.rows() == x.size())
@@ -72,7 +83,10 @@ namespace cppoptlib
 			else
 				polyfem::log_and_throw_error("Invalid bounds!");
 			
-			return max.array().min(x.array() + max_change_);
+			if (consider_max_change)
+				return max.array().min(x.array() + max_change_);
+			else
+				return max;
 		}
 
 	private:

@@ -99,12 +99,12 @@ namespace cppoptlib
 			TVector lower_bound = Superclass::get_lower_bound(x);
 			TVector upper_bound = Superclass::get_upper_bound(x);
 
-			for (int i = 0; i < x.size(); i++)
-				if (lower_bound(i) > x(i) || upper_bound(i) < x(i))
-				{
-					polyfem::logger().error("Entry {} value {} exceeds bound [{}, {}]!", i, x(i), lower_bound(i), upper_bound(i));
-					polyfem::log_and_throw_error("Variable bound exceeded!");
-				}
+			// for (int i = 0; i < x.size(); i++)
+			// 	if (lower_bound(i) > x(i) || upper_bound(i) < x(i))
+			// 	{
+			// 		polyfem::logger().error("Entry {} value {} exceeds bound [{}, {}]!", i, x(i), lower_bound(i), upper_bound(i));
+			// 		polyfem::log_and_throw_error("Variable bound exceeded!");
+			// 	}
 
 			TVector cauchy_point(x.size()), vecc;
 			std::vector<int> newact_set, fv_set;
