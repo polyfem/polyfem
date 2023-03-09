@@ -10,6 +10,7 @@
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/assembler/Problem.hpp>
 #include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
@@ -47,6 +48,12 @@ namespace cppoptlib
 	template <typename ProblemType>
 	class NonlinearSolver;
 }
+
+namespace polyfem::assembler
+{
+	class Mass;
+	class ViscousDamping;
+} // namespace polyfem::assembler
 
 namespace polyfem
 {
@@ -128,8 +135,12 @@ namespace polyfem
 		/// assembler, it dispatches call to the different assembers based on the formulation
 		std::shared_ptr<assembler::Assembler> assembler = nullptr;
 		std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
+
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
+
+		std::shared_ptr<assembler::ViscousDamping> dumping_assembler = nullptr;
+
 		/// current problem, it contains rhs and bc
 		std::shared_ptr<assembler::Problem> problem;
 

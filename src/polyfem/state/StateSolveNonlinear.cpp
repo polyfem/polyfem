@@ -103,9 +103,9 @@ namespace polyfem
 
 	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t, const bool init_time_integrator)
 	{
-		assert(!assembler.is_linear(formulation()) || is_contact_enabled()); // non-linear
-		assert(!problem->is_scalar());                                       // tensor
-		assert(!assembler.is_mixed(formulation()));
+		assert(!assembler->is_linear() || is_contact_enabled()); // non-linear
+		assert(!problem->is_scalar());                           // tensor
+		assert(mixed_assembler == nullptr);
 
 		// --------------------------------------------------------------------
 		// Check for initial intersections
@@ -157,12 +157,12 @@ namespace polyfem
 			// General
 			mesh->dimension(), t,
 			// Elastic form
-			n_bases, bases, geom_bases(), assembler, ass_vals_cache, formulation(),
+			n_bases, bases, geom_bases(), *assembler, ass_vals_cache,
 			// Body form
 			n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
-			n_boundary_samples(), rhs, sol,
+			n_boundary_samples(), rhs, sol, mass_matrix_assembler.density(),
 			// Inertia form
-			args["solver"]["ignore_inertia"], mass,
+			args["solver"]["ignore_inertia"], mass, *dumping_assembler,
 			// Lagged regularization form
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
