@@ -17,6 +17,7 @@
 #include <polyfem/mesh/LocalBoundary.hpp>
 
 #include <polyfem/solver/SolveData.hpp>
+#include <polyfem/solver/DiffCache.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
@@ -645,21 +646,7 @@ namespace polyfem
 		//---------------------------------------------------
 	public:
 		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
-		// TODO make this not inside the class
-		struct DiffCachedParts
-		{
-			StiffnessMatrix gradu_h;
-			StiffnessMatrix gradu_h_next;
-			Eigen::MatrixXd u;
-			Eigen::MatrixXd v;
-			Eigen::MatrixXd acc;
-			Eigen::MatrixXd disp_grad;
-			ipc::Constraints contact_set;
-			ipc::FrictionConstraints friction_constraint_set;
-			// TODO: remove from outside
-			Eigen::MatrixXd initial_velocity_cache;
-		};
-		std::vector<DiffCachedParts> diff_cached;
+		solver::DiffCache diff_cached;
 
 		std::unique_ptr<polysolve::LinearSolver> lin_solver_cached; // matrix factorization of last linear solve
 
@@ -689,24 +676,26 @@ namespace polyfem
 		}
 		// Aux functions for setting up adjoint equations
 		void compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian, StiffnessMatrix &hessian_prev) const;
+		void compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian) const;
+		void compute_force_hessian_prev(const int step, StiffnessMatrix &hessian_prev) const;
 		// Solves the adjoint PDE for derivatives and caches
 		void solve_adjoint_cached(const Eigen::MatrixXd &rhs);
 		Eigen::MatrixXd solve_adjoint(const Eigen::MatrixXd &rhs) const;
 		// Returns cached adjoint solve
 		Eigen::MatrixXd get_adjoint_mat(int type) const
 		{
-			assert(adjoint_mat.size() > 0);
+			assert(diff_cached.adjoint_mat().size() > 0);
 			if (problem->is_time_dependent())
 			{
 				if (type == 0)
-					return adjoint_mat.leftCols(adjoint_mat.cols() / 2 - 1);
+					return diff_cached.adjoint_mat().leftCols(diff_cached.adjoint_mat().cols() / 2);
 				else if (type == 1)
-					return adjoint_mat.middleCols(adjoint_mat.cols() / 2, adjoint_mat.cols() / 2 - 1);
+					return diff_cached.adjoint_mat().middleCols(diff_cached.adjoint_mat().cols() / 2, diff_cached.adjoint_mat().cols() / 2);
 				else
 					log_and_throw_error("Invalid adjoint type!");
 			}
 			
-			return adjoint_mat;
+			return diff_cached.adjoint_mat();
 		}
 		Eigen::MatrixXd solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
 		Eigen::MatrixXd solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
@@ -722,9 +711,6 @@ namespace polyfem
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
 		// downsample grad on P2 nodes to grad on P1 nodes, only for P2 contact shape derivative
 		StiffnessMatrix down_sampling_mat;
-
-	private:
-		Eigen::MatrixXd adjoint_mat;
 
 		//---------------------------------------------------
 		//-----------------homogenization--------------------

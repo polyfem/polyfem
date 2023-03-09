@@ -65,16 +65,17 @@ namespace polyfem::solver
 	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state)
 	{
 		Eigen::VectorXd rhs;
-		rhs.setZero(state.diff_cached[0].u.size());
+		rhs.setZero(state.diff_cached.u(0).size());
 
 		const int dim = state_.mesh->dimension();
 
 		if (&state == &state_)
 		{
 			int i = 0;
+			Eigen::VectorXd disp = state_.diff_cached.u(time_step_);
 			for (int v : active_nodes)
 			{
-				RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + state_.diff_cached[time_step_].u.block(v * dim, 0, dim, 1).transpose();
+				RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
 
 				rhs.segment(v * dim, dim) = 2 * (cur_pos - target_vertex_positions.row(i++));
 			}
@@ -87,9 +88,10 @@ namespace polyfem::solver
 		const int dim = state_.mesh->dimension();
 		double val = 0;
 		int i = 0;
+		Eigen::VectorXd disp = state_.diff_cached.u(time_step_);
 		for (int v : active_nodes)
 		{
-			RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + state_.diff_cached[time_step_].u.block(v * dim, 0, dim, 1).transpose();
+			RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
 			val += (cur_pos - target_vertex_positions.row(i++)).squaredNorm();
 		}
 		return val;
@@ -127,7 +129,7 @@ namespace polyfem::solver
 				continue;
 			
 			state_.ass_vals_cache.compute(e, state_.mesh->is_volume(), state_.bases[e], state_.geom_bases()[e], vals);
-			state_.assembler.compute_tensor_value(state_.formulation(), e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached[time_step_].u, local_vals);
+			state_.assembler.compute_tensor_value(state_.formulation(), e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step_), local_vals);
 			Eigen::VectorXd stress_norms = local_vals.rowwise().norm();
 			max_stress = std::max(max_stress, stress_norms.maxCoeff());
 		}

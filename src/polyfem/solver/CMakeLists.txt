@@ -26,6 +26,7 @@ set(SOURCES
 	Optimizations.cpp
 	SolveData.cpp
 	SolveData.hpp
+	DiffCache.hpp
 	SolverWithBoxConstraints.hpp
 	SparseNewtonDescentSolver.hpp
 	SparseNewtonDescentSolver.tpp

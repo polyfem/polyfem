@@ -61,7 +61,7 @@ namespace polyfem::solver
 		}
 		else
 		{
-			AdjointTools::dJ_shape_static_adjoint_term(get_state(), get_state().diff_cached[0].u, get_state().get_adjoint_mat(0), term);
+			AdjointTools::dJ_shape_static_adjoint_term(get_state(), get_state().diff_cached.u(0), get_state().get_adjoint_mat(0), term);
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}
@@ -159,7 +159,7 @@ namespace polyfem::solver
 		}
 		else
 		{
-			AdjointTools::dJ_material_static_adjoint_term(get_state(), get_state().diff_cached[0].u, get_state().get_adjoint_mat(0), term);
+			AdjointTools::dJ_material_static_adjoint_term(get_state(), get_state().diff_cached.u(0), get_state().get_adjoint_mat(0), term);
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}
@@ -313,7 +313,7 @@ namespace polyfem::solver
 		}
 		else
 		{
-			AdjointTools::dJ_macro_strain_adjoint_term(get_state(), get_state().diff_cached[0].u, get_state().get_adjoint_mat(0), term);
+			AdjointTools::dJ_macro_strain_adjoint_term(get_state(), get_state().diff_cached.u(0), get_state().get_adjoint_mat(0), term);
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}

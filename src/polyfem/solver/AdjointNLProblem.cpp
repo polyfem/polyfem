@@ -140,9 +140,9 @@ namespace polyfem::solver
 
 			Eigen::MatrixXd sol;
 			if (state->args["time"].is_null())
-				sol = state->diff_cached[0].u;
+				sol = state->diff_cached.u(0);
 			else
-				sol = state->diff_cached[state->diff_cached.size() - 1].u;
+				sol = state->diff_cached.u(state->diff_cached.size() - 1);
 
 			state->out_geom.save_vtu(
 				vis_mesh_path,
