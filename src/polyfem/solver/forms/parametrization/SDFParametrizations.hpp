@@ -60,5 +60,7 @@ namespace polyfem::solver
         const Eigen::MatrixXd A_;
         const Eigen::VectorXd b_;
         const std::string in_path_, out_path_;
+
+        mutable Eigen::VectorXd last_x;
     };
 }

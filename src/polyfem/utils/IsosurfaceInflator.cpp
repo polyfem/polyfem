@@ -13,8 +13,11 @@ namespace polyfem::utils
 
         IsosurfaceInflator inflator("2D_doubly_periodic", true, wire_path, 2, 0);
 
-        inflator.meshingOptions().load(options);
         inflator.meshingOptions().debugSVelPath = options["dump_shape_velocity"];
+
+        json opts = options;
+        opts.erase("dump_shape_velocity");
+        inflator.meshingOptions().load(opts);
 
         const double defaultThickness = 0.07;
         if (params.size() != inflator.defaultParameters(defaultThickness).size())

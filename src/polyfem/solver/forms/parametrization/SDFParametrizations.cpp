@@ -259,6 +259,9 @@ namespace polyfem::solver
         auto V = utils::unflatten(x, A_.rows());
         V = ((V * A_.transpose()).eval().rowwise() + b_.transpose()).eval();
 
+        if (last_x.size() == x.size() && last_x == x)
+            return utils::flatten(V);
+
         // save to file
         {
             Eigen::MatrixXd vertices;
@@ -272,6 +275,8 @@ namespace polyfem::solver
 
             logger().info("Saved affined mesh to {}", out_path_);
         }
+
+        last_x = x;
         
         return utils::flatten(V);
     }
