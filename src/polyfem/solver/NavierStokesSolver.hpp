@@ -2,7 +2,7 @@
 
 #include <polyfem/Common.hpp>
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
 #include <polysolve/LinearSolver.hpp>
@@ -25,7 +25,7 @@ namespace polyfem
 						  const std::vector<basis::ElementBases> &bases,
 						  const std::vector<basis::ElementBases> &pressure_bases,
 						  const std::vector<basis::ElementBases> &gbases,
-						  const assembler::AssemblerUtils &assembler,
+						  const assembler::Assembler &assembler,
 						  const assembler::AssemblyValsCache &ass_vals_cache,
 						  const assembler::AssemblyValsCache &pressure_ass_vals_cache,
 						  const std::vector<int> &boundary_nodes,
@@ -49,7 +49,7 @@ namespace polyfem
 							 const int n_pressure_bases,
 							 const std::vector<basis::ElementBases> &bases,
 							 const std::vector<basis::ElementBases> &gbases,
-							 const assembler::AssemblerUtils &assembler,
+							 const assembler::Assembler &assembler,
 							 const assembler::AssemblyValsCache &ass_vals_cache,
 							 const std::vector<int> &boundary_nodes,
 							 const bool use_avg_pressure,

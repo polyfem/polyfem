@@ -234,15 +234,7 @@ namespace polyfem
 
 	public:
 		/// set the multimaterial
-		void set_materials()
-		{
-			if (!utils::is_param_valid(args, "materials"))
-				return;
-			std::vector<int> body_ids(mesh->n_elements());
-			for (int i = 0; i < mesh->n_elements(); ++i)
-				body_ids[i] = mesh->get_body_id(i);
-			assembler->set_materials(body_ids, args["materials"]);
-		}
+		void set_materials();
 
 		//---------------------------------------------------
 		//-----------------solver----------------------------

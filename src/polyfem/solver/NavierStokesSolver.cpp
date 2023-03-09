@@ -37,17 +37,16 @@ namespace polyfem
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &pressure_bases,
 			const std::vector<basis::ElementBases> &gbases,
-			const assembler::AssemblerUtils &assembler,
+			const assembler::Assembler &assembler,
 			const assembler::AssemblyValsCache &ass_vals_cache,
 			const assembler::AssemblyValsCache &pressure_ass_vals_cache,
 			const std::vector<int> &boundary_nodes,
 			const bool use_avg_pressure,
-			const std::string &formulation,
 			const int problem_dim,
 			const bool is_volume,
 			const Eigen::MatrixXd &rhs, Eigen::VectorXd &x)
 		{
-			assert(formulation == "NavierStokes");
+			assert(assembler.name() == "NavierStokes");
 
 			auto solver = LinearSolver::create(solver_type, precond_type);
 			solver->setParameters(solver_param["linear"]);
@@ -152,7 +151,7 @@ namespace polyfem
 			const int n_pressure_bases,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
-			const assembler::AssemblerUtils &assembler,
+			const assembler::Assembler &assembler,
 			const assembler::AssemblyValsCache &ass_vals_cache,
 			const std::vector<int> &boundary_nodes,
 			const bool use_avg_pressure,

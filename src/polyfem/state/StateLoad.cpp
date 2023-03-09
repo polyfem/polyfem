@@ -1,5 +1,7 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/assembler/Mass.hpp>
+
 #include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
@@ -58,7 +60,10 @@ namespace polyfem
 
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
-		assembler.set_size(formulation(), mesh->dimension());
+		assembler->set_size(mesh->dimension());
+		mass_matrix_assembler->set_size(mesh->dimension());
+		if (mixed_assembler != nullptr)
+			mixed_assembler->set_size(mesh->dimension());
 
 		// TODO: renable this
 		// int n_refs = args["n_refs"];
@@ -133,7 +138,11 @@ namespace polyfem
 
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
-		assembler.set_size(formulation(), mesh->dimension());
+		assembler->set_size(mesh->dimension());
+		mass_matrix_assembler->set_size(mesh->dimension());
+		if (mixed_assembler != nullptr)
+			mixed_assembler->set_size(mesh->dimension());
+
 		set_materials();
 
 		timer.stop();

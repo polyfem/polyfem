@@ -354,8 +354,7 @@ namespace polyfem::io
 		const bool is_problem_scalar,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
-		const assembler::AssemblerUtils &assembler,
-		const std::string &formulation,
+		const assembler::Assembler &assembler,
 		const Eigen::MatrixXd &pts,
 		const Eigen::MatrixXi &faces,
 		const Eigen::MatrixXd &fun,
@@ -367,7 +366,7 @@ namespace polyfem::io
 	{
 		interpolate_boundary_tensor_function(
 			mesh, is_problem_scalar, bases, gbases,
-			assembler, formulation,
+			assembler,
 			pts, faces, fun, Eigen::MatrixXd::Zero(pts.rows(), pts.cols()),
 			compute_avg, result, stresses, mises, skip_orientation);
 	}
@@ -377,8 +376,7 @@ namespace polyfem::io
 		const bool is_problem_scalar,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
-		const assembler::AssemblerUtils &assembler,
-		const std::string &formulation,
+		const assembler::Assembler &assembler,
 		const Eigen::MatrixXd &pts,
 		const Eigen::MatrixXi &faces,
 		const Eigen::MatrixXd &fun,
@@ -519,8 +517,8 @@ namespace polyfem::io
 					tet_n += tmp;
 				}
 
-				assembler.compute_tensor_value(formulation, e, bs, gbs, points, fun, tmp_t);
-				assembler.compute_scalar_value(formulation, e, bs, gbs, points, fun, tmp_s);
+				assembler.compute_scalar_value(e, bs, gbs, points, fun, tmp_s);
+				assembler.compute_tensor_value(e, bs, gbs, points, fun, tmp_t);
 
 				Eigen::MatrixXd loc_val = tmp_t[0].second, local_mises = tmp_s[0].second;
 				Eigen::VectorXd tmp(loc_val.cols());
@@ -565,13 +563,12 @@ namespace polyfem::io
 		const Eigen::VectorXi &disc_orders,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
-		const assembler::AssemblerUtils &assembler,
-		const std::string &formulation,
+		const assembler::Assembler &assembler,
 		const utils::RefElementSampler &sampler,
 		const int n_points,
 		const Eigen::MatrixXd &fun,
-		std::vector<assembler::AssemblerUtils::NamedMatrix> &result_scalar,
-		std::vector<assembler::AssemblerUtils::NamedMatrix> &result_tensor,
+		std::vector<assembler::Assembler::NamedMatrix> &result_scalar,
+		std::vector<assembler::Assembler::NamedMatrix> &result_tensor,
 		const bool use_sampler,
 		const bool boundary_only)
 	{
@@ -631,9 +628,9 @@ namespace polyfem::io
 			const quadrature::Quadrature &quadrature = vals.quadrature;
 			const double area = (vals.det.array() * quadrature.weights.array()).sum();
 
-			assembler.compute_scalar_value(formulation, i, bs, gbs, local_pts, fun, tmp_s);
+			assembler.compute_scalar_value(i, bs, gbs, local_pts, fun, tmp_s);
 
-			// assembler.compute_tensor_value(formulation, i, bs, gbs, local_pts, fun, local_val);
+			// assembler.compute_tensor_value(i, bs, gbs, local_pts, fun, local_val);
 			// MatrixXd avg_tensor(n_points * actual_dim*actual_dim, 1);
 
 			for (size_t j = 0; j < bs.bases.size(); ++j)
@@ -777,8 +774,7 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
-		const assembler::AssemblerUtils &assembler,
-		const std::string &formulation,
+		const assembler::Assembler &assembler,
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result,
 		Eigen::VectorXd &von_mises)
@@ -846,10 +842,8 @@ namespace polyfem::io
 
 			std::vector<std::pair<std::string, Eigen::MatrixXd>> tmp_s, tmp_t;
 
-			assembler.compute_scalar_value(formulation, e, bases[e], gbases[e],
-										   quadr.points, fun, tmp_s);
-			assembler.compute_tensor_value(formulation, e, bases[e], gbases[e],
-										   quadr.points, fun, tmp_t);
+			assembler.compute_scalar_value(e, bases[e], gbases[e], quadr.points, fun, tmp_s);
+			assembler.compute_tensor_value(e, bases[e], gbases[e], quadr.points, fun, tmp_t);
 
 			local_mises = tmp_s[0].second;
 			local_val = tmp_t[0].second;
@@ -1057,8 +1051,7 @@ namespace polyfem::io
 		const Eigen::VectorXi &disc_orders,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
-		const assembler::AssemblerUtils &assembler,
-		const std::string &formulation,
+		const assembler::Assembler &assembler,
 		const utils::RefElementSampler &sampler,
 		const Eigen::MatrixXd &fun,
 		const bool use_sampler,
@@ -1121,7 +1114,7 @@ namespace polyfem::io
 				}
 			}
 
-			assembler.compute_scalar_value(formulation, i, bs, gbs, local_pts, fun, tmp_s);
+			assembler.compute_scalar_value(i, bs, gbs, local_pts, fun, tmp_s);
 
 			for (const auto &s : tmp_s)
 				if (std::isnan(s.second.norm()))
@@ -1139,12 +1132,11 @@ namespace polyfem::io
 		const Eigen::VectorXi &disc_orders,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
-		const assembler::AssemblerUtils &assembler,
-		const std::string &formulation,
+		const assembler::Assembler &assembler,
 		const utils::RefElementSampler &sampler,
 		const int n_points,
 		const Eigen::MatrixXd &fun,
-		std::vector<assembler::AssemblerUtils::NamedMatrix> &result,
+		std::vector<assembler::Assembler::NamedMatrix> &result,
 		const bool use_sampler,
 		const bool boundary_only)
 	{
@@ -1208,7 +1200,7 @@ namespace polyfem::io
 				}
 			}
 
-			assembler.compute_scalar_value(formulation, i, bs, gbs, local_pts, fun, tmp_s);
+			assembler.compute_scalar_value(i, bs, gbs, local_pts, fun, tmp_s);
 
 			if (result.empty())
 			{
@@ -1237,12 +1229,11 @@ namespace polyfem::io
 		const Eigen::VectorXi &disc_orders,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
-		const assembler::AssemblerUtils &assembler,
-		const std::string &formulation,
+		const assembler::Assembler &assembler,
 		const utils::RefElementSampler &sampler,
 		const int n_points,
 		const Eigen::MatrixXd &fun,
-		std::vector<assembler::AssemblerUtils::NamedMatrix> &result,
+		std::vector<assembler::Assembler::NamedMatrix> &result,
 		const bool use_sampler,
 		const bool boundary_only)
 	{
@@ -1307,7 +1298,7 @@ namespace polyfem::io
 				}
 			}
 
-			assembler.compute_tensor_value(formulation, i, bs, gbs, local_pts, fun, tmp_t);
+			assembler.compute_tensor_value(i, bs, gbs, local_pts, fun, tmp_t);
 
 			if (result.empty())
 			{

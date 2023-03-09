@@ -36,7 +36,7 @@ namespace polyfem
 								   const std::vector<RowVectorNd> &dirichlet_nodes_position, const std::vector<RowVectorNd> &neumann_nodes_position,
 								   const int n_basis, const int size,
 								   const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
-								   const std::string &formulation, const Problem &problem,
+								   const Problem &problem,
 								   const std::string bc_method,
 								   const std::string &solver, const std::string &preconditioner, const json &solver_params)
 			: assembler_(assembler),
@@ -47,7 +47,6 @@ namespace polyfem
 			  bases_(bases),
 			  gbases_(gbases),
 			  ass_vals_cache_(ass_vals_cache),
-			  formulation_(formulation),
 			  problem_(problem),
 			  bc_method_(bc_method),
 			  solver_(solver),
@@ -77,7 +76,7 @@ namespace polyfem
 
 					const Quadrature &quadrature = vals.quadrature;
 
-					problem_.rhs(assembler_, formulation_, vals.val, t, rhs_fun);
+					problem_.rhs(assembler_, vals.val, t, rhs_fun);
 
 					for (int d = 0; d < size_; ++d)
 					{
@@ -757,7 +756,7 @@ namespace polyfem
 						const Quadrature &quadrature = vals.quadrature;
 						const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
-						problem_.rhs(assembler_, formulation_, vals.val, t, forces);
+						problem_.rhs(assembler_, vals.val, t, forces);
 						assert(forces.rows() == da.size());
 						assert(forces.cols() == size_);
 

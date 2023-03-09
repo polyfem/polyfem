@@ -1,5 +1,7 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/assembler/Mass.hpp>
+
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
 
@@ -18,7 +20,7 @@ namespace polyfem
 		const bool compute_spectrum,
 		Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
-		assert(assembler.is_linear(formulation()) && !is_contact_enabled());
+		assert(assembler->is_linear() && !is_contact_enabled());
 		assert(solve_data.rhs_assembler != nullptr);
 
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
@@ -27,7 +29,7 @@ namespace polyfem
 		Eigen::VectorXd x;
 		stats.spectrum = dirichlet_solve(
 			*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
-			assembler.is_fluid(formulation()), use_avg_pressure);
+			assembler->is_fluid(), use_avg_pressure);
 		sol = x; // Explicit copy because sol is a MatrixXd (with one column)
 
 		solver->getInfo(stats.solver_info);
@@ -38,14 +40,14 @@ namespace polyfem
 		else
 			logger().debug("Solver error: {}", error);
 
-		if (assembler.is_mixed(formulation()))
+		if (mixed_assembler != nullptr)
 			sol_to_pressure(sol, pressure);
 	}
 
 	void State::solve_linear(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		assert(!problem->is_time_dependent());
-		assert(assembler.is_linear(formulation()) && !is_contact_enabled());
+		assert(assembler->is_linear() && !is_contact_enabled());
 
 		// --------------------------------------------------------------------
 
@@ -71,10 +73,10 @@ namespace polyfem
 	void State::solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		assert(problem->is_time_dependent());
-		assert(assembler.is_linear(formulation()) && !is_contact_enabled());
+		assert(assembler->is_linear() && !is_contact_enabled());
 		assert(solve_data.rhs_assembler != nullptr);
 
-		const bool is_scalar_or_mixed = problem->is_scalar() || assembler.is_mixed(formulation());
+		const bool is_scalar_or_mixed = problem->is_scalar() || mixed_assembler != nullptr;
 
 		// --------------------------------------------------------------------
 
@@ -121,16 +123,16 @@ namespace polyfem
 			if (is_scalar_or_mixed)
 			{
 				solve_data.rhs_assembler->compute_energy_grad(
-					local_boundary, boundary_nodes, assembler.density(), n_b_samples, local_neumann_boundary, rhs, time,
+					local_boundary, boundary_nodes, mass_matrix_assembler->density(), n_b_samples, local_neumann_boundary, rhs, time,
 					current_rhs);
 
 				solve_data.rhs_assembler->set_bc(
 					local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, sol, time);
 
-				if (assembler.is_mixed(formulation()))
+				if (mixed_assembler != nullptr)
 				{
 					// divergence free
-					int fluid_offset = use_avg_pressure ? (assembler.is_fluid(formulation()) ? 1 : 0) : 0;
+					int fluid_offset = use_avg_pressure ? (assembler->is_fluid() ? 1 : 0) : 0;
 					current_rhs
 						.block(
 							current_rhs.rows() - n_pressure_bases - use_avg_pressure, 0,
@@ -149,7 +151,7 @@ namespace polyfem
 			}
 			else
 			{
-				solve_data.rhs_assembler->assemble(assembler.density(), current_rhs, time);
+				solve_data.rhs_assembler->assemble(mass_matrix_assembler->density(), current_rhs, time);
 
 				current_rhs *= -1;
 
