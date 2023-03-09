@@ -113,16 +113,12 @@ namespace cppoptlib
 				name(), objFunc.value(x), this->m_current.gradNorm, this->m_stop.iterations,
 				this->m_stop.fDelta, this->m_stop.gradNorm, this->m_stop.xDelta);
 
-		bool is_first_iter = true;
-
 		do
 		{
-			if (!is_first_iter) {
+			if (name() == "MMA") {
 				POLYFEM_SCOPED_TIMER("constraint set update", constraint_set_update_time);
 				objFunc.solution_changed(x);
 			}
-			else
-				is_first_iter = false;
 
 			double energy;
 			{
