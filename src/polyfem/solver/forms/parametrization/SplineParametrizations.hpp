@@ -81,7 +81,7 @@ namespace polyfem::solver
 	private:
 		void compute_faces_for_partial_vertices(const Eigen::MatrixXd &V, Eigen::MatrixXi &F) const;
 
-		int optimal_new_control_point_idx(const Eigen::MatrixXd &V, const Eigen::VectorXi &boundary_loop, const std::vector<int> &existing_points);
+		int optimal_new_control_point_idx(const Eigen::MatrixXd &V, const Eigen::VectorXi &boundary_loop, const std::vector<int> &existing_points) const;
 
 		const int num_control_vertices_;
 		Eigen::MatrixXd control_points_;
