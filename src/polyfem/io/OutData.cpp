@@ -221,6 +221,17 @@ namespace polyfem::io
 						print_warning << loc_nodes.size() << " ";
 						// assert(false);
 					}
+
+					if (!is_simplicial)
+					{
+						for (int k = 0; k < loc_nodes.size(); ++k)
+						{
+							if (!visited_node[loc_nodes[k]])
+								displacement_map_entries.emplace_back(loc_nodes[k], loc_nodes[k], 1);
+
+							visited_node[loc_nodes[k]] = true;
+						}
+					}
 				}
 			}
 
