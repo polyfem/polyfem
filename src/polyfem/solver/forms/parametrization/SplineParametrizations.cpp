@@ -5,6 +5,7 @@
 #include <igl/boundary_conditions.h>
 #include <igl/normalize_row_sums.h>
 #include <igl/boundary_loop.h>
+#include <igl/exact_geodesic.h>
 
 namespace polyfem::solver
 {
@@ -69,7 +70,7 @@ namespace polyfem::solver
 		return Eigen::VectorXd();
 	}
 
-	int BoundedBiharmonicWeights2Dto3D::optimal_new_control_point_idx(const Eigen::MatrixXd &V, const Eigen::VectorXi &boundary_loop, const std::vector<int> &existing_points) const
+	int BoundedBiharmonicWeights2Dto3D::optimal_new_control_point_idx(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const Eigen::VectorXi &boundary_loop, const std::vector<int> &existing_points) const
 	{
 		std::set<int> fixed_vertices;
 		{
@@ -78,49 +79,38 @@ namespace polyfem::solver
 			for (const auto &i : existing_points)
 				fixed_vertices.insert(i);
 		}
-		auto min_distance = [&V, &fixed_vertices](const int i, double &min_dist) {
-			min_dist = -1;
-			int min_j = -1;
-			for (const auto &j : fixed_vertices)
-			{
-				double dist = (V.row(i) - V.row(j)).norm();
-				if (min_j == -1)
-				{
-					min_j = j;
-					min_dist = dist;
-					continue;
-				}
 
-				if (dist < min_dist)
-				{
-					min_dist = dist;
-					min_j = j;
-				}
-			}
-		};
-
-		double max_min_dist = -1;
-		int opt_idx = -1;
+		Eigen::VectorXi free_vertices(V.rows() - fixed_vertices.size());
+		int s = 0;
 		for (int i = 0; i < V.rows(); ++i)
+			if (fixed_vertices.find(i) == fixed_vertices.end())
+				free_vertices(s++) = i;
+
+		Eigen::VectorXi VS, FS, FT;
+		VS.resize(fixed_vertices.size());
+		s = 0;
+		for (const auto &j : fixed_vertices)
+			VS(s++) = j;
+
+		Eigen::VectorXd d;
+		igl::exact_geodesic(V, F, VS, FS, free_vertices, FT, d);
+		int opt_idx = -1;
+		double max_min_dist = -1;
+		for (int i = 0; i < d.size(); ++i)
 		{
-			if (fixed_vertices.find(i) != fixed_vertices.end())
-				continue;
 			if (opt_idx == -1)
 			{
-				min_distance(i, max_min_dist);
-				opt_idx = i;
+				max_min_dist = d(i);
+				opt_idx = free_vertices(i);
 				continue;
 			}
-
-			double dist;
-			min_distance(i, dist);
-
-			if (dist > max_min_dist)
+			else if (d(i) > max_min_dist)
 			{
-				max_min_dist = dist;
-				opt_idx = i;
+				max_min_dist = d(i);
+				opt_idx = free_vertices(i);
 			}
 		}
+
 		return opt_idx;
 	}
 
@@ -147,7 +137,7 @@ namespace polyfem::solver
 			for (int i = 0; i < outer_loop.size(); ++i)
 				possible_control_vertices.erase(outer_loop(i));
 			for (int i = 0; i < num_control_vertices_; ++i)
-				control_indices.push_back(optimal_new_control_point_idx(V, outer_loop, control_indices));
+				control_indices.push_back(optimal_new_control_point_idx(V, F, outer_loop, control_indices));
 
 			const int recompute_loops = 5;
 			for (int r = 0; r < recompute_loops; ++r)
@@ -156,7 +146,7 @@ namespace polyfem::solver
 				{
 					std::vector<int> indices = control_indices;
 					indices.erase(indices.begin() + i);
-					int new_idx = optimal_new_control_point_idx(V, outer_loop, indices);
+					int new_idx = optimal_new_control_point_idx(V, F, outer_loop, indices);
 					control_indices[i] = new_idx;
 				}
 			}
@@ -174,7 +164,7 @@ namespace polyfem::solver
 		igl::boundary_conditions(V, F, point_handles, point_handles_idx, Eigen::VectorXi(), Eigen::VectorXi(), b, bc);
 
 		igl::BBWData bbw_data;
-		bbw_data.active_set_params.max_iter = 50;
+		bbw_data.active_set_params.max_iter = 20;
 		bbw_data.verbosity = 2;
 		Eigen::MatrixXd complete_bbw_weights;
 		bool computation = igl::bbw(V, F, b, bc, bbw_data, complete_bbw_weights);
