@@ -351,6 +351,7 @@ namespace polyfem::solver
 	}
 	Eigen::VectorXd CustomSymmetric::eval(const Eigen::VectorXd &x) const
 	{
+		assert(x.size() == 20);
 		Eigen::VectorXd y = x;
 		y(8) = 1.0 - y(3);
 		y(9) = y(4);
@@ -358,11 +359,14 @@ namespace polyfem::solver
 		y(11) = y(2);
 		y(18) = y(15);
 		y(19) = y(14);
+		y(5) = 0.5;
+		y(6) = 0.5;
 
 		return y;
 	}
 	Eigen::VectorXd CustomSymmetric::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
 	{
+		assert(grad.size() == 20);
 		Eigen::VectorXd grad_new = grad;
 		grad_new(3) -= grad_new(8);
 		grad_new(4) += grad_new(9);
@@ -371,7 +375,7 @@ namespace polyfem::solver
 		grad_new(15) += grad_new(18);
 		grad_new(14) += grad_new(19);
 
-		grad_new({8,9,10,11,18,19}).setZero();
+		grad_new({5,6,8,9,10,11,18,19}).setZero();
 
 		return grad_new;
 	}

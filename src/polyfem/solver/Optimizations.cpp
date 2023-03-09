@@ -51,6 +51,11 @@ namespace polyfem::solver
 				const auto &state = states[args["state"]];
 				obj = std::make_shared<TransientForm>(var2sim, state->args["time"]["time_steps"], state->args["time"]["dt"], args["integral_type"], static_obj);
 			}
+			else if (type == "power")
+			{
+				std::shared_ptr<AdjointForm> obj_aux = std::dynamic_pointer_cast<AdjointForm>(create_form(args["objective"], var2sim, states));
+				obj = std::make_shared<PowerForm>(obj_aux, args["power"]);
+			}
 			else if (type == "compliance")
 			{
 				obj = std::make_shared<ComplianceForm>(var2sim, *(states[args["state"]]), args);

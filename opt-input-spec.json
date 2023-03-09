@@ -691,6 +691,7 @@
         "type": "string",
         "options": [
             "transient_integral",
+            "power",
             "target",
             "sdf-target",
             "function-target",
@@ -735,6 +736,19 @@
         "pointer": "/functionals/*/scale_invariant",
         "type": "bool",
         "default": true,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "power",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "power",
+            "weight"
+        ],
         "doc": "TODO"
     },
     {

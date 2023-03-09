@@ -51,4 +51,17 @@ namespace polyfem::solver
 
 		const Eigen::Vector2d bounds_;
 	};
+
+	class PowerForm : public CompositeForm
+	{
+	public:
+		PowerForm(const std::shared_ptr<AdjointForm> &form, const double power): CompositeForm({form}), power_(power) { }
+		~PowerForm() {}
+	
+	private:
+		double compose(const Eigen::VectorXd &inputs) const override { return pow(inputs(0), power_); }
+		Eigen::VectorXd compose_grad(const Eigen::VectorXd &inputs) const override { Eigen::VectorXd x(1); x(0) = power_ * pow(inputs(0), power_ - 1); return x; }
+
+		const double power_;
+	};
 }
