@@ -62,29 +62,6 @@ namespace polyfem
 			}
 			reduced_mat.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
-
-		StiffnessMatrix replace_rows_by_zero(const StiffnessMatrix &mat, const std::vector<int> &rows)
-		{
-			StiffnessMatrix reduced_mat;
-			reduced_mat.resize(mat.rows(), mat.cols());
-
-			std::vector<bool> mask(mat.rows(), false);
-			for (int i : rows)
-				mask[i] = true;
-
-			std::vector<Eigen::Triplet<double>> coeffs;
-			for (int k = 0; k < mat.outerSize(); ++k)
-			{
-				for (StiffnessMatrix::InnerIterator it(mat, k); it; ++it)
-				{
-					if (!mask[it.row()])
-						coeffs.emplace_back(it.row(), it.col(), it.value());
-				}
-			}
-			reduced_mat.setFromTriplets(coeffs.begin(), coeffs.end());
-
-			return reduced_mat;
-		}
 	} // namespace
 
 	void State::get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces) const
@@ -288,9 +265,8 @@ namespace polyfem
 				x.conservativeResize(x.size() - n_lagrange_multipliers());
 
 				adjoint.col(i) = solve_data.nl_problem->reduced_to_full(x);
-				for (int j : boundary_nodes)
-					adjoint(j, i) = 0;
 			}
+			adjoint(boundary_nodes, Eigen::all).setZero();
 		}
 
 		return adjoint;
@@ -315,39 +291,34 @@ namespace polyfem
 		Eigen::MatrixXd sum_alpha_p, sum_alpha_nu;
 		for (int i = time_steps; i >= 0; --i)
 		{
-			double beta, beta_dt;
-			{
-				int order = std::min(bdf_order, i);
-				if (order >= 1)
-					beta = time_integrator::BDF::betas(order - 1);
-				else
-					beta = std::nan("");
-				beta_dt = beta * dt;
-			}
-
 			{
 				sum_alpha_p.setZero(ndof(), 1);
 				sum_alpha_nu.setZero(ndof(), 1);
 
+				const int num = std::min(bdf_order, time_steps - i);
+
+				Eigen::VectorXd bdf_coeffs(num);
 				for (int j = 0; j < bdf_order && i + j < time_steps; ++j)
-				{
-					int order = std::min(bdf_order - 1, i + j);
-					sum_alpha_p -= time_integrator::BDF::alphas(order)[j] * adjoints.col(i + j + 1);
-					sum_alpha_nu -= time_integrator::BDF::alphas(order)[j] * adjoints.col(i + j + 1 + cols_per_adjoint);
-				}
+					bdf_coeffs(j) = -time_integrator::BDF::alphas(std::min(bdf_order - 1, i + j))[j];
+
+				sum_alpha_p = adjoints.middleCols(i + 1, num) * bdf_coeffs;
+				sum_alpha_nu = adjoints.middleCols(cols_per_adjoint + i + 1, num) * bdf_coeffs;
 			}
 
 			Eigen::VectorXd rhs_ = -reduced_mass.transpose() * sum_alpha_nu - adjoint_rhs.col(i);
 			if (i < time_steps) 
 			{
-				StiffnessMatrix gradu_h_prev; // = diff_cached.gradu_h_prev(i + 1) * beta_dt;
+				StiffnessMatrix gradu_h_prev;
 				compute_force_hessian_prev(i + 1, gradu_h_prev);
-				gradu_h_prev = replace_rows_by_zero(gradu_h_prev, boundary_nodes) * beta_dt;
-				rhs_ += -gradu_h_prev.transpose() * adjoints.col(i + 1);
+				Eigen::VectorXd tmp = adjoints.col(i + 1) * (time_integrator::BDF::betas(diff_cached.bdf_order(i + 1) - 1) * dt);
+				tmp(boundary_nodes).setZero();
+				rhs_ += -gradu_h_prev.transpose() * tmp;
 			}
 
 			if (i > 0)
 			{
+				double beta_dt = time_integrator::BDF::betas(diff_cached.bdf_order(i) - 1) * dt;
+				
 				rhs_ += (1. / beta_dt) * (diff_cached.gradu_h(i) - reduced_mass).transpose() * sum_alpha_p;
 
 				{
@@ -364,13 +335,14 @@ namespace polyfem
 				}
 
 				// TODO: generalize to BDFn
+				Eigen::VectorXd tmp = rhs_(boundary_nodes);
 				if (i + 1 < cols_per_adjoint)
-					rhs_(boundary_nodes) += -2. / beta_dt * adjoints(boundary_nodes, i + 1);
+					tmp += -2. / beta_dt * adjoints(boundary_nodes, i + 1);
 				if (i + 2 < cols_per_adjoint)
-					rhs_(boundary_nodes) += (1. / beta_dt) * adjoints(boundary_nodes, i + 2);
+					tmp += (1. / beta_dt) * adjoints(boundary_nodes, i + 2);
 
-				Eigen::VectorXd tmp = rhs_ - diff_cached.gradu_h(i).transpose() * adjoints.col(i + cols_per_adjoint);
-				adjoints(boundary_nodes, i + cols_per_adjoint) = tmp(boundary_nodes);
+				tmp -= (diff_cached.gradu_h(i).transpose() * adjoints.col(i + cols_per_adjoint))(boundary_nodes);
+				adjoints(boundary_nodes, i + cols_per_adjoint) = tmp;
 				adjoints.col(i) = beta_dt * adjoints.col(i + cols_per_adjoint) - sum_alpha_p;
 			}
 			else
