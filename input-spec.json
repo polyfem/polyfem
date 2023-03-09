@@ -17,7 +17,8 @@
             "initial_conditions",
             "output",
             "input",
-            "tests"
+            "tests",
+            "collision_mesh"
         ],
         "doc": "Root of the configuration file."
     },
@@ -4608,5 +4609,34 @@
             "TestProblem",
             "BilaplacianProblemWithSolution"
         ]
+    },
+    {
+        "pointer": "/collision_mesh",
+        "type": "object",
+        "required": [
+            "mesh",
+            "linear_map"
+        ],
+        "optional": [
+            "enabled"
+        ],
+        "default": "skip",
+        "doc": ""
+    },
+    {
+        "pointer": "/collision_mesh/mesh",
+        "type": "string",
+        "doc": ""
+    },
+    {
+        "pointer": "/collision_mesh/linear_map",
+        "type": "string",
+        "doc": ""
+    },
+    {
+        "pointer": "/collision_mesh/enabled",
+        "type": "bool",
+        "default": true,
+        "doc": ""
     }
 ]

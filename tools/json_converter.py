@@ -130,6 +130,8 @@ def PolyFEM_convert(old):
     # copy_entry("use_spline", old, j["space"]["advanced"])
     copy_entry("bc_method", old, j["space"]["advanced"])
     copy_entry("n_boundary_samples", old, j["space"]["advanced"])
+    if "poly_bases" in old and "poly_basis_type" not in j["space"]:
+        j["space"]["poly_basis_type"] = {}
     copy_entry("poly_bases", old, j["space"]["poly_basis_type"])
     copy_entry("quadrature_order", old, j["space"]["advanced"])
     copy_entry("integral_constraints", old, j["space"]["advanced"])
@@ -425,6 +427,8 @@ def PolyFEM_convert(old):
                 if "is_obstacle" in t and t["is_obstacle"]:
                     continue
                 t["surface_selection"].append(n)
+
+    copy_entry("collision_mesh", old, j)
 
     remove_empty_dicts_from_dict(j)
 
