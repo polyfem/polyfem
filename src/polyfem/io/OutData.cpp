@@ -138,8 +138,8 @@ namespace polyfem::io
 						logger().trace("skipping element {} since it is not a simplex or hex", eid);
 						continue;
 					}
-
-					assert(is_simplicial);
+					// TODO fix me
+					assert(mesh.is_simplex(lb.element_id()));
 
 					std::vector<int> loc_nodes;
 
