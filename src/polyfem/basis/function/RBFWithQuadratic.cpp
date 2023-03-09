@@ -80,7 +80,7 @@ namespace
 ////////////////////////////////////////////////////////////////////////////////
 
 // output is std::array<Eigen::MatrixXd, 5> &strong rhs(q(x_i) er)
-void RBFWithQuadratic::setup_monomials_strong_2d(const int dim, const Assembler &assembler, const Eigen::MatrixXd &pts, const QuadratureVector &da, std::array<Eigen::MatrixXd, 5> &strong)
+void RBFWithQuadratic::setup_monomials_strong_2d(const int dim, const LinearAssembler &assembler, const Eigen::MatrixXd &pts, const QuadratureVector &da, std::array<Eigen::MatrixXd, 5> &strong)
 {
 	// a(u,v) = a(q er, phi_j es) = <rhs(q(x_i) er) , phi_j(x_i) es >
 	//  (not a(phi_j es, q er))
@@ -183,7 +183,7 @@ void RBFWithQuadratic::setup_monomials_vals_2d(const int star_index, const Eigen
 }
 
 RBFWithQuadratic::RBFWithQuadratic(
-	const Assembler &assembler,
+	const LinearAssembler &assembler,
 	const Eigen::MatrixXd &centers,
 	const Eigen::MatrixXd &collocation_points,
 	const Eigen::MatrixXd &local_basis_integral,
@@ -501,7 +501,7 @@ void RBFWithQuadratic::compute_constraints_matrix_2d_old(
 }
 
 void RBFWithQuadratic::compute_constraints_matrix_2d(
-	const Assembler &assembler,
+	const LinearAssembler &assembler,
 	const int num_bases,
 	const Quadrature &quadr,
 	const Eigen::MatrixXd &local_basis_integral,
@@ -575,7 +575,7 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	{
 		for (int j = 0; j < num_kernels; ++j)
 		{
-			const auto tmp = assembler.local_assemble(LinearAssemblerData(ass_val, i, 5 + j, quadr.weights));
+			const auto tmp = assembler.assemble(LinearAssemblerData(ass_val, i, 5 + j, quadr.weights));
 			for (int d1 = 0; d1 < assembler_dim; ++d1)
 			{
 				for (int d2 = 0; d2 < assembler_dim; ++d2)
@@ -610,7 +610,7 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 // -----------------------------------------------------------------------------
 
 void RBFWithQuadratic::compute_constraints_matrix_3d(
-	const Assembler &assembler,
+	const LinearAssembler &assembler,
 	const int num_bases,
 	const Quadrature &quadr,
 	const Eigen::MatrixXd &local_basis_integral,
@@ -709,7 +709,7 @@ void RBFWithQuadratic::compute_constraints_matrix_3d(
 
 // -----------------------------------------------------------------------------
 
-void RBFWithQuadratic::compute_weights(const Assembler &assembler, const Eigen::MatrixXd &samples,
+void RBFWithQuadratic::compute_weights(const LinearAssembler &assembler, const Eigen::MatrixXd &samples,
 									   const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
 									   Eigen::MatrixXd &rhs, bool with_constraints)
 {

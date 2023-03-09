@@ -2,6 +2,7 @@
 #include "PolygonalBasis3d.hpp"
 #include "LagrangeBasis3d.hpp"
 
+#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/quadrature/PolyhedronQuadrature.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/mesh2D/Refinement.hpp>
@@ -571,7 +572,7 @@ namespace polyfem
 		// -----------------------------------------------------------------------------
 
 		int PolygonalBasis3d::build_bases(
-			const Assembler &assembler,
+			const LinearAssembler &assembler,
 			const int nn_samples_per_edge,
 			const Mesh3D &mesh,
 			const int n_bases,
