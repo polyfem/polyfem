@@ -24,6 +24,8 @@
 
 #include <ipc/ipc.hpp>
 
+extern "C" size_t getPeakRSS();
+
 namespace polyfem
 {
 	using namespace mesh;
@@ -84,42 +86,48 @@ namespace polyfem
 		std::ofstream relax_diff_file(resolve_output_path("relax_diff.csv"));
 		relax_diff_file << "L2,Linf" << std::endl;
 
-		igl::Timer timer;
-
-		static double forward_solve_time = 0;
-		static double global_relaxation_time = 0;
+		double total_forward_solve_time = 0, total_remeshing_time = 0, total_global_relaxation_time = 0;
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
+			double cur_forward_solve_time = 0, cur_remeshing_time = 0, cur_global_relaxation_time = 0;
+
+			igl::Timer timer;
 			timer.start();
 			solve_tensor_nonlinear(sol, t);
 			timer.stop();
-			logger().critical("Forward time step {} took {}s", t, timer.getElapsedTimeInSec());
-			forward_solve_time += timer.getElapsedTimeInSec();
-			logger().critical("Forward time step has taken {}s overall", forward_solve_time);
+			cur_forward_solve_time = timer.getElapsedTimeInSec();
 
 			save_energy(save_i);
 			save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
 			if (remesh_enabled)
 			{
-				if (t0 + dt * (t - 1) >= remesh_t0 && mesh::remesh(*this, sol, t0 + dt * t, dt))
+				// TODO: Print timing for remesh
+				if (t0 + dt * (t - 1) >= remesh_t0)
 				{
-					save_energy(save_i);
-					save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
-
-					const Eigen::MatrixXd loc_relax_sol = sol;
 					timer.start();
-					solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
+					const bool remesh_success = mesh::remesh(*this, sol, t0 + dt * t, dt);
 					timer.stop();
-					logger().critical("Global relaxation took {}s", timer.getElapsedTimeInSec());
-					global_relaxation_time += timer.getElapsedTimeInSec();
-					logger().critical("Global relaxation has taken {}s overall", global_relaxation_time);
-					relax_diff_file << fmt::format("{},{}\n", (loc_relax_sol - sol).norm(), (loc_relax_sol - sol).lpNorm<Eigen::Infinity>());
-					relax_diff_file.flush();
+					cur_remeshing_time = timer.getElapsedTimeInSec();
 
-					save_energy(save_i);
-					save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+					if (remesh_success)
+					{
+						save_energy(save_i);
+						save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+
+						const Eigen::MatrixXd loc_relax_sol = sol;
+						timer.start();
+						solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
+						timer.stop();
+						cur_global_relaxation_time = timer.getElapsedTimeInSec();
+
+						relax_diff_file << fmt::format("{},{}\n", (loc_relax_sol - sol).norm(), (loc_relax_sol - sol).lpNorm<Eigen::Infinity>());
+						relax_diff_file.flush();
+
+						save_energy(save_i);
+						save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+					}
 				}
 				else
 				{
@@ -161,10 +169,22 @@ namespace polyfem
 
 			// save restart file
 			save_restart_json(t0, dt, t);
-		}
 
-		logger().critical("Forward time step took {}s overall", forward_solve_time);
-		logger().critical("Global relaxation took {}s overall", global_relaxation_time);
+			total_forward_solve_time += cur_forward_solve_time;
+			total_remeshing_time += cur_remeshing_time;
+			total_global_relaxation_time += cur_global_relaxation_time;
+
+			logger().critical(
+				"Forward (cur, avg, total): {} s, {} s, {} s",
+				cur_forward_solve_time, total_forward_solve_time / t, total_forward_solve_time);
+			logger().critical(
+				"Remeshing (cur, avg, total): {} s, {} s, {} s",
+				cur_remeshing_time, total_remeshing_time / t, total_remeshing_time);
+			logger().critical(
+				"Global relaxation (cur, avg, total): {} s, {} s, {} s",
+				cur_global_relaxation_time, total_global_relaxation_time / t, total_global_relaxation_time);
+			logger().critical("Peak mem: {} GiB", getPeakRSS() / float(1 << 30));
+		}
 	}
 
 	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t, const bool init_time_integrator)
