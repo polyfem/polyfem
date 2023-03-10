@@ -8,7 +8,7 @@
 // non linear NeoHookean material model
 namespace polyfem::assembler
 {
-	class NeoHookeanElasticity : public NLAssembler, ElasticityAssembler
+	class NeoHookeanElasticity : public NLAssembler, public ElasticityAssembler
 	{
 	public:
 		NeoHookeanElasticity();

@@ -7,7 +7,7 @@
 // non linear NeoHookean material model
 namespace polyfem::assembler
 {
-	class GenericElastic : public NLAssembler, ElasticityAssembler
+	class GenericElastic : public NLAssembler, public ElasticityAssembler
 	{
 	public:
 		using NLAssembler::assemble_energy;

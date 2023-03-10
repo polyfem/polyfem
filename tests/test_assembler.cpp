@@ -47,9 +47,8 @@ TEST_CASE("hessian_lin", "[assembler]")
 
 	for (int rand = 0; rand < 10; ++rand)
 	{
-		state.assembler.assemble_energy_hessian(
-			"LinearElasticity", false, state.n_bases, false,
-			state.bases, state.bases, state.ass_vals_cache, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
+		state.assembler->assemble_hessian(false, state.n_bases, false,
+										  state.bases, state.bases, state.ass_vals_cache, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
 
 		const StiffnessMatrix tmp = state.stiffness - hessian;
 		const auto val = Approx(0).margin(1e-8);
