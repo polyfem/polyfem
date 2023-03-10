@@ -692,6 +692,7 @@
         "options": [
             "transient_integral",
             "power",
+            "divide",
             "target",
             "sdf-target",
             "function-target",
@@ -736,6 +737,18 @@
         "pointer": "/functionals/*/scale_invariant",
         "type": "bool",
         "default": true,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "divide",
+        "required": [
+            "objective"
+        ],
+        "optional": [
+            "weight"
+        ],
         "doc": "TODO"
     },
     {
@@ -1063,6 +1076,16 @@
     },
     {
         "pointer": "/functionals/*/objective",
+        "type": "object",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/objective",
+        "type": "list",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*/objective/*",
         "type": "object",
         "doc": "TODO"
     },

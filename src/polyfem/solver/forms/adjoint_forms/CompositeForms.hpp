@@ -64,4 +64,15 @@ namespace polyfem::solver
 
 		const double power_;
 	};
+
+	class DivideForm : public CompositeForm
+	{
+	public:
+		DivideForm(const std::vector<std::shared_ptr<AdjointForm>> &forms): CompositeForm(forms) { assert(forms.size() == 2); }
+		~DivideForm() {}
+	
+	private:
+		double compose(const Eigen::VectorXd &inputs) const override { return inputs(0) / inputs(1); }
+		Eigen::VectorXd compose_grad(const Eigen::VectorXd &inputs) const override { Eigen::VectorXd x(2); x << 1. / inputs(1), -inputs(0) / pow(inputs(1), 2); return x; }
+	};
 }

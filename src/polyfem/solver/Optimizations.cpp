@@ -53,8 +53,15 @@ namespace polyfem::solver
 			}
 			else if (type == "power")
 			{
-				std::shared_ptr<AdjointForm> obj_aux = std::dynamic_pointer_cast<AdjointForm>(create_form(args["objective"], var2sim, states));
+				std::shared_ptr<AdjointForm> obj_aux = create_form(args["objective"], var2sim, states);
 				obj = std::make_shared<PowerForm>(obj_aux, args["power"]);
+			}
+			else if (type == "divide")
+			{
+				std::shared_ptr<AdjointForm> obj1 = create_form(args["objective"][0], var2sim, states);
+				std::shared_ptr<AdjointForm> obj2 = create_form(args["objective"][1], var2sim, states);
+				std::vector<std::shared_ptr<AdjointForm>> objs({obj1, obj2});
+				obj = std::make_shared<DivideForm>(objs);
 			}
 			else if (type == "compliance")
 			{
@@ -91,7 +98,7 @@ namespace polyfem::solver
 			}
 			else if (type == "stress")
 			{
-				log_and_throw_error("Objective not implemented!");
+				obj = std::make_shared<StressForm>(var2sim, *(states[args["state"]]), args);
 			}
 			else if (type == "stress_norm")
 			{
