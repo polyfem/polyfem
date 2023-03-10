@@ -20,6 +20,15 @@ namespace polyfem::solver
 
             igl::writeMSH(path, Vsave, Tri, Tet, Eigen::MatrixXi::Zero(Tri.rows(), 1), Eigen::MatrixXi::Zero(Tet.rows(), 1), std::vector<std::string>(), std::vector<Eigen::MatrixXd>(), std::vector<std::string>(), std::vector<Eigen::MatrixXd>(), std::vector<Eigen::MatrixXd>());
         }
+
+        template <typename T>
+        std::string to_string_with_precision(const T a_value, const int n = 6)
+        {
+            std::ostringstream out;
+            out.precision(n);
+            out << std::fixed << a_value;
+            return out.str();
+        }
     }
 
     bool SDF2Mesh::isosurface_inflator(const Eigen::VectorXd &x) const
@@ -27,16 +36,63 @@ namespace polyfem::solver
         if (last_x.size() == x.size() && last_x == x)
             return true;
 
-        double inflation_time = 0, saving_time = 0;
-
-        std::vector<double> x_vec(x.data(), x.data() + x.size());
+        if (false)
         {
-            POLYFEM_SCOPED_TIMER("mesh inflation", inflation_time);
-            logger().info("isosurface inflator input: {}", x.transpose());
-            utils::inflate(wire_path_, opts_, x_vec, Vout, Fout, vertex_normals, shape_vel);
+            std::string sdf_velocity_path_ = "tmp-vel.msh";
+            std::string shape_params = "--params \"";
+            for (int i = 0; i < x.size(); i++)
+                shape_params += to_string_with_precision(x(i), 16) + " ";
+            shape_params += "\" ";
+
+            std::string command = "~/microstructures/build/isosurface_inflator/isosurface_cli 2D_doubly_periodic " + wire_path_ + " " + shape_params + " -S " + sdf_velocity_path_ + " " + out_path_;
+
+            int return_val;
+            try 
+            {
+                return_val = system(command.c_str());
+            }
+            catch (const std::exception &err)
+            {
+                logger().error("remesh command \"{}\" returns {}", command, return_val);
+
+                return false;
+            }
+
+            logger().info("remesh command \"{}\" returns {}", command, return_val);
+
+            {
+                std::vector<std::vector<int>> elements;
+                std::vector<std::vector<double>> weights;
+                std::vector<int> body_ids;
+                std::vector<std::string> node_data_name;
+                std::vector<std::vector<double>> node_data;
+                io::MshReader::load(sdf_velocity_path_, Vout, Fout, elements, weights, body_ids, node_data_name, node_data);
+
+                assert(node_data_name.size() == node_data.size());
+
+                vertex_normals.setZero(Vout.rows(), Vout.cols());
+                shape_vel.setZero(x.size(), Vout.rows());
+                for (int j = 0; j < Vout.rows(); j++)
+                    for (int d = 0; d < Vout.cols(); d++)
+                        vertex_normals(j, d) = node_data[0][j * 3 + d];
+                
+                for (int i = 1; i < node_data_name.size(); i++)
+                    for (int j = 0; j < Vout.rows(); j++)
+                        shape_vel(i - 1, j) = node_data[i][j];
+            }
         }
-        
-        write_msh(out_path_, Vout, Fout);
+        else
+        {
+            double inflation_time = 0;
+            std::vector<double> x_vec(x.data(), x.data() + x.size());
+            {
+                POLYFEM_SCOPED_TIMER("mesh inflation", inflation_time);
+                logger().info("isosurface inflator input: {}", x.transpose());
+                utils::inflate(wire_path_, opts_, x_vec, Vout, Fout, vertex_normals, shape_vel);
+            }
+            
+            write_msh(out_path_, Vout, Fout);
+        }
 
         last_x = x;
 
@@ -108,6 +164,7 @@ namespace polyfem::solver
             logger().error("Diff in input mesh and x is {}", (x - utils::flatten(vertices)).norm());
             log_and_throw_error("Inconsistent input mesh in tiling!");
         }
+        vertices = utils::unflatten(x, vertices.cols());
 
         Eigen::MatrixXd Vout;
         Eigen::MatrixXi Fout;

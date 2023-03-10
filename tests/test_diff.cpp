@@ -78,6 +78,38 @@ namespace
 		}
 	}
 
+	void verify_adjoint(std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, AdjointForm &obj, State &state, const Eigen::VectorXd &x, const double dt, const double tol, bool print_grad = false)
+	{
+		obj.solution_changed(x);
+		double functional_val = obj.value(x);
+
+		state.solve_adjoint_cached(obj.compute_adjoint_rhs(x, state));
+		Eigen::VectorXd one_form;
+		obj.first_derivative(x, one_form);
+		Eigen::VectorXd theta = one_form.normalized();
+		double derivative = (one_form.array() * theta.array()).sum();
+
+		for (auto &v2s : variable_to_simulations)
+			v2s->update(x + theta * dt);
+		state.build_basis();
+		solve_pde(state);
+		obj.solution_changed(x + theta * dt);
+		double next_functional_val = obj.value(x + theta * dt);
+
+		for (auto &v2s : variable_to_simulations)
+			v2s->update(x - theta * dt);
+		state.build_basis();
+		solve_pde(state);
+		obj.solution_changed(x - theta * dt);
+		double former_functional_val = obj.value(x - theta * dt);
+
+		double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
+		std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
+		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
+
+		REQUIRE(derivative == Approx(finite_difference).epsilon(tol));
+	}
+
 	void verify_adjoint(std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, AdjointForm &obj, State &state, const Eigen::VectorXd &x, const Eigen::MatrixXd &theta, const double dt, const double tol, bool print_grad = false)
 	{
 		obj.solution_changed(x);
@@ -346,16 +378,13 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 	Eigen::VectorXd x;
 	nlohmann::adl_serializer<Eigen::VectorXd>::from_json(opt_args["parameters"][0]["initial"], x);
 
-	Eigen::MatrixXd theta;
-	theta.setRandom(x.size(), 1);
-
 	for (auto &v2s : variable_to_simulations)
 		v2s->update(x);
 	state.build_basis();
 	solve_pde(state);
 
-	verify_adjoint(variable_to_simulations, *obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-3);
-	// verify_adjoint_expensive(variable_to_simulations, obj, state, x, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>());
+	verify_adjoint(variable_to_simulations, *obj, state, x, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 5e-4);
+	// verify_adjoint_expensive(variable_to_simulations, *obj, state, x, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>());
 
 	std::filesystem::current_path(work_path);
 }

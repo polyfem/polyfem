@@ -48,6 +48,7 @@ namespace polyfem::solver
 
 	private:
 		std::shared_ptr<CompositeForm> composite_form_;
+		std::vector<std::shared_ptr<VariableToSimulation>> variables_to_simulation_;
 		std::vector<std::shared_ptr<State>> all_states_;
 		std::vector<bool> active_state_mask;
 		Eigen::VectorXd cur_grad;
@@ -63,7 +64,5 @@ namespace polyfem::solver
 		double grad_assembly_time = 0;
 
 		Eigen::MatrixXd bounds_;
-
-		std::vector<std::shared_ptr<VariableToSimulation>> variables_to_simulation_;
 	};
 } // namespace polyfem::solver
