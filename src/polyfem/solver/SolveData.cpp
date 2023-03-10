@@ -43,7 +43,7 @@ namespace polyfem::solver
 		// Inertia form
 		const bool ignore_inertia,
 		const StiffnessMatrix &mass,
-		const std::shared_ptr<assembler::ViscousDamping> dumping_assembler,
+		const std::shared_ptr<assembler::ViscousDamping> damping_assembler,
 
 		// Lagged regularization form
 		const double lagged_regularization_weight,
@@ -113,10 +113,10 @@ namespace polyfem::solver
 				forms.push_back(inertia_form);
 			}
 
-			if (dumping_assembler != nullptr)
+			if (damping_assembler != nullptr)
 			{
 				damping_form = std::make_shared<ElasticForm>(
-					n_bases, bases, geom_bases, *dumping_assembler, ass_vals_cache, dt, is_volume);
+					n_bases, bases, geom_bases, *damping_assembler, ass_vals_cache, dt, is_volume);
 				forms.push_back(damping_form);
 			}
 		}

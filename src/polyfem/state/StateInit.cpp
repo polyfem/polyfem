@@ -401,17 +401,21 @@ namespace polyfem
 		logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
 	}
 
-	void State::set_materials()
+	void State::set_materials(std::vector<std::shared_ptr<assembler::Assembler>> &assemblers) const
 	{
+		const int size = assembler->is_tensor() ? mesh->dimension() : 1;
+		for (auto &a : assemblers)
+			a->set_size(size);
+
 		if (!utils::is_param_valid(args, "materials"))
 			return;
+
 		std::vector<int> body_ids(mesh->n_elements());
 		for (int i = 0; i < mesh->n_elements(); ++i)
 			body_ids[i] = mesh->get_body_id(i);
-		assembler->set_materials(body_ids, args["materials"]);
-		mass_matrix_assembler->set_materials(body_ids, args["materials"]);
-		// if (mixed_assembler != nullptr)
-		//	mixed_assembler->set_materials(body_ids, args["materials"]);
+
+		for (auto &a : assemblers)
+			a->set_materials(body_ids, args["materials"]);
 	}
 
 } // namespace polyfem

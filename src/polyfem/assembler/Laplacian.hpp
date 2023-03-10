@@ -11,6 +11,11 @@ namespace polyfem
 		class Laplacian : public LinearAssembler
 		{
 		public:
+			using LinearAssembler::assemble;
+
+			std::string name() const override { return "Laplacian"; }
+			std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
+
 			// computes local stiffness matrix (1x1) for bases i,j
 			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> assemble(const LinearAssemblerData &data) const override;
 

@@ -1,5 +1,10 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/assembler/Laplacian.hpp>
+#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/Stokes.hpp>
+#include <polyfem/assembler/NavierStokes.hpp>
+
 #include <polyfem/solver/NavierStokesSolver.hpp>
 #include <polyfem/solver/OperatorSplittingSolver.hpp>
 #include <polyfem/solver/TransientNavierStokesSolver.hpp>
@@ -21,17 +26,23 @@ namespace polyfem
 		solve_data.rhs_assembler->set_bc(
 			local_boundary, boundary_nodes, n_boundary_samples(), local_neumann_boundary, rhs);
 
+		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
+		std::shared_ptr<assembler::Assembler> velocity_stokes_assembler = std::make_shared<assembler::StokesVelocity>();
+		assemblers.push_back(velocity_stokes_assembler);
+		set_materials(assemblers);
 		Eigen::VectorXd x;
 		solver::NavierStokesSolver ns_solver(args["solver"]);
 		ns_solver.minimize(n_bases, n_pressure_bases,
 						   bases, pressure_bases,
 						   geom_bases(),
-						   assembler,
+						   *velocity_stokes_assembler,
+						   *dynamic_cast<assembler::NavierStokesVelocity *>(assembler.get()),
+						   *mixed_assembler,
+						   *pressure_assembler,
 						   ass_vals_cache,
 						   pressure_ass_vals_cache,
 						   boundary_nodes,
 						   use_avg_pressure,
-						   formulation(),
 						   mesh->dimension(),
 						   mesh->is_volume(),
 						   rhs, x);
@@ -81,17 +92,15 @@ namespace polyfem
 		// coefficient matrix of viscosity
 		assembler::Laplacian lapl_assembler;
 		lapl_assembler.assemble(mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, stiffness_viscosity);
-		mass_matrix_assembler->assemble_mass_matrix(mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, mass, true);
+		mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, mass, true);
 
 		// coefficient matrix of pressure projection
-		lapl_assembler.assemble_problem(mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache, stiffness);
+		lapl_assembler.assemble(mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache, stiffness);
 
 		// matrix used to calculate divergence of velocity
-		assembler.assemble_mixed_problem(
-			"Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases,
-			pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
-		assembler.assemble_mass_matrix(
-			"Stokes", mesh->is_volume(), n_bases, true, bases, gbases, ass_vals_cache, velocity_mass);
+		mixed_assembler->assemble(mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases,
+								  pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
+		mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, velocity_mass, true);
 		mixed_stiffness = mixed_stiffness.transpose();
 		logger().info("Matrices assembly ends!");
 
@@ -128,7 +137,7 @@ namespace polyfem
 			logger().info("Diffusion solved!");
 
 			/* external force */
-			ss.external_force(*mesh, assembler, gbases, bases, dt, sol, local_pts, problem, time);
+			ss.external_force(*mesh, *assembler, gbases, bases, dt, sol, local_pts, problem, time);
 
 			/* incompressibility */
 			logger().info("Pressure projection...");
@@ -157,8 +166,7 @@ namespace polyfem
 		Eigen::MatrixXd current_rhs = rhs;
 
 		StiffnessMatrix velocity_mass;
-		assembler.assemble_mass_matrix(
-			formulation(), mesh->is_volume(), n_bases, true, bases, gbases, mass_ass_vals_cache, velocity_mass);
+		mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, gbases, mass_ass_vals_cache, velocity_mass, true);
 
 		StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
 
@@ -169,14 +177,11 @@ namespace polyfem
 			time_integrator.set_parameters(args["time"]["integrator"]);
 		time_integrator.init(sol, Eigen::VectorXd::Zero(sol.size()), Eigen::VectorXd::Zero(sol.size()), dt);
 
-		assembler.assemble_problem(
-			formulation(), mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, velocity_stiffness);
-		assembler.assemble_mixed_problem(
-			formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases,
-			pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
-		assembler.assemble_pressure_problem(
-			formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache,
-			pressure_stiffness);
+		assembler->assemble(mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, velocity_stiffness);
+		mixed_assembler->assemble(mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases,
+								  pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
+		pressure_assembler->assemble(mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache,
+									 pressure_stiffness);
 
 		solver::TransientNavierStokesSolver ns_solver(args["solver"]);
 		const int n_larger = n_pressure_bases + (use_avg_pressure ? 1 : 0);
@@ -192,7 +197,7 @@ namespace polyfem
 
 			prev_sol = time_integrator.weighted_sum_x_prevs();
 			solve_data.rhs_assembler->compute_energy_grad(
-				local_boundary, boundary_nodes, assembler.density(), n_b_samples, local_neumann_boundary, rhs, time, current_rhs);
+				local_boundary, boundary_nodes, mass_matrix_assembler->density(), n_b_samples, local_neumann_boundary, rhs, time, current_rhs);
 			solve_data.rhs_assembler->set_bc(
 				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, Eigen::MatrixXd(), time);
 
@@ -207,10 +212,10 @@ namespace polyfem
 			ns_solver.minimize(
 				n_bases, n_pressure_bases,
 				bases, geom_bases(),
-				assembler, ass_vals_cache,
+				*dynamic_cast<assembler::NavierStokesVelocity *>(assembler.get()),
+				ass_vals_cache,
 				boundary_nodes,
 				use_avg_pressure,
-				formulation(),
 				mesh->dimension(),
 				mesh->is_volume(),
 				sqrt(time_integrator.acceleration_scaling()), prev_sol, velocity_stiffness, mixed_stiffness,

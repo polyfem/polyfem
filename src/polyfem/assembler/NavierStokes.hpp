@@ -6,8 +6,6 @@
 // Navier-Stokes local assembler
 namespace polyfem::assembler
 {
-	template <bool full_gradient>
-	// full graidnet used for Picard iteration
 	class NavierStokesVelocity : public NLAssembler
 	{
 	public:
@@ -40,8 +38,13 @@ namespace polyfem::assembler
 
 		bool is_fluid() const override { return true; }
 
+		void set_picard(const bool val) { full_gradient_ = !val; }
+
 	private:
 		double viscosity_ = 1;
+
+		// not full graidnet used for Picard iteration
+		bool full_gradient_ = true;
 
 		Eigen::MatrixXd compute_N(const NonLinearAssemblerData &data) const;
 		Eigen::MatrixXd compute_W(const NonLinearAssemblerData &data) const;

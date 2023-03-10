@@ -1,5 +1,8 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/ViscousDamping.hpp>
+
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
@@ -153,6 +156,11 @@ namespace polyfem
 		// --------------------------------------------------------------------
 		// Initialize forms
 
+		std::shared_ptr<assembler::ViscousDamping> damping_assembler = std::make_shared<assembler::ViscousDamping>();
+		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
+		assemblers.push_back(damping_assembler);
+		set_materials(assemblers);
+
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
 			// General
 			mesh->dimension(), t,
@@ -160,9 +168,9 @@ namespace polyfem
 			n_bases, bases, geom_bases(), *assembler, ass_vals_cache,
 			// Body form
 			n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
-			n_boundary_samples(), rhs, sol, mass_matrix_assembler.density(),
+			n_boundary_samples(), rhs, sol, mass_matrix_assembler->density(),
 			// Inertia form
-			args["solver"]["ignore_inertia"], mass, *dumping_assembler,
+			args["solver"]["ignore_inertia"], mass, damping_assembler->is_valid() ? damping_assembler : nullptr,
 			// Lagged regularization form
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],

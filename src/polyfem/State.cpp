@@ -1051,7 +1051,18 @@ namespace polyfem
 				else
 				{
 					assert(assembler->is_linear());
-					new_bases = basis::PolygonalBasis2d::build_bases(*dynamic_cast<LinearAssembler *>(assembler.get()), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["mass_quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases_, poly_edge_to_data, polys);
+					new_bases = basis::PolygonalBasis2d::build_bases(
+						*dynamic_cast<LinearAssembler *>(assembler.get()),
+						args["space"]["advanced"]["n_harmonic_samples"],
+						*dynamic_cast<Mesh2D *>(mesh.get()),
+						n_bases,
+						args["space"]["advanced"]["quadrature_order"],
+						args["space"]["advanced"]["mass_quadrature_order"],
+						args["space"]["advanced"]["integral_constraints"],
+						bases,
+						geom_bases_,
+						poly_edge_to_data,
+						polys);
 				}
 			}
 		}

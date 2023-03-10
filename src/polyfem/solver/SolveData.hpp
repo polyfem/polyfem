@@ -69,7 +69,7 @@ namespace polyfem::solver
 			// Inertia form
 			const bool ignore_inertia,
 			const StiffnessMatrix &mass,
-			const std::shared_ptr<assembler::ViscousDamping> dumping_assembler,
+			const std::shared_ptr<assembler::ViscousDamping> damping_assembler,
 
 			// Lagged regularization form
 			const double lagged_regularization_weight,

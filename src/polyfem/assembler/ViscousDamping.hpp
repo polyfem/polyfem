@@ -10,6 +10,9 @@ namespace polyfem
 		class ViscousDamping : public NLAssembler
 		{
 		public:
+			std::string name() const override { return "ViscousDamping"; }
+			std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
+
 			ViscousDamping() = default;
 
 			// energy, gradient, and hessian used in newton method

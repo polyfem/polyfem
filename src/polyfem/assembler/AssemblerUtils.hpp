@@ -26,7 +26,6 @@ namespace polyfem::assembler
 	class StokesVelocity;
 	class StokesMixed;
 	class StokesPressure;
-	template <bool full_gradient>
 	class NavierStokesVelocity;
 	class IncompressibleLinearElasticityDispacement;
 	class IncompressibleLinearElasticityMixed;
@@ -228,8 +227,11 @@ namespace polyfem::assembler
 		std::unique_ptr<StokesMixed> stokes_mixed_;
 		std::unique_ptr<StokesPressure> stokes_pressure_;
 
-		std::unique_ptr<NavierStokesVelocity<false>> navier_stokes_velocity_picard_;
-		std::unique_ptr<NavierStokesVelocity<true>> navier_stokes_velocity_;
+		// std::unique_ptr<NavierStokesVelocity<false>> navier_stokes_velocity_picard_;
+		// std::unique_ptr<NavierStokesVelocity<true>> navier_stokes_velocity_;
+
+		std::unique_ptr<NavierStokesVelocity> navier_stokes_velocity_picard_;
+		std::unique_ptr<NavierStokesVelocity> navier_stokes_velocity_;
 
 		std::unique_ptr<IncompressibleLinearElasticityDispacement> incompressible_lin_elast_displacement_;
 		std::unique_ptr<IncompressibleLinearElasticityMixed> incompressible_lin_elast_mixed_;

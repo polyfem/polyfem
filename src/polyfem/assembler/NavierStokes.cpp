@@ -2,8 +2,8 @@
 
 namespace polyfem::assembler
 {
-	template <bool full_gradient>
-	void NavierStokesVelocity<full_gradient>::add_multimaterial(const int index, const json &params)
+
+	void NavierStokesVelocity::add_multimaterial(const int index, const json &params)
 	{
 		assert(size() == 2 || size() == 3);
 
@@ -13,9 +13,8 @@ namespace polyfem::assembler
 		}
 	}
 
-	template <bool full_gradient>
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-	NavierStokesVelocity<full_gradient>::compute_rhs(const AutodiffHessianPt &pt) const
+	NavierStokesVelocity::compute_rhs(const AutodiffHessianPt &pt) const
 	{
 		assert(pt.size() == size());
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
@@ -32,20 +31,18 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	template <bool full_gradient>
 	Eigen::VectorXd
-	NavierStokesVelocity<full_gradient>::assemble_grad(const NonLinearAssemblerData &data) const
+	NavierStokesVelocity::assemble_grad(const NonLinearAssemblerData &data) const
 	{
 		assert(false);
 		return Eigen::VectorXd(data.vals.basis_values.size() * size());
 	}
 
-	template <bool full_gradient>
 	Eigen::MatrixXd
-	NavierStokesVelocity<full_gradient>::assemble_hessian(const NonLinearAssemblerData &data) const
+	NavierStokesVelocity::assemble_hessian(const NonLinearAssemblerData &data) const
 	{
 		Eigen::MatrixXd H;
-		if (full_gradient)
+		if (full_gradient_)
 			H = compute_N(data) + compute_W(data);
 		else
 			H = compute_N(data);
@@ -54,8 +51,8 @@ namespace polyfem::assembler
 	}
 
 	// Compute N = int v \cdot \nabla phi_i \cdot \phi_j
-	template <bool full_gradient>
-	Eigen::MatrixXd NavierStokesVelocity<full_gradient>::compute_N(const NonLinearAssemblerData &data) const
+
+	Eigen::MatrixXd NavierStokesVelocity::compute_N(const NonLinearAssemblerData &data) const
 	{
 		typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> GradMat;
 
@@ -132,8 +129,8 @@ namespace polyfem::assembler
 	}
 
 	// Compute N = int phi_j \cdot \nabla v \cdot \phi_j
-	template <bool full_gradient>
-	Eigen::MatrixXd NavierStokesVelocity<full_gradient>::compute_W(const NonLinearAssemblerData &data) const
+
+	Eigen::MatrixXd NavierStokesVelocity::compute_W(const NonLinearAssemblerData &data) const
 	{
 		typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> GradMat;
 
@@ -212,7 +209,4 @@ namespace polyfem::assembler
 
 		return W;
 	}
-
-	template class NavierStokesVelocity<true>;
-	template class NavierStokesVelocity<false>;
 } // namespace polyfem::assembler

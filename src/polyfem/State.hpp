@@ -52,7 +52,6 @@ namespace cppoptlib
 namespace polyfem::assembler
 {
 	class Mass;
-	class ViscousDamping;
 } // namespace polyfem::assembler
 
 namespace polyfem
@@ -138,8 +137,6 @@ namespace polyfem
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
-
-		std::shared_ptr<assembler::ViscousDamping> dumping_assembler = nullptr;
 
 		/// current problem, it contains rhs and bc
 		std::shared_ptr<assembler::Problem> problem;
@@ -245,7 +242,7 @@ namespace polyfem
 
 	public:
 		/// set the multimaterial
-		void set_materials();
+		void set_materials(std::vector<std::shared_ptr<assembler::Assembler>> &assemblers) const;
 
 		//---------------------------------------------------
 		//-----------------solver----------------------------

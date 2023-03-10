@@ -60,11 +60,6 @@ namespace polyfem
 
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
-		assembler->set_size(mesh->dimension());
-		mass_matrix_assembler->set_size(mesh->dimension());
-		if (mixed_assembler != nullptr)
-			mixed_assembler->set_size(mesh->dimension());
-
 		// TODO: renable this
 		// int n_refs = args["n_refs"];
 		// if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
@@ -81,7 +76,18 @@ namespace polyfem
 			mesh->compute_boundary_ids(boundary_marker);
 		// TODO: renable this
 		// BoxSetter::set_sidesets(args, *mesh);
-		set_materials();
+
+		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
+		assemblers.push_back(assembler);
+		assemblers.push_back(mass_matrix_assembler);
+		// TODO? TESEO
+		//  if (mixed_assembler != nullptr)
+		//  	assemblers.push_back(mixed_assembler);
+		if (mixed_assembler != nullptr)
+			mixed_assembler->set_size(mesh->dimension());
+		if (pressure_assembler != nullptr)
+			assemblers.push_back(pressure_assembler);
+		set_materials(assemblers);
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -138,12 +144,17 @@ namespace polyfem
 
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
-		assembler->set_size(mesh->dimension());
-		mass_matrix_assembler->set_size(mesh->dimension());
+		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
+		assemblers.push_back(assembler);
+		assemblers.push_back(mass_matrix_assembler);
+		// TODO? TESEO
+		//  if (mixed_assembler != nullptr)
+		//  	assemblers.push_back(mixed_assembler);
 		if (mixed_assembler != nullptr)
 			mixed_assembler->set_size(mesh->dimension());
-
-		set_materials();
+		if (pressure_assembler != nullptr)
+			assemblers.push_back(pressure_assembler);
+		set_materials(assemblers);
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
