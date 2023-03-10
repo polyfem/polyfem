@@ -596,14 +596,8 @@ namespace polyfem
 			{
 				assert(b_discr_orders[i]["id"].is_array() || b_discr_orders[i]["id"].is_number_integer());
 
-				std::vector<int> ids;
-				if (b_discr_orders[i]["id"].is_array())
-					ids = b_discr_orders[i]["id"].get<decltype(ids)>();
-				else
-					ids.push_back(b_discr_orders[i]["id"]);
-
 				const int order = b_discr_orders[i]["order"];
-				for (const int id : ids)
+				for (const int id : json_as_array<int>(b_discr_orders[i]["id"]))
 				{
 					b_orders[id] = order;
 					logger().trace("bid {}, discr {}", id, order);
