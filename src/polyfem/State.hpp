@@ -147,7 +147,7 @@ namespace polyfem
 		/// polyhedra, used since poly have no geom mapping
 		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> polys_3d;
 
-		/// vector of discretization oders, used when not all elements have the same degree, one per element
+		/// vector of discretization orders, used when not all elements have the same degree, one per element
 		Eigen::VectorXi disc_orders;
 
 		/// Mapping from input nodes to FE nodes
