@@ -10,6 +10,7 @@
 #include <polyfem/io/MshReader.hpp>
 
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <geogram/mesh/mesh_io.h>
 #include <geogram/mesh/mesh_geometry.h>
@@ -597,8 +598,7 @@ namespace polyfem::mesh
 		else
 		{
 			assert(in_ordered_edges_.cols() == mesh.in_ordered_edges_.cols());
-			in_ordered_edges_.conservativeResize(in_ordered_edges_.rows() + mesh.in_ordered_edges_.rows(), in_ordered_edges_.cols());
-			in_ordered_edges_.bottomRows(mesh.in_ordered_edges_.rows()) = mesh.in_ordered_edges_.array() + n_vertices;
+			utils::append_rows(in_ordered_edges_, mesh.in_ordered_edges_.array() + n_vertices);
 		}
 
 		if (in_ordered_faces_.size() == 0 || mesh.in_ordered_faces_.size() == 0)
@@ -606,8 +606,7 @@ namespace polyfem::mesh
 		else
 		{
 			assert(in_ordered_faces_.cols() == mesh.in_ordered_faces_.cols());
-			in_ordered_faces_.conservativeResize(in_ordered_faces_.rows() + mesh.in_ordered_faces_.rows(), in_ordered_faces_.cols());
-			in_ordered_faces_.bottomRows(mesh.in_ordered_faces_.rows()) = mesh.in_ordered_faces_.array() + n_vertices;
+			utils::append_rows(in_ordered_faces_, mesh.in_ordered_faces_.array() + n_vertices);
 		}
 	}
 
