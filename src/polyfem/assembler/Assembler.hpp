@@ -202,7 +202,7 @@ namespace polyfem::assembler
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
-			utils::SpareMatrixCache &mat_cache,
+			utils::SparseMatrixCache &mat_cache,
 			StiffnessMatrix &grad) const override;
 
 		virtual bool is_linear() const override { return false; }

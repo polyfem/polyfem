@@ -170,7 +170,7 @@ namespace polyfem
 
 			StiffnessMatrix nl_matrix;
 			StiffnessMatrix total_matrix;
-			SpareMatrixCache mat_cache;
+			SparseMatrixCache mat_cache;
 
 			time.start();
 			velocity_assembler.set_picard(true);

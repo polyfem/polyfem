@@ -643,7 +643,7 @@ namespace polyfem::io
 		assert(tet_index == tets.rows());
 	}
 
-	void OutGeometryData::build_high_oder_vis_mesh(
+	void OutGeometryData::build_high_order_vis_mesh(
 		const mesh::Mesh &mesh,
 		const Eigen::VectorXi &disc_orders,
 		const std::vector<basis::ElementBases> &bases,
@@ -748,13 +748,12 @@ namespace polyfem::io
 					const int n_nodes = elements[i].size();
 					if (disc_orders(i) >= 3)
 					{
-
 						std::swap(elements[i][16], elements[i][17]);
 						std::swap(elements[i][17], elements[i][18]);
 						std::swap(elements[i][18], elements[i][19]);
 					}
 					if (disc_orders(i) > 4)
-						error_msg = ">P4 implementd!!!"; // TODO: higher than 3
+						error_msg = "Saving high-order meshes not implemented for P5+ elements!";
 				}
 				else
 				{
@@ -764,11 +763,11 @@ namespace polyfem::io
 						std::swap(elements[i][n_nodes - 1], elements[i][n_nodes - 2]);
 					}
 					if (disc_orders(i) > 4)
-						error_msg = ">P4 implementd!!!"; // TODO: higher than 3
+						error_msg = "Saving high-order meshes not implemented for P5+ elements!";
 				}
 			}
 			else if (disc_orders(i) > 1)
-				error_msg = ">Q1 not implementd!!!";
+				error_msg = "Saving high-order meshes not implemented for Q2+ elements!";
 		}
 
 		if (!error_msg.empty())
@@ -1078,8 +1077,8 @@ namespace polyfem::io
 						   state.polys, state.polys_3d, opts.boundary_only,
 						   points, tets, el_id, discr);
 		else
-			build_high_oder_vis_mesh(mesh, disc_orders, bases,
-									 points, elements, el_id, discr);
+			build_high_order_vis_mesh(mesh, disc_orders, bases,
+									  points, elements, el_id, discr);
 
 		Eigen::MatrixXd fun, exact_fun, err, node_fun;
 
