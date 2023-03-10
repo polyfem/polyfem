@@ -94,7 +94,7 @@ TEST_CASE("hessian_hooke", "[assembler]")
 
 	state.assemble_stiffness_mat();
 
-	SpareMatrixCache mat_cache;
+	SparseMatrixCache mat_cache;
 	StiffnessMatrix hessian;
 	Eigen::MatrixXd disp(state.n_bases * 2, 1);
 	disp.setZero();
