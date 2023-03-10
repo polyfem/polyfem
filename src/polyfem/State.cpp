@@ -932,6 +932,9 @@ namespace polyfem
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 
+		if (poly_edge_to_data.empty() || polys.empty())
+			return;
+
 		igl::Timer timer;
 		timer.start();
 		logger().info("Computing polygonal basis...");
@@ -1214,7 +1217,7 @@ namespace polyfem
 		}
 		else
 		{
-			if (!is_contact_enabled()) // collisions are non-linear
+			if (!is_contact_enabled() && assembler->is_linear()) // collisions are non-linear
 				assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, stiffness);
 			if (problem->is_time_dependent())
 			{

@@ -78,6 +78,12 @@ namespace
 					"value": 0
 				}],
 				"rhs": 10
+			},
+
+			"output": {
+				"log": {
+					"level": "warning"
+				}
 			}
 
 		})"_json;
@@ -94,7 +100,6 @@ namespace
 
 			auto state = std::make_shared<State>();
 			state->set_max_threads(1);
-			state->init_logger("", spdlog::level::warn, false);
 			state->init(in_args, true);
 
 			state->load_mesh();
