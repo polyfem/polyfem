@@ -169,6 +169,7 @@ namespace polyfem::solver
 				friction_form = std::make_shared<FrictionForm>(
 					collision_mesh, epsv, friction_coefficient, dhat, broad_phase,
 					is_time_dependent ? dt : 1.0, *contact_form, friction_iterations);
+				friction_form->init_lagging(sol);
 				forms.push_back(friction_form);
 			}
 		}

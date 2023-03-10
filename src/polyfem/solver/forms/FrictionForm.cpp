@@ -41,6 +41,7 @@ namespace polyfem::solver
 			collision_mesh_, displaced_surface_prev_, compute_displaced_surface(x),
 			friction_constraint_set_, epsv_ * dt_);
 	}
+
 	void FrictionForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		assert(displaced_surface_prev_.rows() == collision_mesh_.num_vertices());
