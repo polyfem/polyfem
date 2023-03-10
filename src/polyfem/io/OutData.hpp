@@ -335,6 +335,8 @@ namespace polyfem::io
 		double computing_poly_basis_time;
 		/// time to assembly
 		double assembling_stiffness_mat_time;
+		/// time to assembly mass
+		double assembling_mass_mat_time;
 		/// time to computing the rhs
 		double assigning_rhs_time;
 		/// time to solve
@@ -344,7 +346,7 @@ namespace polyfem::io
 		/// @return total time
 		double total_time()
 		{
-			return building_basis_time + assembling_stiffness_mat_time + solving_time;
+			return building_basis_time + assembling_mass_mat_time + assembling_stiffness_mat_time + solving_time;
 		}
 	};
 

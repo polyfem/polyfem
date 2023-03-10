@@ -170,9 +170,6 @@ namespace polyfem
 		/// used to store assembly values for pressure for small problems
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
 
-		/// Stiffness matrix, it is not compute for nonlinear problems
-		StiffnessMatrix stiffness;
-
 		/// Mass matrix, it is computed only for time dependent problems
 		StiffnessMatrix mass;
 		/// average system mass, used for contact with IPC
@@ -204,8 +201,8 @@ namespace polyfem
 		void build_basis();
 		/// compute rhs, step 3 of solve
 		void assemble_rhs();
-		/// assemble matrices, step 4 of solve
-		void assemble_stiffness_mat();
+		/// assemble mass, step 4 of solve
+		void assemble_mass_mat();
 
 		/// build a RhsAssembler for the problem
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler(
@@ -268,7 +265,7 @@ namespace polyfem
 			build_basis();
 
 			assemble_rhs();
-			assemble_stiffness_mat();
+			assemble_mass_mat();
 
 			solve_export_to_file = false;
 			solution_frames.clear();
@@ -355,6 +352,11 @@ namespace polyfem
 			Eigen::VectorXd &b,
 			const bool compute_spectrum,
 			Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+
+	public:
+		/// @brief utility that builds the stiffness matrix and collects stats, used only for linear problems
+		/// @param[out] stiffness matrix
+		void build_stiffness_mat(StiffnessMatrix &stiffness);
 
 		//---------------------------------------------------
 		//-----------------nodes flags-----------------------

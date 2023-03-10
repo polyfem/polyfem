@@ -88,7 +88,9 @@ namespace polyfem
 		const double viscosity_ = -1; // build_json_params()["viscosity"];
 
 		logger().info("Matrices assembly...");
-		StiffnessMatrix stiffness_viscosity, mixed_stiffness, velocity_mass;
+		StiffnessMatrix stiffness_viscosity, mixed_stiffness, velocity_mass, stiffness;
+
+		build_stiffness_mat(stiffness);
 		// coefficient matrix of viscosity
 		assembler::Laplacian lapl_assembler;
 		lapl_assembler.assemble(mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, stiffness_viscosity);

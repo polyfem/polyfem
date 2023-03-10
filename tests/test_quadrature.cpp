@@ -106,7 +106,7 @@ namespace
 
 			state->build_basis();
 			state->assemble_rhs();
-			state->assemble_stiffness_mat();
+			state->assemble_mass_mat();
 
 			return state;
 		}
@@ -122,8 +122,11 @@ namespace
 
 			auto state = get_state(mesh, n_refs, basis_order, -1, -1, spline, serendipity);
 			auto expected = get_state(mesh, n_refs, basis_order, expected_quad, expected_quad, spline, serendipity);
+			StiffnessMatrix exp_st, st;
+			state->build_stiffness_mat(st);
+			expected->build_stiffness_mat(exp_st);
 
-			StiffnessMatrix tmp = state->stiffness - expected->stiffness;
+			StiffnessMatrix tmp = st - exp_st;
 			const auto val = Approx(0).margin(margin);
 
 			REQUIRE(tmp.rows() > 8);

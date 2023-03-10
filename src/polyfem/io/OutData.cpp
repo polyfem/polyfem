@@ -829,7 +829,6 @@ namespace polyfem::io
 			logger().error("Build the bases first!");
 			return;
 		}
-		// if (stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
 		if (rhs.size() <= 0)
 		{
 			logger().error("Assemble the rhs first!");
@@ -987,7 +986,6 @@ namespace polyfem::io
 			logger().error("Build the bases first!");
 			return;
 		}
-		// if (stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
 		if (rhs.size() <= 0)
 		{
 			logger().error("Assemble the rhs first!");
@@ -2303,22 +2301,11 @@ namespace polyfem::io
 		const double tend,
 		const Eigen::MatrixXd &sol)
 	{
-		// if (!mesh)
-		// {
-		// 	logger().error("Load the mesh first!");
-		// 	return;
-		// }
 		if (n_bases <= 0)
 		{
 			logger().error("Build the bases first!");
 			return;
 		}
-		// if (stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
-		// if (rhs.size() <= 0)
-		// {
-		// 	logger().error("Assemble the rhs first!");
-		// 	return;
-		// }
 		if (sol.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -2601,6 +2588,7 @@ namespace polyfem::io
 		j["time_loading_mesh"] = runtime.loading_mesh_time;
 		j["time_computing_poly_basis"] = runtime.computing_poly_basis_time;
 		j["time_assembling_stiffness_mat"] = runtime.assembling_stiffness_mat_time;
+		j["time_assembling_mass_mat"] = runtime.assembling_mass_mat_time;
 		j["time_assigning_rhs"] = runtime.assigning_rhs_time;
 		j["time_solving"] = runtime.solving_time;
 		// j["time_computing_errors"] = runtime.computing_errors_time;

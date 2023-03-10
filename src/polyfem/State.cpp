@@ -40,8 +40,6 @@
 
 #include <igl/Timer.h>
 
-#include <unsupported/Eigen/SparseExtra>
-
 #include <iostream>
 #include <algorithm>
 #include <memory>
@@ -540,7 +538,6 @@ namespace polyfem
 		local_neumann_boundary.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
-		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 
 		if (assembler::MultiModel *mm = dynamic_cast<assembler::MultiModel *>(assembler.get()))
@@ -929,11 +926,13 @@ namespace polyfem
 			return;
 		}
 
-		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 
 		if (poly_edge_to_data.empty() || polys.empty())
+		{
+			timings.computing_poly_basis_time = 0;
 			return;
+		}
 
 		igl::Timer timer;
 		timer.start();
@@ -1150,7 +1149,7 @@ namespace polyfem
 		};
 	}
 
-	void State::assemble_stiffness_mat()
+	void State::assemble_mass_mat()
 	{
 		if (!mesh)
 		{
@@ -1164,95 +1163,77 @@ namespace polyfem
 		}
 		if (assembler->name() == "OperatorSplitting")
 		{
-			stiffness.resize(1, 1);
 			timings.assembling_stiffness_mat_time = 0;
 			return;
 		}
 
-		stiffness.resize(0, 0);
+		if (!problem->is_time_dependent())
+		{
+			timings.assembling_mass_mat_time = 0;
+			return;
+		}
+
 		mass.resize(0, 0);
 		avg_mass = 1;
 
 		igl::Timer timer;
 		timer.start();
-		logger().info("Assembling stiffness mat...");
+		logger().info("Assembling mass mat...");
 
 		// if(problem->is_mixed())
 		if (mixed_assembler != nullptr)
 		{
-			if (assembler->is_linear())
+
+			StiffnessMatrix velocity_mass;
+			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, velocity_mass, true);
+
+			std::vector<Eigen::Triplet<double>> mass_blocks;
+			mass_blocks.reserve(velocity_mass.nonZeros());
+
+			for (int k = 0; k < velocity_mass.outerSize(); ++k)
 			{
-				StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-				assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, velocity_stiffness);
-				mixed_assembler->assemble(mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, geom_bases(), pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
-				pressure_assembler->assemble(mesh->is_volume(), n_pressure_bases, pressure_bases, geom_bases(), pressure_ass_vals_cache, pressure_stiffness);
-
-				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
-				AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure ? assembler->is_fluid() : false,
-													 velocity_stiffness, mixed_stiffness, pressure_stiffness,
-													 stiffness);
-
-				if (problem->is_time_dependent())
+				for (StiffnessMatrix::InnerIterator it(velocity_mass, k); it; ++it)
 				{
-					StiffnessMatrix velocity_mass;
-					mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, velocity_mass, true);
-
-					std::vector<Eigen::Triplet<double>> mass_blocks;
-					mass_blocks.reserve(velocity_mass.nonZeros());
-
-					for (int k = 0; k < velocity_mass.outerSize(); ++k)
-					{
-						for (StiffnessMatrix::InnerIterator it(velocity_mass, k); it; ++it)
-						{
-							mass_blocks.emplace_back(it.row(), it.col(), it.value());
-						}
-					}
-
-					mass.resize(stiffness.rows(), stiffness.cols());
-					mass.setFromTriplets(mass_blocks.begin(), mass_blocks.end());
-					mass.makeCompressed();
+					mass_blocks.emplace_back(it.row(), it.col(), it.value());
 				}
 			}
+
+			mass.resize(n_bases * assembler->size(), n_bases * assembler->size());
+			mass.setFromTriplets(mass_blocks.begin(), mass_blocks.end());
+			mass.makeCompressed();
 		}
 		else
 		{
-			if (!is_contact_enabled() && assembler->is_linear()) // collisions are non-linear
-				assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, stiffness);
-			if (problem->is_time_dependent())
+			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, mass, true);
+		}
+
+		assert(mass.size() > 0);
+
+		for (int k = 0; k < mass.outerSize(); ++k)
+		{
+
+			for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
 			{
-				mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, mass, true);
+				assert(it.col() == k);
+				avg_mass += it.value();
 			}
 		}
 
-		if (mass.size() > 0)
+		avg_mass /= mass.rows();
+		logger().info("average mass {}", avg_mass);
+
+		if (args["solver"]["advanced"]["lump_mass_matrix"])
 		{
-			for (int k = 0; k < mass.outerSize(); ++k)
-			{
-
-				for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
-				{
-					assert(it.col() == k);
-					avg_mass += it.value();
-				}
-			}
-
-			avg_mass /= mass.rows();
-			logger().info("average mass {}", avg_mass);
-
-			if (args["solver"]["advanced"]["lump_mass_matrix"])
-			{
-				mass = lump_matrix(mass);
-			}
+			mass = lump_matrix(mass);
 		}
 
 		timer.stop();
-		timings.assembling_stiffness_mat_time = timer.getElapsedTime();
-		logger().info(" took {}s", timings.assembling_stiffness_mat_time);
+		timings.assembling_mass_mat_time = timer.getElapsedTime();
+		logger().info(" took {}s", timings.assembling_mass_mat_time);
 
-		stats.nn_zero = stiffness.nonZeros();
-		stats.num_dofs = stiffness.rows();
-		stats.mat_size = (long long)stiffness.rows() * (long long)stiffness.cols();
+		stats.nn_zero = mass.nonZeros();
+		stats.num_dofs = mass.rows();
+		stats.mat_size = (long long)mass.rows() * (long long)mass.cols();
 		logger().info("sparsity: {}/{}", stats.nn_zero, stats.mat_size);
 	}
 
@@ -1308,7 +1289,6 @@ namespace polyfem
 		}
 		problem->set_parameters(p_params);
 
-		// stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 
 		timer.start();
@@ -1365,11 +1345,6 @@ namespace polyfem
 			return;
 		}
 
-		if (assembler->is_linear() && !is_contact_enabled() && stiffness.rows() <= 0)
-		{
-			logger().error("Assemble the stiffness matrix first!");
-			return;
-		}
 		if (rhs.size() <= 0)
 		{
 			logger().error("Assemble the rhs first!");
@@ -1383,12 +1358,6 @@ namespace polyfem
 		igl::Timer timer;
 		timer.start();
 		logger().info("Solving {}", assembler->name());
-
-		const std::string full_mat_path = args["output"]["data"]["full_mat"];
-		if (!full_mat_path.empty())
-		{
-			Eigen::saveMarket(stiffness, full_mat_path);
-		}
 
 		init_solve(sol, pressure);
 

@@ -1,17 +1,64 @@
 #include <polyfem/State.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
 
 #include <polysolve/FEMSolver.hpp>
 
+#include <igl/Timer.h>
+
+#include <unsupported/Eigen/SparseExtra>
+
 namespace polyfem
 {
 	using namespace mesh;
 	using namespace time_integrator;
 	using namespace utils;
+
+	void State::build_stiffness_mat(StiffnessMatrix &stiffness)
+	{
+		igl::Timer timer;
+		timer.start();
+		logger().info("Assembling stiffness mat...");
+		assert(assembler->is_linear());
+
+		if (mixed_assembler != nullptr)
+		{
+
+			StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
+			assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, velocity_stiffness);
+			mixed_assembler->assemble(mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, geom_bases(), pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
+			pressure_assembler->assemble(mesh->is_volume(), n_pressure_bases, pressure_bases, geom_bases(), pressure_ass_vals_cache, pressure_stiffness);
+
+			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+
+			assembler::AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure ? assembler->is_fluid() : false,
+															velocity_stiffness, mixed_stiffness, pressure_stiffness,
+															stiffness);
+		}
+		else
+		{
+			assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, stiffness);
+		}
+
+		timer.stop();
+		timings.assembling_stiffness_mat_time = timer.getElapsedTime();
+		logger().info(" took {}s", timings.assembling_stiffness_mat_time);
+
+		stats.nn_zero = stiffness.nonZeros();
+		stats.num_dofs = stiffness.rows();
+		stats.mat_size = (long long)stiffness.rows() * (long long)stiffness.cols();
+		logger().info("sparsity: {}/{}", stats.nn_zero, stats.mat_size);
+
+		const std::string full_mat_path = args["output"]["data"]["full_mat"];
+		if (!full_mat_path.empty())
+		{
+			Eigen::saveMarket(stiffness, full_mat_path);
+		}
+	}
 
 	void State::solve_linear(
 		const std::unique_ptr<polysolve::LinearSolver> &solver,
@@ -62,7 +109,9 @@ namespace polyfem
 			local_boundary, boundary_nodes, n_boundary_samples(),
 			(assembler->name() != "Bilaplacian") ? local_neumann_boundary : std::vector<LocalBoundary>(), rhs);
 
-		StiffnessMatrix A = stiffness;
+		StiffnessMatrix A;
+		build_stiffness_mat(A);
+
 		Eigen::VectorXd b = rhs;
 
 		// --------------------------------------------------------------------
@@ -109,6 +158,9 @@ namespace polyfem
 		const int n_b_samples = n_boundary_samples();
 
 		Eigen::MatrixXd current_rhs = rhs;
+
+		StiffnessMatrix stiffness;
+		build_stiffness_mat(stiffness);
 
 		// --------------------------------------------------------------------
 

@@ -80,7 +80,7 @@ namespace
 
 		state->build_basis();
 		state->assemble_rhs();
-		state->assemble_stiffness_mat();
+		state->assemble_mass_mat();
 
 		return state;
 	}

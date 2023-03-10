@@ -31,7 +31,7 @@ namespace polyfem
 		poly_edge_to_data.clear();
 		obstacle.clear();
 
-		stiffness.resize(0, 0);
+		mass.resize(0, 0);
 		rhs.resize(0, 0);
 
 		n_bases = 0;
