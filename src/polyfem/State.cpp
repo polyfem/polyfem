@@ -968,6 +968,7 @@ namespace polyfem
 				{
 					new_bases = basis::MVPolygonalBasis2d::build_bases(
 						formulation(),
+						assembler->is_tensor() ? 2 : 1,
 						*dynamic_cast<Mesh2D *>(mesh.get()),
 						n_bases,
 						args["space"]["advanced"]["quadrature_order"],
@@ -978,6 +979,7 @@ namespace polyfem
 				{
 					new_bases = basis::WSPolygonalBasis2d::build_bases(
 						formulation(),
+						assembler->is_tensor() ? 2 : 1,
 						*dynamic_cast<Mesh2D *>(mesh.get()),
 						n_bases,
 						args["space"]["advanced"]["quadrature_order"],
@@ -1034,6 +1036,7 @@ namespace polyfem
 				{
 					new_bases = basis::MVPolygonalBasis2d::build_bases(
 						formulation(),
+						assembler->is_tensor() ? 2 : 1,
 						*dynamic_cast<Mesh2D *>(mesh.get()),
 						n_bases, args["space"]["advanced"]["quadrature_order"],
 						args["space"]["advanced"]["mass_quadrature_order"],
@@ -1043,6 +1046,7 @@ namespace polyfem
 				{
 					new_bases = basis::WSPolygonalBasis2d::build_bases(
 						formulation(),
+						assembler->is_tensor() ? 2 : 1,
 						*dynamic_cast<Mesh2D *>(mesh.get()),
 						n_bases, args["space"]["advanced"]["quadrature_order"],
 						args["space"]["advanced"]["mass_quadrature_order"],

@@ -31,6 +31,8 @@ namespace polyfem::assembler
 	class StokesMixed : public MixedAssembler
 	{
 	public:
+		std::string name() const override { return "StokesMixed"; }
+
 		// res is R^{dim}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 		assemble(const MixedAssemblerData &data) const override;

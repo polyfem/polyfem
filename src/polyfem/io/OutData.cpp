@@ -1258,7 +1258,7 @@ namespace polyfem::io
 
 		if (fun.cols() != 1)
 		{
-			std::vector<assembler::AssemblerUtils::NamedMatrix> vals, tvals;
+			std::vector<assembler::Assembler::NamedMatrix> vals, tvals;
 			Evaluator::compute_scalar_value(
 				mesh, problem.is_scalar(), bases, gbases,
 				state.disc_orders, state.polys, state.polys_3d,
@@ -1637,7 +1637,7 @@ namespace polyfem::io
 			else
 			{
 				assert(lgrad.size() == actual_dim * actual_dim);
-				std::vector<assembler::AssemblerUtils::NamedMatrix> tensor_flat;
+				std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
 				const basis::ElementBases &gbs = gbases[el_index];
 				const basis::ElementBases &bs = bases[el_index];
 				assembler.compute_tensor_value(el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol, tensor_flat);
@@ -1981,7 +1981,7 @@ namespace polyfem::io
 
 		if (fun.cols() != 1)
 		{
-			std::vector<assembler::AssemblerUtils::NamedMatrix> scalar_val;
+			std::vector<assembler::Assembler::NamedMatrix> scalar_val;
 			Evaluator::compute_scalar_value(
 				mesh, problem.is_scalar(), state.bases, gbases,
 				state.disc_orders, state.polys, state.polys_3d,

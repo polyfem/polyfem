@@ -26,6 +26,8 @@ namespace polyfem::assembler
 	class BilaplacianMixed : public MixedAssembler
 	{
 	public:
+		std::string name() const override { return "BilaplacianMixed"; }
+
 		using MixedAssembler::assemble;
 
 		// res is R

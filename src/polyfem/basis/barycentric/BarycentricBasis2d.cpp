@@ -115,6 +115,7 @@ namespace polyfem
 
 		int BarycentricBasis2d::build_bases(
 			const std::string &assembler_name,
+			const int dim,
 			const Mesh2D &mesh,
 			const int n_bases,
 			const int quadrature_order,
@@ -126,8 +127,6 @@ namespace polyfem
 			std::map<int, Eigen::MatrixXd> &mapped_boundary)
 		{
 			assert(!mesh.is_volume());
-
-			const int dim = AssemblerUtils::is_tensor(assembler_name) ? 2 : 1;
 
 			Eigen::MatrixXd polygon;
 

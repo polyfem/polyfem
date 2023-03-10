@@ -34,6 +34,8 @@ namespace polyfem::assembler
 	class IncompressibleLinearElasticityMixed : public MixedAssembler
 	{
 	public:
+		std::string name() const override { return "IncompressibleLinearElasticityMixed"; }
+
 		// res is R^{dim}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 		assemble(const MixedAssemblerData &data) const override;
