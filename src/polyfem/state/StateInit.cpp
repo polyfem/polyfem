@@ -413,7 +413,7 @@ namespace polyfem
 
 	void State::set_materials(std::vector<std::shared_ptr<assembler::Assembler>> &assemblers) const
 	{
-		const int size = assembler->is_tensor() ? mesh->dimension() : 1;
+		const int size = (assembler->is_tensor() || assembler->is_fluid()) ? mesh->dimension() : 1;
 		for (auto &a : assemblers)
 			a->set_size(size);
 

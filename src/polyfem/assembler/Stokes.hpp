@@ -56,5 +56,7 @@ namespace polyfem::assembler
 		}
 
 		bool is_fluid() const override { return true; }
+
+		void set_size(const int) override { size_ = 1; }
 	};
 } // namespace polyfem::assembler
