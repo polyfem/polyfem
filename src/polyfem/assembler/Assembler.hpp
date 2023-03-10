@@ -217,7 +217,7 @@ namespace polyfem::assembler
 	class ElasticityAssembler : virtual public Assembler
 	{
 	public:
-		ElasticityAssembler();
+		ElasticityAssembler() {}
 		virtual ~ElasticityAssembler() = default;
 
 		// plotting (eg von mises), assembler is the name of the formulation
