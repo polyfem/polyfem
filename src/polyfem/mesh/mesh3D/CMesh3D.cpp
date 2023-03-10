@@ -1627,6 +1627,9 @@ namespace polyfem
 
 			const CMesh3D &mesh3d = dynamic_cast<const CMesh3D &>(mesh);
 			mesh_.append(mesh3d.mesh_);
+
+			Navigation3D::prepare_mesh(mesh_);
+			compute_elements_tag();
 		}
 
 	} // namespace mesh
