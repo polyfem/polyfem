@@ -356,7 +356,7 @@ namespace polyfem
 					if (current == "LinearElasticity"
 						|| current == "NeoHookean"
 						|| current == "SaintVenant"
-						// || current == "HookeLinearElasticity"
+						|| current == "HookeLinearElasticity"
 						|| current == "MooneyRivlin"
 						|| current == "UnconstrainedOgden"
 						|| current == "IncompressibleOgden"
@@ -365,7 +365,7 @@ namespace polyfem
 						if (tmp == "LinearElasticity"
 							|| tmp == "NeoHookean"
 							|| tmp == "SaintVenant"
-							// || tmp == "HookeLinearElasticity"
+							|| tmp == "HookeLinearElasticity"
 							|| tmp == "MooneyRivlin"
 							|| tmp == "UnconstrainedOgden"
 							|| tmp == "IncompressibleOgden")

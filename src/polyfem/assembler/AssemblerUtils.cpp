@@ -296,6 +296,8 @@ namespace polyfem
 				return incompressible_ogden_elasticity_->assemble_energy(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
 			else if (assembler == "LinearElasticity")
 				return linear_elasticity_->assemble_energy(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+			else if (assembler == "HookeLinearElasticity")
+				return hooke_linear_elasticity_->assemble_energy(is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
 			else
 				return 0;
 		}
@@ -325,6 +327,8 @@ namespace polyfem
 				navier_stokes_velocity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
 			else if (assembler == "LinearElasticity")
 				linear_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
+			else if (assembler == "HookeLinearElasticity")
+				hooke_linear_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
 			else if (assembler == "UnconstrainedOgden")
 				unconstrained_ogden_elasticity_->assemble_grad(is_volume, n_basis, bases, gbases, cache, dt, displacement, displacement_prev, grad);
 			else if (assembler == "IncompressibleOgden")
@@ -362,6 +366,8 @@ namespace polyfem
 				navier_stokes_velocity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
 			else if (assembler == "LinearElasticity")
 				linear_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
+			else if (assembler == "HookeLinearElasticity")
+				hooke_linear_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
 
 			else if (assembler == "UnconstrainedOgden")
 				unconstrained_ogden_elasticity_->assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, dt, displacement, displacement_prev, mat_cache, hessian);
