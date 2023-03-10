@@ -305,7 +305,7 @@ namespace polyfem::io
 		/// @param[out] elements mesh high-order cells
 		/// @param[out] el_id mapping from points to elements id
 		/// @param[out] discr mapping from points to discretization order
-		void build_high_oder_vis_mesh(
+		void build_high_order_vis_mesh(
 			const mesh::Mesh &mesh,
 			const Eigen::VectorXi &disc_orders,
 			const std::vector<basis::ElementBases> &bases,

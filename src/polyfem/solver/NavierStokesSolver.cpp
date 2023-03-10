@@ -169,7 +169,7 @@ namespace polyfem
 
 			StiffnessMatrix nl_matrix;
 			StiffnessMatrix total_matrix;
-			SpareMatrixCache mat_cache;
+			SparseMatrixCache mat_cache;
 
 			time.start();
 			assembler.assemble_energy_hessian(formulation + "Picard", is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);

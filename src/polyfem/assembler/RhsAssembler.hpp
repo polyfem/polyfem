@@ -30,11 +30,11 @@ namespace polyfem
 			// computes the rhs of a problem by \int \phi rho rhs
 			void assemble(const Density &density, Eigen::MatrixXd &rhs, const double t = 1) const;
 
-			// computes the inital soltion for time dependent, calls time_bc
+			// computes the initial soltion for time dependent, calls time_bc
 			void initial_solution(Eigen::MatrixXd &sol) const;
-			// computes the inital velocity for time dependent, calls time_bc
+			// computes the initial velocity for time dependent, calls time_bc
 			void initial_velocity(Eigen::MatrixXd &sol) const;
-			// computes the inital acceleration for time dependent, calls time_bc
+			// computes the initial acceleration for time dependent, calls time_bc
 			void initial_acceleration(Eigen::MatrixXd &sol) const;
 
 			// sets boundary conditions to rhs, the boundary conditions are projected (Dirichlet) integrated (Neumann) at resolution
