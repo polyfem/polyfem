@@ -43,6 +43,9 @@ namespace polyfem::assembler
 	class StokesPressure : public LinearAssembler
 	{
 	public:
+		std::string name() const override { return "StokesPressure"; }
+		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
+
 		// res is R^{dim²}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override

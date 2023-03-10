@@ -13,6 +13,9 @@ namespace polyfem::assembler
 		using NLAssembler::assemble_grad;
 		using NLAssembler::assemble_hessian;
 
+		std::string name() const override { return "NavierStokes"; }
+		std::map<std::string, ParamFunc> parameters() const override;
+
 		// navier stokes is not energy based
 		double compute_energy(const NonLinearAssemblerData &data) const override
 		{

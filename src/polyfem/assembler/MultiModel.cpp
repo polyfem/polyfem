@@ -148,4 +148,12 @@ namespace polyfem::assembler
 			assert(false);
 		}
 	}
+
+	std::map<std::string, Assembler::ParamFunc> MultiModel::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+		// TODO
+
+		return res;
+	}
 } // namespace polyfem::assembler

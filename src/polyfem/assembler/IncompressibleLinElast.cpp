@@ -90,6 +90,50 @@ namespace polyfem::assembler
 		}
 	}
 
+	std::map<std::string, Assembler::ParamFunc> IncompressibleLinearElasticityDispacement::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+		const auto &params = params_;
+		const int size = this->size();
+
+		res["lambda"] = [&params](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+			double lambda, mu;
+
+			params.lambda_mu(uv, p, e, lambda, mu);
+			return lambda;
+		};
+
+		res["mu"] = [&params](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+			double lambda, mu;
+
+			params.lambda_mu(uv, p, e, lambda, mu);
+			return mu;
+		};
+
+		res["E"] = [&params, size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+			double lambda, mu;
+			params.lambda_mu(uv, p, e, lambda, mu);
+
+			if (size == 3)
+				return mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
+			else
+				return 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
+		};
+
+		res["nu"] = [&params, size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+			double lambda, mu;
+
+			params.lambda_mu(uv, p, e, lambda, mu);
+
+			if (size == 3)
+				return lambda / (2.0 * (lambda + mu));
+			else
+				return lambda / (lambda + 2.0 * mu);
+		};
+
+		return res;
+	}
+
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 	IncompressibleLinearElasticityMixed::assemble(const MixedAssemblerData &data) const
 	{

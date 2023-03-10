@@ -218,5 +218,49 @@ namespace polyfem
 			dstress_dmu = grad_u_i.transpose() + grad_u_i;
 			dstress_dlambda = grad_u_i.trace() * Eigen::MatrixXd::Identity(grad_u_i.rows(), grad_u_i.cols());
 		}
+
+		std::map<std::string, Assembler::ParamFunc> LinearElasticity::parameters() const
+		{
+			std::map<std::string, ParamFunc> res;
+			const auto &params = lame_params();
+			const int size = this->size();
+
+			res["lambda"] = [&params](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+				double lambda, mu;
+
+				params.lambda_mu(uv, p, e, lambda, mu);
+				return lambda;
+			};
+
+			res["mu"] = [&params](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+				double lambda, mu;
+
+				params.lambda_mu(uv, p, e, lambda, mu);
+				return mu;
+			};
+
+			res["E"] = [&params, size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+				double lambda, mu;
+				params.lambda_mu(uv, p, e, lambda, mu);
+
+				if (size == 3)
+					return mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
+				else
+					return 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
+			};
+
+			res["nu"] = [&params, size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+				double lambda, mu;
+
+				params.lambda_mu(uv, p, e, lambda, mu);
+
+				if (size == 3)
+					return lambda / (2.0 * (lambda + mu));
+				else
+					return lambda / (lambda + 2.0 * mu);
+			};
+
+			return res;
+		}
 	} // namespace assembler
 } // namespace polyfem

@@ -258,4 +258,22 @@ namespace polyfem::assembler
 
 		return res;
 	}
+
+	std::map<std::string, Assembler::ParamFunc> HookeLinearElasticity::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+		const auto &elast_tensor = elasticity_tensor();
+		const int size = this->size() == 2 ? 3 : 6;
+
+		for (int i = 0; i < size; ++i)
+		{
+			for (int j = i; j < size; ++j)
+			{
+				res[fmt::format("C_{}{}", i, j)] = [&elast_tensor, i, j](const RowVectorNd &, const RowVectorNd &, double, int) {
+					return elast_tensor(i, j);
+				};
+			}
+		}
+		return res;
+	}
 } // namespace polyfem::assembler

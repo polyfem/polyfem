@@ -209,4 +209,12 @@ namespace polyfem::assembler
 
 		return W;
 	}
+
+	std::map<std::string, Assembler::ParamFunc> NavierStokesVelocity::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+		res["k"] = [this](const RowVectorNd &, const RowVectorNd &, double, int) { return this->viscosity_; };
+
+		return res;
+	}
 } // namespace polyfem::assembler

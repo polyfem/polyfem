@@ -244,4 +244,23 @@ namespace polyfem::assembler
 
 		return energy * 0.5;
 	}
+
+	std::map<std::string, Assembler::ParamFunc> SaintVenantElasticity::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+
+		const auto &elast_tensor = this->elasticity_tensor_;
+		const int size = this->size() == 2 ? 3 : 6;
+
+		for (int i = 0; i < size; ++i)
+		{
+			for (int j = i; j < size; ++j)
+			{
+				res[fmt::format("C_{}{}", i, j)] = [&elast_tensor, i, j](const RowVectorNd &, const RowVectorNd &, double, int) {
+					return elast_tensor(i, j);
+				};
+			}
+		}
+		return res;
+	}
 } // namespace polyfem::assembler

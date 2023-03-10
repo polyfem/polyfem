@@ -53,6 +53,9 @@ namespace polyfem::assembler
 		void add_multimaterial(const int index, const json &params) override;
 		void set_params(const LameParameters &params) { params_ = params; }
 
+		std::string name() const override { return "IncompressibleLinearElasticityPressure"; }
+		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
+
 	private:
 		LameParameters params_;
 	};

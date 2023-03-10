@@ -20,6 +20,7 @@ namespace polyfem::assembler
 		}
 
 		std::string name() const override { return "BiLaplacian"; }
+		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
 	};
 
 	class BilaplacianMixed : public MixedAssembler
@@ -45,5 +46,6 @@ namespace polyfem::assembler
 		assemble(const LinearAssemblerData &data) const override;
 
 		std::string name() const override { return "BiLaplacianAux"; }
+		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
 	};
 } // namespace polyfem::assembler

@@ -49,6 +49,15 @@ namespace polyfem::assembler
 		return res;
 	}
 
+	std::map<std::string, Assembler::ParamFunc> StokesVelocity::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+		const double nu = this->viscosity();
+		res["viscosity"] = [nu](const RowVectorNd &, const RowVectorNd &, double, int) { return nu; };
+
+		return res;
+	}
+
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 	StokesMixed::assemble(const MixedAssemblerData &data) const
 	{

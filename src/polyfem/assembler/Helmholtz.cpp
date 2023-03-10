@@ -49,4 +49,12 @@ namespace polyfem::assembler
 
 		return res;
 	}
+
+	std::map<std::string, Assembler::ParamFunc> Helmholtz::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+		res["k"] = [this](const RowVectorNd &, const RowVectorNd &, double, int) { return this->k_; };
+
+		return res;
+	}
 } // namespace polyfem::assembler
