@@ -279,18 +279,6 @@ namespace polyfem
 			pressure_assembler = assembler::AssemblerUtils::get_assembler(other_name);
 		}
 
-		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
-		assemblers.push_back(assembler);
-		assemblers.push_back(mass_matrix_assembler);
-		// TODO?
-		//  if (mixed_assembler != nullptr)
-		//  	assemblers.push_back(mixed_assembler);
-		if (mixed_assembler != nullptr)
-			mixed_assembler->set_size(mesh->dimension());
-		if (pressure_assembler != nullptr)
-			assemblers.push_back(pressure_assembler);
-		set_materials(assemblers);
-
 		if (!args.contains("preset_problem"))
 		{
 			if (!assembler->is_tensor())

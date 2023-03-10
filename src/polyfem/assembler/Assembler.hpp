@@ -129,7 +129,7 @@ namespace polyfem::assembler
 
 		virtual Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const { log_and_throw_error("Kernel not supported by {}!", name()); }
 
-		virtual void set_materials(const std::vector<int> &body_ids, const json &body_params) {}
+		void set_materials(const std::vector<int> &body_ids, const json &body_params);
 		virtual void add_multimaterial(const int index, const json &params) {}
 
 		virtual bool is_linear() const = 0;
