@@ -60,7 +60,7 @@ namespace polyfem
 
 		solve_data.rhs_assembler->set_bc(
 			local_boundary, boundary_nodes, n_boundary_samples(),
-			(formulation() != "Bilaplacian") ? local_neumann_boundary : std::vector<LocalBoundary>(), rhs);
+			(assembler->name() s != "Bilaplacian") ? local_neumann_boundary : std::vector<LocalBoundary>(), rhs);
 
 		StiffnessMatrix A = stiffness;
 		Eigen::VectorXd b = rhs;

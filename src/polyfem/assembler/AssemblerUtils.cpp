@@ -29,6 +29,18 @@ namespace polyfem
 	namespace assembler
 	{
 
+		std::string AssemblerUtils::other_assembler_name(const std::string &formulation)
+		{
+			if (formulation == "Bilaplacian")
+				return "BilaplacianAux";
+			else if (formulation == "Stokes" || formulation == "NavierStokes" || formulation == "OperatorSplitting")
+				return "StokesPressure";
+			else if (formulation == "IncompressibleLinearElasticity")
+				return "IncompressibleLinearElasticityPressure";
+
+			return "";
+		}
+
 		std::shared_ptr<Assembler> AssemblerUtils::get_assembler(const std::string &formulation)
 		{
 			if (formulation == "Helmholtz")

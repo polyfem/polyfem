@@ -104,7 +104,7 @@ namespace polyfem
 		json j;
 		stats.save_json(args, n_bases, n_pressure_bases,
 						sol, *mesh, disc_orders, *problem, timings,
-						formulation(), iso_parametric(), args["output"]["advanced"]["sol_at_node"],
+						assembler->name(), iso_parametric(), args["output"]["advanced"]["sol_at_node"],
 						j);
 		out << j.dump(4) << std::endl;
 	}

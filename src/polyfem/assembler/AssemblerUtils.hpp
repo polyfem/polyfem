@@ -11,6 +11,8 @@ namespace polyfem::assembler
 	class AssemblerUtils
 	{
 	public:
+		static std::string other_assembler_name(const std::string &formulation);
+
 		static std::shared_ptr<Assembler> get_assembler(const std::string &formulation);
 		static std::shared_ptr<MixedAssembler> get_mixed_assembler(const std::string &formulation);
 

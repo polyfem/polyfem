@@ -196,7 +196,6 @@ TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 		state_ptr->geom_bases(),
 		state_ptr->assembler,
 		state_ptr->ass_vals_cache,
-		state_ptr->formulation(),
 		state_ptr->args["time"]["dt"],
 		state_ptr->mesh->is_volume());
 	test_form(form, *state_ptr);
@@ -285,7 +284,6 @@ TEST_CASE("Rayleigh damping form derivatives", "[form][form_derivatives][rayleig
 		state_ptr->geom_bases(),
 		state_ptr->assembler,
 		state_ptr->ass_vals_cache,
-		state_ptr->formulation(),
 		state_ptr->args["time"]["dt"],
 		state_ptr->mesh->is_volume());
 

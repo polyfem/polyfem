@@ -4,6 +4,7 @@
 #include <polyfem/io/MatrixIO.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/MultiModel.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
@@ -542,7 +543,7 @@ namespace polyfem
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 
-		if (formulation() == "MultiModels")
+		if (assembler::MultiModel *mm = dynamic_cast<assembler::MultiModel *>(assembler.get()))
 		{
 			assert(args["materials"].is_array());
 
@@ -556,8 +557,7 @@ namespace polyfem
 			for (int i = 0; i < materials.size(); ++i)
 				materials[i] = mats.at(mesh->get_body_id(i));
 
-			// TESEO fix me
-			//  assembler.init_multimodels(materials);
+			mm->init_multimodels(materials);
 		}
 
 		n_bases = 0;
@@ -687,7 +687,7 @@ namespace polyfem
 				// 	SplineBasis3d::build_bases(tmp_mesh, quadrature_order, geom_bases_, local_boundary, poly_edge_to_data);
 				// }
 
-				n_bases = basis::SplineBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = basis::SplineBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
 
 				// if (iso_parametric() && args["fit_nodes"])
 				// 	SplineBasis3d::fit_nodes(tmp_mesh, n_bases, bases);
@@ -695,15 +695,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					basis::LagrangeBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+					basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 
-				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (mixed_assembler != nullptr)
 			{
-				n_pressure_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				n_pressure_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 			}
 		}
 		else
@@ -719,7 +719,7 @@ namespace polyfem
 				// 	n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, geom_bases_, local_boundary, poly_edge_to_data);
 				// }
 
-				n_bases = basis::SplineBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = basis::SplineBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
 
 				// if (iso_parametric() && args["fit_nodes"])
 				// 	SplineBasis2d::fit_nodes(tmp_mesh, n_bases, bases);
@@ -727,15 +727,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					basis::LagrangeBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+					basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, true, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 
-				n_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (mixed_assembler != nullptr)
 			{
-				n_pressure_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, formulation(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
+				n_pressure_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 			}
 		}
 
@@ -967,7 +967,7 @@ namespace polyfem
 				if (args["space"]["poly_basis_type"] == "MeanValue")
 				{
 					new_bases = basis::MVPolygonalBasis2d::build_bases(
-						formulation(),
+						assembler->name(),
 						assembler->is_tensor() ? 2 : 1,
 						*dynamic_cast<Mesh2D *>(mesh.get()),
 						n_bases,
@@ -978,7 +978,7 @@ namespace polyfem
 				else if (args["space"]["poly_basis_type"] == "Wachspress")
 				{
 					new_bases = basis::WSPolygonalBasis2d::build_bases(
-						formulation(),
+						assembler->name(),
 						assembler->is_tensor() ? 2 : 1,
 						*dynamic_cast<Mesh2D *>(mesh.get()),
 						n_bases,
@@ -1035,7 +1035,7 @@ namespace polyfem
 				if (args["space"]["poly_basis_type"] == "MeanValue")
 				{
 					new_bases = basis::MVPolygonalBasis2d::build_bases(
-						formulation(),
+						assembler->name(),
 						assembler->is_tensor() ? 2 : 1,
 						*dynamic_cast<Mesh2D *>(mesh.get()),
 						n_bases, args["space"]["advanced"]["quadrature_order"],
@@ -1045,7 +1045,7 @@ namespace polyfem
 				else if (args["space"]["poly_basis_type"] == "Wachspress")
 				{
 					new_bases = basis::WSPolygonalBasis2d::build_bases(
-						formulation(),
+						assembler->name(),
 						assembler->is_tensor() ? 2 : 1,
 						*dynamic_cast<Mesh2D *>(mesh.get()),
 						n_bases, args["space"]["advanced"]["quadrature_order"],
@@ -1158,7 +1158,7 @@ namespace polyfem
 			logger().error("Build the bases first!");
 			return;
 		}
-		if (formulation() == "OperatorSplitting")
+		if (assembler->name() == "OperatorSplitting")
 		{
 			stiffness.resize(1, 1);
 			timings.assembling_stiffness_mat_time = 0;
@@ -1291,7 +1291,7 @@ namespace polyfem
 		// 	rhs_path = resolve_input_path(args["boundary_conditions"]["rhs"]);
 
 		json p_params = {};
-		p_params["formulation"] = formulation();
+		p_params["formulation"] = assembler->name();
 		p_params["root_path"] = root_path();
 		{
 			RowVectorNd min, max, delta;
@@ -1320,13 +1320,13 @@ namespace polyfem
 			const int prev_size = rhs.size();
 			const int n_larger = n_pressure_bases + (use_avg_pressure ? (assembler->is_fluid() ? 1 : 0) : 0);
 			rhs.conservativeResize(prev_size + n_larger, rhs.cols());
-			if (formulation() == "OperatorSplitting")
+			if (assembler->name() == "OperatorSplitting")
 			{
 				timings.assigning_rhs_time = 0;
 				return;
 			}
 			// Divergence free rhs
-			if (formulation() != "Bilaplacian" || local_neumann_boundary.empty())
+			if (assembler->name() != "Bilaplacian" || local_neumann_boundary.empty())
 			{
 				rhs.block(prev_size, 0, n_larger, rhs.cols()).setZero();
 			}
@@ -1401,9 +1401,9 @@ namespace polyfem
 							  resolve_output_path(args["output"]["paraview"]["file_name"]));
 			}
 
-			if (formulation() == "NavierStokes")
+			if (assembler->name() == "NavierStokes")
 				solve_transient_navier_stokes(time_steps, t0, dt, sol, pressure);
-			else if (formulation() == "OperatorSplitting")
+			else if (assembler->name() == "OperatorSplitting")
 				solve_transient_navier_stokes_split(time_steps, dt, sol, pressure);
 			else if (assembler->is_linear() && !is_contact_enabled()) // Collisions add nonlinearity to the problem
 				solve_transient_linear(time_steps, t0, dt, sol, pressure);
@@ -1414,7 +1414,7 @@ namespace polyfem
 		}
 		else
 		{
-			if (formulation() == "NavierStokes")
+			if (assembler->name() == "NavierStokes")
 				solve_navier_stokes(sol, pressure);
 			else if (assembler->is_linear() && !is_contact_enabled())
 				solve_linear(sol, pressure);

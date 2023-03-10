@@ -20,7 +20,7 @@ namespace polyfem
 	void State::solve_navier_stokes(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		assert(!problem->is_time_dependent());
-		assert(formulation() == "NavierStokes");
+		assert(assembler->name() == "NavierStokes");
 
 		assert(solve_data.rhs_assembler != nullptr);
 		solve_data.rhs_assembler->set_bc(
@@ -53,7 +53,7 @@ namespace polyfem
 
 	void State::solve_transient_navier_stokes_split(const int time_steps, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
-		assert(formulation() == "OperatorSplitting" && problem->is_time_dependent());
+		assert(assembler->name() == "OperatorSplitting" && problem->is_time_dependent());
 
 		Eigen::MatrixXd local_pts;
 		auto &gbases = geom_bases();
@@ -160,7 +160,7 @@ namespace polyfem
 
 	void State::solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
-		assert(formulation() == "NavierStokes" && problem->is_time_dependent());
+		assert(assembler->name() == "NavierStokes" && problem->is_time_dependent());
 
 		const auto &gbases = geom_bases();
 		Eigen::MatrixXd current_rhs = rhs;

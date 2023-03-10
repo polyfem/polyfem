@@ -80,7 +80,7 @@ namespace polyfem
 		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
 		assemblers.push_back(assembler);
 		assemblers.push_back(mass_matrix_assembler);
-		// TODO? TESEO
+		// TODO?
 		//  if (mixed_assembler != nullptr)
 		//  	assemblers.push_back(mixed_assembler);
 		if (mixed_assembler != nullptr)
@@ -147,7 +147,7 @@ namespace polyfem
 		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
 		assemblers.push_back(assembler);
 		assemblers.push_back(mass_matrix_assembler);
-		// TODO? TESEO
+		// TODO?
 		//  if (mixed_assembler != nullptr)
 		//  	assemblers.push_back(mixed_assembler);
 		if (mixed_assembler != nullptr)

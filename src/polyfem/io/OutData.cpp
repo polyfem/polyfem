@@ -2539,7 +2539,6 @@ namespace polyfem::io
 		logger().info("total count:\t {}", mesh.n_elements());
 	}
 
-	// args["output"]["advanced"]["sol_at_node"]  iso_parametric() formulation()
 	void OutStatsData::save_json(
 		const nlohmann::json &args,
 		const int n_bases, const int n_pressure_bases,
