@@ -18,7 +18,7 @@ namespace polyfem::assembler
 		class LocalThreadMatStorage
 		{
 		public:
-			SpareMatrixCache cache;
+			SparseMatrixCache cache;
 			ElementAssemblyValues vals;
 			QuadratureVector da;
 
@@ -31,7 +31,7 @@ namespace polyfem::assembler
 				init(buffer_size, rows, cols);
 			}
 
-			LocalThreadMatStorage(const int buffer_size, const SpareMatrixCache &c)
+			LocalThreadMatStorage(const int buffer_size, const SparseMatrixCache &c)
 			{
 				init(buffer_size, c);
 			}
@@ -43,7 +43,7 @@ namespace polyfem::assembler
 				cache.init(rows, cols);
 			}
 
-			void init(const int buffer_size, const SpareMatrixCache &c)
+			void init(const int buffer_size, const SparseMatrixCache &c)
 			{
 				cache.reserve(buffer_size);
 				cache.init(c);
@@ -535,7 +535,7 @@ namespace polyfem::assembler
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev,
-		SpareMatrixCache &mat_cache,
+		SparseMatrixCache &mat_cache,
 		StiffnessMatrix &grad) const
 	{
 		const int max_triplets_size = int(1e7);
