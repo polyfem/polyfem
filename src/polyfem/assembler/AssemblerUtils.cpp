@@ -343,7 +343,7 @@ namespace polyfem
 													 const double dt,
 													 const Eigen::MatrixXd &displacement,
 													 const Eigen::MatrixXd &displacement_prev,
-													 utils::SpareMatrixCache &mat_cache,
+													 utils::SparseMatrixCache &mat_cache,
 													 StiffnessMatrix &hessian) const
 		{
 			if (assembler == "SaintVenant")
