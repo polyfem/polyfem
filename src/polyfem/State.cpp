@@ -949,6 +949,7 @@ namespace polyfem
 			{
 				if (args["space"]["poly_basis_type"] == "MeanValue" || args["space"]["poly_basis_type"] == "Wachspress")
 					logger().error("Barycentric bases not supported in 3D");
+				assert(assembler->is_linear());
 				new_bases = basis::PolygonalBasis3d::build_bases(
 					*dynamic_cast<LinearAssembler *>(assembler.get()),
 					args["space"]["advanced"]["n_harmonic_samples"],

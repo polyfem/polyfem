@@ -103,7 +103,7 @@ namespace polyfem::assembler
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
-			utils::SpareMatrixCache &mat_cache,
+			utils::SparseMatrixCache &mat_cache,
 			StiffnessMatrix &grad) const { log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
 
 		// plotting (eg von mises), assembler is the name of the formulation

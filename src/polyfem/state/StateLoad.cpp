@@ -52,42 +52,13 @@ namespace polyfem
 			return;
 		}
 
-		// TODO: renable this
-		// if (args["normalize_mesh"])
-		// 	mesh->normalize();
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
-		// TODO: renable this
-		// int n_refs = args["n_refs"];
-		// if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
-		// {
-		// 	if (args["force_no_ref_for_harmonic"])
-		// 		logger().warn("Using harmonic bases without refinement");
-		// 	else
-		// 		n_refs = 1;
-		// }
-		// if (n_refs > 0)
-		// 	mesh->refine(n_refs, args["refinement_location"], parent_elements);
-
 		if (!skip_boundary_sideset)
 			mesh->compute_boundary_ids(boundary_marker);
-		// TODO: renable this
-		// BoxSetter::set_sidesets(args, *mesh);
-
-		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
-		assemblers.push_back(assembler);
-		assemblers.push_back(mass_matrix_assembler);
-		// TODO?
-		//  if (mixed_assembler != nullptr)
-		//  	assemblers.push_back(mixed_assembler);
-		if (mixed_assembler != nullptr)
-			mixed_assembler->set_size(mesh->dimension());
-		if (pressure_assembler != nullptr)
-			assemblers.push_back(pressure_assembler);
-		set_materials(assemblers);
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -132,29 +103,10 @@ namespace polyfem
 			log_and_throw_error("unable to load the mesh!");
 		}
 
-		// if(!flipped_elements.empty())
-		// {
-		// 	mesh->compute_elements_tag();
-		// 	for(auto el_id : flipped_elements)
-		// 		mesh->set_tag(el_id, ElementType::INTERIOR_POLYTOPE);
-		// }
-
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
 		logger().info("mesh bb min [{}], max [{}]", min, max);
-
-		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
-		assemblers.push_back(assembler);
-		assemblers.push_back(mass_matrix_assembler);
-		// TODO?
-		//  if (mixed_assembler != nullptr)
-		//  	assemblers.push_back(mixed_assembler);
-		if (mixed_assembler != nullptr)
-			mixed_assembler->set_size(mesh->dimension());
-		if (pressure_assembler != nullptr)
-			assemblers.push_back(pressure_assembler);
-		set_materials(assemblers);
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
