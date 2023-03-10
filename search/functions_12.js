@@ -42,7 +42,7 @@ var searchData=
   ['reorder_5fmatrix_39',['reorder_matrix',['../namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1',1,'polyfem::utils']]],
   ['reorder_5fmesh_40',['reorder_mesh',['../namespacepolyfem_1_1mesh.html#a37d707ded3f8dcf2686648b6d2c4aee3',1,'polyfem::mesh']]],
   ['replace_5fext_41',['replace_ext',['../namespacepolyfem_1_1utils_1_1_string_utils.html#af73165b653d0e64acc1e8b888fe93bca',1,'polyfem::utils::StringUtils']]],
-  ['reserve_42',['reserve',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a4e7da6b6dc12d81f22aab089afd63a5a',1,'polyfem::utils::SpareMatrixCache']]],
+  ['reserve_42',['reserve',['../classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ae1a3de15484c0d1b3869b24daca6cf55',1,'polyfem::utils::SparseMatrixCache']]],
   ['reset_43',['reset',['../classcppoptlib_1_1_sparse_newton_descent_solver.html#a3acdaff5ac2b80637f7adb32c6b7235a',1,'cppoptlib::SparseNewtonDescentSolver::reset()'],['../classcppoptlib_1_1_nonlinear_solver.html#a5d761918e6e4e6f5859c732c81c35f84',1,'cppoptlib::NonlinearSolver::reset()'],['../classcppoptlib_1_1_l_b_f_g_s_solver.html#a44e04ede4ee3ee773b9f8dd07ae8960c',1,'cppoptlib::LBFGSSolver::reset()'],['../classpolyfem_1_1io_1_1_out_stats_data.html#abb956b11c2d5d90d1fce4a2d0f022f0f',1,'polyfem::io::OutStatsData::reset()']]],
   ['reset_5fmesh_44',['reset_mesh',['../classpolyfem_1_1_state.html#a6d904b274f338bfa96d3110531cc0aa7',1,'polyfem::State']]],
   ['reset_5ftimes_45',['reset_times',['../classcppoptlib_1_1_nonlinear_solver.html#af5404ccd80ca403e5b781db58456afc1',1,'cppoptlib::NonlinearSolver::reset_times()'],['../classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a4a9d3142ceecbb0b63e8a2783bb6479e',1,'polyfem::solver::line_search::LineSearch::reset_times()']]],

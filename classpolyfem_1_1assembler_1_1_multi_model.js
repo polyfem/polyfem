@@ -5,7 +5,7 @@ var classpolyfem_1_1assembler_1_1_multi_model =
     [ "assemble_grad", "classpolyfem_1_1assembler_1_1_multi_model.html#a586a35c3c56fcd6eafd1a6f63e08521c", null ],
     [ "assemble_grad", "classpolyfem_1_1assembler_1_1_multi_model.html#a556575f6f148cb71d251a5778f8158bf", null ],
     [ "assemble_grad", "classpolyfem_1_1assembler_1_1_multi_model.html#ab670254f9ef1a5e9547faa1793c30d6e", null ],
-    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_multi_model.html#a03a7dfcc15b75fde2ee4fc6f2bdeba32", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_multi_model.html#a35be861aa0a1683d228f1293d1e6c855", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_multi_model.html#a535cf3a88a39fa73b0e844597ddfdc35", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_multi_model.html#aa1e5295c0a989f1a74ef29bcf2bef15b", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_multi_model.html#a752227101e924df55c7542b2d7e60e0d", null ],

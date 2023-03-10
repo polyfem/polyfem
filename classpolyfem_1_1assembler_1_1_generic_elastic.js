@@ -7,7 +7,7 @@ var classpolyfem_1_1assembler_1_1_generic_elastic =
     [ "assemble_grad", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a586a35c3c56fcd6eafd1a6f63e08521c", null ],
     [ "assemble_grad", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a2fed4c33c306a42d2becea41d038b861", null ],
     [ "assemble_grad", "classpolyfem_1_1assembler_1_1_generic_elastic.html#ab670254f9ef1a5e9547faa1793c30d6e", null ],
-    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a03a7dfcc15b75fde2ee4fc6f2bdeba32", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a35be861aa0a1683d228f1293d1e6c855", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a756903519dbd1023df646e9292beaa99", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_generic_elastic.html#aa1e5295c0a989f1a74ef29bcf2bef15b", null ],
     [ "assign_stress_tensor", "classpolyfem_1_1assembler_1_1_generic_elastic.html#ac24b858ae7816aa3666d7118ca190d91", null ],

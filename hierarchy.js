@@ -260,7 +260,7 @@ var hierarchy =
     ] ],
     [ "polyfem::io::SolutionFrame", "classpolyfem_1_1io_1_1_solution_frame.html", null ],
     [ "polyfem::solver::SolveData", "classpolyfem_1_1solver_1_1_solve_data.html", null ],
-    [ "polyfem::utils::SpareMatrixCache", "classpolyfem_1_1utils_1_1_spare_matrix_cache.html", null ],
+    [ "polyfem::utils::SparseMatrixCache", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html", null ],
     [ "polyfem::basis::SplineBasis2d", "classpolyfem_1_1basis_1_1_spline_basis2d.html", null ],
     [ "polyfem::basis::SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ],
     [ "polyfem::State", "classpolyfem_1_1_state.html", null ],

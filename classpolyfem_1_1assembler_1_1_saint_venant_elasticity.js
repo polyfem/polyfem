@@ -6,7 +6,7 @@ var classpolyfem_1_1assembler_1_1_saint_venant_elasticity =
     [ "assemble_grad", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a586a35c3c56fcd6eafd1a6f63e08521c", null ],
     [ "assemble_grad", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a7db62c4c1260a91550320c20a6c71981", null ],
     [ "assemble_grad", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#ab670254f9ef1a5e9547faa1793c30d6e", null ],
-    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a03a7dfcc15b75fde2ee4fc6f2bdeba32", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a35be861aa0a1683d228f1293d1e6c855", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a8dccfbc5f76e3fed25c4924b6588ee4b", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#aa1e5295c0a989f1a74ef29bcf2bef15b", null ],
     [ "assign_stress_tensor", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a8bbad20f6021d7f175643f81cbff4695", null ],

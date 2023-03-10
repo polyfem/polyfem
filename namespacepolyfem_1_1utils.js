@@ -35,7 +35,7 @@ var namespacepolyfem_1_1utils =
     [ "RBFInterpolation", "classpolyfem_1_1utils_1_1_r_b_f_interpolation.html", "classpolyfem_1_1utils_1_1_r_b_f_interpolation" ],
     [ "RefElementSampler", "classpolyfem_1_1utils_1_1_ref_element_sampler.html", "classpolyfem_1_1utils_1_1_ref_element_sampler" ],
     [ "Selection", "classpolyfem_1_1utils_1_1_selection.html", "classpolyfem_1_1utils_1_1_selection" ],
-    [ "SpareMatrixCache", "classpolyfem_1_1utils_1_1_spare_matrix_cache.html", "classpolyfem_1_1utils_1_1_spare_matrix_cache" ],
+    [ "SparseMatrixCache", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html", "classpolyfem_1_1utils_1_1_sparse_matrix_cache" ],
     [ "SpecifiedSelection", "classpolyfem_1_1utils_1_1_specified_selection.html", "classpolyfem_1_1utils_1_1_specified_selection" ],
     [ "SphereSelection", "classpolyfem_1_1utils_1_1_sphere_selection.html", "classpolyfem_1_1utils_1_1_sphere_selection" ],
     [ "Timer", "classpolyfem_1_1utils_1_1_timer.html", "classpolyfem_1_1utils_1_1_timer" ],

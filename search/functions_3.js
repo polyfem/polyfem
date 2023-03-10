@@ -4,7 +4,7 @@ var searchData=
   ['c2_1',['c2',['../classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#af7a2e9a40357ae918c8af3a227770042',1,'polyfem::assembler::MooneyRivlinElasticity']]],
   ['c99_5fprint_2',['C99_print',['../namespacepretty__print.html#a4c61a4500105714e7fea1f44029c7c64',1,'pretty_print']]],
   ['calculate_5flocal_5fpts_3',['calculate_local_pts',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#acb209fc33bfb84395220cc09de3f70c4',1,'polyfem::solver::OperatorSplittingSolver']]],
-  ['capacity_4',['capacity',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a5d9246037a6dff73971f45e746f97526',1,'polyfem::utils::SpareMatrixCache']]],
+  ['capacity_4',['capacity',['../classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a6882e05dcc40c4af5b5ac12720eb1e86',1,'polyfem::utils::SparseMatrixCache']]],
   ['catmul_5fclark_5fsplit_5',['catmul_clark_split',['../namespacepolyfem_1_1mesh_1_1_polygons.html#a25750e2e0917bfbd86951438fffe0370',1,'polyfem::mesh::Polygons']]],
   ['catmul_5fclark_5fsplit_5ffunc_6',['catmul_clark_split_func',['../namespacepolyfem_1_1mesh_1_1_polygons.html#a7e9c499beb732835ffabd7da78996803',1,'polyfem::mesh::Polygons']]],
   ['cell_5fbarycenter_7',['cell_barycenter',['../classpolyfem_1_1mesh_1_1_mesh.html#ae8d68bc06906aa64d4757c7c6fc5f6c2',1,'polyfem::mesh::Mesh::cell_barycenter()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a5db099a709efec7b4313985aa9cb1630',1,'polyfem::mesh::NCMesh3D::cell_barycenter()'],['../classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a0da98e55cc5ffa1d7418ae1a727ade58',1,'polyfem::mesh::CMesh3D::cell_barycenter()'],['../classpolyfem_1_1mesh_1_1_mesh2_d.html#a310e8b13dbda9defdd7f0468e23d9407',1,'polyfem::mesh::Mesh2D::cell_barycenter()']]],

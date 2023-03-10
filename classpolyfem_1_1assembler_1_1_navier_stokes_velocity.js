@@ -5,7 +5,7 @@ var classpolyfem_1_1assembler_1_1_navier_stokes_velocity =
     [ "assemble_grad", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a586a35c3c56fcd6eafd1a6f63e08521c", null ],
     [ "assemble_grad", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a8f3bf6a1107cca23135670bbd8b6270b", null ],
     [ "assemble_grad", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#ab670254f9ef1a5e9547faa1793c30d6e", null ],
-    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a03a7dfcc15b75fde2ee4fc6f2bdeba32", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a35be861aa0a1683d228f1293d1e6c855", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a08c7baca6376bab8e3bc7b07da99955f", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#aa1e5295c0a989f1a74ef29bcf2bef15b", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a31a71bc6f3162a750e1231c49a56d39d", null ],

@@ -19,7 +19,7 @@ var searchData=
   ['elements_5ftag_5f_16',['elements_tag_',['../classpolyfem_1_1mesh_1_1_mesh.html#a1575362bfcf4556fb8f862f012e9278c',1,'polyfem::mesh::Mesh']]],
   ['enabled_5f_17',['enabled_',['../classpolyfem_1_1solver_1_1_form.html#ad3b23922e91c88f9432eb6a0228569ae',1,'polyfem::solver::Form']]],
   ['endings_5f_18',['endings_',['../classpolyfem_1_1mesh_1_1_obstacle.html#ad2cd9c7a670deec1fb861da3aa6559ca',1,'polyfem::mesh::Obstacle']]],
-  ['entries_5f_19',['entries_',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#aeb6938c000317a94cf575d9a7216823f',1,'polyfem::utils::SpareMatrixCache']]],
+  ['entries_5f_19',['entries_',['../classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a9f613b81fa79c3327756fdcfbd2630b5',1,'polyfem::utils::SparseMatrixCache']]],
   ['epsv_5f_20',['epsv_',['../classpolyfem_1_1solver_1_1_friction_form.html#af957a227f9ba06ea915230fefa510faf',1,'polyfem::solver::FrictionForm']]],
   ['error_21',['error',['../classpolyfem_1_1io_1_1_solution_frame.html#ac66c22ee72d1d0badf2ee3c3b1766cbf',1,'polyfem::io::SolutionFrame']]],
   ['es_22',['es',['../structpolyfem_1_1mesh_1_1_face.html#a062642822db33e1287727faad413294c',1,'polyfem::mesh::Face::es()'],['../structpolyfem_1_1mesh_1_1_element.html#a882eaf58173331ee7d70349e6183a93a',1,'polyfem::mesh::Element::es()']]],

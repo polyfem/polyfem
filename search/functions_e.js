@@ -61,7 +61,7 @@ var searchData=
   ['nodeproblem_58',['NodeProblem',['../classpolyfem_1_1problem_1_1_node_problem.html#a0c96b9f95639dfba3fbeab2ebf30f3f5',1,'polyfem::problem::NodeProblem']]],
   ['nodes_59',['nodes',['../classpolyfem_1_1basis_1_1_element_bases.html#a71f1ea2b92e799be2985c5fdf25364bf',1,'polyfem::basis::ElementBases']]],
   ['nodevalues_60',['NodeValues',['../classpolyfem_1_1problem_1_1_node_values.html#a78378941c6a46acea1516d32cc1d49cf',1,'polyfem::problem::NodeValues']]],
-  ['non_5fzeros_61',['non_zeros',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a31318ec89e17071e60af93d25530df33',1,'polyfem::utils::SpareMatrixCache']]],
+  ['non_5fzeros_61',['non_zeros',['../classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a1620ff2b05c375a4156750e92fdf889c',1,'polyfem::utils::SparseMatrixCache']]],
   ['nonlinearassemblerdata_62',['NonLinearAssemblerData',['../classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html#a7fb9d113cb19a072e2f6db8de692fe87',1,'polyfem::assembler::NonLinearAssemblerData']]],
   ['nonlinearsolver_63',['NonlinearSolver',['../classcppoptlib_1_1_nonlinear_solver.html#a4644d12ebe36b4b2ef7c0df4ea538d6d',1,'cppoptlib::NonlinearSolver']]],
   ['normal_64',['normal',['../classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html#ac7477d65d1416630ff8b40369854474f',1,'polyfem::mesh::Obstacle::Plane']]],

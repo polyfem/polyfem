@@ -40,7 +40,7 @@ var searchData=
   ['timer_2ehpp_37',['Timer.hpp',['../_timer_8hpp.html',1,'']]],
   ['timings_38',['timings',['../classpolyfem_1_1_state.html#a0181690b83435d59481076329edec8bc',1,'polyfem::State']]],
   ['tmp_39',['tmp',['../namespaceq__bases.html#aa9656e17bbd1e348385800ca316b200c',1,'q_bases.tmp()'],['../namespacep__bases.html#a545f876b401f1042d3b57d92fb694df8',1,'p_bases.tmp()']]],
-  ['tmp_5f_40',['tmp_',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#aefe878143492a4b8f11533004f547413',1,'polyfem::utils::SpareMatrixCache']]],
+  ['tmp_5f_40',['tmp_',['../classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a7ee5d6448bb3eec2398dd1f2cb6e4edd',1,'polyfem::utils::SparseMatrixCache']]],
   ['to_5f_41',['to_',['../classpolyfem_1_1utils_1_1_linear_ramp.html#aa67165cdc474dad27de38efeb93f86ee',1,'polyfem::utils::LinearRamp']]],
   ['to_5fedge_5ffunctions_42',['to_edge_functions',['../classpolyfem_1_1mesh_1_1_mesh3_d.html#ad6d6ad59f378809ffd4608914bd3ca11',1,'polyfem::mesh::Mesh3D']]],
   ['to_5fface_5ffunctions_43',['to_face_functions',['../classpolyfem_1_1mesh_1_1_mesh3_d.html#afaf4aed29be6457776448d5e7a4b55e9',1,'polyfem::mesh::Mesh3D']]],

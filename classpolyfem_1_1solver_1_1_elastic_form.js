@@ -15,7 +15,7 @@ var classpolyfem_1_1solver_1_1_elastic_form =
     [ "formulation_", "classpolyfem_1_1solver_1_1_elastic_form.html#a81e7ffa2df18cbe53518238ae3e45684", null ],
     [ "geom_bases_", "classpolyfem_1_1solver_1_1_elastic_form.html#a88fa9299f3aa6eb0c2baddf3b38e09ca", null ],
     [ "is_volume_", "classpolyfem_1_1solver_1_1_elastic_form.html#ae2e90737ad01cd3432c78a4a7a1b9b0a", null ],
-    [ "mat_cache_", "classpolyfem_1_1solver_1_1_elastic_form.html#a181e54bb24bc481aeaad5e665a53d8a6", null ],
+    [ "mat_cache_", "classpolyfem_1_1solver_1_1_elastic_form.html#a6e7e9fa68c7ca1d6907c8c4c3336261b", null ],
     [ "n_bases_", "classpolyfem_1_1solver_1_1_elastic_form.html#a4566e1f3b534bb9e36b1acba418ec5c1", null ],
     [ "x_prev_", "classpolyfem_1_1solver_1_1_elastic_form.html#a1742e5433f6b37f4da578c7c8376f0eb", null ]
 ];

@@ -34,7 +34,7 @@ var searchData=
   ['get_5flocal_5fdisp_31',['get_local_disp',['../namespacepolyfem.html#aa3c7c48e526af400b4beb3738e168c35',1,'polyfem']]],
   ['get_5flocal_5fthread_5fstorage_32',['get_local_thread_storage',['../namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b',1,'polyfem::utils']]],
   ['get_5flog_33',['get_log',['../classpolyfem_1_1_state.html#a3ded3e26faeb339787050e8fb2bb4534',1,'polyfem::State']]],
-  ['get_5fmatrix_34',['get_matrix',['../classpolyfem_1_1utils_1_1_spare_matrix_cache.html#a0189658a911ff68705e9ef87b8e4b3d0',1,'polyfem::utils::SpareMatrixCache']]],
+  ['get_5fmatrix_34',['get_matrix',['../classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a2db0237cd2bc0310712e00e2adfd39ed',1,'polyfem::utils::SparseMatrixCache']]],
   ['get_5fn_5fthreads_35',['get_n_threads',['../namespacepolyfem_1_1utils.html#a3b3a8934d13e48dc3a51ed8efe25e11e',1,'polyfem::utils']]],
   ['get_5fnode_5fid_36',['get_node_id',['../classpolyfem_1_1mesh_1_1_mesh.html#af9990574a4f9f73a5931f333a1ae24d6',1,'polyfem::mesh::Mesh']]],
   ['get_5fopt_5fp_37',['get_opt_p',['../namespacepolyfem_1_1refinement.html#a195e7a176e3337f130065846b62aca8f',1,'polyfem::refinement']]],

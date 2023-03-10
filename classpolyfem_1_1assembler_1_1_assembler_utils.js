@@ -13,7 +13,7 @@ var classpolyfem_1_1assembler_1_1_assembler_utils =
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a68b9c1cc03f0b68e8e67e4bb8ff74764", null ],
     [ "assemble_energy", "classpolyfem_1_1assembler_1_1_assembler_utils.html#af74c43b895b7ac9684b2450598b147c8", null ],
     [ "assemble_energy_gradient", "classpolyfem_1_1assembler_1_1_assembler_utils.html#aa487baa33dbf462c1ead1a6feb42add7", null ],
-    [ "assemble_energy_hessian", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a3c7c7bd3b5e8bdc0047b9a62cf55f4cf", null ],
+    [ "assemble_energy_hessian", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a1347c34ccdea40d6a4a5cd811ac1bb74", null ],
     [ "assemble_mass_matrix", "classpolyfem_1_1assembler_1_1_assembler_utils.html#ab505808dcbbdf3508888fb5d05e43927", null ],
     [ "assemble_mixed_problem", "classpolyfem_1_1assembler_1_1_assembler_utils.html#a8b64ced1dafa4e8bee7beab425c2d15e", null ],
     [ "assemble_pressure_problem", "classpolyfem_1_1assembler_1_1_assembler_utils.html#ab0f2f8fc05b10b7f393e274cfdaf8417", null ],
