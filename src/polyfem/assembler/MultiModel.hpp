@@ -1,7 +1,7 @@
 #pragma once
 
 #include <polyfem/assembler/LinearElasticity.hpp>
-// #include <polyfem/assembler/HookeLinearElasticity.hpp>
+#include <polyfem/assembler/HookeLinearElasticity.hpp>
 #include <polyfem/assembler/SaintVenantElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
 #include <polyfem/assembler/GenericElastic.hpp>
@@ -58,7 +58,7 @@ namespace polyfem::assembler
 		SaintVenantElasticity saint_venant_;
 		NeoHookeanElasticity neo_hookean_;
 		LinearElasticity linear_elasticity_;
-		// HookeLinearElasticity hooke_;
+		HookeLinearElasticity hooke_;
 		MooneyRivlinElasticity mooney_rivlin_elasticity_;
 		UnconstrainedOgdenElasticity unconstrained_ogden_elasticity_;
 		IncompressibleOgdenElasticity incompressible_ogden_elasticity_;
