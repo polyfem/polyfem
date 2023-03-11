@@ -49,13 +49,14 @@ var searchData=
   ['hexquadrature_2ehpp_46',['HexQuadrature.hpp',['../_hex_quadrature_8hpp.html',1,'']]],
   ['hf_47',['HF',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a24eb261043d5703973b1c353592c9382',1,'polyfem::mesh::Mesh3DStorage']]],
   ['hooke_48',['hooke',['../namespaceelasticity__rhs.html#ac9ddcfd900a82f06105f1b39539b32b5',1,'elasticity_rhs']]],
-  ['hooke_5f2d_5ffunction_49',['hooke_2d_function',['../namespacepolyfem_1_1autogen.html#a7cfb20309ff20334970285eb319b7f0a',1,'polyfem::autogen']]],
-  ['hooke_5f3d_5ffunction_50',['hooke_3d_function',['../namespacepolyfem_1_1autogen.html#a5ff9f85f23fe2bbffa4586b636e86e71',1,'polyfem::autogen']]],
-  ['hooke_5flinear_5felasticity_5f_51',['hooke_linear_elasticity_',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a702293c9d5b5abb32e4486768d811bbf',1,'polyfem::assembler::AssemblerUtils']]],
-  ['hookelinearelasticity_52',['HookeLinearElasticity',['../classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a10b5f798ac54f0f315b79024e144d11c',1,'polyfem::assembler::HookeLinearElasticity::HookeLinearElasticity()'],['../classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html',1,'polyfem::assembler::HookeLinearElasticity']]],
-  ['hookelinearelasticity_2ecpp_53',['HookeLinearElasticity.cpp',['../_hooke_linear_elasticity_8cpp.html',1,'']]],
-  ['hookelinearelasticity_2ehpp_54',['HookeLinearElasticity.hpp',['../_hooke_linear_elasticity_8hpp.html',1,'']]],
-  ['hpp_55',['hpp',['../namespaceeigs.html#a4613abfdcf4356a51bf82b0ceabe26a5',1,'eigs.hpp()'],['../namespaceelasticity__rhs.html#a58d3488e1b1421e46ba8072a95b6a261',1,'elasticity_rhs.hpp()'],['../namespacep__bases.html#aeebf777187840c3134b16458a2afcbb7',1,'p_bases.hpp()'],['../namespaceq__bases.html#a5d0406ad9fe83a8dda0fff37204faf2f',1,'q_bases.hpp()']]],
-  ['hv_56',['HV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a9a175bd416cdd8b4f8cecc8f1457fa33',1,'polyfem::mesh::Mesh3DStorage']]],
-  ['hyb_57',['HYB',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa774778f8f5b2180a7d3cfd86a25615d4',1,'polyfem::mesh']]]
+  ['hooke_5f_49',['hooke_',['../classpolyfem_1_1assembler_1_1_multi_model.html#aa3e52fd8394e56f36648163b8c07ed94',1,'polyfem::assembler::MultiModel']]],
+  ['hooke_5f2d_5ffunction_50',['hooke_2d_function',['../namespacepolyfem_1_1autogen.html#a7cfb20309ff20334970285eb319b7f0a',1,'polyfem::autogen']]],
+  ['hooke_5f3d_5ffunction_51',['hooke_3d_function',['../namespacepolyfem_1_1autogen.html#a5ff9f85f23fe2bbffa4586b636e86e71',1,'polyfem::autogen']]],
+  ['hooke_5flinear_5felasticity_5f_52',['hooke_linear_elasticity_',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a702293c9d5b5abb32e4486768d811bbf',1,'polyfem::assembler::AssemblerUtils']]],
+  ['hookelinearelasticity_53',['HookeLinearElasticity',['../classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a10b5f798ac54f0f315b79024e144d11c',1,'polyfem::assembler::HookeLinearElasticity::HookeLinearElasticity()'],['../classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html',1,'polyfem::assembler::HookeLinearElasticity']]],
+  ['hookelinearelasticity_2ecpp_54',['HookeLinearElasticity.cpp',['../_hooke_linear_elasticity_8cpp.html',1,'']]],
+  ['hookelinearelasticity_2ehpp_55',['HookeLinearElasticity.hpp',['../_hooke_linear_elasticity_8hpp.html',1,'']]],
+  ['hpp_56',['hpp',['../namespaceeigs.html#a4613abfdcf4356a51bf82b0ceabe26a5',1,'eigs.hpp()'],['../namespaceelasticity__rhs.html#a58d3488e1b1421e46ba8072a95b6a261',1,'elasticity_rhs.hpp()'],['../namespacep__bases.html#aeebf777187840c3134b16458a2afcbb7',1,'p_bases.hpp()'],['../namespaceq__bases.html#a5d0406ad9fe83a8dda0fff37204faf2f',1,'q_bases.hpp()']]],
+  ['hv_57',['HV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a9a175bd416cdd8b4f8cecc8f1457fa33',1,'polyfem::mesh::Mesh3DStorage']]],
+  ['hyb_58',['HYB',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa774778f8f5b2180a7d3cfd86a25615d4',1,'polyfem::mesh']]]
 ];

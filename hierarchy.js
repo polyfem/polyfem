@@ -34,6 +34,7 @@ var hierarchy =
           [ "polyfem::assembler::NeoHookeanAutodiff", "classpolyfem_1_1assembler_1_1_neo_hookean_autodiff.html", null ],
           [ "polyfem::assembler::UnconstrainedOgdenElasticity", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html", null ]
         ] ],
+        [ "polyfem::assembler::HookeLinearElasticity", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html", null ],
         [ "polyfem::assembler::LinearElasticity", "classpolyfem_1_1assembler_1_1_linear_elasticity.html", null ],
         [ "polyfem::assembler::MultiModel", "classpolyfem_1_1assembler_1_1_multi_model.html", null ],
         [ "polyfem::assembler::NavierStokesVelocity< full_gradient >", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html", null ],

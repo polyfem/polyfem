@@ -17,7 +17,8 @@ var searchData=
   ['hex_5fface_5ftable_14',['hex_face_table',['../namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a1de1a2dd8709669d68f19f19b3510749',1,'polyfem::mesh::MeshProcessing3D']]],
   ['hex_5ftetra_5ftable_15',['hex_tetra_table',['../namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a973fa48488e4b472eefcfb966abaed2b',1,'polyfem::mesh::MeshProcessing3D']]],
   ['hf_16',['HF',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a24eb261043d5703973b1c353592c9382',1,'polyfem::mesh::Mesh3DStorage']]],
-  ['hooke_5flinear_5felasticity_5f_17',['hooke_linear_elasticity_',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a702293c9d5b5abb32e4486768d811bbf',1,'polyfem::assembler::AssemblerUtils']]],
-  ['hpp_18',['hpp',['../namespaceeigs.html#a4613abfdcf4356a51bf82b0ceabe26a5',1,'eigs.hpp()'],['../namespaceelasticity__rhs.html#a58d3488e1b1421e46ba8072a95b6a261',1,'elasticity_rhs.hpp()'],['../namespacep__bases.html#aeebf777187840c3134b16458a2afcbb7',1,'p_bases.hpp()'],['../namespaceq__bases.html#a5d0406ad9fe83a8dda0fff37204faf2f',1,'q_bases.hpp()']]],
-  ['hv_19',['HV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a9a175bd416cdd8b4f8cecc8f1457fa33',1,'polyfem::mesh::Mesh3DStorage']]]
+  ['hooke_5f_17',['hooke_',['../classpolyfem_1_1assembler_1_1_multi_model.html#aa3e52fd8394e56f36648163b8c07ed94',1,'polyfem::assembler::MultiModel']]],
+  ['hooke_5flinear_5felasticity_5f_18',['hooke_linear_elasticity_',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a702293c9d5b5abb32e4486768d811bbf',1,'polyfem::assembler::AssemblerUtils']]],
+  ['hpp_19',['hpp',['../namespaceeigs.html#a4613abfdcf4356a51bf82b0ceabe26a5',1,'eigs.hpp()'],['../namespaceelasticity__rhs.html#a58d3488e1b1421e46ba8072a95b6a261',1,'elasticity_rhs.hpp()'],['../namespacep__bases.html#aeebf777187840c3134b16458a2afcbb7',1,'p_bases.hpp()'],['../namespaceq__bases.html#a5d0406ad9fe83a8dda0fff37204faf2f',1,'q_bases.hpp()']]],
+  ['hv_20',['HV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a9a175bd416cdd8b4f8cecc8f1457fa33',1,'polyfem::mesh::Mesh3DStorage']]]
 ];
