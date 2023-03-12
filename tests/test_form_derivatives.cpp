@@ -238,9 +238,7 @@ TEST_CASE("damping form derivatives", "[form][form_derivatives][damping_form]")
 	const auto state_ptr = get_state();
 	const double dt = 1e-2;
 	std::shared_ptr<assembler::ViscousDamping> damping_assembler = std::make_shared<assembler::ViscousDamping>();
-	std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
-	assemblers.push_back(damping_assembler);
-	state_ptr->set_materials(assemblers);
+	state_ptr->set_materials(*damping_assembler);
 
 	ElasticForm form(
 		state_ptr->n_bases,

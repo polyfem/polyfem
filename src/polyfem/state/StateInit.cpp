@@ -428,4 +428,19 @@ namespace polyfem
 			a->set_materials(body_ids, args["materials"]);
 	}
 
+	void State::set_materials(assembler::Assembler &assembler) const
+	{
+		const int size = (this->assembler->is_tensor() || this->assembler->is_fluid()) ? this->mesh->dimension() : 1;
+		assembler.set_size(size);
+
+		if (!utils::is_param_valid(args, "materials"))
+			return;
+
+		std::vector<int> body_ids(mesh->n_elements());
+		for (int i = 0; i < mesh->n_elements(); ++i)
+			body_ids[i] = mesh->get_body_id(i);
+
+		assembler.set_materials(body_ids, args["materials"]);
+	}
+
 } // namespace polyfem

@@ -238,8 +238,12 @@ namespace polyfem
 		void build_polygonal_basis();
 
 	public:
-		/// set the multimaterial
+		/// set the material and the problem dimension
+		/// @param[in/out] list of assembler to set
 		void set_materials(std::vector<std::shared_ptr<assembler::Assembler>> &assemblers) const;
+		/// utulity to set the material and the problem dimension to only 1 assembler
+		/// @param[in/out] assembler to set
+		void set_materials(assembler::Assembler &assembler) const;
 
 		//---------------------------------------------------
 		//-----------------solver----------------------------

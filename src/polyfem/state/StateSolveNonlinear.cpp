@@ -157,9 +157,7 @@ namespace polyfem
 		// Initialize forms
 
 		std::shared_ptr<assembler::ViscousDamping> damping_assembler = std::make_shared<assembler::ViscousDamping>();
-		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
-		assemblers.push_back(damping_assembler);
-		set_materials(assemblers);
+		set_materials(*damping_assembler);
 
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
 			// General

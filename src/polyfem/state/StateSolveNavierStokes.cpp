@@ -26,10 +26,9 @@ namespace polyfem
 		solve_data.rhs_assembler->set_bc(
 			local_boundary, boundary_nodes, n_boundary_samples(), local_neumann_boundary, rhs);
 
-		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
 		std::shared_ptr<assembler::Assembler> velocity_stokes_assembler = std::make_shared<assembler::StokesVelocity>();
-		assemblers.push_back(velocity_stokes_assembler);
-		set_materials(assemblers);
+		set_materials(*velocity_stokes_assembler);
+
 		Eigen::VectorXd x;
 		solver::NavierStokesSolver ns_solver(args["solver"]);
 		ns_solver.minimize(n_bases, n_pressure_bases,
@@ -179,7 +178,10 @@ namespace polyfem
 			time_integrator.set_parameters(args["time"]["integrator"]);
 		time_integrator.init(sol, Eigen::VectorXd::Zero(sol.size()), Eigen::VectorXd::Zero(sol.size()), dt);
 
-		assembler->assemble(mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, velocity_stiffness);
+		std::shared_ptr<assembler::Assembler> velocity_stokes_assembler = std::make_shared<assembler::StokesVelocity>();
+		set_materials(*velocity_stokes_assembler);
+
+		velocity_stokes_assembler->assemble(mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, velocity_stiffness);
 		mixed_assembler->assemble(mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases,
 								  pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
 		pressure_assembler->assemble(mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache,
