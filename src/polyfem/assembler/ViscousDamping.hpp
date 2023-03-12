@@ -10,6 +10,10 @@ namespace polyfem
 		class ViscousDamping : public NLAssembler
 		{
 		public:
+			using NLAssembler::assemble_energy;
+			using NLAssembler::assemble_grad;
+			using NLAssembler::assemble_hessian;
+
 			std::string name() const override { return "ViscousDamping"; }
 			std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
 

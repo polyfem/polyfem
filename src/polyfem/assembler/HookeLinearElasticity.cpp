@@ -28,6 +28,17 @@ namespace polyfem::assembler
 
 			return strain_from_disp_grad(jac);
 		}
+
+		template <typename T, unsigned long N>
+		T stress(const ElasticityTensor &elasticity_tensor, const std::array<T, N> &strain, const int j)
+		{
+			T res = elasticity_tensor(j, 0) * strain[0];
+
+			for (unsigned long k = 1; k < N; ++k)
+				res += elasticity_tensor(j, k) * strain[k];
+
+			return res;
+		}
 	} // namespace
 
 	HookeLinearElasticity::HookeLinearElasticity()
@@ -275,5 +286,97 @@ namespace polyfem::assembler
 			}
 		}
 		return res;
+	}
+
+	double HookeLinearElasticity::compute_energy(const NonLinearAssemblerData &data) const
+	{
+		return compute_energy_aux<double>(data);
+	}
+
+	Eigen::VectorXd HookeLinearElasticity::assemble_grad(const NonLinearAssemblerData &data) const
+	{
+		const int n_bases = data.vals.basis_values.size();
+		return polyfem::gradient_from_energy(
+			size(), n_bases, data,
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 6, 1>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 8, 1>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 12, 1>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 18, 1>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 24, 1>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 30, 1>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 60, 1>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 81, 1>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, BIG_N, 1>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::VectorXd>>(data); });
+	}
+
+	Eigen::MatrixXd HookeLinearElasticity::assemble_hessian(const NonLinearAssemblerData &data) const
+	{
+		const int n_bases = data.vals.basis_values.size();
+		return polyfem::hessian_from_energy(
+			size(), n_bases, data,
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 18, 1>, Eigen::Matrix<double, 18, 18>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 24, 1>, Eigen::Matrix<double, 24, 24>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 30, 1>, Eigen::Matrix<double, 30, 30>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 60, 1>, Eigen::Matrix<double, 60, 60>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>>(data); },
+			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(data); });
+	}
+
+	template <typename T>
+	T HookeLinearElasticity::compute_energy_aux(const NonLinearAssemblerData &data) const
+	{
+		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
+		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
+
+		AutoDiffVect local_disp;
+		get_local_disp(data, size(), local_disp);
+
+		AutoDiffGradMat disp_grad(size(), size());
+
+		T energy = T(0.0);
+
+		const int n_pts = data.da.size();
+		for (long p = 0; p < n_pts; ++p)
+		{
+			compute_disp_grad_at_quad(data, local_disp, p, size(), disp_grad);
+
+			AutoDiffGradMat strain = strain_from_disp_grad(disp_grad);
+			AutoDiffGradMat stress_tensor(size(), size());
+
+			if (size() == 2)
+			{
+				std::array<T, 3> eps;
+				eps[0] = strain(0, 0);
+				eps[1] = strain(1, 1);
+				eps[2] = 2 * strain(0, 1);
+
+				stress_tensor << stress(elasticity_tensor_, eps, 0), stress(elasticity_tensor_, eps, 2),
+					stress(elasticity_tensor_, eps, 2), stress(elasticity_tensor_, eps, 1);
+			}
+			else
+			{
+				std::array<T, 6> eps;
+				eps[0] = strain(0, 0);
+				eps[1] = strain(1, 1);
+				eps[2] = strain(2, 2);
+				eps[3] = 2 * strain(1, 2);
+				eps[4] = 2 * strain(0, 2);
+				eps[5] = 2 * strain(0, 1);
+
+				stress_tensor << stress(elasticity_tensor_, eps, 0), stress(elasticity_tensor_, eps, 5), stress(elasticity_tensor_, eps, 4),
+					stress(elasticity_tensor_, eps, 5), stress(elasticity_tensor_, eps, 1), stress(elasticity_tensor_, eps, 3),
+					stress(elasticity_tensor_, eps, 4), stress(elasticity_tensor_, eps, 3), stress(elasticity_tensor_, eps, 2);
+			}
+
+			energy += (stress_tensor * strain).trace() * data.da(p);
+		}
+
+		return energy * 0.5;
 	}
 } // namespace polyfem::assembler

@@ -15,7 +15,7 @@ namespace polyfem::assembler
 		neo_hookean_.set_size(size);
 		linear_elasticity_.set_size(size);
 
-		// hooke_.set_size(size);
+		hooke_.set_size(size);
 		mooney_rivlin_elasticity_.set_size(size);
 		unconstrained_ogden_elasticity_.set_size(size);
 		incompressible_ogden_elasticity_.set_size(size);
@@ -29,7 +29,7 @@ namespace polyfem::assembler
 		neo_hookean_.add_multimaterial(index, params);
 		linear_elasticity_.add_multimaterial(index, params);
 
-		// hooke_.add_multimaterial(index, params);
+		hooke_.add_multimaterial(index, params);
 		mooney_rivlin_elasticity_.add_multimaterial(index, params);
 		unconstrained_ogden_elasticity_.add_multimaterial(index, params);
 		incompressible_ogden_elasticity_.add_multimaterial(index, params);
@@ -57,8 +57,8 @@ namespace polyfem::assembler
 			return neo_hookean_.assemble_grad(data);
 		else if (model == "LinearElasticity")
 			return linear_elasticity_.assemble_grad(data);
-		// else if (model == "HookeLinearElasticity")
-		// return hooke_.assemble_grad(data);
+		else if (model == "HookeLinearElasticity")
+			return hooke_.assemble_grad(data);
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.assemble_grad(data);
 		else if (model == "UnconstrainedOgden")
@@ -84,8 +84,8 @@ namespace polyfem::assembler
 			return neo_hookean_.assemble_hessian(data);
 		else if (model == "LinearElasticity")
 			return linear_elasticity_.assemble_hessian(data);
-		// else if (model == "HookeLinearElasticity")
-		// return hooke_.assemble_hessian(data);
+		else if (model == "HookeLinearElasticity")
+			return hooke_.assemble_hessian(data);
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.assemble_hessian(data);
 		else if (model == "UnconstrainedOgden")
@@ -110,8 +110,8 @@ namespace polyfem::assembler
 			return neo_hookean_.compute_energy(data);
 		else if (model == "LinearElasticity")
 			return linear_elasticity_.compute_energy(data);
-		// else if (model == "HookeLinearElasticity")
-		// return hooke_.compute_energy(data);
+		else if (model == "HookeLinearElasticity")
+			return hooke_.compute_energy(data);
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.compute_energy(data);
 		else if (model == "UnconstrainedOgden")
@@ -135,8 +135,8 @@ namespace polyfem::assembler
 			neo_hookean_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
 		else if (model == "LinearElasticity")
 			linear_elasticity_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
-		// else if (model == "HookeLinearElasticity")
-		// return hooke_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
+		else if (model == "HookeLinearElasticity")
+			return hooke_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
 		else if (model == "UnconstrainedOgden")
