@@ -9,6 +9,8 @@ namespace polyfem::assembler
 	class Helmholtz : public LinearAssembler
 	{
 	public:
+		using LinearAssembler::assemble;
+
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;
 		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;

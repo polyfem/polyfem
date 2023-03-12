@@ -9,6 +9,8 @@ namespace polyfem::assembler
 	class StokesVelocity : public LinearAssembler
 	{
 	public:
+		using LinearAssembler::assemble;
+
 		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 		// res is R^{dim²}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
@@ -45,6 +47,8 @@ namespace polyfem::assembler
 	class StokesPressure : public LinearAssembler
 	{
 	public:
+		using LinearAssembler::assemble;
+
 		std::string name() const override { return "StokesPressure"; }
 		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
 

@@ -48,6 +48,8 @@ namespace polyfem::assembler
 	class IncompressibleLinearElasticityPressure : public LinearAssembler
 	{
 	public:
+		using LinearAssembler::assemble;
+
 		// res is R^{1}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;

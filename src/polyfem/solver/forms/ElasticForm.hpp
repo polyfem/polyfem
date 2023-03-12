@@ -59,8 +59,9 @@ namespace polyfem::solver
 
 		const assembler::Assembler &assembler_; ///< Reference to the assembler
 		const assembler::AssemblyValsCache &ass_vals_cache_;
-		const bool is_volume_;
 		const double dt_;
+		const bool is_volume_;
+
 		StiffnessMatrix cached_stiffness_;           ///< Cached stiffness matrix for linear elasticity
 		mutable utils::SparseMatrixCache mat_cache_; ///< Matrix cache (mutable because it is modified in second_derivative_unweighted)
 

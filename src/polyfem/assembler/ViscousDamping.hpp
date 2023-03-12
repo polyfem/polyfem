@@ -13,6 +13,7 @@ namespace polyfem
 			using NLAssembler::assemble_energy;
 			using NLAssembler::assemble_grad;
 			using NLAssembler::assemble_hessian;
+			using NLAssembler::compute_energy;
 
 			std::string name() const override { return "ViscousDamping"; }
 			std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
@@ -31,6 +32,7 @@ namespace polyfem
 				psi_ = psi;
 				phi_ = phi;
 			}
+
 			double get_psi() const { return psi_; }
 			double get_phi() const { return phi_; }
 

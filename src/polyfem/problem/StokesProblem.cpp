@@ -1046,6 +1046,8 @@ namespace polyfem
 					return simple_function_lin(pt(0), pt(1), t);
 				case 3:
 					return simple_function_const(pt(0), pt(1), t);
+				default:
+					assert(false);
 				}
 			}
 			else if (pt.size() == 3)
@@ -1060,6 +1062,8 @@ namespace polyfem
 					return simple_function_lin(pt(0), pt(1), pt(2), t);
 				case 3:
 					return simple_function_const(pt(0), pt(1), pt(2), t);
+				default:
+					assert(false);
 				}
 			}
 
@@ -1081,6 +1085,8 @@ namespace polyfem
 					return simple_function_lin(pt(0), pt(1), t);
 				case 3:
 					return simple_function_const(pt(0), pt(1), t);
+				default:
+					assert(false);
 				}
 			}
 			else if (pt.size() == 3)
@@ -1095,6 +1101,8 @@ namespace polyfem
 					return simple_function_lin(pt(0), pt(1), pt(2), t);
 				case 3:
 					return simple_function_const(pt(0), pt(1), pt(2), t);
+				default:
+					assert(false);
 				}
 			}
 
@@ -1116,6 +1124,8 @@ namespace polyfem
 					return simple_function_lin(pt(0), pt(1), t);
 				case 3:
 					return simple_function_const(pt(0), pt(1), t);
+				default:
+					assert(false);
 				}
 			}
 			else if (pt.size() == 3)
@@ -1130,6 +1140,8 @@ namespace polyfem
 					return simple_function_lin(pt(0), pt(1), pt(2), t);
 				case 3:
 					return simple_function_const(pt(0), pt(1), pt(2), t);
+				default:
+					assert(false);
 				}
 			}
 
