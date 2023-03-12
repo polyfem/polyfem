@@ -198,6 +198,27 @@ namespace polyfem::io
 						  const bool is_contact_enabled,
 						  std::vector<SolutionFrame> &solution_frames) const;
 
+		/// saves the  surface vtu file for for constact quantites, eg contact or friction forces
+		/// @param[in] export_surface filename
+		/// @param[in] state state to get the data
+		/// @param[in] sol solution
+		/// @param[in] pressure pressure
+		/// @param[in] t time
+		/// @param[in] dt_in delta_t
+		/// @param[in] opts export options
+		/// @param[in] is_contact_enabled if contact is enabled
+		/// @param[out] solution_frames saves the output here instead of vtu
+		void save_contact_surface(
+			const std::string &export_surface,
+			const State &state,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &pressure,
+			const double t,
+			const double dt_in,
+			const ExportOptions &opts,
+			const bool is_contact_enabled,
+			std::vector<SolutionFrame> &solution_frames) const;
+
 		/// saves the wireframe
 		/// @param[in] name filename
 		/// @param[in] state state to get the data
