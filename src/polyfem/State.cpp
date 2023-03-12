@@ -928,7 +928,7 @@ namespace polyfem
 
 		rhs.resize(0, 0);
 
-		if (poly_edge_to_data.empty() || polys.empty())
+		if (poly_edge_to_data.empty() && polys.empty())
 		{
 			timings.computing_poly_basis_time = 0;
 			return;
