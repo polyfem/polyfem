@@ -112,6 +112,8 @@ namespace cppoptlib
 		if (export_energy_path != "")
 			outfile.open(export_energy_path);
 
+		objFunc.save_to_file(x);
+
 		if (!disable_log)
 			logger().debug(
 				"Starting {} solve f₀={:g} ‖∇f₀‖={:g} "

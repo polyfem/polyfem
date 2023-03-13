@@ -52,8 +52,8 @@ namespace cppoptlib
 
 		double compute_grad_norm(const Eigen::VectorXd &x, const Eigen::VectorXd &grad) const override
 		{
-			auto min = get_lower_bound(x, true);
-			auto max = get_upper_bound(x, true);
+			auto min = get_lower_bound(x, false);
+			auto max = get_upper_bound(x, false);
 
 			return ((x - grad).cwiseMax(min).cwiseMin(max) - x).norm();
 		}
