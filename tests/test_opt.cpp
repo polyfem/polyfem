@@ -93,24 +93,6 @@ namespace
 		return energies;
 	}
 
-	// void run_opt_new(const std::string &name)
-	// {
-	// 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + name + "/";
-	// 	json opt_args;
-	// 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-	// 		log_and_throw_error("Failed to load optimization json file!");
-
-	// 	for (auto &state_arg : opt_args["states"])
-	// 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
-
-	// 	auto nl_problem = make_nl_problem(opt_args, spdlog::level::level_enum::err);
-
-	// 	Eigen::VectorXd x = nl_problem->initial_guess();
-
-	// 	std::shared_ptr<cppoptlib::NonlinearSolver<solver::AdjointNLProblem>> nlsolver = make_nl_solver<solver::AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
-
-	// 	CHECK_THROWS_WITH(nlsolver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
-	// }
 } // namespace
 
 #if defined(__linux__)
@@ -130,7 +112,6 @@ TEST_CASE("material-opt", "[optimization]")
 		for (auto &state_arg : opt_args["states"])
 			state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
 
-		// auto nl_problem = make_nl_problem(opt_args, spdlog::level::level_enum::err);
 		json state_args = opt_args["states"];
 		std::shared_ptr<solver::AdjointNLProblem> nl_problem;
 		std::vector<std::shared_ptr<State>> states(state_args.size());
