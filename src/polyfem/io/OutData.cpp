@@ -1163,7 +1163,7 @@ namespace polyfem::io
 			points.rows(), sol, fun, opts.use_sampler, opts.boundary_only);
 
 		{
-			Eigen::MatrixXd tmp = Eigen::VectorXd::LinSpaced(sol.size(), 0, sol.size());
+			Eigen::MatrixXd tmp = Eigen::VectorXd::LinSpaced(sol.size(), 0, sol.size() - 1);
 
 			Evaluator::interpolate_function(
 				mesh, problem.is_scalar(), bases, state.disc_orders,
