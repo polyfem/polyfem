@@ -17,6 +17,7 @@
 #include <polyfem/assembler/Stokes.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 
+#include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 // #include <unsupported/Eigen/SparseExtra>
@@ -683,17 +684,8 @@ namespace polyfem
 			for (int i = 0; i < body_params.size(); ++i)
 			{
 				json mat = body_params[i];
-				json id = mat["id"];
-				if (id.is_array())
-				{
-					for (int j = 0; j < id.size(); ++j)
-						materials[id[j]] = mat;
-				}
-				else
-				{
-					const int mid = id;
-					materials[mid] = mat;
-				}
+				for (const int id : utils::json_as_array<int>(mat["id"]))
+					materials[id] = mat;
 			}
 
 			std::set<int> missing;
