@@ -116,7 +116,7 @@ namespace polyfem::solver
 			{
 				std::vector<std::shared_ptr<AdjointForm>> forms({create_form(args["objective"], var2sim, states)});
 				Eigen::VectorXd bounds;
-				nlohmann::adl_serializer<Eigen::VectorXd>::from_json(args["values"], bounds);
+				nlohmann::adl_serializer<Eigen::VectorXd>::from_json(args["soft_bound"], bounds);
 				obj = std::make_shared<InequalityConstraintForm>(forms, bounds);
 			}
 			else

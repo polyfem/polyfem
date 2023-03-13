@@ -1066,11 +1066,11 @@
         "type": "object",
         "type_name": "soft_constraint",
         "required": [
-            "objective"
+            "objective",
+            "soft_bound"
         ],
         "optional": [
-            "weight",
-            "soft_bound"
+            "weight"
         ],
         "doc": "TODO"
     },
@@ -1087,11 +1087,6 @@
     {
         "pointer": "/functionals/*/objective/*",
         "type": "object",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/functionals/*/soft_bound",
-        "type": "list",
         "doc": "TODO"
     },
     {

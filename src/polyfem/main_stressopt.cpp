@@ -136,7 +136,6 @@ int main(int argc, char **argv)
 		v2s->update(x);
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
-	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 
 	if (only_compute_energy)
 	{
@@ -148,6 +147,7 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 
+	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 	nl_solver->minimize(*nl_problem, x);
 
 	return EXIT_SUCCESS;
