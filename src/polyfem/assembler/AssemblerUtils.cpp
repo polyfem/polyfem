@@ -17,6 +17,7 @@
 #include <polyfem/assembler/Stokes.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 
+#include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 // #include <unsupported/Eigen/SparseExtra>

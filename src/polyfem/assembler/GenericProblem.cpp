@@ -806,18 +806,11 @@ namespace polyfem
 					neumann_boundary_ids_[i] = j_boundary[i - offset]["id"];
 
 					auto ff = j_boundary[i - offset]["value"];
-					if (ff.is_array())
-					{
-						for (size_t k = 0; k < ff.size(); ++k)
-							forces_[i].value[k].init(ff[k]);
-					}
-					else
-					{
-						assert(false);
-						forces_[i].value[0].init(0);
-						forces_[i].value[1].init(0);
-						forces_[i].value[2].init(0);
-					}
+					assert(ff.is_array());
+
+					for (size_t k = 0; k < ff.size(); ++k)
+						forces_[i].value[k].init(ff[k]);
+
 					if (j_boundary[i - offset]["interpolation"].is_array())
 					{
 						for (int ii = 0; ii < j_boundary[i - offset]["interpolation"].size(); ++ii)
