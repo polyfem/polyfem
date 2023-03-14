@@ -15,7 +15,7 @@ namespace polyfem
 		class KernelProblem : public ProblemWithSolution
 		{
 		public:
-			KernelProblem(const std::string &name, const assembler::AssemblerUtils &assembler);
+			KernelProblem(const std::string &name, const assembler::Assembler &assembler);
 
 			VectorNd eval_fun(const VectorNd &pt, const double t) const override;
 			AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
@@ -25,14 +25,13 @@ namespace polyfem
 				return AutodiffHessianPt(1);
 			}
 
-			void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 			void set_parameters(const json &params) override;
 			bool is_scalar() const override;
 
 		private:
-			const assembler::AssemblerUtils &assembler_;
-			std::string formulation_ = "Laplacian";
+			const assembler::Assembler &assembler_;
 			int n_kernels_ = 5;
 			double kernel_distance_ = 0.05;
 			Eigen::VectorXd kernel_weights_;

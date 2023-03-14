@@ -70,6 +70,30 @@ namespace polyfem::assembler
 		return val;
 	}
 
+	std::map<std::string, Assembler::ParamFunc> UnconstrainedOgdenElasticity::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+		const auto &alphas = this->alphas();
+		const auto &mus = this->mus();
+		const auto &Ds = this->Ds();
+
+		for (int i = 0; i < alphas.size(); ++i)
+			res[fmt::format("alpha_{}", i)] = [&alphas, i](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+				return alphas[i](p, t, e);
+			};
+
+		for (int i = 0; i < mus.size(); ++i)
+			res[fmt::format("mu_{}", i)] = [&mus, i](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+				return mus[i](p, t, e);
+			};
+
+		for (int i = 0; i < Ds.size(); ++i)
+			res[fmt::format("D_{}", i)] = [&Ds, i](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+				return Ds[i](p, t, e);
+			};
+		return res;
+	}
+
 	// =========================================================================
 
 	IncompressibleOgdenElasticity::IncompressibleOgdenElasticity()
@@ -124,6 +148,31 @@ namespace polyfem::assembler
 		val += 0.5 * bulk_modulus_(p, t, el_id) * log_J * log_J;
 
 		return val;
+	}
+
+	std::map<std::string, Assembler::ParamFunc> IncompressibleOgdenElasticity::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+
+		const auto &coefficients = this->coefficients();
+		const auto &expoenents = this->expoenents();
+		const auto &k = this->bulk_modulus();
+
+		for (int i = 0; i < coefficients.size(); ++i)
+			res[fmt::format("c_{}", i)] = [&coefficients, i](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+				return coefficients[i](p, t, e);
+			};
+
+		for (int i = 0; i < expoenents.size(); ++i)
+			res[fmt::format("m_{}", i)] = [&expoenents, i](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+				return expoenents[i](p, t, e);
+			};
+
+		res["k"] = [&k](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+			return k(p, t, e);
+		};
+
+		return res;
 	}
 
 	// =========================================================================

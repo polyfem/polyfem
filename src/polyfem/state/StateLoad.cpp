@@ -1,5 +1,7 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/assembler/Mass.hpp>
+
 #include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
@@ -29,7 +31,7 @@ namespace polyfem
 		poly_edge_to_data.clear();
 		obstacle.clear();
 
-		stiffness.resize(0, 0);
+		mass.resize(0, 0);
 		rhs.resize(0, 0);
 
 		n_bases = 0;
@@ -50,33 +52,23 @@ namespace polyfem
 			return;
 		}
 
-		// TODO: renable this
-		// if (args["normalize_mesh"])
-		// 	mesh->normalize();
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
-		assembler.set_size(formulation(), mesh->dimension());
-
-		// TODO: renable this
-		// int n_refs = args["n_refs"];
-		// if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
-		// {
-		// 	if (args["force_no_ref_for_harmonic"])
-		// 		logger().warn("Using harmonic bases without refinement");
-		// 	else
-		// 		n_refs = 1;
-		// }
-		// if (n_refs > 0)
-		// 	mesh->refine(n_refs, args["refinement_location"], parent_elements);
-
 		if (!skip_boundary_sideset)
 			mesh->compute_boundary_ids(boundary_marker);
-		// TODO: renable this
-		// BoxSetter::set_sidesets(args, *mesh);
-		set_materials();
+
+		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
+		assemblers.push_back(assembler);
+		assemblers.push_back(mass_matrix_assembler);
+		if (mixed_assembler != nullptr)
+			// TODO: assemblers.push_back(mixed_assembler);
+			mixed_assembler->set_size(mesh->dimension());
+		if (pressure_assembler != nullptr)
+			assemblers.push_back(pressure_assembler);
+		set_materials(assemblers);
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -133,8 +125,15 @@ namespace polyfem
 
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
-		assembler.set_size(formulation(), mesh->dimension());
-		set_materials();
+		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
+		assemblers.push_back(assembler);
+		assemblers.push_back(mass_matrix_assembler);
+		if (mixed_assembler != nullptr)
+			// TODO: assemblers.push_back(mixed_assembler);
+			mixed_assembler->set_size(mesh->dimension());
+		if (pressure_assembler != nullptr)
+			assemblers.push_back(pressure_assembler);
+		set_materials(assemblers);
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());

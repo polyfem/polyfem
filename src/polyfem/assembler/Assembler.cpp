@@ -78,15 +78,67 @@ namespace polyfem::assembler
 		};
 	} // namespace
 
-	template <typename LocalBlockMatrix>
-	LinearAssembler<LocalBlockMatrix>::LinearAssembler()
+	void Assembler::set_materials(const std::vector<int> &body_ids, const json &body_params)
 	{
-		if constexpr (std::is_same<LocalBlockMatrix, Eigen::Matrix<double, 1, 1>>::value)
-			set_size(1);
+		if (!body_params.is_array())
+		{
+			this->add_multimaterial(0, body_params);
+			return;
+		}
+
+		std::map<int, json> materials;
+		for (int i = 0; i < body_params.size(); ++i)
+		{
+			json mat = body_params[i];
+			json id = mat["id"];
+			if (id.is_array())
+			{
+				for (int j = 0; j < id.size(); ++j)
+					materials[id[j]] = mat;
+			}
+			else
+			{
+				const int mid = id;
+				materials[mid] = mat;
+			}
+		}
+
+		std::set<int> missing;
+
+		std::map<int, int> body_element_count;
+		std::vector<int> eid_to_eid_in_body(body_ids.size());
+		for (int e = 0; e < body_ids.size(); ++e)
+		{
+			const int bid = body_ids[e];
+			body_element_count.try_emplace(bid, 0);
+			eid_to_eid_in_body[e] = body_element_count[bid]++;
+		}
+
+		for (int e = 0; e < body_ids.size(); ++e)
+		{
+			const int bid = body_ids[e];
+			const auto it = materials.find(bid);
+			if (it == materials.end())
+			{
+				missing.insert(bid);
+				continue;
+			}
+
+			const json &tmp = it->second;
+			this->add_multimaterial(e, tmp);
+		}
+
+		for (int bid : missing)
+		{
+			logger().warn("Missing material parameters for body {}", bid);
+		}
 	}
 
-	template <typename LocalBlockMatrix>
-	void LinearAssembler<LocalBlockMatrix>::assemble(
+	LinearAssembler::LinearAssembler()
+	{
+	}
+
+	void LinearAssembler::assemble(
 		const bool is_volume,
 		const int n_basis,
 		const std::vector<ElementBases> &bases,
@@ -95,6 +147,8 @@ namespace polyfem::assembler
 		StiffnessMatrix &stiffness,
 		const bool is_mass) const
 	{
+		assert(size() > 0);
+
 		const int max_triplets_size = int(1e7);
 		const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * size());
 		// #ifdef POLYFEM_WITH_TBB
@@ -299,15 +353,11 @@ namespace polyfem::assembler
 		// stiffness.setFromTriplets(entries.begin(), entries.end());
 	}
 
-	template <typename LocalBlockMatrix>
-	MixedAssembler<LocalBlockMatrix>::MixedAssembler()
+	MixedAssembler::MixedAssembler()
 	{
-		if constexpr (std::is_same<LocalBlockMatrix, Eigen::Matrix<double, 1, 1>>::value)
-			set_size(1);
 	}
 
-	template <typename LocalBlockMatrix>
-	void MixedAssembler<LocalBlockMatrix>::assemble(
+	void MixedAssembler::assemble(
 		const bool is_volume,
 		const int n_psi_basis,
 		const int n_phi_basis,
@@ -318,6 +368,7 @@ namespace polyfem::assembler
 		const AssemblyValsCache &phi_cache,
 		StiffnessMatrix &stiffness) const
 	{
+		assert(size() > 0);
 		assert(phi_bases.size() == psi_bases.size());
 
 		const int max_triplets_size = int(1e7);
@@ -451,7 +502,7 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void NLAssembler::assemble_grad(
+	void NLAssembler::assemble_gradient(
 		const bool is_volume,
 		const int n_basis,
 		const std::vector<ElementBases> &bases,
@@ -486,7 +537,7 @@ namespace polyfem::assembler
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 				const int n_loc_bases = int(vals.basis_values.size());
 
-				const auto val = assemble_grad(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				const auto val = assemble_gradient(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
 				assert(val.size() == n_loc_bases * size());
 
 				for (int j = 0; j < n_loc_bases; ++j)
@@ -655,10 +706,5 @@ namespace polyfem::assembler
 		timerg.stop();
 		logger().trace("done merge assembly {}s...", timerg.getElapsedTime());
 	}
-
-	template class LinearAssembler<Eigen::Matrix<double, 1, 1>>;
-	template class LinearAssembler<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>>;
-	template class MixedAssembler<Eigen::Matrix<double, 1, 1>>;
-	template class MixedAssembler<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>>;
 
 } // namespace polyfem::assembler

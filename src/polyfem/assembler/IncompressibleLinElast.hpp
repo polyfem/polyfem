@@ -9,69 +9,58 @@
 namespace polyfem::assembler
 {
 	// displacement assembler
-	class IncompressibleLinearElasticityDispacement : public TensorLinearAssembler
+	class IncompressibleLinearElasticityDispacement : public LinearAssembler, ElasticityAssembler
 	{
 	public:
-		using TensorLinearAssembler::assemble;
-
+		using LinearAssembler::assemble;
 		// res is R^{dim²}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const;
-
-		void add_multimaterial(const int index, const json &params);
+		void add_multimaterial(const int index, const json &params) override;
 		void set_params(const LameParameters &params) { params_ = params; }
 
-		void compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
-		void compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &tensor) const;
+		std::string name() const override { return "IncompressibleLinearElasticity"; }
+		std::map<std::string, ParamFunc> parameters() const override;
+
+	protected:
+		void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
 
 	private:
 		LameParameters params_;
-
-		void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
 	};
 
 	// mixed, displacement and pressure
-	class IncompressibleLinearElasticityMixed : public TensorMixedAssembler
+	class IncompressibleLinearElasticityMixed : public MixedAssembler
 	{
 	public:
-		using TensorMixedAssembler::assemble;
+		std::string name() const override { return "IncompressibleLinearElasticityMixed"; }
 
 		// res is R^{dim}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 		assemble(const MixedAssemblerData &data) const override;
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const;
-
 		inline int rows() const override { return size_; }
 		inline int cols() const override { return 1; }
-
-		void add_multimaterial(const int index, const json &params) {}
-		void set_params(const LameParameters &params) {}
 	};
 
 	// pressure only part
-	class IncompressibleLinearElasticityPressure : public ScalarLinearAssembler
+	class IncompressibleLinearElasticityPressure : public LinearAssembler
 	{
 	public:
-		using ScalarLinearAssembler::assemble;
+		using LinearAssembler::assemble;
 
 		// res is R^{1}
-		Eigen::Matrix<double, 1, 1>
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;
 
-		Eigen::Matrix<double, 1, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const
-		{
-			assert(false);
-			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
-		}
-
-		void add_multimaterial(const int index, const json &params);
+		void add_multimaterial(const int index, const json &params) override;
 		void set_params(const LameParameters &params) { params_ = params; }
+
+		std::string name() const override { return "IncompressibleLinearElasticityPressure"; }
+		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
+
+		void set_size(const int) override { size_ = 1; }
 
 	private:
 		LameParameters params_;
