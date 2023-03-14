@@ -118,9 +118,12 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         }
     }
 
+    std::vector<int> boundary_nodes_tmp = boundary_nodes;
+    full_to_periodic(boundary_nodes_tmp);
+
     std::shared_ptr<NLHomoProblem> homo_problem = std::make_shared<NLHomoProblem>(
         ndof,
-        boundary_nodes,
+        boundary_nodes_tmp,
         local_boundary,
         n_boundary_samples(),
         *solve_data.rhs_assembler, *this, 0, forms);
@@ -161,7 +164,8 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
     }
     else
     {
-        homo_problem->set_fixed_entry({0, 1, 2, 3});
+        // homo_problem->set_only_symmetric();
+        homo_problem->set_fixed_entry({1, 2, 3});
 
         homo_problem->init(homo_problem->reduced_to_full(tmp_sol));
         nl_solver->minimize(*homo_problem, tmp_sol);

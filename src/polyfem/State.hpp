@@ -344,7 +344,6 @@ namespace polyfem
 
 		// under periodic BC, the index map from a restricted node to the node it depends on, -1 otherwise
 		Eigen::VectorXi periodic_reduce_map;
-		int n_periodic_dependent_dofs;
 		std::vector<bool> periodic_dimensions;
 		bool has_periodic_bc() const
 		{

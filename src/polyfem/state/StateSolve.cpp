@@ -424,24 +424,22 @@ namespace polyfem
 			if (id < periodic_reduce_map.size())
 				return periodic_reduce_map(id);
 			else
-				return (int)(id + independent_dof - n_bases * problem_dim);
+				return (int)(id + independent_dof - periodic_reduce_map.size());
 		};
 
 		// rhs under periodic basis
 		Eigen::MatrixXd b_periodic;
 		b_periodic.setZero(index_map(b.rows()), b.cols());
-		for (int d = 0; d < b_periodic.cols(); d++)
-		{
+		if (accumulate)
 			for (int k = 0; k < b.rows(); k++)
-				if (accumulate)
-					b_periodic(index_map(k), d) += b(k, d);
-				else
-					b_periodic(index_map(k), d) = b(k, d);
+				b_periodic.row(index_map(k)) += b.row(k);
+		else
+			for (int k = 0; k < b.rows(); k++)
+				b_periodic.row(index_map(k)) = b.row(k);
 
-			if (force_dirichlet)
-				for (int k : boundary_nodes)
-					b_periodic(index_map(k), d) = b(k, d);
-		}
+		if (force_dirichlet)
+			for (int k : boundary_nodes)
+				b_periodic.row(index_map(k)) = b.row(k);
 
 		b = b_periodic;
 

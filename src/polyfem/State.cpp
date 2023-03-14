@@ -1021,17 +1021,16 @@ namespace polyfem
 
 			// new indexing for independent dof
 			int independent_dof = 0;
-			n_periodic_dependent_dofs = 0;
 			for (int i = 0; i < dependent_map.size(); i++)
+			{
 				if (dependent_map(i) < 0)
 				{
 					for (int d = 0; d < problem_dim; d++)
 						periodic_reduce_map(i * problem_dim + d) = independent_dof * problem_dim + d;
 					independent_dof++;
-					dependent_map(i) = i;
+					// dependent_map(i) = i;
 				}
-				else
-					n_periodic_dependent_dofs += problem_dim;
+			}
 
 			for (int i = 0; i < dependent_map.size(); i++)
 				if (dependent_map(i) >= 0)
