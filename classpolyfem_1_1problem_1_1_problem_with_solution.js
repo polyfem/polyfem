@@ -10,6 +10,6 @@ var classpolyfem_1_1problem_1_1_problem_with_solution =
     [ "exact_grad", "classpolyfem_1_1problem_1_1_problem_with_solution.html#af5ad4a407d0ba561ea823dd28d647697", null ],
     [ "has_exact_sol", "classpolyfem_1_1problem_1_1_problem_with_solution.html#a6b6e06e71d46153233b420e606ed421c", null ],
     [ "is_rhs_zero", "classpolyfem_1_1problem_1_1_problem_with_solution.html#a3699d416b210101dbe60e24c439d6f30", null ],
-    [ "rhs", "classpolyfem_1_1problem_1_1_problem_with_solution.html#a7ac8515f2014c5b98b91146bf5b7ed13", null ],
+    [ "rhs", "classpolyfem_1_1problem_1_1_problem_with_solution.html#a24d2aba136e3d02cf1eab72d59c79b5c", null ],
     [ "size_for", "classpolyfem_1_1problem_1_1_problem_with_solution.html#a716a632d5e87de82fd6a81932bf75af1", null ]
 ];

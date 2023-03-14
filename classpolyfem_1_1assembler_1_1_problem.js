@@ -28,7 +28,7 @@ var classpolyfem_1_1assembler_1_1_problem =
     [ "name", "classpolyfem_1_1assembler_1_1_problem.html#a49bcc436f56b6ac1c201261495bb333c", null ],
     [ "neumann_bc", "classpolyfem_1_1assembler_1_1_problem.html#a0a756bb1ea13fad6a955c9b5a884cba9", null ],
     [ "neumann_nodal_value", "classpolyfem_1_1assembler_1_1_problem.html#a53ea1fc8933fca5a88ce52e09a64e4b4", null ],
-    [ "rhs", "classpolyfem_1_1assembler_1_1_problem.html#ae79d044476b72fb431b12d6eadeddca6", null ],
+    [ "rhs", "classpolyfem_1_1assembler_1_1_problem.html#a9e01aba9cf417181f5671d52d126ab2b", null ],
     [ "set_parameters", "classpolyfem_1_1assembler_1_1_problem.html#a10ec97e704f516a2848ad65aadc8fee0", null ],
     [ "setup_bc", "classpolyfem_1_1assembler_1_1_problem.html#a767747047947f319222d4e0d9c2ee942", null ],
     [ "update_nodes", "classpolyfem_1_1assembler_1_1_problem.html#a92740a6fa985a4a8e4a8f5e88b35cda6", null ],

@@ -145,8 +145,8 @@ Collaboration diagram for polyfem::problem::Flow:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ab0a4414cc6c6c8a9ffca6429fe9ae5d6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_flow.html#ab0a4414cc6c6c8a9ffca6429fe9ae5d6">Flow</a> (const std::string &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a49bcc436f56b6ac1c201261495bb333c">name</a>)</td></tr>
 <tr class="separator:ab0a4414cc6c6c8a9ffca6429fe9ae5d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a795a86c9f7add6763458491a7daa681b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_flow.html#a795a86c9f7add6763458491a7daa681b">rhs</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;formulation, const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const override</td></tr>
-<tr class="separator:a795a86c9f7add6763458491a7daa681b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9dce515044d8b8c489f23b571470698"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_flow.html#ab9dce515044d8b8c489f23b571470698">rhs</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">assembler::Assembler</a> &amp;assembler, const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const override</td></tr>
+<tr class="separator:ab9dce515044d8b8c489f23b571470698"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7417cfd167bb1f5455550982cb840259"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_flow.html#a7417cfd167bb1f5455550982cb840259">is_rhs_zero</a> () const override</td></tr>
 <tr class="separator:a7417cfd167bb1f5455550982cb840259"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00a7e1ba9dbd484f4e8f7f169c695186"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_flow.html#a00a7e1ba9dbd484f4e8f7f169c695186">dirichlet_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;uv, const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const override</td></tr>
@@ -179,8 +179,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a49bcc436f56b6ac1c201261495bb333c inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90c406c9ef70aebd6b8d595c61d051ec inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">is_scalar</a> () const =0</td></tr>
 <tr class="separator:a90c406c9ef70aebd6b8d595c61d051ec inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae79d044476b72fb431b12d6eadeddca6 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae79d044476b72fb431b12d6eadeddca6">rhs</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;formulation, const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const =0</td></tr>
-<tr class="separator:ae79d044476b72fb431b12d6eadeddca6 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e01aba9cf417181f5671d52d126ab2b inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9e01aba9cf417181f5671d52d126ab2b">rhs</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">assembler::Assembler</a> &amp;assembler, const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const =0</td></tr>
+<tr class="separator:a9e01aba9cf417181f5671d52d126ab2b inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f7a9a8e77a2f7814de1e92fc6670837 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2f7a9a8e77a2f7814de1e92fc6670837">is_rhs_zero</a> () const =0</td></tr>
 <tr class="separator:a2f7a9a8e77a2f7814de1e92fc6670837 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb390119fd456c4ed13a75cca300abf6 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aeb390119fd456c4ed13a75cca300abf6">dirichlet_bc</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;uv, const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const =0</td></tr>
@@ -390,8 +390,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a795a86c9f7add6763458491a7daa681b" name="a795a86c9f7add6763458491a7daa681b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a795a86c9f7add6763458491a7daa681b">&#9670;&#160;</a></span>rhs()</h2>
+<a id="ab9dce515044d8b8c489f23b571470698" name="ab9dce515044d8b8c489f23b571470698"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9dce515044d8b8c489f23b571470698">&#9670;&#160;</a></span>rhs()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -402,14 +402,8 @@ Here is the call graph for this function:</div>
         <tr>
           <td class="memname">void polyfem::problem::Flow::rhs </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">assembler::Assembler</a> &amp;&#160;</td>
           <td class="paramname"><em>assembler</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>formulation</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -442,7 +436,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae79d044476b72fb431b12d6eadeddca6">polyfem::assembler::Problem</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9e01aba9cf417181f5671d52d126ab2b">polyfem::assembler::Problem</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00253">253</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
 

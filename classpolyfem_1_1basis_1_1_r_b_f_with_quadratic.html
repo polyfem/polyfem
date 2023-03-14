@@ -133,9 +133,9 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1basis_1_1_r_b_f_with_q
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6e9070c30c8f0862727db6998a7edd2b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a6e9070c30c8f0862727db6998a7edd2b">RBFWithQuadratic</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;assembler_name, const Eigen::MatrixXd &amp;centers, const Eigen::MatrixXd &amp;collocation_points, const Eigen::MatrixXd &amp;local_basis_integral, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;rhs, bool with_constraints=true)</td></tr>
-<tr class="memdesc:a6e9070c30c8f0862727db6998a7edd2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize RBF functions over a polytope element.  <a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a6e9070c30c8f0862727db6998a7edd2b">More...</a><br /></td></tr>
-<tr class="separator:a6e9070c30c8f0862727db6998a7edd2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab74c358d285bd90b5e92600d671634d0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#ab74c358d285bd90b5e92600d671634d0">RBFWithQuadratic</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html">assembler::LinearAssembler</a> &amp;assembler, const Eigen::MatrixXd &amp;centers, const Eigen::MatrixXd &amp;collocation_points, const Eigen::MatrixXd &amp;local_basis_integral, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;rhs, bool with_constraints=true)</td></tr>
+<tr class="memdesc:ab74c358d285bd90b5e92600d671634d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize RBF functions over a polytope element.  <a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#ab74c358d285bd90b5e92600d671634d0">More...</a><br /></td></tr>
+<tr class="separator:ab74c358d285bd90b5e92600d671634d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1707dc6e1745ab4fceb760c690bd8c00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a1707dc6e1745ab4fceb760c690bd8c00">basis</a> (const int local_index, const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
 <tr class="memdesc:a1707dc6e1745ab4fceb760c690bd8c00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates one RBF function over a list of coordinates.  <a href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a1707dc6e1745ab4fceb760c690bd8c00">More...</a><br /></td></tr>
 <tr class="separator:a1707dc6e1745ab4fceb760c690bd8c00"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -155,8 +155,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a75b22925d15fe138c5421becf90650ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a699276b593b76cf2523f9e2c995b33b6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a699276b593b76cf2523f9e2c995b33b6">setup_monomials_vals_2d</a> (const int star_index, const Eigen::MatrixXd &amp;pts, <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>)</td></tr>
 <tr class="separator:a699276b593b76cf2523f9e2c995b33b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5aff3ff452671e145858cf8e7d82fd4"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#ab5aff3ff452671e145858cf8e7d82fd4">setup_monomials_strong_2d</a> (const int dim, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;assembler_name, const Eigen::MatrixXd &amp;pts, const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="el" href="_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>, std::array&lt; Eigen::MatrixXd, 5 &gt; &amp;strong)</td></tr>
-<tr class="separator:ab5aff3ff452671e145858cf8e7d82fd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0eb13d358aeff8c5c6a9e89a2c4b1291"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a0eb13d358aeff8c5c6a9e89a2c4b1291">setup_monomials_strong_2d</a> (const int dim, const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html">assembler::LinearAssembler</a> &amp;assembler, const Eigen::MatrixXd &amp;pts, const <a class="el" href="namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f">QuadratureVector</a> &amp;<a class="el" href="_assembler_8cpp.html#a8e8ee90d91b64973bc4ad946fd461666">da</a>, std::array&lt; Eigen::MatrixXd, 5 &gt; &amp;strong)</td></tr>
+<tr class="separator:a0eb13d358aeff8c5c6a9e89a2c4b1291"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -166,12 +166,12 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:af027c7a81967196281bb067570c129c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5359898f644358a097589155295aa195"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a5359898f644358a097589155295aa195">compute_constraints_matrix_2d_old</a> (const int num_bases, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, const Eigen::MatrixXd &amp;local_basis_integral, Eigen::MatrixXd &amp;L, Eigen::MatrixXd &amp;t) const</td></tr>
 <tr class="separator:a5359898f644358a097589155295aa195"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a743a74284f7af70329fdada2b4d07e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a4a743a74284f7af70329fdada2b4d07e">compute_constraints_matrix_2d</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;assembler_name, const int num_bases, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, const Eigen::MatrixXd &amp;local_basis_integral, Eigen::MatrixXd &amp;L, Eigen::MatrixXd &amp;t) const</td></tr>
-<tr class="separator:a4a743a74284f7af70329fdada2b4d07e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77fe2f6a30da36a45ba5991e77e313fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a77fe2f6a30da36a45ba5991e77e313fb">compute_constraints_matrix_3d</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;assembler_name, const int num_bases, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, const Eigen::MatrixXd &amp;local_basis_integral, Eigen::MatrixXd &amp;L, Eigen::MatrixXd &amp;t) const</td></tr>
-<tr class="separator:a77fe2f6a30da36a45ba5991e77e313fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0950bb574bb3bd3475cb4afc40dad9f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#ac0950bb574bb3bd3475cb4afc40dad9f">compute_weights</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::string &amp;assembler_name, const Eigen::MatrixXd &amp;collocation_points, const Eigen::MatrixXd &amp;local_basis_integral, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;rhs, bool with_constraints)</td></tr>
-<tr class="separator:ac0950bb574bb3bd3475cb4afc40dad9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f67bb9379031f0e31631fd31d8d059d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a8f67bb9379031f0e31631fd31d8d059d">compute_constraints_matrix_2d</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html">assembler::LinearAssembler</a> &amp;assembler, const int num_bases, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, const Eigen::MatrixXd &amp;local_basis_integral, Eigen::MatrixXd &amp;L, Eigen::MatrixXd &amp;t) const</td></tr>
+<tr class="separator:a8f67bb9379031f0e31631fd31d8d059d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f6537c427348da79b53b8ef18a5e048"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a2f6537c427348da79b53b8ef18a5e048">compute_constraints_matrix_3d</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html">assembler::LinearAssembler</a> &amp;assembler, const int num_bases, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, const Eigen::MatrixXd &amp;local_basis_integral, Eigen::MatrixXd &amp;L, Eigen::MatrixXd &amp;t) const</td></tr>
+<tr class="separator:a2f6537c427348da79b53b8ef18a5e048"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56b0caddd406bcb915deef758b1b1109"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a56b0caddd406bcb915deef758b1b1109">compute_weights</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html">assembler::LinearAssembler</a> &amp;assembler, const Eigen::MatrixXd &amp;collocation_points, const Eigen::MatrixXd &amp;local_basis_integral, const <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">quadrature::Quadrature</a> &amp;quadr, Eigen::MatrixXd &amp;rhs, bool with_constraints)</td></tr>
+<tr class="separator:a56b0caddd406bcb915deef758b1b1109"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -184,8 +184,8 @@ Private Attributes</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00013">13</a> of file <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html">RBFWithQuadratic.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a6e9070c30c8f0862727db6998a7edd2b" name="a6e9070c30c8f0862727db6998a7edd2b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e9070c30c8f0862727db6998a7edd2b">&#9670;&#160;</a></span>RBFWithQuadratic()</h2>
+<a id="ab74c358d285bd90b5e92600d671634d0" name="ab74c358d285bd90b5e92600d671634d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab74c358d285bd90b5e92600d671634d0">&#9670;&#160;</a></span>RBFWithQuadratic()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -193,14 +193,8 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname">RBFWithQuadratic::RBFWithQuadratic </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html">assembler::LinearAssembler</a> &amp;&#160;</td>
           <td class="paramname"><em>assembler</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>assembler_name</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -261,11 +255,11 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00185">185</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
+<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00712">compute_weights()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_a6e9070c30c8f0862727db6998a7edd2b_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_ab74c358d285bd90b5e92600d671634d0_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -314,11 +308,11 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00237">237</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00236">236</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00101">weights_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00211">grad()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00210">grad()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -369,11 +363,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00225">225</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00224">224</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00384">compute_kernels_matrix()</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, and <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00101">weights_</a>.</p>
+<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00383">compute_kernels_matrix()</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, and <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00101">weights_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00202">basis()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00201">basis()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -431,11 +425,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00202">202</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00201">201</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00225">bases_values()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00224">bases_values()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00712">compute_weights()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -451,8 +445,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a4a743a74284f7af70329fdada2b4d07e" name="a4a743a74284f7af70329fdada2b4d07e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4a743a74284f7af70329fdada2b4d07e">&#9670;&#160;</a></span>compute_constraints_matrix_2d()</h2>
+<a id="a8f67bb9379031f0e31631fd31d8d059d" name="a8f67bb9379031f0e31631fd31d8d059d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f67bb9379031f0e31631fd31d8d059d">&#9670;&#160;</a></span>compute_constraints_matrix_2d()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -463,14 +457,8 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">void RBFWithQuadratic::compute_constraints_matrix_2d </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html">assembler::LinearAssembler</a> &amp;&#160;</td>
           <td class="paramname"><em>assembler</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>assembler_name</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -515,21 +503,21 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00504">504</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00503">503</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00031">polyfem::assembler::ElementAssemblyValues::has_parameterization</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00134">polyfem::assembler::AssemblerUtils::is_tensor()</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00568">polyfem::assembler::AssemblerUtils::local_assemble()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00083">setup_monomials_strong_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00139">setup_monomials_vals_2d()</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a83e70fd7a778342c0d7750416661a575">polyfem::assembler::LinearAssembler::assemble()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00031">polyfem::assembler::ElementAssemblyValues::has_parameterization</a>, <a class="el" href="_assembler_8hpp_source.html#l00138">polyfem::assembler::Assembler::is_tensor()</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00083">setup_monomials_strong_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00139">setup_monomials_vals_2d()</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00712">compute_weights()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_a4a743a74284f7af70329fdada2b4d07e_cgraph.svg" width="100%" height="532"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_a8f67bb9379031f0e31631fd31d8d059d_cgraph.svg" width="100%" height="530"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_a4a743a74284f7af70329fdada2b4d07e_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_a8f67bb9379031f0e31631fd31d8d059d_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -587,7 +575,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00413">413</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00412">412</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00101">weights_</a>.</p>
 <div class="dynheader">
@@ -599,8 +587,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a77fe2f6a30da36a45ba5991e77e313fb" name="a77fe2f6a30da36a45ba5991e77e313fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a77fe2f6a30da36a45ba5991e77e313fb">&#9670;&#160;</a></span>compute_constraints_matrix_3d()</h2>
+<a id="a2f6537c427348da79b53b8ef18a5e048" name="a2f6537c427348da79b53b8ef18a5e048"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f6537c427348da79b53b8ef18a5e048">&#9670;&#160;</a></span>compute_constraints_matrix_3d()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -611,14 +599,8 @@ Here is the call graph for this function:</div>
         <tr>
           <td class="memname">void RBFWithQuadratic::compute_constraints_matrix_3d </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html">assembler::LinearAssembler</a> &amp;&#160;</td>
           <td class="paramname"><em>assembler</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>assembler_name</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -663,21 +645,21 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00614">614</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00612">612</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00101">weights_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00712">compute_weights()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_a77fe2f6a30da36a45ba5991e77e313fb_cgraph.svg" width="550" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_a2f6537c427348da79b53b8ef18a5e048_cgraph.svg" width="550" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_a77fe2f6a30da36a45ba5991e77e313fb_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_a2f6537c427348da79b53b8ef18a5e048_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -717,11 +699,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00384">384</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00383">383</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00225">bases_values()</a>, and <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00224">bases_values()</a>, and <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00712">compute_weights()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -737,8 +719,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="ac0950bb574bb3bd3475cb4afc40dad9f" name="ac0950bb574bb3bd3475cb4afc40dad9f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac0950bb574bb3bd3475cb4afc40dad9f">&#9670;&#160;</a></span>compute_weights()</h2>
+<a id="a56b0caddd406bcb915deef758b1b1109" name="a56b0caddd406bcb915deef758b1b1109"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56b0caddd406bcb915deef758b1b1109">&#9670;&#160;</a></span>compute_weights()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -749,14 +731,8 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">void RBFWithQuadratic::compute_weights </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html">assembler::LinearAssembler</a> &amp;&#160;</td>
           <td class="paramname"><em>assembler</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>assembler_name</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -801,21 +777,21 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">715</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00712">712</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00202">basis()</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00504">compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00614">compute_constraints_matrix_3d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00384">compute_kernels_matrix()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00211">grad()</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00101">weights_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00201">basis()</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00503">compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00612">compute_constraints_matrix_3d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00383">compute_kernels_matrix()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00210">grad()</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00101">weights_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00185">RBFWithQuadratic()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_ac0950bb574bb3bd3475cb4afc40dad9f_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_a56b0caddd406bcb915deef758b1b1109_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_ac0950bb574bb3bd3475cb4afc40dad9f_icgraph.svg" width="550" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_a56b0caddd406bcb915deef758b1b1109_icgraph.svg" width="550" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -863,11 +839,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00211">211</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00210">210</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00237">bases_grads()</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00236">bases_grads()</a>, <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00712">compute_weights()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -931,7 +907,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00016">16</a> of file <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html">RBFWithQuadratic.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00265">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d()</a>, and <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00175">polyfem::basis::PolygonalBasis2d::compute_integral_constraints()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00264">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d()</a>, and <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00176">polyfem::basis::PolygonalBasis2d::compute_integral_constraints()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -968,7 +944,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">centers_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00237">bases_grads()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00504">compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00413">compute_constraints_matrix_2d_old()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00614">compute_constraints_matrix_3d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00384">compute_kernels_matrix()</a>, and <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00236">bases_grads()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00503">compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00412">compute_constraints_matrix_2d_old()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00612">compute_constraints_matrix_3d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00383">compute_kernels_matrix()</a>, and <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00712">compute_weights()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -978,8 +954,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="ab5aff3ff452671e145858cf8e7d82fd4" name="ab5aff3ff452671e145858cf8e7d82fd4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab5aff3ff452671e145858cf8e7d82fd4">&#9670;&#160;</a></span>setup_monomials_strong_2d()</h2>
+<a id="a0eb13d358aeff8c5c6a9e89a2c4b1291" name="a0eb13d358aeff8c5c6a9e89a2c4b1291"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0eb13d358aeff8c5c6a9e89a2c4b1291">&#9670;&#160;</a></span>setup_monomials_strong_2d()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -996,14 +972,8 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html">assembler::LinearAssembler</a> &amp;&#160;</td>
           <td class="paramname"><em>assembler</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>assembler_name</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1038,19 +1008,19 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00083">83</a> of file <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html">RBFWithQuadratic.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_utils_8cpp_source.html#l00524">polyfem::assembler::AssemblerUtils::compute_rhs()</a>, <a class="el" href="_assembler_8cpp_source.html#l00023">da</a>, and <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8hpp_source.html#l00128">polyfem::assembler::Assembler::compute_rhs()</a>, <a class="el" href="_assembler_8cpp_source.html#l00023">da</a>, and <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00504">compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00265">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d()</a>, and <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00175">polyfem::basis::PolygonalBasis2d::compute_integral_constraints()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00503">compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00264">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d()</a>, and <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00176">polyfem::basis::PolygonalBasis2d::compute_integral_constraints()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_ab5aff3ff452671e145858cf8e7d82fd4_cgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_a0eb13d358aeff8c5c6a9e89a2c4b1291_cgraph.svg" width="100%" height="410"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_ab5aff3ff452671e145858cf8e7d82fd4_icgraph.svg" width="100%" height="464"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic_a0eb13d358aeff8c5c6a9e89a2c4b1291_icgraph.svg" width="100%" height="464"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -1100,7 +1070,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00504">compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00265">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d()</a>, and <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00175">polyfem::basis::PolygonalBasis2d::compute_integral_constraints()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00503">compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_lagrange_8cpp_source.html#l00264">polyfem::basis::RBFWithQuadraticLagrange::compute_constraints_matrix_2d()</a>, and <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00176">polyfem::basis::PolygonalBasis2d::compute_integral_constraints()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1133,7 +1103,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00098">98</a> of file <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html">RBFWithQuadratic.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00237">bases_grads()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00504">compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00413">compute_constraints_matrix_2d_old()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00614">compute_constraints_matrix_3d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00384">compute_kernels_matrix()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00211">grad()</a>, and <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00236">bases_grads()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00503">compute_constraints_matrix_2d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00412">compute_constraints_matrix_2d_old()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00612">compute_constraints_matrix_3d()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00383">compute_kernels_matrix()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00712">compute_weights()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00210">grad()</a>, and <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00074">is_volume()</a>.</p>
 
 </div>
 </div>
@@ -1159,7 +1129,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html#l00101">101</a> of file <a class="el" href="_r_b_f_with_quadratic_8hpp_source.html">RBFWithQuadratic.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00237">bases_grads()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00225">bases_values()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00413">compute_constraints_matrix_2d_old()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00614">compute_constraints_matrix_3d()</a>, and <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00715">compute_weights()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00236">bases_grads()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00224">bases_values()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00412">compute_constraints_matrix_2d_old()</a>, <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00612">compute_constraints_matrix_3d()</a>, and <a class="el" href="_r_b_f_with_quadratic_8cpp_source.html#l00712">compute_weights()</a>.</p>
 
 </div>
 </div>

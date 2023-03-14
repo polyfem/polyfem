@@ -8,9 +8,9 @@ var namespacepolyfem_1_1assembler =
     [ "BilaplacianMain", "classpolyfem_1_1assembler_1_1_bilaplacian_main.html", "classpolyfem_1_1assembler_1_1_bilaplacian_main" ],
     [ "BilaplacianMixed", "classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html", "classpolyfem_1_1assembler_1_1_bilaplacian_mixed" ],
     [ "Density", "classpolyfem_1_1assembler_1_1_density.html", "classpolyfem_1_1assembler_1_1_density" ],
+    [ "ElasticityAssembler", "classpolyfem_1_1assembler_1_1_elasticity_assembler.html", "classpolyfem_1_1assembler_1_1_elasticity_assembler" ],
     [ "ElasticityTensor", "classpolyfem_1_1assembler_1_1_elasticity_tensor.html", "classpolyfem_1_1assembler_1_1_elasticity_tensor" ],
     [ "ElementAssemblyValues", "classpolyfem_1_1assembler_1_1_element_assembly_values.html", "classpolyfem_1_1assembler_1_1_element_assembly_values" ],
-    [ "FormulationProperties", "structpolyfem_1_1assembler_1_1_formulation_properties.html", "structpolyfem_1_1assembler_1_1_formulation_properties" ],
     [ "GenericElastic", "classpolyfem_1_1assembler_1_1_generic_elastic.html", "classpolyfem_1_1assembler_1_1_generic_elastic" ],
     [ "GenericMatParam", "classpolyfem_1_1assembler_1_1_generic_mat_param.html", "classpolyfem_1_1assembler_1_1_generic_mat_param" ],
     [ "GenericMatParams", "classpolyfem_1_1assembler_1_1_generic_mat_params.html", "classpolyfem_1_1assembler_1_1_generic_mat_params" ],
@@ -47,10 +47,6 @@ var namespacepolyfem_1_1assembler =
     [ "TensorBCValue", "structpolyfem_1_1assembler_1_1_tensor_b_c_value.html", "structpolyfem_1_1assembler_1_1_tensor_b_c_value" ],
     [ "UnconstrainedOgdenElasticity", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity" ],
     [ "ViscousDamping", "classpolyfem_1_1assembler_1_1_viscous_damping.html", "classpolyfem_1_1assembler_1_1_viscous_damping" ],
-    [ "ScalarLinearAssembler", "namespacepolyfem_1_1assembler.html#a1166e8ad9062148a077047ae71b81252", null ],
-    [ "ScalarMixedAssembler", "namespacepolyfem_1_1assembler.html#aaeb2b24e99bc07dd7deb72825152cef3", null ],
-    [ "TensorLinearAssembler", "namespacepolyfem_1_1assembler.html#a714081f0b8488ce3c31b4c848d64b107", null ],
-    [ "TensorMixedAssembler", "namespacepolyfem_1_1assembler.html#a9a6d3a5b012ca159bd3200d7da05b823", null ],
     [ "cross", "namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784", null ],
     [ "hat", "namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32", null ]
 ];

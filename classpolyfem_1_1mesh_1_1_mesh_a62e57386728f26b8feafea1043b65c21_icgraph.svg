@@ -67,7 +67,7 @@ var sectionId = 'dynsection-56';
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#ac1a39b96cf454d41e627d86f950fa48c" target="_top" xlink:title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the ...">
+<g id="a_node2"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#ac85b31ec6a0a8410af12d73f9943e75c" target="_top" xlink:title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the ...">
 <polygon fill="white" stroke="#666666" points="1461,-1236 1292,-1236 1292,-1206 1461,-1206 1461,-1236"/>
 <text text-anchor="start" x="1300" y="-1224" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
 <text text-anchor="middle" x="1376.5" y="-1213" font-family="Helvetica,sans-Serif" font-size="10.00">::average_grad_based_function</text>
@@ -228,7 +228,7 @@ var sectionId = 'dynsection-56';
 <!-- Node27 -->
 <g id="node27" class="node">
 <title>Node27</title>
-<g id="a_node27"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#abb3dba5cc0e61b5ce7988120a068be70" target="_top" xlink:title="checks if mises are not nan">
+<g id="a_node27"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a9ee846c35328f2e866b83b7cb17cdb2f" target="_top" xlink:title="checks if mises are not nan">
 <polygon fill="white" stroke="#666666" points="1439,-640 1314,-640 1314,-610 1439,-610 1439,-640"/>
 <text text-anchor="start" x="1322" y="-628" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
 <text text-anchor="middle" x="1376.5" y="-617" font-family="Helvetica,sans-Serif" font-size="10.00">::check_scalar_value</text>
@@ -260,7 +260,7 @@ var sectionId = 'dynsection-56';
 <!-- Node29 -->
 <g id="node29" class="node">
 <title>Node29</title>
-<g id="a_node29"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a50d6bffe05b847f6f0f2fe470046dfe3" target="_top" xlink:title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)">
+<g id="a_node29"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#af943b83dd7b643edae1ac15096d386cd" target="_top" xlink:title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)">
 <polygon fill="white" stroke="#666666" points="1442.5,-994 1310.5,-994 1310.5,-964 1442.5,-964 1442.5,-994"/>
 <text text-anchor="start" x="1318.5" y="-982" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
 <text text-anchor="middle" x="1376.5" y="-971" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_scalar_value</text>
@@ -292,7 +292,7 @@ var sectionId = 'dynsection-56';
 <!-- Node31 -->
 <g id="node31" class="node">
 <title>Node31</title>
-<g id="a_node31"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#ab8f3d8364f84614c4a1e80204637c5cd" target="_top" xlink:title="compute von mises stress at quadrature points for the function fun, also compute the interpolated fun...">
+<g id="a_node31"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a13e08ee0734093032d8c0f2dbbfd9438" target="_top" xlink:title="compute von mises stress at quadrature points for the function fun, also compute the interpolated fun...">
 <polygon fill="white" stroke="#666666" points="1056,-932.5 883,-932.5 883,-891.5 1056,-891.5 1056,-932.5"/>
 <text text-anchor="start" x="891" y="-920.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
 <text text-anchor="start" x="891" y="-909.5" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_stress_at_quadrature</text>
@@ -309,7 +309,7 @@ var sectionId = 'dynsection-56';
 <!-- Node32 -->
 <g id="node32" class="node">
 <title>Node32</title>
-<g id="a_node32"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a66168451812a6618e1a54cfda56aa2f3" target="_top" xlink:title="compute tensor quantity (ie stress tensor or velocy)">
+<g id="a_node32"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a4ba83419056824fdae4d81cca72a1e94" target="_top" xlink:title="compute tensor quantity (ie stress tensor or velocy)">
 <polygon fill="white" stroke="#666666" points="1443.5,-1080 1309.5,-1080 1309.5,-1050 1443.5,-1050 1443.5,-1080"/>
 <text text-anchor="start" x="1317.5" y="-1068" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
 <text text-anchor="middle" x="1376.5" y="-1057" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_tensor_value</text>
@@ -423,7 +423,7 @@ var sectionId = 'dynsection-56';
 <!-- Node41 -->
 <g id="node41" class="node">
 <title>Node41</title>
-<g id="a_node41"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#afe5d6ebcbb72f466245bc858f14fb97e" target="_top" xlink:title="computes traction foces for fun (tensor * surface normal) result, stress tensor, and von mises,...">
+<g id="a_node41"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a60d3991b9c7117254f306d4be49a12e3" target="_top" xlink:title="computes traction foces for fun (tensor * surface normal) result, stress tensor, and von mises,...">
 <polygon fill="white" stroke="#666666" points="1440,-329.5 1313,-329.5 1313,-288.5 1440,-288.5 1440,-329.5"/>
 <text text-anchor="start" x="1321" y="-317.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
 <text text-anchor="start" x="1321" y="-306.5" font-family="Helvetica,sans-Serif" font-size="10.00">::interpolate_boundary</text>
@@ -941,7 +941,7 @@ var sectionId = 'dynsection-56';
 <!-- Node42 -->
 <g id="node42" class="node">
 <title>Node42</title>
-<g id="a_node42"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a66d6789a60dceb9f9625cee09b8c81a1" target="_top" xlink:title="same as interpolate_boundary_tensor_function with disp=0">
+<g id="a_node42"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a4a6a141fac462279241b851e57a310ef" target="_top" xlink:title="same as interpolate_boundary_tensor_function with disp=0">
 <polygon fill="white" stroke="#666666" points="1237.5,-329.5 1110.5,-329.5 1110.5,-288.5 1237.5,-288.5 1237.5,-329.5"/>
 <text text-anchor="start" x="1118.5" y="-317.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
 <text text-anchor="start" x="1118.5" y="-306.5" font-family="Helvetica,sans-Serif" font-size="10.00">::interpolate_boundary</text>

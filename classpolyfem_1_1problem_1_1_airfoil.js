@@ -9,7 +9,7 @@ var classpolyfem_1_1problem_1_1_airfoil =
     [ "is_rhs_zero", "classpolyfem_1_1problem_1_1_airfoil.html#ac32753a32abbaf79e48a128aad9b3ba2", null ],
     [ "is_scalar", "classpolyfem_1_1problem_1_1_airfoil.html#a24442cbd20b09aa40392c2fe6c642942", null ],
     [ "is_time_dependent", "classpolyfem_1_1problem_1_1_airfoil.html#a59e59aa1b0a6ce8dbe5687ed29e79672", null ],
-    [ "rhs", "classpolyfem_1_1problem_1_1_airfoil.html#a7818e9fbd380565f4611f5777c9040c5", null ],
+    [ "rhs", "classpolyfem_1_1problem_1_1_airfoil.html#a0dd5ef43299e8f66f2f2a89621cca67f", null ],
     [ "set_parameters", "classpolyfem_1_1problem_1_1_airfoil.html#a011e21435986268097914ee31f41a936", null ],
     [ "is_time_dependent_", "classpolyfem_1_1problem_1_1_airfoil.html#aa3c892d92b80935e4af53424bf569be4", null ]
 ];

@@ -130,15 +130,15 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1basis_1_1_barycentric_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aa1c3f2f069b856296ed2bd9b6c9a188c"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_barycentric_basis2d.html#aa1c3f2f069b856296ed2bd9b6c9a188c">build_bases</a> (const std::string &amp;assembler_name, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">mesh::Mesh2D</a> &amp;mesh, const int n_bases, const int quadrature_order, const int mass_quadrature_order, const std::function&lt; void(const Eigen::MatrixXd &amp;, const Eigen::RowVector2d &amp;, Eigen::MatrixXd &amp;, const double)&gt; bc, const std::function&lt; void(const Eigen::MatrixXd &amp;, const Eigen::RowVector2d &amp;, Eigen::MatrixXd &amp;, const double)&gt; bc_prime, std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;bases, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::map&lt; int, Eigen::MatrixXd &gt; &amp;mapped_boundary)</td></tr>
-<tr class="separator:aa1c3f2f069b856296ed2bd9b6c9a188c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2703ee0b52b532c9921bec4624d846da"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_barycentric_basis2d.html#a2703ee0b52b532c9921bec4624d846da">build_bases</a> (const std::string &amp;assembler_name, const int dim, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">mesh::Mesh2D</a> &amp;mesh, const int n_bases, const int quadrature_order, const int mass_quadrature_order, const std::function&lt; void(const Eigen::MatrixXd &amp;, const Eigen::RowVector2d &amp;, Eigen::MatrixXd &amp;, const double)&gt; bc, const std::function&lt; void(const Eigen::MatrixXd &amp;, const Eigen::RowVector2d &amp;, Eigen::MatrixXd &amp;, const double)&gt; bc_prime, std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;bases, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::map&lt; int, Eigen::MatrixXd &gt; &amp;mapped_boundary)</td></tr>
+<tr class="separator:a2703ee0b52b532c9921bec4624d846da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_barycentric_basis2d_8hpp_source.html#l00014">14</a> of file <a class="el" href="_barycentric_basis2d_8hpp_source.html">BarycentricBasis2d.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="aa1c3f2f069b856296ed2bd9b6c9a188c" name="aa1c3f2f069b856296ed2bd9b6c9a188c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa1c3f2f069b856296ed2bd9b6c9a188c">&#9670;&#160;</a></span>build_bases()</h2>
+<a id="a2703ee0b52b532c9921bec4624d846da" name="a2703ee0b52b532c9921bec4624d846da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2703ee0b52b532c9921bec4624d846da">&#9670;&#160;</a></span>build_bases()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -151,6 +151,12 @@ Static Public Member Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>assembler_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>dim</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -221,19 +227,19 @@ Static Public Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_barycentric_basis2d_8cpp_source.html#l00116">116</a> of file <a class="el" href="_barycentric_basis2d_8cpp_source.html">BarycentricBasis2d.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399">polyfem::mesh::Mesh::face_vertex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111">polyfem::mesh::Mesh2D::get_index_from_face()</a>, <a class="el" href="_polygon_quadrature_8cpp_source.html#l00064">polyfem::quadrature::PolygonQuadrature::get_quadrature()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00036">polyfem::basis::ElementBases::has_parameterization</a>, <a class="el" href="_mesh_8cpp_source.html#l00361">polyfem::mesh::Mesh::is_polytope()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00134">polyfem::assembler::AssemblerUtils::is_tensor()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00025">polyfem::mesh::Mesh2D::is_volume()</a>, <a class="el" href="_mesh_8hpp_source.html#l00154">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh::n_face_vertices()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">polyfem::mesh::Mesh::point()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00822">polyfem::assembler::AssemblerUtils::quadrature_order()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00090">polyfem::basis::ElementBases::set_bases_func()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00091">polyfem::basis::ElementBases::set_grads_func()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00094">polyfem::basis::ElementBases::set_local_node_from_primitive_func()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00064">polyfem::basis::ElementBases::set_mass_quadrature()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00063">polyfem::basis::ElementBases::set_quadrature()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399">polyfem::mesh::Mesh::face_vertex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111">polyfem::mesh::Mesh2D::get_index_from_face()</a>, <a class="el" href="_polygon_quadrature_8cpp_source.html#l00064">polyfem::quadrature::PolygonQuadrature::get_quadrature()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00036">polyfem::basis::ElementBases::has_parameterization</a>, <a class="el" href="_mesh_8cpp_source.html#l00361">polyfem::mesh::Mesh::is_polytope()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00025">polyfem::mesh::Mesh2D::is_volume()</a>, <a class="el" href="_mesh_8hpp_source.html#l00154">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh::n_face_vertices()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">polyfem::mesh::Mesh::point()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00167">polyfem::assembler::AssemblerUtils::quadrature_order()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00090">polyfem::basis::ElementBases::set_bases_func()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00091">polyfem::basis::ElementBases::set_grads_func()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00094">polyfem::basis::ElementBases::set_local_node_from_primitive_func()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00064">polyfem::basis::ElementBases::set_mass_quadrature()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00063">polyfem::basis::ElementBases::set_quadrature()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00241">polyfem::basis::MVPolygonalBasis2d::build_bases()</a>, and <a class="el" href="_w_s_polygonal_basis2d_8cpp_source.html#l00186">polyfem::basis::WSPolygonalBasis2d::build_bases()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_barycentric_basis2d_aa1c3f2f069b856296ed2bd9b6c9a188c_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_barycentric_basis2d_a2703ee0b52b532c9921bec4624d846da_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_barycentric_basis2d_aa1c3f2f069b856296ed2bd9b6c9a188c_icgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_barycentric_basis2d_a2703ee0b52b532c9921bec4624d846da_icgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 

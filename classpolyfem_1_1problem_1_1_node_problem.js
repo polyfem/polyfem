@@ -9,7 +9,7 @@ var classpolyfem_1_1problem_1_1_node_problem =
     [ "is_rhs_zero", "classpolyfem_1_1problem_1_1_node_problem.html#ad1ca688d7de86cfcea869d59a63961b1", null ],
     [ "is_scalar", "classpolyfem_1_1problem_1_1_node_problem.html#a1c837353d969395d1474abc4aafb5dea", null ],
     [ "neumann_bc", "classpolyfem_1_1problem_1_1_node_problem.html#a8281bc2ade9dedbebb473e9d0b088771", null ],
-    [ "rhs", "classpolyfem_1_1problem_1_1_node_problem.html#a9e13cdab3b9ad30399f8fa7fc0a55941", null ],
+    [ "rhs", "classpolyfem_1_1problem_1_1_node_problem.html#a740b7fc07b1450cf68749d2b46b7b8da", null ],
     [ "set_parameters", "classpolyfem_1_1problem_1_1_node_problem.html#a2855592ddcb2cfc34343a3a16bc36192", null ],
     [ "all_dimensions_dirichlet_", "classpolyfem_1_1problem_1_1_node_problem.html#a93d79faf07bc473b67121486f644ea46", null ],
     [ "dirichlet_dimensions_", "classpolyfem_1_1problem_1_1_node_problem.html#a69becdef1093ae0e2bb548a433ade23b", null ],

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['paramfunc_0',['ParamFunc',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a9bf585fe7fc81a4b569d0132a7941970',1,'polyfem::assembler::AssemblerUtils']]]
+  ['paramfunc_0',['ParamFunc',['../classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f',1,'polyfem::assembler::Assembler']]]
 ];

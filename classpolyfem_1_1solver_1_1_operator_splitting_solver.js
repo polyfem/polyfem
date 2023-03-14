@@ -11,7 +11,7 @@ var classpolyfem_1_1solver_1_1_operator_splitting_solver =
     [ "calculate_local_pts", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#acb209fc33bfb84395220cc09de3f70c4", null ],
     [ "compute_gbase_jacobi", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ae3c5f81a4e692638ef18a1040cb61cf1", null ],
     [ "compute_gbase_val", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a438a463e995d920c4f7241f6f6a59d02", null ],
-    [ "external_force", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a708026154cd4cb6d73f0d7a6fea80b33", null ],
+    [ "external_force", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a4daebcfc8dc5dfd88491687bdf20a7d9", null ],
     [ "handle_boundary_advection", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#adb02070fcb475145b61bb691fa8227f4", null ],
     [ "initialize_density", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a70564fa7ec1c4162edd6959c76766ce6", null ],
     [ "initialize_grid", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#af4b7ab99efd5023af3cec64d2240327f", null ],

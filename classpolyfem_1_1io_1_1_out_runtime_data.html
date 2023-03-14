@@ -152,6 +152,9 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a43e0fe9f9bbe227616a8750c0c537e63"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_runtime_data.html#a43e0fe9f9bbe227616a8750c0c537e63">assembling_stiffness_mat_time</a></td></tr>
 <tr class="memdesc:a43e0fe9f9bbe227616a8750c0c537e63"><td class="mdescLeft">&#160;</td><td class="mdescRight">time to assembly  <a href="classpolyfem_1_1io_1_1_out_runtime_data.html#a43e0fe9f9bbe227616a8750c0c537e63">More...</a><br /></td></tr>
 <tr class="separator:a43e0fe9f9bbe227616a8750c0c537e63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9953354b1d788ad1f7319453cf21dad5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_runtime_data.html#a9953354b1d788ad1f7319453cf21dad5">assembling_mass_mat_time</a></td></tr>
+<tr class="memdesc:a9953354b1d788ad1f7319453cf21dad5"><td class="mdescLeft">&#160;</td><td class="mdescRight">time to assembly mass  <a href="classpolyfem_1_1io_1_1_out_runtime_data.html#a9953354b1d788ad1f7319453cf21dad5">More...</a><br /></td></tr>
+<tr class="separator:a9953354b1d788ad1f7319453cf21dad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a875878129bfb3c538fdde0c2500baaa6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_runtime_data.html#a875878129bfb3c538fdde0c2500baaa6">assigning_rhs_time</a></td></tr>
 <tr class="memdesc:a875878129bfb3c538fdde0c2500baaa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">time to computing the rhs  <a href="classpolyfem_1_1io_1_1_out_runtime_data.html#a875878129bfb3c538fdde0c2500baaa6">More...</a><br /></td></tr>
 <tr class="separator:a875878129bfb3c538fdde0c2500baaa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -190,9 +193,9 @@ Public Attributes</h2></td></tr>
 <p>computes total time </p>
 <dl class="section return"><dt>Returns</dt><dd>total time </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00345">345</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00347">347</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_out_data_8hpp_source.html#l00337">assembling_stiffness_mat_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00331">building_basis_time</a>, and <a class="el" href="_out_data_8hpp_source.html#l00341">solving_time</a>.</p>
+<p class="reference">References <a class="el" href="_out_data_8hpp_source.html#l00339">assembling_mass_mat_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00337">assembling_stiffness_mat_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00331">building_basis_time</a>, and <a class="el" href="_out_data_8hpp_source.html#l00343">solving_time</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00023">main()</a>.</p>
 <div class="dynheader">
@@ -205,6 +208,26 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a9953354b1d788ad1f7319453cf21dad5" name="a9953354b1d788ad1f7319453cf21dad5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9953354b1d788ad1f7319453cf21dad5">&#9670;&#160;</a></span>assembling_mass_mat_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::io::OutRuntimeData::assembling_mass_mat_time</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>time to assembly mass </p>
+
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00339">339</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01146">polyfem::State::assemble_mass_mat()</a>, <a class="el" href="_out_data_8cpp_source.html#l02539">polyfem::io::OutStatsData::save_json()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00347">total_time()</a>.</p>
+
+</div>
+</div>
 <a id="a43e0fe9f9bbe227616a8750c0c537e63" name="a43e0fe9f9bbe227616a8750c0c537e63"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a43e0fe9f9bbe227616a8750c0c537e63">&#9670;&#160;</a></span>assembling_stiffness_mat_time</h2>
 
@@ -221,7 +244,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00337">337</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01083">polyfem::State::assemble_stiffness_mat()</a>, <a class="el" href="_out_data_8cpp_source.html#l02554">polyfem::io::OutStatsData::save_json()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00345">total_time()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01146">polyfem::State::assemble_mass_mat()</a>, <a class="el" href="_state_solve_linear_8cpp_source.html#l00021">polyfem::State::build_stiffness_mat()</a>, <a class="el" href="_out_data_8cpp_source.html#l02539">polyfem::io::OutStatsData::save_json()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00347">total_time()</a>.</p>
 
 </div>
 </div>
@@ -239,9 +262,9 @@ Here is the caller graph for this function:</div>
 
 <p>time to computing the rhs </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00339">339</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00341">341</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01209">polyfem::State::assemble_rhs()</a>, and <a class="el" href="_out_data_8cpp_source.html#l02554">polyfem::io::OutStatsData::save_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01254">polyfem::State::assemble_rhs()</a>, and <a class="el" href="_out_data_8cpp_source.html#l02539">polyfem::io::OutStatsData::save_json()</a>.</p>
 
 </div>
 </div>
@@ -261,7 +284,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00331">331</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00520">polyfem::State::build_basis()</a>, <a class="el" href="_out_data_8cpp_source.html#l02554">polyfem::io::OutStatsData::save_json()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00345">total_time()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00520">polyfem::State::build_basis()</a>, <a class="el" href="_out_data_8cpp_source.html#l02539">polyfem::io::OutStatsData::save_json()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00347">total_time()</a>.</p>
 
 </div>
 </div>
@@ -281,7 +304,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00335">335</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00916">polyfem::State::build_polygonal_basis()</a>, and <a class="el" href="_out_data_8cpp_source.html#l02554">polyfem::io::OutStatsData::save_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00915">polyfem::State::build_polygonal_basis()</a>, and <a class="el" href="_out_data_8cpp_source.html#l02539">polyfem::io::OutStatsData::save_json()</a>.</p>
 
 </div>
 </div>
@@ -301,7 +324,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00333">333</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l02554">polyfem::io::OutStatsData::save_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l02539">polyfem::io::OutStatsData::save_json()</a>.</p>
 
 </div>
 </div>
@@ -319,9 +342,9 @@ Here is the caller graph for this function:</div>
 
 <p>time to solve </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00341">341</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00343">343</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l02554">polyfem::io::OutStatsData::save_json()</a>, <a class="el" href="_state_8cpp_source.html#l01285">polyfem::State::solve_problem()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00345">total_time()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l02539">polyfem::io::OutStatsData::save_json()</a>, <a class="el" href="_state_8cpp_source.html#l01329">polyfem::State::solve_problem()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00347">total_time()</a>.</p>
 
 </div>
 </div>

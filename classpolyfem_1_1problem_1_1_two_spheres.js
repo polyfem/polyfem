@@ -5,5 +5,5 @@ var classpolyfem_1_1problem_1_1_two_spheres =
     [ "initial_density", "classpolyfem_1_1problem_1_1_two_spheres.html#a7fcd6a43d5ecd7d4d3ec8e322d94ef54", null ],
     [ "initial_solution", "classpolyfem_1_1problem_1_1_two_spheres.html#a7265e14b45a95bbb313acf45801fad5d", null ],
     [ "is_rhs_zero", "classpolyfem_1_1problem_1_1_two_spheres.html#af439098c03952e5634050b5deaa9c50c", null ],
-    [ "rhs", "classpolyfem_1_1problem_1_1_two_spheres.html#a4cf92675dec992d5dd74766583412ef4", null ]
+    [ "rhs", "classpolyfem_1_1problem_1_1_two_spheres.html#a9c7a305ca8645f583008cf559ba3c775", null ]
 ];

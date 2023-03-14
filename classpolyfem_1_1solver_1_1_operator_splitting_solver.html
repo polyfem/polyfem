@@ -165,8 +165,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a71d25220cfe9747e5a2f970587df6d99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af16cdb358d1592e7ab9341c18014f482"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#af16cdb358d1592e7ab9341c18014f482">solve_diffusion_1st</a> (const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mass, const std::vector&lt; int &gt; &amp;bnd_nodes, Eigen::MatrixXd &amp;sol)</td></tr>
 <tr class="separator:af16cdb358d1592e7ab9341c18014f482"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a708026154cd4cb6d73f0d7a6fea80b33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a708026154cd4cb6d73f0d7a6fea80b33">external_force</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;assembler, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const double dt, Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd &amp;local_pts, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">assembler::Problem</a> &gt; problem, const double time)</td></tr>
-<tr class="separator:a708026154cd4cb6d73f0d7a6fea80b33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4daebcfc8dc5dfd88491687bdf20a7d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a4daebcfc8dc5dfd88491687bdf20a7d9">external_force</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">assembler::Assembler</a> &amp;assembler, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const double dt, Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd &amp;local_pts, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">assembler::Problem</a> &gt; problem, const double time)</td></tr>
+<tr class="separator:a4daebcfc8dc5dfd88491687bdf20a7d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32eada89bbf4f77969c4f3f411b6e84f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a32eada89bbf4f77969c4f3f411b6e84f">solve_pressure</a> (const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const std::vector&lt; int &gt; &amp;pressure_boundary_nodes, Eigen::MatrixXd &amp;sol, Eigen::MatrixXd &amp;pressure)</td></tr>
 <tr class="separator:a32eada89bbf4f77969c4f3f411b6e84f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40d763cda56ab6d6d45b7605bcd58a1d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a40d763cda56ab6d6d45b7605bcd58a1d">projection</a> (const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_mass, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const std::vector&lt; int &gt; &amp;boundary_nodes_, Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd &amp;pressure)</td></tr>
@@ -681,7 +681,7 @@ Here is the call graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01385">dim</a>, <a class="el" href="_operator_splitting_solver_8hpp_source.html#l00350">interpolator()</a>, <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01386">n_el</a>, and <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01401">new_sol</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00043">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00053">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -765,7 +765,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01338">calculate_local_pts()</a>, <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01400">cellI_particle</a>, <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01385">dim</a>, <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01386">n_el</a>, <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01401">new_sol</a>, <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01402">new_sol_w</a>, <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01398">position_particle</a>, <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01387">shape</a>, <a class="el" href="_operator_splitting_solver_8hpp_source.html#l00335">trace_back()</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01399">velocity_particle</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00043">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00053">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1015,8 +1015,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a708026154cd4cb6d73f0d7a6fea80b33" name="a708026154cd4cb6d73f0d7a6fea80b33"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a708026154cd4cb6d73f0d7a6fea80b33">&#9670;&#160;</a></span>external_force()</h2>
+<a id="a4daebcfc8dc5dfd88491687bdf20a7d9" name="a4daebcfc8dc5dfd88491687bdf20a7d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4daebcfc8dc5dfd88491687bdf20a7d9">&#9670;&#160;</a></span>external_force()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1033,7 +1033,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html">assembler::AssemblerUtils</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">assembler::Assembler</a> &amp;&#160;</td>
           <td class="paramname"><em>assembler</em>, </td>
         </tr>
         <tr>
@@ -1095,11 +1095,11 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01385">dim</a>, <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01386">n_el</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00043">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00053">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_operator_splitting_solver_a708026154cd4cb6d73f0d7a6fea80b33_icgraph.svg" width="100%" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_operator_splitting_solver_a4daebcfc8dc5dfd88491687bdf20a7d9_icgraph.svg" width="100%" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -1619,7 +1619,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01409">solver_mass</a>, and <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01414">solver_type</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00043">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00053">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1824,7 +1824,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01385">dim</a>, <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01411">mat_diffusion</a>, <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01407">solver_diffusion</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00043">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00053">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1884,7 +1884,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01412">mat_projection</a>, <a class="el" href="_operator_splitting_solver_8hpp_source.html#l01408">solver_projection</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00043">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00053">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

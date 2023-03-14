@@ -19,7 +19,7 @@ var classpolyfem_1_1assembler_1_1_generic_scalar_problem =
     [ "is_time_dependent", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a61f7b9a0852a74c021d8b9b439c6b747", null ],
     [ "might_have_no_dirichlet", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#add9f908a605e3a5161726927986550d6", null ],
     [ "neumann_bc", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aea31b32c1834fef06b028268ec042560", null ],
-    [ "rhs", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ac9416b47f48a6fd8b16ef3bec4baf787", null ],
+    [ "rhs", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a1cd5b360096c9a0f3910beb9ce474b9c", null ],
     [ "set_parameters", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a1893d02c1123a15dccbe4b98f1e3c5d4", null ],
     [ "set_time_dependent", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ad65948c645dd5271889a5914add45adb", null ],
     [ "update_dirichlet_boundary", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#abbf2774ef056fae90f21dc0d94170c65", null ],

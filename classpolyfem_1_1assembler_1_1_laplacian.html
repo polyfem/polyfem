@@ -130,49 +130,90 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1assembler_1_1_laplacia
 <div class="dynheader">
 Inheritance diagram for polyfem::assembler::Laplacian:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_laplacian__inherit__graph.svg" width="182" height="212"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_laplacian__inherit__graph.svg" width="163" height="227"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for polyfem::assembler::Laplacian:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_laplacian__coll__graph.svg" width="182" height="212"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_laplacian__coll__graph.svg" width="163" height="227"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aadff935f981243c94923ccde40a0d6f2"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, 1, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#aadff935f981243c94923ccde40a0d6f2">assemble</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler_data.html">LinearAssemblerData</a> &amp;data) const override</td></tr>
-<tr class="separator:aadff935f981243c94923ccde40a0d6f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a64ee41e5fb4d757a06ef826e38572c3f"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, 1, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#a64ee41e5fb4d757a06ef826e38572c3f">compute_rhs</a> (const <a class="el" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;pt) const</td></tr>
-<tr class="separator:a64ee41e5fb4d757a06ef826e38572c3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8e0ff38c8a29abddedc8c810f0d5c7e"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a>, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#aa8e0ff38c8a29abddedc8c810f0d5c7e">kernel</a> (const int dim, const <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a> &amp;r) const</td></tr>
-<tr class="separator:aa8e0ff38c8a29abddedc8c810f0d5c7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aabdf3294f903abc4d56e009229be7aa1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#aabdf3294f903abc4d56e009229be7aa1">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:aabdf3294f903abc4d56e009229be7aa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af77ca55b76766383276beb9034a61d24"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#af77ca55b76766383276beb9034a61d24">assemble</a> (const bool is_volume, const int n_basis, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#aa9f8769d176bc34ee17a5e52e84aa9cb">cache</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness, const bool is_mass=false) const</td></tr>
-<tr class="separator:af77ca55b76766383276beb9034a61d24"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fa7930cb3353f0c82709d575f6fd1fb"><td class="memItemLeft" align="right" valign="top">virtual LocalBlockMatrix&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#a2fa7930cb3353f0c82709d575f6fd1fb">assemble</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler_data.html">LinearAssemblerData</a> &amp;data) const=0</td></tr>
-<tr class="separator:a2fa7930cb3353f0c82709d575f6fd1fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html">polyfem::assembler::LinearAssembler&lt; LocalBlockMatrix &gt;</a></td></tr>
-<tr class="memitem:accd807ab510cfcbc1ee820c71ff5bcf7 inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#accd807ab510cfcbc1ee820c71ff5bcf7">LinearAssembler</a> ()</td></tr>
-<tr class="separator:accd807ab510cfcbc1ee820c71ff5bcf7 inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adfdb406e7844edd7ec2c10d003ddc15a inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#adfdb406e7844edd7ec2c10d003ddc15a">~LinearAssembler</a> ()=default</td></tr>
-<tr class="separator:adfdb406e7844edd7ec2c10d003ddc15a inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af77ca55b76766383276beb9034a61d24 inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#af77ca55b76766383276beb9034a61d24">assemble</a> (const bool is_volume, const int n_basis, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#aa9f8769d176bc34ee17a5e52e84aa9cb">cache</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness, const bool is_mass=false) const</td></tr>
-<tr class="separator:af77ca55b76766383276beb9034a61d24 inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af77655474f7b786ef3150c3d5428c658"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#af77655474f7b786ef3150c3d5428c658">name</a> () const override</td></tr>
+<tr class="separator:af77655474f7b786ef3150c3d5428c658"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2faa13ec486150f9088e1e6248a22dd7"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">ParamFunc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#a2faa13ec486150f9088e1e6248a22dd7">parameters</a> () const override</td></tr>
+<tr class="separator:a2faa13ec486150f9088e1e6248a22dd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f86923f1cf44097bb498d2ca4db9aef"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 9, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#a6f86923f1cf44097bb498d2ca4db9aef">assemble</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler_data.html">LinearAssemblerData</a> &amp;data) const override</td></tr>
+<tr class="separator:a6f86923f1cf44097bb498d2ca4db9aef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1006d1e9e03abac9ccb778d65a03574"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#af1006d1e9e03abac9ccb778d65a03574">compute_rhs</a> (const <a class="el" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;pt) const override</td></tr>
+<tr class="separator:af1006d1e9e03abac9ccb778d65a03574"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00b8b3fbdf7427e5a296ad7a77fa547e"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a>, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#a00b8b3fbdf7427e5a296ad7a77fa547e">kernel</a> (const int dim, const <a class="el" href="namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4">AutodiffGradPt</a> &amp;rvect, const <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a> &amp;r) const override</td></tr>
+<tr class="separator:a00b8b3fbdf7427e5a296ad7a77fa547e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83e70fd7a778342c0d7750416661a575"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#a83e70fd7a778342c0d7750416661a575">assemble</a> (const bool is_volume, const int n_basis, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#aa9f8769d176bc34ee17a5e52e84aa9cb">cache</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness, const bool is_mass=false) const override</td></tr>
+<tr class="separator:a83e70fd7a778342c0d7750416661a575"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc7b5a738074ba44208a49ea1027fd14"><td class="memItemLeft" align="right" valign="top">virtual Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 9, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html#adc7b5a738074ba44208a49ea1027fd14">assemble</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler_data.html">LinearAssemblerData</a> &amp;data) const=0</td></tr>
+<tr class="separator:adc7b5a738074ba44208a49ea1027fd14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html">polyfem::assembler::LinearAssembler</a></td></tr>
+<tr class="memitem:aae297eb7e54cfd71847f7a48ea9c5219 inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#aae297eb7e54cfd71847f7a48ea9c5219">LinearAssembler</a> ()</td></tr>
+<tr class="separator:aae297eb7e54cfd71847f7a48ea9c5219 inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a507095d97f5ebec46a02db4ee1bb8e26 inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a507095d97f5ebec46a02db4ee1bb8e26">~LinearAssembler</a> ()=default</td></tr>
+<tr class="separator:a507095d97f5ebec46a02db4ee1bb8e26 inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83e70fd7a778342c0d7750416661a575 inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a83e70fd7a778342c0d7750416661a575">assemble</a> (const bool is_volume, const int n_basis, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#aa9f8769d176bc34ee17a5e52e84aa9cb">cache</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness, const bool is_mass=false) const override</td></tr>
+<tr class="separator:a83e70fd7a778342c0d7750416661a575 inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59f65edb62270e35a5ee07c3eb2e0291 inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a59f65edb62270e35a5ee07c3eb2e0291">is_linear</a> () const override</td></tr>
+<tr class="separator:a59f65edb62270e35a5ee07c3eb2e0291 inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a095458ab45db4b0cc5820427318ca23b inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memItemLeft" align="right" valign="top">virtual Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 9, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a095458ab45db4b0cc5820427318ca23b">assemble</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler_data.html">LinearAssemblerData</a> &amp;data) const =0</td></tr>
+<tr class="separator:a095458ab45db4b0cc5820427318ca23b inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1assembler_1_1_assembler')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">polyfem::assembler::Assembler</a></td></tr>
 <tr class="memitem:a31ef566636a0cb6dbe45c154250974fa inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a31ef566636a0cb6dbe45c154250974fa">~Assembler</a> ()=default</td></tr>
 <tr class="separator:a31ef566636a0cb6dbe45c154250974fa inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c54d99815b988e2ca1bc05c1e202f69 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69">name</a> () const =0</td></tr>
+<tr class="separator:a7c54d99815b988e2ca1bc05c1e202f69 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80752709995e20a40d7df6ae26c684d4 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4">size</a> () const</td></tr>
 <tr class="separator:a80752709995e20a40d7df6ae26c684d4 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa2c54aec247b0afd91f9fa242764c8a inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#aaa2c54aec247b0afd91f9fa242764c8a">set_size</a> (const int <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4">size</a>)</td></tr>
 <tr class="separator:aaa2c54aec247b0afd91f9fa242764c8a inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab48bd60e1023f09136d318f0d91f0b71 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ab48bd60e1023f09136d318f0d91f0b71">assemble</a> (const bool is_volume, const int n_basis, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#aa9f8769d176bc34ee17a5e52e84aa9cb">cache</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness, const bool is_mass=false) const</td></tr>
+<tr class="separator:ab48bd60e1023f09136d318f0d91f0b71 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c049eeffcf6e33adab761c3c7f3d051 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a1c049eeffcf6e33adab761c3c7f3d051">assemble_energy</a> (const bool is_volume, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#aa9f8769d176bc34ee17a5e52e84aa9cb">cache</a>, const double dt, const Eigen::MatrixXd &amp;displacement, const Eigen::MatrixXd &amp;displacement_prev) const</td></tr>
+<tr class="separator:a1c049eeffcf6e33adab761c3c7f3d051 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad876d5f518e470fc58496efd18bd397f inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad876d5f518e470fc58496efd18bd397f">assemble_gradient</a> (const bool is_volume, const int n_basis, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#aa9f8769d176bc34ee17a5e52e84aa9cb">cache</a>, const double dt, const Eigen::MatrixXd &amp;displacement, const Eigen::MatrixXd &amp;displacement_prev, Eigen::MatrixXd &amp;rhs) const</td></tr>
+<tr class="separator:ad876d5f518e470fc58496efd18bd397f inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bf5a67173bf7b042e14f1d65e3079de inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2bf5a67173bf7b042e14f1d65e3079de">assemble_hessian</a> (const bool is_volume, const int n_basis, const bool project_to_psd, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#aa9f8769d176bc34ee17a5e52e84aa9cb">cache</a>, const double dt, const Eigen::MatrixXd &amp;displacement, const Eigen::MatrixXd &amp;displacement_prev, <a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">utils::SparseMatrixCache</a> &amp;mat_cache, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;grad) const</td></tr>
+<tr class="separator:a2bf5a67173bf7b042e14f1d65e3079de inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada61bfb64e086585c09fc66d60ade635 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ada61bfb64e086585c09fc66d60ade635">compute_scalar_value</a> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;fun, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a> &gt; &amp;result) const</td></tr>
+<tr class="separator:ada61bfb64e086585c09fc66d60ade635 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05a391ffee6dad03741212322c25d906 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a05a391ffee6dad03741212322c25d906">compute_tensor_value</a> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;fun, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a> &gt; &amp;result) const</td></tr>
+<tr class="separator:a05a391ffee6dad03741212322c25d906 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf4ca5a2d5825696036c2ad59f80d89b inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">ParamFunc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#abf4ca5a2d5825696036c2ad59f80d89b">parameters</a> () const =0</td></tr>
+<tr class="separator:abf4ca5a2d5825696036c2ad59f80d89b inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3b31adacd89c796c137867e4ab2fd70 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ac3b31adacd89c796c137867e4ab2fd70">compute_rhs</a> (const <a class="el" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;pt) const</td></tr>
+<tr class="separator:ac3b31adacd89c796c137867e4ab2fd70 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d1b1cbf118c32444235f562625f51fe inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual Eigen::Matrix&lt; <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a>, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a6d1b1cbf118c32444235f562625f51fe">kernel</a> (const int dim, const <a class="el" href="namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4">AutodiffGradPt</a> &amp;rvect, const <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a> &amp;r) const</td></tr>
+<tr class="separator:a6d1b1cbf118c32444235f562625f51fe inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9854f3751938da18ef77fda5e6a3acb inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad9854f3751938da18ef77fda5e6a3acb">set_materials</a> (const std::vector&lt; int &gt; &amp;body_ids, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;body_params)</td></tr>
+<tr class="separator:ad9854f3751938da18ef77fda5e6a3acb inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add7e99e08b57e08a241938ec1b360105 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#add7e99e08b57e08a241938ec1b360105">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
+<tr class="separator:add7e99e08b57e08a241938ec1b360105 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad816288354f5093a053de6fdd0a102d1 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad816288354f5093a053de6fdd0a102d1">is_linear</a> () const =0</td></tr>
+<tr class="separator:ad816288354f5093a053de6fdd0a102d1 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40fad32c421398dc8455c9f18f5189e5 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a40fad32c421398dc8455c9f18f5189e5">is_solution_displacement</a> () const</td></tr>
+<tr class="separator:a40fad32c421398dc8455c9f18f5189e5 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac90010fe8eddf43fb759d11942e5e8a0 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ac90010fe8eddf43fb759d11942e5e8a0">is_fluid</a> () const</td></tr>
+<tr class="separator:ac90010fe8eddf43fb759d11942e5e8a0 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a719343427b7a8ea6a643b2f745cb71a9 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a719343427b7a8ea6a643b2f745cb71a9">is_tensor</a> () const</td></tr>
+<tr class="separator:a719343427b7a8ea6a643b2f745cb71a9 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
-<tr class="memitem:a8a68a59efeee95cf4a3649364489212d"><td class="memItemLeft" align="right" valign="top">virtual LocalBlockMatrix&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a8a68a59efeee95cf4a3649364489212d">assemble</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler_data.html">LinearAssemblerData</a> &amp;data) const =0</td></tr>
-<tr class="separator:a8a68a59efeee95cf4a3649364489212d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_types_classpolyfem_1_1assembler_1_1_assembler"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classpolyfem_1_1assembler_1_1_assembler')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">polyfem::assembler::Assembler</a></td></tr>
+<tr class="memitem:a2cb2b720adf98c060d79238859be88ac inherit pub_types_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">typedef std::pair&lt; std::string, Eigen::MatrixXd &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a></td></tr>
+<tr class="separator:a2cb2b720adf98c060d79238859be88ac inherit pub_types_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78bc1c7356d5a01612532c061eb9345f inherit pub_types_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; double(const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;, double, int)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">ParamFunc</a></td></tr>
+<tr class="separator:a78bc1c7356d5a01612532c061eb9345f inherit pub_types_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classpolyfem_1_1assembler_1_1_assembler"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1assembler_1_1_assembler')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">polyfem::assembler::Assembler</a></td></tr>
 <tr class="memitem:ae5e7302dd8929a9170c7dd93b69a0757 inherit pro_attribs_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ae5e7302dd8929a9170c7dd93b69a0757">size_</a> = -1</td></tr>
 <tr class="separator:ae5e7302dd8929a9170c7dd93b69a0757 inherit pro_attribs_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -181,8 +222,8 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_laplacian_8hpp_source.html#l00011">11</a> of file <a class="el" href="_laplacian_8hpp_source.html">Laplacian.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="aabdf3294f903abc4d56e009229be7aa1" name="aabdf3294f903abc4d56e009229be7aa1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabdf3294f903abc4d56e009229be7aa1">&#9670;&#160;</a></span>add_multimaterial()</h2>
+<a id="a83e70fd7a778342c0d7750416661a575" name="a83e70fd7a778342c0d7750416661a575"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83e70fd7a778342c0d7750416661a575">&#9670;&#160;</a></span>assemble() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -191,42 +232,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void polyfem::assembler::Laplacian::add_multimaterial </td>
-          <td>(</td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>index</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_laplacian_8hpp_source.html#l00029">29</a> of file <a class="el" href="_laplacian_8hpp_source.html">Laplacian.hpp</a>.</p>
-
-</div>
-</div>
-<a id="af77ca55b76766383276beb9034a61d24" name="af77ca55b76766383276beb9034a61d24"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af77ca55b76766383276beb9034a61d24">&#9670;&#160;</a></span>assemble() <span class="overload">[1/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html">polyfem::assembler::LinearAssembler</a>&lt; LocalBlockMatrix &gt;::assemble </td>
+          <td class="memname">void polyfem::assembler::LinearAssembler::assemble </td>
           <td>(</td>
           <td class="paramtype">const bool&#160;</td>
           <td class="paramname"><em>is_volume</em>, </td>
@@ -273,12 +279,19 @@ Additional Inherited Members</h2></td></tr>
           <td></td><td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a83e70fd7a778342c0d7750416661a575">polyfem::assembler::LinearAssembler</a>.</p>
 
 </div>
 </div>
-<a id="aadff935f981243c94923ccde40a0d6f2" name="aadff935f981243c94923ccde40a0d6f2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aadff935f981243c94923ccde40a0d6f2">&#9670;&#160;</a></span>assemble() <span class="overload">[2/3]</span></h2>
+<a id="a6f86923f1cf44097bb498d2ca4db9aef" name="a6f86923f1cf44097bb498d2ca4db9aef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f86923f1cf44097bb498d2ca4db9aef">&#9670;&#160;</a></span>assemble() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -287,7 +300,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Eigen::Matrix&lt; double, 1, 1 &gt; polyfem::assembler::Laplacian::assemble </td>
+          <td class="memname">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 9, 1 &gt; polyfem::assembler::Laplacian::assemble </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler_data.html">LinearAssemblerData</a> &amp;&#160;</td>
           <td class="paramname"><em>data</em></td><td>)</td>
@@ -301,16 +314,24 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a8a68a59efeee95cf4a3649364489212d">polyfem::assembler::LinearAssembler&lt; LocalBlockMatrix &gt;</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a095458ab45db4b0cc5820427318ca23b">polyfem::assembler::LinearAssembler</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_laplacian_8cpp_source.html#l00005">5</a> of file <a class="el" href="_laplacian_8cpp_source.html">Laplacian.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00045">polyfem::assembler::LinearAssemblerData::da</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00041">polyfem::assembler::LinearAssemblerData::i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00043">polyfem::assembler::LinearAssemblerData::j</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00039">polyfem::assembler::LinearAssemblerData::vals</a>.</p>
 
+<p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00053">polyfem::State::solve_transient_navier_stokes_split()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_laplacian_a6f86923f1cf44097bb498d2ca4db9aef_icgraph.svg" width="100%" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
-<a id="a2fa7930cb3353f0c82709d575f6fd1fb" name="a2fa7930cb3353f0c82709d575f6fd1fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2fa7930cb3353f0c82709d575f6fd1fb">&#9670;&#160;</a></span>assemble() <span class="overload">[3/3]</span></h2>
+
+</div>
+</div>
+<a id="adc7b5a738074ba44208a49ea1027fd14" name="adc7b5a738074ba44208a49ea1027fd14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc7b5a738074ba44208a49ea1027fd14">&#9670;&#160;</a></span>assemble() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -319,7 +340,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual LocalBlockMatrix <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html">polyfem::assembler::LinearAssembler</a>&lt; LocalBlockMatrix &gt;::assemble </td>
+          <td class="memname">virtual Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 9, 1 &gt; polyfem::assembler::LinearAssembler::assemble </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler_data.html">LinearAssemblerData</a> &amp;&#160;</td>
           <td class="paramname"><em>data</em></td><td>)</td>
@@ -333,41 +354,60 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a8a68a59efeee95cf4a3649364489212d">polyfem::assembler::LinearAssembler&lt; LocalBlockMatrix &gt;</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a095458ab45db4b0cc5820427318ca23b">polyfem::assembler::LinearAssembler</a>.</p>
 
 </div>
 </div>
-<a id="a64ee41e5fb4d757a06ef826e38572c3f" name="a64ee41e5fb4d757a06ef826e38572c3f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a64ee41e5fb4d757a06ef826e38572c3f">&#9670;&#160;</a></span>compute_rhs()</h2>
+<a id="af1006d1e9e03abac9ccb778d65a03574" name="af1006d1e9e03abac9ccb778d65a03574"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1006d1e9e03abac9ccb778d65a03574">&#9670;&#160;</a></span>compute_rhs()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Eigen::Matrix&lt; double, 1, 1 &gt; polyfem::assembler::Laplacian::compute_rhs </td>
+          <td class="memname">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt; polyfem::assembler::Laplacian::compute_rhs </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;&#160;</td>
           <td class="paramname"><em>pt</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ac3b31adacd89c796c137867e4ab2fd70">polyfem::assembler::Assembler</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_laplacian_8cpp_source.html#l00018">18</a> of file <a class="el" href="_laplacian_8cpp_source.html">Laplacian.cpp</a>.</p>
 
 </div>
 </div>
-<a id="aa8e0ff38c8a29abddedc8c810f0d5c7e" name="aa8e0ff38c8a29abddedc8c810f0d5c7e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa8e0ff38c8a29abddedc8c810f0d5c7e">&#9670;&#160;</a></span>kernel()</h2>
+<a id="a00b8b3fbdf7427e5a296ad7a77fa547e" name="a00b8b3fbdf7427e5a296ad7a77fa547e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00b8b3fbdf7427e5a296ad7a77fa547e">&#9670;&#160;</a></span>kernel()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">Eigen::Matrix&lt; <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a>, Eigen::Dynamic, 1, 0, 3, 1 &gt; polyfem::assembler::Laplacian::kernel </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4">AutodiffGradPt</a> &amp;&#160;</td>
+          <td class="paramname"><em>rvect</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -381,9 +421,74 @@ Additional Inherited Members</h2></td></tr>
           <td></td><td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a6d1b1cbf118c32444235f562625f51fe">polyfem::assembler::Assembler</a>.</p>
+
 <p class="definition">Definition at line <a class="el" href="_laplacian_8cpp_source.html#l00026">26</a> of file <a class="el" href="_laplacian_8cpp_source.html">Laplacian.cpp</a>.</p>
+
+</div>
+</div>
+<a id="af77655474f7b786ef3150c3d5428c658" name="af77655474f7b786ef3150c3d5428c658"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af77655474f7b786ef3150c3d5428c658">&#9670;&#160;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::assembler::Laplacian::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69">polyfem::assembler::Assembler</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_laplacian_8hpp_source.html#l00016">16</a> of file <a class="el" href="_laplacian_8hpp_source.html">Laplacian.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a2faa13ec486150f9088e1e6248a22dd7" name="a2faa13ec486150f9088e1e6248a22dd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2faa13ec486150f9088e1e6248a22dd7">&#9670;&#160;</a></span>parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">ParamFunc</a> &gt; polyfem::assembler::Laplacian::parameters </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#abf4ca5a2d5825696036c2ad59f80d89b">polyfem::assembler::Assembler</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_laplacian_8hpp_source.html#l00017">17</a> of file <a class="el" href="_laplacian_8hpp_source.html">Laplacian.hpp</a>.</p>
 
 </div>
 </div>

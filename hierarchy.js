@@ -9,7 +9,21 @@ var hierarchy =
     [ "polyfem::mesh::NCMesh3D::ArrayHasher2D", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher2_d.html", null ],
     [ "polyfem::mesh::NCMesh3D::ArrayHasher3D", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher3_d.html", null ],
     [ "polyfem::assembler::Assembler", "classpolyfem_1_1assembler_1_1_assembler.html", [
-      [ "polyfem::assembler::LinearAssembler< LocalBlockMatrix >", "classpolyfem_1_1assembler_1_1_linear_assembler.html", [
+      [ "polyfem::assembler::ElasticityAssembler", "classpolyfem_1_1assembler_1_1_elasticity_assembler.html", [
+        [ "polyfem::assembler::GenericElastic", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
+          [ "polyfem::assembler::IncompressibleOgdenElasticity", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html", null ],
+          [ "polyfem::assembler::MooneyRivlinElasticity", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html", null ],
+          [ "polyfem::assembler::NeoHookeanAutodiff", "classpolyfem_1_1assembler_1_1_neo_hookean_autodiff.html", null ],
+          [ "polyfem::assembler::UnconstrainedOgdenElasticity", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html", null ]
+        ] ],
+        [ "polyfem::assembler::HookeLinearElasticity", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html", null ],
+        [ "polyfem::assembler::IncompressibleLinearElasticityDispacement", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html", null ],
+        [ "polyfem::assembler::LinearElasticity", "classpolyfem_1_1assembler_1_1_linear_elasticity.html", null ],
+        [ "polyfem::assembler::MultiModel", "classpolyfem_1_1assembler_1_1_multi_model.html", null ],
+        [ "polyfem::assembler::NeoHookeanElasticity", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html", null ],
+        [ "polyfem::assembler::SaintVenantElasticity", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html", null ]
+      ] ],
+      [ "polyfem::assembler::LinearAssembler", "classpolyfem_1_1assembler_1_1_linear_assembler.html", [
         [ "polyfem::assembler::BilaplacianAux", "classpolyfem_1_1assembler_1_1_bilaplacian_aux.html", null ],
         [ "polyfem::assembler::BilaplacianMain", "classpolyfem_1_1assembler_1_1_bilaplacian_main.html", null ],
         [ "polyfem::assembler::Helmholtz", "classpolyfem_1_1assembler_1_1_helmholtz.html", null ],
@@ -22,22 +36,12 @@ var hierarchy =
         [ "polyfem::assembler::StokesPressure", "classpolyfem_1_1assembler_1_1_stokes_pressure.html", null ],
         [ "polyfem::assembler::StokesVelocity", "classpolyfem_1_1assembler_1_1_stokes_velocity.html", null ]
       ] ],
-      [ "polyfem::assembler::MixedAssembler< LocalBlockMatrix >", "classpolyfem_1_1assembler_1_1_mixed_assembler.html", [
-        [ "polyfem::assembler::BilaplacianMixed", "classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html", null ],
-        [ "polyfem::assembler::IncompressibleLinearElasticityMixed", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html", null ],
-        [ "polyfem::assembler::StokesMixed", "classpolyfem_1_1assembler_1_1_stokes_mixed.html", null ]
-      ] ],
       [ "polyfem::assembler::NLAssembler", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", [
-        [ "polyfem::assembler::GenericElastic", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
-          [ "polyfem::assembler::IncompressibleOgdenElasticity", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html", null ],
-          [ "polyfem::assembler::MooneyRivlinElasticity", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html", null ],
-          [ "polyfem::assembler::NeoHookeanAutodiff", "classpolyfem_1_1assembler_1_1_neo_hookean_autodiff.html", null ],
-          [ "polyfem::assembler::UnconstrainedOgdenElasticity", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html", null ]
-        ] ],
+        [ "polyfem::assembler::GenericElastic", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::HookeLinearElasticity", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html", null ],
         [ "polyfem::assembler::LinearElasticity", "classpolyfem_1_1assembler_1_1_linear_elasticity.html", null ],
         [ "polyfem::assembler::MultiModel", "classpolyfem_1_1assembler_1_1_multi_model.html", null ],
-        [ "polyfem::assembler::NavierStokesVelocity< full_gradient >", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html", null ],
+        [ "polyfem::assembler::NavierStokesVelocity", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html", null ],
         [ "polyfem::assembler::NeoHookeanElasticity", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html", null ],
         [ "polyfem::assembler::SaintVenantElasticity", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html", null ],
         [ "polyfem::assembler::ViscousDamping", "classpolyfem_1_1assembler_1_1_viscous_damping.html", null ]
@@ -85,7 +89,6 @@ var hierarchy =
       [ "polyfem::solver::LaggedRegForm", "classpolyfem_1_1solver_1_1_lagged_reg_form.html", null ],
       [ "polyfem::solver::RayleighDampingForm", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html", null ]
     ] ],
-    [ "polyfem::assembler::FormulationProperties", "structpolyfem_1_1assembler_1_1_formulation_properties.html", null ],
     [ "polyfem::renderer::FragmentAttributes", "classpolyfem_1_1renderer_1_1_fragment_attributes.html", null ],
     [ "polyfem::renderer::FrameBufferAttributes", "classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html", null ],
     [ "polyfem::assembler::GenericMatParam", "classpolyfem_1_1assembler_1_1_generic_mat_param.html", null ],
@@ -149,6 +152,11 @@ var hierarchy =
     [ "polyfem::mesh::Mesh3DStorage", "classpolyfem_1_1mesh_1_1_mesh3_d_storage.html", null ],
     [ "polyfem::mesh::Mesh_Quality", "structpolyfem_1_1mesh_1_1_mesh___quality.html", null ],
     [ "polyfem::mesh::MeshNodes", "classpolyfem_1_1mesh_1_1_mesh_nodes.html", null ],
+    [ "polyfem::assembler::MixedAssembler", "classpolyfem_1_1assembler_1_1_mixed_assembler.html", [
+      [ "polyfem::assembler::BilaplacianMixed", "classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html", null ],
+      [ "polyfem::assembler::IncompressibleLinearElasticityMixed", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html", null ],
+      [ "polyfem::assembler::StokesMixed", "classpolyfem_1_1assembler_1_1_stokes_mixed.html", null ]
+    ] ],
     [ "polyfem::assembler::MixedAssemblerData", "classpolyfem_1_1assembler_1_1_mixed_assembler_data.html", null ],
     [ "polyfem::io::MshReader", "classpolyfem_1_1io_1_1_msh_reader.html", null ],
     [ "polyfem::io::MshWriter", "classpolyfem_1_1io_1_1_msh_writer.html", null ],

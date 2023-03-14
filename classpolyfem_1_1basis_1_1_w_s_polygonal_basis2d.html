@@ -130,8 +130,8 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1basis_1_1_w_s_polygona
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a50b588a2ab913de3c21d0e6704be6128"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html#a50b588a2ab913de3c21d0e6704be6128">build_bases</a> (const std::string &amp;assembler_name, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">mesh::Mesh2D</a> &amp;mesh, const int n_bases, const int quadrature_order, const int mass_quadrature_order, std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;bases, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::map&lt; int, Eigen::MatrixXd &gt; &amp;mapped_boundary)</td></tr>
-<tr class="separator:a50b588a2ab913de3c21d0e6704be6128"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fe45bd8fb2b0b8d16e20d7eab13296a"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html#a5fe45bd8fb2b0b8d16e20d7eab13296a">build_bases</a> (const std::string &amp;assembler_name, const int dim, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh2_d.html">mesh::Mesh2D</a> &amp;mesh, const int n_bases, const int quadrature_order, const int mass_quadrature_order, std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &gt; &amp;bases, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, std::map&lt; int, Eigen::MatrixXd &gt; &amp;mapped_boundary)</td></tr>
+<tr class="separator:a5fe45bd8fb2b0b8d16e20d7eab13296a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a18c437d6d18725ba35e6e49b7c692014"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html#a18c437d6d18725ba35e6e49b7c692014">wachspress</a> (const Eigen::MatrixXd &amp;polygon, const Eigen::RowVector2d &amp;point, Eigen::MatrixXd &amp;b, const double tol)</td></tr>
 <tr class="separator:a18c437d6d18725ba35e6e49b7c692014"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5699764466dac77f782982b9e8d02927"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html#a5699764466dac77f782982b9e8d02927">wachspress_derivative</a> (const Eigen::MatrixXd &amp;polygon, const Eigen::RowVector2d &amp;point, Eigen::MatrixXd &amp;derivatives, const double tol)</td></tr>
@@ -141,8 +141,8 @@ Static Public Member Functions</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_w_s_polygonal_basis2d_8hpp_source.html#l00014">14</a> of file <a class="el" href="_w_s_polygonal_basis2d_8hpp_source.html">WSPolygonalBasis2d.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a50b588a2ab913de3c21d0e6704be6128" name="a50b588a2ab913de3c21d0e6704be6128"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a50b588a2ab913de3c21d0e6704be6128">&#9670;&#160;</a></span>build_bases()</h2>
+<a id="a5fe45bd8fb2b0b8d16e20d7eab13296a" name="a5fe45bd8fb2b0b8d16e20d7eab13296a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fe45bd8fb2b0b8d16e20d7eab13296a">&#9670;&#160;</a></span>build_bases()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -155,6 +155,12 @@ Static Public Member Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>assembler_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>dim</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -215,17 +221,17 @@ Static Public Member Functions</h2></td></tr>
 
 <p class="reference">References <a class="el" href="_barycentric_basis2d_8cpp_source.html#l00116">polyfem::basis::BarycentricBasis2d::build_bases()</a>, <a class="el" href="_w_s_polygonal_basis2d_8cpp_source.html#l00023">wachspress()</a>, and <a class="el" href="_w_s_polygonal_basis2d_8cpp_source.html#l00094">wachspress_derivative()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00916">polyfem::State::build_polygonal_basis()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00915">polyfem::State::build_polygonal_basis()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d_a50b588a2ab913de3c21d0e6704be6128_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d_a5fe45bd8fb2b0b8d16e20d7eab13296a_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d_a50b588a2ab913de3c21d0e6704be6128_icgraph.svg" width="100%" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d_a5fe45bd8fb2b0b8d16e20d7eab13296a_icgraph.svg" width="100%" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 

@@ -6,6 +6,8 @@ var classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity =
     [ "Ds", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#a0b167b2cb9d14d604b156056c697cc96", null ],
     [ "elastic_energy_T", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#af2f984b34b574212d9be9612ac284642", null ],
     [ "mus", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#a060131c460dc846c7a54dd67bb364076", null ],
+    [ "name", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#a7c2a2e7a52cbe9296ec6c6b7e8a5b459", null ],
+    [ "parameters", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#a6690cdc1bbdfca18e0990965bbeb7245", null ],
     [ "alphas_", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#a12812b3f1bd84fdea09bfe0daa85382a", null ],
     [ "Ds_", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#a2041d890ef90d33ddf76b9c02fde31d0", null ],
     [ "mus_", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#a8d6bd84dc83b5797383e2d4deaf62cc9", null ]

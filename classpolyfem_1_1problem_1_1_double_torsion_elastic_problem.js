@@ -10,7 +10,7 @@ var classpolyfem_1_1problem_1_1_double_torsion_elastic_problem =
     [ "is_rhs_zero", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#ac6e4c2e7314329abb3876e45d5a15a12", null ],
     [ "is_scalar", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#ad0e4d6daa451f826befd2488e01c0dad", null ],
     [ "is_time_dependent", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a8ea0df5b56a863b2660bca9409c74466", null ],
-    [ "rhs", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a9955252849f125f6860d4aa08a0c5f04", null ],
+    [ "rhs", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#ab8177f14fee43cb7f144209c2557c809", null ],
     [ "set_parameters", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a74a792109624c6117b0a5904870192ea", null ],
     [ "angular_v0_", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a3e4075a5d4aba86b9c3811c6021c442f", null ],
     [ "angular_v1_", "classpolyfem_1_1problem_1_1_double_torsion_elastic_problem.html#a58ce4d96db7534496b56e38c4a465f60", null ],

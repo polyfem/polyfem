@@ -33,7 +33,7 @@ var classpolyfem_1_1assembler_1_1_generic_tensor_problem =
     [ "might_have_no_dirichlet", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ada4dc69fbd13ad2b53d52ad9d557b354", null ],
     [ "neumann_bc", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a21f9ade09719d477675f76e787f77bc3", null ],
     [ "neumann_nodal_value", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a8d57b6de64d26b07e21b2d7989ee8f12", null ],
-    [ "rhs", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ac877a0b256e0b4cb417f6dab4c3d61cc", null ],
+    [ "rhs", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#af6b751523b4242cee6ebdf5f88c7bd0e", null ],
     [ "set_parameters", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a3286b846bdcde273f9713d019d6053d2", null ],
     [ "set_rhs", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a4cfa2e07afdd64419a9ad645a9c43f9e", null ],
     [ "set_time_dependent", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a6dd70ffe7823cb8bb97bb882226e3611", null ],
