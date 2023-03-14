@@ -29,6 +29,9 @@ namespace cppoptlib
 
 		first_grad_norm_tol = solver_params["first_grad_norm_tol"];
 
+		debug_finite_diff = solver_params["debug_fd"];
+		finite_diff_eps = solver_params["debug_fd_eps"];
+
 		set_line_search(solver_params["line_search"]["method"]);
 	}
 
@@ -45,6 +48,38 @@ namespace cppoptlib
 		solver_info["line_search"] = line_search_name;
 
 		m_line_search->set_min_step_size(min_step_size);
+	}
+
+	template <typename ProblemType>
+	bool NonlinearSolver<ProblemType>::verify_gradient(ProblemType &objFunc, const TVector &x, const TVector &grad)
+	{
+		if (!debug_finite_diff)
+			return true;
+		
+		Eigen::VectorXd direc = grad.normalized();
+		Eigen::VectorXd x2 = x + direc * finite_diff_eps;
+		Eigen::VectorXd x1 = x - direc * finite_diff_eps;
+
+		objFunc.solution_changed(x2);
+		double J2 = objFunc.value(x2);
+
+		objFunc.solution_changed(x1);
+		double J1 = objFunc.value(x1);
+
+		double fd = (J2 - J1) / 2 / finite_diff_eps;
+		double analytic = direc.dot(grad);
+
+		bool match = abs(fd - analytic) < 1e-8 || abs(fd - analytic) < 1e-1 * abs(analytic);
+
+		// Log error in either case to make it more visible in the logs.
+		if (match)
+			polyfem::logger().error("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
+		else
+			polyfem::logger().error("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
+
+		objFunc.solution_changed(x);
+
+		return match;
 	}
 
 	template <typename ProblemType>
@@ -150,7 +185,7 @@ namespace cppoptlib
 			Eigen::MatrixXd grads;
 			{
 				POLYFEM_SCOPED_TIMER("verify gradient", grad_time);
-				objFunc.verify_gradient(x, grad);
+				verify_gradient(objFunc, x, grad);
 				// values = objFunc.component_values(x);
 				// grads = objFunc.component_gradients(x);
 			}

@@ -23,7 +23,6 @@ namespace polyfem::solver
 
 		Eigen::VectorXd component_values(const Eigen::VectorXd &x) override;
 		Eigen::MatrixXd component_gradients(const Eigen::VectorXd &x) override;
-		bool verify_gradient(const Eigen::VectorXd &x, const Eigen::VectorXd &gradv) override;
 
 		bool smoothing(const Eigen::VectorXd &x, const Eigen::VectorXd &new_x, Eigen::VectorXd &smoothed_x) override;
 		bool remesh(Eigen::VectorXd &x) override;
@@ -56,9 +55,6 @@ namespace polyfem::solver
 
 		const int solve_log_level;
 		const int save_freq;
-
-		const bool debug_finite_diff;
-		const double finite_diff_eps;
 
 		double adjoint_solve_time = 0;
 		double grad_assembly_time = 0;

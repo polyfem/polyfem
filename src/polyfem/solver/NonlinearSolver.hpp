@@ -62,6 +62,8 @@ namespace cppoptlib
 				   || this->m_status == Status::GradNormTolerance;
 		}
 
+		bool verify_gradient(ProblemType &objFunc, const TVector &x, const TVector &grad);
+
 	protected:
 		// ====================================================================
 		//                        Solver parameters
@@ -127,6 +129,9 @@ namespace cppoptlib
 		ErrorCode m_error_code;
 
 		bool disable_log = false;
+
+		bool debug_finite_diff;
+		double finite_diff_eps;
 
 		// ====================================================================
 		//                                 END

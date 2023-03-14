@@ -14,9 +14,7 @@ namespace polyfem::solver
 		  variables_to_simulation_(variables_to_simulation),
 		  all_states_(all_states),
 		  solve_log_level(args["output"]["solve_log_level"]),
-		  save_freq(args["output"]["save_frequency"]),
-		  debug_finite_diff(args["solver"]["nonlinear"]["debug_fd"]),
-		  finite_diff_eps(args["solver"]["nonlinear"]["debug_fd_eps"])
+		  save_freq(args["output"]["save_frequency"])
 	{
 		cur_grad.setZero(0);
 
@@ -239,39 +237,6 @@ namespace polyfem::solver
 		// 	}
 		// }
 		return grads;
-	}
-
-	bool AdjointNLProblem::verify_gradient(const Eigen::VectorXd &x, const Eigen::VectorXd &gradv)
-	{
-		if (debug_finite_diff)
-		{
-			Eigen::VectorXd direc = gradv.normalized();
-			Eigen::VectorXd x2 = x + direc * finite_diff_eps;
-			Eigen::VectorXd x1 = x - direc * finite_diff_eps;
-
-			solution_changed(x2);
-			double J2 = value(x2);
-
-			solution_changed(x1);
-			double J1 = value(x1);
-
-			double fd = (J2 - J1) / 2 / finite_diff_eps;
-			double analytic = direc.dot(gradv);
-
-			bool match = abs(fd - analytic) < 1e-8 || abs(fd - analytic) < 1e-1 * abs(analytic);
-
-			// Log error in either case to make it more visible in the logs.
-			if (match)
-				logger().error("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
-			else
-				logger().error("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
-
-			solution_changed(x);
-
-			return match;
-		}
-
-		return true;
 	}
 
 } // namespace polyfem::solver

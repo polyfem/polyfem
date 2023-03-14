@@ -1907,6 +1907,8 @@
             "solver",
             "f_delta",
             "x_delta",
+            "debug_fd",
+            "debug_fd_eps",
             "grad_norm",
             "first_grad_norm_tol",
             "max_iterations",
@@ -1919,6 +1921,18 @@
             "min_step_size"
         ],
         "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
+    },
+    {
+        "pointer": "/solver/nonlinear/debug_fd",
+        "default": false,
+        "type": "bool",
+        "doc": "Use finite difference to verify gradient in optimization"
+    },
+    {
+        "pointer": "/solver/nonlinear/debug_fd_eps",
+        "default": 1e-7,
+        "type": "float",
+        "doc": "Use finite difference to verify gradient in optimization"
     },
     {
         "pointer": "/solver/nonlinear/max_step_size",

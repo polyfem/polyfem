@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 	CLI::App command_line{"polyfem"};
 
 	// Eigen::setNbThreads(1);
-	size_t max_threads = std::numeric_limits<size_t>::max();
+	size_t max_threads = 32;
 	command_line.add_option("--max_threads", max_threads, "Maximum number of threads");
 
 	std::string json_file = "";
@@ -137,7 +137,6 @@ int main(int argc, char **argv)
 		v2s->update(x);
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
-	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 
 	if (only_compute_energy)
 	{
@@ -146,6 +145,7 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 
+	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
 	nl_solver->minimize(*nl_problem, x);
 
 	return EXIT_SUCCESS;
