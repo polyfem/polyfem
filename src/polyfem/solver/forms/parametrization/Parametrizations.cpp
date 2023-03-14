@@ -375,7 +375,7 @@ namespace polyfem::solver
 		for (const auto &pair : equal_pairs)
 			y(pair.second) = y(pair.first);
 
-		for (const auto &pair : equal_pairs)
+		for (const auto &pair : sum_equal_pairs)
 			y(pair.second) = 1.0 - y(pair.first);
 
 		return y;
