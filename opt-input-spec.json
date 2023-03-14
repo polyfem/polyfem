@@ -544,7 +544,27 @@
         "pointer": "/variable_to_simulation/*/composition/*",
         "type_name": "custom-symmetric",
         "type": "object",
-        "doc": "For custom use only."
+        "optional": [
+            "fixed_entries",
+            "equal_pairs",
+            "sum_equal_pairs"
+        ],
+        "doc": "To set equality constraint."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/fixed_entries",
+        "type": "list",
+        "default": []
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/equal_pairs",
+        "type": "list",
+        "default": []
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/sum_equal_pairs",
+        "type": "list",
+        "default": []
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/state",

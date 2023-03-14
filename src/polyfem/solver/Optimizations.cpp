@@ -172,7 +172,7 @@ namespace polyfem::solver
 		}
 		else if (type == "custom-symmetric")
 		{
-			map = std::make_shared<CustomSymmetric>();
+			map = std::make_shared<CustomSymmetric>(args);
 		}
 		else if (type == "sdf-to-mesh")
 		{
