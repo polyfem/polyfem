@@ -70,7 +70,7 @@ namespace polyfem::assembler
 
 	// E := 0.5(F^T F - I), Compute Stress = \int dF/dt * (2\psi dE/dt + \phi Tr(dE/dt) I) : gradv du
 	Eigen::VectorXd
-	ViscousDamping::assemble_grad(const NonLinearAssemblerData &data) const
+	ViscousDamping::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		Eigen::MatrixXd local_disp;
 		local_disp.setZero(data.vals.basis_values.size(), size());

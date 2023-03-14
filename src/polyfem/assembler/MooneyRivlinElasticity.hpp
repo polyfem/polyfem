@@ -18,6 +18,9 @@ namespace polyfem::assembler
 		const GenericMatParam &c2() const { return c2_; }
 		const GenericMatParam &k() const { return k_; }
 
+		std::string name() const override { return "MooneyRivlin"; }
+		std::map<std::string, ParamFunc> parameters() const override;
+
 		// This macro defines the overriden functions that compute the energy:
 		// template <typename T>
 		// T elastic_energy(const RowVectorNd &p, const int el_id, const DefGradMatrix<T> &def_grad) const override { elastic_energy_T<T>(p, el_id, def_grad); };

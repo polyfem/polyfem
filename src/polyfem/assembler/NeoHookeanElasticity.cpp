@@ -36,7 +36,7 @@ namespace polyfem::assembler
 	}
 
 	Eigen::VectorXd
-	NeoHookeanElasticity::assemble_grad(const NonLinearAssemblerData &data) const
+	NeoHookeanElasticity::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		Eigen::Matrix<double, Eigen::Dynamic, 1> gradient;
 
@@ -181,24 +181,6 @@ namespace polyfem::assembler
 		}
 
 		return hessian;
-	}
-
-	void NeoHookeanElasticity::compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &stresses) const
-	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
-			Eigen::MatrixXd tmp = stress;
-			auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
-			return Eigen::MatrixXd(a);
-		});
-	}
-
-	void NeoHookeanElasticity::compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
-	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, ElasticityTensorType::CAUCHY, stresses, [&](const Eigen::MatrixXd &stress) {
-			Eigen::Matrix<double, 1, 1> res;
-			res.setConstant(von_mises_stress_for_stress_tensor(stress));
-			return res;
-		});
 	}
 
 	void NeoHookeanElasticity::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
@@ -530,6 +512,50 @@ namespace polyfem::assembler
 		Eigen::MatrixXd FmT = def_grad.inverse().transpose();
 		dstress_dmu = def_grad - FmT;
 		dstress_dlambda = std::log(def_grad.determinant()) * FmT;
+	}
+
+	std::map<std::string, Assembler::ParamFunc> NeoHookeanElasticity::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+		const auto &params = params_;
+		const int size = this->size();
+
+		res["lambda"] = [&params](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+			double lambda, mu;
+
+			params.lambda_mu(uv, p, e, lambda, mu);
+			return lambda;
+		};
+
+		res["mu"] = [&params](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+			double lambda, mu;
+
+			params.lambda_mu(uv, p, e, lambda, mu);
+			return mu;
+		};
+
+		res["E"] = [&params, size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+			double lambda, mu;
+			params.lambda_mu(uv, p, e, lambda, mu);
+
+			if (size == 3)
+				return mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
+			else
+				return 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
+		};
+
+		res["nu"] = [&params, size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+			double lambda, mu;
+
+			params.lambda_mu(uv, p, e, lambda, mu);
+
+			if (size == 3)
+				return lambda / (2.0 * (lambda + mu));
+			else
+				return lambda / (lambda + 2.0 * mu);
+		};
+
+		return res;
 	}
 
 } // namespace polyfem::assembler

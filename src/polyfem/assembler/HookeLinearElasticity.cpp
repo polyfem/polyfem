@@ -196,24 +196,6 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void HookeLinearElasticity::compute_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &stresses) const
-	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
-			Eigen::MatrixXd tmp = stress;
-			auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
-			return Eigen::MatrixXd(a);
-		});
-	}
-
-	void HookeLinearElasticity::compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
-	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, ElasticityTensorType::CAUCHY, stresses, [&](const Eigen::MatrixXd &stress) {
-			Eigen::Matrix<double, 1, 1> res;
-			res.setConstant(von_mises_stress_for_stress_tensor(stress));
-			return res;
-		});
-	}
-
 	void HookeLinearElasticity::assign_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		Eigen::MatrixXd displacement_grad(size(), size());
@@ -288,12 +270,30 @@ namespace polyfem::assembler
 		return res;
 	}
 
+	std::map<std::string, Assembler::ParamFunc> HookeLinearElasticity::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+		const auto &elast_tensor = elasticity_tensor();
+		const int size = this->size() == 2 ? 3 : 6;
+
+		for (int i = 0; i < size; ++i)
+		{
+			for (int j = i; j < size; ++j)
+			{
+				res[fmt::format("C_{}{}", i, j)] = [&elast_tensor, i, j](const RowVectorNd &, const RowVectorNd &, double, int) {
+					return elast_tensor(i, j);
+				};
+			}
+		}
+		return res;
+	}
+
 	double HookeLinearElasticity::compute_energy(const NonLinearAssemblerData &data) const
 	{
 		return compute_energy_aux<double>(data);
 	}
 
-	Eigen::VectorXd HookeLinearElasticity::assemble_grad(const NonLinearAssemblerData &data) const
+	Eigen::VectorXd HookeLinearElasticity::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		const int n_bases = data.vals.basis_values.size();
 		return polyfem::gradient_from_energy(

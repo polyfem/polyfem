@@ -38,20 +38,21 @@ TEST_CASE("hessian_lin", "[assembler]")
 	// state.compute_mesh_stats();
 	state.build_basis();
 
-	state.assemble_stiffness_mat();
+	state.assemble_mass_mat();
 
 	SparseMatrixCache mat_cache;
-	StiffnessMatrix hessian;
+	StiffnessMatrix hessian, stiffness;
 	Eigen::MatrixXd disp(state.n_bases * 2, 1);
 	disp.setZero();
 
+	state.build_stiffness_mat(stiffness);
+
 	for (int rand = 0; rand < 10; ++rand)
 	{
-		state.assembler.assemble_energy_hessian(
-			"LinearElasticity", false, state.n_bases, false,
-			state.bases, state.bases, state.ass_vals_cache, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
+		state.assembler->assemble_hessian(false, state.n_bases, false,
+										  state.bases, state.bases, state.ass_vals_cache, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
 
-		const StiffnessMatrix tmp = state.stiffness - hessian;
+		const StiffnessMatrix tmp = stiffness - hessian;
 		const auto val = Approx(0).margin(1e-8);
 
 		for (int k = 0; k < tmp.outerSize(); ++k)
@@ -92,20 +93,21 @@ TEST_CASE("hessian_hooke", "[assembler]")
 	// state.compute_mesh_stats();
 	state.build_basis();
 
-	state.assemble_stiffness_mat();
+	state.assemble_mass_mat();
 
 	SparseMatrixCache mat_cache;
-	StiffnessMatrix hessian;
+	StiffnessMatrix hessian, stiffness;
 	Eigen::MatrixXd disp(state.n_bases * 2, 1);
 	disp.setZero();
 
+	state.build_stiffness_mat(stiffness);
+
 	for (int rand = 0; rand < 10; ++rand)
 	{
-		state.assembler.assemble_energy_hessian(
-			"HookeLinearElasticity", false, state.n_bases, false,
-			state.bases, state.bases, state.ass_vals_cache, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
+		state.assembler->assemble_hessian(false, state.n_bases, false,
+										  state.bases, state.bases, state.ass_vals_cache, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
 
-		const StiffnessMatrix tmp = state.stiffness - hessian;
+		const StiffnessMatrix tmp = stiffness - hessian;
 		const auto val = Approx(0).margin(1e-8);
 
 		for (int k = 0; k < tmp.outerSize(); ++k)
@@ -191,8 +193,8 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 		{
 			const NonLinearAssemblerData data(vals, 0, displacement, displacement, da);
 
-			const Eigen::VectorXd grada = autodiff.assemble_grad(data);
-			const Eigen::VectorXd grad = real.assemble_grad(data);
+			const Eigen::VectorXd grada = autodiff.assemble_gradient(data);
+			const Eigen::VectorXd grad = real.assemble_gradient(data);
 
 			for (int i = 0; i < grada.size(); ++i)
 			{

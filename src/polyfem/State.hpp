@@ -9,6 +9,7 @@
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/assembler/Problem.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polyfem/mesh/Mesh.hpp>
@@ -47,6 +48,11 @@ namespace cppoptlib
 	template <typename ProblemType>
 	class NonlinearSolver;
 }
+
+namespace polyfem::assembler
+{
+	class Mass;
+} // namespace polyfem::assembler
 
 namespace polyfem
 {
@@ -125,8 +131,13 @@ namespace polyfem
 		//-----------------assembly--------------------------
 		//---------------------------------------------------
 
-		/// assembler, it dispatches call to the different assemblers based on the formulation
-		assembler::AssemblerUtils assembler;
+		/// assemblers
+		std::shared_ptr<assembler::Assembler> assembler = nullptr;
+		std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
+
+		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
+		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
+
 		/// current problem, it contains rhs and bc
 		std::shared_ptr<assembler::Problem> problem;
 
@@ -159,9 +170,6 @@ namespace polyfem
 		/// used to store assembly values for pressure for small problems
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
 
-		/// Stiffness matrix, it is not compute for nonlinear problems
-		StiffnessMatrix stiffness;
-
 		/// Mass matrix, it is computed only for time dependent problems
 		StiffnessMatrix mass;
 		/// average system mass, used for contact with IPC
@@ -193,8 +201,8 @@ namespace polyfem
 		void build_basis();
 		/// compute rhs, step 3 of solve
 		void assemble_rhs();
-		/// assemble matrices, step 4 of solve
-		void assemble_stiffness_mat();
+		/// assemble mass, step 4 of solve
+		void assemble_mass_mat();
 
 		/// build a RhsAssembler for the problem
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler(
@@ -230,16 +238,12 @@ namespace polyfem
 		void build_polygonal_basis();
 
 	public:
-		/// set the multimaterial
-		void set_materials()
-		{
-			if (!utils::is_param_valid(args, "materials"))
-				return;
-			std::vector<int> body_ids(mesh->n_elements());
-			for (int i = 0; i < mesh->n_elements(); ++i)
-				body_ids[i] = mesh->get_body_id(i);
-			assembler.set_materials(body_ids, args["materials"]);
-		}
+		/// set the material and the problem dimension
+		/// @param[in/out] list of assembler to set
+		void set_materials(std::vector<std::shared_ptr<assembler::Assembler>> &assemblers) const;
+		/// utility to set the material and the problem dimension to only 1 assembler
+		/// @param[in/out] assembler to set
+		void set_materials(assembler::Assembler &assembler) const;
 
 		//---------------------------------------------------
 		//-----------------solver----------------------------
@@ -265,7 +269,7 @@ namespace polyfem
 			build_basis();
 
 			assemble_rhs();
-			assemble_stiffness_mat();
+			assemble_mass_mat();
 
 			solve_export_to_file = false;
 			solution_frames.clear();
@@ -352,6 +356,11 @@ namespace polyfem
 			Eigen::VectorXd &b,
 			const bool compute_spectrum,
 			Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+
+	public:
+		/// @brief utility that builds the stiffness matrix and collects stats, used only for linear problems
+		/// @param[out] stiffness matrix
+		void build_stiffness_mat(StiffnessMatrix &stiffness);
 
 		//---------------------------------------------------
 		//-----------------nodes flags-----------------------

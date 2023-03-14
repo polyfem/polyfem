@@ -77,8 +77,7 @@ namespace
 ////////////////////////////////////////////////////////////////////////////////
 
 RBFWithQuadraticLagrange::RBFWithQuadraticLagrange(
-	const AssemblerUtils &assembler,
-	const std::string &assembler_name,
+	const LinearAssembler &assembler,
 	const Eigen::MatrixXd &centers,
 	const Eigen::MatrixXd &collocation_points,
 	const Eigen::MatrixXd &local_basis_integral,
@@ -88,7 +87,7 @@ RBFWithQuadraticLagrange::RBFWithQuadraticLagrange(
 	: centers_(centers)
 {
 	// centers_.resize(0, centers.cols());
-	compute_weights(assembler, assembler_name, collocation_points, local_basis_integral, quadr, rhs, with_constraints);
+	compute_weights(assembler, collocation_points, local_basis_integral, quadr, rhs, with_constraints);
 }
 
 // -----------------------------------------------------------------------------
@@ -235,10 +234,10 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d_old(
 	Eigen::RowVectorXd I_sqr = (quadr.points.array().square().colwise() * quadr.weights.array()).colwise().sum();
 	double volume = quadr.weights.sum();
 
-	//TODO
-	// std::cout << I_lin << std::endl;
-	// std::cout << I_mix << std::endl;
-	// std::cout << I_sqr << std::endl;
+	// TODO
+	//  std::cout << I_lin << std::endl;
+	//  std::cout << I_mix << std::endl;
+	//  std::cout << I_sqr << std::endl;
 
 	// Compute M
 	Eigen::Matrix<double, 5, 5> M;
@@ -262,12 +261,12 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d_old(
 	// std::cout << L.bottomRightCorner(10, 10) << std::endl;
 }
 
-void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(const AssemblerUtils &assembler, const std::string &assembler_name,
+void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(const LinearAssembler &assembler,
 															 const int num_bases, const Quadrature &quadr, Eigen::MatrixXd &C) const
 {
 	const int num_kernels = centers_.rows();
 	const int space_dim = centers_.cols();
-	const int assembler_dim = assembler.is_tensor(assembler_name) ? 2 : 1;
+	const int assembler_dim = assembler.is_tensor() ? 2 : 1;
 	assert(space_dim == 2);
 
 	std::array<Eigen::MatrixXd, 5> strong;
@@ -277,11 +276,11 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(const AssemblerUtil
 	ass_val.has_parameterization = false;
 	ass_val.basis_values.resize(5 + num_kernels);
 
-	//evaluating monomial and grad of monomials at quad points
+	// evaluating monomial and grad of monomials at quad points
 	RBFWithQuadratic::setup_monomials_vals_2d(0, quadr.points, ass_val);
-	RBFWithQuadratic::setup_monomials_strong_2d(assembler_dim, assembler, assembler_name, quadr.points, quadr.weights.array(), strong);
+	RBFWithQuadratic::setup_monomials_strong_2d(assembler_dim, assembler, quadr.points, quadr.weights.array(), strong);
 
-	//evaluating psi and grad psi at quadr points
+	// evaluating psi and grad psi at quadr points
 	for (int j = 0; j < num_kernels; ++j)
 	{
 		ass_val.basis_values[5 + j].val = Eigen::MatrixXd(quadr.points.rows(), 1);
@@ -308,10 +307,10 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(const AssemblerUtil
 
 	for (int d = 0; d < 5; ++d)
 	{
-		//first num_kernels bases
+		// first num_kernels bases
 		for (int i = 0; i < num_kernels; ++i)
 		{
-			const auto tmp = assembler.local_assemble(assembler_name, ass_val, d, 5 + i, quadr.weights);
+			const auto tmp = assembler.assemble(LinearAssemblerData(ass_val, d, 5 + i, quadr.weights));
 			for (int alpha = 0; alpha < assembler_dim; ++alpha)
 			{
 				for (int beta = 0; beta < assembler_dim; ++beta)
@@ -322,10 +321,10 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(const AssemblerUtil
 			}
 		}
 
-		//second the q_i
+		// second the q_i
 		for (int i = 0; i < 5; ++i)
 		{
-			const auto tmp = assembler.local_assemble(assembler_name, ass_val, d, i, quadr.weights);
+			const auto tmp = assembler.assemble(LinearAssemblerData(ass_val, d, i, quadr.weights));
 			for (int alpha = 0; alpha < assembler_dim; ++alpha)
 			{
 				for (int beta = 0; beta < assembler_dim; ++beta)
@@ -336,7 +335,7 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(const AssemblerUtil
 			}
 		}
 
-		//finally the constant
+		// finally the constant
 		for (int alpha = 0; alpha < assembler_dim; ++alpha)
 		{
 			for (int beta = 0; beta < assembler_dim; ++beta)
@@ -436,8 +435,8 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_3d(
 	M_rhs.segment<3>(6) = I_sqr;
 	// M_rhs << I_lin, I_mix, I_sqr;
 	M.bottomRows(dim).rowwise() += 2.0 * M_rhs;
-	//TODO
-	// assert(false);
+	// TODO
+	//  assert(false);
 
 	show_matrix_stats(M);
 
@@ -454,7 +453,7 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_3d(
 
 // -----------------------------------------------------------------------------
 
-void RBFWithQuadraticLagrange::compute_weights(const AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &samples,
+void RBFWithQuadraticLagrange::compute_weights(const LinearAssembler &assembler, const Eigen::MatrixXd &samples,
 											   const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
 											   Eigen::MatrixXd &b, bool with_constraints)
 {
@@ -491,7 +490,7 @@ void RBFWithQuadraticLagrange::compute_weights(const AssemblerUtils &assembler, 
 	}
 	else
 	{
-		compute_constraints_matrix_2d(assembler, assembler_name, num_bases, quadr, C);
+		compute_constraints_matrix_2d(assembler, num_bases, quadr, C);
 	}
 
 	const int dim = centers_.cols();

@@ -75,7 +75,7 @@ Eigen::MatrixXd run_sim(State &state, const json &args)
 	state.build_basis();
 
 	state.assemble_rhs();
-	state.assemble_stiffness_mat();
+	state.assemble_mass_mat();
 
 	Eigen::MatrixXd sol;
 	Eigen::MatrixXd pressure;

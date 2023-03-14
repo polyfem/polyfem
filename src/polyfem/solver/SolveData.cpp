@@ -11,6 +11,7 @@
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
+#include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::solver
@@ -26,9 +27,8 @@ namespace polyfem::solver
 		const int n_bases,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &geom_bases,
-		const assembler::AssemblerUtils &assembler,
+		const assembler::Assembler &assembler,
 		const assembler::AssemblyValsCache &ass_vals_cache,
-		const std::string &formulation,
 
 		// Body form
 		const int n_pressure_bases,
@@ -38,10 +38,12 @@ namespace polyfem::solver
 		const int n_boundary_samples,
 		const Eigen::MatrixXd &rhs,
 		const Eigen::MatrixXd &sol,
+		const assembler::Density &density,
 
 		// Inertia form
 		const bool ignore_inertia,
 		const StiffnessMatrix &mass,
+		const std::shared_ptr<assembler::ViscousDamping> damping_assembler,
 
 		// Lagged regularization form
 		const double lagged_regularization_weight,
@@ -85,7 +87,7 @@ namespace polyfem::solver
 		std::vector<std::shared_ptr<Form>> forms;
 
 		elastic_form = std::make_shared<ElasticForm>(
-			n_bases, bases, geom_bases, assembler, ass_vals_cache, formulation,
+			n_bases, bases, geom_bases, assembler, ass_vals_cache,
 			dt, is_volume);
 		forms.push_back(elastic_form);
 
@@ -94,7 +96,7 @@ namespace polyfem::solver
 			body_form = std::make_shared<BodyForm>(
 				ndof, n_pressure_bases, boundary_nodes, local_boundary,
 				local_neumann_boundary, n_boundary_samples, rhs, *rhs_assembler,
-				assembler.density(), /*apply_DBC=*/true, /*is_formulation_mixed=*/false,
+				density, /*apply_DBC=*/true, /*is_formulation_mixed=*/false,
 				is_time_dependent);
 			body_form->update_quantities(t, sol);
 			forms.push_back(body_form);
@@ -111,11 +113,10 @@ namespace polyfem::solver
 				forms.push_back(inertia_form);
 			}
 
-			if (assembler.has_damping())
+			if (damping_assembler != nullptr)
 			{
 				damping_form = std::make_shared<ElasticForm>(
-					n_bases, bases, geom_bases, assembler, ass_vals_cache,
-					"Damping", dt, is_volume);
+					n_bases, bases, geom_bases, *damping_assembler, ass_vals_cache, dt, is_volume);
 				forms.push_back(damping_form);
 			}
 		}

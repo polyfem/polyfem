@@ -6,6 +6,7 @@
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/MatParams.hpp>
+#include <polyfem/assembler/Mass.hpp>
 
 #include <polyfem/basis/ElementBases.hpp>
 
@@ -839,7 +840,6 @@ namespace polyfem::io
 			logger().error("Build the bases first!");
 			return;
 		}
-		// if (stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
 		if (rhs.size() <= 0)
 		{
 			logger().error("Assemble the rhs first!");
@@ -927,7 +927,7 @@ namespace polyfem::io
 			Eigen::VectorXd mises;
 			Evaluator::compute_stress_at_quadrature_points(
 				mesh, problem.is_scalar(),
-				bases, gbases, state.disc_orders, state.assembler, state.formulation(),
+				bases, gbases, state.disc_orders, *state.assembler,
 				sol, result, mises);
 			std::ofstream out(stress_path);
 			out.precision(20);
@@ -939,7 +939,7 @@ namespace polyfem::io
 			Eigen::VectorXd mises;
 			Evaluator::compute_stress_at_quadrature_points(
 				mesh, problem.is_scalar(),
-				bases, gbases, state.disc_orders, state.assembler, state.formulation(),
+				bases, gbases, state.disc_orders, *state.assembler,
 				sol, result, mises);
 			std::ofstream out(mises_path);
 			out.precision(20);
@@ -997,7 +997,6 @@ namespace polyfem::io
 			logger().error("Build the bases first!");
 			return;
 		}
-		// if (stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
 		if (rhs.size() <= 0)
 		{
 			logger().error("Assemble the rhs first!");
@@ -1067,15 +1066,14 @@ namespace polyfem::io
 		std::vector<SolutionFrame> &solution_frames) const
 	{
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
-		const auto &density = state.assembler.density();
+		const auto &density = state.mass_matrix_assembler->density();
 		const std::vector<basis::ElementBases> &bases = state.bases;
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
 		const std::map<int, Eigen::MatrixXd> &polys = state.polys;
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d = state.polys_3d;
-		const assembler::AssemblerUtils &assembler = state.assembler;
+		const assembler::Assembler &assembler = *state.assembler;
 		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator = state.solve_data.time_integrator;
-		const std::string &formulation = state.formulation();
 		const mesh::Mesh &mesh = *state.mesh;
 		const mesh::Obstacle &obstacle = state.obstacle;
 		const assembler::Problem &problem = *state.problem;
@@ -1128,7 +1126,7 @@ namespace polyfem::io
 				res.row(i) = tmp;
 				res_grad.row(i) = tmp_grad;
 
-				if (assembler.is_mixed(formulation))
+				if (state.mixed_assembler != nullptr)
 				{
 					Evaluator::interpolate_at_local_vals(
 						mesh, 1, pressure_bases, gbases,
@@ -1147,7 +1145,7 @@ namespace polyfem::io
 			std::ofstream osgg(path + "_grid.txt");
 			osgg << grid_points;
 
-			if (assembler.is_mixed(formulation))
+			if (state.mixed_assembler != nullptr)
 			{
 				std::ofstream osp(path + "_p_sol.txt");
 				osp << res_p;
@@ -1227,7 +1225,7 @@ namespace polyfem::io
 		}
 
 		// if(problem->is_mixed())
-		if (assembler.is_mixed(formulation))
+		if (state.mixed_assembler != nullptr)
 		{
 			Eigen::MatrixXd interp_p;
 			Evaluator::interpolate_function(
@@ -1271,11 +1269,11 @@ namespace polyfem::io
 
 		if (fun.cols() != 1)
 		{
-			std::vector<assembler::AssemblerUtils::NamedMatrix> vals, tvals;
+			std::vector<assembler::Assembler::NamedMatrix> vals, tvals;
 			Evaluator::compute_scalar_value(
 				mesh, problem.is_scalar(), bases, gbases,
 				state.disc_orders, state.polys, state.polys_3d,
-				state.assembler, state.formulation(),
+				*state.assembler,
 				ref_element_sampler, points.rows(), sol, vals, opts.use_sampler, opts.boundary_only);
 
 			if (obstacle.n_vertices() > 0)
@@ -1300,7 +1298,7 @@ namespace polyfem::io
 				Evaluator::compute_tensor_value(
 					mesh, problem.is_scalar(), bases, gbases,
 					state.disc_orders, state.polys, state.polys_3d,
-					state.assembler, state.formulation(),
+					*state.assembler,
 					ref_element_sampler, points.rows(), sol, tvals, opts.use_sampler, opts.boundary_only);
 				for (const auto &v : tvals)
 				{
@@ -1325,7 +1323,7 @@ namespace polyfem::io
 				Evaluator::average_grad_based_function(
 					mesh, problem.is_scalar(), state.n_bases, bases, gbases,
 					state.disc_orders, state.polys, state.polys_3d,
-					state.assembler, state.formulation(),
+					*state.assembler,
 					ref_element_sampler, points.rows(), sol, vals, tvals, opts.use_sampler, opts.boundary_only);
 
 				if (obstacle.n_vertices() > 0)
@@ -1354,7 +1352,7 @@ namespace polyfem::io
 
 		if (opts.material_params)
 		{
-			const auto &params = assembler.parameters(formulation);
+			const auto &params = assembler.parameters();
 
 			std::map<std::string, Eigen::MatrixXd> param_val;
 			for (const auto &[p, _] : params)
@@ -1570,12 +1568,11 @@ namespace polyfem::io
 	{
 
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
-		const auto &density = state.assembler.density();
+		const auto &density = state.mass_matrix_assembler->density();
 		const std::vector<basis::ElementBases> &bases = state.bases;
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
-		const assembler::AssemblerUtils &assembler = state.assembler;
-		const std::string &formulation = state.formulation();
+		const assembler::Assembler &assembler = *state.assembler;
 		const assembler::Problem &problem = *state.problem;
 		const mesh::Mesh &mesh = *state.mesh;
 
@@ -1619,7 +1616,7 @@ namespace polyfem::io
 				mesh, problem.is_scalar(), bases, gbases,
 				el_index, boundary_vis_local_vertices.row(i), sol, lsol, lgrad);
 			assert(lsol.size() == actual_dim);
-			if (assembler.is_mixed(formulation))
+			if (state.mixed_assembler != nullptr)
 			{
 				Evaluator::interpolate_at_local_vals(
 					mesh, 1, pressure_bases, gbases,
@@ -1645,10 +1642,10 @@ namespace polyfem::io
 			else
 			{
 				assert(lgrad.size() == actual_dim * actual_dim);
-				std::vector<assembler::AssemblerUtils::NamedMatrix> tensor_flat;
+				std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
 				const basis::ElementBases &gbs = gbases[el_index];
 				const basis::ElementBases &bs = bases[el_index];
-				assembler.compute_tensor_value(formulation, el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol, tensor_flat);
+				assembler.compute_tensor_value(el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol, tensor_flat);
 				// TF computed only from cauchy stress
 				assert(tensor_flat[0].first == "cauchy_stess");
 				assert(tensor_flat[0].second.size() == actual_dim * actual_dim);
@@ -1669,7 +1666,7 @@ namespace polyfem::io
 		{
 
 			writer.add_field("normals", boundary_vis_normals);
-			if (assembler.is_mixed(formulation))
+			if (state.mixed_assembler != nullptr)
 				writer.add_field("pressure", interp_p);
 			writer.add_field("discr", discr);
 			writer.add_field("sidesets", b_sidesets);
@@ -1681,13 +1678,13 @@ namespace polyfem::io
 		}
 		else
 		{
-			if (assembler.is_mixed(formulation))
+			if (state.mixed_assembler != nullptr)
 				solution_frames.back().pressure = interp_p;
 		}
 
 		if (opts.material_params)
 		{
-			const auto &params = assembler.parameters(formulation);
+			const auto &params = assembler.parameters();
 
 			std::map<std::string, Eigen::MatrixXd> param_val;
 			for (const auto &[p, _] : params)
@@ -2009,11 +2006,11 @@ namespace polyfem::io
 
 		if (fun.cols() != 1)
 		{
-			std::vector<assembler::AssemblerUtils::NamedMatrix> scalar_val;
+			std::vector<assembler::Assembler::NamedMatrix> scalar_val;
 			Evaluator::compute_scalar_value(
 				mesh, problem.is_scalar(), state.bases, gbases,
 				state.disc_orders, state.polys, state.polys_3d,
-				state.assembler, state.formulation(),
+				*state.assembler,
 				ref_element_sampler, pts_index, sol, scalar_val, /*use_sampler*/ true, false);
 			for (const auto &v : scalar_val)
 				writer.add_field(v.first, v.second);
@@ -2332,22 +2329,11 @@ namespace polyfem::io
 		const double tend,
 		const Eigen::MatrixXd &sol)
 	{
-		// if (!mesh)
-		// {
-		// 	logger().error("Load the mesh first!");
-		// 	return;
-		// }
 		if (n_bases <= 0)
 		{
 			logger().error("Build the bases first!");
 			return;
 		}
-		// if (stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
-		// if (rhs.size() <= 0)
-		// {
-		// 	logger().error("Assemble the rhs first!");
-		// 	return;
-		// }
 		if (sol.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -2567,7 +2553,6 @@ namespace polyfem::io
 		logger().info("total count:\t {}", mesh.n_elements());
 	}
 
-	// args["output"]["advanced"]["sol_at_node"]  iso_parametric() formulation()
 	void OutStatsData::save_json(
 		const nlohmann::json &args,
 		const int n_bases, const int n_pressure_bases,
@@ -2631,6 +2616,7 @@ namespace polyfem::io
 		j["time_loading_mesh"] = runtime.loading_mesh_time;
 		j["time_computing_poly_basis"] = runtime.computing_poly_basis_time;
 		j["time_assembling_stiffness_mat"] = runtime.assembling_stiffness_mat_time;
+		j["time_assembling_mass_mat"] = runtime.assembling_mass_mat_time;
 		j["time_assigning_rhs"] = runtime.assigning_rhs_time;
 		j["time_solving"] = runtime.solving_time;
 		// j["time_computing_errors"] = runtime.computing_errors_time;

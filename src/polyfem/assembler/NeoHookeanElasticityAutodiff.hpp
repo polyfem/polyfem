@@ -9,6 +9,10 @@ namespace polyfem::assembler
 	class NeoHookeanAutodiff : public GenericElastic
 	{
 	public:
+		std::string name() const override { return "NeoHookeanAutodiff"; }
+		// Used only for testing, no need to output
+		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
+
 		NeoHookeanAutodiff();
 
 		// sets material params

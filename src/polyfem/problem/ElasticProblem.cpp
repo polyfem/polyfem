@@ -14,7 +14,7 @@ namespace polyfem
 			boundary_ids_ = {1, 3, 5, 6};
 		}
 
-		void ElasticProblem::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void ElasticProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
@@ -45,7 +45,7 @@ namespace polyfem
 			trans_.setConstant(0.5);
 		}
 
-		void TorsionElasticProblem::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void TorsionElasticProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
@@ -124,7 +124,7 @@ namespace polyfem
 			trans_1_.setConstant(0.5);
 		}
 
-		void DoubleTorsionElasticProblem::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void DoubleTorsionElasticProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
@@ -241,7 +241,7 @@ namespace polyfem
 			boundary_ids_ = {1, 2, 3, 4, 5, 6};
 		}
 
-		void ElasticProblemZeroBC::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void ElasticProblemZeroBC::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 			val.col(1).setConstant(0.5);
@@ -566,7 +566,7 @@ namespace polyfem
 			}
 		}
 
-		void GravityProblem::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GravityProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 			val.col(1).setConstant(force_);
@@ -598,7 +598,7 @@ namespace polyfem
 			boundary_ids_ = {1, 2};
 		}
 
-		void WalkProblem::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void WalkProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
@@ -681,7 +681,7 @@ namespace polyfem
 			}
 		}
 
-		void ElasticCantileverExact::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void ElasticCantileverExact::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			const int size = size_for(pts);
 			val.resize(pts.rows(), size);
@@ -701,7 +701,7 @@ namespace polyfem
 					pt(d) = AutodiffScalarHessian(d, pts(i, d));
 
 				const auto res = eval_fun(pt, t);
-				val.row(i) = assembler.compute_rhs(formulation, res).transpose();
+				val.row(i) = assembler.compute_rhs(res).transpose();
 			}
 		}
 
