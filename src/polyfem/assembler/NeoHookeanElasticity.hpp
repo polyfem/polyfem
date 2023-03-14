@@ -14,12 +14,12 @@ namespace polyfem::assembler
 		NeoHookeanElasticity();
 
 		using NLAssembler::assemble_energy;
-		using NLAssembler::assemble_grad;
+		using NLAssembler::assemble_gradient;
 		using NLAssembler::assemble_hessian;
 
 		// energy, gradient, and hessian used in newton method
 		double compute_energy(const NonLinearAssemblerData &data) const override;
-		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const override;
+		Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const override;
 		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
 
 		// rhs for fabbricated solution, compute with automatic sympy code

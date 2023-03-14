@@ -13,7 +13,7 @@ namespace polyfem::assembler
 	public:
 		using LinearAssembler::assemble;
 		using NLAssembler::assemble_energy;
-		using NLAssembler::assemble_grad;
+		using NLAssembler::assemble_gradient;
 		using NLAssembler::assemble_hessian;
 
 		HookeLinearElasticity();
@@ -27,7 +27,7 @@ namespace polyfem::assembler
 		// neccessary for mixing linear model with non-linear collision response
 		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
 		// compute gradient of elastic energy, as assembler
-		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const override;
+		Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const override;
 
 		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 
@@ -49,7 +49,7 @@ namespace polyfem::assembler
 
 		// aux function that computes energy
 		// double compute_energy is the same with T=double
-		// assemble_grad is the same with T=DScalar1 and return .getGradient()
+		// assemble_gradient is the same with T=DScalar1 and return .getGradient()
 		template <typename T>
 		T compute_energy_aux(const NonLinearAssemblerData &data) const;
 	};

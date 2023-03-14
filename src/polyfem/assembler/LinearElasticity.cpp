@@ -55,7 +55,7 @@ namespace polyfem
 			return compute_energy_aux<double>(data);
 		}
 
-		Eigen::VectorXd LinearElasticity::assemble_grad(const NonLinearAssemblerData &data) const
+		Eigen::VectorXd LinearElasticity::assemble_gradient(const NonLinearAssemblerData &data) const
 		{
 			const int n_bases = data.vals.basis_values.size();
 			return polyfem::gradient_from_energy(

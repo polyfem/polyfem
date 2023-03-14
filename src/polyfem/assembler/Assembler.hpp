@@ -81,7 +81,7 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement_prev) const { log_and_throw_error("Assemble energy not implemented by {}!", name()); }
 
 		// assemble gradient of energy (rhs)
-		virtual void assemble_grad(
+		virtual void assemble_gradient(
 			const bool is_volume,
 			const int n_basis,
 			const std::vector<basis::ElementBases> &bases,
@@ -180,7 +180,7 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement_prev) const override;
 
 		// assemble gradient of energy (rhs)
-		void assemble_grad(
+		void assemble_gradient(
 			const bool is_volume,
 			const int n_basis,
 			const std::vector<basis::ElementBases> &bases,
@@ -210,7 +210,7 @@ namespace polyfem::assembler
 	protected:
 		// energy, gradient, and hessian used in newton method
 		virtual double compute_energy(const NonLinearAssemblerData &data) const = 0;
-		virtual Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const = 0;
+		virtual Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const = 0;
 		virtual Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const = 0;
 	};
 

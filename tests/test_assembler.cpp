@@ -193,8 +193,8 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 		{
 			const NonLinearAssemblerData data(vals, 0, displacement, displacement, da);
 
-			const Eigen::VectorXd grada = autodiff.assemble_grad(data);
-			const Eigen::VectorXd grad = real.assemble_grad(data);
+			const Eigen::VectorXd grada = autodiff.assemble_gradient(data);
+			const Eigen::VectorXd grad = real.assemble_gradient(data);
 
 			for (int i = 0; i < grada.size(); ++i)
 			{

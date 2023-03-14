@@ -34,8 +34,8 @@ namespace polyfem::solver
 	void ElasticForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		Eigen::MatrixXd grad;
-		assembler_.assemble_grad(is_volume_, n_bases_, bases_, geom_bases_,
-								 ass_vals_cache_, dt_, x, x_prev_, grad);
+		assembler_.assemble_gradient(is_volume_, n_bases_, bases_, geom_bases_,
+									 ass_vals_cache_, dt_, x, x_prev_, grad);
 		gradv = grad;
 	}
 

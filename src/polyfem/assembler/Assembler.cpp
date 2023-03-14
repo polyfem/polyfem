@@ -502,7 +502,7 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void NLAssembler::assemble_grad(
+	void NLAssembler::assemble_gradient(
 		const bool is_volume,
 		const int n_basis,
 		const std::vector<ElementBases> &bases,
@@ -537,7 +537,7 @@ namespace polyfem::assembler
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 				const int n_loc_bases = int(vals.basis_values.size());
 
-				const auto val = assemble_grad(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				const auto val = assemble_gradient(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
 				assert(val.size() == n_loc_bases * size());
 
 				for (int j = 0; j < n_loc_bases; ++j)

@@ -69,7 +69,7 @@ namespace polyfem::assembler
 		return compute_energy_aux<double>(data);
 	}
 
-	Eigen::VectorXd GenericElastic::assemble_grad(const NonLinearAssemblerData &data) const
+	Eigen::VectorXd GenericElastic::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		const int n_bases = data.vals.basis_values.size();
 		return polyfem::gradient_from_energy(

@@ -10,7 +10,7 @@ namespace polyfem::assembler
 	{
 	public:
 		using NLAssembler::assemble_energy;
-		using NLAssembler::assemble_grad;
+		using NLAssembler::assemble_gradient;
 		using NLAssembler::assemble_hessian;
 
 		std::string name() const override { return "NavierStokes"; }
@@ -27,7 +27,7 @@ namespace polyfem::assembler
 		// res is R^{dim²}
 		// pde
 		Eigen::VectorXd
-		assemble_grad(const NonLinearAssemblerData &data) const override;
+		assemble_gradient(const NonLinearAssemblerData &data) const override;
 
 		Eigen::MatrixXd
 		// gradient of pde, this returns full gradient or partil depending on the template

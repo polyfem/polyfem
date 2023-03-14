@@ -268,15 +268,15 @@ namespace polyfem
 		}
 
 		const std::string formulation = this->formulation();
-		assembler = assembler::AssemblerUtils::get_assembler(formulation);
+		assembler = assembler::AssemblerUtils::make_assembler(formulation);
 		assert(assembler->name() == formulation);
 		mass_matrix_assembler = std::make_shared<assembler::Mass>();
 		const auto other_name = assembler::AssemblerUtils::other_assembler_name(formulation);
 
 		if (!other_name.empty())
 		{
-			mixed_assembler = assembler::AssemblerUtils::get_mixed_assembler(formulation);
-			pressure_assembler = assembler::AssemblerUtils::get_assembler(other_name);
+			mixed_assembler = assembler::AssemblerUtils::make_mixed_assembler(formulation);
+			pressure_assembler = assembler::AssemblerUtils::make_assembler(other_name);
 		}
 
 		if (!args.contains("preset_problem"))

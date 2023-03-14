@@ -46,25 +46,25 @@ namespace polyfem::assembler
 	}
 
 	Eigen::VectorXd
-	MultiModel::assemble_grad(const NonLinearAssemblerData &data) const
+	MultiModel::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		const int el_id = data.vals.element_id;
 		const std::string model = multi_material_models_[el_id];
 
 		if (model == "SaintVenant")
-			return saint_venant_.assemble_grad(data);
+			return saint_venant_.assemble_gradient(data);
 		else if (model == "NeoHookean")
-			return neo_hookean_.assemble_grad(data);
+			return neo_hookean_.assemble_gradient(data);
 		else if (model == "LinearElasticity")
-			return linear_elasticity_.assemble_grad(data);
+			return linear_elasticity_.assemble_gradient(data);
 		else if (model == "HookeLinearElasticity")
-			return hooke_.assemble_grad(data);
+			return hooke_.assemble_gradient(data);
 		else if (model == "MooneyRivlin")
-			return mooney_rivlin_elasticity_.assemble_grad(data);
+			return mooney_rivlin_elasticity_.assemble_gradient(data);
 		else if (model == "UnconstrainedOgden")
-			return unconstrained_ogden_elasticity_.assemble_grad(data);
+			return unconstrained_ogden_elasticity_.assemble_gradient(data);
 		else if (model == "IncompressibleOgden")
-			return incompressible_ogden_elasticity_.assemble_grad(data);
+			return incompressible_ogden_elasticity_.assemble_gradient(data);
 		else
 		{
 			assert(false);

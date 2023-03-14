@@ -86,7 +86,7 @@ namespace polyfem::assembler
 	}
 
 	Eigen::VectorXd
-	SaintVenantElasticity::assemble_grad(const NonLinearAssemblerData &data) const
+	SaintVenantElasticity::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		// igl::Timer time; time.start();
 

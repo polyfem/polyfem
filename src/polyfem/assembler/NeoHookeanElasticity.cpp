@@ -36,7 +36,7 @@ namespace polyfem::assembler
 	}
 
 	Eigen::VectorXd
-	NeoHookeanElasticity::assemble_grad(const NonLinearAssemblerData &data) const
+	NeoHookeanElasticity::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		Eigen::Matrix<double, Eigen::Dynamic, 1> gradient;
 

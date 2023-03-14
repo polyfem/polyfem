@@ -42,7 +42,7 @@ namespace polyfem
 			return "";
 		}
 
-		std::shared_ptr<Assembler> AssemblerUtils::get_assembler(const std::string &formulation)
+		std::shared_ptr<Assembler> AssemblerUtils::make_assembler(const std::string &formulation)
 		{
 			if (formulation == "Helmholtz")
 				return std::make_shared<Helmholtz>();
@@ -84,15 +84,10 @@ namespace polyfem
 			else if (formulation == "OperatorSplitting")
 				return std::make_shared<StokesVelocity>();
 
-			else
-			{
-				log_and_throw_error("Inavalid assembler name {}", formulation);
-			}
-
-			return nullptr;
+			log_and_throw_error("Inavalid assembler name {}", formulation);
 		}
 
-		std::shared_ptr<MixedAssembler> AssemblerUtils::get_mixed_assembler(const std::string &formulation)
+		std::shared_ptr<MixedAssembler> AssemblerUtils::make_mixed_assembler(const std::string &formulation)
 		{
 			if (formulation == "Bilaplacian")
 				return std::make_shared<BilaplacianMixed>();
@@ -101,10 +96,7 @@ namespace polyfem
 			else if (formulation == "Stokes" || formulation == "NavierStokes" || formulation == "OperatorSplitting")
 				return std::make_shared<StokesMixed>();
 
-			else
-			{
-				log_and_throw_error("Inavalid mixed assembler name {}", formulation);
-			}
+			log_and_throw_error("Inavalid mixed assembler name {}", formulation);
 		}
 
 		void AssemblerUtils::merge_mixed_matrices(

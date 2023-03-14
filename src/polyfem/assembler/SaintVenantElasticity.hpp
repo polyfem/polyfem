@@ -14,11 +14,11 @@ namespace polyfem::assembler
 		SaintVenantElasticity();
 
 		using NLAssembler::assemble_energy;
-		using NLAssembler::assemble_grad;
+		using NLAssembler::assemble_gradient;
 		using NLAssembler::assemble_hessian;
 
 		double compute_energy(const NonLinearAssemblerData &data) const override;
-		Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const override;
+		Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const override;
 		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
 
 		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;

@@ -32,7 +32,7 @@ namespace polyfem::assembler
 	}
 
 	Eigen::VectorXd
-	NavierStokesVelocity::assemble_grad(const NonLinearAssemblerData &data) const
+	NavierStokesVelocity::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		assert(false);
 		return Eigen::VectorXd(data.vals.basis_values.size() * size());
