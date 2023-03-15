@@ -1023,6 +1023,12 @@ namespace polyfem::io
 						 is_contact_enabled, solution_frames);
 		}
 
+		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces))
+		{
+			save_contact_surface(base_path + "_surf" + opts.file_extension(), state, sol, pressure, t, dt, opts,
+								 is_contact_enabled, solution_frames);
+		}
+
 		if (opts.wire)
 		{
 			save_wire(base_path + "_wire" + opts.file_extension(), state, sol, t, opts, solution_frames);
@@ -1040,12 +1046,9 @@ namespace polyfem::io
 		if (opts.volume)
 			vtm.add_dataset("Volume", "data", path_stem + opts.file_extension());
 		if (opts.surface)
-		{
 			vtm.add_dataset("Surface", "data", path_stem + "_surf" + opts.file_extension());
-
-			if (opts.contact_forces || opts.friction_forces)
-				vtm.add_dataset("Contact", "data", path_stem + "_surf_contact" + opts.file_extension());
-		}
+		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces))
+			vtm.add_dataset("Contact", "data", path_stem + "_surf_contact" + opts.file_extension());
 		if (opts.wire)
 			vtm.add_dataset("Wireframe", "data", path_stem + "_wire" + opts.file_extension());
 		if (opts.points)
@@ -1570,14 +1573,8 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
 		const assembler::Assembler &assembler = *state.assembler;
-		const mesh::Mesh &mesh = *state.mesh;
-		const ipc::CollisionMesh &collision_mesh = state.collision_mesh;
-		const double dhat = state.args["contact"]["dhat"];
-		const double friction_coefficient = state.args["contact"]["friction_coefficient"];
-		const double epsv = state.args["contact"]["epsv"];
-		const std::shared_ptr<solver::ContactForm> &contact_form = state.solve_data.contact_form;
-		const std::shared_ptr<solver::FrictionForm> &friction_form = state.solve_data.friction_form;
 		const assembler::Problem &problem = *state.problem;
+		const mesh::Mesh &mesh = *state.mesh;
 
 		Eigen::MatrixXd boundary_vis_vertices;
 		Eigen::MatrixXd boundary_vis_local_vertices;
@@ -1658,84 +1655,6 @@ namespace polyfem::io
 			}
 		}
 
-		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces) && opts.solve_export_to_file)
-		{
-			std::shared_ptr<paraviewo::ParaviewWriter> tmpw;
-			if (opts.use_hdf5)
-				tmpw = std::make_shared<paraviewo::HDF5VTUWriter>();
-			else
-				tmpw = std::make_shared<paraviewo::VTUWriter>();
-			paraviewo::ParaviewWriter &writer = *tmpw;
-
-			const int problem_dim = mesh.dimension();
-			const Eigen::MatrixXd full_displacements = utils::unflatten(sol, problem_dim);
-			const Eigen::MatrixXd surface_displacements = collision_mesh.map_displacements(full_displacements);
-
-			const Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(full_displacements);
-
-			ipc::Constraints constraint_set;
-			constraint_set.use_convergent_formulation = state.args["contact"]["use_convergent_formulation"];
-			constraint_set.build(
-				collision_mesh, displaced_surface, dhat,
-				/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);
-
-			const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
-
-			if (opts.contact_forces)
-			{
-				Eigen::MatrixXd forces = -barrier_stiffness * ipc::compute_barrier_potential_gradient(collision_mesh, displaced_surface, constraint_set, dhat);
-				// forces = collision_mesh.to_full_dof(forces);
-				// assert(forces.size() == sol.size());
-
-				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
-
-				assert(forces_reshaped.rows() == surface_displacements.rows());
-				assert(forces_reshaped.cols() == surface_displacements.cols());
-				writer.add_field("contact_forces", forces_reshaped);
-			}
-
-			if (opts.friction_forces)
-			{
-				Eigen::MatrixXd displaced_surface_prev;
-				if (friction_form != nullptr)
-					displaced_surface_prev = friction_form->displaced_surface_prev();
-				if (displaced_surface_prev.size() == 0)
-					displaced_surface_prev = displaced_surface;
-
-				ipc::FrictionConstraints friction_constraint_set;
-				ipc::construct_friction_constraint_set(
-					collision_mesh, displaced_surface, constraint_set,
-					dhat, barrier_stiffness, friction_coefficient,
-					friction_constraint_set);
-
-				double dt = 1;
-				if (dt_in > 0)
-					dt = dt_in;
-				Eigen::MatrixXd forces = -ipc::compute_friction_potential_gradient(
-					collision_mesh, displaced_surface_prev, displaced_surface,
-					friction_constraint_set, epsv * dt);
-				// forces = collision_mesh.to_full_dof(forces);
-				// assert(forces.size() == sol.size());
-
-				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
-
-				assert(forces_reshaped.rows() == surface_displacements.rows());
-				assert(forces_reshaped.cols() == surface_displacements.cols());
-				writer.add_field("friction_forces", forces_reshaped);
-			}
-
-			assert(collision_mesh.vertices_at_rest().rows() == surface_displacements.rows());
-			assert(collision_mesh.vertices_at_rest().cols() == surface_displacements.cols());
-
-			// Write the solution last so it is the default for warp-by-vector
-			writer.add_field("solution", surface_displacements);
-
-			writer.write_mesh(
-				export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
-				collision_mesh.vertices_at_rest(),
-				problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges());
-		}
-
 		std::shared_ptr<paraviewo::ParaviewWriter> tmpw;
 		if (opts.use_hdf5)
 			tmpw = std::make_shared<paraviewo::HDF5VTUWriter>();
@@ -1813,6 +1732,104 @@ namespace polyfem::io
 			solution_frames.back().name = export_surface;
 			solution_frames.back().points = boundary_vis_vertices;
 			solution_frames.back().connectivity = boundary_vis_elements;
+		}
+	}
+
+	void OutGeometryData::save_contact_surface(
+		const std::string &export_surface,
+		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &pressure,
+		const double t,
+		const double dt_in,
+		const ExportOptions &opts,
+		const bool is_contact_enabled,
+		std::vector<SolutionFrame> &solution_frames) const
+	{
+		const mesh::Mesh &mesh = *state.mesh;
+		const ipc::CollisionMesh &collision_mesh = state.collision_mesh;
+		const double dhat = state.args["contact"]["dhat"];
+		const double friction_coefficient = state.args["contact"]["friction_coefficient"];
+		const double epsv = state.args["contact"]["epsv"];
+		const std::shared_ptr<solver::ContactForm> &contact_form = state.solve_data.contact_form;
+		const std::shared_ptr<solver::FrictionForm> &friction_form = state.solve_data.friction_form;
+
+		if (opts.solve_export_to_file)
+		{
+			std::shared_ptr<paraviewo::ParaviewWriter> tmpw;
+			if (opts.use_hdf5)
+				tmpw = std::make_shared<paraviewo::HDF5VTUWriter>();
+			else
+				tmpw = std::make_shared<paraviewo::VTUWriter>();
+			paraviewo::ParaviewWriter &writer = *tmpw;
+
+			const int problem_dim = mesh.dimension();
+			const Eigen::MatrixXd full_displacements = utils::unflatten(sol, problem_dim);
+			const Eigen::MatrixXd surface_displacements = collision_mesh.map_displacements(full_displacements);
+
+			const Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(full_displacements);
+
+			ipc::Constraints constraint_set;
+			constraint_set.use_convergent_formulation = state.args["contact"]["use_convergent_formulation"];
+			constraint_set.build(
+				collision_mesh, displaced_surface, dhat,
+				/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);
+
+			const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
+
+			if (opts.contact_forces)
+			{
+				Eigen::MatrixXd forces = -barrier_stiffness * ipc::compute_barrier_potential_gradient(collision_mesh, displaced_surface, constraint_set, dhat);
+				// forces = collision_mesh.to_full_dof(forces);
+				// assert(forces.size() == sol.size());
+
+				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
+
+				assert(forces_reshaped.rows() == surface_displacements.rows());
+				assert(forces_reshaped.cols() == surface_displacements.cols());
+				writer.add_field("contact_forces", forces_reshaped);
+			}
+
+			if (opts.friction_forces)
+			{
+				Eigen::MatrixXd displaced_surface_prev;
+				if (friction_form != nullptr)
+					displaced_surface_prev = friction_form->displaced_surface_prev();
+				if (displaced_surface_prev.size() == 0)
+					displaced_surface_prev = displaced_surface;
+
+				ipc::FrictionConstraints friction_constraint_set;
+				ipc::construct_friction_constraint_set(
+					collision_mesh, displaced_surface, constraint_set,
+					dhat, barrier_stiffness, friction_coefficient,
+					friction_constraint_set);
+
+				double dt = 1;
+				if (dt_in > 0)
+					dt = dt_in;
+				Eigen::MatrixXd forces = -ipc::compute_friction_potential_gradient(
+					collision_mesh, displaced_surface_prev, displaced_surface,
+					friction_constraint_set, epsv * dt);
+				// forces = collision_mesh.to_full_dof(forces);
+				// assert(forces.size() == sol.size());
+
+				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
+
+				assert(forces_reshaped.rows() == surface_displacements.rows());
+				assert(forces_reshaped.cols() == surface_displacements.cols());
+				writer.add_field("friction_forces", forces_reshaped);
+			}
+
+			assert(collision_mesh.vertices_at_rest().rows() == surface_displacements.rows());
+			assert(collision_mesh.vertices_at_rest().cols() == surface_displacements.cols());
+
+			// Write the solution last so it is the default for warp-by-vector
+			writer.add_field("solution", surface_displacements);
+
+			writer.write_mesh(
+				export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
+				collision_mesh.vertices_at_rest(),
+				problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges());
 		}
 	}
 
