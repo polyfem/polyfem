@@ -90,6 +90,9 @@ namespace polyfem::solver
 	{
 		parametrization_.eval(x);
 
+		// const int cur_log = state_ptr_->current_log_level;
+		// state_ptr_->set_log_level(spdlog::level::level_enum::warn);
+
 		state_ptr_->in_args["geometry"][mesh_id_]["mesh"] = mesh_path_;
 		state_ptr_->in_args["geometry"][mesh_id_].erase("transformation");
 
@@ -130,7 +133,9 @@ namespace polyfem::solver
 
 		state_ptr_->load_mesh();
 		state_ptr_->stats.compute_mesh_stats(*state_ptr_->mesh);
-		state_ptr_->build_basis();
+		// state_ptr_->build_basis();
+
+		// state_ptr_->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
 
 		const int dim = state_ptr_->mesh->dimension();
 		parametrization_.set_output_indexing(Eigen::VectorXi::LinSpaced((end - start) * dim, start * dim, end * dim - 1));
