@@ -2730,9 +2730,21 @@
             "neumann_boundary",
             "pressure_boundary",
             "obstacle_displacements",
-            "linear_displacement_offset"
+            "linear_displacement_offset",
+            "fixed_macro_strain"
         ],
         "doc": "The settings for boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/fixed_macro_strain",
+        "type": "list",
+        "default": [],
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/fixed_macro_strain/*",
+        "type": "int",
+        "doc": ""
     },
     {
         "pointer": "/boundary_conditions/linear_displacement_offset",

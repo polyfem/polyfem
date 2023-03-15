@@ -5,6 +5,7 @@
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/State.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -226,6 +227,7 @@ namespace polyfem::assembler
 			state->disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd pressure;
 			state->args["optimization"]["enabled"] = true;
+			nlohmann::adl_serializer<Eigen::VectorXi>::to_json(state->args["boundary_conditions"]["fixed_macro_strain"], Eigen::VectorXi::LinSpaced(size()*size(),0,size()*size()-1));
 			state->solve_problem(x, pressure);
 		}
 
@@ -247,6 +249,7 @@ namespace polyfem::assembler
 			state->disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd pressure;
 			state->args["optimization"]["enabled"] = true;
+			nlohmann::adl_serializer<Eigen::VectorXi>::to_json(state->args["boundary_conditions"]["fixed_macro_strain"], Eigen::VectorXi::LinSpaced(size()*size(),0,size()*size()-1));
 			state->solve_problem(x, pressure);
 		}
 
@@ -266,6 +269,7 @@ namespace polyfem::assembler
 			state->disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd pressure;
 			state->args["optimization"]["enabled"] = true;
+			nlohmann::adl_serializer<Eigen::VectorXi>::to_json(state->args["boundary_conditions"]["fixed_macro_strain"], Eigen::VectorXi::LinSpaced(size()*size(),0,size()*size()-1));
 			state->solve_problem(x, pressure);
 		}
 

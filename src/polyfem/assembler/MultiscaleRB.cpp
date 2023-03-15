@@ -4,6 +4,7 @@
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/PolarDecomposition.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/State.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -16,8 +17,6 @@
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/solver/DenseNewtonDescentSolver.hpp>
 
-#include <unsupported/Eigen/KroneckerProduct>
-#include <unsupported/Eigen/MatrixFunctions>
 #include <finitediff.hpp>
 #include <filesystem>
 
@@ -61,63 +60,6 @@ namespace polyfem::assembler
 				basis[4] = std::pow(1./2, 1./2) * Eigen::MatrixXd{{0,0,0},{0,0,1},{0,1,0}};
 			}
 		}
-		
-		// S = sqrt(A), A is SPD, compute dS/dA
-		Eigen::MatrixXd matrix_sqrt_grad(const Eigen::MatrixXd &S)
-		{
-			const int dim = S.rows();
-			assert(S.cols() == dim);
-			Eigen::MatrixXd id = Eigen::MatrixXd::Identity(dim, dim);
-
-			return (Eigen::kroneckerProduct(S, id) + Eigen::kroneckerProduct(id, S)).inverse();
-		}
-
-		void polar_decomposition(const Eigen::MatrixXd &F, Eigen::MatrixXd &R, Eigen::MatrixXd &U)
-		{
-			const int dim = F.rows();
-			assert(F.cols() == dim);
-			Eigen::JacobiSVD<Eigen::MatrixXd> svd;
-			svd.compute(F, Eigen::ComputeThinU | Eigen::ComputeThinV);
-			R = svd.matrixU() * svd.matrixV().transpose();
-			U = R.transpose() * F;
-
-			if (svd.singularValues().minCoeff() <= 0)
-				logger().error("Negative Deformation Gradient!");
-		}
-
-		bool delta(int i, int j)
-		{
-			return i == j;
-		}
-
-		void my_polar_decomposition_grad(const Eigen::MatrixXd &F, const Eigen::MatrixXd &R, const Eigen::MatrixXd &U, Eigen::MatrixXd &dUdF)
-		{
-			const int dim = F.rows();
-			assert(F.cols() == dim);
-
-			Eigen::MatrixXd dU_dATA = matrix_sqrt_grad(U);
-
-			Eigen::MatrixXd dATA_dA;
-			dATA_dA.setZero(dim*dim, dim*dim);
-			for (int i = 0; i < dim; i++)
-			for (int p = 0; p < dim; p++)
-			for (int q = 0; q < dim; q++)
-			{
-				dATA_dA(q + i * dim, p + q * dim) += F(p, i);
-				dATA_dA(i + q * dim, p + q * dim) += F(p, i);
-			}
-
-			dUdF = dU_dATA * dATA_dA;
-
-			{
-				Eigen::MatrixXd tmp = dUdF;
-				for (int i = 0; i < dim; i++)
-				for (int j = 0; j < dim; j++)
-				for (int k = 0; k < dim; k++)
-				for (int l = 0; l < dim; l++)
-					dUdF(i * dim + j, k * dim + l) = tmp(i + j * dim, k + l * dim);
-			}
-		}
 
 		bool compare_matrix(
 			const Eigen::MatrixXd& x,
@@ -154,6 +96,9 @@ namespace polyfem::assembler
 
 		Eigen::MatrixXd sols;
 		sols.setZero(state->n_bases * size(), def_grads.size());
+
+		Eigen::VectorXi tmp_ind = Eigen::VectorXi::LinSpaced(size()*size(), 0, size()*size()-1);
+		std::vector<int> fixed_entry(tmp_ind.data(), tmp_ind.data() + tmp_ind.size());
 	
 		utils::maybe_parallel_for(def_grads.size(), [&](int start, int end, int thread_id) {
 			Eigen::MatrixXd tmp;
@@ -163,7 +108,7 @@ namespace polyfem::assembler
 				// solve fluctuation field
 				Eigen::MatrixXd grad = def_grads[idx] - Eigen::MatrixXd::Identity(size(), size());
 				tmp.setZero();
-				state->solve_homogenized_field(grad, tmp);
+				state->solve_homogenized_field(grad, tmp, fixed_entry);
 				sols.col(idx) = tmp - io::Evaluator::generate_linear_field(state->n_bases, state->mesh_nodes, grad);
 			}
 		});
@@ -377,10 +322,12 @@ namespace polyfem::assembler
 
 	void MultiscaleRB::homogenization(const Eigen::MatrixXd &def_grad, double &energy, Eigen::MatrixXd &stress, Eigen::MatrixXd &stiffness) const
 	{
+		const int dim = size();
+
 		Eigen::MatrixXd R, Ubar, dUdF;
 		{
-			polar_decomposition(def_grad, R, Ubar);
-			my_polar_decomposition_grad(def_grad, R, Ubar, dUdF);
+			utils::polar_decomposition(def_grad, R, Ubar);
+			utils::polar_decomposition_grad(def_grad, R, Ubar, dUdF);
 		}
 
 		Eigen::MatrixXd x;
@@ -397,7 +344,6 @@ namespace polyfem::assembler
 		// effective stress = average stress over unit cell
 		Eigen::MatrixXd stress_no_rotation;
 		homogenize_stress(x, stress_no_rotation);
-		stress_no_rotation = utils::flatten(stress_no_rotation);
 
 		// effective stiffness
 		// \bar{C}^{RB} = < C^{RB} > - \sum_{i,j} (D^{-1})_{ij} < C^{RB} \cdot B^{(i)} > \cross < B^{(j)} \cdot C^{RB} >
@@ -416,24 +362,19 @@ namespace polyfem::assembler
 		// }
 		
 		// my version
-		stress = utils::unflatten(dUdF.transpose() * stress_no_rotation, size());
-		stiffness = dUdF.transpose() * stiffness_no_rotation * dUdF;
-		{
-			Eigen::MatrixXd fjacobian;
-			fd::finite_jacobian(
-			utils::flatten(def_grad),
-			[this, &stress_no_rotation](const Eigen::VectorXd &x) -> Eigen::VectorXd {
-				Eigen::MatrixXd F = utils::unflatten(x, this->size());
-				Eigen::MatrixXd R, Ubar, dUdF;
-				polar_decomposition(F, R, Ubar);
-				my_polar_decomposition_grad(F, R, Ubar, dUdF);
-				Eigen::VectorXd tmp = dUdF.transpose() * stress_no_rotation;
-				return tmp;
-			},
-			fjacobian);
+		stress = (dUdF.transpose() * stress_no_rotation.reshaped()).reshaped(size(), size());
 
-			stiffness += fjacobian;
-		}
+		Eigen::MatrixXd fjacobian;
+		utils::finite_diff_complex_step(def_grad.reshaped(), [dim, &stress_no_rotation](const Eigen::VectorXcd &y) -> Eigen::VectorXcd {
+			Eigen::MatrixXcd F = y.reshaped(dim, dim);
+			Eigen::MatrixXcd R, U, grad;
+			utils::polar_decomposition(F, R, U);
+			utils::polar_decomposition_grad(F, R, U, grad);
+			Eigen::VectorXcd tmp = grad.transpose() * stress_no_rotation.reshaped();
+			return tmp;
+		}, fjacobian, 1e-12);
+
+		stiffness = (dUdF.transpose() * stiffness_no_rotation * dUdF) + fjacobian;
 
 		// std::cout << "cauchy stress symmetry: " << (stress_no_rotation * Ubar - Ubar * stress_no_rotation.transpose()).norm() / (Ubar * stress_no_rotation.transpose()).norm() << "\n";
 	}
@@ -442,8 +383,8 @@ namespace polyfem::assembler
 	{
 		Eigen::MatrixXd R, Ubar, dUdF;
 		{
-			polar_decomposition(def_grad, R, Ubar);
-			my_polar_decomposition_grad(def_grad, R, Ubar, dUdF);
+			utils::polar_decomposition(def_grad, R, Ubar);
+			utils::polar_decomposition_grad(def_grad, R, Ubar, dUdF);
 		}
 
 		Eigen::MatrixXd x;
@@ -460,21 +401,17 @@ namespace polyfem::assembler
 		// effective stress = average stress over unit cell
 		Eigen::MatrixXd stress_no_rotation;
 		homogenize_stress(x, stress_no_rotation);
-		stress_no_rotation = utils::flatten(stress_no_rotation);
 		
 		// my version
-		stress = utils::unflatten(dUdF.transpose() * stress_no_rotation, size());
+		stress = (dUdF.transpose() * stress_no_rotation.reshaped()).reshaped(size(), size());
 
 		// std::cout << "cauchy stress symmetry: " << (stress_no_rotation * Ubar - Ubar * stress_no_rotation.transpose()).norm() / (Ubar * stress_no_rotation.transpose()).norm() << "\n";
 	}
 
 	void MultiscaleRB::homogenization(const Eigen::MatrixXd &def_grad, double &energy) const
 	{
-		Eigen::MatrixXd R, Ubar, dUdF;
-		{
-			polar_decomposition(def_grad, R, Ubar);
-			my_polar_decomposition_grad(def_grad, R, Ubar, dUdF);
-		}
+		Eigen::MatrixXd R, Ubar;
+		utils::polar_decomposition(def_grad, R, Ubar);
 
 		Eigen::MatrixXd x;
 		{
@@ -665,15 +602,6 @@ namespace polyfem::assembler
 			// 		// hessian_temp = fhess;
 			// 	}
 			// }
-
-			{
-				Eigen::MatrixXd hessian_temp2 = hessian_temp;
-				for (int i = 0; i < size(); i++)
-				for (int j = 0; j < size(); j++)
-				for (int k = 0; k < size(); k++)
-				for (int l = 0; l < size(); l++)
-					hessian_temp(i + j * size(), k + l * size()) = hessian_temp2(i * size() + j, k * size() + l);
-			}
 
 			Eigen::MatrixXd delF_delU_tensor(jac_it.size(), grad.size());
 			Eigen::MatrixXd temp;

@@ -48,6 +48,12 @@ int main(int argc, char **argv)
 	std::string log_file = "";
 	command_line.add_option("--log_file", log_file, "Log to a file");
 
+	int min_strain = 0;
+	command_line.add_option("--min", min_strain, "min strain in the sweep");
+
+	int max_strain = 40;
+	command_line.add_option("--max", max_strain, "max strain in the sweep");
+
 	// const std::vector<std::string> solvers = polysolve::LinearSolver::availableSolvers();
 	// std::string solver;
 	// command_line.add_option("--solver", solver, "Used to print the list of linear solvers available")->check(CLI::IsMember(solvers));
@@ -150,7 +156,7 @@ int main(int argc, char **argv)
 	Eigen::MatrixXd F;
 	F.setZero(dim, dim);
 
-	for (int l = -30; l >= -40; l--)
+	for (int l = -min_strain; l >= -max_strain; l--)
 	{
 		F(0, 0) = 0;
 		F(1, 1) = l / 100.0;
@@ -158,7 +164,7 @@ int main(int argc, char **argv)
 		micro_state->args["output"]["paraview"]["file_name"] = "load_" + std::to_string(-l) + ".vtu";
 
 		Eigen::MatrixXd fluctuated;
-		micro_state->solve_homogenized_field(F, fluctuated, true);
+		micro_state->solve_homogenized_field(F, fluctuated, micro_state->args["boundary_conditions"]["fixed_macro_strain"], false);
 
 		// effective energy = average energy over unit cell
 		double energy = micro_assembler.homogenize_energy(fluctuated);

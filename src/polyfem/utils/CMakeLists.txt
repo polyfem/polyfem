@@ -52,6 +52,7 @@ set(SOURCES
 	Types.hpp
 	LazyCubicInterpolator.cpp
 	LazyCubicInterpolator.hpp
+	PolarDecomposition.hpp
 )
 
 prepend_current_path(SOURCES)

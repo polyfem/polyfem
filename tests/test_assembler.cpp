@@ -161,7 +161,7 @@ TEST_CASE("multiscale_derivatives", "[assembler]")
 				},
 				"space": {
 					"advanced": {
-						"quadrature_order": 5
+						"quadrature_order": 2
 					}
 				},
 				"solver": {
@@ -260,7 +260,7 @@ TEST_CASE("multiscale_rb_derivatives", "[assembler]")
 				"solver": "Eigen::SimplicialLDLT"
 			}
 		},
-		"output" : { "log": { "level": 2 } },
+		"output" : { "log": { "level": 4 } },
 		"boundary_conditions": {
 			"dirichlet_boundary": [
 				{
@@ -291,7 +291,7 @@ TEST_CASE("multiscale_rb_derivatives", "[assembler]")
 						"solver": "Eigen::SimplicialLDLT"
 					}
 				},
-				"output" : { "log": { "level": 2 } },
+				"output" : { "log": { "level": 4 } },
 				"boundary_conditions": {
 					"periodic_boundary": [true, true]
 				},
