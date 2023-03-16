@@ -152,7 +152,7 @@ namespace polyfem
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 
 			const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
-			if (!rest_mesh_path.empty())
+			if (remesh_enabled && !rest_mesh_path.empty())
 			{
 				Eigen::MatrixXd V;
 				Eigen::MatrixXi F;
