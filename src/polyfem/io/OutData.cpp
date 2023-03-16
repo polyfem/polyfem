@@ -952,6 +952,11 @@ namespace polyfem::io
 		velocity = args["output"]["paraview"]["options"]["velocity"];
 		acceleration = args["output"]["paraview"]["options"]["acceleration"];
 
+		scalar_values = args["output"]["paraview"]["options"]["scalar_values"];
+		tensor_values = args["output"]["paraview"]["options"]["tensor_values"] && !is_problem_scalar;
+		discretization_order = args["output"]["paraview"]["options"]["discretization_order"] && !is_problem_scalar;
+		nodes = args["output"]["paraview"]["options"]["nodes"] && !is_problem_scalar;
+
 		use_spline = args["space"]["basis_type"] == "Spline";
 
 		reorder_output = args["output"]["data"]["advanced"]["reorder_nodes"];
@@ -1230,7 +1235,7 @@ namespace polyfem::io
 
 		VTUWriter writer;
 
-		if (opts.solve_export_to_file)
+		if (opts.solve_export_to_file && opts.nodes)
 			writer.add_field("nodes", node_fun);
 
 		if (problem.is_time_dependent())
@@ -1300,8 +1305,9 @@ namespace polyfem::io
 			discr.bottomRows(obstacle.n_vertices()).setZero();
 		}
 
-		if (opts.solve_export_to_file)
+		if (opts.solve_export_to_file && opts.discretization_order)
 			writer.add_field("discr", discr);
+
 		if (problem.has_exact_sol())
 		{
 			if (opts.solve_export_to_file)
@@ -1331,12 +1337,15 @@ namespace polyfem::io
 				vals.bottomRows(obstacle.n_vertices()).setZero();
 			}
 
-			if (opts.solve_export_to_file)
-				writer.add_field("scalar_value", vals);
-			else
-				solution_frames.back().scalar_value = vals;
+			if (opts.scalar_values)
+			{
+				if (opts.solve_export_to_file)
+					writer.add_field("scalar_value", vals);
+				else
+					solution_frames.back().scalar_value = vals;
+			}
 
-			if (opts.solve_export_to_file)
+			if (opts.solve_export_to_file && opts.tensor_values)
 			{
 				Evaluator::compute_tensor_value(
 					mesh, problem.is_scalar(), bases, gbases,
@@ -1371,10 +1380,13 @@ namespace polyfem::io
 					vals.bottomRows(obstacle.n_vertices()).setZero();
 				}
 
-				if (opts.solve_export_to_file)
-					writer.add_field("scalar_value_avg", vals);
-				else
-					solution_frames.back().scalar_value_avg = vals;
+				if (opts.scalar_values)
+				{
+					if (opts.solve_export_to_file)
+						writer.add_field("scalar_value_avg", vals);
+					else
+						solution_frames.back().scalar_value_avg = vals;
+				}
 				// for(int i = 0; i < tvals.cols(); ++i){
 				// 	const int ii = (i / mesh.dimension()) + 1;
 				// 	const int jj = (i % mesh.dimension()) + 1;

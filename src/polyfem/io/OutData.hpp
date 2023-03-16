@@ -57,6 +57,10 @@ namespace polyfem::io
 			bool sol_on_grid;
 			bool velocity;
 			bool acceleration;
+			bool tensor_values;
+			bool scalar_values;
+			bool discretization_order;
+			bool nodes;
 
 			bool use_spline;
 			bool reorder_output;
