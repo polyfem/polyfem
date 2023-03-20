@@ -105,10 +105,6 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         *solve_data_tmp.rhs_assembler, *this, 0, forms);
     solve_data_tmp.nl_problem = homo_problem;
 
-    Eigen::VectorXd tmp_sol = homo_problem->full_to_reduced(sol_, Eigen::MatrixXd::Zero(dim, dim));
-    Eigen::VectorXd tail = homo_problem->macro_full_to_reduced(utils::flatten(disp_grad));
-    tmp_sol.tail(tail.size()) = tail;
-
     if (args["optimization"]["enabled"])
     {
         solve_data = solve_data_tmp;
@@ -138,6 +134,10 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         }
     }
 
+    Eigen::VectorXd tmp_sol = homo_problem->full_to_reduced(sol_, Eigen::MatrixXd::Zero(dim, dim));
+    Eigen::VectorXd tail = homo_problem->macro_full_to_reduced(utils::flatten(disp_grad));
+    tmp_sol.tail(tail.size()) = tail;
+
     homo_problem->init(homo_problem->reduced_to_full(tmp_sol));
     std::shared_ptr<cppoptlib::NonlinearSolver<NLHomoProblem>> nl_solver = make_nl_homo_solver<NLHomoProblem>(args["solver"]);
     nl_solver->minimize(*homo_problem, tmp_sol);
@@ -150,8 +150,12 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
 
     sol_ = homo_problem->reduced_to_full(tmp_sol);
 
+    Eigen::MatrixXd disp_grad_out = homo_problem->reduced_to_disp_grad(tmp_sol);
+
+    logger().info("displacement grad {}", utils::flatten(disp_grad_out).transpose());
+
     if (args["optimization"]["enabled"])
-        cache_transient_adjoint_quantities(0, sol_, homo_problem->reduced_to_disp_grad(tmp_sol));
+        cache_transient_adjoint_quantities(0, sol_, disp_grad_out);
 
     // static int index = 0;
     // StiffnessMatrix H;

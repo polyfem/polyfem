@@ -42,12 +42,8 @@ namespace polyfem
 				Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic> M = F + (detF / real_abs(detF)) * adjFstar;
 				U = (M.transpose() * F) / pow(real_abs(M.determinant()), 0.5);
 			}
-			else if (dim == 3)
-			{
-				
-			}
 			else
-				throw std::runtime_error("Only support 2x2 or 3x3 matrix polar decomposition!");
+				throw std::runtime_error("Only support 2x2 matrix polar decomposition!");
 		}
 
 		void finite_diff_complex_step(const Eigen::VectorXd &x, const std::function<Eigen::VectorXcd(const Eigen::VectorXcd&)>& f, Eigen::MatrixXd& jac, const double eps)
@@ -68,13 +64,13 @@ namespace polyfem
 		}
 
 		template <class scalar>
-		void polar_decomposition_grad(const Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic> &F, const Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic> &R, const Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic> &U, Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic> &dUdF)
+		void polar_decomposition_grad(const Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic> &F, const Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic> &U, Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic> &dUdF)
 		{
 			const int dim = F.rows();
 			assert(F.cols() == dim);
 
 			Eigen::VectorXi ind = Eigen::VectorXi::LinSpaced(dim*dim, 0, dim*dim-1).reshaped(dim, dim).reshaped<Eigen::RowMajor>();
-			Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic> tmp = Eigen::kroneckerProduct(F.transpose(), Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic>::Identity(dim, dim))(Eigen::all, ind);
+			Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic> tmp = Eigen::kroneckerProduct(Eigen::Matrix<scalar, Eigen::Dynamic, Eigen::Dynamic>::Identity(dim, dim), F.transpose());
 
 			dUdF = matrix_sqrt_grad(U) * (tmp + tmp(ind, Eigen::all));
 		}

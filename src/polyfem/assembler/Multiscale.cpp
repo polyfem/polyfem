@@ -31,11 +31,6 @@ namespace polyfem::assembler
 {
 	namespace {
 
-		bool delta(int i, int j)
-		{
-			return i == j;
-		}
-
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 
 		bool compare_matrix(
@@ -215,6 +210,8 @@ namespace polyfem::assembler
 			stiffness.row(i) += b;
 		}
 
+		Eigen::VectorXi ind = Eigen::VectorXi::LinSpaced(stiffness.rows(), 0, stiffness.rows()-1).reshaped(size(), size()).reshaped<Eigen::RowMajor>();
+		stiffness = stiffness(ind, ind).eval();
 		stiffness /= microstructure_volume;
 	}
 
@@ -427,15 +424,6 @@ namespace polyfem::assembler
 
 			double energy = 0;
 			homogenization(def_grad, energy, stress_tensor, hessian_temp);
-
-			{
-				Eigen::MatrixXd hessian_temp2 = hessian_temp;
-				for (int i = 0; i < size(); i++)
-				for (int j = 0; j < size(); j++)
-				for (int k = 0; k < size(); k++)
-				for (int l = 0; l < size(); l++)
-					hessian_temp(i + j * size(), k + l * size()) = hessian_temp2(i * size() + j, k * size() + l);
-			}
 
 			Eigen::MatrixXd delF_delU_tensor(jac_it.size(), grad.size());
 			Eigen::MatrixXd temp;

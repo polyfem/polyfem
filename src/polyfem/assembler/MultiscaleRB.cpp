@@ -327,7 +327,7 @@ namespace polyfem::assembler
 		Eigen::MatrixXd R, Ubar, dUdF;
 		{
 			utils::polar_decomposition(def_grad, R, Ubar);
-			utils::polar_decomposition_grad(def_grad, R, Ubar, dUdF);
+			utils::polar_decomposition_grad(def_grad, Ubar, dUdF);
 		}
 
 		Eigen::MatrixXd x;
@@ -369,10 +369,10 @@ namespace polyfem::assembler
 			Eigen::MatrixXcd F = y.reshaped(dim, dim);
 			Eigen::MatrixXcd R, U, grad;
 			utils::polar_decomposition(F, R, U);
-			utils::polar_decomposition_grad(F, R, U, grad);
+			utils::polar_decomposition_grad(F, U, grad);
 			Eigen::VectorXcd tmp = grad.transpose() * stress_no_rotation.reshaped();
 			return tmp;
-		}, fjacobian, 1e-12);
+		}, fjacobian, 1e-16);
 
 		stiffness = (dUdF.transpose() * stiffness_no_rotation * dUdF) + fjacobian;
 
@@ -384,7 +384,7 @@ namespace polyfem::assembler
 		Eigen::MatrixXd R, Ubar, dUdF;
 		{
 			utils::polar_decomposition(def_grad, R, Ubar);
-			utils::polar_decomposition_grad(def_grad, R, Ubar, dUdF);
+			utils::polar_decomposition_grad(def_grad, Ubar, dUdF);
 		}
 
 		Eigen::MatrixXd x;

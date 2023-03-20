@@ -36,12 +36,10 @@ namespace polyfem::solver
         {
             for (int j = i; j < dim; j++)
             {
-                full_to_symmetric(i * dim + j, idx) += 0.5;
-                full_to_symmetric(j * dim + i, idx) += 0.5;
+                full_to_symmetric(i * dim + j, idx) = 1;
                 
                 symmetric_to_full(j * dim + i, idx) = 1;
-                if (j != i)
-                    symmetric_to_full(i * dim + j, idx) = 1;
+                symmetric_to_full(i * dim + j, idx) = 1;
                 
                 idx++;
             }
