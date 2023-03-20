@@ -235,6 +235,7 @@ namespace polyfem::solver
 
 			Eigen::MatrixXd V1 = utils::unflatten(AdjointTools::map_primitive_to_node_order(state_, X), state_.mesh->dimension());
 
+			// Do this until get_vf is fixed wrt to ordering
 			const auto &mesh = state_.mesh;
 			const auto &bases = state_.bases;
 			const auto &gbases = state_.geom_bases();
