@@ -240,7 +240,7 @@ namespace polyfem::solver
 
 	SliceMap::SliceMap(const int from = -1, const int to = -1) : from_(from), to_(to)
 	{
-		if (to_ - from_ <= 0)
+		if (to_ - from_ < 0)
 			log_and_throw_error("Invalid Slice Map input!");
 	}
 
@@ -268,9 +268,8 @@ namespace polyfem::solver
 		values_.setConstant(size, val);
 	}
 
-	AppendConstantMap::AppendConstantMap(const Eigen::VectorXd &values): values_(values)
+	AppendConstantMap::AppendConstantMap(const Eigen::VectorXd &values) : values_(values)
 	{
-
 	}
 
 	int AppendConstantMap::size(const int x_size) const
@@ -345,14 +344,14 @@ namespace polyfem::solver
 		return (tt_radius_adjacency * grad).array() / tt_radius_adjacency_row_sum.array();
 	}
 
-	CustomSymmetric::CustomSymmetric(const json& args)
+	CustomSymmetric::CustomSymmetric(const json &args)
 	{
 		for (const auto &entry : args["fixed_entries"])
 			fixed_entries.push_back(entry.get<int>());
 
 		for (const auto &pair : args["equal_pairs"])
 			equal_pairs.emplace_back(pair[0].get<int>(), pair[1].get<int>());
-		
+
 		for (const auto &pair : args["sum_equal_pairs"])
 			sum_equal_pairs.emplace_back(pair[0].get<int>(), pair[1].get<int>());
 	}

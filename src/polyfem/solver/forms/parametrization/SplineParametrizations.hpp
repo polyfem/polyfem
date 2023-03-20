@@ -3,6 +3,7 @@
 #include "Parametrization.hpp"
 
 #include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/State.hpp>
 
 #include <polyfem/utils/BSplineParametrization.hpp>
 
@@ -68,11 +69,12 @@ namespace polyfem::solver
 	class BoundedBiharmonicWeights2Dto3D : public Parametrization
 	{
 	public:
-		BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const Eigen::MatrixXd &V_full, const Eigen::MatrixXi &F_full) : num_control_vertices_(num_control_vertices), V_full_(V_full), F_full_(F_full) {}
+		BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const Eigen::MatrixXd &V_surface, const Eigen::MatrixXi &F_surface) : num_control_vertices_(num_control_vertices), num_vertices_(num_vertices), V_surface_(V_surface), F_surface_(F_surface) {}
+		BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const State &state, const int surface_selection);
 
 		// Should only be called to initialize the parameter, when the shape matches the initial control points.
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
-		int size(const int x_size) const override { return control_points_.size(); }
+		int size(const int x_size) const override { return num_vertices_ * 3; }
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const override;
 
@@ -84,11 +86,13 @@ namespace polyfem::solver
 		int optimal_new_control_point_idx(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const Eigen::VectorXi &boundary_loop, const std::vector<int> &existing_points) const;
 
 		const int num_control_vertices_;
+		const int num_vertices_;
 		Eigen::MatrixXd control_points_;
 		Eigen::MatrixXd bbw_weights_;
+		Eigen::MatrixXd boundary_bbw_weights_;
 
-		const Eigen::MatrixXd V_full_;
-		const Eigen::MatrixXi F_full_;
+		Eigen::MatrixXd V_surface_;
+		Eigen::MatrixXi F_surface_;
 
 		Eigen::VectorXd y_start;
 

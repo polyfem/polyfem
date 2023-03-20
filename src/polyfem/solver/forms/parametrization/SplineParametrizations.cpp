@@ -6,6 +6,9 @@
 #include <igl/normalize_row_sums.h>
 #include <igl/boundary_loop.h>
 #include <igl/exact_geodesic.h>
+#include <igl/bounding_box.h>
+
+#include <unordered_map>
 
 namespace polyfem::solver
 {
@@ -68,6 +71,42 @@ namespace polyfem::solver
 	Eigen::VectorXd BSplineParametrization2DTo3D::apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const
 	{
 		return Eigen::VectorXd();
+	}
+
+	BoundedBiharmonicWeights2Dto3D::BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const State &state, const int surface_selection)
+		: num_control_vertices_(num_control_vertices), num_vertices_(num_vertices)
+	{
+		Eigen::MatrixXd V;
+		Eigen::MatrixXi F;
+		state.get_vf(V, F);
+
+		auto map = state.node_to_primitive();
+
+		int f_size = 0;
+		const auto &mesh = state.mesh;
+		const auto &bases = state.bases;
+		const auto &gbases = state.geom_bases();
+		for (const auto &lb : state.total_local_boundary)
+		{
+			const int e = lb.element_id();
+			for (int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const int boundary_id = mesh->get_boundary_id(primitive_global_id);
+				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
+				F_surface_.conservativeResize(++f_size, 3);
+				for (int f = 0; f < nodes.size(); ++f)
+				{
+					F_surface_(f_size - 1, f) = map[gbases[e].bases[nodes(f)].global()[0].index];
+				}
+			}
+		}
+		V_surface_.resizeLike(V);
+		for (int e = 0; e < gbases.size(); e++)
+		{
+			for (const auto &gbs : gbases[e].bases)
+				V_surface_.row(map[gbs.global()[0].index]) = gbs.global()[0].node;
+		}
 	}
 
 	int BoundedBiharmonicWeights2Dto3D::optimal_new_control_point_idx(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const Eigen::VectorXi &boundary_loop, const std::vector<int> &existing_points) const
@@ -171,7 +210,8 @@ namespace polyfem::solver
 		if (!computation)
 			log_and_throw_error("Bounded Bihamonic Weight computation failed!");
 		igl::normalize_row_sums(complete_bbw_weights, complete_bbw_weights);
-		bbw_weights_ = complete_bbw_weights.block(0, 0, V.rows(), num_control_vertices_).matrix(); // throw away handles on boundary points
+		bbw_weights_ = complete_bbw_weights.block(0, 0, V.rows(), num_control_vertices_).matrix();
+		boundary_bbw_weights_ = complete_bbw_weights.block(0, num_control_vertices_, V.rows(), V_outer_loop.rows()).matrix();
 
 		invoked_inverse_eval_ = true;
 
@@ -185,7 +225,12 @@ namespace polyfem::solver
 		Eigen::VectorXd y = Eigen::VectorXd::Zero(y_start.size());
 		for (int j = 0; j < bbw_weights_.cols(); ++j)
 			for (int i = 0; i < bbw_weights_.rows(); ++i)
-				y.segment(i * 3, 3) += bbw_weights_(i, j) * (y_start.segment(i * 3, 3) + (control_points_.row(j).transpose() + x.segment(j * 3, 3)));
+				y.segment(i * 3, 3) += bbw_weights_(i, j) * (y_start.segment(i * 3, 3) + x.segment(j * 3, 3));
+
+		for (int j = 0; j < boundary_bbw_weights_.cols(); ++j)
+			for (int i = 0; i < boundary_bbw_weights_.rows(); ++i)
+				y.segment(i * 3, 3) += boundary_bbw_weights_(i, j) * y_start.segment(i * 3, 3);
+
 		return y;
 	}
 
@@ -200,7 +245,66 @@ namespace polyfem::solver
 
 	void BoundedBiharmonicWeights2Dto3D::compute_faces_for_partial_vertices(const Eigen::MatrixXd &V, Eigen::MatrixXi &F) const
 	{
-		// TODO: implement this correctly
-		F = F_full_;
+		// The following implementation is maybe a bit wasteful, but is independent of state or surface selections
+		std::unordered_map<int, int> full_to_reduced_indices;
+
+		Eigen::MatrixXd BV;
+		BV.setZero(3, 2);
+		for (int i = 0; i < V.rows(); ++i)
+		{
+			if (i == 0)
+			{
+				BV.col(0) = V.row(i);
+				BV.col(1) = V.row(i);
+			}
+			else
+			{
+				for (int j = 0; j < 3; ++j)
+				{
+					BV(j, 0) = std::min(BV(j, 0), V(i, j));
+					BV(j, 1) = std::max(BV(j, 1), V(i, j));
+				}
+			}
+		}
+
+		Eigen::VectorXd bbox_width = (BV.col(1) - BV.col(0));
+		for (int j = 0; j < 3; ++j)
+			if (bbox_width(j) < 1e-12)
+				bbox_width(j) = 1e-3;
+
+		// Pad the bbox to make it conservative
+		BV.col(0) -= 0.05 * (BV.col(1) - BV.col(0));
+		BV.col(1) += 0.05 * (BV.col(1) - BV.col(0));
+
+		auto in_bbox = [&BV](const Eigen::VectorXd &x) {
+			bool in = true;
+			in &= (x(0) >= BV(0, 0)) && (x(0) <= BV(0, 1));
+			in &= (x(1) >= BV(1, 0)) && (x(1) <= BV(1, 1));
+			in &= (x(2) >= BV(2, 0)) && (x(0) <= BV(2, 1));
+			return in;
+		};
+
+		for (int i = 0; i < V_surface_.rows(); ++i)
+			for (int j = 0; j < V.rows(); ++j)
+			{
+				// if (in_bbox(V_surface_.row(i)))
+				if ((V_surface_.row(i) - V.row(j)).norm() < 1e-12)
+					full_to_reduced_indices[i] = j;
+			}
+
+		F.resize(0, 3);
+		for (int i = 0; i < F_surface_.rows(); ++i)
+		{
+			bool contains_face = true;
+			for (int j = 0; j < 3; ++j)
+				contains_face &= (full_to_reduced_indices.count(F_surface_(i, j)) == 1);
+
+			if (contains_face)
+			{
+				F.conservativeResize(F.rows() + 1, 3);
+				for (int j = 0; j < 3; ++j)
+					F(F.rows() - 1, j) = full_to_reduced_indices.at(F_surface_(i, j));
+			}
+		}
 	}
 } // namespace polyfem::solver

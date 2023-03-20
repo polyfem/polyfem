@@ -127,11 +127,11 @@ TEST_CASE("BoundedBiharmonicWeights", "[parametrization]")
 	std::vector<std::vector<int>> e;
 	std::vector<std::vector<double>> w;
 	std::vector<int> ids;
-	polyfem::io::MshReader::load("../cube_dense.msh", V, F, e, w, ids);
+	polyfem::io::MshReader::load("../cube_dense2.msh", V, F, e, w, ids);
 	V.conservativeResize(V.rows(), 3);
 	V.col(2) = Eigen::VectorXd::Zero(V.rows());
 
-	BoundedBiharmonicWeights2Dto3D parametrization(5, V, F);
+	BoundedBiharmonicWeights2Dto3D parametrization(5, V.rows(), V, F);
 	verify_apply_jacobian(parametrization, utils::flatten(V));
 
 	// Eigen::MatrixXd bbw_weights = parametrization.get_bbw_weights();
