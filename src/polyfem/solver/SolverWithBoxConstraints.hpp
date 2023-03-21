@@ -55,9 +55,13 @@ namespace cppoptlib
 			auto min = get_lower_bound(x, false);
 			auto max = get_upper_bound(x, false);
 
-			const double grad_norm = grad.norm();
-
-			return ((x - grad / grad_norm).cwiseMax(min).cwiseMin(max) - x).norm() * grad_norm;
+			// return ((x - grad).cwiseMax(min).cwiseMin(max) - x).norm();
+			Eigen::VectorXd proj_grad = grad;
+			for (int i = 0; i < x.size(); i++)
+				if (x(i) < min(i) + 1e-14 || x(i) > max(i) - 1e-14)
+					proj_grad(i) = 0;
+			
+			return proj_grad.norm();
 		}
 
 		Eigen::VectorXd get_lower_bound(const Eigen::VectorXd &x, bool consider_max_change = true) const

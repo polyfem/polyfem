@@ -1,5 +1,6 @@
 #include "AdjointForm.hpp"
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 namespace polyfem::solver
 {
@@ -119,22 +120,24 @@ namespace polyfem::solver
 
 	double MaxStressForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		Eigen::MatrixXd local_vals;
-		assembler::ElementAssemblyValues vals;
+		Eigen::VectorXd max_stress;
+		max_stress.setZero(state_.bases.size());
+		utils::maybe_parallel_for(state_.bases.size(), [&](int start, int end, int thread_id) {
+			Eigen::MatrixXd local_vals;
+			assembler::ElementAssemblyValues vals;
+			for (int e = start; e < end; e++)
+			{
+				if (interested_ids_.size() != 0 && interested_ids_.find(state_.mesh->get_body_id(e)) == interested_ids_.end())
+					continue;
+				
+				state_.ass_vals_cache.compute(e, state_.mesh->is_volume(), state_.bases[e], state_.geom_bases()[e], vals);
+				state_.assembler.compute_tensor_value(state_.formulation(), e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step_), local_vals);
+				Eigen::VectorXd stress_norms = local_vals.rowwise().norm();
+				max_stress(e) = std::max(max_stress(e), stress_norms.maxCoeff());
+			}
+		});
 
-		double max_stress = 0;
-		for (int e = 0; e < state_.bases.size(); e++)
-		{
-			if (interested_ids_.size() != 0 && interested_ids_.find(state_.mesh->get_body_id(e)) == interested_ids_.end())
-				continue;
-			
-			state_.ass_vals_cache.compute(e, state_.mesh->is_volume(), state_.bases[e], state_.geom_bases()[e], vals);
-			state_.assembler.compute_tensor_value(state_.formulation(), e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step_), local_vals);
-			Eigen::VectorXd stress_norms = local_vals.rowwise().norm();
-			max_stress = std::max(max_stress, stress_norms.maxCoeff());
-		}
-
-		return max_stress;
+		return max_stress.maxCoeff();
 	}
 	Eigen::VectorXd MaxStressForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state)
 	{

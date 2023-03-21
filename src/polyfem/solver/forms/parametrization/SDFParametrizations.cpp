@@ -4,6 +4,7 @@
 #include <polyfem/io/MshReader.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <igl/writeMSH.h>
+#include <polyfem/io/VTUWriter.hpp>
 
 namespace polyfem::solver
 {
@@ -70,15 +71,11 @@ namespace polyfem::solver
 
                 assert(node_data_name.size() == node_data.size());
 
-                vertex_normals.setZero(Vout.rows(), Vout.cols());
-                shape_vel.setZero(x.size(), Vout.rows());
-                for (int j = 0; j < Vout.rows(); j++)
-                    for (int d = 0; d < Vout.cols(); d++)
-                        vertex_normals(j, d) = node_data[0][j * 3 + d];
+                vertex_normals = Eigen::Map<Eigen::MatrixXd>(node_data[0].data(), 3, Vout.rows()).topRows(Vout.cols()).transpose();
                 
+                shape_vel.setZero(x.size(), Vout.rows());
                 for (int i = 1; i < node_data_name.size(); i++)
-                    for (int j = 0; j < Vout.rows(); j++)
-                        shape_vel(i - 1, j) = node_data[i][j];
+                    shape_vel.row(i - 1) = Eigen::Map<RowVectorNd>(node_data[i].data(), Vout.rows());
             }
         }
         else
@@ -117,17 +114,26 @@ namespace polyfem::solver
     } 
     Eigen::VectorXd SDF2Mesh::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
     {
-        if (!isosurface_inflator(x))
-        {
-            logger().error("Failed to inflate mesh!");
-            return Eigen::VectorXd();
-        }
-        
         assert(x.size() == shape_vel.rows());
 
         const int dim = vertex_normals.cols();
         
         Eigen::VectorXd mapped_grad  = shape_vel * (vertex_normals.array() * utils::unflatten(grad, dim).array()).matrix().rowwise().sum();
+
+        // debug
+        // {
+        //     static int debug_id = 0;
+        //     Eigen::VectorXd grad_normal_coeffs = (vertex_normals.array() * utils::unflatten(grad, dim).array()).matrix().rowwise().sum();
+        //     Eigen::MatrixXd grad_normal_direction = vertex_normals.array().colwise() * grad_normal_coeffs.array();
+        //     Eigen::MatrixXd grad_tangent_direction = utils::unflatten(grad, dim) - grad_normal_direction;
+            
+        //     io::VTUWriter writer;
+        //     writer.add_field("gradient", utils::unflatten(grad, dim));
+        //     writer.add_field("gradient_normal", grad_normal_direction);
+        //     writer.add_field("gradient_tangent", grad_tangent_direction);
+
+        //     writer.write_mesh("debug_" + std::to_string(debug_id++) + ".vtu", Vout, Fout);
+        // }
 
         return mapped_grad;
     }
