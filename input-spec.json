@@ -1141,7 +1141,6 @@
         "type": "object",
         "optional": [
             "enabled",
-            "t0",
             "split",
             "collapse",
             "swap",
@@ -1156,12 +1155,6 @@
         "default": false,
         "type": "bool",
         "doc": "Whether to do adaptive remeshing"
-    },
-    {
-        "pointer": "/space/remesh/t0",
-        "default": 0.0,
-        "type": "float",
-        "doc": "Time at which to start adaptive remeshing"
     },
     {
         "pointer": "/space/remesh/split",

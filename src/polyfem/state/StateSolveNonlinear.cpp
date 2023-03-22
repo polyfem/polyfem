@@ -63,7 +63,6 @@ namespace polyfem
 		init_nonlinear_tensor_solve(sol, t0 + dt);
 
 		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
-		const double remesh_t0 = args["space"]["remesh"]["t0"];
 		const double save_dt = remesh_enabled ? (dt / 3) : dt;
 		int save_i = 0;
 
@@ -83,8 +82,6 @@ namespace polyfem
 				solve_data.nl_problem->value(sol));
 			energy_file.flush();
 		};
-		std::ofstream relax_diff_file(resolve_output_path("relax_diff.csv"));
-		relax_diff_file << "L2,Linf" << std::endl;
 
 		double total_forward_solve_time = 0, total_remeshing_time = 0, total_global_relaxation_time = 0;
 
@@ -103,39 +100,26 @@ namespace polyfem
 
 			if (remesh_enabled)
 			{
-				// TODO: Print timing for remesh
-				if (t0 + dt * (t - 1) >= remesh_t0)
+				timer.start();
+				const bool remesh_success = mesh::remesh(*this, sol, t0 + dt * t, dt);
+				timer.stop();
+				cur_remeshing_time = timer.getElapsedTimeInSec();
+
+				// Save the solution after remeshing
+				save_energy(save_i);
+				save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+
+				// Only do global relaxation if remeshing was successful
+				if (remesh_success)
 				{
 					timer.start();
-					const bool remesh_success = mesh::remesh(*this, sol, t0 + dt * t, dt);
+					solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
 					timer.stop();
-					cur_remeshing_time = timer.getElapsedTimeInSec();
-
-					if (remesh_success)
-					{
-						save_energy(save_i);
-						save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
-
-						const Eigen::MatrixXd loc_relax_sol = sol;
-						timer.start();
-						solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
-						timer.stop();
-						cur_global_relaxation_time = timer.getElapsedTimeInSec();
-
-						relax_diff_file << fmt::format("{},{}\n", (loc_relax_sol - sol).norm(), (loc_relax_sol - sol).lpNorm<Eigen::Infinity>());
-						relax_diff_file.flush();
-
-						save_energy(save_i);
-						save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
-					}
+					cur_global_relaxation_time = timer.getElapsedTimeInSec();
 				}
-				else
-				{
-					save_energy(save_i);
-					save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
-					save_energy(save_i);
-					save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
-				}
+				// Always save the solution for consistency
+				save_energy(save_i);
+				save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 			}
 
 			{
