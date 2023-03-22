@@ -186,7 +186,8 @@ namespace polyfem::solver
 			amips_energy_.local_assembler().add_multimaterial(0, transform_params);
 
 			Eigen::MatrixXd V;
-			state_.get_vf(V, F);
+			state_.get_vertices(V);
+			state_.get_elements(F);
 			X_init = utils::flatten(V);
 			init_geom_bases_ = state_.geom_bases();
 			init_ass_vals_cache_ = state_.ass_vals_cache;

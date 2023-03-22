@@ -159,7 +159,8 @@ namespace polyfem::solver
 			// If shape opt, save rest meshes as well
 			Eigen::MatrixXd V;
 			Eigen::MatrixXi F;
-			state->get_vf(V, F);
+			state->get_vertices(V);
+			state->get_elements(F);
 			if (state->mesh->dimension() == 3)
 				F = igl::boundary_facets<Eigen::MatrixXi, Eigen::MatrixXi>(F);
 

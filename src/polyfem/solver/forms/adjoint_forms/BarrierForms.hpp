@@ -15,8 +15,7 @@ namespace polyfem::solver
 			state_.build_collision_mesh(collision_mesh_, state.n_geom_bases, state_.geom_bases());
 
 			Eigen::MatrixXd V;
-			Eigen::MatrixXi F;
-			state_.get_vf(V, F);
+			state_.get_vertices(V);
 			X_init = utils::flatten(V);
 
 			broad_phase_method_ = ipc::BroadPhaseMethod::HASH_GRID;

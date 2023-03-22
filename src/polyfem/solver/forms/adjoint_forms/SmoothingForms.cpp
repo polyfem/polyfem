@@ -99,8 +99,7 @@ namespace polyfem::solver
 		else
 		{
 			Eigen::MatrixXd V;
-			Eigen::MatrixXi F;
-			state_.get_vf(V, F);
+			state_.get_vertices(V);
 
 			val = (L * V).eval().squaredNorm();
 		}
@@ -148,8 +147,7 @@ namespace polyfem::solver
 		else
 		{
 			Eigen::MatrixXd V;
-			Eigen::MatrixXi F;
-			state_.get_vf(V, F);
+			state_.get_vertices(V);
 			
 			grad = utils::flatten(2 * (L.transpose() * (L * V)));
 		}

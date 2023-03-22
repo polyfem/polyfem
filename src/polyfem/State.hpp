@@ -700,7 +700,8 @@ namespace polyfem
 		Eigen::MatrixXd solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
 		// Change geometric node positions
 		void set_mesh_vertex(int v_id, const Eigen::VectorXd &vertex);
-		void get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces) const;
+		void get_vertices(Eigen::MatrixXd &vertices) const;
+		void get_elements(Eigen::MatrixXi &elements) const;
 
 		// Get geometric node indices for surface/volume
 		void compute_surface_node_ids(const int surface_selection, std::vector<int> &node_ids) const;

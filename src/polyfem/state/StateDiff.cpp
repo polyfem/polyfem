@@ -64,18 +64,22 @@ namespace polyfem
 		}
 	} // namespace
 
-	void State::get_vf(Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces) const
+	void State::get_vertices(Eigen::MatrixXd &vertices) const
 	{
-		assert(mesh->is_simplicial());
 		vertices.setZero(mesh->n_vertices(), mesh->dimension());
-		faces.setZero(mesh->n_elements(), mesh->dimension() + 1);
-
-		for (int e = 0; e < mesh->n_elements(); e++)
-			for (int i = 0; i < mesh->dimension() + 1; i++)
-				faces(e, i) = mesh->element_vertex(e, i);
 
 		for (int v = 0; v < mesh->n_vertices(); v++)
 			vertices.row(v) = mesh->point(v);
+	}
+
+	void State::get_elements(Eigen::MatrixXi &elements) const
+	{
+		assert(mesh->is_simplicial());
+		elements.setZero(mesh->n_elements(), mesh->dimension() + 1);
+
+		for (int e = 0; e < mesh->n_elements(); e++)
+			for (int i = 0; i < mesh->dimension() + 1; i++)
+				elements(e, i) = mesh->element_vertex(e, i);
 	}
 
 	void State::set_mesh_vertex(int v_id, const Eigen::VectorXd &vertex)

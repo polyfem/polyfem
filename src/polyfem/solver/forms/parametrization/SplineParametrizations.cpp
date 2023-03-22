@@ -77,8 +77,7 @@ namespace polyfem::solver
 		: num_control_vertices_(num_control_vertices), num_vertices_(num_vertices)
 	{
 		Eigen::MatrixXd V;
-		Eigen::MatrixXi F;
-		state.get_vf(V, F);
+		state.get_vertices(V);
 
 		auto map = state.node_to_primitive();
 

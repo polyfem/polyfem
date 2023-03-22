@@ -182,8 +182,7 @@ int main(int argc, char **argv)
 			x.conservativeResize(x.size() + free_vars);
 
 			Eigen::MatrixXd V;
-			Eigen::MatrixXi F;
-			state->get_vf(V, F);
+			state->get_vertices(V);
 			Eigen::VectorXd V_flat = utils::flatten(V);
 			auto b_idx = variable_to_simulations.back()->get_parametrization().get_output_indexing(x);
 			assert(b_idx.size() == (opt_inodes * dim));
@@ -248,8 +247,7 @@ int main(int argc, char **argv)
 				x.conservativeResize(x.size() + free_vars);
 
 				Eigen::MatrixXd V;
-				Eigen::MatrixXi F;
-				states[param["states"][0]]->get_vf(V, F);
+				states[param["states"][0]]->get_vertices(V);
 				Eigen::VectorXd V_flat = utils::flatten(V);
 				auto b_idx = variable_to_simulations.back()->get_parametrization().get_output_indexing(x);
 				assert(b_idx.size() == (opt_bnodes * dim));

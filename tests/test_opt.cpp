@@ -336,8 +336,7 @@ TEST_CASE("shape-stress-opt-debug", "[optimization]")
 
 	Eigen::VectorXd x;
 	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	states[0]->get_vf(V, F);
+	states[0]->get_vertices(V);
 	x = utils::flatten(V);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
@@ -445,8 +444,7 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 
 	{
 		Eigen::MatrixXd V;
-		Eigen::MatrixXi F;
-		states[0]->get_vf(V, F);
+		states[0]->get_vertices(V);
 		Eigen::VectorXd V_flat = utils::flatten(V);
 
 		auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
@@ -570,8 +568,7 @@ TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 
 	{
 		Eigen::MatrixXd V;
-		Eigen::MatrixXi F;
-		states[0]->get_vf(V, F);
+		states[0]->get_vertices(V);
 		Eigen::VectorXd V_flat = utils::flatten(V);
 
 		auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
@@ -690,8 +687,7 @@ TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
 
 	{
 		Eigen::MatrixXd V;
-		Eigen::MatrixXi F;
-		states[0]->get_vf(V, F);
+		states[0]->get_vertices(V);
 		Eigen::VectorXd V_flat = utils::flatten(V);
 
 		auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
@@ -796,8 +792,7 @@ TEST_CASE("shape-stress-bbw-opt", "[optimization]")
 	}
 	x.resize((opt_boundary_var + opt_inodes) * dim);
 	Eigen::MatrixXd V, V_surface;
-	Eigen::MatrixXi F, F_surface;
-	states[0]->get_vf(V, F);
+	states[0]->get_vertices(V);
 	Eigen::VectorXd V_flat = utils::flatten(V);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;

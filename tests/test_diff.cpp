@@ -61,8 +61,7 @@ namespace
 		if (order >= 1)
 		{
 			Eigen::MatrixXd V;
-			Eigen::MatrixXi F;
-			state.get_vf(V, F);
+			state.get_vertices(V);
 
 			discrete_field = utils::flatten(field(V));
 		}
@@ -201,9 +200,6 @@ TEST_CASE("laplacian", "[adjoint_method]")
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
-	// Eigen::MatrixXd V;
-	// Eigen::MatrixXi F;
-	// state.get_vf(V, F);
 	Eigen::VectorXd x = variable_to_simulations[0]->inverse_eval();
 
 	// Eigen::MatrixXd velocity_discrete(x.size(), 1);
@@ -242,8 +238,7 @@ TEST_CASE("boundary-smoothing", "[adjoint_method]")
 	BoundarySmoothingForm obj(variable_to_simulations, state, true, 3);
 
 	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	state.get_vf(V, F);
+	state.get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
 	Eigen::MatrixXd velocity_discrete;
@@ -273,8 +268,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 	obj.set_integral_type(SpatialIntegralType::SURFACE);
 
 	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	state.get_vf(V, F);
+	state.get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
 	Eigen::MatrixXd velocity_discrete(x.size(), 1);
@@ -304,8 +298,7 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 	obj.set_integral_type(SpatialIntegralType::SURFACE);
 
 	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	state.get_vf(V, F);
+	state.get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
 	Eigen::MatrixXd velocity_discrete(x.size(), 1);
@@ -409,8 +402,7 @@ TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
 	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	state.get_vf(V, F);
+	state.get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
 	Eigen::MatrixXd velocity_discrete(x.size(), 1);
@@ -478,8 +470,7 @@ TEST_CASE("shape-neumann-nodes", "[adjoint_method]")
 	x.resize(opt_bnodes * dim);
 
 	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	state.get_vf(V, F);
+	state.get_vertices(V);
 	Eigen::VectorXd V_flat = utils::flatten(V);
 	auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
 	for (int i = 0; i < b_idx.size(); ++i)
@@ -548,8 +539,7 @@ TEST_CASE("shape-pressure-neumann-nodes", "[adjoint_method]")
 	x.resize(opt_bnodes * dim);
 
 	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	state.get_vf(V, F);
+	state.get_vertices(V);
 	Eigen::VectorXd V_flat = utils::flatten(V);
 	auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
 	for (int i = 0; i < b_idx.size(); ++i)
@@ -600,8 +590,7 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 		}
 
 	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	state.get_vf(V, F);
+	state.get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-6);
@@ -627,8 +616,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
 	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	state.get_vf(V, F);
+	state.get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
 	Eigen::MatrixXd velocity_discrete(x.size(), 1);
@@ -778,8 +766,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	velocity_discrete.normalize();
 
 	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	state.get_vf(V, F);
+	state.get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-6, 1e-5);
@@ -836,8 +823,7 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 	velocity_discrete.normalize();
 
 	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	state.get_vf(V, F);
+	state.get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-5);
