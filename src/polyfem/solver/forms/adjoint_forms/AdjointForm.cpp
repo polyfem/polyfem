@@ -103,18 +103,20 @@ namespace polyfem::solver
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &parametrization = param_map->get_parametrization();
-			const auto &state = param_map->get_state();
 			const auto &param_type = param_map->get_parameter_type();
 
-			if (&state != &state_)
-				continue;
+			for (const auto &state : param_map->get_states())
+			{
+				if (state.get() != &state_)
+					continue;
 
-			Eigen::VectorXd term;
-			if (param_type == ParameterType::Shape)
-				throw std::runtime_error("Shape derivative of NodeTargetForm not implemented!");
+				Eigen::VectorXd term;
+				if (param_type == ParameterType::Shape)
+					throw std::runtime_error("Shape derivative of NodeTargetForm not implemented!");
 
-			if (term.size() > 0)
-				gradv += parametrization.apply_jacobian(term, x);
+				if (term.size() > 0)
+					gradv += parametrization.apply_jacobian(term, x);
+			}
 		}
 	}
 

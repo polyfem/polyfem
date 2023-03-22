@@ -48,20 +48,22 @@ namespace polyfem::solver
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &parametrization = param_map->get_parametrization();
-			const auto &state = param_map->get_state();
 			const auto &param_type = param_map->get_parameter_type();
 
-			if (&state != &state_)
-				continue;
+			for (const auto &state : param_map->get_states())
+			{
+				if (state.get() != &state_)
+					continue;
 
-			Eigen::VectorXd term;
-			if (param_type == ParameterType::Shape)
-				AdjointTools::compute_shape_derivative_functional_term(state_, state_.diff_cached.u(time_step_), get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
-			else if (param_type == ParameterType::MacroStrain)
-				AdjointTools::compute_macro_strain_derivative_functional_term(state_, state_.diff_cached.u(time_step_), get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
+				Eigen::VectorXd term;
+				if (param_type == ParameterType::Shape)
+					AdjointTools::compute_shape_derivative_functional_term(state_, state_.diff_cached.u(time_step_), get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
+				else if (param_type == ParameterType::MacroStrain)
+					AdjointTools::compute_macro_strain_derivative_functional_term(state_, state_.diff_cached.u(time_step_), get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
 
-			if (term.size() > 0)
-				gradv += parametrization.apply_jacobian(term, x);
+				if (term.size() > 0)
+					gradv += parametrization.apply_jacobian(term, x);
+			}
 		}
 	}
 
@@ -158,18 +160,20 @@ namespace polyfem::solver
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &parametrization = param_map->get_parametrization();
-			const auto &state = param_map->get_state();
 			const auto &param_type = param_map->get_parameter_type();
 
-			if (&state != &state_)
-				continue;
+			for (const auto &state : param_map->get_states())
+			{
+				if (state.get() != &state_)
+					continue;
 
-			Eigen::VectorXd term;
-			if (param_type == ParameterType::Material)
-				log_and_throw_error("Doesn't support stress derivative wrt. material!");
+				Eigen::VectorXd term;
+				if (param_type == ParameterType::Material)
+					log_and_throw_error("Doesn't support stress derivative wrt. material!");
 
-			if (term.size() > 0)
-				gradv += parametrization.apply_jacobian(term, x);
+				if (term.size() > 0)
+					gradv += parametrization.apply_jacobian(term, x);
+			}
 		}
 	}
 
@@ -217,52 +221,56 @@ namespace polyfem::solver
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &parametrization = param_map->get_parametrization();
-			const auto &state = param_map->get_state();
 			const auto &param_type = param_map->get_parameter_type();
 
-			if (&state != &state_)
-				continue;
-
-			Eigen::VectorXd term;
-			if (param_type == ParameterType::Material)
+			for (const auto &state_ptr : param_map->get_states())
 			{
-				term.setZero(parametrization.size(x.size()));
+				const auto &state = *state_ptr;
 
-				const auto &bases = state.bases;
-				const auto &gbases = state.geom_bases();
-				auto df_dmu_dlambda_function = state.assembler.get_dstress_dmu_dlambda_function(state.formulation());
-				const int dim = state.mesh->dimension();
+				if (&state != &state_)
+					continue;
 
-				for (int e = 0; e < bases.size(); e++)
+				Eigen::VectorXd term;
+				if (param_type == ParameterType::Material)
 				{
-					assembler::ElementAssemblyValues vals;
-					state.ass_vals_cache.compute(e, state.mesh->is_volume(), bases[e], gbases[e], vals);
+					term.setZero(parametrization.size(x.size()));
 
-					const quadrature::Quadrature &quadrature = vals.quadrature;
-					Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+					const auto &bases = state.bases;
+					const auto &gbases = state.geom_bases();
+					auto df_dmu_dlambda_function = state.assembler.get_dstress_dmu_dlambda_function(state.formulation());
+					const int dim = state.mesh->dimension();
 
-					Eigen::MatrixXd u, grad_u;
-					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, state.diff_cached.u(time_step_), u, grad_u);
-
-					Eigen::MatrixXd grad_u_q;
-					for (int q = 0; q < quadrature.weights.size(); q++)
+					for (int e = 0; e < bases.size(); e++)
 					{
-						double lambda, mu;
-						state.assembler.lame_params().lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
+						assembler::ElementAssemblyValues vals;
+						state.ass_vals_cache.compute(e, state.mesh->is_volume(), bases[e], gbases[e], vals);
 
-						vector2matrix(grad_u.row(q), grad_u_q);
+						const quadrature::Quadrature &quadrature = vals.quadrature;
+						Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
-						Eigen::MatrixXd f_prime_dmu, f_prime_dlambda;
-						df_dmu_dlambda_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_q, f_prime_dmu, f_prime_dlambda);
+						Eigen::MatrixXd u, grad_u;
+						io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, state.diff_cached.u(time_step_), u, grad_u);
 
-						term(e + bases.size()) += dot(f_prime_dmu, grad_u_q) * da(q);
-						term(e) += dot(f_prime_dlambda, grad_u_q) * da(q);
+						Eigen::MatrixXd grad_u_q;
+						for (int q = 0; q < quadrature.weights.size(); q++)
+						{
+							double lambda, mu;
+							state.assembler.lame_params().lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
+
+							vector2matrix(grad_u.row(q), grad_u_q);
+
+							Eigen::MatrixXd f_prime_dmu, f_prime_dlambda;
+							df_dmu_dlambda_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_q, f_prime_dmu, f_prime_dlambda);
+
+							term(e + bases.size()) += dot(f_prime_dmu, grad_u_q) * da(q);
+							term(e) += dot(f_prime_dlambda, grad_u_q) * da(q);
+						}
 					}
 				}
-			}
 
-			if (term.size() > 0)
-				gradv += parametrization.apply_jacobian(term, x);
+				if (term.size() > 0)
+					gradv += parametrization.apply_jacobian(term, x);
+			}
 		}
 	}
 
@@ -518,18 +526,21 @@ namespace polyfem::solver
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &parametrization = param_map->get_parametrization();
-			const auto &state = param_map->get_state();
 			const auto &param_type = param_map->get_parameter_type();
 
-			if (&state != &state_)
-				continue;
+			for (const auto &state_ptr : param_map->get_states())
+			{
+				const auto &state = *state_ptr;
+				if (&state != &state_)
+					continue;
 
-			Eigen::VectorXd term;
-			if (param_type == ParameterType::Material)
-				log_and_throw_error("Doesn't support stress derivative wrt. material!");
+				Eigen::VectorXd term;
+				if (param_type == ParameterType::Material)
+					log_and_throw_error("Doesn't support stress derivative wrt. material!");
 
-			if (term.size() > 0)
-				gradv += parametrization.apply_jacobian(term, x);
+				if (term.size() > 0)
+					gradv += parametrization.apply_jacobian(term, x);
+			}
 		}
 	}
 

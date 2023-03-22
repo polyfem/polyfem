@@ -259,7 +259,8 @@
             "damping",
             "macro-strain",
             "initial",
-            "sdf-shape"
+            "sdf-shape",
+            "dirichlet"
         ]
     },
     {
@@ -304,6 +305,14 @@
     },
     {
         "pointer": "/variable_to_simulation/*/state",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/state",
+        "type": "list"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/state/*",
         "type": "int"
     },
     {
@@ -1090,7 +1099,8 @@
             "soft_bound"
         ],
         "optional": [
-            "weight"
+            "weight",
+            "power"
         ],
         "doc": "TODO"
     },

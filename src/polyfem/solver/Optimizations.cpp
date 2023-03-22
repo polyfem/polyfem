@@ -117,7 +117,7 @@ namespace polyfem::solver
 				std::vector<std::shared_ptr<AdjointForm>> forms({create_form(args["objective"], var2sim, states)});
 				Eigen::VectorXd bounds;
 				nlohmann::adl_serializer<Eigen::VectorXd>::from_json(args["soft_bound"], bounds);
-				obj = std::make_shared<InequalityConstraintForm>(forms, bounds);
+				obj = std::make_shared<InequalityConstraintForm>(forms, bounds, args["power"]);
 			}
 			else
 				log_and_throw_error("Objective not implemented!");
@@ -210,33 +210,44 @@ namespace polyfem::solver
 			map_list.push_back(create_parametrization(arg, states));
 		CompositeParametrization composite_map(map_list);
 
+		std::vector<std::shared_ptr<State>> cur_states;
+		if (args["state"].is_array())
+			for (int i : args["state"])
+				cur_states.push_back(states[i]);
+		else
+			cur_states.push_back(states[args["state"]]);
+
         if (type == "shape")
 		{
-			var2sim = std::make_shared<ShapeVariableToSimulation>(states[args["state"]], composite_map);
+			var2sim = std::make_shared<ShapeVariableToSimulation>(cur_states, composite_map);
 		}
         else if (type == "elastic")
 		{
-			var2sim = std::make_shared<ElasticVariableToSimulation>(states[args["state"]], composite_map);
+			var2sim = std::make_shared<ElasticVariableToSimulation>(cur_states, composite_map);
 		}
         else if (type == "friction")
 		{
-			log_and_throw_error("Not implemented!");
+			var2sim = std::make_shared<FrictionCoeffientVariableToSimulation>(cur_states, composite_map);
 		}
         else if (type == "damping")
 		{
-			log_and_throw_error("Not implemented!");
+			var2sim = std::make_shared<DampingCoeffientVariableToSimulation>(cur_states, composite_map);
 		}
         else if (type == "macro-strain")
 		{
-			log_and_throw_error("Not implemented!");
+			var2sim = std::make_shared<MacroStrainVariableToSimulation>(cur_states, composite_map);
 		}
         else if (type == "initial")
 		{
-			log_and_throw_error("Not implemented!");
+			var2sim = std::make_shared<InitialConditionVariableToSimulation>(cur_states, composite_map);
 		}
         else if (type == "sdf-shape")
 		{
-			var2sim = std::make_shared<SDFShapeVariableToSimulation>(states[args["state"]], composite_map, args);
+			var2sim = std::make_shared<SDFShapeVariableToSimulation>(cur_states, composite_map, args);
+		}
+		else if (type == "dirichlet")
+		{
+			var2sim = std::make_shared<DirichletVariableToSimulation>(cur_states, composite_map);
 		}
 
 		return var2sim;

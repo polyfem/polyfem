@@ -19,10 +19,20 @@ namespace polyfem::solver
 		cur_grad.setZero(0);
 
 		active_state_mask.assign(all_states_.size(), false);
-		for (const auto &v2sim : variables_to_simulation_)
-			for (int i = 0; i < all_states_.size(); i++)
-				if (all_states_[i].get() == &(v2sim->get_state()))
-					active_state_mask[i] = true;
+		for (int i = 0; i < all_states_.size(); i++)
+		{
+			for (const auto &v2sim : variables_to_simulation_)
+			{
+				for (const auto &state : v2sim->get_states())
+				{
+					if (all_states_[i].get() == state.get())
+					{
+						active_state_mask[i] = true;
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	double AdjointNLProblem::value(const Eigen::VectorXd &x)

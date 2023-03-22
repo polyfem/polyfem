@@ -36,39 +36,46 @@ namespace polyfem::solver
 
 	void ShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
-		const int dim = state_ptr_->mesh->dimension();
+		for (auto state : states_)
+		{
+			const int dim = state->mesh->dimension();
 
-		// If indices include one vertex entry, we assume it include all entries of this vertex.
-		for (int i = 0; i < indices.size(); i += dim)
-			for (int j = 0; j < dim; j++)
-				assert(indices(i + j) == indices(i) + j);
+			// If indices include one vertex entry, we assume it include all entries of this vertex.
+			for (int i = 0; i < indices.size(); i += dim)
+				for (int j = 0; j < dim; j++)
+					assert(indices(i + j) == indices(i) + j);
 
-		for (int i = 0; i < indices.size(); i += dim)
-			state_ptr_->set_mesh_vertex(indices(i) / dim, state_variable(Eigen::seqN(i, dim)));
-
-		// TODO: move this to the end of all variable to simulation
-		// state_ptr_->build_basis();
+			for (int i = 0; i < indices.size(); i += dim)
+				state->set_mesh_vertex(indices(i) / dim, state_variable(Eigen::seqN(i, dim)));
+		}
 	}
 	Eigen::VectorXd ShapeVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
-		Eigen::VectorXd term;
-		if (get_state().problem->is_time_dependent())
+		Eigen::VectorXd term, cur_term;
+		for (auto state : states_)
 		{
-			Eigen::MatrixXd adjoint_nu, adjoint_p;
-			adjoint_nu = get_state().get_adjoint_mat(1);
-			adjoint_p = get_state().get_adjoint_mat(0);
-			AdjointTools::dJ_shape_transient_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
-		}
-		else
-		{
-			AdjointTools::dJ_shape_static_adjoint_term(get_state(), get_state().diff_cached.u(0), get_state().get_adjoint_mat(0), term);
+			if (state->problem->is_time_dependent())
+			{
+				Eigen::MatrixXd adjoint_nu, adjoint_p;
+				adjoint_nu = state->get_adjoint_mat(1);
+				adjoint_p = state->get_adjoint_mat(0);
+				AdjointTools::dJ_shape_transient_adjoint_term(*state, adjoint_nu, adjoint_p, cur_term);
+			}
+			else
+			{
+				AdjointTools::dJ_shape_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+			}
+			if (term.size() != cur_term.size())
+				term = cur_term;
+			else
+				term += cur_term;
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}
 	Eigen::VectorXd ShapeVariableToSimulation::inverse_eval()
 	{
-		const int dim = state_ptr_->mesh->dimension();
-		const int npts = state_ptr_->mesh->n_vertices();
+		const int dim = states_[0]->mesh->dimension();
+		const int npts = states_[0]->mesh->n_vertices();
 
 		Eigen::VectorXd x;
 		Eigen::VectorXi indices = parametrization_.get_output_indexing(x);
@@ -78,66 +85,69 @@ namespace polyfem::solver
 
 		x.setZero(indices.size());
 		for (int i = 0; i < indices.size(); i++)
-			x(i) = state_ptr_->mesh->point(i / dim)(i % dim);
+			x(i) = states_[0]->mesh->point(i / dim)(i % dim);
 
 		return parametrization_.inverse_eval(x);
 	}
 
-	SDFShapeVariableToSimulation::SDFShapeVariableToSimulation(const std::shared_ptr<State> &state_ptr, const CompositeParametrization &parametrization, const json &args) : ShapeVariableToSimulation(state_ptr, parametrization), mesh_id_(args["mesh_id"]), mesh_path_(args["mesh"])
+	SDFShapeVariableToSimulation::SDFShapeVariableToSimulation(const std::vector<std::shared_ptr<State>> &states, const CompositeParametrization &parametrization, const json &args) : ShapeVariableToSimulation(states, parametrization), mesh_id_(args["mesh_id"]), mesh_path_(args["mesh"])
 	{
 	}
 	void SDFShapeVariableToSimulation::update(const Eigen::VectorXd &x)
 	{
 		parametrization_.eval(x);
 
-		// const int cur_log = state_ptr_->current_log_level;
-		// state_ptr_->set_log_level(spdlog::level::level_enum::warn);
-
-		state_ptr_->in_args["geometry"][mesh_id_]["mesh"] = mesh_path_;
-		state_ptr_->in_args["geometry"][mesh_id_].erase("transformation");
-
-		state_ptr_->mesh = nullptr;
-		state_ptr_->assembler.update_lame_params(Eigen::MatrixXd(), Eigen::MatrixXd());
-
-		state_ptr_->init(state_ptr_->in_args, false);
-
 		int start = 0, end = 0; // start vertex index of the mesh
+		for (auto state : states_)
 		{
-			assert(state_ptr_->args["geometry"].is_array());
-			auto geometries = state_ptr_->args["geometry"].get<std::vector<json>>();
+			// const int cur_log = state->current_log_level;
+			// state->set_log_level(spdlog::level::level_enum::warn);
 
-			int i = 0;
-			for (const json &geometry : geometries)
+			state->in_args["geometry"][mesh_id_]["mesh"] = mesh_path_;
+			state->in_args["geometry"][mesh_id_].erase("transformation");
+
+			state->mesh = nullptr;
+			state->assembler.update_lame_params(Eigen::MatrixXd(), Eigen::MatrixXd());
+
+			state->init(state->in_args, false);
+
 			{
-				if (!geometry["enabled"].get<bool>() || geometry["is_obstacle"].get<bool>())
-					continue;
+				assert(state->args["geometry"].is_array());
+				auto geometries = state->args["geometry"].get<std::vector<json>>();
 
-				if (geometry["type"] != "mesh")
-					log_and_throw_error(
-						fmt::format("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]));
+				int i = 0;
+				for (const json &geometry : geometries)
+				{
+					if (!geometry["enabled"].get<bool>() || geometry["is_obstacle"].get<bool>())
+						continue;
 
-				if (i == mesh_id_)
-					start = state_ptr_->mesh ? state_ptr_->mesh->n_vertices() : 0;
+					if (geometry["type"] != "mesh")
+						log_and_throw_error(
+							fmt::format("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]));
 
-				if (state_ptr_->mesh == nullptr)
-					state_ptr_->mesh = mesh::read_fem_mesh(geometry, state_ptr_->args["root_path"], false);
-				else
-					state_ptr_->mesh->append(mesh::read_fem_mesh(geometry, state_ptr_->args["root_path"], false));
+					if (i == mesh_id_)
+						start = state->mesh ? state->mesh->n_vertices() : 0;
 
-				if (i == mesh_id_)
-					end = state_ptr_->mesh->n_vertices();
+					if (state->mesh == nullptr)
+						state->mesh = mesh::read_fem_mesh(geometry, state->args["root_path"], false);
+					else
+						state->mesh->append(mesh::read_fem_mesh(geometry, state->args["root_path"], false));
 
-				i++;
+					if (i == mesh_id_)
+						end = state->mesh->n_vertices();
+
+					i++;
+				}
 			}
+
+			state->load_mesh();
+			state->stats.compute_mesh_stats(*state->mesh);
+			// state->build_basis();
+
+			// state->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
 		}
 
-		state_ptr_->load_mesh();
-		state_ptr_->stats.compute_mesh_stats(*state_ptr_->mesh);
-		// state_ptr_->build_basis();
-
-		// state_ptr_->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
-
-		const int dim = state_ptr_->mesh->dimension();
+		const int dim = states_[0]->mesh->dimension();
 		parametrization_.set_output_indexing(Eigen::VectorXi::LinSpaced((end - start) * dim, start * dim, end * dim - 1));
 	}
 	Eigen::VectorXd SDFShapeVariableToSimulation::inverse_eval()
@@ -148,23 +158,33 @@ namespace polyfem::solver
 
 	void ElasticVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
-		const int n_elem = state_ptr_->bases.size();
-		assert(n_elem * 2 == state_variable.size());
-		state_ptr_->assembler.update_lame_params(state_variable.segment(0, n_elem), state_variable.segment(n_elem, n_elem));
+		for (auto state : states_)
+		{
+			const int n_elem = state->bases.size();
+			assert(n_elem * 2 == state_variable.size());
+			state->assembler.update_lame_params(state_variable.segment(0, n_elem), state_variable.segment(n_elem, n_elem));
+		}
 	}
 	Eigen::VectorXd ElasticVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
-		Eigen::VectorXd term;
-		if (get_state().problem->is_time_dependent())
+		Eigen::VectorXd term, cur_term;
+		for (auto state : states_)
 		{
-			Eigen::MatrixXd adjoint_nu, adjoint_p;
-			adjoint_nu = get_state().get_adjoint_mat(1);
-			adjoint_p = get_state().get_adjoint_mat(0);
-			AdjointTools::dJ_material_transient_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
-		}
-		else
-		{
-			AdjointTools::dJ_material_static_adjoint_term(get_state(), get_state().diff_cached.u(0), get_state().get_adjoint_mat(0), term);
+			if (state->problem->is_time_dependent())
+			{
+				Eigen::MatrixXd adjoint_nu, adjoint_p;
+				adjoint_nu = state->get_adjoint_mat(1);
+				adjoint_p = state->get_adjoint_mat(0);
+				AdjointTools::dJ_material_transient_adjoint_term(*state, adjoint_nu, adjoint_p, cur_term);
+			}
+			else
+			{
+				AdjointTools::dJ_material_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+			}
+			if (term.size() != cur_term.size())
+				term = cur_term;
+			else
+				term += cur_term;
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}
@@ -178,21 +198,29 @@ namespace polyfem::solver
 	{
 		assert(state_variable.size() == 1);
 		assert(state_variable(0) >= 0);
-		state_ptr_->args["contact"]["friction_coefficient"] = state_variable(0);
+		for (auto state : states_)
+			state->args["contact"]["friction_coefficient"] = state_variable(0);
 	}
 	Eigen::VectorXd FrictionCoeffientVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
-		Eigen::VectorXd term;
-		if (get_state().problem->is_time_dependent())
+		Eigen::VectorXd term, cur_term;
+		for (auto state : states_)
 		{
-			Eigen::MatrixXd adjoint_nu, adjoint_p;
-			adjoint_nu = get_state().get_adjoint_mat(1);
-			adjoint_p = get_state().get_adjoint_mat(0);
-			AdjointTools::dJ_friction_transient_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
-		}
-		else
-		{
-			log_and_throw_error("Friction coefficient grad in static simulations not implemented!");
+			if (state->problem->is_time_dependent())
+			{
+				Eigen::MatrixXd adjoint_nu, adjoint_p;
+				adjoint_nu = state->get_adjoint_mat(1);
+				adjoint_p = state->get_adjoint_mat(0);
+				AdjointTools::dJ_friction_transient_adjoint_term(*state, adjoint_nu, adjoint_p, cur_term);
+			}
+			else
+			{
+				log_and_throw_error("Friction coefficient grad in static simulations not implemented!");
+			}
+			if (term.size() != cur_term.size())
+				term = cur_term;
+			else
+				term += cur_term;
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}
@@ -209,22 +237,30 @@ namespace polyfem::solver
 			{"psi", state_variable(0)},
 			{"phi", state_variable(1)},
 		};
-		state_ptr_->assembler.add_multimaterial(0, damping_param);
+		for (auto state : states_)
+			state->assembler.add_multimaterial(0, damping_param);
 		logger().info("Current damping params: {}, {}", state_variable(0), state_variable(1));
 	}
 	Eigen::VectorXd DampingCoeffientVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
-		Eigen::VectorXd term;
-		if (get_state().problem->is_time_dependent())
+		Eigen::VectorXd term, cur_term;
+		for (auto state : states_)
 		{
-			Eigen::MatrixXd adjoint_nu, adjoint_p;
-			adjoint_nu = get_state().get_adjoint_mat(1);
-			adjoint_p = get_state().get_adjoint_mat(0);
-			AdjointTools::dJ_damping_transient_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
-		}
-		else
-		{
-			log_and_throw_error("Static damping not supported!");
+			if (state->problem->is_time_dependent())
+			{
+				Eigen::MatrixXd adjoint_nu, adjoint_p;
+				adjoint_nu = state->get_adjoint_mat(1);
+				adjoint_p = state->get_adjoint_mat(0);
+				AdjointTools::dJ_damping_transient_adjoint_term(*state, adjoint_nu, adjoint_p, cur_term);
+			}
+			else
+			{
+				log_and_throw_error("Static damping not supported!");
+			}
+			if (term.size() != cur_term.size())
+				term = cur_term;
+			else
+				term += cur_term;
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}
@@ -236,23 +272,33 @@ namespace polyfem::solver
 
 	void InitialConditionVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
-		assert(state_variable.size() == state_ptr_->ndof() * 2);
-		state_ptr_->initial_sol_update = state_variable.head(state_ptr_->ndof());
-		state_ptr_->initial_vel_update = state_variable.tail(state_ptr_->ndof());
+		for (auto state : states_)
+		{
+			assert(state_variable.size() == state->ndof() * 2);
+			state->initial_sol_update = state_variable.head(state->ndof());
+			state->initial_vel_update = state_variable.tail(state->ndof());
+		}
 	}
 	Eigen::VectorXd InitialConditionVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
-		Eigen::VectorXd term;
-		if (get_state().problem->is_time_dependent())
+		Eigen::VectorXd term, cur_term;
+		for (auto state : states_)
 		{
-			Eigen::MatrixXd adjoint_nu, adjoint_p;
-			adjoint_nu = get_state().get_adjoint_mat(1);
-			adjoint_p = get_state().get_adjoint_mat(0);
-			AdjointTools::dJ_initial_condition_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
-		}
-		else
-		{
-			log_and_throw_error("Static initial condition not supported!");
+			if (state->problem->is_time_dependent())
+			{
+				Eigen::MatrixXd adjoint_nu, adjoint_p;
+				adjoint_nu = state->get_adjoint_mat(1);
+				adjoint_p = state->get_adjoint_mat(0);
+				AdjointTools::dJ_initial_condition_adjoint_term(*state, adjoint_nu, adjoint_p, cur_term);
+			}
+			else
+			{
+				log_and_throw_error("Static initial condition not supported!");
+			}
+			if (term.size() != cur_term.size())
+				term = cur_term;
+			else
+				term += cur_term;
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}
@@ -280,17 +326,24 @@ namespace polyfem::solver
 	}
 	Eigen::VectorXd DirichletVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
-		Eigen::VectorXd term;
-		if (get_state().problem->is_time_dependent())
+		Eigen::VectorXd term, cur_term;
+		for (auto state : states_)
 		{
-			Eigen::MatrixXd adjoint_nu, adjoint_p;
-			adjoint_nu = get_state().get_adjoint_mat(1);
-			adjoint_p = get_state().get_adjoint_mat(0);
-			AdjointTools::dJ_dirichlet_transient_adjoint_term(get_state(), adjoint_nu, adjoint_p, term);
-		}
-		else
-		{
-			log_and_throw_error("Static dirichlet boundary optimization not supported!");
+			if (state->problem->is_time_dependent())
+			{
+				Eigen::MatrixXd adjoint_nu, adjoint_p;
+				adjoint_nu = state->get_adjoint_mat(1);
+				adjoint_p = state->get_adjoint_mat(0);
+				AdjointTools::dJ_dirichlet_transient_adjoint_term(*state, adjoint_nu, adjoint_p, cur_term);
+			}
+			else
+			{
+				log_and_throw_error("Static dirichlet boundary optimization not supported!");
+			}
+			if (term.size() != cur_term.size())
+				term = cur_term;
+			else
+				term += cur_term;
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}
@@ -306,19 +359,29 @@ namespace polyfem::solver
 
 	void MacroStrainVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
-		assert(state_variable.size() == state_ptr_->mesh->dimension() * state_ptr_->mesh->dimension());
-		state_ptr_->disp_grad = utils::unflatten(state_variable, state_ptr_->mesh->dimension());
+		for (auto state : states_)
+		{
+			assert(state_variable.size() == state->mesh->dimension() * state->mesh->dimension());
+			state->disp_grad = utils::unflatten(state_variable, state->mesh->dimension());
+		}
 	}
 	Eigen::VectorXd MacroStrainVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
-		Eigen::VectorXd term;
-		if (get_state().problem->is_time_dependent())
+		Eigen::VectorXd term, cur_term;
+		for (auto state : states_)
 		{
-			log_and_throw_error("Transient macro strain optimization not supported!");
-		}
-		else
-		{
-			AdjointTools::dJ_macro_strain_adjoint_term(get_state(), get_state().diff_cached.u(0), get_state().get_adjoint_mat(0), term);
+			if (state->problem->is_time_dependent())
+			{
+				log_and_throw_error("Transient macro strain optimization not supported!");
+			}
+			else
+			{
+				AdjointTools::dJ_macro_strain_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+			}
+			if (term.size() != cur_term.size())
+				term = cur_term;
+			else
+				term += cur_term;
 		}
 		return parametrization_.apply_jacobian(term, x);
 	}

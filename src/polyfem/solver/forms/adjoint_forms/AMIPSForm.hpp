@@ -215,8 +215,9 @@ namespace polyfem::solver
 			gradv.setZero(x.size());
 			for (auto &p : variable_to_simulations_)
 			{
-				if (&p->get_state() != &state_)
-					continue;
+				for (const auto &state : p->get_states())
+					if (state.get() != &state_)
+						continue;
 				if (p->get_parameter_type() != ParameterType::Shape)
 					continue;
 				gradv += p->get_parametrization().apply_jacobian(grad, x);
@@ -264,8 +265,9 @@ namespace polyfem::solver
 
 			for (auto &p : variable_to_simulations_)
 			{
-				if (&p->get_state() != &state_)
-					continue;
+				for (const auto &state : p->get_states())
+					if (state.get() != &state_)
+						continue;
 				if (p->get_parameter_type() != ParameterType::Shape)
 					continue;
 				auto state_variable = p->get_parametrization().eval(x);
