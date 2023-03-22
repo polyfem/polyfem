@@ -40,7 +40,7 @@ jobs:
           libglu1-mesa-dev \
           xorg-dev \
           ccache
-          echo 'CACHE_PATH=~/.ccache' >> "$GITHUB_ENV"
+          echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
 
       - name: Cache Build
         id: cache-build
