@@ -70,7 +70,7 @@ namespace polyfem::solver
 	{
 	public:
 		BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const Eigen::MatrixXd &V_surface, const Eigen::MatrixXi &F_surface) : num_control_vertices_(num_control_vertices), num_vertices_(num_vertices), V_surface_(V_surface), F_surface_(F_surface) {}
-		BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const State &state, const int surface_selection);
+		BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const State &state);
 
 		// Should only be called to initialize the parameter, when the shape matches the initial control points.
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;

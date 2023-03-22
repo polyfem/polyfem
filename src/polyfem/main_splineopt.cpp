@@ -175,7 +175,7 @@ int main(int argc, char **argv)
 			int free_vars = opt_inodes * dim;
 
 			std::vector<std::shared_ptr<Parametrization>> param_map_list = {};
-			param_map_list.push_back(std::make_shared<SliceMap>(x.size(), x.size() + free_vars));
+			param_map_list.push_back(std::make_shared<SliceMap>(x.size(), x.size() + free_vars, -1));
 			variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToInteriorNodes(param_map_list, *states[0], volume_selection)));
 
 			int start_idx = x.size();
@@ -238,7 +238,7 @@ int main(int argc, char **argv)
 				}
 
 				std::vector<std::shared_ptr<Parametrization>> param_map_list = {};
-				param_map_list.push_back(std::make_shared<SliceMap>(x.size(), x.size() + free_vars));
+				param_map_list.push_back(std::make_shared<SliceMap>(x.size(), x.size() + free_vars, -1));
 				param_map_list.push_back(std::make_shared<BSplineParametrization1DTo2D>(control_points, knots, opt_bnodes, true));
 
 				variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[param["states"][0]], VariableToBoundaryNodes(param_map_list, *states[param["states"][0]], surface_selection)));
@@ -275,10 +275,10 @@ int main(int argc, char **argv)
 	auto obj1 = std::make_shared<TransientForm>(variable_to_simulations, states[0]->args["time"]["time_steps"], states[0]->args["time"]["dt"], "final", target);
 	obj1->set_weight(1.0);
 
-	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0], json());
+	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0]);
 	obj2->set_weight(0.01);
 
-	auto obj3 = std::make_shared<CollisionBarrierForm>(variable_to_simulations, *states[0], 1e-4);
+	auto obj3 = std::make_shared<CollisionBarrierForm>(variable_to_simulations, *states[0], 1e-3);
 	obj3->set_weight(1.0);
 
 	std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2, obj3});

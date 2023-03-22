@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 	json opt_args;
 	if (!load_json(json_file, opt_args))
 		log_and_throw_error("Failed to load optimization json file!");
-	
+
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	/* states */
@@ -119,18 +119,25 @@ int main(int argc, char **argv)
 	Eigen::VectorXd x;
 	x.setZero(ndof);
 	int accumulative = 0;
+	int var = 0;
 	for (const auto &arg : opt_args["parameters"])
 	{
 		Eigen::VectorXd tmp(arg["number"].get<int>());
 		if (arg["initial"].is_array() && arg["initial"].size() > 0)
+		{
 			nlohmann::adl_serializer<Eigen::VectorXd>::from_json(arg["initial"], tmp);
+			x.segment(accumulative, tmp.size()) = tmp;
+		}
 		else if (arg["initial"].is_number())
+		{
 			tmp.setConstant(arg["initial"].get<double>());
+			x.segment(accumulative, tmp.size()) = tmp;
+		}
 		else
-			x = variable_to_simulations[0]->inverse_eval();
-		
-		x.segment(accumulative, tmp.size()) = tmp;
+			x += variable_to_simulations[var]->inverse_eval();
+
 		accumulative += tmp.size();
+		var++;
 	}
 
 	for (auto &v2s : variable_to_simulations)

@@ -101,7 +101,7 @@ namespace polyfem::solver
 	class SliceMap : public Parametrization
 	{
 	public:
-		SliceMap(const int from, const int to);
+		SliceMap(const int from, const int to, const int total);
 
 		int size(const int x_size) const override { return to_ - from_; }
 
@@ -110,7 +110,7 @@ namespace polyfem::solver
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:
-		const int from_, to_;
+		const int from_, to_, total_;
 	};
 
 	class AppendConstantMap : public Parametrization
@@ -147,12 +147,12 @@ namespace polyfem::solver
 	class CustomSymmetric : public Parametrization
 	{
 	public:
-		CustomSymmetric(const json& args);
+		CustomSymmetric(const json &args);
 
 		int size(const int x_size) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
-	
+
 	private:
 		std::vector<int> fixed_entries;
 		std::vector<std::pair<int, int>> equal_pairs;

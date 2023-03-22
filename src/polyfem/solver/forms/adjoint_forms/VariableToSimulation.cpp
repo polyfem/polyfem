@@ -76,9 +76,14 @@ namespace polyfem::solver
 		if (indices.size() == 0)
 			indices.setLinSpaced(npts * dim, 0, npts * dim - 1);
 
+		Eigen::MatrixXd V, V_flat;
+		Eigen::MatrixXi F;
+		state_ptr_->get_vf(V, F);
+		V_flat = utils::flatten(V);
+
 		x.setZero(indices.size());
 		for (int i = 0; i < indices.size(); i++)
-			x(i) = state_ptr_->mesh->point(i / dim)(i % dim);
+			x(i) = V_flat(indices(i));
 
 		return parametrization_.inverse_eval(x);
 	}
