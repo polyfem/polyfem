@@ -38,6 +38,9 @@ namespace polyfem::solver
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+
+			if (args["power"] > 0)
+				in_power_ = args["power"];
 		}
 
 		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;

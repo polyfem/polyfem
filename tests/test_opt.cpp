@@ -298,7 +298,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToBoundaryNodesExclusive({}, *states[0], {1})));
 	}
 
-	auto obj1 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0], json());
+	auto obj1 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0]);
 	obj1->set_weight(1.0);
 
 	std::vector<std::shared_ptr<AdjointForm>> forms({obj1});
@@ -347,7 +347,7 @@ TEST_CASE("shape-stress-opt-debug", "[optimization]")
 	auto obj1 = std::make_shared<StressNormForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
 	obj1->set_weight(1.0);
 
-	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0], json());
+	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0]);
 	obj2->set_weight(1.0);
 
 	std::vector<std::shared_ptr<AdjointForm>> forms({obj2});
@@ -435,8 +435,8 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	{
-		std::vector<std::shared_ptr<Parametrization>> boundary_map_list = {std::make_shared<SliceMap>(0, opt_bnodes * dim)};
-		std::vector<std::shared_ptr<Parametrization>> interior_map_list = {std::make_shared<SliceMap>(opt_bnodes * dim, (opt_bnodes + opt_inodes) * dim)};
+		std::vector<std::shared_ptr<Parametrization>> boundary_map_list = {std::make_shared<SliceMap>(0, opt_bnodes * dim, -1)};
+		std::vector<std::shared_ptr<Parametrization>> interior_map_list = {std::make_shared<SliceMap>(opt_bnodes * dim, (opt_bnodes + opt_inodes) * dim, -1)};
 
 		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToBoundaryNodesExclusive(boundary_map_list, *states[0], {10, 11})));
 		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToInteriorNodes(interior_map_list, *states[0], 1)));
@@ -463,7 +463,7 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 	auto obj1 = std::make_shared<StressNormForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
 	obj1->set_weight(1.0);
 
-	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0], json());
+	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0]);
 	obj2->set_weight(0.01);
 
 	auto obj3 = std::make_shared<BoundarySmoothingForm>(variable_to_simulations, *states[0], false, 2);
@@ -725,12 +725,80 @@ TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
 	REQUIRE(energies[energies.size() - 1] == Approx(1.056e-8).epsilon(1e-3));
 }
 
+TEST_CASE("shape-stress-bbw-opt-json", "[optimization]")
+{
+	const std::string name = "shape-stress-bbw-opt";
+	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + name + "/";
+	json opt_args;
+	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
+		log_and_throw_error("Failed to load optimization json file!");
+
+	opt_args = apply_opt_json_spec(opt_args, false);
+
+	for (auto &state_arg : opt_args["states"])
+		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
+
+	json state_args = opt_args["states"];
+	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
+	std::vector<std::shared_ptr<State>> states(state_args.size());
+	Eigen::VectorXd x;
+	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	{
+		// create simulators based on json inputs
+		int i = 0;
+		for (const json &args : state_args)
+		{
+			json cur_args;
+			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
+				log_and_throw_error("Can't find json for State {}", i);
+
+			states[i++] = create_state(cur_args);
+		}
+
+		// define mappings from optimization variable x to material parameters in states
+		for (const auto &arg : opt_args["variable_to_simulation"])
+			variable_to_simulations.push_back(create_variable_to_simulation(arg, states));
+
+		// initialize optimization variable and assign elastic parameters to simulators
+		int ndof = 0;
+		for (const auto &arg : opt_args["parameters"])
+			ndof += arg["number"].get<int>();
+
+		x.setZero(ndof);
+		int var = 0;
+		for (const auto &arg : opt_args["parameters"])
+		{
+			x += variable_to_simulations[var++]->inverse_eval();
+		}
+
+		// define optimization objective -- sum of compliance of the same structure under different loads
+		std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(create_form(opt_args["functionals"], variable_to_simulations, states));
+
+		nl_problem = std::make_shared<solver::AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+
+		nl_problem->solution_changed(x);
+	}
+
+	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+
+	// run the optimization for a few steps
+	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+
+	// check if the objective at these steps are correct
+	auto energies = read_energy(name);
+
+	REQUIRE(energies[0] == Approx(26.158).epsilon(1e-3));
+	REQUIRE(energies[energies.size() - 1] == Approx(24.846).epsilon(1e-3));
+}
+
 TEST_CASE("shape-stress-bbw-opt", "[optimization]")
 {
 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + "shape-stress-bbw-opt" + "/";
 	json opt_args;
 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
 		log_and_throw_error("Failed to load optimization json file!");
+
+	opt_args = apply_opt_json_spec(opt_args, false);
 
 	for (auto &state_arg : opt_args["states"])
 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
@@ -790,46 +858,31 @@ TEST_CASE("shape-stress-bbw-opt", "[optimization]")
 		}
 		opt_inodes = node_ids.size();
 	}
-	x.resize((opt_boundary_var + opt_inodes) * dim);
+	x.setZero((opt_boundary_var + opt_inodes) * dim);
 	Eigen::MatrixXd V, V_surface;
 	states[0]->get_vertices(V);
 	Eigen::VectorXd V_flat = utils::flatten(V);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	{
-		std::vector<std::shared_ptr<Parametrization>> boundary_map_list = {std::make_shared<SliceMap>(0, opt_boundary_var * dim), std::make_shared<BoundedBiharmonicWeights2Dto3D>(opt_boundary_var, opt_bnodes, *states[0], 2)};
-		std::vector<std::shared_ptr<Parametrization>> interior_map_list = {std::make_shared<SliceMap>(opt_boundary_var * dim, (opt_boundary_var + opt_inodes) * dim)};
+		std::vector<std::shared_ptr<Parametrization>> boundary_map_list = {std::make_shared<SliceMap>(0, opt_boundary_var * dim, (opt_boundary_var + opt_inodes) * dim), std::make_shared<BoundedBiharmonicWeights2Dto3D>(opt_boundary_var, opt_bnodes, *states[0])};
+		std::vector<std::shared_ptr<Parametrization>> interior_map_list = {std::make_shared<SliceMap>(opt_boundary_var * dim, (opt_boundary_var + opt_inodes) * dim, (opt_boundary_var + opt_inodes) * dim)};
 
 		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToBoundaryNodes(boundary_map_list, *states[0], 2)));
 		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToInteriorNodes(interior_map_list, *states[0], 1)));
 	}
 
-	{
-		auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
-		assert(b_idx.size() == (opt_bnodes * dim));
-		Eigen::VectorXd y(opt_bnodes * dim);
-		for (int i = 0; i < opt_bnodes; ++i)
-			for (int k = 0; k < dim; ++k)
-				y(i * dim + k) = V_flat(b_idx(i * dim + k));
+	x += variable_to_simulations[0]->inverse_eval();
+	x += variable_to_simulations[1]->inverse_eval();
 
-		x.segment(0, opt_boundary_var * dim) = variable_to_simulations[0]->get_parametrization().inverse_eval(y);
-	}
-
-	{
-		auto b_idx = variable_to_simulations[1]->get_parametrization().get_output_indexing(x);
-		assert(b_idx.size() == (opt_inodes * dim));
-		Eigen::VectorXd y(opt_inodes * dim);
-		for (int i = 0; i < opt_inodes; ++i)
-			for (int k = 0; k < dim; ++k)
-				y(i * dim + k) = V_flat(b_idx(i * dim + k));
-
-		x.segment(opt_boundary_var * dim, opt_inodes * dim) = variable_to_simulations[1]->get_parametrization().inverse_eval(y);
-	}
+	std::cout << "opt bnodes " << opt_bnodes << " " << opt_bnodes * dim << std::endl;
+	std::cout << "opt inodes " << opt_inodes << " " << opt_inodes * dim << std::endl;
+	std::cout << "opt b var " << opt_boundary_var << " " << opt_boundary_var * dim << std::endl;
 
 	auto obj1 = std::make_shared<StressNormForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
 	obj1->set_weight(1.0e-12);
 
-	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0], json());
+	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0]);
 	obj2->set_weight(1.0);
 
 	std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2});

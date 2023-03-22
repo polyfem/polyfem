@@ -7,10 +7,12 @@
 #include <polyfem/solver/forms/adjoint_forms/CompositeForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/TransientForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SmoothingForms.hpp>
+#include <polyfem/solver/forms/adjoint_forms/AMIPSForm.hpp>
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
+#include <polyfem/solver/forms/parametrization/SplineParametrizations.hpp>
 
 namespace polyfem::solver
 {
@@ -39,7 +41,7 @@ namespace polyfem::solver
 			std::vector<std::shared_ptr<AdjointForm>> forms;
 			for (const auto &arg : args)
 				forms.push_back(create_form(arg, var2sim, states));
-			
+
 			obj = std::make_shared<SumCompositeForm>(var2sim, forms);
 		}
 		else
@@ -119,6 +121,10 @@ namespace polyfem::solver
 				nlohmann::adl_serializer<Eigen::VectorXd>::from_json(args["soft_bound"], bounds);
 				obj = std::make_shared<InequalityConstraintForm>(forms, bounds, args["power"]);
 			}
+			else if (type == "AMIPS")
+			{
+				obj = std::make_shared<AMIPSForm>(var2sim, *(states[args["state"]]));
+			}
 			else
 				log_and_throw_error("Objective not implemented!");
 
@@ -142,7 +148,7 @@ namespace polyfem::solver
 		}
 		else if (type == "slice")
 		{
-			map = std::make_shared<SliceMap>(args["from"], args["to"]);
+			map = std::make_shared<SliceMap>(args["from"], args["to"], args["last"]);
 		}
 		else if (type == "exp")
 		{
@@ -194,9 +200,13 @@ namespace polyfem::solver
 				A, b);
 			map = std::make_shared<MeshAffine>(A, b, args["input_path"], args["output_path"]);
 		}
+		else if (type == "bounded-biharmonic-weights")
+		{
+			map = std::make_shared<BoundedBiharmonicWeights2Dto3D>(args["num_control_vertices"], args["num_vertices"], *states[args["state"]]);
+		}
 		else
 			log_and_throw_error("Unkown parametrization!");
-		
+
 		return map;
 	}
 
@@ -208,7 +218,7 @@ namespace polyfem::solver
 		std::vector<std::shared_ptr<Parametrization>> map_list;
 		for (const auto &arg : args["composition"])
 			map_list.push_back(create_parametrization(arg, states));
-		CompositeParametrization composite_map(map_list);
+		CompositeParametrization composite_map;
 
 		std::vector<std::shared_ptr<State>> cur_states;
 		if (args["state"].is_array())
@@ -217,31 +227,55 @@ namespace polyfem::solver
 		else
 			cur_states.push_back(states[args["state"]]);
 
-        if (type == "shape")
+		const std::string composite_map_type = args["composite_map_type"];
+		if (composite_map_type == "none")
+		{
+			composite_map = CompositeParametrization(map_list);
+		}
+		else if (composite_map_type == "interior")
+		{
+			assert(type == "shape");
+			composite_map = VariableToInteriorNodes(map_list, *cur_states[0], args["volume_selection"][0]);
+		}
+		else if (composite_map_type == "boundary")
+		{
+			assert(type == "shape");
+			composite_map = VariableToBoundaryNodes(map_list, *cur_states[0], args["surface_selection"][0]);
+		}
+		else if (composite_map_type == "boundary_excluding_surface")
+		{
+			assert(type == "shape");
+			std::vector<int> excluded_surfaces;
+			for (const auto &s : args["surface_selection"])
+				excluded_surfaces.push_back(s);
+			composite_map = VariableToBoundaryNodesExclusive(map_list, *cur_states[0], excluded_surfaces);
+		}
+
+		if (type == "shape")
 		{
 			var2sim = std::make_shared<ShapeVariableToSimulation>(cur_states, composite_map);
 		}
-        else if (type == "elastic")
+		else if (type == "elastic")
 		{
 			var2sim = std::make_shared<ElasticVariableToSimulation>(cur_states, composite_map);
 		}
-        else if (type == "friction")
+		else if (type == "friction")
 		{
 			var2sim = std::make_shared<FrictionCoeffientVariableToSimulation>(cur_states, composite_map);
 		}
-        else if (type == "damping")
+		else if (type == "damping")
 		{
 			var2sim = std::make_shared<DampingCoeffientVariableToSimulation>(cur_states, composite_map);
 		}
-        else if (type == "macro-strain")
+		else if (type == "macro-strain")
 		{
 			var2sim = std::make_shared<MacroStrainVariableToSimulation>(cur_states, composite_map);
 		}
-        else if (type == "initial")
+		else if (type == "initial")
 		{
 			var2sim = std::make_shared<InitialConditionVariableToSimulation>(cur_states, composite_map);
 		}
-        else if (type == "sdf-shape")
+		else if (type == "sdf-shape")
 		{
 			var2sim = std::make_shared<SDFShapeVariableToSimulation>(cur_states, composite_map, args);
 		}

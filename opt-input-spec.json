@@ -114,7 +114,10 @@
     {
         "pointer": "/solver/nonlinear/bounds",
         "type": "list",
-        "default": [0, 0],
+        "default": [
+            0,
+            0
+        ],
         "doc": "Box constraints in the optimizations specified in an array of size 2"
     },
     {
@@ -336,8 +339,19 @@
             "custom-symmetric",
             "sdf-to-mesh",
             "periodic-mesh-tile",
-            "mesh-affine"
+            "mesh-affine",
+            "bounded-biharmonic-weights"
         ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "bounded-biharmonic-weights",
+        "type": "object",
+        "required": [
+            "num_control_vertices",
+            "num_vertices"
+        ],
+        "doc": "TODO"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*",
@@ -382,6 +396,9 @@
             "from",
             "to"
         ],
+        "optional": [
+            "last"
+        ],
         "doc": "Ouputs x[from:to], where x is the input vector"
     },
     {
@@ -391,6 +408,11 @@
     {
         "pointer": "/variable_to_simulation/*/composition/*/to",
         "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/last",
+        "type": "int",
+        "default": -1
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*",
@@ -740,7 +762,8 @@
             "material_smoothing",
             "volume",
             "soft_constraint",
-            "layer_thickness"
+            "layer_thickness",
+            "AMIPS"
         ],
         "doc": "TODO"
     },
@@ -1377,6 +1400,20 @@
     {
         "pointer": "/functionals/*/soft_bound/*",
         "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/functionals/*",
+        "type": "object",
+        "type_name": "AMIPS",
+        "required": [
+            "type",
+            "state"
+        ],
+        "optional": [
+            "volume_selection",
+            "weight"
+        ],
         "doc": "TODO"
     }
 ]

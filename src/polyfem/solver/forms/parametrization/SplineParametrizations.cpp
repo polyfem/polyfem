@@ -7,6 +7,7 @@
 #include <igl/boundary_loop.h>
 #include <igl/exact_geodesic.h>
 #include <igl/bounding_box.h>
+#include <igl/writeOBJ.h>
 
 #include <unordered_map>
 
@@ -73,7 +74,7 @@ namespace polyfem::solver
 		return Eigen::VectorXd();
 	}
 
-	BoundedBiharmonicWeights2Dto3D::BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const State &state, const int surface_selection)
+	BoundedBiharmonicWeights2Dto3D::BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const State &state)
 		: num_control_vertices_(num_control_vertices), num_vertices_(num_vertices)
 	{
 		Eigen::MatrixXd V;
@@ -194,6 +195,8 @@ namespace polyfem::solver
 		point_handles.block(0, 0, num_control_vertices_, 3) = control_points_;
 		point_handles.block(num_control_vertices_, 0, outer_loop.size(), 3) = V_outer_loop;
 
+		igl::writeOBJ("bbw_control_points.obj", point_handles, Eigen::MatrixXi::Zero(0, 3));
+
 		Eigen::VectorXi b;
 		Eigen::MatrixXd bc;
 		Eigen::VectorXi point_handles_idx(point_handles.rows());
@@ -202,7 +205,7 @@ namespace polyfem::solver
 		igl::boundary_conditions(V, F, point_handles, point_handles_idx, Eigen::VectorXi(), Eigen::VectorXi(), b, bc);
 
 		igl::BBWData bbw_data;
-		bbw_data.active_set_params.max_iter = 20;
+		bbw_data.active_set_params.max_iter = 100;
 		bbw_data.verbosity = 2;
 		Eigen::MatrixXd complete_bbw_weights;
 		bool computation = igl::bbw(V, F, b, bc, bbw_data, complete_bbw_weights);

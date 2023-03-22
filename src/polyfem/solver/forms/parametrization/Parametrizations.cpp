@@ -238,7 +238,7 @@ namespace polyfem::solver
 		return grad_body;
 	}
 
-	SliceMap::SliceMap(const int from = -1, const int to = -1) : from_(from), to_(to)
+	SliceMap::SliceMap(const int from = -1, const int to = -1, const int total = -1) : from_(from), to_(to), total_(total)
 	{
 		if (to_ - from_ < 0)
 			log_and_throw_error("Invalid Slice Map input!");
@@ -246,7 +246,15 @@ namespace polyfem::solver
 
 	Eigen::VectorXd SliceMap::inverse_eval(const Eigen::VectorXd &y)
 	{
-		return y;
+		if (total_ == -1)
+			return y;
+		else
+		{
+			Eigen::VectorXd y_;
+			y_.setZero(total_);
+			y_.segment(from_, to_ - from_) = y;
+			return y_;
+		}
 	}
 
 	Eigen::VectorXd SliceMap::eval(const Eigen::VectorXd &x) const

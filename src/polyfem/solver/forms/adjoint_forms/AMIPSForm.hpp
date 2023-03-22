@@ -114,7 +114,7 @@ namespace polyfem::solver
 	class AMIPSForm : public AdjointForm
 	{
 	public:
-		AMIPSForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state, const json &args)
+		AMIPSForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state)
 			: AdjointForm(variable_to_simulation),
 			  state_(state)
 		{
