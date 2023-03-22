@@ -725,7 +725,7 @@ TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
 	REQUIRE(energies[energies.size() - 1] == Approx(1.056e-8).epsilon(1e-3));
 }
 
-TEST_CASE("shape-stress-bbw-opt-json", "[optimization]")
+TEST_CASE("shape-stress-bbw-opt", "[optimization]")
 {
 	const std::string name = "shape-stress-bbw-opt";
 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + name + "/";
@@ -786,118 +786,6 @@ TEST_CASE("shape-stress-bbw-opt-json", "[optimization]")
 
 	// check if the objective at these steps are correct
 	auto energies = read_energy(name);
-
-	REQUIRE(energies[0] == Approx(26.158).epsilon(1e-3));
-	REQUIRE(energies[energies.size() - 1] == Approx(24.846).epsilon(1e-3));
-}
-
-TEST_CASE("shape-stress-bbw-opt", "[optimization]")
-{
-	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + "shape-stress-bbw-opt" + "/";
-	json opt_args;
-	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-		log_and_throw_error("Failed to load optimization json file!");
-
-	opt_args = apply_opt_json_spec(opt_args, false);
-
-	for (auto &state_arg : opt_args["states"])
-		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
-
-	json state_args = opt_args["states"];
-	std::vector<std::shared_ptr<State>> states(state_args.size());
-	int i = 0;
-	for (const json &args : state_args)
-	{
-		json cur_args;
-		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-			log_and_throw_error("Can't find json for State {}", i);
-
-		states[i++] = create_state(cur_args, spdlog::level::level_enum::err);
-	}
-
-	Eigen::VectorXd x;
-	int opt_bnodes = 0;
-	int opt_boundary_var = 5;
-	int opt_inodes = 0;
-	int dim;
-	{
-		const auto &mesh = states[0]->mesh;
-		const auto &bases = states[0]->bases;
-		const auto &gbases = states[0]->geom_bases();
-		dim = mesh->dimension();
-
-		std::set<int> total_bnode_ids;
-		std::set<int> node_ids;
-		for (const auto &lb : states[0]->total_local_boundary)
-		{
-			const int e = lb.element_id();
-			for (int i = 0; i < lb.size(); ++i)
-			{
-				const int primitive_global_id = lb.global_primitive_id(i);
-				const int boundary_id = mesh->get_boundary_id(primitive_global_id);
-				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
-
-				if (boundary_id == 2)
-					for (long n = 0; n < nodes.size(); ++n)
-						node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
-				for (long n = 0; n < nodes.size(); ++n)
-					total_bnode_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
-			}
-		}
-		opt_bnodes = node_ids.size();
-
-		node_ids = {};
-		for (int e = 0; e < gbases.size(); e++)
-		{
-			const int body_id = mesh->get_body_id(e);
-			if (body_id == 1)
-				for (const auto &gbs : gbases[e].bases)
-					for (const auto &g : gbs.global())
-						if (!total_bnode_ids.count(g.index))
-							node_ids.insert(g.index);
-		}
-		opt_inodes = node_ids.size();
-	}
-	x.setZero((opt_boundary_var + opt_inodes) * dim);
-	Eigen::MatrixXd V, V_surface;
-	states[0]->get_vertices(V);
-	Eigen::VectorXd V_flat = utils::flatten(V);
-
-	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	{
-		std::vector<std::shared_ptr<Parametrization>> boundary_map_list = {std::make_shared<SliceMap>(0, opt_boundary_var * dim, (opt_boundary_var + opt_inodes) * dim), std::make_shared<BoundedBiharmonicWeights2Dto3D>(opt_boundary_var, opt_bnodes, *states[0])};
-		std::vector<std::shared_ptr<Parametrization>> interior_map_list = {std::make_shared<SliceMap>(opt_boundary_var * dim, (opt_boundary_var + opt_inodes) * dim, (opt_boundary_var + opt_inodes) * dim)};
-
-		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToBoundaryNodes(boundary_map_list, *states[0], 2)));
-		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToInteriorNodes(interior_map_list, *states[0], 1)));
-	}
-
-	x += variable_to_simulations[0]->inverse_eval();
-	x += variable_to_simulations[1]->inverse_eval();
-
-	std::cout << "opt bnodes " << opt_bnodes << " " << opt_bnodes * dim << std::endl;
-	std::cout << "opt inodes " << opt_inodes << " " << opt_inodes * dim << std::endl;
-	std::cout << "opt b var " << opt_boundary_var << " " << opt_boundary_var * dim << std::endl;
-
-	auto obj1 = std::make_shared<StressNormForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
-	obj1->set_weight(1.0e-12);
-
-	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0]);
-	obj2->set_weight(1.0);
-
-	std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2});
-
-	auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
-	sum->set_weight(1.0);
-
-	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
-
-	nl_problem->solution_changed(x);
-
-	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
-	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
-
-	auto energies = read_energy("shape-stress-bbw-opt");
 
 	REQUIRE(energies[0] == Approx(26.158).epsilon(1e-3));
 	REQUIRE(energies[energies.size() - 1] == Approx(24.846).epsilon(1e-3));

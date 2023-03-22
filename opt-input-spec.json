@@ -274,6 +274,9 @@
             "state",
             "type",
             "composition"
+        ],
+        "optional": [
+            "composite_map_type"
         ]
     },
     {
@@ -662,6 +665,11 @@
         "default": false
     },
     {
+        "pointer": "/variable_to_simulation/*/composite_map_type",
+        "type": "string",
+        "default": "none"
+    },
+    {
         "pointer": "/parameters",
         "type": "list",
         "doc": "TODO"
@@ -826,8 +834,10 @@
         ],
         "optional": [
             "control_points",
+            "control_points_grid",
             "knots",
-            "tangents",
+            "knots_u",
+            "knots_v",
             "delta",
             "weight",
             "surface_selection"
@@ -986,23 +996,6 @@
     {
         "pointer": "/functionals/*/active_dimension/*",
         "type": "bool",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/functionals/*/tangents",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/functionals/*/tangents/*",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/functionals/*/tangents/*/*",
-        "type": "float",
         "doc": "TODO"
     },
     {
