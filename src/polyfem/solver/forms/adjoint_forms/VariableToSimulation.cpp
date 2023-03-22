@@ -77,8 +77,7 @@ namespace polyfem::solver
 			indices.setLinSpaced(npts * dim, 0, npts * dim - 1);
 
 		Eigen::MatrixXd V, V_flat;
-		Eigen::MatrixXi F;
-		state_ptr_->get_vf(V, F);
+		state_ptr_->get_vertices(V);
 		V_flat = utils::flatten(V);
 
 		x.setZero(indices.size());
