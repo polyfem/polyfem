@@ -39,13 +39,13 @@ namespace polyfem::solver
 			gradv.setZero(x.size());
 
 			{
-				POLYFEM_SCOPED_TIMER("adjoint solve", adjoint_solve_time);
+				POLYFEM_SCOPED_TIMER("adjoint solve");
 				for (int i = 0; i < all_states_.size(); i++)
 					all_states_[i]->solve_adjoint_cached(composite_form_->compute_adjoint_rhs(x, *all_states_[i])); // caches inside state
 			}
 
 			{
-				POLYFEM_SCOPED_TIMER("gradient assembly", grad_assembly_time);
+				POLYFEM_SCOPED_TIMER("gradient assembly");
 				composite_form_->first_derivative(x, gradv);
 			}
 
@@ -169,12 +169,24 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::solution_changed(const Eigen::VectorXd &newX)
 	{
+		bool need_rebuild_basis = false;
+
 		// update to new parameter and check if the new parameter is valid to solve
 		for (const auto &v : variables_to_simulation_)
+		{
 			v->update(newX);
+			if (v->get_parameter_type() == ParameterType::Shape)
+				need_rebuild_basis = true;
+		}
 
-		for (const auto &state : all_states_)
-			state->build_basis();
+		if (need_rebuild_basis)
+		{
+			const int cur_log = all_states_[0]->current_log_level;
+			all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
+			for (const auto &state : all_states_)
+				state->build_basis();
+			all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
+		}
 
 		// solve PDE
 		solve_pde();

@@ -265,8 +265,7 @@ namespace polyfem::assembler
 
 	void MultiscaleRB::homogenize_stiffness(const Eigen::MatrixXd &x, Eigen::MatrixXd &stiffness) const
 	{
-		double time;
-		POLYFEM_SCOPED_TIMER("homogenize variables", time);
+		POLYFEM_SCOPED_TIMER("homogenize variables");
 
 		const auto &bases = state->bases;
 		const auto &gbases = state->geom_bases();
@@ -332,8 +331,7 @@ namespace polyfem::assembler
 
 		Eigen::MatrixXd x;
 		{
-			double time;
-			POLYFEM_SCOPED_TIMER("coefficient newton", time);
+			POLYFEM_SCOPED_TIMER("coefficient newton");
 			Eigen::MatrixXd disp_grad = Ubar - Eigen::MatrixXd::Identity(size(), size());
 			projection(disp_grad, x);
 		}
@@ -389,8 +387,7 @@ namespace polyfem::assembler
 
 		Eigen::MatrixXd x;
 		{
-			double time;
-			POLYFEM_SCOPED_TIMER("coefficient newton", time);
+			POLYFEM_SCOPED_TIMER("coefficient newton");
 			Eigen::MatrixXd disp_grad = Ubar - Eigen::MatrixXd::Identity(size(), size());
 			projection(disp_grad, x);
 		}
@@ -415,8 +412,7 @@ namespace polyfem::assembler
 
 		Eigen::MatrixXd x;
 		{
-			double time;
-			POLYFEM_SCOPED_TIMER("coefficient newton", time);
+			POLYFEM_SCOPED_TIMER("coefficient newton");
 			Eigen::MatrixXd disp_grad = Ubar - Eigen::MatrixXd::Identity(size(), size());
 			projection(disp_grad, x);
 		}

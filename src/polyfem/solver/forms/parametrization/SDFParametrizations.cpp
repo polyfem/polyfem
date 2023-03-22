@@ -80,10 +80,9 @@ namespace polyfem::solver
         }
         else
         {
-            double inflation_time = 0;
             std::vector<double> x_vec(x.data(), x.data() + x.size());
             {
-                POLYFEM_SCOPED_TIMER("mesh inflation", inflation_time);
+                POLYFEM_SCOPED_TIMER("mesh inflation");
                 logger().info("isosurface inflator input: {}", x.transpose());
                 utils::inflate(wire_path_, opts_, x_vec, Vout, Fout, vertex_normals, shape_vel);
             }

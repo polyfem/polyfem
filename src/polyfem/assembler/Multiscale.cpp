@@ -156,8 +156,7 @@ namespace polyfem::assembler
 
 	void Multiscale::homogenize_stiffness(const Eigen::MatrixXd &x, Eigen::MatrixXd &stiffness) const
 	{
-		double time;
-		POLYFEM_SCOPED_TIMER("homogenize variables", time);
+		POLYFEM_SCOPED_TIMER("homogenize variables");
 
 		const auto &bases = state->bases;
 		const auto &gbases = state->geom_bases();
@@ -219,8 +218,7 @@ namespace polyfem::assembler
 	{
 		Eigen::MatrixXd x;
 		{
-			double time;
-			POLYFEM_SCOPED_TIMER("micro newton", time);
+			POLYFEM_SCOPED_TIMER("micro newton");
 			state->disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd pressure;
 			state->args["optimization"]["enabled"] = true;
@@ -241,8 +239,7 @@ namespace polyfem::assembler
 	{
 		Eigen::MatrixXd x;
 		{
-			double time;
-			POLYFEM_SCOPED_TIMER("micro newton", time);
+			POLYFEM_SCOPED_TIMER("micro newton");
 			state->disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd pressure;
 			state->args["optimization"]["enabled"] = true;
@@ -261,8 +258,7 @@ namespace polyfem::assembler
 	{
 		Eigen::MatrixXd x;
 		{
-			double time;
-			POLYFEM_SCOPED_TIMER("micro newton", time);
+			POLYFEM_SCOPED_TIMER("micro newton");
 			state->disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd pressure;
 			state->args["optimization"]["enabled"] = true;

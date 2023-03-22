@@ -56,9 +56,6 @@ namespace polyfem::solver
 		const int solve_log_level;
 		const int save_freq;
 
-		double adjoint_solve_time = 0;
-		double grad_assembly_time = 0;
-
 		Eigen::MatrixXd bounds_;
 	};
 } // namespace polyfem::solver
