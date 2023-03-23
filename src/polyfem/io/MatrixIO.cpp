@@ -44,16 +44,16 @@ namespace polyfem::io
 
 		if (extension == ".txt")
 		{
-			return write_matrix_ascii(path, mat) && write_matrix_binary(path + ".bin", mat);
+			return write_matrix_ascii(path, mat);
 		}
 		else if (extension == ".bin")
 		{
-			return write_matrix_binary(path, mat) && write_matrix_ascii(path + ".txt", mat);
+			return write_matrix_binary(path, mat);
 		}
 		else
 		{
 			logger().warn("Uknown output matrix format (\"{}\"). Using ASCII format.");
-			return write_matrix_ascii(path + ".txt", mat) && write_matrix_binary(path + ".bin", mat);
+			return write_matrix_ascii(path + ".txt", mat);
 		}
 	}
 
