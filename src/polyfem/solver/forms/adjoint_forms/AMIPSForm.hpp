@@ -232,25 +232,8 @@ namespace polyfem::solver
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override
 		{
 			Eigen::VectorXd X = get_updated_mesh_nodes(x1);
-			// Eigen::MatrixXd V1 = utils::unflatten(X, state_.mesh->dimension());
-			// bool flipped = is_flipped(V1, F);
-
-			Eigen::MatrixXd V1 = utils::unflatten(AdjointTools::map_primitive_to_node_order(state_, X), state_.mesh->dimension());
-
-			// Do this until get_vf is fixed wrt to ordering
-			const auto &mesh = state_.mesh;
-			const auto &bases = state_.bases;
-			const auto &gbases = state_.geom_bases();
-			int dim = mesh->dimension();
-			Eigen::MatrixXi F_(gbases.size(), dim + 1);
-			for (int e = 0; e < gbases.size(); e++)
-			{
-				int i = 0;
-				for (const auto &gbs : gbases[e].bases)
-					F_(e, i++) = gbs.global()[0].index;
-			}
-
-			bool flipped = is_flipped(V1, F_);
+			Eigen::MatrixXd V1 = utils::unflatten(X, state_.mesh->dimension());
+			bool flipped = is_flipped(V1, F);
 
 			if (flipped)
 				logger().trace("Step flips elements.");

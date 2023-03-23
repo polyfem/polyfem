@@ -75,11 +75,18 @@ namespace polyfem
 	void State::get_elements(Eigen::MatrixXi &elements) const
 	{
 		assert(mesh->is_simplicial());
-		elements.setZero(mesh->n_elements(), mesh->dimension() + 1);
 
-		for (int e = 0; e < mesh->n_elements(); e++)
-			for (int i = 0; i < mesh->dimension() + 1; i++)
-				elements(e, i) = mesh->element_vertex(e, i);
+		auto node_to_primitive_map = node_to_primitive();
+
+		const auto &gbases = geom_bases();
+		int dim = mesh->dimension();
+		elements.setZero(gbases.size(), dim + 1);
+		for (int e = 0; e < gbases.size(); e++)
+		{
+			int i = 0;
+			for (const auto &gbs : gbases[e].bases)
+				elements(e, i++) = node_to_primitive_map[gbs.global()[0].index];
+		}
 	}
 
 	void State::set_mesh_vertex(int v_id, const Eigen::VectorXd &vertex)
@@ -108,14 +115,14 @@ namespace polyfem
 			Eigen::MatrixXd vel, acc;
 			if (current_step == 0)
 			{
-				if (dynamic_cast<time_integrator::BDF*>(solve_data.time_integrator.get()))
+				if (dynamic_cast<time_integrator::BDF *>(solve_data.time_integrator.get()))
 				{
-					const auto bdf_integrator = dynamic_cast<time_integrator::BDF*>(solve_data.time_integrator.get());
+					const auto bdf_integrator = dynamic_cast<time_integrator::BDF *>(solve_data.time_integrator.get());
 					vel = bdf_integrator->weighted_sum_v_prevs();
 				}
-				else if (dynamic_cast<time_integrator::ImplicitEuler*>(solve_data.time_integrator.get()))
+				else if (dynamic_cast<time_integrator::ImplicitEuler *>(solve_data.time_integrator.get()))
 				{
-					const auto euler_integrator = dynamic_cast<time_integrator::ImplicitEuler*>(solve_data.time_integrator.get());
+					const auto euler_integrator = dynamic_cast<time_integrator::ImplicitEuler *>(solve_data.time_integrator.get());
 					vel = euler_integrator->v_prev();
 				}
 				else
@@ -162,7 +169,7 @@ namespace polyfem
 			const Eigen::MatrixXd u_prev = diff_cached.u(step - 1);
 			const double beta = time_integrator::BDF::betas(diff_cached.bdf_order(step) - 1);
 			const double dt = solve_data.time_integrator->dt();
-			
+
 			hessian_prev = StiffnessMatrix(u.size(), u.size());
 			if (problem->is_time_dependent())
 			{
@@ -310,7 +317,7 @@ namespace polyfem
 			}
 
 			Eigen::VectorXd rhs_ = -reduced_mass.transpose() * sum_alpha_nu - adjoint_rhs.col(i);
-			if (i < time_steps) 
+			if (i < time_steps)
 			{
 				StiffnessMatrix gradu_h_prev;
 				compute_force_hessian_prev(i + 1, gradu_h_prev);
@@ -322,7 +329,7 @@ namespace polyfem
 			if (i > 0)
 			{
 				double beta_dt = time_integrator::BDF::betas(diff_cached.bdf_order(i) - 1) * dt;
-				
+
 				rhs_ += (1. / beta_dt) * (diff_cached.gradu_h(i) - reduced_mass).transpose() * sum_alpha_p;
 
 				{
