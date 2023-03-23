@@ -196,7 +196,7 @@ TEST_CASE("laplacian", "[adjoint_method]")
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -233,7 +233,7 @@ TEST_CASE("boundary-smoothing", "[adjoint_method]")
 	std::vector<std::shared_ptr<State>> states({state_ptr});
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
 	BoundarySmoothingForm obj(variable_to_simulations, state, true, 3);
 
@@ -262,7 +262,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 	std::vector<std::shared_ptr<State>> states({state_ptr});
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
 	PositionForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
 	obj.set_integral_type(SpatialIntegralType::SURFACE);
@@ -292,7 +292,7 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 	std::vector<std::shared_ptr<State>> states({state_ptr});
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
 	PositionForm obj(variable_to_simulations, state, opt_args["functionals"][0]);
 	obj.set_integral_type(SpatialIntegralType::SURFACE);
@@ -364,7 +364,7 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 	std::vector<std::shared_ptr<State>> states({state_ptr});
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -397,7 +397,7 @@ TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -564,7 +564,7 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 	std::vector<std::shared_ptr<State>> states({state_ptr});
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
 	std::vector<std::shared_ptr<AdjointForm>> forms;
 	for (int i = 0; i < 2; i++)
@@ -611,7 +611,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -752,7 +752,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -787,7 +787,7 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 	std::vector<std::shared_ptr<State>> states({state_ptr});
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states));
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
 	Eigen::MatrixXd control_points;
 	Eigen::VectorXd knots;
