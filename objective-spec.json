@@ -1,0 +1,666 @@
+[
+    {
+        "pointer": "/type",
+        "type": "string",
+        "options": [
+            "transient_integral",
+            "power",
+            "divide",
+            "target",
+            "sdf-target",
+            "function-target",
+            "node-target",
+            "position",
+            "acceleration",
+            "kinetic",
+            "stress",
+            "stress_norm",
+            "max_stress",
+            "compliance",
+            "strain_norm",
+            "boundary_smoothing",
+            "collision_barrier",
+            "control_smoothing",
+            "material_smoothing",
+            "volume",
+            "soft_constraint",
+            "layer_thickness",
+            "AMIPS"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/power",
+        "type": "float",
+        "default": 2,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/adjust_weight_period",
+        "type": "int",
+        "default": 1000000,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/adjustment_coeff",
+        "type": "float",
+        "default": 1.0,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/scale_invariant",
+        "type": "bool",
+        "default": true,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "divide",
+        "required": [
+            "objective"
+        ],
+        "optional": [
+            "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "power",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "power",
+            "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "sdf-target",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "control_points",
+            "control_points_grid",
+            "knots",
+            "knots_u",
+            "knots_v",
+            "delta",
+            "weight",
+            "surface_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "node-target",
+        "required": [
+            "state",
+            "type",
+            "targets",
+            "node_ids"
+        ],
+        "optional": [
+            "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "function-target",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "weight",
+            "target_function",
+            "target_function_gradient",
+            "surface_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "target",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "weight",
+            "surface_selection",
+            "reference_cached_body_ids",
+            "target_state"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/volume_selection",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/volume_selection",
+        "type": "file",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/volume_selection/*",
+        "type": "int",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/surface_selection",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/surface_selection/*",
+        "type": "int",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/reference_cached_body_ids",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/reference_cached_body_ids/*",
+        "type": "int",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/target_state",
+        "type": "int",
+        "default": -1,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/weight",
+        "type": "float",
+        "default": 1,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/integral_type",
+        "type": "string",
+        "default": "uniform",
+        "options": [
+            "simpson",
+            "uniform",
+            "final",
+            "steps"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/steps",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/target_function",
+        "type": "string",
+        "default": "0",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/target_function_gradient",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/target_function_gradient/*",
+        "type": "string",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/target_displacement",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/target_displacement/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/active_dimension",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/active_dimension/*",
+        "type": "bool",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/control_points",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/control_points/*",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/control_points/*/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/knots",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/knots/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/control_points_grid",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/control_points_grid/*",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/control_points_grid/*/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/knots_u",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/knots_u/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/knots_v",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/knots_v/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/delta",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/delta/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/state",
+        "type": "int",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/matching",
+        "type": "string",
+        "options": [
+            "exact",
+            "marker-data",
+            "exact-marker"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "position",
+        "required": [
+            "state",
+            "type",
+            "dim"
+        ],
+        "optional": [
+            "weight",
+            "volume_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "soft_constraint",
+        "required": [
+            "objective",
+            "soft_bound"
+        ],
+        "optional": [
+            "weight",
+            "power"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/objective",
+        "type": "object",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/objective",
+        "type": "list",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/objective/*",
+        "type": "object",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "transient_integral",
+        "required": [
+            "static_objective",
+            "state"
+        ],
+        "optional": [
+            "weight",
+            "integral_type",
+            "steps"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/static_objective",
+        "type": "object",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "acceleration",
+        "required": [
+            "state",
+            "type",
+            "dim"
+        ],
+        "optional": [
+            "weight",
+            "volume_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "kinetic",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "weight",
+            "volume_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "stress",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "volume_selection",
+            "weight",
+            "dimensions"
+        ],
+        "doc": "One entry of elastic stress matrix"
+    },
+    {
+        "pointer": "/dimensions",
+        "default": [],
+        "type": "list"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "stress_norm",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "volume_selection",
+            "power",
+            "weight"
+        ],
+        "doc": "Lp Norm of elastic stress over the volume selection"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "max_stress",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "volume_selection",
+            "weight"
+        ],
+        "doc": "Pointwise max stress over the volume selection"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "compliance",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "volume_selection",
+            "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "strain_norm",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "volume_selection",
+            "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/bounds",
+        "type": "list",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/bounds/*",
+        "type": "object",
+        "required": [
+            "min",
+            "max",
+            "type",
+            "dhat",
+            "kappa"
+        ],
+        "doc": "Barrier function parameters for material bounds."
+    },
+    {
+        "pointer": "/bounds/*/type",
+        "type": "string",
+        "options": [
+            "E",
+            "nu",
+            "lambda",
+            "mu"
+        ]
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "boundary_smoothing",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "scale_invariant",
+            "power",
+            "weight",
+            "adjust_weight_period",
+            "adjustment_coeff",
+            "surface_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "material_smoothing",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "weight",
+            "volume_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "control_smoothing",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "collision_barrier",
+        "optional": [
+            "weight",
+            "dhat"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "layer_thickness",
+        "optional": [
+            "adjacent_boundary_id",
+            "dmin",
+            "dhat",
+            "weight"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/dhat",
+        "type": "float",
+        "default": 1e-3,
+        "doc": "The support size of barrier function"
+    },
+    {
+        "pointer": "/adjacent_boundary_id",
+        "type": "int",
+        "default": -1,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/dmin",
+        "type": "float",
+        "default": 0.0,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "volume",
+        "required": [
+            "type",
+            "state"
+        ],
+        "optional": [
+            "weight",
+            "volume_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/soft_bound",
+        "type": "list",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/soft_bound/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "AMIPS",
+        "required": [
+            "type",
+            "state"
+        ],
+        "optional": [
+            "volume_selection",
+            "weight"
+        ],
+        "doc": "TODO"
+    }
+]

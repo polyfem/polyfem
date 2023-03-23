@@ -327,6 +327,34 @@ namespace polyfem::solver
 		state.solve_problem(sol, pressure);
 	}
 
+	void apply_objective_json_spec(json &args, const json &rules)
+	{
+		if (args.is_array())
+		{
+			for (auto &arg : args)
+				apply_objective_json_spec(arg, rules);
+		}
+		else if (args.is_object())
+		{
+			jse::JSE jse;
+			const bool valid_input = jse.verify_json(args, rules);
+
+			if (!valid_input)
+			{
+				logger().error("invalid objective json:\n{}", jse.log2str());
+				throw std::runtime_error("Invald objective json file");
+			}
+
+			args = jse.inject_defaults(args, rules);
+
+			for (auto &it : args.items())
+			{
+				if (it.key().find("objective") != std::string::npos)
+					apply_objective_json_spec(it.value(), rules);
+			}
+		}
+	}
+
 	json apply_opt_json_spec(const json &input_args, bool strict_validation)
 	{
 		json args_in = input_args;
@@ -357,6 +385,22 @@ namespace polyfem::solver
 		}
 
 		json args = jse.inject_defaults(args_in, rules);
+
+		json obj_rules;
+		{
+			const std::string polyfem_objective_spec = POLYFEM_OBJECTIVE_INPUT_SPEC;
+			std::ifstream file(polyfem_objective_spec);
+
+			if (file.is_open())
+				file >> obj_rules;
+			else
+			{
+				logger().error("unable to open {} rules", polyfem_objective_spec);
+				throw std::runtime_error("Invald spec file");
+			}
+		}
+		apply_objective_json_spec(args["functionals"], obj_rules);
+		
 		return args;
 	}
 
