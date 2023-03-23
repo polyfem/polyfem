@@ -104,9 +104,6 @@ namespace polyfem::solver
 		int start = 0, end = 0; // start vertex index of the mesh
 		for (auto state : states_)
 		{
-			// const int cur_log = state->current_log_level;
-			// state->set_log_level(spdlog::level::level_enum::warn);
-
 			state->in_args["geometry"][mesh_id_]["mesh"] = mesh_path_;
 			state->in_args["geometry"][mesh_id_].erase("transformation");
 

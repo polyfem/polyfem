@@ -638,7 +638,6 @@ namespace polyfem
 		pressure_bases.clear();
 		geom_bases_.clear();
 		boundary_nodes.clear();
-		boundary_gnodes.clear();
 		input_dirichlet.clear();
 		dirichlet_nodes.clear();
 		neumann_nodes.clear();
@@ -1074,7 +1073,7 @@ namespace polyfem
 
 		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, n_bases,
-						  bases, geom_bases(), pressure_bases, boundary_gnodes,
+						  bases, geom_bases(), pressure_bases,
 						  local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes,
 						  dirichlet_nodes, neumann_nodes);
 		const bool has_pressure_stablization = (args["materials"].contains("delta2") && (args["materials"]["delta2"].get<double>() > 0));

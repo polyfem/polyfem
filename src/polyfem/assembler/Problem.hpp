@@ -66,7 +66,6 @@ namespace polyfem
 
 			void setup_bc(const mesh::Mesh &mesh,
 						  const int n_bases, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &geom_bases, const std::vector<basis::ElementBases> &pressure_bases,
-						  std::vector<int> &boundary_gnodes,
 						  std::vector<mesh::LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes,
 						  std::vector<mesh::LocalBoundary> &local_neumann_boundary,
 						  std::vector<int> &pressure_boundary_nodes,
