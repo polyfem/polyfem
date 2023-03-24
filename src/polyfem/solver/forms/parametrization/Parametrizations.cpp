@@ -250,6 +250,8 @@ namespace polyfem::solver
 			return y;
 		else
 		{
+			if (y.size() != size(0))
+				log_and_throw_error("Inverse eval on SliceMap is inconsistent in size!");
 			Eigen::VectorXd y_;
 			y_.setZero(total_);
 			y_.segment(from_, to_ - from_) = y;
