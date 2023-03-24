@@ -1915,6 +1915,7 @@
             "relative_gradient",
             "line_search",
             "export_energy",
+            "export_energy_components",
             "solver_info_log",
             "max_step_size",
             "min_step_size"
@@ -1956,6 +1957,12 @@
         "default": "",
         "type": "string",
         "doc": "Save energy and gradient in optimizations to file"
+    },
+    {
+        "pointer": "/solver/nonlinear/export_energy_components",
+        "default": false,
+        "type": "bool",
+        "doc": "Save energy and gradient components"
     },
     {
         "pointer": "/solver/nonlinear/solver",
