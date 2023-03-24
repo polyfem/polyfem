@@ -400,23 +400,31 @@
         "pointer": "/variable_to_simulation/*/composition/*",
         "type_name": "slice",
         "type": "object",
-        "optional": [
+        "required": [
             "from",
-            "to",
-            "last",
+            "to"
+        ],
+        "optional": [
+            "last"
+        ],
+        "doc": "Ouputs x[from:to], where x is the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "slice",
+        "type": "object",
+        "required": [
             "parameter_index"
         ],
         "doc": "Ouputs x[from:to], where x is the input vector"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/from",
-        "type": "int",
-        "default": -1
+        "type": "int"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/to",
-        "type": "int",
-        "default": -1
+        "type": "int"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/last",
@@ -425,8 +433,7 @@
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/parameter_index",
-        "type": "int",
-        "default": -1
+        "type": "int"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*",
@@ -698,6 +705,25 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/parameters/*",
+        "type": "object",
+        "required": [
+            "surface_selection",
+            "state"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*",
+        "type": "object",
+        "required": [
+            "volume_selection",
+            "state",
+            "exclude_boundary_nodes"
+        ],
+        "doc": "TODO"
+    },
+    {
         "pointer": "/parameters/*/initial",
         "type": "list",
         "default": []
@@ -750,5 +776,25 @@
             "per-vertex",
             "per-element"
         ]
+    },
+    {
+        "pointer": "/parameters/*/state",
+        "type": "int"
+    },
+    {
+        "pointer": "/parameters/*/surface_selection",
+        "type": "list"
+    },
+    {
+        "pointer": "/parameters/*/surface_selection/*",
+        "type": "int"
+    },
+    {
+        "pointer": "/parameters/*/volume_selection",
+        "type": "list"
+    },
+    {
+        "pointer": "/parameters/*/volume_selection/*",
+        "type": "int"
     }
 ]

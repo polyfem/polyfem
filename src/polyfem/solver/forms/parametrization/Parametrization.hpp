@@ -45,7 +45,7 @@ namespace polyfem::solver
 				return ind;
 			}
 			else
-				log_and_throw_error("Indexing size and output size of the Parametrization do not match!");
+				log_and_throw_error(fmt::format("Indexing size and output size of the Parametrization do not match! {} vs {}", output_indexing_.size(), out_size));
 			return Eigen::VectorXi();
 		}
 

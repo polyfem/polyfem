@@ -589,6 +589,9 @@
         "pointer": "/",
         "type": "object",
         "type_name": "collision_barrier",
+        "required": [
+            "state"
+        ],
         "optional": [
             "weight",
             "dhat"
