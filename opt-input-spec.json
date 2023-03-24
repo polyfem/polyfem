@@ -701,12 +701,9 @@
     {
         "pointer": "/parameters/*",
         "type": "object",
-        "required": [
-            "number"
-        ],
         "optional": [
             "initial",
-            "bounds"
+            "number"
         ],
         "doc": "TODO"
     },
@@ -739,49 +736,13 @@
         "type": "float"
     },
     {
-        "pointer": "/parameters/*/bounds",
-        "type": "list",
-        "default": []
-    },
-    {
-        "pointer": "/parameters/*/bounds/*",
-        "type": "list",
-        "doc": "In the form of [[min1, min2, ...], [max1, max2, ...]]"
-    },
-    {
-        "pointer": "/parameters/*/bounds/*/*",
+        "pointer": "/parameters/*/initial",
         "type": "float"
     },
     {
-        "pointer": "/parameters/*/bounds/*",
-        "type": "float",
-        "doc": "In the form of [min, max]"
-    },
-    {
-        "pointer": "/parameters/*/bounds",
-        "type": "file",
-        "doc": "N by 2 matrix stored in file"
-    },
-    {
         "pointer": "/parameters/*/number",
-        "type": "int"
-    },
-    {
-        "pointer": "/parameters/*/number",
-        "type": "object",
-        "doc": "Define number of DOFs from existing DOFs in simulations"
-    },
-    {
-        "pointer": "/parameters/*/number/state",
-        "type": "int"
-    },
-    {
-        "pointer": "/parameters/*/number/type",
-        "type": "string",
-        "options": [
-            "per-vertex",
-            "per-element"
-        ]
+        "type": "int",
+        "default": -1
     },
     {
         "pointer": "/parameters/*/state",

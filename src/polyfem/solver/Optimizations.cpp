@@ -466,10 +466,13 @@ namespace polyfem::solver
 
 	int compute_variable_size(const json &args, const std::vector<std::shared_ptr<State>> &states)
 	{
-		if (args.contains("number"))
+		if (args["number"].get<int>() > 0)
 		{
-			assert(args["number"].get<int>() != -1);
 			return args["number"].get<int>();
+		}
+		else if (args["initial"].size() > 0)
+		{
+			return args["initial"].size();
 		}
 		else if (args.contains("surface_selection"))
 		{
