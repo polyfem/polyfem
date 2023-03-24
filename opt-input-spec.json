@@ -764,5 +764,9 @@
     {
         "pointer": "/parameters/*/volume_selection/*",
         "type": "int"
+    },
+    {
+        "pointer": "/parameters/*/exclude_boundary_nodes",
+        "type": "bool"
     }
 ]
