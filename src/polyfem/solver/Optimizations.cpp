@@ -468,50 +468,58 @@ namespace polyfem::solver
 
 	int compute_variable_size(const json &args, const std::vector<std::shared_ptr<State>> &states)
 	{
-		if (args["number"].get<int>() > 0)
+		if (args["number"].is_number())
 		{
 			return args["number"].get<int>();
 		}
-		else if (args["initial"].size() > 0)
+		else if (args["number"].is_null() && args["initial"].size() > 0)
 		{
 			return args["initial"].size();
 		}
-		else if (args.contains("surface_selection"))
+		else if (args["number"].is_object())
 		{
-			auto surface_selection = args["surface_selection"].get<std::vector<int>>();
-			auto state_id = args["state"];
-			std::set<int> node_ids = {};
-			for (const auto &surface : surface_selection)
+			auto selection = args["number"];
+			if (selection.contains("surface_selection"))
 			{
-				std::vector<int> ids;
-				states[state_id]->compute_surface_node_ids(surface, ids);
-				for (const auto &i : ids)
-					node_ids.insert(i);
+				auto surface_selection = selection["surface_selection"].get<std::vector<int>>();
+				auto state_id = selection["state"];
+				std::set<int> node_ids = {};
+				for (const auto &surface : surface_selection)
+				{
+					std::vector<int> ids;
+					states[state_id]->compute_surface_node_ids(surface, ids);
+					for (const auto &i : ids)
+						node_ids.insert(i);
+				}
+				return node_ids.size() * states[state_id]->mesh->dimension();
 			}
-			return node_ids.size() * states[state_id]->mesh->dimension();
-		}
-		else if (args.contains("volume_selection"))
-		{
-			auto volume_selection = args["volume_selection"].get<std::vector<int>>();
-			auto state_id = args["state"];
-			std::set<int> node_ids = {};
-			for (const auto &volume : volume_selection)
+			else if (selection.contains("volume_selection"))
 			{
-				std::vector<int> ids;
-				states[state_id]->compute_volume_node_ids(volume, ids);
-				for (const auto &i : ids)
-					node_ids.insert(i);
-			}
+				auto volume_selection = selection["volume_selection"].get<std::vector<int>>();
+				auto state_id = selection["state"];
+				std::set<int> node_ids = {};
+				for (const auto &volume : volume_selection)
+				{
+					std::vector<int> ids;
+					states[state_id]->compute_volume_node_ids(volume, ids);
+					for (const auto &i : ids)
+						node_ids.insert(i);
+				}
 
-			if (args["exclude_boundary_nodes"])
-			{
-				std::vector<int> ids;
-				states[state_id]->compute_total_surface_node_ids(ids);
-				for (const auto &i : ids)
-					node_ids.erase(i);
-			}
+				if (selection["exclude_boundary_nodes"])
+				{
+					std::vector<int> ids;
+					states[state_id]->compute_total_surface_node_ids(ids);
+					for (const auto &i : ids)
+						node_ids.erase(i);
+				}
 
-			return node_ids.size() * states[state_id]->mesh->dimension();
+				return node_ids.size() * states[state_id]->mesh->dimension();
+			}
+			else
+			{
+				log_and_throw_error("Incorrect specification for parameters.");
+			}
 		}
 		else
 			log_and_throw_error("Incorrect specification for parameters.");

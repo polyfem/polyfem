@@ -703,22 +703,27 @@
         "pointer": "/parameters/*",
         "type": "object",
         "optional": [
-            "initial",
-            "number"
+            "number",
+            "initial"
         ],
         "doc": "TODO"
     },
     {
-        "pointer": "/parameters/*",
+        "pointer": "/parameters/*/number",
+        "type": "int"
+    },
+    {
+        "pointer": "/parameters/*/number",
         "type": "object",
         "required": [
             "surface_selection",
             "state"
         ],
+        "default": null,
         "doc": "TODO"
     },
     {
-        "pointer": "/parameters/*",
+        "pointer": "/parameters/*/number",
         "type": "object",
         "required": [
             "volume_selection",
@@ -739,11 +744,6 @@
     {
         "pointer": "/parameters/*/initial",
         "type": "float"
-    },
-    {
-        "pointer": "/parameters/*/number",
-        "type": "int",
-        "default": -1
     },
     {
         "pointer": "/parameters/*/state",
