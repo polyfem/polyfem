@@ -124,7 +124,6 @@ namespace cppoptlib
 		double obj_fun_time;
 
 		std::string export_energy_path;
-		bool export_energy_components;
 
 		ErrorCode m_error_code;
 

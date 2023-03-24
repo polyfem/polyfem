@@ -30,6 +30,12 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/print_energy",
+        "type": "string",
+        "default": "",
+        "doc": "TODO"
+    },
+    {
         "pointer": "/power",
         "type": "float",
         "default": 2,
@@ -58,10 +64,12 @@
         "type": "object",
         "type_name": "divide",
         "required": [
+            "type",
             "objective"
         ],
         "optional": [
-            "weight"
+            "weight",
+            "print_energy"
         ],
         "doc": "TODO"
     },
@@ -74,7 +82,8 @@
         ],
         "optional": [
             "power",
-            "weight"
+            "weight",
+            "print_energy"
         ],
         "doc": "TODO"
     },
@@ -94,6 +103,7 @@
             "knots_v",
             "delta",
             "weight",
+            "print_energy",
             "surface_selection"
         ],
         "doc": "TODO"
@@ -109,7 +119,8 @@
             "node_ids"
         ],
         "optional": [
-            "weight"
+            "weight",
+            "print_energy"
         ],
         "doc": "TODO"
     },
@@ -123,6 +134,7 @@
         ],
         "optional": [
             "weight",
+            "print_energy",
             "target_function",
             "target_function_gradient",
             "surface_selection"
@@ -139,6 +151,7 @@
         ],
         "optional": [
             "weight",
+            "print_energy",
             "surface_selection",
             "reference_cached_body_ids",
             "target_state"
@@ -356,6 +369,7 @@
         ],
         "optional": [
             "weight",
+            "print_energy",
             "volume_selection"
         ],
         "doc": "TODO"
@@ -365,11 +379,13 @@
         "type": "object",
         "type_name": "soft_constraint",
         "required": [
+            "type",
             "objective",
             "soft_bound"
         ],
         "optional": [
             "weight",
+            "print_energy",
             "power"
         ],
         "doc": "TODO"
@@ -394,11 +410,13 @@
         "type": "object",
         "type_name": "transient_integral",
         "required": [
+            "type",
             "static_objective",
             "state"
         ],
         "optional": [
             "weight",
+            "print_energy",
             "integral_type",
             "steps"
         ],
@@ -420,6 +438,7 @@
         ],
         "optional": [
             "weight",
+            "print_energy",
             "volume_selection"
         ],
         "doc": "TODO"
@@ -434,6 +453,7 @@
         ],
         "optional": [
             "weight",
+            "print_energy",
             "volume_selection"
         ],
         "doc": "TODO"
@@ -449,6 +469,7 @@
         "optional": [
             "volume_selection",
             "weight",
+            "print_energy",
             "dimensions"
         ],
         "doc": "One entry of elastic stress matrix"
@@ -469,7 +490,8 @@
         "optional": [
             "volume_selection",
             "power",
-            "weight"
+            "weight",
+            "print_energy"
         ],
         "doc": "Lp Norm of elastic stress over the volume selection"
     },
@@ -483,7 +505,8 @@
         ],
         "optional": [
             "volume_selection",
-            "weight"
+            "weight",
+            "print_energy"
         ],
         "doc": "Pointwise max stress over the volume selection"
     },
@@ -497,7 +520,8 @@
         ],
         "optional": [
             "volume_selection",
-            "weight"
+            "weight",
+            "print_energy"
         ],
         "doc": "TODO"
     },
@@ -511,7 +535,8 @@
         ],
         "optional": [
             "volume_selection",
-            "weight"
+            "weight",
+            "print_energy"
         ],
         "doc": "TODO"
     },
@@ -553,6 +578,7 @@
             "scale_invariant",
             "power",
             "weight",
+            "print_energy",
             "adjust_weight_period",
             "adjustment_coeff",
             "surface_selection"
@@ -568,6 +594,7 @@
         ],
         "optional": [
             "weight",
+            "print_energy",
             "volume_selection"
         ],
         "doc": "TODO"
@@ -581,7 +608,8 @@
             "type"
         ],
         "optional": [
-            "weight"
+            "weight",
+            "print_energy"
         ],
         "doc": "TODO"
     },
@@ -590,10 +618,12 @@
         "type": "object",
         "type_name": "collision_barrier",
         "required": [
-            "state"
+            "state",
+            "type"
         ],
         "optional": [
             "weight",
+            "print_energy",
             "dhat"
         ],
         "doc": "TODO"
@@ -606,7 +636,8 @@
             "adjacent_boundary_id",
             "dmin",
             "dhat",
-            "weight"
+            "weight",
+            "print_energy"
         ],
         "doc": "TODO"
     },
@@ -638,6 +669,7 @@
         ],
         "optional": [
             "weight",
+            "print_energy",
             "volume_selection"
         ],
         "doc": "TODO"
@@ -662,7 +694,8 @@
         ],
         "optional": [
             "volume_selection",
-            "weight"
+            "weight",
+            "print_energy"
         ],
         "doc": "TODO"
     }

@@ -164,6 +164,8 @@ namespace polyfem::solver
 				log_and_throw_error("Objective not implemented!");
 
 			obj->set_weight(args["weight"]);
+			if (args["print_energy"].get<std::string>() != "")
+				obj->enable_energy_print(args["print_energy"]);
 		}
 
 		return obj;

@@ -59,8 +59,6 @@ namespace polyfem::solver
     {
         if (inputs.size() != 1)
             throw std::runtime_error("Invalid input size for HomoCompositeForm!");
-
-		logger().debug("[{},{},{}]", bounds_(0), inputs(0), bounds_(1));
         
 		return pow(std::max(bounds_(0) - inputs(0), 0.0), power_) + pow(std::max(inputs(0) - bounds_(1), 0.0), power_);
     }

@@ -11,6 +11,25 @@ namespace polyfem::solver
 		AdjointForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations) : variable_to_simulations_(variable_to_simulations) {}
 		virtual ~AdjointForm() {}
 
+		inline double value(const Eigen::VectorXd &x) const
+		{
+			double val = Form::value(x);
+			if (print_energy_ == 1)
+			{
+				logger().debug("[{}] {}", print_energy_keyword_, val);
+				print_energy_ = 2;
+			}
+			return val;
+		}
+
+		void enable_energy_print(const std::string &print_energy_keyword) { print_energy_keyword_ = print_energy_keyword; print_energy_ = 1; }
+
+		virtual void solution_changed(const Eigen::VectorXd &new_x) override
+		{
+			if (print_energy_ == 2)
+				print_energy_ = 1;
+		}
+
 		const auto &get_variable_to_simulations() const { return variable_to_simulations_; }
 
 		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state)
@@ -36,6 +55,9 @@ namespace polyfem::solver
 		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations_;
+
+		mutable int print_energy_ = 0; // 0: don't print, 1: print, 2: already printed on current solution
+		std::string print_energy_keyword_;
 	};
 
 	class StaticForm : public AdjointForm

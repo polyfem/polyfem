@@ -25,7 +25,6 @@ namespace cppoptlib
 		solver_info_log = solver_params["solver_info_log"];
 
 		export_energy_path = solver_params["export_energy"];
-		export_energy_components = solver_params["export_energy_components"];
 
 		first_grad_norm_tol = solver_params["first_grad_norm_tol"];
 
@@ -181,13 +180,9 @@ namespace cppoptlib
 				objFunc.gradient(x, grad);
 			}
 
-			Eigen::VectorXd values;
-			Eigen::MatrixXd grads;
 			{
 				POLYFEM_SCOPED_TIMER("verify gradient", grad_time);
 				verify_gradient(objFunc, x, grad);
-				// values = objFunc.component_values(x);
-				// grads = objFunc.component_gradients(x);
 			}
 
 			const double grad_norm = compute_grad_norm(x, grad);
@@ -203,16 +198,6 @@ namespace cppoptlib
 			{
 				assert(values.size() == grads.cols());
 				outfile << std::setprecision(12) << energy << ", " << grad_norm;
-				if (export_energy_components)
-				{
-					outfile << ", ";
-					for (int i = 0; i < values.size(); i++)
-					{
-						outfile << std::setprecision(12) << values(i) << ", " << grads.col(i).norm();
-						if (i < values.size() - 1)
-							outfile << ", ";
-					}
-				}
 				outfile << "\n";
 				outfile.flush();
 			}
