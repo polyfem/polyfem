@@ -69,8 +69,8 @@ namespace polyfem::solver
 	class BoundedBiharmonicWeights2Dto3D : public Parametrization
 	{
 	public:
-		BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const Eigen::MatrixXd &V_surface, const Eigen::MatrixXi &F_surface) : num_control_vertices_(num_control_vertices), num_vertices_(num_vertices), V_surface_(V_surface), F_surface_(F_surface) {}
-		BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const State &state);
+		BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const Eigen::MatrixXd &V_surface, const Eigen::MatrixXi &F_surface) : num_control_vertices_(num_control_vertices), num_vertices_(num_vertices), V_surface_(V_surface), F_surface_(F_surface), allow_rotations_(true) {}
+		BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const State &state, const bool allow_rotations);
 
 		// Should only be called to initialize the parameter, when the shape matches the initial control points.
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
@@ -97,6 +97,8 @@ namespace polyfem::solver
 		Eigen::VectorXd y_start;
 
 		bool invoked_inverse_eval_ = false;
+
+		const bool allow_rotations_;
 	};
 
 } // namespace polyfem::solver

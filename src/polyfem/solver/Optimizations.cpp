@@ -264,7 +264,7 @@ namespace polyfem::solver
 		}
 		else if (type == "bounded-biharmonic-weights")
 		{
-			map = std::make_shared<BoundedBiharmonicWeights2Dto3D>(args["num_control_vertices"], args["num_vertices"], *states[args["state"]]);
+			map = std::make_shared<BoundedBiharmonicWeights2Dto3D>(args["num_control_vertices"], args["num_vertices"], *states[args["state"]], args["allow_rotations"]);
 		}
 		else
 			log_and_throw_error("Unkown parametrization!");
