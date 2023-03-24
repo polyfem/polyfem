@@ -192,11 +192,11 @@ namespace polyfem::solver
 
 		if (need_rebuild_basis)
 		{
-			const int cur_log = all_states_[0]->current_log_level;
+			const auto cur_log_level = logger().level();
 			all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
 			for (const auto &state : all_states_)
 				state->build_basis();
-			all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
+			all_states_[0]->set_log_level(cur_log_level);
 		}
 
 		// solve PDE
@@ -207,7 +207,7 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::solve_pde()
 	{
-		const int cur_log = all_states_[0]->current_log_level;
+		const auto cur_log_level = logger().level();
 		all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
 		utils::maybe_parallel_for(all_states_.size(), [&](int start, int end, int thread_id) {
 			for (int i = start; i < end; i++)
@@ -222,7 +222,7 @@ namespace polyfem::solver
 				}
 			}
 		});
-		all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
+		all_states_[0]->set_log_level(cur_log_level);
 
 		cur_grad.resize(0);
 	}

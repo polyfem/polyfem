@@ -6,6 +6,9 @@
 #include <igl/writeMSH.h>
 #include <polyfem/io/VTUWriter.hpp>
 
+#include <polyfem/State.hpp>
+#include <polysolve/FEMSolver.hpp>
+
 namespace polyfem::solver
 {
     namespace {
@@ -37,62 +40,212 @@ namespace polyfem::solver
         if (last_x.size() == x.size() && last_x == x)
             return true;
 
-        if (false)
-        {
-            std::string sdf_velocity_path_ = "tmp-vel.msh";
-            std::string shape_params = "--params \"";
-            for (int i = 0; i < x.size(); i++)
-                shape_params += to_string_with_precision(x(i), 16) + " ";
-            shape_params += "\" ";
+        // if (false)
+        // {
+        //     std::string sdf_velocity_path_ = "tmp-vel.msh";
+        //     std::string shape_params = "--params \"";
+        //     for (int i = 0; i < x.size(); i++)
+        //         shape_params += to_string_with_precision(x(i), 16) + " ";
+        //     shape_params += "\" ";
 
-            std::string command = "~/microstructures/build/isosurface_inflator/isosurface_cli 2D_doubly_periodic " + wire_path_ + " " + shape_params + " -S " + sdf_velocity_path_ + " " + out_path_;
+        //     std::string command = "~/microstructures/build/isosurface_inflator/isosurface_cli 2D_doubly_periodic " + wire_path_ + " " + shape_params + " -S " + sdf_velocity_path_ + " " + out_path_;
 
-            int return_val;
-            try 
-            {
-                return_val = system(command.c_str());
-            }
-            catch (const std::exception &err)
-            {
-                logger().error("remesh command \"{}\" returns {}", command, return_val);
+        //     int return_val;
+        //     try 
+        //     {
+        //         return_val = system(command.c_str());
+        //     }
+        //     catch (const std::exception &err)
+        //     {
+        //         logger().error("remesh command \"{}\" returns {}", command, return_val);
 
-                return false;
-            }
+        //         return false;
+        //     }
 
-            logger().info("remesh command \"{}\" returns {}", command, return_val);
+        //     logger().info("remesh command \"{}\" returns {}", command, return_val);
 
-            {
-                std::vector<std::vector<int>> elements;
-                std::vector<std::vector<double>> weights;
-                std::vector<int> body_ids;
-                std::vector<std::string> node_data_name;
-                std::vector<std::vector<double>> node_data;
-                io::MshReader::load(sdf_velocity_path_, Vout, Fout, elements, weights, body_ids, node_data_name, node_data);
+        //     {
+        //         std::vector<std::vector<int>> elements;
+        //         std::vector<std::vector<double>> weights;
+        //         std::vector<int> body_ids;
+        //         std::vector<std::string> node_data_name;
+        //         std::vector<std::vector<double>> node_data;
+        //         io::MshReader::load(sdf_velocity_path_, Vout, Fout, elements, weights, body_ids, node_data_name, node_data);
 
-                assert(node_data_name.size() == node_data.size());
+        //         assert(node_data_name.size() == node_data.size());
 
-                vertex_normals = Eigen::Map<Eigen::MatrixXd>(node_data[0].data(), 3, Vout.rows()).topRows(Vout.cols()).transpose();
+        //         vertex_normals = Eigen::Map<Eigen::MatrixXd>(node_data[0].data(), 3, Vout.rows()).topRows(Vout.cols()).transpose();
                 
-                shape_vel.setZero(x.size(), Vout.rows());
-                for (int i = 1; i < node_data_name.size(); i++)
-                    shape_vel.row(i - 1) = Eigen::Map<RowVectorNd>(node_data[i].data(), Vout.rows());
-            }
-        }
-        else
+        //         shape_vel.setZero(x.size(), Vout.rows());
+        //         for (int i = 1; i < node_data_name.size(); i++)
+        //             shape_vel.row(i - 1) = Eigen::Map<RowVectorNd>(node_data[i].data(), Vout.rows());
+        //     }
+        // }
+        // else
         {
             std::vector<double> x_vec(x.data(), x.data() + x.size());
             {
                 POLYFEM_SCOPED_TIMER("mesh inflation");
                 logger().info("isosurface inflator input: {}", x.transpose());
+                Eigen::MatrixXd vertex_normals, shape_vel;
                 utils::inflate(wire_path_, opts_, x_vec, Vout, Fout, vertex_normals, shape_vel);
+
+                Eigen::VectorXd norms = vertex_normals.rowwise().norm();
+                boundary_flags.setZero(norms.size());
+                for (int i = 0; i < norms.size(); i++)
+                    if (norms(i) > 0.1)
+                        boundary_flags(i) = true;
+                
+                shape_velocity.setZero(shape_vel.rows(), vertex_normals.size());
+                for (int d = 0; d < vertex_normals.cols(); d++)
+                    for (int i = 0; i < vertex_normals.rows(); i++)
+                        for (int q = 0; q < shape_vel.rows(); q++)
+                            shape_velocity(q, vertex_normals.cols() * i + d) = shape_vel(q, i) * vertex_normals(i, d);
             }
             
             write_msh(out_path_, Vout, Fout);
+            if (volume_velocity_)
+                extend_to_internal();
         }
 
         last_x = x;
 
         return true;
+    }
+    void SDF2Mesh::extend_to_internal() const
+    {
+        json args = R"(
+        {
+            "geometry": [
+                {
+                    "mesh": "",
+                    "surface_selection": {
+                        "threshold": 1e-7
+                    }
+                }
+            ],
+            "space": {
+                "discr_order": 1
+            },
+            "solver": {
+                "linear": {
+                    "solver": "Eigen::PardisoLDLT"
+                }
+            },
+            "boundary_conditions": {
+                "dirichlet_boundary": [
+                    {
+                        "id": 7,
+                        "value": 0.0
+                    }
+                ],
+                "periodic_boundary": [true, true]
+            },
+            "output": {
+                "log": {
+                    "level": "info"
+                }
+            },
+            "materials": {
+                "type": "Laplacian"
+            }
+        })"_json;
+
+        const auto log_level = logger().level();
+        
+        args["geometry"][0]["mesh"] = out_path_;
+
+        const int dim = Vout.cols();
+
+        Eigen::MatrixXd extended_velocity;
+        extended_velocity.setZero(shape_velocity.rows(), shape_velocity.cols());
+
+        State state;
+        state.init(args, false);
+
+        logger().info("Laplacian solve for volume shape velocity...");
+
+        state.load_mesh();
+
+        if (state.mesh == nullptr)
+            log_and_throw_error("Invalid mesh!");
+        
+        state.stats.compute_mesh_stats(*state.mesh);
+
+        state.build_basis();
+
+        state.assemble_rhs();
+        state.assemble_stiffness_mat();
+
+        state.boundary_nodes.clear();
+        std::vector<int> primitive_to_node = state.primitive_to_node();
+        std::vector<int> node_to_primitive = state.node_to_primitive();
+        for (int i = 0; i < boundary_flags.size(); i++)
+            if (boundary_flags(i))
+                state.boundary_nodes.push_back(primitive_to_node[i]);
+
+        auto solver = polysolve::LinearSolver::create(state.args["solver"]["linear"]["solver"], state.args["solver"]["linear"]["precond"]);
+        solver->setParameters(state.args["solver"]["linear"]);
+
+        StiffnessMatrix A = state.stiffness;
+        std::vector<int> boundary_nodes_tmp = state.boundary_nodes;
+        {
+            const int full_size = A.rows();
+            int precond_num = full_size;
+
+            state.full_to_periodic(boundary_nodes_tmp);
+            precond_num = state.full_to_periodic(A);
+
+            StiffnessMatrix Atmp = A;
+            prefactorize(*solver, Atmp, boundary_nodes_tmp, precond_num, state.args["output"]["data"]["stiffness_mat"]);
+        }
+
+        Eigen::MatrixXd rhs;
+        rhs.setZero(state.ndof(), shape_velocity.rows() * dim);
+        for (int q = 0; q < shape_velocity.rows(); q++)
+            for (int d = 0; d < dim; d++)
+                for (int i : state.boundary_nodes)
+                    rhs(i, q * dim + d) = shape_velocity(q, node_to_primitive[i] * dim + d);
+
+        state.full_to_periodic(rhs, true);
+    
+        // enforce dirichlet boundary on rhs
+        {
+            Eigen::VectorXd N;
+            N.setZero(A.rows());
+            N(boundary_nodes_tmp).setOnes();
+            rhs -= ((1.0 - N.array()).matrix()).asDiagonal() * (A * (N.asDiagonal() * rhs));
+        }
+
+        for (int q = 0; q < shape_velocity.rows(); q++)
+        {
+            Eigen::MatrixXd sol(state.ndof(), dim);
+            for (int d = 0; d < dim; d++)
+            {
+                Eigen::VectorXd x;
+                x.setZero(rhs.rows());
+                solver->solve(rhs.col(q * dim + d), x);
+
+                sol.col(d) = state.periodic_to_full(state.ndof(), x);
+            }
+            extended_velocity.row(q) = utils::flatten(sol(primitive_to_node, Eigen::all)).transpose();
+
+            // io::VTUWriter writer;
+            // writer.add_field("volume_velocity", utils::unflatten(extended_velocity.row(q).transpose(), dim));
+            // writer.add_field("boundary_velocity", utils::unflatten(shape_velocity.row(q).transpose(), dim));
+
+            // writer.write_mesh("debug_" + std::to_string(q) + ".vtu", Vout, Fout);
+        }
+        
+        double error = 0;
+        for (int i = 0; i < extended_velocity.cols(); i++)
+            if (boundary_flags(i / dim))
+                error += (extended_velocity.col(i) - shape_velocity.col(i)).norm();
+        logger().info("Error of volume shape velocity: {}", error);
+
+        state.set_log_level(log_level);
+        
+        std::swap(extended_velocity, shape_velocity);
     }
     int SDF2Mesh::size(const int x_size) const
     {
@@ -113,11 +266,10 @@ namespace polyfem::solver
     } 
     Eigen::VectorXd SDF2Mesh::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
     {
-        assert(x.size() == shape_vel.rows());
-
-        const int dim = vertex_normals.cols();
+        // assert(x.size() == shape_vel.rows());
+        // const int dim = vertex_normals.cols();
         
-        Eigen::VectorXd mapped_grad  = shape_vel * (vertex_normals.array() * utils::unflatten(grad, dim).array()).matrix().rowwise().sum();
+        Eigen::VectorXd mapped_grad  = shape_velocity * grad; // shape_vel * (vertex_normals.array() * utils::unflatten(grad, dim).array()).matrix().rowwise().sum();
 
         // debug
         // {

@@ -1,16 +1,10 @@
-# Not implemented
+## json spec
+1. rename parameter "number" to "size"
+2. rename parameter "initial" to "initial_value"
 
-## Shape Optimization
-1. Collision check
-2. Remesh
+## logging
+1. one logger for each state?
 
-## Material Optimization
-1. Barrier function to bound variables
-2. Material smoothing
-3. Friction/Damping optimizations
-
-## Initial Condition Optimization
-1. Everything.
-
-## Control Optimization
-1. Control smoothing
+## differentiable
+1. shape derivative on neumann nodes
+2. shape derivative with pressure boundary condition

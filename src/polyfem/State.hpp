@@ -108,10 +108,7 @@ namespace polyfem
 			spdlog::set_level(log_level);
 			logger().set_level(log_level);
 			ipc::logger().set_level(log_level);
-			current_log_level = log_level;
 		}
-
-		int current_log_level;
 
 		/// gets the output log as json
 		/// this is *not* what gets printed but more informative
@@ -162,9 +159,6 @@ namespace polyfem
 		/// Mapping from input nodes to FE nodes
 		std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes, geom_mesh_nodes, pressure_mesh_nodes;
 
-		// list of dirichlet boundary geometry nodes
-		std::vector<int> boundary_gnodes;
-
 		/// used to store assembly values for small problems
 		assembler::AssemblyValsCache ass_vals_cache;
 		assembler::AssemblyValsCache mass_ass_vals_cache;
@@ -184,7 +178,6 @@ namespace polyfem
 
 		/// In Elasticity PDE, solve for "min W(disp_grad + \grad u)" instead of "min W(\grad u)"
 		Eigen::MatrixXd disp_grad;
-		bool solve_disp_grad = false;
 
 		/// use average pressure for stokes problem to fix the additional dofs, true by default
 		/// if false, it will fix one pressure node to zero
@@ -382,17 +375,6 @@ namespace polyfem
 
 		Eigen::MatrixXd periodic_to_full(const int ndofs, const Eigen::MatrixXd &x_periodic) const;
 
-	private:
-		/// @brief Load or compute the initial solution.
-		/// @param[out] solution Output solution variable.
-		void initial_solution(Eigen::MatrixXd &solution) const;
-		/// @brief Load or compute the initial velocity.
-		/// @param[out] solution Output velocity variable.
-		void initial_velocity(Eigen::MatrixXd &velocity) const;
-		/// @brief Load or compute the initial acceleration.
-		/// @param[out] solution Output acceleration variable.
-		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
-
 		/// @brief Solve the linear problem with the given solver and system.
 		/// @param solver Linear solver.
 		/// @param A Linear system matrix.
@@ -406,6 +388,17 @@ namespace polyfem
 			Eigen::VectorXd &b,
 			const bool compute_spectrum,
 			Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+
+	private:
+		/// @brief Load or compute the initial solution.
+		/// @param[out] solution Output solution variable.
+		void initial_solution(Eigen::MatrixXd &solution) const;
+		/// @brief Load or compute the initial velocity.
+		/// @param[out] solution Output velocity variable.
+		void initial_velocity(Eigen::MatrixXd &velocity) const;
+		/// @brief Load or compute the initial acceleration.
+		/// @param[out] solution Output acceleration variable.
+		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
 
 		//---------------------------------------------------
 		//-----------------nodes flags-----------------------
