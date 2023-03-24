@@ -437,16 +437,16 @@ namespace polyfem
 		Eigen::VectorXi in_node_to_node;
 		/// maps in vertices/edges/faces/cells to polyfem vertices/edges/faces/cells
 		Eigen::VectorXi in_primitive_to_primitive;
-		
+
 		std::vector<int> primitive_to_node() const
-		{ 
+		{
 			auto indices = iso_parametric() ? mesh_nodes->primitive_to_node() : geom_mesh_nodes->primitive_to_node();
 			indices.resize(mesh->n_vertices());
 			return indices;
 		}
 
 		std::vector<int> node_to_primitive() const
-		{ 
+		{
 			auto p2n = primitive_to_node();
 			auto indices = p2n;
 			for (int i = 0; i < p2n.size(); i++)
@@ -693,7 +693,7 @@ namespace polyfem
 				else
 					log_and_throw_error("Invalid adjoint type!");
 			}
-			
+
 			return diff_cached.adjoint_mat();
 		}
 		Eigen::MatrixXd solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
@@ -705,6 +705,7 @@ namespace polyfem
 
 		// Get geometric node indices for surface/volume
 		void compute_surface_node_ids(const int surface_selection, std::vector<int> &node_ids) const;
+		void compute_total_surface_node_ids(std::vector<int> &node_ids) const;
 		void compute_volume_node_ids(const int volume_selection, std::vector<int> &node_ids) const;
 
 		// to replace the initial condition

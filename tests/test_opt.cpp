@@ -760,8 +760,9 @@ TEST_CASE("shape-stress-bbw-opt", "[optimization]")
 		std::vector<int> variable_sizes;
 		for (const auto &arg : opt_args["parameters"])
 		{
-			ndof += arg["number"].get<int>();
-			variable_sizes.push_back(arg["number"].get<int>());
+			int size = compute_variable_size(arg, states);
+			ndof += size;
+			variable_sizes.push_back(size);
 		}
 
 		// define mappings from optimization variable x to material parameters in states

@@ -393,6 +393,30 @@ namespace polyfem
 		}
 	}
 
+	void State::compute_total_surface_node_ids(std::vector<int> &node_ids) const
+	{
+		node_ids = {};
+
+		const auto &gbases = geom_bases();
+		for (const auto &lb : total_local_boundary)
+		{
+			const int e = lb.element_id();
+			for (int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
+
+				for (long n = 0; n < nodes.size(); ++n)
+				{
+					const int g_id = gbases[e].bases[nodes(n)].global()[0].index;
+
+					if (std::count(node_ids.begin(), node_ids.end(), g_id) == 0)
+						node_ids.push_back(g_id);
+				}
+			}
+		}
+	}
+
 	void State::compute_volume_node_ids(const int volume_selection, std::vector<int> &node_ids) const
 	{
 		node_ids = {};

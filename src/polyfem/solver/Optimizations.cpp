@@ -183,10 +183,15 @@ namespace polyfem::solver
 		}
 		else if (type == "slice")
 		{
-			if ((args["from"] != -1) && (args["to"] != -1))
-				map = std::make_shared<SliceMap>(args["from"], args["to"], args["last"]);
-			else if (args["parameter_index"] != -1)
+			if (args.contains("from") && args.contains("to"))
 			{
+				assert(args["from"] != -1);
+				assert(args["to"] != -1);
+				map = std::make_shared<SliceMap>(args["from"], args["to"], args["last"]);
+			}
+			else if (args.contains("parameter_index"))
+			{
+				assert(args["parameter_index"] != -1);
 				int idx = args["parameter_index"].get<int>();
 				int from, to, last;
 				int cumulative = 0;
@@ -457,6 +462,56 @@ namespace polyfem::solver
 		apply_objective_json_spec(args["functionals"], obj_rules);
 
 		return args;
+	}
+
+	int compute_variable_size(const json &args, const std::vector<std::shared_ptr<State>> &states)
+	{
+		if (args.contains("number"))
+		{
+			assert(args["number"].get<int>() != -1);
+			return args["number"].get<int>();
+		}
+		else if (args.contains("surface_selection"))
+		{
+			auto surface_selection = args["surface_selection"].get<std::vector<int>>();
+			auto state_id = args["state"];
+			std::set<int> node_ids = {};
+			for (const auto &surface : surface_selection)
+			{
+				std::vector<int> ids;
+				states[state_id]->compute_surface_node_ids(surface, ids);
+				for (const auto &i : ids)
+					node_ids.insert(i);
+			}
+			return node_ids.size() * states[state_id]->mesh->dimension();
+		}
+		else if (args.contains("volume_selection"))
+		{
+			auto volume_selection = args["volume_selection"].get<std::vector<int>>();
+			auto state_id = args["state"];
+			std::set<int> node_ids = {};
+			for (const auto &volume : volume_selection)
+			{
+				std::vector<int> ids;
+				states[state_id]->compute_volume_node_ids(volume, ids);
+				for (const auto &i : ids)
+					node_ids.insert(i);
+			}
+
+			if (args["exclude_boundary_nodes"])
+			{
+				std::vector<int> ids;
+				states[state_id]->compute_total_surface_node_ids(ids);
+				for (const auto &i : ids)
+					node_ids.erase(i);
+			}
+
+			return node_ids.size() * states[state_id]->mesh->dimension();
+		}
+		else
+			log_and_throw_error("Incorrect specification for parameters.");
+
+		return -1;
 	}
 
 } // namespace polyfem::solver

@@ -60,4 +60,6 @@ namespace polyfem::solver
 
 	std::shared_ptr<VariableToSimulation> create_variable_to_simulation(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes);
 
+	int compute_variable_size(const json &args, const std::vector<std::shared_ptr<State>> &states);
+
 } // namespace polyfem

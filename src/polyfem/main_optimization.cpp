@@ -108,8 +108,9 @@ int main(int argc, char **argv)
 	std::vector<int> variable_sizes;
 	for (const auto &arg : opt_args["parameters"])
 	{
-		ndof += arg["number"].get<int>(); // TODO: might be macro linking to number of elements/vertices
-		variable_sizes.push_back(arg["number"].get<int>());
+		int size = compute_variable_size(arg, states);
+		ndof += size;
+		variable_sizes.push_back(size);
 	}
 
 	/* variable to simulations */
@@ -126,7 +127,7 @@ int main(int argc, char **argv)
 	int var = 0;
 	for (const auto &arg : opt_args["parameters"])
 	{
-		Eigen::VectorXd tmp(arg["number"].get<int>());
+		Eigen::VectorXd tmp(variable_sizes[var]);
 		if (arg["initial"].is_array() && arg["initial"].size() > 0)
 		{
 			nlohmann::adl_serializer<Eigen::VectorXd>::from_json(arg["initial"], tmp);
