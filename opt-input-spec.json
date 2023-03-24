@@ -623,9 +623,15 @@
             "output_path"
         ],
         "optional": [
-            "options"
+            "options",
+            "use_volume_velocity"
         ],
         "doc": "Append a list of constants at the end of the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/use_volume_velocity",
+        "type": "bool",
+        "default": false
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/wire_path",

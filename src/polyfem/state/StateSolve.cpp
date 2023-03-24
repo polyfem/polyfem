@@ -455,14 +455,13 @@ namespace polyfem
 			if (id < periodic_reduce_map.size())
 				return periodic_reduce_map(id);
 			else
-				return (int)(id + independent_dof - n_bases * problem_dim);
+				return (int)(id + independent_dof - periodic_reduce_map.size());
 		};
 
 		Eigen::MatrixXd x_full;
 		x_full.resize(ndofs, x_periodic.cols());
 		for (int i = 0; i < x_full.rows(); i++)
-			for (int j = 0; j < x_full.cols(); j++)
-				x_full(i, j) = x_periodic(index_map(i), j);
+			x_full.row(i) = x_periodic.row(index_map(i));
 
 		return x_full;
 	}

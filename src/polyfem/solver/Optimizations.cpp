@@ -182,7 +182,7 @@ namespace polyfem::solver
 		}
 		else if (type == "sdf-to-mesh")
 		{
-			map = std::make_shared<SDF2Mesh>(args["wire_path"], args["output_path"], args["options"]);
+			map = std::make_shared<SDF2Mesh>(args["wire_path"], args["output_path"], args["use_volume_velocity"], args["options"]);
 		}
 		else if (type == "periodic-mesh-tile")
 		{
