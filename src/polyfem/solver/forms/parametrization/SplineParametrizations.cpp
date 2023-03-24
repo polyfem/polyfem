@@ -9,10 +9,80 @@
 #include <igl/bounding_box.h>
 #include <igl/writeOBJ.h>
 
+#include <polyfem/utils/AutodiffTypes.hpp>
+
 #include <unordered_map>
 
 namespace polyfem::solver
 {
+	namespace
+	{
+		typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1>> Diff;
+
+		template <typename T>
+		Eigen::Matrix<T, 3, 3> rotation_matrix(const T x_angle, const T y_angle, const T z_angle)
+		{
+			Eigen::Matrix<T, 3, 3> x_rot;
+			for (int i = 0; i < 3; ++i)
+				for (int j = 0; j < 3; ++j)
+					x_rot(i, j) = T(0);
+			x_rot(0, 0) = 1.;
+			x_rot(1, 1) = cos(x_angle);
+			x_rot(1, 2) = -sin(x_angle);
+			x_rot(2, 1) = sin(x_angle);
+			x_rot(2, 2) = cos(x_angle);
+			Eigen::Matrix<T, 3, 3> y_rot;
+			for (int i = 0; i < 3; ++i)
+				for (int j = 0; j < 3; ++j)
+					y_rot(i, j) = T(0);
+			y_rot(1, 1) = 1.;
+			y_rot(0, 0) = cos(y_angle);
+			y_rot(0, 2) = sin(y_angle);
+			y_rot(2, 0) = -sin(y_angle);
+			y_rot(2, 2) = cos(y_angle);
+			Eigen::Matrix<T, 3, 3> z_rot;
+			for (int i = 0; i < 3; ++i)
+				for (int j = 0; j < 3; ++j)
+					z_rot(i, j) = T(0);
+			z_rot(2, 2) = 1.;
+			z_rot(0, 0) = cos(z_angle);
+			z_rot(0, 1) = -sin(z_angle);
+			z_rot(1, 0) = sin(z_angle);
+			z_rot(1, 1) = cos(z_angle);
+
+			return z_rot * y_rot * x_rot;
+		}
+
+		template <typename T>
+		Eigen::Matrix<T, 3, 1> affine_transformation(const Eigen::VectorXd &point, const Eigen::Matrix<T, 6, 1> &param)
+		{
+			Eigen::Matrix<T, 3, 3> rot = rotation_matrix(param(0), param(1), param(2));
+			Eigen::Matrix<T, 3, 1> transformed_point(3);
+			for (int i = 0; i < 3; ++i)
+			{
+				T val(0);
+				for (int j = 0; j < 3; ++j)
+					val = val + rot(j, i) * point(j);
+				transformed_point(i) = val + param(3 + i);
+			}
+			return transformed_point;
+		}
+
+		Eigen::MatrixXd grad_affine_transformation(const Eigen::VectorXd &point, const Eigen::VectorXd &param)
+		{
+			DiffScalarBase::setVariableCount(6);
+			Eigen::Matrix<Diff, 6, 1> full_diff(6, 1);
+			for (int i = 0; i < 6; i++)
+				full_diff(i) = Diff(i, param(i));
+			auto reduced_diff = affine_transformation(point, full_diff);
+
+			Eigen::MatrixXd grad(3, 6);
+			for (int i = 0; i < 3; ++i)
+				grad.row(i) = reduced_diff[i].getGradient();
+
+			return grad;
+		}
+	} // namespace
 	Eigen::VectorXd BSplineParametrization1DTo2D::inverse_eval(const Eigen::VectorXd &y)
 	{
 		spline_ = std::make_shared<BSplineParametrization2D>(initial_control_points_, knots_, utils::unflatten(y, 2));
@@ -74,8 +144,8 @@ namespace polyfem::solver
 		return Eigen::VectorXd();
 	}
 
-	BoundedBiharmonicWeights2Dto3D::BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const State &state)
-		: num_control_vertices_(num_control_vertices), num_vertices_(num_vertices)
+	BoundedBiharmonicWeights2Dto3D::BoundedBiharmonicWeights2Dto3D(const int num_control_vertices, const int num_vertices, const State &state, const bool allow_rotations)
+		: num_control_vertices_(num_control_vertices), num_vertices_(num_vertices), allow_rotations_(allow_rotations)
 	{
 		Eigen::MatrixXd V;
 		state.get_vertices(V);
@@ -217,7 +287,7 @@ namespace polyfem::solver
 
 		invoked_inverse_eval_ = true;
 
-		return Eigen::VectorXd::Zero(num_control_vertices_ * 3);
+		return Eigen::VectorXd::Zero(num_control_vertices_ * (allow_rotations_ ? 6 : 3));
 	}
 
 	Eigen::VectorXd BoundedBiharmonicWeights2Dto3D::eval(const Eigen::VectorXd &x) const
@@ -225,9 +295,21 @@ namespace polyfem::solver
 		if (!invoked_inverse_eval_)
 			log_and_throw_error("Must call inverse eval on this parametrization first!");
 		Eigen::VectorXd y = Eigen::VectorXd::Zero(y_start.size());
-		for (int j = 0; j < bbw_weights_.cols(); ++j)
-			for (int i = 0; i < bbw_weights_.rows(); ++i)
-				y.segment(i * 3, 3) += bbw_weights_(i, j) * (y_start.segment(i * 3, 3) + x.segment(j * 3, 3));
+		if (allow_rotations_)
+		{
+			for (int j = 0; j < bbw_weights_.cols(); ++j)
+			{
+				Eigen::Matrix<double, 6, 1> affine_params = x.segment(j * 6, 6);
+				for (int i = 0; i < bbw_weights_.rows(); ++i)
+					y.segment(i * 3, 3) += bbw_weights_(i, j) * affine_transformation(y_start.segment(i * 3, 3), affine_params);
+			}
+		}
+		else
+		{
+			for (int j = 0; j < bbw_weights_.cols(); ++j)
+				for (int i = 0; i < bbw_weights_.rows(); ++i)
+					y.segment(i * 3, 3) += bbw_weights_(i, j) * (y_start.segment(i * 3, 3) + x.segment(j * 3, 3));
+		}
 
 		for (int j = 0; j < boundary_bbw_weights_.cols(); ++j)
 			for (int i = 0; i < boundary_bbw_weights_.rows(); ++i)
@@ -239,9 +321,18 @@ namespace polyfem::solver
 	Eigen::VectorXd BoundedBiharmonicWeights2Dto3D::apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd grad = Eigen::VectorXd::Zero(x.size());
-		for (int j = 0; j < bbw_weights_.cols(); ++j)
-			for (int i = 0; i < bbw_weights_.rows(); ++i)
-				grad.segment(j * 3, 3) += bbw_weights_(i, j) * grad_full.segment(i * 3, 3);
+		if (allow_rotations_)
+		{
+			for (int j = 0; j < bbw_weights_.cols(); ++j)
+				for (int i = 0; i < bbw_weights_.rows(); ++i)
+					grad.segment(j * 6, 6) += bbw_weights_(i, j) * grad_affine_transformation(y_start.segment(i * 3, 3), x.segment(j * 6, 6)).transpose() * grad_full.segment(i * 3, 3);
+		}
+		else
+		{
+			for (int j = 0; j < bbw_weights_.cols(); ++j)
+				for (int i = 0; i < bbw_weights_.rows(); ++i)
+					grad.segment(j * 3, 3) += bbw_weights_(i, j) * grad_full.segment(i * 3, 3);
+		}
 		return grad;
 	}
 
