@@ -8,6 +8,7 @@
 #include <polyfem/solver/forms/adjoint_forms/TransientForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SmoothingForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/AMIPSForm.hpp>
+#include <polyfem/solver/forms/adjoint_forms/BarrierForms.hpp>
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
@@ -86,7 +87,37 @@ namespace polyfem::solver
 			}
 			else if (type == "sdf-target")
 			{
-				log_and_throw_error("Objective not implemented!");
+				std::shared_ptr<SDFTargetForm> tmp = std::make_shared<SDFTargetForm>(var2sim, *(states[args["state"]]), args);
+				double delta = args["delta"].get<double>();
+				if (!states[args["state"]]->mesh->is_volume())
+				{
+					int dim = 2;
+					Eigen::MatrixXd control_points(args["control_points"].size(), dim);
+					for (int i = 0; i < control_points.rows(); ++i)
+						for (int j = 0; j < control_points.cols(); ++j)
+							control_points(i, j) = args["control_points"][i][j].get<double>();
+					Eigen::VectorXd knots(args["knots"].size());
+					for (int i = 0; i < knots.size(); ++i)
+						knots(i) = args["knots"][i].get<double>();
+					tmp->set_bspline_target(control_points, knots, delta);
+				}
+				else
+				{
+					int dim = 3;
+					Eigen::MatrixXd control_points_grid(args["control_points_grid"].size(), dim);
+					for (int i = 0; i < control_points_grid.rows(); ++i)
+						for (int j = 0; j < control_points_grid.cols(); ++j)
+							control_points_grid(i, j) = args["control_points_grid"][i][j].get<double>();
+					Eigen::VectorXd knots_u(args["knots_u"].size());
+					for (int i = 0; i < knots_u.size(); ++i)
+						knots_u(i) = args["knots_u"][i].get<double>();
+					Eigen::VectorXd knots_v(args["knots_v"].size());
+					for (int i = 0; i < knots_v.size(); ++i)
+						knots_v(i) = args["knots_v"][i].get<double>();
+					tmp->set_bspline_target(control_points_grid, knots_u, knots_v, delta);
+				}
+
+				obj = tmp;
 			}
 			else if (type == "function-target")
 			{
@@ -125,6 +156,10 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<AMIPSForm>(var2sim, *(states[args["state"]]));
 			}
+			else if (type == "collision_barrier")
+			{
+				obj = std::make_shared<CollisionBarrierForm>(var2sim, *(states[args["state"]]), args["dhat"]);
+			}
 			else
 				log_and_throw_error("Objective not implemented!");
 
@@ -134,7 +169,7 @@ namespace polyfem::solver
 		return obj;
 	}
 
-	std::shared_ptr<Parametrization> create_parametrization(const json &args, const std::vector<std::shared_ptr<State>> &states)
+	std::shared_ptr<Parametrization> create_parametrization(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
 	{
 		std::shared_ptr<Parametrization> map;
 		const std::string type = args["type"];
@@ -148,7 +183,32 @@ namespace polyfem::solver
 		}
 		else if (type == "slice")
 		{
-			map = std::make_shared<SliceMap>(args["from"], args["to"], args["last"]);
+			if (args.contains("from") && args.contains("to"))
+			{
+				assert(args["from"] != -1);
+				assert(args["to"] != -1);
+				map = std::make_shared<SliceMap>(args["from"], args["to"], args["last"]);
+			}
+			else if (args.contains("parameter_index"))
+			{
+				assert(args["parameter_index"] != -1);
+				int idx = args["parameter_index"].get<int>();
+				int from, to, last;
+				int cumulative = 0;
+				for (int i = 0; i < variable_sizes.size(); ++i)
+				{
+					if (i == idx)
+					{
+						from = cumulative;
+						to = from + variable_sizes[i];
+					}
+					cumulative += variable_sizes[i];
+				}
+				last = cumulative;
+				map = std::make_shared<SliceMap>(from, to, last);
+			}
+			else
+				log_and_throw_error("Incorrect spec for SliceMap!");
 		}
 		else if (type == "exp")
 		{
@@ -210,14 +270,14 @@ namespace polyfem::solver
 		return map;
 	}
 
-	std::shared_ptr<VariableToSimulation> create_variable_to_simulation(const json &args, const std::vector<std::shared_ptr<State>> &states)
+	std::shared_ptr<VariableToSimulation> create_variable_to_simulation(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
 	{
 		std::shared_ptr<VariableToSimulation> var2sim;
 		const std::string type = args["type"];
 
 		std::vector<std::shared_ptr<Parametrization>> map_list;
 		for (const auto &arg : args["composition"])
-			map_list.push_back(create_parametrization(arg, states));
+			map_list.push_back(create_parametrization(arg, states, variable_sizes));
 		CompositeParametrization composite_map;
 
 		std::vector<std::shared_ptr<State>> cur_states;
@@ -400,8 +460,58 @@ namespace polyfem::solver
 			}
 		}
 		apply_objective_json_spec(args["functionals"], obj_rules);
-		
+
 		return args;
+	}
+
+	int compute_variable_size(const json &args, const std::vector<std::shared_ptr<State>> &states)
+	{
+		if (args.contains("number"))
+		{
+			assert(args["number"].get<int>() != -1);
+			return args["number"].get<int>();
+		}
+		else if (args.contains("surface_selection"))
+		{
+			auto surface_selection = args["surface_selection"].get<std::vector<int>>();
+			auto state_id = args["state"];
+			std::set<int> node_ids = {};
+			for (const auto &surface : surface_selection)
+			{
+				std::vector<int> ids;
+				states[state_id]->compute_surface_node_ids(surface, ids);
+				for (const auto &i : ids)
+					node_ids.insert(i);
+			}
+			return node_ids.size() * states[state_id]->mesh->dimension();
+		}
+		else if (args.contains("volume_selection"))
+		{
+			auto volume_selection = args["volume_selection"].get<std::vector<int>>();
+			auto state_id = args["state"];
+			std::set<int> node_ids = {};
+			for (const auto &volume : volume_selection)
+			{
+				std::vector<int> ids;
+				states[state_id]->compute_volume_node_ids(volume, ids);
+				for (const auto &i : ids)
+					node_ids.insert(i);
+			}
+
+			if (args["exclude_boundary_nodes"])
+			{
+				std::vector<int> ids;
+				states[state_id]->compute_total_surface_node_ids(ids);
+				for (const auto &i : ids)
+					node_ids.erase(i);
+			}
+
+			return node_ids.size() * states[state_id]->mesh->dimension();
+		}
+		else
+			log_and_throw_error("Incorrect specification for parameters.");
+
+		return -1;
 	}
 
 } // namespace polyfem::solver

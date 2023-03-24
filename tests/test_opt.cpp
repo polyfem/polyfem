@@ -220,7 +220,7 @@ TEST_CASE("topology-opt", "[optimization]")
 
 		// define mappings from optimization variable x to material parameters in states
 		for (const auto &arg : opt_args["variable_to_simulation"])
-			variable_to_simulations.push_back(create_variable_to_simulation(arg, states));
+			variable_to_simulations.push_back(create_variable_to_simulation(arg, states, {}));
 
 		// initialize optimization variable and assign elastic parameters to simulators
 		int ndof = 0;
@@ -755,14 +755,19 @@ TEST_CASE("shape-stress-bbw-opt", "[optimization]")
 			states[i++] = create_state(cur_args);
 		}
 
-		// define mappings from optimization variable x to material parameters in states
-		for (const auto &arg : opt_args["variable_to_simulation"])
-			variable_to_simulations.push_back(create_variable_to_simulation(arg, states));
-
 		// initialize optimization variable and assign elastic parameters to simulators
 		int ndof = 0;
+		std::vector<int> variable_sizes;
 		for (const auto &arg : opt_args["parameters"])
-			ndof += arg["number"].get<int>();
+		{
+			int size = compute_variable_size(arg, states);
+			ndof += size;
+			variable_sizes.push_back(size);
+		}
+
+		// define mappings from optimization variable x to material parameters in states
+		for (const auto &arg : opt_args["variable_to_simulation"])
+			variable_to_simulations.push_back(create_variable_to_simulation(arg, states, variable_sizes));
 
 		x.setZero(ndof);
 		int var = 0;

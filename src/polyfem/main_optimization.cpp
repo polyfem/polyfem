@@ -103,18 +103,23 @@ int main(int argc, char **argv)
 		}
 	}
 
+	/* DOF */
+	int ndof = 0;
+	std::vector<int> variable_sizes;
+	for (const auto &arg : opt_args["parameters"])
+	{
+		int size = compute_variable_size(arg, states);
+		ndof += size;
+		variable_sizes.push_back(size);
+	}
+
 	/* variable to simulations */
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	for (const auto &arg : opt_args["variable_to_simulation"])
-		variable_to_simulations.push_back(create_variable_to_simulation(arg, states));
+		variable_to_simulations.push_back(create_variable_to_simulation(arg, states, variable_sizes));
 
 	/* forms */
 	std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(create_form(opt_args["functionals"], variable_to_simulations, states));
-
-	/* DOF */
-	int ndof = 0;
-	for (const auto &arg : opt_args["parameters"])
-		ndof += arg["number"].get<int>(); // TODO: might be macro linking to number of elements/vertices
 
 	Eigen::VectorXd x;
 	x.setZero(ndof);
@@ -122,7 +127,7 @@ int main(int argc, char **argv)
 	int var = 0;
 	for (const auto &arg : opt_args["parameters"])
 	{
-		Eigen::VectorXd tmp(arg["number"].get<int>());
+		Eigen::VectorXd tmp(variable_sizes[var]);
 		if (arg["initial"].is_array() && arg["initial"].size() > 0)
 		{
 			nlohmann::adl_serializer<Eigen::VectorXd>::from_json(arg["initial"], tmp);
