@@ -43,8 +43,11 @@ namespace polyfem::utils
         const auto normals = inflator.vertexNormals();
         vertex_normals.setZero(normals.size(), dim);
         for (int i = 0; i < normals.size(); i++)
+        {
             for (int d = 0; d < dim; d++)
                 vertex_normals(i, d) = normals[i][d];
+            vertex_normals.row(i).normalize();
+        }
 
         const auto &velocity = inflator.normalShapeVelocities();
         shape_vel.setZero(velocity.size(), vertices.size());

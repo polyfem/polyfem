@@ -8,7 +8,7 @@ namespace polyfem::solver
     class SDF2Mesh : public Parametrization
     {
     public:
-        SDF2Mesh(const std::string wire_path, const std::string out_path, const bool volume_velocity, const json &opts) : volume_velocity_(volume_velocity), wire_path_(wire_path), out_path_(out_path), opts_(opts) {}
+        SDF2Mesh(const std::string wire_path, const std::string out_path, const bool volume_velocity, const bool use_scaling, const json &opts) : volume_velocity_(volume_velocity), use_scaling_(use_scaling), dim_(2), wire_path_(wire_path), out_path_(out_path), opts_(opts) {}
 
         int size(const int x_size) const override;
 
@@ -19,8 +19,9 @@ namespace polyfem::solver
         bool isosurface_inflator(const Eigen::VectorXd &x) const;
         void extend_to_internal() const;
 
-        const bool volume_velocity_;
+        const bool volume_velocity_, use_scaling_;
 
+        const int dim_;
         const std::string wire_path_, out_path_;
         const json opts_;
         

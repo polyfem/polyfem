@@ -134,7 +134,6 @@ int main(int argc, char **argv)
 	}
 
 	State state;
-	state.set_max_threads(max_threads);
 	state.init(in_args, is_strict);
 	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
 

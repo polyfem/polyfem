@@ -83,12 +83,20 @@ namespace polyfem::solver
         // }
         // else
         {
-            std::vector<double> x_vec(x.data(), x.data() + x.size());
+            Eigen::VectorXd y;
+            if (use_scaling_)
+                y = x.head(x.size() - dim_);
+            else
+                y = x;
+            
+            std::vector<double> y_vec(y.data(), y.data() + y.size());
             {
                 POLYFEM_SCOPED_TIMER("mesh inflation");
-                logger().info("isosurface inflator input: {}", x.transpose());
+                logger().info("isosurface inflator input: {}", y.transpose());
                 Eigen::MatrixXd vertex_normals, shape_vel;
-                utils::inflate(wire_path_, opts_, x_vec, Vout, Fout, vertex_normals, shape_vel);
+                utils::inflate(wire_path_, opts_, y_vec, Vout, Fout, vertex_normals, shape_vel);
+
+                Vout.array().rowwise() *= x.tail(dim_).transpose().array();
 
                 Eigen::VectorXd norms = vertex_normals.rowwise().norm();
                 boundary_flags.setZero(norms.size());
@@ -97,10 +105,10 @@ namespace polyfem::solver
                         boundary_flags(i) = true;
                 
                 shape_velocity.setZero(shape_vel.rows(), vertex_normals.size());
-                for (int d = 0; d < vertex_normals.cols(); d++)
+                for (int d = 0; d < dim_; d++)
                     for (int i = 0; i < vertex_normals.rows(); i++)
                         for (int q = 0; q < shape_vel.rows(); q++)
-                            shape_velocity(q, vertex_normals.cols() * i + d) = shape_vel(q, i) * vertex_normals(i, d);
+                            shape_velocity(q, dim_ * i + d) = shape_vel(q, i) * vertex_normals(i, d);
             }
             
             write_msh(out_path_, Vout, Fout);
@@ -249,10 +257,7 @@ namespace polyfem::solver
     }
     int SDF2Mesh::size(const int x_size) const
     {
-        if (last_x.size() == x_size)
-            return Vout.size();
-        else
-            return 0;
+        return Vout.size();
     }
     Eigen::VectorXd SDF2Mesh::eval(const Eigen::VectorXd &x) const
     {
@@ -269,7 +274,18 @@ namespace polyfem::solver
         // assert(x.size() == shape_vel.rows());
         // const int dim = vertex_normals.cols();
         
-        Eigen::VectorXd mapped_grad  = shape_velocity * grad; // shape_vel * (vertex_normals.array() * utils::unflatten(grad, dim).array()).matrix().rowwise().sum();
+        Eigen::VectorXd mapped_grad(x.size());
+        if (use_scaling_)
+        {
+            Eigen::VectorXd scale = x.tail(dim_);
+            const int n_nodes = shape_velocity.cols() / dim_;
+            mapped_grad.head(x.size() - dim_) = shape_velocity * scale.replicate(n_nodes, 1).asDiagonal() * grad;
+
+            Eigen::MatrixXd unflattened_grad = utils::unflatten(grad, dim_);
+            mapped_grad.tail(dim_) = (Vout.array() * unflattened_grad.array()).colwise().sum().array() / scale.transpose().array();
+        }
+        else
+            mapped_grad = shape_velocity * grad; // shape_vel * (vertex_normals.array() * utils::unflatten(grad, dim).array()).matrix().rowwise().sum();
 
         // debug
         // {
