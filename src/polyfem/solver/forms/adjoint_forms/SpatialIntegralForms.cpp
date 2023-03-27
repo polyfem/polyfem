@@ -323,7 +323,6 @@ namespace polyfem::solver
 		IntegrableFunctional j;
 
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
-			
 			const int e = params["elem"];
 			Eigen::MatrixXd v, grad_v;
 			io::Evaluator::interpolate_at_local_vals(*(state_.mesh), state_.problem->is_scalar(), state_.bases, state_.geom_bases(), e, local_pts, state_.diff_cached.v(time_step_), v, grad_v);
@@ -692,10 +691,12 @@ namespace polyfem::solver
 		for (int i = 0; i < t_or_uv_sampling.size(); ++i)
 			point_sampling.row(i) = curve.evaluate(t_or_uv_sampling(i));
 
-		Eigen::MatrixXi edges(samples - 1, 2);
-		edges.col(0) = Eigen::VectorXi::LinSpaced(samples - 1, 0, samples - 2);
-		edges.col(1) = Eigen::VectorXi::LinSpaced(samples - 1, 1, samples - 1);
-		io::OBJWriter::write(state_.resolve_output_path(fmt::format("spline_target_{:d}.obj", rand() % 100)), point_sampling, edges);
+		{
+			Eigen::MatrixXi edges(samples - 1, 2);
+			edges.col(0) = Eigen::VectorXi::LinSpaced(samples - 1, 0, samples - 2);
+			edges.col(1) = Eigen::VectorXi::LinSpaced(samples - 1, 1, samples - 1);
+			io::OBJWriter::write(state_.resolve_output_path(fmt::format("spline_target_{:d}.obj", rand() % 100)), point_sampling, edges);
+		}
 
 		interpolation_fn = std::make_unique<LazyCubicInterpolator>(dim, delta_);
 	}
@@ -725,6 +726,21 @@ namespace polyfem::solver
 		for (int i = 0; i < t_or_uv_sampling.rows(); ++i)
 		{
 			point_sampling.row(i) = patch.evaluate(t_or_uv_sampling(i, 0), t_or_uv_sampling(i, 1));
+		}
+
+		{
+			Eigen::MatrixXi F(2 * ((samples - 1) * (samples - 1)), 3);
+			int f = 0;
+			for (int i = 0; i < samples - 1; ++i)
+				for (int j = 0; j < samples - 1; ++j)
+				{
+					Eigen::MatrixXi F_local(2, 3);
+					F_local << (i * samples + j), ((i + 1) * samples + j), (i * samples + j + 1),
+						(i * samples + j + 1), ((i + 1) * samples + j), ((i + 1) * samples + j + 1);
+					F.block(f, 0, 2, 3) = F_local;
+					f += 2;
+				}
+			io::OBJWriter::write(state_.resolve_output_path(fmt::format("spline_target_{:d}.obj", rand() % 100)), point_sampling, F);
 		}
 
 		interpolation_fn = std::make_unique<LazyCubicInterpolator>(dim, delta_);
