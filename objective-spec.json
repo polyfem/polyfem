@@ -25,7 +25,8 @@
             "volume",
             "soft_constraint",
             "layer_thickness",
-            "AMIPS"
+            "AMIPS",
+            "parametrized_product"
         ],
         "doc": "TODO"
     },
@@ -78,7 +79,8 @@
         "type": "object",
         "type_name": "power",
         "required": [
-            "type"
+            "type",
+            "objective"
         ],
         "optional": [
             "power",
@@ -371,6 +373,21 @@
             "weight",
             "print_energy",
             "volume_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "parametrized_product",
+        "required": [
+            "type",
+            "parametrization"
+        ],
+        "optional": [
+            "weight",
+            "print_energy",
+            "power"
         ],
         "doc": "TODO"
     },

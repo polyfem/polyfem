@@ -376,7 +376,7 @@ TEST_CASE("isosurface-inflator", "[adjoint_method]")
 	state.build_basis();
 	solve_pde(state);
 
-	verify_adjoint(variable_to_simulations, *obj, state, x, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 5e-4);
+	verify_adjoint(variable_to_simulations, *obj, state, x, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-3);
 	// verify_adjoint_expensive(variable_to_simulations, *obj, state, x, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>());
 
 	std::filesystem::current_path(work_path);

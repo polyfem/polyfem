@@ -15,6 +15,8 @@
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/SplineParametrizations.hpp>
 
+#include <polyfem/solver/forms/adjoint_forms/ParametrizedProductForm.hpp>
+
 namespace polyfem::solver
 {
 	namespace
@@ -160,6 +162,18 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<CollisionBarrierForm>(var2sim, *(states[args["state"]]), args["dhat"]);
 			}
+			else if (type == "parametrized_product")
+			{
+				if (args["parametrization"].contains("parameter_index"))
+					log_and_throw_error("Parametrizations in parametrized forms don't support parameter_index!");
+
+				std::vector<std::shared_ptr<Parametrization>> map_list;
+				for (const auto &arg : args["parametrization"])
+					map_list.push_back(create_parametrization(arg, states, {}));
+				CompositeParametrization composite_map = CompositeParametrization(map_list);
+
+				obj = std::make_shared<ParametrizedProductForm>(composite_map);
+			}
 			else
 				log_and_throw_error("Objective not implemented!");
 
@@ -244,7 +258,7 @@ namespace polyfem::solver
 		}
 		else if (type == "sdf-to-mesh")
 		{
-			map = std::make_shared<SDF2Mesh>(args["wire_path"], args["output_path"], args["use_volume_velocity"], args["options"]);
+			map = std::make_shared<SDF2Mesh>(args["wire_path"], args["output_path"], args["use_volume_velocity"], args["use_scaling"], args["options"]);
 		}
 		else if (type == "periodic-mesh-tile")
 		{

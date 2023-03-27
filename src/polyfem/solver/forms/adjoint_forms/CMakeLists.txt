@@ -12,6 +12,7 @@ set(SOURCES
 	SumCompositeForm.hpp
 	AMIPSForm.hpp
 	WeightedVolumeForm.hpp
+	ParametrizedProductForm.hpp
 	TransientForm.hpp
 	TransientForm.cpp
 	BarrierForms.hpp
