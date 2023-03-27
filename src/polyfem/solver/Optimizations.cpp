@@ -15,6 +15,8 @@
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/SplineParametrizations.hpp>
 
+#include <polyfem/io/OBJReader.hpp>
+
 namespace polyfem::solver
 {
 	namespace
@@ -117,6 +119,18 @@ namespace polyfem::solver
 					tmp->set_bspline_target(control_points_grid, knots_u, knots_v, delta);
 				}
 
+				obj = tmp;
+			}
+			else if (type == "mesh-target")
+			{
+				std::shared_ptr<MeshTargetForm> tmp = std::make_shared<MeshTargetForm>(var2sim, *(states[args["state"]]), args);
+				double delta = args["delta"].get<double>();
+				Eigen::MatrixXd V;
+				Eigen::MatrixXi E, F;
+				bool read = polyfem::io::OBJReader::read(args["mesh_path"], V, E, F);
+				if (!read)
+					log_and_throw_error(fmt::format("Could not read mesh! {}", args["mesh"]));
+				tmp->set_surface_mesh_target(V, F, delta);
 				obj = tmp;
 			}
 			else if (type == "function-target")

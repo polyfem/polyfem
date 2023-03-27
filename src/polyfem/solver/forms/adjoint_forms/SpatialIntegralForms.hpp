@@ -2,6 +2,8 @@
 
 #include "AdjointForm.hpp"
 
+#include <igl/AABB.h>
+
 #include <polyfem/utils/LazyCubicInterpolator.hpp>
 
 namespace polyfem::solver
@@ -223,6 +225,35 @@ namespace polyfem::solver
 		Eigen::MatrixXd t_or_uv_sampling;
 		Eigen::MatrixXd point_sampling;
 		int samples;
+
+		std::unique_ptr<LazyCubicInterpolator> interpolation_fn;
+	};
+
+	class MeshTargetForm : public SpatialIntegralForm
+	{
+	public:
+		MeshTargetForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		{
+			set_integral_type(SpatialIntegralType::SURFACE);
+
+			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
+			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+		}
+
+		void set_surface_mesh_target(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const double delta);
+
+	protected:
+		IntegrableFunctional get_integral_functional() const override;
+
+		void solution_changed(const Eigen::VectorXd &x) override;
+
+	private:
+		int dim;
+		double delta_;
+
+		Eigen::MatrixXd V_;
+		Eigen::MatrixXi F_;
+		igl::AABB<Eigen::MatrixXd, 3> tree_;
 
 		std::unique_ptr<LazyCubicInterpolator> interpolation_fn;
 	};

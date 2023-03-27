@@ -818,4 +818,101 @@ namespace polyfem::solver
 
 		return j;
 	}
+
+	void MeshTargetForm::set_surface_mesh_target(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const double delta)
+	{
+		dim = V.cols();
+		delta_ = delta;
+		if ((dim != 3) || (state_.mesh->dimension() != 3))
+			log_and_throw_error("MeshTargetForm is only available for 3d scenes.");
+
+		tree_.init(V, F);
+		V_ = V;
+		F_ = F;
+
+		interpolation_fn = std::make_unique<LazyCubicInterpolator>(dim, delta_);
+	}
+
+	void MeshTargetForm::solution_changed(const Eigen::VectorXd &x)
+	{
+		assert(time_step_ < state_.diff_cached.size());
+
+		const auto &bases = state_.bases;
+		const auto &gbases = state_.geom_bases();
+		const int actual_dim = state_.problem->is_scalar() ? 1 : dim;
+
+		auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
+		utils::maybe_parallel_for(state_.total_local_boundary.size(), [&](int start, int end, int thread_id) {
+			LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+			Eigen::MatrixXd uv, samples, gtmp;
+			Eigen::MatrixXd points, normal;
+			Eigen::VectorXd weights;
+
+			Eigen::MatrixXd u, grad_u;
+
+			for (int lb_id = start; lb_id < end; ++lb_id)
+			{
+				const auto &lb = state_.total_local_boundary[lb_id];
+				const int e = lb.element_id();
+
+				for (int i = 0; i < lb.size(); i++)
+				{
+					const int global_primitive_id = lb.global_primitive_id(i);
+					if (ids_.size() != 0 && ids_.find(state_.mesh->get_boundary_id(global_primitive_id)) == ids_.end())
+						continue;
+
+					utils::BoundarySampler::boundary_quadrature(lb, state_.n_boundary_samples(), *state_.mesh, i, false, uv, points, normal, weights);
+
+					assembler::ElementAssemblyValues &vals = local_storage.vals;
+					vals.compute(e, state_.mesh->is_volume(), points, bases[e], gbases[e]);
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, state_.diff_cached.u(time_step_), u, grad_u);
+
+					normal = normal * vals.jac_it[0]; // assuming linear geometry
+
+					for (int q = 0; q < u.rows(); q++)
+						interpolation_fn->cache_grid([this](const Eigen::MatrixXd &point, double &distance) {
+							int idx;
+							Eigen::Matrix<double, 1, 3> closest;
+							distance = pow(tree_.squared_distance(V_, F_, point.col(0), idx, closest), 0.5);
+						},
+													 vals.val.row(q) + u.row(q));
+				}
+			}
+		});
+	}
+
+	IntegrableFunctional MeshTargetForm::get_integral_functional() const
+	{
+		IntegrableFunctional j;
+		auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(u.rows(), 1);
+
+			for (int q = 0; q < u.rows(); q++)
+			{
+				double distance;
+				Eigen::MatrixXd unused_grad;
+				interpolation_fn->evaluate(u.row(q) + pts.row(q), distance, unused_grad);
+				val(q) = pow(distance, 2);
+			}
+		};
+
+		auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(u.rows(), u.cols());
+
+			for (int q = 0; q < u.rows(); q++)
+			{
+				double distance;
+				Eigen::MatrixXd grad;
+				interpolation_fn->evaluate(u.row(q) + pts.row(q), distance, grad);
+				val.row(q) = 2 * distance * grad.transpose();
+			}
+		};
+
+		j.set_j(j_func);
+		j.set_dj_du(djdu_func);
+		j.set_dj_dx(djdu_func);
+
+		return j;
+	}
 } // namespace polyfem::solver
