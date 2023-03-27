@@ -93,7 +93,8 @@
         "type_name": "sdf-target",
         "required": [
             "state",
-            "type"
+            "type",
+            "delta"
         ],
         "optional": [
             "control_points",
@@ -101,7 +102,6 @@
             "knots",
             "knots_u",
             "knots_v",
-            "delta",
             "weight",
             "print_energy",
             "surface_selection"
@@ -333,14 +333,8 @@
         "doc": "TODO"
     },
     {
-        "pointer": "/delta",
-        "type": "list",
-        "default": [],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/delta/*",
-        "type": "float",
+        "pointer": "delta",
+        "type": "int",
         "doc": "TODO"
     },
     {
