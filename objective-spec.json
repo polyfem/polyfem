@@ -13,6 +13,7 @@
             "position",
             "acceleration",
             "kinetic",
+            "disp_grad",
             "stress",
             "stress_norm",
             "max_stress",
@@ -468,6 +469,22 @@
             "volume_selection"
         ],
         "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "disp_grad",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "volume_selection",
+            "weight",
+            "print_energy",
+            "dimensions"
+        ],
+        "doc": "One entry of displacement gradient matrix"
     },
     {
         "pointer": "/",
