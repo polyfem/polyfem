@@ -194,7 +194,9 @@ namespace polyfem
 			}
 			else if (rules[i]["pointer"] == "/solver/linear/adjoint_solver")
 			{
-				rules[i]["default"] = polysolve::LinearSolver::defaultSolver();
+				const auto ss = polysolve::LinearSolver::availableSolvers();
+				const auto solver_found = std::find(ss.begin(), ss.end(), args_in["solver"]["linear"]["solver"]);
+				rules[i]["default"] = solver_found == ss.end() ? polysolve::LinearSolver::defaultSolver() : args_in["solver"]["linear"]["solver"].get<std::string>();
 				rules[i]["options"] = polysolve::LinearSolver::availableSolvers();
 			}
 		}
