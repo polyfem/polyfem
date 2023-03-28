@@ -8,6 +8,7 @@
             "divide",
             "target",
             "sdf-target",
+            "mesh-target",
             "function-target",
             "node-target",
             "position",
@@ -105,6 +106,23 @@
             "knots",
             "knots_u",
             "knots_v",
+            "weight",
+            "print_energy",
+            "surface_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "mesh-target",
+        "required": [
+            "state",
+            "type",
+            "delta",
+            "mesh_path"
+        ],
+        "optional": [
             "weight",
             "print_energy",
             "surface_selection"
@@ -338,6 +356,11 @@
     {
         "pointer": "delta",
         "type": "int",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "mesh_path",
+        "type": "string",
         "doc": "TODO"
     },
     {
