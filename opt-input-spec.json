@@ -121,6 +121,16 @@
     },
     {
         "pointer": "/solver/nonlinear/bounds/*",
+        "type": "list",
+        "doc": "Lower and Upper bounds"
+    },
+    {
+        "pointer": "/solver/nonlinear/bounds/*/*",
+        "type": "float",
+        "doc": "Box constraint values"
+    },
+    {
+        "pointer": "/solver/nonlinear/bounds/*",
         "type": "float",
         "doc": "Box constraint values"
     },
@@ -151,6 +161,16 @@
     {
         "pointer": "/solver/nonlinear/max_change",
         "default": 1e10,
+        "type": "float",
+        "doc": "Max difference in design variables in single iteration"
+    },
+    {
+        "pointer": "/solver/nonlinear/max_change",
+        "type": "list",
+        "doc": "Max difference in design variables in single iteration"
+    },
+    {
+        "pointer": "/solver/nonlinear/max_change/*",
         "type": "float",
         "doc": "Max difference in design variables in single iteration"
     },
@@ -669,6 +689,7 @@
         "type": "object",
         "optional": [
             "maxArea",
+            "symmetry",
             "dump_shape_velocity",
             "marchingSquaresGridSize",
             "forceMSGridSize"
@@ -684,6 +705,15 @@
         "pointer": "/variable_to_simulation/*/composition/*/options/dump_shape_velocity",
         "type": "string",
         "default": "velocity.msh"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/options/symmetry",
+        "type": "string",
+        "default": "doubly_periodic",
+        "options": [
+            "doubly_periodic",
+            "orthotropic"
+        ]
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/options/marchingSquaresGridSize",
