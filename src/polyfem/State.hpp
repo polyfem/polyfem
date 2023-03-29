@@ -177,7 +177,7 @@ namespace polyfem
 		Eigen::MatrixXd rhs;
 
 		/// In Elasticity PDE, solve for "min W(disp_grad + \grad u)" instead of "min W(\grad u)"
-		Eigen::MatrixXd disp_grad;
+		Eigen::MatrixXd disp_grad_;
 
 		/// use average pressure for stokes problem to fix the additional dofs, true by default
 		/// if false, it will fix one pressure node to zero

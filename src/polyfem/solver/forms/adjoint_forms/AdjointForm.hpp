@@ -32,9 +32,9 @@ namespace polyfem::solver
 
 		const auto &get_variable_to_simulations() const { return variable_to_simulations_; }
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state)
+		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) final
 		{
-			return compute_adjoint_rhs_unweighted(x, state) * weight_;
+			return compute_reduced_adjoint_rhs_unweighted(x, state) * weight_;
 		}
 
 		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final
@@ -44,6 +44,7 @@ namespace polyfem::solver
 		}
 
 		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state);
+		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state);
 		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const;
 
 		inline virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const final override
@@ -109,6 +110,22 @@ namespace polyfem::solver
 	
 	private:
 		std::set<int> interested_ids_;
+		const State &state_;
+	};
+
+	class HomogenizedDispGradForm : public AdjointForm
+	{
+	public:
+		HomogenizedDispGradForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : AdjointForm(variable_to_simulations), state_(state)
+		{
+			dimensions_ = args["dimensions"].get<std::vector<int>>();
+		}
+
+		double value_unweighted(const Eigen::VectorXd &x) const override;
+		Eigen::MatrixXd compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override;
+
+	protected:
+		std::vector<int> dimensions_;
 		const State &state_;
 	};
 } // namespace polyfem::solver

@@ -219,7 +219,7 @@ namespace polyfem::assembler
 		Eigen::MatrixXd x;
 		{
 			POLYFEM_SCOPED_TIMER("micro newton");
-			state->disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
+			state->disp_grad_ = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd pressure;
 			state->args["optimization"]["enabled"] = true;
 			nlohmann::adl_serializer<Eigen::VectorXi>::to_json(state->args["boundary_conditions"]["fixed_macro_strain"], Eigen::VectorXi::LinSpaced(size()*size(),0,size()*size()-1));
@@ -240,7 +240,7 @@ namespace polyfem::assembler
 		Eigen::MatrixXd x;
 		{
 			POLYFEM_SCOPED_TIMER("micro newton");
-			state->disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
+			state->disp_grad_ = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd pressure;
 			state->args["optimization"]["enabled"] = true;
 			nlohmann::adl_serializer<Eigen::VectorXi>::to_json(state->args["boundary_conditions"]["fixed_macro_strain"], Eigen::VectorXi::LinSpaced(size()*size(),0,size()*size()-1));
@@ -259,7 +259,7 @@ namespace polyfem::assembler
 		Eigen::MatrixXd x;
 		{
 			POLYFEM_SCOPED_TIMER("micro newton");
-			state->disp_grad = def_grad - Eigen::MatrixXd::Identity(size(), size());
+			state->disp_grad_ = def_grad - Eigen::MatrixXd::Identity(size(), size());
 			Eigen::MatrixXd pressure;
 			state->args["optimization"]["enabled"] = true;
 			nlohmann::adl_serializer<Eigen::VectorXi>::to_json(state->args["boundary_conditions"]["fixed_macro_strain"], Eigen::VectorXi::LinSpaced(size()*size(),0,size()*size()-1));

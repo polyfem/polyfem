@@ -1,9 +1,29 @@
 #include "AdjointForm.hpp"
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 
 namespace polyfem::solver
 {
+	Eigen::MatrixXd AdjointForm::compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
+	{
+		Eigen::MatrixXd rhs = compute_adjoint_rhs_unweighted(x, state);
+		if (!state.problem->is_time_dependent() && !state.lin_solver_cached) // nonlinear static solve only
+		{
+			Eigen::MatrixXd reduced;
+			for (int i = 0; i < rhs.cols(); i++)
+			{
+				Eigen::VectorXd reduced_vec = state.solve_data.nl_problem->full_to_reduced_grad(rhs.col(i));
+				if (i == 0)
+					reduced.setZero(reduced_vec.rows(), rhs.cols());
+				reduced.col(i) = reduced_vec;
+			}
+			return reduced;
+		}
+		else
+			return rhs;	
+	}
+	
 	void AdjointForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv.setZero(x.size());
@@ -147,4 +167,36 @@ namespace polyfem::solver
 		return Eigen::VectorXd();
 	}
 	
+	double HomogenizedDispGradForm::value_unweighted(const Eigen::VectorXd &x) const
+	{
+		return state_.diff_cached.disp_grad()(dimensions_[0], dimensions_[1]);
+	}
+	Eigen::MatrixXd HomogenizedDispGradForm::compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
+	{
+		if (&state != &state_)
+		{
+			if (!state.problem->is_time_dependent() && !state.lin_solver_cached) // nonlinear static solve only
+			{
+				return state.solve_data.nl_problem->full_to_reduced_grad(Eigen::VectorXd::Zero(state.ndof()));
+			}
+			else
+			{
+				return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
+			}
+		}
+
+		std::shared_ptr<NLHomoProblem> problem = std::dynamic_pointer_cast<NLHomoProblem>(state_.solve_data.nl_problem);
+		if (!problem)
+			log_and_throw_error("Homogenized displacement gradient objective only works in homogenization!");
+		
+		Eigen::MatrixXd disp_grad;
+		disp_grad.setZero(state.mesh->dimension(), state.mesh->dimension());
+		disp_grad(dimensions_[0], dimensions_[1]) = 1;
+		
+		Eigen::VectorXd rhs;
+		rhs.setZero(problem->reduced_size() + problem->macro_reduced_size());
+		rhs.tail(problem->macro_reduced_size()) = problem->macro_full_to_reduced_grad(utils::flatten(disp_grad));
+
+		return rhs;
+	}
 } // namespace polyfem::solver

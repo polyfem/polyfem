@@ -150,7 +150,7 @@ namespace cppoptlib
 					direction.dot(grad), this->descent_strategy_name());
 				return compute_update_direction(objFunc, x, grad, direction);
 			}
-			else if (grad.squaredNorm() != 0 && direction.dot(grad) > -grad.squaredNorm() * 1e-2)
+			else if (grad.squaredNorm() != 0 && direction.dot(grad) > - grad.norm() * direction.norm() * 1e-2)
 			{
 				reset_history(x.size());
 				increase_descent_strategy();

@@ -220,13 +220,14 @@ namespace polyfem
 	Eigen::MatrixXd State::solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs) const
 	{
 		Eigen::MatrixXd b = adjoint_rhs;
-		for (int i : boundary_nodes)
-			b.row(i).setZero();
 
 		Eigen::MatrixXd adjoint;
 		adjoint.setZero(ndof(), adjoint_rhs.cols());
 		if (lin_solver_cached)
 		{
+			for (int i : boundary_nodes)
+				b.row(i).setZero();
+			
 			StiffnessMatrix A = diff_cached.gradu_h(0);
 			const int full_size = A.rows();
 			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
@@ -270,7 +271,7 @@ namespace polyfem
 
 			for (int i = 0; i < b.cols(); i++)
 			{
-				Eigen::MatrixXd tmp = solve_data.nl_problem->full_to_reduced_grad(b.col(i));
+				Eigen::MatrixXd tmp = b.col(i);
 
 				Eigen::VectorXd x;
 				x.setZero(tmp.size());
@@ -280,7 +281,9 @@ namespace polyfem
 
 				adjoint.col(i) = solve_data.nl_problem->reduced_to_full(x);
 			}
-			adjoint(boundary_nodes, Eigen::all).setZero();
+			// NLProblem sets dirichlet values to forward BC values, but we want zero in adjoint
+			if (disp_grad_.size() == 0)
+				adjoint(boundary_nodes, Eigen::all).setZero();
 		}
 
 		return adjoint;

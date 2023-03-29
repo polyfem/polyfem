@@ -1168,20 +1168,20 @@ namespace polyfem
 		{
 			if (args["boundary_conditions"]["linear_displacement_offset"].size() > 0)
 			{
-				disp_grad.setZero(mesh->dimension(), mesh->dimension());
+				disp_grad_.setZero(mesh->dimension(), mesh->dimension());
 				int i = 0;
 				for (const auto &row : args["boundary_conditions"]["linear_displacement_offset"])
 				{
 					int j = 0;
 					for (const auto &x : row)
-						disp_grad(i, j++) = x;
+						disp_grad_(i, j++) = x;
 					i++;
 				}
 
-				logger().info("Underlying linear displacement field: {}", utils::flatten(disp_grad).transpose());
+				logger().info("Underlying linear displacement field: {}", utils::flatten(disp_grad_).transpose());
 			}
 			else
-				disp_grad.resize(0, 0);
+				disp_grad_.resize(0, 0);
 		}
 
 		const auto &curret_bases = geom_bases();
@@ -1677,8 +1677,8 @@ namespace polyfem
 		{
 			if (formulation() == "NavierStokes")
 				solve_navier_stokes(sol, pressure);
-			else if (disp_grad.size() > 0)
-				solve_homogenized_field(disp_grad, sol, args["boundary_conditions"]["fixed_macro_strain"].get<std::vector<int>>(), args["solver"]["advanced"]["bistable"].get<bool>());
+			else if (disp_grad_.size() > 0)
+				solve_homogenized_field(disp_grad_, sol, args["boundary_conditions"]["fixed_macro_strain"].get<std::vector<int>>(), args["solver"]["advanced"]["bistable"].get<bool>());
 			else if (assembler.is_linear(formulation()) && !is_contact_enabled())
 			{
 				init_linear_solve(sol);

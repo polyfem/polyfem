@@ -566,34 +566,26 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
-	std::vector<std::shared_ptr<AdjointForm>> forms;
-	for (int i = 0; i < 2; i++)
-	{
-		for (int j = 0; j < 2; j++)
-		{
-			opt_args["functionals"][0]["dimensions"] = {i, j};
-			forms.push_back(std::make_shared<StressForm>(variable_to_simulations, state, opt_args["functionals"][0]));
-		}
-	}
-
-	HomoCompositeForm obj(variable_to_simulations, forms);
-
-	Eigen::MatrixXd velocity_discrete;
-	velocity_discrete.setZero(state.mesh->n_vertices() * 2, 1);
-	const double eps = 1e-3;
-	for (int i = 0; i < state.mesh->n_vertices(); i++)
-		for (int d = 0; d < 2; d++)
-		{
-			auto vert = state.mesh->point(i);
-			if (vert(0) > eps && vert(0) < 1 - eps && vert(1) > eps && vert(1) < 1 - eps)
-				velocity_discrete(i * 2 + d) = (rand() % 10000) / 1.0e4;
-		}
+	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
 	Eigen::MatrixXd V;
 	state.get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-6);
+	Eigen::MatrixXd velocity_discrete;
+	velocity_discrete.setZero(x.size(), 1);
+	const double eps = 1e-5;
+	Eigen::VectorXd min = V.colwise().minCoeff();
+	Eigen::VectorXd max = V.colwise().maxCoeff();
+	for (int i = 0; i < V.rows(); i++)
+		for (int d = 0; d < 2; d++)
+		{
+			auto vert = state.mesh->point(i);
+			if (state.mesh->is_boundary_vertex(i) && vert(0) > min(0) + eps && vert(0) < max(0) - eps && vert(1) > min(1) + eps && vert(1) < max(1) - eps)
+				velocity_discrete(i * 2 + d) = (rand() % 10000) / 1.0e4;
+		}
+
+	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 1e-5);
 }
 
 TEST_CASE("shape-contact", "[adjoint_method]")
@@ -622,7 +614,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	Eigen::MatrixXd velocity_discrete(x.size(), 1);
 	velocity_discrete.setRandom();
 
-	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-6, 1e-6);
+	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-8, 1e-5);
 }
 
 TEST_CASE("node-trajectory", "[adjoint_method]")

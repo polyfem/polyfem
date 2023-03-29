@@ -363,7 +363,7 @@ namespace polyfem::solver
 		for (auto state : states_)
 		{
 			assert(state_variable.size() == state->mesh->dimension() * state->mesh->dimension());
-			state->disp_grad = utils::unflatten(state_variable, state->mesh->dimension());
+			state->disp_grad_ = utils::unflatten(state_variable, state->mesh->dimension());
 		}
 	}
 	Eigen::VectorXd MacroStrainVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const

@@ -15,20 +15,24 @@ namespace polyfem::solver
 
 		virtual int n_objs() const final { return forms_.size(); }
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) final
+		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override final
 		{
 			Eigen::VectorXd composite_grad = compose_grad(get_inputs(x));
 
 			Eigen::MatrixXd term;
-			term.setZero(state.ndof(), state.diff_cached.size());
 			Eigen::VectorXd tmp_grad;
 			for (int i = 0; i < forms_.size(); i++)
-				term += composite_grad(i) * forms_[i]->compute_adjoint_rhs(x, state); // important: not "unweighted"
+			{
+				if (i == 0)
+					term = composite_grad(i) * forms_[i]->compute_adjoint_rhs(x, state);
+				else
+					term += composite_grad(i) * forms_[i]->compute_adjoint_rhs(x, state); // important: not "unweighted"
+			}
 
 			return term;
 		}
 
-		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final
+		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override final
 		{
 			Eigen::VectorXd composite_grad = compose_grad(get_inputs(x));
 
