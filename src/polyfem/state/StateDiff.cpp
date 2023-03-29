@@ -139,7 +139,10 @@ namespace polyfem
 			diff_cached.cache_quantities_transient(current_step, solve_data.time_integrator->steps(), sol, vel, acc, gradu_h, cur_contact_set, cur_friction_set);
 		}
 		else
+		{
 			diff_cached.cache_quantities_static(sol, gradu_h, cur_contact_set, cur_friction_set);
+			diff_cached.cache_disp_grad(disp_grad);
+		}
 	}
 
 	void State::compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian) const

@@ -79,6 +79,9 @@ namespace polyfem::solver
         Eigen::VectorXd v(const int step) const { assert(step < size()); return v_.col(step); }
         Eigen::VectorXd acc(const int step) const { assert(step < size()); return acc_.col(step); }
 
+        void cache_disp_grad(const Eigen::MatrixXd &disp_grad) { disp_grad_ = disp_grad; }
+        Eigen::MatrixXd disp_grad() const { assert(disp_grad_.size() > 0); return disp_grad_; }
+
         const StiffnessMatrix &gradu_h(const int step) const { assert(step < size()); return gradu_h_[step]; }
         // const StiffnessMatrix &gradu_h_prev(const int step) const { assert(step < size()); return gradu_h_prev_[step]; }
 
@@ -93,6 +96,8 @@ namespace polyfem::solver
         Eigen::MatrixXd u_; // PDE solution
         Eigen::MatrixXd v_; // velocity in transient elastic simulations
         Eigen::MatrixXd acc_; // acceleration in transient elastic simulations
+
+        Eigen::MatrixXd disp_grad_; // macro linear displacement in homogenization
 
         Eigen::VectorXi bdf_order_; // BDF orders used at each time step in forward simulation
         
