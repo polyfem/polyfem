@@ -272,7 +272,7 @@ int main(int argc, char **argv)
 
 	auto target = std::make_shared<SDFTargetForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
 	target->set_bspline_target(control_points, knots, 0.001);
-	auto obj1 = std::make_shared<TransientForm>(variable_to_simulations, states[0]->args["time"]["time_steps"], states[0]->args["time"]["dt"], "final", target);
+	auto obj1 = std::make_shared<TransientForm>(variable_to_simulations, states[0]->args["time"]["time_steps"], states[0]->args["time"]["dt"], "final", std::vector<int>(), target);
 	obj1->set_weight(1.0);
 
 	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0]);

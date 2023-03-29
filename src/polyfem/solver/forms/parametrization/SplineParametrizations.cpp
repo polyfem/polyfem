@@ -232,7 +232,25 @@ namespace polyfem::solver
 		compute_faces_for_partial_vertices(V, F);
 
 		Eigen::VectorXi outer_loop;
-		igl::boundary_loop(F, outer_loop);
+		std::vector<std::vector<int>> loops;
+		igl::boundary_loop(F, loops);
+		if (loops.size() == 1)
+		{
+			outer_loop.resize(loops[0].size());
+			for (int i = 0; i < loops[0].size(); ++i)
+				outer_loop(i) = loops[0][i];
+		}
+		else
+		{
+			logger().error("More than 1 boundary loop! Concatenating and continuing as normal.");
+			for (const auto &l : loops)
+			{
+				int size = outer_loop.size();
+				outer_loop.conservativeResize(outer_loop.size() + l.size());
+				for (int i = 0; i < l.size(); ++i)
+					outer_loop(size + i) = l[i];
+			}
+		}
 		Eigen::MatrixXd V_outer_loop = V(outer_loop, Eigen::all);
 
 		Eigen::MatrixXd point_handles(num_control_vertices_ + outer_loop.size(), 3);

@@ -739,7 +739,7 @@ namespace polyfem::solver
 			Eigen::MatrixXi edges(samples - 1, 2);
 			edges.col(0) = Eigen::VectorXi::LinSpaced(samples - 1, 0, samples - 2);
 			edges.col(1) = Eigen::VectorXi::LinSpaced(samples - 1, 1, samples - 1);
-			io::OBJWriter::write(state_.resolve_output_path(fmt::format("spline_target_{:d}.obj", rand() % 100)), point_sampling, edges);
+			io::OBJWriter::write(fmt::format("spline_target_{:d}.obj", rand() % 100), point_sampling, edges);
 		}
 
 		interpolation_fn = std::make_unique<LazyCubicInterpolator>(dim, delta_);
@@ -784,7 +784,7 @@ namespace polyfem::solver
 					F.block(f, 0, 2, 3) = F_local;
 					f += 2;
 				}
-			io::OBJWriter::write(state_.resolve_output_path(fmt::format("spline_target_{:d}.obj", rand() % 100)), point_sampling, F);
+			io::OBJWriter::write(fmt::format("spline_target_{:d}.obj", rand() % 100), point_sampling, F);
 		}
 
 		interpolation_fn = std::make_unique<LazyCubicInterpolator>(dim, delta_);
