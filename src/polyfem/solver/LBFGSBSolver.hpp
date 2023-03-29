@@ -134,6 +134,12 @@ namespace cppoptlib
                 vecc, newact_set, fv_set, /*Maximum number of iterations*/ max_submin, direction);
 			}
 
+			if (x.size() < 100)
+			{
+				polyfem::logger().debug("grad: {}", grad.transpose());
+				polyfem::logger().debug("direc: {}", direction.transpose());
+			}
+
 			if (std::isnan(direction.squaredNorm()))
 			{
 				reset_history(x.size());
@@ -144,13 +150,13 @@ namespace cppoptlib
 					direction.dot(grad), this->descent_strategy_name());
 				return compute_update_direction(objFunc, x, grad, direction);
 			}
-			else if (grad.squaredNorm() != 0 && direction.dot(grad) > 0)
+			else if (grad.squaredNorm() != 0 && direction.dot(grad) > -grad.squaredNorm() * 1e-2)
 			{
 				reset_history(x.size());
 				increase_descent_strategy();
 				polyfem::logger().log(
 					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
-					"L-BFGS direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
+					"L-BFGS direction is not a good descent direction (Δx⋅g={}); reverting to {}",
 					direction.dot(grad), this->descent_strategy_name());
 				return compute_update_direction(objFunc, x, grad, direction);
 			}

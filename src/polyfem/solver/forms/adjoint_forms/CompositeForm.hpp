@@ -106,6 +106,7 @@ namespace polyfem::solver
 
 		virtual void solution_changed(const Eigen::VectorXd &new_x) override
 		{
+			AdjointForm::solution_changed(new_x);
 			for (const auto &f : forms_)
 				f->solution_changed(new_x);
 		}

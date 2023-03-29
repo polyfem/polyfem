@@ -11,12 +11,13 @@ namespace polyfem::utils
     {
         const int dim = 2;
 
-        IsosurfaceInflator inflator("2D_doubly_periodic", true, wire_path, 2, 0);
+        IsosurfaceInflator inflator("2D_" + options["symmetry"].get<std::string>(), true, wire_path, 2, 0);
 
         inflator.meshingOptions().debugSVelPath = options["dump_shape_velocity"];
 
         json opts = options;
         opts.erase("dump_shape_velocity");
+        opts.erase("symmetry");
         inflator.meshingOptions().load(opts);
 
         const double defaultThickness = 0.07;

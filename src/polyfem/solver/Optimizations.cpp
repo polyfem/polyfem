@@ -149,6 +149,10 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<StressForm>(var2sim, *(states[args["state"]]), args);
 			}
+			else if (type == "disp_grad")
+			{
+				obj = std::make_shared<DispGradForm>(var2sim, *(states[args["state"]]), args);
+			}
 			else if (type == "stress_norm")
 			{
 				obj = std::make_shared<StressNormForm>(var2sim, *(states[args["state"]]), args);

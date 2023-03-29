@@ -619,6 +619,50 @@ namespace polyfem::solver
 		return j;
 	}
 
+	void DispGradForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
+		for (const auto &param_map : variable_to_simulations_)
+		{
+			const auto &parametrization = param_map->get_parametrization();
+			const auto &param_type = param_map->get_parameter_type();
+
+			for (const auto &state_ptr : param_map->get_states())
+			{
+				const auto &state = *state_ptr;
+				if (&state != &state_)
+					continue;
+
+				Eigen::VectorXd term;
+				if (param_type == ParameterType::Material)
+					log_and_throw_error("Doesn't support stress derivative wrt. material!");
+
+				if (term.size() > 0)
+					gradv += parametrization.apply_jacobian(term, x);
+			}
+		}
+	}
+
+	IntegrableFunctional DispGradForm::get_integral_functional() const
+	{
+		IntegrableFunctional j;
+
+		auto dimensions = dimensions_;
+
+		j.set_j([dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			const int dim = sqrt(grad_u.cols());
+			val = grad_u.col(dimensions[0] * dim + dimensions[1]);
+		});
+
+		j.set_dj_dgradu([dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(grad_u.rows(), grad_u.cols());
+			const int dim = sqrt(grad_u.cols());
+			val.col(dimensions[0] * dim + dimensions[1]).setOnes();
+		});
+
+		return j;
+	}
+
 	IntegrableFunctional VolumeForm::get_integral_functional() const
 	{
 		IntegrableFunctional j;

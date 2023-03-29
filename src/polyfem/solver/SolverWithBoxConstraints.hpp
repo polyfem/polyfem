@@ -19,7 +19,11 @@ namespace cppoptlib
 		SolverWithBoxConstraints(const polyfem::json &solver_params, const double dt)
 			: Superclass(solver_params, dt)
 		{
-			max_change_ = solver_params["max_change"];
+			if (solver_params["max_change"].is_number())
+				max_change_val_ = solver_params["max_change"];
+			else
+				nlohmann::adl_serializer<Eigen::VectorXd>::from_json(solver_params["max_change"], max_change_);
+			
 			if (solver_params.contains("bounds"))
 			{
 				if (solver_params["bounds"].is_string())
@@ -55,13 +59,13 @@ namespace cppoptlib
 			auto min = get_lower_bound(x, false);
 			auto max = get_upper_bound(x, false);
 
-			// return ((x - grad).cwiseMax(min).cwiseMin(max) - x).norm();
-			Eigen::VectorXd proj_grad = grad;
-			for (int i = 0; i < x.size(); i++)
-				if (x(i) < min(i) + 1e-14 || x(i) > max(i) - 1e-14)
-					proj_grad(i) = 0;
+			return ((x - grad).cwiseMax(min).cwiseMin(max) - x).norm();
+			// Eigen::VectorXd proj_grad = grad;
+			// for (int i = 0; i < x.size(); i++)
+			// 	if (x(i) < min(i) + 1e-14 || x(i) > max(i) - 1e-14)
+			// 		proj_grad(i) = 0;
 			
-			return proj_grad.norm();
+			// return proj_grad.norm();
 		}
 
 		Eigen::VectorXd get_lower_bound(const Eigen::VectorXd &x, bool consider_max_change = true) const
@@ -75,7 +79,7 @@ namespace cppoptlib
 				polyfem::log_and_throw_error("Invalid bounds!");
 			
 			if (consider_max_change)
-				return min.array().max(x.array() - max_change_);
+				return min.array().max(x.array() - get_max_change(x).array());
 			else
 				return min;
 		}
@@ -90,14 +94,28 @@ namespace cppoptlib
 				polyfem::log_and_throw_error("Invalid bounds!");
 			
 			if (consider_max_change)
-				return max.array().min(x.array() + max_change_);
+				return max.array().min(x.array() + get_max_change(x).array());
 			else
 				return max;
 		}
 
+		Eigen::VectorXd get_max_change(const Eigen::VectorXd &x) const
+		{
+			if (max_change_.size() == x.size())
+				return max_change_;
+			else if (max_change_val_ > 0)
+				return Eigen::VectorXd::Ones(x.size()) * max_change_val_;
+			else
+				throw std::runtime_error("Invalid max change!");
+			
+			return Eigen::VectorXd();
+		}
+
 	private:
 		Eigen::MatrixXd bounds_;
-		double max_change_;
+		
+		double max_change_val_ = 0;
+		Eigen::VectorXd max_change_;
 	};
 
 }
