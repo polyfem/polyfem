@@ -580,7 +580,7 @@ TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 
 	auto target = std::make_shared<TargetForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
 	target->set_reference(states[1], {2});
-	auto obj1 = std::make_shared<TransientForm>(variable_to_simulations, 4, 0.1, "final", target);
+	auto obj1 = std::make_shared<TransientForm>(variable_to_simulations, 4, 0.1, "final", std::vector<int>(), target);
 	obj1->set_weight(1.0);
 
 	std::vector<std::shared_ptr<AdjointForm>> forms({obj1});
@@ -704,7 +704,7 @@ TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
 
 	auto target = std::make_shared<TargetForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
 	target->set_reference(states[1], {2});
-	auto obj1 = std::make_shared<TransientForm>(variable_to_simulations, 4, 0.1, "final", target);
+	auto obj1 = std::make_shared<TransientForm>(variable_to_simulations, 4, 0.1, "final", std::vector<int>(), target);
 	obj1->set_weight(1.0);
 
 	std::vector<std::shared_ptr<AdjointForm>> forms({obj1});

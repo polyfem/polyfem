@@ -688,7 +688,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	std::set<int> reference_cached_body_ids = std::set(tmp_ids.begin(), tmp_ids.end());
 	obj_aux->set_reference(state_reference, reference_cached_body_ids);
 
-	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
+	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], {}, obj_aux);
 
 	Eigen::VectorXd velocity_discrete;
 	velocity_discrete.setOnes(2);
@@ -725,7 +725,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 	std::vector<int> tmp_ids = opt_args["functionals"][0]["reference_cached_body_ids"];
 	obj_aux->set_reference(state_reference, {1, 3});
 
-	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
+	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], {}, obj_aux);
 
 	Eigen::VectorXd velocity_discrete;
 	velocity_discrete.setOnes(state.bases.size() * 2);
@@ -810,7 +810,7 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 
 	std::shared_ptr<SDFTargetForm> obj_aux = std::make_shared<SDFTargetForm>(variable_to_simulations, state, opt_args["functionals"][0]);
 	obj_aux->set_bspline_target(control_points, knots, delta);
-	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
+	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], {}, obj_aux);
 
 	Eigen::MatrixXd velocity_discrete;
 	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
@@ -859,7 +859,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	std::set<int> reference_cached_body_ids = std::set(tmp_ids.begin(), tmp_ids.end());
 	obj_aux->set_reference(state_reference, reference_cached_body_ids);
 
-	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], obj_aux);
+	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], {}, obj_aux);
 
 	Eigen::MatrixXd velocity_discrete;
 	velocity_discrete.setZero(state.ndof() * 2, 1);
