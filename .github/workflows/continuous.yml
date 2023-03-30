@@ -45,6 +45,7 @@ jobs:
       - name: Cache Build
         id: cache-build
         uses: actions/cache@v3
+        if: matrix.config == 'Release' # debug cache is not working
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
@@ -52,7 +53,7 @@ jobs:
 
       - name: Prepare ccache
         run: |
-          ccache --max-size=1.0G
+          # ccache --max-size=1.0G
           ccache -V && ccache --show-stats && ccache --zero-stats
 
       - name: Configure
