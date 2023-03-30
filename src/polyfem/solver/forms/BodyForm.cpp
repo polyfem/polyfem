@@ -8,6 +8,8 @@
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
+#include <polyfem/autogen/auto_p_bases.hpp>
+
 #include <polyfem/solver/AdjointTools.hpp>
 
 #include <polyfem/utils/Logger.hpp>
@@ -64,7 +66,7 @@ namespace polyfem::solver
 		return rhs_assembler_.compute_energy(x, local_neumann_boundary_, density_, n_boundary_samples_, t_);
 	}
 
-	void BodyForm::first_derivative_unweighted(const Eigen::VectorXd &, Eigen::VectorXd &gradv) const
+	void BodyForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		// REMEMBER -!!!!!
 		gradv = -current_rhs_;
@@ -104,7 +106,7 @@ namespace polyfem::solver
 				current_rhs_, x, t_);
 	}
 
-	void BodyForm::force_shape_derivative(const int n_verts, const Eigen::MatrixXd &x, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
+	void BodyForm::force_shape_derivative(const int n_verts, const double t, const Eigen::MatrixXd &x, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
 	{
 		const auto &bases = rhs_assembler_.bases();
 		const auto &gbases = rhs_assembler_.gbases();
@@ -133,7 +135,7 @@ namespace polyfem::solver
 				io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint, p, grad_p);
 
 				Eigen::MatrixXd rhs_function;
-				rhs_assembler_.problem().rhs(rhs_assembler_.assembler(), rhs_assembler_.formulation(), vals.val, 0, rhs_function);
+				rhs_assembler_.problem().rhs(rhs_assembler_.assembler(), rhs_assembler_.formulation(), vals.val, t, rhs_function);
 				rhs_function *= -1;
 				for (int q = 0; q < vals.val.rows(); q++)
 				{
@@ -209,12 +211,26 @@ namespace polyfem::solver
 					}
 
 					Eigen::MatrixXd neumann_val;
-					rhs_assembler_.problem().neumann_bc(rhs_assembler_.mesh(), global_ids, uv, vals.val, normals, 0, neumann_val);
+					rhs_assembler_.problem().neumann_bc(rhs_assembler_.mesh(), global_ids, uv, vals.val, normals, t, neumann_val);
 
 					Eigen::MatrixXd p, grad_p;
 					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint_zeroed, p, grad_p);
 
 					const auto nodes = gbases[e].local_nodes_for_primitive(global_primitive_id, rhs_assembler_.mesh());
+
+					Eigen::MatrixXd node_points;
+					if (rhs_assembler_.mesh().is_volume())
+					{
+						autogen::p_nodes_3d(1, node_points);
+						node_points = node_points(nodes, Eigen::all);
+					}
+					else
+					{
+						autogen::p_nodes_2d(1, node_points);
+						node_points = node_points(nodes, Eigen::all);
+					}
+					Eigen::MatrixXd u, grad_u;
+					io::Evaluator::interpolate_at_local_vals(rhs_assembler_.mesh(), actual_dim, bases, gbases, e, node_points, x, u, grad_u);
 
 					if (nodes.size() != dim)
 						log_and_throw_error("Only linear geometry is supported in shape derivative!");
@@ -236,6 +252,12 @@ namespace polyfem::solver
 								V.row(0) = gbases[e].bases[nodes(0)].global()[0].node;
 								V.row(1) = gbases[e].bases[nodes(1)].global()[0].node;
 								V.row(2) = gbases[e].bases[nodes(2)].global()[0].node;
+
+								velocity_div_mat = AdjointTools::face_velocity_divergence(V);
+
+								for (int k = 0; k < 3; ++k)
+									V.row(k) += u.row(k);
+
 								auto grad = AdjointTools::face_normal_gradient(V);
 								if (n == 0)
 									grad_pressure_bc = grad.block(0, 0, 3, 3).rowwise().sum();
@@ -245,14 +267,17 @@ namespace polyfem::solver
 									grad_pressure_bc = grad.block(0, 6, 3, 3).rowwise().sum();
 								else
 									assert(false);
-
-								velocity_div_mat = AdjointTools::face_velocity_divergence(V);
 							}
 							else
 							{
 								Eigen::MatrixXd V(2, 2);
 								V.row(0) = gbases[e].bases[nodes(0)].global()[0].node;
 								V.row(1) = gbases[e].bases[nodes(1)].global()[0].node;
+
+								velocity_div_mat = AdjointTools::edge_velocity_divergence(V);
+
+								for (int k = 0; k < 2; ++k)
+									V.row(k) += u.row(k);
 
 								auto grad = AdjointTools::edge_normal_gradient(V);
 								if (n == 0)
@@ -261,8 +286,6 @@ namespace polyfem::solver
 									grad_pressure_bc = grad.block(0, 2, 2, 2).rowwise().sum();
 								else
 									assert(false);
-
-								velocity_div_mat = AdjointTools::edge_velocity_divergence(V);
 							}
 							grad_pressure_bc *= pressure_bc;
 						}
@@ -274,8 +297,8 @@ namespace polyfem::solver
 							const int g_index = v.global[0].index * dim + d;
 							local_storage.vec(g_index) += value.sum() * velocity_div_mat(n, d);
 							const bool is_pressure = rhs_assembler_.problem().is_boundary_pressure(rhs_assembler_.mesh().get_boundary_id(global_primitive_id));
-							if (is_pressure)
-								local_storage.vec(g_index) += grad_pressure_bc(d) * pressure_value.sum();
+							// if (is_pressure)
+							// 	local_storage.vec(g_index) += grad_pressure_bc(d) * pressure_value.sum();
 						}
 					}
 				}
