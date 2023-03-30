@@ -195,11 +195,12 @@ namespace polyfem
 			else if (rules[i]["pointer"] == "/solver/linear/adjoint_solver")
 			{
 				const auto ss = polysolve::LinearSolver::availableSolvers();
-				const auto solver_found = std::find(ss.begin(), ss.end(), args_in["solver"]["linear"]["solver"]);
-				rules[i]["default"] = solver_found == ss.end() ? polysolve::LinearSolver::defaultSolver() : args_in["solver"]["linear"]["solver"].get<std::string>();
+				const bool solver_found = args_in.contains("solver") && args_in["solver"].contains("linear") && args_in["solver"]["linear"].contains("solver") && (std::find(ss.begin(), ss.end(), args_in["solver"]["linear"]["solver"]) != ss.end());
+				rules[i]["default"] = solver_found ? args_in["solver"]["linear"]["solver"].get<std::string>() : polysolve::LinearSolver::defaultSolver();
 				rules[i]["options"] = polysolve::LinearSolver::availableSolvers();
 			}
 		}
+		std::cout << rules << "\n";
 
 		const bool valid_input = jse.verify_json(args_in, rules);
 
