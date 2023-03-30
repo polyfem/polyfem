@@ -200,7 +200,6 @@ namespace polyfem
 				rules[i]["options"] = polysolve::LinearSolver::availableSolvers();
 			}
 		}
-		std::cout << rules << "\n";
 
 		const bool valid_input = jse.verify_json(args_in, rules);
 
