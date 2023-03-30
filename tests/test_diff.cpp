@@ -119,6 +119,11 @@ namespace
 		obj.first_derivative(x, one_form);
 		double derivative = (one_form.array() * theta.array()).sum();
 
+		if (one_form.size() == state.ndof()) {
+			state.args["output"]["paraview"]["file_name"] = "debug.vtu";
+			state.export_data(utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.node_to_primitive(), Eigen::all)), Eigen::MatrixXd());
+		}
+
 		for (auto &v2s : variable_to_simulations)
 			v2s->update(x + theta * dt);
 		state.build_basis();
@@ -585,7 +590,7 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 				velocity_discrete(i * 2 + d) = (rand() % 10000) / 1.0e4;
 		}
 
-	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 1e-5);
+	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-5);
 }
 
 TEST_CASE("shape-contact", "[adjoint_method]")

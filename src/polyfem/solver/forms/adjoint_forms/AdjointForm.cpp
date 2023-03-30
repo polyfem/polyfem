@@ -42,13 +42,12 @@ namespace polyfem::solver
 
 	void AdjointForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		log_and_throw_error("Should override this function in any AdjointForm!");
+		gradv = Eigen::VectorXd::Zero(x.size());
 	}
 
 	Eigen::MatrixXd AdjointForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
 	{
-		log_and_throw_error("Should override this function in any AdjointForm!");
-		return Eigen::MatrixXd();
+		return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
 	}
 
 	Eigen::MatrixXd StaticForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)

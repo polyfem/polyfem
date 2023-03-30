@@ -15,6 +15,7 @@
             "acceleration",
             "kinetic",
             "disp_grad",
+            "homo_disp_grad",
             "stress",
             "stress_norm",
             "max_stress",
@@ -508,6 +509,21 @@
             "dimensions"
         ],
         "doc": "One entry of displacement gradient matrix"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "homo_disp_grad",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "weight",
+            "print_energy",
+            "dimensions"
+        ],
+        "doc": "One entry of macro displacement gradient matrix, only work for homogenization"
     },
     {
         "pointer": "/",
