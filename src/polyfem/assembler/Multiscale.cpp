@@ -200,6 +200,18 @@ namespace polyfem::assembler
 
 		stiffness = avg_stiffness;
 
+		{
+			Eigen::MatrixXd CB_reduced;
+			for (int i = 0; i < CB.cols(); i++)
+			{
+				Eigen::VectorXd tmp = state->solve_data.nl_problem->full_to_reduced_grad(CB.col(i));
+				if (CB_reduced.size() == 0)
+					CB_reduced.setZero(tmp.size(), CB.cols());
+				CB_reduced.col(i) = tmp;
+			}
+			std::swap(CB, CB_reduced);
+		}
+
 		Eigen::MatrixXd adjoints = state->solve_adjoint(CB);
 		for (int i = 0; i < CB.cols(); i++)
 		{
