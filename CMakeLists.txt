@@ -53,6 +53,7 @@ include(Warnings)
 
 # Use C++11/14
 include(CXXFeatures)
+set(CMAKE_CXX_STANDARD 14)
 
 # Utility function to link libraries as system libraries to avoid warnings
 include(PolyfemTargetLinkSystemLibraries)
@@ -263,6 +264,10 @@ polyfem_target_link_system_libraries(polyfem PUBLIC natsort::natsort)
 include(glob)
 polyfem_target_link_system_libraries(polyfem PUBLIC Glob::Glob)
 
+# polysolve
+include(units)
+polyfem_target_link_system_libraries(polyfem PUBLIC units::units)
+
 ################################################################################
 # Optional libraries
 ################################################################################
@@ -299,6 +304,7 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
 
     target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+
 
     target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem::polyfem polyfem::warnings)
 

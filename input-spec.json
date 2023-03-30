@@ -1,4 +1,5 @@
-[{
+[
+    {
         "pointer": "/",
         "type": "object",
         "required": [
@@ -2498,6 +2499,30 @@
         "pointer": "/materials/*/E",
         "type": "file",
         "doc": "Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/E",
+        "type": "object",
+        "required": [
+            "value",
+            "unit"
+        ],
+        "doc": "Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/E/unit",
+        "type": "string",
+        "doc": "The unit of the Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/E/value",
+        "type": "float",
+        "doc": "The value of the Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/E/value",
+        "type": "file",
+        "doc": "The value of the Young's modulus"
     },
     {
         "pointer": "/materials/*/nu",

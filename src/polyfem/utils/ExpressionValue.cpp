@@ -3,10 +3,14 @@
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/Logger.hpp>
 
+#include <units/units.hpp>
+
 #include <igl/PI.h>
 
 #include <tinyexpr.h>
 #include <filesystem>
+
+#include <iostream>
 
 namespace polyfem
 {
@@ -124,6 +128,15 @@ namespace polyfem
 				{
 					mat_(i) = vals[i];
 				}
+			}
+			else if (vals.is_object())
+			{
+				std::stringstream ss;
+				ss << vals["value"] << " " << vals["unit"].get<std::string>();
+				std::cout << ss.str() << std::endl;
+				auto unit = units::unit_from_string(ss.str());
+				std::cout << units::convert(unit, units::Pa) << std::endl;
+				exit(0);
 			}
 			else
 			{
