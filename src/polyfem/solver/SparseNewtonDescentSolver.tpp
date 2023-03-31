@@ -67,35 +67,35 @@ namespace cppoptlib
 		const TVector &grad,
 		TVector &direction)
 	{
-		// if (this->descent_strategy == 2)
-		// {
-		// 	direction = -grad;
-		// 	return true;
-		// }
+		if (this->descent_strategy == 2)
+		{
+			direction = -grad;
+			return true;
+		}
 
 		polyfem::StiffnessMatrix hessian;
 
 		assemble_hessian(objFunc, x, hessian);
 
-		if (this->descent_strategy == 2)
-		{
-			std::vector<Eigen::Triplet<double>> entries;
-			for (int k=0; k<hessian.outerSize(); ++k)
-			{
-				double diagonal = 0;
-				for (polyfem::StiffnessMatrix::InnerIterator it(hessian,k); it; ++it)
-				{
-					if (it.row() >= x.size() || it.col() >= x.size())
-						entries.emplace_back(it.row(), it.col(), it.value());
-					if (it.row() == it.col())
-						diagonal = it.value();
-				}
-				if (diagonal != 0)
-					entries.emplace_back(k, k, 1);
-			}
-			hessian.setZero();
-			hessian.setFromTriplets(entries.begin(), entries.end());
-		}
+		// if (this->descent_strategy == 2)
+		// {
+		// 	std::vector<Eigen::Triplet<double>> entries;
+		// 	for (int k=0; k<hessian.outerSize(); ++k)
+		// 	{
+		// 		double diagonal = 0;
+		// 		for (polyfem::StiffnessMatrix::InnerIterator it(hessian,k); it; ++it)
+		// 		{
+		// 			if (it.row() >= x.size() || it.col() >= x.size())
+		// 				entries.emplace_back(it.row(), it.col(), it.value());
+		// 			if (it.row() == it.col())
+		// 				diagonal = it.value();
+		// 		}
+		// 		if (diagonal != 0)
+		// 			entries.emplace_back(k, k, 1);
+		// 	}
+		// 	hessian.setZero();
+		// 	hessian.setFromTriplets(entries.begin(), entries.end());
+		// }
 		if (!solve_linear_system(hessian, grad, direction))
 			return compute_update_direction(objFunc, x, grad, direction);
 
