@@ -585,7 +585,7 @@ namespace polyfem::solver
 		{
 			state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, sol, sol, adjoint, elasticity_term);
 			if (state.solve_data.body_form)
-				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, sol, adjoint, rhs_term);
+				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, 0, sol, adjoint, rhs_term);
 			else
 				rhs_term.setZero(one_form.size());
 
@@ -608,6 +608,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
 	{
+		const double t0 = state.args["time"]["t0"];
 		const double dt = state.args["time"]["dt"];
 		const int time_steps = state.args["time"]["time_steps"];
 		const int bdf_order = state.get_bdf_order();
@@ -632,7 +633,7 @@ namespace polyfem::solver
 			{
 				state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, velocity, cur_nu, mass_term);
 				state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i), -cur_p, elasticity_term);
-				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), -cur_p, rhs_term);
+				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i), -cur_p, rhs_term);
 
 				if (state.solve_data.damping_form)
 					state.solve_data.damping_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i - 1), -cur_p, damping_term);

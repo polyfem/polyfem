@@ -69,10 +69,11 @@ namespace polyfem::solver
 		/// @param[in] adjoint Current adjoint solution
 		/// @param[out] term Derivative of force multiplied by the adjoint
 		void force_shape_derivative(
-		 const int n_verts,
-		 const Eigen::MatrixXd &x, 
-		 const Eigen::MatrixXd &adjoint, 
-		 Eigen::VectorXd &term);
+			const int n_verts,
+			const double t,
+			const Eigen::MatrixXd &x,
+			const Eigen::MatrixXd &adjoint,
+			Eigen::VectorXd &term);
 
 	private:
 		const std::vector<int> &boundary_nodes_;
