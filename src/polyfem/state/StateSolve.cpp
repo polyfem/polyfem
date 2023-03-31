@@ -131,7 +131,8 @@ namespace polyfem
 		if (n_lagrange_multipliers() == 0)
 			return;
 
-		logger().trace("No Dirichlet BC, use Lagrange multiplier to find unique solution...");
+		// logger().trace("No Dirichlet BC, use Lagrange multiplier to find unique solution...");
+		log_and_throw_error("Lagrange multiplier is deprecated!");
 
 		if (formulation() == "Laplacian")
 		{

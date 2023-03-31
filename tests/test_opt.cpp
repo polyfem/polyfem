@@ -287,7 +287,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
 			log_and_throw_error("Can't find json for State {}", i);
 
-		states[i++] = create_state(cur_args, spdlog::level::level_enum::err);
+		states[i++] = create_state(cur_args);
 	}
 
 	Eigen::VectorXd x(2);
@@ -331,7 +331,7 @@ TEST_CASE("shape-stress-opt-debug", "[optimization]")
 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
 			log_and_throw_error("Can't find json for State {}", i);
 
-		states[i++] = create_state(cur_args, spdlog::level::level_enum::err);
+		states[i++] = create_state(cur_args);
 	}
 
 	Eigen::VectorXd x;
@@ -384,7 +384,7 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
 			log_and_throw_error("Can't find json for State {}", i);
 
-		states[i++] = create_state(cur_args, spdlog::level::level_enum::err);
+		states[i++] = create_state(cur_args);
 	}
 
 	Eigen::VectorXd x;
@@ -526,7 +526,7 @@ TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
 			log_and_throw_error("Can't find json for State {}", i);
 
-		states[i++] = create_state(cur_args, spdlog::level::level_enum::err);
+		states[i++] = create_state(cur_args);
 	}
 
 	Eigen::VectorXd x;
@@ -621,7 +621,7 @@ TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
 			log_and_throw_error("Can't find json for State {}", i);
 
-		states[i++] = create_state(cur_args, spdlog::level::level_enum::err);
+		states[i++] = create_state(cur_args);
 	}
 
 	Eigen::VectorXd x;

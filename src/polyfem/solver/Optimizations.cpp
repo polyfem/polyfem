@@ -385,14 +385,14 @@ namespace polyfem::solver
 		return var2sim;
 	}
 
-	std::shared_ptr<State> create_state(const json &args, spdlog::level::level_enum log_level, const int max_threads)
+	std::shared_ptr<State> create_state(const json &args, const int max_threads)
 	{
 		std::shared_ptr<State> state = std::make_shared<State>();
 		state->set_max_threads(max_threads);
 
 		json in_args = args;
 		in_args["solver"]["max_threads"] = max_threads;
-		{
+		if (!args.contains("output") || !args["output"].contains("log") || !args["output"]["log"].contains("level")) {
 			auto tmp = R"({
 					"output": {
 						"log": {
@@ -401,7 +401,7 @@ namespace polyfem::solver
 					}
 				})"_json;
 
-			tmp["output"]["log"]["level"] = int(log_level);
+			tmp["output"]["log"]["level"] = int(4);
 
 			in_args.merge_patch(tmp);
 		}

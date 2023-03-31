@@ -139,8 +139,10 @@ int main(int argc, char **argv)
 		if (!load_json(utils::resolve_path(args["path"], root_path, false), cur_args))
 			log_and_throw_error("Can't find json for State {}", i);
 
-		states[i++] = create_state(cur_args, log_level);
+		states[i++] = create_state(cur_args);
 	}
+
+	states[0]->set_log_level(log_level);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 

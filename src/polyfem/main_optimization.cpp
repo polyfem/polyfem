@@ -99,9 +99,11 @@ int main(int argc, char **argv)
 			if (!load_json(args["path"], cur_args))
 				log_and_throw_error("Can't find json for State {}", i);
 
-			states[i++] = create_state(cur_args, log_level, max_threads);
+			states[i++] = create_state(cur_args, max_threads);
 		}
 	}
+
+	states[0]->set_log_level(log_level);
 
 	/* DOF */
 	int ndof = 0;
