@@ -1162,7 +1162,7 @@ namespace polyfem
 			return;
 		}
 
-		if (!problem->is_time_dependent() && !is_contact_enabled())
+		if (!problem->is_time_dependent())
 		{
 			avg_mass = 1;
 			timings.assembling_mass_mat_time = 0;
