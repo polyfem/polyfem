@@ -189,12 +189,14 @@ namespace polyfem
 			// Augmented lagrangian form
 			obstacle,
 			// Contact form
-			args["contact"]["enabled"], collision_mesh, args["contact"]["dhat"],
+			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
 			avg_mass, args["contact"]["use_convergent_formulation"],
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
+			// Periodic contact
+			args["contact"]["periodic"], tiled_to_periodic,
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],

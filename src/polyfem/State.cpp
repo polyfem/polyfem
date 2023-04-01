@@ -41,7 +41,7 @@
 #include <polyfem/solver/forms/ElasticForm.hpp>
 
 #include <unsupported/Eigen/SparseExtra>
-
+#include <polyfem/io/OBJWriter.hpp>
 #include <iostream>
 #include <algorithm>
 #include <memory>
@@ -1058,6 +1058,8 @@ namespace polyfem
 
 		logger().info("Building collision mesh...");
 		build_collision_mesh(collision_mesh, n_bases, bases);
+		if (args["contact"]["periodic"])
+			build_periodic_collision_mesh();
 		logger().info("Done!");
 
 		{
@@ -1339,6 +1341,133 @@ namespace polyfem
 		logger().info(" took {}s", timings.computing_poly_basis_time);
 
 		n_bases += new_bases;
+	}
+
+	void State::build_periodic_collision_mesh()
+	{
+		assert(!mesh->is_volume());
+
+		Eigen::MatrixXd V(n_bases, mesh->dimension());
+		for (const auto &bs : bases)
+			for (const auto &b : bs.bases)
+				for (const auto &g : b.global())
+					V.row(g.index) = g.node;
+		
+		Eigen::MatrixXi E = collision_mesh.edges();
+		for (int i = 0; i < E.size(); i++)
+			E(i) = collision_mesh.to_full_vertex_id(E(i));
+
+        Eigen::MatrixXd bbox(V.cols(), 2);
+        bbox.col(0) = V.colwise().minCoeff();
+        bbox.col(1) = V.colwise().maxCoeff();
+        Eigen::VectorXd size = bbox.col(1) - bbox.col(0);
+
+		// remove boundary edges on periodic BC
+		{
+			const double eps = 1e-6;
+			Eigen::MatrixXd barycenters = (V(E.col(0), Eigen::all) + V(E.col(1), Eigen::all)) / 2.0;
+			std::vector<int> ind;
+			for (int i = 0; i < barycenters.rows(); i++)
+			{
+				Eigen::VectorXd p = barycenters.row(i);
+				if ((p - bbox.col(0)).minCoeff() > eps && (bbox.col(1) - p).minCoeff() > eps)
+					ind.push_back(i);
+			}
+			E = E(ind, Eigen::all).eval();
+		}
+
+        Eigen::MatrixXd Vtmp, Vnew;
+        Eigen::MatrixXi Etmp, Enew;
+        Vtmp.setZero(V.rows() * 9, V.cols());
+        Etmp.setZero(E.rows() * 9, E.cols());
+
+		for (int i = 0, idx = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				Vtmp.middleRows(idx * V.rows(), V.rows()) = V;
+				Vtmp.block(idx * V.rows(), 0, V.rows(), 1).array() += size(0) * i;
+				Vtmp.block(idx * V.rows(), 1, V.rows(), 1).array() += size(1) * j;
+
+				Etmp.middleRows(idx * E.rows(), E.rows()) = E.array() + idx * V.rows();
+				idx += 1;
+			}
+		}
+
+        // clean duplicated vertices
+        const double eps = 1e-6;
+        Eigen::VectorXi indices;
+        {
+            std::vector<int> tmp;
+            for (int i = 0; i < V.rows(); i++)
+            {
+                Eigen::VectorXd p = V.row(i);
+                if ((p - bbox.col(0)).array().abs().minCoeff() < eps || (p - bbox.col(1)).array().abs().minCoeff() < eps)
+                    tmp.push_back(i);
+            }
+
+            indices.resize(tmp.size() * 9);
+            for (int i = 0; i < 9; i++)
+            {
+                indices.segment(i * tmp.size(), tmp.size()) = Eigen::Map<Eigen::VectorXi, Eigen::Unaligned>(tmp.data(), tmp.size());
+                indices.segment(i * tmp.size(), tmp.size()).array() += i * V.rows();
+            }
+        }
+
+        Eigen::VectorXi potentially_duplicate_mask(Vtmp.rows());
+        potentially_duplicate_mask.setZero();
+        potentially_duplicate_mask(indices).array() = 1;
+        Eigen::MatrixXd candidates = Vtmp(indices, Eigen::all);
+
+        Eigen::VectorXi SVI;
+        std::vector<int> SVJ;
+        SVI.setConstant(Vtmp.rows(), -1);
+        int id = 0;
+        for (int i = 0; i < Vtmp.rows(); i++)
+        {
+            if (SVI[i] < 0)
+            {
+                SVI[i] = id;
+                SVJ.push_back(i);
+                if (potentially_duplicate_mask(i))
+                {
+                    Eigen::VectorXd diffs = (candidates.rowwise() - Vtmp.row(i)).rowwise().norm();
+                    for (int j = 0; j < diffs.size(); j++)
+                        if (diffs(j) < eps)
+                            SVI[indices[j]] = id;
+                }
+                id++;
+            }
+        }
+        Vnew = Vtmp(SVJ, Eigen::all);
+
+		// Eigen::VectorXi index_map;
+        // index_map.setConstant(Vtmp.rows(), -1);
+        // for (int i = 0; i < V.rows(); i++)
+        //     for (int j = 0; j < 9; j++)
+        //         index_map(j * V.rows() + i) = i;
+        // index_map = index_map(SVJ).eval();
+
+        Enew.resizeLike(Etmp);
+        for (int d = 0; d < Etmp.cols(); d++)
+            Enew.col(d) = SVI(Etmp.col(d));
+
+		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(Vnew.rows(), Enew);
+
+		Eigen::MatrixXi boundary_triangles;
+		Eigen::SparseMatrix<double> displacement_map;
+		periodic_collision_mesh = ipc::CollisionMesh(is_on_surface,
+											 Vnew,
+											 Enew,
+											 boundary_triangles,
+											 displacement_map);
+
+		tiled_to_periodic.setConstant(Vnew.rows(), -1);
+		for (int i = 0; i < V.rows(); i++)
+			for (int j = 0; j < 9; j++)
+				tiled_to_periodic(SVI[j * V.rows() + i]) = i;
+		
+		assert(tiled_to_periodic.maxCoeff() + 1 == V.rows());
 	}
 
 	void State::build_collision_mesh(

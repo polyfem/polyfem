@@ -521,11 +521,18 @@ namespace polyfem
 		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
 
+		/// @brief IPC collision mesh under periodic BC
+		ipc::CollisionMesh periodic_collision_mesh;
+		/// index mapping from tiled mesh to original periodic mesh
+		Eigen::VectorXi tiled_to_periodic;
+
 		/// extracts the boundary mesh for collision, called in build_basis
 		void build_collision_mesh(
 			ipc::CollisionMesh &collision_mesh_,
 			const int n_bases_,
 			const std::vector<basis::ElementBases> &bases_) const;
+
+		void build_periodic_collision_mesh();
 
 		/// checks if vertex is obstacle
 		/// @param[in] vi vertex index
@@ -711,7 +718,6 @@ namespace polyfem
 		//---------------------------------------------------
 	public:
 		void solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::MatrixXd &sol_, const std::vector<int> &fixed_entry, bool for_bistable = false);
-		void solve_homogenized_field_incremental(const Eigen::MatrixXd &macro_field2, Eigen::MatrixXd &macro_field1, Eigen::MatrixXd &sol_);
 	};
 
 } // namespace polyfem

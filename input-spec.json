@@ -1385,7 +1385,8 @@
             "dhat_percentage",
             "epsv",
             "friction_coefficient",
-            "use_convergent_formulation"
+            "use_convergent_formulation",
+            "periodic"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1426,6 +1427,12 @@
         "default": false,
         "type": "bool",
         "doc": "Whether to use the convergent (area weighted) formulation of IPC."
+    },
+    {
+        "pointer": "/contact/periodic",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to use a 3x3 tiling of the mesh to detect collision under periodic BC."
     },
     {
         "pointer": "/solver",

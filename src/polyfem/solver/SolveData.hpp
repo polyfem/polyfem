@@ -27,6 +27,7 @@ namespace polyfem::solver
 	class NLProblem;
 	class Form;
 	class ContactForm;
+	class PeriodicContactForm;
 	class FrictionForm;
 	class BodyForm;
 	class ALForm;
@@ -88,6 +89,10 @@ namespace polyfem::solver
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
 
+			// Periodic contact
+			const bool periodic_contact,
+			const Eigen::VectorXi tiled_to_periodic,
+
 			// Friction form
 			const double friction_coefficient,
 			const double epsv,
@@ -112,6 +117,7 @@ namespace polyfem::solver
 		std::shared_ptr<solver::ALForm> al_form;
 		std::shared_ptr<solver::BodyForm> body_form;
 		std::shared_ptr<solver::ContactForm> contact_form;
+		std::shared_ptr<solver::PeriodicContactForm> periodic_contact_form;
 		std::shared_ptr<solver::ElasticForm> damping_form;
 		std::shared_ptr<solver::ElasticForm> elastic_form;
 		std::shared_ptr<solver::FrictionForm> friction_form;

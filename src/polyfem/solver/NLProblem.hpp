@@ -31,8 +31,8 @@ namespace polyfem::solver
 				  const double t, 
 				  const std::vector<std::shared_ptr<Form>> &forms);
 
-		double value(const TVector &x) override;
-		void gradient(const TVector &x, TVector &gradv) override;
+		virtual double value(const TVector &x) override;
+		virtual void gradient(const TVector &x, TVector &gradv) override;
 		virtual void hessian(const TVector &x, THessian &hessian) override;
 
 		bool is_step_valid(const TVector &x0, const TVector &x1) const override;
@@ -49,7 +49,7 @@ namespace polyfem::solver
 
 		// --------------------------------------------------------------------
 
-		void update_quantities(const double t, const TVector &x);
+		virtual void update_quantities(const double t, const TVector &x);
 
 		int full_size() const { return full_size_; }
 		int reduced_size() const { return reduced_size_; }

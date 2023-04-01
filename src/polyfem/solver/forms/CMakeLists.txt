@@ -16,6 +16,8 @@ set(SOURCES
 	FrictionForm.hpp
 	ContactForm.cpp
 	ContactForm.hpp
+	PeriodicContactForm.cpp
+	PeriodicContactForm.hpp
 	RayleighDampingForm.cpp
 	RayleighDampingForm.hpp
 )
