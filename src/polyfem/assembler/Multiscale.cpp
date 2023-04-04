@@ -15,6 +15,7 @@
 #include <polyfem/io/MatrixIO.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/solver/NonlinearSolver.hpp>
 #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/solver/DenseNewtonDescentSolver.hpp>
@@ -213,13 +214,18 @@ namespace polyfem::assembler
 		}
 
 		Eigen::MatrixXd adjoints = state->solve_adjoint(CB);
+		std::shared_ptr<solver::NLHomoProblem> homo_problem = std::dynamic_pointer_cast<solver::NLHomoProblem>(state->solve_data.nl_problem);
+		assert(homo_problem);
+		const Eigen::VectorXd disp_grad_values = homo_problem->get_fixed_values();
+		homo_problem->set_fixed_values(Eigen::VectorXd::Zero(disp_grad_values.size()));
 		for (int i = 0; i < CB.cols(); i++)
 		{
 			Eigen::VectorXd b;
 			// Eigen::MatrixXd adjoints = state->solve_adjoint(CB.col(i));
-			solver::AdjointTools::dJ_macro_strain_adjoint_term(*state, x, adjoints.col(i), b);
+			solver::AdjointTools::dJ_macro_strain_adjoint_term(*state, x, homo_problem->reduced_to_full(adjoints.col(i)), b);
 			stiffness.row(i) += b;
 		}
+		homo_problem->set_fixed_values(disp_grad_values);
 
 		Eigen::VectorXi ind = Eigen::VectorXi::LinSpaced(stiffness.rows(), 0, stiffness.rows()-1).reshaped(size(), size()).reshaped<Eigen::RowMajor>();
 		stiffness = stiffness(ind, ind).eval();
