@@ -63,7 +63,10 @@ namespace polyfem::solver
 			}
 			else
 			{
-				AdjointTools::dJ_shape_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+				if (state->disp_grad_.size() == 0)
+					AdjointTools::dJ_shape_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+				else
+					AdjointTools::dJ_shape_homogenization_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
 			}
 			if (term.size() != cur_term.size())
 				term = cur_term;

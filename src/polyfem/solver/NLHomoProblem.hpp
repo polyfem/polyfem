@@ -19,6 +19,7 @@ namespace polyfem::solver
 				  const assembler::RhsAssembler &rhs_assembler,
 				  const State &state,
 				  const double t, const std::vector<std::shared_ptr<Form>> &forms, 
+				  const bool solve_symmetric_macro_strain,
 				  const std::shared_ptr<PeriodicContactForm> &contact_form);
 		
 		double value(const TVector &x) override;
@@ -42,10 +43,11 @@ namespace polyfem::solver
 
 		Eigen::MatrixXd reduced_to_disp_grad(const TVector &reduced) const;
 
-		void set_only_symmetric();
-		void set_fixed_entry(const std::vector<int> &fixed_entry);
+		void set_fixed_entry(const std::vector<int> &fixed_entry, const Eigen::VectorXd &full_values);
+		Eigen::VectorXd get_fixed_values() const { return fixed_values_; }
+		void set_fixed_values(const Eigen::VectorXd &fixed_values) { fixed_values_ = fixed_values; }
 
-
+		void init(const TVector &x0) override;
 		bool is_step_valid(const TVector &x0, const TVector &x1) const override;
 		bool is_step_collision_free(const TVector &x0, const TVector &x1) const override;
 		double max_step_size(const TVector &x0, const TVector &x1) const override;
@@ -60,13 +62,16 @@ namespace polyfem::solver
 
 		void update_quantities(const double t, const TVector &x) override;
 
-	private:
 		Eigen::MatrixXd constraint_grad; // (dim*dim) x (dim*n_bases)
 
-		bool only_symmetric = false;
-		Eigen::MatrixXd full_to_symmetric, symmetric_to_full; // (dim*dim) x (dim*(dim+1)/2)
+	private:
+		void init_projection();
 
-		std::vector<int> fixed_entry_; // dirichlet BC on macro strain
+		const bool only_symmetric;
+		Eigen::VectorXi fixed_mask_;
+		Eigen::VectorXd fixed_values_;
+		Eigen::MatrixXd macro_mid_to_reduced_; // (dim*dim) x (dim*(dim+1)/2)
+		Eigen::MatrixXd macro_full_to_mid_, macro_mid_to_full_;
 
 		std::shared_ptr<PeriodicContactForm> contact_form_;
     };

@@ -11,6 +11,7 @@
 #include <polyfem/io/Evaluator.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
@@ -101,11 +102,7 @@ namespace polyfem
 		if (current_step == 0)
 			diff_cached.init(ndof(), problem->is_time_dependent() ? args["time"]["time_steps"].get<int>() : 0);
 		if (!problem->is_time_dependent() || current_step > 0)
-			compute_force_hessian(sol, gradu_h);
-
-		StiffnessMatrix tmp = gradu_h;
-		gradu_h.setZero();
-		replace_rows_by_identity(gradu_h, tmp, boundary_nodes);
+			compute_force_hessian(sol, disp_grad, gradu_h);
 
 		auto cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::Constraints();
 		auto cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_constraint_set() : ipc::FrictionConstraints();
@@ -145,17 +142,42 @@ namespace polyfem
 		}
 	}
 
-	void State::compute_force_hessian(const Eigen::MatrixXd &sol, StiffnessMatrix &hessian) const
+	void State::compute_force_hessian(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian) const
 	{
-		if (assembler.is_linear(formulation()) && !is_contact_enabled())
+		if (problem->is_time_dependent())
 		{
-			hessian = stiffness;
-		}
-		else
-		{
+			if (assembler.is_linear(formulation()) && !is_contact_enabled())
+				log_and_throw_error("Transient linear formulation is not yet differentiable!");
+			
+			StiffnessMatrix tmp_hess;
 			solve_data.nl_problem->set_project_to_psd(false);
 			solve_data.nl_problem->FullNLProblem::solution_changed(sol);
-			solve_data.nl_problem->FullNLProblem::hessian(sol, hessian);
+			solve_data.nl_problem->FullNLProblem::hessian(sol, tmp_hess);
+			hessian.setZero();
+			replace_rows_by_identity(hessian, tmp_hess, boundary_nodes);
+		}
+		else // static formulation
+		{
+			if (assembler.is_linear(formulation()) && !is_contact_enabled() && disp_grad_.size() == 0)
+			{
+				hessian.setZero();
+				replace_rows_by_identity(hessian, stiffness, boundary_nodes);
+			}
+			else 
+			{
+				solve_data.nl_problem->set_project_to_psd(false);
+				Eigen::VectorXd reduced;
+				if (disp_grad_.size() != 0)
+				{
+					std::shared_ptr<solver::NLHomoProblem> homo_problem = std::dynamic_pointer_cast<solver::NLHomoProblem>(solve_data.nl_problem);
+					reduced = homo_problem->full_to_reduced(sol, disp_grad);
+				}
+				else
+					reduced = solve_data.nl_problem->full_to_reduced(sol);
+
+				solve_data.nl_problem->solution_changed(reduced);
+				solve_data.nl_problem->hessian(reduced, hessian);
+			}
 		}
 	}
 
@@ -264,26 +286,41 @@ namespace polyfem
 			auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["adjoint_solver"], args["solver"]["linear"]["precond"]);
 			solver->setParameters(args["solver"]["linear"]);
 
-			StiffnessMatrix A;
-			solve_data.nl_problem->full_hessian_to_reduced_hessian(diff_cached.gradu_h(0), A);
+			StiffnessMatrix A = diff_cached.gradu_h(0);
 			solver->analyzePattern(A, A.rows());
 			solver->factorize(A);
 
-			for (int i = 0; i < b.cols(); i++)
-			{
-				Eigen::MatrixXd tmp = b.col(i);
-
-				Eigen::VectorXd x;
-				x.setZero(tmp.size());
-				// dirichlet_solve(*solver, A, tmp, {}, x, A.rows(), "", false, false, false);
-				solver->solve(tmp, x);
-				x.conservativeResize(x.size() - n_lagrange_multipliers());
-
-				adjoint.col(i) = solve_data.nl_problem->reduced_to_full(x);
-			}
-			// NLProblem sets dirichlet values to forward BC values, but we want zero in adjoint
 			if (disp_grad_.size() == 0)
+			{
+				for (int i = 0; i < b.cols(); i++)
+				{
+					Eigen::MatrixXd tmp = b.col(i);
+
+					Eigen::VectorXd x;
+					x.setZero(tmp.size());
+					solver->solve(tmp, x);
+					x.conservativeResize(x.size() - n_lagrange_multipliers());
+
+					adjoint.col(i) = solve_data.nl_problem->reduced_to_full(x);
+				}
+				// NLProblem sets dirichlet values to forward BC values, but we want zero in adjoint
 				adjoint(boundary_nodes, Eigen::all).setZero();
+			}
+			else
+			{
+				adjoint.setZero(adjoint_rhs.rows(), adjoint_rhs.cols());
+				for (int i = 0; i < b.cols(); i++)
+				{
+					Eigen::MatrixXd tmp = b.col(i);
+
+					Eigen::VectorXd x;
+					x.setZero(tmp.size());
+					solver->solve(tmp, x);
+					x.conservativeResize(x.size() - n_lagrange_multipliers());
+
+					adjoint.col(i) = x;
+				}
+			}
 		}
 
 		return adjoint;

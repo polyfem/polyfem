@@ -10,11 +10,10 @@ namespace polyfem::solver
                 const assembler::RhsAssembler &rhs_assembler,
                 const State &state,
                 const double t, const std::vector<std::shared_ptr<Form>> &forms, 
-				  const std::shared_ptr<PeriodicContactForm> &contact_form) : NLProblem(full_size, boundary_nodes, local_boundary, n_boundary_samples, rhs_assembler, state, t, forms), contact_form_(contact_form)
+                const bool solve_symmetric_macro_strain,
+				const std::shared_ptr<PeriodicContactForm> &contact_form) : NLProblem(full_size, boundary_nodes, local_boundary, n_boundary_samples, rhs_assembler, state, t, forms), only_symmetric(solve_symmetric_macro_strain), contact_form_(contact_form)
     {
         const int dim = state_.mesh->dimension();
-        const int dof2 = macro_reduced_size();
-        const int dof1 = reduced_size();
 
         Eigen::MatrixXd X = io::Evaluator::get_bases_position(state_.n_bases, state_.mesh_nodes);
 
@@ -23,6 +22,36 @@ namespace polyfem::solver
             for (int j = 0; j < dim; j++)
                 for (int k = 0; k < dim; k++)
                     constraint_grad(j * dim + k, i * dim + j) = X(i, k);
+        
+        init_projection();
+    }
+
+    void NLHomoProblem::init_projection()
+    {
+        const int dim = state_.mesh->dimension();
+        if (only_symmetric)
+        {
+            macro_mid_to_full_.setZero(dim * dim, (dim * (dim + 1)) / 2);
+            macro_full_to_mid_.setZero((dim * (dim + 1)) / 2, dim * dim);
+            for (int i = 0, idx = 0; i < dim; i++)
+            {
+                for (int j = i; j < dim; j++)
+                {
+                    macro_full_to_mid_(idx, i * dim + j) = 1;
+                    
+                    macro_mid_to_full_(j * dim + i, idx) = 1;
+                    macro_mid_to_full_(i * dim + j, idx) = 1;
+                    
+                    idx++;
+                }
+            }
+        }
+        else
+        {
+            macro_mid_to_full_.setIdentity(dim * dim, dim * dim);
+            macro_full_to_mid_.setIdentity(dim * dim, dim * dim);
+        }
+        macro_mid_to_reduced_.setIdentity(macro_full_to_mid_.rows(), macro_full_to_mid_.rows());
     }
     
     Eigen::VectorXd NLHomoProblem::reduced_to_extended(const Eigen::VectorXd &reduced) const
@@ -130,31 +159,27 @@ namespace polyfem::solver
         }
     }
 
-    void NLHomoProblem::set_only_symmetric()
+    void NLHomoProblem::set_fixed_entry(const std::vector<int> &fixed_entry, const Eigen::VectorXd &full_values)
     {
-        only_symmetric = true;
-
         const int dim = state_.mesh->dimension();
 
-        symmetric_to_full.setZero(dim * dim, (dim * (dim + 1)) / 2);
-        full_to_symmetric.setZero(dim * dim, (dim * (dim + 1)) / 2);
-        for (int i = 0, idx = 0; i < dim; i++)
-        {
-            for (int j = i; j < dim; j++)
-            {
-                full_to_symmetric(i * dim + j, idx) = 1;
-                
-                symmetric_to_full(j * dim + i, idx) = 1;
-                symmetric_to_full(i * dim + j, idx) = 1;
-                
-                idx++;
-            }
-        }
-    }
+        Eigen::VectorXd fixed_mask;
+        fixed_mask.setZero(dim * dim);
+        fixed_mask(fixed_entry).setOnes();
+        fixed_mask = (macro_full_to_mid_ * fixed_mask).eval();
 
-    void NLHomoProblem::set_fixed_entry(const std::vector<int> &fixed_entry)
-    {
-        fixed_entry_ = fixed_entry;
+        fixed_mask_.setZero(fixed_mask.size());
+        for (int i = 0; i < fixed_mask.size(); i++)
+            if (abs(fixed_mask(i)) > 1e-8)
+                fixed_mask_(i) = true;
+        
+        fixed_values_ = (macro_full_to_mid_ * full_values).eval();
+
+        const int new_reduced_size = fixed_mask_.size() - fixed_mask_.sum();
+        macro_mid_to_reduced_.setZero(new_reduced_size, fixed_mask_.size());
+        for (int i = 0, j = 0; i < fixed_mask_.size(); i++)
+            if (!fixed_mask_(i))
+                macro_mid_to_reduced_(j++, i) = 1;
     }
 
     void NLHomoProblem::full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const
@@ -184,12 +209,6 @@ namespace polyfem::solver
         for (int i = 0; i < A22.rows(); i++)
             for (int j = 0; j < A22.cols(); j++)
                 entries.emplace_back(i + full.rows(), j + full.cols(), A22(i, j));
-
-        // for (int i : fixed_entry_)
-        //     entries.emplace_back(i + full.rows(), i + full.cols(), 1);
-        tmp = macro_full_to_reduced_grad(Eigen::MatrixXd::Ones(dim*dim, 1));
-        for (int i = 0; i < tmp.size(); i++)
-            entries.emplace_back(i + full.rows(), i + full.cols(), 1 - tmp(i));
 
         THessian mid(full.rows() + dof2, full.cols() + dof2);
         mid.setFromTriplets(entries.begin(), entries.end());
@@ -245,36 +264,31 @@ namespace polyfem::solver
 
     int NLHomoProblem::macro_reduced_size() const
     {
-        const int dim = state_.mesh->dimension();
-        if (only_symmetric)
-            return ((dim + 1) * dim) / 2;
-        else
-            return dim * dim;
+        return macro_mid_to_reduced_.rows();
     }
     NLHomoProblem::TVector NLHomoProblem::macro_full_to_reduced(const TVector &full) const
     {
-        if (only_symmetric)
-            return full_to_symmetric.transpose() * full;
-        else
-            return full;
+        return macro_mid_to_reduced_ * macro_full_to_mid_ * full;
     }
     Eigen::MatrixXd NLHomoProblem::macro_full_to_reduced_grad(const Eigen::MatrixXd &full) const
     {
-        Eigen::MatrixXd mid = full;
-        for (int i : fixed_entry_)
-            mid.row(i).setZero();
-
-        if (only_symmetric)
-            return symmetric_to_full.transpose() * mid;
-        else
-            return mid;
+        return macro_mid_to_reduced_ * macro_mid_to_full_.transpose() * full;
     }
     NLHomoProblem::TVector NLHomoProblem::macro_reduced_to_full(const TVector &reduced) const
     {
-        if (only_symmetric)
-            return symmetric_to_full * reduced;
-        else
-            return reduced;
+        TVector mid = macro_mid_to_reduced_.transpose() * reduced;
+        for (int i = 0; i < fixed_mask_.size(); i++)
+            if (fixed_mask_(i))
+                mid(i) = fixed_values_(i);
+        
+        return macro_mid_to_full_ * mid;
+    }
+
+    void NLHomoProblem::init(const TVector &x0)
+    {
+        if (contact_form_)
+            contact_form_->init(reduced_to_extended(x0));
+        FullNLProblem::init(reduced_to_full(x0));
     }
 
     bool NLHomoProblem::is_step_valid(const TVector &x0, const TVector &x1) const

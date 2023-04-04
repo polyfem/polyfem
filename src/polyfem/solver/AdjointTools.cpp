@@ -10,10 +10,12 @@
 #include <polyfem/utils/BoundarySampler.hpp>
 
 #include <polyfem/solver/forms/ElasticForm.hpp>
-#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
+
+#include <polyfem/solver/NLHomoProblem.hpp>
 
 #include <polyfem/time_integrator/BDF.hpp>
 
@@ -591,7 +593,7 @@ namespace polyfem::solver
 
 			if (state.is_contact_enabled())
 			{
-				state.solve_data.contact_form->force_shape_derivative(state.solve_data.contact_form->get_constraint_set(), sol, adjoint, contact_term);
+				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.contact_set(0), sol, adjoint, contact_term);
 				contact_term = state.down_sampling_mat * contact_term;
 			}
 			else
@@ -600,6 +602,58 @@ namespace polyfem::solver
 		}
 
 		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
+	}
+
+	void AdjointTools::dJ_shape_homogenization_adjoint_term(
+		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &adjoint,
+		Eigen::VectorXd &one_form)
+	{
+		Eigen::VectorXd elasticity_term, contact_term;
+
+		std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state.solve_data.nl_problem);
+		assert(homo_problem);
+
+		const int dim = state.mesh->dimension();
+		one_form.setZero(state.n_geom_bases * dim);
+
+		const Eigen::VectorXd disp_grad_values = homo_problem->get_fixed_values();
+		homo_problem->set_fixed_values(Eigen::VectorXd::Zero(disp_grad_values.size()));
+
+		{
+			state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, sol, sol, homo_problem->reduced_to_full(adjoint), elasticity_term);
+			{
+				Eigen::MatrixXd affine_adjoint = homo_problem->reduced_to_disp_grad(adjoint);
+
+				Eigen::VectorXd force;
+				state.solve_data.elastic_form->first_derivative(sol, force);
+
+				Eigen::VectorXd tmp = state.down_sampling_mat * utils::flatten(utils::unflatten(force, dim) * affine_adjoint);
+				elasticity_term += tmp;
+			}
+
+			if (state.args["contact"]["periodic"])
+			{
+				Eigen::VectorXd extended_sol(sol.size() + dim * dim);
+				extended_sol.head(sol.size()) = sol - io::Evaluator::generate_linear_field(state.n_bases, state.mesh_nodes, state.diff_cached.disp_grad());
+				extended_sol.tail(dim * dim) = utils::flatten(state.diff_cached.disp_grad());
+				state.solve_data.periodic_contact_form->force_shape_derivative(state.solve_data.periodic_contact_form->get_constraint_set(), extended_sol, homo_problem->reduced_to_extended(adjoint), contact_term);
+				contact_term = state.down_sampling_mat * contact_term;
+			}
+			else if (state.is_contact_enabled())
+			{
+				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.contact_set(0), sol, homo_problem->reduced_to_full(adjoint), contact_term);
+				contact_term = state.down_sampling_mat * contact_term;
+			}
+			else
+				contact_term.setZero(elasticity_term.size());
+			
+			one_form = elasticity_term + contact_term;
+		}
+
+		homo_problem->set_fixed_values(disp_grad_values);
+		one_form = utils::flatten(utils::unflatten(one_form, dim)(state.primitive_to_node(), Eigen::all));
 	}
 
 	void AdjointTools::dJ_shape_transient_adjoint_term(

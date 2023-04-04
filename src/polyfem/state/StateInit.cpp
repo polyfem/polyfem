@@ -288,6 +288,7 @@ namespace polyfem
 		{
 			args["solver"]["contact"]["friction_iterations"] = 0;
 			args["contact"]["friction_coefficient"] = 0;
+			args["contact"]["periodic"] = false;
 		}
 
 		if (!args.contains("preset_problem"))

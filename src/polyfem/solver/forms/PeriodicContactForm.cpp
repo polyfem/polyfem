@@ -90,10 +90,11 @@ namespace polyfem::solver
 
     void PeriodicContactForm::force_shape_derivative(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
     {
+        const int dim = collision_mesh_.dim();
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(periodic_to_full(solution));
 
 		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh_, displaced_surface, contact_set, dhat_));
-		term = -barrier_stiffness() * full_to_periodic_grad(dq_h.transpose() * periodic_to_full(adjoint_sol));
+		term = -barrier_stiffness() * full_to_periodic_grad(dq_h.transpose() * periodic_to_full(adjoint_sol)).head((tiled_to_periodic_.maxCoeff() + 1) * dim);
     }
 
     double PeriodicContactForm::value_unweighted(const Eigen::VectorXd &x) const

@@ -1157,7 +1157,7 @@ namespace polyfem
 		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
 
-		if (boundary_nodes.size() == 0)
+		if (boundary_nodes.size() == 0 && !problem->is_scalar())
 		{
 			for (int d = 0; d < mesh->dimension(); d++)
 			{
@@ -1468,6 +1468,12 @@ namespace polyfem
 				tiled_to_periodic(SVI[j * V.rows() + i]) = i;
 		
 		assert(tiled_to_periodic.maxCoeff() + 1 == V.rows());
+
+		if (args["space"]["advanced"]["periodic_basis"].get<bool>())
+		{
+			for (int i = 0; i < tiled_to_periodic.size(); i++)
+				tiled_to_periodic(i) = periodic_reduce_map(tiled_to_periodic(i));
+		}
 	}
 
 	void State::build_collision_mesh(

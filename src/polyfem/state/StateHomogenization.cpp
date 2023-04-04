@@ -96,25 +96,8 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         // Rayleigh damping form
         args["solver"]["rayleigh_damping"]);
 
-    std::vector<int> boundary_nodes_tmp = boundary_nodes;
-    full_to_periodic(boundary_nodes_tmp);
-
-    std::shared_ptr<NLHomoProblem> homo_problem = std::make_shared<NLHomoProblem>(
-        ndof,
-        boundary_nodes_tmp,
-        local_boundary,
-        n_boundary_samples(),
-        *solve_data_tmp.rhs_assembler, *this, 0, forms, solve_data_tmp.periodic_contact_form);
-    solve_data_tmp.nl_problem = homo_problem;
-
-    if (args["optimization"]["enabled"])
+    bool solve_symmetric_flag = false;
     {
-        solve_data = solve_data_tmp;
-    }
-
-    homo_problem->set_fixed_entry(fixed_entry);
-    {
-        bool flag = false;
         for (int i = 0; i < dim; i++)
         {
             for (int j = 0; j < i; j++)
@@ -123,36 +106,56 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
                     std::find(fixed_entry.begin(), fixed_entry.end(), j + i * dim) == fixed_entry.end())
                 {
                     logger().info("Strain entry [{},{}] and [{},{}] are not fixed, solve for symmetric strain...", i, j, j, i);
-                    flag = true;
+                    solve_symmetric_flag = true;
                     break;
                 }
             }
         }
-        if (flag)
+        if (solve_symmetric_flag)
         {
             if ((disp_grad - disp_grad.transpose()).norm() > 1e-10)
                 log_and_throw_error("Macro strain is not symmetric!");
-            homo_problem->set_only_symmetric();
         }
     }
 
-    Eigen::VectorXd tmp_sol = homo_problem->full_to_reduced(sol_, Eigen::MatrixXd::Zero(dim, dim));
-    Eigen::VectorXd tail = homo_problem->macro_full_to_reduced(utils::flatten(disp_grad));
-    tmp_sol.tail(tail.size()) = tail;
+    std::vector<int> boundary_nodes_tmp = boundary_nodes;
+    full_to_periodic(boundary_nodes_tmp);
 
-    homo_problem->init(homo_problem->reduced_to_full(tmp_sol));
+    std::shared_ptr<NLHomoProblem> homo_problem = std::make_shared<NLHomoProblem>(
+        ndof,
+        boundary_nodes_tmp,
+        local_boundary,
+        n_boundary_samples(),
+        *solve_data_tmp.rhs_assembler, *this, 0, forms, solve_symmetric_flag, solve_data_tmp.periodic_contact_form);
+    solve_data_tmp.nl_problem = homo_problem;
+
+    if (args["optimization"]["enabled"])
+    {
+        solve_data = solve_data_tmp;
+    }
+
+    homo_problem->set_fixed_entry(fixed_entry, utils::flatten(disp_grad));
+
+    Eigen::VectorXd tmp_sol;
+    Eigen::MatrixXd disp_grad_out = disp_grad;
+    {
+        tmp_sol = homo_problem->full_to_reduced(sol_, Eigen::MatrixXd::Zero(dim, dim));
+        Eigen::VectorXd tail = homo_problem->macro_full_to_reduced(utils::flatten(disp_grad));
+        tmp_sol.tail(tail.size()) = tail;
+    }
+
+    homo_problem->init(tmp_sol);
     std::shared_ptr<cppoptlib::NonlinearSolver<NLHomoProblem>> nl_solver = make_nl_homo_solver<NLHomoProblem>(args["solver"]);
     nl_solver->minimize(*homo_problem, tmp_sol);
     
     if (for_bistable)
     {
-        homo_problem->set_fixed_entry({});
+        homo_problem->set_fixed_entry({}, utils::flatten(disp_grad));
         nl_solver->minimize(*homo_problem, tmp_sol);
     }
 
     sol_ = homo_problem->reduced_to_full(tmp_sol);
-
-    Eigen::MatrixXd disp_grad_out = homo_problem->reduced_to_disp_grad(tmp_sol);
+    disp_grad_out = homo_problem->reduced_to_disp_grad(tmp_sol);
 
     logger().info("displacement grad {}", utils::flatten(disp_grad_out).transpose());
 
