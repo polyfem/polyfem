@@ -155,6 +155,13 @@ namespace polyfem
 		ipc::logger().set_level(log_level);
 	}
 
+	void State::set_log_level(const spdlog::level::level_enum log_level)
+	{
+		spdlog::set_level(log_level);
+		logger().set_level(log_level);
+		ipc::logger().set_level(log_level);
+	}
+
 	void State::init(const json &p_args_in, const bool strict_validation)
 	{
 		json args_in = p_args_in; // mutable copy

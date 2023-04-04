@@ -158,8 +158,6 @@ namespace polyfem::solver
                 "type": "Laplacian"
             }
         })"_json;
-
-        const auto log_level = logger().level();
         
         args["geometry"][0]["mesh"] = out_path_;
 
@@ -250,8 +248,6 @@ namespace polyfem::solver
             if (boundary_flags(i / dim))
                 error += (extended_velocity.col(i) - shape_velocity.col(i)).norm();
         logger().info("Error of volume shape velocity: {}", error);
-
-        state.set_log_level(log_level);
         
         std::swap(extended_velocity, shape_velocity);
     }

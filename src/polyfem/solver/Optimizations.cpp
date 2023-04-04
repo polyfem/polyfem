@@ -401,7 +401,7 @@ namespace polyfem::solver
 					}
 				})"_json;
 
-			tmp["output"]["log"]["level"] = int(4);
+			tmp["output"]["log"]["level"] = "error";
 
 			in_args.merge_patch(tmp);
 		}

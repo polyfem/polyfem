@@ -99,11 +99,23 @@ int main(int argc, char **argv)
 			if (!load_json(args["path"], cur_args))
 				log_and_throw_error("Can't find json for State {}", i);
 
+			{
+				auto tmp = R"({
+						"output": {
+							"log": {
+								"level": -1
+							}
+						}
+					})"_json;
+
+				tmp["output"]["log"]["level"] = int(log_level);
+
+				cur_args.merge_patch(tmp);
+			}
+
 			states[i++] = create_state(cur_args, max_threads);
 		}
 	}
-
-	states[0]->set_log_level(log_level);
 
 	/* DOF */
 	int ndof = 0;

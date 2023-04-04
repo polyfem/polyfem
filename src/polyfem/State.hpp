@@ -103,12 +103,7 @@ namespace polyfem
 
 		/// change log level
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
-		void set_log_level(const spdlog::level::level_enum log_level)
-		{
-			spdlog::set_level(log_level);
-			logger().set_level(log_level);
-			ipc::logger().set_level(log_level);
-		}
+		void set_log_level(const spdlog::level::level_enum log_level);
 
 		/// gets the output log as json
 		/// this is *not* what gets printed but more informative
