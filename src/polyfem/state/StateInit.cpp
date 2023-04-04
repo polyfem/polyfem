@@ -279,10 +279,6 @@ namespace polyfem
 			{
 				args["solver"]["contact"]["friction_iterations"] = 0;
 			}
-			if (args["optimization"]["enabled"])
-			{
-				args["contact"]["use_convergent_formulation"] = true;
-			}
 		}
 		else
 		{
@@ -332,11 +328,24 @@ namespace polyfem
 	
 		if (args["optimization"]["enabled"])
 		{
+			if (is_contact_enabled())
+			{
+				if (!args["contact"]["use_convergent_formulation"])
+				{
+					args["contact"]["use_convergent_formulation"] = true;
+					logger().warn("Use convergent formulation for differentiable contact...");
+				}
+				if (args["/solver/contact/barrier_stiffness"_json_pointer].is_string())
+				{
+					logger().error("Only constant barrier stiffness is supported in differentiable contact!");
+				}
+			}
+
 			if (args.contains("boundary_conditions") && args["boundary_conditions"].contains("rhs"))
 			{
 				json rhs = args["boundary_conditions"]["rhs"];
 				if ((rhs.is_array() && rhs.size() > 0 && rhs[0].is_string()) || rhs.is_string())
-					logger().warn("Only constant rhs over space is supported in differentiable code!");
+					logger().error("Only constant rhs over space is supported in differentiable code!");
 			}
 		}
 	}
