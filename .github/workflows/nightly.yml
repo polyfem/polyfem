@@ -47,6 +47,7 @@ jobs:
       - name: Cache Build
         id: cache-build
         uses: actions/cache@v3
+        if: matrix.config == 'Release' # debug cache is not working
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}

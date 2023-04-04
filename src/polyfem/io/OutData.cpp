@@ -1302,18 +1302,22 @@ namespace polyfem::io
 					ref_element_sampler, points.rows(), sol, tvals, opts.use_sampler, opts.boundary_only);
 				for (const auto &v : tvals)
 				{
-					for (int i = 0; i < v.second.cols(); ++i)
+					const int stride = mesh.dimension();
+					assert(v.second.cols() % stride == 0);
+
+					for (int i = 0; i < v.second.cols(); i += stride)
 					{
-						Eigen::MatrixXd tmp = v.second.col(i);
+						Eigen::MatrixXd tmp = v.second.middleCols(i, stride);
+						assert(tmp.cols() == stride);
+
 						if (obstacle.n_vertices() > 0)
 						{
-							tmp.conservativeResize(tmp.size() + obstacle.n_vertices(), 1);
+							tmp.conservativeResize(tmp.size() + obstacle.n_vertices(), tmp.cols());
 							tmp.bottomRows(obstacle.n_vertices()).setZero();
 						}
 
-						const int ii = (i / mesh.dimension()) + 1;
-						const int jj = (i % mesh.dimension()) + 1;
-						writer.add_field(fmt::format("{:s}_{:d}{:d}", v.first, ii, jj), tmp);
+						const int ii = (i / stride) + 1;
+						writer.add_field(fmt::format("{:s}_{:d}", v.first, ii), tmp);
 					}
 				}
 			}
@@ -1652,6 +1656,12 @@ namespace polyfem::io
 
 				Eigen::Map<Eigen::MatrixXd> tensor(tensor_flat[0].second.data(), actual_dim, actual_dim);
 				vect.row(i) = boundary_vis_normals.row(i) * tensor;
+
+				assembler::ElementAssemblyValues vals;
+				vals.compute(i, actual_dim == 3, bs, gbs);
+				const quadrature::Quadrature &quadrature = vals.quadrature;
+				const double area = (vals.det.array() * quadrature.weights.array()).sum();
+				vect.row(i) *= area;
 			}
 		}
 
