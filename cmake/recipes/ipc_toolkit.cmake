@@ -7,11 +7,14 @@ endif()
 
 message(STATUS "Third-party: creating target 'ipc::toolkit'")
 
+# WARNING: This forces the use of the floating point CCD used in the original IPC paper.
+set(IPC_TOOLKIT_WITH_CORRECT_CCD OFF CACHE BOOL "Use the TightInclusion CCD" FORCE)
+
 include(FetchContent)
 FetchContent_Declare(
     ipc_toolkit
     GIT_REPOSITORY https://github.com/ipc-sim/ipc-toolkit.git
-    GIT_TAG c1ba93d475ceb8e906e4cf44d8cf992b67235788
+    GIT_TAG 29f20b1f8ba1096b86ee0ae1ed302ee881c0d894
     GIT_SHALLOW FALSE
 )
 FetchContent_MakeAvailable(ipc_toolkit)
