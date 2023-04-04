@@ -676,6 +676,8 @@ namespace polyfem::solver
 
 	void SDFTargetForm::solution_changed(const Eigen::VectorXd &x)
 	{
+		AdjointForm::solution_changed(x);
+
 		assert(time_step_ < state_.diff_cached.size());
 
 		const auto &bases = state_.bases;
@@ -879,6 +881,8 @@ namespace polyfem::solver
 
 	void MeshTargetForm::solution_changed(const Eigen::VectorXd &x)
 	{
+		AdjointForm::solution_changed(x);
+
 		assert(time_step_ < state_.diff_cached.size());
 
 		const auto &bases = state_.bases;

@@ -131,7 +131,7 @@ namespace polyfem::solver
 			Eigen::Matrix<T, 3, 1> v1 = V.segment(0, 3);
 			Eigen::Matrix<T, 3, 1> v2 = V.segment(3, 3);
 			Eigen::Matrix<T, 3, 1> v3 = V.segment(6, 3);
-			Eigen::Matrix<T, 3, 1> normal = (v1 - v2).cross(v1 - v2);
+			Eigen::Matrix<T, 3, 1> normal = -(v1 - v2).cross(v1 - v3);
 			normal = normal / normal.norm();
 			return normal;
 		}

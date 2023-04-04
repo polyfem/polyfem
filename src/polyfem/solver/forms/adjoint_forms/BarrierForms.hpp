@@ -48,6 +48,8 @@ namespace polyfem::solver
 
 		void solution_changed(const Eigen::VectorXd &x) override
 		{
+			AdjointForm::solution_changed(x);
+
 			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
 			build_constraint_set(displaced_surface);
 		}
