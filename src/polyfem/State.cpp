@@ -1174,7 +1174,6 @@ namespace polyfem
 		if (assembler->name() == "OperatorSplitting")
 		{
 			timings.assembling_stiffness_mat_time = 0;
-			avg_mass = 1;
 			return;
 		}
 
