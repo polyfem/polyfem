@@ -263,7 +263,7 @@ namespace polyfem
 
 		logger().trace("Building in-primitive to primitive mapping...");
 		timer.start();
-		bool failed = build_in_primitive_to_primitive(
+		bool ok = build_in_primitive_to_primitive(
 			*mesh, *mesh_nodes,
 			mesh->in_ordered_vertices(),
 			mesh->in_ordered_edges(),
@@ -272,7 +272,7 @@ namespace polyfem
 		timer.stop();
 		logger().trace("Done (took {}s)", timer.getElapsedTime());
 
-		if (failed)
+		if (!ok)
 		{
 			in_node_to_node.resize(0);
 			in_primitive_to_primitive.resize(0);
