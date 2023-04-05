@@ -1,10 +1,12 @@
 #pragma once
 
 #include "NLProblem.hpp"
-#include "forms/PeriodicContactForm.hpp"
 
 namespace polyfem::solver
 {
+	class PeriodicContactForm;
+	class MacroStrainALForm;
+
     class NLHomoProblem : public NLProblem
     {
     public:
@@ -21,6 +23,8 @@ namespace polyfem::solver
 				  const double t, const std::vector<std::shared_ptr<Form>> &forms, 
 				  const bool solve_symmetric_macro_strain,
 				  const std::shared_ptr<PeriodicContactForm> &contact_form);
+
+		void set_al_form(const std::shared_ptr<MacroStrainALForm> &al_form) { al_form_ = al_form; }
 		
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
@@ -34,6 +38,7 @@ namespace polyfem::solver
 
 		int macro_reduced_size() const;
 		TVector macro_full_to_reduced(const TVector &full) const;
+		TVector macro_full_to_mid(const TVector &full) const;
 		Eigen::MatrixXd macro_full_to_reduced_grad(const Eigen::MatrixXd &full) const;
 		TVector macro_reduced_to_full(const TVector &reduced) const;
 
@@ -62,8 +67,6 @@ namespace polyfem::solver
 
 		void update_quantities(const double t, const TVector &x) override;
 
-		Eigen::MatrixXd constraint_grad; // (dim*dim) x (dim*n_bases)
-
 	private:
 		void init_projection();
 
@@ -73,6 +76,9 @@ namespace polyfem::solver
 		Eigen::MatrixXd macro_mid_to_reduced_; // (dim*dim) x (dim*(dim+1)/2)
 		Eigen::MatrixXd macro_full_to_mid_, macro_mid_to_full_;
 
+		Eigen::MatrixXd constraint_grad_; // (dim*dim) x (dim*n_bases)
+
 		std::shared_ptr<PeriodicContactForm> contact_form_;
+		std::shared_ptr<MacroStrainALForm> al_form_;
     };
 }

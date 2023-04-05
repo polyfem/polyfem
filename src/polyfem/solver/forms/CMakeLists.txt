@@ -18,6 +18,8 @@ set(SOURCES
 	ContactForm.hpp
 	PeriodicContactForm.cpp
 	PeriodicContactForm.hpp
+	MacroStrainALForm.cpp
+	MacroStrainALForm.hpp
 	RayleighDampingForm.cpp
 	RayleighDampingForm.hpp
 )

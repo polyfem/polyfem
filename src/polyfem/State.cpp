@@ -678,8 +678,6 @@ namespace polyfem
 		periodic_dimensions = args["boundary_conditions"]["periodic_boundary"].get<std::vector<bool>>();
 		if (periodic_dimensions.size() != mesh->dimension())
 			periodic_dimensions.resize(mesh->dimension(), false);
-		if (need_periodic_reduction())
-			args["solver"]["augmented_lagrangian"]["initial_weight"] = 0;
 
 		logger().info("Building {} basis...", (iso_parametric() ? "isoparametric" : "not isoparametric"));
 		const bool has_polys = mesh->has_poly();
@@ -1346,6 +1344,7 @@ namespace polyfem
 	void State::build_periodic_collision_mesh()
 	{
 		assert(!mesh->is_volume());
+		const int n_tiles = 2;
 
 		Eigen::MatrixXd V(n_bases, mesh->dimension());
 		for (const auto &bs : bases)
@@ -1378,12 +1377,12 @@ namespace polyfem
 
         Eigen::MatrixXd Vtmp, Vnew;
         Eigen::MatrixXi Etmp, Enew;
-        Vtmp.setZero(V.rows() * 9, V.cols());
-        Etmp.setZero(E.rows() * 9, E.cols());
+        Vtmp.setZero(V.rows() * n_tiles * n_tiles, V.cols());
+        Etmp.setZero(E.rows() * n_tiles * n_tiles, E.cols());
 
-		for (int i = 0, idx = 0; i < 3; i++)
+		for (int i = 0, idx = 0; i < n_tiles; i++)
 		{
-			for (int j = 0; j < 3; j++)
+			for (int j = 0; j < n_tiles; j++)
 			{
 				Vtmp.middleRows(idx * V.rows(), V.rows()) = V;
 				Vtmp.block(idx * V.rows(), 0, V.rows(), 1).array() += size(0) * i;
@@ -1406,8 +1405,8 @@ namespace polyfem
                     tmp.push_back(i);
             }
 
-            indices.resize(tmp.size() * 9);
-            for (int i = 0; i < 9; i++)
+            indices.resize(tmp.size() * n_tiles * n_tiles);
+            for (int i = 0; i < n_tiles * n_tiles; i++)
             {
                 indices.segment(i * tmp.size(), tmp.size()) = Eigen::Map<Eigen::VectorXi, Eigen::Unaligned>(tmp.data(), tmp.size());
                 indices.segment(i * tmp.size(), tmp.size()).array() += i * V.rows();
@@ -1441,13 +1440,6 @@ namespace polyfem
         }
         Vnew = Vtmp(SVJ, Eigen::all);
 
-		// Eigen::VectorXi index_map;
-        // index_map.setConstant(Vtmp.rows(), -1);
-        // for (int i = 0; i < V.rows(); i++)
-        //     for (int j = 0; j < 9; j++)
-        //         index_map(j * V.rows() + i) = i;
-        // index_map = index_map(SVJ).eval();
-
         Enew.resizeLike(Etmp);
         for (int d = 0; d < Etmp.cols(); d++)
             Enew.col(d) = SVI(Etmp.col(d));
@@ -1464,7 +1456,7 @@ namespace polyfem
 
 		tiled_to_periodic.setConstant(Vnew.rows(), -1);
 		for (int i = 0; i < V.rows(); i++)
-			for (int j = 0; j < 9; j++)
+			for (int j = 0; j < n_tiles * n_tiles; j++)
 				tiled_to_periodic(SVI[j * V.rows() + i]) = i;
 		
 		assert(tiled_to_periodic.maxCoeff() + 1 == V.rows());
