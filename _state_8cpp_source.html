@@ -1281,51 +1281,51 @@ $(document).ready(function(){initNavTree('_state_8cpp_source.html',''); initResi
 <div class="line"><a id="l01158" name="l01158"></a><span class="lineno"> 1158</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classpolyfem_1_1_state.html#a231166af7f4eeac4e187b2b8996baf60">assembler</a>-&gt;name() == <span class="stringliteral">&quot;OperatorSplitting&quot;</span>)</div>
 <div class="line"><a id="l01159" name="l01159"></a><span class="lineno"> 1159</span>        {</div>
 <div class="line"><a id="l01160" name="l01160"></a><span class="lineno"> 1160</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#a0181690b83435d59481076329edec8bc">timings</a>.<a class="code hl_variable" href="classpolyfem_1_1io_1_1_out_runtime_data.html#a43e0fe9f9bbe227616a8750c0c537e63">assembling_stiffness_mat_time</a> = 0;</div>
-<div class="line"><a id="l01161" name="l01161"></a><span class="lineno"> 1161</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l01162" name="l01162"></a><span class="lineno"> 1162</span>        }</div>
-<div class="line"><a id="l01163" name="l01163"></a><span class="lineno"> 1163</span> </div>
-<div class="line"><a id="l01164" name="l01164"></a><span class="lineno"> 1164</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classpolyfem_1_1_state.html#a799e2a119d49943bab7ca9b0de7c09f6">problem</a>-&gt;is_time_dependent())</div>
-<div class="line"><a id="l01165" name="l01165"></a><span class="lineno"> 1165</span>        {</div>
-<div class="line"><a id="l01166" name="l01166"></a><span class="lineno"> 1166</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#a0181690b83435d59481076329edec8bc">timings</a>.<a class="code hl_variable" href="classpolyfem_1_1io_1_1_out_runtime_data.html#a9953354b1d788ad1f7319453cf21dad5">assembling_mass_mat_time</a> = 0;</div>
-<div class="line"><a id="l01167" name="l01167"></a><span class="lineno"> 1167</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l01168" name="l01168"></a><span class="lineno"> 1168</span>        }</div>
-<div class="line"><a id="l01169" name="l01169"></a><span class="lineno"> 1169</span> </div>
-<div class="line"><a id="l01170" name="l01170"></a><span class="lineno"> 1170</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663">mass</a>.resize(0, 0);</div>
-<div class="line"><a id="l01171" name="l01171"></a><span class="lineno"> 1171</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#ab1959486b5e566e79059ce2daca3a096">avg_mass</a> = 1;</div>
-<div class="line"><a id="l01172" name="l01172"></a><span class="lineno"> 1172</span> </div>
-<div class="line"><a id="l01173" name="l01173"></a><span class="lineno"> 1173</span>        igl::Timer timer;</div>
-<div class="line"><a id="l01174" name="l01174"></a><span class="lineno"> 1174</span>        timer.start();</div>
-<div class="line"><a id="l01175" name="l01175"></a><span class="lineno"> 1175</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().info(<span class="stringliteral">&quot;Assembling mass mat...&quot;</span>);</div>
-<div class="line"><a id="l01176" name="l01176"></a><span class="lineno"> 1176</span> </div>
-<div class="line"><a id="l01177" name="l01177"></a><span class="lineno"> 1177</span>        <span class="comment">// if(problem-&gt;is_mixed())</span></div>
+<div class="line"><a id="l01161" name="l01161"></a><span class="lineno"> 1161</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#ab1959486b5e566e79059ce2daca3a096">avg_mass</a> = 1;</div>
+<div class="line"><a id="l01162" name="l01162"></a><span class="lineno"> 1162</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l01163" name="l01163"></a><span class="lineno"> 1163</span>        }</div>
+<div class="line"><a id="l01164" name="l01164"></a><span class="lineno"> 1164</span> </div>
+<div class="line"><a id="l01165" name="l01165"></a><span class="lineno"> 1165</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classpolyfem_1_1_state.html#a799e2a119d49943bab7ca9b0de7c09f6">problem</a>-&gt;is_time_dependent())</div>
+<div class="line"><a id="l01166" name="l01166"></a><span class="lineno"> 1166</span>        {</div>
+<div class="line"><a id="l01167" name="l01167"></a><span class="lineno"> 1167</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#ab1959486b5e566e79059ce2daca3a096">avg_mass</a> = 1;</div>
+<div class="line"><a id="l01168" name="l01168"></a><span class="lineno"> 1168</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#a0181690b83435d59481076329edec8bc">timings</a>.<a class="code hl_variable" href="classpolyfem_1_1io_1_1_out_runtime_data.html#a9953354b1d788ad1f7319453cf21dad5">assembling_mass_mat_time</a> = 0;</div>
+<div class="line"><a id="l01169" name="l01169"></a><span class="lineno"> 1169</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l01170" name="l01170"></a><span class="lineno"> 1170</span>        }</div>
+<div class="line"><a id="l01171" name="l01171"></a><span class="lineno"> 1171</span> </div>
+<div class="line"><a id="l01172" name="l01172"></a><span class="lineno"> 1172</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663">mass</a>.resize(0, 0);</div>
+<div class="line"><a id="l01173" name="l01173"></a><span class="lineno"> 1173</span> </div>
+<div class="line"><a id="l01174" name="l01174"></a><span class="lineno"> 1174</span>        igl::Timer timer;</div>
+<div class="line"><a id="l01175" name="l01175"></a><span class="lineno"> 1175</span>        timer.start();</div>
+<div class="line"><a id="l01176" name="l01176"></a><span class="lineno"> 1176</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().info(<span class="stringliteral">&quot;Assembling mass mat...&quot;</span>);</div>
+<div class="line"><a id="l01177" name="l01177"></a><span class="lineno"> 1177</span> </div>
 <div class="line"><a id="l01178" name="l01178"></a><span class="lineno"> 1178</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classpolyfem_1_1_state.html#afb2787cd632703450c654a4feb140890">mixed_assembler</a> != <span class="keyword">nullptr</span>)</div>
 <div class="line"><a id="l01179" name="l01179"></a><span class="lineno"> 1179</span>        {</div>
-<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"> 1180</span> </div>
-<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span>            <a class="code hl_typedef" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> velocity_mass;</div>
-<div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#a59dc389e25521f023b8fff2469fcac66">mass_matrix_assembler</a>-&gt;assemble(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;is_volume(), <a class="code hl_variable" href="classpolyfem_1_1_state.html#a096d1ecae0577a376befd99612f6fffd">n_bases</a>, <a class="code hl_variable" href="classpolyfem_1_1_state.html#a9da655f2e8df643e8bcb5093717dd5c9">bases</a>, <a class="code hl_function" href="classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053">geom_bases</a>(), <a class="code hl_variable" href="classpolyfem_1_1_state.html#accd0a9edb699ad586baac3759745cda0">mass_ass_vals_cache</a>, velocity_mass, <span class="keyword">true</span>);</div>
-<div class="line"><a id="l01183" name="l01183"></a><span class="lineno"> 1183</span> </div>
-<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span>            std::vector&lt;Eigen::Triplet&lt;double&gt;&gt; mass_blocks;</div>
-<div class="line"><a id="l01185" name="l01185"></a><span class="lineno"> 1185</span>            mass_blocks.reserve(velocity_mass.nonZeros());</div>
-<div class="line"><a id="l01186" name="l01186"></a><span class="lineno"> 1186</span> </div>
-<div class="line"><a id="l01187" name="l01187"></a><span class="lineno"> 1187</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; velocity_mass.outerSize(); ++k)</div>
-<div class="line"><a id="l01188" name="l01188"></a><span class="lineno"> 1188</span>            {</div>
-<div class="line"><a id="l01189" name="l01189"></a><span class="lineno"> 1189</span>                <span class="keywordflow">for</span> (StiffnessMatrix::InnerIterator it(velocity_mass, k); it; ++it)</div>
-<div class="line"><a id="l01190" name="l01190"></a><span class="lineno"> 1190</span>                {</div>
-<div class="line"><a id="l01191" name="l01191"></a><span class="lineno"> 1191</span>                    mass_blocks.emplace_back(it.row(), it.col(), it.value());</div>
-<div class="line"><a id="l01192" name="l01192"></a><span class="lineno"> 1192</span>                }</div>
-<div class="line"><a id="l01193" name="l01193"></a><span class="lineno"> 1193</span>            }</div>
-<div class="line"><a id="l01194" name="l01194"></a><span class="lineno"> 1194</span> </div>
-<div class="line"><a id="l01195" name="l01195"></a><span class="lineno"> 1195</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663">mass</a>.resize(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a096d1ecae0577a376befd99612f6fffd">n_bases</a> * <a class="code hl_variable" href="classpolyfem_1_1_state.html#a231166af7f4eeac4e187b2b8996baf60">assembler</a>-&gt;size(), <a class="code hl_variable" href="classpolyfem_1_1_state.html#a096d1ecae0577a376befd99612f6fffd">n_bases</a> * <a class="code hl_variable" href="classpolyfem_1_1_state.html#a231166af7f4eeac4e187b2b8996baf60">assembler</a>-&gt;size());</div>
-<div class="line"><a id="l01196" name="l01196"></a><span class="lineno"> 1196</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663">mass</a>.setFromTriplets(mass_blocks.begin(), mass_blocks.end());</div>
-<div class="line"><a id="l01197" name="l01197"></a><span class="lineno"> 1197</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663">mass</a>.makeCompressed();</div>
-<div class="line"><a id="l01198" name="l01198"></a><span class="lineno"> 1198</span>        }</div>
-<div class="line"><a id="l01199" name="l01199"></a><span class="lineno"> 1199</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01200" name="l01200"></a><span class="lineno"> 1200</span>        {</div>
-<div class="line"><a id="l01201" name="l01201"></a><span class="lineno"> 1201</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#a59dc389e25521f023b8fff2469fcac66">mass_matrix_assembler</a>-&gt;assemble(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;is_volume(), <a class="code hl_variable" href="classpolyfem_1_1_state.html#a096d1ecae0577a376befd99612f6fffd">n_bases</a>, <a class="code hl_variable" href="classpolyfem_1_1_state.html#a9da655f2e8df643e8bcb5093717dd5c9">bases</a>, <a class="code hl_function" href="classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053">geom_bases</a>(), <a class="code hl_variable" href="classpolyfem_1_1_state.html#accd0a9edb699ad586baac3759745cda0">mass_ass_vals_cache</a>, <a class="code hl_variable" href="classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663">mass</a>, <span class="keyword">true</span>);</div>
-<div class="line"><a id="l01202" name="l01202"></a><span class="lineno"> 1202</span>        }</div>
-<div class="line"><a id="l01203" name="l01203"></a><span class="lineno"> 1203</span> </div>
-<div class="line"><a id="l01204" name="l01204"></a><span class="lineno"> 1204</span>        assert(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663">mass</a>.size() &gt; 0);</div>
-<div class="line"><a id="l01205" name="l01205"></a><span class="lineno"> 1205</span> </div>
+<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"> 1180</span>            <a class="code hl_typedef" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> velocity_mass;</div>
+<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#a59dc389e25521f023b8fff2469fcac66">mass_matrix_assembler</a>-&gt;assemble(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;is_volume(), <a class="code hl_variable" href="classpolyfem_1_1_state.html#a096d1ecae0577a376befd99612f6fffd">n_bases</a>, <a class="code hl_variable" href="classpolyfem_1_1_state.html#a9da655f2e8df643e8bcb5093717dd5c9">bases</a>, <a class="code hl_function" href="classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053">geom_bases</a>(), <a class="code hl_variable" href="classpolyfem_1_1_state.html#accd0a9edb699ad586baac3759745cda0">mass_ass_vals_cache</a>, velocity_mass, <span class="keyword">true</span>);</div>
+<div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span> </div>
+<div class="line"><a id="l01183" name="l01183"></a><span class="lineno"> 1183</span>            std::vector&lt;Eigen::Triplet&lt;double&gt;&gt; mass_blocks;</div>
+<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span>            mass_blocks.reserve(velocity_mass.nonZeros());</div>
+<div class="line"><a id="l01185" name="l01185"></a><span class="lineno"> 1185</span> </div>
+<div class="line"><a id="l01186" name="l01186"></a><span class="lineno"> 1186</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; velocity_mass.outerSize(); ++k)</div>
+<div class="line"><a id="l01187" name="l01187"></a><span class="lineno"> 1187</span>            {</div>
+<div class="line"><a id="l01188" name="l01188"></a><span class="lineno"> 1188</span>                <span class="keywordflow">for</span> (StiffnessMatrix::InnerIterator it(velocity_mass, k); it; ++it)</div>
+<div class="line"><a id="l01189" name="l01189"></a><span class="lineno"> 1189</span>                {</div>
+<div class="line"><a id="l01190" name="l01190"></a><span class="lineno"> 1190</span>                    mass_blocks.emplace_back(it.row(), it.col(), it.value());</div>
+<div class="line"><a id="l01191" name="l01191"></a><span class="lineno"> 1191</span>                }</div>
+<div class="line"><a id="l01192" name="l01192"></a><span class="lineno"> 1192</span>            }</div>
+<div class="line"><a id="l01193" name="l01193"></a><span class="lineno"> 1193</span> </div>
+<div class="line"><a id="l01194" name="l01194"></a><span class="lineno"> 1194</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663">mass</a>.resize(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a096d1ecae0577a376befd99612f6fffd">n_bases</a> * <a class="code hl_variable" href="classpolyfem_1_1_state.html#a231166af7f4eeac4e187b2b8996baf60">assembler</a>-&gt;size(), <a class="code hl_variable" href="classpolyfem_1_1_state.html#a096d1ecae0577a376befd99612f6fffd">n_bases</a> * <a class="code hl_variable" href="classpolyfem_1_1_state.html#a231166af7f4eeac4e187b2b8996baf60">assembler</a>-&gt;size());</div>
+<div class="line"><a id="l01195" name="l01195"></a><span class="lineno"> 1195</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663">mass</a>.setFromTriplets(mass_blocks.begin(), mass_blocks.end());</div>
+<div class="line"><a id="l01196" name="l01196"></a><span class="lineno"> 1196</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663">mass</a>.makeCompressed();</div>
+<div class="line"><a id="l01197" name="l01197"></a><span class="lineno"> 1197</span>        }</div>
+<div class="line"><a id="l01198" name="l01198"></a><span class="lineno"> 1198</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01199" name="l01199"></a><span class="lineno"> 1199</span>        {</div>
+<div class="line"><a id="l01200" name="l01200"></a><span class="lineno"> 1200</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#a59dc389e25521f023b8fff2469fcac66">mass_matrix_assembler</a>-&gt;assemble(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;is_volume(), <a class="code hl_variable" href="classpolyfem_1_1_state.html#a096d1ecae0577a376befd99612f6fffd">n_bases</a>, <a class="code hl_variable" href="classpolyfem_1_1_state.html#a9da655f2e8df643e8bcb5093717dd5c9">bases</a>, <a class="code hl_function" href="classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053">geom_bases</a>(), <a class="code hl_variable" href="classpolyfem_1_1_state.html#accd0a9edb699ad586baac3759745cda0">mass_ass_vals_cache</a>, <a class="code hl_variable" href="classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663">mass</a>, <span class="keyword">true</span>);</div>
+<div class="line"><a id="l01201" name="l01201"></a><span class="lineno"> 1201</span>        }</div>
+<div class="line"><a id="l01202" name="l01202"></a><span class="lineno"> 1202</span> </div>
+<div class="line"><a id="l01203" name="l01203"></a><span class="lineno"> 1203</span>        assert(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663">mass</a>.size() &gt; 0);</div>
+<div class="line"><a id="l01204" name="l01204"></a><span class="lineno"> 1204</span> </div>
+<div class="line"><a id="l01205" name="l01205"></a><span class="lineno"> 1205</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#ab1959486b5e566e79059ce2daca3a096">avg_mass</a> = 0;</div>
 <div class="line"><a id="l01206" name="l01206"></a><span class="lineno"> 1206</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; <a class="code hl_variable" href="classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663">mass</a>.outerSize(); ++k)</div>
 <div class="line"><a id="l01207" name="l01207"></a><span class="lineno"> 1207</span>        {</div>
 <div class="line"><a id="l01208" name="l01208"></a><span class="lineno"> 1208</span> </div>
