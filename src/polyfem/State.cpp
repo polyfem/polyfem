@@ -1158,26 +1158,25 @@ namespace polyfem
 		if (assembler->name() == "OperatorSplitting")
 		{
 			timings.assembling_stiffness_mat_time = 0;
+			avg_mass = 1;
 			return;
 		}
 
 		if (!problem->is_time_dependent())
 		{
+			avg_mass = 1;
 			timings.assembling_mass_mat_time = 0;
 			return;
 		}
 
 		mass.resize(0, 0);
-		avg_mass = 1;
 
 		igl::Timer timer;
 		timer.start();
 		logger().info("Assembling mass mat...");
 
-		// if(problem->is_mixed())
 		if (mixed_assembler != nullptr)
 		{
-
 			StiffnessMatrix velocity_mass;
 			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, velocity_mass, true);
 
@@ -1203,6 +1202,7 @@ namespace polyfem
 
 		assert(mass.size() > 0);
 
+		avg_mass = 0;
 		for (int k = 0; k < mass.outerSize(); ++k)
 		{
 
