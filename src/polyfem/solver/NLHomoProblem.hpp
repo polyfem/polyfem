@@ -43,6 +43,7 @@ namespace polyfem::solver
 		TVector macro_reduced_to_full(const TVector &reduced) const;
 
 		TVector reduced_to_extended(const TVector &reduced) const;
+		TVector extended_to_reduced(const TVector &extended) const;
 		TVector extended_to_reduced_grad(const TVector &extended) const;
 		void extended_hessian_to_reduced_hessian(const THessian &extended, THessian &reduced) const;
 

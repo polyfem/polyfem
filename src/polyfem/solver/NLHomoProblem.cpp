@@ -55,7 +55,20 @@ namespace polyfem::solver
         }
         macro_mid_to_reduced_.setIdentity(macro_full_to_mid_.rows(), macro_full_to_mid_.rows());
     }
-    
+
+    Eigen::VectorXd NLHomoProblem::extended_to_reduced(const Eigen::VectorXd &extended) const
+    {
+        const int dim = state_.mesh->dimension();
+        const int dof2 = macro_reduced_size();
+        const int dof1 = reduced_size();
+
+        Eigen::VectorXd reduced(dof1 + dof2);
+        reduced.head(dof1) = NLProblem::full_to_reduced(extended.head(extended.size() - dim * dim));
+        reduced.tail(dof2) = macro_full_to_reduced(extended.tail(dim * dim));
+
+        return reduced;
+    }
+
     Eigen::VectorXd NLHomoProblem::reduced_to_extended(const Eigen::VectorXd &reduced) const
     {
         const int dim = state_.mesh->dimension();
@@ -145,9 +158,9 @@ namespace polyfem::solver
             for (int j = 0; j < A22.cols(); j++)
                 entries.emplace_back(i + full_size_, j + full_size_, A22(i, j));
 
-        Eigen::VectorXd tmp = macro_full_to_reduced_grad(Eigen::VectorXd::Ones(dim*dim));
-        for (int i = 0; i < tmp.size(); i++)
-            entries.emplace_back(i + full_size_, i + full_size_, 1 - tmp(i));
+        // Eigen::VectorXd tmp = macro_full_to_reduced_grad(Eigen::VectorXd::Ones(dim*dim));
+        // for (int i = 0; i < tmp.size(); i++)
+        //     entries.emplace_back(i + full_size_, i + full_size_, 1 - tmp(i));
 
         THessian mid(full_size_ + dof2, full_size_ + dof2);
         mid.setFromTriplets(entries.begin(), entries.end());

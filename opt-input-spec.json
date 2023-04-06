@@ -72,6 +72,7 @@
             "f_delta",
             "debug_fd",
             "debug_fd_eps",
+            "fall_back_descent_strategy_period",
             "max_step_size",
             "max_change",
             "better_initial_guess",
@@ -88,6 +89,12 @@
             "first_grad_norm_tol"
         ],
         "doc": "Settings for optimization nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
+    },
+    {
+        "pointer": "/solver/nonlinear/fall_back_descent_strategy_period",
+        "default": 1,
+        "type": "int",
+        "doc": "TODO"
     },
     {
         "pointer": "/solver/nonlinear/solver",

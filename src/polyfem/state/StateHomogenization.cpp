@@ -147,19 +147,14 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         Eigen::VectorXd al_values;
         // from full to symmetric indices
         {
-            Eigen::VectorXd fixed_mask;
-            fixed_mask.setZero(dim * dim);
-            fixed_mask(fixed_entry).setOnes();
-            fixed_mask = homo_problem->macro_full_to_mid(fixed_mask);
+            al_indices.setZero(fixed_entry.size());
+            for (int i = 0; i < fixed_entry.size(); i++)
+                al_indices(i) = fixed_entry[i] + homo_problem->full_size();
             
-            al_indices.setZero((int)std::round(fixed_mask.sum()));
-            for (int i = 0, j = 0; i < fixed_mask.size(); i++)
-                if (abs(fixed_mask(i)) > 1e-8)
-                    al_indices(j++) = i;
-            
-            al_values = homo_problem->macro_full_to_mid(utils::flatten(disp_grad));
+            al_values = utils::flatten(disp_grad)(fixed_entry);
         }
-        std::shared_ptr<MacroStrainALForm> al_form = std::make_shared<MacroStrainALForm>(dim, al_indices, al_values);
+        logger().debug("AL indices: {}, AL values: {}", al_indices.transpose(), al_values.transpose());
+        std::shared_ptr<MacroStrainALForm> al_form = std::make_shared<MacroStrainALForm>(al_indices, al_values);
         homo_problem->set_al_form(al_form);
 
         const double initial_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
@@ -168,47 +163,63 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         double al_weight = initial_weight;
 
         Eigen::VectorXd tmp_sol = homo_problem->full_to_reduced(sol_, Eigen::MatrixXd::Zero(dim, dim));
-        Eigen::VectorXd reduced_sol = tmp_sol;
-        for (int i = 0; i < al_indices.size(); i++)
-            reduced_sol(al_indices(i) + homo_problem->reduced_size()) = al_values(i);
+        Eigen::VectorXd extended = homo_problem->reduced_to_extended(tmp_sol);
+        double gap = (extended(al_indices).array() - al_values.array()).matrix().norm();
+        extended(al_indices) = al_values;
+        Eigen::VectorXd reduced_sol = homo_problem->extended_to_reduced(extended);
+        // for (int i = 0; i < al_indices.size(); i++)
+        //     reduced_sol(al_indices(i)) = al_values(i);
 
         homo_problem->line_search_begin(tmp_sol, reduced_sol);
         int al_steps = 0;
         while (force_al
-            || !std::isfinite(homo_problem->value(tmp_sol))
-            || !homo_problem->is_step_valid(tmp_sol, reduced_sol)
-            || !homo_problem->is_step_collision_free(tmp_sol, reduced_sol))
+            || (gap > args["solver"]["augmented_lagrangian"]["threshold"].get<double>())
+            || !std::isfinite(homo_problem->value(reduced_sol))
+            || !homo_problem->is_step_valid(tmp_sol, reduced_sol))
         {
             force_al = false;
             homo_problem->line_search_end();
 
-            {
-                for (auto form : forms)
-                    form->set_weight(al_weight);
-                solve_data_tmp.periodic_contact_form->set_weight(al_weight);
-                al_form->set_weight(1 - al_weight);
-            }
-            logger().debug("Solving AL Problem with weight {}", al_weight);
+            if (al_weight == 0)
+                throw std::runtime_error("Zero AL weight invalid!");
+
+            al_form->set_weight(1. / al_weight);
+            logger().debug("Solving AL Problem with weight {}", 1. / al_weight);
 
             homo_problem->init(tmp_sol);
             nl_solver->minimize(*homo_problem, tmp_sol);
 
-            reduced_sol = tmp_sol;
-            for (int i = 0; i < al_indices.size(); i++)
-                reduced_sol(al_indices(i) + homo_problem->reduced_size()) = al_values(i);
+            extended = homo_problem->reduced_to_extended(tmp_sol);
+            double gap = (extended(al_indices).array() - al_values.array()).matrix().norm();
+            extended(al_indices) = al_values;
+            reduced_sol = homo_problem->extended_to_reduced(extended);
             
             logger().debug("Current macro strain: {}", tmp_sol.tail(homo_problem->macro_reduced_size()));
 
             homo_problem->line_search_begin(tmp_sol, reduced_sol);
 
             al_weight /= scaling;
-			if (al_steps >= max_al_steps)
+			if (al_steps++ >= max_al_steps)
 			{
 				log_and_throw_error(fmt::format("Unable to solve AL problem, out of iterations {} (current weight = {}), stopping", max_al_steps, al_weight));
 				break;
 			}
-
-            ++al_steps;
+            if (!std::isfinite(homo_problem->value(reduced_sol)))
+            {
+                logger().debug("Invalid energy, continue AL...");
+                continue;
+            }
+            if (!homo_problem->is_step_valid(tmp_sol, reduced_sol))
+            {
+                logger().debug("Invalid step, continue AL...");
+                continue;
+            }
+            if (gap > args["solver"]["augmented_lagrangian"]["threshold"].get<double>())
+            {
+                logger().debug("Large gap on macro strain, continue AL...");
+                continue;
+            }
+            break;
         }
         homo_problem->line_search_end();
         extended_sol = homo_problem->reduced_to_extended(tmp_sol);
@@ -217,7 +228,8 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
             al_weight = 1;
             for (auto form : forms)
                 form->set_weight(al_weight);
-            solve_data_tmp.periodic_contact_form->set_weight(al_weight);
+            if (solve_data_tmp.periodic_contact_form)
+                solve_data_tmp.periodic_contact_form->set_weight(al_weight);
             al_form->set_weight(1 - al_weight);
             al_form->disable();
         }
@@ -225,9 +237,9 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
 
     homo_problem->set_fixed_entry(fixed_entry, utils::flatten(disp_grad));
 
-    Eigen::VectorXd reduced_sol = homo_problem->NLProblem::full_to_reduced(extended_sol.head(ndof));
-    Eigen::VectorXd tail = homo_problem->macro_full_to_reduced(utils::flatten(disp_grad_out));
-    reduced_sol.tail(tail.size()) = tail;
+    Eigen::VectorXd reduced_sol(homo_problem->reduced_size() + homo_problem->macro_reduced_size());
+    reduced_sol.head(homo_problem->reduced_size()) = homo_problem->NLProblem::full_to_reduced(extended_sol.head(ndof));
+    reduced_sol.tail(homo_problem->macro_reduced_size()) = homo_problem->macro_full_to_reduced(utils::flatten(disp_grad_out));
 
     homo_problem->init(reduced_sol);
     nl_solver->minimize(*homo_problem, reduced_sol);

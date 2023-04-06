@@ -32,6 +32,8 @@ namespace cppoptlib
 		debug_finite_diff = solver_params["debug_fd"];
 		finite_diff_eps = solver_params["debug_fd_eps"];
 
+		fall_back_descent_strategy_period = solver_params["fall_back_descent_strategy_period"];
+
 		set_line_search(solver_params["line_search"]["method"]);
 	}
 
@@ -285,8 +287,12 @@ namespace cppoptlib
 			// Post update
 			// -----------
 
-			descent_strategy = default_descent_strategy(); // Reset this for the next iterations
-
+			{
+				static int fall_back_descent_strategy_iter = 0;
+				if (++fall_back_descent_strategy_iter % fall_back_descent_strategy_period == 0)
+					descent_strategy = default_descent_strategy(); // Reset this for the next iterations
+			}
+			
 			const double step = (x - old_x).norm();
 
 			// TODO: removed feature

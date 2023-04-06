@@ -7,7 +7,7 @@ namespace polyfem::solver
     class MacroStrainALForm : public Form
     {
     public:
-        MacroStrainALForm(const int dim, const Eigen::VectorXi &indices, const Eigen::VectorXd &values);
+        MacroStrainALForm(const Eigen::VectorXi &indices, const Eigen::VectorXd &values);
 
     protected:
 		/// @brief Compute the contact barrier potential value
@@ -26,7 +26,6 @@ namespace polyfem::solver
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
     private:
-        const int dim_;
         const Eigen::VectorXi indices_;
         const Eigen::VectorXd values_;
     };

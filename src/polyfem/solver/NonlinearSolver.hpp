@@ -133,6 +133,8 @@ namespace cppoptlib
 		bool debug_finite_diff;
 		double finite_diff_eps;
 
+		int fall_back_descent_strategy_period;
+
 		// ====================================================================
 		//                                 END
 		// ====================================================================
