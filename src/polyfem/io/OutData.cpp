@@ -1297,19 +1297,13 @@ namespace polyfem::io
 				*state.assembler,
 				ref_element_sampler, points.rows(), sol, vals, opts.use_sampler, opts.boundary_only);
 
-			if (obstacle.n_vertices() > 0)
-			{
-				for (auto &v : vals)
-				{
-					v.second.conservativeResize(v.second.size() + obstacle.n_vertices(), 1);
-					v.second.bottomRows(obstacle.n_vertices()).setZero();
-				}
-			}
+			for (auto &[_, v] : vals)
+				utils::append_rows_of_zeros(v, obstacle.n_vertices());
 
 			if (opts.solve_export_to_file)
 			{
-				for (const auto &v : vals)
-					writer.add_field(v.first, v.second);
+				for (const auto &[name, v] : vals)
+					writer.add_field(name, v);
 			}
 			else if (vals.size() > 0)
 				solution_frames.back().scalar_value = vals[0].second;
@@ -1317,28 +1311,25 @@ namespace polyfem::io
 			if (opts.solve_export_to_file)
 			{
 				Evaluator::compute_tensor_value(
-					mesh, problem.is_scalar(), bases, gbases,
-					state.disc_orders, state.polys, state.polys_3d,
-					*state.assembler,
-					ref_element_sampler, points.rows(), sol, tvals, opts.use_sampler, opts.boundary_only);
-				for (const auto &v : tvals)
+					mesh, problem.is_scalar(), bases, gbases, state.disc_orders,
+					state.polys, state.polys_3d, *state.assembler, ref_element_sampler,
+					points.rows(), sol, tvals, opts.use_sampler, opts.boundary_only);
+
+				for (auto &[_, v] : tvals)
+					utils::append_rows_of_zeros(v, obstacle.n_vertices());
+
+				for (const auto &[name, v] : tvals)
 				{
 					const int stride = mesh.dimension();
-					assert(v.second.cols() % stride == 0);
+					assert(v.cols() % stride == 0);
 
-					for (int i = 0; i < v.second.cols(); i += stride)
+					for (int i = 0; i < v.cols(); i += stride)
 					{
-						Eigen::MatrixXd tmp = v.second.middleCols(i, stride);
+						const Eigen::MatrixXd tmp = v.middleCols(i, stride);
 						assert(tmp.cols() == stride);
 
-						if (obstacle.n_vertices() > 0)
-						{
-							tmp.conservativeResize(tmp.size() + obstacle.n_vertices(), tmp.cols());
-							tmp.bottomRows(obstacle.n_vertices()).setZero();
-						}
-
 						const int ii = (i / stride) + 1;
-						writer.add_field(fmt::format("{:s}_{:d}", v.first, ii), tmp);
+						writer.add_field(fmt::format("{:s}_{:d}", name, ii), tmp);
 					}
 				}
 			}
@@ -1347,9 +1338,9 @@ namespace polyfem::io
 			{
 				Evaluator::average_grad_based_function(
 					mesh, problem.is_scalar(), state.n_bases, bases, gbases,
-					state.disc_orders, state.polys, state.polys_3d,
-					*state.assembler,
-					ref_element_sampler, points.rows(), sol, vals, tvals, opts.use_sampler, opts.boundary_only);
+					state.disc_orders, state.polys, state.polys_3d, *state.assembler,
+					ref_element_sampler, points.rows(), sol, vals, tvals,
+					opts.use_sampler, opts.boundary_only);
 
 				if (obstacle.n_vertices() > 0)
 				{
