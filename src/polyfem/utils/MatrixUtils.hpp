@@ -161,7 +161,7 @@ namespace polyfem
 		}
 
 		template <typename DstMat>
-		void append_zero_rows(DstMat &dst, const size_t n_zero_rows)
+		void append_rows_of_zeros(DstMat &dst, const size_t n_zero_rows)
 		{
 			assert(dst.cols() > 0);
 			if (n_zero_rows == 0)
