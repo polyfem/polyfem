@@ -110,7 +110,7 @@ namespace cppoptlib
 
 		objFunc.hessian(x, hessian);
 
-		if (reg_weight > 0 && this->descent_strategy != 0)
+		if (reg_weight > 0)
 		{
 			hessian += reg_weight * polyfem::utils::sparse_identity(hessian.rows(), hessian.cols());
 		}

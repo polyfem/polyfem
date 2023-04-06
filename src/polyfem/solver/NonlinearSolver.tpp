@@ -12,7 +12,6 @@ namespace cppoptlib
 		TCriteria criteria = TCriteria::defaults();
 		criteria.xDelta = solver_params["x_delta"];
 		criteria.fDelta = solver_params["f_delta"];
-		criteria.xDelta = solver_params["x_delta"];
 		criteria.gradNorm = solver_params["grad_norm"];
 		criteria.iterations = solver_params["max_iterations"];
 		// criteria.condition = solver_params["condition"];
@@ -263,6 +262,27 @@ namespace cppoptlib
 			this->m_status = checkConvergence(this->m_stop, this->m_current);
 
 			old_energy = energy;
+
+			// ---------------
+			// Plot energy over descent direction
+			// ---------------
+
+			// if (this->m_current.iterations > 8) {
+			// 	const double value_ = objFunc.value(x);
+			// 	const double rate_ = delta_x.dot(grad);
+			// 	std::cout << "descent rate " << rate_ << "\n";
+			// 	std::cout << std::setprecision(20) << 0 << " " << value_ << " " << grad.dot(delta_x) << "\n";
+			// 	double dt_ = 1e-4;
+			// 	while (dt_ < 1e2)
+			// 	{
+			// 		objFunc.solution_changed(x + delta_x * dt_);
+			// 		Eigen::VectorXd grad_;
+			// 		objFunc.gradient(x, grad_);
+			// 		std::cout << std::setprecision(20) << dt_ << " " << objFunc.value(x + delta_x * dt_) << " " << grad.dot(delta_x) << "\n";
+			// 		dt_ *= 1.2;
+			// 	}
+			// 	exit(0);
+			// }
 
 			// ---------------
 			// Variable update
