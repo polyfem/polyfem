@@ -497,159 +497,146 @@ TEST_CASE("shape-neumann-nodes", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 1e-3);
 }
 
-// TEST_CASE("neumann-shape-derivative", "[adjoint_method]")
-// {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-// 	json in_args;
-// 	load_json(path + "shape-neumann-nodes.json", in_args);
-// 	Eigen::MatrixXd sol;
-// 	auto state_ptr = create_state_and_solve(in_args, sol);
-// 	State &state = *state_ptr;
+TEST_CASE("neumann-shape-derivative", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+	json in_args;
+	load_json(path + "shape-neumann-nodes.json", in_args);
+	Eigen::MatrixXd sol;
+	auto state_ptr = create_state_and_solve(in_args, sol);
+	State &state = *state_ptr;
 
-// 	auto velocity = [](const Eigen::MatrixXd &position) {
-// 		auto vel = position;
-// 		for (int i = 0; i < vel.size(); i++)
-// 		{
-// 			vel(i) = (rand() % 1000) / 1000.0;
-// 		}
-// 		return vel;
-// 	};
-// 	Eigen::MatrixXd velocity_discrete;
+	auto velocity = [](const Eigen::MatrixXd &position) {
+		auto vel = position;
+		for (int i = 0; i < vel.size(); i++)
+		{
+			vel(i) = (rand() % 1000) / 1000.0;
+		}
+		return vel;
+	};
+	Eigen::MatrixXd velocity_discrete;
 
-// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-// 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, VariableToBoundaryNodes({}, *state_ptr, 2)));
+	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, VariableToBoundaryNodes({}, *state_ptr, 2)));
 
-// 	Eigen::VectorXd x;
-// 	int opt_bnodes = 0;
-// 	int dim;
-// 	{
-// 		const auto &mesh = state.mesh;
-// 		const auto &bases = state.bases;
-// 		const auto &gbases = state.geom_bases();
-// 		dim = mesh->dimension();
+	Eigen::VectorXd x;
+	int opt_bnodes = 0;
+	int dim;
+	{
+		const auto &mesh = state.mesh;
+		const auto &bases = state.bases;
+		const auto &gbases = state.geom_bases();
+		dim = mesh->dimension();
 
-// 		std::set<int> node_ids;
-// 		std::set<int> total_bnode_ids;
-// 		for (const auto &lb : state.total_local_boundary)
-// 		{
-// 			const int e = lb.element_id();
-// 			for (int i = 0; i < lb.size(); ++i)
-// 			{
-// 				const int primitive_global_id = lb.global_primitive_id(i);
-// 				const int boundary_id = mesh->get_boundary_id(primitive_global_id);
-// 				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
+		std::set<int> node_ids;
+		std::set<int> total_bnode_ids;
+		for (const auto &lb : state.total_local_boundary)
+		{
+			const int e = lb.element_id();
+			for (int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const int boundary_id = mesh->get_boundary_id(primitive_global_id);
+				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
 
-// 				if (boundary_id == 2)
-// 					for (long n = 0; n < nodes.size(); ++n)
-// 						node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
-// 			}
-// 		}
-// 		opt_bnodes = node_ids.size();
-// 	}
-// 	x.resize(opt_bnodes * dim);
+				if (boundary_id == 2)
+					for (long n = 0; n < nodes.size(); ++n)
+						node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+			}
+		}
+		opt_bnodes = node_ids.size();
+	}
+	x.resize(opt_bnodes * dim);
 
-// 	Eigen::MatrixXd V;
-// 	state.get_vertices(V);
-// 	Eigen::VectorXd V_flat = utils::flatten(V);
-// 	auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
-// 	for (int i = 0; i < b_idx.size(); ++i)
-// 		x(i) = V_flat(b_idx(i));
-// 	velocity_discrete = velocity(x);
+	Eigen::MatrixXd V;
+	state.get_vertices(V);
+	Eigen::VectorXd V_flat = utils::flatten(V);
+	auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
+	for (int i = 0; i < b_idx.size(); ++i)
+		x(i) = V_flat(b_idx(i));
+	velocity_discrete = velocity(x);
 
-// 	double t0 = 0;
-// 	double dt = 0.025;
-// 	double timesteps = 10;
+	double t0 = 0;
+	double dt = 0.025;
+	double timesteps = 10;
 
-// 	// auto form = state.solve_data.body_form;
-// 	double eps = 1e-7;
+	// auto form = state.solve_data.body_form;
+	double eps = 1e-7;
 
-// 	// auto form = std::make_shared<BodyForm>(state.n_bases * dim, state.n_pressure_bases, state.boundary_nodes, state.local_boundary,
-// 	// 									   state.local_neumann_boundary, state.n_boundary_samples(), state.rhs, *state.solve_data.rhs_assembler,
-// 	// 									   state.assembler.density(), /*apply_DBC=*/true, /*is_formulation_mixed=*/false,
-// 	// 									   state.problem->is_time_dependent());
-// 	for (int k = 0; k < x.size(); ++k)
-// 	{
-// 		Eigen::VectorXd derivative = Eigen::VectorXd::Zero(x.size());
-// 		Eigen::VectorXd indicator = Eigen::VectorXd::Zero(V_flat.size());
-// 		indicator(b_idx(k)) = 1.;
-// 		for (int i = 1; i <= timesteps; ++i)
-// 		{
-// 			Eigen::VectorXd term;
-// 			state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, 0, state.diff_cached.u(i), indicator, term);
-// 			derivative += term(b_idx);
-// 		}
+	std::vector<Eigen::MatrixXd> hess_vec;
+	for (int i = 1; i <= timesteps; ++i)
+	{
+		Eigen::MatrixXd hess(state.n_bases * state.mesh->dimension(), x.size());
 
-// 		std::cout << "derivative " << derivative << std::endl;
-// 	}
+		for (int k = 0; k < state.n_bases * state.mesh->dimension(); ++k)
+		{
+			Eigen::VectorXd indicator = Eigen::VectorXd::Zero(state.n_bases * state.mesh->dimension());
+			indicator(k) = 1;
+			Eigen::VectorXd term;
+			state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i), indicator, term);
+			hess.row(k) = variable_to_simulations[0]->get_parametrization().apply_jacobian(term, x);
+		}
 
-// 	for (int k = 0; k < x.size(); ++k)
-// 	{
-// 		Eigen::VectorXd h_plus, h_minus;
-// 		h_plus.setZero(x.size());
-// 		h_minus.setZero(x.size());
-// 		{
-// 			Eigen::VectorXd y = x;
-// 			y(k) += eps;
-// 			variable_to_simulations[0]->update(y);
-// 			state.build_basis();
-// 			state.assemble_rhs();
-// 			auto form = std::make_shared<BodyForm>(state.n_bases * dim, state.n_pressure_bases, state.boundary_nodes, state.local_boundary,
-// 												   state.local_neumann_boundary, state.n_boundary_samples(), state.rhs, *state.solve_data.rhs_assembler,
-// 												   state.assembler.density(), /*apply_DBC=*/true, /*is_formulation_mixed=*/false,
-// 												   state.problem->is_time_dependent());
+		hess_vec.push_back(hess);
+	}
 
-// 			for (int i = 1; i <= timesteps; ++i)
-// 			{
-// 				double t = t0 + i * dt;
-// 				form->update_quantities(t, state.diff_cached.u(i));
-// 			}
-// 			for (int i = 1; i <= timesteps; ++i)
-// 			{
-// 				Eigen::VectorXd term;
-// 				form->first_derivative(sol, term);
-// 				h_plus += term(b_idx);
-// 			}
-// 		}
+	std::vector<Eigen::MatrixXd> hess_fd_vec;
+	for (int i = 1; i <= timesteps; ++i)
+	{
+		Eigen::MatrixXd hess_fd(state.n_bases * state.mesh->dimension(), x.size());
 
-// 		{
-// 			Eigen::VectorXd y = x;
-// 			y(k) -= eps;
-// 			variable_to_simulations[0]->update(y);
-// 			state.build_basis();
-// 			state.assemble_rhs();
-// 			auto form = std::make_shared<BodyForm>(state.n_bases * dim, state.n_pressure_bases, state.boundary_nodes, state.local_boundary,
-// 												   state.local_neumann_boundary, state.n_boundary_samples(), state.rhs, *state.solve_data.rhs_assembler,
-// 												   state.assembler.density(), /*apply_DBC=*/true, /*is_formulation_mixed=*/false,
-// 												   state.problem->is_time_dependent());
+		for (int k = 0; k < x.size(); ++k)
+		{
 
-// 			for (int i = 1; i <= timesteps; ++i)
-// 			{
-// 				double t = t0 + i * dt;
-// 				form->update_quantities(t, state.diff_cached.u(i));
-// 			}
-// 			for (int i = 1; i <= timesteps; ++i)
-// 			{
-// 				Eigen::VectorXd term;
-// 				form->first_derivative(sol, term);
-// 				h_minus += term(b_idx);
-// 			}
-// 		}
+			Eigen::VectorXd h_plus, h_minus;
+			{
+				Eigen::VectorXd y = x;
+				y(k) += eps;
+				variable_to_simulations[0]->update(y);
+				state.build_basis();
+				state.assemble_rhs();
+				state.assemble_stiffness_mat();
+				auto form = std::make_shared<BodyForm>(state.n_bases * dim, state.n_pressure_bases, state.boundary_nodes, state.local_boundary,
+													   state.local_neumann_boundary, state.n_boundary_samples(), state.rhs, *state.solve_data.rhs_assembler,
+													   state.assembler.density(), /*apply_DBC=*/true, /*is_formulation_mixed=*/false,
+													   state.problem->is_time_dependent());
+				form->update_quantities(t0 + i * dt, state.diff_cached.u(i - 1));
 
-// 		auto fd = (h_plus - h_minus) / (2 * eps);
+				Eigen::VectorXd term;
+				form->first_derivative(state.diff_cached.u(i), term);
+				h_plus = term;
+			}
 
-// 		std::cout << "fd " << fd << std::endl;
+			{
+				Eigen::VectorXd y = x;
+				y(k) -= eps;
+				variable_to_simulations[0]->update(y);
+				state.build_basis();
+				state.assemble_rhs();
+				state.assemble_stiffness_mat();
+				auto form = std::make_shared<BodyForm>(state.n_bases * dim, state.n_pressure_bases, state.boundary_nodes, state.local_boundary,
+													   state.local_neumann_boundary, state.n_boundary_samples(), state.rhs, *state.solve_data.rhs_assembler,
+													   state.assembler.density(), /*apply_DBC=*/true, /*is_formulation_mixed=*/false,
+													   state.problem->is_time_dependent());
+				form->update_quantities(t0 + i * dt, state.diff_cached.u(i - 1));
 
-// 		// Eigen::VectorXd derivative = Eigen::VectorXd::Zero(x.size());
-// 		// Eigen::VectorXd indicator = Eigen::VectorXd::Zero(x.size());
-// 		// indicator(k) = 1.;
-// 		// for (int i = 1; i <= timesteps; ++i)
-// 		// {
-// 		// 	Eigen::VectorXd term;
-// 		// 	state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), indicator, term);
-// 		// 	derivative += term(b_idx);
-// 		// }
-// 	}
-// }
+				Eigen::VectorXd term;
+				form->first_derivative(state.diff_cached.u(i), term);
+				h_minus = term;
+			}
+
+			hess_fd.col(k) = (h_plus - h_minus) / (2 * eps);
+		}
+
+		hess_fd_vec.push_back(hess_fd);
+	}
+
+	for (int i = 1; i <= timesteps; ++i)
+	{
+		std::cout << "comparison" << std::endl;
+		std::cout << "norm of difference " << (hess_fd_vec[i - 1] - hess_vec[i - 1]).norm() << std::endl;
+	}
+}
 
 TEST_CASE("shape-pressure-neumann-nodes", "[adjoint_method]")
 {

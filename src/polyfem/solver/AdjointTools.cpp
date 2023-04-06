@@ -131,7 +131,7 @@ namespace polyfem::solver
 			Eigen::Matrix<T, 3, 1> v1 = V.segment(0, 3);
 			Eigen::Matrix<T, 3, 1> v2 = V.segment(3, 3);
 			Eigen::Matrix<T, 3, 1> v3 = V.segment(6, 3);
-			Eigen::Matrix<T, 3, 1> normal = -(v1 - v2).cross(v1 - v3);
+			Eigen::Matrix<T, 3, 1> normal = (v2 - v1).cross(v3 - v1);
 			normal = normal / normal.norm();
 			return normal;
 		}
@@ -648,7 +648,7 @@ namespace polyfem::solver
 			}
 			else
 				contact_term.setZero(elasticity_term.size());
-			
+
 			one_form = elasticity_term + contact_term;
 		}
 
@@ -688,6 +688,8 @@ namespace polyfem::solver
 				state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, velocity, cur_nu, mass_term);
 				state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i), -cur_p, elasticity_term);
 				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i), -cur_p, rhs_term);
+				// Maybe needs to be the following, take a look at BodyForm::update_quantities where it is called in the forward.
+				// state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i- 1), -cur_p, rhs_term);
 
 				if (state.solve_data.damping_form)
 					state.solve_data.damping_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i - 1), -cur_p, damping_term);

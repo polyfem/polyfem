@@ -155,6 +155,8 @@ namespace polyfem::solver
 
 	void TransientForm::solution_changed(const Eigen::VectorXd &new_x)
 	{
+		AdjointForm::solution_changed(new_x);
+
 		for (int i = 0; i <= time_steps_; i++)
 		{
 			obj_->set_time_step(i);
