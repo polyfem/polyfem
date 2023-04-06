@@ -5,7 +5,7 @@
 namespace polyfem::solver
 {
 	RayleighDampingForm::RayleighDampingForm(
-		Form &form_to_damp,
+		const Form &form_to_damp,
 		const time_integrator::ImplicitTimeIntegrator &time_integrator,
 		const bool use_stiffness_as_ratio,
 		const double stiffness,

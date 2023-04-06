@@ -86,7 +86,7 @@ namespace polyfem::assembler
 	}
 
 	Eigen::VectorXd
-	SaintVenantElasticity::assemble_grad(const NonLinearAssemblerData &data) const
+	SaintVenantElasticity::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		// igl::Timer time; time.start();
 
@@ -125,24 +125,6 @@ namespace polyfem::assembler
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(data); });
-	}
-
-	void SaintVenantElasticity::compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &stresses) const
-	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
-			Eigen::MatrixXd tmp = stress;
-			auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
-			return Eigen::MatrixXd(a);
-		});
-	}
-
-	void SaintVenantElasticity::compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
-	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, ElasticityTensorType::CAUCHY, stresses, [&](const Eigen::MatrixXd &stress) {
-			Eigen::Matrix<double, 1, 1> res;
-			res.setConstant(von_mises_stress_for_stress_tensor(stress));
-			return res;
-		});
 	}
 
 	void SaintVenantElasticity::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
@@ -261,5 +243,24 @@ namespace polyfem::assembler
 		}
 
 		return energy * 0.5;
+	}
+
+	std::map<std::string, Assembler::ParamFunc> SaintVenantElasticity::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+
+		const auto &elast_tensor = this->elasticity_tensor_;
+		const int size = this->size() == 2 ? 3 : 6;
+
+		for (int i = 0; i < size; ++i)
+		{
+			for (int j = i; j < size; ++j)
+			{
+				res[fmt::format("C_{}{}", i, j)] = [&elast_tensor, i, j](const RowVectorNd &, const RowVectorNd &, double, int) {
+					return elast_tensor(i, j);
+				};
+			}
+		}
+		return res;
 	}
 } // namespace polyfem::assembler

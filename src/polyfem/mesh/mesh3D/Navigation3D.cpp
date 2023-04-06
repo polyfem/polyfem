@@ -259,7 +259,51 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::get_index_from_e
 	}
 	else
 	{
-		assert(false);
+		assert(M.elements[idx.element].fs.size() == 4);
+		for (int i = 0; i < 4; i++)
+		{
+			const auto fid = M.elements[idx.element].fs[i];
+			const auto &fvid = M.faces[fid].vs;
+			int fv0 = fvid[0], fv1 = fvid[1], fv2 = fvid[2];
+			if (fv0 > fv2)
+				swap(fv0, fv2);
+			if (fv0 > fv1)
+				swap(fv0, fv1);
+			if (fv1 > fv2)
+				swap(fv1, fv2);
+
+			assert(fv0 < fv1);
+			assert(fv0 < fv2);
+			assert(fv1 < fv2);
+
+			if (v0 != fv0 || v1 != fv1 || v2 != fv2)
+				continue;
+
+			idx.face = fid;
+			idx.element_patch = i;
+
+			for (int j = 0; j < 3; j++)
+			{
+				const auto eid = M.faces[fid].es[j];
+				const auto &veid = M.edges[eid].vs;
+				assert(veid[0] < veid[1]);
+				if (veid[0] == v0_ && veid[1] == v1_)
+				{
+					idx.edge = eid;
+					if (fvid[0] == idx.vertex)
+						idx.face_corner = 0;
+					else if (fvid[1] == idx.vertex)
+						idx.face_corner = 1;
+					else
+						idx.face_corner = 2;
+
+					assert(idx.vertex == v0i);
+					assert(switch_vertex(M, idx).vertex == v1i);
+					assert(switch_vertex(M, switch_edge(M, idx)).vertex == v2i);
+					return idx;
+				}
+			}
+		}
 	}
 	assert(false);
 	return idx;

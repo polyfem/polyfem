@@ -2728,6 +2728,8 @@
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/id",
         "type": "int",
+        "min": 0,
+        "max": 2147483646,
         "doc": "ID of Dirichlet boundary condition from surface selection."
     },
     {
@@ -2914,6 +2916,8 @@
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/id",
         "type": "int",
+        "min": 0,
+        "max": 2147483646,
         "doc": "ID of Neumann boundary condition"
     },
     {
@@ -3077,20 +3081,17 @@
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/id",
         "type": "int",
+        "min": 0,
+        "max": 2147483646,
         "doc": "ID for the pressure Neumann boundary condition"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/value",
-        "type": "list",
-        "doc": "Values of pressure Neumann boundary condition"
-    },
-    {
-        "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
         "type": "string",
         "doc": "Values of pressure Neumann boundary condition as a function of $x,y,z,t$"
     },
     {
-        "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
+        "pointer": "/boundary_conditions/pressure_boundary/*/value",
         "type": "float",
         "doc": "Values of pressure Neumann boundary condition"
     },

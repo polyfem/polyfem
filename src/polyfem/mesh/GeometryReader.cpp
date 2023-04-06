@@ -438,22 +438,44 @@ namespace polyfem::mesh
 					const int id = geometry["surface_selection"];
 					for (const json &disp : dirichlets)
 					{
-						// TODO: Add support for array of ints
 						if ((disp["id"].is_string() && disp["id"].get<std::string>() == "all")
 							|| (disp["id"].is_number_integer() && disp["id"].get<int>() == id))
 						{
 							displacement = disp;
 							break;
 						}
+						else if (disp["id"].is_array())
+						{
+							for (const json &disp_id : disp["id"])
+							{
+								assert(disp_id.is_number_integer());
+								if (disp_id.get<int>() == id)
+								{
+									displacement = disp;
+									break;
+								}
+							}
+						}
 					}
 					for (const json &disp : displacements)
 					{
-						// TODO: Add support for array of ints
 						if ((disp["id"].is_string() && disp["id"].get<std::string>() == "all")
 							|| (disp["id"].is_number_integer() && disp["id"].get<int>() == id))
 						{
 							displacement = disp;
 							break;
+						}
+						else if (disp["id"].is_array())
+						{
+							for (const json &disp_id : disp["id"])
+							{
+								assert(disp_id.is_number_integer());
+								if (disp_id.get<int>() == id)
+								{
+									displacement = disp;
+									break;
+								}
+							}
 						}
 					}
 				}

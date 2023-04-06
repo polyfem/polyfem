@@ -1,12 +1,12 @@
-PolyFEM
-=======
+<h1 align="center">
+<a href="https://polyfem.github.io/"><img alt="polyfem" src="https://polyfem.github.io/img/polyfem.png" width="60%"></a>
+</h1><br>
+
 [![Build](https://github.com/polyfem/polyfem/actions/workflows/continuous.yml/badge.svg?label=test)](https://github.com/polyfem/polyfem/actions/workflows/continuous.yml)
 [![Nightly](https://github.com/polyfem/polyfem/actions/workflows/nightly.yml/badge.svg)](https://github.com/polyfem/polyfem/actions/workflows/nightly.yml)
 [![Docs](https://github.com/polyfem/polyfem/actions/workflows/docs.yml/badge.svg)](https://polyfem.github.io/polyfem)
 
-*A polyvalent C++ FEM library.*
-
-![Logo](https://polyfem.github.io/img/polyfem.png)
+PolyFEM is a polyvalent C++ FEM library.
 
 Compilation
 -----------

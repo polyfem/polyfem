@@ -36,17 +36,17 @@ namespace polyfem
 			return I;
 		}
 
-		class SpareMatrixCache
+		class SparseMatrixCache
 		{
 		public:
-			SpareMatrixCache() {}
-			SpareMatrixCache(const size_t size);
-			SpareMatrixCache(const size_t rows, const size_t cols);
-			SpareMatrixCache(const SpareMatrixCache &other);
+			SparseMatrixCache() {}
+			SparseMatrixCache(const size_t size);
+			SparseMatrixCache(const size_t rows, const size_t cols);
+			SparseMatrixCache(const SparseMatrixCache &other);
 
 			void init(const size_t size);
 			void init(const size_t rows, const size_t cols);
-			void init(const SpareMatrixCache &other);
+			void init(const SparseMatrixCache &other);
 
 			void set_zero();
 
@@ -60,8 +60,8 @@ namespace polyfem
 			StiffnessMatrix get_matrix(const bool compute_mapping = true);
 			void prune();
 
-			SpareMatrixCache operator+(const SpareMatrixCache &a) const;
-			void operator+=(const SpareMatrixCache &o);
+			SparseMatrixCache operator+(const SparseMatrixCache &a) const;
+			void operator+=(const SparseMatrixCache &o);
 
 			const StiffnessMatrix &mat() const { return mat_; }
 			const std::vector<Eigen::Triplet<double>> &entries() const { return entries_; }
@@ -73,7 +73,7 @@ namespace polyfem
 			std::vector<std::vector<std::pair<int, size_t>>> mapping_;
 			std::vector<int> inner_index_, outer_index_;
 			std::vector<double> values_;
-			const SpareMatrixCache *main_cache_ = nullptr;
+			const SparseMatrixCache *main_cache_ = nullptr;
 
 			std::vector<std::vector<int>> second_cache_;
 			std::vector<std::vector<std::pair<int, int>>> second_cache_entries_;

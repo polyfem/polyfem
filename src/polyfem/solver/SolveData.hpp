@@ -2,7 +2,7 @@
 
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
@@ -21,6 +21,11 @@ namespace polyfem::time_integrator
 {
 	class ImplicitTimeIntegrator;
 } // namespace polyfem::time_integrator
+
+namespace polyfem::assembler
+{
+	class ViscousDamping;
+} // namespace polyfem::assembler
 
 namespace polyfem::solver
 {
@@ -48,9 +53,8 @@ namespace polyfem::solver
 			const int n_bases,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &geom_bases,
-			const assembler::AssemblerUtils &assembler,
+			const assembler::Assembler &assembler,
 			const assembler::AssemblyValsCache &ass_vals_cache,
-			const std::string &formulation,
 
 			// Body form
 			const int n_pressure_bases,
@@ -60,10 +64,12 @@ namespace polyfem::solver
 			const int n_boundary_samples,
 			const Eigen::MatrixXd &rhs,
 			const Eigen::MatrixXd &sol,
+			const assembler::Density &density,
 
 			// Inertia form
 			const bool ignore_inertia,
 			const StiffnessMatrix &mass,
+			const std::shared_ptr<assembler::ViscousDamping> damping_assembler,
 
 			// Lagged regularization form
 			const double lagged_regularization_weight,

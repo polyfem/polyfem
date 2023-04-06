@@ -160,31 +160,38 @@ namespace polyfem
 					elements.push_back(tmp);
 				}
 				assert(elements.size() == n_c + other.elements.size());
+				EV.resize(0, 0);
+				// assert(EV.size() == 0 || EV.rows() == other.EV.rows());
+				// EV.conservativeResize(std::max(EV.rows(), other.EV.rows()), other.EV.cols() + EV.cols());
+				// EV.rightCols(other.EV.cols()) = other.EV.array() + n_v;
 
-				EV.conservativeResize(EV.rows(), other.EV.cols() + EV.cols());
-				EV.rightCols(other.EV.cols()) = other.EV.array() + n_v;
+				// //////////////////
+				FV.resize(0, 0);
+				// assert(FV.size() == 0 || FV.rows() == other.FV.rows());
+				// FV.conservativeResize(std::max(FV.rows(), other.FV.rows()), other.FV.cols() + FV.cols());
+				// FV.rightCols(other.FV.cols()) = other.FV.array() + n_v;
+				FE.resize(0, 0);
+				// assert(FE.size() == 0 || FE.rows() == other.FE.rows());
+				// FE.conservativeResize(std::max(FE.rows(), other.FE.rows()), other.FE.cols() + FE.cols());
+				// FE.rightCols(other.FE.cols()) = other.FE.array() + n_e;
+				FH.resize(0, 0);
+				// assert(FH.size() == 0 || FH.rows() == other.FH.rows());
+				// FH.conservativeResize(std::max(FH.rows(), other.FH.rows()), other.FH.cols() + FH.cols());
+				// FH.rightCols(other.FH.cols()) = other.FH.array() + n_c;
+				FHi.resize(0, 0);
+				// assert(FHi.size() == 0 || FHi.rows() == other.FHi.rows());
+				// FHi.conservativeResize(std::max(FHi.rows(), other.FHi.rows()), other.FHi.cols() + FHi.cols());
+				// FHi.rightCols(other.FHi.cols()) = other.FHi.array();
 
-				//////////////////
-
-				FV.conservativeResize(FV.rows(), other.FV.cols() + FV.cols());
-				FV.rightCols(other.FV.cols()) = other.FV.array() + n_v;
-
-				FE.conservativeResize(FE.rows(), other.FE.cols() + FE.cols());
-				FE.rightCols(other.FE.cols()) = other.FE.array() + n_e;
-
-				FH.conservativeResize(FH.rows(), other.FH.cols() + FH.cols());
-				FH.rightCols(other.FH.cols()) = other.FH.array() + n_c;
-
-				FHi.conservativeResize(FHi.rows(), other.FHi.cols() + FHi.cols());
-				FHi.rightCols(other.FHi.cols()) = other.FHi.array();
-
-				/////////////////
-
-				HV.conservativeResize(HV.rows(), other.HV.cols() + HV.cols());
-				HV.rightCols(other.HV.cols()) = other.HV.array() + n_v;
-
-				HF.conservativeResize(HF.rows(), other.HF.cols() + HF.cols());
-				HF.rightCols(other.HF.cols()) = other.HF.array() + n_f;
+				// /////////////////
+				HV.resize(0, 0);
+				// assert(HV.size() == 0 || HV.rows() == other.HV.rows());
+				// HV.conservativeResize(std::max(HV.rows(), other.HV.rows()), other.HV.cols() + HV.cols());
+				// HV.rightCols(other.HV.cols()) = other.HV.array() + n_v;
+				HF.resize(0, 0);
+				// assert(HF.size() == 0 || HF.rows() == other.HF.rows());
+				// HF.conservativeResize(std::max(HF.rows(), other.HF.rows()), other.HF.cols() + HF.cols());
+				// HF.rightCols(other.HF.cols()) = other.HF.array() + n_f;
 			}
 		};
 

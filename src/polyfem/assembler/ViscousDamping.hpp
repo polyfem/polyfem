@@ -10,24 +10,29 @@ namespace polyfem
 		class ViscousDamping : public NLAssembler
 		{
 		public:
-			ViscousDamping() = default;
-
 			using NLAssembler::assemble_energy;
-			using NLAssembler::assemble_grad;
+			using NLAssembler::assemble_gradient;
 			using NLAssembler::assemble_hessian;
+			using NLAssembler::compute_energy;
+
+			std::string name() const override { return "ViscousDamping"; }
+			std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
+
+			ViscousDamping() = default;
 
 			// energy, gradient, and hessian used in newton method
 			double compute_energy(const NonLinearAssemblerData &data) const override;
 			Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
-			Eigen::VectorXd assemble_grad(const NonLinearAssemblerData &data) const override;
+			Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const override;
 
 			// sets material params
-			void add_multimaterial(const int index, const json &params);
+			void add_multimaterial(const int index, const json &params) override;
 			void set_params(const double psi, const double phi)
 			{
 				psi_ = psi;
 				phi_ = phi;
 			}
+
 			double get_psi() const { return psi_; }
 			double get_phi() const { return phi_; }
 

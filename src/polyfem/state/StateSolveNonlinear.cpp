@@ -1,5 +1,8 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/ViscousDamping.hpp>
+
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
@@ -103,9 +106,9 @@ namespace polyfem
 
 	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t, const bool init_time_integrator)
 	{
-		assert(!assembler.is_linear(formulation()) || is_contact_enabled()); // non-linear
-		assert(!problem->is_scalar());                                       // tensor
-		assert(!assembler.is_mixed(formulation()));
+		assert(!assembler->is_linear() || is_contact_enabled()); // non-linear
+		assert(!problem->is_scalar());                           // tensor
+		assert(mixed_assembler == nullptr);
 
 		// --------------------------------------------------------------------
 		// Check for initial intersections
@@ -153,16 +156,19 @@ namespace polyfem
 		// --------------------------------------------------------------------
 		// Initialize forms
 
+		std::shared_ptr<assembler::ViscousDamping> damping_assembler = std::make_shared<assembler::ViscousDamping>();
+		set_materials(*damping_assembler);
+
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
 			// General
 			mesh->dimension(), t,
 			// Elastic form
-			n_bases, bases, geom_bases(), assembler, ass_vals_cache, formulation(),
+			n_bases, bases, geom_bases(), *assembler, ass_vals_cache,
 			// Body form
 			n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
-			n_boundary_samples(), rhs, sol,
+			n_boundary_samples(), rhs, sol, mass_matrix_assembler->density(),
 			// Inertia form
-			args["solver"]["ignore_inertia"], mass,
+			args["solver"]["ignore_inertia"], mass, damping_assembler->is_valid() ? damping_assembler : nullptr,
 			// Lagged regularization form
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],

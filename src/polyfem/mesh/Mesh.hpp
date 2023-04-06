@@ -641,11 +641,11 @@ namespace polyfem
 			/// stores if the mesh is rational
 			bool is_rational_ = false;
 
-			/// high-oder nodes associates to edges
+			/// high-order nodes associates to edges
 			std::vector<EdgeNodes> edge_nodes_;
-			/// high-oder nodes associates to faces
+			/// high-order nodes associates to faces
 			std::vector<FaceNodes> face_nodes_;
-			/// high-oder nodes associates to cells
+			/// high-order nodes associates to cells
 			std::vector<CellNodes> cell_nodes_;
 			/// weights associates to cells for rational polynomail meshes
 			std::vector<std::vector<double>> cell_weights_;

@@ -199,7 +199,7 @@ TEST_CASE("eigs3idautodiff", "[matrix]")
 
 TEST_CASE("cache", "[matrix]")
 {
-	SpareMatrixCache cache(10);
+	SparseMatrixCache cache(10);
 	cache.add_value(0, 0, 0, 1);
 	cache.add_value(0, 0, 1, 2);
 	cache.add_value(0, 9, 4, 3);
@@ -214,7 +214,7 @@ TEST_CASE("cache", "[matrix]")
 	REQUIRE(tmp.coeff(9, 9) == 4);
 
 	///////////////////
-	SpareMatrixCache cache1(10);
+	SparseMatrixCache cache1(10);
 	cache1.add_value(0, 0, 0, 1);
 	cache1.add_value(0, 0, 1, 2);
 	cache1.prune();
@@ -230,7 +230,7 @@ TEST_CASE("cache", "[matrix]")
 	REQUIRE(tmp1.coeff(9, 9) == 4);
 
 	///////////////////
-	SpareMatrixCache cache2(cache1);
+	SparseMatrixCache cache2(cache1);
 	cache2.add_value(0, 0, 0, 1);
 	cache2.add_value(0, 0, 1, 2);
 	cache2.prune();

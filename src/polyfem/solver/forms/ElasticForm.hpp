@@ -3,7 +3,7 @@
 #include "Form.hpp"
 
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
 #include <polyfem/utils/Types.hpp>
@@ -19,9 +19,8 @@ namespace polyfem::solver
 		ElasticForm(const int n_bases,
 					const std::vector<basis::ElementBases> &bases,
 					const std::vector<basis::ElementBases> &geom_bases,
-					const assembler::AssemblerUtils &assembler,
+					const assembler::Assembler &assembler,
 					const assembler::AssemblyValsCache &ass_vals_cache,
-					const std::string &formulation,
 					const double dt,
 					const bool is_volume);
 
@@ -58,13 +57,13 @@ namespace polyfem::solver
 		const std::vector<basis::ElementBases> &bases_;
 		const std::vector<basis::ElementBases> &geom_bases_;
 
-		const assembler::AssemblerUtils &assembler_; ///< Reference to the assembler
+		const assembler::Assembler &assembler_; ///< Reference to the assembler
 		const assembler::AssemblyValsCache &ass_vals_cache_;
-		const std::string formulation_; ///< Elasticity formulation name
-		const bool is_volume_;
 		const double dt_;
-		StiffnessMatrix cached_stiffness_;          ///< Cached stiffness matrix for linear elasticity
-		mutable utils::SpareMatrixCache mat_cache_; ///< Matrix cache (mutable because it is modified in second_derivative_unweighted)
+		const bool is_volume_;
+
+		StiffnessMatrix cached_stiffness_;           ///< Cached stiffness matrix for linear elasticity
+		mutable utils::SparseMatrixCache mat_cache_; ///< Matrix cache (mutable because it is modified in second_derivative_unweighted)
 
 		/// @brief Compute the stiffness matrix (cached)
 		void compute_cached_stiffness();

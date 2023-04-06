@@ -198,6 +198,27 @@ namespace polyfem::io
 						  const bool is_contact_enabled,
 						  std::vector<SolutionFrame> &solution_frames) const;
 
+		/// saves the  surface vtu file for for constact quantites, eg contact or friction forces
+		/// @param[in] export_surface filename
+		/// @param[in] state state to get the data
+		/// @param[in] sol solution
+		/// @param[in] pressure pressure
+		/// @param[in] t time
+		/// @param[in] dt_in delta_t
+		/// @param[in] opts export options
+		/// @param[in] is_contact_enabled if contact is enabled
+		/// @param[out] solution_frames saves the output here instead of vtu
+		void save_contact_surface(
+			const std::string &export_surface,
+			const State &state,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &pressure,
+			const double t,
+			const double dt_in,
+			const ExportOptions &opts,
+			const bool is_contact_enabled,
+			std::vector<SolutionFrame> &solution_frames) const;
+
 		/// saves the wireframe
 		/// @param[in] name filename
 		/// @param[in] state state to get the data
@@ -305,7 +326,7 @@ namespace polyfem::io
 		/// @param[out] elements mesh high-order cells
 		/// @param[out] el_id mapping from points to elements id
 		/// @param[out] discr mapping from points to discretization order
-		void build_high_oder_vis_mesh(
+		void build_high_order_vis_mesh(
 			const mesh::Mesh &mesh,
 			const Eigen::VectorXi &disc_orders,
 			const std::vector<basis::ElementBases> &bases,
@@ -335,6 +356,8 @@ namespace polyfem::io
 		double computing_poly_basis_time;
 		/// time to assembly
 		double assembling_stiffness_mat_time;
+		/// time to assembly mass
+		double assembling_mass_mat_time;
 		/// time to computing the rhs
 		double assigning_rhs_time;
 		/// time to solve
@@ -344,7 +367,7 @@ namespace polyfem::io
 		/// @return total time
 		double total_time()
 		{
-			return building_basis_time + assembling_stiffness_mat_time + solving_time;
+			return building_basis_time + assembling_mass_mat_time + assembling_stiffness_mat_time + solving_time;
 		}
 	};
 

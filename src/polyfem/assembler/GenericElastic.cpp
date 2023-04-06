@@ -8,35 +8,6 @@ namespace polyfem::assembler
 	{
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-	GenericElastic::compute_rhs(const AutodiffHessianPt &pt) const
-	{
-		assert(pt.size() == size());
-
-		log_and_throw_error("Fabricated solution not supported!");
-
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res;
-		return res;
-	}
-
-	void GenericElastic::compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &stresses) const
-	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
-			Eigen::MatrixXd tmp = stress;
-			auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
-			return Eigen::MatrixXd(a);
-		});
-	}
-
-	void GenericElastic::compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
-	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, ElasticityTensorType::CAUCHY, stresses, [&](const Eigen::MatrixXd &stress) {
-			Eigen::Matrix<double, 1, 1> res;
-			res.setConstant(von_mises_stress_for_stress_tensor(stress));
-			return res;
-		});
-	}
-
 	void GenericElastic::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		Eigen::MatrixXd deformation_grad(size(), size());
@@ -98,7 +69,7 @@ namespace polyfem::assembler
 		return compute_energy_aux<double>(data);
 	}
 
-	Eigen::VectorXd GenericElastic::assemble_grad(const NonLinearAssemblerData &data) const
+	Eigen::VectorXd GenericElastic::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		const int n_bases = data.vals.basis_values.size();
 		return polyfem::gradient_from_energy(

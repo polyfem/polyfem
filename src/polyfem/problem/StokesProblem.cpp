@@ -10,7 +10,7 @@ namespace polyfem
 	{
 		namespace
 		{
-			//https://math.stackexchange.com/questions/101480/are-there-other-kinds-of-bump-functions-than-e-frac1x2-1
+			// https://math.stackexchange.com/questions/101480/are-there-other-kinds-of-bump-functions-than-e-frac1x2-1
 			double bump(double r)
 			{
 				const auto f = [](double x) { return x <= 0 ? 0 : exp(-1. / x); };
@@ -47,7 +47,7 @@ namespace polyfem
 			boundary_ids_ = {1, 2, 3, 4, 5, 6, 7};
 		}
 
-		void ConstantVelocity::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void ConstantVelocity::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
@@ -76,7 +76,7 @@ namespace polyfem
 			// boundary_ids_ = {1};
 		}
 
-		void TwoSpheres::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void TwoSpheres::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
@@ -140,7 +140,7 @@ namespace polyfem
 			// boundary_ids_ = {1};
 		}
 
-		void DrivenCavity::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void DrivenCavity::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
@@ -171,7 +171,7 @@ namespace polyfem
 			// boundary_ids_ = {1};
 		}
 
-		void DrivenCavityC0::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void DrivenCavityC0::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
@@ -206,7 +206,7 @@ namespace polyfem
 			// boundary_ids_ = {1};
 		}
 
-		void DrivenCavitySmooth::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void DrivenCavitySmooth::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
@@ -250,7 +250,7 @@ namespace polyfem
 			outflow_amout_ = 0.25;
 		}
 
-		void Flow::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void Flow::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
@@ -346,7 +346,7 @@ namespace polyfem
 			U_ = 1.5;
 		}
 
-		void FlowWithObstacle::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void FlowWithObstacle::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
@@ -453,7 +453,7 @@ namespace polyfem
 			}
 		}
 
-		void Kovnaszy::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void Kovnaszy::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), pts.cols());
 			val.setZero();
@@ -472,7 +472,7 @@ namespace polyfem
 			U_ = 1.5;
 		}
 
-		void CornerFlow::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void CornerFlow::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
@@ -518,7 +518,7 @@ namespace polyfem
 			U_ = 1;
 		}
 
-		void Lshape::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void Lshape::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
@@ -565,7 +565,7 @@ namespace polyfem
 			dir_ = 0;
 		}
 
-		void UnitFlowWithObstacle::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void UnitFlowWithObstacle::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
@@ -712,7 +712,7 @@ namespace polyfem
 			val.setZero();
 		}
 
-		void StokesLawProblem::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void StokesLawProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), pts.cols());
 			val.setZero();
@@ -789,7 +789,7 @@ namespace polyfem
 			val.setZero();
 		}
 
-		void Airfoil::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void Airfoil::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), pts.cols());
 			val.setZero();
@@ -892,7 +892,7 @@ namespace polyfem
 			}
 		}
 
-		void TaylorGreenVortexProblem::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void TaylorGreenVortexProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), pts.cols());
 			val.setZero();
@@ -1046,6 +1046,8 @@ namespace polyfem
 					return simple_function_lin(pt(0), pt(1), t);
 				case 3:
 					return simple_function_const(pt(0), pt(1), t);
+				default:
+					assert(false);
 				}
 			}
 			else if (pt.size() == 3)
@@ -1060,6 +1062,8 @@ namespace polyfem
 					return simple_function_lin(pt(0), pt(1), pt(2), t);
 				case 3:
 					return simple_function_const(pt(0), pt(1), pt(2), t);
+				default:
+					assert(false);
 				}
 			}
 
@@ -1081,6 +1085,8 @@ namespace polyfem
 					return simple_function_lin(pt(0), pt(1), t);
 				case 3:
 					return simple_function_const(pt(0), pt(1), t);
+				default:
+					assert(false);
 				}
 			}
 			else if (pt.size() == 3)
@@ -1095,6 +1101,8 @@ namespace polyfem
 					return simple_function_lin(pt(0), pt(1), pt(2), t);
 				case 3:
 					return simple_function_const(pt(0), pt(1), pt(2), t);
+				default:
+					assert(false);
 				}
 			}
 
@@ -1116,6 +1124,8 @@ namespace polyfem
 					return simple_function_lin(pt(0), pt(1), t);
 				case 3:
 					return simple_function_const(pt(0), pt(1), t);
+				default:
+					assert(false);
 				}
 			}
 			else if (pt.size() == 3)
@@ -1130,6 +1140,8 @@ namespace polyfem
 					return simple_function_lin(pt(0), pt(1), pt(2), t);
 				case 3:
 					return simple_function_const(pt(0), pt(1), pt(2), t);
+				default:
+					assert(false);
 				}
 			}
 
@@ -1244,7 +1256,7 @@ namespace polyfem
 			// }
 		}
 
-		void TransientStokeProblemExact::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void TransientStokeProblemExact::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), pts.cols());
 

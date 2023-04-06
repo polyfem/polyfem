@@ -17,6 +17,9 @@ namespace polyfem::assembler
 		const GenericMatParams &mus() const { return mus_; }
 		const GenericMatParams &Ds() const { return Ds_; }
 
+		std::string name() const override { return "UnconstrainedOgden"; }
+		std::map<std::string, ParamFunc> parameters() const override;
+
 		// This macro defines the overriden functions that compute the energy:
 		// template <typename T>
 		// T elastic_energy(const RowVectorNd &p, const int el_id, const DefGradMatrix<T> &def_grad) const override { elastic_energy_T<T>(p, el_id, def_grad); };
@@ -51,6 +54,9 @@ namespace polyfem::assembler
 
 		/// Number of terms in the Ogden model
 		int num_terms() const { return coefficients_.size(); }
+
+		std::string name() const override { return "IncompressibleOgden"; }
+		std::map<std::string, ParamFunc> parameters() const override;
 
 		// This macro defines the overriden functions that compute the energy:
 		// template <typename T>
