@@ -41,7 +41,7 @@ var namespacepolyfem_1_1utils =
     [ "Timer", "classpolyfem_1_1utils_1_1_timer.html", "classpolyfem_1_1utils_1_1_timer" ],
     [ "UniformSelection", "classpolyfem_1_1utils_1_1_uniform_selection.html", "classpolyfem_1_1utils_1_1_uniform_selection" ],
     [ "append_rows", "namespacepolyfem_1_1utils.html#abfd143acb03ac1513784509e3185b980", null ],
-    [ "append_zero_rows", "namespacepolyfem_1_1utils.html#ad7e42b1cb43314d794089f065cf68289", null ],
+    [ "append_rows_of_zeros", "namespacepolyfem_1_1utils.html#ab6d6b194b77675457ea6803cfc9decd4", null ],
     [ "apply_common_params", "namespacepolyfem_1_1utils.html#aa79eb723c652651a8079603fba4ebef9", null ],
     [ "are_edges_collinear", "namespacepolyfem_1_1utils.html#ad8c38f388e888043894cf1bb1b89a53e", null ],
     [ "are_triangles_coplanar", "namespacepolyfem_1_1utils.html#ab7792e275b464e2ea5fad474fa7d9c0b", null ],

@@ -2,7 +2,7 @@ var _matrix_utils_8hpp =
 [
     [ "polyfem::utils::SparseMatrixCache", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html", "classpolyfem_1_1utils_1_1_sparse_matrix_cache" ],
     [ "append_rows", "_matrix_utils_8hpp.html#abfd143acb03ac1513784509e3185b980", null ],
-    [ "append_zero_rows", "_matrix_utils_8hpp.html#ad7e42b1cb43314d794089f065cf68289", null ],
+    [ "append_rows_of_zeros", "_matrix_utils_8hpp.html#ab6d6b194b77675457ea6803cfc9decd4", null ],
     [ "determinant", "_matrix_utils_8hpp.html#abe6b8c4990a1c67602ca66d6d522d557", null ],
     [ "flatten", "_matrix_utils_8hpp.html#adac090350174847f46edfd397abd4ab4", null ],
     [ "full_to_reduced_matrix", "_matrix_utils_8hpp.html#af03329969960f2decea3c0752c243b2a", null ],

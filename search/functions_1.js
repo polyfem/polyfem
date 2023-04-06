@@ -32,7 +32,7 @@ var searchData=
   ['append_5fmesh_5fsequence_29',['append_mesh_sequence',['../classpolyfem_1_1mesh_1_1_obstacle.html#a71ba54d050ad956de73af7d4a0f97636',1,'polyfem::mesh::Obstacle']]],
   ['append_5fplane_30',['append_plane',['../classpolyfem_1_1mesh_1_1_obstacle.html#a512f3a98b1f2d3b12fc7bff4b595927a',1,'polyfem::mesh::Obstacle']]],
   ['append_5frows_31',['append_rows',['../namespacepolyfem_1_1utils.html#abfd143acb03ac1513784509e3185b980',1,'polyfem::utils']]],
-  ['append_5fzero_5frows_32',['append_zero_rows',['../namespacepolyfem_1_1utils.html#ad7e42b1cb43314d794089f065cf68289',1,'polyfem::utils']]],
+  ['append_5frows_5fof_5fzeros_32',['append_rows_of_zeros',['../namespacepolyfem_1_1utils.html#ab6d6b194b77675457ea6803cfc9decd4',1,'polyfem::utils']]],
   ['apply_5faffine_5ftransformation_33',['apply_affine_transformation',['../classpolyfem_1_1mesh_1_1_mesh.html#a82c1d573c9697269c01b0ec07f108887',1,'polyfem::mesh::Mesh']]],
   ['apply_5fcommon_5fparams_34',['apply_common_params',['../namespacepolyfem_1_1utils.html#aa79eb723c652651a8079603fba4ebef9',1,'polyfem::utils']]],
   ['apriori_35',['APriori',['../classpolyfem_1_1refinement_1_1_a_priori.html#a2d99bc27a0e384164accb8133ab092a9',1,'polyfem::refinement::APriori']]],

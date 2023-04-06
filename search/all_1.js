@@ -52,7 +52,7 @@ var searchData=
   ['append_5fmesh_5fsequence_49',['append_mesh_sequence',['../classpolyfem_1_1mesh_1_1_obstacle.html#a71ba54d050ad956de73af7d4a0f97636',1,'polyfem::mesh::Obstacle']]],
   ['append_5fplane_50',['append_plane',['../classpolyfem_1_1mesh_1_1_obstacle.html#a512f3a98b1f2d3b12fc7bff4b595927a',1,'polyfem::mesh::Obstacle']]],
   ['append_5frows_51',['append_rows',['../namespacepolyfem_1_1utils.html#abfd143acb03ac1513784509e3185b980',1,'polyfem::utils']]],
-  ['append_5fzero_5frows_52',['append_zero_rows',['../namespacepolyfem_1_1utils.html#ad7e42b1cb43314d794089f065cf68289',1,'polyfem::utils']]],
+  ['append_5frows_5fof_5fzeros_52',['append_rows_of_zeros',['../namespacepolyfem_1_1utils.html#ab6d6b194b77675457ea6803cfc9decd4',1,'polyfem::utils']]],
   ['apply_5faffine_5ftransformation_53',['apply_affine_transformation',['../classpolyfem_1_1mesh_1_1_mesh.html#a82c1d573c9697269c01b0ec07f108887',1,'polyfem::mesh::Mesh']]],
   ['apply_5fcommon_5fparams_54',['apply_common_params',['../namespacepolyfem_1_1utils.html#aa79eb723c652651a8079603fba4ebef9',1,'polyfem::utils']]],
   ['apply_5fdbc_5f_55',['apply_DBC_',['../classpolyfem_1_1solver_1_1_body_form.html#ac977a5b42c7d8b11f9e75b6c7be45655',1,'polyfem::solver::BodyForm']]],

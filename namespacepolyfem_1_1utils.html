@@ -295,9 +295,9 @@ Functions</h2></td></tr>
 <tr class="memitem:abfd143acb03ac1513784509e3185b980"><td class="memTemplParams" colspan="2">template&lt;typename DstMat , typename SrcMat &gt; </td></tr>
 <tr class="memitem:abfd143acb03ac1513784509e3185b980"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#abfd143acb03ac1513784509e3185b980">append_rows</a> (DstMat &amp;dst, const SrcMat &amp;src)</td></tr>
 <tr class="separator:abfd143acb03ac1513784509e3185b980"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7e42b1cb43314d794089f065cf68289"><td class="memTemplParams" colspan="2">template&lt;typename DstMat &gt; </td></tr>
-<tr class="memitem:ad7e42b1cb43314d794089f065cf68289"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#ad7e42b1cb43314d794089f065cf68289">append_zero_rows</a> (DstMat &amp;dst, const size_t n_zero_rows)</td></tr>
-<tr class="separator:ad7e42b1cb43314d794089f065cf68289"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6d6b194b77675457ea6803cfc9decd4"><td class="memTemplParams" colspan="2">template&lt;typename DstMat &gt; </td></tr>
+<tr class="memitem:ab6d6b194b77675457ea6803cfc9decd4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#ab6d6b194b77675457ea6803cfc9decd4">append_rows_of_zeros</a> (DstMat &amp;dst, const size_t n_zero_rows)</td></tr>
+<tr class="separator:ab6d6b194b77675457ea6803cfc9decd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afac51d1fd7878475ff843eef315f510c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">maybe_parallel_for</a> (int size, const std::function&lt; void(int, int, int)&gt; &amp;partial_for)</td></tr>
 <tr class="separator:afac51d1fd7878475ff843eef315f510c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6271a11288e93e85b3d285403b962020"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a6271a11288e93e85b3d285403b962020">maybe_parallel_for</a> (int size, const std::function&lt; void(int)&gt; &amp;body)</td></tr>
@@ -362,8 +362,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="ad7e42b1cb43314d794089f065cf68289" name="ad7e42b1cb43314d794089f065cf68289"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad7e42b1cb43314d794089f065cf68289">&#9670;&#160;</a></span>append_zero_rows()</h2>
+<a id="ab6d6b194b77675457ea6803cfc9decd4" name="ab6d6b194b77675457ea6803cfc9decd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6d6b194b77675457ea6803cfc9decd4">&#9670;&#160;</a></span>append_rows_of_zeros()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -371,7 +371,7 @@ Here is the caller graph for this function:</div>
 template&lt;typename DstMat &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void polyfem::utils::append_zero_rows </td>
+          <td class="memname">void polyfem::utils::append_rows_of_zeros </td>
           <td>(</td>
           <td class="paramtype">DstMat &amp;&#160;</td>
           <td class="paramname"><em>dst</em>, </td>
@@ -391,6 +391,14 @@ template&lt;typename DstMat &gt; </div>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00164">164</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01059">polyfem::io::OutGeometryData::save_volume()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_ab6d6b194b77675457ea6803cfc9decd4_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
 
 </div>
 </div>
@@ -893,7 +901,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="par__for_8hpp_source.html#l00014">polyfem::utils::NThread::get()</a>, and <a class="el" href="par__for_8hpp_source.html#l00013">polyfem::utils::NThread::num_threads</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="par__for_8cpp_source.html#l00010">par_for()</a>, and <a class="el" href="_out_data_8cpp_source.html#l02566">polyfem::io::OutStatsData::save_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="par__for_8cpp_source.html#l00010">par_for()</a>, and <a class="el" href="_out_data_8cpp_source.html#l02557">polyfem::io::OutStatsData::save_json()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2449,7 +2457,7 @@ Here is the call graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00055">polyfem::solver::ContactForm::compute_displaced_surface()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00030">polyfem::solver::FrictionForm::compute_displaced_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l00809">polyfem::io::OutGeometryData::export_data()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00156">polyfem::utils::PiecewiseCubicInterpolation::init()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00107">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_out_data_8cpp_source.html#l01748">polyfem::io::OutGeometryData::save_contact_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l01059">polyfem::io::OutGeometryData::save_volume()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01533">polyfem::io::OutGeometryData::save_volume_vector_field()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00055">polyfem::solver::ContactForm::compute_displaced_surface()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00030">polyfem::solver::FrictionForm::compute_displaced_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l00809">polyfem::io::OutGeometryData::export_data()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00156">polyfem::utils::PiecewiseCubicInterpolation::init()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00107">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_out_data_8cpp_source.html#l01739">polyfem::io::OutGeometryData::save_contact_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l01059">polyfem::io::OutGeometryData::save_volume()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01524">polyfem::io::OutGeometryData::save_volume_vector_field()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
