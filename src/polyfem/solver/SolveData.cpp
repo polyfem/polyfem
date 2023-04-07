@@ -69,7 +69,7 @@ namespace polyfem::solver
 
 		// Periodic contact
 		const bool periodic_contact,
-		const Eigen::VectorXi tiled_to_periodic,
+		const Eigen::VectorXi tiled_to_single,
 
 		// Friction form
 		const double friction_coefficient,
@@ -151,7 +151,7 @@ namespace polyfem::solver
 			if (periodic_contact)
 			{
 				periodic_contact_form = std::make_shared<PeriodicContactForm>(
-					collision_mesh, tiled_to_periodic, dhat, avg_mass, use_convergent_contact_formulation,
+					collision_mesh, tiled_to_single, dhat, avg_mass, use_convergent_contact_formulation,
 					use_adaptive_barrier_stiffness, is_time_dependent, broad_phase, ccd_tolerance,
 					ccd_max_iterations);
 

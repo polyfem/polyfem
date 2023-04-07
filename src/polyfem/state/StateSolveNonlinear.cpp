@@ -196,7 +196,7 @@ namespace polyfem
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
 			// Periodic contact
-			args["contact"]["periodic"], tiled_to_periodic,
+			args["contact"]["periodic"], tiled_to_single,
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],

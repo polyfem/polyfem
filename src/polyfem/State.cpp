@@ -1454,17 +1454,18 @@ namespace polyfem
 											 boundary_triangles,
 											 displacement_map);
 
-		tiled_to_periodic.setConstant(Vnew.rows(), -1);
+		tiled_to_single.setConstant(Vnew.rows(), -1);
 		for (int i = 0; i < V.rows(); i++)
 			for (int j = 0; j < n_tiles * n_tiles; j++)
-				tiled_to_periodic(SVI[j * V.rows() + i]) = i;
+				tiled_to_single(SVI[j * V.rows() + i]) = i;
 		
-		assert(tiled_to_periodic.maxCoeff() + 1 == V.rows());
+		if (tiled_to_single.maxCoeff() + 1 != V.rows())
+			log_and_throw_error("Failed to tile mesh!");
 
 		if (args["space"]["advanced"]["periodic_basis"].get<bool>())
 		{
-			for (int i = 0; i < tiled_to_periodic.size(); i++)
-				tiled_to_periodic(i) = periodic_reduce_map(tiled_to_periodic(i));
+			for (int i = 0; i < tiled_to_single.size(); i++)
+				tiled_to_single(i) = periodic_reduce_map(tiled_to_single(i));
 		}
 	}
 

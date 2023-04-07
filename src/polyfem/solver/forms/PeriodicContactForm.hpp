@@ -11,9 +11,9 @@ namespace polyfem::solver
     public:
 		/// @brief Construct a new Contact Form object
 		/// @param periodic_collision_mesh 3x3 tiling of a periodic mesh
-		/// @param tiled_to_periodic Index mapping from the tiled mesh to the original periodic mesh
+		/// @param tiled_to_single Index mapping from the tiled mesh to the original periodic mesh
 		PeriodicContactForm(const ipc::CollisionMesh &periodic_collision_mesh,
-                        const Eigen::VectorXi &tiled_to_periodic,
+                        const Eigen::VectorXi &tiled_to_single,
                         const double dhat,
                         const double avg_mass,
                         const bool use_convergent_formulation,
@@ -78,10 +78,11 @@ namespace polyfem::solver
 		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
 
     private:
-        const Eigen::VectorXi tiled_to_periodic_;
+        const Eigen::VectorXi tiled_to_single_;
+		const int n_single_dof_;
 		StiffnessMatrix proj;
 
-        Eigen::VectorXd periodic_to_full(const Eigen::VectorXd &x) const;
-        Eigen::VectorXd full_to_periodic_grad(const Eigen::VectorXd &grad) const;
+        Eigen::VectorXd single_to_tiled(const Eigen::VectorXd &x) const;
+        Eigen::VectorXd tiled_to_single_grad(const Eigen::VectorXd &grad) const;
     };
 }

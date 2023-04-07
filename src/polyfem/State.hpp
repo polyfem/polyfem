@@ -248,7 +248,6 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		void solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
-		void solve_homogenization(Eigen::MatrixXd &sol);
 		/// solves the problem, call other methods
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
@@ -519,7 +518,7 @@ namespace polyfem
 		/// @brief IPC collision mesh under periodic BC
 		ipc::CollisionMesh periodic_collision_mesh;
 		/// index mapping from tiled mesh to original periodic mesh
-		Eigen::VectorXi tiled_to_periodic;
+		Eigen::VectorXi tiled_to_single;
 
 		/// extracts the boundary mesh for collision, called in build_basis
 		void build_collision_mesh(
@@ -712,6 +711,7 @@ namespace polyfem
 		//---------------------------------------------------
 	public:
 		void solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::MatrixXd &sol_, const std::vector<int> &fixed_entry, bool for_bistable = false);
+		Eigen::VectorXd homo_initial_guess;
 	};
 
 } // namespace polyfem

@@ -89,7 +89,7 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         args["solver"]["contact"]["CCD"]["tolerance"],
         args["solver"]["contact"]["CCD"]["max_iterations"],
         // Periodic contact
-        args["contact"]["periodic"], tiled_to_periodic,
+        args["contact"]["periodic"], tiled_to_single,
         // Friction form
         args["contact"]["friction_coefficient"],
         args["contact"]["epsv"],
@@ -140,6 +140,8 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
     bool force_al = args["solver"]["augmented_lagrangian"]["force"];
     Eigen::VectorXd extended_sol(sol_.size() + dim * dim);
     extended_sol << sol_, Eigen::VectorXd::Zero(dim * dim);
+    if (homo_initial_guess.size() == extended_sol.size())
+        extended_sol = homo_initial_guess;
     Eigen::MatrixXd disp_grad_out = disp_grad;
     if (force_al)
     {
@@ -257,6 +259,8 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
 
     if (args["optimization"]["enabled"])
         cache_transient_adjoint_quantities(0, sol_, disp_grad_out);
+    
+    homo_initial_guess = homo_problem->reduced_to_extended(reduced_sol);
 
     // static int index = 0;
     // StiffnessMatrix H;

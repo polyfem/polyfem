@@ -633,7 +633,7 @@ namespace polyfem::solver
 				elasticity_term += tmp;
 			}
 
-			if (state.args["contact"]["periodic"])
+			if (state.is_contact_enabled() && state.args["contact"]["periodic"])
 			{
 				Eigen::VectorXd extended_sol(sol.size() + dim * dim);
 				extended_sol.head(sol.size()) = sol - io::Evaluator::generate_linear_field(state.n_bases, state.mesh_nodes, state.diff_cached.disp_grad());
@@ -645,6 +645,15 @@ namespace polyfem::solver
 			{
 				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.contact_set(0), sol, homo_problem->reduced_to_full(adjoint), contact_term);
 				contact_term = state.down_sampling_mat * contact_term;
+				{
+					Eigen::MatrixXd affine_adjoint = homo_problem->reduced_to_disp_grad(adjoint);
+
+					Eigen::VectorXd force;
+					state.solve_data.contact_form->first_derivative(sol, force);
+
+					Eigen::VectorXd tmp = state.down_sampling_mat * utils::flatten(utils::unflatten(force, dim) * affine_adjoint);
+					contact_term += tmp;
+				}
 			}
 			else
 				contact_term.setZero(elasticity_term.size());
