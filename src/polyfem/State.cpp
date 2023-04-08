@@ -1362,18 +1362,18 @@ namespace polyfem
         Eigen::VectorXd size = bbox.col(1) - bbox.col(0);
 
 		// remove boundary edges on periodic BC
-		{
-			const double eps = 1e-6;
-			Eigen::MatrixXd barycenters = (V(E.col(0), Eigen::all) + V(E.col(1), Eigen::all)) / 2.0;
-			std::vector<int> ind;
-			for (int i = 0; i < barycenters.rows(); i++)
-			{
-				Eigen::VectorXd p = barycenters.row(i);
-				if ((p - bbox.col(0)).minCoeff() > eps && (bbox.col(1) - p).minCoeff() > eps)
-					ind.push_back(i);
-			}
-			E = E(ind, Eigen::all).eval();
-		}
+		// {
+		// 	const double eps = 1e-6;
+		// 	Eigen::MatrixXd barycenters = (V(E.col(0), Eigen::all) + V(E.col(1), Eigen::all)) / 2.0;
+		// 	std::vector<int> ind;
+		// 	for (int i = 0; i < barycenters.rows(); i++)
+		// 	{
+		// 		Eigen::VectorXd p = barycenters.row(i);
+		// 		if ((p - bbox.col(0)).minCoeff() > eps && (bbox.col(1) - p).minCoeff() > eps)
+		// 			ind.push_back(i);
+		// 	}
+		// 	E = E(ind, Eigen::all).eval();
+		// }
 
         Eigen::MatrixXd Vtmp, Vnew;
         Eigen::MatrixXi Etmp, Enew;
@@ -1443,6 +1443,26 @@ namespace polyfem
         Enew.resizeLike(Etmp);
         for (int d = 0; d < Etmp.cols(); d++)
             Enew.col(d) = SVI(Etmp.col(d));
+		// remoe duplicate edges
+		{
+			std::set<std::array<int, 2>> set;
+			for (int i = 0; i < Enew.cols(); i++)
+			{
+				Eigen::VectorXi tmp = Enew.row(i);
+				std::sort(tmp.data(), tmp.data() + 2);
+				std::array<int, 2> arr = {{tmp(0), tmp(1)}};
+				set.insert(arr);
+			}
+			Eigen::MatrixXi Eunique(set.size(), 2);
+			int i = 0;
+			for (auto itr : set)
+			{
+				Eunique(i, 0) = itr[0];
+				Eunique(i, 1) = itr[1];
+				i++;
+			}
+			std::swap(Eunique, Enew);
+		}
 
 		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(Vnew.rows(), Enew);
 

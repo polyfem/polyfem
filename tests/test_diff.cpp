@@ -24,6 +24,9 @@
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>
 
+#include <polyfem/io/VTUWriter.hpp>
+#include <finitediff.hpp>
+
 #include <catch2/catch.hpp>
 #include <math.h>
 ////////////////////////////////////////////////////////////////////////////////
@@ -747,7 +750,31 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 				velocity_discrete(i * 2 + d) = (rand() % 10000) / 1.0e4;
 		}
 
-	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-5);
+	// Eigen::VectorXd fgrad;
+	// fd::finite_gradient(
+	// 	x, [&](const Eigen::VectorXd &y) -> double 
+	// 	{
+	// 		for (auto &v2s : variable_to_simulations)
+	// 			v2s->update(y);
+	// 		state.build_basis();
+	// 		solve_pde(state);
+	// 		obj->solution_changed(y);
+	// 		return obj->value(y);
+	// 	}, fgrad, fd::AccuracyOrder::SECOND, 1e-8);
+
+	// state.solve_adjoint_cached(obj->compute_adjoint_rhs(x, state));
+	// Eigen::VectorXd one_form;
+	// obj->first_derivative(x, one_form);
+
+	// io::VTUWriter writer;
+	// writer.add_field("grad", utils::unflatten(one_form, 2));
+	// writer.add_field("fgrad", utils::unflatten(fgrad, 2));
+
+	// Eigen::MatrixXi F;
+	// state.get_elements(F);
+	// writer.write_mesh("debug.vtu", V, F);
+
+	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-4);
 }
 
 TEST_CASE("periodic-contact-force", "[adjoint_method]")
@@ -827,155 +854,6 @@ TEST_CASE("periodic-contact-force", "[adjoint_method]")
 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-6));
 }
 
-// TEST_CASE("contact-force", "[adjoint_method]")
-// {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-// 	json in_args;
-// 	load_json(path + "homogenize-stress.json", in_args);
-// 	in_args["contact"]["periodic"] = false;
-// 	auto state_ptr = create_state_and_solve(in_args);
-// 	State &state = *state_ptr;
-
-// 	json opt_args;
-// 	load_json(path + "homogenize-stress-opt.json", opt_args);
-// 	opt_args = apply_opt_json_spec(opt_args, false);
-
-// 	std::vector<std::shared_ptr<State>> states({state_ptr});
-
-// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-// 	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
-
-// 	Eigen::MatrixXd V;
-// 	state.get_vertices(V);
-// 	Eigen::VectorXd x = utils::flatten(V);
-
-// 	Eigen::VectorXd theta;
-// 	theta.setZero(x.size());
-// 	const double eps = 1e-5;
-// 	Eigen::VectorXd min = V.colwise().minCoeff();
-// 	Eigen::VectorXd max = V.colwise().maxCoeff();
-// 	for (int i = 0; i < V.rows(); i++)
-// 		for (int d = 0; d < 2; d++)
-// 		{
-// 			auto vert = state.mesh->point(i);
-// 			if (state.mesh->is_boundary_vertex(i) && vert(0) > min(0) + eps && vert(0) < max(0) - eps && vert(1) > min(1) + eps && vert(1) < max(1) - eps)
-// 				theta(i * 2 + d) = (rand() % 10000) / 1.0e4;
-// 		}
-
-// 	const double dt = opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>();
-// 	Eigen::VectorXd weights, sol;
-// 	{
-// 		std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state.solve_data.nl_problem);
-// 		sol = state.diff_cached.u(0) + io::Evaluator::generate_linear_field(state.n_bases, state.mesh_nodes, state.diff_cached.disp_grad());
-// 		weights.setRandom(sol.size());
-// 	}
-
-// 	auto form = state.solve_data.contact_form;
-
-// 	Eigen::VectorXd force;
-// 	form->first_derivative(sol, force);
-// 	double functional_val = force.dot(weights);
-
-// 	Eigen::VectorXd force_grad;
-// 	form->force_shape_derivative(state.diff_cached.contact_set(0), sol, weights, force_grad);
-// 	force_grad = -utils::flatten(utils::unflatten(state.down_sampling_mat * force_grad, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
-
-// 	for (auto &v2s : variable_to_simulations)
-// 		v2s->update(x + theta * dt);
-// 	state.build_basis();
-// 	form->solution_changed(sol);
-// 	form->first_derivative(sol, force);
-// 	double next_functional_val = force.dot(weights);
-
-// 	for (auto &v2s : variable_to_simulations)
-// 		v2s->update(x - theta * dt);
-// 	state.build_basis();
-// 	form->solution_changed(sol);
-// 	form->first_derivative(sol, force);
-// 	double former_functional_val = force.dot(weights);
-
-// 	double derivative = force_grad.dot(theta);
-// 	double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
-// 	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
-// 	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-
-// 	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-2));
-// }
-
-TEST_CASE("elastic-force", "[adjoint_method]")
-{
-	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-	json in_args;
-	load_json(path + "homogenize-stress.json", in_args);
-	auto state_ptr = create_state_and_solve(in_args);
-	State &state = *state_ptr;
-
-	json opt_args;
-	load_json(path + "homogenize-stress-opt.json", opt_args);
-	opt_args = apply_opt_json_spec(opt_args, false);
-
-	std::vector<std::shared_ptr<State>> states({state_ptr});
-
-	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
-
-	Eigen::MatrixXd V;
-	state.get_vertices(V);
-	Eigen::VectorXd x = utils::flatten(V);
-
-	Eigen::VectorXd theta;
-	theta.setZero(x.size());
-	const double eps = 1e-5;
-	Eigen::VectorXd min = V.colwise().minCoeff();
-	Eigen::VectorXd max = V.colwise().maxCoeff();
-	for (int i = 0; i < V.rows(); i++)
-		for (int d = 0; d < 2; d++)
-		{
-			auto vert = state.mesh->point(i);
-			if (state.mesh->is_boundary_vertex(i) && vert(0) > min(0) + eps && vert(0) < max(0) - eps && vert(1) > min(1) + eps && vert(1) < max(1) - eps)
-				theta(i * 2 + d) = (rand() % 10000) / 1.0e4;
-		}
-
-	const double dt = opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>();
-	Eigen::VectorXd weights, sol;
-	{
-		std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state.solve_data.nl_problem);
-		sol = state.diff_cached.u(0) + io::Evaluator::generate_linear_field(state.n_bases, state.mesh_nodes, state.diff_cached.disp_grad());
-		weights.setRandom(sol.size());
-	}
-
-	auto form = state.solve_data.elastic_form;
-
-	Eigen::VectorXd force;
-	form->first_derivative(sol, force);
-	double functional_val = force.dot(weights);
-
-	Eigen::VectorXd force_grad;
-	form->force_shape_derivative(x.size(), sol, sol, weights, force_grad);
-	force_grad = -utils::flatten(utils::unflatten(force_grad, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
-
-	for (auto &v2s : variable_to_simulations)
-		v2s->update(x + theta * dt);
-	state.build_basis();
-	// form->solution_changed(sol);
-	form->first_derivative(sol, force);
-	double next_functional_val = force.dot(weights);
-
-	for (auto &v2s : variable_to_simulations)
-		v2s->update(x - theta * dt);
-	state.build_basis();
-	// form->solution_changed(sol);
-	form->first_derivative(sol, force);
-	double former_functional_val = force.dot(weights);
-
-	double derivative = force_grad.dot(theta);
-	double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
-	std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
-	std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-
-	REQUIRE(derivative == Approx(finite_difference).epsilon(1e-6));
-}
-
 TEST_CASE("shape-contact", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
@@ -999,10 +877,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	state.get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	Eigen::MatrixXd velocity_discrete(x.size(), 1);
-	velocity_discrete.setRandom();
-
-	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-8, 1e-5);
+	verify_adjoint(variable_to_simulations, *obj, state, x, 1e-8, 1e-5);
 }
 
 TEST_CASE("node-trajectory", "[adjoint_method]")

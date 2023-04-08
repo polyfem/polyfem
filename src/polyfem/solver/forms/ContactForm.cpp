@@ -38,7 +38,7 @@ namespace polyfem::solver
 
 		prev_distance_ = -1;
 		constraint_set_.use_convergent_formulation = use_convergent_formulation;
-		constraint_set_.compute_shape_derivatives = constraint_set_.use_convergent_formulation; // only for differentiable
+		constraint_set_.compute_shape_derivatives = true; // only for differentiable
 	}
 
 	void ContactForm::init(const Eigen::VectorXd &x)

@@ -40,6 +40,8 @@ namespace cppoptlib
 		static constexpr double reg_weight_inc = 10;
 		static constexpr double reg_weight_dec = 2;
 
+		bool verify_hessian = false;
+
 		// ====================================================================
 		//                           Solver state
 		// ====================================================================

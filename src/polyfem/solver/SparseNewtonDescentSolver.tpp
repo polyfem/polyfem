@@ -1,8 +1,8 @@
 #pragma once
 
 #include "SparseNewtonDescentSolver.hpp"
-// #include <finitediff.hpp>
-// #include <unsupported/Eigen/SparseExtra>
+#include <finitediff.hpp>
+#include <unsupported/Eigen/SparseExtra>
 
 namespace cppoptlib
 {
@@ -14,6 +14,9 @@ namespace cppoptlib
 		linear_solver = polysolve::LinearSolver::create(
 			linear_solver_params["solver"], linear_solver_params["precond"]);
 		linear_solver->setParameters(linear_solver_params);
+
+		if (solver_params.contains("verify_hessian"))
+			verify_hessian = solver_params["verify_hessian"];
 	}
 
 	// =======================================================================
@@ -103,12 +106,46 @@ namespace cppoptlib
 	{
 		POLYFEM_SCOPED_TIMER("assembly time", this->assembly_time);
 
-		if (this->descent_strategy == 1)
-			objFunc.set_project_to_psd(true);
-		else if (this->descent_strategy == 0)
+		// if (this->descent_strategy == 1)
+			// objFunc.set_project_to_psd(true);
+		// else if (this->descent_strategy == 0)
 			objFunc.set_project_to_psd(false);
 
 		objFunc.hessian(x, hessian);
+
+		if (verify_hessian)
+		{
+			Eigen::MatrixXd fhess;
+			fd::finite_jacobian(
+				x,
+				[&](const Eigen::VectorXd &y) -> Eigen::VectorXd {
+					Eigen::VectorXd grad;
+					objFunc.solution_changed(y);
+					objFunc.gradient(y, grad);
+					return grad;
+				},
+				fhess);
+			// fd::finite_hessian(
+			// 	x,
+			// 	[&](const Eigen::VectorXd &y) -> double {
+			// 		Eigen::VectorXd grad;
+			// 		objFunc.solution_changed(y);
+			// 		return objFunc.value(y);
+			// 	},
+			// 	fhess);
+			
+			polyfem::StiffnessMatrix fhess_ = fhess.sparseView(0, 1e-9);
+			const double error = (hessian - fhess_).norm();
+			const double norm = hessian.norm();
+			std::cout << "error " << error << " norm " << norm << "\n";
+			// if (error > 1e-5 * norm)
+			// {
+			// 	Eigen::saveMarket(hessian, "hess.mat");
+			// 	Eigen::saveMarket(fhess_, "fhess.mat");
+			// 	exit(0);
+			// }
+			objFunc.solution_changed(x);
+		}
 
 		if (reg_weight > 0)
 		{
