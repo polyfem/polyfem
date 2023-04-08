@@ -1443,15 +1443,17 @@ namespace polyfem
         Enew.resizeLike(Etmp);
         for (int d = 0; d < Etmp.cols(); d++)
             Enew.col(d) = SVI(Etmp.col(d));
-		// remoe duplicate edges
+		// remove duplicate edges
 		{
 			std::set<std::array<int, 2>> set;
-			for (int i = 0; i < Enew.cols(); i++)
+			for (int i = 0; i < Enew.rows(); i++)
 			{
 				Eigen::VectorXi tmp = Enew.row(i);
 				std::sort(tmp.data(), tmp.data() + 2);
 				std::array<int, 2> arr = {{tmp(0), tmp(1)}};
-				set.insert(arr);
+				auto it = set.insert(arr);
+				if (!it.second)
+					set.erase(it.first);
 			}
 			Eigen::MatrixXi Eunique(set.size(), 2);
 			int i = 0;

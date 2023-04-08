@@ -774,7 +774,7 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 	// state.get_elements(F);
 	// writer.write_mesh("debug.vtu", V, F);
 
-	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-4);
+	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-5);
 }
 
 TEST_CASE("periodic-contact-force", "[adjoint_method]")
