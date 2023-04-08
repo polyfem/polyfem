@@ -48,7 +48,7 @@ namespace polyfem::solver
 		: FullNLProblem(forms),
 		  boundary_nodes_(boundary_nodes),
 		  full_size_(full_size),
-		  reduced_size_((state.need_periodic_reduction() ? (state.periodic_reduce_map.maxCoeff() + 1) : full_size) - boundary_nodes.size()),
+		  reduced_size_((state.need_periodic_reduction() ? (state.bases_to_periodic_map.maxCoeff() + 1) : full_size) - boundary_nodes.size()),
 		  rhs_assembler_(&rhs_assembler),
 		  local_boundary_(&local_boundary),
 		  n_boundary_samples_(n_boundary_samples),

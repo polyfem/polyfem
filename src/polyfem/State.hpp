@@ -330,7 +330,8 @@ namespace polyfem
 			const std::string &linear_solver_type = "") const;
 
 		// under periodic BC, the index map from a restricted node to the node it depends on, -1 otherwise
-		Eigen::VectorXi periodic_reduce_map;
+		Eigen::VectorXi gbases_to_periodic_map; // size = n_geom_bases
+		Eigen::VectorXi bases_to_periodic_map; // size = ndof()
 		std::vector<bool> periodic_dimensions;
 		bool has_periodic_bc() const
 		{
@@ -345,6 +346,7 @@ namespace polyfem
 		{
 			return has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"];
 		}
+		void build_periodic_index_mapping(const int n_bases_, const std::vector<basis::ElementBases> &bases_, const std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes_, Eigen::VectorXi &index_map) const;
 
 		// add lagrangian multiplier rows for pure neumann/periodic boundary condition, returns the number of rows added
 		int n_lagrange_multipliers() const;
@@ -359,7 +361,7 @@ namespace polyfem
 			if (need_periodic_reduction())
 			{
 				for (int i = 0; i < boundary_nodes_.size(); i++)
-					boundary_nodes_[i] = periodic_reduce_map(boundary_nodes_[i]);
+					boundary_nodes_[i] = bases_to_periodic_map(boundary_nodes_[i]);
 
 				std::sort(boundary_nodes_.begin(), boundary_nodes_.end());
 				auto it = std::unique(boundary_nodes_.begin(), boundary_nodes_.end());
@@ -425,21 +427,8 @@ namespace polyfem
 		/// maps in vertices/edges/faces/cells to polyfem vertices/edges/faces/cells
 		Eigen::VectorXi in_primitive_to_primitive;
 
-		std::vector<int> primitive_to_node() const
-		{
-			auto indices = iso_parametric() ? mesh_nodes->primitive_to_node() : geom_mesh_nodes->primitive_to_node();
-			indices.resize(mesh->n_vertices());
-			return indices;
-		}
-
-		std::vector<int> node_to_primitive() const
-		{
-			auto p2n = primitive_to_node();
-			auto indices = p2n;
-			for (int i = 0; i < p2n.size(); i++)
-				indices[p2n[i]] = i;
-			return indices;
-		}
+		std::vector<int> primitive_to_node() const;
+		std::vector<int> node_to_primitive() const;
 
 	private:
 		/// build the mapping from input nodes to polyfem nodes

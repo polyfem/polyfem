@@ -201,6 +201,28 @@ namespace polyfem
 		}
 	} // namespace
 
+	std::vector<int> State::primitive_to_node() const
+	{
+		auto indices = iso_parametric() ? mesh_nodes->primitive_to_node() : geom_mesh_nodes->primitive_to_node();
+		indices.resize(mesh->n_vertices());
+		if (args["space"]["advanced"]["periodic_geom_basis"].get<bool>())
+		{
+			for (int i = 0; i < indices.size(); i++)
+				indices[i] = gbases_to_periodic_map(indices[i]);
+		}
+		return indices;
+	}
+
+	std::vector<int> State::node_to_primitive() const
+	{
+		auto p2n = primitive_to_node();
+		std::vector<int> indices;
+		indices.resize(n_geom_bases);
+		for (int i = 0; i < p2n.size(); i++)
+			indices[p2n[i]] = i;
+		return indices;
+	}
+
 	void State::build_node_mapping()
 	{
 		if (args["space"]["basis_type"] == "Spline")
@@ -624,6 +646,98 @@ namespace polyfem
 		return args["space"]["advanced"]["isoparametric"];
 	}
 
+	void State::build_periodic_index_mapping(const int n_bases_, const std::vector<basis::ElementBases> &bases_, const std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes_, Eigen::VectorXi &index_map) const
+	{
+		const int dim = mesh->dimension();
+		std::vector<bool> periodic_dim;
+		for (const auto &r : args["boundary_conditions"]["periodic_boundary"])
+			periodic_dim.push_back(r);
+		while (periodic_dim.size() < dim)
+			periodic_dim.push_back(false);
+
+		RowVectorNd min, max;
+		mesh->bounding_box(min, max);
+		const double bbox_size = (max - min).maxCoeff();
+
+		index_map.setConstant(n_bases_, 1, -1);
+
+		Eigen::VectorXi dependent_map(n_bases_);
+		dependent_map.setConstant(-1);
+
+		// find corresponding periodic boundary nodes
+		Eigen::Vector3i dependent_face({1, 2, 5}), target_face({3, 4, 6});
+		for (int d = 0; d < dim; d++)
+		{
+			if (!periodic_dim[d])
+				continue;
+
+			const int dependent_boundary_id = dependent_face(d);
+			const int target_boundary_id = target_face(d);
+
+			std::set<int> dependent_ids, target_ids;
+
+			for (const auto &lb : total_local_boundary)
+			{
+				const int e = lb.element_id();
+				const basis::ElementBases &bs = bases_[e];
+
+				for (int i = 0; i < lb.size(); ++i)
+				{
+					const int primitive_global_id = lb.global_primitive_id(i);
+					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, *mesh);
+
+					for (long n = 0; n < nodes.size(); ++n)
+					{
+						for (int j = 0; j < bs.bases[nodes(n)].global().size(); j++)
+						{
+							const int gid = bs.bases[nodes(n)].global()[j].index;
+							if (mesh->get_boundary_id(primitive_global_id) == dependent_boundary_id)
+								dependent_ids.insert(gid);
+							else if (mesh->get_boundary_id(primitive_global_id) == target_boundary_id)
+								target_ids.insert(gid);
+						}
+					}
+				}
+			}
+
+			for (int i : dependent_ids)
+			{
+				bool found_target = false;
+				for (int j : target_ids)
+				{
+					RowVectorNd projected_diff = mesh_nodes_->node_position(j) - mesh_nodes_->node_position(i);
+					projected_diff(d) = 0;
+					if (projected_diff.norm() < 1e-6 * bbox_size)
+					{
+						dependent_map(i) = j;
+						found_target = true;
+						break;
+					}
+				}
+				if (!found_target)
+					throw std::runtime_error("Periodic boundary condition failed to find corresponding nodes!");
+			}
+		}
+
+		// break dependency chains into direct dependency
+		for (int d = 0; d < dim; d++)
+			for (int i = 0; i < dependent_map.size(); i++)
+				if (dependent_map(i) >= 0 && dependent_map(dependent_map(i)) >= 0)
+					dependent_map(i) = dependent_map(dependent_map(i));
+
+		// new indexing for independent dof
+		int independent_dof = 0;
+		for (int i = 0; i < dependent_map.size(); i++)
+		{
+			if (dependent_map(i) < 0)
+				index_map(i) = independent_dof++;
+		}
+
+		for (int i = 0; i < dependent_map.size(); i++)
+			if (dependent_map(i) >= 0)
+				index_map(i) = index_map(dependent_map(i));
+	}
+
 	void State::build_basis()
 	{
 		if (!mesh)
@@ -940,99 +1054,37 @@ namespace polyfem
 		// handle periodic bc
 		if (has_periodic_bc())
 		{
-			std::vector<bool> periodic_dim;
-			for (const auto &r : args["boundary_conditions"]["periodic_boundary"])
-				periodic_dim.push_back(r);
-			while (periodic_dim.size() < dim)
-				periodic_dim.push_back(false);
-
-			RowVectorNd min, max;
-			mesh->bounding_box(min, max);
-			const double bbox_size = (max - min).maxCoeff();
-
-			periodic_reduce_map.setConstant(n_bases * problem_dim, 1, -1);
-
-			Eigen::VectorXi dependent_map(n_bases);
-			dependent_map.setConstant(-1);
-
-			// find corresponding periodic boundary nodes
-			Eigen::Vector3i dependent_face({1, 2, 5}), target_face({3, 4, 6});
-			for (int d = 0; d < dim; d++)
 			{
-				if (!periodic_dim[d])
-					continue;
+				Eigen::VectorXi tmp_map;
+				build_periodic_index_mapping(n_bases, bases, mesh_nodes, tmp_map);
 
-				const int dependent_boundary_id = dependent_face(d);
-				const int target_boundary_id = target_face(d);
+				if (!iso_parametric())
+					build_periodic_index_mapping(n_geom_bases, geom_bases(), geom_mesh_nodes, gbases_to_periodic_map);
+				else
+					gbases_to_periodic_map = tmp_map;
 
-				std::set<int> dependent_ids, target_ids;
-
-				for (const auto &lb : total_local_boundary)
 				{
-					const int e = lb.element_id();
-					const basis::ElementBases &bs = bases[e];
-
-					for (int i = 0; i < lb.size(); ++i)
-					{
-						const int primitive_global_id = lb.global_primitive_id(i);
-						const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, *mesh);
-
-						for (long n = 0; n < nodes.size(); ++n)
-						{
-							for (int j = 0; j < bs.bases[nodes(n)].global().size(); j++)
-							{
-								const int gid = bs.bases[nodes(n)].global()[j].index;
-								if (mesh->get_boundary_id(primitive_global_id) == dependent_boundary_id)
-									dependent_ids.insert(gid);
-								else if (mesh->get_boundary_id(primitive_global_id) == target_boundary_id)
-									target_ids.insert(gid);
-							}
-						}
-					}
-				}
-
-				for (int i : dependent_ids)
-				{
-					bool found_target = false;
-					for (int j : target_ids)
-					{
-						RowVectorNd projected_diff = mesh_nodes->node_position(j) - mesh_nodes->node_position(i);
-						projected_diff(d) = 0;
-						if (projected_diff.norm() < 1e-6 * bbox_size)
-						{
-							dependent_map(i) = j;
-							found_target = true;
-							break;
-						}
-					}
-					if (!found_target)
-						throw std::runtime_error("Periodic boundary condition failed to find corresponding nodes!");
+					const int old_size = tmp_map.size();
+					bases_to_periodic_map.setZero(old_size * problem_dim);
+					for (int i = 0; i < old_size; i++)
+						for (int d = 0; d < problem_dim; d++)
+							bases_to_periodic_map(i * problem_dim + d) = tmp_map(i) * problem_dim + d;
 				}
 			}
 
-			// break dependency chains into direct dependency
-			for (int d = 0; d < dim; d++)
-				for (int i = 0; i < dependent_map.size(); i++)
-					if (dependent_map(i) >= 0 && dependent_map(dependent_map(i)) >= 0)
-						dependent_map(i) = dependent_map(dependent_map(i));
-
-			// new indexing for independent dof
-			int independent_dof = 0;
-			for (int i = 0; i < dependent_map.size(); i++)
+			if (args["space"]["advanced"]["periodic_geom_basis"].get<bool>())
 			{
-				if (dependent_map(i) < 0)
-				{
-					for (int d = 0; d < problem_dim; d++)
-						periodic_reduce_map(i * problem_dim + d) = independent_dof * problem_dim + d;
-					independent_dof++;
-					// dependent_map(i) = i;
-				}
-			}
+				for (auto &bs : geom_bases())
+					for (auto &b : bs.bases)
+						for (auto &g : b.global())
+						{
+							int idx = gbases_to_periodic_map(g.index);
+							if (idx != g.index)
+								g.index = idx;
+						}
 
-			for (int i = 0; i < dependent_map.size(); i++)
-				if (dependent_map(i) >= 0)
-					for (int d = 0; d < problem_dim; d++)
-						periodic_reduce_map(i * problem_dim + d) = periodic_reduce_map(dependent_map(i) * problem_dim + d);
+				n_geom_bases = gbases_to_periodic_map.maxCoeff() + 1;
+			}
 
 			if (args["space"]["advanced"]["periodic_basis"].get<bool>())
 			{
@@ -1040,12 +1092,12 @@ namespace polyfem
 					for (auto &b : bs.bases)
 						for (auto &g : b.global())
 						{
-							int idx = periodic_reduce_map(g.index * problem_dim) / problem_dim;
+							int idx = bases_to_periodic_map(g.index * problem_dim) / problem_dim;
 							if (idx != g.index)
 								g.index = idx;
 						}
 
-				n_bases = independent_dof;
+				n_bases = (bases_to_periodic_map.maxCoeff() + 1) / problem_dim;
 			}
 		}
 		if (args["space"]["advanced"]["count_flipped_els"])
@@ -1394,7 +1446,7 @@ namespace polyfem
 		}
 
         // clean duplicated vertices
-        const double eps = 1e-6;
+        const double eps = 1e-6 * size.maxCoeff();
         Eigen::VectorXi indices;
         {
             std::vector<int> tmp;
@@ -1487,7 +1539,7 @@ namespace polyfem
 		if (args["space"]["advanced"]["periodic_basis"].get<bool>())
 		{
 			for (int i = 0; i < tiled_to_single.size(); i++)
-				tiled_to_single(i) = periodic_reduce_map(tiled_to_single(i));
+				tiled_to_single(i) = bases_to_periodic_map(tiled_to_single(i));
 		}
 	}
 

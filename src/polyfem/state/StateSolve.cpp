@@ -388,12 +388,12 @@ namespace polyfem
 	int State::full_to_periodic(StiffnessMatrix &A) const
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-		const int independent_dof = periodic_reduce_map.maxCoeff() + 1;
+		const int independent_dof = bases_to_periodic_map.maxCoeff() + 1;
 		
 		// account for potential pressure block
 		auto index_map = [&](int id){
-			if (id < periodic_reduce_map.size())
-				return periodic_reduce_map(id);
+			if (id < bases_to_periodic_map.size())
+				return bases_to_periodic_map(id);
 			else
 				return (int)(id + independent_dof - n_bases * problem_dim);
 		};
@@ -418,14 +418,14 @@ namespace polyfem
 	int State::full_to_periodic(Eigen::MatrixXd &b, bool accumulate, bool force_dirichlet) const
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-		const int independent_dof = periodic_reduce_map.maxCoeff() + 1;
+		const int independent_dof = bases_to_periodic_map.maxCoeff() + 1;
 		
 		// account for potential pressure block
 		auto index_map = [&](int id){
-			if (id < periodic_reduce_map.size())
-				return periodic_reduce_map(id);
+			if (id < bases_to_periodic_map.size())
+				return bases_to_periodic_map(id);
 			else
-				return (int)(id + independent_dof - periodic_reduce_map.size());
+				return (int)(id + independent_dof - bases_to_periodic_map.size());
 		};
 
 		// rhs under periodic basis
@@ -450,13 +450,13 @@ namespace polyfem
 	Eigen::MatrixXd State::periodic_to_full(const int ndofs, const Eigen::MatrixXd &x_periodic) const
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-		const int independent_dof = periodic_reduce_map.maxCoeff() + 1;
+		const int independent_dof = bases_to_periodic_map.maxCoeff() + 1;
 		
 		auto index_map = [&](int id){
-			if (id < periodic_reduce_map.size())
-				return periodic_reduce_map(id);
+			if (id < bases_to_periodic_map.size())
+				return bases_to_periodic_map(id);
 			else
-				return (int)(id + independent_dof - periodic_reduce_map.size());
+				return (int)(id + independent_dof - bases_to_periodic_map.size());
 		};
 
 		Eigen::MatrixXd x_full;
