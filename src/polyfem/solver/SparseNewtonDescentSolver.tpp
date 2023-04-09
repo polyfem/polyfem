@@ -113,7 +113,7 @@ namespace cppoptlib
 
 		objFunc.hessian(x, hessian);
 
-		if (verify_hessian)
+		if (verify_hessian && this->descent_strategy == 0)
 		{
 			Eigen::MatrixXd fhess;
 			fd::finite_jacobian(
