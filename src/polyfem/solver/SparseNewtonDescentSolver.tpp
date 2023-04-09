@@ -106,9 +106,9 @@ namespace cppoptlib
 	{
 		POLYFEM_SCOPED_TIMER("assembly time", this->assembly_time);
 
-		// if (this->descent_strategy == 1)
-			// objFunc.set_project_to_psd(true);
-		// else if (this->descent_strategy == 0)
+		if (this->descent_strategy == 1)
+			objFunc.set_project_to_psd(true);
+		else if (this->descent_strategy == 0)
 			objFunc.set_project_to_psd(false);
 
 		objFunc.hessian(x, hessian);
@@ -137,7 +137,7 @@ namespace cppoptlib
 			polyfem::StiffnessMatrix fhess_ = fhess.sparseView(0, 1e-9);
 			const double error = (hessian - fhess_).norm();
 			const double norm = hessian.norm();
-			std::cout << "error " << error << " norm " << norm << "\n";
+			std::cout << "hessian FD error " << error << ", matrix norm " << norm << "\n";
 			// if (error > 1e-5 * norm)
 			// {
 			// 	Eigen::saveMarket(hessian, "hess.mat");

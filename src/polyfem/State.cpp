@@ -205,11 +205,6 @@ namespace polyfem
 	{
 		auto indices = iso_parametric() ? mesh_nodes->primitive_to_node() : geom_mesh_nodes->primitive_to_node();
 		indices.resize(mesh->n_vertices());
-		if (args["space"]["advanced"]["periodic_geom_basis"].get<bool>())
-		{
-			for (int i = 0; i < indices.size(); i++)
-				indices[i] = gbases_to_periodic_map(indices[i]);
-		}
 		return indices;
 	}
 
@@ -1070,20 +1065,6 @@ namespace polyfem
 						for (int d = 0; d < problem_dim; d++)
 							bases_to_periodic_map(i * problem_dim + d) = tmp_map(i) * problem_dim + d;
 				}
-			}
-
-			if (args["space"]["advanced"]["periodic_geom_basis"].get<bool>())
-			{
-				for (auto &bs : geom_bases())
-					for (auto &b : bs.bases)
-						for (auto &g : b.global())
-						{
-							int idx = gbases_to_periodic_map(g.index);
-							if (idx != g.index)
-								g.index = idx;
-						}
-
-				n_geom_bases = gbases_to_periodic_map.maxCoeff() + 1;
 			}
 
 			if (args["space"]["advanced"]["periodic_basis"].get<bool>())

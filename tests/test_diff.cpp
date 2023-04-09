@@ -137,12 +137,6 @@ namespace
 		obj.first_derivative(x, one_form);
 		double derivative = (one_form.array() * theta.array()).sum();
 
-		if (one_form.size() == state.ndof())
-		{
-			state.args["output"]["paraview"]["file_name"] = "debug.vtu";
-			state.export_data(utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.node_to_primitive(), Eigen::all)), Eigen::MatrixXd());
-		}
-
 		for (auto &v2s : variable_to_simulations)
 			v2s->update(x + theta * dt);
 		state.build_basis();
@@ -737,21 +731,24 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 	state.get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	Eigen::MatrixXd theta;
-	theta.setRandom(x.size(), 1);
+	Eigen::VectorXd theta;
+	theta.setRandom(x.size());
 	const double eps = 1e-5;
 	Eigen::VectorXd min = V.colwise().minCoeff();
 	Eigen::VectorXd max = V.colwise().maxCoeff();
 	for (int i = 0; i < V.rows(); i++)
 	{
 		auto vert = state.mesh->point(i);
-		if (state.mesh->is_boundary_vertex(i) && vert(0) > min(0) + eps && vert(0) < max(0) - eps && vert(1) > min(1) + eps && vert(1) < max(1) - eps)
+		if (vert(0) < min(0) + eps || vert(0) > max(0) - eps)
 		{
-
-		}
-		else
 			for (int d = 0; d < 2; d++)
 				theta(i * 2 + d) = 0;
+		}
+		if ( vert(1) < min(1) + eps || vert(1) > max(1) - eps)
+		{
+			for (int d = 0; d < 2; d++)
+				theta(i * 2 + d) = 0;
+		}
 	}
 
 	// Eigen::VectorXd fgrad;
@@ -781,57 +778,6 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-5);
 }
 
-// TEST_CASE("homogenize-stress-scaling", "[adjoint_method]")
-// {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-// 	json in_args;
-// 	load_json(path + "homogenize-stress.json", in_args);
-// 	auto state_ptr = create_state_and_solve(in_args);
-// 	State &state = *state_ptr;
-
-// 	json opt_args;
-// 	load_json(path + "homogenize-stress-opt.json", opt_args);
-// 	opt_args = apply_opt_json_spec(opt_args, false);
-
-// 	std::vector<std::shared_ptr<State>> states({state_ptr});
-
-// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-// 	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
-
-// 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
-
-// 	Eigen::MatrixXd V;
-// 	state.get_vertices(V);
-// 	Eigen::VectorXd x(2);
-// 	x << 1,1;
-
-// 	Eigen::MatrixXd theta;
-// 	theta.setRandom(x.size(), 1);
-
-// 	Eigen::VectorXd fgrad;
-// 	fd::finite_gradient(
-// 		x, [&](const Eigen::VectorXd &y) -> double 
-// 		{
-// 			Eigen::MatrixXd V_ = V;
-// 			V_.col(0) *= y(0);
-// 			V_.col(1) *= y(1);
-// 			for (int i = 0; i < V.rows(); i++)
-// 				state.set_mesh_vertex(i, V_.row(i));
-// 			state.build_basis();
-// 			solve_pde(state);
-// 			obj->solution_changed(utils::flatten(V_));
-// 			return obj->value(utils::flatten(V_));
-// 		}, fgrad, fd::AccuracyOrder::SECOND, 1e-8);
-
-// 	state.solve_adjoint_cached(obj->compute_adjoint_rhs(utils::flatten(V), state));
-// 	Eigen::VectorXd one_form;
-// 	obj->first_derivative(utils::flatten(V), one_form);
-// 	Eigen::VectorXd grad = utils::unflatten(one_form, 2).colwise().sum();
-
-// 	std::cout << grad.transpose() << "\n";
-// 	std::cout << fgrad.transpose() << "\n";
-// }
-
 TEST_CASE("periodic-contact-force", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
@@ -855,17 +801,27 @@ TEST_CASE("periodic-contact-force", "[adjoint_method]")
 	Eigen::VectorXd x = utils::flatten(V);
 
 	Eigen::VectorXd theta;
-	theta.setZero(x.size());
+	theta.setRandom(x.size());
 	const double eps = 1e-5;
 	Eigen::VectorXd min = V.colwise().minCoeff();
 	Eigen::VectorXd max = V.colwise().maxCoeff();
 	for (int i = 0; i < V.rows(); i++)
-		for (int d = 0; d < 2; d++)
+	{
+		auto vert = state.mesh->point(i);
+		if (!state.mesh->is_boundary_vertex(i))
+			for (int d = 0; d < 2; d++)
+				theta(i * 2 + d) = 0;
+		if (vert(0) < min(0) + eps || vert(0) > max(0) - eps)
 		{
-			auto vert = state.mesh->point(i);
-			if (state.mesh->is_boundary_vertex(i) && vert(0) > min(0) + eps && vert(0) < max(0) - eps && vert(1) > min(1) + eps && vert(1) < max(1) - eps)
-				theta(i * 2 + d) = (rand() % 10000) / 1.0e4;
+			for (int d = 0; d < 2; d++)
+				theta(i * 2 + d) = 0;
 		}
+		if ( vert(1) < min(1) + eps || vert(1) > max(1) - eps)
+		{
+			for (int d = 0; d < 2; d++)
+				theta(i * 2 + d) = 0;
+		}
+	}
 
 	const double dt = opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>();
 	Eigen::VectorXd weights, extended_sol;
@@ -886,6 +842,26 @@ TEST_CASE("periodic-contact-force", "[adjoint_method]")
 	Eigen::VectorXd force_grad;
 	state.solve_data.periodic_contact_form->force_shape_derivative(state.solve_data.periodic_contact_form->get_constraint_set(), extended_sol, weights, force_grad);
 	force_grad = -utils::flatten(utils::unflatten(state.down_sampling_mat * force_grad, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
+
+	// Eigen::VectorXd fgrad;
+	// fd::finite_gradient(
+	// 	x, [&](const Eigen::VectorXd &y) -> double 
+	// 	{
+	// 		for (auto &v2s : variable_to_simulations)
+	// 			v2s->update(y);
+	// 		state.build_basis();
+	// 		state.solve_data.periodic_contact_form->solution_changed(extended_sol);
+	// 		state.solve_data.periodic_contact_form->first_derivative(extended_sol, force);
+	// 		return force.dot(weights);
+	// 	}, fgrad, fd::AccuracyOrder::SECOND, 1e-8);
+
+	// io::VTUWriter writer;
+	// writer.add_field("grad", utils::unflatten(force_grad, 2));
+	// writer.add_field("fgrad", utils::unflatten(fgrad, 2));
+
+	// Eigen::MatrixXi F;
+	// state.get_elements(F);
+	// writer.write_mesh("debug.vtu", V, F);
 
 	for (auto &v2s : variable_to_simulations)
 		v2s->update(x + theta * dt);
