@@ -100,7 +100,27 @@ namespace polyfem::solver
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(single_to_tiled(solution));
 
 		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh_, displaced_surface, contact_set, dhat_));
-		term = -barrier_stiffness() * (proj * (dq_h.transpose() * (proj.transpose() * adjoint_sol))).block(0, 0, n_single_dof_ * dim, 1);
+		term = -barrier_stiffness() * (proj * (dq_h.transpose() * (proj.transpose() * adjoint_sol)));
+
+        Eigen::VectorXd force;
+		force = barrier_stiffness() * ipc::compute_barrier_potential_gradient(collision_mesh_, displaced_surface, contact_set, dhat_);
+		force = collision_mesh_.to_full_dof(force);
+        for (int p = 0; p < dim; p++)
+            for (int k = 0; k < collision_mesh_.num_vertices(); k++)
+                for (int d = 0; d < dim; d++)
+                {
+                    const int k_full = collision_mesh_.to_full_vertex_id(k);
+                    term(tiled_to_single_(k_full) * dim + d) -= force(k_full * dim + p) * adjoint_sol(adjoint_sol.size() - dim * dim + p * dim + d);
+                }
+
+        term = term.head(n_single_dof_ * dim).eval();
+
+        // const Eigen::MatrixXd displaced = collision_mesh_.displace_vertices(
+        //     utils::unflatten(single_to_tiled(solution), collision_mesh_.dim()));
+
+        // io::OBJWriter::write(
+        //     "tiled.obj", displaced,
+        //     collision_mesh_.edges(), collision_mesh_.faces());
     }
 
     double PeriodicContactForm::value_unweighted(const Eigen::VectorXd &x) const

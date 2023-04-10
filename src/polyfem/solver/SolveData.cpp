@@ -69,7 +69,7 @@ namespace polyfem::solver
 
 		// Periodic contact
 		const bool periodic_contact,
-		const Eigen::VectorXi tiled_to_single,
+		const Eigen::VectorXi &tiled_to_single,
 
 		// Friction form
 		const double friction_coefficient,

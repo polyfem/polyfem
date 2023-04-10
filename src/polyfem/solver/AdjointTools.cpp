@@ -579,7 +579,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
 	{
-		Eigen::VectorXd elasticity_term, rhs_term, contact_term, friction_term;
+		Eigen::VectorXd elasticity_term, rhs_term, contact_term;
 
 		one_form.setZero(state.n_geom_bases * state.mesh->dimension());
 
@@ -630,7 +630,7 @@ namespace polyfem::solver
 				state.solve_data.elastic_form->first_derivative(sol, force);
 
 				Eigen::VectorXd tmp = state.down_sampling_mat * utils::flatten(utils::unflatten(force, dim) * affine_adjoint);
-				elasticity_term += tmp;
+				elasticity_term -= tmp;
 			}
 
 			if (state.is_contact_enabled() && state.args["contact"]["periodic"])
@@ -652,7 +652,7 @@ namespace polyfem::solver
 					state.solve_data.contact_form->first_derivative(sol, force);
 
 					Eigen::VectorXd tmp = state.down_sampling_mat * utils::flatten(utils::unflatten(force, dim) * affine_adjoint);
-					contact_term += tmp;
+					contact_term -= tmp;
 				}
 			}
 			else
