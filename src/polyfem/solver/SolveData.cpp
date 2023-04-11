@@ -12,6 +12,7 @@
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/assembler/Mass.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::solver
@@ -29,6 +30,7 @@ namespace polyfem::solver
 		const std::vector<basis::ElementBases> &geom_bases,
 		const assembler::Assembler &assembler,
 		const assembler::AssemblyValsCache &ass_vals_cache,
+		const assembler::AssemblyValsCache &mass_ass_vals_cache,
 
 		// Body form
 		const int n_pressure_bases,
@@ -131,9 +133,16 @@ namespace polyfem::solver
 
 		if (rhs_assembler != nullptr)
 		{
+			assembler::Mass mass_mat_assembler;
+			mass_mat_assembler.set_size(dim);
+			StiffnessMatrix mass_tmp;
+			const int n_fe_basis = n_bases - obstacle.n_vertices();
+			mass_mat_assembler.assemble(dim == 3, n_fe_basis, bases, geom_bases, mass_ass_vals_cache, mass_tmp, true);
+			assert(mass.rows() == n_bases * dim - obstacle.ndof() && mass_tmp.cols() == n_bases * dim - obstacle.ndof());
+
 			al_form = std::make_shared<ALForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-				n_boundary_samples, mass, *rhs_assembler, obstacle, is_time_dependent, t);
+				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle, is_time_dependent, t);
 			forms.push_back(al_form);
 		}
 

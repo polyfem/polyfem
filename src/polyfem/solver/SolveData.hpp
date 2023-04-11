@@ -55,6 +55,7 @@ namespace polyfem::solver
 			const std::vector<basis::ElementBases> &geom_bases,
 			const assembler::Assembler &assembler,
 			const assembler::AssemblyValsCache &ass_vals_cache,
+			const assembler::AssemblyValsCache &mass_ass_vals_cache,
 
 			// Body form
 			const int n_pressure_bases,
