@@ -1,54 +1,28 @@
 #pragma once
 
-#include "AdjointNLProblem.hpp"
-#include <jse/jse.h>
+#include <polyfem/Common.hpp>
 
-#include <polyfem/State.hpp>
+namespace polyfem
+{
+	class State;
+}
 
-#include "LBFGSBSolver.hpp"
-#include "LBFGSSolver.hpp"
-#include "BFGSSolver.hpp"
-#include "MMASolver.hpp"
-#include "GradientDescentSolver.hpp"
+namespace cppoptlib
+{
+	template <typename ProblemType>
+	class NonlinearSolver;
+}
 
 namespace polyfem::solver
 {
+	class AdjointNLProblem;
+	class AdjointForm;
+	class Parametrization;
+	class VariableToSimulation;
+
 	json apply_opt_json_spec(const json &input_args, bool strict_validation);
 
-	template <typename ProblemType>
-	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(const json &solver_params)
-	{
-		const std::string name = solver_params["solver"].template get<std::string>();
-		if (name == "GradientDescent" || name == "gradientdescent" || name == "gradient")
-		{
-			return std::make_shared<cppoptlib::GradientDescentSolver<ProblemType>>(
-				solver_params, 0.);
-		}
-		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
-		{
-			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(
-				solver_params, 0.);
-		}
-		else if (name == "bfgs" || name == "BFGS" || name == "BFGS")
-		{
-			return std::make_shared<cppoptlib::BFGSSolver<ProblemType>>(
-				solver_params, 0.);
-		}
-		else if (name == "lbfgsb" || name == "LBFGSB" || name == "L-BFGS-B")
-		{
-			return std::make_shared<cppoptlib::LBFGSBSolver<ProblemType>>(
-				solver_params, 0.);
-		}
-		else if (name == "mma" || name == "MMA")
-		{
-			return std::make_shared<cppoptlib::MMASolver<ProblemType>>(
-				solver_params, 0.);
-		}
-		else
-		{
-			throw std::invalid_argument(fmt::format("invalid nonlinear solver type: {}", name));
-		}
-	}
+	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> make_nl_solver(const json &solver_params);
 
 	std::shared_ptr<State> create_state(const json &args, const int max_threads = 32);
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AdjointForm.hpp"
+#include <polyfem/State.hpp>
 
 namespace polyfem::solver
 {

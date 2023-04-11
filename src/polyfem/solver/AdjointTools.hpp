@@ -1,6 +1,13 @@
 #pragma once
 
-#include <polyfem/State.hpp>
+#include <polyfem/Common.hpp>
+#include <set>
+
+namespace polyfem
+{
+	class State;
+	class IntegrableFunctional;
+}
 
 namespace polyfem::solver
 {

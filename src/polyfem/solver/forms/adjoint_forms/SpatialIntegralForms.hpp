@@ -3,7 +3,7 @@
 #include "AdjointForm.hpp"
 
 #include <igl/AABB.h>
-
+#include <polyfem/utils/ExpressionValue.hpp>
 #include <polyfem/utils/LazyCubicInterpolator.hpp>
 
 namespace polyfem::solver

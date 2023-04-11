@@ -1,4 +1,6 @@
 #include "SmoothingForms.hpp"
+#include <polyfem/State.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 namespace polyfem::solver
 {

@@ -8,6 +8,7 @@
 #include <polyfem/io/OBJWriter.hpp>
 
 #include <polyfem/solver/forms/parametrization/SplineParametrizations.hpp>
+#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 
 #include <iostream>
 #include <fstream>

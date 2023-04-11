@@ -1,13 +1,19 @@
 #pragma once
 
 #include <memory>
-#include <polyfem/solver/forms/adjoint_forms/CompositeForm.hpp>
+#include <polyfem/Common.hpp>
 #include "FullNLProblem.hpp"
-#include <polyfem/utils/Logger.hpp>
-#include <polyfem/State.hpp>
+
+namespace polyfem
+{
+	class State;
+}
 
 namespace polyfem::solver
 {
+	class CompositeForm;
+	class VariableToSimulation;
+
 	class AdjointNLProblem : public FullNLProblem
 	{
 	public:
@@ -16,10 +22,7 @@ namespace polyfem::solver
 		double value(const Eigen::VectorXd &x) override;
 
 		void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
-		inline void hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override
-		{
-			log_and_throw_error("Hessian not supported!");
-		}
+		void hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian);
 
 		Eigen::VectorXd component_values(const Eigen::VectorXd &x) override;
 		Eigen::MatrixXd component_gradients(const Eigen::VectorXd &x) override;

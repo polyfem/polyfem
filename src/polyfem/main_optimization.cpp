@@ -4,6 +4,7 @@
 
 #include <polyfem/solver/Optimizations.hpp>
 #include <polyfem/solver/NonlinearSolver.hpp>
+#include <polyfem/solver/AdjointNLProblem.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -171,7 +172,7 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 
-	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nl_solver = make_nl_solver(opt_args["solver"]["nonlinear"]);
 	nl_solver->minimize(*nl_problem, x);
 
 	return EXIT_SUCCESS;

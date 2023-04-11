@@ -1,5 +1,6 @@
 set(SOURCES
 	Parametrization.hpp
+	Parametrization.cpp
 	Parametrizations.hpp
 	Parametrizations.cpp
 	SplineParametrizations.hpp

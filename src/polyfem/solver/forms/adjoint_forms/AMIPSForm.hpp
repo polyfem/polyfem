@@ -3,6 +3,7 @@
 #include <polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp>
 #include "VariableToSimulation.hpp"
 #include <polyfem/State.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
@@ -269,6 +270,6 @@ namespace polyfem::solver
 		std::vector<polyfem::basis::ElementBases> init_geom_bases_;
 		assembler::AssemblyValsCache init_ass_vals_cache_;
 
-		NLAssembler<GenericElastic<AMIPSEnergy>> amips_energy_;
+		assembler::NLAssembler<assembler::GenericElastic<assembler::AMIPSEnergy>> amips_energy_;
 	};
 } // namespace polyfem::solver

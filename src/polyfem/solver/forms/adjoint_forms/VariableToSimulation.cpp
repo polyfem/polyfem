@@ -2,7 +2,9 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+#include <polyfem/State.hpp>
 #include <polyfem/mesh/GeometryReader.hpp>
+#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 
 namespace polyfem::solver
 {
@@ -33,6 +35,11 @@ namespace polyfem::solver
 			return barycenter;
 		}
 	} // namespace
+
+	void VariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) 
+	{ 
+		log_and_throw_error("Not implemented!"); 
+	}
 
 	void ShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{

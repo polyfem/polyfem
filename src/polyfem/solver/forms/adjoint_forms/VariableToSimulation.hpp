@@ -20,13 +20,13 @@ namespace polyfem::solver
 		inline int n_states() const { return states_.size(); }
 		inline const std::vector<std::shared_ptr<State>> &get_states() const { return states_; }
 
-		inline CompositeParametrization get_parametrization() const { return parametrization_; }
+		inline CompositeParametrization &get_parametrization() { return parametrization_; }
 		virtual ParameterType get_parameter_type() const = 0;
 		virtual Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const = 0;
 		virtual Eigen::VectorXd inverse_eval() = 0;
 
 	protected:
-		virtual void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) = 0;
+		virtual void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices);
 		std::vector<std::shared_ptr<State>> states_;
 		CompositeParametrization parametrization_;
 	};

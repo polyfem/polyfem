@@ -6,6 +6,8 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/solver/Optimizations.hpp>
 #include <polyfem/solver/NonlinearSolver.hpp>
+#include <polyfem/solver/AdjointNLProblem.hpp>
+#include <polyfem/solver/MMASolver.hpp>
 
 #include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/CompositeForms.hpp>
@@ -152,7 +154,7 @@ TEST_CASE("material-opt", "[optimization]")
 			nl_problem = std::make_shared<AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
 		}
 
-		auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+		auto nl_solver = make_nl_solver(opt_args["solver"]["nonlinear"]);
 		CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
 	}
 	auto energies = read_energy(name);
@@ -308,7 +310,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 
 	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
 
-	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+	auto nl_solver = make_nl_solver(opt_args["solver"]["nonlinear"]);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
 }
 
@@ -359,7 +361,7 @@ TEST_CASE("shape-stress-opt-debug", "[optimization]")
 
 	nl_problem->solution_changed(x);
 
-	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+	auto nl_solver = make_nl_solver(opt_args["solver"]["nonlinear"]);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
 
 	auto energies = read_energy("shape-stress-opt-new");
@@ -486,7 +488,7 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 
 	nl_problem->solution_changed(x);
 
-	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+	auto nl_solver = make_nl_solver(opt_args["solver"]["nonlinear"]);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
 
 	auto energies = read_energy("shape-stress-opt-new");
@@ -592,7 +594,7 @@ TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 
 	nl_problem->solution_changed(x);
 
-	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+	auto nl_solver = make_nl_solver(opt_args["solver"]["nonlinear"]);
 	// Expect this simple example to converge
 	nl_solver->minimize(*nl_problem, x);
 
@@ -716,7 +718,7 @@ TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
 
 	nl_problem->solution_changed(x);
 
-	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+	auto nl_solver = make_nl_solver(opt_args["solver"]["nonlinear"]);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
 
 	auto energies = read_energy("shape-trajectory-surface-opt-bspline");
@@ -784,7 +786,7 @@ TEST_CASE("shape-stress-bbw-opt", "[optimization]")
 		nl_problem->solution_changed(x);
 	}
 
-	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+	auto nl_solver = make_nl_solver(opt_args["solver"]["nonlinear"]);
 
 	// run the optimization for a few steps
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
@@ -956,7 +958,7 @@ TEST_CASE("3d-bspline-shape-matching", "[optimization]")
 		nl_problem->solution_changed(x);
 	}
 
-	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+	auto nl_solver = make_nl_solver(opt_args["solver"]["nonlinear"]);
 
 	// run the optimization for a few steps
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
@@ -1027,7 +1029,7 @@ TEST_CASE("3d-bspline-shape-mesh-matching", "[optimization]")
 		nl_problem->solution_changed(x);
 	}
 
-	auto nl_solver = make_nl_solver<AdjointNLProblem>(opt_args["solver"]["nonlinear"]);
+	auto nl_solver = make_nl_solver(opt_args["solver"]["nonlinear"]);
 
 	// run the optimization for a few steps
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));

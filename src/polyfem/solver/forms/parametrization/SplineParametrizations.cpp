@@ -1,5 +1,6 @@
 #include "SplineParametrizations.hpp"
 
+#include <polyfem/State.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <igl/bbw.h>
 #include <igl/boundary_conditions.h>

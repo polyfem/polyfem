@@ -5,6 +5,7 @@
 #include <set>
 #include <iostream>
 #include <Eigen/Dense>
+#include <polyfem/utils/Logger.hpp>
 
 #include <nanospline/BSpline.h>
 #include <nanospline/BSplinePatch.h>

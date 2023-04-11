@@ -1,4 +1,5 @@
 #include "TransientForm.hpp"
+#include <polyfem/State.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 
 namespace polyfem::solver

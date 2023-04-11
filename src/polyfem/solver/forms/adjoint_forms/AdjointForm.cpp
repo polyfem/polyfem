@@ -5,6 +5,28 @@
 
 namespace polyfem::solver
 {
+	double AdjointForm::value(const Eigen::VectorXd &x) const
+	{
+		double val = Form::value(x);
+		if (print_energy_ == 1)
+		{
+			logger().debug("[{}] {}", print_energy_keyword_, val);
+			print_energy_ = 2;
+		}
+		return val;
+	}
+
+	void AdjointForm::solution_changed(const Eigen::VectorXd &new_x)
+	{
+		if (print_energy_ == 2)
+			print_energy_ = 1;
+	}
+
+	void AdjointForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
+	{
+		log_and_throw_error("Not implemented");
+	}
+	
 	Eigen::MatrixXd AdjointForm::compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
 	{
 		Eigen::MatrixXd rhs = compute_adjoint_rhs_unweighted(x, state);

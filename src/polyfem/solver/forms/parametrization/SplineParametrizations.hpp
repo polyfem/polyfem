@@ -2,13 +2,15 @@
 
 #include "Parametrization.hpp"
 
-#include <polyfem/mesh/Mesh.hpp>
-#include <polyfem/State.hpp>
-
 #include <polyfem/utils/BSplineParametrization.hpp>
 
 #include <Eigen/Core>
 #include <map>
+
+namespace polyfem
+{
+	class State;
+}
 
 namespace polyfem::solver
 {

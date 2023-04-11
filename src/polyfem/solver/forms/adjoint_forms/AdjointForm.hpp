@@ -11,24 +11,11 @@ namespace polyfem::solver
 		AdjointForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations) : variable_to_simulations_(variable_to_simulations) {}
 		virtual ~AdjointForm() {}
 
-		inline double value(const Eigen::VectorXd &x) const
-		{
-			double val = Form::value(x);
-			if (print_energy_ == 1)
-			{
-				logger().debug("[{}] {}", print_energy_keyword_, val);
-				print_energy_ = 2;
-			}
-			return val;
-		}
+		double value(const Eigen::VectorXd &x) const;
 
 		void enable_energy_print(const std::string &print_energy_keyword) { print_energy_keyword_ = print_energy_keyword; print_energy_ = 1; }
 
-		virtual void solution_changed(const Eigen::VectorXd &new_x) override
-		{
-			if (print_energy_ == 2)
-				print_energy_ = 1;
-		}
+		virtual void solution_changed(const Eigen::VectorXd &new_x) override;
 
 		const auto &get_variable_to_simulations() const { return variable_to_simulations_; }
 
@@ -47,10 +34,7 @@ namespace polyfem::solver
 		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state);
 		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const;
 
-		inline virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const final override
-		{
-			log_and_throw_error("Not implemented");
-		}
+		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const final override;
 
 	protected:
 		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;

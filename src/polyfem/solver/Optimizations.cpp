@@ -1,6 +1,15 @@
 #include "Optimizations.hpp"
 
 #include <polyfem/mesh/GeometryReader.hpp>
+#include <jse/jse.h>
+#include <polyfem/State.hpp>
+
+#include "AdjointNLProblem.hpp"
+#include "LBFGSBSolver.hpp"
+#include "LBFGSSolver.hpp"
+#include "BFGSSolver.hpp"
+#include "MMASolver.hpp"
+#include "GradientDescentSolver.hpp"
 
 #include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
@@ -37,6 +46,40 @@ namespace polyfem::solver
 			return true;
 		}
 	} // namespace
+
+	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> make_nl_solver(const json &solver_params)
+	{
+		const std::string name = solver_params["solver"].template get<std::string>();
+		if (name == "GradientDescent" || name == "gradientdescent" || name == "gradient")
+		{
+			return std::make_shared<cppoptlib::GradientDescentSolver<AdjointNLProblem>>(
+				solver_params, 0.);
+		}
+		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
+		{
+			return std::make_shared<cppoptlib::LBFGSSolver<AdjointNLProblem>>(
+				solver_params, 0.);
+		}
+		else if (name == "bfgs" || name == "BFGS" || name == "BFGS")
+		{
+			return std::make_shared<cppoptlib::BFGSSolver<AdjointNLProblem>>(
+				solver_params, 0.);
+		}
+		else if (name == "lbfgsb" || name == "LBFGSB" || name == "L-BFGS-B")
+		{
+			return std::make_shared<cppoptlib::LBFGSBSolver<AdjointNLProblem>>(
+				solver_params, 0.);
+		}
+		else if (name == "mma" || name == "MMA")
+		{
+			return std::make_shared<cppoptlib::MMASolver<AdjointNLProblem>>(
+				solver_params, 0.);
+		}
+		else
+		{
+			throw std::invalid_argument(fmt::format("invalid nonlinear solver type: {}", name));
+		}
+	}
 
 	std::shared_ptr<AdjointForm> create_form(const json &args, const std::vector<std::shared_ptr<VariableToSimulation>> &var2sim, const std::vector<std::shared_ptr<State>> &states)
 	{
@@ -352,6 +395,10 @@ namespace polyfem::solver
 		if (type == "shape")
 		{
 			var2sim = std::make_shared<ShapeVariableToSimulation>(cur_states, composite_map);
+		}
+		else if (type == "periodic-shape")
+		{
+			var2sim = std::make_shared<PeriodicShapeVariableToSimulation>(cur_states, composite_map);
 		}
 		else if (type == "elastic")
 		{

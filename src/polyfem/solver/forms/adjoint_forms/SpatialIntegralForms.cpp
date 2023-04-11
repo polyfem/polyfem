@@ -5,8 +5,11 @@
 #include <nanospline/BSpline.h>
 #include <nanospline/BSplinePatch.h>
 
+#include <polyfem/State.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
+
+#include <polyfem/utils/IntegrableFunctional.hpp>
 
 using namespace polyfem::utils;
 
@@ -60,6 +63,8 @@ namespace polyfem::solver
 					AdjointTools::compute_shape_derivative_functional_term(state_, state_.diff_cached.u(time_step_), get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
 				else if (param_type == ParameterType::MacroStrain)
 					AdjointTools::compute_macro_strain_derivative_functional_term(state_, state_.diff_cached.u(time_step_), get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
+				else if (param_type == ParameterType::PeriodicShape)
+					AdjointTools::compute_periodic_shape_derivative_functional_term(state_, state_.diff_cached.u(time_step_), get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
 
 				if (term.size() > 0)
 					gradv += parametrization.apply_jacobian(term, x);

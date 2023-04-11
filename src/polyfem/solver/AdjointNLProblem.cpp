@@ -1,8 +1,11 @@
 #include "AdjointNLProblem.hpp"
 
+#include <polyfem/solver/forms/adjoint_forms/CompositeForm.hpp>
+#include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+#include <polyfem/State.hpp>
 #include <igl/boundary_facets.h>
 #include <igl/writeOBJ.h>
 
@@ -33,6 +36,11 @@ namespace polyfem::solver
 				}
 			}
 		}
+	}
+
+	void AdjointNLProblem::hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
+	{
+		log_and_throw_error("Hessian not supported!");
 	}
 
 	double AdjointNLProblem::value(const Eigen::VectorXd &x)
