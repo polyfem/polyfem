@@ -136,9 +136,8 @@ namespace polyfem::solver
 			assembler::Mass mass_mat_assembler;
 			mass_mat_assembler.set_size(dim);
 			StiffnessMatrix mass_tmp;
-			const int n_fe_basis = n_bases - obstacle.n_vertices();
-			mass_mat_assembler.assemble(dim == 3, n_fe_basis, bases, geom_bases, mass_ass_vals_cache, mass_tmp, true);
-			assert(mass.rows() == n_bases * dim - obstacle.ndof() && mass_tmp.cols() == n_bases * dim - obstacle.ndof());
+			mass_mat_assembler.assemble(dim == 3, n_bases, bases, geom_bases, mass_ass_vals_cache, mass_tmp, true);
+			assert(mass_tmp.rows() == mass.rows() && mass_tmp.cols() == mass.cols());
 
 			al_form = std::make_shared<ALForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
