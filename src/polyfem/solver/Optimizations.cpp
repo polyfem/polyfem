@@ -396,10 +396,6 @@ namespace polyfem::solver
 		{
 			var2sim = std::make_shared<ShapeVariableToSimulation>(cur_states, composite_map);
 		}
-		else if (type == "periodic-shape")
-		{
-			var2sim = std::make_shared<PeriodicShapeVariableToSimulation>(cur_states, composite_map);
-		}
 		else if (type == "elastic")
 		{
 			var2sim = std::make_shared<ElasticVariableToSimulation>(cur_states, composite_map);
