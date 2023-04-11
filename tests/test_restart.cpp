@@ -63,7 +63,7 @@ Eigen::MatrixXd run_sim(State &state, const json &args)
 {
 	state.init(args, true);
 	state.set_max_threads(1);
-	spdlog::set_level(spdlog::level::info);
+	logger().set_level(spdlog::level::info);
 	state.load_mesh();
 
 	if (state.mesh == nullptr)
