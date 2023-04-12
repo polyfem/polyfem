@@ -97,7 +97,7 @@ namespace polyfem::solver
 
 	void BCLagrangianForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = -2 * masked_lumped_mass_sqrt_ * lagr_mults_;
+		gradv = -(masked_lumped_mass_sqrt_ * lagr_mults_);
 	}
 
 	void BCLagrangianForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
