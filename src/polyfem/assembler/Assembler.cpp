@@ -513,7 +513,7 @@ namespace polyfem::assembler
 	{
 		auto storage = create_thread_storage(LocalThreadScalarStorage());
 		const int n_bases = int(bases.size());
-		Eigen::VectorXd(bases.size());
+		Eigen::VectorXd out(bases.size());
 
 		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
@@ -528,7 +528,7 @@ namespace polyfem::assembler
 				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-				const double val = local_assembler_.compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				const double val = compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
 				out[e] = val;
 			}
 		});
@@ -538,6 +538,8 @@ namespace polyfem::assembler
 			is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
 		assert(std::abs(assemble_val - out.sum()) < 1e-10);
 #endif
+
+		return out;
 	}
 
 	void NLAssembler::assemble_gradient(
