@@ -8,6 +8,7 @@ set(SOURCES
 	SDFParametrizations.hpp
 	SDFParametrizations.cpp
 	NodeCompositeParametrizations.hpp
+	NodeCompositeParametrizations.cpp
 )
 
 prepend_current_path(SOURCES)

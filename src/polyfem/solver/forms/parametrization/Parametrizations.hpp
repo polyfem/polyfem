@@ -1,12 +1,13 @@
 #pragma once
 
 #include "Parametrization.hpp"
-
-#include <polyfem/mesh/Mesh.hpp>
-#include <polyfem/State.hpp>
-
-#include <Eigen/Core>
+#include <polyfem/Common.hpp>
 #include <map>
+
+namespace polyfem::mesh
+{
+	class Mesh;
+}
 
 namespace polyfem::solver
 {

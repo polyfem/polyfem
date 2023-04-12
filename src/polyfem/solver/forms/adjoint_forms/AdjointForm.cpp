@@ -2,6 +2,7 @@
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>
+#include <polyfem/State.hpp>
 
 namespace polyfem::solver
 {

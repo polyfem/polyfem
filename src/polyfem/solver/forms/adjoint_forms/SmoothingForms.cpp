@@ -4,6 +4,11 @@
 
 namespace polyfem::solver
 {
+	Eigen::MatrixXd BoundarySmoothingForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
+	{
+		return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
+	}
+
 	void BoundarySmoothingForm::init_form()
 	{
 		const auto &mesh = *(state_.mesh);

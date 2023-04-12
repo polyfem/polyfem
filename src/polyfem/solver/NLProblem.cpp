@@ -1,5 +1,5 @@
 #include "NLProblem.hpp"
-
+#include <polyfem/State.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 
 /*
@@ -58,6 +58,13 @@ namespace polyfem::solver
 		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
 		assert(boundary_nodes.size() == 0 || (boundary_nodes.front() >= 0 && boundary_nodes.back() < full_size_));
 		use_reduced_size();
+	}
+
+	int NLProblem::current_size() const
+	{
+		if (current_size_ == CurrentSize::FULL_SIZE && state_.need_periodic_reduction() && reduced_size_ < full_size_)
+			log_and_throw_error("Periodic BC doesn't support AL solve!");
+		return current_size_ == CurrentSize::FULL_SIZE ? full_size() : reduced_size();
 	}
 
 	void NLProblem::init_lagging(const TVector &x)

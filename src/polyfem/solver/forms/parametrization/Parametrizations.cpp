@@ -1,5 +1,7 @@
 #include "Parametrizations.hpp"
-
+#include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/Common.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 
 namespace polyfem::solver

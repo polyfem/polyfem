@@ -1,7 +1,11 @@
 #pragma once
 
 #include "AdjointForm.hpp"
-#include <polyfem/State.hpp>
+
+namespace polyfem
+{
+	class State;
+}
 
 namespace polyfem::solver
 {
@@ -15,10 +19,7 @@ namespace polyfem::solver
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
 		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
-		inline Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override
-		{
-			return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
-		}
+		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override;
 
 	private:
 		void init_form();

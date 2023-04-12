@@ -342,6 +342,15 @@ namespace polyfem
 			}
 			return false;
 		}
+		bool all_direction_periodic()
+		{
+			for (const bool &r : periodic_dimensions)
+			{
+				if (!r)
+					return false;
+			}
+			return true;
+		}
 		bool need_periodic_reduction() const
 		{
 			return has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"];

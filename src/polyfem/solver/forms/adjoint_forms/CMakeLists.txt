@@ -2,6 +2,7 @@ set(SOURCES
 	AdjointForm.cpp
 	AdjointForm.hpp
 	ParametrizationForm.hpp
+	ParametrizationForm.cpp
 	SpatialIntegralForms.cpp
 	SpatialIntegralForms.hpp
 	VariableToSimulation.cpp

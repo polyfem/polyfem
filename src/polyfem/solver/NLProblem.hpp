@@ -3,7 +3,11 @@
 #include <polyfem/solver/FullNLProblem.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
-#include <polyfem/State.hpp>
+
+namespace polyfem
+{
+	class State;
+}
 
 namespace polyfem::solver
 {
@@ -80,12 +84,7 @@ namespace polyfem::solver
 			REDUCED_SIZE
 		};
 		CurrentSize current_size_; ///< Current size of the problem (either full or reduced size)
-		int current_size() const
-		{
-			if (current_size_ == CurrentSize::FULL_SIZE && state_.need_periodic_reduction() && reduced_size_ < full_size_)
-				log_and_throw_error("Periodic BC doesn't support AL solve!");
-			return current_size_ == CurrentSize::FULL_SIZE ? full_size() : reduced_size();
-		}
+		int current_size() const;
 
 	private:
 		const assembler::RhsAssembler *rhs_assembler_;

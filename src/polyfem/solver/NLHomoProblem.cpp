@@ -1,4 +1,5 @@
 #include "NLHomoProblem.hpp"
+#include <polyfem/State.hpp>
 #include "forms/PeriodicContactForm.hpp"
 #include "forms/MacroStrainALForm.hpp"
 #include <polyfem/io/Evaluator.hpp>

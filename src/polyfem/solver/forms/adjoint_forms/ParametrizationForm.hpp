@@ -3,7 +3,11 @@
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/solver/forms/parametrization/Parametrization.hpp>
 #include <polyfem/solver/forms/adjoint_forms/AdjointForm.hpp>
-#include <polyfem/State.hpp>
+
+namespace polyfem
+{
+	class State;
+}
 
 namespace polyfem::solver
 {
@@ -87,7 +91,7 @@ namespace polyfem::solver
 			return is_step_collision_free_with_param(apply_parametrizations(x0), apply_parametrizations(x1));
 		}
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override { return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size()); }
+		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override;
 
 		virtual void init_with_param(const Eigen::VectorXd &x) {}
 		virtual bool is_step_valid_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }

@@ -21,7 +21,6 @@
 
 using namespace polyfem;
 using namespace solver;
-using namespace polysolve;
 
 bool has_arg(const CLI::App &command_line, const std::string &value)
 {
