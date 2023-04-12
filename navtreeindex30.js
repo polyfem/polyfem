@@ -1,5 +1,7 @@
 var NAVTREEINDEX30 =
 {
+"p__bases_8py.html#a264ccd2c332799ad0378505bef7386e4":[5,0,1,0,1,13,11],
+"p__bases_8py.html#a36a8a9147deeb221254d7855627f907d":[5,0,1,0,1,13,5],
 "p__bases_8py.html#a3cdfa6c883d528b882e06952a18362c7":[5,0,1,0,1,13,35],
 "p__bases_8py.html#a482e93806367591d684b2c432e56984b":[5,0,1,0,1,13,9],
 "p__bases_8py.html#a545f876b401f1042d3b57d92fb694df8":[5,0,1,0,1,13,30],
@@ -247,7 +249,5 @@ var NAVTREEINDEX30 =
 "structpolyfem_1_1assembler_1_1_tensor_b_c_value.html#a8146b72656e058368450c00e1c1cd426":[4,0,3,0,44,0],
 "structpolyfem_1_1basis_1_1_interface_data.html":[4,0,3,1,3],
 "structpolyfem_1_1basis_1_1_interface_data.html":[3,0,6,2,3],
-"structpolyfem_1_1basis_1_1_interface_data.html#a27d8681b82abf210b42122a404671d8a":[4,0,3,1,3,0],
-"structpolyfem_1_1basis_1_1_interface_data.html#a27d8681b82abf210b42122a404671d8a":[3,0,6,2,3,0],
-"structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html":[4,0,3,2,5,0]
+"structpolyfem_1_1basis_1_1_interface_data.html#a27d8681b82abf210b42122a404671d8a":[4,0,3,1,3,0]
 };

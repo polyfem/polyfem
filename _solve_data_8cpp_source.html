@@ -292,8 +292,8 @@ $(document).ready(function(){initNavTree('_solve_data_8cpp_source.html',''); ini
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>            <span class="keywordflow">if</span> (friction_coefficient != 0)</div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>            {</div>
 <div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                <a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a26e3e9d75849c5a3c7b59192894671a0">friction_form</a> = std::make_shared&lt;FrictionForm&gt;(</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                    collision_mesh, epsv, friction_coefficient, dhat, broad_phase,</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                    is_time_dependent ? dt : 1.0, *<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#ab3d9f54bfa1c173fd1569a852bcd1a11">contact_form</a>, friction_iterations);</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                    collision_mesh, <a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">time_integrator</a>, epsv, friction_coefficient, dhat, broad_phase,</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                    *<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#ab3d9f54bfa1c173fd1569a852bcd1a11">contact_form</a>, friction_iterations);</div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                forms.push_back(<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a26e3e9d75849c5a3c7b59192894671a0">friction_form</a>);</div>
 <div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            }</div>
 <div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        }</div>

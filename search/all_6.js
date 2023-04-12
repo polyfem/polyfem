@@ -71,7 +71,7 @@ var searchData=
   ['friction_5fconstraint_5fset_5f_68',['friction_constraint_set_',['../classpolyfem_1_1solver_1_1_friction_form.html#a00af4221999274bc7bf2f6ce261a49e2',1,'polyfem::solver::FrictionForm']]],
   ['friction_5fforces_69',['friction_forces',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a273b9ec341d7dffb3ac1d798ce4ef638',1,'polyfem::io::OutGeometryData::ExportOptions']]],
   ['friction_5fform_70',['friction_form',['../classpolyfem_1_1solver_1_1_solve_data.html#a26e3e9d75849c5a3c7b59192894671a0',1,'polyfem::solver::SolveData']]],
-  ['frictionform_71',['FrictionForm',['../classpolyfem_1_1solver_1_1_friction_form.html#ae484f85764e1e3821d5b196208adda98',1,'polyfem::solver::FrictionForm::FrictionForm()'],['../classpolyfem_1_1solver_1_1_friction_form.html',1,'polyfem::solver::FrictionForm']]],
+  ['frictionform_71',['FrictionForm',['../classpolyfem_1_1solver_1_1_friction_form.html#a40fb4863174e6c198d3adf57aa52e3e8',1,'polyfem::solver::FrictionForm::FrictionForm()'],['../classpolyfem_1_1solver_1_1_friction_form.html',1,'polyfem::solver::FrictionForm']]],
   ['frictionform_2ecpp_72',['FrictionForm.cpp',['../_friction_form_8cpp.html',1,'']]],
   ['frictionform_2ehpp_73',['FrictionForm.hpp',['../_friction_form_8hpp.html',1,'']]],
   ['from_5f_74',['from_',['../classpolyfem_1_1utils_1_1_linear_ramp.html#a97a6acbe4f5b77b45f63085a40e30b0f',1,'polyfem::utils::LinearRamp']]],

@@ -1,5 +1,7 @@
 var NAVTREEINDEX31 =
 {
+"structpolyfem_1_1basis_1_1_interface_data.html#a27d8681b82abf210b42122a404671d8a":[3,0,6,2,3,0],
+"structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html":[4,0,3,2,5,0],
 "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html":[3,0,6,3,5,0],
 "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a058ae9ddb1d5084291badc7de9166a2e":[3,0,6,3,5,0,18],
 "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a058ae9ddb1d5084291badc7de9166a2e":[4,0,3,2,5,0,18],
@@ -247,7 +249,5 @@ var NAVTREEINDEX31 =
 "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html":[3,0,6,4,17,4],
 "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#a076dd8387709cbe395f3e8258fa799e1":[4,0,3,3,15,4,3],
 "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#a076dd8387709cbe395f3e8258fa799e1":[3,0,6,4,17,4,3],
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#a268b3b5ed3138859cf99f03ef2a994d8":[4,0,3,3,15,4,2],
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#a268b3b5ed3138859cf99f03ef2a994d8":[3,0,6,4,17,4,2],
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#a2821b9854edcdf0f97f06d503ed1ce93":[3,0,6,4,17,4,13]
+"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#a268b3b5ed3138859cf99f03ef2a994d8":[4,0,3,3,15,4,2]
 };
