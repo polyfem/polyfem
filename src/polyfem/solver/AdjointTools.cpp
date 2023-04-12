@@ -599,7 +599,7 @@ namespace polyfem::solver
 			}
 			else
 				contact_term.setZero(elasticity_term.size());
-			one_form += elasticity_term + rhs_term + contact_term;
+			one_form -= elasticity_term + rhs_term + contact_term;
 		}
 
 		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
@@ -631,7 +631,7 @@ namespace polyfem::solver
 				state.solve_data.elastic_form->first_derivative(sol, force);
 
 				Eigen::VectorXd tmp = state.down_sampling_mat * utils::flatten(utils::unflatten(force, dim) * affine_adjoint);
-				elasticity_term -= tmp;
+				elasticity_term += tmp;
 			}
 
 			if (state.is_contact_enabled() && state.args["contact"]["periodic"])
@@ -653,13 +653,13 @@ namespace polyfem::solver
 					state.solve_data.contact_form->first_derivative(sol, force);
 
 					Eigen::VectorXd tmp = state.down_sampling_mat * utils::flatten(utils::unflatten(force, dim) * affine_adjoint);
-					contact_term -= tmp;
+					contact_term += tmp;
 				}
 			}
 			else
 				contact_term.setZero(elasticity_term.size());
 
-			one_form = elasticity_term + contact_term;
+			one_form = -(elasticity_term + contact_term);
 		}
 
 		homo_problem->set_fixed_values(disp_grad_values);
@@ -696,19 +696,19 @@ namespace polyfem::solver
 
 			{
 				state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, velocity, cur_nu, mass_term);
-				state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i), -cur_p, elasticity_term);
-				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i), -cur_p, rhs_term);
+				state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i), cur_p, elasticity_term);
+				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i), cur_p, rhs_term);
 				// Maybe needs to be the following, take a look at BodyForm::update_quantities where it is called in the forward.
-				// state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i- 1), -cur_p, rhs_term);
+				// state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i- 1), cur_p, rhs_term);
 
 				if (state.solve_data.damping_form)
-					state.solve_data.damping_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i - 1), -cur_p, damping_term);
+					state.solve_data.damping_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i - 1), cur_p, damping_term);
 				else
 					damping_term.setZero(mass_term.size());
 
 				if (state.is_contact_enabled())
 				{
-					state.solve_data.contact_form->force_shape_derivative(state.diff_cached.contact_set(i), state.diff_cached.u(i), -cur_p, contact_term);
+					state.solve_data.contact_form->force_shape_derivative(state.diff_cached.contact_set(i), state.diff_cached.u(i), cur_p, contact_term);
 					contact_term = state.down_sampling_mat * contact_term;
 					contact_term /= beta_dt * beta_dt;
 				}
@@ -717,7 +717,7 @@ namespace polyfem::solver
 
 				if (state.solve_data.friction_form)
 				{
-					state.solve_data.friction_form->force_shape_derivative(state.diff_cached.u(i - 1), state.diff_cached.u(i), -cur_p, state.diff_cached.friction_constraint_set(i), friction_term);
+					state.solve_data.friction_form->force_shape_derivative(state.diff_cached.u(i - 1), state.diff_cached.u(i), cur_p, state.diff_cached.friction_constraint_set(i), friction_term);
 					friction_term = state.down_sampling_mat * friction_term;
 					friction_term /= beta_dt * beta_dt;
 				}
@@ -725,7 +725,7 @@ namespace polyfem::solver
 					friction_term.setZero(mass_term.size());
 			}
 
-			one_form += beta_dt * (elasticity_term + rhs_term + damping_term + contact_term + friction_term + mass_term);
+			one_form += beta_dt * (elasticity_term + rhs_term + damping_term + contact_term - friction_term + mass_term);
 		}
 
 		// time step 0

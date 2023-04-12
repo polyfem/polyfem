@@ -53,7 +53,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(solution);
 
 		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh_, displaced_surface, contact_set, dhat_));
-		term = -barrier_stiffness() * dq_h.transpose() * adjoint_sol;
+		term = barrier_stiffness() * dq_h.transpose() * adjoint_sol;
 	}
 
 	void ContactForm::update_quantities(const double t, const Eigen::VectorXd &x)

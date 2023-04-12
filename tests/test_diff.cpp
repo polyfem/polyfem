@@ -154,7 +154,7 @@ namespace
 		double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
 		std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
 		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-
+		std::cout << std::setprecision(12) << "relative error: " << abs((finite_difference - derivative) / derivative) << "\n";
 		REQUIRE(derivative == Approx(finite_difference).epsilon(tol));
 	}
 

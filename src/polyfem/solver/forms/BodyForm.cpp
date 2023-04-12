@@ -136,7 +136,6 @@ namespace polyfem::solver
 
 				Eigen::MatrixXd rhs_function;
 				rhs_assembler_.problem().rhs(rhs_assembler_.assembler(), rhs_assembler_.formulation(), vals.val, t, rhs_function);
-				rhs_function *= -1;
 				for (int q = 0; q < vals.val.rows(); q++)
 				{
 					const double rho = density_(quadrature.points.row(q), vals.val.row(q), e);
@@ -292,7 +291,7 @@ namespace polyfem::solver
 							const bool is_neumann = std::find(boundary_nodes_.begin(), boundary_nodes_.end(), g_index) == boundary_nodes_.end();
 							if (is_neumann)
 							{
-								local_storage.vec(g_index) += value.sum() * velocity_div_mat(n, d);
+								local_storage.vec(g_index) -= value.sum() * velocity_div_mat(n, d);
 								const bool is_pressure = rhs_assembler_.problem().is_boundary_pressure(rhs_assembler_.mesh().get_boundary_id(global_primitive_id));
 								// if (is_pressure)
 								// 	local_storage.vec(g_index) += grad_pressure_bc(d) * pressure_value.sum();
