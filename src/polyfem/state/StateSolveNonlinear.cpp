@@ -86,7 +86,33 @@ namespace polyfem
 			energy_file.flush();
 		};
 
+		std::ofstream stats_file(resolve_output_path("stats.csv"));
+		stats_file << "step,time,forward,remeshing,global_relaxation,peak_mem,#V,#T" << std::endl;
 		double total_forward_solve_time = 0, total_remeshing_time = 0, total_global_relaxation_time = 0;
+		const auto save_stats = [&](const int t, const double forward, const double remeshing, const double global_relaxation) {
+			total_forward_solve_time += forward;
+			total_remeshing_time += remeshing;
+			total_global_relaxation_time += global_relaxation;
+
+			logger().debug(
+				"Forward (cur, avg, total): {} s, {} s, {} s",
+				forward, total_forward_solve_time / t, total_forward_solve_time);
+			logger().debug(
+				"Remeshing (cur, avg, total): {} s, {} s, {} s",
+				remeshing, total_remeshing_time / t, total_remeshing_time);
+			logger().debug(
+				"Global relaxation (cur, avg, total): {} s, {} s, {} s",
+				global_relaxation, total_global_relaxation_time / t, total_global_relaxation_time);
+
+			const double peak_mem = getPeakRSS() / double(1 << 30);
+			logger().debug("Peak mem: {} GiB", peak_mem);
+
+			stats_file << fmt::format(
+				"{},{},{},{},{},{},{},{}\n",
+				t, t0 + dt * t, forward, remeshing, global_relaxation, peak_mem,
+				n_bases, mesh->n_elements());
+			stats_file.flush();
+		};
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
@@ -156,21 +182,7 @@ namespace polyfem
 
 			// save restart file
 			save_restart_json(t0, dt, t);
-
-			total_forward_solve_time += cur_forward_solve_time;
-			total_remeshing_time += cur_remeshing_time;
-			total_global_relaxation_time += cur_global_relaxation_time;
-
-			logger().critical(
-				"Forward (cur, avg, total): {} s, {} s, {} s",
-				cur_forward_solve_time, total_forward_solve_time / t, total_forward_solve_time);
-			logger().critical(
-				"Remeshing (cur, avg, total): {} s, {} s, {} s",
-				cur_remeshing_time, total_remeshing_time / t, total_remeshing_time);
-			logger().critical(
-				"Global relaxation (cur, avg, total): {} s, {} s, {} s",
-				cur_global_relaxation_time, total_global_relaxation_time / t, total_global_relaxation_time);
-			logger().critical("Peak mem: {} GiB", getPeakRSS() / float(1 << 30));
+			save_stats(t, cur_forward_solve_time, cur_remeshing_time, cur_global_relaxation_time);
 		}
 	}
 
@@ -268,7 +280,6 @@ namespace polyfem
 		// Initialize nonlinear problems
 
 		const int ndof = n_bases * mesh->dimension();
-		logger().critical("# DOF: {}", ndof);
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
 			*solve_data.rhs_assembler, t, forms);
