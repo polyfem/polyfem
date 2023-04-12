@@ -67,7 +67,7 @@ namespace polyfem::time_integrator
 		/// @brief Access the time step size.
 		const double &dt() const { return dt_; }
 
-		/// @brief Save the values of \$x\$, \f$v\f$, and \f$a\f$.
+		/// @brief Save the values of \f$x\f$, \f$v\f$, and \f$a\f$.
 		/// @param x_path path for the output file containing \f$x\f$, if the extension is `.txt`
 		///               then it will write an ASCII file else if the extension is `.bin` it will
 		///               write a binary file.

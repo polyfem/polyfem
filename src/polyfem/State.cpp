@@ -879,8 +879,8 @@ namespace polyfem
 			double min_boundary_edge_length = std::numeric_limits<double>::max();
 			for (const auto &edge : collision_mesh.edges().rowwise())
 			{
-				const VectorNd v0 = collision_mesh.vertices_at_rest().row(edge(0));
-				const VectorNd v1 = collision_mesh.vertices_at_rest().row(edge(1));
+				const VectorNd v0 = collision_mesh.rest_positions().row(edge(0));
+				const VectorNd v1 = collision_mesh.rest_positions().row(edge(1));
 				min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
 			}
 
