@@ -1,16 +1,11 @@
 #include "RhsAssembler.hpp"
+
+#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/utils/BoundarySampler.hpp>
+#include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 
-#include <polyfem/utils/BoundarySampler.hpp>
 #include <polysolve/LinearSolver.hpp>
-
-#include <polyfem/utils/Logger.hpp>
-
-#include <Eigen/Sparse>
-
-#include <iostream>
-#include <map>
-#include <memory>
 
 namespace polyfem
 {
@@ -36,22 +31,31 @@ namespace polyfem
 			};
 		} // namespace
 
-		RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const Obstacle &obstacle,
+		RhsAssembler::RhsAssembler(const Assembler &assembler, const Mesh &mesh, const Obstacle &obstacle,
 								   const std::vector<int> &dirichlet_nodes, const std::vector<int> &neumann_nodes,
 								   const std::vector<RowVectorNd> &dirichlet_nodes_position, const std::vector<RowVectorNd> &neumann_nodes_position,
 								   const int n_basis, const int size,
 								   const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
-								   const std::string &formulation, const Problem &problem,
+								   const Problem &problem,
 								   const std::string bc_method,
 								   const std::string &solver, const std::string &preconditioner, const json &solver_params)
-			: assembler_(assembler), mesh_(mesh), obstacle_(obstacle),
-			  n_basis_(n_basis), size_(size),
-			  bases_(bases), gbases_(gbases), ass_vals_cache_(ass_vals_cache),
-			  formulation_(formulation), problem_(problem),
+			: assembler_(assembler),
+			  mesh_(mesh),
+			  obstacle_(obstacle),
+			  n_basis_(n_basis),
+			  size_(size),
+			  bases_(bases),
+			  gbases_(gbases),
+			  ass_vals_cache_(ass_vals_cache),
+			  problem_(problem),
 			  bc_method_(bc_method),
-			  solver_(solver), preconditioner_(preconditioner), solver_params_(solver_params),
-			  dirichlet_nodes_(dirichlet_nodes), neumann_nodes_(neumann_nodes),
-			  dirichlet_nodes_position_(dirichlet_nodes_position), neumann_nodes_position_(neumann_nodes_position)
+			  solver_(solver),
+			  preconditioner_(preconditioner),
+			  solver_params_(solver_params),
+			  dirichlet_nodes_(dirichlet_nodes),
+			  dirichlet_nodes_position_(dirichlet_nodes_position),
+			  neumann_nodes_(neumann_nodes),
+			  neumann_nodes_position_(neumann_nodes_position)
 		{
 			assert(ass_vals_cache_.is_mass());
 		}
@@ -72,7 +76,7 @@ namespace polyfem
 
 					const Quadrature &quadrature = vals.quadrature;
 
-					problem_.rhs(assembler_, formulation_, vals.val, t, rhs_fun);
+					problem_.rhs(assembler_, vals.val, t, rhs_fun);
 
 					for (int d = 0; d < size_; ++d)
 					{
@@ -200,9 +204,11 @@ namespace polyfem
 
 				if (fabs(mmin) > 1e-8 || fabs(mmax) > 1e-8)
 				{
+					assembler::Mass mass_mat_assembler;
+					mass_mat_assembler.set_size(assembler_.size());
 					StiffnessMatrix mass;
 					const int n_fe_basis = n_basis_ - obstacle_.n_vertices();
-					assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_fe_basis, false, bases_, gbases_, ass_vals_cache_, mass);
+					mass_mat_assembler.assemble(size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, mass, true);
 					assert(mass.rows() == n_basis_ * size_ - obstacle_.ndof() && mass.cols() == n_basis_ * size_ - obstacle_.ndof());
 
 					auto solver = LinearSolver::create(solver_, preconditioner_);
@@ -750,7 +756,7 @@ namespace polyfem
 						const Quadrature &quadrature = vals.quadrature;
 						const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
-						problem_.rhs(assembler_, formulation_, vals.val, t, forces);
+						problem_.rhs(assembler_, vals.val, t, forces);
 						assert(forces.rows() == da.size());
 						assert(forces.cols() == size_);
 

@@ -1,86 +1,66 @@
 #pragma once
 
-#include "AssemblerData.hpp"
-
-#include <polyfem/Common.hpp>
-
+#include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
-#include <polyfem/utils/Types.hpp>
-
-#include <Eigen/Dense>
-#include <functional>
 
 namespace polyfem::assembler
 {
 	// stokes local assembler for velocity
-	class StokesVelocity
+	class StokesVelocity : public LinearAssembler
 	{
 	public:
+		using LinearAssembler::assemble;
+
+		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 		// res is R^{dim²}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-		assemble(const LinearAssemblerData &data) const;
+		assemble(const LinearAssemblerData &data) const override;
 
-		// not implemented!
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const;
-
-		void set_size(const int size);
-		inline int size() const { return size_; }
-
-		void add_multimaterial(const int index, const json &params);
-
-		void compute_norm_velocity(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &velocity, Eigen::MatrixXd &norms) const;
-		void compute_stress_tensor(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &velocity, Eigen::MatrixXd &tensor) const;
+		void add_multimaterial(const int index, const json &params) override;
 
 		double viscosity() const { return viscosity_; }
 
+		std::string name() const override { return "Stokes"; }
+		std::map<std::string, ParamFunc> parameters() const override;
+
+		bool is_fluid() const override { return true; }
+
 	private:
-		int size_ = 2;
 		double viscosity_ = 1;
 	};
 
 	// stokes mixed assembler (velocity phi and pressure psi)
-	class StokesMixed
+	class StokesMixed : public MixedAssembler
 	{
 	public:
+		std::string name() const override { return "StokesMixed"; }
+
 		// res is R^{dim}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-		assemble(const MixedAssemblerData &data) const;
+		assemble(const MixedAssemblerData &data) const override;
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const;
-
-		void set_size(const int size);
-
-		inline int rows() const { return size_; }
-		inline int cols() const { return 1; }
-
-		void add_multimaterial(const int index, const json &params) {}
-
-	private:
-		int size_ = 2;
+		inline int rows() const override { return size(); }
+		inline int cols() const override { return 1; }
 	};
 
 	// pressure only for stokes is zero
-	class StokesPressure
+	class StokesPressure : public LinearAssembler
 	{
 	public:
+		using LinearAssembler::assemble;
+
+		std::string name() const override { return "StokesPressure"; }
+		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
+
 		// res is R^{dim²}
-		Eigen::Matrix<double, 1, 1>
-		assemble(const LinearAssemblerData &data) const
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+		assemble(const LinearAssemblerData &data) const override
 		{
 			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
 		}
 
-		Eigen::Matrix<double, 1, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const
-		{
-			assert(false);
-			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
-		}
+		bool is_fluid() const override { return true; }
 
-		inline int size() const { return 1; }
-
-		void add_multimaterial(const int index, const json &params) {}
+		void set_size(const int) override { size_ = 1; }
 	};
 } // namespace polyfem::assembler

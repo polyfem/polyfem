@@ -3,7 +3,7 @@
 #include <Eigen/Core>
 
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 
 #include <polyfem/utils/RefElementSampler.hpp>
@@ -38,7 +38,6 @@ namespace polyfem::io
 		/// @param[in] gbases geom bases
 		/// @param[in] disc_orders discretization orders
 		/// @param[in] assembler assembler
-		/// @param[in] formulation formulation
 		/// @param[in] fun function to use
 		/// @param[out] result output displacement
 		/// @param[out] von_mises output von mises
@@ -48,8 +47,7 @@ namespace polyfem::io
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const Eigen::VectorXi &disc_orders,
-			const assembler::AssemblerUtils &assembler,
-			const std::string &formulation,
+			const assembler::Assembler &assembler,
 			const Eigen::MatrixXd &fun,
 			Eigen::MatrixXd &result,
 			Eigen::VectorXd &von_mises);
@@ -160,7 +158,6 @@ namespace polyfem::io
 		/// @param[in] polys polygons
 		/// @param[in] polys_3d polyhedra
 		/// @param[in] assembler assembler
-		/// @param[in] formulation formulation
 		/// @param[in] sampler sampler for the local element
 		/// @param[in] fun function to used
 		/// @param[in] use_sampler uses the sampler or not
@@ -174,8 +171,7 @@ namespace polyfem::io
 			const Eigen::VectorXi &disc_orders,
 			const std::map<int, Eigen::MatrixXd> &polys,
 			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
-			const assembler::AssemblerUtils &assembler,
-			const std::string &formulation,
+			const assembler::Assembler &assembler,
 			const utils::RefElementSampler &sampler,
 			const Eigen::MatrixXd &fun,
 			const bool use_sampler,
@@ -190,7 +186,6 @@ namespace polyfem::io
 		/// @param[in] polys polygons
 		/// @param[in] polys_3d polyhedra
 		/// @param[in] assembler assembler
-		/// @param[in] formulation formulation
 		/// @param[in] sampler sampler for the local element
 		/// @param[in] n_points is the size of the output.
 		/// @param[in] fun function to used
@@ -205,12 +200,11 @@ namespace polyfem::io
 			const Eigen::VectorXi &disc_orders,
 			const std::map<int, Eigen::MatrixXd> &polys,
 			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
-			const assembler::AssemblerUtils &assembler,
-			const std::string &formulation,
+			const assembler::Assembler &assembler,
 			const utils::RefElementSampler &sampler,
 			const int n_points,
 			const Eigen::MatrixXd &fun,
-			Eigen::MatrixXd &result,
+			std::vector<assembler::Assembler::NamedMatrix> &result,
 			const bool use_sampler,
 			const bool boundary_only);
 
@@ -225,7 +219,6 @@ namespace polyfem::io
 		/// @param[in] polys polygons
 		/// @param[in] polys_3d polyhedra
 		/// @param[in] assembler assembler
-		/// @param[in] formulation formulation
 		/// @param[in] sampler sampler for the local element
 		/// @param[in] n_points is the size of the output.
 		/// @param[in] fun function to used
@@ -242,13 +235,12 @@ namespace polyfem::io
 			const Eigen::VectorXi &disc_orders,
 			const std::map<int, Eigen::MatrixXd> &polys,
 			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
-			const assembler::AssemblerUtils &assembler,
-			const std::string &formulation,
+			const assembler::Assembler &assembler,
 			const utils::RefElementSampler &sampler,
 			const int n_points,
 			const Eigen::MatrixXd &fun,
-			Eigen::MatrixXd &result_scalar,
-			Eigen::MatrixXd &result_tensor,
+			std::vector<assembler::Assembler::NamedMatrix> &result_scalar,
+			std::vector<assembler::Assembler::NamedMatrix> &result_tensor,
 			const bool use_sampler,
 			const bool boundary_only);
 
@@ -261,7 +253,6 @@ namespace polyfem::io
 		/// @param[in] polys polygons
 		/// @param[in] polys_3d polyhedra
 		/// @param[in] assembler assembler
-		/// @param[in] formulation formulation
 		/// @param[in] sampler sampler for the local element
 		/// @param[in] n_points is the size of the output.
 		/// @param[in] fun function to used
@@ -276,12 +267,11 @@ namespace polyfem::io
 			const Eigen::VectorXi &disc_orders,
 			const std::map<int, Eigen::MatrixXd> &polys,
 			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
-			const assembler::AssemblerUtils &assembler,
-			const std::string &formulation,
+			const assembler::Assembler &assembler,
 			const utils::RefElementSampler &sampler,
 			const int n_points,
 			const Eigen::MatrixXd &fun,
-			Eigen::MatrixXd &result,
+			std::vector<assembler::Assembler::NamedMatrix> &result,
 			const bool use_sampler,
 			const bool boundary_only);
 
@@ -332,7 +322,6 @@ namespace polyfem::io
 		/// @param[in] bases bases
 		/// @param[in] gbases geom bases
 		/// @param[in] assembler assembler
-		/// @param[in] formulation formulation
 		/// @param[in] pts boundary points
 		/// @param[in] faces boundary faces
 		/// @param[in] fun function to used
@@ -347,8 +336,7 @@ namespace polyfem::io
 			const bool is_problem_scalar,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
-			const assembler::AssemblerUtils &assembler,
-			const std::string &formulation,
+			const assembler::Assembler &assembler,
 			const Eigen::MatrixXd &pts,
 			const Eigen::MatrixXi &faces,
 			const Eigen::MatrixXd &fun,
@@ -365,7 +353,6 @@ namespace polyfem::io
 		/// @param[in] bases bases
 		/// @param[in] gbases geom bases
 		/// @param[in] assembler assembler
-		/// @param[in] formulation formulation
 		/// @param[in] pts boundary points
 		/// @param[in] faces boundary faces
 		/// @param[in] fun function to used
@@ -379,8 +366,7 @@ namespace polyfem::io
 			const bool is_problem_scalar,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
-			const assembler::AssemblerUtils &assembler,
-			const std::string &formulation,
+			const assembler::Assembler &assembler,
 			const Eigen::MatrixXd &pts,
 			const Eigen::MatrixXi &faces,
 			const Eigen::MatrixXd &fun,

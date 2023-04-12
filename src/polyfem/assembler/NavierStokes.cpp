@@ -1,14 +1,11 @@
 #include "NavierStokes.hpp"
 
-#include <polyfem/basis/Basis.hpp>
-#include <polyfem/utils/ElasticityUtils.hpp>
-
 namespace polyfem::assembler
 {
-	template <bool full_gradient>
-	void NavierStokesVelocity<full_gradient>::add_multimaterial(const int index, const json &params)
+
+	void NavierStokesVelocity::add_multimaterial(const int index, const json &params)
 	{
-		assert(size_ == 2 || size_ == 3);
+		assert(size() == 2 || size() == 3);
 
 		if (params.count("viscosity"))
 		{
@@ -16,15 +13,8 @@ namespace polyfem::assembler
 		}
 	}
 
-	template <bool full_gradient>
-	void NavierStokesVelocity<full_gradient>::set_size(const int size)
-	{
-		size_ = size;
-	}
-
-	template <bool full_gradient>
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-	NavierStokesVelocity<full_gradient>::compute_rhs(const AutodiffHessianPt &pt) const
+	NavierStokesVelocity::compute_rhs(const AutodiffHessianPt &pt) const
 	{
 		assert(pt.size() == size());
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
@@ -41,94 +31,18 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	template <bool full_gradient>
-	void NavierStokesVelocity<full_gradient>::compute_norm_velocity(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &velocity, Eigen::MatrixXd &norms) const
-	{
-		norms.resize(local_pts.rows(), 1);
-		assert(velocity.cols() == 1);
-
-		Eigen::MatrixXd vel(1, size());
-
-		ElementAssemblyValues vals;
-		vals.compute(-1, size() == 3, local_pts, bs, gbs);
-
-		for (long p = 0; p < local_pts.rows(); ++p)
-		{
-			vel.setZero();
-
-			for (std::size_t j = 0; j < bs.bases.size(); ++j)
-			{
-				const basis::Basis &b = bs.bases[j];
-				const auto &loc_val = vals.basis_values[j];
-
-				assert(bs.bases.size() == vals.basis_values.size());
-				assert(loc_val.val.rows() == local_pts.rows());
-				assert(loc_val.val.cols() == 1);
-
-				for (int d = 0; d < size(); ++d)
-				{
-					for (std::size_t ii = 0; ii < b.global().size(); ++ii)
-					{
-						vel(d) += b.global()[ii].val * loc_val.val(p) * velocity(b.global()[ii].index * size() + d);
-					}
-				}
-			}
-
-			norms(p) = vel.norm();
-		}
-	}
-
-	template <bool full_gradient>
-	void NavierStokesVelocity<full_gradient>::compute_stress_tensor(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &velocity, Eigen::MatrixXd &tensor) const
-	{
-		tensor.resize(local_pts.rows(), size());
-		assert(velocity.cols() == 1);
-
-		Eigen::MatrixXd vel(1, size());
-
-		ElementAssemblyValues vals;
-		vals.compute(-1, size() == 3, local_pts, bs, gbs);
-
-		for (long p = 0; p < local_pts.rows(); ++p)
-		{
-			vel.setZero();
-
-			for (std::size_t j = 0; j < bs.bases.size(); ++j)
-			{
-				const basis::Basis &b = bs.bases[j];
-				const auto &loc_val = vals.basis_values[j];
-
-				assert(bs.bases.size() == vals.basis_values.size());
-				assert(loc_val.grad.rows() == local_pts.rows());
-				assert(loc_val.grad.cols() == size());
-
-				for (int d = 0; d < size(); ++d)
-				{
-					for (std::size_t ii = 0; ii < b.global().size(); ++ii)
-					{
-						vel(d) += b.global()[ii].val * loc_val.val(p) * velocity(b.global()[ii].index * size() + d);
-					}
-				}
-			}
-
-			tensor.row(p) = vel;
-		}
-	}
-
-	template <bool full_gradient>
 	Eigen::VectorXd
-	NavierStokesVelocity<full_gradient>::assemble_grad(const NonLinearAssemblerData &data) const
+	NavierStokesVelocity::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		assert(false);
 		return Eigen::VectorXd(data.vals.basis_values.size() * size());
 	}
 
-	template <bool full_gradient>
 	Eigen::MatrixXd
-	NavierStokesVelocity<full_gradient>::assemble_hessian(const NonLinearAssemblerData &data) const
+	NavierStokesVelocity::assemble_hessian(const NonLinearAssemblerData &data) const
 	{
 		Eigen::MatrixXd H;
-		if (full_gradient)
+		if (full_gradient_)
 			H = compute_N(data) + compute_W(data);
 		else
 			H = compute_N(data);
@@ -137,8 +51,8 @@ namespace polyfem::assembler
 	}
 
 	// Compute N = int v \cdot \nabla phi_i \cdot \phi_j
-	template <bool full_gradient>
-	Eigen::MatrixXd NavierStokesVelocity<full_gradient>::compute_N(const NonLinearAssemblerData &data) const
+
+	Eigen::MatrixXd NavierStokesVelocity::compute_N(const NonLinearAssemblerData &data) const
 	{
 		typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> GradMat;
 
@@ -215,8 +129,8 @@ namespace polyfem::assembler
 	}
 
 	// Compute N = int phi_j \cdot \nabla v \cdot \phi_j
-	template <bool full_gradient>
-	Eigen::MatrixXd NavierStokesVelocity<full_gradient>::compute_W(const NonLinearAssemblerData &data) const
+
+	Eigen::MatrixXd NavierStokesVelocity::compute_W(const NonLinearAssemblerData &data) const
 	{
 		typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> GradMat;
 
@@ -296,6 +210,11 @@ namespace polyfem::assembler
 		return W;
 	}
 
-	template class NavierStokesVelocity<true>;
-	template class NavierStokesVelocity<false>;
+	std::map<std::string, Assembler::ParamFunc> NavierStokesVelocity::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+		res["k"] = [this](const RowVectorNd &, const RowVectorNd &, double, int) { return this->viscosity_; };
+
+		return res;
+	}
 } // namespace polyfem::assembler

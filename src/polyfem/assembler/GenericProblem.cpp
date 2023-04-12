@@ -1,10 +1,9 @@
 #include "GenericProblem.hpp"
+
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/io/MatrixIO.hpp>
-
-#include <iostream>
 
 namespace polyfem
 {
@@ -54,7 +53,7 @@ namespace polyfem
 		{
 		}
 
-		void GenericTensorProblem::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), pts.cols());
 
@@ -807,18 +806,11 @@ namespace polyfem
 					neumann_boundary_ids_[i] = j_boundary[i - offset]["id"];
 
 					auto ff = j_boundary[i - offset]["value"];
-					if (ff.is_array())
-					{
-						for (size_t k = 0; k < ff.size(); ++k)
-							forces_[i].value[k].init(ff[k]);
-					}
-					else
-					{
-						assert(false);
-						forces_[i].value[0].init(0);
-						forces_[i].value[1].init(0);
-						forces_[i].value[2].init(0);
-					}
+					assert(ff.is_array());
+
+					for (size_t k = 0; k < ff.size(); ++k)
+						forces_[i].value[k].init(ff[k]);
+
 					if (j_boundary[i - offset]["interpolation"].is_array())
 					{
 						for (int ii = 0; ii < j_boundary[i - offset]["interpolation"].size(); ++ii)
@@ -1034,7 +1026,7 @@ namespace polyfem
 		{
 		}
 
-		void GenericScalarProblem::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericScalarProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), 1);
 			if (is_rhs_zero())

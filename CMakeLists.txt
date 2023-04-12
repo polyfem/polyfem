@@ -54,6 +54,9 @@ include(Warnings)
 # Use C++11/14
 include(CXXFeatures)
 
+# Utility function to link libraries as system libraries to avoid warnings
+include(PolyfemTargetLinkSystemLibraries)
+
 # Sort projects inside the solution
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -175,14 +178,18 @@ endif ()
 
 # Eigen
 include(eigen)
-target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
+polyfem_target_link_system_libraries(polyfem PUBLIC Eigen3::Eigen)
 
 # polysolve
 include(polysolver)
-target_link_libraries(polyfem PUBLIC polysolve)
+polyfem_target_link_system_libraries(polyfem PUBLIC polysolve)
+
+# paraviewo
+include(paraviewo)
+polyfem_target_link_system_libraries(polyfem PUBLIC paraviewo::paraviewo)
 
 include(ipc_toolkit)
-target_link_libraries(polyfem PUBLIC ipc::toolkit)
+polyfem_target_link_system_libraries(polyfem PUBLIC ipc::toolkit)
 
 # Threading
 if(POLYFEM_THREADING STREQUAL "CPP")
@@ -192,69 +199,69 @@ if(POLYFEM_THREADING STREQUAL "CPP")
     target_compile_definitions(polyfem PUBLIC _GLIBCXX_USE_TBB_PAR_BACKEND=0)
 elseif(POLYFEM_THREADING STREQUAL "TBB")
     include(onetbb)
-    target_link_libraries(polyfem PUBLIC TBB::tbb)
+    polyfem_target_link_system_libraries(polyfem PUBLIC TBB::tbb)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TBB)
 endif()
 
 # libigl
 include(libigl)
-target_link_libraries(polyfem PUBLIC igl::core)
+polyfem_target_link_system_libraries(polyfem PUBLIC igl::core)
 
 if(LIBIGL_WITH_TRIANGLE)
-    target_link_libraries(polyfem PUBLIC igl::triangle)
+    polyfem_target_link_system_libraries(polyfem PUBLIC igl::triangle)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TRIANGLE)
 endif()
 
 # BVH
 include(BVH)
-target_link_libraries(polyfem PUBLIC BVH_lib)
+polyfem_target_link_system_libraries(polyfem PUBLIC BVH_lib)
 
 # MSHIO
 include(mshio)
-target_link_libraries(polyfem PUBLIC mshio)
+polyfem_target_link_system_libraries(polyfem PUBLIC mshio)
 
 # Geogram
 include(geogram)
-target_link_libraries(polyfem PUBLIC geogram)
+polyfem_target_link_system_libraries(polyfem PUBLIC geogram)
 
 # spdlog
 include(spdlog)
-target_link_libraries(polyfem PUBLIC spdlog::spdlog)
+polyfem_target_link_system_libraries(polyfem PUBLIC spdlog::spdlog)
 
 # CppNumericalSolvers
 include(cppoptlib)
-target_link_libraries(polyfem PUBLIC cppoptlib)
+polyfem_target_link_system_libraries(polyfem PUBLIC cppoptlib)
 
 # LBFGSpp
 include(LBFGSpp)
-target_link_libraries(polyfem PUBLIC LBFGSpp::LBFGSpp)
+polyfem_target_link_system_libraries(polyfem PUBLIC LBFGSpp::LBFGSpp)
 
 # TinyExpr library
 include(tinyexpr)
-target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
+polyfem_target_link_system_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
 
 # TinyXML library
 include(tinyxml)
-target_link_libraries(polyfem PUBLIC tinyxml2)
+polyfem_target_link_system_libraries(polyfem PUBLIC tinyxml2)
 
 # JSON Specification Engine library
 include(jse)
-target_link_libraries(polyfem PUBLIC jse::jse)
+polyfem_target_link_system_libraries(polyfem PUBLIC jse::jse)
 
 # HighFive + HDF5 library
 include(hdf5)
-target_link_libraries(polyfem PUBLIC hdf5::hdf5)
+polyfem_target_link_system_libraries(polyfem PUBLIC hdf5::hdf5)
 
 include(high_five)
-target_link_libraries(polyfem PUBLIC HighFive::HighFive)
+polyfem_target_link_system_libraries(polyfem PUBLIC HighFive::HighFive)
 
 # natsort library
 include(natsort)
-target_link_libraries(polyfem PUBLIC natsort::natsort)
+polyfem_target_link_system_libraries(polyfem PUBLIC natsort::natsort)
 
 # GLOB library
 include(glob)
-target_link_libraries(polyfem PUBLIC Glob::Glob)
+polyfem_target_link_system_libraries(polyfem PUBLIC Glob::Glob)
 
 # Tracy library
 # include(tracy)
@@ -267,20 +274,20 @@ target_link_libraries(polyfem PUBLIC Glob::Glob)
 # # MMG wrapper
 if(POLYFEM_WITH_MMG)
     include(mmg)
-    target_link_libraries(polyfem PUBLIC mmg::mmg)
+    polyfem_target_link_system_libraries(polyfem PUBLIC mmg::mmg)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
 endif()
 
 if(POLYFEM_WITH_REMESHING)
     # wmtk library
     include(wmtk)
-    target_link_libraries(polyfem PUBLIC wmtk::toolkit)
+    polyfem_target_link_system_libraries(polyfem PUBLIC wmtk::toolkit)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_REMESHING)
 endif()
 
 if(POLYFEM_WITH_CLIPPER)
     include(clipper)
-    target_link_libraries(polyfem PUBLIC clipper::clipper)
+    polyfem_target_link_system_libraries(polyfem PUBLIC clipper::clipper)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
 endif()
 # else()
@@ -300,13 +307,11 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
 
     target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+
+    target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem::polyfem polyfem::warnings)
+
     include(cli11)
-    target_link_libraries(${PROJECT_NAME}_bin
-        PUBLIC
-            polyfem::polyfem
-            polyfem::warnings
-            CLI11::CLI11
-    )
+    polyfem_target_link_system_libraries(${PROJECT_NAME}_bin PUBLIC CLI11::CLI11)
 
     if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
         set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)

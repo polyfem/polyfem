@@ -27,7 +27,7 @@ else()
         PREFIX ${FETCHCONTENT_BASE_DIR}/polyfem-test-data
         SOURCE_DIR ${POLYFEM_DATA_DIR}
         GIT_REPOSITORY https://github.com/polyfem/polyfem-data
-        GIT_TAG 5030093643ad4e0fc785d4213bea3f7e1c3ba205
+        GIT_TAG 87f0ecab929b5f3a0ae827980014318cee9a0f9c
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
         INSTALL_COMMAND ""

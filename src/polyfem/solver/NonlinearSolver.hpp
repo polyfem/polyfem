@@ -37,7 +37,7 @@ namespace cppoptlib
 
 		void set_line_search(const std::string &line_search_name);
 
-		void minimize(ProblemType &objFunc, TVector &x);
+		void minimize(ProblemType &objFunc, TVector &x) override;
 
 		double line_search(const TVector &x, const TVector &delta_x, ProblemType &objFunc);
 

@@ -21,7 +21,7 @@ namespace polyfem
 		/// are tagged as boundary, and vertices incident to a polytope are also considered as boundary.
 		enum class ElementType
 		{
-			SIMPLEX,                       /// Triangle/tet element
+			SIMPLEX = 0,                   /// Triangle/tet element
 			REGULAR_INTERIOR_CUBE,         /// Regular quad/hex inside a 3^n patch
 			SIMPLE_SINGULAR_INTERIOR_CUBE, /// Quad/hex incident to exactly 1 singular vertex (in 2D) or edge (in 3D)
 			MULTI_SINGULAR_INTERIOR_CUBE,  /// Quad/Hex incident to more than 1 singular vertices (should not happen in 2D)
@@ -641,11 +641,11 @@ namespace polyfem
 			/// stores if the mesh is rational
 			bool is_rational_ = false;
 
-			/// high-oder nodes associates to edges
+			/// high-order nodes associates to edges
 			std::vector<EdgeNodes> edge_nodes_;
-			/// high-oder nodes associates to faces
+			/// high-order nodes associates to faces
 			std::vector<FaceNodes> face_nodes_;
-			/// high-oder nodes associates to cells
+			/// high-order nodes associates to cells
 			std::vector<CellNodes> cell_nodes_;
 			/// weights associates to cells for rational polynomail meshes
 			std::vector<std::vector<double>> cell_weights_;

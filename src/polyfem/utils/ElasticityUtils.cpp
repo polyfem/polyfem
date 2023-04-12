@@ -74,6 +74,8 @@ namespace polyfem
 			grad = auto_diff_energy.getGradient();
 			break;
 		}
+		default:
+			throw std::runtime_error("gradient_from_energy: unknown size");
 		}
 
 		if (grad.size() <= 0)
@@ -170,6 +172,8 @@ namespace polyfem
 			hessian = auto_diff_energy.getHessian();
 			break;
 		}
+		default:
+			throw std::runtime_error("gradient_from_energy: unknown size");
 		}
 
 		if (hessian.size() <= 0)
@@ -248,4 +252,13 @@ namespace polyfem
 		return von_mises_stress;
 	}
 
+	Eigen::MatrixXd pk1_from_cauchy(const Eigen::MatrixXd &stress, const Eigen::MatrixXd &F)
+	{
+		return F.determinant() * stress * F.inverse().transpose();
+	}
+
+	Eigen::MatrixXd pk2_from_cauchy(const Eigen::MatrixXd &stress, const Eigen::MatrixXd &F)
+	{
+		return F.determinant() * F.inverse() * stress * F.inverse().transpose();
+	}
 } // namespace polyfem

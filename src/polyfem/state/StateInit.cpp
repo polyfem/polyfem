@@ -2,6 +2,7 @@
 
 #include <polyfem/problem/ProblemFactory.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
+#include <polyfem/assembler/Mass.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -270,9 +271,21 @@ namespace polyfem
 			args["contact"]["friction_coefficient"] = 0;
 		}
 
+		const std::string formulation = this->formulation();
+		assembler = assembler::AssemblerUtils::make_assembler(formulation);
+		assert(assembler->name() == formulation);
+		mass_matrix_assembler = std::make_shared<assembler::Mass>();
+		const auto other_name = assembler::AssemblerUtils::other_assembler_name(formulation);
+
+		if (!other_name.empty())
+		{
+			mixed_assembler = assembler::AssemblerUtils::make_mixed_assembler(formulation);
+			pressure_assembler = assembler::AssemblerUtils::make_assembler(other_name);
+		}
+
 		if (!args.contains("preset_problem"))
 		{
-			if (assembler.is_scalar(formulation()))
+			if (!assembler->is_tensor())
 				problem = std::make_shared<assembler::GenericScalarProblem>("GenericScalar");
 			else
 				problem = std::make_shared<assembler::GenericTensorProblem>("GenericTensor");
@@ -296,7 +309,7 @@ namespace polyfem
 		{
 			if (args["preset_problem"]["type"] == "Kernel")
 			{
-				problem = std::make_shared<KernelProblem>("Kernel", assembler);
+				problem = std::make_shared<KernelProblem>("Kernel", *assembler);
 				problem->clear();
 				KernelProblem &kprob = *dynamic_cast<KernelProblem *>(problem.get());
 			}
@@ -359,7 +372,7 @@ namespace polyfem
 				}
 				else
 				{
-					assert(false);
+					throw std::runtime_error("This code should be unreachable!");
 				}
 			}
 			else if (is_param_valid(args["time"], "dt"))
@@ -378,7 +391,7 @@ namespace polyfem
 			else
 			{
 				// tend and dt are already confirmed to be invalid
-				assert(false);
+				throw std::runtime_error("This code should be unreachable!");
 			}
 		}
 		else if (num_valid == 3)
@@ -390,8 +403,7 @@ namespace polyfem
 			// Check that all parameters agree
 			if (abs(t0 + dt * time_steps - tend) > 1e-12)
 			{
-				logger().error("Exactly two of (tend, dt, time_steps) must be specified");
-				throw std::runtime_error("Exactly two of (tend, dt, time_steps) must be specified");
+				log_and_throw_error("Exactly two of (tend, dt, time_steps) must be specified");
 			}
 		}
 
@@ -401,6 +413,38 @@ namespace polyfem
 		args["time"]["time_steps"] = time_steps;
 
 		logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
+	}
+
+	void State::set_materials(std::vector<std::shared_ptr<assembler::Assembler>> &assemblers) const
+	{
+		const int size = (assembler->is_tensor() || assembler->is_fluid()) ? mesh->dimension() : 1;
+		for (auto &a : assemblers)
+			a->set_size(size);
+
+		if (!utils::is_param_valid(args, "materials"))
+			return;
+
+		std::vector<int> body_ids(mesh->n_elements());
+		for (int i = 0; i < mesh->n_elements(); ++i)
+			body_ids[i] = mesh->get_body_id(i);
+
+		for (auto &a : assemblers)
+			a->set_materials(body_ids, args["materials"]);
+	}
+
+	void State::set_materials(assembler::Assembler &assembler) const
+	{
+		const int size = (this->assembler->is_tensor() || this->assembler->is_fluid()) ? this->mesh->dimension() : 1;
+		assembler.set_size(size);
+
+		if (!utils::is_param_valid(args, "materials"))
+			return;
+
+		std::vector<int> body_ids(mesh->n_elements());
+		for (int i = 0; i < mesh->n_elements(); ++i)
+			body_ids[i] = mesh->get_body_id(i);
+
+		assembler.set_materials(body_ids, args["materials"]);
 	}
 
 } // namespace polyfem

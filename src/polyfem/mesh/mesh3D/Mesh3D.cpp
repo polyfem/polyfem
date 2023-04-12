@@ -200,7 +200,7 @@ namespace polyfem
 		{
 			if (is_simplex(index.element) && orders_.size() > 0 && orders_(index.element) == n_new_nodes + 3)
 			{
-				assert(n_new_nodes == 1); // test higher than 4 oder meshes
+				assert(n_new_nodes == 1); // test higher than 4 order meshes
 				const auto &n = cell_nodes_[index.element];
 				assert(n.nodes.rows() == 1);
 				return n.nodes;
