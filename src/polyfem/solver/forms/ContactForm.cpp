@@ -153,7 +153,7 @@ namespace polyfem::solver
 				const double potential = constraint_set_[i].compute_potential(V, E, F, dhat_);
 
 				const int n_v = constraint_set_[i].num_vertices();
-				const std::array<long, 4> vis = constraint_set_[i].vertex_indices(E, F);
+				const std::array<long, 4> vis = constraint_set_[i].vertex_ids(E, F);
 				for (int j = 0; j < n_v; j++)
 				{
 					assert(0 <= vis[j] && vis[j] < num_vertices);

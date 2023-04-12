@@ -538,7 +538,7 @@ namespace polyfem::mesh
 			return state.resolve_output_path(fmt::format("edge_ranks_{:d}.vtu", i));
 		};
 
-		io::VTUWriter writer;
+		paraviewo::VTUWriter writer;
 		writer.add_field("displacement", displacements);
 		writer.add_field("elastic_energy_rank", elastic_energy_ranks);
 		if (!contact_ranks.empty())

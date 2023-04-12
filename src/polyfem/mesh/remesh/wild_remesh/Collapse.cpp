@@ -164,7 +164,7 @@ namespace polyfem::mesh
 
 #ifndef NDEBUG
 			// This should never happen because we only collapse collinear edges on the rest mesh boundary.
-			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices_at_rest()))
+			if (ipc::has_intersections(collision_mesh, collision_mesh.rest_positions()))
 			{
 				write_mesh(state.resolve_output_path("collapse_intersects.vtu"));
 				assert(false);

@@ -1,5 +1,6 @@
 #include <polyfem/mesh/remesh/PhysicsRemesher.hpp>
 
+#include <polyfem/assembler/Mass.hpp>
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/problems/StaticBoundaryNLProblem.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
@@ -52,15 +53,15 @@ namespace polyfem::mesh
 		this->num_solves++;
 
 		// These have to stay alive
-		assembler::AssemblerUtils &assembler = this->init_assembler(local_mesh.body_ids());
+		this->init_assembler(local_mesh.body_ids());
 		SolveData solve_data;
 		assembler::AssemblyValsCache ass_vals_cache;
 		Eigen::SparseMatrix<double> mass;
 		ipc::CollisionMesh collision_mesh;
 
 		local_solve_data(
-			local_mesh, bases, boundary_nodes, assembler, include_global_boundary,
-			solve_data, ass_vals_cache, mass, collision_mesh);
+			local_mesh, bases, boundary_nodes, *this->assembler, *this->mass_matrix_assembler,
+			include_global_boundary, solve_data, ass_vals_cache, mass, collision_mesh);
 
 		const Eigen::MatrixXd target_x = utils::flatten(local_mesh.displacements());
 		Eigen::MatrixXd sol = target_x;
@@ -241,7 +242,8 @@ namespace polyfem::mesh
 		const LocalMesh<This> &local_mesh,
 		const std::vector<polyfem::basis::ElementBases> &bases,
 		const std::vector<int> &boundary_nodes,
-		const assembler::AssemblerUtils &assembler,
+		const assembler::Assembler &assembler,
+		const assembler::Mass &mass_matrix_assembler,
 		const bool contact_enabled,
 		solver::SolveData &solve_data,
 		assembler::AssemblyValsCache &ass_vals_cache,
@@ -261,9 +263,9 @@ namespace polyfem::mesh
 		{
 			POLYFEM_REMESHER_SCOPED_TIMER("Assemble mass matrix");
 			ass_vals_cache.init(this->is_volume(), bases, /*gbases=*/bases, /*is_mass=*/true);
-			assembler.assemble_mass_matrix(
-				/*assembler_formulation=*/"", this->is_volume(), n_bases,
-				/*use_density=*/true, bases, /*gbases=*/bases, ass_vals_cache, mass);
+			mass_matrix_assembler.assemble(
+				this->is_volume(), n_bases, bases, /*gbases=*/bases,
+				ass_vals_cache, mass, /*is_mass=*/true);
 			// Set the mass of the codimensional fixed vertices to the average mass.
 			const int local_ndof = this->dim() * local_mesh.num_local_vertices();
 			for (int i = local_ndof; i < ndof; ++i)
@@ -320,13 +322,12 @@ namespace polyfem::mesh
 				this->dim(), this->current_time,
 				// Elastic form
 				n_bases, bases, /*geom_bases=*/bases, assembler, ass_vals_cache,
-				state.formulation(),
 				// Body form
 				/*n_pressure_bases=*/0, boundary_nodes, local_boundary,
 				local_neumann_boundary, state.n_boundary_samples(), rhs,
-				/*sol=*/target_x,
+				/*sol=*/target_x, mass_matrix_assembler.density(),
 				// Inertia form
-				state.args["solver"]["ignore_inertia"], mass,
+				state.args["solver"]["ignore_inertia"], mass, /*damping_assembler=*/nullptr,
 				// Lagged regularization form
 				state.args["solver"]["advanced"]["lagged_regularization_weight"],
 				state.args["solver"]["advanced"]["lagged_regularization_iterations"],

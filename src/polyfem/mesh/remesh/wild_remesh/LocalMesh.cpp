@@ -4,7 +4,8 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
-#include <polyfem/io/VTUWriter.hpp>
+
+#include <paraviewo/VTUWriter.hpp>
 
 #include <wmtk/utils/TupleUtils.hpp>
 
@@ -533,7 +534,7 @@ namespace polyfem::mesh
 		Eigen::VectorXd is_free = Eigen::VectorXd::Ones(num_vertices());
 		is_free(fixed_vertices()) = Eigen::VectorXd::Zero(fixed_vertices().size());
 
-		io::VTUWriter writer;
+		paraviewo::VTUWriter writer;
 		writer.add_field("is_free", is_free);
 		writer.add_field("displacement", utils::unflatten(sol, M::DIM));
 		writer.write_mesh(path, rest_positions(), elements());

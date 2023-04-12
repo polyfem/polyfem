@@ -2,6 +2,7 @@
 
 #include <polyfem/mesh/remesh/L2Projection.hpp>
 
+#include <polyfem/assembler/Mass.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/basis/LagrangeBasis2d.hpp>
@@ -10,7 +11,7 @@
 #include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/io/OBJWriter.hpp>
-#include <polyfem/io/VTUWriter.hpp>
+#include <paraviewo/VTUWriter.hpp>
 
 #include <igl/boundary_facets.h>
 #include <igl/edges.h>
@@ -27,9 +28,14 @@ namespace polyfem::mesh
 		  m_obstacle_displacements(obstacle_displacements),
 		  m_obstacle_quantities(obstacle_quantities),
 		  current_time(current_time),
-		  starting_energy(starting_energy),
-		  assembler(state.assembler)
+		  starting_energy(starting_energy)
 	{
+		assembler = assembler::AssemblerUtils::make_assembler(state.formulation());
+		state.set_materials(*assembler);
+		assert(assembler->name() == state.formulation());
+
+		mass_matrix_assembler = std::make_shared<assembler::Mass>();
+		state.set_materials(*mass_matrix_assembler);
 	}
 
 	void Remesher::init(
@@ -296,21 +302,20 @@ namespace polyfem::mesh
 		return n_bases;
 	}
 
-	assembler::AssemblerUtils &Remesher::init_assembler(
+	void Remesher::init_assembler(
 		const std::vector<int> &body_ids) const
 	{
 		POLYFEM_REMESHER_SCOPED_TIMER("Create assembler");
-		// assembler::AssemblerUtils new_assembler = state.assembler;
 		assert(utils::is_param_valid(state.args, "materials"));
-		assembler.set_materials(body_ids, state.args["materials"]);
-		return assembler;
+		assembler->set_materials(body_ids, state.args["materials"]);
+		mass_matrix_assembler->set_materials(body_ids, state.args["materials"]);
 	}
 
 	void Remesher::write_mesh(const std::string &path) const
 	{
 		assert(utils::StringUtils::endswith(path, ".vtu"));
 
-		io::VTUWriter writer;
+		paraviewo::VTUWriter writer;
 
 		Eigen::MatrixXd rest_positions = this->rest_positions();
 		Eigen::MatrixXd displacements = this->displacements();

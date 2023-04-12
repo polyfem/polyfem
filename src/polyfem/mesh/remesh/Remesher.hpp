@@ -177,7 +177,7 @@ namespace polyfem::mesh
 		/// @brief Create an assembler object
 		/// @param body_ids One body ID per element.
 		/// @return Assembler object
-		assembler::AssemblerUtils &init_assembler(const std::vector<int> &body_ids) const;
+		void init_assembler(const std::vector<int> &body_ids) const;
 
 		/// @brief Build bases for a given mesh (V, F)
 		/// @param V Matrix of vertex (rest) positions
@@ -224,7 +224,8 @@ namespace polyfem::mesh
 		/// @brief Starting energy
 		const double starting_energy;
 		/// @brief copy of the assembler
-		mutable assembler::AssemblerUtils assembler;
+		mutable std::shared_ptr<assembler::Assembler> assembler;
+		mutable std::shared_ptr<assembler::Mass> mass_matrix_assembler;
 
 		// --------------------------------------------------------------------
 		// statistics

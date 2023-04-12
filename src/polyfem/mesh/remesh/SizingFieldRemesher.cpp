@@ -1,6 +1,7 @@
 #include "SizingFieldRemesher.hpp"
 
 #include <ipc/collision_mesh.hpp>
+#include <ipc/candidates/candidates.hpp>
 #include <ipc/broad_phase/hash_grid.hpp>
 
 #include <Eigen/Dense>
@@ -107,7 +108,7 @@ namespace polyfem::mesh
 		const Eigen::MatrixXd &V,
 		const double dhat) const
 	{
-		const Eigen::MatrixXd &V_rest = collision_mesh.vertices_at_rest();
+		const Eigen::MatrixXd &V_rest = collision_mesh.rest_positions();
 		const Eigen::MatrixXi &E = collision_mesh.edges();
 		const Eigen::MatrixXi &F = collision_mesh.faces();
 
@@ -119,7 +120,7 @@ namespace polyfem::mesh
 			const double distance_sqr = candidate.compute_distance(V, E, F);
 			const double rest_distance_sqr = candidate.compute_distance(V_rest, E, F);
 			const ipc::VectorMax12d distance_grad = candidate.compute_distance_gradient(V, E, F);
-			const auto vertices = candidate.vertex_indices(E, F);
+			const auto vertices = candidate.vertex_ids(E, F);
 			for (int i = 0; i < 4; i++)
 			{
 				const long vi = vertices[i];
@@ -152,7 +153,7 @@ namespace polyfem::mesh
 		if (this->obstacle().n_vertices())
 			utils::append_rows(V, this->obstacle().v() + this->obstacle_displacements());
 
-		V_rest = collision_mesh.vertices_at_rest();
+		V_rest = collision_mesh.rest_positions();
 		V = collision_mesh.vertices(V);
 		const Eigen::MatrixXi &E = collision_mesh.edges();
 		const Eigen::MatrixXi &F = collision_mesh.faces();
