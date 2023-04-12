@@ -39,6 +39,8 @@
 #include <string>
 #include <unordered_map>
 
+#include <spdlog/sinks/basic_file_sink.h>
+
 #include <ipc/collision_mesh.hpp>
 #include <ipc/utils/logger.hpp>
 
@@ -110,6 +112,8 @@ namespace polyfem
 			spdlog::set_level(log_level);
 			logger().set_level(log_level);
 			ipc::logger().set_level(log_level);
+			if (file_sink_)
+				file_sink_->set_level(spdlog::level::trace);
 		}
 
 		/// gets the output log as json
@@ -125,6 +129,8 @@ namespace polyfem
 	private:
 		/// initializing the logger meant for internal usage
 		void init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level);
+
+		spdlog::sink_ptr file_sink_ = nullptr;
 
 	public:
 		//---------------------------------------------------

@@ -127,7 +127,10 @@ namespace polyfem
 			sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
 
 		if (!log_file.empty())
-			sinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_file, /*truncate=*/true));
+		{
+			file_sink_ = std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_file, /*truncate=*/true);
+			sinks.push_back(file_sink_);
+		}
 
 		init_logger(sinks, log_level);
 		spdlog::flush_every(std::chrono::seconds(3));
@@ -142,10 +145,7 @@ namespace polyfem
 
 	void State::init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level)
 	{
-		spdlog::set_level(log_level);
-
 		set_logger(std::make_shared<spdlog::logger>("polyfem", sinks.begin(), sinks.end()));
-		logger().set_level(log_level);
 
 		GEO::Logger *geo_logger = GEO::Logger::instance();
 		geo_logger->unregister_all_clients();
@@ -153,7 +153,8 @@ namespace polyfem
 		geo_logger->set_pretty(false);
 
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
-		ipc::logger().set_level(log_level);
+
+		set_log_level(log_level);
 	}
 
 	void State::init(const json &p_args_in, const bool strict_validation)
