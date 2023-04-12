@@ -230,7 +230,7 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 		ccd_tolerance, ccd_max_iterations);
 
 	FrictionForm form(
-		state_ptr->collision_mesh, epsv, mu, dhat, broad_phase_method, dt,
+		state_ptr->collision_mesh, nullptr, epsv, mu, dhat, broad_phase_method,
 		contact_form, /*n_lagging_iters=*/-1);
 
 	test_form(form, *state_ptr);
