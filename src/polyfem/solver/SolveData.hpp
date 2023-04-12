@@ -34,7 +34,8 @@ namespace polyfem::solver
 	class ContactForm;
 	class FrictionForm;
 	class BodyForm;
-	class ALForm;
+	class BCLagrangianForm;
+	class BCPenaltyForm;
 	class InertiaForm;
 	class ElasticForm;
 
@@ -116,7 +117,8 @@ namespace polyfem::solver
 		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
 		std::shared_ptr<solver::NLProblem> nl_problem;
 
-		std::shared_ptr<solver::ALForm> al_form;
+		std::shared_ptr<solver::BCLagrangianForm> al_lagr_form;
+		std::shared_ptr<solver::BCPenaltyForm> al_pen_form;
 		std::shared_ptr<solver::BodyForm> body_form;
 		std::shared_ptr<solver::ContactForm> contact_form;
 		std::shared_ptr<solver::ElasticForm> damping_form;

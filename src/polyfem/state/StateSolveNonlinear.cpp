@@ -9,7 +9,6 @@
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
-#include <polyfem/solver/forms/ALForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
 
 #include <polyfem/solver/NonlinearSolver.hpp>
@@ -235,10 +234,10 @@ namespace polyfem
 		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_solver<NLProblem>();
 
 		ALSolver al_solver(
-			nl_solver, solve_data.al_form,
+			nl_solver, solve_data.al_lagr_form, solve_data.al_pen_form,
 			args["solver"]["augmented_lagrangian"]["initial_weight"],
 			args["solver"]["augmented_lagrangian"]["scaling"],
-			args["solver"]["augmented_lagrangian"]["max_steps"],
+			args["solver"]["augmented_lagrangian"]["max_weight"],
 			[&](const Eigen::VectorXd &x) {
 				this->solve_data.update_barrier_stiffness(sol);
 			});
