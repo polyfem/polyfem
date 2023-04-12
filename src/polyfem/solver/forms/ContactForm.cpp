@@ -39,7 +39,7 @@ namespace polyfem::solver
 		assert(ccd_tolerance > 0);
 
 		prev_distance_ = -1;
-		constraint_set_.use_convergent_formulation = use_convergent_formulation;
+		constraint_set_.set_use_convergent_formulation(use_convergent_formulation);
 	}
 
 	void ContactForm::init(const Eigen::VectorXd &x)
@@ -89,8 +89,8 @@ namespace polyfem::solver
 
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
-		Eigen::VectorXd grad_barrier = ipc::compute_barrier_potential_gradient(
-			collision_mesh_, displaced_surface, constraint_set_, dhat_);
+		Eigen::VectorXd grad_barrier = constraint_set_.compute_potential_gradient(
+			collision_mesh_, displaced_surface, dhat_);
 		grad_barrier = collision_mesh_.to_full_dof(grad_barrier);
 
 		weight_ = ipc::initial_barrier_stiffness(
@@ -118,25 +118,25 @@ namespace polyfem::solver
 				candidates_, collision_mesh_, displaced_surface, dhat_);
 		else
 			constraint_set_.build(
-				collision_mesh_, displaced_surface, dhat_, /*dmin=*/0, broad_phase_method_);
+				collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_method_);
 		cached_displaced_surface = displaced_surface;
 	}
 
 	double ContactForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return ipc::compute_barrier_potential(collision_mesh_, compute_displaced_surface(x), constraint_set_, dhat_);
+		return constraint_set_.compute_potential(collision_mesh_, compute_displaced_surface(x), dhat_);
 	}
 
 	void ContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = ipc::compute_barrier_potential_gradient(collision_mesh_, compute_displaced_surface(x), constraint_set_, dhat_);
+		gradv = constraint_set_.compute_potential_gradient(collision_mesh_, compute_displaced_surface(x), dhat_);
 		gradv = collision_mesh_.to_full_dof(gradv);
 	}
 
 	void ContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		POLYFEM_SCOPED_TIMER("barrier hessian");
-		hessian = ipc::compute_barrier_potential_hessian(collision_mesh_, compute_displaced_surface(x), constraint_set_, dhat_, project_to_psd_);
+		hessian = constraint_set_.compute_potential_hessian(collision_mesh_, compute_displaced_surface(x), dhat_, project_to_psd_);
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
@@ -161,8 +161,8 @@ namespace polyfem::solver
 
 		double max_step;
 		if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU)
-			max_step = ipc::compute_collision_free_stepsize(
-				candidates_, collision_mesh_, V0, V1, ccd_tolerance_, ccd_max_iterations_);
+			max_step = candidates_.compute_collision_free_stepsize(
+				collision_mesh_, V0, V1, dmin_, ccd_tolerance_, ccd_max_iterations_);
 		else
 			max_step = ipc::compute_collision_free_stepsize(
 				collision_mesh_, V0, V1, broad_phase_method_, ccd_tolerance_, ccd_max_iterations_);
@@ -189,12 +189,11 @@ namespace polyfem::solver
 
 	void ContactForm::line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
-		ipc::construct_collision_candidates(
+		candidates_.build(
 			collision_mesh_,
 			compute_displaced_surface(x0),
 			compute_displaced_surface(x1),
-			candidates_,
-			/*inflation_radius=*/dhat_ / 1.99, // divide by 1.99 instead of 2 to be conservative
+			/*inflation_radius=*/dhat_ / 2,
 			broad_phase_method_);
 
 		use_cached_candidates_ = true;
@@ -210,7 +209,7 @@ namespace polyfem::solver
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
-		const double curr_distance = ipc::compute_minimum_distance(collision_mesh_, displaced_surface, constraint_set_);
+		const double curr_distance = constraint_set_.compute_minimum_distance(collision_mesh_, displaced_surface);
 
 		if (use_adaptive_barrier_stiffness_)
 		{
@@ -253,17 +252,13 @@ namespace polyfem::solver
 
 		bool is_valid;
 		if (use_cached_candidates_)
-			is_valid = ipc::is_step_collision_free(
-				candidates_, collision_mesh_,
-				displaced0,
-				displaced1,
+			is_valid = candidates_.is_step_collision_free(
+				collision_mesh_, displaced0, displaced1, dmin_,
 				ccd_tolerance_, ccd_max_iterations_);
 		else
 			is_valid = ipc::is_step_collision_free(
-				collision_mesh_,
-				displaced0,
-				displaced1,
-				broad_phase_method_, ccd_tolerance_, ccd_max_iterations_);
+				collision_mesh_, displaced0, displaced1, broad_phase_method_,
+				dmin_, ccd_tolerance_, ccd_max_iterations_);
 
 		return is_valid;
 	}

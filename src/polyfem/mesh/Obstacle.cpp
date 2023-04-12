@@ -267,19 +267,21 @@ namespace polyfem
 			{
 				assert(dim_ == 3);
 
-				Eigen::Vector3d cross_x = ipc::cross(Eigen::Vector3d::UnitX(), normal());
-				Eigen::Vector3d cross_y = ipc::cross(Eigen::Vector3d::UnitY(), normal());
+				const Eigen::Vector3d normal = this->normal();
+
+				const Eigen::Vector3d cross_x = Eigen::Vector3d::UnitX().cross(normal);
+				const Eigen::Vector3d cross_y = Eigen::Vector3d::UnitY().cross(normal);
 
 				Eigen::Vector3d tangent_x, tangent_y;
 				if (cross_x.squaredNorm() > cross_y.squaredNorm())
 				{
 					tangent_x = cross_x.normalized();
-					tangent_y = ipc::cross(normal(), cross_x).normalized();
+					tangent_y = normal.cross(cross_x).normalized();
 				}
 				else
 				{
 					tangent_x = cross_y.normalized();
-					tangent_y = ipc::cross(normal(), cross_y).normalized();
+					tangent_y = normal.cross(cross_y).normalized();
 				}
 
 				vis_v_.resize((size_x + 1) * (size_y + 1), 3);
