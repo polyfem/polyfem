@@ -11,6 +11,7 @@ namespace polyfem::solver
 		const double initial_al_weight,
 		const double scaling,
 		const double max_al_weight,
+		const double eta_tol,
 		const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness)
 		: nl_solver(nl_solver),
 		  lagr_form(lagr_form),
@@ -18,6 +19,7 @@ namespace polyfem::solver
 		  initial_al_weight(initial_al_weight),
 		  scaling(scaling),
 		  max_al_weight(max_al_weight),
+		  eta_tol(eta_tol),
 		  update_barrier_stiffness(update_barrier_stiffness)
 	{
 	}
@@ -65,7 +67,7 @@ namespace polyfem::solver
 
 			logger().debug("Current eta = {}", eta);
 
-			if (eta < 0.99 && al_weight < max_al_weight)
+			if (eta < eta_tol && al_weight < max_al_weight)
 				al_weight *= scaling;
 			else
 				lagr_form->update_lagrangian(sol, al_weight);
