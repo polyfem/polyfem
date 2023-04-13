@@ -3018,6 +3018,20 @@
         "doc": "interpolation of boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_cubic",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*/type",
         "type": "string",
         "options": [
@@ -3025,7 +3039,8 @@
             "linear",
             "linear_ramp",
             "piecewise_constant",
-            "piecewise_linear"
+            "piecewise_linear",
+            "piecewise_cubic"
         ],
         "doc": "type of interpolation of boundary condition"
     },
@@ -3188,6 +3203,20 @@
         "doc": "interpolation of boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/*",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_cubic",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/type",
         "type": "string",
         "options": [
@@ -3195,7 +3224,8 @@
             "linear",
             "linear_ramp",
             "piecewise_constant",
-            "piecewise_linear"
+            "piecewise_linear",
+            "piecewise_cubic"
         ],
         "doc": "type of interpolation of boundary condition"
     },
@@ -3350,6 +3380,20 @@
         "doc": "interpolation of boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_cubic",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*/type",
         "type": "string",
         "options": [
@@ -3357,7 +3401,8 @@
             "linear",
             "linear_ramp",
             "piecewise_constant",
-            "piecewise_linear"
+            "piecewise_linear",
+            "piecewise_cubic"
         ],
         "doc": "type of interpolation of boundary condition"
     },
