@@ -118,15 +118,6 @@ namespace polyfem::solver
 
 		/// @brief Update the barrier stiffness based on the current elasticity energy
 		/// @param x Current solution
-		/// @param nl_problem Nonlinear problem to use for computing the gradient
-		/// @param friction_form Pointer to the friction form
-		void update_barrier_stiffness(
-			const Eigen::VectorXd &x,
-			NLProblem &nl_problem,
-			std::shared_ptr<FrictionForm> friction_form);
-
-		/// @brief Update the barrier stiffness based on the current elasticity energy
-		/// @param x Current solution
 		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
 
 		inline bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }

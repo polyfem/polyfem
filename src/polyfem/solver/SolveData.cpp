@@ -155,14 +155,14 @@ namespace polyfem::solver
 			if (use_adaptive_barrier_stiffness)
 			{
 				contact_form->set_weight(1);
-				// logger().debug("Using adaptive barrier stiffness");
+				logger().debug("Using adaptive barrier stiffness");
 			}
 			else
 			{
 				assert(barrier_stiffness.is_number());
 				assert(barrier_stiffness.get<double>() > 0);
 				contact_form->set_weight(barrier_stiffness);
-				// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
+				logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
 			}
 
 			forms.push_back(contact_form);
@@ -206,34 +206,20 @@ namespace polyfem::solver
 
 	void SolveData::update_barrier_stiffness(const Eigen::VectorXd &x)
 	{
-		// TODO: missing use_adaptive_barrier_stiffness_ if (use_adaptive_barrier_stiffness_ && is_time_dependent_)
-		// if (inertia_form == nullptr)
-		// 	return;
-
-		// if (contact_form)
-		// 	contact_form->update_barrier_stiffness(x, *nl_problem, friction_form);
-
-		if (contact_form == nullptr)
+		if (contact_form == nullptr || !contact_form->use_adaptive_barrier_stiffness())
 			return;
 
-		if (!contact_form->use_adaptive_barrier_stiffness())
-			return;
-
-		Eigen::VectorXd grad_energy(x.size(), 1);
-		grad_energy.setZero();
-
-		elastic_form->first_derivative(x, grad_energy);
-
-		if (inertia_form)
+		Eigen::VectorXd grad_energy = Eigen::VectorXd::Zero(x.size());
+		const std::array<std::shared_ptr<Form>, 3> energy_forms{{elastic_form, inertia_form, body_form}};
+		for (const std::shared_ptr<Form> form : energy_forms)
 		{
-			Eigen::VectorXd grad_inertia(x.size());
-			inertia_form->first_derivative(x, grad_inertia);
-			grad_energy += grad_inertia;
-		}
+			if (form == nullptr || !form->enabled())
+				continue;
 
-		Eigen::VectorXd body_energy(x.size());
-		body_form->first_derivative(x, body_energy);
-		grad_energy += body_energy;
+			Eigen::VectorXd grad_form;
+			form->first_derivative(x, grad_form);
+			grad_energy += grad_form;
+		}
 
 		contact_form->update_barrier_stiffness(x, grad_energy);
 	}
