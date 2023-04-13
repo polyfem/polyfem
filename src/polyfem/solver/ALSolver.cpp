@@ -64,7 +64,7 @@ namespace polyfem::solver
 
 			if (al_steps >= max_al_steps)
 			{
-				log_and_throw_error(fmt::format("Unable to solve AL problem, out of iterations {} (current weight = {}), stopping", max_al_steps, al_weight));
+				log_and_throw_error("Unable to solve AL problem, out of iterations {} (current weight = {}), stopping", max_al_steps, al_weight);
 				break;
 			}
 

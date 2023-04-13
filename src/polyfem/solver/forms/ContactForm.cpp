@@ -228,7 +228,7 @@ namespace polyfem::solver
 
 			const double Linf = (V_toi - V0).lpNorm<Eigen::Infinity>();
 			if (max_step <= 0 || Linf == 0)
-				log_and_throw_error(fmt::format("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf));
+				log_and_throw_error("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf);
 
 			V_toi = (V1 - V0) * max_step + V0;
 		}

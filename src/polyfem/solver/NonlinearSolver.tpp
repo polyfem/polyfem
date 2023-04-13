@@ -35,6 +35,8 @@ namespace cppoptlib
 	{
 		using namespace polyfem;
 
+		constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
+
 		// ---------------------------
 		// Initialize the minimization
 		// ---------------------------
@@ -47,7 +49,7 @@ namespace cppoptlib
 		// double factor = 1e-5;
 
 		// Set these to nan to indicate they have not been computed yet
-		double old_energy = std::nan("");
+		double old_energy = NaN;
 
 		{
 			POLYFEM_SCOPED_TIMER("constraint set update", constraint_set_update_time);
@@ -66,7 +68,7 @@ namespace cppoptlib
 			log_and_throw_error("[{}] Initial gradient is nan; stopping", name());
 			return;
 		}
-		this->m_current.xDelta = std::nan(""); // we don't know the initial step size
+		this->m_current.xDelta = NaN; // we don't know the initial step size
 		this->m_current.fDelta = old_energy;
 		this->m_current.gradNorm = first_grad_norm / (normalize_gradient ? first_grad_norm : 1);
 
@@ -164,7 +166,7 @@ namespace cppoptlib
 			// Use the maximum absolute displacement value divided by the timestep,
 			// so the units are in velocity units.
 			// TODO: Also divide by the world scale to make this criteria scale invariant.
-			this->m_current.xDelta = delta_x_norm / dt;
+			this->m_current.xDelta = descent_strategy == 2 ? NaN : (delta_x_norm / dt);
 			this->m_current.fDelta = std::abs(old_energy - energy); // / std::abs(old_energy);
 			// if normalize_gradient, use relative to first norm
 			this->m_current.gradNorm = grad_norm / (normalize_gradient ? first_grad_norm : 1);

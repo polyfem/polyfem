@@ -42,17 +42,11 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/recipes/")
 # Color output
 include(UseColors)
 
-# Prepend function
-include(PrependCurrentPath)
-
 # Polyfem utils
 include(PolyfemUtils)
 
 # Extra warnings
 include(Warnings)
-
-# Use C++11/14
-include(CXXFeatures)
 
 # Utility function to link libraries as system libraries to avoid warnings
 include(PolyfemTargetLinkSystemLibraries)
@@ -154,7 +148,7 @@ polyfem_autogen(polyfem elasticity_rhs.py auto_elasticity_rhs)
 target_include_directories(polyfem PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Use C++17
-target_compile_features(polyfem PUBLIC ${CXX17_FEATURES})
+target_compile_features(polyfem PUBLIC cxx_std_17)
 
 # No limit yay
 target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
@@ -306,7 +300,7 @@ target_link_libraries(polyfem PRIVATE polyfem::warnings)
 if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
 
-    target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+    target_compile_features(${PROJECT_NAME}_bin PUBLIC cxx_std_14)
 
     target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem::polyfem polyfem::warnings)
 

@@ -184,7 +184,7 @@ namespace polyfem
 				assert(nodes.rows() == 4 && nodes.cols() == 3);
 				return (1 - uvw[0] - uvw[1] - uvw[2]) * nodes.row(0) + uvw[0] * nodes.row(1) + uvw[1] * nodes.row(2) + uvw[2] * nodes.row(3);
 			}
-		}; // namespace
+		} // namespace
 
 		void MassMatrixAssembler::assemble_cross(
 			const bool is_volume,

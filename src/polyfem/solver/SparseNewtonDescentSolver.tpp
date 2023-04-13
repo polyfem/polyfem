@@ -44,6 +44,10 @@ namespace cppoptlib
 			this->descent_strategy++;
 		else
 			reg_weight = std::max(reg_weight_inc * reg_weight, reg_weight_min);
+		// if (this->descent_strategy == 1 && reg_weight > 0)
+		// 	polyfem::log_and_throw_error("no projected Newton w/ regularization");
+		if (this->descent_strategy == 2)
+			polyfem::log_and_throw_error("no gradient descent");
 		assert(this->descent_strategy <= 2);
 	}
 
