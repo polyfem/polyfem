@@ -982,9 +982,7 @@ namespace polyfem
 		// if (is_contact_enabled())
 		if (args["optimization"]["enabled"])
 		{
-			Eigen::SparseMatrix<bool, 0> tmp1(n_geom_bases, n_bases);
-			Eigen::SparseMatrix<bool, 0> tmp2(n_geom_bases, n_bases);
-			std::vector<Eigen::Triplet<bool>> coeffs1, coeffs2;
+			std::map<std::array<int, 2>, double> pairs;
 			for (int e = 0; e < gbases.size(); e++)
 			{
 				const auto &gbs = gbases[e].bases;
@@ -992,16 +990,20 @@ namespace polyfem
 
 				Eigen::MatrixXd local_pts;
 				const int order = bs.front().order();
-				assert(order <= 2);
 				if (mesh->is_volume())
+				{
 					if (mesh->is_simplex(e))
 						autogen::p_nodes_3d(order, local_pts);
 					else
 						autogen::q_nodes_3d(order, local_pts);
-				else if (mesh->is_simplex(e))
-					autogen::p_nodes_2d(order, local_pts);
-				else
-					autogen::q_nodes_2d(order, local_pts);
+				}
+				else 
+				{
+					if (mesh->is_simplex(e))
+						autogen::p_nodes_2d(order, local_pts);
+					else
+						autogen::q_nodes_2d(order, local_pts);
+				}
 
 				ElementAssemblyValues vals;
 				vals.compute(e, mesh->is_volume(), local_pts, gbases[e], gbases[e]);
@@ -1010,33 +1012,23 @@ namespace polyfem
 				{
 					for (int j = 0; j < gbs.size(); j++)
 					{
-						if (std::abs(vals.basis_values[j].val(i) - 1) < 1e-7)
-							coeffs1.emplace_back(gbs[j].global()[0].index, bs[i].global()[0].index, true);
-						else if (std::abs(vals.basis_values[j].val(i) - 0.5) < 1e-7)
-							coeffs2.emplace_back(gbs[j].global()[0].index, bs[i].global()[0].index, true);
-						else if (std::abs(vals.basis_values[j].val(i)) < 1e-7)
+						if (std::abs(vals.basis_values[j].val(i)) > 1e-7)
 						{
+							std::array<int, 2> index = {{gbs[j].global()[0].index, bs[i].global()[0].index}};
+							pairs.insert({index, vals.basis_values[j].val(i)});
 						}
-						else
-							assert(false);
 					}
 				}
 			}
-			tmp1.setFromTriplets(coeffs1.begin(), coeffs1.end());
-			tmp2.setFromTriplets(coeffs2.begin(), coeffs2.end());
 
+			const int dim = mesh->dimension();
 			std::vector<Eigen::Triplet<double>> coeffs;
+			coeffs.clear();
+			for (const auto &iter : pairs)
+				for (int d = 0; d < dim; d++)
+					coeffs.emplace_back(iter.first[0] * dim + d, iter.first[1] * dim + d, iter.second);
+			
 			down_sampling_mat.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
-			for (int k = 0; k < tmp1.outerSize(); ++k)
-				for (Eigen::SparseMatrix<bool, 0>::InnerIterator it(tmp1, k); it; ++it)
-					if (it.value())
-						for (int d = 0; d < mesh->dimension(); d++)
-							coeffs.emplace_back(it.row() * mesh->dimension() + d, it.col() * mesh->dimension() + d, 1);
-			for (int k = 0; k < tmp2.outerSize(); ++k)
-				for (Eigen::SparseMatrix<bool, 0>::InnerIterator it(tmp2, k); it; ++it)
-					if (it.value())
-						for (int d = 0; d < mesh->dimension(); d++)
-							coeffs.emplace_back(it.row() * mesh->dimension() + d, it.col() * mesh->dimension() + d, 0.5);
 			down_sampling_mat.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
 
