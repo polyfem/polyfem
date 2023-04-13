@@ -11,7 +11,7 @@ include(FetchContent)
 FetchContent_Declare(
     Microstructures
     GIT_REPOSITORY https://github.com/Huangzizhou/microstructure_inflators.git
-    GIT_TAG 4532b8f8ff32947de64bb298d7f4d0792aedd15a
+    GIT_TAG f15035ac8581fe26572a6bccad77eaf02f9da04c
     GIT_SHALLOW FALSE
 )
 FetchContent_MakeAvailable(Microstructures)
