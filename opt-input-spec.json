@@ -283,6 +283,7 @@
         "type": "string",
         "options": [
             "shape",
+            "periodic-shape",
             "elastic",
             "friction",
             "damping",
@@ -295,6 +296,19 @@
     {
         "pointer": "/variable_to_simulation/*",
         "type_name": "shape",
+        "type": "object",
+        "required": [
+            "state",
+            "type",
+            "composition"
+        ],
+        "optional": [
+            "composite_map_type"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "periodic-shape",
         "type": "object",
         "required": [
             "state",
@@ -719,7 +733,8 @@
         "default": "doubly_periodic",
         "options": [
             "doubly_periodic",
-            "orthotropic"
+            "orthotropic",
+            "symmetric"
         ]
     },
     {

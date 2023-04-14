@@ -5,6 +5,7 @@
 #include <polyfem/State.hpp>
 #include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 
 namespace polyfem::solver
 {
@@ -73,7 +74,11 @@ namespace polyfem::solver
 				if (state->disp_grad_.size() == 0)
 					AdjointTools::dJ_shape_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
 				else
-					AdjointTools::dJ_shape_homogenization_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+				{
+					std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state->solve_data.nl_problem);
+					Eigen::MatrixXd reduced_sol = homo_problem->full_to_reduced(state->diff_cached.u(0), state->diff_cached.disp_grad());
+					AdjointTools::dJ_shape_homogenization_adjoint_term(*state, reduced_sol, state->get_adjoint_mat(0), cur_term);
+				}
 			}
 			if (term.size() != cur_term.size())
 				term = cur_term;
@@ -102,6 +107,58 @@ namespace polyfem::solver
 			x(i) = V_flat(indices(i));
 
 		return parametrization_.inverse_eval(x);
+	}
+
+	Eigen::VectorXd PeriodicShapeVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd term, cur_term;
+		for (auto state : states_)
+		{
+			if (state->problem->is_time_dependent())
+			{
+				log_and_throw_error("Not implemented!");
+			}
+			else
+			{
+				AdjointTools::dJ_periodic_shape_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+			}
+			if (term.size() != cur_term.size())
+				term = cur_term;
+			else
+				term += cur_term;
+		}
+		return parametrization_.apply_jacobian(term, x);
+	}
+	void PeriodicShapeVariableToSimulation::update(const Eigen::VectorXd &x)
+	{
+		Eigen::VectorXd y = parametrization_.eval(x);
+
+		for (auto state : states_)
+		{
+			const int dim = state->mesh->dimension();
+			const int n_verts = state->mesh->n_vertices();
+			const auto primitive_to_node = state->primitive_to_node();
+
+			Eigen::MatrixXd V = utils::unflatten(state->periodic_mesh_map->eval(y), state->mesh->dimension());
+			for (int i = 0; i < n_verts; i++)
+				state->set_mesh_vertex(i, V.row(i));
+			
+			state->periodic_mesh_representation = y;
+		}
+	}
+	Eigen::VectorXd PeriodicShapeVariableToSimulation::inverse_eval()
+	{
+		const auto &state = *(states_[0]);
+		const int dim = state.mesh->dimension();
+		const int n_verts = state.mesh->n_vertices();
+		const auto primitive_to_node = state.primitive_to_node();
+
+		// Eigen::VectorXd x(dim * state.gbases_to_periodic_map.maxCoeff() + dim);
+		Eigen::MatrixXd V;
+		state.get_vertices(V);
+
+		assert(state.args["space"]["advanced"]["periodic_mesh"].get<bool>() && state.all_direction_periodic());
+		return parametrization_.inverse_eval(state.periodic_mesh_map->inverse_eval(utils::flatten(V)));
 	}
 
 	SDFShapeVariableToSimulation::SDFShapeVariableToSimulation(const std::vector<std::shared_ptr<State>> &states, const CompositeParametrization &parametrization, const json &args) : ShapeVariableToSimulation(states, parametrization), mesh_id_(args["mesh_id"]), mesh_path_(args["mesh"])

@@ -530,7 +530,7 @@ namespace polyfem::solver
         dependent_map.resize(n_verts);
         dependent_map.setConstant(-1);
 
-        const double eps = 1e-4 * scale_.maxCoeff();
+        const double eps = 1e-6 * scale_.maxCoeff();
         Eigen::VectorXi boundary_indices;
         {
             Eigen::VectorXi boundary_mask1 = ((V.rowwise() - min.transpose()).rowwise().minCoeff().array() < eps).select(Eigen::VectorXi::Ones(V.rows()), Eigen::VectorXi::Zero(V.rows()));

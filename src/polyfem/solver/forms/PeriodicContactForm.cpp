@@ -2,6 +2,8 @@
 
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
+#include <polyfem/State.hpp>
 
 #include <iostream>
 
@@ -94,26 +96,24 @@ namespace polyfem::solver
         ContactForm::init(single_to_tiled(x));
     }
 
-    void PeriodicContactForm::force_shape_derivative(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
+    void PeriodicContactForm::force_shape_derivative(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
     {
         const int dim = collision_mesh_.dim();
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(single_to_tiled(solution));
 
 		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh_, displaced_surface, contact_set, dhat_));
-		term = barrier_stiffness() * (proj * (dq_h.transpose() * (proj.transpose() * adjoint_sol)));
+		term = barrier_stiffness() * (proj.topRows(n_single_dof_ * dim) * (dq_h.transpose() * (proj.transpose() * adjoint_sol)));
 
+        // grad of the chain rule from single to tiled
         Eigen::VectorXd force;
 		force = barrier_stiffness() * ipc::compute_barrier_potential_gradient(collision_mesh_, displaced_surface, contact_set, dhat_);
 		force = collision_mesh_.to_full_dof(force);
-        for (int p = 0; p < dim; p++)
-            for (int k = 0; k < collision_mesh_.num_vertices(); k++)
-                for (int d = 0; d < dim; d++)
-                {
-                    const int k_full = collision_mesh_.to_full_vertex_id(k);
-                    term(tiled_to_single_(k_full) * dim + d) += force(k_full * dim + p) * adjoint_sol(adjoint_sol.size() - dim * dim + p * dim + d);
-                }
-
-        term = term.head(n_single_dof_ * dim).eval();
+        Eigen::MatrixXd adjoint_affine = utils::unflatten(adjoint_sol.tail(dim * dim), dim);
+        for (int k = 0; k < collision_mesh_.num_vertices(); k++)
+        {
+            const int k_full = collision_mesh_.to_full_vertex_id(k);
+            term.segment(tiled_to_single_(k_full) * dim, dim) += adjoint_affine.transpose() * force.segment(k_full * dim, dim);
+        }
 
         // const Eigen::MatrixXd displaced = collision_mesh_.displace_vertices(
         //     utils::unflatten(single_to_tiled(solution), collision_mesh_.dim()));
@@ -121,6 +121,49 @@ namespace polyfem::solver
         // io::OBJWriter::write(
         //     "tiled.obj", displaced,
         //     collision_mesh_.edges(), collision_mesh_.faces());
+    }
+
+    void PeriodicContactForm::force_periodic_shape_derivative(const State& state, const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
+    {
+        const int dim = collision_mesh_.dim();
+		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(single_to_tiled(solution));
+
+        Eigen::VectorXd tiled_term;
+
+        // regular term
+		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh_, displaced_surface, contact_set, dhat_));
+		tiled_term = barrier_stiffness() * (dq_h.transpose() * (proj.transpose() * adjoint_sol));
+
+        // grad of the chain rule from single to tiled
+        Eigen::VectorXd force;
+		force = barrier_stiffness() * ipc::compute_barrier_potential_gradient(collision_mesh_, displaced_surface, contact_set, dhat_);
+		force = collision_mesh_.to_full_dof(force);
+        Eigen::MatrixXd adjoint_affine = utils::unflatten(adjoint_sol.tail(dim * dim), dim);
+        for (int k = 0; k < collision_mesh_.num_vertices(); k++)
+        {
+            const int k_full = collision_mesh_.to_full_vertex_id(k);
+            tiled_term.segment(k_full * dim, dim) += adjoint_affine.transpose() * force.segment(k_full * dim, dim);
+        }
+
+        // chain rule from tiled collision mesh to single dof and scaling
+        assert(state.tile_id.rows() == tiled_to_single_.size() && state.tile_id.cols() == dim);
+        Eigen::VectorXd single_term, scale_term;
+        single_term = proj.topRows(dim * n_single_dof_) * tiled_term;
+        scale_term.setZero(dim);
+        const Eigen::MatrixXd &vertices = collision_mesh_.vertices_at_rest();
+        for (int k = 0; k < collision_mesh_.num_vertices(); k++)
+        {
+            const int k_full = collision_mesh_.to_full_vertex_id(k);
+            scale_term.array() += tiled_term.segment(k_full * dim, dim).array() * state.tile_id.cast<double>().row(k_full).transpose().array();
+        }
+        
+        // bases to geom_bases, then to vertices
+        single_term = state.down_sampling_mat * single_term;
+        single_term = utils::flatten(utils::unflatten(single_term, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
+
+        // chain rule from full dof and scaling to periodic dof and scaling
+        term = state.periodic_mesh_map->apply_jacobian(single_term, state.periodic_mesh_representation);
+        term.tail(dim) += scale_term;
     }
 
     double PeriodicContactForm::value_unweighted(const Eigen::VectorXd &x) const

@@ -61,7 +61,7 @@ namespace polyfem::solver
 		void use_full_size() { current_size_ = CurrentSize::FULL_SIZE; }
 		void use_reduced_size() { current_size_ = CurrentSize::REDUCED_SIZE; }
 
-		TVector full_to_reduced(const TVector &full) const;
+		virtual TVector full_to_reduced(const TVector &full) const;
 		virtual TVector full_to_reduced_grad(const TVector &full) const;
 		virtual void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
 		virtual TVector reduced_to_full(const TVector &reduced) const;

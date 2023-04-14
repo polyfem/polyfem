@@ -32,15 +32,11 @@
 #include <polyfem/quadrature/TetQuadrature.hpp>
 #include <polyfem/quadrature/TriQuadrature.hpp>
 
-#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
-
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Timer.hpp>
 
 #include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
-
-#include <polyfem/solver/forms/ElasticForm.hpp>
 
 #include <unsupported/Eigen/SparseExtra>
 #include <polyfem/io/OBJWriter.hpp>
@@ -786,10 +782,6 @@ namespace polyfem
 		disc_orders.resize(mesh->n_elements());
 		problem->init(*mesh);
 
-		periodic_dimensions = args["boundary_conditions"]["periodic_boundary"].get<std::vector<bool>>();
-		if (periodic_dimensions.size() != mesh->dimension())
-			periodic_dimensions.resize(mesh->dimension(), false);
-
 		logger().info("Building {} basis...", (iso_parametric() ? "isoparametric" : "not isoparametric"));
 		const bool has_polys = mesh->has_poly();
 
@@ -1044,7 +1036,7 @@ namespace polyfem
 		if (has_periodic_bc())
 		{
 			// periodic bases mapping
-			// if (!periodic_mesh_map || bases_to_periodic_map.size() == 0) {
+			{
 				Eigen::VectorXi tmp_map;
 				build_periodic_index_mapping(n_bases, bases, mesh_nodes, tmp_map);
 
@@ -1053,14 +1045,6 @@ namespace polyfem
 				for (int i = 0; i < old_size; i++)
 					for (int d = 0; d < problem_dim; d++)
 						bases_to_periodic_map(i * problem_dim + d) = tmp_map(i) * problem_dim + d;
-			// }
-
-			// periodic mesh mapping
-			if (!periodic_mesh_map && all_direction_periodic())
-			{
-				Eigen::MatrixXd V;
-				get_vertices(V);
-				periodic_mesh_map = std::make_shared<solver::PeriodicMeshToMesh>(V);
 			}
 
 			if (args["space"]["advanced"]["periodic_basis"].get<bool>())
@@ -1392,7 +1376,7 @@ namespace polyfem
 
 		// remove boundary edges on periodic BC
 		{
-			const double eps = 1e-4 * size.maxCoeff();
+			const double eps = 1e-6 * size.maxCoeff();
 			Eigen::MatrixXd barycenters = (V(E.col(0), Eigen::all) + V(E.col(1), Eigen::all)) / 2.0;
 			std::vector<int> ind;
 			for (int i = 0; i < barycenters.rows(); i++)

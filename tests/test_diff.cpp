@@ -3,11 +3,12 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
-#include <jse/jse.h>
 
 #include <polyfem/solver/Optimizations.hpp>
-#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/solver/AdjointTools.hpp>
 #include <polyfem/io/Evaluator.hpp>
+
+#include <polyfem/solver/AdjointNLProblem.hpp>
 
 #include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
@@ -708,6 +709,77 @@ TEST_CASE("shape-pressure-neumann-nodes", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-8, 1e-3);
 }
 
+TEST_CASE("homogenize-stress-periodic", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+	json in_args;
+	load_json(path + "homogenize-stress-periodic.json", in_args);
+	auto state_ptr = create_state(in_args);
+	State &state = *state_ptr;
+
+	json opt_args;
+	load_json(path + "homogenize-stress-periodic-opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
+
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
+	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
+
+	auto obj = std::dynamic_pointer_cast<SumCompositeForm>(create_form(opt_args["functionals"], variable_to_simulations, states));
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+
+	Eigen::MatrixXd V;
+	state.get_vertices(V);
+	Eigen::VectorXd x = variable_to_simulations[0]->inverse_eval();
+
+	nl_problem->solution_changed(x);
+	Eigen::VectorXd one_form;
+	nl_problem->gradient(x, one_form);
+
+	// auto periodic_grad_to_full = [&](const Eigen::VectorXd &y) -> Eigen::VectorXd {
+	// 	Eigen::VectorXd z;
+	// 	z.setZero(V.size());
+	// 	for (int i = 0; i < V.rows(); i++)
+	// 		z.segment(i * V.cols(), V.cols()) = y.segment(state.periodic_mesh_map->full_to_periodic(i) * V.cols(), V.cols()).array();
+
+	// 	return z;
+	// };
+
+	// Eigen::VectorXd fgrad;
+	// fgrad.setZero(x.size());
+	// fd::finite_gradient(
+	// 	x, [&](const Eigen::VectorXd &y) -> double 
+	// 	{
+	// 		nl_problem->solution_changed(y);
+	// 		return obj->value(y);
+	// 	}, fgrad, fd::AccuracyOrder::SECOND, 1e-8);
+	
+	// std::cout << "grad " << one_form.tail(2).transpose() << "\n";
+	// std::cout << "fgrad " << fgrad.tail(2).transpose() << "\n";
+
+	// io::VTUWriter writer;
+	// writer.add_field("grad", utils::unflatten(periodic_grad_to_full(one_form), 2));
+	// writer.add_field("fgrad", utils::unflatten(periodic_grad_to_full(fgrad), 2));
+	
+	// auto ids = state.primitive_to_node();
+	// Eigen::VectorXd ids_ = Eigen::Map<Eigen::VectorXi>(ids.data(), ids.size()).cast<double>();
+	// writer.add_field("ids", ids_);
+
+	// Eigen::MatrixXi F;
+	// state.get_elements(F);
+	// writer.write_mesh("debug.vtu", V, F);
+
+	Eigen::VectorXd theta;
+	theta.setRandom(x.size());
+	theta.tail(2).setZero();
+	nl_problem->solution_changed(x);
+	
+	// verify_adjoint_expensive(variable_to_simulations, *obj, state, x, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>());
+	verify_adjoint(variable_to_simulations, *obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-5);
+}
+
 TEST_CASE("homogenize-stress", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
@@ -739,43 +811,13 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 	for (int i = 0; i < V.rows(); i++)
 	{
 		auto vert = state.mesh->point(i);
-		if (vert(0) < min(0) + eps || vert(0) > max(0) - eps)
-		{
-			for (int d = 0; d < 2; d++)
-				theta(i * 2 + d) = 0;
-		}
-		if ( vert(1) < min(1) + eps || vert(1) > max(1) - eps)
+		if (vert(0) < min(0) + eps || vert(0) > max(0) - eps || vert(1) < min(1) + eps || vert(1) > max(1) - eps)
 		{
 			for (int d = 0; d < 2; d++)
 				theta(i * 2 + d) = 0;
 		}
 	}
-
-	// Eigen::VectorXd fgrad;
-	// fd::finite_gradient(
-	// 	x, [&](const Eigen::VectorXd &y) -> double 
-	// 	{
-	// 		for (auto &v2s : variable_to_simulations)
-	// 			v2s->update(y);
-	// 		state.build_basis();
-	// 		solve_pde(state);
-	// 		obj->solution_changed(y);
-	// 		return obj->value(y);
-	// 	}, fgrad, fd::AccuracyOrder::SECOND, 1e-8);
-
-	// state.solve_adjoint_cached(obj->compute_adjoint_rhs(x, state));
-	// Eigen::VectorXd one_form;
-	// obj->first_derivative(x, one_form);
-
-	// io::VTUWriter writer;
-	// writer.add_field("grad", utils::unflatten(one_form, 2));
-	// writer.add_field("fgrad", utils::unflatten(fgrad, 2));
-
-	// Eigen::MatrixXi F;
-	// state.get_elements(F);
-	// writer.write_mesh("debug.vtu", V, F);
-
-	verify_adjoint(variable_to_simulations, *obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-3);
+	verify_adjoint(variable_to_simulations, *obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-5);
 }
 
 TEST_CASE("shape-contact", "[adjoint_method]")

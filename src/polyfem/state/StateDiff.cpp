@@ -316,7 +316,7 @@ namespace polyfem
 					Eigen::VectorXd x;
 					x.setZero(tmp.size());
 					solver->solve(tmp, x);
-					x.conservativeResize(x.size() - n_lagrange_multipliers());
+					x.conservativeResize(adjoint.rows());
 
 					adjoint.col(i) = x;
 				}

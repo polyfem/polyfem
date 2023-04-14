@@ -420,6 +420,10 @@ namespace polyfem::solver
 		{
 			var2sim = std::make_shared<SDFShapeVariableToSimulation>(cur_states, composite_map, args);
 		}
+		else if (type == "periodic-shape")
+		{
+			var2sim = std::make_shared<PeriodicShapeVariableToSimulation>(cur_states, composite_map);
+		}
 		else if (type == "dirichlet")
 		{
 			var2sim = std::make_shared<DirichletVariableToSimulation>(cur_states, composite_map);

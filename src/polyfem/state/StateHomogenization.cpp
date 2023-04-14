@@ -11,6 +11,7 @@
 
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/MacroStrainALForm.hpp>
+#include <polyfem/solver/forms/ALForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 
@@ -96,6 +97,9 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         args["solver"]["contact"]["friction_iterations"],
         // Rayleigh damping form
         args["solver"]["rayleigh_damping"]);
+    
+    solve_data_tmp.al_form->disable();
+    solve_data_tmp.al_form->set_weight(0);
 
     bool solve_symmetric_flag = false;
     {

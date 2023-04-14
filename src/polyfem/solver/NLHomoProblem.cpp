@@ -16,16 +16,6 @@ namespace polyfem::solver
                 const bool solve_symmetric_macro_strain,
 				const std::shared_ptr<PeriodicContactForm> &contact_form) : NLProblem(full_size, boundary_nodes, local_boundary, n_boundary_samples, rhs_assembler, state, t, forms), only_symmetric(solve_symmetric_macro_strain), contact_form_(contact_form)
     {
-        const int dim = state_.mesh->dimension();
-
-        Eigen::MatrixXd X = io::Evaluator::get_bases_position(state_.n_bases, state_.mesh_nodes);
-
-        constraint_grad_.setZero(dim * dim, full_size_);
-        for (int i = 0; i < X.rows(); i++)
-            for (int j = 0; j < dim; j++)
-                for (int k = 0; k < dim; k++)
-                    constraint_grad_(j * dim + k, i * dim + j) = X(i, k);
-        
         init_projection();
     }
 
@@ -225,7 +215,7 @@ namespace polyfem::solver
         const int dof2 = macro_reduced_size();
         const int dof1 = reduced_size();
 
-        Eigen::MatrixXd tmp = macro_full_to_reduced_grad(constraint_grad_);
+        Eigen::MatrixXd tmp = constraint_grad();
         Eigen::MatrixXd A12 = full * tmp.transpose();
         Eigen::MatrixXd A22 = tmp * A12;
 
@@ -253,6 +243,12 @@ namespace polyfem::solver
         NLProblem::full_hessian_to_reduced_hessian(mid, reduced);
     }
 
+    NLHomoProblem::TVector NLHomoProblem::full_to_reduced(const TVector &full) const
+    {
+        log_and_throw_error("Invalid function!");
+        return TVector();
+    }
+
     NLHomoProblem::TVector NLHomoProblem::full_to_reduced(const TVector &full, const Eigen::MatrixXd &disp_grad) const
     {
         const int dim = state_.mesh->dimension();
@@ -277,7 +273,7 @@ namespace polyfem::solver
         reduced.setZero(dof1 + dof2);
 
         reduced.head(dof1) = NLProblem::full_to_reduced_grad(full);
-        reduced.tail(dof2) = macro_full_to_reduced_grad(constraint_grad_) * full;
+        reduced.tail(dof2) = constraint_grad() * full;
 
         return reduced;
     }
@@ -410,5 +406,21 @@ namespace polyfem::solver
             contact_form_->update_quantities(t, reduced_to_extended(x));
         if (al_form_ && al_form_->enabled())
             al_form_->update_quantities(t, reduced_to_extended(x));
+    }
+
+    Eigen::MatrixXd NLHomoProblem::constraint_grad() const
+    {
+        const int dim = state_.mesh->dimension();
+        Eigen::MatrixXd jac; // (dim*dim) x (dim*n_bases)
+
+        Eigen::MatrixXd X = io::Evaluator::get_bases_position(state_.n_bases, state_.mesh_nodes);
+
+        jac.setZero(dim * dim, full_size_);
+        for (int i = 0; i < X.rows(); i++)
+            for (int j = 0; j < dim; j++)
+                for (int k = 0; k < dim; k++)
+                    jac(j * dim + k, i * dim + j) = X(i, k);
+        
+        return macro_full_to_reduced_grad(jac);
     }
 }

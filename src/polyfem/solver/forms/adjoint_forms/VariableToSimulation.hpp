@@ -46,6 +46,19 @@ namespace polyfem::solver
 		virtual void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
 	};
 
+	class PeriodicShapeVariableToSimulation : public VariableToSimulation
+	{
+	public:
+		using VariableToSimulation::VariableToSimulation;
+		virtual ~PeriodicShapeVariableToSimulation() {}
+
+		ParameterType get_parameter_type() const override { return ParameterType::PeriodicShape; }
+
+		void update(const Eigen::VectorXd &x) override;
+		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd inverse_eval() override;
+	};
+
 	class SDFShapeVariableToSimulation : public ShapeVariableToSimulation
 	{
 	public:

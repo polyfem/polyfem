@@ -2,6 +2,11 @@
 
 #include "ContactForm.hpp"
 
+namespace polyfem
+{
+	class State;
+}
+
 namespace polyfem::solver
 {
 	/// @brief Form representing the contact potential and forces on a periodic mesh
@@ -25,7 +30,8 @@ namespace polyfem::solver
 
         void init(const Eigen::VectorXd &x) override;
 
-        void force_shape_derivative(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term) override;
+        void force_shape_derivative(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) override;
+		void force_periodic_shape_derivative(const State& state, const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
 
     protected:
 		/// @brief Compute the contact barrier potential value

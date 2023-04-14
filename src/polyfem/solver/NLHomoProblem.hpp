@@ -33,6 +33,7 @@ namespace polyfem::solver
 		void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const override;
 
 		TVector full_to_reduced(const TVector &full, const Eigen::MatrixXd &disp_grad) const;
+		TVector full_to_reduced(const TVector &full) const override;
 		TVector full_to_reduced_grad(const TVector &full) const override;
 		TVector reduced_to_full(const TVector &reduced) const override;
 
@@ -71,13 +72,13 @@ namespace polyfem::solver
 	private:
 		void init_projection();
 
+		Eigen::MatrixXd constraint_grad() const;
+
 		const bool only_symmetric;
 		Eigen::VectorXi fixed_mask_;
 		Eigen::VectorXd fixed_values_;
 		Eigen::MatrixXd macro_mid_to_reduced_; // (dim*dim) x (dim*(dim+1)/2)
 		Eigen::MatrixXd macro_full_to_mid_, macro_mid_to_full_;
-
-		Eigen::MatrixXd constraint_grad_; // (dim*dim) x (dim*n_bases)
 
 		std::shared_ptr<PeriodicContactForm> contact_form_;
 		std::shared_ptr<MacroStrainALForm> al_form_;

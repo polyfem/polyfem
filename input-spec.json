@@ -1144,6 +1144,7 @@
             "discr_order_max",
             "isoparametric",
             "periodic_basis",
+            "periodic_mesh",
             "bc_method",
             "n_boundary_samples",
             "quadrature_order",
@@ -1174,6 +1175,12 @@
         "default": false,
         "type": "bool",
         "doc": "Use periodic basis when periodic boundary condition is applied."
+    },
+    {
+        "pointer": "/space/advanced/periodic_mesh",
+        "default": false,
+        "type": "bool",
+        "doc": "Use periodic mesh representation in shape optimization for periodic PDE."
     },
     {        
         "pointer": "/space/advanced/bc_method",

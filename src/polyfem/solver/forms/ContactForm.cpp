@@ -46,7 +46,7 @@ namespace polyfem::solver
 		update_constraint_set(compute_displaced_surface(x));
 	}
 
-	void ContactForm::force_shape_derivative(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint_sol, Eigen::VectorXd &term)
+	void ContactForm::force_shape_derivative(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
 	{
 		// Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
 		// Eigen::MatrixXd X = collision_mesh_.vertices(boundary_nodes_pos_);
