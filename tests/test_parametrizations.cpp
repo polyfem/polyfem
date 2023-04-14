@@ -144,4 +144,18 @@ TEST_CASE("BoundedBiharmonicWeights", "[parametrization]")
 	// }
 }
 
+TEST_CASE("PeriodicMesh", "[parametrization]")
+{
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+	std::vector<std::vector<int>> e;
+	std::vector<std::vector<double>> w;
+	std::vector<int> ids;
+	polyfem::io::MshReader::load("../cross2d.msh", V, F, e, w, ids);
+	assert(V.size() > 0);
+
+	PeriodicMeshToMesh parametrization(V);
+	verify_apply_jacobian(parametrization, utils::flatten(V));
+}
+
 #endif

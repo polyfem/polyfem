@@ -2,14 +2,13 @@
 
 #include "Parametrization.hpp"
 
-#include <polyfem/utils/BSplineParametrization.hpp>
-
 #include <Eigen/Core>
-#include <map>
 
 namespace polyfem
 {
 	class State;
+	class BSplineParametrization2D;
+	class BSplineParametrization3D;
 }
 
 namespace polyfem::solver

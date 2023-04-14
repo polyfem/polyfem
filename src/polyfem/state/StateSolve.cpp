@@ -415,7 +415,7 @@ namespace polyfem
 		return independent_dof;
 	}
 
-	int State::full_to_periodic(Eigen::MatrixXd &b, bool accumulate, bool force_dirichlet) const
+	int State::full_to_periodic(Eigen::MatrixXd &b, bool accumulate) const
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const int independent_dof = bases_to_periodic_map.maxCoeff() + 1;
@@ -436,10 +436,6 @@ namespace polyfem
 				b_periodic.row(index_map(k)) += b.row(k);
 		else
 			for (int k = 0; k < b.rows(); k++)
-				b_periodic.row(index_map(k)) = b.row(k);
-
-		if (force_dirichlet)
-			for (int k : boundary_nodes)
 				b_periodic.row(index_map(k)) = b.row(k);
 
 		b = b_periodic;

@@ -68,4 +68,25 @@ namespace polyfem::solver
 
         mutable Eigen::VectorXd last_x;
     };
+
+    class PeriodicMeshToMesh : public Parametrization
+    {
+    public:
+        PeriodicMeshToMesh(const Eigen::MatrixXd &V);
+
+        int size(const int x_size) const override { assert(x_size == input_size()); return dependent_map.size() * dim; }
+        int input_size() const { return n_periodic_dof * dim + dim; }
+
+        Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+        Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
+        Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
+
+        int full_to_periodic(int i) const { return dependent_map(i); }
+
+    private:
+        int dim;
+        int n_periodic_dof;
+        Eigen::VectorXi dependent_map;
+        std::array<std::vector<std::array<int, 2>>, 3> periodic_dependence; // <id1, id2> for 2/3 axis
+    };
 }

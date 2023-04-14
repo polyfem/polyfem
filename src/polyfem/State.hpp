@@ -23,7 +23,6 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/utils/IntegrableFunctional.hpp>
 
 #include <polyfem/io/OutData.hpp>
 
@@ -58,6 +57,11 @@ namespace polyfem
 		class Mesh2D;
 		class Mesh3D;
 	} // namespace mesh
+
+	namespace solver
+	{
+		class PeriodicMeshToMesh;
+	}
 
 	/// main class that contains the polyfem solver and all its state
 	class State
@@ -329,9 +333,10 @@ namespace polyfem
 		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(
 			const std::string &linear_solver_type = "") const;
 
-		// under periodic BC, the index map from a restricted node to the node it depends on, -1 otherwise
-		Eigen::VectorXi gbases_to_periodic_map; // size = n_geom_bases
-		Eigen::VectorXi bases_to_periodic_map; // size = ndof()
+		/// periodic BC and periodic mesh utils
+		Eigen::VectorXi bases_to_periodic_map; // size = ndof(), from full dof to periodic dof
+		std::shared_ptr<solver::PeriodicMeshToMesh> periodic_mesh_map; // chain rule for periodic mesh optimization
+		Eigen::VectorXd periodic_mesh_representation;
 		std::vector<bool> periodic_dimensions;
 		bool has_periodic_bc() const
 		{
@@ -364,7 +369,7 @@ namespace polyfem
 
 		// compute the matrix/vector under periodic basis, if the size is larger than #periodic_basis, the extra rows are kept
 		int full_to_periodic(StiffnessMatrix &A) const;
-		int full_to_periodic(Eigen::MatrixXd &b, bool accumulate, bool force_dirichlet = true) const;
+		int full_to_periodic(Eigen::MatrixXd &b, bool accumulate) const;
 		void full_to_periodic(std::vector<int> &boundary_nodes_) const
 		{
 			if (need_periodic_reduction())
@@ -515,6 +520,8 @@ namespace polyfem
 
 		/// @brief IPC collision mesh under periodic BC
 		ipc::CollisionMesh periodic_collision_mesh;
+		/// the grid id <i, j, k> for each point on tiled collision mesh
+		Eigen::MatrixXi tile_id;
 		/// index mapping from tiled mesh to original periodic mesh
 		Eigen::VectorXi tiled_to_single;
 

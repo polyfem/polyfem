@@ -511,4 +511,155 @@ namespace polyfem::solver
         auto tmp = utils::unflatten(grad, A_.rows());
         return utils::flatten(tmp * A_.transpose());
     }
+
+    PeriodicMeshToMesh::PeriodicMeshToMesh(const Eigen::MatrixXd &V)
+    {
+        dim = V.cols();
+
+        for (auto &list : periodic_dependence)
+            list.clear();
+
+        assert(dim == V.cols());
+        const int n_verts = V.rows();
+
+        Eigen::VectorXd min = V.colwise().minCoeff();
+        Eigen::VectorXd max = V.colwise().maxCoeff();
+        Eigen::VectorXd scale_ = max - min;
+
+        n_periodic_dof = 0;
+        dependent_map.resize(n_verts);
+        dependent_map.setConstant(-1);
+
+        const double eps = 1e-4 * scale_.maxCoeff();
+        Eigen::VectorXi boundary_indices;
+        {
+            Eigen::VectorXi boundary_mask1 = ((V.rowwise() - min.transpose()).rowwise().minCoeff().array() < eps).select(Eigen::VectorXi::Ones(V.rows()), Eigen::VectorXi::Zero(V.rows()));
+            Eigen::VectorXi boundary_mask2 = ((V.rowwise() - max.transpose()).rowwise().maxCoeff().array() > -eps).select(Eigen::VectorXi::Ones(V.rows()), Eigen::VectorXi::Zero(V.rows()));
+            Eigen::VectorXi boundary_mask = boundary_mask1.array() + boundary_mask2.array();
+
+            boundary_indices.setZero(boundary_mask.sum());
+            for (int i = 0, j = 0; i < boundary_mask.size(); i++)
+                if (boundary_mask[i])
+                    boundary_indices[j++] = i;
+        }
+
+        // find corresponding periodic boundary nodes
+        Eigen::MatrixXd V_boundary = V(boundary_indices, Eigen::all);
+        for (int d = 0; d < dim; d++)
+        {
+            Eigen::VectorXi mask1 = (V_boundary.col(d).array() < min(d) + eps).select(Eigen::VectorXi::Ones(V_boundary.rows()), Eigen::VectorXi::Zero(V_boundary.rows()));
+            Eigen::VectorXi mask2 = (V_boundary.col(d).array() > max(d) - eps).select(Eigen::VectorXi::Ones(V_boundary.rows()), Eigen::VectorXi::Zero(V_boundary.rows()));
+
+            for (int i = 0; i < mask1.size(); i++)
+            {
+                if (!mask1(i))
+                    continue;
+                
+                bool found_target = false;
+                for (int j = 0; j < mask2.size(); j++)
+                {
+                    if (!mask2(j))
+                        continue;
+                    
+                    RowVectorNd projected_diff = V_boundary.row(j) - V_boundary.row(i);
+                    projected_diff(d) = 0;
+                    if (projected_diff.norm() < eps)
+                    {
+                        dependent_map(boundary_indices[j]) = boundary_indices[i];
+                        std::array<int, 2> pair = {{boundary_indices[i], boundary_indices[j]}};
+                        periodic_dependence[d].push_back(pair);
+                        found_target = true;
+                        break;
+                    }
+                }
+                if (!found_target)
+                    throw std::runtime_error("Periodic mesh failed to find corresponding nodes!");
+            }
+        }
+
+        // break dependency chains into direct dependency
+        for (int d = 0; d < dim; d++)
+            for (int i = 0; i < dependent_map.size(); i++)
+                if (dependent_map(i) >= 0 && dependent_map(dependent_map(i)) >= 0)
+                    dependent_map(i) = dependent_map(dependent_map(i));
+        
+        Eigen::VectorXi reduce_map;
+        reduce_map.setZero(dependent_map.size());
+        for (int i = 0; i < dependent_map.size(); i++)
+            if (dependent_map(i) < 0)
+                reduce_map(i) = n_periodic_dof++;
+        for (int i = 0; i < dependent_map.size(); i++)
+            if (dependent_map(i) >= 0)
+                reduce_map(i) = reduce_map(dependent_map(i));
+        
+        dependent_map = std::move(reduce_map);
+    }
+
+    Eigen::VectorXd PeriodicMeshToMesh::eval(const Eigen::VectorXd &x) const
+    {
+        assert(x.size() == input_size());
+
+        Eigen::VectorXd scale = x.tail(dim);
+        Eigen::VectorXd y;
+        y.setZero(size(x.size()));
+        for (int i = 0; i < dependent_map.size(); i++)
+            y.segment(i * dim, dim) = x.segment(dependent_map(i) * dim, dim).array() * scale.array();
+        
+        for (int d = 0; d < dim; d++)
+        {
+            const auto &dependence_list = periodic_dependence[d];
+            for (const auto &pair : dependence_list)
+                y(pair[1] * dim + d) += scale[d];
+        }
+
+        return y;
+    }
+
+    Eigen::VectorXd PeriodicMeshToMesh::inverse_eval(const Eigen::VectorXd &y)
+    {
+        assert(y.size() == dim * dependent_map.size());
+        Eigen::VectorXd x;
+        x.setZero(input_size());
+
+        Eigen::MatrixXd V = utils::unflatten(y, dim);
+        Eigen::VectorXd min = V.colwise().minCoeff();
+        Eigen::VectorXd max = V.colwise().maxCoeff();
+        Eigen::VectorXd scale = max - min;
+        x.tail(dim) = scale;
+
+        Eigen::VectorXd z = y;
+        for (int d = 0; d < dim; d++)
+        {
+            const auto &dependence_list = periodic_dependence[d];
+            for (const auto &pair : dependence_list)
+                z(pair[1] * dim + d) -= scale[d];
+        }
+
+        for (int i = 0; i < dependent_map.size(); i++)
+            x.segment(dependent_map(i) * dim, dim) = z.segment(i * dim, dim).array() / scale.array();
+
+        return x;
+    }
+
+    Eigen::VectorXd PeriodicMeshToMesh::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
+    {
+        assert(x.size() == input_size());
+        Eigen::VectorXd reduced_grad;
+        reduced_grad.setZero(x.size());
+
+        for (int i = 0; i < dependent_map.size(); i++)
+            reduced_grad.segment(dependent_map(i) * dim, dim).array() += grad.segment(i * dim, dim).array() * x.tail(dim).array();
+        
+        for (int i = 0; i < dependent_map.size(); i++)
+            reduced_grad.segment(dim * n_periodic_dof, dim).array() += grad.segment(i * dim, dim).array() * x.segment(dependent_map(i) * dim, dim).array();
+
+        for (int d = 0; d < dim; d++)
+        {
+            const auto &dependence_list = periodic_dependence[d];
+            for (const auto &pair : dependence_list)
+                reduced_grad(dim * n_periodic_dof + d) += grad(pair[1] * dim + d);
+        }
+
+        return reduced_grad;
+    }
 }

@@ -32,6 +32,8 @@
 #include <polyfem/quadrature/TetQuadrature.hpp>
 #include <polyfem/quadrature/TriQuadrature.hpp>
 
+#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
+
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Timer.hpp>
 
@@ -1041,22 +1043,24 @@ namespace polyfem
 		// handle periodic bc
 		if (has_periodic_bc())
 		{
-			{
+			// periodic bases mapping
+			// if (!periodic_mesh_map || bases_to_periodic_map.size() == 0) {
 				Eigen::VectorXi tmp_map;
 				build_periodic_index_mapping(n_bases, bases, mesh_nodes, tmp_map);
 
-				if (!iso_parametric())
-					build_periodic_index_mapping(n_geom_bases, geom_bases(), geom_mesh_nodes, gbases_to_periodic_map);
-				else
-					gbases_to_periodic_map = tmp_map;
+				const int old_size = tmp_map.size();
+				bases_to_periodic_map.setZero(old_size * problem_dim);
+				for (int i = 0; i < old_size; i++)
+					for (int d = 0; d < problem_dim; d++)
+						bases_to_periodic_map(i * problem_dim + d) = tmp_map(i) * problem_dim + d;
+			// }
 
-				{
-					const int old_size = tmp_map.size();
-					bases_to_periodic_map.setZero(old_size * problem_dim);
-					for (int i = 0; i < old_size; i++)
-						for (int d = 0; d < problem_dim; d++)
-							bases_to_periodic_map(i * problem_dim + d) = tmp_map(i) * problem_dim + d;
-				}
+			// periodic mesh mapping
+			if (!periodic_mesh_map && all_direction_periodic())
+			{
+				Eigen::MatrixXd V;
+				get_vertices(V);
+				periodic_mesh_map = std::make_shared<solver::PeriodicMeshToMesh>(V);
 			}
 
 			if (args["space"]["advanced"]["periodic_basis"].get<bool>())
@@ -1388,7 +1392,7 @@ namespace polyfem
 
 		// remove boundary edges on periodic BC
 		{
-			const double eps = 1e-6 * size.maxCoeff();
+			const double eps = 1e-4 * size.maxCoeff();
 			Eigen::MatrixXd barycenters = (V(E.col(0), Eigen::all) + V(E.col(1), Eigen::all)) / 2.0;
 			std::vector<int> ind;
 			for (int i = 0; i < barycenters.rows(); i++)
@@ -1405,6 +1409,8 @@ namespace polyfem
         Vtmp.setZero(V.rows() * n_tiles * n_tiles, V.cols());
         Etmp.setZero(E.rows() * n_tiles * n_tiles, E.cols());
 
+		tile_id.setZero(Vtmp.rows(), Vtmp.cols());
+
 		for (int i = 0, idx = 0; i < n_tiles; i++)
 		{
 			for (int j = 0; j < n_tiles; j++)
@@ -1412,6 +1418,9 @@ namespace polyfem
 				Vtmp.middleRows(idx * V.rows(), V.rows()) = V;
 				Vtmp.block(idx * V.rows(), 0, V.rows(), 1).array() += size(0) * i;
 				Vtmp.block(idx * V.rows(), 1, V.rows(), 1).array() += size(1) * j;
+
+				tile_id.block(idx * V.rows(), 0, V.rows(), 1).array() = i;
+				tile_id.block(idx * V.rows(), 1, V.rows(), 1).array() = j;
 
 				Etmp.middleRows(idx * E.rows(), E.rows()) = E.array() + idx * V.rows();
 				idx += 1;
@@ -1464,6 +1473,7 @@ namespace polyfem
             }
         }
         Vnew = Vtmp(SVJ, Eigen::all);
+		tile_id = tile_id(SVJ, Eigen::all).eval();
 
         Enew.resizeLike(Etmp);
         for (int d = 0; d < Etmp.cols(); d++)
