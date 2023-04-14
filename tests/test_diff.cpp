@@ -735,8 +735,8 @@ TEST_CASE("homogenize-stress-periodic", "[adjoint_method]")
 	Eigen::VectorXd x = variable_to_simulations[0]->inverse_eval();
 
 	nl_problem->solution_changed(x);
-	Eigen::VectorXd one_form;
-	nl_problem->gradient(x, one_form);
+	// Eigen::VectorXd one_form;
+	// nl_problem->gradient(x, one_form);
 
 	// auto periodic_grad_to_full = [&](const Eigen::VectorXd &y) -> Eigen::VectorXd {
 	// 	Eigen::VectorXd z;
@@ -755,9 +755,30 @@ TEST_CASE("homogenize-stress-periodic", "[adjoint_method]")
 	// 		nl_problem->solution_changed(y);
 	// 		return obj->value(y);
 	// 	}, fgrad, fd::AccuracyOrder::SECOND, 1e-8);
-	
-	// std::cout << "grad " << one_form.tail(2).transpose() << "\n";
-	// std::cout << "fgrad " << fgrad.tail(2).transpose() << "\n";
+	// const double eps = 1e-8;
+	// for (int j = 0; j < V.rows(); j++)
+	// {
+	// 	const int i = state.periodic_mesh_map->full_to_periodic(j);
+	// 	if (!state.mesh->is_boundary_vertex(j))
+	// 		continue;
+
+	// 	logger().warn("current {}, total {}", j, V.rows());
+	// 	// std::cout << "[" << j << " " << V.rows() << "]\n";
+	// 	for (int d = 0; d < 2; d++)
+	// 	{
+	// 		Eigen::VectorXd y = x;
+
+	// 		y(2*i+d) = x(2*i+d) + eps;
+	// 		nl_problem->solution_changed(y);
+	// 		const double a = obj->value(y);
+
+	// 		y(2*i+d) = x(2*i+d) - eps;
+	// 		nl_problem->solution_changed(y);
+	// 		const double b = obj->value(y);
+
+	// 		fgrad(2*i+d) = (a - b) / (2 * eps);
+	// 	}
+	// }
 
 	// io::VTUWriter writer;
 	// writer.add_field("grad", utils::unflatten(periodic_grad_to_full(one_form), 2));
@@ -785,7 +806,7 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
 	load_json(path + "homogenize-stress.json", in_args);
-	auto state_ptr = create_state_and_solve(in_args);
+	auto state_ptr = create_state(in_args);
 	State &state = *state_ptr;
 
 	json opt_args;
@@ -797,14 +818,46 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
-	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
+	auto obj = std::dynamic_pointer_cast<SumCompositeForm>(create_form(opt_args["functionals"], variable_to_simulations, states));
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
 	Eigen::MatrixXd V;
 	state.get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
+	nl_problem->solution_changed(x);
+	Eigen::VectorXd one_form;
+	nl_problem->gradient(x, one_form);
+
+	// if (opt_args["solver"]["nonlinear"]["debug_fd"])
+	// {
+	// 	Eigen::VectorXd fgrad;
+	// 	fgrad.setZero(x.size());
+	// 	fd::finite_gradient(
+	// 		x, [&](const Eigen::VectorXd &y) -> double 
+	// 		{
+	// 			nl_problem->solution_changed(y);
+	// 			return obj->value(y);
+	// 		}, fgrad, fd::AccuracyOrder::SECOND, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>());
+
+	// 	io::VTUWriter writer;
+	// 	writer.add_field("grad", utils::unflatten(one_form, 2));
+	// 	writer.add_field("fgrad", utils::unflatten(fgrad, 2));
+	// 	writer.add_field("disp", utils::unflatten(state.diff_cached.u(0), 2)(state.primitive_to_node(), Eigen::all));
+		
+	// 	auto ids = state.primitive_to_node();
+	// 	Eigen::VectorXd ids_ = Eigen::Map<Eigen::VectorXi>(ids.data(), ids.size()).cast<double>();
+	// 	writer.add_field("ids", ids_);
+
+	// 	Eigen::MatrixXi F;
+	// 	state.get_elements(F);
+	// 	writer.write_mesh("debug.vtu", V, F);
+	// }
+
 	Eigen::VectorXd theta;
 	theta.setRandom(x.size());
+
 	const double eps = 1e-5;
 	Eigen::VectorXd min = V.colwise().minCoeff();
 	Eigen::VectorXd max = V.colwise().maxCoeff();
@@ -817,6 +870,7 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 				theta(i * 2 + d) = 0;
 		}
 	}
+	nl_problem->solution_changed(x);
 	verify_adjoint(variable_to_simulations, *obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-5);
 }
 

@@ -1170,31 +1170,18 @@ namespace polyfem
 
 		if (boundary_nodes.size() == 0 && !problem->is_scalar())
 		{
+			// find an internal node
+			int i = 0;
+			for (; i < mesh->n_vertices(); i++)
+				if (!mesh->is_boundary_vertex(i))
+					break;
+			if (i >= mesh->n_vertices())
+				log_and_throw_error("Failed to find an internal vertex!");
 			for (int d = 0; d < mesh->dimension(); d++)
 			{
 				if (periodic_dimensions[d])
-					boundary_nodes.push_back(d);
+					boundary_nodes.push_back(i * mesh->dimension() + d);
 			}
-		}
-
-		// build disp_grad
-		{
-			if (args["boundary_conditions"]["linear_displacement_offset"].size() > 0)
-			{
-				disp_grad_.setZero(mesh->dimension(), mesh->dimension());
-				int i = 0;
-				for (const auto &row : args["boundary_conditions"]["linear_displacement_offset"])
-				{
-					int j = 0;
-					for (const auto &x : row)
-						disp_grad_(i, j++) = x;
-					i++;
-				}
-
-				logger().info("Underlying linear displacement field: {}", utils::flatten(disp_grad_).transpose());
-			}
-			else
-				disp_grad_.resize(0, 0);
 		}
 
 		const auto &curret_bases = geom_bases();
