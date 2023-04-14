@@ -347,7 +347,7 @@ namespace polyfem
 			}
 			return false;
 		}
-		bool all_direction_periodic()
+		bool all_direction_periodic() const
 		{
 			for (const bool &r : periodic_dimensions)
 			{
