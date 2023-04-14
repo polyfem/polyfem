@@ -12,6 +12,7 @@ namespace polyfem::solver
 		const double scaling,
 		const double max_al_weight,
 		const double eta_tol,
+		const int max_solver_iter,
 		const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness)
 		: nl_solver(nl_solver),
 		  lagr_form(lagr_form),
@@ -20,6 +21,7 @@ namespace polyfem::solver
 		  scaling(scaling),
 		  max_al_weight(max_al_weight),
 		  eta_tol(eta_tol),
+		  max_solver_iter(max_solver_iter),
 		  update_barrier_stiffness(update_barrier_stiffness)
 	{
 	}
@@ -35,6 +37,8 @@ namespace polyfem::solver
 
 		double al_weight = initial_al_weight;
 		int al_steps = 0;
+		const int iters = nl_solver->max_iterations();
+		nl_solver->max_iterations() = max_solver_iter;
 
 		const StiffnessMatrix &mask = pen_form->mask();
 		const double initial_error = (pen_form->target() - sol).transpose() * mask * (pen_form->target() - sol);
@@ -83,6 +87,7 @@ namespace polyfem::solver
 			++al_steps;
 		}
 		nl_problem.line_search_end();
+		nl_solver->max_iterations() = iters;
 
 		// --------------------------------------------------------------------
 		// Perform one final solve with the DBC projected out

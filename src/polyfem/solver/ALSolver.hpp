@@ -26,6 +26,7 @@ namespace polyfem::solver
 			const double scaling,
 			const double max_al_weight,
 			const double eta_tol,
+			const int max_solver_iter,
 			const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness);
 
 		void solve(NLProblem &nl_problem, Eigen::MatrixXd &sol, bool force_al = false);
@@ -42,6 +43,7 @@ namespace polyfem::solver
 		const double scaling;
 		const double max_al_weight;
 		const double eta_tol;
+		const int max_solver_iter;
 
 		// TODO: replace this with a member function
 		std::function<void(const Eigen::VectorXd &)> update_barrier_stiffness;

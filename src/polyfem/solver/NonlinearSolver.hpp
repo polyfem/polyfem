@@ -55,6 +55,9 @@ namespace cppoptlib
 				   || this->m_status == Status::GradNormTolerance;
 		}
 
+		size_t max_iterations() const { return this->m_stop.iterations; }
+		size_t &max_iterations() { return this->m_stop.iterations; }
+
 	protected:
 		// ====================================================================
 		//                        Solver parameters

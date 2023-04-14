@@ -239,6 +239,7 @@ namespace polyfem
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_weight"],
 			args["solver"]["augmented_lagrangian"]["eta"],
+			args["solver"]["augmented_lagrangian"]["max_solver_iters"],
 			[&](const Eigen::VectorXd &x) {
 				this->solve_data.update_barrier_stiffness(sol);
 			});
