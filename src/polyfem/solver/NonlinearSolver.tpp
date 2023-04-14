@@ -226,8 +226,8 @@ namespace cppoptlib
 		// Log results
 		// -----------
 
-		if (this->m_status == Status::IterationLimit)
-			log_and_throw_error("[{}] Reached iteration limit (limit={})", name(), this->m_stop.iterations);
+		// if (this->m_status == Status::IterationLimit)
+		// 	log_and_throw_error("[{}] Reached iteration limit (limit={})", name(), this->m_stop.iterations);
 		if (this->m_current.iterations == 0)
 			log_and_throw_error("[{}] Unable to take a step", name());
 		if (this->m_status == Status::UserDefined)

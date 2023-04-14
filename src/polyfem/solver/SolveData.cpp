@@ -155,14 +155,14 @@ namespace polyfem::solver
 			if (use_adaptive_barrier_stiffness)
 			{
 				contact_form->set_weight(1);
-				logger().debug("Using adaptive barrier stiffness");
+				// logger().debug("Using adaptive barrier stiffness");
 			}
 			else
 			{
 				assert(barrier_stiffness.is_number());
 				assert(barrier_stiffness.get<double>() > 0);
 				contact_form->set_weight(barrier_stiffness);
-				logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
+				// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
 			}
 
 			forms.push_back(contact_form);

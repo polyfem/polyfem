@@ -103,9 +103,9 @@ namespace polyfem::solver
 
 		logger().debug("adaptive barrier form stiffness {}", barrier_stiffness());
 
-		// Eigen::VectorXd tmp;
-		// this->first_derivative(x, tmp);
-		// logger().debug("grad_energy {}; grad_barrier {}", grad_energy.norm(), tmp.norm());
+		Eigen::VectorXd tmp;
+		this->first_derivative(x, tmp);
+		logger().debug("grad_energy {}; grad_barrier {}", grad_energy.norm(), tmp.norm());
 	}
 
 	void ContactForm::update_constraint_set(const Eigen::MatrixXd &displaced_surface)
