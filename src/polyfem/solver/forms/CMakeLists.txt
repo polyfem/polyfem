@@ -1,7 +1,9 @@
 set(SOURCES
 	Form.hpp
-	ALForm.hpp
-	ALForm.cpp
+	BCLagrangianForm.hpp
+	BCLagrangianForm.cpp
+	BCPenaltyForm.hpp
+	BCPenaltyForm.cpp
 	BodyForm.hpp
 	BodyForm.cpp
 	ElasticForm.hpp
