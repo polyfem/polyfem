@@ -198,8 +198,9 @@ var annotated_dup =
           [ "LineSearch", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html", "classpolyfem_1_1solver_1_1line__search_1_1_line_search" ],
           [ "MoreThuenteLineSearch", "classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search.html", "classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search" ]
         ] ],
-        [ "ALForm", "classpolyfem_1_1solver_1_1_a_l_form.html", "classpolyfem_1_1solver_1_1_a_l_form" ],
         [ "ALSolver", "classpolyfem_1_1solver_1_1_a_l_solver.html", "classpolyfem_1_1solver_1_1_a_l_solver" ],
+        [ "BCLagrangianForm", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form" ],
+        [ "BCPenaltyForm", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html", "classpolyfem_1_1solver_1_1_b_c_penalty_form" ],
         [ "BodyForm", "classpolyfem_1_1solver_1_1_body_form.html", "classpolyfem_1_1solver_1_1_body_form" ],
         [ "ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html", "classpolyfem_1_1solver_1_1_contact_form" ],
         [ "ElasticForm", "classpolyfem_1_1solver_1_1_elastic_form.html", "classpolyfem_1_1solver_1_1_elastic_form" ],

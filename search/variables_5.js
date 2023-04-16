@@ -23,13 +23,14 @@ var searchData=
   ['epsv_5f_20',['epsv_',['../classpolyfem_1_1solver_1_1_friction_form.html#af957a227f9ba06ea915230fefa510faf',1,'polyfem::solver::FrictionForm']]],
   ['error_21',['error',['../classpolyfem_1_1io_1_1_solution_frame.html#ac66c22ee72d1d0badf2ee3c3b1766cbf',1,'polyfem::io::SolutionFrame']]],
   ['es_22',['es',['../structpolyfem_1_1mesh_1_1_face.html#a062642822db33e1287727faad413294c',1,'polyfem::mesh::Face::es()'],['../structpolyfem_1_1mesh_1_1_element.html#a882eaf58173331ee7d70349e6183a93a',1,'polyfem::mesh::Element::es()']]],
-  ['ev_23',['EV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a1e5821bc0729272d0587fddf254f6323',1,'polyfem::mesh::Mesh3DStorage']]],
-  ['eval_5fbases_5ffunc_5f_24',['eval_bases_func_',['../classpolyfem_1_1basis_1_1_element_bases.html#a4e780b2e0aa26209bd5ed6e60e841ba8',1,'polyfem::basis::ElementBases']]],
-  ['eval_5fgrads_5ffunc_5f_25',['eval_grads_func_',['../classpolyfem_1_1basis_1_1_element_bases.html#af991f80d3057d11973733b07f13e644d',1,'polyfem::basis::ElementBases']]],
-  ['exact_26',['exact',['../classpolyfem_1_1io_1_1_solution_frame.html#a9cc95f45ac85ed95b3c4c26f16063e38',1,'polyfem::io::SolutionFrame']]],
-  ['exact_5f_27',['exact_',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#af8cdcfeee105441905126b4a4f3be33a',1,'polyfem::assembler::GenericTensorProblem::exact_()'],['../classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a6365da4bb42d2c5b47d82682818ffb0b',1,'polyfem::assembler::GenericScalarProblem::exact_()']]],
-  ['exact_5fgrad_5f_28',['exact_grad_',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aa829e52d35b06d98c9cf6188204316e6',1,'polyfem::assembler::GenericTensorProblem::exact_grad_()'],['../classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a6eeadd2af638293255d87291f3b77741',1,'polyfem::assembler::GenericScalarProblem::exact_grad_()']]],
-  ['expoenents_5f_29',['expoenents_',['../classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html#a7f6ff8116e6ea650e178245feedb8b82',1,'polyfem::assembler::IncompressibleOgdenElasticity']]],
-  ['expr_5f_30',['expr_',['../classpolyfem_1_1utils_1_1_expression_value.html#a98484d50dcbca8e955f04ae8f7bd17ee',1,'polyfem::utils::ExpressionValue']]],
-  ['extend_5f_31',['extend_',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#aecb68e2239c1ee24a5221fa931f6247b',1,'polyfem::utils::PiecewiseInterpolation']]]
+  ['eta_5ftol_23',['eta_tol',['../classpolyfem_1_1solver_1_1_a_l_solver.html#a8a05857125ca09413c55d1c7b9b5ce77',1,'polyfem::solver::ALSolver']]],
+  ['ev_24',['EV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a1e5821bc0729272d0587fddf254f6323',1,'polyfem::mesh::Mesh3DStorage']]],
+  ['eval_5fbases_5ffunc_5f_25',['eval_bases_func_',['../classpolyfem_1_1basis_1_1_element_bases.html#a4e780b2e0aa26209bd5ed6e60e841ba8',1,'polyfem::basis::ElementBases']]],
+  ['eval_5fgrads_5ffunc_5f_26',['eval_grads_func_',['../classpolyfem_1_1basis_1_1_element_bases.html#af991f80d3057d11973733b07f13e644d',1,'polyfem::basis::ElementBases']]],
+  ['exact_27',['exact',['../classpolyfem_1_1io_1_1_solution_frame.html#a9cc95f45ac85ed95b3c4c26f16063e38',1,'polyfem::io::SolutionFrame']]],
+  ['exact_5f_28',['exact_',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#af8cdcfeee105441905126b4a4f3be33a',1,'polyfem::assembler::GenericTensorProblem::exact_()'],['../classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a6365da4bb42d2c5b47d82682818ffb0b',1,'polyfem::assembler::GenericScalarProblem::exact_()']]],
+  ['exact_5fgrad_5f_29',['exact_grad_',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aa829e52d35b06d98c9cf6188204316e6',1,'polyfem::assembler::GenericTensorProblem::exact_grad_()'],['../classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a6eeadd2af638293255d87291f3b77741',1,'polyfem::assembler::GenericScalarProblem::exact_grad_()']]],
+  ['expoenents_5f_30',['expoenents_',['../classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html#a7f6ff8116e6ea650e178245feedb8b82',1,'polyfem::assembler::IncompressibleOgdenElasticity']]],
+  ['expr_5f_31',['expr_',['../classpolyfem_1_1utils_1_1_expression_value.html#a98484d50dcbca8e955f04ae8f7bd17ee',1,'polyfem::utils::ExpressionValue']]],
+  ['extend_5f_32',['extend_',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#aecb68e2239c1ee24a5221fa931f6247b',1,'polyfem::utils::PiecewiseInterpolation']]]
 ];

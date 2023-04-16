@@ -1,9 +1,10 @@
 <map id="polyfem::assembler::RhsAssembler::set_bc" name="polyfem::assembler::RhsAssembler::set_bc">
-<area shape="rect" id="node1" title=" " alt="" coords="2155,613,2328,653"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#aa7612805538e997b3f4eaa6f3b3cb56a" title=" " alt="" coords="1904,517,2107,557"/>
-<area shape="rect" id="node25" href="$classpolyfem_1_1solver_1_1_body_form.html#ac565e4b704690c5a47c2862ca09ce0a1" title="Update current_rhs." alt="" coords="1906,613,2105,653"/>
-<area shape="rect" id="node29" href="$classpolyfem_1_1solver_1_1_a_l_form.html#a0a40a0b4758f3d34279aaf08377fb9d4" title="Update target x to the Dirichlet boundary values at time t." alt="" coords="1915,741,2096,781"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a887440705d78e1fe9ae808e053e3210b" title=" " alt="" coords="1653,485,1856,525"/>
+<area shape="rect" id="node1" title=" " alt="" coords="2195,709,2368,749"/>
+<area shape="rect" id="node2" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#aa7612805538e997b3f4eaa6f3b3cb56a" title=" " alt="" coords="1934,533,2137,573"/>
+<area shape="rect" id="node25" href="$classpolyfem_1_1solver_1_1_body_form.html#ac565e4b704690c5a47c2862ca09ce0a1" title="Update current_rhs." alt="" coords="1936,645,2135,685"/>
+<area shape="rect" id="node29" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a314f8a932a3cb372cb7c57aea87d77ab" title="Update target x to the Dirichlet boundary values at time t." alt="" coords="1924,741,2147,781"/>
+<area shape="rect" id="node32" href="$classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a1a91634a984680598d5850e4b7267f5d" title="Update target x to the Dirichlet boundary values at time t." alt="" coords="1936,869,2135,909"/>
+<area shape="rect" id="node3" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a887440705d78e1fe9ae808e053e3210b" title=" " alt="" coords="1663,485,1866,525"/>
 <area shape="rect" id="node4" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#a727281312b26149dbbce7d9e4f283d58" title=" " alt="" coords="1403,80,1605,120"/>
 <area shape="rect" id="node5" href="$classpolyfem_1_1_state.html#acdb194af25d840fa14cec97b19e04577" title="solves nonlinear problems" alt="" coords="675,276,836,316"/>
 <area shape="rect" id="node11" href="$classpolyfem_1_1solver_1_1_n_l_problem.html#ac5391ca8bfaf7182e806ea462405c8a9" title=" " alt="" coords="1403,219,1605,259"/>
@@ -24,10 +25,12 @@
 <area shape="rect" id="node9" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="424,304,627,344"/>
 <area shape="rect" id="node7" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="59,258,113,283"/>
 <area shape="rect" id="node8" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="5,307,167,333"/>
-<area shape="rect" id="node20" href="$classpolyfem_1_1solver_1_1_a_l_solver.html#aa5680f2cec0f8bc3a36ccd0ae45850ce" title=" " alt="" coords="1150,512,1339,552"/>
-<area shape="rect" id="node26" href="$classpolyfem_1_1solver_1_1_body_form.html#ae79c6932d834cbe1dba199ba0cbfec12" title="Construct a new Body Form object." alt="" coords="1655,549,1854,589"/>
-<area shape="rect" id="node27" href="$classpolyfem_1_1solver_1_1_body_form.html#a638bd0d14aeb801284b8ffc8b0cbf261" title="Set if the Dirichlet boundary conditions should be enforced." alt="" coords="1655,613,1854,653"/>
-<area shape="rect" id="node28" href="$classpolyfem_1_1solver_1_1_body_form.html#a59038ae41bd1beec9805dacdf2194d85" title="Update time dependent quantities." alt="" coords="1655,677,1854,717"/>
-<area shape="rect" id="node30" href="$classpolyfem_1_1solver_1_1_a_l_form.html#ae73c504ace426cedd4cd839312c18241" title="Construct a new ALForm object with a time dependent Dirichlet boundary." alt="" coords="1664,741,1845,781"/>
-<area shape="rect" id="node31" href="$classpolyfem_1_1solver_1_1_a_l_form.html#a33ff034c7307e516775d5063d3215877" title="Update time dependent quantities." alt="" coords="1664,805,1845,845"/>
+<area shape="rect" id="node20" href="$classpolyfem_1_1solver_1_1_a_l_solver.html#a37b1f3b8343a9f2a4858a29546e9b015" title=" " alt="" coords="1150,512,1339,552"/>
+<area shape="rect" id="node26" href="$classpolyfem_1_1solver_1_1_body_form.html#ae79c6932d834cbe1dba199ba0cbfec12" title="Construct a new Body Form object." alt="" coords="1665,677,1864,717"/>
+<area shape="rect" id="node27" href="$classpolyfem_1_1solver_1_1_body_form.html#a638bd0d14aeb801284b8ffc8b0cbf261" title="Set if the Dirichlet boundary conditions should be enforced." alt="" coords="1665,549,1864,589"/>
+<area shape="rect" id="node28" href="$classpolyfem_1_1solver_1_1_body_form.html#a59038ae41bd1beec9805dacdf2194d85" title="Update time dependent quantities." alt="" coords="1665,613,1864,653"/>
+<area shape="rect" id="node30" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a0b0be50c9e6d6de1b641fccb18554e4c" title="Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary." alt="" coords="1653,741,1876,781"/>
+<area shape="rect" id="node31" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a2a49e56f3b76a506f8d097368fa6f4ec" title="Update time dependent quantities." alt="" coords="1653,805,1876,845"/>
+<area shape="rect" id="node33" href="$classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a7f6855ef9b1244ee946f218478fac440" title="Construct a new BCPenaltyForm object with a time dependent Dirichlet boundary." alt="" coords="1665,869,1864,909"/>
+<area shape="rect" id="node34" href="$classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a4abff93789ea47f89f61c7efcd579a35" title="Update time dependent quantities." alt="" coords="1665,933,1864,973"/>
 </map>

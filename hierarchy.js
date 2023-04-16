@@ -80,7 +80,8 @@ var hierarchy =
     [ "polyfem::mesh::NCMesh2D::follower_face", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__face.html", null ],
     [ "polyfem::mesh::NCMesh3D::follower_face", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__face.html", null ],
     [ "polyfem::solver::Form", "classpolyfem_1_1solver_1_1_form.html", [
-      [ "polyfem::solver::ALForm", "classpolyfem_1_1solver_1_1_a_l_form.html", null ],
+      [ "polyfem::solver::BCLagrangianForm", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html", null ],
+      [ "polyfem::solver::BCPenaltyForm", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html", null ],
       [ "polyfem::solver::BodyForm", "classpolyfem_1_1solver_1_1_body_form.html", null ],
       [ "polyfem::solver::ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html", null ],
       [ "polyfem::solver::ElasticForm", "classpolyfem_1_1solver_1_1_elastic_form.html", null ],
