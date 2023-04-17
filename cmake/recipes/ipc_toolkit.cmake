@@ -14,7 +14,7 @@ include(FetchContent)
 FetchContent_Declare(
     ipc_toolkit
     GIT_REPOSITORY https://github.com/ipc-sim/ipc-toolkit.git
-    GIT_TAG 29f20b1f8ba1096b86ee0ae1ed302ee881c0d894
+    GIT_TAG 6aaf0ca84917d595a16a1d37dc1e6cd98ca0467c
     GIT_SHALLOW FALSE
 )
 FetchContent_MakeAvailable(ipc_toolkit)

@@ -5,7 +5,7 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
 
-#include <ipc/ipc.hpp>
+#include <ipc/collisions/collision_constraints.hpp>
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
 
@@ -125,7 +125,10 @@ namespace polyfem::solver
 		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
 
 		inline bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
-		inline bool use_convergent_formulation() const { return constraint_set_.use_convergent_formulation; }
+		inline bool use_convergent_formulation() const { return constraint_set_.use_convergent_formulation(); }
+
+		/// @brief Compute the displaced positions of the surface nodes
+		Eigen::MatrixXd compute_displaced_surface(const Eigen::VectorXd &x) const;
 
 		bool save_ccd_debug_meshes = false; ///< If true, output debug files
 
@@ -133,6 +136,9 @@ namespace polyfem::solver
 		const ipc::CollisionMesh &collision_mesh_;
 
 		const double dhat_; ///< Barrier activation distance
+
+		// TODO: Make this a parameter
+		const double dmin_ = 0; ///< Minimum distance between elements
 
 		const double avg_mass_;
 
@@ -147,12 +153,9 @@ namespace polyfem::solver
 
 		double prev_distance_; ///< Previous minimum distance between all elements
 
-		bool use_cached_candidates_ = false; ///< If true, use the cached candidate set for the current solution
-		ipc::Constraints constraint_set_;    ///< Cached constraint set for the current solution
-		ipc::Candidates candidates_;         ///< Cached candidate set for the current solution
-
-		/// @brief Compute the displaced positions of the surface nodes
-		Eigen::MatrixXd compute_displaced_surface(const Eigen::VectorXd &x) const;
+		bool use_cached_candidates_ = false;       ///< If true, use the cached candidate set for the current solution
+		ipc::CollisionConstraints constraint_set_; ///< Cached constraint set for the current solution
+		ipc::Candidates candidates_;               ///< Cached candidate set for the current solution
 
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution

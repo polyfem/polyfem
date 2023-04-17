@@ -31,7 +31,7 @@ bool missing_tests_data(const json &j, const std::string &key)
 	return !j.contains(key) || (j.at(key).size() == 1 && j.at(key).contains("time_steps"));
 }
 
-int authenticate_json(const std::string &json_file, const bool allow_append)
+int authenticate_json(const std::string &json_file, const bool compute_validation)
 {
 	json in_args;
 	if (!load_json(json_file, in_args))
@@ -41,7 +41,7 @@ int authenticate_json(const std::string &json_file, const bool allow_append)
 	}
 
 	const std::string tests_key = "tests";
-	if (missing_tests_data(in_args, tests_key) && !allow_append)
+	if (missing_tests_data(in_args, tests_key) && !compute_validation)
 	{
 		spdlog::error(
 			"JSON file missing \"{}\" key. Add a * to the beginning of filename to allow appends.",
@@ -135,9 +135,9 @@ int authenticate_json(const std::string &json_file, const bool allow_append)
 	std::vector<std::string> test_keys =
 		{"err_l2", "err_h1", "err_h1_semi", "err_linf", "err_linf_grad", "err_lp"};
 
-	if (!missing_tests_data(in_args, tests_key))
+	if (!compute_validation)
 	{
-		spdlog::info("Authenticating..");
+		spdlog::info("Authenticating...");
 		json authen = in_args.at(tests_key);
 		double margin = authen.value("margin", 1e-5);
 		for (const std::string &key : test_keys)
@@ -155,7 +155,7 @@ int authenticate_json(const std::string &json_file, const bool allow_append)
 	}
 	else
 	{
-		spdlog::warn("Appending JSON..");
+		spdlog::warn("Appending JSON...");
 
 		in_args[tests_key] = out;
 		std::ofstream file(json_file);
@@ -174,23 +174,29 @@ TEST_CASE("runners", tags)
 {
 	// Disabled on Windows CI, due to the requirement for Pardiso.
 	std::ifstream file(POLYFEM_TEST_DIR "/system_test_list.txt");
+	std::vector<std::string> failing_tests;
 	std::string line;
 	while (std::getline(file, line))
 	{
-		DYNAMIC_SECTION(line)
+		bool compute_validation = false;
+		if (line[0] == '#')
+			continue;
+		else if (line[0] == '*')
 		{
-			auto allow_append = false;
-			if (line[0] == '#')
-				continue;
-			if (line[0] == '*')
-			{
-				allow_append = true;
-				line = line.substr(1);
-			}
-			spdlog::info("Processing {}", line);
-			auto flag = authenticate_json(POLYFEM_DATA_DIR "/" + line, allow_append);
-			CAPTURE(line);
-			CHECK(flag == 0);
+			compute_validation = true;
+			line = line.substr(1);
 		}
+		spdlog::info("Processing {}", line);
+		auto flag = authenticate_json(POLYFEM_DATA_DIR "/" + line, compute_validation);
+		CAPTURE(line);
+		CHECK(flag == 0);
+		if (flag != 0)
+			failing_tests.push_back(line);
+	}
+	if (failing_tests.size() > 0)
+	{
+		std::cout << "Failing tests:" << std::endl;
+		for (auto &t : failing_tests)
+			std::cout << t << std::endl;
 	}
 }
