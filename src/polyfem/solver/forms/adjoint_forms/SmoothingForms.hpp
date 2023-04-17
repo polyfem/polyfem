@@ -19,7 +19,7 @@ namespace polyfem::solver
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
 		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override;
+		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
 
 	private:
 		void init_form();

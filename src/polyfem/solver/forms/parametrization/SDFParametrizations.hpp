@@ -75,7 +75,8 @@ namespace polyfem::solver
         PeriodicMeshToMesh(const Eigen::MatrixXd &V);
 
         int size(const int x_size) const override { assert(x_size == input_size()); return dependent_map.size() * dim; }
-        int input_size() const { return n_periodic_dof * dim + dim; }
+        int input_size() const { return n_periodic_dof_ * dim + dim; }
+        int n_periodic_dof() const { return n_periodic_dof_; }
 
         Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
         Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
@@ -85,7 +86,7 @@ namespace polyfem::solver
 
     private:
         int dim;
-        int n_periodic_dof;
+        int n_periodic_dof_;
         Eigen::VectorXi dependent_map;
         std::array<std::vector<std::array<int, 2>>, 3> periodic_dependence; // <id1, id2> for 2/3 axis
     };

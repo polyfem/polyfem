@@ -4,6 +4,8 @@
 #include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/State.hpp>
 
+#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
+
 namespace polyfem::solver
 {
 	double AdjointForm::value(const Eigen::VectorXd &x) const
@@ -28,7 +30,7 @@ namespace polyfem::solver
 		log_and_throw_error("Not implemented");
 	}
 	
-	Eigen::MatrixXd AdjointForm::compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
+	Eigen::MatrixXd AdjointForm::compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
 	{
 		Eigen::MatrixXd rhs = compute_adjoint_rhs_unweighted(x, state);
 		if (!state.problem->is_time_dependent() && !state.lin_solver_cached) // nonlinear static solve only
@@ -68,12 +70,12 @@ namespace polyfem::solver
 		gradv = Eigen::VectorXd::Zero(x.size());
 	}
 
-	Eigen::MatrixXd AdjointForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
+	Eigen::MatrixXd AdjointForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
 	{
 		return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
 	}
 
-	Eigen::MatrixXd StaticForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
+	Eigen::MatrixXd StaticForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
 	{
 		Eigen::MatrixXd term = Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
 		term.col(time_step_) = compute_adjoint_rhs_unweighted_step(x, state);
@@ -105,7 +107,7 @@ namespace polyfem::solver
 	NodeTargetForm::NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_) : StaticForm(variable_to_simulations), state_(state), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
 	{
 	}
-	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state)
+	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) const
 	{
 		Eigen::VectorXd rhs;
 		rhs.setZero(state.diff_cached.u(0).size());
@@ -183,7 +185,7 @@ namespace polyfem::solver
 
 		return max_stress.maxCoeff();
 	}
-	Eigen::VectorXd MaxStressForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state)
+	Eigen::VectorXd MaxStressForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) const
 	{
 		log_and_throw_error("MaxStressForm is not differentiable!");
 		return Eigen::VectorXd();
@@ -193,7 +195,7 @@ namespace polyfem::solver
 	{
 		return state_.diff_cached.disp_grad()(dimensions_[0], dimensions_[1]);
 	}
-	Eigen::MatrixXd HomogenizedDispGradForm::compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
+	Eigen::MatrixXd HomogenizedDispGradForm::compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
 	{
 		if (&state != &state_)
 		{
@@ -220,5 +222,45 @@ namespace polyfem::solver
 		rhs.tail(problem->macro_reduced_size()) = problem->macro_full_to_reduced_grad(utils::flatten(disp_grad));
 
 		return rhs;
+	}
+
+	WeightedSolution::WeightedSolution(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : AdjointForm(variable_to_simulations), state_(state)
+	{
+		coeffs.setRandom(state_.ndof());
+	}
+	double WeightedSolution::value_unweighted(const Eigen::VectorXd &x) const
+	{
+		return state_.diff_cached.u(0).dot(coeffs);
+	}
+	Eigen::MatrixXd WeightedSolution::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
+	{
+		return coeffs;
+	}
+	void WeightedSolution::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		gradv.setZero(x.size());
+		for (const auto &param_map : variable_to_simulations_)
+		{
+			const auto &parametrization = param_map->get_parametrization();
+			const auto &param_type = param_map->get_parameter_type();
+
+			for (const auto &state : param_map->get_states())
+			{
+				if (state.get() != &state_)
+					continue;
+
+				Eigen::VectorXd term;
+				if (param_type == ParameterType::PeriodicShape)
+				{
+					auto adjoint_rhs = compute_adjoint_rhs_unweighted(x, state_);
+					std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state_.solve_data.nl_problem);
+					term = homo_problem->reduced_to_full_shape_derivative(state_.diff_cached.disp_grad(), adjoint_rhs);
+					term = utils::flatten(utils::unflatten(term, state_.mesh->dimension())(state_.primitive_to_node(), Eigen::all));
+					term = state_.periodic_mesh_map->apply_jacobian(term, state_.periodic_mesh_representation);
+				}
+				if (term.size() > 0)
+					gradv += parametrization.apply_jacobian(term, x);
+			}
+		}
 	}
 } // namespace polyfem::solver

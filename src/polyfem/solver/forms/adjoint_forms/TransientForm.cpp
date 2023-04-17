@@ -63,7 +63,7 @@ namespace polyfem::solver
 		}
 		return value;
 	}
-	Eigen::MatrixXd TransientForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state)
+	Eigen::MatrixXd TransientForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
 	{
 		Eigen::MatrixXd terms;
 		terms.setZero(state.ndof(), time_steps_ + 1);

@@ -20,6 +20,7 @@
             "stress_norm",
             "max_stress",
             "compliance",
+            "weighted_solution",
             "strain_norm",
             "boundary_smoothing",
             "collision_barrier",
@@ -724,6 +725,20 @@
         "pointer": "/dmin",
         "type": "float",
         "default": 0.0,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "weighted_solution",
+        "required": [
+            "type",
+            "state"
+        ],
+        "optional": [
+            "weight",
+            "print_energy"
+        ],
         "doc": "TODO"
     },
     {

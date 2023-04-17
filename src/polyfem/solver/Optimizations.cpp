@@ -208,6 +208,10 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<MaxStressForm>(var2sim, *(states[args["state"]]), args);
 			}
+			else if (type == "weighted_solution")
+			{
+				obj = std::make_shared<WeightedSolution>(var2sim, *(states[args["state"]]), args);
+			}
 			else if (type == "volume")
 			{
 				obj = std::make_shared<VolumeForm>(var2sim, *(states[args["state"]]), args);

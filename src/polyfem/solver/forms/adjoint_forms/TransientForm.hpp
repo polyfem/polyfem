@@ -10,7 +10,7 @@ namespace polyfem::solver
 		TransientForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const int time_steps, const double dt, const std::string &transient_integral_type, const std::vector<int> &steps, const std::shared_ptr<StaticForm> &obj) : AdjointForm(variable_to_simulations), time_steps_(time_steps), dt_(dt), transient_integral_type_(transient_integral_type), steps_(steps), obj_(obj) {}
 		virtual ~TransientForm() = default;
 
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override;
+		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
 		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		void init(const Eigen::VectorXd &x) override;
@@ -34,6 +34,6 @@ namespace polyfem::solver
 		double dt_;
 		std::string transient_integral_type_;
 		std::vector<int> steps_;
-		std::shared_ptr<StaticForm> obj_;
+		mutable std::shared_ptr<StaticForm> obj_;
 	};
 }

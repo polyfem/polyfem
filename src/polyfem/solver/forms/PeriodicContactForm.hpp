@@ -30,8 +30,10 @@ namespace polyfem::solver
 
         void init(const Eigen::VectorXd &x) override;
 
-        void force_shape_derivative(const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) override;
-		void force_periodic_shape_derivative(const State& state, const ipc::Constraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
+		void force_periodic_shape_derivative(const State& state, const ipc::Constraints &contact_set, const Eigen::VectorXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
+
+        Eigen::VectorXd single_to_tiled(const Eigen::VectorXd &x) const;
+        Eigen::VectorXd tiled_to_single_grad(const Eigen::VectorXd &grad) const;
 
     protected:
 		/// @brief Compute the contact barrier potential value
@@ -84,11 +86,10 @@ namespace polyfem::solver
 		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
 
     private:
+		void update_projection() const;
+
         const Eigen::VectorXi tiled_to_single_;
 		const int n_single_dof_;
-		StiffnessMatrix proj;
-
-        Eigen::VectorXd single_to_tiled(const Eigen::VectorXd &x) const;
-        Eigen::VectorXd tiled_to_single_grad(const Eigen::VectorXd &grad) const;
+		mutable StiffnessMatrix proj;
     };
 }

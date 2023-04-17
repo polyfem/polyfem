@@ -9,6 +9,9 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
 
+#include <polyfem/solver/NLHomoProblem.hpp>
+#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
+
 #include <polyfem/utils/IntegrableFunctional.hpp>
 
 using namespace polyfem::utils;
@@ -64,14 +67,26 @@ namespace polyfem::solver
 				else if (param_type == ParameterType::MacroStrain)
 					AdjointTools::compute_macro_strain_derivative_functional_term(state_, state_.diff_cached.u(time_step_), get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
 				else if (param_type == ParameterType::PeriodicShape)
-					AdjointTools::compute_periodic_shape_derivative_functional_term(state_, state_.diff_cached.u(time_step_), get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
+				{
+					AdjointTools::compute_shape_derivative_functional_term(state_, state_.diff_cached.u(time_step_), get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
+
+					auto adjoint_rhs = compute_adjoint_rhs_unweighted_step(x, state_);
+					std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state_.solve_data.nl_problem);
+					// term += homo_problem->reduced_to_full_shape_derivative(state_.diff_cached.disp_grad(), adjoint_rhs);
+					{
+						Eigen::VectorXd tmp = homo_problem->reduced_to_full_shape_derivative(state_.diff_cached.disp_grad(), adjoint_rhs);
+						term += utils::flatten(utils::unflatten(tmp, state_.mesh->dimension())(state_.primitive_to_node(), Eigen::all));
+					}
+
+					term = state_.periodic_mesh_map->apply_jacobian(term, state_.periodic_mesh_representation);
+				}
 				if (term.size() > 0)
 					gradv += parametrization.apply_jacobian(term, x);
 			}
 		}
 	}
 
-	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state)
+	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) const
 	{
 		if (&state != &state_)
 			return Eigen::VectorXd::Zero(state.ndof());

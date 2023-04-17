@@ -301,10 +301,10 @@ namespace polyfem::solver
 					const quadrature::Quadrature &quadrature = vals.quadrature;
 					local_storage.da = vals.det.array() * quadrature.weights.array();
 
-					Eigen::MatrixXd u, grad_u, p, grad_p, stiffnesses;
+					Eigen::MatrixXd u, grad_u, p, grad_p; //, stiffnesses;
 					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, x, u, grad_u);
 					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint, p, grad_p);
-					assembler_.compute_stiffness_value(formulation_, vals, quadrature.points, x, stiffnesses);
+					// assembler_.compute_stiffness_value(formulation_, vals, quadrature.points, x, stiffnesses);
 
 					for (int q = 0; q < local_storage.da.size(); ++q)
 					{
@@ -320,7 +320,7 @@ namespace polyfem::solver
 							vector2matrix(grad_p.row(q), grad_p_i);
 						}
 
-						stiffness_i = utils::unflatten(stiffnesses.row(q).transpose(), actual_dim * dim);
+						// stiffness_i = utils::unflatten(stiffnesses.row(q).transpose(), actual_dim * dim);
 
 						for (auto &v : gvals.basis_values)
 						{
@@ -332,7 +332,7 @@ namespace polyfem::solver
 
 								Eigen::MatrixXd stress_tensor, f_prime_gradu_gradv;
 								f_prime_gradu_gradv_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_i, grad_u_i * grad_v_i, stress_tensor, f_prime_gradu_gradv);
-								f_prime_gradu_gradv = utils::unflatten(stiffness_i * utils::flatten(grad_u_i * grad_v_i), dim);
+								// f_prime_gradu_gradv = utils::unflatten(stiffness_i * utils::flatten(grad_u_i * grad_v_i), dim);
 
 								Eigen::MatrixXd tmp = grad_v_i - grad_v_i.trace() * Eigen::MatrixXd::Identity(dim, dim);
 								local_storage.vec(v.global[0].index * dim + d) -= dot(f_prime_gradu_gradv + stress_tensor * tmp.transpose(), grad_p_i) * local_storage.da(q);

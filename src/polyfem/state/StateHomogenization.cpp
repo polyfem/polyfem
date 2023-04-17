@@ -264,7 +264,7 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
     if (args["optimization"]["enabled"])
         cache_transient_adjoint_quantities(0, sol_, disp_grad_out);
     
-    homo_initial_guess = homo_problem->reduced_to_extended(reduced_sol);
+    // homo_initial_guess = homo_problem->reduced_to_extended(reduced_sol);
 
     // static int index = 0;
     // StiffnessMatrix H;

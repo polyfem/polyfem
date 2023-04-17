@@ -54,7 +54,7 @@ namespace polyfem::solver
 			build_constraint_set(displaced_surface);
 		}
 
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override
+		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override
 		{
 			return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
 		}

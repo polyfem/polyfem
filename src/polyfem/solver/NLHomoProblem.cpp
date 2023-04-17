@@ -286,6 +286,20 @@ namespace polyfem::solver
         Eigen::MatrixXd disp_grad = utils::unflatten(macro_reduced_to_full(reduced.tail(dof2)), dim);
         return NLProblem::reduced_to_full(reduced.head(dof1)) + io::Evaluator::generate_linear_field(state_.n_bases, state_.mesh_nodes, disp_grad);
     }
+    NLHomoProblem::TVector NLHomoProblem::reduced_to_full_shape_derivative(const Eigen::MatrixXd &disp_grad, const TVector &adjoint_full) const
+    {
+        const int dim = state_.mesh->dimension();
+
+        Eigen::VectorXd term;
+        term.setZero(state_.n_bases * dim);
+        for (int i = 0; i < state_.n_bases; i++)
+            for (int d = 0; d < dim; d++)
+                for (int p = 0; p < dim; p++)
+                    term(i * dim + p) += adjoint_full(i * dim + d) * disp_grad(d, p);
+            // term.segment(i * dim, dim) += disp_grad.transpose() * adjoint_full.segment(i * dim, dim);
+        
+        return state_.down_sampling_mat * term;
+    }
     Eigen::MatrixXd NLHomoProblem::reduced_to_disp_grad(const TVector &reduced) const
     {
         const int dim = state_.mesh->dimension();

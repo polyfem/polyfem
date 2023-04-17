@@ -734,51 +734,30 @@ TEST_CASE("homogenize-stress-periodic", "[adjoint_method]")
 	state.get_vertices(V);
 	Eigen::VectorXd x = variable_to_simulations[0]->inverse_eval();
 
-	nl_problem->solution_changed(x);
-	// Eigen::VectorXd one_form;
-	// nl_problem->gradient(x, one_form);
-
-	// auto periodic_grad_to_full = [&](const Eigen::VectorXd &y) -> Eigen::VectorXd {
-	// 	Eigen::VectorXd z;
-	// 	z.setZero(V.size());
-	// 	for (int i = 0; i < V.rows(); i++)
-	// 		z.segment(i * V.cols(), V.cols()) = y.segment(state.periodic_mesh_map->full_to_periodic(i) * V.cols(), V.cols()).array();
-
-	// 	return z;
-	// };
+	// nl_problem->solution_changed(x);
+	// Eigen::VectorXd grad;
+	// nl_problem->gradient(x, grad);
 
 	// Eigen::VectorXd fgrad;
 	// fgrad.setZero(x.size());
-	// fd::finite_gradient(
-	// 	x, [&](const Eigen::VectorXd &y) -> double 
-	// 	{
-	// 		nl_problem->solution_changed(y);
-	// 		return obj->value(y);
-	// 	}, fgrad, fd::AccuracyOrder::SECOND, 1e-8);
-	// const double eps = 1e-8;
-	// for (int j = 0; j < V.rows(); j++)
+	// const double eps = opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>();
+	// for (int i = x.size() - 2; i < x.size(); i++)
 	// {
-	// 	const int i = state.periodic_mesh_map->full_to_periodic(j);
-	// 	if (!state.mesh->is_boundary_vertex(j))
-	// 		continue;
+	// 	Eigen::VectorXd y = x;
 
-	// 	logger().warn("current {}, total {}", j, V.rows());
-	// 	// std::cout << "[" << j << " " << V.rows() << "]\n";
-	// 	for (int d = 0; d < 2; d++)
-	// 	{
-	// 		Eigen::VectorXd y = x;
+	// 	y(i) = x(i) + eps;
+	// 	nl_problem->solution_changed(y);
+	// 	const double a = obj->value(y);
 
-	// 		y(2*i+d) = x(2*i+d) + eps;
-	// 		nl_problem->solution_changed(y);
-	// 		const double a = obj->value(y);
+	// 	y(i) = x(i) - eps;
+	// 	nl_problem->solution_changed(y);
+	// 	const double b = obj->value(y);
 
-	// 		y(2*i+d) = x(2*i+d) - eps;
-	// 		nl_problem->solution_changed(y);
-	// 		const double b = obj->value(y);
-
-	// 		fgrad(2*i+d) = (a - b) / (2 * eps);
-	// 	}
+	// 	fgrad(i) = (a - b) / (2 * eps);
 	// }
+
+	// std::cout << "fgrad " << fgrad.tail(2).transpose() << "\n";
+	// std::cout << "grad " << grad.tail(2).transpose() << "\n";
 
 	// io::VTUWriter writer;
 	// writer.add_field("grad", utils::unflatten(periodic_grad_to_full(one_form), 2));
@@ -794,7 +773,6 @@ TEST_CASE("homogenize-stress-periodic", "[adjoint_method]")
 
 	Eigen::VectorXd theta;
 	theta.setRandom(x.size());
-	theta.tail(2).setZero();
 	nl_problem->solution_changed(x);
 	
 	// verify_adjoint_expensive(variable_to_simulations, *obj, state, x, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>());

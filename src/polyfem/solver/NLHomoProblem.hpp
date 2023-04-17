@@ -36,6 +36,7 @@ namespace polyfem::solver
 		TVector full_to_reduced(const TVector &full) const override;
 		TVector full_to_reduced_grad(const TVector &full) const override;
 		TVector reduced_to_full(const TVector &reduced) const override;
+		TVector reduced_to_full_shape_derivative(const Eigen::MatrixXd &disp_grad, const TVector &adjoint_full) const;
 
 		int macro_reduced_size() const;
 		TVector macro_full_to_reduced(const TVector &full) const;

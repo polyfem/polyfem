@@ -526,7 +526,7 @@ namespace polyfem::solver
         Eigen::VectorXd max = V.colwise().maxCoeff();
         Eigen::VectorXd scale_ = max - min;
 
-        n_periodic_dof = 0;
+        n_periodic_dof_ = 0;
         dependent_map.resize(n_verts);
         dependent_map.setConstant(-1);
 
@@ -587,7 +587,7 @@ namespace polyfem::solver
         reduce_map.setZero(dependent_map.size());
         for (int i = 0; i < dependent_map.size(); i++)
             if (dependent_map(i) < 0)
-                reduce_map(i) = n_periodic_dof++;
+                reduce_map(i) = n_periodic_dof_++;
         for (int i = 0; i < dependent_map.size(); i++)
             if (dependent_map(i) >= 0)
                 reduce_map(i) = reduce_map(dependent_map(i));
@@ -651,13 +651,13 @@ namespace polyfem::solver
             reduced_grad.segment(dependent_map(i) * dim, dim).array() += grad.segment(i * dim, dim).array() * x.tail(dim).array();
         
         for (int i = 0; i < dependent_map.size(); i++)
-            reduced_grad.segment(dim * n_periodic_dof, dim).array() += grad.segment(i * dim, dim).array() * x.segment(dependent_map(i) * dim, dim).array();
+            reduced_grad.segment(dim * n_periodic_dof_, dim).array() += grad.segment(i * dim, dim).array() * x.segment(dependent_map(i) * dim, dim).array();
 
         for (int d = 0; d < dim; d++)
         {
             const auto &dependence_list = periodic_dependence[d];
             for (const auto &pair : dependence_list)
-                reduced_grad(dim * n_periodic_dof + d) += grad(pair[1] * dim + d);
+                reduced_grad(dim * n_periodic_dof_ + d) += grad(pair[1] * dim + d);
         }
 
         return reduced_grad;

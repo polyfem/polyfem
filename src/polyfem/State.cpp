@@ -39,11 +39,12 @@
 #include <polysolve/FEMSolver.hpp>
 
 #include <unsupported/Eigen/SparseExtra>
-#include <polyfem/io/OBJWriter.hpp>
 #include <iostream>
 #include <algorithm>
 #include <memory>
 #include <filesystem>
+
+#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 
 #include <polyfem/utils/autodiff.h>
 DECLARE_DIFFSCALAR_BASE();
@@ -639,14 +640,9 @@ namespace polyfem
 		return args["space"]["advanced"]["isoparametric"];
 	}
 
-	void State::build_periodic_index_mapping(const int n_bases_, const std::vector<basis::ElementBases> &bases_, const std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes_, Eigen::VectorXi &index_map) const
+	void State::build_periodic_index_mapping(const int n_bases_, const std::vector<basis::ElementBases> &bases_, const std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes_, Eigen::VectorXi &index_map, Eigen::VectorXi &periodic_mask) const
 	{
 		const int dim = mesh->dimension();
-		std::vector<bool> periodic_dim;
-		for (const auto &r : args["boundary_conditions"]["periodic_boundary"])
-			periodic_dim.push_back(r);
-		while (periodic_dim.size() < dim)
-			periodic_dim.push_back(false);
 
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
@@ -657,11 +653,13 @@ namespace polyfem
 		Eigen::VectorXi dependent_map(n_bases_);
 		dependent_map.setConstant(-1);
 
+		int n_pairs = 0;
+
 		// find corresponding periodic boundary nodes
 		Eigen::Vector3i dependent_face({1, 2, 5}), target_face({3, 4, 6});
 		for (int d = 0; d < dim; d++)
 		{
-			if (!periodic_dim[d])
+			if (!periodic_dimensions[d])
 				continue;
 
 			const int dependent_boundary_id = dependent_face(d);
@@ -703,12 +701,25 @@ namespace polyfem
 					if (projected_diff.norm() < 1e-6 * bbox_size)
 					{
 						dependent_map(i) = j;
+						n_pairs++;
 						found_target = true;
 						break;
 					}
 				}
 				if (!found_target)
 					throw std::runtime_error("Periodic boundary condition failed to find corresponding nodes!");
+			}
+		}
+
+		{
+			periodic_mask.setZero(n_bases_);
+			for (int i = 0; i < dependent_map.size(); i++)
+			{
+				if (dependent_map(i) >= 0)
+				{
+					periodic_mask(dependent_map(i)) = 1;
+					periodic_mask(i) = 1;
+				}
 			}
 		}
 
@@ -1036,9 +1047,10 @@ namespace polyfem
 		if (has_periodic_bc())
 		{
 			// periodic bases mapping
+			if (!bases_to_periodic_map.size())
 			{
 				Eigen::VectorXi tmp_map;
-				build_periodic_index_mapping(n_bases, bases, mesh_nodes, tmp_map);
+				build_periodic_index_mapping(n_bases, bases, mesh_nodes, tmp_map, periodic_bases_mask);
 
 				const int old_size = tmp_map.size();
 				bases_to_periodic_map.setZero(old_size * problem_dim);
@@ -1170,7 +1182,7 @@ namespace polyfem
 
 		if (boundary_nodes.size() == 0 && !problem->is_scalar())
 		{
-			// find an internal node
+			// find an internal node to force zero dirichlet
 			int i = 0;
 			for (; i < mesh->n_vertices(); i++)
 				if (!mesh->is_boundary_vertex(i))
@@ -1361,15 +1373,12 @@ namespace polyfem
         bbox.col(1) = V.colwise().maxCoeff();
         Eigen::VectorXd size = bbox.col(1) - bbox.col(0);
 
-		// remove boundary edges on periodic BC
+		// remove boundary edges on periodic BC, buggy
 		{
-			const double eps = 1e-6 * size.maxCoeff();
-			Eigen::MatrixXd barycenters = (V(E.col(0), Eigen::all) + V(E.col(1), Eigen::all)) / 2.0;
 			std::vector<int> ind;
-			for (int i = 0; i < barycenters.rows(); i++)
+			for (int i = 0; i < E.rows(); i++)
 			{
-				Eigen::VectorXd p = barycenters.row(i);
-				if ((p - bbox.col(0)).minCoeff() > eps && (bbox.col(1) - p).minCoeff() > eps)
+				if (!periodic_bases_mask(E(i, 0)) || !periodic_bases_mask(E(i, 1)))
 					ind.push_back(i);
 			}
 			E = E(ind, Eigen::all).eval();
@@ -1380,18 +1389,22 @@ namespace polyfem
         Vtmp.setZero(V.rows() * n_tiles * n_tiles, V.cols());
         Etmp.setZero(E.rows() * n_tiles * n_tiles, E.cols());
 
-		tile_id.setZero(Vtmp.rows(), Vtmp.cols());
+		Eigen::VectorXd tile_offset = size;
+		if (periodic_mesh_map)
+		{
+			if (periodic_mesh_representation.size() != periodic_mesh_map->input_size())
+				log_and_throw_error("Inconsistent mesh and periodic representation!");
+			else
+				tile_offset = periodic_mesh_representation.tail(mesh->dimension());
+		}
 
 		for (int i = 0, idx = 0; i < n_tiles; i++)
 		{
 			for (int j = 0; j < n_tiles; j++)
 			{
 				Vtmp.middleRows(idx * V.rows(), V.rows()) = V;
-				Vtmp.block(idx * V.rows(), 0, V.rows(), 1).array() += size(0) * i;
-				Vtmp.block(idx * V.rows(), 1, V.rows(), 1).array() += size(1) * j;
-
-				tile_id.block(idx * V.rows(), 0, V.rows(), 1).array() = i;
-				tile_id.block(idx * V.rows(), 1, V.rows(), 1).array() = j;
+				Vtmp.block(idx * V.rows(), 0, V.rows(), 1).array() += tile_offset(0) * i;
+				Vtmp.block(idx * V.rows(), 1, V.rows(), 1).array() += tile_offset(1) * j;
 
 				Etmp.middleRows(idx * E.rows(), E.rows()) = E.array() + idx * V.rows();
 				idx += 1;
@@ -1399,14 +1412,12 @@ namespace polyfem
 		}
 
         // clean duplicated vertices
-        const double eps = 1e-6 * size.maxCoeff();
         Eigen::VectorXi indices;
         {
             std::vector<int> tmp;
             for (int i = 0; i < V.rows(); i++)
             {
-                Eigen::VectorXd p = V.row(i);
-                if ((p - bbox.col(0)).array().abs().minCoeff() < eps || (p - bbox.col(1)).array().abs().minCoeff() < eps)
+                if (periodic_bases_mask(i))
                     tmp.push_back(i);
             }
 
@@ -1427,6 +1438,7 @@ namespace polyfem
         std::vector<int> SVJ;
         SVI.setConstant(Vtmp.rows(), -1);
         int id = 0;
+		const double eps = 1e-6;
         for (int i = 0; i < Vtmp.rows(); i++)
         {
             if (SVI[i] < 0)
@@ -1444,33 +1456,10 @@ namespace polyfem
             }
         }
         Vnew = Vtmp(SVJ, Eigen::all);
-		tile_id = tile_id(SVJ, Eigen::all).eval();
 
         Enew.resizeLike(Etmp);
         for (int d = 0; d < Etmp.cols(); d++)
             Enew.col(d) = SVI(Etmp.col(d));
-		// remove duplicate edges
-		// {
-		// 	std::set<std::array<int, 2>> set;
-		// 	for (int i = 0; i < Enew.rows(); i++)
-		// 	{
-		// 		Eigen::VectorXi tmp = Enew.row(i);
-		// 		std::sort(tmp.data(), tmp.data() + 2);
-		// 		std::array<int, 2> arr = {{tmp(0), tmp(1)}};
-		// 		auto it = set.insert(arr);
-		// 		if (!it.second)
-		// 			set.erase(it.first);
-		// 	}
-		// 	Eigen::MatrixXi Eunique(set.size(), 2);
-		// 	int i = 0;
-		// 	for (auto itr : set)
-		// 	{
-		// 		Eunique(i, 0) = itr[0];
-		// 		Eunique(i, 1) = itr[1];
-		// 		i++;
-		// 	}
-		// 	std::swap(Eunique, Enew);
-		// }
 
 		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(Vnew.rows(), Enew);
 

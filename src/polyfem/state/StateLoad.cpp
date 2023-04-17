@@ -162,6 +162,9 @@ namespace polyfem
 			for (int i = 0; i < mesh->n_vertices(); i++)
 				V.row(i) = mesh->point(i);
 			periodic_mesh_map = std::make_shared<solver::PeriodicMeshToMesh>(V);
+			periodic_mesh_representation = periodic_mesh_map->inverse_eval(utils::flatten(V));
+			
+			logger().info("Periodic Mesh vertices: {}", periodic_mesh_map->n_periodic_dof());
 		}
 
 		// build disp_grad

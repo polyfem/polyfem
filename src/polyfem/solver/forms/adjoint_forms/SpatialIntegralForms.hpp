@@ -20,7 +20,7 @@ namespace polyfem::solver
 		void set_integral_type(const SpatialIntegralType type) { spatial_integral_type_ = type; }
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
-		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) override;
+		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) const override;
 		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:

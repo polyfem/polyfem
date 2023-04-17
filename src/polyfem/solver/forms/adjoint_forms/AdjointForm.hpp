@@ -19,7 +19,7 @@ namespace polyfem::solver
 
 		const auto &get_variable_to_simulations() const { return variable_to_simulations_; }
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) final
+		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const final
 		{
 			return compute_reduced_adjoint_rhs_unweighted(x, state) * weight_;
 		}
@@ -30,8 +30,8 @@ namespace polyfem::solver
 			gradv *= weight_;
 		}
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state);
-		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state);
+		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const;
+		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const;
 		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const;
 
 		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const final override;
@@ -54,8 +54,8 @@ namespace polyfem::solver
 		virtual void set_time_step(int time_step) { time_step_ = time_step; }
 		int get_time_step() const { return time_step_; }
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) final override;
-		virtual Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) = 0;
+		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const final override;
+		virtual Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) const = 0;
 		virtual double value_unweighted(const Eigen::VectorXd &x) const = 0;
 
 	protected:
@@ -69,7 +69,7 @@ namespace polyfem::solver
 		NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_);
 		~NodeTargetForm() = default;
 
-		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) override;
+		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) const override;
 		double value_unweighted(const Eigen::VectorXd &x) const override;
 		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 	
@@ -90,7 +90,7 @@ namespace polyfem::solver
 		}
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
-		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) override;
+		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) const override;
 	
 	private:
 		std::set<int> interested_ids_;
@@ -106,10 +106,23 @@ namespace polyfem::solver
 		}
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
-		Eigen::MatrixXd compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) override;
+		Eigen::MatrixXd compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
 
 	protected:
 		std::vector<int> dimensions_;
+		const State &state_;
+	};
+
+	class WeightedSolution : public AdjointForm
+	{
+	public:
+		WeightedSolution(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args);
+
+		double value_unweighted(const Eigen::VectorXd &x) const override;
+		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
+		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+	private:
+		Eigen::VectorXd coeffs;
 		const State &state_;
 	};
 } // namespace polyfem::solver

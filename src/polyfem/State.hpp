@@ -335,6 +335,7 @@ namespace polyfem
 
 		/// periodic BC and periodic mesh utils
 		Eigen::VectorXi bases_to_periodic_map; // size = ndof(), from full dof to periodic dof
+		Eigen::VectorXi periodic_bases_mask; // size = n_bases, mark periodic indices
 		std::shared_ptr<solver::PeriodicMeshToMesh> periodic_mesh_map; // chain rule for periodic mesh optimization
 		Eigen::VectorXd periodic_mesh_representation;
 		std::vector<bool> periodic_dimensions;
@@ -360,7 +361,7 @@ namespace polyfem
 		{
 			return has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"];
 		}
-		void build_periodic_index_mapping(const int n_bases_, const std::vector<basis::ElementBases> &bases_, const std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes_, Eigen::VectorXi &index_map) const;
+		void build_periodic_index_mapping(const int n_bases_, const std::vector<basis::ElementBases> &bases_, const std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes_, Eigen::VectorXi &index_map, Eigen::VectorXi &periodic_mask) const;
 
 		// add lagrangian multiplier rows for pure neumann/periodic boundary condition, returns the number of rows added
 		int n_lagrange_multipliers() const;
@@ -520,8 +521,6 @@ namespace polyfem
 
 		/// @brief IPC collision mesh under periodic BC
 		ipc::CollisionMesh periodic_collision_mesh;
-		/// the grid id <i, j, k> for each point on tiled collision mesh
-		Eigen::MatrixXi tile_id;
 		/// index mapping from tiled mesh to original periodic mesh
 		Eigen::VectorXi tiled_to_single;
 
@@ -716,7 +715,7 @@ namespace polyfem
 		//---------------------------------------------------
 	public:
 		void solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::MatrixXd &sol_, const std::vector<int> &fixed_entry, bool for_bistable = false);
-		Eigen::VectorXd homo_initial_guess;
+		// Eigen::VectorXd homo_initial_guess;
 	};
 
 } // namespace polyfem

@@ -74,11 +74,7 @@ namespace polyfem::solver
 				if (state->disp_grad_.size() == 0)
 					AdjointTools::dJ_shape_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
 				else
-				{
-					std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state->solve_data.nl_problem);
-					Eigen::MatrixXd reduced_sol = homo_problem->full_to_reduced(state->diff_cached.u(0), state->diff_cached.disp_grad());
-					AdjointTools::dJ_shape_homogenization_adjoint_term(*state, reduced_sol, state->get_adjoint_mat(0), cur_term);
-				}
+					AdjointTools::dJ_shape_homogenization_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
 			}
 			if (term.size() != cur_term.size())
 				term = cur_term;
