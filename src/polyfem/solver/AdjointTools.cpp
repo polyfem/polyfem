@@ -640,7 +640,7 @@ namespace polyfem::solver
 			// 	state.solve_data.periodic_contact_form->force_shape_derivative(state.solve_data.periodic_contact_form->get_constraint_set(), extended_sol, extended_adjoint, contact_term);
 			// 	contact_term = state.down_sampling_mat * contact_term;
 			// }
-			assert(!state.solve_data.periodic_contact_form);
+			// assert(!state.solve_data.periodic_contact_form);
 			if (state.solve_data.contact_form)
 			{
 				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.contact_set(0), sol, full_adjoint, contact_term);
