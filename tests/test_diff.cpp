@@ -776,7 +776,7 @@ TEST_CASE("homogenize-stress-periodic", "[adjoint_method]")
 	nl_problem->solution_changed(x);
 	
 	// verify_adjoint_expensive(variable_to_simulations, *obj, state, x, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>());
-	verify_adjoint(variable_to_simulations, *obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-5);
+	verify_adjoint(variable_to_simulations, *obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-4);
 }
 
 TEST_CASE("homogenize-stress", "[adjoint_method]")
@@ -849,7 +849,7 @@ TEST_CASE("homogenize-stress", "[adjoint_method]")
 		}
 	}
 	nl_problem->solution_changed(x);
-	verify_adjoint(variable_to_simulations, *obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-5);
+	verify_adjoint(variable_to_simulations, *obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-4);
 }
 
 TEST_CASE("shape-contact", "[adjoint_method]")

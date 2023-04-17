@@ -151,7 +151,8 @@ TEST_CASE("PeriodicMesh", "[parametrization]")
 	std::vector<std::vector<int>> e;
 	std::vector<std::vector<double>> w;
 	std::vector<int> ids;
-	polyfem::io::MshReader::load("../cross2d.msh", V, F, e, w, ids);
+	const std::string path = POLYFEM_DATA_DIR;
+	polyfem::io::MshReader::load(path + "/../cross2d.msh", V, F, e, w, ids);
 	assert(V.size() > 0);
 
 	PeriodicMeshToMesh parametrization(V);
