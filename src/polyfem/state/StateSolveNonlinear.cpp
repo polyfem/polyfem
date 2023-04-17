@@ -9,7 +9,6 @@
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
-#include <polyfem/solver/forms/ALForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
 
 #include <polyfem/solver/NonlinearSolver.hpp>
@@ -163,7 +162,7 @@ namespace polyfem
 			// General
 			mesh->dimension(), t,
 			// Elastic form
-			n_bases, bases, geom_bases(), *assembler, ass_vals_cache,
+			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache,
 			// Body form
 			n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
 			n_boundary_samples(), rhs, sol, mass_matrix_assembler->density(),
@@ -235,10 +234,12 @@ namespace polyfem
 		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_solver<NLProblem>();
 
 		ALSolver al_solver(
-			nl_solver, solve_data.al_form,
+			nl_solver, solve_data.al_lagr_form, solve_data.al_pen_form,
 			args["solver"]["augmented_lagrangian"]["initial_weight"],
 			args["solver"]["augmented_lagrangian"]["scaling"],
-			args["solver"]["augmented_lagrangian"]["max_steps"],
+			args["solver"]["augmented_lagrangian"]["max_weight"],
+			args["solver"]["augmented_lagrangian"]["eta"],
+			args["solver"]["augmented_lagrangian"]["max_solver_iters"],
 			[&](const Eigen::VectorXd &x) {
 				this->solve_data.update_barrier_stiffness(sol);
 			});
