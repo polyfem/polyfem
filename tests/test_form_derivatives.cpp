@@ -340,7 +340,7 @@ TEST_CASE("BC lagrangian form derivatives", "[form][form_derivatives][bc_lagr_fo
 		state_ptr->n_boundary_samples(),
 		mass_tmp,
 		*rhs_assembler_ptr,
-		state_ptr->obstacle,
+		state_ptr->obstacle.ndof(),
 		state_ptr->problem->is_time_dependent(),
 		0);
 
@@ -391,7 +391,7 @@ TEST_CASE("BC penalty form derivatives", "[form][form_derivatives][bc_penalty_fo
 		state_ptr->n_boundary_samples(),
 		mass_tmp,
 		*rhs_assembler_ptr,
-		state_ptr->obstacle,
+		state_ptr->obstacle.ndof(),
 		state_ptr->problem->is_time_dependent(),
 		0);
 

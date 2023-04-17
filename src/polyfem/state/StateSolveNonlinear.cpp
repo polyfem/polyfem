@@ -72,15 +72,16 @@ namespace polyfem
 
 		// Write the total energy to a CSV file
 		std::ofstream energy_file(resolve_output_path("energy.csv"));
-		energy_file << "i,elastic_energy,body_energy,inertia,contact_form,AL_energy,total_energy" << std::endl;
+		energy_file << "i,elastic_energy,body_energy,inertia,contact_form,AL_lagr_energy,AL_pen_energy,total_energy" << std::endl;
 		const auto save_energy = [&](int i) {
 			energy_file << fmt::format(
-				"{},{},{},{},{},{},{}\n", i,
+				"{},{},{},{},{},{},{},{}\n", i,
 				solve_data.elastic_form->value(sol),
 				solve_data.body_form->value(sol),
 				solve_data.inertia_form ? solve_data.inertia_form->value(sol) : 0,
 				solve_data.contact_form ? solve_data.contact_form->value(sol) : 0,
-				solve_data.al_form->value(sol),
+				solve_data.al_lagr_form->value(sol),
+				solve_data.al_pen_form->value(sol),
 				solve_data.nl_problem->value(sol));
 			energy_file.flush();
 		};
@@ -254,7 +255,7 @@ namespace polyfem
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
 			// Augmented lagrangian form
-			obstacle,
+			obstacle.ndof(),
 			// Contact form
 			args["contact"]["enabled"], collision_mesh, args["contact"]["dhat"],
 			avg_mass, args["contact"]["use_convergent_formulation"],

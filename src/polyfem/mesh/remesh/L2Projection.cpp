@@ -2,7 +2,8 @@
 
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/problems/StaticBoundaryNLProblem.hpp>
-#include <polyfem/solver/forms/ALForm.hpp>
+#include <polyfem/solver/forms/BCPenaltyForm.hpp>
+#include <polyfem/solver/forms/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/InversionBarrierForm.hpp>
 #include <polyfem/solver/forms/L2ProjectionForm.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -88,12 +89,7 @@ namespace polyfem::mesh
 		const size_t obstacle_ndof,
 		const Eigen::VectorXd &target_x,
 		// Initial guess
-		const Eigen::VectorXd &x0,
-		// AL parameters
-		const double al_initial_weight,
-		const double al_scaling,
-		const int al_max_steps,
-		const bool force_al)
+		const Eigen::VectorXd &x0)
 	{
 		using namespace polyfem::solver;
 
@@ -121,9 +117,13 @@ namespace polyfem::mesh
 		}
 
 		const int ndof = x0.size();
-		std::shared_ptr<ALForm> al_form = std::make_shared<ALForm>(
+		std::shared_ptr<BCPenaltyForm> bc_penalty_form = std::make_shared<BCPenaltyForm>(
 			ndof, boundary_nodes, M, obstacle_ndof, target_x);
-		forms.push_back(al_form);
+		forms.push_back(bc_penalty_form);
+
+		std::shared_ptr<BCLagrangianForm> bc_lagrangian_form = std::make_shared<BCLagrangianForm>(
+			ndof, boundary_nodes, M, obstacle_ndof, target_x);
+		forms.push_back(bc_lagrangian_form);
 
 		// --------------------------------------------------------------------
 
@@ -132,8 +132,16 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 
 		// Create augmented Lagrangian solver
+		// AL parameters
+		constexpr double al_initial_weight = 1e6;
+		constexpr double al_scaling = 2.0;
+		constexpr int al_max_weight = 100 * al_initial_weight;
+		constexpr double al_eta_tol = 0.99;
+		constexpr size_t al_max_solver_iter = 1000;
+		constexpr bool force_al = false;
 		ALSolver al_solver(
-			nl_solver, al_form, al_initial_weight, al_scaling, al_max_steps,
+			nl_solver, bc_lagrangian_form, bc_penalty_form, al_initial_weight,
+			al_scaling, al_max_weight, al_eta_tol, al_max_solver_iter,
 			/*update_barrier_stiffness=*/[&](const Eigen::MatrixXd &x) {});
 
 		Eigen::MatrixXd sol = x0;

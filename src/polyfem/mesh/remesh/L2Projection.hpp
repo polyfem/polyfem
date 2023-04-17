@@ -43,11 +43,6 @@ namespace polyfem::mesh
 		const size_t obstacle_ndof,
 		const Eigen::VectorXd &target_x,
 		// Initial guess
-		const Eigen::VectorXd &x0,
-		// AL parameters
-		const double al_initial_weight = 0.5,
-		const double al_scaling = 10.0,
-		const int al_max_steps = 20,
-		const bool force_al = false);
+		const Eigen::VectorXd &x0);
 
 } // namespace polyfem::mesh

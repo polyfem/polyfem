@@ -39,13 +39,14 @@ namespace polyfem::mesh
 		const std::vector<int> boundary_nodes = local_boundary_nodes(local_mesh);
 		this->init_assembler(local_mesh.body_ids());
 		SolveData solve_data;
-		assembler::AssemblyValsCache ass_vals_cache;
+		assembler::AssemblyValsCache assembly_vals_cache, mass_assembly_vals_cache;
 		Eigen::SparseMatrix<double> mass;
 		ipc::CollisionMesh collision_mesh;
 
 		local_solve_data(
 			local_mesh, bases, boundary_nodes, *this->assembler, *this->mass_matrix_assembler,
-			include_global_boundary, solve_data, ass_vals_cache, mass, collision_mesh);
+			include_global_boundary, solve_data, assembly_vals_cache,
+			mass_assembly_vals_cache, mass, collision_mesh);
 
 		const Eigen::MatrixXd sol = utils::flatten(local_mesh.displacements());
 
@@ -118,14 +119,14 @@ namespace polyfem::mesh
 		const std::vector<int> boundary_nodes; // no boundary nodes
 		this->init_assembler(local_mesh.body_ids());
 		SolveData solve_data;
-		assembler::AssemblyValsCache ass_vals_cache;
+		assembler::AssemblyValsCache assembly_vals_cache, mass_assembly_vals_cache;
 		Eigen::SparseMatrix<double> mass;
 		ipc::CollisionMesh collision_mesh;
 
 		// TODO: account for contact energy
 		local_solve_data(
 			local_mesh, bases, boundary_nodes, *this->assembler, *this->mass_matrix_assembler,
-			false, solve_data, ass_vals_cache, mass, collision_mesh);
+			false, solve_data, assembly_vals_cache, mass_assembly_vals_cache, mass, collision_mesh);
 
 		const Eigen::MatrixXd sol = utils::flatten(local_mesh.displacements());
 

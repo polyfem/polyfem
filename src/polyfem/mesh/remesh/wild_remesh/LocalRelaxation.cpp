@@ -52,13 +52,14 @@ namespace polyfem::mesh
 		// These have to stay alive
 		this->init_assembler(local_mesh.body_ids());
 		SolveData solve_data;
-		assembler::AssemblyValsCache ass_vals_cache;
+		assembler::AssemblyValsCache assembly_vals_cache, mass_assembly_vals_cache;
 		Eigen::SparseMatrix<double> mass;
 		ipc::CollisionMesh collision_mesh;
 
 		local_solve_data(
 			local_mesh, bases, boundary_nodes, *this->assembler, *this->mass_matrix_assembler,
-			include_global_boundary, solve_data, ass_vals_cache, mass, collision_mesh);
+			include_global_boundary, solve_data, assembly_vals_cache, mass_assembly_vals_cache,
+			mass, collision_mesh);
 
 		const Eigen::MatrixXd target_x = utils::flatten(local_mesh.displacements());
 		Eigen::MatrixXd sol = target_x;
@@ -73,10 +74,12 @@ namespace polyfem::mesh
 
 		// Create augmented Lagrangian solver
 		ALSolver al_solver(
-			nl_solver, solve_data.al_form,
+			nl_solver, solve_data.al_lagr_form, solve_data.al_pen_form,
 			state.args["solver"]["augmented_lagrangian"]["initial_weight"],
 			state.args["solver"]["augmented_lagrangian"]["scaling"],
-			state.args["solver"]["augmented_lagrangian"]["max_steps"],
+			state.args["solver"]["augmented_lagrangian"]["max_weight"],
+			state.args["solver"]["augmented_lagrangian"]["eta"],
+			state.args["solver"]["augmented_lagrangian"]["max_solver_iters"],
 			/*update_barrier_stiffness=*/[](const Eigen::VectorXd &) {});
 
 		const auto level_before = logger().level();
@@ -221,7 +224,8 @@ namespace polyfem::mesh
 		const assembler::Mass &mass_matrix_assembler,
 		const bool contact_enabled,
 		solver::SolveData &solve_data,
-		assembler::AssemblyValsCache &ass_vals_cache,
+		assembler::AssemblyValsCache &assembly_vals_cache,
+		assembler::AssemblyValsCache &mass_assembly_vals_cache,
 		Eigen::SparseMatrix<double> &mass,
 		ipc::CollisionMesh &collision_mesh) const
 	{
@@ -237,17 +241,17 @@ namespace polyfem::mesh
 		// Assemble the mass matrix.
 		{
 			POLYFEM_REMESHER_SCOPED_TIMER("Assemble mass matrix");
-			ass_vals_cache.init(this->is_volume(), bases, /*gbases=*/bases, /*is_mass=*/true);
+			mass_assembly_vals_cache.init(this->is_volume(), bases, /*gbases=*/bases, /*is_mass=*/true);
 			mass_matrix_assembler.assemble(
 				this->is_volume(), n_bases, bases, /*gbases=*/bases,
-				ass_vals_cache, mass, /*is_mass=*/true);
+				mass_assembly_vals_cache, mass, /*is_mass=*/true);
 			// Set the mass of the codimensional fixed vertices to the average mass.
 			const int local_ndof = this->dim() * local_mesh.num_local_vertices();
 			for (int i = local_ndof; i < ndof; ++i)
 				mass.coeffRef(i, i) = state.avg_mass;
 		}
 		// Assemble the stiffness matrix.
-		ass_vals_cache.init(this->is_volume(), bases, /*gbases=*/bases, /*is_mass=*/false);
+		mass_assembly_vals_cache.init(this->is_volume(), bases, /*gbases=*/bases, /*is_mass=*/false);
 
 		// Create collision mesh.
 		if (contact_enabled)
@@ -296,7 +300,8 @@ namespace polyfem::mesh
 				// General
 				this->dim(), this->current_time,
 				// Elastic form
-				n_bases, bases, /*geom_bases=*/bases, assembler, ass_vals_cache,
+				n_bases, bases, /*geom_bases=*/bases, assembler,
+				assembly_vals_cache, mass_assembly_vals_cache,
 				// Body form
 				/*n_pressure_bases=*/0, boundary_nodes, local_boundary,
 				local_neumann_boundary, state.n_boundary_samples(), rhs,
@@ -307,7 +312,7 @@ namespace polyfem::mesh
 				state.args["solver"]["advanced"]["lagged_regularization_weight"],
 				state.args["solver"]["advanced"]["lagged_regularization_iterations"],
 				// Augmented lagrangian form
-				Obstacle(),
+				/*obstacle_ndof=*/0,
 				// Contact form
 				contact_enabled,
 				collision_mesh,
@@ -332,12 +337,19 @@ namespace polyfem::mesh
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 			// Augmented Lagrangian form
-			assert(solve_data.al_form == nullptr);
-			solve_data.al_form = std::make_shared<ALForm>(
+			assert(solve_data.al_lagr_form == nullptr && solve_data.al_pen_form == nullptr);
+
+			solve_data.al_lagr_form = std::make_shared<BCLagrangianForm>(
 				ndof, boundary_nodes, mass, /*obstacle_ndof=*/0, target_x);
-			forms.push_back(solve_data.al_form);
-			assert(state.solve_data.al_form != nullptr);
-			solve_data.al_form->set_weight(state.solve_data.al_form->weight());
+			forms.push_back(solve_data.al_lagr_form);
+			assert(state.solve_data.al_lagr_form != nullptr);
+			solve_data.al_lagr_form->set_weight(state.solve_data.al_lagr_form->weight());
+
+			solve_data.al_pen_form = std::make_shared<BCPenaltyForm>(
+				ndof, boundary_nodes, mass, /*obstacle_ndof=*/0, target_x);
+			forms.push_back(solve_data.al_pen_form);
+			assert(state.solve_data.al_pen_form != nullptr);
+			solve_data.al_pen_form->set_weight(state.solve_data.al_pen_form->weight());
 		}
 
 		solve_data.nl_problem = std::make_shared<polyfem::solver::StaticBoundaryNLProblem>(

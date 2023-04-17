@@ -126,7 +126,8 @@ namespace polyfem::mesh
 			const assembler::Mass &mass_matrix_assembler,
 			const bool contact_enabled,
 			solver::SolveData &solve_data,
-			assembler::AssemblyValsCache &ass_vals_cache,
+			assembler::AssemblyValsCache &assembly_vals_cache,
+			assembler::AssemblyValsCache &mass_assembly_vals_cache,
 			Eigen::SparseMatrix<double> &mass,
 			ipc::CollisionMesh &collision_mesh) const;
 
