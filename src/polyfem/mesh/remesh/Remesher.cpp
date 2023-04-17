@@ -222,7 +222,7 @@ namespace polyfem::mesh
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
 				state.args["solver"]["contact"]["CCD"]["max_iterations"],
 				// Augmented lagrangian form
-				boundary_nodes, obstacle(), to_projection_quantities.col(i),
+				boundary_nodes, obstacle().ndof(), to_projection_quantities.col(i),
 				// Initial guess
 				to_projection_quantities.col(i));
 		}

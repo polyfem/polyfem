@@ -17,6 +17,9 @@ namespace polyfem::mesh
 	template <class WMTKMesh>
 	bool WildRemesher<WMTKMesh>::collapse_edge_before(const Tuple &t)
 	{
+		if (!WMTKMesh::collapse_edge_before(t))
+			return false;
+
 		const double max_edge_length = std::min(
 			args["collapse"]["abs_max_edge_length"].template get<double>(),
 			state.starting_min_edge_length
@@ -73,7 +76,7 @@ namespace polyfem::mesh
 	{
 		// POLYFEM_REMESHER_SCOPED_TIMER("Collapse edge before");
 
-		if (!Super::collapse_edge_before(t)) // NOTE: also calls collapse_edge_before
+		if (!Super::collapse_edge_before(t)) // NOTE: also calls cache_collapse_edge
 			return false;
 
 		if (this->edge_attr(t.eid(*this)).op_attempts++ >= this->max_op_attempts
@@ -86,7 +89,6 @@ namespace polyfem::mesh
 		const VectorNd &v0 = vertex_attrs[t.vid(*this)].rest_position;
 		const VectorNd &v1 = vertex_attrs[t.switch_vertex(*this).vid(*this)].rest_position;
 
-		double local_energy = 0;
 		switch (this->op_cache->collapse_to)
 		{
 		case CollapseEdgeTo::V0:
@@ -110,6 +112,9 @@ namespace polyfem::mesh
 	template <class WMTKMesh>
 	bool WildRemesher<WMTKMesh>::collapse_edge_after(const Tuple &t)
 	{
+		if (!WMTKMesh::collapse_edge_after(t))
+			return false;
+
 		// 0) perform operation (done before this function)
 
 		// 1a) Update rest position of new vertex
@@ -150,7 +155,7 @@ namespace polyfem::mesh
 		double new_total_volume = 0;
 		for (const Tuple &t : get_elements())
 			new_total_volume += element_volume(t);
-		assert(std::abs(new_total_volume - total_volume) < 1e-12);
+		assert(std::abs(new_total_volume - total_volume) < std::max(1e-12 * total_volume, 1e-12));
 #endif
 
 		// Check the interpolated position does not cause intersections
@@ -216,12 +221,30 @@ namespace polyfem::mesh
 	template <class WMTKMesh>
 	void PhysicsRemesher<WMTKMesh>::collapse_edges()
 	{
+		const auto collapsable = [this](const Tuple &e) {
+			return this->edge_attr(e.eid(*this)).energy_rank == Super::EdgeAttributes::EnergyRank::BOTTOM
+				   || this->rest_edge_length(e) < 1e-3 * this->state.starting_min_edge_length; // collapse short edges
+		};
+
+		executor.priority = [](const WildRemesher<WMTKMesh> &m, std::string op, const Tuple &t) -> double {
+			// return -m.edge_elastic_energy(t); // invert the energy to get a reverse ordering
+			return -m.rest_edge_length(t);
+		};
+
+		executor.renew_neighbor_tuples = [&](const WildRemesher<WMTKMesh> &m, std::string op, const std::vector<Tuple> &tris) -> Operations {
+			const std::vector<Tuple> edges = m.get_edges_for_elements(
+				m.get_one_ring_elements_for_vertex(tris[0]));
+			Operations new_ops;
+			for (auto &e : edges)
+				if (collapsable(e))
+					new_ops.emplace_back(op, e);
+			return new_ops;
+		};
+
 		std::vector<Tuple> included_edges;
 		{
 			const std::vector<Tuple> edges = WMTKMesh::get_edges();
-			std::copy_if(edges.begin(), edges.end(), std::back_inserter(included_edges), [this](const Tuple &e) {
-				return this->edge_attr(e.eid(*this)).energy_rank == Super::EdgeAttributes::EnergyRank::BOTTOM;
-			});
+			std::copy_if(edges.begin(), edges.end(), std::back_inserter(included_edges), collapsable);
 		}
 
 		if (included_edges.empty())
@@ -231,11 +254,6 @@ namespace polyfem::mesh
 		collapses.reserve(included_edges.size());
 		for (const Tuple &e : included_edges)
 			collapses.emplace_back("edge_collapse", e);
-
-		executor.priority = [](const WildRemesher<WMTKMesh> &m, std::string op, const Tuple &t) -> double {
-			return -m.rest_edge_length(t);
-			// return -m.edge_elastic_energy(t); // invert the energy to get a reverse ordering
-		};
 
 		executor(*this, collapses);
 	}

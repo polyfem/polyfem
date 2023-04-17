@@ -133,7 +133,7 @@ namespace polyfem::solver
 		{
 			al_form = std::make_shared<ALForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-				n_boundary_samples, mass, *rhs_assembler, obstacle, is_time_dependent, t);
+				n_boundary_samples, mass, *rhs_assembler, obstacle.ndof(), is_time_dependent, t);
 			forms.push_back(al_form);
 		}
 

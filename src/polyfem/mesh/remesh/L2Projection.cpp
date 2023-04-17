@@ -8,6 +8,8 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
+#include <ipc/ipc.hpp>
+
 #ifdef POLYSOLVE_WITH_MKL
 #include <Eigen/PardisoSupport>
 #else
@@ -19,7 +21,7 @@ namespace polyfem::mesh
 	Eigen::MatrixXd unconstrained_L2_projection(
 		const Eigen::SparseMatrix<double> &M,
 		const Eigen::SparseMatrix<double> &A,
-		const Eigen::MatrixXd &y)
+		const Eigen::Ref<const Eigen::MatrixXd> &y)
 	{
 		// Construct a linear solver for M
 #ifdef POLYSOLVE_WITH_MKL
@@ -35,9 +37,31 @@ namespace polyfem::mesh
 
 		double residual_error = (M * x - rhs).norm();
 		logger().debug("residual error in L2 projection: {}", residual_error);
-		assert(residual_error < 1e-12);
+		assert(residual_error < std::max(1e-12 * rhs.norm(), 1e-12));
 
 		return x;
+	}
+
+	void reduced_L2_projection(
+		const Eigen::MatrixXd &M,
+		const Eigen::MatrixXd &A,
+		const Eigen::Ref<const Eigen::MatrixXd> &y,
+		const std::vector<int> &boundary_nodes,
+		Eigen::Ref<Eigen::MatrixXd> x)
+	{
+		std::vector<int> free_nodes;
+		for (int i = 0, j = 0; i < y.rows(); ++i)
+		{
+			if (boundary_nodes[j] == i)
+				++j;
+			else
+				free_nodes.push_back(i);
+		}
+
+		const Eigen::MatrixXd H = M(free_nodes, free_nodes);
+		const Eigen::MatrixXd g = -((M * x - A * y)(free_nodes, Eigen::all));
+		const Eigen::MatrixXd sol = H.llt().solve(g);
+		x(free_nodes, Eigen::all) += sol;
 	}
 
 	Eigen::VectorXd constrained_L2_projection(
@@ -61,7 +85,7 @@ namespace polyfem::mesh
 		const int ccd_max_iterations,
 		// Augmented lagrangian form
 		const std::vector<int> &boundary_nodes,
-		const Obstacle &obstacle,
+		const size_t obstacle_ndof,
 		const Eigen::VectorXd &target_x,
 		// Initial guess
 		const Eigen::VectorXd &x0,
@@ -86,16 +110,19 @@ namespace polyfem::mesh
 		forms.back()->set_weight(barrier_stiffness); // use same weight as barrier stiffness
 		assert(forms.back()->is_step_valid(x0, x0));
 
-		forms.push_back(std::make_shared<ContactForm>(
-			collision_mesh, dhat, /*avg_mass=*/1.0, use_convergent_formulation,
-			/*use_adaptive_barrier_stiffness=*/false, /*is_time_dependent=*/true,
-			broad_phase_method, ccd_tolerance, ccd_max_iterations));
-		forms.back()->set_weight(barrier_stiffness);
-		assert(!ipc::has_intersections(collision_mesh, collision_mesh.displace_vertices(utils::unflatten(x0, dim))));
+		if (collision_mesh.num_vertices() != 0)
+		{
+			forms.push_back(std::make_shared<ContactForm>(
+				collision_mesh, dhat, /*avg_mass=*/1.0, use_convergent_formulation,
+				/*use_adaptive_barrier_stiffness=*/false, /*is_time_dependent=*/true,
+				broad_phase_method, ccd_tolerance, ccd_max_iterations));
+			forms.back()->set_weight(barrier_stiffness);
+			assert(!ipc::has_intersections(collision_mesh, collision_mesh.displace_vertices(utils::unflatten(x0, dim))));
+		}
 
 		const int ndof = x0.size();
 		std::shared_ptr<ALForm> al_form = std::make_shared<ALForm>(
-			ndof, boundary_nodes, M, obstacle, target_x);
+			ndof, boundary_nodes, M, obstacle_ndof, target_x);
 		forms.push_back(al_form);
 
 		// --------------------------------------------------------------------
@@ -112,8 +139,11 @@ namespace polyfem::mesh
 		Eigen::MatrixXd sol = x0;
 		al_solver.solve(problem, sol, force_al);
 
-		assert(forms[1]->is_step_valid(sol, sol));
-		assert(!ipc::has_intersections(collision_mesh, collision_mesh.displace_vertices(utils::unflatten(sol, dim))));
+#ifndef NDEBUG
+		assert(forms[1]->is_step_valid(sol, sol)); // inversion-free
+		if (collision_mesh.num_vertices() != 0)
+			assert(!ipc::has_intersections(collision_mesh, collision_mesh.displace_vertices(utils::unflatten(sol, dim))));
+#endif
 
 		return sol;
 	}

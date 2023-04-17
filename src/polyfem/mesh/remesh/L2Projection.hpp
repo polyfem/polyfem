@@ -10,7 +10,14 @@ namespace polyfem::mesh
 	Eigen::MatrixXd unconstrained_L2_projection(
 		const Eigen::SparseMatrix<double> &M,
 		const Eigen::SparseMatrix<double> &A,
-		const Eigen::MatrixXd &y);
+		const Eigen::Ref<const Eigen::MatrixXd> &y);
+
+	void reduced_L2_projection(
+		const Eigen::MatrixXd &M,
+		const Eigen::MatrixXd &A,
+		const Eigen::Ref<const Eigen::MatrixXd> &y,
+		const std::vector<int> &boundary_nodes,
+		Eigen::Ref<Eigen::MatrixXd> x);
 
 	Eigen::VectorXd constrained_L2_projection(
 		// Nonlinear solver
@@ -33,7 +40,7 @@ namespace polyfem::mesh
 		const int ccd_max_iterations,
 		// Augmented lagrangian form
 		const std::vector<int> &boundary_nodes,
-		const Obstacle &obstacle,
+		const size_t obstacle_ndof,
 		const Eigen::VectorXd &target_x,
 		// Initial guess
 		const Eigen::VectorXd &x0,

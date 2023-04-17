@@ -76,7 +76,7 @@ namespace polyfem
 			StiffnessMatrix &mass) const
 		{
 			const int buffer_size = std::min(long(1e8), long(n_basis) * size);
-			logger().debug("buffer_size {}", buffer_size);
+			// logger().debug("buffer_size {}", buffer_size);
 
 			mass.resize(n_basis * size, n_basis * size);
 			mass.setZero();
@@ -199,7 +199,7 @@ namespace polyfem
 			StiffnessMatrix &mass) const
 		{
 			const int buffer_size = std::min(long(1e8), long(std::max(n_from_basis, n_to_basis)) * size);
-			logger().debug("buffer_size {}", buffer_size);
+			// logger().debug("buffer_size {}", buffer_size);
 
 			mass.resize(n_to_basis * size, n_from_basis * size);
 			mass.setZero();

@@ -46,7 +46,7 @@ namespace polyfem::mesh
 		using Tuple = wmtk::TetMesh::Tuple;
 
 		static std::shared_ptr<TetOperationCache> split_edge(WildTetRemesher &m, const Tuple &t);
-		// static TetOperationCache swap_32(WildTetRemesher &m, const Tuple &t);
+		static std::shared_ptr<TetOperationCache> swap_32(WildTetRemesher &m, const Tuple &t) { log_and_throw_error("TetOperationCache::swap_32 not implemented!"); }
 		// static TetOperationCache swap_23(WildTetRemesher &m, const Tuple &t);
 		// static TetOperationCache swap_44(WildTetRemesher &m, const Tuple &t);
 		static std::shared_ptr<TetOperationCache> collapse_edge(WildTetRemesher &m, const Tuple &t);

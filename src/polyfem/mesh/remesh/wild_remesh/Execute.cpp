@@ -2,7 +2,6 @@
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
-#include <polyfem/mesh/remesh/wild_remesh/LocalMesh.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
@@ -16,6 +15,11 @@ namespace polyfem::mesh
 	template <class WMTKMesh>
 	bool WildRemesher<WMTKMesh>::execute()
 	{
+		const auto &reset_edge_attrs = [&](const Tuple &e) {
+			edge_attr(e.eid(*this)).op_attempts = 0;
+			edge_attr(e.eid(*this)).op_depth = 0;
+		};
+
 		utils::Timer timer(total_time);
 		timer.start();
 
@@ -42,6 +46,14 @@ namespace polyfem::mesh
 		static int aggregate_split_cnt_fail = 0;
 		static int aggregate_collapse_cnt_success = 0;
 		static int aggregate_collapse_cnt_fail = 0;
+		static int aggregate_swap_cnt_success = 0;
+		static int aggregate_swap_cnt_fail = 0;
+		static int aggregate_smooth_cnt_success = 0;
+		static int aggregate_smooth_cnt_fail = 0;
+		static int frame_count = 0;
+
+		if (frame_count == 0)
+			write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
 
 		int cnt_success = 0;
 
@@ -49,48 +61,74 @@ namespace polyfem::mesh
 
 		if (split)
 		{
+			logger().info("Splitting");
 			split_edges();
-
 			cnt_success += executor.cnt_success();
-
 			aggregate_split_cnt_success += executor.cnt_success();
 			aggregate_split_cnt_fail += executor.cnt_fail();
+			write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
 		}
 
 		// Reset operation attempts and depth counters
-		for (const Tuple e : WMTKMesh::get_edges())
-		{
-			edge_attr(e.eid(*this)).op_attempts = 0;
-			edge_attr(e.eid(*this)).op_depth = 0;
-		}
+		WMTKMesh::for_each_edge(reset_edge_attrs);
+
+		bool projection_needed = false;
 
 		if (collapse)
 		{
+			logger().info("Collapsing");
+			executor.m_cnt_success = 0;
+			executor.m_cnt_fail = 0;
 			collapse_edges();
-
 			cnt_success += executor.cnt_success();
-
 			aggregate_collapse_cnt_success += executor.cnt_success();
 			aggregate_collapse_cnt_fail += executor.cnt_fail();
+			projection_needed |= executor.cnt_success() > 0;
+			write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
 		}
 
-		assert(!swap);
-		assert(!smooth);
+		// Reset operation attempts and depth counters
+		WMTKMesh::for_each_edge(reset_edge_attrs);
+
+		if (swap)
+		{
+			assert(DIM == 2);
+			logger().info("Swapping");
+			executor.m_cnt_success = 0;
+			executor.m_cnt_fail = 0;
+			swap_edges();
+			cnt_success += executor.cnt_success();
+			aggregate_swap_cnt_success += executor.cnt_success();
+			aggregate_swap_cnt_fail += executor.cnt_fail();
+			projection_needed |= executor.cnt_success() > 0;
+			write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
+		}
+
+		if (smooth)
+		{
+			assert(DIM == 2);
+			logger().info("Smoothing");
+			executor.m_cnt_success = 0;
+			executor.m_cnt_fail = 0;
+			smooth_vertices();
+			cnt_success += executor.cnt_success();
+			aggregate_smooth_cnt_success += executor.cnt_success();
+			aggregate_smooth_cnt_fail += executor.cnt_fail();
+			projection_needed |= executor.cnt_success() > 0;
+			write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
+		}
 
 		logger().info("[split]    aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_split_cnt_success, aggregate_split_cnt_fail);
 		logger().info("[collapse] aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_collapse_cnt_success, aggregate_collapse_cnt_fail);
+		logger().info("[swap]     aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_swap_cnt_success, aggregate_swap_cnt_fail);
+		logger().info("[smooth]   aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_smooth_cnt_success, aggregate_smooth_cnt_fail);
 
-		if ((collapse || swap || smooth) && executor.cnt_success() > 0)
+		if (projection_needed)
 			project_quantities();
+		write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
 
 		// Remove unused vertices
 		WMTKMesh::consolidate_mesh();
-
-		// if (executor.cnt_success() > 40)
-		// {
-		// 	logger().critical("exiting now for debugging purposes");
-		// 	exit(0);
-		// }
 
 		timer.stop();
 		log_timings();

@@ -11,7 +11,7 @@ namespace polyfem::mesh
 {
 	template <class WMTKMesh>
 	bool PhysicsRemesher<WMTKMesh>::local_relaxation(
-		const Tuple &t,
+		const std::vector<Tuple> &local_mesh_tuples,
 		const double acceptance_tolerance)
 	{
 		using namespace polyfem::solver;
@@ -20,8 +20,6 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 		// 1. Get the n-ring of elements around the vertex.
-
-		std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(t);
 
 		const bool include_global_boundary =
 			state.is_contact_enabled() && std::any_of(local_mesh_tuples.begin(), local_mesh_tuples.end(), [&](const Tuple &t) {
@@ -32,8 +30,7 @@ namespace polyfem::mesh
 				return false;
 			});
 
-		LocalMesh<PhysicsRemesher<WMTKMesh>> local_mesh(
-			*this, local_mesh_tuples, include_global_boundary);
+		LocalMesh<Super> local_mesh(*this, local_mesh_tuples, include_global_boundary);
 
 		const int n_bases = local_mesh.num_vertices();
 		const int ndof = n_bases * this->dim();
@@ -153,80 +150,56 @@ namespace polyfem::mesh
 
 			// local_mesh.write_mesh(state.resolve_output_path(fmt::format("local_mesh_{:04d}.vtu", save_i)), sol);
 			// write_mesh(state.resolve_output_path(fmt::format("relaxation_{:04d}.vtu", save_i++)));
-
-			// Increase the hash of the triangles that have been modified
-			// to invalidate all tuples that point to them.
-			this->extend_local_patch(local_mesh_tuples);
-			for (Tuple &t : local_mesh_tuples)
-			{
-				assert(t.is_valid(*this));
-				if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
-					this->m_tri_connectivity[t.fid(*this)].hash++;
-				else
-					this->m_tet_connectivity[t.tid(*this)].hash++;
-				assert(!t.is_valid(*this));
-				t.update_hash(*this);
-				assert(t.is_valid(*this));
-			}
 		}
 
 		static const std::string accept_str =
 			fmt::format(fmt::fg(fmt::terminal_color::green), "accept");
 		static const std::string reject_str =
 			fmt::format(fmt::fg(fmt::terminal_color::yellow), "reject");
-		logger().debug(
-			"[{:s}] E0={:<10g} E1={:<10g} (E1-E0)={:<10g} tol={:g} local_ndof={:d} n_iters={:d}",
-			accept ? accept_str : reject_str, local_energy_before(),
-			local_energy_after, abs_diff, acceptance_tolerance,
-			ndof - boundary_nodes.size(), nl_solver->criteria().iterations);
+		// logger().debug(
+		// 	"[{:s}] E0={:<10g} E1={:<10g} (E1-E0)={:<10g} tol={:g} local_ndof={:d} n_iters={:d}",
+		// 	accept ? accept_str : reject_str, local_energy_before(),
+		// 	local_energy_after, abs_diff, acceptance_tolerance,
+		// 	ndof - boundary_nodes.size(), nl_solver->criteria().iterations);
 
 		return accept;
 	}
 
 	template <class WMTKMesh>
 	std::vector<int> PhysicsRemesher<WMTKMesh>::local_boundary_nodes(
-		const LocalMesh<This> &local_mesh) const
+		const LocalMesh<Super> &local_mesh) const
 	{
 		POLYFEM_REMESHER_SCOPED_TIMER("Create boundary nodes");
 
 		std::vector<int> boundary_nodes;
 
-		const auto add_vertex_to_boundary_nodes = [&](const int vi) {
-			for (int d = 0; d < this->dim(); ++d)
-				boundary_nodes.push_back(this->dim() * vi + d);
-		};
-
 		for (const int vi : local_mesh.fixed_vertices())
-			add_vertex_to_boundary_nodes(vi);
-
-		// TODO: get this from state rather than building it
-		assert(state.args["boundary_conditions"]["dirichlet_boundary"].is_array());
-		const std::vector<json> bcs = state.args["boundary_conditions"]["dirichlet_boundary"];
-		std::unordered_set<int> bc_ids;
-		for (const json &bc : bcs)
 		{
-			if (!bc.is_object())
-				log_and_throw_error("Boundary condition is not an object");
-			assert(bc.contains("id") && bc["id"].is_number_integer());
-			bc_ids.insert(bc["id"].get<int>());
-
-#ifndef NDEBUG
-			// Only all dimensions constrained are supported right now.
-			const std::vector<bool> bc_dim = bc["dimension"];
-			assert(std::all_of(bc_dim.begin(), bc_dim.end(), [](const bool b) { return b; }));
-#endif
+			for (int d = 0; d < this->dim(); ++d)
+			{
+				boundary_nodes.push_back(this->dim() * vi + d);
+			}
 		}
+
+		const std::unordered_map<int, std::array<bool, 3>> bcs =
+			state.boundary_conditions_ids("dirichlet_boundary");
 
 		const Eigen::MatrixXi &BF = local_mesh.boundary_facets();
 		for (int i = 0; i < BF.rows(); i++)
 		{
-			const int boundary_id = local_mesh.boundary_ids()[i];
+			const auto bc = bcs.find(local_mesh.boundary_ids()[i]);
 
-			if (bc_ids.find(boundary_id) == bc_ids.end())
+			if (bc == bcs.end())
 				continue;
 
-			for (int j = 0; j < BF.cols(); ++j)
-				add_vertex_to_boundary_nodes(BF(i, j));
+			for (int d = 0; d < this->dim(); ++d)
+			{
+				if (!bc->second[d])
+					continue;
+
+				for (int j = 0; j < BF.cols(); ++j)
+					boundary_nodes.push_back(this->dim() * BF(i, j) + d);
+			}
 		}
 
 		// Sort and remove the duplicate boundary_nodes.
@@ -239,7 +212,7 @@ namespace polyfem::mesh
 
 	template <class WMTKMesh>
 	void PhysicsRemesher<WMTKMesh>::local_solve_data(
-		const LocalMesh<This> &local_mesh,
+		const LocalMesh<Super> &local_mesh,
 		const std::vector<polyfem::basis::ElementBases> &bases,
 		const std::vector<int> &boundary_nodes,
 		const assembler::Assembler &assembler,
@@ -359,7 +332,7 @@ namespace polyfem::mesh
 			// Augmented Lagrangian form
 			assert(solve_data.al_form == nullptr);
 			solve_data.al_form = std::make_shared<ALForm>(
-				ndof, boundary_nodes, mass, Obstacle(), target_x);
+				ndof, boundary_nodes, mass, /*obstacle_ndof=*/0, target_x);
 			forms.push_back(solve_data.al_form);
 			assert(state.solve_data.al_form != nullptr);
 			solve_data.al_form->set_weight(state.solve_data.al_form->weight());

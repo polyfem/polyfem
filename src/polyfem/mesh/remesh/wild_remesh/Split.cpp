@@ -13,6 +13,9 @@ namespace polyfem::mesh
 	{
 		// POLYFEM_REMESHER_SCOPED_TIMER("Split edges before");
 
+		if (!WMTKMesh::split_edge_before(e))
+			return false;
+
 		// Dont split if the edge is too small
 		double min_edge_length = args["split"]["min_edge_length"];
 		if (is_boundary_facet(e) && state.is_contact_enabled())
@@ -69,6 +72,9 @@ namespace polyfem::mesh
 	template <class WMTKMesh>
 	bool WildRemesher<WMTKMesh>::split_edge_after(const Tuple &t)
 	{
+		if (!WMTKMesh::split_edge_after(t))
+			return false;
+
 		// 0) perform operation (done before this function)
 
 		// 1a) Update rest position of new vertex
@@ -132,8 +138,28 @@ namespace polyfem::mesh
 		else
 			new_vertex = t;
 
+		std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(new_vertex);
+
 		// Perform a local relaxation of the n-ring to get an estimate of the energy decrease.
-		return local_relaxation(new_vertex, args["split"]["acceptance_tolerance"]);
+		if (!local_relaxation(local_mesh_tuples, args["split"]["acceptance_tolerance"]))
+			return false;
+
+		// Increase the hash of the triangles that have been modified
+		// to invalidate all tuples that point to them.
+		this->extend_local_patch(local_mesh_tuples);
+		for (Tuple &t : local_mesh_tuples)
+		{
+			assert(t.is_valid(*this));
+			if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
+				this->m_tri_connectivity[t.fid(*this)].hash++;
+			else
+				this->m_tet_connectivity[t.tid(*this)].hash++;
+			assert(!t.is_valid(*this));
+			t.update_hash(*this);
+			assert(t.is_valid(*this));
+		}
+
+		return true;
 	}
 
 	// -------------------------------------------------------------------------

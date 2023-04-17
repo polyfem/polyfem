@@ -38,6 +38,13 @@ namespace polyfem::mesh
 				return 3;
 		}();
 
+		static constexpr int VERTICES_PER_ELEMENT = [] {
+			if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
+				return 3;
+			else
+				return 4;
+		}();
+
 		static constexpr int EDGES_PER_ELEMENT = [] {
 			if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
 				return 3;
@@ -110,8 +117,8 @@ namespace polyfem::mesh
 
 		virtual void split_edges() = 0;
 		virtual void collapse_edges() = 0;
-		void smooth_vertices() { throw std::runtime_error("Not implemented!"); }
-		void swap_edges() { throw std::runtime_error("Not implemented!"); }
+		virtual void smooth_vertices();
+		virtual void swap_edges() { log_and_throw_error("WildRemesher::swap_edges not implemented!"); }
 
 	protected:
 		// Edge splitting
@@ -122,10 +129,20 @@ namespace polyfem::mesh
 		virtual bool collapse_edge_before(const Tuple &t) override;
 		virtual bool collapse_edge_after(const Tuple &t) override;
 
+		// Swap edge
+		virtual bool swap_edge_before(const Tuple &t) override;
+		virtual bool swap_edge_after(const Tuple &t) override;
+
+		// Smooth_vertex
+		virtual bool smooth_before(const Tuple &t) override;
+		virtual bool smooth_after(const Tuple &t) override;
+
 		/// @brief Check if invariants are satisfied
 		bool invariants(const std::vector<Tuple> &new_tris) override;
 
-		/// @brief Check if a triangle is inverted
+		/// @brief Check if a triangle's rest shape is inverted
+		bool is_rest_inverted(const Tuple &loc) const;
+		/// @brief Check if a triangle's rest and deformed shapes are inverted
 		bool is_inverted(const Tuple &loc) const;
 
 		// --------------------------------------------------------------------
@@ -219,15 +236,23 @@ namespace polyfem::mesh
 		std::array<size_t, DIM> facet_vids(const Tuple &t) const;
 
 		/// @brief Get the vertex tuples of an element.
-		std::array<Tuple, DIM + 1> element_vertices(const Tuple &t) const;
+		std::array<Tuple, VERTICES_PER_ELEMENT> element_vertices(const Tuple &t) const;
 		/// @brief Get the vertex ids of an element.
-		std::array<size_t, DIM + 1> element_vids(const Tuple &t) const;
+		std::array<size_t, VERTICES_PER_ELEMENT> element_vids(const Tuple &t) const;
+
+		/// @brief Reorder the element vertices so that the first vertex is v0.
+		/// @param conn The element vertices in oriented order
+		/// @param v0 The vertex to be the first vertex
+		/// @return The element vertices reordered with the same orientation
+		std::array<size_t, VERTICES_PER_ELEMENT> orient_preserve_element_reorder(
+			const std::array<size_t, VERTICES_PER_ELEMENT> &conn, const size_t v0) const;
 
 		/// @brief Get the one ring of elements around a vertex.
 		std::vector<Tuple> get_one_ring_elements_for_vertex(const Tuple &t) const;
 		std::vector<Tuple> get_one_ring_boundary_edges_for_vertex(const Tuple &v) const;
 		std::array<Tuple, 2> get_boundary_faces_for_edge(const Tuple &e) const;
 		std::vector<Tuple> get_one_ring_boundary_faces_for_vertex(const Tuple &v) const;
+		std::vector<Tuple> get_edges_for_elements(const std::vector<Tuple> &elements) const;
 
 		/// @brief Get the id of a facet (edge for triangle, triangle for tetrahedra)
 		size_t facet_id(const Tuple &t) const;
@@ -243,16 +268,27 @@ namespace polyfem::mesh
 		/// @brief Get the incident elements for an edge
 		std::vector<Tuple> get_incident_elements_for_edge(const Tuple &t) const;
 
+		/// @brief Extend the local patch by including neighboring elements
+		/// @param patch local patch of elements
 		void extend_local_patch(std::vector<Tuple> &patch) const;
 
-		Tuple opposite_vertex_on_face(const Tuple &e) const { return e.switch_edge(*this).switch_vertex(*this); }
+		/// @brief Get the opposite vertex on a face
+		/// @param e edge tuple
+		/// @return vertex tuple
+		Tuple opposite_vertex_on_face(const Tuple &e) const
+		{
+			return e.switch_edge(*this).switch_vertex(*this);
+		}
 
+		/// @brief Determine where to collapse an edge to
+		/// @param e edge tuple
+		/// @return Enumeration of possible collapse locations
 		CollapseEdgeTo collapse_boundary_edge_to(const Tuple &e) const;
 
 	protected:
 		using Operations = std::vector<std::pair<std::string, Tuple>>;
 		virtual Operations renew_neighbor_tuples(
-			const std::string &op, const std::vector<Tuple> &tris) const;
+			const std::string &op, const std::vector<Tuple> &tris) const { return {}; }
 
 		/// @brief Cache the split edge operation
 		/// @param e edge tuple
@@ -263,22 +299,24 @@ namespace polyfem::mesh
 		/// @param collapse_to collapse to which vertex
 		void cache_collapse_edge(const Tuple &e, const CollapseEdgeTo collapse_to);
 
-		/// @brief Map the vertex attributes for edge collapse
-		/// @param t new vertex tuple
-		void map_edge_collapse_vertex_attributes(const Tuple &t);
+		/// @brief Cache the edge swap operation
+		/// @param e edge tuple
+		void cache_swap_edge(const Tuple &e);
 
-		/// @brief Map the edge attributes for edge collapse
-		/// @param t new vertex tuple
-		void map_edge_collapse_boundary_attributes(const Tuple &t);
-
-		void map_edge_collapse_edge_attributes(const Tuple &t);
+		// NOTE: Nothing to cache for vertex smoothing
 
 		void map_edge_split_edge_attributes(const Tuple &t);
 		void map_edge_split_boundary_attributes(const Tuple &t);
 		void map_edge_split_element_attributes(const Tuple &t);
 
-		// No need to map boundary attributes for edge collapse because no new boundary is created
-		// No need to map element attributes for edge collapse because no new element is created
+		void map_edge_collapse_vertex_attributes(const Tuple &t);
+		void map_edge_collapse_boundary_attributes(const Tuple &t);
+		void map_edge_collapse_edge_attributes(const Tuple &t);
+
+		void map_edge_swap_edge_attributes(const Tuple &t);
+		void map_edge_swap_element_attributes(const Tuple &t);
+
+		// NOTE: Nothing to map for vertex smoothing
 
 		// --------------------------------------------------------------------
 		// members
@@ -370,7 +408,6 @@ namespace polyfem::mesh
 
 	protected:
 		wmtk::ExecutePass<WildRemesher, EXECUTION_POLICY> executor;
-		int vis_counter = 0;
 		int m_n_quantities;
 		double total_volume;
 

@@ -35,7 +35,7 @@ namespace polyfem::solver
 	{
 		const Eigen::VectorXd out = assembler_.assemble_energy_per_element(
 			is_volume_, bases_, geom_bases_, ass_vals_cache_, dt_, x, x_prev_);
-		assert(abs(out.sum() - value_unweighted(x)) < 1e-10);
+		assert(abs(out.sum() - value_unweighted(x)) < std::max(1e-10 * out.sum(), 1e-10));
 		return out;
 	}
 

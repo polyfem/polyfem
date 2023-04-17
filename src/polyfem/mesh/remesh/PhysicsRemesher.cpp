@@ -12,7 +12,7 @@ namespace polyfem::mesh
 	{
 		const double rel_area = args["local_relaxation"]["local_mesh_rel_area"];
 		const double n_ring = args["local_relaxation"]["local_mesh_n_ring"];
-		return LocalMesh<PhysicsRemesher<WMTKMesh>>::ball_selection(
+		return LocalMesh<Super>::ball_selection(
 			*this, center, rel_area * this->total_volume, n_ring);
 	}
 
@@ -33,7 +33,7 @@ namespace polyfem::mesh
 				return false;
 			});
 
-		LocalMesh local_mesh(*this, local_mesh_tuples, include_global_boundary);
+		LocalMesh<Super> local_mesh(*this, local_mesh_tuples, include_global_boundary);
 
 		const std::vector<ElementBases> bases = local_mesh.build_bases(state.formulation());
 		const std::vector<int> boundary_nodes = local_boundary_nodes(local_mesh);
@@ -60,25 +60,18 @@ namespace polyfem::mesh
 	{
 		// POLYFEM_REMESHER_SCOPED_TIMER("Renew neighbor tuples");
 		assert(elements.size() == 1);
-		assert(op != "vertex_smooth");
 
 		VectorNd center;
 		if constexpr (std::is_same_v<wmtk::TriMesh, WMTKMesh>)
 		{
 			if (op == "edge_split")
-			{
 				center = vertex_attrs[elements[0].switch_vertex(*this).vid(*this)].rest_position;
-			}
 			else if (op == "edge_swap")
-			{
 				center = (vertex_attrs[elements[0].vid(*this)].rest_position
 						  + vertex_attrs[elements[0].switch_vertex(*this).vid(*this)].rest_position)
 						 / 2.0;
-			}
 			else // if (op == "edge_collapse" || op == "vertex_smooth")
-			{
 				center = vertex_attrs[elements[0].vid(*this)].rest_position;
-			}
 		}
 		else
 		{
@@ -90,29 +83,18 @@ namespace polyfem::mesh
 		std::vector<Tuple> local_mesh_tuples = this->local_mesh_tuples(center);
 		this->extend_local_patch(local_mesh_tuples);
 
-		std::vector<Tuple> edges;
-		for (const Tuple &t : local_mesh_tuples)
-		{
-			const size_t t_id = this->element_id(t);
-
-			for (auto j = 0; j < Super::EDGES_PER_ELEMENT; j++)
-			{
-				const Tuple e = WMTKMesh::tuple_from_edge(t_id, j);
-				const size_t e_id = e.eid(*this);
-
-				if (op == "edge_split" && this->edge_attr(e_id).energy_rank != Super::EdgeAttributes::EnergyRank::TOP)
-					continue;
-				else if (op == "edge_collapse" && this->edge_attr(e_id).energy_rank != Super::EdgeAttributes::EnergyRank::BOTTOM)
-					continue;
-
-				edges.push_back(e);
-			}
-		}
-		wmtk::unique_edge_tuples(*this, edges);
-
 		Operations new_ops;
-		for (auto &e : edges)
+		for (const Tuple &e : this->get_edges_for_elements(local_mesh_tuples))
+		{
+			const auto energy_rank = this->edge_attr(e.eid(*this)).energy_rank;
+
+			if (op == "edge_split" && energy_rank != Super::EdgeAttributes::EnergyRank::TOP)
+				continue;
+			else if (op == "edge_collapse" && energy_rank != Super::EdgeAttributes::EnergyRank::BOTTOM)
+				continue;
+
 			new_ops.emplace_back(op, e);
+		}
 
 		return new_ops;
 	}
@@ -130,7 +112,7 @@ namespace polyfem::mesh
 			volume += this->element_volume(t);
 		assert(volume > 0);
 
-		LocalMesh local_mesh(*this, elements, /*include_global_boundary=*/false);
+		LocalMesh<Super> local_mesh(*this, elements, /*include_global_boundary=*/false);
 
 		const std::vector<ElementBases> bases = local_mesh.build_bases(state.formulation());
 		const std::vector<int> boundary_nodes; // no boundary nodes

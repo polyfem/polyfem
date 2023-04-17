@@ -4,6 +4,7 @@
 #include <polyfem/utils/GeometryUtils.hpp>
 
 #include <wmtk/utils/TupleUtils.hpp>
+#include <wmtk/utils/TetraQualityUtils.hpp>
 
 #include <igl/predicates/predicates.h>
 #include <igl/edges.h>
@@ -41,7 +42,7 @@ namespace polyfem::mesh
 		{
 			const size_t f0 = face.vid(*this);
 			const size_t f1 = face.switch_vertex(*this).vid(*this);
-			const size_t f2 = face.switch_edge(*this).switch_vertex(*this).vid(*this);
+			const size_t f2 = opposite_vertex_on_face(face).vid(*this);
 
 			boundary_ids[{{f0, f1, f2}}] = boundary_attrs[face.fid(*this)].boundary_id;
 		}
@@ -98,6 +99,23 @@ namespace polyfem::mesh
 	std::vector<Tuple> WildTetRemesher::get_elements() const
 	{
 		return get_tets();
+	}
+
+	template <>
+	bool WildTetRemesher::is_rest_inverted(const Tuple &loc) const
+	{
+		// Get the vertices ids
+		const std::array<size_t, 4> vids = oriented_tet_vids(loc);
+
+		igl::predicates::exactinit();
+
+		// Use igl for checking orientation
+		const igl::predicates::Orientation orientation = igl::predicates::orient3d(
+			vertex_attrs[vids[0]].rest_position, vertex_attrs[vids[1]].rest_position,
+			vertex_attrs[vids[2]].rest_position, vertex_attrs[vids[3]].rest_position);
+
+		// neg result == pos tet (tet origin from geogram delaunay)
+		return orientation != igl::predicates::Orientation::NEGATIVE;
 	}
 
 	template <>
@@ -181,7 +199,7 @@ namespace polyfem::mesh
 	template <>
 	bool WildTetRemesher::is_body_boundary_vertex(const Tuple &v) const
 	{
-		throw std::runtime_error("Not implemented");
+		log_and_throw_error("WildTetRemesher::is_body_boundary_vertex() not implemented!");
 	}
 
 	template <>
@@ -221,7 +239,7 @@ namespace polyfem::mesh
 		return {{
 			t.vid(*this),
 			t.switch_vertex(*this).vid(*this),
-			t.switch_edge(*this).switch_vertex(*this).vid(*this),
+			opposite_vertex_on_face(t).vid(*this),
 		}};
 	}
 
@@ -235,6 +253,13 @@ namespace polyfem::mesh
 	std::array<size_t, 4> WildTetRemesher::element_vids(const Tuple &t) const
 	{
 		return oriented_tet_vids(t);
+	}
+
+	template <>
+	std::array<size_t, 4> WildTetRemesher::orient_preserve_element_reorder(
+		const std::array<size_t, 4> &conn, const size_t v0) const
+	{
+		return wmtk::orient_preserve_tet_reorder(conn, v0);
 	}
 
 	template <>

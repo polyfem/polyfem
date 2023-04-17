@@ -3,6 +3,8 @@
 #include <polyfem/mesh/remesh/wild_remesh/OperationCache.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
 
+#include <wmtk/utils/TriQualityUtils.hpp>
+
 #include <igl/predicates/predicates.h>
 
 namespace polyfem::mesh
@@ -40,6 +42,25 @@ namespace polyfem::mesh
 			boundary_ids[{{e0, e1}}] = boundary_attrs[edge.eid(*this)].boundary_id;
 		}
 		return boundary_ids;
+	}
+
+	template <>
+	bool WildTriRemesher::is_rest_inverted(const Tuple &loc) const
+	{
+		// Get the vertices ids
+		const std::array<size_t, 3> vids = oriented_tri_vids(loc);
+
+		igl::predicates::exactinit();
+
+		// Use igl for checking orientation
+		const igl::predicates::Orientation orientation =
+			igl::predicates::orient2d(
+				vertex_attrs[vids[0]].rest_position,
+				vertex_attrs[vids[1]].rest_position,
+				vertex_attrs[vids[2]].rest_position);
+
+		// The element is inverted if it not positive (i.e. it is negative or it is degenerate)
+		return orientation != igl::predicates::Orientation::POSITIVE;
 	}
 
 	template <>
@@ -198,6 +219,13 @@ namespace polyfem::mesh
 	std::array<size_t, 3> WildTriRemesher::element_vids(const Tuple &t) const
 	{
 		return oriented_tri_vids(t);
+	}
+
+	template <>
+	std::array<size_t, 3> WildTriRemesher::orient_preserve_element_reorder(
+		const std::array<size_t, 3> &conn, const size_t v0) const
+	{
+		return wmtk::orient_preserve_tri_reorder(conn, v0);
 	}
 
 	template <>

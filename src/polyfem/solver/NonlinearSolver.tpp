@@ -147,8 +147,8 @@ namespace cppoptlib
 			{
 				increase_descent_strategy();
 				logger().debug(
-					"[{}] direction is not a descent direction (Δx⋅g={:g}≥0); reverting to {}",
-					name(), delta_x.dot(grad), descent_strategy_name());
+					"[{}] direction is not a descent direction (‖Δx‖={:g}; ‖g‖={:g}; Δx⋅g={:g}≥0); reverting to {}",
+					name(), delta_x.norm(), grad.norm(), delta_x.dot(grad), descent_strategy_name());
 				this->m_status = Status::Continue;
 				continue;
 			}

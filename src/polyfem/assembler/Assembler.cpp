@@ -154,7 +154,7 @@ namespace polyfem::assembler
 		// #ifdef POLYFEM_WITH_TBB
 		// 		buffer_size /= tbb::task_scheduler_init::default_num_threads();
 		// #endif
-		logger().trace("buffer_size {}", buffer_size);
+		// logger().trace("buffer_size {}", buffer_size);
 		try
 		{
 			stiffness.resize(n_basis * size(), n_basis * size());
@@ -373,7 +373,7 @@ namespace polyfem::assembler
 
 		const int max_triplets_size = int(1e7);
 		const int buffer_size = std::min(long(max_triplets_size), long(std::max(n_psi_basis, n_phi_basis)) * std::max(rows(), cols()));
-		logger().debug("buffer_size {}", buffer_size);
+		// logger().debug("buffer_size {}", buffer_size);
 
 		stiffness.resize(n_phi_basis * rows(), n_psi_basis * cols());
 		stiffness.setZero();
@@ -534,9 +534,9 @@ namespace polyfem::assembler
 		});
 
 #ifndef NDEBUG
-		const double assemble_val = assemble(
+		const double assemble_val = assemble_energy(
 			is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
-		assert(std::abs(assemble_val - out.sum()) < 1e-10);
+		assert(std::abs(assemble_val - out.sum()) < std::max(1e-10 * assemble_val, 1e-10));
 #endif
 
 		return out;

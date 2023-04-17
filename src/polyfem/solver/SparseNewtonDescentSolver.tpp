@@ -180,12 +180,12 @@ namespace cppoptlib
 		}
 
 		// do this check here because we need to repeat the solve without resetting reg_weight
-		if (grad.dot(direction) >= 0)
+		if (grad.norm() != 0 && grad.dot(direction) >= 0)
 		{
 			increase_descent_strategy();
 			polyfem::logger().log(
-				log_level(), "[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
-				name(), direction.dot(grad), descent_strategy_name());
+				log_level(), "[{}] direction is not a descent direction (‖g‖={:g}; ‖Δx‖={:g}; Δx⋅g={:g}≥0); reverting to {}",
+				name(), grad.norm(), direction.norm(), direction.dot(grad), descent_strategy_name());
 			return false;
 		}
 

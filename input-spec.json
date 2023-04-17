@@ -1264,7 +1264,8 @@
         "type": "object",
         "optional": [
             "enabled",
-            "acceptance_tolerance"
+            "acceptance_tolerance",
+            "max_depth"
         ],
         "doc": "Settings for adaptive remeshing edge/face swap operations"
     },
@@ -1281,12 +1282,20 @@
         "doc": "Accept swap operation if energy decreased by at least x"
     },
     {
+        "pointer": "/space/remesh/swap/max_depth",
+        "default": 3,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum depth swap per time-step"
+    },
+    {
         "pointer": "/space/remesh/smooth",
         "default": null,
         "type": "object",
         "optional": [
             "enabled",
-            "acceptance_tolerance"
+            "acceptance_tolerance",
+            "max_iters"
         ],
         "doc": "Settings for adaptive remeshing vertex smoothing operations"
     },
@@ -1298,9 +1307,16 @@
     },
     {
         "pointer": "/space/remesh/smooth/acceptance_tolerance",
-        "default": 1e-3,
+        "default": -1e-8,
         "type": "float",
         "doc": "Accept smooth operation if energy decreased by at least x"
+    },
+    {
+        "pointer": "/space/remesh/smooth/max_iters",
+        "default": 1,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum number of smoothing iterations per time-step"
     },
     {
         "pointer": "/space/remesh/local_relaxation",

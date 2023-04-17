@@ -174,7 +174,7 @@ namespace polyfem::solver
 		for (int i = 0; i < out.size(); i++)
 			out_full[collision_mesh_.to_full_vertex_id(i)] = out[i];
 
-		assert(std::abs(value_unweighted(x) - out_full.sum()) < 1e-10);
+		assert(std::abs(value_unweighted(x) - out_full.sum()) < std::max(1e-10 * out_full.sum(), 1e-10));
 
 		return out_full;
 	}

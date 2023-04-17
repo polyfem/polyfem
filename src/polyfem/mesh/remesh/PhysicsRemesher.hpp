@@ -47,6 +47,10 @@ namespace polyfem::mesh
 		bool collapse_edge_before(const Tuple &t) override;
 		bool collapse_edge_after(const Tuple &t) override;
 
+		// Smooth vertex
+		bool smooth_before(const Tuple &t) override;
+		bool smooth_after(const Tuple &t) override;
+
 	protected:
 		/// @brief Renew the neighbor tuples of an operation.
 		/// @param op Operation
@@ -58,7 +62,25 @@ namespace polyfem::mesh
 		/// @brief Relax a local n-ring around a vertex.
 		/// @param t Center of the local n-ring
 		/// @return If the local relaxation reduced the energy "significantly"
-		bool local_relaxation(const Tuple &t, const double acceptance_tolerance);
+		bool local_relaxation(const Tuple &t, const double acceptance_tolerance)
+		{
+			return local_relaxation(local_mesh_tuples(t), acceptance_tolerance);
+		}
+
+		/// @brief Relax a local n-ring around a vertex.
+		/// @param local_mesh_tuples Tuples of the local mesh
+		/// @return If the local relaxation reduced the energy "significantly"
+		bool local_relaxation(const VectorNd &center, const double acceptance_tolerance)
+		{
+			return local_relaxation(local_mesh_tuples(center), acceptance_tolerance);
+		}
+
+		/// @brief Relax a local n-ring around a vertex.
+		/// @param local_mesh_tuples Tuples of the local mesh
+		/// @return If the local relaxation reduced the energy "significantly"
+		bool local_relaxation(
+			const std::vector<Tuple> &local_mesh_tuples,
+			const double acceptance_tolerance);
 
 		/// @brief Get the local n-ring around a vertex.
 		/// @param center Center of the local n-ring
@@ -84,8 +106,7 @@ namespace polyfem::mesh
 		/// @brief Get the boundary nodes of a local_mesh.
 		/// @param local_mesh Local mesh.
 		/// @return Boundary nodes of the local mesh.
-		std::vector<int> local_boundary_nodes(
-			const LocalMesh<This> &local_mesh) const;
+		std::vector<int> local_boundary_nodes(const LocalMesh<Super> &local_mesh) const;
 
 		/// @brief Initialize the solve data for a local relaxation.
 		/// @param local_mesh Local mesh.
@@ -98,7 +119,7 @@ namespace polyfem::mesh
 		/// @param mass Mass matrix.
 		/// @param collision_mesh Collision mesh.
 		void local_solve_data(
-			const LocalMesh<This> &local_mesh,
+			const LocalMesh<Super> &local_mesh,
 			const std::vector<polyfem::basis::ElementBases> &bases,
 			const std::vector<int> &boundary_nodes,
 			const assembler::Assembler &assembler,
@@ -136,12 +157,8 @@ namespace polyfem::mesh
 		}
 
 	protected:
-		// TODO: move this into PhysicsRemesher
-		// Smoothing
-		bool smooth_before(const Tuple &t) override;
-		bool smooth_after(const Tuple &t) override;
-
 		// Edge swap
+		void swap_edges() override;
 		bool swap_edge_before(const Tuple &t) override;
 		bool swap_edge_after(const Tuple &t) override;
 	};

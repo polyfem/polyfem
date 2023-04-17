@@ -17,8 +17,8 @@
 
 namespace polyfem::mesh
 {
-	using TriMesh = PhysicsRemesher<wmtk::TriMesh>;
-	using TetMesh = PhysicsRemesher<wmtk::TetMesh>;
+	using TriMesh = WildRemesher<wmtk::TriMesh>;
+	using TetMesh = WildRemesher<wmtk::TetMesh>;
 
 	template <typename M>
 	LocalMesh<M>::LocalMesh(

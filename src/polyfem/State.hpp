@@ -367,6 +367,10 @@ namespace polyfem
 		//---------------------------------------------------
 
 	public:
+		/// Construct a vector of boundary conditions ids with their dimension flags.
+		std::unordered_map<int, std::array<bool, 3>>
+		boundary_conditions_ids(const std::string &bc_type) const;
+
 		/// list of boundary nodes
 		std::vector<int> boundary_nodes;
 		/// list of neumann boundary nodes

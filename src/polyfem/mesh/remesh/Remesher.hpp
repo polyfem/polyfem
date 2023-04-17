@@ -81,11 +81,6 @@ namespace polyfem::mesh
 		// main functions
 	public:
 		/// @brief Execute the remeshing
-		/// @param split Perform splitting operations
-		/// @param collapse Perform collapsing operations
-		/// @param smooth Perform smoothing operations
-		/// @param swap Perform edge swapping operations
-		/// @param max_ops_percent Maximum number of operations to perform (default: unlimited)
 		/// @return True if any operation was performed.
 		virtual bool execute() = 0;
 
@@ -192,6 +187,9 @@ namespace polyfem::mesh
 			std::vector<polyfem::basis::ElementBases> &bases,
 			Eigen::VectorXi &vertex_to_basis);
 
+		/// @brief Reference to the simulation state.
+		const State &state;
+
 		// --------------------------------------------------------------------
 		// members
 	public:
@@ -211,8 +209,6 @@ namespace polyfem::mesh
 
 		GlobalProjectionCache global_projection_cache;
 
-		/// @brief Reference to the simulation state.
-		const State &state;
 		/// @brief Copy of remesh args.
 		const json args;
 		/// @brief Collision obstacles' displacements

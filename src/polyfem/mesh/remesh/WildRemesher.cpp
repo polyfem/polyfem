@@ -210,32 +210,26 @@ namespace polyfem::mesh
 	{
 		std::vector<int> boundary_nodes;
 
-		// TODO: get this from state rather than building it
-		std::unordered_map<int, std::array<bool, DIM>> bc_ids;
-		{
-			assert(state.args["boundary_conditions"]["dirichlet_boundary"].is_array());
-			const std::vector<json> bcs = state.args["boundary_conditions"]["dirichlet_boundary"];
-			for (const json &bc : bcs)
-			{
-				assert(bc["dimension"].size() == dim());
-				bc_ids[bc["id"].get<int>()] = bc["dimension"];
-			}
-		}
-
+		const std::unordered_map<int, std::array<bool, 3>> bcs =
+			state.boundary_conditions_ids("dirichlet_boundary");
 		std::vector<int> boundary_ids;
 		const std::vector<Tuple> boundary_facets = this->boundary_facets(&boundary_ids);
 		for (int i = 0; i < boundary_facets.size(); ++i)
 		{
 			const Tuple &t = boundary_facets[i];
-			const auto bc = bc_ids.find(boundary_ids[i]);
+			const auto bc = bcs.find(boundary_ids[i]);
 
-			if (bc == bc_ids.end())
+			if (bc == bcs.end())
 				continue;
 
-			for (const size_t vid : facet_vids(t))
-				for (int d = 0; d < dim(); ++d)
-					if (bc->second[d])
-						boundary_nodes.push_back(dim() * vertex_to_basis[vid] + d);
+			for (int d = 0; d < this->dim(); ++d)
+			{
+				if (!bc->second[d])
+					continue;
+
+				for (const size_t vid : facet_vids(t))
+					boundary_nodes.push_back(dim() * vertex_to_basis[vid] + d);
+			}
 		}
 
 		// Sort and remove the duplicate boundary_nodes.
@@ -269,11 +263,12 @@ namespace polyfem::mesh
 
 			for (int local_fid = 0; local_fid < FACETS_PER_ELEMENT; ++local_fid)
 			{
-				const int boundary_id = boundary_attrs[FACETS_PER_ELEMENT * tid + local_fid].boundary_id;
-				assert((boundary_id >= 0) == is_boundary_facet(tuple_from_facet(tid, local_fid)));
+				const Tuple facet_tuple = tuple_from_facet(tid, local_fid);
+				const int boundary_id = boundary_attrs[facet_id(facet_tuple)].boundary_id;
+				assert((boundary_id >= 0) == is_boundary_facet(facet_tuple));
 				if (boundary_id >= 0)
 				{
-					boundary_facets.push_back(tuple_from_facet(tid, local_fid));
+					boundary_facets.push_back(facet_tuple);
 					if (boundary_ids)
 						boundary_ids->push_back(boundary_id);
 				}
@@ -381,7 +376,7 @@ namespace polyfem::mesh
 			{
 				static int inversion_cnt = 0;
 				write_mesh(state.resolve_output_path(fmt::format("inversion_{:04d}.vtu", inversion_cnt++)));
-				log_and_throw_error("Inverted element found, invariants violated");
+				log_and_throw_error("Inverted element found, invariants violated!");
 				return false;
 			}
 		}
@@ -423,6 +418,18 @@ namespace polyfem::mesh
 		const VectorNd &e0 = vertex_attrs[e.vid(*this)].position;
 		const VectorNd &e1 = vertex_attrs[e.switch_vertex(*this).vid(*this)].position;
 		return (e1 + e0) / 2.0;
+	}
+
+	template <class WMTKMesh>
+	std::vector<typename WMTKMesh::Tuple> WildRemesher<WMTKMesh>::get_edges_for_elements(
+		const std::vector<Tuple> &elements) const
+	{
+		std::vector<Tuple> edges;
+		for (auto t : elements)
+			for (int j = 0; j < EDGES_PER_ELEMENT; ++j)
+				edges.push_back(WMTKMesh::tuple_from_edge(t.fid(*this), j));
+		wmtk::unique_edge_tuples(*this, edges);
+		return edges;
 	}
 
 	template <class WMTKMesh>
@@ -476,15 +483,6 @@ namespace polyfem::mesh
 				}
 			}
 		}
-	}
-
-	template <class WMTKMesh>
-	typename WildRemesher<WMTKMesh>::Operations
-	WildRemesher<WMTKMesh>::renew_neighbor_tuples(
-		const std::string &op,
-		const std::vector<Tuple> &elements) const
-	{
-		return WildRemesher<WMTKMesh>::Operations();
 	}
 
 	template <class WMTKMesh>
