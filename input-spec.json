@@ -1178,6 +1178,7 @@
     {
         "pointer": "/space/remesh/split/acceptance_tolerance",
         "default": 1e-3,
+        "min": 0,
         "type": "float",
         "doc": "Accept split operation if energy decreased by at least x"
     },
@@ -1226,6 +1227,7 @@
     {
         "pointer": "/space/remesh/collapse/acceptance_tolerance",
         "default": -1e-8,
+        "max": 0,
         "type": "float",
         "doc": "Accept collapse operation if energy decreased by at least x"
     },
@@ -1278,6 +1280,7 @@
     {
         "pointer": "/space/remesh/swap/acceptance_tolerance",
         "default": -1e-8,
+        "max": 0,
         "type": "float",
         "doc": "Accept swap operation if energy decreased by at least x"
     },
@@ -1308,6 +1311,7 @@
     {
         "pointer": "/space/remesh/smooth/acceptance_tolerance",
         "default": -1e-8,
+        "max": 0,
         "type": "float",
         "doc": "Accept smooth operation if energy decreased by at least x"
     },

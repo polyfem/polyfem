@@ -236,9 +236,13 @@ namespace polyfem::mesh
 		wmtk::logger().set_level(log_lvl);
 
 		// The AMIPS energy should have prevented inversions
-		assert(std::all_of(one_ring.begin(), one_ring.end(), [this](const Tuple &t) {
-			return !this->is_rest_inverted(t);
-		}));
+		if (std::any_of(one_ring.begin(), one_ring.end(), [this](const Tuple &t) {
+				return this->is_rest_inverted(t);
+			}))
+		{
+			assert(false);
+			return false;
+		}
 
 		// ---------------------------------------------------------------------
 		// 2. project quantities so to minimize the L2 error
@@ -252,9 +256,13 @@ namespace polyfem::mesh
 		project_local_quantities(*this, old_local_mesh, new_local_mesh);
 
 		// The Constrained L2 Projection should have prevented inversions
-		assert(std::all_of(one_ring.begin(), one_ring.end(), [this](const Tuple &t) {
-			return !this->is_inverted(t);
-		}));
+		if (std::any_of(one_ring.begin(), one_ring.end(), [this](const Tuple &t) {
+				return this->is_inverted(t);
+			}))
+		{
+			assert(false);
+			return false;
+		}
 
 		return true;
 	}

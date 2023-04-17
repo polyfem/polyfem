@@ -88,6 +88,7 @@ namespace polyfem::mesh
 		}
 		catch (const std::runtime_error &e)
 		{
+			logger().set_level(level_before);
 			assert(false);
 			return false;
 		}
@@ -135,6 +136,7 @@ namespace polyfem::mesh
 				}
 				catch (const std::runtime_error &e)
 				{
+					logger().set_level(level_before);
 					assert(false);
 					return false;
 				}
