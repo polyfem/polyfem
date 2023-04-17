@@ -167,7 +167,7 @@ namespace polyfem::solver
 					continue;
 			if (p->get_parameter_type() != ParameterType::Shape)
 				continue;
-			gradv += p->get_parametrization().apply_jacobian(grad, x);
+			gradv += p->apply_parametrization_jacobian(grad, x);
 		}
 	}
 } // namespace polyfem::solver

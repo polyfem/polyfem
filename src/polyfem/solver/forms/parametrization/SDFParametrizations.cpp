@@ -83,11 +83,7 @@ namespace polyfem::solver
         // }
         // else
         {
-            Eigen::VectorXd y;
-            if (use_scaling_)
-                y = x.head(x.size() - dim_);
-            else
-                y = x;
+            Eigen::VectorXd y = x;
             
             std::vector<double> y_vec(y.data(), y.data() + y.size());
             {
@@ -270,18 +266,7 @@ namespace polyfem::solver
         // assert(x.size() == shape_vel.rows());
         // const int dim = vertex_normals.cols();
         
-        Eigen::VectorXd mapped_grad(x.size());
-        if (use_scaling_)
-        {
-            Eigen::VectorXd scale = x.tail(dim_);
-            const int n_nodes = shape_velocity.cols() / dim_;
-            mapped_grad.head(x.size() - dim_) = shape_velocity * scale.replicate(n_nodes, 1).asDiagonal() * grad;
-
-            Eigen::MatrixXd unflattened_grad = utils::unflatten(grad, dim_);
-            mapped_grad.tail(dim_) = (Vout.array() * unflattened_grad.array()).colwise().sum().array() / scale.transpose().array();
-        }
-        else
-            mapped_grad = shape_velocity * grad; // shape_vel * (vertex_normals.array() * utils::unflatten(grad, dim).array()).matrix().rowwise().sum();
+        Eigen::VectorXd mapped_grad = shape_velocity * grad; // shape_vel * (vertex_normals.array() * utils::unflatten(grad, dim).array()).matrix().rowwise().sum();
 
         // debug
         // {

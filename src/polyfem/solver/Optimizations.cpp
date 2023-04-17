@@ -371,21 +371,26 @@ namespace polyfem::solver
 				cur_states.push_back(states[i]);
 		else
 			cur_states.push_back(states[args["state"]]);
+		
+		composite_map = CompositeParametrization(map_list);
 
 		const std::string composite_map_type = args["composite_map_type"];
+		Eigen::VectorXi output_indexing;
 		if (composite_map_type == "none")
 		{
-			composite_map = CompositeParametrization(map_list);
+			
 		}
 		else if (composite_map_type == "interior")
 		{
 			assert(type == "shape");
-			composite_map = VariableToInteriorNodes(map_list, *cur_states[0], args["volume_selection"][0]);
+			VariableToInteriorNodes variable_to_node(*cur_states[0], args["volume_selection"][0]);
+			output_indexing = variable_to_node.get_output_indexing();
 		}
 		else if (composite_map_type == "boundary")
 		{
 			assert(type == "shape");
-			composite_map = VariableToBoundaryNodes(map_list, *cur_states[0], args["surface_selection"][0]);
+			VariableToBoundaryNodes variable_to_node(*cur_states[0], args["surface_selection"][0]);
+			output_indexing = variable_to_node.get_output_indexing();
 		}
 		else if (composite_map_type == "boundary_excluding_surface")
 		{
@@ -393,12 +398,14 @@ namespace polyfem::solver
 			std::vector<int> excluded_surfaces;
 			for (const auto &s : args["surface_selection"])
 				excluded_surfaces.push_back(s);
-			composite_map = VariableToBoundaryNodesExclusive(map_list, *cur_states[0], excluded_surfaces);
+			VariableToBoundaryNodesExclusive variable_to_node(*cur_states[0], excluded_surfaces);
+			output_indexing = variable_to_node.get_output_indexing();
 		}
 
 		if (type == "shape")
 		{
 			var2sim = std::make_shared<ShapeVariableToSimulation>(cur_states, composite_map);
+			var2sim->set_output_indexing(output_indexing);
 		}
 		else if (type == "elastic")
 		{

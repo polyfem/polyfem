@@ -14,7 +14,7 @@ namespace polyfem::solver
 
 		inline virtual void update(const Eigen::VectorXd &x)
 		{
-			update_state(parametrization_.eval(x), parametrization_.get_output_indexing(x));
+			update_state(parametrization_.eval(x), get_output_indexing(x));
 		}
 
 		inline int n_states() const { return states_.size(); }
@@ -25,10 +25,17 @@ namespace polyfem::solver
 		virtual Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const = 0;
 		virtual Eigen::VectorXd inverse_eval() = 0;
 
+		void set_output_indexing(const Eigen::VectorXi &output_indexing) { output_indexing_ = output_indexing; }
+		Eigen::VectorXi get_output_indexing(const Eigen::VectorXd &x) const;
+
+		Eigen::VectorXd apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const;
+
 	protected:
 		virtual void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices);
 		std::vector<std::shared_ptr<State>> states_;
 		CompositeParametrization parametrization_;
+
+		Eigen::VectorXi output_indexing_;
 	};
 
 	class ShapeVariableToSimulation : public VariableToSimulation
@@ -46,6 +53,7 @@ namespace polyfem::solver
 		virtual void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
 	};
 
+	// Only for periodic mesh
 	class PeriodicShapeVariableToSimulation : public VariableToSimulation
 	{
 	public:
@@ -59,6 +67,7 @@ namespace polyfem::solver
 		Eigen::VectorXd inverse_eval() override;
 	};
 
+	// For optimizing the shape of a parametrized SDF. The mesh connectivity may change when SDF changes, so a new mesh is loaded whenever the optimization variable changes.
 	class SDFShapeVariableToSimulation : public ShapeVariableToSimulation
 	{
 	public:
@@ -70,6 +79,20 @@ namespace polyfem::solver
 
 	protected:
 		const int mesh_id_;
+		const std::string mesh_path_;
+	};
+
+	// Combination of SDFShapeVariableToSimulation and PeriodicShapeVariableToSimulation, to optimize the shape of a SDF, assuming the mesh of this SDF is periodic
+	class SDFPeriodicShapeVariableToSimulation : public PeriodicShapeVariableToSimulation
+	{
+	public:
+		SDFPeriodicShapeVariableToSimulation(const std::vector<std::shared_ptr<State>> &states, const CompositeParametrization &parametrization, const json &args);
+		virtual ~SDFPeriodicShapeVariableToSimulation() {}
+
+		void update(const Eigen::VectorXd &x) override;
+		virtual Eigen::VectorXd inverse_eval() override;
+
+	protected:
 		const std::string mesh_path_;
 	};
 

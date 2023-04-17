@@ -297,7 +297,10 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	{
-		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToBoundaryNodesExclusive({}, *states[0], {1})));
+		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
+
+		VariableToBoundaryNodesExclusive variable_to_node(*states[0], {1});
+		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
 	}
 
 	auto obj1 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0]);
@@ -440,8 +443,13 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 		std::vector<std::shared_ptr<Parametrization>> boundary_map_list = {std::make_shared<SliceMap>(0, opt_bnodes * dim, -1)};
 		std::vector<std::shared_ptr<Parametrization>> interior_map_list = {std::make_shared<SliceMap>(opt_bnodes * dim, (opt_bnodes + opt_inodes) * dim, -1)};
 
-		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToBoundaryNodesExclusive(boundary_map_list, *states[0], {10, 11})));
-		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToInteriorNodes(interior_map_list, *states[0], 1)));
+		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization(boundary_map_list)));
+		VariableToBoundaryNodesExclusive variable_to_node1(*states[0], {10, 11});
+		variable_to_simulations[0]->set_output_indexing(variable_to_node1.get_output_indexing());
+
+		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization(interior_map_list)));
+		VariableToInteriorNodes variable_to_node2(*states[0], 1);
+		variable_to_simulations[1]->set_output_indexing(variable_to_node2.get_output_indexing());
 	}
 
 	{
@@ -449,13 +457,13 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 		states[0]->get_vertices(V);
 		Eigen::VectorXd V_flat = utils::flatten(V);
 
-		auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
+		auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
 		assert(b_idx.size() == (opt_bnodes * dim));
 		for (int i = 0; i < opt_bnodes; ++i)
 			for (int k = 0; k < dim; ++k)
 				x(i * dim + k) = V_flat(b_idx(i * dim + k));
 
-		auto i_idx = variable_to_simulations[1]->get_parametrization().get_output_indexing(x);
+		auto i_idx = variable_to_simulations[1]->get_output_indexing(x);
 		assert(i_idx.size() == (opt_inodes * dim));
 		for (int i = 0; i < opt_inodes; ++i)
 			for (int k = 0; k < dim; ++k)
@@ -565,7 +573,9 @@ TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 	{
 		std::vector<std::shared_ptr<Parametrization>> spline_boundary_map_list = {};
 
-		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToBoundaryNodes(spline_boundary_map_list, *states[0], {4})));
+		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization(spline_boundary_map_list)));
+		VariableToBoundaryNodes variable_to_node(*states[0], {4});
+		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
 	}
 
 	{
@@ -573,7 +583,7 @@ TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
 		states[0]->get_vertices(V);
 		Eigen::VectorXd V_flat = utils::flatten(V);
 
-		auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
+		auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
 		assert(b_idx.size() == (opt_bnodes * dim));
 		for (int i = 0; i < opt_bnodes; ++i)
 			for (int k = 0; k < dim; ++k)
@@ -684,7 +694,10 @@ TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
 	{
 		std::vector<std::shared_ptr<Parametrization>> spline_boundary_map_list = {std::make_shared<BSplineParametrization1DTo2D>(initial_control_points, knots, opt_bnodes, true)};
 
-		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], VariableToBoundaryNodes(spline_boundary_map_list, *states[0], 4)));
+		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization(spline_boundary_map_list)));
+
+		VariableToBoundaryNodes variable_to_node(*states[0], 4);
+		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
 	}
 
 	{
@@ -692,7 +705,7 @@ TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
 		states[0]->get_vertices(V);
 		Eigen::VectorXd V_flat = utils::flatten(V);
 
-		auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
+		auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
 		assert(b_idx.size() == (opt_bnodes * dim));
 		Eigen::VectorXd y(opt_bnodes * dim);
 		for (int i = 0; i < opt_bnodes; ++i)

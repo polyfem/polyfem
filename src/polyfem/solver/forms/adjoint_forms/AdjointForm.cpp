@@ -146,7 +146,6 @@ namespace polyfem::solver
 		gradv.setZero(x.size());
 		for (const auto &param_map : variable_to_simulations_)
 		{
-			const auto &parametrization = param_map->get_parametrization();
 			const auto &param_type = param_map->get_parameter_type();
 
 			for (const auto &state : param_map->get_states())
@@ -159,7 +158,7 @@ namespace polyfem::solver
 					throw std::runtime_error("Shape derivative of NodeTargetForm not implemented!");
 
 				if (term.size() > 0)
-					gradv += parametrization.apply_jacobian(term, x);
+					gradv += param_map->apply_parametrization_jacobian(term, x);
 			}
 		}
 	}
@@ -241,7 +240,6 @@ namespace polyfem::solver
 		gradv.setZero(x.size());
 		for (const auto &param_map : variable_to_simulations_)
 		{
-			const auto &parametrization = param_map->get_parametrization();
 			const auto &param_type = param_map->get_parameter_type();
 
 			for (const auto &state : param_map->get_states())
@@ -259,7 +257,7 @@ namespace polyfem::solver
 					term = state_.periodic_mesh_map->apply_jacobian(term, state_.periodic_mesh_representation);
 				}
 				if (term.size() > 0)
-					gradv += parametrization.apply_jacobian(term, x);
+					gradv += param_map->apply_parametrization_jacobian(term, x);
 			}
 		}
 	}

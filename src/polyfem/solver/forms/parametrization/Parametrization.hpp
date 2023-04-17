@@ -21,20 +21,7 @@ namespace polyfem::solver
 		virtual Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const = 0;
 	};
 
-	class IndexedParametrization : public Parametrization
-	{
-	public:
-		IndexedParametrization() {}
-		virtual ~IndexedParametrization() {}
-
-		void set_output_indexing(const Eigen::VectorXi &output_indexing) { output_indexing_ = output_indexing; }
-		Eigen::VectorXi get_output_indexing(const Eigen::VectorXd &x) const;
-
-	protected:
-		Eigen::VectorXi output_indexing_;
-	};
-
-	class CompositeParametrization : public IndexedParametrization
+	class CompositeParametrization : public Parametrization
 	{
 	public:
 		CompositeParametrization() {}

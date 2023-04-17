@@ -290,6 +290,7 @@
             "macro-strain",
             "initial",
             "sdf-shape",
+            "sdf-periodic-shape",
             "dirichlet"
         ]
     },
@@ -339,6 +340,20 @@
         "required": [
             "mesh",
             "mesh_id",
+            "state",
+            "type",
+            "composition"
+        ],
+        "optional": [
+            "composite_map_type"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "sdf-periodic-shape",
+        "type": "object",
+        "required": [
+            "mesh",
             "state",
             "type",
             "composition"
@@ -678,18 +693,12 @@
         ],
         "optional": [
             "options",
-            "use_volume_velocity",
-            "use_scaling"
+            "use_volume_velocity"
         ],
         "doc": "Append a list of constants at the end of the input vector"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/use_volume_velocity",
-        "type": "bool",
-        "default": false
-    },
-    {
-        "pointer": "/variable_to_simulation/*/composition/*/use_scaling",
         "type": "bool",
         "default": false
     },

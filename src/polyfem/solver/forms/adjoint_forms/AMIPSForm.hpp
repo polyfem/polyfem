@@ -221,7 +221,7 @@ namespace polyfem::solver
 						continue;
 				if (p->get_parameter_type() != ParameterType::Shape)
 					continue;
-				gradv += p->get_parametrization().apply_jacobian(grad, x);
+				gradv += p->apply_parametrization_jacobian(grad, x);
 			}
 		}
 
@@ -255,7 +255,7 @@ namespace polyfem::solver
 				if (p->get_parameter_type() != ParameterType::Shape)
 					continue;
 				auto state_variable = p->get_parametrization().eval(x);
-				auto output_indexing = p->get_parametrization().get_output_indexing(x);
+				auto output_indexing = p->get_output_indexing(x);
 				for (int i = 0; i < output_indexing.size(); ++i)
 					X(output_indexing(i)) = state_variable(i);
 			}

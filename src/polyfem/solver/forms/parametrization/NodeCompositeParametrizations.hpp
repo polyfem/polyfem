@@ -1,41 +1,44 @@
 #pragma once
 
-#include "Parametrization.hpp"
-
-#include <polyfem/mesh/Mesh.hpp>
-#include <polyfem/State.hpp>
-
+#include <vector>
 #include <Eigen/Core>
-#include <map>
+
+namespace polyfem
+{
+	class State;
+}
 
 namespace polyfem::solver
 {
-	class VariableToNodes : public CompositeParametrization
+	class VariableToNodes
 	{
 	public:
-		using CompositeParametrization::CompositeParametrization;
-
+		VariableToNodes(const State &state);
+		virtual ~VariableToNodes() {}
 		virtual void set_output_indexing(const std::vector<int> node_ids) final;
+		const Eigen::VectorXi &get_output_indexing() const { return output_indexing_; }
 
 	protected:
 		int dim;
+
+		Eigen::VectorXi output_indexing_;
 	};
 
 	class VariableToInteriorNodes : public VariableToNodes
 	{
 	public:
-		VariableToInteriorNodes(const std::vector<std::shared_ptr<Parametrization>> &parametrizations, const State &state, const int volume_selection);
+		VariableToInteriorNodes(const State &state, const int volume_selection);
 	};
 
 	class VariableToBoundaryNodes : public VariableToNodes
 	{
 	public:
-		VariableToBoundaryNodes(const std::vector<std::shared_ptr<Parametrization>> &parametrizations, const State &state, const int surface_selection);
+		VariableToBoundaryNodes(const State &state, const int surface_selection);
 	};
 
 	class VariableToBoundaryNodesExclusive : public VariableToNodes
 	{
 	public:
-		VariableToBoundaryNodesExclusive(const std::vector<std::shared_ptr<Parametrization>> &parametrizations, const State &state, const std::vector<int> &exclude_surface_selections);
+		VariableToBoundaryNodesExclusive(const State &state, const std::vector<int> &exclude_surface_selections);
 	};
 } // namespace polyfem::solver

@@ -53,7 +53,6 @@ namespace polyfem::solver
 		gradv.setZero(x.size());
 		for (const auto &param_map : variable_to_simulations_)
 		{
-			const auto &parametrization = param_map->get_parametrization();
 			const auto &param_type = param_map->get_parameter_type();
 
 			for (const auto &state : param_map->get_states())
@@ -81,7 +80,7 @@ namespace polyfem::solver
 					term = state_.periodic_mesh_map->apply_jacobian(term, state_.periodic_mesh_representation);
 				}
 				if (term.size() > 0)
-					gradv += parametrization.apply_jacobian(term, x);
+					gradv += param_map->apply_parametrization_jacobian(term, x);
 			}
 		}
 	}
@@ -178,7 +177,6 @@ namespace polyfem::solver
 		SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
-			const auto &parametrization = param_map->get_parametrization();
 			const auto &param_type = param_map->get_parameter_type();
 
 			for (const auto &state : param_map->get_states())
@@ -191,7 +189,7 @@ namespace polyfem::solver
 					log_and_throw_error("Doesn't support stress derivative wrt. material!");
 
 				if (term.size() > 0)
-					gradv += parametrization.apply_jacobian(term, x);
+					gradv += param_map->apply_parametrization_jacobian(term, x);
 			}
 		}
 	}
@@ -239,7 +237,6 @@ namespace polyfem::solver
 		SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
-			const auto &parametrization = param_map->get_parametrization();
 			const auto &param_type = param_map->get_parameter_type();
 
 			for (const auto &state_ptr : param_map->get_states())
@@ -252,10 +249,9 @@ namespace polyfem::solver
 				Eigen::VectorXd term;
 				if (param_type == ParameterType::Material)
 				{
-					term.setZero(parametrization.size(x.size()));
-
 					const auto &bases = state.bases;
 					const auto &gbases = state.geom_bases();
+					term.setZero(bases.size() * 2);
 					auto df_dmu_dlambda_function = state.assembler.get_dstress_dmu_dlambda_function(state.formulation());
 					const int dim = state.mesh->dimension();
 
@@ -288,7 +284,7 @@ namespace polyfem::solver
 				}
 
 				if (term.size() > 0)
-					gradv += parametrization.apply_jacobian(term, x);
+					gradv += param_map->apply_parametrization_jacobian(term, x);
 			}
 		}
 	}
@@ -543,7 +539,6 @@ namespace polyfem::solver
 		SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
-			const auto &parametrization = param_map->get_parametrization();
 			const auto &param_type = param_map->get_parameter_type();
 
 			for (const auto &state_ptr : param_map->get_states())
@@ -557,7 +552,7 @@ namespace polyfem::solver
 					log_and_throw_error("Doesn't support stress derivative wrt. material!");
 
 				if (term.size() > 0)
-					gradv += parametrization.apply_jacobian(term, x);
+					gradv += param_map->apply_parametrization_jacobian(term, x);
 			}
 		}
 	}
@@ -643,7 +638,6 @@ namespace polyfem::solver
 		SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
-			const auto &parametrization = param_map->get_parametrization();
 			const auto &param_type = param_map->get_parameter_type();
 
 			for (const auto &state_ptr : param_map->get_states())
@@ -657,7 +651,7 @@ namespace polyfem::solver
 					log_and_throw_error("Doesn't support stress derivative wrt. material!");
 
 				if (term.size() > 0)
-					gradv += parametrization.apply_jacobian(term, x);
+					gradv += param_map->apply_parametrization_jacobian(term, x);
 			}
 		}
 	}

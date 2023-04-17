@@ -37,6 +37,27 @@ namespace polyfem::solver
 		}
 	} // namespace
 
+    Eigen::VectorXi VariableToSimulation::get_output_indexing(const Eigen::VectorXd &x) const
+    {
+        const int out_size = parametrization_.size(x.size());
+        if (output_indexing_.size() == out_size)
+            return output_indexing_;
+        else if (output_indexing_.size() == 0)
+        {
+            Eigen::VectorXi ind;
+            ind.setLinSpaced(out_size, 0, out_size - 1);
+            return ind;
+        }
+        else
+            log_and_throw_error(fmt::format("Indexing size and output size of the Parametrization do not match! {} vs {}", output_indexing_.size(), out_size));
+        return Eigen::VectorXi();
+    }
+
+	Eigen::VectorXd VariableToSimulation::apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const
+	{
+		return parametrization_.apply_jacobian(term(get_output_indexing(x)), x);
+	}
+
 	void VariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) 
 	{ 
 		log_and_throw_error("Not implemented!"); 
@@ -81,7 +102,7 @@ namespace polyfem::solver
 			else
 				term += cur_term;
 		}
-		return parametrization_.apply_jacobian(term, x);
+		return apply_parametrization_jacobian(term, x);
 	}
 	Eigen::VectorXd ShapeVariableToSimulation::inverse_eval()
 	{
@@ -89,7 +110,7 @@ namespace polyfem::solver
 		const int npts = states_[0]->mesh->n_vertices();
 
 		Eigen::VectorXd x;
-		Eigen::VectorXi indices = parametrization_.get_output_indexing(x);
+		Eigen::VectorXi indices = get_output_indexing(x);
 
 		if (indices.size() == 0)
 			indices.setLinSpaced(npts * dim, 0, npts * dim - 1);
@@ -123,7 +144,7 @@ namespace polyfem::solver
 			else
 				term += cur_term;
 		}
-		return parametrization_.apply_jacobian(term, x);
+		return apply_parametrization_jacobian(term, x);
 	}
 	void PeriodicShapeVariableToSimulation::update(const Eigen::VectorXd &x)
 	{
@@ -212,9 +233,60 @@ namespace polyfem::solver
 		}
 
 		const int dim = states_[0]->mesh->dimension();
-		parametrization_.set_output_indexing(Eigen::VectorXi::LinSpaced((end - start) * dim, start * dim, end * dim - 1));
+		set_output_indexing(Eigen::VectorXi::LinSpaced((end - start) * dim, start * dim, end * dim - 1));
 	}
 	Eigen::VectorXd SDFShapeVariableToSimulation::inverse_eval()
+	{
+		log_and_throw_error("SDF shape doesn't support inverse evaluation!");
+		return Eigen::VectorXd();
+	}
+
+	SDFPeriodicShapeVariableToSimulation::SDFPeriodicShapeVariableToSimulation(const std::vector<std::shared_ptr<State>> &states, const CompositeParametrization &parametrization, const json &args) : PeriodicShapeVariableToSimulation(states, parametrization), mesh_path_(args["mesh"])
+	{
+	}
+	void SDFPeriodicShapeVariableToSimulation::update(const Eigen::VectorXd &x)
+	{
+		auto y = parametrization_.eval(x);
+
+		for (auto state : states_)
+		{
+			if (state->in_args["geometry"].is_array())
+			{
+				assert(state->in_args["geometry"].size() == 1);
+				state->in_args["geometry"][0]["mesh"] = mesh_path_;
+				state->in_args["geometry"][0].erase("transformation");
+			}
+			else
+			{
+				state->in_args["geometry"]["mesh"] = mesh_path_;
+				state->in_args["geometry"].erase("transformation");
+			}
+
+			state->mesh = nullptr;
+			state->assembler.update_lame_params(Eigen::MatrixXd(), Eigen::MatrixXd());
+
+			state->init(state->in_args, false);
+
+			state->load_mesh();
+			state->stats.compute_mesh_stats(*state->mesh);
+		}
+
+		// const int dim = states_[0]->mesh->dimension();
+		// auto periodic_mesh = states_[0]->periodic_mesh_map;
+		// Eigen::VectorXi indexing;
+		// indexing.setConstant(periodic_mesh.n_periodic_dof() * dim, -1);
+		// for (int i = 0; i < periodic_mesh.n_full_dof(); i++)
+		// {
+		// 	for (int d = 0; d < dim; d++)
+		// 	{
+		// 		int full_id = i * dim + d;
+		// 		indexing(full_id) = full_to_periodic(i) * dim + d;
+		// 	}
+		// }
+
+		// parametrization_.set_output_indexing(Eigen::VectorXi::LinSpaced(,,));
+	}
+	Eigen::VectorXd SDFPeriodicShapeVariableToSimulation::inverse_eval()
 	{
 		log_and_throw_error("SDF shape doesn't support inverse evaluation!");
 		return Eigen::VectorXd();
@@ -250,7 +322,7 @@ namespace polyfem::solver
 			else
 				term += cur_term;
 		}
-		return parametrization_.apply_jacobian(term, x);
+		return apply_parametrization_jacobian(term, x);
 	}
 	Eigen::VectorXd ElasticVariableToSimulation::inverse_eval()
 	{
@@ -286,7 +358,7 @@ namespace polyfem::solver
 			else
 				term += cur_term;
 		}
-		return parametrization_.apply_jacobian(term, x);
+		return apply_parametrization_jacobian(term, x);
 	}
 	Eigen::VectorXd FrictionCoeffientVariableToSimulation::inverse_eval()
 	{
@@ -326,7 +398,7 @@ namespace polyfem::solver
 			else
 				term += cur_term;
 		}
-		return parametrization_.apply_jacobian(term, x);
+		return apply_parametrization_jacobian(term, x);
 	}
 	Eigen::VectorXd DampingCoeffientVariableToSimulation::inverse_eval()
 	{
@@ -364,7 +436,7 @@ namespace polyfem::solver
 			else
 				term += cur_term;
 		}
-		return parametrization_.apply_jacobian(term, x);
+		return apply_parametrization_jacobian(term, x);
 	}
 	Eigen::VectorXd InitialConditionVariableToSimulation::inverse_eval()
 	{
@@ -409,7 +481,7 @@ namespace polyfem::solver
 			else
 				term += cur_term;
 		}
-		return parametrization_.apply_jacobian(term, x);
+		return apply_parametrization_jacobian(term, x);
 	}
 	std::string DirichletVariableToSimulation::variable_to_string(const Eigen::VectorXd &variable)
 	{
@@ -447,7 +519,7 @@ namespace polyfem::solver
 			else
 				term += cur_term;
 		}
-		return parametrization_.apply_jacobian(term, x);
+		return apply_parametrization_jacobian(term, x);
 	}
 	Eigen::VectorXd MacroStrainVariableToSimulation::inverse_eval()
 	{

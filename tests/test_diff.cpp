@@ -4,6 +4,7 @@
 #include <fstream>
 #include <cmath>
 
+#include <polyfem/State.hpp>
 #include <polyfem/solver/Optimizations.hpp>
 #include <polyfem/solver/AdjointTools.hpp>
 #include <polyfem/io/Evaluator.hpp>
@@ -445,7 +446,11 @@ TEST_CASE("shape-neumann-nodes", "[adjoint_method]")
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, VariableToBoundaryNodes({}, *state_ptr, 2)));
+	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+	{
+		VariableToBoundaryNodes variable_to_node(*state_ptr, 2);
+		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
+	}
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -491,7 +496,7 @@ TEST_CASE("shape-neumann-nodes", "[adjoint_method]")
 	Eigen::MatrixXd V;
 	state.get_vertices(V);
 	Eigen::VectorXd V_flat = utils::flatten(V);
-	auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
+	auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
 	for (int i = 0; i < b_idx.size(); ++i)
 		x(i) = V_flat(b_idx(i));
 	velocity_discrete = velocity(x);
@@ -519,7 +524,11 @@ TEST_CASE("neumann-shape-derivative", "[adjoint_method]")
 	Eigen::MatrixXd velocity_discrete;
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, VariableToBoundaryNodes({}, *state_ptr, 2)));
+	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+	{
+		VariableToBoundaryNodes variable_to_node(*state_ptr, 2);
+		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
+	}
 
 	Eigen::VectorXd x;
 	int opt_bnodes = 0;
@@ -553,7 +562,7 @@ TEST_CASE("neumann-shape-derivative", "[adjoint_method]")
 	Eigen::MatrixXd V;
 	state.get_vertices(V);
 	Eigen::VectorXd V_flat = utils::flatten(V);
-	auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
+	auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
 	for (int i = 0; i < b_idx.size(); ++i)
 		x(i) = V_flat(b_idx(i));
 	velocity_discrete = velocity(x);
@@ -576,7 +585,7 @@ TEST_CASE("neumann-shape-derivative", "[adjoint_method]")
 			indicator(k) = 1;
 			Eigen::VectorXd term;
 			state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i), indicator, term);
-			hess.row(k) = variable_to_simulations[0]->get_parametrization().apply_jacobian(term, x);
+			hess.row(k) = variable_to_simulations[0]->apply_parametrization_jacobian(term, x);
 		}
 
 		hess_vec.push_back(hess);
@@ -655,7 +664,11 @@ TEST_CASE("shape-pressure-neumann-nodes", "[adjoint_method]")
 	opt_args = apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, VariableToBoundaryNodes({}, *state_ptr, 2)));
+	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+	{
+		VariableToBoundaryNodes variable_to_node(*state_ptr, 2);
+		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
+	}
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -701,7 +714,7 @@ TEST_CASE("shape-pressure-neumann-nodes", "[adjoint_method]")
 	Eigen::MatrixXd V;
 	state.get_vertices(V);
 	Eigen::VectorXd V_flat = utils::flatten(V);
-	auto b_idx = variable_to_simulations[0]->get_parametrization().get_output_indexing(x);
+	auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
 	for (int i = 0; i < b_idx.size(); ++i)
 		x(i) = V_flat(b_idx(i));
 	velocity_discrete = velocity(x);

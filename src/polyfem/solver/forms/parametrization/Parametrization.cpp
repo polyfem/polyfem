@@ -9,22 +9,6 @@ namespace polyfem::solver
         return Eigen::VectorXd();
     }
     
-    Eigen::VectorXi IndexedParametrization::get_output_indexing(const Eigen::VectorXd &x) const
-    {
-        const int out_size = size(x.size());
-        if (output_indexing_.size() == out_size)
-            return output_indexing_;
-        else if (output_indexing_.size() == 0)
-        {
-            Eigen::VectorXi ind;
-            ind.setLinSpaced(out_size, 0, out_size - 1);
-            return ind;
-        }
-        else
-            log_and_throw_error(fmt::format("Indexing size and output size of the Parametrization do not match! {} vs {}", output_indexing_.size(), out_size));
-        return Eigen::VectorXi();
-    }
-    
     int CompositeParametrization::size(const int x_size) const
     {
         int cur_size = x_size;
@@ -63,7 +47,7 @@ namespace polyfem::solver
     }
     Eigen::VectorXd CompositeParametrization::apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const
     {
-        Eigen::VectorXd gradv = grad_full(get_output_indexing(x));
+        Eigen::VectorXd gradv = grad_full;
 
         if (parametrizations_.empty())
             return gradv;
