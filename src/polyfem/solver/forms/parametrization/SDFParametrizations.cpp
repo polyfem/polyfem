@@ -92,8 +92,6 @@ namespace polyfem::solver
                 Eigen::MatrixXd vertex_normals, shape_vel;
                 utils::inflate(wire_path_, opts_, y_vec, Vout, Fout, vertex_normals, shape_vel);
 
-                Vout.array().rowwise() *= x.tail(dim_).transpose().array();
-
                 Eigen::VectorXd norms = vertex_normals.rowwise().norm();
                 boundary_flags.setZero(norms.size());
                 for (int i = 0; i < norms.size(); i++)

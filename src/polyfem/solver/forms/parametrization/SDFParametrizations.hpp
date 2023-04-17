@@ -8,7 +8,7 @@ namespace polyfem::solver
     class SDF2Mesh : public Parametrization
     {
     public:
-        SDF2Mesh(const std::string wire_path, const std::string out_path, const bool volume_velocity, const bool use_scaling, const json &opts) : volume_velocity_(volume_velocity), dim_(2), wire_path_(wire_path), out_path_(out_path), opts_(opts) {}
+        SDF2Mesh(const std::string wire_path, const std::string out_path, const bool volume_velocity, const json &opts) : volume_velocity_(volume_velocity), dim_(2), wire_path_(wire_path), out_path_(out_path), opts_(opts) {}
 
         int size(const int x_size) const override;
 
