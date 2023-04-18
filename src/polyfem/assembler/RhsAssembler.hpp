@@ -36,7 +36,7 @@ namespace polyfem
 			// computes the rhs of a problem by \int \phi rho rhs
 			void assemble(const Density &density, Eigen::MatrixXd &rhs, const double t = 1) const;
 
-			//computes the inital soltion for time dependent, calls time_bc
+			// computes the inital soltion for time dependent, calls time_bc
 			void initial_solution(Eigen::MatrixXd &sol) const;
 			// computes the inital velocity for time dependent, calls time_bc
 			void initial_velocity(Eigen::MatrixXd &sol) const;
@@ -53,6 +53,9 @@ namespace polyfem
 			double compute_energy(const Eigen::MatrixXd &displacement, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, const Density &density, const int resolution, const double t) const;
 			// compute body energy gradient, hessian is zero, rhs is a linear function
 			void compute_energy_grad(const std::vector<mesh::LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const Density &density, const int resolution, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &final_rhs, const double t, Eigen::MatrixXd &rhs) const;
+
+			// compute body hessian wrt to previous solution
+			void compute_energy_hess(const std::vector<int> &bounday_nodes, const int resolution, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &displacement, const double t, const bool project_to_psd, StiffnessMatrix &hess) const;
 
 			// return the formulation
 			inline const std::string &formulation() const { return formulation_; }

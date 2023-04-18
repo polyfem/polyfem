@@ -148,7 +148,7 @@ namespace polyfem
 		{
 			if (assembler.is_linear(formulation()) && !is_contact_enabled())
 				log_and_throw_error("Transient linear formulation is not yet differentiable!");
-			
+
 			StiffnessMatrix tmp_hess;
 			solve_data.nl_problem->set_project_to_psd(false);
 			solve_data.nl_problem->FullNLProblem::solution_changed(sol);
@@ -163,7 +163,7 @@ namespace polyfem
 				hessian.setZero();
 				replace_rows_by_identity(hessian, stiffness, boundary_nodes);
 			}
-			else 
+			else
 			{
 				solve_data.nl_problem->set_project_to_psd(false);
 				Eigen::VectorXd reduced;
@@ -222,6 +222,12 @@ namespace polyfem
 
 					hessian_prev += damping_hessian_prev;
 				}
+
+				{
+					StiffnessMatrix body_force_hessian(u.size(), u.size());
+					solve_data.body_form->hessian_wrt_u_prev(u_prev, (step - 1) * dt, body_force_hessian);
+					hessian_prev += body_force_hessian;
+				}
 			}
 		}
 	}
@@ -249,7 +255,7 @@ namespace polyfem
 		{
 			for (int i : boundary_nodes)
 				b.row(i).setZero();
-			
+
 			StiffnessMatrix A = diff_cached.gradu_h(0);
 			const int full_size = A.rows();
 			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();

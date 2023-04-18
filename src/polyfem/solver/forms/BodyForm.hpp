@@ -45,7 +45,7 @@ namespace polyfem::solver
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
-		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override { hessian.resize(x.size(), x.size()); }
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 	public:
 		/// @brief Update time dependent quantities
@@ -75,6 +75,11 @@ namespace polyfem::solver
 			const Eigen::MatrixXd &adjoint,
 			Eigen::VectorXd &term);
 
+		void hessian_wrt_u_prev(
+			const Eigen::VectorXd &u_prev,
+			const double t,
+			StiffnessMatrix &hessian) const;
+
 	private:
 		const std::vector<int> &boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> &local_boundary_;
@@ -83,13 +88,13 @@ namespace polyfem::solver
 
 		const assembler::RhsAssembler &rhs_assembler_; ///< Reference to the RHS assembler
 		const assembler::Density &density_;
-		bool is_formulation_mixed_; ///< True if the formulation is mixed
+		bool is_formulation_mixed_;                    ///< True if the formulation is mixed
 
-		double t_;       ///< Current time
-		const int ndof_; ///< Number of degrees of freedom
+		double t_;                                     ///< Current time
+		const int ndof_;                               ///< Number of degrees of freedom
 		const int n_pressure_bases_;
 
-		bool apply_DBC_; ///< If true, set the Dirichlet boundary conditions in the RHS
+		bool apply_DBC_;              ///< If true, set the Dirichlet boundary conditions in the RHS
 
 		const Eigen::MatrixXd &rhs_;  ///< static RHS for the current time
 		Eigen::MatrixXd current_rhs_; ///< Cached RHS for the current time
