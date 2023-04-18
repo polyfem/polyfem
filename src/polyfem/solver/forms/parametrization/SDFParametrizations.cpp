@@ -25,14 +25,42 @@ namespace polyfem::solver
             igl::writeMSH(path, Vsave, Tri, Tet, Eigen::MatrixXi::Zero(Tri.rows(), 1), Eigen::MatrixXi::Zero(Tet.rows(), 1), std::vector<std::string>(), std::vector<Eigen::MatrixXd>(), std::vector<std::string>(), std::vector<Eigen::MatrixXd>(), std::vector<Eigen::MatrixXd>());
         }
 
-        template <typename T>
-        std::string to_string_with_precision(const T a_value, const int n = 6)
-        {
-            std::ostringstream out;
-            out.precision(n);
-            out << std::fixed << a_value;
-            return out.str();
-        }
+		double triangle_jacobian(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3)
+		{
+			Eigen::VectorXd a = v2 - v1, b = v3 - v1;
+			return a(0) * b(1) - b(0) * a(1);
+		}
+
+		double tet_determinant(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3, const Eigen::VectorXd &v4)
+		{
+			Eigen::Matrix3d mat;
+			mat.col(0) << v2 - v1;
+			mat.col(1) << v3 - v1;
+			mat.col(2) << v4 - v1;
+			return mat.determinant();
+		}
+
+		bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+		{
+			if (F.cols() == 3)
+			{
+				for (int i = 0; i < F.rows(); i++)
+					if (triangle_jacobian(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2))) <= 0)
+						return true;
+			}
+			else if (F.cols() == 4)
+			{
+				for (int i = 0; i < F.rows(); i++)
+					if (tet_determinant(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2)), V.row(F(i, 3))) <= 0)
+						return true;
+			}
+			else
+			{
+				return true;
+			}
+
+			return false;
+		}
     }
 
     bool SDF2Mesh::isosurface_inflator(const Eigen::VectorXd &x) const
@@ -40,57 +68,13 @@ namespace polyfem::solver
         if (last_x.size() == x.size() && last_x == x)
             return true;
 
-        // if (false)
-        // {
-        //     std::string sdf_velocity_path_ = "tmp-vel.msh";
-        //     std::string shape_params = "--params \"";
-        //     for (int i = 0; i < x.size(); i++)
-        //         shape_params += to_string_with_precision(x(i), 16) + " ";
-        //     shape_params += "\" ";
-
-        //     std::string command = "~/microstructures/build/isosurface_inflator/isosurface_cli 2D_doubly_periodic " + wire_path_ + " " + shape_params + " -S " + sdf_velocity_path_ + " " + out_path_;
-
-        //     int return_val;
-        //     try 
-        //     {
-        //         return_val = system(command.c_str());
-        //     }
-        //     catch (const std::exception &err)
-        //     {
-        //         logger().error("remesh command \"{}\" returns {}", command, return_val);
-
-        //         return false;
-        //     }
-
-        //     logger().info("remesh command \"{}\" returns {}", command, return_val);
-
-        //     {
-        //         std::vector<std::vector<int>> elements;
-        //         std::vector<std::vector<double>> weights;
-        //         std::vector<int> body_ids;
-        //         std::vector<std::string> node_data_name;
-        //         std::vector<std::vector<double>> node_data;
-        //         io::MshReader::load(sdf_velocity_path_, Vout, Fout, elements, weights, body_ids, node_data_name, node_data);
-
-        //         assert(node_data_name.size() == node_data.size());
-
-        //         vertex_normals = Eigen::Map<Eigen::MatrixXd>(node_data[0].data(), 3, Vout.rows()).topRows(Vout.cols()).transpose();
-                
-        //         shape_vel.setZero(x.size(), Vout.rows());
-        //         for (int i = 1; i < node_data_name.size(); i++)
-        //             shape_vel.row(i - 1) = Eigen::Map<RowVectorNd>(node_data[i].data(), Vout.rows());
-        //     }
-        // }
-        // else
         {
-            Eigen::VectorXd y = x;
-            
-            std::vector<double> y_vec(y.data(), y.data() + y.size());
+            std::vector<double> x_vec(x.data(), x.data() + x.size());
             {
                 POLYFEM_SCOPED_TIMER("mesh inflation");
-                logger().info("isosurface inflator input: {}", y.transpose());
+                logger().info("isosurface inflator input: {}", x.transpose());
                 Eigen::MatrixXd vertex_normals, shape_vel;
-                utils::inflate(wire_path_, opts_, y_vec, Vout, Fout, vertex_normals, shape_vel);
+                utils::inflate(wire_path_, opts_, x_vec, Vout, Fout, vertex_normals, shape_vel);
                 Vout /= 2.0;
 
                 Eigen::VectorXd norms = vertex_normals.rowwise().norm();
@@ -242,7 +226,9 @@ namespace polyfem::solver
         for (int i = 0; i < extended_velocity.cols(); i++)
             if (boundary_flags(i / dim))
                 error += (extended_velocity.col(i) - shape_velocity.col(i)).norm();
-        logger().info("Error of volume shape velocity: {}", error);
+        
+        if (error > 1e-10)
+            logger().error("Error of volume shape velocity: {}", error);
         
         std::swap(extended_velocity, shape_velocity);
     }
@@ -283,6 +269,17 @@ namespace polyfem::solver
         // }
 
         return mapped_grad;
+    }
+    Eigen::VectorXd SDF2Mesh::displace_vertices(const Eigen::VectorXd &x) const
+    {
+        if (last_x.size() != x.size() || (x - last_x).norm() > 1e-1)
+            return Eigen::VectorXd();
+        
+        Eigen::MatrixXd V = Vout + utils::unflatten(shape_velocity.transpose() * (x - last_x), dim_);
+        if (is_flipped(V, Fout))
+            return Eigen::VectorXd();
+        
+        return utils::flatten(V);
     }
 
     MeshTiling::MeshTiling(const Eigen::VectorXi &nums, const std::string in_path, const std::string out_path): nums_(nums), in_path_(in_path), out_path_(out_path)

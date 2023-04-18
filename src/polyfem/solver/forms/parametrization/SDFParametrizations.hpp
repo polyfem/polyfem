@@ -16,6 +16,7 @@ namespace polyfem::solver
         Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
         Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
     
+        Eigen::VectorXd displace_vertices(const Eigen::VectorXd &x) const;
     private:
         bool isosurface_inflator(const Eigen::VectorXd &x) const;
         void extend_to_internal() const;

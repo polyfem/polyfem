@@ -70,7 +70,7 @@ option(POLYFEM_BUILD_DOCS       "Build documentation using Doxygen" OFF)
 
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
-set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
+set(POLYFEM_THREADING "CPP" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 
 option(POLYFEM_WITH_REMESHING "Uses VMTK for remeshing"                     OFF)
@@ -309,8 +309,8 @@ include(finite_diff)
 target_link_libraries(polyfem PUBLIC finitediff::finitediff)
 
 # Microstructures
-include(inflator)
-target_link_libraries(polyfem INTERFACE Microstructures)
+# include(inflator)
+# target_link_libraries(polyfem INTERFACE Microstructures)
 
 # Extra warnings (link this here so it has top priority)
 target_link_libraries(polyfem PRIVATE polyfem::warnings)
