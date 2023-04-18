@@ -186,7 +186,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &solution,
 		const std::set<int> &interested_ids, // either body id or surface id
 		const SpatialIntegralType spatial_integral_type,
-		const int cur_step) // current time step
+		const int cur_step)                  // current time step
 	{
 		const auto &bases = state.bases;
 		const auto &gbases = state.geom_bases();
@@ -634,7 +634,7 @@ namespace polyfem::solver
 			state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, sol, sol, full_adjoint, elasticity_term);
 
 			// assert (!state.solve_data.body_form);
-			
+
 			// if (state.solve_data.periodic_contact_form)
 			// {
 			// 	state.solve_data.periodic_contact_form->force_shape_derivative(state.solve_data.periodic_contact_form->get_constraint_set(), extended_sol, extended_adjoint, contact_term);
@@ -732,9 +732,7 @@ namespace polyfem::solver
 			{
 				state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, velocity, cur_nu, mass_term);
 				state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i), cur_p, elasticity_term);
-				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i), cur_p, rhs_term);
-				// Maybe needs to be the following, take a look at BodyForm::update_quantities where it is called in the forward.
-				// state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i- 1), cur_p, rhs_term);
+				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i - 1), cur_p, rhs_term);
 
 				if (state.solve_data.damping_form)
 					state.solve_data.damping_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i - 1), cur_p, damping_term);
