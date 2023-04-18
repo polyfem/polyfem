@@ -290,6 +290,7 @@
             "macro-strain",
             "initial",
             "sdf-shape",
+            "periodic-shape-scale",
             "sdf-periodic-shape",
             "dirichlet"
         ]
@@ -354,6 +355,19 @@
         "type": "object",
         "required": [
             "mesh",
+            "state",
+            "type",
+            "composition"
+        ],
+        "optional": [
+            "composite_map_type"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "periodic-shape-scale",
+        "type": "object",
+        "required": [
             "state",
             "type",
             "composition"

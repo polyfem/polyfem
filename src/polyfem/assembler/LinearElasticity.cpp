@@ -175,34 +175,10 @@ namespace polyfem
 				params_.lambda_mu(local_pts.row(p), vals.val.row(p), vals.element_id, lambda, mu);
 
 				for (int i = 0, idx = 0; i < size(); i++)
-				for (int j = 0; j < size(); j++)
-				for (int k = 0; k < size(); k++)
-				for (int l = 0; l < size(); l++)
-				{
-					tensor(p, idx) = mu * delta(i, k) * delta(j, l) + mu * delta(i, l) * delta(j, k) + lambda * delta(i, j) * delta(k, l);
-					idx++;
-				}
-
-				// {
-				// 	Eigen::MatrixXd hess = utils::unflatten(tensor.row(p), size()*size());
-				// 	Eigen::MatrixXd fhess;
-				// 	Eigen::VectorXd x0 = utils::flatten(Eigen::MatrixXd::Identity(size(), size()));
-				// 	fd::finite_jacobian(
-				// 		x0, [this, lambda, mu](const Eigen::VectorXd &x1) -> Eigen::VectorXd 
-				// 		{ 
-				// 			Eigen::MatrixXd F = utils::unflatten(x1, this->size());
-				// 			Eigen::MatrixXd strain = (F + F.transpose()) / 2;
-				// 			Eigen::MatrixXd stress_tensor = 2 * mu * strain + lambda * strain.trace() * Eigen::MatrixXd::Identity(this->size(), this->size());
-				// 			return utils::flatten(stress_tensor);
-				// 		}, fhess);
-
-				// 	if (!fd::compare_hessian(hess, fhess))
-				// 	{
-				// 		std::cout << "Hessian: " << hess << std::endl;
-				// 		std::cout << "Finite hessian: " << fhess << std::endl;
-				// 		log_and_throw_error("Hessian in LinearElasticity mismatch");
-				// 	}
-				// }
+					for (int j = 0; j < size(); j++)
+						for (int k = 0; k < size(); k++)
+							for (int l = 0; l < size(); l++)
+								tensor(p, idx++) = mu * delta(i, k) * delta(j, l) + mu * delta(i, l) * delta(j, k) + lambda * delta(i, j) * delta(k, l);
 			}
 		}
 

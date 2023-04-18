@@ -435,6 +435,10 @@ namespace polyfem::solver
 		{
 			var2sim = std::make_shared<SDFPeriodicShapeVariableToSimulation>(cur_states, composite_map, args);
 		}
+		else if (type == "periodic-shape-scale")
+		{
+			var2sim = std::make_shared<PeriodicShapeScaleVariableToSimulation>(cur_states, composite_map, args);
+		}
 		else if (type == "periodic-shape")
 		{
 			var2sim = std::make_shared<PeriodicShapeVariableToSimulation>(cur_states, composite_map);

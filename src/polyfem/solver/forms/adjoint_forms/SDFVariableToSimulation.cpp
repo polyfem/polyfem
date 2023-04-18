@@ -62,11 +62,6 @@ namespace polyfem::solver
 		const int dim = states_[0]->mesh->dimension();
 		set_output_indexing(Eigen::VectorXi::LinSpaced((end - start) * dim, start * dim, end * dim - 1));
 	}
-	Eigen::VectorXd SDFShapeVariableToSimulation::inverse_eval()
-	{
-		log_and_throw_error("SDF shape doesn't support inverse evaluation!");
-		return Eigen::VectorXd();
-	}
 
 	SDFPeriodicShapeVariableToSimulation::SDFPeriodicShapeVariableToSimulation(const std::vector<std::shared_ptr<State>> &states, const CompositeParametrization &parametrization, const json &args) : PeriodicShapeVariableToSimulation(states, parametrization), mesh_path_(args["mesh"])
 	{
@@ -99,11 +94,6 @@ namespace polyfem::solver
 			state->stats.compute_mesh_stats(*state->mesh);
 		}
 	}
-	Eigen::VectorXd SDFPeriodicShapeVariableToSimulation::inverse_eval()
-	{
-		log_and_throw_error("SDF shape doesn't support inverse evaluation!");
-		return Eigen::VectorXd();
-	}
     Eigen::VectorXd SDFPeriodicShapeVariableToSimulation::apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const
     {
         auto &periodic_mesh_map = *(states_[0]->periodic_mesh_map);
@@ -126,4 +116,34 @@ namespace polyfem::solver
         
         return parametrization_.apply_jacobian(full_term, x);
     }
+
+	PeriodicShapeScaleVariableToSimulation::PeriodicShapeScaleVariableToSimulation(const std::vector<std::shared_ptr<State>> &states, const CompositeParametrization &parametrization, const json &args) : PeriodicShapeVariableToSimulation(states, parametrization)
+	{
+		for (const auto &state : states)
+		{
+			if (!state->args["space"]["advanced"]["periodic_mesh"].get<bool>())
+				log_and_throw_error("PeriodicShapeScaleVariableToSimulation is designed for periodic mesh representation!");
+			dim = state->mesh->dimension();
+		}
+	}
+	void PeriodicShapeScaleVariableToSimulation::update(const Eigen::VectorXd &x)
+	{
+		Eigen::VectorXd y = parametrization_.eval(x);
+		assert(y.size() == dim);
+		
+		for (auto state : states_)
+		{
+			assert(state->periodic_mesh_representation.size() > dim);
+			state->periodic_mesh_representation.tail(dim) = y;
+		
+			auto V = utils::unflatten(state->periodic_mesh_map->eval(state->periodic_mesh_representation), dim);
+			for (int i = 0; i < V.rows(); i++)
+				state->set_mesh_vertex(i, V.row(i));
+		}
+	}
+	Eigen::VectorXd PeriodicShapeScaleVariableToSimulation::apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const
+	{
+		assert(x.size() == dim);
+		return parametrization_.apply_jacobian(term.tail(dim), x);
+	}
 }

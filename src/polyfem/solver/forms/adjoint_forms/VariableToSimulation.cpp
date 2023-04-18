@@ -25,6 +25,12 @@ namespace polyfem::solver
 		return parametrization_.apply_jacobian(term(get_output_indexing(x)), x);
 	}
 
+	Eigen::VectorXd VariableToSimulation::inverse_eval()
+	{
+		log_and_throw_error("Not implemented!");
+		return Eigen::VectorXd();
+	}
+
 	void VariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) 
 	{ 
 		log_and_throw_error("Not implemented!"); 
