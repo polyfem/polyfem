@@ -225,7 +225,7 @@ namespace polyfem
 
 				{
 					StiffnessMatrix body_force_hessian(u.size(), u.size());
-					solve_data.body_form->hessian_wrt_u_prev(u_prev, (step - 1) * dt, body_force_hessian);
+					solve_data.body_form->hessian_wrt_u_prev(u_prev, step * dt, body_force_hessian);
 					hessian_prev += body_force_hessian;
 				}
 			}

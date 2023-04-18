@@ -68,43 +68,12 @@ namespace polyfem::solver
 
 	void BodyForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		// Eigen::MatrixXd current_rhs;
-
-		// rhs_assembler_.compute_energy_grad(
-		// 	local_boundary_, boundary_nodes_, density_,
-		// 	n_boundary_samples_, local_neumann_boundary_,
-		// 	rhs_, t_, current_rhs);
-
-		// if (is_formulation_mixed_ && current_rhs.size() < ndof_)
-		// {
-		// 	current_rhs.conservativeResize(
-		// 		current_rhs.rows() + n_pressure_bases_, current_rhs.cols());
-		// 	current_rhs.bottomRows(n_pressure_bases_).setZero();
-		// }
-
-		// // Apply Neumann boundary conditions
-		// rhs_assembler_.set_bc(
-		// 	std::vector<mesh::LocalBoundary>(), std::vector<int>(),
-		// 	n_boundary_samples_, local_neumann_boundary_,
-		// 	current_rhs, x, t_);
-
-		// // Apply Dirichlet boundary conditions
-		// if (apply_DBC_)
-		// 	rhs_assembler_.set_bc(
-		// 		local_boundary_, boundary_nodes_,
-		// 		n_boundary_samples_, std::vector<mesh::LocalBoundary>(),
-		// 		current_rhs, x, t_);
-
 		// REMEMBER -!!!!!
 		gradv = -current_rhs_;
 	}
 
 	void BodyForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
-		// rhs_assembler_.compute_energy_hess(boundary_nodes_,
-		// 								   n_boundary_samples_, local_neumann_boundary_,
-		// 								   x, t_, project_to_psd_, hessian);
-		// hessian *= -1;
 		hessian.resize(x.size(), x.size());
 	}
 
@@ -296,14 +265,15 @@ namespace polyfem::solver
 
 					Eigen::VectorXd value = (p.array() * neumann_val.array()).rowwise().sum() * weights.array();
 
+					Eigen::VectorXd pressure_bc;
+					pressure_bc = (neumann_val.array() * normals.array()).rowwise().sum();
+
 					for (long n = 0; n < geom_nodes.size(); ++n)
 					{
 						const assembler::AssemblyValues &v = gvals.basis_values[geom_nodes(n)];
 
 						Eigen::MatrixXd velocity_div_mat;
-						double pressure_bc;
 						{
-							pressure_bc = neumann_val.row(0).dot(normals.row(0));
 							if (rhs_assembler_.mesh().is_volume())
 							{
 								Eigen::MatrixXd V(3, 3);
@@ -328,21 +298,24 @@ namespace polyfem::solver
 						{
 							assert(v.global.size() == 1);
 							const int g_index = v.global[0].index * dim + d;
-							const bool is_neumann = std::find(boundary_nodes_.begin(), boundary_nodes_.end(), g_index) == boundary_nodes_.end();
-							if (is_neumann)
-							{
-								local_storage.vec(g_index) += value.sum() * velocity_div_mat(n, d);
-								const bool is_pressure = rhs_assembler_.problem().is_boundary_pressure(rhs_assembler_.mesh().get_boundary_id(global_primitive_id));
-								if (is_pressure)
-								{
-									Eigen::VectorXd grad_normal_val(vals.jac_it.size());
-									grad_normal_val.setZero();
-									for (int q = 0; q < vals.jac_it.size(); ++q)
-										for (int k = 0; k < dim; ++k)
-											grad_normal_val(q) += grad_normal[q][k](d, geom_nodes(n));
-									local_storage.vec(g_index) += pressure_bc * (grad_normal_val.array() * p.col(d).array() * v.val.array() * weights.array()).sum();
-								}
-							}
+
+							Eigen::MatrixXd gvals(v.val.size(), dim);
+							gvals.setZero();
+							gvals.col(d) = v.val;
+
+							local_storage.vec(g_index) += value.sum() * velocity_div_mat(n, d);
+							const bool is_pressure = rhs_assembler_.problem().is_boundary_pressure(rhs_assembler_.mesh().get_boundary_id(global_primitive_id));
+							// if (is_pressure)
+							// {
+							// 	for (int q = 0; q < vals.jac_it.size(); ++q)
+							// 	{
+							// 		Eigen::MatrixXd grad_x_f(dim, dim);
+							// 		for (int ki = 0; ki < dim; ++ki)
+							// 			for (int kj = 0; kj < dim; ++kj)
+							// 				grad_x_f(ki, kj) = grad_normal[q][ki](kj, geom_nodes(n));
+							// 		local_storage.vec(g_index) += pressure_bc(q) * (grad_x_f * gvals.row(q).transpose()).dot(p.row(q)) * weights(q);
+							// 	}
+							// }
 						}
 					}
 				}
@@ -353,12 +326,15 @@ namespace polyfem::solver
 			term += local_storage.vec;
 
 		term *= -1;
+
+		StiffnessMatrix hess;
+		hessian_wrt_u_prev(x, t, hess);
+		term += hess.transpose() * adjoint_zeroed;
 	}
 
 	void BodyForm::hessian_wrt_u_prev(const Eigen::VectorXd &u_prev, const double t, StiffnessMatrix &hessian) const
 	{
 		rhs_assembler_.compute_energy_hess(boundary_nodes_, n_boundary_samples_, local_neumann_boundary_, u_prev, t, false, hessian);
 		hessian *= -1;
-		// hessian.resize(u_prev.size(), u_prev.size());
 	}
 } // namespace polyfem::solver
