@@ -9,8 +9,10 @@ set(test_sources
   test_matrix.cpp
   test_cmesh.cpp
   test_geometry_utils.cpp
+  test_inflator.cpp
   test_ncmesh.cpp
   test_normal.cpp
+  test_periodic.cpp
   test_problem.cpp
   test_quadrature.cpp
   test_rbf.cpp

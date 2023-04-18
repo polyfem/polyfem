@@ -156,8 +156,11 @@ namespace polyfem
 		if (periodic_dimensions.size() != mesh->dimension())
 			periodic_dimensions.resize(mesh->dimension(), false);
 		
-		if (args["space"]["advanced"]["periodic_mesh"].get<bool>() && all_direction_periodic())
+		if (args["space"]["advanced"]["periodic_mesh"].get<bool>())
 		{
+			if (!all_direction_periodic())
+				log_and_throw_error("Periodic mesh representation is only used for PDE with periodic BC in all axial directions!");
+			
 			Eigen::MatrixXd V(mesh->n_vertices(), mesh->dimension());
 			for (int i = 0; i < mesh->n_vertices(); i++)
 				V.row(i) = mesh->point(i);

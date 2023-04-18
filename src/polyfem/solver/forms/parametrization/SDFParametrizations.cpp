@@ -91,6 +91,7 @@ namespace polyfem::solver
                 logger().info("isosurface inflator input: {}", y.transpose());
                 Eigen::MatrixXd vertex_normals, shape_vel;
                 utils::inflate(wire_path_, opts_, y_vec, Vout, Fout, vertex_normals, shape_vel);
+                Vout /= 2.0;
 
                 Eigen::VectorXd norms = vertex_normals.rowwise().norm();
                 boundary_flags.setZero(norms.size());
@@ -102,7 +103,7 @@ namespace polyfem::solver
                 for (int d = 0; d < dim_; d++)
                     for (int i = 0; i < vertex_normals.rows(); i++)
                         for (int q = 0; q < shape_vel.rows(); q++)
-                            shape_velocity(q, dim_ * i + d) = shape_vel(q, i) * vertex_normals(i, d);
+                            shape_velocity(q, dim_ * i + d) = shape_vel(q, i) * vertex_normals(i, d) / 2.0;
             }
             
             write_msh(out_path_, Vout, Fout);
@@ -497,12 +498,12 @@ namespace polyfem::solver
 
     PeriodicMeshToMesh::PeriodicMeshToMesh(const Eigen::MatrixXd &V)
     {
-        dim = V.cols();
+        dim_ = V.cols();
 
         for (auto &list : periodic_dependence)
             list.clear();
 
-        assert(dim == V.cols());
+        assert(dim_ == V.cols());
         const int n_verts = V.rows();
 
         Eigen::VectorXd min = V.colwise().minCoeff();
@@ -528,7 +529,7 @@ namespace polyfem::solver
 
         // find corresponding periodic boundary nodes
         Eigen::MatrixXd V_boundary = V(boundary_indices, Eigen::all);
-        for (int d = 0; d < dim; d++)
+        for (int d = 0; d < dim_; d++)
         {
             Eigen::VectorXi mask1 = (V_boundary.col(d).array() < min(d) + eps).select(Eigen::VectorXi::Ones(V_boundary.rows()), Eigen::VectorXi::Zero(V_boundary.rows()));
             Eigen::VectorXi mask2 = (V_boundary.col(d).array() > max(d) - eps).select(Eigen::VectorXi::Ones(V_boundary.rows()), Eigen::VectorXi::Zero(V_boundary.rows()));
@@ -561,7 +562,7 @@ namespace polyfem::solver
         }
 
         // break dependency chains into direct dependency
-        for (int d = 0; d < dim; d++)
+        for (int d = 0; d < dim_; d++)
             for (int i = 0; i < dependent_map.size(); i++)
                 if (dependent_map(i) >= 0 && dependent_map(dependent_map(i)) >= 0)
                     dependent_map(i) = dependent_map(dependent_map(i));
@@ -582,17 +583,17 @@ namespace polyfem::solver
     {
         assert(x.size() == input_size());
 
-        Eigen::VectorXd scale = x.tail(dim);
+        Eigen::VectorXd scale = x.tail(dim_);
         Eigen::VectorXd y;
         y.setZero(size(x.size()));
         for (int i = 0; i < dependent_map.size(); i++)
-            y.segment(i * dim, dim) = x.segment(dependent_map(i) * dim, dim).array() * scale.array();
+            y.segment(i * dim_, dim_) = x.segment(dependent_map(i) * dim_, dim_).array() * scale.array();
         
-        for (int d = 0; d < dim; d++)
+        for (int d = 0; d < dim_; d++)
         {
             const auto &dependence_list = periodic_dependence[d];
             for (const auto &pair : dependence_list)
-                y(pair[1] * dim + d) += scale[d];
+                y(pair[1] * dim_ + d) += scale[d];
         }
 
         return y;
@@ -600,26 +601,26 @@ namespace polyfem::solver
 
     Eigen::VectorXd PeriodicMeshToMesh::inverse_eval(const Eigen::VectorXd &y)
     {
-        assert(y.size() == dim * dependent_map.size());
+        assert(y.size() == dim_ * dependent_map.size());
         Eigen::VectorXd x;
         x.setZero(input_size());
 
-        Eigen::MatrixXd V = utils::unflatten(y, dim);
+        Eigen::MatrixXd V = utils::unflatten(y, dim_);
         Eigen::VectorXd min = V.colwise().minCoeff();
         Eigen::VectorXd max = V.colwise().maxCoeff();
         Eigen::VectorXd scale = max - min;
-        x.tail(dim) = scale;
+        x.tail(dim_) = scale;
 
         Eigen::VectorXd z = y;
-        for (int d = 0; d < dim; d++)
+        for (int d = 0; d < dim_; d++)
         {
             const auto &dependence_list = periodic_dependence[d];
             for (const auto &pair : dependence_list)
-                z(pair[1] * dim + d) -= scale[d];
+                z(pair[1] * dim_ + d) -= scale[d];
         }
 
         for (int i = 0; i < dependent_map.size(); i++)
-            x.segment(dependent_map(i) * dim, dim) = z.segment(i * dim, dim).array() / scale.array();
+            x.segment(dependent_map(i) * dim_, dim_) = z.segment(i * dim_, dim_).array() / scale.array();
 
         return x;
     }
@@ -631,16 +632,16 @@ namespace polyfem::solver
         reduced_grad.setZero(x.size());
 
         for (int i = 0; i < dependent_map.size(); i++)
-            reduced_grad.segment(dependent_map(i) * dim, dim).array() += grad.segment(i * dim, dim).array() * x.tail(dim).array();
+            reduced_grad.segment(dependent_map(i) * dim_, dim_).array() += grad.segment(i * dim_, dim_).array() * x.tail(dim_).array();
         
         for (int i = 0; i < dependent_map.size(); i++)
-            reduced_grad.segment(dim * n_periodic_dof_, dim).array() += grad.segment(i * dim, dim).array() * x.segment(dependent_map(i) * dim, dim).array();
+            reduced_grad.segment(dim_ * n_periodic_dof_, dim_).array() += grad.segment(i * dim_, dim_).array() * x.segment(dependent_map(i) * dim_, dim_).array();
 
-        for (int d = 0; d < dim; d++)
+        for (int d = 0; d < dim_; d++)
         {
             const auto &dependence_list = periodic_dependence[d];
             for (const auto &pair : dependence_list)
-                reduced_grad(dim * n_periodic_dof_ + d) += grad(pair[1] * dim + d);
+                reduced_grad(dim_ * n_periodic_dof_ + d) += grad(pair[1] * dim_ + d);
         }
 
         return reduced_grad;

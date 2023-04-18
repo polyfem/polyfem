@@ -643,6 +643,7 @@ namespace polyfem
 	void State::build_periodic_index_mapping(const int n_bases_, const std::vector<basis::ElementBases> &bases_, const std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes_, Eigen::VectorXi &index_map, Eigen::VectorXi &periodic_mask) const
 	{
 		const int dim = mesh->dimension();
+		const double eps = 1e-6;
 
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
@@ -698,7 +699,7 @@ namespace polyfem
 				{
 					RowVectorNd projected_diff = mesh_nodes_->node_position(j) - mesh_nodes_->node_position(i);
 					projected_diff(d) = 0;
-					if (projected_diff.norm() < 1e-6 * bbox_size)
+					if (projected_diff.norm() < eps * bbox_size)
 					{
 						dependent_map(i) = j;
 						n_pairs++;
@@ -1047,8 +1048,9 @@ namespace polyfem
 		if (has_periodic_bc())
 		{
 			// periodic bases mapping
-			if (!bases_to_periodic_map.size())
 			{
+				logger().warn("Periodic BC can only apply on nodes on the bounding box!");
+
 				Eigen::VectorXi tmp_map;
 				build_periodic_index_mapping(n_bases, bases, mesh_nodes, tmp_map, periodic_bases_mask);
 

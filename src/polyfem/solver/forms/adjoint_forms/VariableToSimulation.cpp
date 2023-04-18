@@ -1,42 +1,9 @@
 #include "VariableToSimulation.hpp"
-#include <polyfem/utils/MaybeParallelFor.hpp>
-#include <polyfem/mesh/mesh2D/Mesh2D.hpp>
-#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/State.hpp>
-#include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
-#include <polyfem/solver/NLHomoProblem.hpp>
 
 namespace polyfem::solver
 {
-	namespace
-	{
-		template <typename T>
-		std::string to_string_with_precision(const T a_value, const int n = 6)
-		{
-			std::ostringstream out;
-			out.precision(n);
-			out << std::fixed << a_value;
-			return out.str();
-		}
-
-		RowVectorNd get_barycenter(const mesh::Mesh &mesh, int e)
-		{
-			RowVectorNd barycenter;
-			if (!mesh.is_volume())
-			{
-				const auto &mesh2d = dynamic_cast<const mesh::Mesh2D &>(mesh);
-				barycenter = mesh2d.face_barycenter(e);
-			}
-			else
-			{
-				const auto &mesh3d = dynamic_cast<const mesh::Mesh3D &>(mesh);
-				barycenter = mesh3d.cell_barycenter(e);
-			}
-			return barycenter;
-		}
-	} // namespace
-
     Eigen::VectorXi VariableToSimulation::get_output_indexing(const Eigen::VectorXd &x) const
     {
         const int out_size = parametrization_.size(x.size());
@@ -176,120 +143,6 @@ namespace polyfem::solver
 
 		assert(state.args["space"]["advanced"]["periodic_mesh"].get<bool>() && state.all_direction_periodic());
 		return parametrization_.inverse_eval(state.periodic_mesh_map->inverse_eval(utils::flatten(V)));
-	}
-
-	SDFShapeVariableToSimulation::SDFShapeVariableToSimulation(const std::vector<std::shared_ptr<State>> &states, const CompositeParametrization &parametrization, const json &args) : ShapeVariableToSimulation(states, parametrization), mesh_id_(args["mesh_id"]), mesh_path_(args["mesh"])
-	{
-	}
-	void SDFShapeVariableToSimulation::update(const Eigen::VectorXd &x)
-	{
-		parametrization_.eval(x);
-
-		int start = 0, end = 0; // start vertex index of the mesh
-		for (auto state : states_)
-		{
-			state->in_args["geometry"][mesh_id_]["mesh"] = mesh_path_;
-			state->in_args["geometry"][mesh_id_].erase("transformation");
-
-			state->mesh = nullptr;
-			state->assembler.update_lame_params(Eigen::MatrixXd(), Eigen::MatrixXd());
-
-			state->init(state->in_args, false);
-
-			{
-				assert(state->args["geometry"].is_array());
-				auto geometries = state->args["geometry"].get<std::vector<json>>();
-
-				int i = 0;
-				for (const json &geometry : geometries)
-				{
-					if (!geometry["enabled"].get<bool>() || geometry["is_obstacle"].get<bool>())
-						continue;
-
-					if (geometry["type"] != "mesh")
-						log_and_throw_error(
-							fmt::format("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]));
-
-					if (i == mesh_id_)
-						start = state->mesh ? state->mesh->n_vertices() : 0;
-
-					if (state->mesh == nullptr)
-						state->mesh = mesh::read_fem_mesh(geometry, state->args["root_path"], false);
-					else
-						state->mesh->append(mesh::read_fem_mesh(geometry, state->args["root_path"], false));
-
-					if (i == mesh_id_)
-						end = state->mesh->n_vertices();
-
-					i++;
-				}
-			}
-
-			state->load_mesh();
-			state->stats.compute_mesh_stats(*state->mesh);
-			// state->build_basis();
-
-			// state->set_log_level(static_cast<spdlog::level::level_enum>(cur_log));
-		}
-
-		const int dim = states_[0]->mesh->dimension();
-		set_output_indexing(Eigen::VectorXi::LinSpaced((end - start) * dim, start * dim, end * dim - 1));
-	}
-	Eigen::VectorXd SDFShapeVariableToSimulation::inverse_eval()
-	{
-		log_and_throw_error("SDF shape doesn't support inverse evaluation!");
-		return Eigen::VectorXd();
-	}
-
-	SDFPeriodicShapeVariableToSimulation::SDFPeriodicShapeVariableToSimulation(const std::vector<std::shared_ptr<State>> &states, const CompositeParametrization &parametrization, const json &args) : PeriodicShapeVariableToSimulation(states, parametrization), mesh_path_(args["mesh"])
-	{
-	}
-	void SDFPeriodicShapeVariableToSimulation::update(const Eigen::VectorXd &x)
-	{
-		auto y = parametrization_.eval(x);
-
-		for (auto state : states_)
-		{
-			if (state->in_args["geometry"].is_array())
-			{
-				assert(state->in_args["geometry"].size() == 1);
-				state->in_args["geometry"][0]["mesh"] = mesh_path_;
-				state->in_args["geometry"][0].erase("transformation");
-			}
-			else
-			{
-				state->in_args["geometry"]["mesh"] = mesh_path_;
-				state->in_args["geometry"].erase("transformation");
-			}
-
-			state->mesh = nullptr;
-			state->assembler.update_lame_params(Eigen::MatrixXd(), Eigen::MatrixXd());
-
-			state->init(state->in_args, false);
-
-			state->load_mesh();
-			state->stats.compute_mesh_stats(*state->mesh);
-		}
-
-		// const int dim = states_[0]->mesh->dimension();
-		// auto periodic_mesh = states_[0]->periodic_mesh_map;
-		// Eigen::VectorXi indexing;
-		// indexing.setConstant(periodic_mesh.n_periodic_dof() * dim, -1);
-		// for (int i = 0; i < periodic_mesh.n_full_dof(); i++)
-		// {
-		// 	for (int d = 0; d < dim; d++)
-		// 	{
-		// 		int full_id = i * dim + d;
-		// 		indexing(full_id) = full_to_periodic(i) * dim + d;
-		// 	}
-		// }
-
-		// parametrization_.set_output_indexing(Eigen::VectorXi::LinSpaced(,,));
-	}
-	Eigen::VectorXd SDFPeriodicShapeVariableToSimulation::inverse_eval()
-	{
-		log_and_throw_error("SDF shape doesn't support inverse evaluation!");
-		return Eigen::VectorXd();
 	}
 
 	void ElasticVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)

@@ -28,7 +28,7 @@ namespace polyfem::solver
 		void set_output_indexing(const Eigen::VectorXi &output_indexing) { output_indexing_ = output_indexing; }
 		Eigen::VectorXi get_output_indexing(const Eigen::VectorXd &x) const;
 
-		Eigen::VectorXd apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const;
+		virtual Eigen::VectorXd apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const;
 
 	protected:
 		virtual void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices);
@@ -75,7 +75,7 @@ namespace polyfem::solver
 		virtual ~SDFShapeVariableToSimulation() {}
 
 		void update(const Eigen::VectorXd &x) override;
-		virtual Eigen::VectorXd inverse_eval() override;
+		Eigen::VectorXd inverse_eval() override;
 
 	protected:
 		const int mesh_id_;
@@ -90,7 +90,8 @@ namespace polyfem::solver
 		virtual ~SDFPeriodicShapeVariableToSimulation() {}
 
 		void update(const Eigen::VectorXd &x) override;
-		virtual Eigen::VectorXd inverse_eval() override;
+		Eigen::VectorXd inverse_eval() override;
+		Eigen::VectorXd apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const override;
 
 	protected:
 		const std::string mesh_path_;
