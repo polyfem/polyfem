@@ -1182,7 +1182,7 @@
         "type": "bool",
         "doc": "Use periodic mesh representation in shape optimization for periodic PDE."
     },
-    {        
+    {
         "pointer": "/space/advanced/bc_method",
         "default": "sample",
         "options": [
@@ -1923,6 +1923,7 @@
             "x_delta",
             "debug_fd",
             "debug_fd_eps",
+            "verify_hessian",
             "fall_back_descent_strategy_period",
             "grad_norm",
             "first_grad_norm_tol",
@@ -1936,6 +1937,12 @@
             "min_step_size"
         ],
         "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
+    },
+    {
+        "pointer": "/solver/nonlinear/verify_hessian",
+        "default": false,
+        "type": "bool",
+        "doc": "Use finite difference to verify gradient in optimization"
     },
     {
         "pointer": "/solver/nonlinear/debug_fd",

@@ -68,8 +68,44 @@ namespace polyfem::solver
 
 	void BodyForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
+		// Eigen::MatrixXd current_rhs;
+
+		// rhs_assembler_.compute_energy_grad(
+		// 	local_boundary_, boundary_nodes_, density_,
+		// 	n_boundary_samples_, local_neumann_boundary_,
+		// 	rhs_, t_, current_rhs);
+
+		// if (is_formulation_mixed_ && current_rhs.size() < ndof_)
+		// {
+		// 	current_rhs.conservativeResize(
+		// 		current_rhs.rows() + n_pressure_bases_, current_rhs.cols());
+		// 	current_rhs.bottomRows(n_pressure_bases_).setZero();
+		// }
+
+		// // Apply Neumann boundary conditions
+		// rhs_assembler_.set_bc(
+		// 	std::vector<mesh::LocalBoundary>(), std::vector<int>(),
+		// 	n_boundary_samples_, local_neumann_boundary_,
+		// 	current_rhs, x, t_);
+
+		// // Apply Dirichlet boundary conditions
+		// if (apply_DBC_)
+		// 	rhs_assembler_.set_bc(
+		// 		local_boundary_, boundary_nodes_,
+		// 		n_boundary_samples_, std::vector<mesh::LocalBoundary>(),
+		// 		current_rhs, x, t_);
+
 		// REMEMBER -!!!!!
 		gradv = -current_rhs_;
+	}
+
+	void BodyForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
+	{
+		// rhs_assembler_.compute_energy_hess(boundary_nodes_,
+		// 								   n_boundary_samples_, local_neumann_boundary_,
+		// 								   x, t_, project_to_psd_, hessian);
+		// hessian *= -1;
+		hessian.resize(x.size(), x.size());
 	}
 
 	void BodyForm::update_quantities(const double t, const Eigen::VectorXd &x)
@@ -136,6 +172,7 @@ namespace polyfem::solver
 
 				Eigen::MatrixXd rhs_function;
 				rhs_assembler_.problem().rhs(rhs_assembler_.assembler(), rhs_assembler_.formulation(), vals.val, t, rhs_function);
+				rhs_function *= -1;
 				for (int q = 0; q < vals.val.rows(); q++)
 				{
 					const double rho = density_(quadrature.points.row(q), vals.val.row(q), e);
@@ -164,7 +201,7 @@ namespace polyfem::solver
 			Eigen::MatrixXd uv, points, normals;
 			Eigen::VectorXd weights;
 			Eigen::VectorXi global_ids;
-			assembler::ElementAssemblyValues vals;
+			assembler::ElementAssemblyValues vals, gvals;
 
 			for (int lb_id = start; lb_id < end; ++lb_id)
 			{
@@ -178,35 +215,72 @@ namespace polyfem::solver
 					utils::BoundarySampler::boundary_quadrature(lb, n_boundary_samples_, rhs_assembler_.mesh(), i, false, uv, points, normals, weights);
 					global_ids.setConstant(points.rows(), 1, global_primitive_id);
 
-					vals.compute(e, rhs_assembler_.mesh().is_volume(), points, gbases[e], gbases[e]);
+					Eigen::MatrixXd reference_normals = normals;
 
-					for (int n = 0; n < vals.jac_it.size(); ++n)
+					vals.compute(e, rhs_assembler_.mesh().is_volume(), points, bases[e], gbases[e]);
+					gvals.compute(e, rhs_assembler_.mesh().is_volume(), points, gbases[e], gbases[e]);
+
+					std::vector<std::vector<Eigen::MatrixXd>> grad_normal;
+					for (int n = 0; n < gvals.jac_it.size(); ++n)
 					{
-						Eigen::MatrixXd ppp(1, dim);
-						ppp = vals.val.row(n);
-						Eigen::MatrixXd trafo = vals.jac_it[n].inverse();
+						Eigen::MatrixXd trafo = gvals.jac_it[n].inverse();
 
-						if (actual_dim == dim)
+						Eigen::MatrixXd deform_mat(dim, dim);
+						deform_mat.setZero();
+						Eigen::MatrixXd jac_mat(dim, gvals.basis_values.size());
+						int b_idx = 0;
+						for (const auto &b : gvals.basis_values)
 						{
-							Eigen::MatrixXd deform_mat(dim, dim);
-							deform_mat.setZero();
-							for (const auto &b : vals.basis_values)
-							{
-								for (const auto &g : b.global)
-								{
-									for (int d = 0; d < dim; ++d)
-									{
-										deform_mat.row(d) += x(g.index * dim + d) * b.grad.row(n);
+							jac_mat.col(b_idx++) = b.grad.row(n);
 
-										ppp(d) += x(g.index * dim + d) * b.val(n);
-									}
-								}
-							}
-
-							trafo += deform_mat;
+							for (const auto &g : b.global)
+								for (int d = 0; d < dim; ++d)
+									deform_mat.row(d) += x(g.index * dim + d) * b.grad.row(n);
 						}
-						normals.row(n) = normals.row(n) * trafo.inverse();
-						normals.row(n).normalize();
+
+						trafo += deform_mat;
+						trafo = trafo.inverse();
+
+						Eigen::VectorXd displaced_normal = normals.row(n) * trafo;
+						normals.row(n) = displaced_normal / displaced_normal.norm();
+
+						std::vector<Eigen::MatrixXd> grad;
+						{
+							Eigen::MatrixXd vec = -(jac_mat.transpose() * trafo * reference_normals.row(n).transpose());
+							// Gradient of the displaced normal computation
+							for (int k = 0; k < dim; ++k)
+							{
+								Eigen::MatrixXd grad_i(jac_mat.rows(), jac_mat.cols());
+								grad_i.setZero();
+								for (int m = 0; m < jac_mat.rows(); ++m)
+									for (int l = 0; l < jac_mat.cols(); ++l)
+										grad_i(m, l) = -(reference_normals.row(n) * trafo)(m) * (jac_mat.transpose() * trafo)(l, k);
+								grad.push_back(grad_i);
+							}
+						}
+
+						{
+							Eigen::MatrixXd normalization_chain_rule = (normals.row(n).transpose() * normals.row(n));
+							normalization_chain_rule = Eigen::MatrixXd::Identity(dim, dim) - normalization_chain_rule;
+							normalization_chain_rule /= displaced_normal.norm();
+
+							Eigen::VectorXd vec(dim);
+							b_idx = 0;
+							for (const auto &b : gvals.basis_values)
+							{
+								for (int d = 0; d < dim; ++d)
+								{
+									for (int k = 0; k < dim; ++k)
+										vec(k) = grad[k](d, b_idx);
+									vec = normalization_chain_rule * vec;
+									for (int k = 0; k < dim; ++k)
+										grad[k](d, b_idx) = vec(k);
+								}
+								b_idx++;
+							}
+						}
+
+						grad_normal.push_back(grad);
 					}
 
 					Eigen::MatrixXd neumann_val;
@@ -215,72 +289,38 @@ namespace polyfem::solver
 					Eigen::MatrixXd p, grad_p;
 					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint_zeroed, p, grad_p);
 
-					const Eigen::VectorXi nodes = gbases[e].local_nodes_for_primitive(global_primitive_id, rhs_assembler_.mesh());
+					const Eigen::VectorXi geom_nodes = gbases[e].local_nodes_for_primitive(global_primitive_id, rhs_assembler_.mesh());
 
-					Eigen::MatrixXd node_points;
-					if (rhs_assembler_.mesh().is_volume())
-						autogen::p_nodes_3d(1, node_points);
-					else
-						autogen::p_nodes_2d(1, node_points);
-					Eigen::MatrixXd u, grad_u;
-					io::Evaluator::interpolate_at_local_vals(rhs_assembler_.mesh(), actual_dim, bases, gbases, e, node_points(nodes, Eigen::all), x, u, grad_u);
-
-					if (nodes.size() != dim)
+					if (geom_nodes.size() != dim)
 						log_and_throw_error("Only linear geometry is supported in shape derivative!");
 
 					Eigen::VectorXd value = (p.array() * neumann_val.array()).rowwise().sum() * weights.array();
-					Eigen::VectorXd pressure_value = (p.array() * vals.val.array()).rowwise().sum() * weights.array();
 
-					for (long n = 0; n < nodes.size(); ++n)
+					for (long n = 0; n < geom_nodes.size(); ++n)
 					{
-						const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
+						const assembler::AssemblyValues &v = gvals.basis_values[geom_nodes(n)];
 
-						Eigen::VectorXd grad_pressure_bc;
 						Eigen::MatrixXd velocity_div_mat;
+						double pressure_bc;
 						{
-							double pressure_bc = neumann_val.row(0).dot(normals.row(0));
+							pressure_bc = neumann_val.row(0).dot(normals.row(0));
 							if (rhs_assembler_.mesh().is_volume())
 							{
 								Eigen::MatrixXd V(3, 3);
-								V.row(0) = gbases[e].bases[nodes(0)].global()[0].node;
-								V.row(1) = gbases[e].bases[nodes(1)].global()[0].node;
-								V.row(2) = gbases[e].bases[nodes(2)].global()[0].node;
+								V.row(0) = gbases[e].bases[geom_nodes(0)].global()[0].node;
+								V.row(1) = gbases[e].bases[geom_nodes(1)].global()[0].node;
+								V.row(2) = gbases[e].bases[geom_nodes(2)].global()[0].node;
 
 								velocity_div_mat = AdjointTools::face_velocity_divergence(V);
-
-								for (int k = 0; k < 3; ++k)
-									V.row(k) += u.row(k);
-
-								Eigen::MatrixXd grad = AdjointTools::face_normal_gradient(V);
-								if (n == 0)
-									grad_pressure_bc = grad.block(0, 0, 3, 3).rowwise().sum();
-								else if (n == 1)
-									grad_pressure_bc = grad.block(0, 3, 3, 3).rowwise().sum();
-								else if (n == 2)
-									grad_pressure_bc = grad.block(0, 6, 3, 3).rowwise().sum();
-								else
-									assert(false);
 							}
 							else
 							{
 								Eigen::MatrixXd V(2, 2);
-								V.row(0) = gbases[e].bases[nodes(0)].global()[0].node;
-								V.row(1) = gbases[e].bases[nodes(1)].global()[0].node;
+								V.row(0) = gbases[e].bases[geom_nodes(0)].global()[0].node;
+								V.row(1) = gbases[e].bases[geom_nodes(1)].global()[0].node;
 
 								velocity_div_mat = AdjointTools::edge_velocity_divergence(V);
-
-								for (int k = 0; k < 2; ++k)
-									V.row(k) += u.row(k);
-
-								Eigen::MatrixXd grad = AdjointTools::edge_normal_gradient(V);
-								if (n == 0)
-									grad_pressure_bc = grad.block(0, 0, 2, 2).rowwise().sum();
-								else if (n == 1)
-									grad_pressure_bc = grad.block(0, 2, 2, 2).rowwise().sum();
-								else
-									assert(false);
 							}
-							grad_pressure_bc *= pressure_bc;
 						}
 
 						// integrate j * div(gbases) over the whole boundary
@@ -291,10 +331,17 @@ namespace polyfem::solver
 							const bool is_neumann = std::find(boundary_nodes_.begin(), boundary_nodes_.end(), g_index) == boundary_nodes_.end();
 							if (is_neumann)
 							{
-								local_storage.vec(g_index) -= value.sum() * velocity_div_mat(n, d);
+								local_storage.vec(g_index) += value.sum() * velocity_div_mat(n, d);
 								const bool is_pressure = rhs_assembler_.problem().is_boundary_pressure(rhs_assembler_.mesh().get_boundary_id(global_primitive_id));
-								// if (is_pressure)
-								// 	local_storage.vec(g_index) += grad_pressure_bc(d) * pressure_value.sum();
+								if (is_pressure)
+								{
+									Eigen::VectorXd grad_normal_val(vals.jac_it.size());
+									grad_normal_val.setZero();
+									for (int q = 0; q < vals.jac_it.size(); ++q)
+										for (int k = 0; k < dim; ++k)
+											grad_normal_val(q) += grad_normal[q][k](d, geom_nodes(n));
+									local_storage.vec(g_index) += pressure_bc * (grad_normal_val.array() * p.col(d).array() * v.val.array() * weights.array()).sum();
+								}
 							}
 						}
 					}
@@ -304,5 +351,14 @@ namespace polyfem::solver
 
 		for (const LocalThreadVecStorage &local_storage : storage)
 			term += local_storage.vec;
+
+		term *= -1;
+	}
+
+	void BodyForm::hessian_wrt_u_prev(const Eigen::VectorXd &u_prev, const double t, StiffnessMatrix &hessian) const
+	{
+		rhs_assembler_.compute_energy_hess(boundary_nodes_, n_boundary_samples_, local_neumann_boundary_, u_prev, t, false, hessian);
+		hessian *= -1;
+		// hessian.resize(u_prev.size(), u_prev.size());
 	}
 } // namespace polyfem::solver
