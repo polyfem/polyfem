@@ -440,18 +440,25 @@ namespace polyfem
 			/// @param[in] body_ids vector of labels, one per element
 			virtual void set_body_ids(const std::vector<int> &body_ids) { body_ids_ = body_ids; }
 
+			/// @brief Get the default boundary selection of an element (face in 3d, edge in 2d)
+			///
+			/// @param[in] primitive element id
+			/// @return default label of element
+			virtual int get_default_boundary_id(const int primitive) const
+			{
+				if (is_volume() ? is_boundary_face(primitive) : is_boundary_edge(primitive))
+					return std::numeric_limits<int>::max(); // default for no selected boundary
+				else
+					return -1; // default for no boundary
+			}
+
 			/// @brief Get the boundary selection of an element (face in 3d, edge in 2d)
 			///
 			/// @param[in] primitive element id
 			/// @return label of element
 			virtual int get_boundary_id(const int primitive) const
 			{
-				if (has_boundary_ids())
-					return boundary_ids_.at(primitive);
-				else if (is_volume() ? is_boundary_face(primitive) : is_boundary_edge(primitive))
-					return std::numeric_limits<int>::max(); // default for no selected boundary
-				else
-					return -1; // default for no boundary
+				return has_boundary_ids() ? (boundary_ids_.at(primitive)) : get_default_boundary_id(primitive);
 			}
 
 			/// @brief Get the boundary selection of a node

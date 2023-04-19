@@ -427,7 +427,7 @@ namespace polyfem::mesh
 		std::vector<Tuple> edges;
 		for (auto t : elements)
 			for (int j = 0; j < EDGES_PER_ELEMENT; ++j)
-				edges.push_back(WMTKMesh::tuple_from_edge(t.fid(*this), j));
+				edges.push_back(WMTKMesh::tuple_from_edge(element_id(t), j));
 		wmtk::unique_edge_tuples(*this, edges);
 		return edges;
 	}
