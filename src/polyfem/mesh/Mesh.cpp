@@ -534,7 +534,7 @@ namespace polyfem::mesh
 		{
 			boundary_ids_.resize(n_boundary_elements() + mesh.n_boundary_elements());
 			for (int i = 0; i < mesh.n_boundary_elements(); ++i)
-				boundary_ids_[n_boundary_elements() + i] = mesh.get_boundary_id(i); // results in default if boundary_ids_ is empty
+				boundary_ids_[n_boundary_elements() + i] = mesh.get_boundary_id(i); // results in default if mesh.boundary_ids_ is empty
 		}
 
 		// --------------------------------------------------------------------
