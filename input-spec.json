@@ -1923,6 +1923,7 @@
             "x_delta",
             "debug_fd",
             "debug_fd_eps",
+            "disable_project_psd",
             "verify_hessian",
             "fall_back_descent_strategy_period",
             "grad_norm",
@@ -1937,6 +1938,12 @@
             "min_step_size"
         ],
         "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
+    },
+    {
+        "pointer": "/solver/nonlinear/disable_project_psd",
+        "default": false,
+        "type": "bool",
+        "doc": "Disable projection to PSD in newton solve."
     },
     {
         "pointer": "/solver/nonlinear/verify_hessian",

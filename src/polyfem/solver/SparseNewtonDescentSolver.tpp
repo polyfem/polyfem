@@ -15,8 +15,8 @@ namespace cppoptlib
 			linear_solver_params["solver"], linear_solver_params["precond"]);
 		linear_solver->setParameters(linear_solver_params);
 
-		if (solver_params.contains("verify_hessian"))
-			verify_hessian = solver_params["verify_hessian"];
+		verify_hessian = solver_params["verify_hessian"];
+		disable_project_psd = solver_params["disable_project_psd"];
 	}
 
 	// =======================================================================
@@ -106,9 +106,9 @@ namespace cppoptlib
 	{
 		POLYFEM_SCOPED_TIMER("assembly time", this->assembly_time);
 
-		if (this->descent_strategy == 1)
+		if (!disable_project_psd && this->descent_strategy == 1)
 			objFunc.set_project_to_psd(true);
-		else if (this->descent_strategy == 0)
+		else
 			objFunc.set_project_to_psd(false);
 
 		objFunc.hessian(x, hessian);
