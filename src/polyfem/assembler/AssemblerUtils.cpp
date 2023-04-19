@@ -17,6 +17,7 @@
 #include <polyfem/assembler/SaintVenantElasticity.hpp>
 #include <polyfem/assembler/Stokes.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/assembler/MultiscaleRB.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -87,6 +88,11 @@ namespace polyfem
 			
 			else if (formulation == "AMIPS")
 				return std::make_shared<AMIPSEnergy>();
+
+			else if (formulation == "Multiscale")
+				return std::make_shared<Multiscale>();
+			else if (formulation == "MultiscaleRB")
+				return std::make_shared<MultiscaleRB>();
 
 			log_and_throw_error("Inavalid assembler name {}", formulation);
 		}

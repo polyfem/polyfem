@@ -38,10 +38,10 @@ set(SOURCES
 	NavierStokes.hpp
 	NeoHookeanElasticity.cpp
 	NeoHookeanElasticity.hpp
-	# MultiscaleRB.cpp
-	# MultiscaleRB.hpp
-	# Multiscale.cpp
-	# Multiscale.hpp
+	MultiscaleRB.cpp
+	MultiscaleRB.hpp
+	Multiscale.cpp
+	Multiscale.hpp
 	NeoHookeanElasticityAutodiff.cpp
 	NeoHookeanElasticityAutodiff.hpp
 	OgdenElasticity.cpp

@@ -77,7 +77,7 @@ namespace polyfem::assembler
 		state = state_ptr;
 		
 		state->assemble_rhs();
-		state->assemble_mass_mat(true);
+		state->assemble_mass_mat();
 
 		RowVectorNd min, max;
 		state->mesh->bounding_box(min, max);
@@ -94,7 +94,7 @@ namespace polyfem::assembler
 		const auto &bases = state->bases;
 		const auto &gbases = state->geom_bases();
 
-		return state->assembler.assemble_energy(state->formulation(), size() == 3, bases, gbases, state->ass_vals_cache, 0, x, x) / microstructure_volume;
+		return state->assembler->assemble_energy(size() == 3, bases, gbases, state->ass_vals_cache, 0, x, x) / microstructure_volume;
 	}
 
 	Eigen::MatrixXd Multiscale::homogenize_def_grad(const Eigen::MatrixXd &x) const
@@ -140,7 +140,8 @@ namespace polyfem::assembler
 				const quadrature::Quadrature &quadrature = vals.quadrature;
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-				state->assembler.compute_tensor_value(state->formulation(), e, bases[e], gbases[e], quadrature.points, x, stresses);
+				std::shared_ptr<ElasticityAssembler> elastic_assembler = std::dynamic_pointer_cast<ElasticityAssembler>(state->assembler);
+				elastic_assembler->compute_stress_tensor(e, bases[e], gbases[e], quadrature.points, x, ElasticityTensorType::PK1, stresses);
 				tmp = stresses.transpose() * local_storage.da;
 				local_storage.vec += tmp;
 				// avg_stress = Eigen::Map<Eigen::MatrixXd>(tmp.data(), size(), size());
@@ -176,7 +177,7 @@ namespace polyfem::assembler
 			Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
 			Eigen::MatrixXd stiffnesses;
-			state->assembler.compute_stiffness_value(state->formulation(), vals, quadrature.points, x, stiffnesses);
+			state->assembler->compute_stiffness_value(vals, quadrature.points, x, stiffnesses);
 			avg_stiffness += utils::unflatten(stiffnesses.transpose() * da, size()*size());
 			stiffnesses.array().colwise() *= da.array();
 
@@ -308,7 +309,7 @@ namespace polyfem::assembler
 				state->stats.compute_mesh_stats(*state->mesh);
 				state->build_basis();
 				state->assemble_rhs();
-				state->assemble_mass_mat(true);
+				state->assemble_mass_mat();
 
 				RowVectorNd min, max;
 				state->mesh->bounding_box(min, max);
@@ -317,32 +318,8 @@ namespace polyfem::assembler
 		}
 	}
 
-	void Multiscale::set_size(const int size)
-	{
-		size_ = size;
-	}
-
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-	Multiscale::compute_rhs(const AutodiffHessianPt &pt) const
-	{
-		assert(pt.size() == size());
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res;
-
-		double lambda, mu;
-		params_.lambda_mu(0, 0, 0, pt(0).getValue(), pt(1).getValue(), size() == 2 ? 0. : pt(2).getValue(), 0, lambda, mu);
-
-		if (size() == 2)
-			autogen::neo_hookean_2d_function(pt, lambda, mu, res);
-		else if (size() == 3)
-			autogen::neo_hookean_3d_function(pt, lambda, mu, res);
-		else
-			assert(false);
-
-		return res;
-	}
-
 	Eigen::VectorXd
-	Multiscale::assemble_grad(const NonLinearAssemblerData &data) const
+	Multiscale::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		const auto &bs = data.vals.basis_values;
 		Eigen::MatrixXd local_disp;
@@ -462,25 +439,7 @@ namespace polyfem::assembler
 		return hessian;
 	}
 
-	void Multiscale::compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
-	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), stresses, [&](const Eigen::MatrixXd &stress) {
-			Eigen::MatrixXd tmp = stress;
-			auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
-			return Eigen::MatrixXd(a);
-		});
-	}
-
-	void Multiscale::compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
-	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, stresses, [&](const Eigen::MatrixXd &stress) {
-			Eigen::Matrix<double, 1, 1> res;
-			res.setConstant(von_mises_stress_for_stress_tensor(stress));
-			return res;
-		});
-	}
-
-	void Multiscale::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	void Multiscale::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		Eigen::MatrixXd displacement_grad(size(), size());
 
@@ -548,5 +507,11 @@ namespace polyfem::assembler
 			}
 
 			return energy;
+	}
+
+	std::map<std::string, Assembler::ParamFunc> Multiscale::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+		return res;
 	}
 } // namespace polyfem::assembler

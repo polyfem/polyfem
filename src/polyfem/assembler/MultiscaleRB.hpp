@@ -29,6 +29,10 @@ namespace polyfem
 			MultiscaleRB();
 			~MultiscaleRB();
 
+			using NLAssembler::assemble_energy;
+			using NLAssembler::assemble_gradient;
+			using NLAssembler::assemble_hessian;
+			
 			// energy, gradient, and hessian used in newton method
 			Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
 
@@ -67,10 +71,10 @@ namespace polyfem
 
 			void set_linear_disp(const Eigen::MatrixXd &linear_sol) { linear_sol_ = linear_sol; }
 
-			double value(const TVector &x);
-			void gradient(const TVector &x, TVector &gradv);
+			double value(const TVector &x) override;
+			void gradient(const TVector &x, TVector &gradv) override;
 			void hessian(const TVector &x, THessian &hessian);
-			void hessian(const TVector &x, Eigen::MatrixXd &hessian);
+			void hessian(const TVector &x, Eigen::MatrixXd &hessian) override;
 
 			TVector component_values(const TVector &x)
 			{

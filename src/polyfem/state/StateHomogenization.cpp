@@ -134,7 +134,8 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         local_boundary,
         n_boundary_samples(),
         *solve_data_tmp.rhs_assembler, *this, 0, forms, solve_symmetric_flag);
-    homo_problem->add_form(solve_data_tmp.periodic_contact_form);
+    if (solve_data_tmp.periodic_contact_form)
+        homo_problem->add_form(solve_data_tmp.periodic_contact_form);
     solve_data_tmp.nl_problem = homo_problem;
 
     if (args["optimization"]["enabled"])

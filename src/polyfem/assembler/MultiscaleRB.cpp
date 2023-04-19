@@ -1,7 +1,6 @@
 #include "MultiscaleRB.hpp"
 
 #include <polyfem/basis/Basis.hpp>
-#include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/PolarDecomposition.hpp>
@@ -117,7 +116,11 @@ namespace polyfem::assembler
 
 		// compute covariance matrix
 		StiffnessMatrix laplacian;
-		state->assembler.assemble_problem("Laplacian", state->mesh->is_volume(), state->n_bases, state->bases, state->geom_bases(), state->ass_vals_cache, laplacian);
+		auto laplacian_assembler = assembler::AssemblerUtils::make_assembler("Laplacian");
+		// state->set_materials(*laplacian_assembler);
+		laplacian_assembler->set_size(1);
+		laplacian_assembler->assemble(state->mesh->is_volume(), state->n_bases, state->bases, state->geom_bases(), state->ass_vals_cache, laplacian);
+		
 
 		Eigen::MatrixXd covariance;
 		// covariance = Eigen::MatrixXd::Identity(def_grads.size(), def_grads.size());
@@ -250,7 +253,7 @@ namespace polyfem::assembler
 		// 	[this, &x0](const Eigen::VectorXd &xi_) -> Eigen::VectorXd {
 		// 		Eigen::MatrixXd grad_;
 		// 		Eigen::MatrixXd tmp = x0 + this->reduced_basis * xi_;
-		// 		state->assembler.assemble_energy_gradient(
+		// 		state->assembler->assemble_gradient(
 		// 			state->formulation(), this->size() == 3, state->n_bases, state->bases, state->geom_bases(),
 		// 			state->ass_vals_cache, 0, tmp, tmp, grad_);
 		// 		return this->reduced_basis.transpose() * grad_;
@@ -286,7 +289,7 @@ namespace polyfem::assembler
 			const quadrature::Quadrature &quadrature = vals.quadrature;
 			Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
-			state->assembler.compute_stiffness_value(state->formulation(), vals, quadrature.points, x, stiffnesses);
+			state->assembler->compute_stiffness_value(vals, quadrature.points, x, stiffnesses);
 			avg_stiffness += utils::unflatten(stiffnesses.transpose() * da, size()*size());
 
 			for (int i = 0; i < n_reduced_basis; i++)
@@ -308,10 +311,14 @@ namespace polyfem::assembler
 		// compute term2 given CB
 		{
 			Eigen::MatrixXd hessian;
-			state->assembler.assemble_energy_hessian(
-				state->formulation(), size() == 3, state->n_bases, false, state->bases,
-				state->geom_bases(), state->ass_vals_cache, 0, x, x, reduced_basis, hessian);
 
+			utils::SparseMatrixCache mat_cache;
+			StiffnessMatrix full_hessian;
+			state->assembler->assemble_hessian(
+				size() == 3, state->n_bases, false, state->bases,
+				state->geom_bases(), state->ass_vals_cache, 0, x, x, mat_cache, full_hessian);
+
+			hessian = reduced_basis.transpose() * full_hessian * reduced_basis;
 			Eigen::LLT<Eigen::MatrixXd> llt(hessian);
 			term2 = CB * llt.solve(CB.transpose());
 		}
@@ -656,8 +663,8 @@ namespace polyfem::assembler
 	double MultiscaleRBProblem::value(const TVector &x)
 	{
 		Eigen::MatrixXd sol = coeff_to_field(x);
-		return state->assembler.assemble_energy(
-			state->formulation(), state->mesh->is_volume(), state->bases, state->geom_bases(),
+		return state->assembler->assemble_energy(
+			state->mesh->is_volume(), state->bases, state->geom_bases(),
 			state->ass_vals_cache, 0, sol, sol) / microstructure_volume;
 	}
 
@@ -665,29 +672,35 @@ namespace polyfem::assembler
 	{
 		Eigen::MatrixXd sol = coeff_to_field(x);
 		Eigen::MatrixXd grad;
-		state->assembler.assemble_energy_gradient(
-			state->formulation(), state->mesh->is_volume(), state->n_bases, state->bases, state->geom_bases(),
-			state->ass_vals_cache, 0, sol, sol, reduced_basis_, grad);
-		gradv = grad / microstructure_volume;
+		state->assembler->assemble_gradient(
+			state->mesh->is_volume(), state->n_bases, state->bases, state->geom_bases(),
+			state->ass_vals_cache, 0, sol, sol, grad);
+		gradv = (reduced_basis_.transpose() * grad) / microstructure_volume;
 	}
 
 	void MultiscaleRBProblem::hessian(const TVector &x, THessian &hessian)
 	{
 		Eigen::MatrixXd sol = coeff_to_field(x);
-		Eigen::MatrixXd tmp;
-		state->assembler.assemble_energy_hessian(
-			state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
-			state->geom_bases(), state->ass_vals_cache, 0, sol, sol, reduced_basis_, tmp);
-		hessian = tmp.sparseView();
+
+		utils::SparseMatrixCache mat_cache;
+		StiffnessMatrix full_hessian;
+		state->assembler->assemble_hessian(
+			state->mesh->is_volume(), state->n_bases, false, state->bases,
+			state->geom_bases(), state->ass_vals_cache, 0, sol, sol, mat_cache, full_hessian);
+		
+		hessian = (reduced_basis_.transpose() * full_hessian * reduced_basis_).sparseView();
 		hessian /= microstructure_volume;
 	}
 
 	void MultiscaleRBProblem::hessian(const TVector &x, Eigen::MatrixXd &hessian)
 	{
 		Eigen::MatrixXd sol = coeff_to_field(x);
-		state->assembler.assemble_energy_hessian(
-			state->formulation(), state->mesh->is_volume(), state->n_bases, false, state->bases,
-			state->geom_bases(), state->ass_vals_cache, 0, sol, sol, reduced_basis_, hessian);
-		hessian /= microstructure_volume;
+
+		utils::SparseMatrixCache mat_cache;
+		StiffnessMatrix full_hessian;
+		state->assembler->assemble_hessian(
+			state->mesh->is_volume(), state->n_bases, false, state->bases,
+			state->geom_bases(), state->ass_vals_cache, 0, sol, sol, mat_cache, full_hessian);
+		hessian = reduced_basis_.transpose() * full_hessian * reduced_basis_ / microstructure_volume;
 	}
 } // namespace polyfem::assembler
