@@ -43,6 +43,13 @@ namespace polyfem::mesh
 						  (size_t)in_node_to_node[mesh->face_vertex(i, 1)],
 						  (size_t)in_node_to_node[mesh->face_vertex(i, 2)]}};
 					face_to_boundary_id[f] = mesh->get_boundary_id(i);
+
+#ifndef NDEBUG
+					if (mesh->is_boundary_face(i))
+						assert(face_to_boundary_id[f] >= 0);
+					else
+						assert(face_to_boundary_id[f] == -1);
+#endif
 				}
 				return face_to_boundary_id;
 			}

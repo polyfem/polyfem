@@ -136,7 +136,7 @@ namespace polyfem::mesh
 			edge_attr(edge.eid(*this)).energy_rank = edge_ranks.at({{e0, e1}});
 		}
 
-		write_edge_ranks_mesh(edge_elastic_ranks, edge_contact_ranks);
+		// write_edge_ranks_mesh(edge_elastic_ranks, edge_contact_ranks);
 	}
 
 	// -------------------------------------------------------------------------
