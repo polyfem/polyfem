@@ -47,6 +47,7 @@ var namespacepolyfem_1_1assembler =
     [ "TensorBCValue", "structpolyfem_1_1assembler_1_1_tensor_b_c_value.html", "structpolyfem_1_1assembler_1_1_tensor_b_c_value" ],
     [ "UnconstrainedOgdenElasticity", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity" ],
     [ "ViscousDamping", "classpolyfem_1_1assembler_1_1_viscous_damping.html", "classpolyfem_1_1assembler_1_1_viscous_damping" ],
+    [ "DefGradMatrix", "namespacepolyfem_1_1assembler.html#a3845564fe405bdfdad1fdf79c7255e69", null ],
     [ "cross", "namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784", null ],
     [ "hat", "namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32", null ]
 ];

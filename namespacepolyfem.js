@@ -52,7 +52,6 @@ var namespacepolyfem =
     [ "AutodiffHessianPt", "namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c", null ],
     [ "AutodiffScalarGrad", "namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc", null ],
     [ "AutodiffScalarHessian", "namespacepolyfem.html#a6521c58d4a828e40157cb2671a4a63ce", null ],
-    [ "DefGradMatrix", "namespacepolyfem.html#aaf999d1426fe3b12a651bbca7f870df4", null ],
     [ "json", "namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15", null ],
     [ "MatrixNd", "namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2", null ],
     [ "QuadratureVector", "namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f", null ],

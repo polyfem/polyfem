@@ -4,7 +4,7 @@ var classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity =
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#ac0249e146e358a4137a242731fec6c62", null ],
     [ "c1", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#a70a7f14057bb420554cde23eadcc8732", null ],
     [ "c2", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#af7a2e9a40357ae918c8af3a227770042", null ],
-    [ "elastic_energy_T", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#a760384ef2a3cd1861d18497c038828f3", null ],
+    [ "elastic_energy", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#a2749cdfc9b198639b02dde6330fa1f3d", null ],
     [ "k", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#a6a4b31a22e3dbbd25c05f041a4ee7089", null ],
     [ "name", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#a82e07d2222a3512cc366e61522cb7e3d", null ],
     [ "parameters", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#a98ec0b400d1fba118107013874d8f26b", null ],

@@ -1,5 +1,6 @@
 var NAVTREEINDEX30 =
 {
+"namespacepretty__print.html#a4c61a4500105714e7fea1f44029c7c64":[3,0,7,0],
 "namespaceq__bases.html":[3,0,8],
 "namespaceq__bases.html#a0049f6e47cc2d7c900d43b6630ae21d1":[3,0,8,28],
 "namespaceq__bases.html#a13209816834bfbd803ab75e13798ac1f":[3,0,8,2],
@@ -248,6 +249,5 @@ var NAVTREEINDEX30 =
 "struct_d_scalar2.html#a5a8f755ccfacec2566abf82507354d66":[4,0,7,15],
 "struct_d_scalar2.html#a60f1e4e2c029f87b8e10b83ec4867d4d":[4,0,7,33],
 "struct_d_scalar2.html#a613d16702f3528bb0bb4c71d7381ec36":[4,0,7,30],
-"struct_d_scalar2.html#a68169e89cff0a1156126cf12d86cfd9f":[4,0,7,7],
-"struct_d_scalar2.html#a6a73136197d442eee2f18fe3fb605664":[4,0,7,6]
+"struct_d_scalar2.html#a68169e89cff0a1156126cf12d86cfd9f":[4,0,7,7]
 };
