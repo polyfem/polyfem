@@ -4,7 +4,6 @@
 #include <polyfem/assembler/HookeLinearElasticity.hpp>
 #include <polyfem/assembler/SaintVenantElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
-#include <polyfem/assembler/GenericElastic.hpp>
 #include <polyfem/assembler/MooneyRivlinElasticity.hpp>
 #include <polyfem/assembler/OgdenElasticity.hpp>
 #include <polyfem/basis/Basis.hpp>

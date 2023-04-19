@@ -5,7 +5,7 @@
 
 namespace polyfem::assembler
 {
-	class UnconstrainedOgdenElasticity : public GenericElastic
+	class UnconstrainedOgdenElasticity : public GenericElastic<UnconstrainedOgdenElasticity>
 	{
 	public:
 		UnconstrainedOgdenElasticity();
@@ -20,24 +20,19 @@ namespace polyfem::assembler
 		std::string name() const override { return "UnconstrainedOgden"; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
-		// This macro defines the overriden functions that compute the energy:
-		// template <typename T>
-		// T elastic_energy(const RowVectorNd &p, const int el_id, const DefGradMatrix<T> &def_grad) const override { elastic_energy_T<T>(p, el_id, def_grad); };
-		POLYFEM_OVERRIDE_ELASTIC_ENERGY
-
-	private:
 		template <typename T>
-		T elastic_energy_T(
+		T elastic_energy(
 			const RowVectorNd &p,
 			const int el_id,
 			const DefGradMatrix<T> &def_grad) const;
 
+	private:
 		GenericMatParams alphas_;
 		GenericMatParams mus_;
 		GenericMatParams Ds_;
 	};
 
-	class IncompressibleOgdenElasticity : public GenericElastic
+	class IncompressibleOgdenElasticity : public GenericElastic<IncompressibleOgdenElasticity>
 	{
 	public:
 		IncompressibleOgdenElasticity();
@@ -58,20 +53,17 @@ namespace polyfem::assembler
 		std::string name() const override { return "IncompressibleOgden"; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
-		// This macro defines the overriden functions that compute the energy:
-		// template <typename T>
-		// T elastic_energy(const RowVectorNd &p, const int el_id, const DefGradMatrix<T> &def_grad) const override { elastic_energy_T<T>(p, el_id, def_grad); };
-		POLYFEM_OVERRIDE_ELASTIC_ENERGY
-
-	private:
 		template <typename T>
-		T elastic_energy_T(
+		T elastic_energy(
 			const RowVectorNd &p,
 			const int el_id,
 			const DefGradMatrix<T> &def_grad) const;
 
+	private:
 		GenericMatParams coefficients_;
 		GenericMatParams expoenents_;
 		GenericMatParam bulk_modulus_;
 	};
 } // namespace polyfem::assembler
+
+#include "OgdenElasticity.tpp"
