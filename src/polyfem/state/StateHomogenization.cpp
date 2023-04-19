@@ -11,6 +11,7 @@
 
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/MacroStrainALForm.hpp>
+#include <polyfem/solver/forms/MacroStrainLagrangianForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 
@@ -132,7 +133,8 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         boundary_nodes_tmp,
         local_boundary,
         n_boundary_samples(),
-        *solve_data_tmp.rhs_assembler, *this, 0, forms, solve_symmetric_flag, solve_data_tmp.periodic_contact_form);
+        *solve_data_tmp.rhs_assembler, *this, 0, forms, solve_symmetric_flag);
+    homo_problem->add_form(solve_data_tmp.periodic_contact_form);
     solve_data_tmp.nl_problem = homo_problem;
 
     if (args["optimization"]["enabled"])
@@ -162,16 +164,20 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         }
         logger().debug("AL indices: {}, AL values: {}", al_indices.transpose(), al_values.transpose());
         std::shared_ptr<MacroStrainALForm> al_form = std::make_shared<MacroStrainALForm>(al_indices, al_values);
-        homo_problem->set_al_form(al_form);
+        std::shared_ptr<MacroStrainLagrangianForm> lagr_form = std::make_shared<MacroStrainLagrangianForm>(al_indices, al_values);
+        homo_problem->add_form(al_form);
+        homo_problem->add_form(lagr_form);
 
         const double initial_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
+        const double max_weight = args["solver"]["augmented_lagrangian"]["max_weight"];
+        const double eta_tol = args["solver"]["augmented_lagrangian"]["eta"];
         const double scaling = args["solver"]["augmented_lagrangian"]["scaling"];
-        const int max_al_steps = args["solver"]["augmented_lagrangian"]["max_steps"];
+        const int max_al_steps = args["solver"]["augmented_lagrangian"]["max_solver_iters"];
         double al_weight = initial_weight;
 
         Eigen::VectorXd tmp_sol = homo_problem->full_to_reduced(sol_, Eigen::MatrixXd::Zero(dim, dim));
         Eigen::VectorXd extended = homo_problem->reduced_to_extended(tmp_sol);
-        double gap = (extended(al_indices).array() - al_values.array()).matrix().norm();
+        const double initial_error = (extended(al_indices).array() - al_values.array()).matrix().squaredNorm();
         extended(al_indices) = al_values;
         Eigen::VectorXd reduced_sol = homo_problem->extended_to_reduced(extended);
         // for (int i = 0; i < al_indices.size(); i++)
@@ -180,32 +186,42 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         homo_problem->line_search_begin(tmp_sol, reduced_sol);
         int al_steps = 0;
         while (force_al
-            || (gap > args["solver"]["augmented_lagrangian"]["threshold"].get<double>())
             || !std::isfinite(homo_problem->value(reduced_sol))
             || !homo_problem->is_step_valid(tmp_sol, reduced_sol))
         {
             force_al = false;
             homo_problem->line_search_end();
 
-            if (al_weight == 0)
-                throw std::runtime_error("Zero AL weight invalid!");
-
-            al_form->set_weight(1. / al_weight);
-            logger().debug("Solving AL Problem with weight {}", 1. / al_weight);
+            al_form->set_weight(al_weight);
+            logger().debug("Solving AL Problem with weight {}", al_weight);
 
             homo_problem->init(tmp_sol);
             nl_solver->minimize(*homo_problem, tmp_sol);
 
             extended = homo_problem->reduced_to_extended(tmp_sol);
-            double gap = (extended(al_indices).array() - al_values.array()).matrix().norm();
+            logger().debug("Current macro strain: {}", tmp_sol.tail(homo_problem->macro_reduced_size()));
+
+            const double current_error = (extended(al_indices).array() - al_values.array()).matrix().squaredNorm();
+            const double eta = 1 - sqrt(current_error / initial_error);
+
+            logger().debug("Current eta = {}", eta);
+
+			if (eta < eta_tol && al_weight < max_weight)
+			{
+            	al_weight *= scaling;
+				lagr_form->update_lagrangian(extended, al_weight);
+            }
+            else
+            {
+                logger().info("Cannot increase AL weight anymore, stopping...");
+                break;
+            }
+
             extended(al_indices) = al_values;
             reduced_sol = homo_problem->extended_to_reduced(extended);
-            
-            logger().debug("Current macro strain: {}", tmp_sol.tail(homo_problem->macro_reduced_size()));
 
             homo_problem->line_search_begin(tmp_sol, reduced_sol);
 
-            al_weight /= scaling;
 			if (al_steps++ >= max_al_steps)
 			{
 				log_and_throw_error(fmt::format("Unable to solve AL problem, out of iterations {} (current weight = {}), stopping", max_al_steps, al_weight));
@@ -221,11 +237,6 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
                 logger().debug("Invalid step, continue AL...");
                 continue;
             }
-            if (gap > args["solver"]["augmented_lagrangian"]["threshold"].get<double>())
-            {
-                logger().debug("Large gap on macro strain, continue AL...");
-                continue;
-            }
             break;
         }
         homo_problem->line_search_end();
@@ -239,6 +250,8 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
                 solve_data_tmp.periodic_contact_form->set_weight(al_weight);
             al_form->set_weight(1 - al_weight);
             al_form->disable();
+            lagr_form->set_weight(1 - al_weight);
+            lagr_form->disable();
         }
     }
 

@@ -7,7 +7,6 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/assembler/MatParams.hpp>
 
 // this casses are instantiated in the cpp, cannot be used with generic assembler
 // without adding template instantiation

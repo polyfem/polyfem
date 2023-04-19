@@ -4,9 +4,6 @@
 
 namespace polyfem::solver
 {
-	class PeriodicContactForm;
-	class MacroStrainALForm;
-
     class NLHomoProblem : public NLProblem
     {
     public:
@@ -21,11 +18,8 @@ namespace polyfem::solver
 				  const assembler::RhsAssembler &rhs_assembler,
 				  const State &state,
 				  const double t, const std::vector<std::shared_ptr<Form>> &forms, 
-				  const bool solve_symmetric_macro_strain,
-				  const std::shared_ptr<PeriodicContactForm> &contact_form);
+				  const bool solve_symmetric_macro_strain);
 
-		void set_al_form(const std::shared_ptr<MacroStrainALForm> &al_form) { al_form_ = al_form; }
-		
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
 		void hessian(const TVector &x, THessian &hessian) override;
@@ -70,6 +64,8 @@ namespace polyfem::solver
 
 		void update_quantities(const double t, const TVector &x) override;
 
+		void add_form(const std::shared_ptr<Form> &form) { homo_forms.push_back(form); }
+
 	private:
 		void init_projection();
 
@@ -81,7 +77,6 @@ namespace polyfem::solver
 		Eigen::MatrixXd macro_mid_to_reduced_; // (dim*dim) x (dim*(dim+1)/2)
 		Eigen::MatrixXd macro_full_to_mid_, macro_mid_to_full_;
 
-		std::shared_ptr<PeriodicContactForm> contact_form_;
-		std::shared_ptr<MacroStrainALForm> al_form_;
+		std::vector<std::shared_ptr<Form>> homo_forms;
     };
 }

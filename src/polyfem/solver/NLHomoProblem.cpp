@@ -2,6 +2,7 @@
 #include <polyfem/State.hpp>
 #include "forms/PeriodicContactForm.hpp"
 #include "forms/MacroStrainALForm.hpp"
+#include "forms/MacroStrainLagrangianForm.hpp"
 #include <polyfem/io/Evaluator.hpp>
 
 namespace polyfem::solver
@@ -13,8 +14,7 @@ namespace polyfem::solver
                 const assembler::RhsAssembler &rhs_assembler,
                 const State &state,
                 const double t, const std::vector<std::shared_ptr<Form>> &forms, 
-                const bool solve_symmetric_macro_strain,
-				const std::shared_ptr<PeriodicContactForm> &contact_form) : NLProblem(full_size, boundary_nodes, local_boundary, n_boundary_samples, rhs_assembler, state, t, forms), only_symmetric(solve_symmetric_macro_strain), contact_form_(contact_form)
+                const bool solve_symmetric_macro_strain) : NLProblem(full_size, boundary_nodes, local_boundary, n_boundary_samples, rhs_assembler, state, t, forms), only_symmetric(solve_symmetric_macro_strain)
     {
         init_projection();
     }
@@ -91,10 +91,9 @@ namespace polyfem::solver
     double NLHomoProblem::value(const TVector &x)
     {
         double val = NLProblem::value(x);
-        if (contact_form_ && contact_form_->enabled())
-            val += contact_form_->value(reduced_to_extended(x));
-        if (al_form_ && al_form_->enabled())
-            val += al_form_->value(reduced_to_extended(x));
+        for (auto &form : homo_forms)
+            if (form->enabled())
+                val += form->value(reduced_to_extended(x));
 
         return val;
     }
@@ -102,18 +101,13 @@ namespace polyfem::solver
     {
         NLProblem::gradient(x, gradv);
 
-        if (contact_form_ && contact_form_->enabled())
-        {
-            Eigen::VectorXd grad_extended;
-            contact_form_->first_derivative(reduced_to_extended(x), grad_extended);
-            gradv += extended_to_reduced_grad(grad_extended);
-        }
-        if (al_form_ && al_form_->enabled())
-        {
-            Eigen::VectorXd grad_extended;
-            al_form_->first_derivative(reduced_to_extended(x), grad_extended);
-            gradv += extended_to_reduced_grad(grad_extended);
-        }
+        for (auto &form : homo_forms)
+            if (form->enabled())
+            {
+                Eigen::VectorXd grad_extended;
+                form->first_derivative(reduced_to_extended(x), grad_extended);
+                gradv += extended_to_reduced_grad(grad_extended);
+            }
     }
     void NLHomoProblem::extended_hessian_to_reduced_hessian(const THessian &extended, THessian &reduced) const
     {
@@ -162,24 +156,16 @@ namespace polyfem::solver
     {
         NLProblem::hessian(x, hessian);
 
-        if (contact_form_ && contact_form_->enabled())
-        {
-            THessian hess_extended;
-            contact_form_->second_derivative(reduced_to_extended(x), hess_extended);
+        for (auto &form : homo_forms)
+            if (form->enabled())
+            {
+                THessian hess_extended;
+                form->second_derivative(reduced_to_extended(x), hess_extended);
 
-            THessian hess;
-            extended_hessian_to_reduced_hessian(hess_extended, hess);
-            hessian += hess;
-        }
-        if (al_form_ && al_form_->enabled())
-        {
-            THessian hess_extended;
-            al_form_->second_derivative(reduced_to_extended(x), hess_extended);
-
-            THessian hess;
-            extended_hessian_to_reduced_hessian(hess_extended, hess);
-            hessian += hess;
-        }
+                THessian hess;
+                extended_hessian_to_reduced_hessian(hess_extended, hess);
+                hessian += hess;
+            }
     }
 
     NLHomoProblem::TVector NLHomoProblem::macro_full_to_mid(const TVector &full) const
@@ -333,93 +319,83 @@ namespace polyfem::solver
 
     void NLHomoProblem::init(const TVector &x0)
     {
-        if (contact_form_ && contact_form_->enabled())
-            contact_form_->init(reduced_to_extended(x0));
-        if (al_form_ && al_form_->enabled())
-            al_form_->init(reduced_to_extended(x0));
+        for (auto &form : homo_forms)
+            if (form->enabled())
+                form->init(reduced_to_extended(x0));
         FullNLProblem::init(reduced_to_full(x0));
     }
 
     bool NLHomoProblem::is_step_valid(const TVector &x0, const TVector &x1) const
     {
         bool flag =  NLProblem::is_step_valid(x0, x1);
-        if (contact_form_ && contact_form_->enabled())
-            flag &= contact_form_->is_step_valid(reduced_to_extended(x0), reduced_to_extended(x1));
-        if (al_form_ && al_form_->enabled())
-            flag &= al_form_->is_step_valid(reduced_to_extended(x0), reduced_to_extended(x1));
+        for (auto &form : homo_forms)
+            if (form->enabled())
+                flag &= form->is_step_valid(reduced_to_extended(x0), reduced_to_extended(x1));
         
         return flag;
     }
     bool NLHomoProblem::is_step_collision_free(const TVector &x0, const TVector &x1) const
     {
         bool flag = NLProblem::is_step_collision_free(x0, x1);
-        if (contact_form_ && contact_form_->enabled())
-            flag &= contact_form_->is_step_collision_free(reduced_to_extended(x0), reduced_to_extended(x1));
-        if (al_form_ && al_form_->enabled())
-            flag &= al_form_->is_step_collision_free(reduced_to_extended(x0), reduced_to_extended(x1));
+        for (auto &form : homo_forms)
+            if (form->enabled())
+                flag &= form->is_step_collision_free(reduced_to_extended(x0), reduced_to_extended(x1));
         
         return flag;
     }
     double NLHomoProblem::max_step_size(const TVector &x0, const TVector &x1) const
     {
         double size = NLProblem::max_step_size(x0, x1);
-        if (contact_form_ && contact_form_->enabled())
-            size = std::min(size, contact_form_->max_step_size(reduced_to_extended(x0), reduced_to_extended(x1)));
-        if (al_form_ && al_form_->enabled())
-            size = std::min(size, al_form_->max_step_size(reduced_to_extended(x0), reduced_to_extended(x1)));
+        for (auto &form : homo_forms)
+            if (form->enabled())
+                size = std::min(size, form->max_step_size(reduced_to_extended(x0), reduced_to_extended(x1)));
         return size;
     }
 
     void NLHomoProblem::line_search_begin(const TVector &x0, const TVector &x1)
     {
         NLProblem::line_search_begin(x0, x1);
-        if (contact_form_ && contact_form_->enabled())
-            contact_form_->line_search_begin(reduced_to_extended(x0), reduced_to_extended(x1));
-        if (al_form_ && al_form_->enabled())
-            al_form_->line_search_begin(reduced_to_extended(x0), reduced_to_extended(x1));
+        for (auto &form : homo_forms)
+            if (form->enabled())
+                form->line_search_begin(reduced_to_extended(x0), reduced_to_extended(x1));
     }
     void NLHomoProblem::post_step(const int iter_num, const TVector &x)
     {
         NLProblem::post_step(iter_num, x);
-        if (contact_form_ && contact_form_->enabled())
-            contact_form_->post_step(iter_num, reduced_to_extended(x));
-        if (al_form_ && al_form_->enabled())
-            al_form_->post_step(iter_num, reduced_to_extended(x));
+        for (auto &form : homo_forms)
+            if (form->enabled())
+                form->post_step(iter_num, reduced_to_extended(x));
     }
 
     void NLHomoProblem::solution_changed(const TVector &new_x)
     {
         NLProblem::solution_changed(new_x);
-        if (contact_form_ && contact_form_->enabled())
-            contact_form_->solution_changed(reduced_to_extended(new_x));
-        if (al_form_ && al_form_->enabled())
-            al_form_->solution_changed(reduced_to_extended(new_x));
+        for (auto &form : homo_forms)
+            if (form->enabled())
+                form->solution_changed(reduced_to_extended(new_x));
     }
 
     void NLHomoProblem::init_lagging(const TVector &x)
     {
         NLProblem::init_lagging(x);
-        if (contact_form_ && contact_form_->enabled())
-            contact_form_->init_lagging(reduced_to_extended(x));
-        if (al_form_ && al_form_->enabled())
-            al_form_->init_lagging(reduced_to_extended(x));
+        for (auto &form : homo_forms)
+            if (form->enabled())
+                form->init_lagging(reduced_to_extended(x));
     }
     void NLHomoProblem::update_lagging(const TVector &x, const int iter_num)
     {
         NLProblem::update_lagging(x, iter_num);
-        if (contact_form_ && contact_form_->enabled())
-            contact_form_->update_lagging(reduced_to_extended(x), iter_num);
-        if (al_form_ && al_form_->enabled())
-            al_form_->update_lagging(reduced_to_extended(x), iter_num);
+        for (auto &form : homo_forms)
+            if (form->enabled())
+                form->update_lagging(reduced_to_extended(x), iter_num);
     }
 
     void NLHomoProblem::update_quantities(const double t, const TVector &x)
     {
         NLProblem::update_quantities(t, x);
-        if (contact_form_ && contact_form_->enabled())
-            contact_form_->update_quantities(t, reduced_to_extended(x));
-        if (al_form_ && al_form_->enabled())
-            al_form_->update_quantities(t, reduced_to_extended(x));
+        for (auto &form : homo_forms)
+            if (form->enabled())
+                form->update_quantities(t, reduced_to_extended(x));
     }
 
     Eigen::MatrixXd NLHomoProblem::constraint_grad() const
