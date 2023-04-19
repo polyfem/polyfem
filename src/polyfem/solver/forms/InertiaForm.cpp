@@ -57,7 +57,7 @@ namespace polyfem::solver
 		const int n_geom_bases,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &geom_bases,
-		const assembler::AssemblerUtils &assembler,
+		const assembler::Mass &assembler,
 		const assembler::AssemblyValsCache &ass_vals_cache,
 		const Eigen::MatrixXd &velocity, 
 		const Eigen::MatrixXd &adjoint, 

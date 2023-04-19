@@ -27,6 +27,7 @@ set(test_sources
   verify_run.cpp
   test_output.cpp
   test_parametrizations.cpp
+  test_restart.cpp
 )
 
 add_executable(unit_tests ${test_sources})
@@ -39,10 +40,10 @@ target_link_libraries(unit_tests PUBLIC polyfem::polyfem)
 target_link_libraries(unit_tests PUBLIC polyfem::warnings)
 
 include(catch2)
-target_link_libraries(unit_tests PUBLIC Catch2::Catch2)
+polyfem_target_link_system_libraries(unit_tests PUBLIC Catch2::Catch2)
 
 include(finite_diff)
-target_link_libraries(unit_tests PUBLIC finitediff::finitediff)
+polyfem_target_link_system_libraries(unit_tests PUBLIC finitediff::finitediff)
 
 include(polyfem_data)
 target_link_libraries(unit_tests PUBLIC polyfem::data)

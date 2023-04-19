@@ -1935,7 +1935,8 @@
             "export_energy_components",
             "solver_info_log",
             "max_step_size",
-            "min_step_size"
+            "min_step_size",
+            "force_psd_projection"
         ],
         "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
     },
@@ -2079,37 +2080,58 @@
         "doc": "When the energy is smaller than use_grad_norm_tol, line-search uses norm of gradient instead of energy"
     },
     {
+        "pointer": "/solver/nonlinear/force_psd_projection",
+        "default": false,
+        "type": "bool",
+        "doc": "Force the Hessian to be PSD when using second order solvers (i.e., Newton's method)."
+    },
+    {
         "pointer": "/solver/augmented_lagrangian",
         "default": null,
         "type": "object",
         "optional": [
             "initial_weight",
             "scaling",
-            "max_steps",
-            "force",
-            "threshold"
+            "max_weight",
+            "eta",
+            "max_solver_iters",
+            "force"
         ],
-        "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes a*E + (1-a)*AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a /= scaling` `max_steps` times."
+        "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes E + a/2*AL^2 - lambda AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a *= scaling` until `max_weight`. See IPC additional material"
     },
     {
         "pointer": "/solver/augmented_lagrangian/initial_weight",
-        "default": 0.5,
+        "default": 1e6,
         "min": 0,
-        "max": 1,
         "type": "float",
         "doc": "Initial weight for AL"
     },
     {
         "pointer": "/solver/augmented_lagrangian/scaling",
-        "default": 10.0,
+        "default": 2.0,
         "type": "float",
-        "doc": "Division factor"
+        "doc": "Multiplication factor"
     },
     {
-        "pointer": "/solver/augmented_lagrangian/max_steps",
-        "default": 20,
+        "pointer": "/solver/augmented_lagrangian/max_weight",
+        "default": 1e8,
+        "type": "float",
+        "doc": "Maximum weigth"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/eta",
+        "default": 0.99,
+        "min": 0,
+        "max": 1,
+        "type": "float",
+        "doc": "Tolerance for increasing the weight or updating the lagrangian"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/max_solver_iters",
+        "min": 1,
+        "default": 500,
         "type": "int",
-        "doc": "Maximum number of divisions"
+        "doc": "Maximum number of iterations of the nonlinear solver inside the AL steps."
     },
     {
         "pointer": "/solver/augmented_lagrangian/force",
@@ -2411,22 +2433,6 @@
     {
         "pointer": "/materials/*",
         "type": "object",
-        "type_name": "MooneyRivlin",
-        "required": [
-            "type",
-            "c1",
-            "c2"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "k"
-        ],
-        "doc": "Material Parameters including ID, for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
         "type_name": "NeoHookean",
         "required": [
             "type",
@@ -2440,6 +2446,54 @@
             "psi"
         ],
         "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "MooneyRivlin",
+        "required": [
+            "type",
+            "c1",
+            "c2",
+            "k"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "UnconstrainedOgden",
+        "required": [
+            "type",
+            "alphas",
+            "mus",
+            "Ds"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for [Ogden](https://en.wikipedia.org/wiki/Ogden_hyperelastic_model)."
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "IncompressibleOgden",
+        "required": [
+            "type",
+            "c",
+            "m",
+            "k"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for [Ogden](https://en.wikipedia.org/wiki/Ogden_hyperelastic_model)."
     },
     {
         "pointer": "/materials/*",
@@ -2611,12 +2665,12 @@
         "type": "object",
         "type_name": "Helmholtz",
         "required": [
-            "type"
+            "type",
+            "k"
         ],
         "optional": [
             "id",
-            "rho",
-            "k"
+            "rho"
         ],
         "doc": "Material Parameters including ID, k, density ($\\rho$)"
     },
@@ -2719,8 +2773,7 @@
     {
         "pointer": "/materials/*/k",
         "type": "float",
-        "doc": "Scaling for Helmholtz",
-        "default": 1
+        "doc": "Scaling for Helmholtz/Bulk modulus for Ogden"
     },
     {
         "pointer": "/materials/*/type",
@@ -2733,6 +2786,8 @@
             "MultiscaleRB",
             "Multiscale",
             "MooneyRivlin",
+            "UnconstrainedOgden",
+            "IncompressibleOgden",
             "Stokes",
             "NavierStokes",
             "IncompressibleLinearElasticity",
@@ -2762,6 +2817,81 @@
         "pointer": "/materials/*/c2",
         "type": "float",
         "doc": "Second Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/alphas",
+        "type": "float",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/mus",
+        "type": "float",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/Ds",
+        "type": "float",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/alphas",
+        "type": "list",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/mus",
+        "type": "list",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/Ds",
+        "type": "list",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/alphas/*",
+        "type": "float",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/mus/*",
+        "type": "float",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/Ds/*",
+        "type": "float",
+        "doc": ""
+    },
+    {
+        "pointer": "/materials/*/c",
+        "type": "float",
+        "doc": "Coefficient(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/materials/*/m",
+        "type": "float",
+        "doc": "Exponent(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/materials/*/c",
+        "type": "list",
+        "doc": "Coefficient(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/materials/*/m",
+        "type": "list",
+        "doc": "Exponent(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/materials/*/c/*",
+        "type": "float",
+        "doc": "Coefficient of Incompressible Ogden"
+    },
+    {
+        "pointer": "/materials/*/m/*",
+        "type": "float",
+        "doc": "Exponent(s) of Incompressible Ogden"
     },
     {
         "pointer": "/boundary_conditions",
@@ -2873,6 +3003,8 @@
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/id",
         "type": "int",
+        "min": 0,
+        "max": 2147483646,
         "doc": "ID of Dirichlet boundary condition from surface selection."
     },
     {
@@ -3009,6 +3141,20 @@
         "doc": "interpolation of boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_cubic",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*/type",
         "type": "string",
         "options": [
@@ -3016,7 +3162,8 @@
             "linear",
             "linear_ramp",
             "piecewise_constant",
-            "piecewise_linear"
+            "piecewise_linear",
+            "piecewise_cubic"
         ],
         "doc": "type of interpolation of boundary condition"
     },
@@ -3085,6 +3232,8 @@
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/id",
         "type": "int",
+        "min": 0,
+        "max": 2147483646,
         "doc": "ID of Neumann boundary condition"
     },
     {
@@ -3171,6 +3320,20 @@
         "doc": "interpolation of boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_cubic",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*/type",
         "type": "string",
         "options": [
@@ -3178,7 +3341,8 @@
             "linear",
             "linear_ramp",
             "piecewise_constant",
-            "piecewise_linear"
+            "piecewise_linear",
+            "piecewise_cubic"
         ],
         "doc": "type of interpolation of boundary condition"
     },
@@ -3248,20 +3412,17 @@
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/id",
         "type": "int",
+        "min": 0,
+        "max": 2147483646,
         "doc": "ID for the pressure Neumann boundary condition"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/value",
-        "type": "list",
-        "doc": "Values of pressure Neumann boundary condition"
-    },
-    {
-        "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
         "type": "string",
         "doc": "Values of pressure Neumann boundary condition as a function of $x,y,z,t$"
     },
     {
-        "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
+        "pointer": "/boundary_conditions/pressure_boundary/*/value",
         "type": "float",
         "doc": "Values of pressure Neumann boundary condition"
     },
@@ -3344,6 +3505,20 @@
         "doc": "interpolation of boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/*",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_cubic",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/type",
         "type": "string",
         "options": [
@@ -3351,7 +3526,8 @@
             "linear",
             "linear_ramp",
             "piecewise_constant",
-            "piecewise_linear"
+            "piecewise_linear",
+            "piecewise_cubic"
         ],
         "doc": "type of interpolation of boundary condition"
     },
@@ -3506,6 +3682,20 @@
         "doc": "interpolation of boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_cubic",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*/type",
         "type": "string",
         "options": [
@@ -3513,7 +3703,8 @@
             "linear",
             "linear_ramp",
             "piecewise_constant",
-            "piecewise_linear"
+            "piecewise_linear",
+            "piecewise_cubic"
         ],
         "doc": "type of interpolation of boundary condition"
     },
@@ -3848,6 +4039,7 @@
         "default": null,
         "type": "object",
         "optional": [
+            "use_hdf5",
             "material",
             "topology",
             "body_ids",
@@ -3858,6 +4050,12 @@
             "acceleration"
         ],
         "doc": "Optional fields in the output"
+    },
+    {
+        "pointer": "/output/paraview/options/use_hdf5",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, export the data as hdf5, compatible with paraview >5.11"
     },
     {
         "pointer": "/output/paraview/options/material",
@@ -4047,6 +4245,7 @@
             "vis_boundary_only",
             "curved_mesh_size",
             "save_solve_sequence_debug",
+            "save_ccd_debug_meshes",
             "save_time_sequence",
             "save_nl_solve_sequence",
             "spectrum"
@@ -4091,6 +4290,12 @@
     },
     {
         "pointer": "/output/advanced/save_solve_sequence_debug",
+        "default": false,
+        "type": "bool",
+        "doc": "saves AL internal steps, for debugging"
+    },
+    {
+        "pointer": "/output/advanced/save_ccd_debug_meshes",
         "default": false,
         "type": "bool",
         "doc": "saves AL internal steps, for debugging"
@@ -4154,7 +4359,7 @@
     },
     {
         "pointer": "/input/data/reorder",
-        "default": true,
+        "default": false,
         "type": "bool",
         "doc": "reorder input data"
     },

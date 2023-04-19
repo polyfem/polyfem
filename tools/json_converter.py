@@ -13,7 +13,7 @@ def rename_entry(key, f, key2, t):
 
 
 def remove_empty_dicts_from_list(li):
-    assert(type(li) == list)
+    assert (type(li) == list)
     for val in li:
         if type(val) is dict:
             remove_empty_dicts_from_dict(val)
@@ -130,6 +130,8 @@ def PolyFEM_convert(old):
     # copy_entry("use_spline", old, j["space"]["advanced"])
     copy_entry("bc_method", old, j["space"]["advanced"])
     copy_entry("n_boundary_samples", old, j["space"]["advanced"])
+    if "poly_basis_type" not in j["space"]:
+        j["space"]["poly_basis_type"] = {}
     copy_entry("poly_bases", old, j["space"]["poly_basis_type"])
     copy_entry("quadrature_order", old, j["space"]["advanced"])
     copy_entry("integral_constraints", old, j["space"]["advanced"])

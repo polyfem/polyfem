@@ -31,7 +31,7 @@ namespace polyfem::solver
         void cache_quantities_static(
             const Eigen::MatrixXd &u,
             const StiffnessMatrix &gradu_h,
-            const ipc::Constraints &contact_set,
+            const ipc::CollisionConstraints &contact_set,
             const ipc::FrictionConstraints &friction_constraint_set)
         {
             u_ = u;
@@ -51,7 +51,7 @@ namespace polyfem::solver
             const Eigen::MatrixXd &acc,
             const StiffnessMatrix &gradu_h,
             // const StiffnessMatrix &gradu_h_prev,
-            const ipc::Constraints &contact_set,
+            const ipc::CollisionConstraints &contact_set,
             const ipc::FrictionConstraints &friction_constraint_set)
         {
             bdf_order_(cur_step) = cur_bdf_order;
@@ -85,7 +85,7 @@ namespace polyfem::solver
         const StiffnessMatrix &gradu_h(const int step) const { assert(step < size()); return gradu_h_[step]; }
         // const StiffnessMatrix &gradu_h_prev(const int step) const { assert(step < size()); return gradu_h_prev_[step]; }
 
-        const ipc::Constraints &contact_set(const int step) const { assert(step < size()); return contact_set_[step]; }
+        const ipc::CollisionConstraints &contact_set(const int step) const { assert(step < size()); return contact_set_[step]; }
         const ipc::FrictionConstraints &friction_constraint_set(const int step) const { assert(step < size()); return friction_constraint_set_[step]; }
 
     private:
@@ -104,7 +104,7 @@ namespace polyfem::solver
         std::vector<StiffnessMatrix> gradu_h_; // gradient of force at time T wrt. u  at time T
         // std::vector<StiffnessMatrix> gradu_h_prev_; // gradient of force at time T wrt. u at time (T-1) in transient simulations
 
-        std::vector<ipc::Constraints> contact_set_;
+        std::vector<ipc::CollisionConstraints> contact_set_;
         std::vector<ipc::FrictionConstraints> friction_constraint_set_;
 
         Eigen::MatrixXd adjoint_mat_;

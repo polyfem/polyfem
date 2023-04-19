@@ -19,7 +19,7 @@ namespace polyfem::solver
 			state->in_args["geometry"][mesh_id_].erase("transformation");
 
 			state->mesh = nullptr;
-			state->assembler.update_lame_params(Eigen::MatrixXd(), Eigen::MatrixXd());
+			state->assembler->update_lame_params(Eigen::MatrixXd(), Eigen::MatrixXd());
 
 			state->init(state->in_args, false);
 
@@ -86,7 +86,7 @@ namespace polyfem::solver
 			}
 
 			state->mesh = nullptr;
-			state->assembler.update_lame_params(Eigen::MatrixXd(), Eigen::MatrixXd());
+			state->assembler->update_lame_params(Eigen::MatrixXd(), Eigen::MatrixXd());
 
 			state->init(state->in_args, false);
 

@@ -1,12 +1,10 @@
 #pragma once
 
-#include <polyfem/quadrature/Quadrature.hpp>
 #include <polyfem/basis/Basis.hpp>
 
 #include <Eigen/Dense>
-#include <iostream>
 
-//stores per local bases evaluations
+// stores per local bases evaluations
 namespace polyfem
 {
 	namespace assembler

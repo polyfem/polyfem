@@ -1,8 +1,5 @@
 #include "Problem.hpp"
 
-#include <memory>
-#include <iostream>
-
 namespace polyfem
 {
 	using namespace basis;

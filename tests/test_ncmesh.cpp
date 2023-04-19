@@ -90,7 +90,7 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 	// state.compute_mesh_stats();
 	state.build_basis();
 
-	state.assemble_stiffness_mat();
+	state.assemble_mass_mat();
 	state.assemble_rhs();
 
 	Eigen::MatrixXd sol;
@@ -174,7 +174,7 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 	// state.compute_mesh_stats();
 	state.build_basis();
 
-	state.assemble_stiffness_mat();
+	state.assemble_mass_mat();
 	state.assemble_rhs();
 
 	Eigen::MatrixXd sol;

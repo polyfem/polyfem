@@ -17,6 +17,7 @@ namespace cppoptlib
 
 		verify_hessian = solver_params["verify_hessian"];
 		disable_project_psd = solver_params["disable_project_psd"];
+		force_psd_projection = solver_params["force_psd_projection"];
 	}
 
 	// =======================================================================
@@ -82,9 +83,11 @@ namespace cppoptlib
 		assemble_hessian(objFunc, x, hessian);
 
 		if (!solve_linear_system(hessian, grad, direction))
+			// solve_linear_system will increase descent_strategy if needed
 			return compute_update_direction(objFunc, x, grad, direction);
 
 		if (!check_direction(hessian, grad, direction))
+			// check_direction will increase descent_strategy if needed
 			return compute_update_direction(objFunc, x, grad, direction);
 
 		json info;

@@ -162,7 +162,7 @@ namespace polyfem::solver
 				const quadrature::Quadrature &quadrature = vals.quadrature;
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-				state.assembler.compute_stiffness_value(state.formulation(), vals, quadrature.points, sol, stiffnesses);
+				state.assembler->compute_stiffness_value(vals, quadrature.points, sol, stiffnesses);
 				stiffnesses.array().colwise() *= local_storage.da.array();
 
 				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
@@ -225,7 +225,7 @@ namespace polyfem::solver
 
 					params["elem"] = e;
 					params["body_id"] = state.mesh->get_body_id(e);
-					j.evaluate(state.assembler.lame_params(), quadrature.points, vals.val, u, grad_u, params, result);
+					j.evaluate(state.assembler->parameters(), quadrature.points, vals.val, u, grad_u, params, result);
 
 					local_storage.val += dot(result, local_storage.da);
 				}
@@ -272,7 +272,7 @@ namespace polyfem::solver
 						params["elem"] = e;
 						params["body_id"] = state.mesh->get_body_id(e);
 						params["boundary_id"] = state.mesh->get_boundary_id(global_primitive_id);
-						j.evaluate(state.assembler.lame_params(), points, vals.val, u, grad_u, params, result);
+						j.evaluate(state.assembler->parameters(), points, vals.val, u, grad_u, params, result);
 
 						local_storage.val += dot(result, weights);
 					}
@@ -303,7 +303,7 @@ namespace polyfem::solver
 					params["body_id"] = state.mesh->get_body_id(e);
 					params["boundary_id"] = -1;
 					Eigen::MatrixXd val;
-					j.evaluate(state.assembler.lame_params(), Eigen::MatrixXd::Zero(1, dim) /*Not used*/, g.node, solution.block(g.index * dim, 0, dim, 1).transpose(), Eigen::MatrixXd::Zero(1, dim * actual_dim) /*Not used*/, params, val);
+					j.evaluate(state.assembler->parameters(), Eigen::MatrixXd::Zero(1, dim) /*Not used*/, g.node, solution.block(g.index * dim, 0, dim, 1).transpose(), Eigen::MatrixXd::Zero(1, dim * actual_dim) /*Not used*/, params, val);
 					integral += val(0);
 					traversed[g.index] = true;
 				}
@@ -360,13 +360,13 @@ namespace polyfem::solver
 					params["elem"] = e;
 					params["body_id"] = state.mesh->get_body_id(e);
 
-					j.evaluate(state.assembler.lame_params(), quadrature.points, vals.val, u, grad_u, params, j_val);
+					j.evaluate(state.assembler->parameters(), quadrature.points, vals.val, u, grad_u, params, j_val);
 
 					if (j.depend_on_gradu())
-						j.dj_dgradu(state.assembler.lame_params(), quadrature.points, vals.val, u, grad_u, params, dj_du);
+						j.dj_dgradu(state.assembler->parameters(), quadrature.points, vals.val, u, grad_u, params, dj_du);
 
 					if (j.depend_on_x())
-						j.dj_dx(state.assembler.lame_params(), quadrature.points, vals.val, u, grad_u, params, dj_dx);
+						j.dj_dx(state.assembler->parameters(), quadrature.points, vals.val, u, grad_u, params, dj_dx);
 
 					Eigen::MatrixXd tau_q, grad_u_q;
 					for (auto &v : gvals.basis_values)
@@ -435,18 +435,18 @@ namespace polyfem::solver
 						params["body_id"] = state.mesh->get_body_id(e);
 						params["boundary_id"] = state.mesh->get_boundary_id(global_primitive_id);
 
-						j.evaluate(state.assembler.lame_params(), points, vals.val, u, grad_u, params, j_val);
+						j.evaluate(state.assembler->parameters(), points, vals.val, u, grad_u, params, j_val);
 						j_val = j_val.array().colwise() * weights.array();
 
 						if (j.depend_on_gradu())
 						{
-							j.dj_dgradu(state.assembler.lame_params(), points, vals.val, u, grad_u, params, dj_du);
+							j.dj_dgradu(state.assembler->parameters(), points, vals.val, u, grad_u, params, dj_du);
 							dj_du = dj_du.array().colwise() * weights.array();
 						}
 
 						if (j.depend_on_x())
 						{
-							j.dj_dx(state.assembler.lame_params(), points, vals.val, u, grad_u, params, dj_dx);
+							j.dj_dx(state.assembler->parameters(), points, vals.val, u, grad_u, params, dj_dx);
 							dj_dx = dj_dx.array().colwise() * weights.array();
 						}
 
@@ -561,7 +561,7 @@ namespace polyfem::solver
 					params["elem"] = e;
 					params["body_id"] = state.mesh->get_body_id(e);
 
-					j.dj_dgradu(state.assembler.lame_params(), quadrature.points, vals.val, u, grad_u, params, dj_du);
+					j.dj_dgradu(state.assembler->parameters(), quadrature.points, vals.val, u, grad_u, params, dj_du);
 
 					local_storage.vec += dj_du.transpose() * local_storage.da;
 				}
@@ -730,7 +730,7 @@ namespace polyfem::solver
 			cur_nu(state.boundary_nodes).setZero();
 
 			{
-				state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, velocity, cur_nu, mass_term);
+				state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), *(state.mass_matrix_assembler), state.mass_ass_vals_cache, velocity, cur_nu, mass_term);
 				state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i), cur_p, elasticity_term);
 				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i - 1), cur_p, rhs_term);
 
@@ -758,7 +758,7 @@ namespace polyfem::solver
 					friction_term.setZero(mass_term.size());
 			}
 
-			one_form += beta_dt * (elasticity_term + rhs_term + damping_term + contact_term - friction_term + mass_term);
+			one_form += beta_dt * (elasticity_term + rhs_term + damping_term + contact_term + friction_term + mass_term);
 		}
 
 		// time step 0
@@ -773,7 +773,7 @@ namespace polyfem::solver
 			}
 		}
 		sum_alpha_p(state.boundary_nodes).setZero();
-		state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), state.assembler, state.mass_ass_vals_cache, state.diff_cached.v(0), sum_alpha_p, mass_term);
+		state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), *(state.mass_matrix_assembler), state.mass_ass_vals_cache, state.diff_cached.v(0), sum_alpha_p, mass_term);
 
 		one_form += mass_term;
 
@@ -851,7 +851,7 @@ namespace polyfem::solver
 				Eigen::MatrixXd surface_solution_prev = state.collision_mesh.vertices(utils::unflatten(state.diff_cached.u(t - 1), dim));
 				Eigen::MatrixXd surface_solution = state.collision_mesh.vertices(utils::unflatten(state.diff_cached.u(t), dim));
 
-				Eigen::MatrixXd force = state.collision_mesh.to_full_dof(-ipc::compute_friction_force(state.collision_mesh, state.collision_mesh.vertices_at_rest(), surface_solution_prev, surface_solution, state.diff_cached.friction_constraint_set(t), state.solve_data.contact_form->dhat(), state.solve_data.contact_form->barrier_stiffness(), state.solve_data.friction_form->epsv_dt()));
+				Eigen::MatrixXd force = state.collision_mesh.to_full_dof(-state.diff_cached.friction_constraint_set(t).compute_force(state.collision_mesh, state.collision_mesh.rest_positions(), surface_solution_prev, surface_solution, state.solve_data.contact_form->dhat(), state.solve_data.contact_form->barrier_stiffness(), state.solve_data.friction_form->epsv() * dt));
 
 				Eigen::VectorXd cur_p = adjoint_p.col(t);
 				cur_p(state.boundary_nodes).setZero();
@@ -993,7 +993,7 @@ namespace polyfem::solver
 
 					params["elem"] = e;
 					params["body_id"] = state.mesh->get_body_id(e);
-					result = j.grad_j(state.assembler.lame_params(), quadrature.points, vals.val, u, grad_u, params);
+					result = j.grad_j(state.assembler->parameters(), quadrature.points, vals.val, u, grad_u, params);
 					for (int q = 0; q < result.rows(); q++)
 						result.row(q) *= local_storage.da(q);
 
@@ -1066,7 +1066,7 @@ namespace polyfem::solver
 						params["elem"] = e;
 						params["body_id"] = state.mesh->get_body_id(e);
 						params["boundary_id"] = state.mesh->get_boundary_id(global_primitive_id);
-						result = j.grad_j(state.assembler.lame_params(), points, vals.val, u, grad_u, params);
+						result = j.grad_j(state.assembler->parameters(), points, vals.val, u, grad_u, params);
 						for (int q = 0; q < result.rows(); q++)
 							result.row(q) *= weights(q);
 
@@ -1132,7 +1132,7 @@ namespace polyfem::solver
 					params["body_id"] = state.mesh->get_body_id(e);
 					params["boundary_id"] = -1;
 					Eigen::MatrixXd val;
-					j.dj_du(state.assembler.lame_params(), Eigen::MatrixXd::Zero(1, dim) /*Not used*/, g.node, solution.block(g.index * dim, 0, dim, 1).transpose(), Eigen::MatrixXd::Zero(1, dim * actual_dim) /*Not used*/, params, val);
+					j.dj_du(state.assembler->parameters(), Eigen::MatrixXd::Zero(1, dim) /*Not used*/, g.node, solution.block(g.index * dim, 0, dim, 1).transpose(), Eigen::MatrixXd::Zero(1, dim * actual_dim) /*Not used*/, params, val);
 					term.block(g.index * actual_dim, 0, actual_dim, 1) += val.transpose();
 					traversed[g.index] = true;
 				}

@@ -16,6 +16,7 @@ namespace polyfem
 		public:
 			static int build_bases(
 				const std::string &assembler_name,
+				const int dim,
 				const mesh::Mesh2D &mesh,
 				const int n_bases,
 				const int quadrature_order,

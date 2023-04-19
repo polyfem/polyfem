@@ -4,6 +4,7 @@
 #include <Eigen/Dense>
 #include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 
 using namespace polyfem::assembler;
 
@@ -36,7 +37,7 @@ namespace polyfem
 			has_gradu = true;
 		}
 
-		void evaluate(const LameParameters &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params, Eigen::MatrixXd &val) const
+		void evaluate(const std::map<std::string, Assembler::ParamFunc> &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params, Eigen::MatrixXd &val) const
 		{
 			assert(j_func);
 			Eigen::MatrixXd lambda, mu;
@@ -44,7 +45,7 @@ namespace polyfem
 			j_func(local_pts, pts, u, grad_u, lambda, mu, params, val);
 		}
 
-		void dj_dx(const LameParameters &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params, Eigen::MatrixXd &val) const
+		void dj_dx(const std::map<std::string, Assembler::ParamFunc> &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params, Eigen::MatrixXd &val) const
 		{
 			assert(has_x);
 			Eigen::MatrixXd lambda, mu;
@@ -59,7 +60,7 @@ namespace polyfem
 			}
 		}
 
-		void dj_du(const LameParameters &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params, Eigen::MatrixXd &val) const
+		void dj_du(const std::map<std::string, Assembler::ParamFunc> &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params, Eigen::MatrixXd &val) const
 		{
 			assert(has_u);
 			Eigen::MatrixXd lambda, mu;
@@ -74,7 +75,7 @@ namespace polyfem
 			}
 		}
 
-		void dj_dgradu(const LameParameters &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params, Eigen::MatrixXd &val) const
+		void dj_dgradu(const std::map<std::string, Assembler::ParamFunc> &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params, Eigen::MatrixXd &val) const
 		{
 			assert(has_gradu);
 			Eigen::MatrixXd lambda, mu;
@@ -89,7 +90,7 @@ namespace polyfem
 			}
 		}
 
-		Eigen::MatrixXd grad_j(const LameParameters &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params) const
+		Eigen::MatrixXd grad_j(const std::map<std::string, Assembler::ParamFunc> &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, json &params) const
 		{
 			Eigen::MatrixXd val;
 			if (depend_on_gradu())
@@ -106,12 +107,23 @@ namespace polyfem
 		bool depend_on_gradu() const { return has_gradu; }
 
 	private:
-		void lambda_mu(const LameParameters &lame_params, const int e, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, Eigen::MatrixXd &lambda, Eigen::MatrixXd &mu) const
+		void lambda_mu(const std::map<std::string, Assembler::ParamFunc> &lame_params, const int e, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, Eigen::MatrixXd &lambda, Eigen::MatrixXd &mu) const
 		{
+			const double t = 0;
 			lambda.setZero(local_pts.rows(), 1);
 			mu.setZero(local_pts.rows(), 1);
+			
+			auto search_lambda = lame_params.find("lambda");
+			auto search_mu = lame_params.find("mu");
+
+			if (search_lambda == lame_params.end() || search_mu == lame_params.end())
+				return;
+
 			for (int p = 0; p < local_pts.rows(); p++)
-				lame_params.lambda_mu(local_pts.row(p), pts.row(p), e, lambda(p), mu(p));
+			{
+				lambda(p) = search_lambda->second(local_pts.row(p), pts.row(p), t, e);
+				mu(p) = search_mu->second(local_pts.row(p), pts.row(p), t, e);
+			}
 		}
 
 		std::string name = "";

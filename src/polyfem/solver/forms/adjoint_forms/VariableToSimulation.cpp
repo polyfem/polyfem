@@ -1,6 +1,10 @@
 #include "VariableToSimulation.hpp"
 #include <polyfem/State.hpp>
 #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
+#include <polyfem/assembler/ViscousDamping.hpp>
+
+#include <polyfem/mesh/mesh2D/Mesh2D.hpp>
+#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
 namespace polyfem::solver
 {
@@ -157,7 +161,7 @@ namespace polyfem::solver
 		{
 			const int n_elem = state->bases.size();
 			assert(n_elem * 2 == state_variable.size());
-			state->assembler.update_lame_params(state_variable.segment(0, n_elem), state_variable.segment(n_elem, n_elem));
+			state->assembler->update_lame_params(state_variable.segment(0, n_elem), state_variable.segment(n_elem, n_elem));
 		}
 	}
 	Eigen::VectorXd ElasticVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
@@ -185,8 +189,40 @@ namespace polyfem::solver
 	}
 	Eigen::VectorXd ElasticVariableToSimulation::inverse_eval()
 	{
-		log_and_throw_error("Not implemented!");
-		return Eigen::VectorXd();
+		auto &state = *(states_[0]);
+
+		auto search_lambda = state.assembler->parameters().find("lambda");
+		auto search_mu = state.assembler->parameters().find("mu");
+		if (search_lambda == state.assembler->parameters().end() || search_mu == state.assembler->parameters().end())
+		{
+			log_and_throw_error("Failed to find Lame parameters!");
+			return Eigen::VectorXd();
+		}
+			
+		Eigen::VectorXd lambdas(state.mesh->n_elements());
+		Eigen::VectorXd mus(state.mesh->n_elements());
+		for (int e = 0; e < state.mesh->n_elements(); e++)
+		{
+			RowVectorNd barycenter;
+			if (!state.mesh->is_volume())
+			{
+				const auto &mesh2d = *dynamic_cast<mesh::Mesh2D *>(state.mesh.get());
+				barycenter = mesh2d.face_barycenter(e);
+			}
+			else
+			{
+				const auto &mesh3d = *dynamic_cast<mesh::Mesh3D *>(state.mesh.get());
+				barycenter = mesh3d.cell_barycenter(e);
+			}
+			lambdas(e) = search_lambda->second(RowVectorNd::Zero(state.mesh->dimension()), barycenter, 0., e);
+			mus(e) = search_mu->second(RowVectorNd::Zero(state.mesh->dimension()), barycenter, 0., e);
+		}
+		state.assembler->update_lame_params(lambdas, mus);
+
+		Eigen::VectorXd params(lambdas.size() + mus.size());
+		params << lambdas, mus;
+
+		return parametrization_.inverse_eval(params);
 	}
 
 	void FrictionCoeffientVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
@@ -233,7 +269,24 @@ namespace polyfem::solver
 			{"phi", state_variable(1)},
 		};
 		for (auto state : states_)
-			state->assembler.add_multimaterial(0, damping_param);
+		{
+			if (!state->args["materials"].is_array())
+			{
+				state->args["materials"]["psi"] = damping_param["psi"];
+				state->args["materials"]["phi"] = damping_param["phi"];
+			}
+			else
+			{
+				for (auto &arg : state->args["materials"])
+				{
+					arg["psi"] = damping_param["psi"];
+					arg["phi"] = damping_param["phi"];
+				}
+			}
+
+			if (state->damping_assembler)
+				state->damping_assembler->add_multimaterial(0, damping_param);
+		}
 		logger().info("Current damping params: {}, {}", state_variable(0), state_variable(1));
 	}
 	Eigen::VectorXd DampingCoeffientVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const

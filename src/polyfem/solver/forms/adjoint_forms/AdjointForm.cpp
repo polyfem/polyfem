@@ -176,7 +176,8 @@ namespace polyfem::solver
 					continue;
 				
 				state_.ass_vals_cache.compute(e, state_.mesh->is_volume(), state_.bases[e], state_.geom_bases()[e], vals);
-				state_.assembler.compute_tensor_value(state_.formulation(), e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step_), local_vals);
+				// state_.assembler->compute_tensor_value(e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step_), local_vals);
+				log_and_throw_error("Max stress form is deprecated!");
 				Eigen::VectorXd stress_norms = local_vals.rowwise().norm();
 				max_stress(e) = std::max(max_stress(e), stress_norms.maxCoeff());
 			}

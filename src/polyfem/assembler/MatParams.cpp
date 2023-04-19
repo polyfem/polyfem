@@ -1,5 +1,7 @@
 #include "MatParams.hpp"
 
+#include <polyfem/utils/JSONUtils.hpp>
+
 namespace polyfem::assembler
 {
 	namespace
@@ -50,6 +52,34 @@ namespace polyfem::assembler
 		const auto &tmp_param = param_.size() == 1 ? param_[0] : param_[index];
 
 		return tmp_param(x, y, z, t, index);
+	}
+
+	GenericMatParams::GenericMatParams(const std::string &param_name)
+		: param_name_(param_name)
+	{
+	}
+
+	void GenericMatParams::add_multimaterial(const int index, const json &params)
+	{
+		if (!params.contains(param_name_))
+			return;
+
+		std::vector<json> params_array = utils::json_as_array(params[param_name_]);
+		assert(params_array.size() == params_.size() || params_.empty());
+
+		if (params_.empty())
+			for (int i = 0; i < params_array.size(); ++i)
+				params_.emplace_back(param_name_ + "_" + std::to_string(i));
+
+		for (int i = 0; i < params_.size(); ++i)
+		{
+			for (int j = params_.at(i).param_.size(); j <= index; ++j)
+			{
+				params_.at(i).param_.emplace_back();
+			}
+
+			params_.at(i).param_[index].init(params_array[i]);
+		}
 	}
 
 	void ElasticityTensor::resize(const int size)
@@ -278,7 +308,7 @@ namespace polyfem::assembler
 		is_lambda_mu_ = true;
 	}
 
-	void LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu, bool has_density) const
+	void LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const
 	{
 		assert(lambda_or_E_.size() == 1 || el_id < lambda_or_E_.size());
 		assert(mu_or_nu_.size() == 1 || el_id < mu_or_nu_.size());

@@ -24,6 +24,7 @@
 #include <ipc/ipc.hpp>
 #include <ipc/barrier/barrier.hpp>
 #include <ipc/utils/local_to_global.hpp>
+#include <finitediff.hpp>
 
 #include <Eigen/Dense>
 #include <unsupported/Eigen/SparseExtra>
@@ -104,7 +105,7 @@ namespace polyfem
 		if (!problem->is_time_dependent() || current_step > 0)
 			compute_force_hessian(sol, disp_grad, gradu_h);
 
-		auto cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::Constraints();
+		auto cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::CollisionConstraints();
 		auto cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_constraint_set() : ipc::FrictionConstraints();
 
 		if (problem->is_time_dependent())
@@ -142,11 +143,11 @@ namespace polyfem
 		}
 	}
 
-	void State::compute_force_hessian(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian) const
+	void State::compute_force_hessian(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian)
 	{
 		if (problem->is_time_dependent())
 		{
-			if (assembler.is_linear(formulation()) && !is_contact_enabled())
+			if (assembler->is_linear() && !is_contact_enabled())
 				log_and_throw_error("Transient linear formulation is not yet differentiable!");
 
 			StiffnessMatrix tmp_hess;
@@ -158,9 +159,11 @@ namespace polyfem
 		}
 		else // static formulation
 		{
-			if (assembler.is_linear(formulation()) && !is_contact_enabled() && disp_grad_.size() == 0)
+			if (assembler->is_linear() && !is_contact_enabled() && disp_grad_.size() == 0)
 			{
 				hessian.setZero();
+				StiffnessMatrix stiffness;
+				build_stiffness_mat(stiffness);
 				replace_rows_by_identity(hessian, stiffness, boundary_nodes);
 			}
 			else
@@ -184,9 +187,9 @@ namespace polyfem
 	void State::compute_force_hessian_prev(const int step, StiffnessMatrix &hessian_prev) const
 	{
 		assert(step > 0);
-		if (assembler.is_linear(formulation()) && !is_contact_enabled())
+		if (assembler->is_linear() && !is_contact_enabled())
 		{
-			hessian_prev = StiffnessMatrix(stiffness.rows(), stiffness.cols());
+			hessian_prev = StiffnessMatrix(ndof(), ndof());
 		}
 		else
 		{
@@ -203,22 +206,55 @@ namespace polyfem
 					Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(utils::unflatten(u_prev, mesh->dimension()));
 					Eigen::MatrixXd surface_solution = collision_mesh.vertices(utils::unflatten(u, mesh->dimension()));
 
-					hessian_prev = -ipc::compute_friction_force_jacobian(
+					hessian_prev = -diff_cached.friction_constraint_set(step).compute_force_jacobian(
 						collision_mesh,
-						collision_mesh.vertices_at_rest(),
+						collision_mesh.rest_positions(),
 						surface_solution_prev,
 						surface_solution,
-						diff_cached.friction_constraint_set(step),
-						solve_data.contact_form->dhat(), solve_data.contact_form->barrier_stiffness(), solve_data.friction_form->epsv_dt(),
+						solve_data.contact_form->dhat(), solve_data.contact_form->barrier_stiffness(), solve_data.friction_form->epsv() * dt,
 						ipc::FrictionConstraint::DiffWRT::Ut);
+				
+					// {
+					// 	Eigen::MatrixXd X = collision_mesh.rest_positions();
+					// 	Eigen::VectorXd x = utils::flatten(surface_solution_prev);
+					// 	const double barrier_stiffness = solve_data.contact_form->barrier_stiffness();
+					// 	const double dhat = solve_data.contact_form->dhat();
+					// 	const double mu = solve_data.friction_form->mu();
+					// 	const double epsv = solve_data.friction_form->epsv();
+
+					// 	Eigen::MatrixXd fgrad;
+					// 	fd::finite_jacobian(
+					// 		x, [&](const Eigen::VectorXd &y) -> Eigen::VectorXd 
+					// 		{
+					// 			Eigen::MatrixXd fd_Ut = utils::unflatten(y, surface_solution_prev.cols());
+
+					// 			ipc::FrictionConstraints fd_friction_constraints;
+					// 			ipc::CollisionConstraints fd_constraints;
+					// 			fd_constraints.set_use_convergent_formulation(solve_data.contact_form->use_convergent_formulation());
+					// 			fd_constraints.set_are_shape_derivatives_enabled(true);
+					// 			fd_constraints.build(collision_mesh, X + fd_Ut, dhat);
+
+					// 			fd_friction_constraints.build(
+					// 				collision_mesh, X + fd_Ut, fd_constraints, dhat, barrier_stiffness,
+					// 				mu);
+								
+					// 			// return -fd_friction_constraints.compute_force(
+					//     			// collision_mesh, X, fd_Ut, surface_solution, dhat, barrier_stiffness, epsv);
+					// 			return fd_friction_constraints.compute_potential_gradient(collision_mesh, (surface_solution - fd_Ut) / dt, epsv);
+
+					// 		}, fgrad, fd::AccuracyOrder::SECOND, 1e-8);
+						
+					// 	std::cout << "force Ut derivative error " << (fgrad - hessian_prev).norm() << " " << hessian_prev.norm() << "\n";
+					// }
+				
 					hessian_prev = collision_mesh.to_full_dof(hessian_prev) / (beta * dt) / (beta * dt);
 				}
 
-				if (assembler.has_damping())
+				if (damping_assembler->is_valid())
 				{
-					utils::SpareMatrixCache mat_cache;
+					utils::SparseMatrixCache mat_cache;
 					StiffnessMatrix damping_hessian_prev(u.size(), u.size());
-					assembler.assemble_energy_hessian("DampingPrev", mesh->is_volume(), n_bases, false, bases, geom_bases(), ass_vals_cache, dt, u, u_prev, mat_cache, damping_hessian_prev);
+					damping_prev_assembler->assemble_hessian(mesh->is_volume(), n_bases, false, bases, geom_bases(), ass_vals_cache, dt, u, u_prev, mat_cache, damping_hessian_prev);
 
 					hessian_prev += damping_hessian_prev;
 				}

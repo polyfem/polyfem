@@ -224,7 +224,7 @@ namespace polyfem::solver
 				if (active_state_mask[i] || state->diff_cached.size() == 0)
 				{
 					state->assemble_rhs();
-					state->assemble_stiffness_mat();
+					state->assemble_mass_mat();
 					Eigen::MatrixXd sol, pressure; // solution is also cached in state
 					state->solve_problem(sol, pressure);
 				}

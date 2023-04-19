@@ -41,7 +41,7 @@ namespace cppoptlib
 
 		void set_line_search(const std::string &line_search_name);
 
-		void minimize(ProblemType &objFunc, TVector &x);
+		void minimize(ProblemType &objFunc, TVector &x) override;
 
 		double line_search(const TVector &x, const TVector &delta_x, ProblemType &objFunc);
 
@@ -63,6 +63,8 @@ namespace cppoptlib
 		}
 
 		bool verify_gradient(ProblemType &objFunc, const TVector &x, const TVector &grad);
+		size_t max_iterations() const { return this->m_stop.iterations; }
+		size_t &max_iterations() { return this->m_stop.iterations; }
 
 	protected:
 		// ====================================================================

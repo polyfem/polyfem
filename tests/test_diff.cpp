@@ -26,7 +26,7 @@
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>
 
-#include <polyfem/io/VTUWriter.hpp>
+#include <paraviewo/VTUWriter.hpp>
 #include <finitediff.hpp>
 
 #include <catch2/catch.hpp>
@@ -352,10 +352,7 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 	for (int e = 0; e < state.bases.size(); e++)
 		theta(e) = (rand() % 1000) / 1000.0;
 
-	Eigen::VectorXd y(state.bases.size() * 2);
-	y << state.assembler.lame_params().lambda_mat_, state.assembler.lame_params().mu_mat_;
-
-	Eigen::VectorXd x = composite_map.inverse_eval(y);
+	Eigen::VectorXd x = variable_to_simulations[0]->inverse_eval();
 
 	for (auto &v2s : variable_to_simulations)
 		v2s->update(x);
@@ -776,7 +773,7 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
 	load_json(path + "node-trajectory.json", in_args);
-	auto state_ptr = create_state_and_solve(in_args);
+	auto state_ptr = create_state(in_args);
 	State &state = *state_ptr;
 
 	json opt_args;
@@ -795,8 +792,9 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 
 	NodeTargetForm obj(state, variable_to_simulations, actives, targets);
 
-	Eigen::VectorXd x(state.mesh->n_elements() * 2);
-	x << state.assembler.lame_params().lambda_mat_, state.assembler.lame_params().mu_mat_;
+	Eigen::VectorXd x = variable_to_simulations[0]->inverse_eval();
+	variable_to_simulations[0]->update(x);
+	solve_pde(state);
 
 	Eigen::MatrixXd velocity_discrete(x.size(), 1);
 	velocity_discrete.setRandom();
@@ -860,7 +858,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 	in_args_ref["materials"]["E"] = 1e5;
 	std::shared_ptr<State> state_reference = create_state_and_solve(in_args_ref);
 
-	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
+	std::shared_ptr<State> state_ptr = create_state(in_args);
 	State &state = *state_ptr;
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
@@ -877,10 +875,11 @@ TEST_CASE("material-transient", "[adjoint_method]")
 	velocity_discrete.setOnes(state.bases.size() * 2);
 	velocity_discrete *= 1e3;
 
-	Eigen::VectorXd x(velocity_discrete.size());
-	x << state.assembler.lame_params().lambda_mat_, state.assembler.lame_params().mu_mat_;
+	Eigen::VectorXd x = variable_to_simulations[0]->inverse_eval();
+	variable_to_simulations[0]->update(x);
+	solve_pde(state);
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-5, 1e-4);
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, opt_args["solver"]["nonlinear"]["debug_fd_eps"], 1e-4);
 }
 
 TEST_CASE("shape-transient-friction", "[adjoint_method]")

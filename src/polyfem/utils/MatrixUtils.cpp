@@ -29,7 +29,7 @@ void polyfem::utils::show_matrix_stats(const Eigen::MatrixXd &M)
 	// logger().trace("{}", lu.solve(M) );
 }
 
-polyfem::utils::SpareMatrixCache::SpareMatrixCache(const size_t size)
+polyfem::utils::SparseMatrixCache::SparseMatrixCache(const size_t size)
 	: size_(size)
 {
 	tmp_.resize(size_, size_);
@@ -37,7 +37,7 @@ polyfem::utils::SpareMatrixCache::SpareMatrixCache(const size_t size)
 	mat_.setZero();
 }
 
-polyfem::utils::SpareMatrixCache::SpareMatrixCache(const size_t rows, const size_t cols)
+polyfem::utils::SparseMatrixCache::SparseMatrixCache(const size_t rows, const size_t cols)
 	: size_(rows == cols ? rows : 0)
 {
 	tmp_.resize(rows, cols);
@@ -45,12 +45,12 @@ polyfem::utils::SpareMatrixCache::SpareMatrixCache(const size_t rows, const size
 	mat_.setZero();
 }
 
-polyfem::utils::SpareMatrixCache::SpareMatrixCache(const polyfem::utils::SpareMatrixCache &other)
+polyfem::utils::SparseMatrixCache::SparseMatrixCache(const polyfem::utils::SparseMatrixCache &other)
 {
 	init(other);
 }
 
-void polyfem::utils::SpareMatrixCache::init(const size_t size)
+void polyfem::utils::SparseMatrixCache::init(const size_t size)
 {
 	assert(mapping().empty() || size_ == size);
 
@@ -60,7 +60,7 @@ void polyfem::utils::SpareMatrixCache::init(const size_t size)
 	mat_.setZero();
 }
 
-void polyfem::utils::SpareMatrixCache::init(const size_t rows, const size_t cols)
+void polyfem::utils::SparseMatrixCache::init(const size_t rows, const size_t cols)
 {
 	assert(mapping().empty());
 
@@ -70,7 +70,7 @@ void polyfem::utils::SpareMatrixCache::init(const size_t rows, const size_t cols
 	mat_.setZero();
 }
 
-void polyfem::utils::SpareMatrixCache::init(const SpareMatrixCache &other)
+void polyfem::utils::SparseMatrixCache::init(const SparseMatrixCache &other)
 {
 	if (main_cache_ == nullptr)
 	{
@@ -89,7 +89,7 @@ void polyfem::utils::SpareMatrixCache::init(const SpareMatrixCache &other)
 	std::fill(values_.begin(), values_.end(), 0);
 }
 
-void polyfem::utils::SpareMatrixCache::set_zero()
+void polyfem::utils::SparseMatrixCache::set_zero()
 {
 	tmp_.setZero();
 	mat_.setZero();
@@ -97,7 +97,7 @@ void polyfem::utils::SpareMatrixCache::set_zero()
 	std::fill(values_.begin(), values_.end(), 0);
 }
 
-void polyfem::utils::SpareMatrixCache::add_value(const int e, const int i, const int j, const double value)
+void polyfem::utils::SparseMatrixCache::add_value(const int e, const int i, const int j, const double value)
 {
 	if (mapping().empty())
 	{
@@ -139,7 +139,7 @@ void polyfem::utils::SpareMatrixCache::add_value(const int e, const int i, const
 	}
 }
 
-void polyfem::utils::SpareMatrixCache::prune()
+void polyfem::utils::SparseMatrixCache::prune()
 {
 	if (mapping().empty())
 	{
@@ -157,7 +157,7 @@ void polyfem::utils::SpareMatrixCache::prune()
 	}
 }
 
-polyfem::StiffnessMatrix polyfem::utils::SpareMatrixCache::get_matrix(const bool compute_mapping)
+polyfem::StiffnessMatrix polyfem::utils::SparseMatrixCache::get_matrix(const bool compute_mapping)
 {
 	prune();
 
@@ -251,9 +251,9 @@ polyfem::StiffnessMatrix polyfem::utils::SpareMatrixCache::get_matrix(const bool
 	return mat_;
 }
 
-polyfem::utils::SpareMatrixCache polyfem::utils::SpareMatrixCache::operator+(const SpareMatrixCache &a) const
+polyfem::utils::SparseMatrixCache polyfem::utils::SparseMatrixCache::operator+(const SparseMatrixCache &a) const
 {
-	polyfem::utils::SpareMatrixCache out(a);
+	polyfem::utils::SparseMatrixCache out(a);
 
 	if (a.mapping().empty() || mapping().empty())
 	{
@@ -301,7 +301,7 @@ polyfem::utils::SpareMatrixCache polyfem::utils::SpareMatrixCache::operator+(con
 	return out;
 }
 
-void polyfem::utils::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
+void polyfem::utils::SparseMatrixCache::operator+=(const SparseMatrixCache &o)
 {
 	if (mapping().empty() || o.mapping().empty())
 	{

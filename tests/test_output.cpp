@@ -15,7 +15,11 @@ using namespace polyfem::utils;
 
 bool load_json(const std::string &json_file, json &out);
 
+#ifdef NDEBUG
 TEST_CASE("full sim", "[full_sim]")
+#else
+TEST_CASE("full sim", "[.][full_sim]")
+#endif
 {
 	const std::string scene = GENERATE("2D/unit-tests/5-squares", "3D/unit-tests/5-cubes-fast", "3D/unit-tests/edge-edge-parallel");
 	const std::string scene_file = fmt::format("{}/contact/examples/{}.json", POLYFEM_DATA_DIR, scene);
@@ -63,7 +67,7 @@ TEST_CASE("full sim", "[full_sim]")
 	state.build_basis();
 
 	state.assemble_rhs();
-	state.assemble_stiffness_mat();
+	state.assemble_mass_mat();
 
 	Eigen::MatrixXd sol;
 	Eigen::MatrixXd pressure;

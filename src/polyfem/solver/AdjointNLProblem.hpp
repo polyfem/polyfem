@@ -22,7 +22,7 @@ namespace polyfem::solver
 		double value(const Eigen::VectorXd &x) override;
 
 		void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
-		void hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian);
+		void hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
 
 		Eigen::VectorXd component_values(const Eigen::VectorXd &x) override;
 		Eigen::MatrixXd component_gradients(const Eigen::VectorXd &x) override;

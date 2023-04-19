@@ -104,7 +104,7 @@ namespace polyfem
 		json j;
 		stats.save_json(args, n_bases, n_pressure_bases,
 						sol, *mesh, disc_orders, *problem, timings,
-						formulation(), iso_parametric(), args["output"]["advanced"]["sol_at_node"],
+						assembler->name(), iso_parametric(), args["output"]["advanced"]["sol_at_node"],
 						j);
 		out << j.dump(4) << std::endl;
 	}
@@ -140,7 +140,6 @@ namespace polyfem
 			logger().error("Build the bases first!");
 			return;
 		}
-		// if (stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
 		// if (rhs.size() <= 0)
 		// {
 		// 	logger().error("Assemble the rhs first!");
@@ -189,32 +188,57 @@ namespace polyfem
 		restart_json["common"] = root_path();
 		restart_json["time"] = {{"t0", t0 + dt * t}};
 
-		const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
+		std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
 		if (!rest_mesh_path.empty())
 		{
+			rest_mesh_path = resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t));
+
 			std::vector<json> patch;
-			const std::vector<json> in_geometry = args["geometry"];
-			for (int i = 0; i < in_geometry.size(); ++i)
+			if (args["geometry"].is_array())
 			{
-				if (!in_geometry[i]["is_obstacle"].get<bool>())
+				const std::vector<json> in_geometry = args["geometry"];
+				for (int i = 0; i < in_geometry.size(); ++i)
 				{
-					patch.push_back({
-						{"op", "remove"},
-						{"path", fmt::format("/geometry/{}", i)},
-					});
+					if (!in_geometry[i]["is_obstacle"].get<bool>())
+					{
+						patch.push_back({
+							{"op", "remove"},
+							{"path", fmt::format("/geometry/{}", i)},
+						});
+					}
 				}
+
+				const int remaining_geometry = in_geometry.size() - patch.size();
+				assert(remaining_geometry >= 0);
+
+				patch.push_back({
+					{"op", "add"},
+					{"path", fmt::format("/geometry/{}", remaining_geometry > 0 ? "0" : "-")},
+					{"value",
+					 {
+						 // TODO: this does not set the surface selections
+						 {"mesh", rest_mesh_path},
+					 }},
+				});
 			}
-			const int remaining_geometry = in_geometry.size() - patch.size();
-			assert(remaining_geometry >= 0);
-			patch.push_back({
-				{"op", "add"},
-				{"path", fmt::format("/geometry/{}", remaining_geometry > 0 ? "0" : "-")},
-				{"value",
-				 {
-					 // TODO: this does not set the surface selections
-					 {"mesh", resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t))},
-				 }},
-			});
+			else
+			{
+				assert(args["geometry"].is_object());
+				patch.push_back({
+					{"op", "remove"},
+					{"path", "/geometry"},
+				});
+				patch.push_back({
+					{"op", "replace"},
+					{"path", "/geometry"},
+					{"value",
+					 {
+						 // TODO: this does not set the surface selections
+						 {"mesh", rest_mesh_path},
+					 }},
+				});
+			}
+
 			restart_json["patch"] = patch;
 		}
 

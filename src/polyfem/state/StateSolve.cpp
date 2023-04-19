@@ -19,7 +19,7 @@ namespace polyfem
 
 		initial_solution(sol);
 
-		if (assembler.is_mixed(formulation()))
+		if (mixed_assembler != nullptr)
 		{
 			pressure.resize(0, 0);
 			sol.conservativeResize(rhs.size(), sol.cols());
@@ -110,11 +110,11 @@ namespace polyfem
 		if (boundary_nodes.size() > 0 || problem->is_time_dependent())
 			return 0;
 		
-		if (assembler.is_fluid(formulation()))
+		if (assembler->is_fluid())
 			return mesh->dimension();
-		else if (formulation() == "Laplacian")
+		else if (assembler->name() == "Laplacian")
 			return 1;
-		else if (assembler.is_solution_displacement(formulation()))
+		else if (assembler->is_solution_displacement())
 			if (!has_periodic_bc()) // pure neumann
 				return 3 * (mesh->dimension() - 1);
 			else
@@ -175,7 +175,7 @@ namespace polyfem
 			A_extended.setFromTriplets(entries.begin(), entries.end());
 			std::swap(A, A_extended);
 		}
-		else if (assembler.is_solution_displacement(formulation()))
+		else if (assembler->is_solution_displacement())
 		{
 			Eigen::MatrixXd test_func;
 			if (!has_periodic_bc()) 
@@ -311,7 +311,7 @@ namespace polyfem
 			A_extended.setFromTriplets(entries.begin(), entries.end());
 			std::swap(A, A_extended);
 		}
-		else if (assembler.is_fluid(formulation()))
+		else if (assembler->is_fluid())
 		{
 			Eigen::MatrixXd coeffs(n_bases * problem_dim, problem_dim);
 			coeffs.setZero();

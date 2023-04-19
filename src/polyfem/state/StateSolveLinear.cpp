@@ -1,5 +1,8 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
 
@@ -11,6 +14,10 @@
 
 #include <polysolve/FEMSolver.hpp>
 
+#include <igl/Timer.h>
+
+#include <unsupported/Eigen/SparseExtra>
+
 namespace polyfem
 {
 	using namespace mesh;
@@ -19,6 +26,48 @@ namespace polyfem
 	using namespace solver;
 	using namespace io;
 
+	void State::build_stiffness_mat(StiffnessMatrix &stiffness)
+	{
+		igl::Timer timer;
+		timer.start();
+		logger().info("Assembling stiffness mat...");
+		assert(assembler->is_linear());
+
+		if (mixed_assembler != nullptr)
+		{
+
+			StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
+			assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, velocity_stiffness);
+			mixed_assembler->assemble(mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, geom_bases(), pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
+			pressure_assembler->assemble(mesh->is_volume(), n_pressure_bases, pressure_bases, geom_bases(), pressure_ass_vals_cache, pressure_stiffness);
+
+			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+
+			assembler::AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure ? assembler->is_fluid() : false,
+															velocity_stiffness, mixed_stiffness, pressure_stiffness,
+															stiffness);
+		}
+		else
+		{
+			assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, stiffness);
+		}
+
+		timer.stop();
+		timings.assembling_stiffness_mat_time = timer.getElapsedTime();
+		logger().info(" took {}s", timings.assembling_stiffness_mat_time);
+
+		stats.nn_zero = stiffness.nonZeros();
+		stats.num_dofs = stiffness.rows();
+		stats.mat_size = (long long)stiffness.rows() * (long long)stiffness.cols();
+		logger().info("sparsity: {}/{}", stats.nn_zero, stats.mat_size);
+
+		const std::string full_mat_path = args["output"]["data"]["full_mat"];
+		if (!full_mat_path.empty())
+		{
+			Eigen::saveMarket(stiffness, full_mat_path);
+		}
+	}
+
 	void State::solve_linear(
 		const std::unique_ptr<polysolve::LinearSolver> &solver,
 		StiffnessMatrix &A,
@@ -26,7 +75,7 @@ namespace polyfem
 		const bool compute_spectrum,
 		Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
-		assert(assembler.is_linear(formulation()) && !is_contact_enabled());
+		assert(assembler->is_linear() && !is_contact_enabled());
 		assert(solve_data.rhs_assembler != nullptr);
 
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
@@ -57,7 +106,7 @@ namespace polyfem
 		{
 			stats.spectrum = dirichlet_solve(
 				*solver, A, b, boundary_nodes_tmp, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
-				assembler.is_fluid(formulation()), use_avg_pressure);
+				assembler->is_fluid(), use_avg_pressure);
 		}
 
 		solver->getInfo(stats.solver_info);
@@ -74,14 +123,14 @@ namespace polyfem
  		else
  			sol = x; // Explicit copy because sol is a MatrixXd (with one column)
 
-		if (assembler.is_mixed(formulation()))
+		if (mixed_assembler != nullptr)
 			sol_to_pressure(sol, pressure);
 	}
 
 	void State::solve_linear(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		assert(!problem->is_time_dependent());
-		assert(assembler.is_linear(formulation()) && !is_contact_enabled());
+		assert(assembler->is_linear() && !is_contact_enabled());
 
 		// --------------------------------------------------------------------
 		if (lin_solver_cached)
@@ -96,9 +145,11 @@ namespace polyfem
 
 		solve_data.rhs_assembler->set_bc(
 			local_boundary, boundary_nodes, n_boundary_samples(),
-			(formulation() != "Bilaplacian") ? local_neumann_boundary : std::vector<LocalBoundary>(), rhs);
+			(assembler->name() != "Bilaplacian") ? local_neumann_boundary : std::vector<LocalBoundary>(), rhs);
 
-		StiffnessMatrix A = stiffness;
+		StiffnessMatrix A;
+		build_stiffness_mat(A);
+
 		Eigen::VectorXd b = rhs;
 
 		// --------------------------------------------------------------------
@@ -108,17 +159,16 @@ namespace polyfem
 
 	void State::init_linear_solve(Eigen::MatrixXd &sol, const double t)
 	{
-		assert(assembler.is_linear(formulation()) && !is_contact_enabled()); // linear
+		assert(assembler->is_linear() && !is_contact_enabled()); // linear
 
-		if (assembler.is_mixed(formulation()))
+		if (mixed_assembler != nullptr)
 			return;
 
 		const int ndof = n_bases * mesh->dimension();
 
 		solve_data.elastic_form = std::make_shared<ElasticForm>(
 			n_bases, bases, geom_bases(),
-			assembler, ass_vals_cache,
-			formulation(),
+			*assembler, ass_vals_cache,
 			problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
 			mesh->is_volume());
 
@@ -126,7 +176,7 @@ namespace polyfem
 			ndof, n_pressure_bases,
 			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
 			rhs, *solve_data.rhs_assembler,
-			assembler.density(),
+			mass_matrix_assembler->density(),
 			/*apply_DBC=*/true, /*is_formulation_mixed=*/false, problem->is_time_dependent());
 		solve_data.body_form->update_quantities(t, sol);
 
@@ -143,7 +193,7 @@ namespace polyfem
 
 		///////////////////////////////////////////////////////////////////////
 		// Initialize time integrator
-		if (problem->is_time_dependent() && assembler.is_tensor(formulation()))
+		if (problem->is_time_dependent() && assembler->is_tensor())
 		{
 			POLYFEM_SCOPED_TIMER("Initialize time integrator");
 
@@ -162,10 +212,10 @@ namespace polyfem
 	void State::solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		assert(problem->is_time_dependent());
-		assert(assembler.is_linear(formulation()) && !is_contact_enabled());
+		assert(assembler->is_linear() && !is_contact_enabled());
 		assert(solve_data.rhs_assembler != nullptr);
 
-		const bool is_scalar_or_mixed = problem->is_scalar() || assembler.is_mixed(formulation());
+		const bool is_scalar_or_mixed = problem->is_scalar() || mixed_assembler != nullptr;
 
 		// --------------------------------------------------------------------
 
@@ -205,6 +255,9 @@ namespace polyfem
 
 		Eigen::MatrixXd current_rhs = rhs;
 
+		StiffnessMatrix stiffness;
+		build_stiffness_mat(stiffness);
+
 		// --------------------------------------------------------------------
 
 		for (int t = 1; t <= time_steps; ++t)
@@ -218,16 +271,16 @@ namespace polyfem
 			if (is_scalar_or_mixed)
 			{
 				solve_data.rhs_assembler->compute_energy_grad(
-					local_boundary, boundary_nodes, assembler.density(), n_b_samples, local_neumann_boundary, rhs, time,
+					local_boundary, boundary_nodes, mass_matrix_assembler->density(), n_b_samples, local_neumann_boundary, rhs, time,
 					current_rhs);
 
 				solve_data.rhs_assembler->set_bc(
 					local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, sol, time);
 
-				if (assembler.is_mixed(formulation()))
+				if (mixed_assembler != nullptr)
 				{
 					// divergence free
-					int fluid_offset = use_avg_pressure ? (assembler.is_fluid(formulation()) ? 1 : 0) : 0;
+					int fluid_offset = use_avg_pressure ? (assembler->is_fluid() ? 1 : 0) : 0;
 					current_rhs
 						.block(
 							current_rhs.rows() - n_pressure_bases - use_avg_pressure, 0,
@@ -246,7 +299,7 @@ namespace polyfem
 			}
 			else
 			{
-				solve_data.rhs_assembler->assemble(assembler.density(), current_rhs, time);
+				solve_data.rhs_assembler->assemble(mass_matrix_assembler->density(), current_rhs, time);
 
 				current_rhs *= -1;
 

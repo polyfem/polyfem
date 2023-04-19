@@ -5,6 +5,7 @@
 #include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/assembler/ViscousDamping.hpp>
 
 using namespace polyfem::assembler;
 using namespace polyfem::utils;
@@ -33,9 +34,8 @@ namespace polyfem::solver
 	ElasticForm::ElasticForm(const int n_bases,
 							 const std::vector<basis::ElementBases> &bases,
 							 const std::vector<basis::ElementBases> &geom_bases,
-							 const assembler::AssemblerUtils &assembler,
+							 const assembler::Assembler &assembler,
 							 const assembler::AssemblyValsCache &ass_vals_cache,
-							 const std::string &formulation,
 							 const double dt,
 							 const bool is_volume)
 		: n_bases_(n_bases),
@@ -43,27 +43,24 @@ namespace polyfem::solver
 		  geom_bases_(geom_bases),
 		  assembler_(assembler),
 		  ass_vals_cache_(ass_vals_cache),
-		  formulation_(formulation),
 		  dt_(dt),
 		  is_volume_(is_volume)
 	{
-		if (assembler_.is_linear(formulation_))
+		if (assembler_.is_linear())
 			compute_cached_stiffness();
 	}
 
 	double ElasticForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return assembler_.assemble_energy(
-			formulation_, is_volume_, bases_, geom_bases_,
-			ass_vals_cache_, dt_, x, x_prev_);
+		return assembler_.assemble_energy(is_volume_, bases_, geom_bases_,
+										  ass_vals_cache_, dt_, x, x_prev_);
 	}
 
 	void ElasticForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		Eigen::MatrixXd grad;
-		assembler_.assemble_energy_gradient(
-			formulation_, is_volume_, n_bases_, bases_, geom_bases_,
-			ass_vals_cache_, dt_, x, x_prev_, grad);
+		assembler_.assemble_gradient(is_volume_, n_bases_, bases_, geom_bases_,
+									 ass_vals_cache_, dt_, x, x_prev_, grad);
 		gradv = grad;
 	}
 
@@ -73,7 +70,7 @@ namespace polyfem::solver
 
 		hessian.resize(x.size(), x.size());
 
-		if (assembler_.is_linear(formulation_))
+		if (assembler_.is_linear())
 		{
 			assert(cached_stiffness_.rows() == x.size() && cached_stiffness_.cols() == x.size());
 			hessian = cached_stiffness_;
@@ -81,8 +78,8 @@ namespace polyfem::solver
 		else
 		{
 			// NOTE: mat_cache_ is marked as mutable so we can modify it here
-			assembler_.assemble_energy_hessian(
-				formulation_, is_volume_, n_bases_, project_to_psd_, bases_,
+			assembler_.assemble_hessian(
+				is_volume_, n_bases_, project_to_psd_, bases_,
 				geom_bases_, ass_vals_cache_, dt_, x, x_prev_, mat_cache_, hessian);
 		}
 	}
@@ -106,11 +103,10 @@ namespace polyfem::solver
 
 	void ElasticForm::compute_cached_stiffness()
 	{
-		if (assembler_.is_linear(formulation_) && cached_stiffness_.size() == 0)
+		if (assembler_.is_linear() && cached_stiffness_.size() == 0)
 		{
-			assembler_.assemble_problem(
-				formulation_, is_volume_, n_bases_, bases_, geom_bases_,
-				ass_vals_cache_, cached_stiffness_);
+			assembler_.assemble(is_volume_, n_bases_, bases_, geom_bases_,
+								ass_vals_cache_, cached_stiffness_);
 		}
 	}
 
@@ -120,7 +116,7 @@ namespace polyfem::solver
 
 		const int n_elements = int(bases_.size());
 
-		if (formulation_ == "Damping")
+		if (assembler_.name() == "ViscousDamping")
 		{
 			term.setZero(2);
 
@@ -166,8 +162,6 @@ namespace polyfem::solver
 		{
 			term.setZero(n_elements * 2, 1);
 
-			auto df_dmu_dlambda_function = assembler_.get_dstress_dmu_dlambda_function(formulation_);
-
 			auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 
 			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
@@ -192,7 +186,7 @@ namespace polyfem::solver
 						vector2matrix(grad_u.row(q), grad_u_i);
 
 						Eigen::MatrixXd f_prime_dmu, f_prime_dlambda;
-						df_dmu_dlambda_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_i, f_prime_dmu, f_prime_dlambda);
+						assembler_.compute_dstress_dmu_dlambda(e, quadrature.points.row(q), vals.val.row(q), grad_u_i, f_prime_dmu, f_prime_dlambda);
 
 						// This needs to be a sum over material parameter basis.
 						local_storage.vec(e + n_elements) += -dot(f_prime_dmu, grad_p_i) * local_storage.da(q);
@@ -209,18 +203,15 @@ namespace polyfem::solver
 	void ElasticForm::force_shape_derivative(const int n_verts, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
 	{
 		const int dim = is_volume_ ? 3 : 2;
-		const int actual_dim = assembler_.is_scalar(formulation_) ? 1 : dim;
+		const int actual_dim = (assembler_.name() == "Laplacian") ? 1 : dim;
 
 		const int n_elements = int(bases_.size());
 		term.setZero(n_verts * dim, 1);
 
 		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 
-		if (formulation_ == "Damping")
+		if (assembler_.name() == "ViscousDamping")
 		{
-			const auto stress_grad_func = assembler_.get_stress_grad_function(formulation_);
-			const auto stress_prev_grad_func = assembler_.get_stress_prev_grad_function(formulation_);
-
 			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
 				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
@@ -253,8 +244,8 @@ namespace polyfem::solver
 						for (auto &v : gvals.basis_values)
 						{
 							Eigen::MatrixXd stress_grad, stress_prev_grad;
-							stress_grad_func(e, dt_, quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, stress_tensor, stress_grad);
-							stress_prev_grad_func(e, dt_, quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, stress_prev_grad);
+							assembler_.compute_stress_grad(e, dt_, quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, stress_tensor, stress_grad);
+							assembler_.compute_stress_prev_grad(e, dt_, quadrature.points.row(q), vals.val.row(q), grad_u_i, prev_grad_u_i, stress_prev_grad);
 							for (int d = 0; d < dim; d++)
 							{
 								grad_v_i.setZero(dim, dim);
@@ -286,8 +277,6 @@ namespace polyfem::solver
 		}
 		else
 		{
-			auto f_prime_gradu_gradv_function = assembler_.get_stress_grad_multiply_mat_function(formulation_);
-
 			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
 				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
@@ -331,7 +320,7 @@ namespace polyfem::solver
 								grad_v_i.row(d) = v.grad_t_m.row(q);
 
 								Eigen::MatrixXd stress_tensor, f_prime_gradu_gradv;
-								f_prime_gradu_gradv_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_i, grad_u_i * grad_v_i, stress_tensor, f_prime_gradu_gradv);
+								assembler_.compute_stress_grad_multiply_mat(e, quadrature.points.row(q), vals.val.row(q), grad_u_i, grad_u_i * grad_v_i, stress_tensor, f_prime_gradu_gradv);
 								// f_prime_gradu_gradv = utils::unflatten(stiffness_i * utils::flatten(grad_u_i * grad_v_i), dim);
 
 								Eigen::MatrixXd tmp = grad_v_i - grad_v_i.trace() * Eigen::MatrixXd::Identity(dim, dim);

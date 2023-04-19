@@ -217,7 +217,7 @@ namespace polyfem::solver
 		virtual Eigen::VectorXd inverse_eval() override;
 
 	protected:
-		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices);
+		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
 	};
 
 } // namespace polyfem::solver

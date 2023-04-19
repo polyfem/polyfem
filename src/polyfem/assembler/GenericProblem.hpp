@@ -1,13 +1,8 @@
 #pragma once
 
-#include "Problem.hpp"
+#include <polyfem/assembler/Problem.hpp>
 #include <polyfem/utils/ExpressionValue.hpp>
 #include <polyfem/utils/Interpolation.hpp>
-
-#include <Eigen/Dense>
-
-#include <array>
-#include <vector>
 
 namespace polyfem
 {
@@ -46,7 +41,8 @@ namespace polyfem
 
 			double eval(const RowVectorNd &pts, const double t) const
 			{
-				double x = pts(0), y = pts(1), z = pts.size() == 2 ? 0 : pts(2);
+				assert(pts.size() == 2 || pts.size() == 3);
+				double x = pts(0), y = pts(1), z = pts.size() == 3 ? pts(2) : 0.0;
 				return value(x, y, z, t) * interpolation->eval(t);
 			}
 		};
@@ -56,7 +52,7 @@ namespace polyfem
 		public:
 			GenericTensorProblem(const std::string &name);
 
-			void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override
 			{
 				for (int i = 0; i < 3; ++i)
@@ -157,7 +153,7 @@ namespace polyfem
 		public:
 			GenericScalarProblem(const std::string &name);
 
-			void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override { return rhs_.is_zero(); }
 
 			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;

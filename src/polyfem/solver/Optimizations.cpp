@@ -478,7 +478,7 @@ namespace polyfem::solver
 		Eigen::MatrixXd sol, pressure;
 		state->build_basis();
 		state->assemble_rhs();
-		state->assemble_stiffness_mat();
+		state->assemble_mass_mat();
 
 		return state;
 	}
@@ -486,7 +486,7 @@ namespace polyfem::solver
 	void solve_pde(State &state)
 	{
 		state.assemble_rhs();
-		state.assemble_stiffness_mat();
+		state.assemble_mass_mat();
 		Eigen::MatrixXd sol, pressure;
 		state.solve_problem(sol, pressure);
 	}

@@ -145,7 +145,7 @@ int main(int argc, char **argv)
 	state.stats.compute_mesh_stats(*state.mesh);
 	state.build_basis();
 	state.assemble_rhs();
-	state.assemble_stiffness_mat();
+	state.assemble_mass_mat();
 
 	auto &micro_assembler = state.assembler.get_microstructure_local_assembler(state.formulation());
 	std::shared_ptr<State> micro_state = micro_assembler.get_microstructure_state();

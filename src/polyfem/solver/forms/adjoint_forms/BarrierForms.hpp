@@ -25,14 +25,14 @@ namespace polyfem::solver
 		{
 			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
 
-			return ipc::compute_barrier_potential(collision_mesh_, displaced_surface, constraint_set, dhat_);
+			return constraint_set.compute_potential(collision_mesh_, displaced_surface, dhat_);
 		}
 
 		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
 		{
 			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
 
-			Eigen::VectorXd grad = collision_mesh_.to_full_dof(ipc::compute_barrier_potential_gradient(collision_mesh_, displaced_surface, constraint_set, dhat_));
+			Eigen::VectorXd grad = collision_mesh_.to_full_dof(constraint_set.compute_potential_gradient(collision_mesh_, displaced_surface, dhat_));
 
 			gradv.setZero(x.size());
 			for (auto &p : variable_to_simulations_)
@@ -129,7 +129,7 @@ namespace polyfem::solver
 		Eigen::VectorXd X_init;
 
 		ipc::CollisionMesh collision_mesh_;
-		ipc::Constraints constraint_set;
+		ipc::CollisionConstraints constraint_set;
 		const double dhat_;
 		ipc::BroadPhaseMethod broad_phase_method_;
 	};

@@ -6,7 +6,7 @@
 #include <polysolve/FEMSolver.hpp>
 #include <polyfem/utils/Logger.hpp>
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 #include <memory>
 
 #ifdef POLYFEM_WITH_TBB
@@ -1010,7 +1010,7 @@ namespace polyfem
 			}
 
 			void external_force(const mesh::Mesh &mesh,
-								const assembler::AssemblerUtils &assembler,
+								const assembler::Assembler &assembler,
 								const std::vector<basis::ElementBases> &gbases,
 								const std::vector<basis::ElementBases> &bases,
 								const double dt,
@@ -1037,7 +1037,7 @@ namespace polyfem
 											  pos(0, d) = mapped(local_idx, d);
 
 										  Eigen::MatrixXd val;
-										  problem->rhs(assembler, std::string(), pos, time, val);
+										  problem->rhs(assembler, pos, time, val);
 
 										  for (int d = 0; d < dim; d++)
 										  {
@@ -1056,7 +1056,7 @@ namespace polyfem
 				if (pressure_boundary_nodes.size() == 0)
 					rhs = Eigen::VectorXd::Zero(mixed_stiffness.rows() + 1); // mixed_stiffness * sol;
 				else
-					rhs = Eigen::VectorXd::Zero(mixed_stiffness.rows()); // mixed_stiffness * sol;
+					rhs = Eigen::VectorXd::Zero(mixed_stiffness.rows());     // mixed_stiffness * sol;
 
 				Eigen::VectorXd temp = mixed_stiffness * sol;
 				for (int i = 0; i < temp.rows(); i++)

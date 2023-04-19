@@ -2,7 +2,7 @@
 
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
@@ -22,6 +22,11 @@ namespace polyfem::time_integrator
 	class ImplicitTimeIntegrator;
 } // namespace polyfem::time_integrator
 
+namespace polyfem::assembler
+{
+	class ViscousDamping;
+} // namespace polyfem::assembler
+
 namespace polyfem::solver
 {
 	class NLProblem;
@@ -31,7 +36,8 @@ namespace polyfem::solver
 	class MacroStrainALForm;
 	class FrictionForm;
 	class BodyForm;
-	class ALForm;
+	class BCLagrangianForm;
+	class BCPenaltyForm;
 	class InertiaForm;
 	class ElasticForm;
 
@@ -50,9 +56,9 @@ namespace polyfem::solver
 			const int n_bases,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &geom_bases,
-			const assembler::AssemblerUtils &assembler,
+			const assembler::Assembler &assembler,
 			const assembler::AssemblyValsCache &ass_vals_cache,
-			const std::string &formulation,
+			const assembler::AssemblyValsCache &mass_ass_vals_cache,
 
 			// Body form
 			const int n_pressure_bases,
@@ -62,10 +68,12 @@ namespace polyfem::solver
 			const int n_boundary_samples,
 			const Eigen::MatrixXd &rhs,
 			const Eigen::MatrixXd &sol,
+			const assembler::Density &density,
 
 			// Inertia form
 			const bool ignore_inertia,
 			const StiffnessMatrix &mass,
+			const std::shared_ptr<assembler::ViscousDamping> damping_assembler,
 
 			// Lagged regularization form
 			const double lagged_regularization_weight,
@@ -115,7 +123,8 @@ namespace polyfem::solver
 		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
 		std::shared_ptr<solver::NLProblem> nl_problem;
 
-		std::shared_ptr<solver::ALForm> al_form;
+		std::shared_ptr<solver::BCLagrangianForm> al_lagr_form;
+		std::shared_ptr<solver::BCPenaltyForm> al_pen_form;
 		std::shared_ptr<solver::BodyForm> body_form;
 		std::shared_ptr<solver::ContactForm> contact_form;
 		std::shared_ptr<solver::ElasticForm> damping_form;

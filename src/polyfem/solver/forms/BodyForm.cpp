@@ -140,7 +140,7 @@ namespace polyfem::solver
 				io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint, p, grad_p);
 
 				Eigen::MatrixXd rhs_function;
-				rhs_assembler_.problem().rhs(rhs_assembler_.assembler(), rhs_assembler_.formulation(), vals.val, t, rhs_function);
+				rhs_assembler_.problem().rhs(rhs_assembler_.assembler(), vals.val, t, rhs_function);
 				rhs_function *= -1;
 				for (int q = 0; q < vals.val.rows(); q++)
 				{
@@ -327,9 +327,14 @@ namespace polyfem::solver
 
 		term *= -1;
 
-		StiffnessMatrix hess;
-		hessian_wrt_u_prev(x, t, hess);
-		term += hess.transpose() * adjoint_zeroed;
+		if (actual_dim == dim)
+		{
+			StiffnessMatrix hess;
+			hessian_wrt_u_prev(x, t, hess);
+			if (hess.cols() == term.size())
+				term += hess.transpose() * adjoint_zeroed;
+			// TODO: fix me for P2 basis
+		}
 	}
 
 	void BodyForm::hessian_wrt_u_prev(const Eigen::VectorXd &u_prev, const double t, StiffnessMatrix &hessian) const

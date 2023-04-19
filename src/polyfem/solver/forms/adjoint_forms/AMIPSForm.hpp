@@ -119,7 +119,8 @@ namespace polyfem::solver
 			: AdjointForm(variable_to_simulation),
 			  state_(state)
 		{
-			amips_energy_.local_assembler().set_size(state.mesh->dimension());
+			amips_energy_ = assembler::AssemblerUtils::make_assembler("AMIPS");
+			amips_energy_->set_size(state.mesh->dimension());
 
 			json transform_params = {};
 			transform_params["canonical_transformation"] = json::array();
@@ -184,7 +185,7 @@ namespace polyfem::solver
 				}
 			}
 			transform_params["solve_displacement"] = true;
-			amips_energy_.local_assembler().add_multimaterial(0, transform_params);
+			amips_energy_->add_multimaterial(0, transform_params);
 
 			Eigen::MatrixXd V;
 			state_.get_vertices(V);
@@ -198,7 +199,7 @@ namespace polyfem::solver
 		{
 			Eigen::VectorXd X = get_updated_mesh_nodes(x);
 
-			double energy = amips_energy_.assemble(state_.mesh->is_volume(), init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_init), Eigen::VectorXd(), false);
+			double energy = amips_energy_->assemble_energy(state_.mesh->is_volume(), init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_init), Eigen::VectorXd());
 
 			return energy;
 		}
@@ -208,7 +209,7 @@ namespace polyfem::solver
 			Eigen::VectorXd X = get_updated_mesh_nodes(x);
 
 			Eigen::MatrixXd grad;
-			amips_energy_.assemble_grad(state_.mesh->is_volume(), state_.n_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_init), Eigen::VectorXd(), grad); // grad wrt. gbases
+			amips_energy_->assemble_gradient(state_.mesh->is_volume(), state_.n_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_init), Eigen::VectorXd(), grad); // grad wrt. gbases
 			grad = AdjointTools::map_node_to_primitive_order(state_, grad);                                                                                                                                                             // grad wrt. vertices
 
 			assert(grad.cols() == 1);
@@ -270,6 +271,6 @@ namespace polyfem::solver
 		std::vector<polyfem::basis::ElementBases> init_geom_bases_;
 		assembler::AssemblyValsCache init_ass_vals_cache_;
 
-		assembler::NLAssembler<assembler::GenericElastic<assembler::AMIPSEnergy>> amips_energy_;
+		std::shared_ptr<assembler::Assembler> amips_energy_;
 	};
 } // namespace polyfem::solver

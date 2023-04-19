@@ -4,7 +4,7 @@
 #include <polyfem/io/MshReader.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <igl/writeMSH.h>
-#include <polyfem/io/VTUWriter.hpp>
+#include <paraviewo/VTUWriter.hpp>
 
 #include <polyfem/State.hpp>
 #include <polysolve/FEMSolver.hpp>
@@ -160,7 +160,7 @@ namespace polyfem::solver
         state.build_basis();
 
         state.assemble_rhs();
-        state.assemble_stiffness_mat();
+        state.assemble_mass_mat();
 
         state.boundary_nodes.clear();
         std::vector<int> primitive_to_node = state.primitive_to_node();
@@ -172,7 +172,8 @@ namespace polyfem::solver
         auto solver = polysolve::LinearSolver::create(state.args["solver"]["linear"]["solver"], state.args["solver"]["linear"]["precond"]);
         solver->setParameters(state.args["solver"]["linear"]);
 
-        StiffnessMatrix A = state.stiffness;
+        StiffnessMatrix A;
+        state.build_stiffness_mat(A);
         std::vector<int> boundary_nodes_tmp = state.boundary_nodes;
         {
             const int full_size = A.rows();

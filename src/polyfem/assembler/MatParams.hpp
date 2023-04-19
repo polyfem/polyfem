@@ -2,10 +2,7 @@
 
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
-
 #include <polyfem/utils/ExpressionValue.hpp>
-
-#include <Eigen/Dense>
 
 namespace polyfem::assembler
 {
@@ -22,6 +19,23 @@ namespace polyfem::assembler
 	private:
 		const std::string param_name_;
 		std::vector<utils::ExpressionValue> param_;
+
+		friend class GenericMatParams;
+	};
+
+	class GenericMatParams
+	{
+	public:
+		GenericMatParams(const std::string &param_name);
+
+		const GenericMatParam &operator[](const size_t i) const { return params_[i]; }
+		size_t size() const { return params_.size(); }
+
+		void add_multimaterial(const int index, const json &params);
+
+	private:
+		const std::string param_name_;
+		std::vector<GenericMatParam> params_;
 	};
 
 	class ElasticityTensor
@@ -57,14 +71,15 @@ namespace polyfem::assembler
 
 		void add_multimaterial(const int index, const json &params, const bool is_volume);
 
-		void lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu, bool has_density = true) const;
-		void lambda_mu(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id, double &lambda, double &mu, bool has_density = true) const
+		void lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const;
+		void lambda_mu(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id, double &lambda, double &mu) const
 		{
+			assert(param.size() == 2 || param.size() == 3);
 			assert(param.size() == p.size());
 			lambda_mu(
-				param(0), param(1), param.size() == 2 ? 0. : param(2),
-				p(0), p(1), p.size() ? 0. : p(2),
-				el_id, lambda, mu, has_density);
+				param(0), param(1), param.size() == 3 ? param(2) : 0.0,
+				p(0), p(1), p.size() == 3 ? p(2) : 0.0,
+				el_id, lambda, mu);
 		}
 
 		Eigen::MatrixXd lambda_mat_, mu_mat_;
@@ -93,9 +108,10 @@ namespace polyfem::assembler
 		double operator()(double px, double py, double pz, double x, double y, double z, int el_id) const;
 		double operator()(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id) const
 		{
+			assert(param.size() == 2 || param.size() == 3);
 			assert(param.size() == p.size());
-			return (*this)(param(0), param(1), param.size() == 2 ? 0. : param(2),
-						   p(0), p(1), p.size() ? 0. : p(2),
+			return (*this)(param(0), param(1), param.size() == 3 ? param(2) : 0.0,
+						   p(0), p(1), p.size() == 3 ? p(2) : 0.0,
 						   el_id);
 		}
 

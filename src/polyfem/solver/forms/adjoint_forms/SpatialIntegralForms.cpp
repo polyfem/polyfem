@@ -8,6 +8,7 @@
 #include <polyfem/State.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
+#include <polyfem/assembler/Mass.hpp>
 
 #include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
@@ -252,7 +253,6 @@ namespace polyfem::solver
 					const auto &bases = state.bases;
 					const auto &gbases = state.geom_bases();
 					term.setZero(bases.size() * 2);
-					auto df_dmu_dlambda_function = state.assembler.get_dstress_dmu_dlambda_function(state.formulation());
 					const int dim = state.mesh->dimension();
 
 					for (int e = 0; e < bases.size(); e++)
@@ -270,12 +270,13 @@ namespace polyfem::solver
 						for (int q = 0; q < quadrature.weights.size(); q++)
 						{
 							double lambda, mu;
-							state.assembler.lame_params().lambda_mu(quadrature.points.row(q), vals.val.row(q), e, lambda, mu);
+							lambda = state.assembler->parameters().at("lambda")(quadrature.points.row(q), vals.val.row(q), 0, e);
+							mu = state.assembler->parameters().at("mu")(quadrature.points.row(q), vals.val.row(q), 0, e);
 
 							vector2matrix(grad_u.row(q), grad_u_q);
 
 							Eigen::MatrixXd f_prime_dmu, f_prime_dlambda;
-							df_dmu_dlambda_function(e, quadrature.points.row(q), vals.val.row(q), grad_u_q, f_prime_dmu, f_prime_dlambda);
+							state.assembler->compute_dstress_dmu_dlambda(e, quadrature.points.row(q), vals.val.row(q), grad_u_q, f_prime_dmu, f_prime_dlambda);
 
 							term(e + bases.size()) += dot(f_prime_dmu, grad_u_q) * da(q);
 							term(e) += dot(f_prime_dlambda, grad_u_q) * da(q);
@@ -345,7 +346,7 @@ namespace polyfem::solver
 			val.setZero(u.rows(), 1);
 			for (int q = 0; q < v.rows(); q++)
 			{
-				const double rho = state_.assembler.density()(local_pts.row(q), pts.row(q), e);
+				const double rho = state_.mass_matrix_assembler->density()(local_pts.row(q), pts.row(q), e);
 				val(q) = 0.5 * rho * v.row(q).squaredNorm();
 			}
 		});

@@ -1,38 +1,38 @@
-// #define EIGEN_STACK_ALLOCATION_LIMIT 0
-
 #include "MultiModel.hpp"
 
-#include <polyfem/basis/Basis.hpp>
-#include <polyfem/autogen/auto_elasticity_rhs.hpp>
+// #include <polyfem/basis/Basis.hpp>
+// #include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
-#include <igl/Timer.h>
+// #include <igl/Timer.h>
 
 namespace polyfem::assembler
 {
-	using namespace basis;
 	void MultiModel::set_size(const int size)
 	{
-		size_ = size;
+		Assembler::set_size(size);
+
 		saint_venant_.set_size(size);
 		neo_hookean_.set_size(size);
 		linear_elasticity_.set_size(size);
 
-		// hooke_.set_size(size);
+		hooke_.set_size(size);
 		mooney_rivlin_elasticity_.set_size(size);
-		ogden_elasticity_.set_size(size);
+		unconstrained_ogden_elasticity_.set_size(size);
+		incompressible_ogden_elasticity_.set_size(size);
 	}
 
 	void MultiModel::add_multimaterial(const int index, const json &params)
 	{
-		assert(size_ == 2 || size_ == 3);
+		assert(size() == 2 || size() == 3);
 
 		saint_venant_.add_multimaterial(index, params);
 		neo_hookean_.add_multimaterial(index, params);
 		linear_elasticity_.add_multimaterial(index, params);
 
-		// hooke_.add_multimaterial(index, params);
+		hooke_.add_multimaterial(index, params);
 		mooney_rivlin_elasticity_.add_multimaterial(index, params);
-		ogden_elasticity_.add_multimaterial(index, params);
+		unconstrained_ogden_elasticity_.add_multimaterial(index, params);
+		incompressible_ogden_elasticity_.add_multimaterial(index, params);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
@@ -46,23 +46,25 @@ namespace polyfem::assembler
 	}
 
 	Eigen::VectorXd
-	MultiModel::assemble_grad(const NonLinearAssemblerData &data) const
+	MultiModel::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		const int el_id = data.vals.element_id;
 		const std::string model = multi_material_models_[el_id];
 
 		if (model == "SaintVenant")
-			return saint_venant_.assemble_grad(data);
+			return saint_venant_.assemble_gradient(data);
 		else if (model == "NeoHookean")
-			return neo_hookean_.assemble_grad(data);
+			return neo_hookean_.assemble_gradient(data);
 		else if (model == "LinearElasticity")
-			return linear_elasticity_.assemble_grad(data);
-		// else if (model == "HookeLinearElasticity")
-		// return hooke_.assemble_grad(data);
+			return linear_elasticity_.assemble_gradient(data);
+		else if (model == "HookeLinearElasticity")
+			return hooke_.assemble_gradient(data);
 		else if (model == "MooneyRivlin")
-			return mooney_rivlin_elasticity_.assemble_grad(data);
-		else if (model == "Ogden")
-			return ogden_elasticity_.assemble_grad(data);
+			return mooney_rivlin_elasticity_.assemble_gradient(data);
+		else if (model == "UnconstrainedOgden")
+			return unconstrained_ogden_elasticity_.assemble_gradient(data);
+		else if (model == "IncompressibleOgden")
+			return incompressible_ogden_elasticity_.assemble_gradient(data);
 		else
 		{
 			assert(false);
@@ -82,12 +84,14 @@ namespace polyfem::assembler
 			return neo_hookean_.assemble_hessian(data);
 		else if (model == "LinearElasticity")
 			return linear_elasticity_.assemble_hessian(data);
-		// else if (model == "HookeLinearElasticity")
-		// return hooke_.assemble_hessian(data);
+		else if (model == "HookeLinearElasticity")
+			return hooke_.assemble_hessian(data);
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.assemble_hessian(data);
-		else if (model == "Ogden")
-			return ogden_elasticity_.assemble_hessian(data);
+		else if (model == "UnconstrainedOgden")
+			return unconstrained_ogden_elasticity_.assemble_hessian(data);
+		else if (model == "IncompressibleOgden")
+			return incompressible_ogden_elasticity_.assemble_hessian(data);
 		else
 		{
 			assert(false);
@@ -106,12 +110,14 @@ namespace polyfem::assembler
 			return neo_hookean_.compute_energy(data);
 		else if (model == "LinearElasticity")
 			return linear_elasticity_.compute_energy(data);
-		// else if (model == "HookeLinearElasticity")
-		// return hooke_.compute_energy(data);
+		else if (model == "HookeLinearElasticity")
+			return hooke_.compute_energy(data);
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.compute_energy(data);
-		else if (model == "Ogden")
-			return ogden_elasticity_.compute_energy(data);
+		else if (model == "UnconstrainedOgden")
+			return unconstrained_ogden_elasticity_.compute_energy(data);
+		else if (model == "IncompressibleOgden")
+			return incompressible_ogden_elasticity_.compute_energy(data);
 		else
 		{
 			assert(false);
@@ -119,49 +125,35 @@ namespace polyfem::assembler
 		}
 	}
 
-	void MultiModel::compute_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
+	void MultiModel::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		const std::string model = multi_material_models_[el_id];
 
 		if (model == "SaintVenant")
-			saint_venant_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+			saint_venant_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
 		else if (model == "NeoHookean")
-			neo_hookean_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+			neo_hookean_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
 		else if (model == "LinearElasticity")
-			linear_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
-		// else if (model == "HookeLinearElasticity")
-		// return hooke_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+			linear_elasticity_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
+		else if (model == "HookeLinearElasticity")
+			return hooke_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
 		else if (model == "MooneyRivlin")
-			return mooney_rivlin_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
-		else if (model == "Ogden")
-			return ogden_elasticity_.compute_stress_tensor(el_id, bs, gbs, local_pts, displacement, stresses);
+			return mooney_rivlin_elasticity_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
+		else if (model == "UnconstrainedOgden")
+			return unconstrained_ogden_elasticity_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
+		else if (model == "IncompressibleOgden")
+			return incompressible_ogden_elasticity_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
 		else
 		{
 			assert(false);
-			stresses = Eigen::MatrixXd(0, 0);
 		}
 	}
 
-	void MultiModel::compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
+	std::map<std::string, Assembler::ParamFunc> MultiModel::parameters() const
 	{
-		const std::string model = multi_material_models_[el_id];
+		std::map<std::string, ParamFunc> res;
+		// TODO
 
-		if (model == "SaintVenant")
-			saint_venant_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
-		else if (model == "NeoHookean")
-			neo_hookean_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
-		else if (model == "LinearElasticity")
-			linear_elasticity_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
-		// else if (model == "HookeLinearElasticity")
-		// return hooke_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
-		else if (model == "MooneyRivlin")
-			return mooney_rivlin_elasticity_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
-		else if (model == "Ogden")
-			return ogden_elasticity_.compute_von_mises_stresses(el_id, bs, gbs, local_pts, displacement, stresses);
-		else
-		{
-			assert(false);
-			stresses = Eigen::MatrixXd(0, 0);
-		}
+		return res;
 	}
 } // namespace polyfem::assembler

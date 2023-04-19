@@ -108,7 +108,7 @@ namespace polyfem::solver
     void PeriodicContactForm::update_projection() const
     {
         const int dim = collision_mesh_.dim();
-        const auto &boundary_vertices = collision_mesh_.vertices_at_rest();
+        const auto &boundary_vertices = collision_mesh_.rest_positions();
 
         std::vector<Eigen::Triplet<double>> entries;
         for (int i = 0; i < collision_mesh_.num_vertices(); i++)
@@ -130,7 +130,7 @@ namespace polyfem::solver
     Eigen::VectorXd PeriodicContactForm::single_to_tiled(const Eigen::VectorXd &x) const
     {
         const int dim = collision_mesh_.dim();
-        const auto &boundary_vertices = collision_mesh_.vertices_at_rest();
+        const auto &boundary_vertices = collision_mesh_.rest_positions();
         assert(x.size() == n_single_dof_ * dim + dim * dim);
 
         Eigen::VectorXd tiled_x;
@@ -151,7 +151,7 @@ namespace polyfem::solver
     Eigen::VectorXd PeriodicContactForm::tiled_to_single_grad(const Eigen::VectorXd &grad) const
     {
         const int dim = collision_mesh_.dim();
-        const auto &boundary_vertices = collision_mesh_.vertices_at_rest();
+        const auto &boundary_vertices = collision_mesh_.rest_positions();
         assert(grad.size() == tiled_to_single_.size() * dim);
 
         Eigen::VectorXd reduced_grad;
@@ -175,7 +175,7 @@ namespace polyfem::solver
         ContactForm::init(single_to_tiled(x));
     }
 
-    void PeriodicContactForm::force_periodic_shape_derivative(const State& state, const ipc::Constraints &contact_set, const Eigen::VectorXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
+    void PeriodicContactForm::force_periodic_shape_derivative(const State& state, const ipc::CollisionConstraints &contact_set, const Eigen::VectorXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
     {
         const int dim = collision_mesh_.dim();
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(single_to_tiled(solution));
@@ -183,14 +183,14 @@ namespace polyfem::solver
         Eigen::VectorXd tiled_term;
 
         {
-		    StiffnessMatrix dq_h = collision_mesh_.to_full_dof(ipc::compute_barrier_shape_derivative(collision_mesh_, displaced_surface, contact_set, dhat_));
+		    StiffnessMatrix dq_h = collision_mesh_.to_full_dof(contact_set.compute_shape_derivative(collision_mesh_, displaced_surface, dhat_));
 		    update_projection();
             tiled_term = dq_h.transpose() * single_to_tiled(adjoint_sol);
         }
 
         {
             Eigen::VectorXd force;
-            force = ipc::compute_barrier_potential_gradient(collision_mesh_, displaced_surface, contact_set, dhat_);
+            force = contact_set.compute_potential_gradient(collision_mesh_, displaced_surface, dhat_);
             force = collision_mesh_.to_full_dof(force);
             Eigen::MatrixXd adjoint_affine = utils::unflatten(adjoint_sol.tail(dim * dim), dim);
             for (int k = 0; k < collision_mesh_.num_vertices(); k++)
@@ -220,7 +220,7 @@ namespace polyfem::solver
         for (int k = 0; k < collision_mesh_.num_vertices(); k++)
         {
             const int k_full = collision_mesh_.to_full_vertex_id(k);
-            scale_term.array() += tiled_term.segment(k_full * dim, dim).array() * collision_mesh_.vertices_at_rest().row(k).transpose().array();
+            scale_term.array() += tiled_term.segment(k_full * dim, dim).array() * collision_mesh_.rest_positions().row(k).transpose().array();
             unit_term.segment(k_full * dim, dim).array() += tiled_term.segment(k_full * dim, dim).array() * scale.array();
         }
 
@@ -235,7 +235,7 @@ namespace polyfem::solver
         term *= weight();
 
         // harder test
-        // Eigen::VectorXd tiled_term = (adjoint_sol.dot(tiled_to_single_grad(random_coeffs.array() * single_to_tiled(solution).array()))) * collision_mesh_.to_full_dof(utils::flatten(Eigen::MatrixXd::Zero(collision_mesh_.vertices_at_rest().rows(), collision_mesh_.vertices_at_rest().cols())));
+        // Eigen::VectorXd tiled_term = (adjoint_sol.dot(tiled_to_single_grad(random_coeffs.array() * single_to_tiled(solution).array()))) * collision_mesh_.to_full_dof(utils::flatten(Eigen::MatrixXd::Zero(collision_mesh_.rest_positions().rows(), collision_mesh_.rest_positions().cols())));
 
         // Eigen::VectorXd force = random_coeffs.array() * single_to_tiled(solution).array();
         // Eigen::MatrixXd adjoint_affine = utils::unflatten(adjoint_sol.tail(dim * dim), dim);
@@ -256,7 +256,7 @@ namespace polyfem::solver
         // }
 
         // // auto grad
-        // // Eigen::VectorXd tiled_term = collision_mesh_.to_full_dof(adjoint_sol.transpose() * vector_func_grad(utils::flatten(collision_mesh_.vertices_at_rest()), solution, tiled_to_single_, collision_mesh_));
+        // // Eigen::VectorXd tiled_term = collision_mesh_.to_full_dof(adjoint_sol.transpose() * vector_func_grad(utils::flatten(collision_mesh_.rest_positions()), solution, tiled_to_single_, collision_mesh_));
 
         // Eigen::VectorXd scale_term, unit_term;
         // scale_term.setZero(dim);
@@ -265,7 +265,7 @@ namespace polyfem::solver
         // for (int k = 0; k < collision_mesh_.num_vertices(); k++)
         // {
         //     const int k_full = collision_mesh_.to_full_vertex_id(k);
-        //     scale_term.array() += tiled_term.segment(k_full * dim, dim).array() * collision_mesh_.vertices_at_rest().row(k).transpose().array();
+        //     scale_term.array() += tiled_term.segment(k_full * dim, dim).array() * collision_mesh_.rest_positions().row(k).transpose().array();
         //     unit_term.segment(k_full * dim, dim).array() += tiled_term.segment(k_full * dim, dim).array() * scale.array();
         // }
 
@@ -291,7 +291,7 @@ namespace polyfem::solver
         gradv = tiled_to_single_grad(gradv);
 
         // gradv = tiled_to_single_grad(random_coeffs.array() * single_to_tiled(x).array());
-        // gradv = vector_func<double>(utils::flatten(collision_mesh_.vertices_at_rest()), x, tiled_to_single_, collision_mesh_);
+        // gradv = vector_func<double>(utils::flatten(collision_mesh_.rest_positions()), x, tiled_to_single_, collision_mesh_);
     }
 
     void PeriodicContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const

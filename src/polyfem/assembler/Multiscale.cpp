@@ -77,7 +77,7 @@ namespace polyfem::assembler
 		state = state_ptr;
 		
 		state->assemble_rhs();
-		state->assemble_stiffness_mat(true);
+		state->assemble_mass_mat(true);
 
 		RowVectorNd min, max;
 		state->mesh->bounding_box(min, max);
@@ -308,7 +308,7 @@ namespace polyfem::assembler
 				state->stats.compute_mesh_stats(*state->mesh);
 				state->build_basis();
 				state->assemble_rhs();
-				state->assemble_stiffness_mat(true);
+				state->assemble_mass_mat(true);
 
 				RowVectorNd min, max;
 				state->mesh->bounding_box(min, max);

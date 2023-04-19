@@ -1,10 +1,9 @@
 #include "GenericProblem.hpp"
+
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/io/MatrixIO.hpp>
-
-#include <iostream>
 
 namespace polyfem
 {
@@ -14,8 +13,10 @@ namespace polyfem
 	{
 		namespace
 		{
-			std::vector<json> flatten_ids(const json &j_boundary_tmp)
+			std::vector<json> flatten_ids(const json &p_j_boundary_tmp)
 			{
+				const std::vector<json> j_boundary_tmp = utils::json_as_array(p_j_boundary_tmp);
+
 				std::vector<json> j_boundary;
 
 				for (size_t i = 0; i < j_boundary_tmp.size(); ++i)
@@ -52,7 +53,7 @@ namespace polyfem
 		{
 		}
 
-		void GenericTensorProblem::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), pts.cols());
 
@@ -705,8 +706,7 @@ namespace polyfem
 			{
 				// boundary_ids_.clear();
 				int offset = boundary_ids_.size();
-				auto j_boundary_tmp = params["dirichlet_boundary"];
-				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
+				std::vector<json> j_boundary = flatten_ids(params["dirichlet_boundary"]);
 
 				boundary_ids_.resize(offset + j_boundary.size());
 				displacements_.resize(offset + j_boundary.size());
@@ -803,18 +803,11 @@ namespace polyfem
 					neumann_boundary_ids_[i] = j_boundary[i - offset]["id"];
 
 					auto ff = j_boundary[i - offset]["value"];
-					if (ff.is_array())
-					{
-						for (size_t k = 0; k < ff.size(); ++k)
-							forces_[i].value[k].init(ff[k]);
-					}
-					else
-					{
-						assert(false);
-						forces_[i].value[0].init(0);
-						forces_[i].value[1].init(0);
-						forces_[i].value[2].init(0);
-					}
+					assert(ff.is_array());
+
+					for (size_t k = 0; k < ff.size(); ++k)
+						forces_[i].value[k].init(ff[k]);
+
 					if (j_boundary[i - offset]["interpolation"].is_array())
 					{
 						for (int ii = 0; ii < j_boundary[i - offset]["interpolation"].size(); ++ii)
@@ -1030,7 +1023,7 @@ namespace polyfem
 		{
 		}
 
-		void GenericScalarProblem::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericScalarProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), 1);
 			if (is_rhs_zero())
@@ -1191,8 +1184,7 @@ namespace polyfem
 			{
 				// boundary_ids_.clear();
 				const int offset = boundary_ids_.size();
-				auto j_boundary_tmp = params["dirichlet_boundary"];
-				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
+				std::vector<json> j_boundary = flatten_ids(params["dirichlet_boundary"]);
 
 				boundary_ids_.resize(offset + j_boundary.size());
 				dirichlet_.resize(offset + j_boundary.size());

@@ -1,6 +1,6 @@
 #include <polyfem/State.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>
-
+#include <polyfem/assembler/Mass.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 
@@ -11,7 +11,6 @@
 
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/MacroStrainALForm.hpp>
-#include <polyfem/solver/forms/ALForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 
@@ -71,12 +70,12 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         // General
         mesh->dimension(), 0,
         // Elastic form
-        n_bases, bases, geom_bases(), assembler, ass_vals_cache, formulation(),
+        n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache,
         // Body form
         n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
-        n_boundary_samples(), rhs, sol_,
+        n_boundary_samples(), rhs, sol_, mass_matrix_assembler->density(),
         // Inertia form
-        args["solver"]["ignore_inertia"], mass,
+        args["solver"]["ignore_inertia"], mass, nullptr,
         // Lagged regularization form
         args["solver"]["advanced"]["lagged_regularization_weight"],
         args["solver"]["advanced"]["lagged_regularization_iterations"],
@@ -98,8 +97,10 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         // Rayleigh damping form
         args["solver"]["rayleigh_damping"]);
     
-    solve_data_tmp.al_form->disable();
-    solve_data_tmp.al_form->set_weight(0);
+    solve_data_tmp.named_forms().at("augmented_lagrangian_lagr")->disable();
+    solve_data_tmp.named_forms().at("augmented_lagrangian_lagr")->set_weight(0);
+    solve_data_tmp.named_forms().at("augmented_lagrangian_penalty")->disable();
+    solve_data_tmp.named_forms().at("augmented_lagrangian_penalty")->set_weight(0);
 
     bool solve_symmetric_flag = false;
     {

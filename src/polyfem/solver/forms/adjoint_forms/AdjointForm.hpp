@@ -11,7 +11,7 @@ namespace polyfem::solver
 		AdjointForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations) : variable_to_simulations_(variable_to_simulations) {}
 		virtual ~AdjointForm() {}
 
-		double value(const Eigen::VectorXd &x) const;
+		double value(const Eigen::VectorXd &x) const override;
 
 		void enable_energy_print(const std::string &print_energy_keyword) { print_energy_keyword_ = print_energy_keyword; print_energy_ = 1; }
 
@@ -56,7 +56,7 @@ namespace polyfem::solver
 
 		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const final override;
 		virtual Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) const = 0;
-		virtual double value_unweighted(const Eigen::VectorXd &x) const = 0;
+		virtual double value_unweighted(const Eigen::VectorXd &x) const override = 0;
 
 	protected:
 		int time_step_ = 0; // time step to integrate

@@ -1,19 +1,19 @@
-#include "ALForm.hpp"
+#include "BCPenaltyForm.hpp"
 
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::solver
 {
-	ALForm::ALForm(const int ndof,
-				   const std::vector<int> &boundary_nodes,
-				   const std::vector<mesh::LocalBoundary> &local_boundary,
-				   const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
-				   const int n_boundary_samples,
-				   const StiffnessMatrix &mass,
-				   const assembler::RhsAssembler &rhs_assembler,
-				   const mesh::Obstacle &obstacle,
-				   const bool is_time_dependent,
-				   const double t)
+	BCPenaltyForm::BCPenaltyForm(const int ndof,
+								 const std::vector<int> &boundary_nodes,
+								 const std::vector<mesh::LocalBoundary> &local_boundary,
+								 const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
+								 const int n_boundary_samples,
+								 const StiffnessMatrix &mass,
+								 const assembler::RhsAssembler &rhs_assembler,
+								 const mesh::Obstacle &obstacle,
+								 const bool is_time_dependent,
+								 const double t)
 		: boundary_nodes_(boundary_nodes),
 		  local_boundary_(&local_boundary),
 		  local_neumann_boundary_(&local_neumann_boundary),
@@ -25,11 +25,11 @@ namespace polyfem::solver
 		update_target(t); // initialize target_x_
 	}
 
-	ALForm::ALForm(const int ndof,
-				   const std::vector<int> &boundary_nodes,
-				   const StiffnessMatrix &mass,
-				   const mesh::Obstacle &obstacle,
-				   const Eigen::MatrixXd &target_x)
+	BCPenaltyForm::BCPenaltyForm(const int ndof,
+								 const std::vector<int> &boundary_nodes,
+								 const StiffnessMatrix &mass,
+								 const mesh::Obstacle &obstacle,
+								 const Eigen::MatrixXd &target_x)
 		: boundary_nodes_(boundary_nodes),
 		  local_boundary_(nullptr),
 		  local_neumann_boundary_(nullptr),
@@ -41,7 +41,7 @@ namespace polyfem::solver
 		init_masked_lumped_mass(ndof, mass, obstacle);
 	}
 
-	void ALForm::init_masked_lumped_mass(
+	void BCPenaltyForm::init_masked_lumped_mass(
 		const int ndof,
 		const StiffnessMatrix &mass,
 		const mesh::Obstacle &obstacle)
@@ -69,40 +69,39 @@ namespace polyfem::solver
 			assert(row == col); // matrix should be diagonal
 			return !is_boundary_dof[row];
 		});
+
+		mask_.resize(masked_lumped_mass_.rows(), masked_lumped_mass_.cols());
+		mask_.setIdentity();
+		mask_.prune([&](const int &row, const int &col, const double &value) -> bool {
+			assert(row == col); // matrix should be diagonal
+			return !is_boundary_dof[row];
+		});
 	}
 
-	double ALForm::value_unweighted(const Eigen::VectorXd &x) const
+	double BCPenaltyForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		const Eigen::VectorXd dist = x - target_x_;
 		const double AL_penalty = 0.5 * dist.transpose() * masked_lumped_mass_ * dist;
-
-		// TODO: Implement Lagrangian potential if needed (i.e., penalty exceeds maximum)
-		// ₙ    __
-		// ∑ -⎷ mₖ λₖᵀ (xₖ - x̂ₖ) = -λᵀ M (x - x̂)
-		// ᵏ
-
-		// logger().trace("AL_penalty={}", sqrt(AL_penalty));
-
 		return AL_penalty;
 	}
 
-	void ALForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void BCPenaltyForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv = masked_lumped_mass_ * (x - target_x_);
 	}
 
-	void ALForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
+	void BCPenaltyForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		hessian = masked_lumped_mass_;
 	}
 
-	void ALForm::update_quantities(const double t, const Eigen::VectorXd &)
+	void BCPenaltyForm::update_quantities(const double t, const Eigen::VectorXd &)
 	{
 		if (is_time_dependent_)
 			update_target(t);
 	}
 
-	void ALForm::update_target(const double t)
+	void BCPenaltyForm::update_target(const double t)
 	{
 		assert(rhs_assembler_ != nullptr);
 		assert(local_boundary_ != nullptr);

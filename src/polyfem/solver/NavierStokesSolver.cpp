@@ -37,17 +37,19 @@ namespace polyfem
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &pressure_bases,
 			const std::vector<basis::ElementBases> &gbases,
-			const assembler::AssemblerUtils &assembler,
+			const assembler::Assembler &velocity_stokes_assembler,
+			assembler::NavierStokesVelocity &velocity_assembler,
+			const assembler::MixedAssembler &mixed_assembler,
+			const assembler::Assembler &pressure_assembler,
 			const assembler::AssemblyValsCache &ass_vals_cache,
 			const assembler::AssemblyValsCache &pressure_ass_vals_cache,
 			const std::vector<int> &boundary_nodes,
 			const bool use_avg_pressure,
-			const std::string &formulation,
 			const int problem_dim,
 			const bool is_volume,
 			const Eigen::MatrixXd &rhs, Eigen::VectorXd &x)
 		{
-			assert(formulation == "NavierStokes");
+			assert(velocity_assembler.name() == "NavierStokes");
 
 			auto solver = LinearSolver::create(solver_type, precond_type);
 			solver->setParameters(solver_param["linear"]);
@@ -60,9 +62,9 @@ namespace polyfem
 			time.start();
 			StiffnessMatrix stoke_stiffness;
 			StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-			assembler.assemble_problem(formulation, is_volume, n_bases, bases, gbases, ass_vals_cache, velocity_stiffness);
-			assembler.assemble_mixed_problem(formulation, is_volume, n_pressure_bases, n_bases, pressure_bases, bases, gbases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
-			assembler.assemble_pressure_problem(formulation, is_volume, n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache, pressure_stiffness);
+			velocity_stokes_assembler.assemble(is_volume, n_bases, bases, gbases, ass_vals_cache, velocity_stiffness);
+			mixed_assembler.assemble(is_volume, n_pressure_bases, n_bases, pressure_bases, bases, gbases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
+			pressure_assembler.assemble(is_volume, n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache, pressure_stiffness);
 
 			AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 												 velocity_stiffness, mixed_stiffness, pressure_stiffness,
@@ -107,24 +109,24 @@ namespace polyfem
 			int it = 0;
 			double nlres_norm = 0;
 			b = rhs;
-			it += minimize_aux(formulation, true, skipping,
+			it += minimize_aux(true, skipping,
 							   n_bases,
 							   n_pressure_bases,
 							   bases,
 							   gbases,
-							   assembler,
+							   velocity_assembler,
 							   ass_vals_cache,
 							   boundary_nodes,
 							   use_avg_pressure,
 							   problem_dim,
 							   is_volume,
 							   velocity_stiffness, mixed_stiffness, pressure_stiffness, b, 1e-3, solver, nlres_norm, x);
-			it += minimize_aux(formulation, false, skipping,
+			it += minimize_aux(false, skipping,
 							   n_bases,
 							   n_pressure_bases,
 							   bases,
 							   gbases,
-							   assembler,
+							   velocity_assembler,
 							   ass_vals_cache,
 							   boundary_nodes,
 							   use_avg_pressure,
@@ -145,14 +147,13 @@ namespace polyfem
 		}
 
 		int NavierStokesSolver::minimize_aux(
-			const std::string &formulation,
 			bool is_picard,
 			const std::vector<int> &skipping,
 			const int n_bases,
 			const int n_pressure_bases,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
-			const assembler::AssemblerUtils &assembler,
+			assembler::NavierStokesVelocity &velocity_assembler,
 			const assembler::AssemblyValsCache &ass_vals_cache,
 			const std::vector<int> &boundary_nodes,
 			const bool use_avg_pressure,
@@ -169,10 +170,11 @@ namespace polyfem
 
 			StiffnessMatrix nl_matrix;
 			StiffnessMatrix total_matrix;
-			SpareMatrixCache mat_cache;
+			SparseMatrixCache mat_cache;
 
 			time.start();
-			assembler.assemble_energy_hessian(formulation + "Picard", is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
+			velocity_assembler.set_picard(true);
+			velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 			AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 												 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 												 total_matrix);
@@ -198,7 +200,8 @@ namespace polyfem
 				time.start();
 				if (!is_picard)
 				{
-					assembler.assemble_energy_hessian(formulation, is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
+					velocity_assembler.set_picard(false);
+					velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 					AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 														 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 														 total_matrix);
@@ -215,7 +218,8 @@ namespace polyfem
 				// TODO check for nans
 
 				time.start();
-				assembler.assemble_energy_hessian(formulation + "Picard", is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
+				velocity_assembler.set_picard(true);
+				velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 				AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 													 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 													 total_matrix);

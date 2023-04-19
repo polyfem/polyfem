@@ -22,7 +22,7 @@
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>
 
-#include <polyfem/io/VTUWriter.hpp>
+#include <paraviewo/VTUWriter.hpp>
 #include <finitediff.hpp>
 
 #include <catch2/catch.hpp>

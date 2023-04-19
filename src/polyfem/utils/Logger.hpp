@@ -23,10 +23,10 @@ namespace polyfem
 	///
 	void set_logger(std::shared_ptr<spdlog::logger> logger);
 
-	void log_and_throw_error(const std::string &msg);
+	[[noreturn]] void log_and_throw_error(const std::string &msg);
 
 	template <typename... Args>
-	void log_and_throw_error(const std::string &msg, const Args &...args)
+	[[noreturn]] void log_and_throw_error(const std::string &msg, const Args &...args)
 	{
 		log_and_throw_error(fmt::format(msg, args...));
 	}
