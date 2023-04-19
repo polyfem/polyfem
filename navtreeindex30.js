@@ -1,5 +1,7 @@
 var NAVTREEINDEX30 =
 {
+"namespacepolyfem_1_1utils_1_1_string_utils.html#af73165b653d0e64acc1e8b888fe93bca":[3,0,6,11,0,1],
+"namespacepretty__print.html":[3,0,7],
 "namespacepretty__print.html#a4c61a4500105714e7fea1f44029c7c64":[3,0,7,0],
 "namespaceq__bases.html":[3,0,8],
 "namespaceq__bases.html#a0049f6e47cc2d7c900d43b6630ae21d1":[3,0,8,28],
@@ -247,7 +249,5 @@ var NAVTREEINDEX30 =
 "struct_d_scalar2.html#a51b7cd14e6f457142494c459bbcc7750":[4,0,7,24],
 "struct_d_scalar2.html#a561cdd3ae42960efc690d29f5fe633c9":[4,0,7,25],
 "struct_d_scalar2.html#a5a8f755ccfacec2566abf82507354d66":[4,0,7,15],
-"struct_d_scalar2.html#a60f1e4e2c029f87b8e10b83ec4867d4d":[4,0,7,33],
-"struct_d_scalar2.html#a613d16702f3528bb0bb4c71d7381ec36":[4,0,7,30],
-"struct_d_scalar2.html#a68169e89cff0a1156126cf12d86cfd9f":[4,0,7,7]
+"struct_d_scalar2.html#a60f1e4e2c029f87b8e10b83ec4867d4d":[4,0,7,33]
 };

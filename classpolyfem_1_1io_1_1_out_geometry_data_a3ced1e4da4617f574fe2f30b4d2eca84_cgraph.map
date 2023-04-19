@@ -1,39 +1,40 @@
 <map id="polyfem::io::OutGeometryData::save_surface" name="polyfem::io::OutGeometryData::save_surface">
-<area shape="rect" id="node1" title="saves the surface vtu file for for surface quantites, eg traction forces" alt="" coords="5,691,197,731"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a8867f92a6f5370d8ccc88fda2ff5dee1" title="builds the boundary mesh for visualization" alt="" coords="245,619,476,659"/>
-<area shape="rect" id="node25" href="$classpolyfem_1_1assembler_1_1_assembler.html#a05a391ffee6dad03741212322c25d906" title=" " alt="" coords="279,683,443,738"/>
-<area shape="rect" id="node26" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="569,248,732,288"/>
-<area shape="rect" id="node27" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="279,763,442,803"/>
-<area shape="rect" id="node29" href="$classpolyfem_1_1mesh_1_1_mesh.html#a0417a588019e24120727a6667d0cfcef" title="Get the volume selection of an element (cell in 3d, face in 2d)" alt="" coords="279,827,442,867"/>
-<area shape="rect" id="node31" href="$classpolyfem_1_1mesh_1_1_mesh.html#a5e569bdb72d6c480fe1f27ee4acda141" title="Get the boundary selection of an element (face in 3d, edge in 2d)" alt="" coords="279,133,442,173"/>
-<area shape="rect" id="node35" href="$classpolyfem_1_1io_1_1_evaluator.html#a37193c8a31244f89fc4586d18101a033" title="interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)" alt="" coords="264,497,457,537"/>
-<area shape="rect" id="node36" href="$classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec" title=" " alt="" coords="285,891,437,931"/>
-<area shape="rect" id="node37" href="$classpolyfem_1_1assembler_1_1_assembler.html#abf4ca5a2d5825696036c2ad59f80d89b" title=" " alt="" coords="269,955,452,995"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="839,305,1002,345"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#aa925326e2e2dfa5e305959154ed99ca5" title=" " alt="" coords="524,763,777,803"/>
-<area shape="rect" id="node15" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a2fe4e23eb3764fe8f7b25db3e4209fad" title=" " alt="" coords="534,363,767,403"/>
-<area shape="rect" id="node16" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a58d1aa4acd871a4a38e5197f9dcdf13b" title=" " alt="" coords="536,427,765,467"/>
-<area shape="rect" id="node17" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a3cb05c15f577e549c9ec1aff534bfccf" title=" " alt="" coords="543,491,758,531"/>
-<area shape="rect" id="node18" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a9ba642e0745173decb0b36d4af7e7d17" title=" " alt="" coords="545,555,756,595"/>
-<area shape="rect" id="node19" href="$classpolyfem_1_1utils_1_1_ref_element_sampler.html#a1f28b1443c2c42b543adc8b8869a905e" title=" " alt="" coords="553,619,749,659"/>
-<area shape="rect" id="node20" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#ac12965de419a6fe6b793263d39d94895" title=" " alt="" coords="545,683,756,738"/>
-<area shape="rect" id="node21" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a9fb7f42d906df7cd9332811512fef43d" title=" " alt="" coords="545,827,756,882"/>
-<area shape="rect" id="node22" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#aedbf480f1e32d3fad5ee6e2946b91099" title=" " alt="" coords="545,906,756,961"/>
-<area shape="rect" id="node23" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a762ea74cf87bbaff2f6877765eea7821" title=" " alt="" coords="545,985,756,1039"/>
-<area shape="rect" id="node24" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#acb587c61b43b393260dba4a5a95c090b" title=" " alt="" coords="535,1064,766,1104"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#acd82435a4005fe54dc87c97ce2903a19" title=" " alt="" coords="825,1041,1016,1081"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a2a493667ce2cb9d01bd4fdd68bcb8243" title="number of vertices of a face" alt="" coords="825,849,1016,889"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a655514850b93a4d71b22c5a301c8984b" title=" " alt="" coords="830,913,1011,953"/>
-<area shape="rect" id="node13" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#af83fbccdc67bac8c265979729cfe8640" title="point coordinates" alt="" coords="825,977,1016,1017"/>
-<area shape="rect" id="node14" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a0a627d17ee1efd05fd946bb46cbe5927" title=" " alt="" coords="825,785,1016,825"/>
-<area shape="rect" id="node6" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#a1b9d2ef721df947c3827b416016918fd" title=" " alt="" coords="1064,1009,1263,1049"/>
-<area shape="rect" id="node7" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#a5989f6fbf9ec292c06a5626412f1e8ba" title=" " alt="" coords="1311,885,1509,925"/>
-<area shape="rect" id="node8" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#abf91546c2ca67de0513b99b390ed1e51" title=" " alt="" coords="1311,1009,1509,1049"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a126b7c7206e56ae3728e1bd251fa6581" title=" " alt="" coords="1073,929,1254,969"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a8763fa8b0b83980f2d18184895b75d42" title=" " alt="" coords="1073,865,1254,905"/>
-<area shape="rect" id="node28" href="$classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" title="check if using iso parametric bases" alt="" coords="578,1128,723,1168"/>
-<area shape="rect" id="node30" href="$classpolyfem_1_1mesh_1_1_mesh.html#a6714c8e53f6fdfae01933119d8ad152c" title="checks if volumes selections are available" alt="" coords="569,1192,732,1232"/>
-<area shape="rect" id="node32" href="$classpolyfem_1_1mesh_1_1_mesh.html#a2a0448ef817e94ed705e39ac818bf9e1" title="checks if surface selections are available" alt="" coords="569,69,732,109"/>
-<area shape="rect" id="node33" href="$classpolyfem_1_1mesh_1_1_mesh.html#aa91ff468411251e60dd0bec73654b0fb" title="is edge boundary" alt="" coords="569,133,732,173"/>
-<area shape="rect" id="node34" href="$classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4" title="is face boundary" alt="" coords="569,5,732,45"/>
+<area shape="rect" id="node1" title="saves the surface vtu file for for surface quantites, eg traction forces" alt="" coords="5,663,197,703"/>
+<area shape="rect" id="node2" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a8867f92a6f5370d8ccc88fda2ff5dee1" title="builds the boundary mesh for visualization" alt="" coords="245,591,476,631"/>
+<area shape="rect" id="node25" href="$classpolyfem_1_1assembler_1_1_assembler.html#a05a391ffee6dad03741212322c25d906" title=" " alt="" coords="279,655,443,710"/>
+<area shape="rect" id="node26" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="569,165,732,205"/>
+<area shape="rect" id="node27" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="279,735,442,775"/>
+<area shape="rect" id="node29" href="$classpolyfem_1_1mesh_1_1_mesh.html#a0417a588019e24120727a6667d0cfcef" title="Get the volume selection of an element (cell in 3d, face in 2d)" alt="" coords="279,799,442,839"/>
+<area shape="rect" id="node31" href="$classpolyfem_1_1mesh_1_1_mesh.html#a5e569bdb72d6c480fe1f27ee4acda141" title="Get the boundary selection of an element (face in 3d, edge in 2d)" alt="" coords="279,101,442,141"/>
+<area shape="rect" id="node36" href="$classpolyfem_1_1io_1_1_evaluator.html#a37193c8a31244f89fc4586d18101a033" title="interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)" alt="" coords="264,261,457,301"/>
+<area shape="rect" id="node37" href="$classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec" title=" " alt="" coords="285,863,437,903"/>
+<area shape="rect" id="node38" href="$classpolyfem_1_1assembler_1_1_assembler.html#abf4ca5a2d5825696036c2ad59f80d89b" title=" " alt="" coords="269,927,452,967"/>
+<area shape="rect" id="node3" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="839,381,1002,421"/>
+<area shape="rect" id="node4" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#aa925326e2e2dfa5e305959154ed99ca5" title=" " alt="" coords="524,519,777,559"/>
+<area shape="rect" id="node15" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a2fe4e23eb3764fe8f7b25db3e4209fad" title=" " alt="" coords="534,663,767,703"/>
+<area shape="rect" id="node16" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a58d1aa4acd871a4a38e5197f9dcdf13b" title=" " alt="" coords="536,727,765,767"/>
+<area shape="rect" id="node17" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a3cb05c15f577e549c9ec1aff534bfccf" title=" " alt="" coords="543,791,758,831"/>
+<area shape="rect" id="node18" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a9ba642e0745173decb0b36d4af7e7d17" title=" " alt="" coords="545,855,756,895"/>
+<area shape="rect" id="node19" href="$classpolyfem_1_1utils_1_1_ref_element_sampler.html#a1f28b1443c2c42b543adc8b8869a905e" title=" " alt="" coords="553,919,749,959"/>
+<area shape="rect" id="node20" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#ac12965de419a6fe6b793263d39d94895" title=" " alt="" coords="545,230,756,285"/>
+<area shape="rect" id="node21" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a9fb7f42d906df7cd9332811512fef43d" title=" " alt="" coords="545,309,756,363"/>
+<area shape="rect" id="node22" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#aedbf480f1e32d3fad5ee6e2946b91099" title=" " alt="" coords="545,439,756,494"/>
+<area shape="rect" id="node23" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a762ea74cf87bbaff2f6877765eea7821" title=" " alt="" coords="545,583,756,638"/>
+<area shape="rect" id="node24" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#acb587c61b43b393260dba4a5a95c090b" title=" " alt="" coords="535,983,766,1023"/>
+<area shape="rect" id="node5" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#acd82435a4005fe54dc87c97ce2903a19" title=" " alt="" coords="825,867,1016,907"/>
+<area shape="rect" id="node9" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a2a493667ce2cb9d01bd4fdd68bcb8243" title="number of vertices of a face" alt="" coords="825,544,1016,584"/>
+<area shape="rect" id="node10" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a655514850b93a4d71b22c5a301c8984b" title=" " alt="" coords="830,660,1011,700"/>
+<area shape="rect" id="node13" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#af83fbccdc67bac8c265979729cfe8640" title="point coordinates" alt="" coords="825,776,1016,816"/>
+<area shape="rect" id="node14" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a0a627d17ee1efd05fd946bb46cbe5927" title=" " alt="" coords="825,931,1016,971"/>
+<area shape="rect" id="node6" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#a1b9d2ef721df947c3827b416016918fd" title=" " alt="" coords="1064,867,1263,907"/>
+<area shape="rect" id="node7" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#a5989f6fbf9ec292c06a5626412f1e8ba" title=" " alt="" coords="1311,931,1509,971"/>
+<area shape="rect" id="node8" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#abf91546c2ca67de0513b99b390ed1e51" title=" " alt="" coords="1311,867,1509,907"/>
+<area shape="rect" id="node11" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a126b7c7206e56ae3728e1bd251fa6581" title=" " alt="" coords="1073,635,1254,675"/>
+<area shape="rect" id="node12" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a8763fa8b0b83980f2d18184895b75d42" title=" " alt="" coords="1073,699,1254,739"/>
+<area shape="rect" id="node28" href="$classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" title="check if using iso parametric bases" alt="" coords="578,1047,723,1087"/>
+<area shape="rect" id="node30" href="$classpolyfem_1_1mesh_1_1_mesh.html#a6714c8e53f6fdfae01933119d8ad152c" title="checks if volumes selections are available" alt="" coords="569,1111,732,1151"/>
+<area shape="rect" id="node32" href="$classpolyfem_1_1mesh_1_1_mesh.html#aad8b1ae368d562f132f816906d01de17" title="Get the default boundary selection of an element (face in 3d, edge in 2d)" alt="" coords="555,37,746,77"/>
+<area shape="rect" id="node35" href="$classpolyfem_1_1mesh_1_1_mesh.html#a2a0448ef817e94ed705e39ac818bf9e1" title="checks if surface selections are available" alt="" coords="569,101,732,141"/>
+<area shape="rect" id="node33" href="$classpolyfem_1_1mesh_1_1_mesh.html#aa91ff468411251e60dd0bec73654b0fb" title="is edge boundary" alt="" coords="839,5,1002,45"/>
+<area shape="rect" id="node34" href="$classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4" title="is face boundary" alt="" coords="839,69,1002,109"/>
 </map>

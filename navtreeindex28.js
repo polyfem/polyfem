@@ -1,5 +1,7 @@
 var NAVTREEINDEX28 =
 {
+"functions_p.html":[4,3,0,16],
+"functions_q.html":[4,3,0,17],
 "functions_r.html":[4,3,0,18],
 "functions_rela.html":[4,3,5],
 "functions_s.html":[4,3,0,19],
@@ -247,7 +249,5 @@ var NAVTREEINDEX28 =
 "namespacepolyfem_1_1autogen.html#a267b3426fd266f23e433bd1b63eff38c":[3,0,6,1,27],
 "namespacepolyfem_1_1autogen.html#a2f3adeab0ebfd5fde39348930e85ad26":[3,0,6,1,9],
 "namespacepolyfem_1_1autogen.html#a354a4b5cbfcf4c5768a35a8ed4f2cdb7":[3,0,6,1,20],
-"namespacepolyfem_1_1autogen.html#a46ed52c4fc0f593215885e2088d4c80b":[3,0,6,1,13],
-"namespacepolyfem_1_1autogen.html#a4ed466f5717b1e96c5fd9f788f84249d":[3,0,6,1,15],
-"namespacepolyfem_1_1autogen.html#a594e7753160f1151b99eba4e45e3773e":[3,0,6,1,5]
+"namespacepolyfem_1_1autogen.html#a46ed52c4fc0f593215885e2088d4c80b":[3,0,6,1,13]
 };

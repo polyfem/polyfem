@@ -515,6 +515,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4c42cdd2891d4bc0d8743dc4e776ca14 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a4c42cdd2891d4bc0d8743dc4e776ca14">set_body_ids</a> (const std::vector&lt; int &gt; &amp;body_ids)</td></tr>
 <tr class="memdesc:a4c42cdd2891d4bc0d8743dc4e776ca14 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the volume sections.  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a4c42cdd2891d4bc0d8743dc4e776ca14">More...</a><br /></td></tr>
 <tr class="separator:a4c42cdd2891d4bc0d8743dc4e776ca14 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad8b1ae368d562f132f816906d01de17 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aad8b1ae368d562f132f816906d01de17">get_default_boundary_id</a> (const int primitive) const</td></tr>
+<tr class="memdesc:aad8b1ae368d562f132f816906d01de17 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the default boundary selection of an element (face in 3d, edge in 2d)  <a href="classpolyfem_1_1mesh_1_1_mesh.html#aad8b1ae368d562f132f816906d01de17">More...</a><br /></td></tr>
+<tr class="separator:aad8b1ae368d562f132f816906d01de17 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e569bdb72d6c480fe1f27ee4acda141 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a5e569bdb72d6c480fe1f27ee4acda141">get_boundary_id</a> (const int primitive) const</td></tr>
 <tr class="memdesc:a5e569bdb72d6c480fe1f27ee4acda141 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the boundary selection of an element (face in 3d, edge in 2d)  <a href="classpolyfem_1_1mesh_1_1_mesh.html#a5e569bdb72d6c480fe1f27ee4acda141">More...</a><br /></td></tr>
 <tr class="separator:a5e569bdb72d6c480fe1f27ee4acda141 inherit pub_methods_classpolyfem_1_1mesh_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -883,7 +886,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00189">189</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00649">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00645">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00647">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00086">get_index_from_face()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">mesh_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00033">n_faces()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00059">polyfem::mesh::Mesh2D::next_around_face()</a>, <a class="el" href="_mesh_8hpp_source.html#l00640">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00656">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00652">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00654">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00086">get_index_from_face()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">mesh_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00033">n_faces()</a>, <a class="el" href="_mesh2_d_8hpp_source.html#l00059">polyfem::mesh::Mesh2D::next_around_face()</a>, <a class="el" href="_mesh_8hpp_source.html#l00647">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1000,7 +1003,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00165">165</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00105">boundary_edges_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00104">boundary_vertices_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00103">c2e_</a>, <a class="el" href="_mesh_8hpp_source.html#l00649">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00546">compute_elements_tag()</a>, <a class="el" href="_mesh_8hpp_source.html#l00645">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_mesh_8hpp_source.html#l00647">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">mesh_</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00304">polyfem::mesh::orient_normals_2d()</a>, <a class="el" href="_navigation_8cpp_source.html#l00027">polyfem::mesh::Navigation::prepare_mesh()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l00575">polyfem::mesh::to_geogram_mesh()</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00105">boundary_edges_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00104">boundary_vertices_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00103">c2e_</a>, <a class="el" href="_mesh_8hpp_source.html#l00656">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00546">compute_elements_tag()</a>, <a class="el" href="_mesh_8hpp_source.html#l00652">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_mesh_8hpp_source.html#l00654">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">mesh_</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00304">polyfem::mesh::orient_normals_2d()</a>, <a class="el" href="_navigation_8cpp_source.html#l00027">polyfem::mesh::Navigation::prepare_mesh()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l00575">polyfem::mesh::to_geogram_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1098,7 +1101,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00565">565</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00638">polyfem::mesh::Mesh::body_ids_</a>, <a class="el" href="_mesh2_d_8cpp_source.html#l00069">polyfem::mesh::Mesh2D::face_barycenter()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00154">polyfem::mesh::Mesh::n_elements()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00645">polyfem::mesh::Mesh::body_ids_</a>, <a class="el" href="_mesh2_d_8cpp_source.html#l00069">polyfem::mesh::Mesh2D::face_barycenter()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00154">polyfem::mesh::Mesh::n_elements()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1145,7 +1148,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00577">577</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00636">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00388">bounding_box()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00557">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00643">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00388">bounding_box()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00557">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1191,7 +1194,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00607">607</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00636">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00557">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00643">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00557">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1237,7 +1240,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00624">624</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00636">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00557">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00643">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00557">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1283,7 +1286,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00636">636</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00636">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00557">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00643">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00557">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1329,7 +1332,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00661">661</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00636">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00557">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00040">edge_vertex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00643">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00557">edge_barycenter()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00040">edge_vertex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1375,7 +1378,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00648">648</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00636">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00040">edge_vertex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00643">polyfem::mesh::Mesh::boundary_ids_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00040">edge_vertex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00048">is_boundary_edge()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00034">n_edges()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1414,7 +1417,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00546">546</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_utils_8cpp_source.html#l00097">polyfem::mesh::compute_element_tags()</a>, <a class="el" href="_mesh_8hpp_source.html#l00632">polyfem::mesh::Mesh::elements_tag_</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_utils_8cpp_source.html#l00097">polyfem::mesh::compute_element_tags()</a>, <a class="el" href="_mesh_8hpp_source.html#l00639">polyfem::mesh::Mesh::elements_tag_</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">mesh_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00165">build_from_matrices()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00142">load()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00025">refine()</a>.</p>
 <div class="dynheader">
@@ -1578,7 +1581,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00322">322</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navigation_8hpp_source.html#l00016">polyfem::mesh::Navigation::Index::edge</a>, <a class="el" href="_mesh_8hpp_source.html#l00645">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_navigation_8hpp_source.html#l00017">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="_mesh_8hpp_source.html#l00640">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00461">point()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
+<p class="reference">References <a class="el" href="_navigation_8hpp_source.html#l00016">polyfem::mesh::Navigation::Index::edge</a>, <a class="el" href="_mesh_8hpp_source.html#l00652">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_navigation_8hpp_source.html#l00017">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="_mesh_8hpp_source.html#l00647">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00461">point()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1698,7 +1701,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00344">344</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navigation_8hpp_source.html#l00017">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="_mesh_8hpp_source.html#l00647">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_mesh_8cpp_source.html#l00348">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00418">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_mesh_8hpp_source.html#l00640">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00461">point()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00090">switch_edge()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
+<p class="reference">References <a class="el" href="_navigation_8hpp_source.html#l00017">polyfem::mesh::Navigation::Index::face</a>, <a class="el" href="_mesh_8hpp_source.html#l00654">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_mesh_8cpp_source.html#l00348">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="_mesh_8cpp_source.html#l00418">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_mesh_8hpp_source.html#l00647">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00461">point()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00090">switch_edge()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00089">switch_vertex()</a>, and <a class="el" href="_navigation_8hpp_source.html#l00015">polyfem::mesh::Navigation::Index::vertex</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2022,7 +2025,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00142">142</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00105">boundary_edges_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00104">boundary_vertices_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00103">c2e_</a>, <a class="el" href="_mesh_8hpp_source.html#l00649">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00546">compute_elements_tag()</a>, <a class="el" href="_mesh_8hpp_source.html#l00645">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00647">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">mesh_</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00304">polyfem::mesh::orient_normals_2d()</a>, and <a class="el" href="_navigation_8cpp_source.html#l00027">polyfem::mesh::Navigation::prepare_mesh()</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00105">boundary_edges_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00104">boundary_vertices_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00103">c2e_</a>, <a class="el" href="_mesh_8hpp_source.html#l00656">polyfem::mesh::Mesh::cell_nodes_</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00546">compute_elements_tag()</a>, <a class="el" href="_mesh_8hpp_source.html#l00652">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00654">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">mesh_</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00304">polyfem::mesh::orient_normals_2d()</a>, and <a class="el" href="_navigation_8cpp_source.html#l00027">polyfem::mesh::Navigation::prepare_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2275,7 +2278,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00402">402</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00645">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00647">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_mesh2_d_8cpp_source.html#l00021">polyfem::mesh::Mesh2D::get_edges()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00652">polyfem::mesh::Mesh::edge_nodes_</a>, <a class="el" href="_mesh_8hpp_source.html#l00654">polyfem::mesh::Mesh::face_nodes_</a>, <a class="el" href="_mesh2_d_8cpp_source.html#l00021">polyfem::mesh::Mesh2D::get_edges()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">mesh_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2433,7 +2436,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00025">25</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00105">boundary_edges_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00104">boundary_vertices_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00103">c2e_</a>, <a class="el" href="_refinement_8hpp_source.html#l00106">polyfem::mesh::Polygons::catmul_clark_split_func()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00546">compute_elements_tag()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01244">polyfem::mesh::generate_edges()</a>, <a class="el" href="_mesh_8hpp_source.html#l00656">polyfem::mesh::Mesh::in_ordered_edges_</a>, <a class="el" href="_mesh_8hpp_source.html#l00658">polyfem::mesh::Mesh::in_ordered_faces_</a>, <a class="el" href="_mesh_8hpp_source.html#l00654">polyfem::mesh::Mesh::in_ordered_vertices_</a>, <a class="el" href="_mesh_8cpp_source.html#l00418">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">mesh_</a>, <a class="el" href="_mesh_8hpp_source.html#l00154">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="_mesh_8hpp_source.html#l00640">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_refinement_8hpp_source.html#l00087">polyfem::mesh::Polygons::polar_split_func()</a>, <a class="el" href="_navigation_8cpp_source.html#l00027">polyfem::mesh::Navigation::prepare_mesh()</a>, <a class="el" href="_refinement_8cpp_source.html#l00620">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00736">polyfem::mesh::refine_triangle_mesh()</a>.</p>
+<p class="reference">References <a class="el" href="_c_mesh2_d_8hpp_source.html#l00105">boundary_edges_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00104">boundary_vertices_</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00103">c2e_</a>, <a class="el" href="_refinement_8hpp_source.html#l00106">polyfem::mesh::Polygons::catmul_clark_split_func()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00546">compute_elements_tag()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01244">polyfem::mesh::generate_edges()</a>, <a class="el" href="_mesh_8hpp_source.html#l00663">polyfem::mesh::Mesh::in_ordered_edges_</a>, <a class="el" href="_mesh_8hpp_source.html#l00665">polyfem::mesh::Mesh::in_ordered_faces_</a>, <a class="el" href="_mesh_8hpp_source.html#l00661">polyfem::mesh::Mesh::in_ordered_vertices_</a>, <a class="el" href="_mesh_8cpp_source.html#l00418">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">mesh_</a>, <a class="el" href="_mesh_8hpp_source.html#l00154">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="_mesh_8hpp_source.html#l00647">polyfem::mesh::Mesh::orders_</a>, <a class="el" href="_refinement_8hpp_source.html#l00087">polyfem::mesh::Polygons::polar_split_func()</a>, <a class="el" href="_navigation_8cpp_source.html#l00027">polyfem::mesh::Navigation::prepare_mesh()</a>, <a class="el" href="_refinement_8cpp_source.html#l00620">polyfem::mesh::refine_polygonal_mesh()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00736">polyfem::mesh::refine_triangle_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2725,7 +2728,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_c_mesh2_d_8cpp_source.html#l00552">552</a> of file <a class="el" href="_c_mesh2_d_8cpp_source.html">CMesh2D.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_utils_8cpp_source.html#l00097">polyfem::mesh::compute_element_tags()</a>, <a class="el" href="_mesh_8hpp_source.html#l00632">polyfem::mesh::Mesh::elements_tag_</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">mesh_</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_utils_8cpp_source.html#l00097">polyfem::mesh::compute_element_tags()</a>, <a class="el" href="_mesh_8hpp_source.html#l00639">polyfem::mesh::Mesh::elements_tag_</a>, and <a class="el" href="_c_mesh2_d_8hpp_source.html#l00102">mesh_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
