@@ -183,7 +183,7 @@ namespace polyfem
 		for (const json &bc : json_bcs)
 		{
 			assert(bc["dimension"].size() >= mesh->dimension());
-			std::array<bool, 3> dimension = {true, true, true};
+			std::array<bool, 3> dimension{{true, true, true}};
 			for (int d = 0; d < bc["dimension"].size(); ++d)
 				dimension[d] = bc["dimension"][d];
 
