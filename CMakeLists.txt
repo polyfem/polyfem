@@ -263,6 +263,10 @@ polyfem_target_link_system_libraries(polyfem PUBLIC natsort::natsort)
 include(glob)
 polyfem_target_link_system_libraries(polyfem PUBLIC Glob::Glob)
 
+# YAML library
+include(yaml)
+polyfem_target_link_system_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
+
 ################################################################################
 # Optional libraries
 ################################################################################
