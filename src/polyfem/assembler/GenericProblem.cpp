@@ -53,6 +53,20 @@ namespace polyfem
 		{
 		}
 
+		void GenericTensorProblem::set_units(const assembler::Assembler &assembler, const Units &units)
+		{
+			if (assembler.is_fluid())
+			{
+				// TODO
+				assert(false);
+			}
+			else
+			{
+				for (int i = 0; i < 3; ++i)
+					rhs_[i].set_unit_type(units.acceleration());
+			}
+		}
+
 		void GenericTensorProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), pts.cols());

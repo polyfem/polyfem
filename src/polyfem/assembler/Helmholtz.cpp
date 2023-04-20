@@ -28,7 +28,7 @@ namespace polyfem::assembler
 		return result;
 	}
 
-	void Helmholtz::add_multimaterial(const int index, const json &params)
+	void Helmholtz::add_multimaterial(const int index, const json &params, const Units &units)
 	{
 		if (params.contains("k"))
 		{

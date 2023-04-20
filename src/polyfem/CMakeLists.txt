@@ -2,6 +2,7 @@ set(SOURCES
 	Common.hpp
 	State.cpp
 	State.hpp
+	Units.hpp
 )
 
 prepend_current_path(SOURCES)

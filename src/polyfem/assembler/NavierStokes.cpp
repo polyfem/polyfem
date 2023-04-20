@@ -3,9 +3,10 @@
 namespace polyfem::assembler
 {
 
-	void NavierStokesVelocity::add_multimaterial(const int index, const json &params)
+	void NavierStokesVelocity::add_multimaterial(const int index, const json &params, const Units &units)
 	{
 		assert(size() == 2 || size() == 3);
+		// TODO use units and generic mat param
 
 		if (params.count("viscosity"))
 		{

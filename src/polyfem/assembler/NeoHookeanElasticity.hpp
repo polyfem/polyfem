@@ -26,7 +26,8 @@ namespace polyfem::assembler
 		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
+
 		void set_params(const LameParameters &params) { params_ = params; }
 
 		std::string name() const override { return "NeoHookean"; }

@@ -317,6 +317,8 @@ namespace polyfem
 			// important for the BC
 			problem->set_parameters(args["preset_problem"]);
 		}
+
+		problem->set_units(*assembler, units);
 	}
 
 	void State::set_max_threads(const unsigned int max_threads)
@@ -425,7 +427,7 @@ namespace polyfem
 			body_ids[i] = mesh->get_body_id(i);
 
 		for (auto &a : assemblers)
-			a->set_materials(body_ids, args["materials"]);
+			a->set_materials(body_ids, args["materials"], units);
 	}
 
 	void State::set_materials(assembler::Assembler &assembler) const
@@ -440,7 +442,7 @@ namespace polyfem
 		for (int i = 0; i < mesh->n_elements(); ++i)
 			body_ids[i] = mesh->get_body_id(i);
 
-		assembler.set_materials(body_ids, args["materials"]);
+		assembler.set_materials(body_ids, args["materials"], units);
 	}
 
 } // namespace polyfem

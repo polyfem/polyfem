@@ -4,11 +4,11 @@ namespace polyfem::assembler
 {
 	using namespace basis;
 
-	void IncompressibleLinearElasticityDispacement::add_multimaterial(const int index, const json &params)
+	void IncompressibleLinearElasticityDispacement::add_multimaterial(const int index, const json &params, const Units &units)
 	{
 		assert(size() == 2 || size() == 3);
 
-		params_.add_multimaterial(index, params, size() == 3);
+		params_.add_multimaterial(index, params, size() == 3, units.stress());
 
 		// std::cout<<mu_<<std::endl;
 		// std::cout<<lambda_<<std::endl;
@@ -155,11 +155,11 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void IncompressibleLinearElasticityPressure::add_multimaterial(const int index, const json &params)
+	void IncompressibleLinearElasticityPressure::add_multimaterial(const int index, const json &params, const Units &units)
 	{
 		assert(size() == 2 || size() == 3);
 
-		params_.add_multimaterial(index, params, size() == 3);
+		params_.add_multimaterial(index, params, size() == 3, units.stress());
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>

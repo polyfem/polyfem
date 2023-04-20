@@ -18,7 +18,7 @@ namespace polyfem::assembler
 		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const override;
 
 		// sets the k parameter
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
 		double k() const { return k_; }
 

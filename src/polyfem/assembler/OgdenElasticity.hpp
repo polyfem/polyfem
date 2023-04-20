@@ -11,7 +11,7 @@ namespace polyfem::assembler
 		UnconstrainedOgdenElasticity();
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
 		const GenericMatParams &alphas() const { return alphas_; }
 		const GenericMatParams &mus() const { return mus_; }
@@ -38,7 +38,7 @@ namespace polyfem::assembler
 		IncompressibleOgdenElasticity();
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
 		/// Coefficient of nth term, where n can range from 1 to 6
 		const GenericMatParams &coefficients() const { return coefficients_; }

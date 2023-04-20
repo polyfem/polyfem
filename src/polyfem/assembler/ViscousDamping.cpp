@@ -58,8 +58,9 @@ namespace polyfem::assembler
 		}
 	}
 
-	void ViscousDamping::add_multimaterial(const int index, const json &params)
+	void ViscousDamping::add_multimaterial(const int index, const json &params, const Units &units)
 	{
+		// TODO add units
 		assert(size() == 2 || size() == 3);
 
 		if (params.contains("psi"))

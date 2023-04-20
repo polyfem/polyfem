@@ -26,7 +26,7 @@ namespace polyfem
 			Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const override;
 
 			// sets material params
-			void add_multimaterial(const int index, const json &params) override;
+			void add_multimaterial(const int index, const json &params, const Units &units) override;
 			void set_params(const double psi, const double phi)
 			{
 				psi_ = psi;

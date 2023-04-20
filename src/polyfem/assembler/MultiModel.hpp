@@ -31,7 +31,8 @@ namespace polyfem::assembler
 		void set_size(const int size) override;
 
 		// inialize material parameter
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
+
 		// initialized multi models
 		inline void init_multimodels(const std::vector<std::string> &mats) { multi_material_models_ = mats; }
 

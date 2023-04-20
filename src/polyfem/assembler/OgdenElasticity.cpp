@@ -9,11 +9,12 @@ namespace polyfem::assembler
 	{
 	}
 
-	void UnconstrainedOgdenElasticity::add_multimaterial(const int index, const json &params)
+	void UnconstrainedOgdenElasticity::add_multimaterial(const int index, const json &params, const Units &units)
 	{
-		alphas_.add_multimaterial(index, params);
-		mus_.add_multimaterial(index, params);
-		Ds_.add_multimaterial(index, params);
+		// TODO check me
+		alphas_.add_multimaterial(index, params, "");
+		mus_.add_multimaterial(index, params, units.stress());
+		Ds_.add_multimaterial(index, params, units.stress());
 		assert(alphas_.size() == mus_.size());
 		assert(alphas_.size() == Ds_.size());
 	}
@@ -49,11 +50,11 @@ namespace polyfem::assembler
 	{
 	}
 
-	void IncompressibleOgdenElasticity::add_multimaterial(const int index, const json &params)
+	void IncompressibleOgdenElasticity::add_multimaterial(const int index, const json &params, const Units &units)
 	{
-		coefficients_.add_multimaterial(index, params);
-		expoenents_.add_multimaterial(index, params);
-		bulk_modulus_.add_multimaterial(index, params);
+		coefficients_.add_multimaterial(index, params, units.stress());
+		expoenents_.add_multimaterial(index, params, "");
+		bulk_modulus_.add_multimaterial(index, params, units.stress());
 		assert(coefficients_.size() == expoenents_.size());
 	}
 

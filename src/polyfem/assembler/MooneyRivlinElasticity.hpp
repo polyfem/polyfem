@@ -12,7 +12,7 @@ namespace polyfem::assembler
 		MooneyRivlinElasticity();
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
 		const GenericMatParam &c1() const { return c1_; }
 		const GenericMatParam &c2() const { return c2_; }

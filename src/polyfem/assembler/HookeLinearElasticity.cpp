@@ -45,7 +45,7 @@ namespace polyfem::assembler
 	{
 	}
 
-	void HookeLinearElasticity::add_multimaterial(const int index, const json &params)
+	void HookeLinearElasticity::add_multimaterial(const int index, const json &params, const Units &units)
 	{
 		assert(size() == 2 || size() == 3);
 
@@ -54,23 +54,23 @@ namespace polyfem::assembler
 			if (params.count("young"))
 			{
 				if (params["young"].is_number() && params["nu"].is_number())
-					elasticity_tensor_.set_from_young_poisson(params["young"], params["nu"]);
+					elasticity_tensor_.set_from_young_poisson(params["young"], params["nu"], units.stress());
 			}
 			else if (params.count("E"))
 			{
 				if (params["E"].is_number() && params["nu"].is_number())
-					elasticity_tensor_.set_from_young_poisson(params["E"], params["nu"]);
+					elasticity_tensor_.set_from_young_poisson(params["E"], params["nu"], units.stress());
 			}
 			else if (params.count("lambda"))
 			{
 				if (params["lambda"].is_number() && params["mu"].is_number())
-					elasticity_tensor_.set_from_lambda_mu(params["lambda"], params["mu"]);
+					elasticity_tensor_.set_from_lambda_mu(params["lambda"], params["mu"], units.stress());
 			}
 		}
 		else
 		{
 			std::vector<double> entries = params["elasticity_tensor"];
-			elasticity_tensor_.set_from_entries(entries);
+			elasticity_tensor_.set_from_entries(entries, units.stress());
 		}
 	}
 

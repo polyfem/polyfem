@@ -34,7 +34,7 @@ namespace polyfem::assembler
 		void set_size(const int size) override;
 
 		// sets the elasticty tensor
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
 		const ElasticityTensor &elasticity_tensor() const { return elasticity_tensor_; }
 

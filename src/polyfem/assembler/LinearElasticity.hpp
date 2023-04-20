@@ -38,7 +38,7 @@ namespace polyfem::assembler
 		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 
 		// inialize material parameter
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
 		// class that stores and compute lame parameters per point
 		const LameParameters &lame_params() const { return params_; }
