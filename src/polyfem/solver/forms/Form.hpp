@@ -133,7 +133,7 @@ namespace polyfem::solver
 	protected:
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite
 
-		double weight_ = 1; ///< weight of the form (e.g., AL penalty weight or Δtꜝ)
+		double weight_ = 1; ///< weight of the form (e.g., AL penalty weight or Δt²)
 
 		bool enabled_ = true; ///< If true, the form is enabled
 
