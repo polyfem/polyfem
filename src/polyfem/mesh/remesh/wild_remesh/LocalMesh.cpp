@@ -20,6 +20,16 @@ namespace polyfem::mesh
 	using TriMesh = WildRemesher<wmtk::TriMesh>;
 	using TetMesh = WildRemesher<wmtk::TetMesh>;
 
+	void unique_facet_tuples(const wmtk::TriMesh &m, std::vector<wmtk::TriMesh::Tuple> &tuples)
+	{
+		wmtk::unique_edge_tuples(m, tuples);
+	}
+
+	void unique_facet_tuples(const wmtk::TetMesh &m, std::vector<wmtk::TetMesh::Tuple> &tuples)
+	{
+		wmtk::unique_face_tuples(m, tuples);
+	}
+
 	template <typename M>
 	LocalMesh<M>::LocalMesh(
 		const M &m,
@@ -52,6 +62,8 @@ namespace polyfem::mesh
 		}
 		// The above puts local vertices at front
 		m_num_local_vertices = m_global_to_local.size();
+
+		// ---------------------------------------------------------------------
 
 		std::vector<Tuple> local_boundary_facets;
 		{
@@ -88,6 +100,30 @@ namespace polyfem::mesh
 		}
 
 		// ---------------------------------------------------------------------
+		{
+			// Only build boundary ids for the local facets
+			std::vector<Tuple> facets_tuples;
+			facets_tuples.reserve(num_elements() * M::FACETS_PER_ELEMENT);
+			std::vector<Tuple> local_boundary_facets;
+			for (const Tuple &elem : element_tuples)
+				for (int i = 0; i < M::FACETS_PER_ELEMENT; ++i)
+					facets_tuples.push_back(m.tuple_from_facet(m.element_id(elem), i));
+			unique_facet_tuples(m, facets_tuples);
+			for (const Tuple &t : facets_tuples)
+			{
+				auto vids = m.facet_vids(t);
+				for (auto &v : vids)
+					v = m_global_to_local[v];
+
+				const int boundary_id = m.boundary_attrs[m.facet_id(t)].boundary_id;
+
+				if constexpr (std::is_same_v<M, TriMesh>)
+					std::get<Remesher::EdgeMap<int>>(m_boundary_ids)[vids] = boundary_id;
+				else
+					std::get<Remesher::FaceMap<int>>(m_boundary_ids)[vids] = boundary_id;
+			}
+		}
+		// ---------------------------------------------------------------------
 
 		if (include_global_boundary)
 		{
@@ -95,8 +131,7 @@ namespace polyfem::mesh
 			// Copy the global to local map so we can check if a vertex is new
 			const std::unordered_map<int, int> prev_global_to_local = m_global_to_local;
 
-			std::vector<int> boundary_ids;
-			const std::vector<Tuple> global_boundary_facets = m.boundary_facets(&boundary_ids);
+			const std::vector<Tuple> global_boundary_facets = m.boundary_facets();
 
 			boundary_facets().resize(global_boundary_facets.size(), m_elements.cols() - 1);
 			for (int i = 0; i < global_boundary_facets.size(); i++)
@@ -119,25 +154,18 @@ namespace polyfem::mesh
 						m_fixed_vertices.push_back(boundary_facets()(i, j));
 				}
 			}
-
-			m_boundary_ids.insert(m_boundary_ids.end(), boundary_ids.begin(), boundary_ids.end());
 		}
 		else
 		{
 			POLYFEM_REMESHER_SCOPED_TIMER("LocalMesh::LocalMesh -> !include_global_boundary");
 
-			if constexpr (std::is_same_v<M, TriMesh>)
-				wmtk::unique_edge_tuples(m, local_boundary_facets);
-			else
-				wmtk::unique_face_tuples(m, local_boundary_facets);
+			unique_facet_tuples(m, local_boundary_facets);
 			boundary_facets().resize(local_boundary_facets.size(), m_elements.cols() - 1);
 			for (int i = 0; i < local_boundary_facets.size(); i++)
 			{
-				const Tuple &facet = local_boundary_facets[i];
-				const auto vids = m.facet_vids(facet);
+				const auto vids = m.facet_vids(local_boundary_facets[i]);
 				for (int j = 0; j < vids.size(); ++j)
 					boundary_facets()(i, j) = m_global_to_local[vids[j]];
-				m_boundary_ids.push_back(m.boundary_attrs[m.facet_id(facet)].boundary_id);
 			}
 		}
 
@@ -154,6 +182,7 @@ namespace polyfem::mesh
 
 		const int tmp_num_vertices = num_vertices();
 
+		// Include the obstacle as part of the local mesh if including the global boundary
 		if (include_global_boundary && m.obstacle().n_vertices() > 0)
 		{
 			POLYFEM_REMESHER_SCOPED_TIMER("LocalMesh::LocalMesh -> append obstacles");
@@ -168,13 +197,6 @@ namespace polyfem::mesh
 
 			for (int i = 0; i < obstacle.n_vertices(); i++)
 				m_fixed_vertices.push_back(i + tmp_num_vertices);
-
-			if constexpr (std::is_same_v<M, TriMesh>)
-				for (int i = 0; i < obstacle.n_edges(); i++)
-					m_boundary_ids.push_back(std::numeric_limits<int>::max());
-			else
-				for (int i = 0; i < obstacle.n_faces(); i++)
-					m_boundary_ids.push_back(std::numeric_limits<int>::max());
 		}
 	}
 
@@ -493,6 +515,29 @@ namespace polyfem::mesh
 
 		for (int &vi : m_fixed_vertices)
 			vi = permutation[vi];
+
+		if constexpr (std::is_same_v<M, TriMesh>)
+		{
+			const Remesher::EdgeMap<int> &old_boundary_ids = std::get<Remesher::EdgeMap<int>>(m_boundary_ids);
+			Remesher::EdgeMap<int> new_boundary_ids;
+			for (const auto &[e, id] : old_boundary_ids)
+			{
+				const size_t v0 = permutation[e[0]], v1 = permutation[e[1]];
+				new_boundary_ids[{{v0, v1}}] = id;
+			}
+			m_boundary_ids = new_boundary_ids;
+		}
+		else
+		{
+			const Remesher::FaceMap<int> &old_boundary_ids = std::get<Remesher::FaceMap<int>>(m_boundary_ids);
+			Remesher::FaceMap<int> new_boundary_ids;
+			for (const auto &[f, id] : old_boundary_ids)
+			{
+				const size_t v0 = permutation[f[0]], v1 = permutation[f[1]], v2 = permutation[f[2]];
+				new_boundary_ids[{{v0, v1, v2}}] = id;
+			}
+			m_boundary_ids = new_boundary_ids;
+		}
 	}
 
 	template <typename M>
@@ -502,13 +547,16 @@ namespace polyfem::mesh
 
 		std::vector<polyfem::basis::ElementBases> bases;
 
+		std::vector<LocalBoundary> local_boundary;
 		Eigen::VectorXi vertex_to_basis;
+		std::unique_ptr<Mesh> mesh = Mesh::create(rest_positions(), elements());
 		int n_bases = Remesher::build_bases(
-			rest_positions(), elements(), formulation, bases, vertex_to_basis);
+			*mesh, formulation, bases, local_boundary, vertex_to_basis);
 
 		assert(n_bases == num_local_vertices());
+		assert(vertex_to_basis.size() == num_local_vertices());
 		n_bases = num_vertices();
-		assert(vertex_to_basis.size() == n_bases);
+		vertex_to_basis.conservativeResize(n_bases);
 
 		const int start_i = num_local_vertices();
 		if (start_i < n_bases)
@@ -517,10 +565,9 @@ namespace polyfem::mesh
 			std::iota(vertex_to_basis.begin() + start_i, vertex_to_basis.end(), start_i);
 		}
 
-#ifndef NDEBUG
-		for (const int basis_id : vertex_to_basis)
-			assert(basis_id >= 0);
-#endif
+		assert(std::all_of(vertex_to_basis.begin(), vertex_to_basis.end(), [](const int basis_id) {
+			return basis_id >= 0;
+		}));
 
 		reorder_vertices(vertex_to_basis);
 
@@ -541,8 +588,7 @@ namespace polyfem::mesh
 	}
 
 	// -------------------------------------------------------------------------
-	// Template specializations
-
+	// Template instantiations
 	template class LocalMesh<TriMesh>;
 	template class LocalMesh<TetMesh>;
 } // namespace polyfem::mesh

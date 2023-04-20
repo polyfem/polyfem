@@ -8,6 +8,8 @@ set(SOURCES
 	LocalMesh.cpp
 	LocalMesh.hpp
 	LocalRelaxation.cpp
+	LocalRelaxationData.cpp
+	LocalRelaxationData.hpp
 	Smooth.cpp
 	Split.cpp
 	Swap.cpp

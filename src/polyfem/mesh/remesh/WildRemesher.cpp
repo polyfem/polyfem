@@ -369,6 +369,7 @@ namespace polyfem::mesh
 	template <class WMTKMesh>
 	bool WildRemesher<WMTKMesh>::invariants(const std::vector<Tuple> &new_tris)
 	{
+		POLYFEM_REMESHER_SCOPED_TIMER("WildRemesher::invariants");
 		// for (auto &t : new_tris)
 		for (auto &t : get_elements())
 		{

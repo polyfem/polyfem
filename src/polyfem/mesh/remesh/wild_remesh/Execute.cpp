@@ -1,14 +1,11 @@
 #include <polyfem/mesh/remesh/WildRemesher.hpp>
 
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
-#include <polyfem/assembler/NeoHookeanElasticity.hpp>
-#include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/utils/Logger.hpp>
-#include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 
 #include <wmtk/utils/ExecutorUtils.hpp>
 #include <wmtk/utils/TupleUtils.hpp>
+
+// #define SAVE_OPS
 
 namespace polyfem::mesh
 {
@@ -50,10 +47,12 @@ namespace polyfem::mesh
 		static int aggregate_swap_cnt_fail = 0;
 		static int aggregate_smooth_cnt_success = 0;
 		static int aggregate_smooth_cnt_fail = 0;
-		static int frame_count = 0;
 
-		// if (frame_count == 0)
-		// 	write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
+#ifdef SAVE_OPS
+		static int frame_count = 0;
+		if (frame_count == 0)
+			write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
+#endif
 
 		int cnt_success = 0;
 
@@ -66,7 +65,9 @@ namespace polyfem::mesh
 			cnt_success += executor.cnt_success();
 			aggregate_split_cnt_success += executor.cnt_success();
 			aggregate_split_cnt_fail += executor.cnt_fail();
-			// write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
+#ifdef SAVE_OPS
+			write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
+#endif
 		}
 
 		// Reset operation attempts and depth counters
@@ -84,7 +85,9 @@ namespace polyfem::mesh
 			aggregate_collapse_cnt_success += executor.cnt_success();
 			aggregate_collapse_cnt_fail += executor.cnt_fail();
 			projection_needed |= executor.cnt_success() > 0;
-			// write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
+#ifdef SAVE_OPS
+			write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
+#endif
 		}
 
 		// Reset operation attempts and depth counters
@@ -101,7 +104,9 @@ namespace polyfem::mesh
 			aggregate_swap_cnt_success += executor.cnt_success();
 			aggregate_swap_cnt_fail += executor.cnt_fail();
 			projection_needed |= executor.cnt_success() > 0;
-			// write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
+#ifdef SAVE_OPS
+			write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
+#endif
 		}
 
 		if (smooth)
@@ -115,7 +120,9 @@ namespace polyfem::mesh
 			aggregate_smooth_cnt_success += executor.cnt_success();
 			aggregate_smooth_cnt_fail += executor.cnt_fail();
 			projection_needed |= executor.cnt_success() > 0;
-			// write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
+#ifdef SAVE_OPS
+			write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
+#endif
 		}
 
 		logger().info("[split]    aggregate_cnt_success {} aggregate_cnt_fail {}", aggregate_split_cnt_success, aggregate_split_cnt_fail);
@@ -125,7 +132,9 @@ namespace polyfem::mesh
 
 		if (projection_needed)
 			project_quantities();
-		// write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
+#ifdef SAVE_OPS
+		write_mesh(state.resolve_output_path(fmt::format("op{:d}.vtu", frame_count++)));
+#endif
 
 		// Remove unused vertices
 		WMTKMesh::consolidate_mesh();

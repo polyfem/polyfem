@@ -30,12 +30,6 @@ namespace polyfem::mesh
 		  current_time(current_time),
 		  starting_energy(starting_energy)
 	{
-		assembler = assembler::AssemblerUtils::make_assembler(state.formulation());
-		state.set_materials(*assembler);
-		assert(assembler->name() == state.formulation());
-
-		mass_matrix_assembler = std::make_shared<assembler::Mass>();
-		state.set_materials(*mass_matrix_assembler);
 	}
 
 	void Remesher::init(
@@ -105,14 +99,13 @@ namespace polyfem::mesh
 		using namespace polyfem::basis;
 		using namespace polyfem::utils;
 
+		const std::unique_ptr<Mesh> from_mesh = Mesh::create(
+			global_projection_cache.rest_positions, global_projection_cache.elements);
 		std::vector<ElementBases> from_bases;
+		std::vector<LocalBoundary> _;
 		Eigen::VectorXi from_vertex_to_basis;
-		int n_from_basis = build_bases(
-			global_projection_cache.rest_positions,
-			global_projection_cache.elements,
-			state.formulation(),
-			from_bases,
-			from_vertex_to_basis);
+		int n_from_basis = build_bases(*from_mesh, state.formulation(), from_bases, _, from_vertex_to_basis);
+		assert(from_vertex_to_basis.size() == global_projection_cache.rest_positions.rows());
 
 		// Old values of independent variables
 		Eigen::MatrixXd from_projection_quantities = reorder_matrix(
@@ -127,11 +120,11 @@ namespace polyfem::mesh
 		Eigen::MatrixXd rest_positions = this->rest_positions();
 		Eigen::MatrixXi elements = this->elements();
 
+		const std::unique_ptr<Mesh> to_mesh = Mesh::create(rest_positions, elements);
 		std::vector<ElementBases> to_bases;
 		Eigen::VectorXi to_vertex_to_basis;
-		int n_to_basis = build_bases(
-			rest_positions, elements, state.formulation(),
-			to_bases, to_vertex_to_basis);
+		int n_to_basis = build_bases(*to_mesh, state.formulation(), to_bases, _, to_vertex_to_basis);
+		assert(to_vertex_to_basis.size() == rest_positions.rows());
 
 		rest_positions = reorder_matrix(rest_positions, to_vertex_to_basis, n_to_basis);
 		elements = map_index_matrix(elements, to_vertex_to_basis);
@@ -239,25 +232,22 @@ namespace polyfem::mesh
 	}
 
 	int Remesher::build_bases(
-		const Eigen::MatrixXd &V,
-		const Eigen::MatrixXi &F,
+		const Mesh &mesh,
 		const std::string &assembler_formulation,
 		std::vector<polyfem::basis::ElementBases> &bases,
+		std::vector<LocalBoundary> &local_boundary,
 		Eigen::VectorXi &vertex_to_basis)
 	{
 		using namespace polyfem::basis;
-		const int dim = V.cols();
 
 		int n_bases;
-		std::vector<LocalBoundary> local_boundary;
 		std::map<int, basis::InterfaceData> poly_edge_to_data;
 		std::shared_ptr<mesh::MeshNodes> mesh_nodes;
-		if (dim == 2)
+		if (mesh.dimension() == 2)
 		{
-			CMesh2D mesh;
-			mesh.build_from_matrices(V, F);
 			n_bases = LagrangeBasis2d::build_bases(
-				mesh, assembler_formulation, /*quadrature_order=*/1,
+				dynamic_cast<const Mesh2D &>(mesh),
+				assembler_formulation, /*quadrature_order=*/1,
 				/*mass_quadrature_order=*/2, /*discr_order=*/1,
 				/*serendipity=*/false, /*has_polys=*/false,
 				/*is_geom_bases=*/false, bases, local_boundary,
@@ -265,11 +255,10 @@ namespace polyfem::mesh
 		}
 		else
 		{
-			assert(dim == 3);
-			CMesh3D mesh;
-			mesh.build_from_matrices(V, F);
+			assert(mesh.dimension() == 3);
 			n_bases = LagrangeBasis3d::build_bases(
-				mesh, assembler_formulation, /*quadrature_order=*/1,
+				dynamic_cast<const Mesh3D &>(mesh),
+				assembler_formulation, /*quadrature_order=*/1,
 				/*mass_quadrature_order=*/2, /*discr_order=*/1,
 				/*serendipity=*/false, /*has_polys=*/false,
 				/*is_geom_bases=*/false, bases, local_boundary,
@@ -277,7 +266,7 @@ namespace polyfem::mesh
 		}
 
 		// TODO: use mesh_nodes to build vertex_to_basis
-		vertex_to_basis.setConstant(V.rows(), -1);
+		vertex_to_basis.setConstant(mesh.n_vertices(), -1);
 		for (const ElementBases &elm : bases)
 		{
 			for (const Basis &basis : elm.bases)
@@ -286,9 +275,9 @@ namespace polyfem::mesh
 				const int basis_id = basis.global()[0].index;
 				const RowVectorNd v = basis.global()[0].node;
 
-				for (int i = 0; i < V.rows(); i++)
+				for (int i = 0; i < mesh.n_vertices(); i++)
 				{
-					if ((V.row(i).array() == v.array()).all())
+					if ((mesh.point(i).array() == v.array()).all())
 					{
 						if (vertex_to_basis[i] == -1)
 							vertex_to_basis[i] = basis_id;
@@ -300,15 +289,6 @@ namespace polyfem::mesh
 		}
 
 		return n_bases;
-	}
-
-	void Remesher::init_assembler(
-		const std::vector<int> &body_ids) const
-	{
-		POLYFEM_REMESHER_SCOPED_TIMER("Create assembler");
-		assert(utils::is_param_valid(state.args, "materials"));
-		assembler->set_materials(body_ids, state.args["materials"]);
-		mass_matrix_assembler->set_materials(body_ids, state.args["materials"]);
 	}
 
 	void Remesher::write_mesh(const std::string &path) const

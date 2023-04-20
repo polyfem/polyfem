@@ -1,5 +1,6 @@
 #include "PhysicsRemesher.hpp"
 
+#include <polyfem/mesh/remesh/wild_remesh/LocalRelaxationData.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 
 #include <paraviewo/VTUWriter.hpp>
@@ -34,23 +35,8 @@ namespace polyfem::mesh
 			});
 
 		LocalMesh<Super> local_mesh(*this, local_mesh_tuples, include_global_boundary);
-
-		const std::vector<ElementBases> bases = local_mesh.build_bases(state.formulation());
-		const std::vector<int> boundary_nodes = local_boundary_nodes(local_mesh);
-		this->init_assembler(local_mesh.body_ids());
-		SolveData solve_data;
-		assembler::AssemblyValsCache assembly_vals_cache, mass_assembly_vals_cache;
-		Eigen::SparseMatrix<double> mass;
-		ipc::CollisionMesh collision_mesh;
-
-		local_solve_data(
-			local_mesh, bases, boundary_nodes, *this->assembler, *this->mass_matrix_assembler,
-			include_global_boundary, solve_data, assembly_vals_cache,
-			mass_assembly_vals_cache, mass, collision_mesh);
-
-		const Eigen::MatrixXd sol = utils::flatten(local_mesh.displacements());
-
-		return solve_data.nl_problem->value(sol);
+		LocalRelaxationData data(this->state, local_mesh, this->current_time, include_global_boundary);
+		return data.solve_data.nl_problem->value(data.sol());
 	}
 
 	template <class WMTKMesh>
@@ -113,24 +99,9 @@ namespace polyfem::mesh
 			volume += this->element_volume(t);
 		assert(volume > 0);
 
-		LocalMesh<Super> local_mesh(*this, elements, /*include_global_boundary=*/false);
-
-		const std::vector<ElementBases> bases = local_mesh.build_bases(state.formulation());
-		const std::vector<int> boundary_nodes; // no boundary nodes
-		this->init_assembler(local_mesh.body_ids());
-		SolveData solve_data;
-		assembler::AssemblyValsCache assembly_vals_cache, mass_assembly_vals_cache;
-		Eigen::SparseMatrix<double> mass;
-		ipc::CollisionMesh collision_mesh;
-
-		// TODO: account for contact energy
-		local_solve_data(
-			local_mesh, bases, boundary_nodes, *this->assembler, *this->mass_matrix_assembler,
-			false, solve_data, assembly_vals_cache, mass_assembly_vals_cache, mass, collision_mesh);
-
-		const Eigen::MatrixXd sol = utils::flatten(local_mesh.displacements());
-
-		return solve_data.nl_problem->value(sol) / volume; // average energy
+		LocalMesh<Super> local_mesh(*this, elements, false);
+		LocalRelaxationData data(this->state, local_mesh, this->current_time, false);
+		return data.solve_data.nl_problem->value(data.sol()) / volume; // average energy
 	}
 
 	template <class WMTKMesh>

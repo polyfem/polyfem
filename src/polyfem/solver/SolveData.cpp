@@ -225,7 +225,7 @@ namespace polyfem::solver
 
 		Eigen::VectorXd grad_energy = Eigen::VectorXd::Zero(x.size());
 		const std::array<std::shared_ptr<Form>, 3> energy_forms{{elastic_form, inertia_form, body_form}};
-		for (const std::shared_ptr<Form> form : energy_forms)
+		for (const std::shared_ptr<Form> &form : energy_forms)
 		{
 			if (form == nullptr || !form->enabled())
 				continue;

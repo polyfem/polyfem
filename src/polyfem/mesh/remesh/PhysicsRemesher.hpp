@@ -75,8 +75,9 @@ namespace polyfem::mesh
 			return local_relaxation(local_mesh_tuples(center), acceptance_tolerance);
 		}
 
-		/// @brief Relax a local n-ring around a vertex.
+		/// @brief Relax a local mesh.
 		/// @param local_mesh_tuples Tuples of the local mesh
+		/// @param acceptance_tolerance Acceptance tolerance.
 		/// @return If the local relaxation reduced the energy "significantly"
 		bool local_relaxation(
 			const std::vector<Tuple> &local_mesh_tuples,
@@ -102,34 +103,6 @@ namespace polyfem::mesh
 
 		/// @brief Get the energy of the local n-ring around a vertex.
 		double local_energy_before() const { return this->op_cache->local_energy; }
-
-		/// @brief Get the boundary nodes of a local_mesh.
-		/// @param local_mesh Local mesh.
-		/// @return Boundary nodes of the local mesh.
-		std::vector<int> local_boundary_nodes(const LocalMesh<Super> &local_mesh) const;
-
-		/// @brief Initialize the solve data for a local relaxation.
-		/// @param local_mesh Local mesh.
-		/// @param bases Element bases.
-		/// @param boundary_nodes Boundary nodes of the local mesh.
-		/// @param assembler Assembler utils.
-		/// @param contact_enabled If contact is enabled.
-		/// @param solve_data Solve data.
-		/// @param ass_vals_cache Assembly values cache.
-		/// @param mass Mass matrix.
-		/// @param collision_mesh Collision mesh.
-		void local_solve_data(
-			const LocalMesh<Super> &local_mesh,
-			const std::vector<polyfem::basis::ElementBases> &bases,
-			const std::vector<int> &boundary_nodes,
-			const assembler::Assembler &assembler,
-			const assembler::Mass &mass_matrix_assembler,
-			const bool contact_enabled,
-			solver::SolveData &solve_data,
-			assembler::AssemblyValsCache &assembly_vals_cache,
-			assembler::AssemblyValsCache &mass_assembly_vals_cache,
-			Eigen::SparseMatrix<double> &mass,
-			ipc::CollisionMesh &collision_mesh) const;
 
 		/// @brief Compute the average elastic energy of the faces containing an edge.
 		double edge_elastic_energy(const Tuple &e) const;

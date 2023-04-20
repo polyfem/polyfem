@@ -181,10 +181,10 @@ namespace polyfem::mesh
 		/// @param vertex_to_basis Map from vertex to reordered nodes
 		/// @return Number of bases
 		static int build_bases(
-			const Eigen::MatrixXd &V,
-			const Eigen::MatrixXi &F,
+			const Mesh &mesh,
 			const std::string &assembler_formulation,
 			std::vector<polyfem::basis::ElementBases> &bases,
+			std::vector<LocalBoundary> &local_boundary,
 			Eigen::VectorXi &vertex_to_basis);
 
 		/// @brief Reference to the simulation state.
@@ -219,9 +219,6 @@ namespace polyfem::mesh
 		const double current_time;
 		/// @brief Starting energy
 		const double starting_energy;
-		/// @brief copy of the assembler
-		mutable std::shared_ptr<assembler::Assembler> assembler;
-		mutable std::shared_ptr<assembler::Mass> mass_matrix_assembler;
 
 		// --------------------------------------------------------------------
 		// statistics

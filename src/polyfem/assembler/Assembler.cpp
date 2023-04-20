@@ -340,13 +340,10 @@ namespace polyfem::assembler
 
 				logger().trace("done setFromTriplets assembly {}s...", timer3.getElapsedTime());
 			}
-
-			// exit(0);
 		}
 		catch (std::bad_alloc &ba)
 		{
-			logger().error("bad alloc {}", ba.what());
-			exit(0);
+			log_and_throw_error("bad alloc {}", ba.what());
 		}
 
 		// stiffness.resize(n_basis*size(), n_basis*size());

@@ -51,9 +51,10 @@ namespace polyfem::mesh
 		const auto &v0 = this->vertex_attrs[e.vid(*this)].rest_position;
 		const auto &v1 = this->vertex_attrs[e.switch_vertex(*this).vid(*this)].rest_position;
 		this->op_cache->local_energy = local_mesh_energy((v0 + v1) / 2);
+		// assert(this->op_cache->local_energy >= 0);
 		// Do not split if the energy of the local mesh is too small
-		if (this->op_cache->local_energy < args["split"]["acceptance_tolerance"].template get<double>())
-			return false;
+		// if (this->op_cache->local_energy < args["split"]["acceptance_tolerance"].template get<double>())
+		// 	return false;
 
 		return true;
 	}
