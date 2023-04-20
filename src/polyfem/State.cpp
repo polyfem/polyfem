@@ -106,13 +106,14 @@ namespace polyfem
 			foo(mesh.n_cells(), num_cell_nodes);
 		}
 
-		void build_in_primitive_to_primitive(
+		bool build_in_primitive_to_primitive(
 			const Mesh &mesh, const MeshNodes &mesh_nodes,
 			const Eigen::VectorXi &in_ordered_vertices,
 			const Eigen::MatrixXi &in_ordered_edges,
 			const Eigen::MatrixXi &in_ordered_faces,
 			Eigen::VectorXi &in_primitive_to_primitive)
 		{
+			// NOTE: Assume in_cells_to_cells is identity
 			const int num_vertex_nodes = mesh_nodes.num_vertex_nodes();
 			const int num_edge_nodes = mesh_nodes.num_edge_nodes();
 			const int num_face_nodes = mesh_nodes.num_face_nodes();
@@ -143,7 +144,11 @@ namespace polyfem
 			logger().trace("Building Mesh edges to IDs...");
 			timer.start();
 			const auto edges_to_ids = mesh.edges_to_ids();
-			assert(in_ordered_edges.rows() == edges_to_ids.size());
+			if (in_ordered_edges.rows() != edges_to_ids.size())
+			{
+				logger().warn("Node ordering disabled, in_ordered_edges != edges_to_ids, {} != {}", in_ordered_edges.rows(), edges_to_ids.size());
+				return false;
+			}
 			timer.stop();
 			logger().trace("Done (took {}s)", timer.getElapsedTime());
 
@@ -172,7 +177,11 @@ namespace polyfem
 				logger().trace("Building Mesh faces to IDs...");
 				timer.start();
 				const auto faces_to_ids = mesh.faces_to_ids();
-				assert(in_ordered_faces.rows() == faces_to_ids.size());
+				if (in_ordered_faces.rows() != faces_to_ids.size())
+				{
+					logger().warn("Node ordering disabled, in_ordered_faces != faces_to_ids, {} != {}", in_ordered_faces.rows(), faces_to_ids.size());
+					return false;
+				}
 				timer.stop();
 				logger().trace("Done (took {}s)", timer.getElapsedTime());
 
@@ -195,7 +204,7 @@ namespace polyfem
 				offset += mesh.n_faces();
 			}
 
-			// NOTE: Assume in_cells_to_cells is identity
+			return true;
 		}
 	} // namespace
 
@@ -254,7 +263,7 @@ namespace polyfem
 
 		logger().trace("Building in-primitive to primitive mapping...");
 		timer.start();
-		build_in_primitive_to_primitive(
+		bool ok = build_in_primitive_to_primitive(
 			*mesh, *mesh_nodes,
 			mesh->in_ordered_vertices(),
 			mesh->in_ordered_edges(),
@@ -262,6 +271,13 @@ namespace polyfem
 			in_primitive_to_primitive);
 		timer.stop();
 		logger().trace("Done (took {}s)", timer.getElapsedTime());
+
+		if (!ok)
+		{
+			in_node_to_node.resize(0);
+			in_primitive_to_primitive.resize(0);
+			return;
+		}
 
 		const auto primitive_offset = [&](int node) {
 			if (mesh_nodes->is_vertex_node(node))
@@ -863,8 +879,8 @@ namespace polyfem
 			double min_boundary_edge_length = std::numeric_limits<double>::max();
 			for (const auto &edge : collision_mesh.edges().rowwise())
 			{
-				const VectorNd v0 = collision_mesh.vertices_at_rest().row(edge(0));
-				const VectorNd v1 = collision_mesh.vertices_at_rest().row(edge(1));
+				const VectorNd v0 = collision_mesh.rest_positions().row(edge(0));
+				const VectorNd v1 = collision_mesh.rest_positions().row(edge(1));
 				min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
 			}
 
@@ -1158,26 +1174,25 @@ namespace polyfem
 		if (assembler->name() == "OperatorSplitting")
 		{
 			timings.assembling_stiffness_mat_time = 0;
+			avg_mass = 1;
 			return;
 		}
 
 		if (!problem->is_time_dependent())
 		{
+			avg_mass = 1;
 			timings.assembling_mass_mat_time = 0;
 			return;
 		}
 
 		mass.resize(0, 0);
-		avg_mass = 1;
 
 		igl::Timer timer;
 		timer.start();
 		logger().info("Assembling mass mat...");
 
-		// if(problem->is_mixed())
 		if (mixed_assembler != nullptr)
 		{
-
 			StiffnessMatrix velocity_mass;
 			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, velocity_mass, true);
 
@@ -1203,6 +1218,7 @@ namespace polyfem
 
 		assert(mass.size() > 0);
 
+		avg_mass = 0;
 		for (int k = 0; k < mass.outerSize(); ++k)
 		{
 

@@ -2,7 +2,8 @@
 
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/Form.hpp>
-#include <polyfem/solver/forms/ALForm.hpp>
+#include <polyfem/solver/forms/BCLagrangianForm.hpp>
+#include <polyfem/solver/forms/BCPenaltyForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
@@ -12,6 +13,7 @@
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/assembler/Mass.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::solver
@@ -29,6 +31,7 @@ namespace polyfem::solver
 		const std::vector<basis::ElementBases> &geom_bases,
 		const assembler::Assembler &assembler,
 		const assembler::AssemblyValsCache &ass_vals_cache,
+		const assembler::AssemblyValsCache &mass_ass_vals_cache,
 
 		// Body form
 		const int n_pressure_bases,
@@ -131,10 +134,21 @@ namespace polyfem::solver
 
 		if (rhs_assembler != nullptr)
 		{
-			al_form = std::make_shared<ALForm>(
+			// assembler::Mass mass_mat_assembler;
+			// mass_mat_assembler.set_size(dim);
+			StiffnessMatrix mass_tmp = mass;
+			// mass_mat_assembler.assemble(dim == 3, n_bases, bases, geom_bases, mass_ass_vals_cache, mass_tmp, true);
+			// assert(mass_tmp.rows() == mass.rows() && mass_tmp.cols() == mass.cols());
+
+			al_lagr_form = std::make_shared<BCLagrangianForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-				n_boundary_samples, mass, *rhs_assembler, obstacle, is_time_dependent, t);
-			forms.push_back(al_form);
+				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle, is_time_dependent, t);
+			forms.push_back(al_lagr_form);
+
+			al_pen_form = std::make_shared<BCPenaltyForm>(
+				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
+				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle, is_time_dependent, t);
+			forms.push_back(al_pen_form);
 		}
 
 		contact_form = nullptr;
@@ -168,8 +182,8 @@ namespace polyfem::solver
 			if (friction_coefficient != 0)
 			{
 				friction_form = std::make_shared<FrictionForm>(
-					collision_mesh, epsv, friction_coefficient, dhat, broad_phase,
-					is_time_dependent ? dt : 1.0, *contact_form, friction_iterations);
+					collision_mesh, time_integrator, epsv, friction_coefficient, dhat, broad_phase,
+					*contact_form, friction_iterations);
 				forms.push_back(friction_form);
 			}
 		}
@@ -256,7 +270,8 @@ namespace polyfem::solver
 		return {
 			{"contact", contact_form},
 			{"body", body_form},
-			{"augmented_lagrangian", al_form},
+			{"augmented_lagrangian_lagr", al_lagr_form},
+			{"augmented_lagrangian_penalty", al_pen_form},
 			{"damping", damping_form},
 			{"friction", friction_form},
 			{"inertia", inertia_form},

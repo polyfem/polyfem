@@ -9,7 +9,6 @@ set(SOURCES
 	AssemblyValues.hpp
 	Bilaplacian.cpp
 	Bilaplacian.hpp
-	ElasticEnergyMacros.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp
 	GenericElastic.cpp
@@ -42,6 +41,7 @@ set(SOURCES
 	NeoHookeanElasticityAutodiff.hpp
 	OgdenElasticity.cpp
 	OgdenElasticity.hpp
+	OgdenElasticity.tpp
 	Problem.cpp
 	Problem.hpp
 	RhsAssembler.cpp
