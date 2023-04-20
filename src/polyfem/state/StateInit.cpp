@@ -550,34 +550,7 @@ namespace polyfem
 			body_ids[i] = mesh->get_body_id(i);
 
 		for (auto &a : assemblers)
-		{
 			a->set_materials(body_ids, args["materials"]);
-
-			// for material optimizations
-			auto search_lambda = a->parameters().find("lambda");
-			auto search_mu = a->parameters().find("mu");
-			if (search_lambda == a->parameters().end() || search_mu == a->parameters().end())
-				continue;
-
-			Eigen::MatrixXd lambdas(mesh->n_elements(), 1), mus(mesh->n_elements(), 1);
-			for (int e = 0; e < mesh->n_elements(); e++)
-			{
-				RowVectorNd barycenter;
-				if (!mesh->is_volume())
-				{
-					const auto &mesh2d = *dynamic_cast<mesh::Mesh2D *>(mesh.get());
-					barycenter = mesh2d.face_barycenter(e);
-				}
-				else
-				{
-					const auto &mesh3d = *dynamic_cast<mesh::Mesh3D *>(mesh.get());
-					barycenter = mesh3d.cell_barycenter(e);
-				}
-				lambdas(e) = search_lambda->second(RowVectorNd::Zero(size), barycenter, 0., e);
-				mus(e) = search_mu->second(RowVectorNd::Zero(size), barycenter, 0., e);
-			}
-			a->update_lame_params(lambdas, mus);
-		}
 	}
 
 	void State::set_materials(assembler::Assembler &assembler) const
