@@ -75,9 +75,10 @@ namespace polyfem::solver
 			collision_mesh_, displaced_surface, dhat_);
 		grad_barrier = collision_mesh_.to_full_dof(grad_barrier);
 
-		weight_ = ipc::initial_barrier_stiffness(
+		barrier_stiffness_ = ipc::initial_barrier_stiffness(
 			ipc::world_bbox_diagonal_length(displaced_surface), dhat_, avg_mass_,
 			grad_energy, grad_barrier, max_barrier_stiffness_);
+
 		if (use_convergent_formulation())
 		{
 			double scaling_factor = 0;
@@ -87,7 +88,6 @@ namespace polyfem::solver
 					collision_mesh_, displaced_surface, dhat_);
 
 				update_constraint_set(displaced_surface);
-				// convergent_constraints = constraint_set_;
 				const double convergent_potential = constraint_set_.compute_potential(
 					collision_mesh_, displaced_surface, dhat_);
 
@@ -95,11 +95,15 @@ namespace polyfem::solver
 			}
 			else
 			{
+				// Hardcoded difference between the non-convergent and convergent barrier
 				scaling_factor = dhat_ * std::pow(dhat_ + 2 * dmin_, 2);
 			}
-			weight_ *= scaling_factor;
+			barrier_stiffness_ *= scaling_factor;
 			max_barrier_stiffness_ *= scaling_factor;
 		}
+
+		// Remove the acceleration scaling from the barrier stiffness because it will be applied later.
+		barrier_stiffness_ /= weight_;
 
 		logger().debug("adaptive barrier form stiffness {}", barrier_stiffness());
 
@@ -269,7 +273,7 @@ namespace polyfem::solver
 			{
 				const double prev_barrier_stiffness = barrier_stiffness();
 
-				weight_ = ipc::update_barrier_stiffness(
+				barrier_stiffness_ = ipc::update_barrier_stiffness(
 					prev_distance_, curr_distance, max_barrier_stiffness_,
 					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface));
 

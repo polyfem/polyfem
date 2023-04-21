@@ -44,7 +44,7 @@ namespace polyfem::solver
 
 	void BodyForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
-		hessian.resize(x.size(), x.size()); // Zero
+		hessian.resize(x.size(), x.size());
 	}
 
 	void BodyForm::update_quantities(const double t, const Eigen::VectorXd &x)
