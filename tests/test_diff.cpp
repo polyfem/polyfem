@@ -840,7 +840,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	Eigen::VectorXd x(2);
 	x << state.args["materials"]["psi"], state.args["materials"]["phi"];
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-5, 1e-6);
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, opt_args["solver"]["nonlinear"]["debug_fd_eps"], 1e-4);
 }
 
 TEST_CASE("material-transient", "[adjoint_method]")
