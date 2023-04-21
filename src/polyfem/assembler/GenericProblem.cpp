@@ -65,13 +65,13 @@ namespace polyfem
 				for (int i = 0; i < 3; ++i)
 				{
 					rhs_[i].set_unit_type(units.acceleration());
-					exact_[i].set_unit_type(units.length);
+					exact_[i].set_unit_type(units.length());
 				}
 				for (int i = 0; i < 3; ++i)
 					exact_grad_[i].set_unit_type("");
 
 				for (auto &v : displacements_)
-					v.set_unit_type(units.length);
+					v.set_unit_type(units.length());
 
 				for (auto &v : forces_)
 					v.set_unit_type(units.force());
@@ -81,7 +81,7 @@ namespace polyfem
 
 				for (auto &v : initial_position_)
 					for (int i = 0; i < 3; ++i)
-						v.second[i].set_unit_type(units.length);
+						v.second[i].set_unit_type(units.length());
 
 				for (auto &v : initial_velocity_)
 					for (int i = 0; i < 3; ++i)
@@ -92,7 +92,7 @@ namespace polyfem
 						v.second[i].set_unit_type(units.acceleration());
 
 				for (auto &v : nodal_dirichlet_)
-					v.second.set_unit_type(units.length);
+					v.second.set_unit_type(units.length());
 
 				for (auto &v : nodal_neumann_)
 					v.second.set_unit_type(units.force());

@@ -246,7 +246,7 @@ namespace polyfem
 		{
 			for (auto &d : displacements_)
 			{
-				d.set_unit_type(units.length);
+				d.set_unit_type(units.length());
 			}
 		}
 

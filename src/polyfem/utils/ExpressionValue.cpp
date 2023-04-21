@@ -218,7 +218,8 @@ namespace polyfem
 
 			if (!unit_.base_units().empty())
 			{
-				assert(unit_.is_convertible(unit_type_));
+				if (!unit_.is_convertible(unit_type_))
+					log_and_throw_error(fmt::format("Cannot convert {} to {}", units::to_string(unit_), units::to_string(unit_type_)));
 
 				result = units::convert(result, unit_, unit_type_);
 			}
