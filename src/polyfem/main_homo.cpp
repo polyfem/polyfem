@@ -2,15 +2,15 @@
 
 #include <CLI/CLI.hpp>
 
-#include <highfive/H5File.hpp>
-#include <highfive/H5Easy.hpp>
-
 #include <polyfem/State.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/io/Evaluator.hpp>
 
+#include <polyfem/assembler/Multiscale.hpp>
 #include <polysolve/LinearSolver.hpp>
+
+#include <polyfem/io/Evaluator.hpp>
 
 bool has_arg(const CLI::App &command_line, const std::string &value)
 {
@@ -53,6 +53,9 @@ int main(int argc, char **argv)
 
 	int max_strain = 40;
 	command_line.add_option("--max", max_strain, "max strain in the sweep");
+
+	int stride = 1;
+	command_line.add_option("--stride", stride, "stride in the sweep");
 
 	// const std::vector<std::string> solvers = polysolve::LinearSolver::availableSolvers();
 	// std::string solver;
@@ -97,7 +100,7 @@ int main(int argc, char **argv)
 	else
 	{
 		logger().error("No input file specified!");
-		return command_line.exit(CLI::RequiredError("--json or --hdf5"));
+		return command_line.exit(CLI::RequiredError("--json"));
 	}
 
 	if (has_arg(command_line, "max_threads"))
@@ -147,7 +150,7 @@ int main(int argc, char **argv)
 	state.assemble_rhs();
 	state.assemble_mass_mat();
 
-	auto &micro_assembler = state.assembler.get_microstructure_local_assembler(state.formulation());
+	assembler::Multiscale &micro_assembler = *dynamic_cast<assembler::Multiscale*>(state.assembler.get());
 	std::shared_ptr<State> micro_state = micro_assembler.get_microstructure_state();
 	assert(micro_state);
 
@@ -155,15 +158,22 @@ int main(int argc, char **argv)
 	Eigen::MatrixXd F;
 	F.setZero(dim, dim);
 
-	for (int l = -min_strain; l >= -max_strain; l--)
+	for (int l = -min_strain; l >= -max_strain; l -= stride)
 	{
-		F(0, 0) = 0;
-		F(1, 1) = l / 100.0;
+		F << 0, 0, 0, l / 100.0;
 
 		micro_state->args["output"]["paraview"]["file_name"] = "load_" + std::to_string(-l) + ".vtu";
 
 		Eigen::MatrixXd fluctuated;
 		micro_state->solve_homogenized_field(F, fluctuated, micro_state->args["boundary_conditions"]["fixed_macro_strain"], false);
+		
+		// recover extended solution as the initial guess for the next solve
+		Eigen::VectorXd extended(fluctuated.size() + F.size());
+		{
+			extended.head(fluctuated.size()) = fluctuated - io::Evaluator::generate_linear_field(micro_state->n_bases, micro_state->mesh_nodes, F);
+			extended.tail(F.size()) = utils::flatten(F);
+			micro_state->homo_initial_guess = extended;
+		}
 
 		// effective energy = average energy over unit cell
 		double energy = micro_assembler.homogenize_energy(fluctuated);

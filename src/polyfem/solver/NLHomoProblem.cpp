@@ -413,4 +413,10 @@ namespace polyfem::solver
         
         return macro_full_to_reduced_grad(jac);
     }
+
+    Eigen::MatrixXd NLHomoProblem::boundary_values() const
+	{
+		Eigen::MatrixXd result = Eigen::MatrixXd::Zero(full_size(), 1);
+		return result;
+	}
 }

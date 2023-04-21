@@ -58,13 +58,10 @@ namespace
 	}
 }
 
-void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::MatrixXd &sol_, const std::vector<int> &fixed_entry, bool for_bistable)
+void State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, Eigen::MatrixXd &sol_, const std::vector<int> &fixed_entry, bool for_bistable)
 {
     const int dim = mesh->dimension();
     const int ndof = n_bases * dim;
-
-    Eigen::MatrixXd pressure;
-    init_solve(sol_, pressure);
 
     solver::SolveData solve_data_tmp = solve_data;
     const std::vector<std::shared_ptr<Form>> forms = solve_data_tmp.init_forms(
@@ -145,13 +142,21 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
 
     std::shared_ptr<cppoptlib::NonlinearSolver<NLHomoProblem>> nl_solver = make_nl_homo_solver<NLHomoProblem>(args["solver"]);
 
+    Eigen::MatrixXd pressure;
+    init_solve(sol_, pressure); // set solution to zero
+    
     bool force_al = args["solver"]["augmented_lagrangian"]["force"];
-    Eigen::VectorXd extended_sol(sol_.size() + dim * dim);
-    extended_sol << sol_, Eigen::VectorXd::Zero(dim * dim);
-    // if (homo_initial_guess.size() == extended_sol.size())
-    //     extended_sol = homo_initial_guess;
+
+    Eigen::VectorXd extended_sol(ndof + dim * dim);
+    if (!force_al)
+        extended_sol << sol_, utils::flatten(disp_grad); // if not forcing AL, start solve from pure compression
+    else
+        extended_sol << sol_, Eigen::VectorXd::Zero(dim * dim); // if forcing AL, start solve from rest pose
+    
+    if (homo_initial_guess.size() == extended_sol.size())
+        extended_sol = homo_initial_guess;
+
     Eigen::MatrixXd disp_grad_out = disp_grad;
-    if (force_al)
     {
         Eigen::VectorXi al_indices;
         Eigen::VectorXd al_values;
@@ -176,19 +181,19 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
         const int max_al_steps = args["solver"]["augmented_lagrangian"]["max_solver_iters"];
         double al_weight = initial_weight;
 
-        Eigen::VectorXd tmp_sol = homo_problem->full_to_reduced(sol_, Eigen::MatrixXd::Zero(dim, dim));
-        Eigen::VectorXd extended = homo_problem->reduced_to_extended(tmp_sol);
-        const double initial_error = (extended(al_indices).array() - al_values.array()).matrix().squaredNorm();
-        extended(al_indices) = al_values;
-        Eigen::VectorXd reduced_sol = homo_problem->extended_to_reduced(extended);
-        // for (int i = 0; i < al_indices.size(); i++)
-        //     reduced_sol(al_indices(i)) = al_values(i);
+        Eigen::VectorXd tmp_sol = homo_problem->extended_to_reduced(extended_sol);
+        const double initial_error = (extended_sol(al_indices).array() - al_values.array()).matrix().squaredNorm();
+        
+        // try to enforce fixed values on macro strain
+        extended_sol(al_indices) = al_values;
+        Eigen::VectorXd reduced_sol = homo_problem->extended_to_reduced(extended_sol);
 
         homo_problem->line_search_begin(tmp_sol, reduced_sol);
         int al_steps = 0;
-        while (force_al
-            || !std::isfinite(homo_problem->value(reduced_sol))
-            || !homo_problem->is_step_valid(tmp_sol, reduced_sol))
+		while (force_al
+			   || !std::isfinite(homo_problem->value(reduced_sol))
+			   || !homo_problem->is_step_valid(tmp_sol, reduced_sol)
+			   || !homo_problem->is_step_collision_free(tmp_sol, reduced_sol))
         {
             force_al = false;
             homo_problem->line_search_end();
@@ -199,50 +204,31 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
             homo_problem->init(tmp_sol);
             nl_solver->minimize(*homo_problem, tmp_sol);
 
-            extended = homo_problem->reduced_to_extended(tmp_sol);
-            logger().debug("Current macro strain: {}", tmp_sol.tail(homo_problem->macro_reduced_size()));
+            extended_sol = homo_problem->reduced_to_extended(tmp_sol);
+            logger().debug("Current macro strain: {}", extended_sol.tail(dim * dim));
 
-            const double current_error = (extended(al_indices).array() - al_values.array()).matrix().squaredNorm();
+            const double current_error = (extended_sol(al_indices).array() - al_values.array()).matrix().squaredNorm();
             const double eta = 1 - sqrt(current_error / initial_error);
 
-            logger().debug("Current eta = {}", eta);
+            logger().debug("Current eta = {}, current error = {}, initial error = {}", eta, current_error, initial_error);
 
 			if (eta < eta_tol && al_weight < max_weight)
-			{
             	al_weight *= scaling;
-				lagr_form->update_lagrangian(extended, al_weight);
-            }
             else
-            {
-                logger().info("Cannot increase AL weight anymore, stopping...");
-                break;
-            }
+                lagr_form->update_lagrangian(extended_sol, al_weight);
 
-            extended(al_indices) = al_values;
-            reduced_sol = homo_problem->extended_to_reduced(extended);
+            // try to enforce fixed values on macro strain
+            extended_sol(al_indices) = al_values;
+            reduced_sol = homo_problem->extended_to_reduced(extended_sol);
 
             homo_problem->line_search_begin(tmp_sol, reduced_sol);
 
 			if (al_steps++ >= max_al_steps)
-			{
 				log_and_throw_error(fmt::format("Unable to solve AL problem, out of iterations {} (current weight = {}), stopping", max_al_steps, al_weight));
-				break;
-			}
-            if (!std::isfinite(homo_problem->value(reduced_sol)))
-            {
-                logger().debug("Invalid energy, continue AL...");
-                continue;
-            }
-            if (!homo_problem->is_step_valid(tmp_sol, reduced_sol))
-            {
-                logger().debug("Invalid step, continue AL...");
-                continue;
-            }
-            break;
         }
         homo_problem->line_search_end();
-        extended_sol = homo_problem->reduced_to_extended(tmp_sol);
-        disp_grad_out = utils::unflatten(extended_sol.tail(dim * dim), dim);
+        // extended_sol = homo_problem->reduced_to_extended(tmp_sol);
+        // disp_grad_out = utils::unflatten(extended_sol.tail(dim * dim), dim);
         {
             al_weight = 1;
             for (auto form : forms)
@@ -258,26 +244,24 @@ void State::solve_homogenized_field(const Eigen::MatrixXd &disp_grad, Eigen::Mat
 
     homo_problem->set_fixed_entry(fixed_entry, utils::flatten(disp_grad));
 
-    Eigen::VectorXd reduced_sol(homo_problem->reduced_size() + homo_problem->macro_reduced_size());
-    reduced_sol.head(homo_problem->reduced_size()) = homo_problem->NLProblem::full_to_reduced(extended_sol.head(ndof));
-    reduced_sol.tail(homo_problem->macro_reduced_size()) = homo_problem->macro_full_to_reduced(utils::flatten(disp_grad_out));
+    Eigen::VectorXd reduced_sol = homo_problem->extended_to_reduced(extended_sol);
 
     homo_problem->init(reduced_sol);
     nl_solver->minimize(*homo_problem, reduced_sol);
     
     if (for_bistable)
     {
-        homo_problem->set_fixed_entry({}, utils::flatten(disp_grad_out));
+        homo_problem->set_fixed_entry({}, utils::flatten(disp_grad));
         nl_solver->minimize(*homo_problem, reduced_sol);
     }
 
     sol_ = homo_problem->reduced_to_full(reduced_sol);
-    disp_grad_out = homo_problem->reduced_to_disp_grad(reduced_sol);
+    disp_grad = homo_problem->reduced_to_disp_grad(reduced_sol);
 
-    logger().info("displacement grad {}", utils::flatten(disp_grad_out).transpose());
+    logger().info("displacement grad {}", utils::flatten(disp_grad).transpose());
 
     if (args["optimization"]["enabled"])
-        cache_transient_adjoint_quantities(0, sol_, disp_grad_out);
+        cache_transient_adjoint_quantities(0, sol_, disp_grad);
     
     // homo_initial_guess = homo_problem->reduced_to_extended(reduced_sol);
 

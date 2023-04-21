@@ -66,6 +66,9 @@ namespace polyfem::solver
 
 		void add_form(const std::shared_ptr<Form> &form) { homo_forms.push_back(form); }
 
+	protected:
+		Eigen::MatrixXd boundary_values() const override;
+
 	private:
 		void init_projection();
 
