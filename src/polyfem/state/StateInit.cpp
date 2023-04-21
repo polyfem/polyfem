@@ -204,6 +204,7 @@ namespace polyfem
 		// end of check
 
 		this->args = jse.inject_defaults(args_in, rules);
+		units.init(this->args["units"]);
 
 		const bool fallback_solver = this->args["solver"]["linear"]["enable_overwrite_solver"];
 		// Fallback to default linear solver if the specified solver is invalid

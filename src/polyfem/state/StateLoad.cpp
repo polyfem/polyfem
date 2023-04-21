@@ -76,11 +76,12 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading obstacles...");
 		obstacle = mesh::read_obstacle_geometry(
+			units,
 			args["geometry"],
 			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
 			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
 			args["root_path"], mesh->dimension());
-		obstacle.set_units(units);
+
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
@@ -105,6 +106,7 @@ namespace polyfem
 		{
 			assert(is_param_valid(args, "geometry"));
 			mesh = mesh::read_fem_geometry(
+				units,
 				args["geometry"], args["root_path"],
 				names, vertices, cells, non_conforming);
 		}
@@ -144,11 +146,11 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading obstacles...");
 		obstacle = mesh::read_obstacle_geometry(
+			units,
 			args["geometry"],
 			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
 			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
 			args["root_path"], mesh->dimension(), names, vertices, cells);
-		obstacle.set_units(units);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}
