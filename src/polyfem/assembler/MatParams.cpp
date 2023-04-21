@@ -380,6 +380,8 @@ namespace polyfem::assembler
 		mu_or_nu_[index].init(nu);
 
 		lambda_or_E_[index].set_unit_type(stress_unit);
+		// nu has no unit
+		mu_or_nu_[index].set_unit_type("");
 	}
 
 	Density::Density()

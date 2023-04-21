@@ -63,6 +63,8 @@ namespace polyfem
 			class Plane;
 			inline const std::vector<Plane> &planes() const { return planes_; };
 
+			void set_units(const Units &units);
+
 		private:
 			void append_mesh(
 				const Eigen::MatrixXd &vertices,

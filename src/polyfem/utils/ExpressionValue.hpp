@@ -16,6 +16,7 @@ namespace polyfem
 			void set_unit_type(const std::string &unit_type)
 			{
 				unit_type_ = units::unit_from_string(unit_type);
+				unit_type_set_ = true;
 			}
 
 			void init(const json &vals);
@@ -47,6 +48,7 @@ namespace polyfem
 
 			units::precise_unit unit_type_;
 			units::precise_unit unit_;
+			bool unit_type_set_ = false;
 		};
 	} // namespace utils
 } // namespace polyfem

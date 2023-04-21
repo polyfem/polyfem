@@ -32,6 +32,12 @@ namespace polyfem
 
 				return val;
 			}
+
+			void set_unit_type(const std::string &unit_type)
+			{
+				for (auto &v : value)
+					v.set_unit_type(unit_type);
+			}
 		};
 
 		struct ScalarBCValue

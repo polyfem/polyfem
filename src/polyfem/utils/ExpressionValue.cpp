@@ -178,7 +178,7 @@ namespace polyfem
 
 		double ExpressionValue::operator()(double x, double y, double z, double t, int index) const
 		{
-			assert(!unit_type_.base_units().empty());
+			assert(unit_type_set_);
 
 			double result;
 			if (expr_.empty())
