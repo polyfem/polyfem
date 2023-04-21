@@ -407,8 +407,8 @@ namespace polyfem
 		}
 
 		// Store these for use later
-		args["time"]["tend"] = Units::convert(tend, units.time());
-		args["time"]["dt"] = Units::convert(dt, units.time());
+		args["time"]["tend"] = tend;
+		args["time"]["dt"] = dt;
 		args["time"]["time_steps"] = time_steps;
 
 		logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
