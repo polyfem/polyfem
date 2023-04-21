@@ -63,7 +63,39 @@ namespace polyfem
 			else
 			{
 				for (int i = 0; i < 3; ++i)
+				{
 					rhs_[i].set_unit_type(units.acceleration());
+					exact_[i].set_unit_type(units.length);
+				}
+				for (int i = 0; i < 3; ++i)
+					exact_grad_[i].set_unit_type("");
+
+				for (auto &v : displacements_)
+					v.set_unit_type(units.length);
+
+				for (auto &v : forces_)
+					v.set_unit_type(units.force());
+
+				for (auto &v : pressures_)
+					v.set_unit_type(units.pressure());
+
+				for (auto &v : initial_position_)
+					for (int i = 0; i < 3; ++i)
+						v.second[i].set_unit_type(units.length);
+
+				for (auto &v : initial_velocity_)
+					for (int i = 0; i < 3; ++i)
+						v.second[i].set_unit_type(units.velocity());
+
+				for (auto &v : initial_acceleration_)
+					for (int i = 0; i < 3; ++i)
+						v.second[i].set_unit_type(units.acceleration());
+
+				for (auto &v : nodal_dirichlet_)
+					v.second.set_unit_type(units.length);
+
+				for (auto &v : nodal_neumann_)
+					v.second.set_unit_type(units.force());
 			}
 		}
 
@@ -1038,6 +1070,26 @@ namespace polyfem
 		GenericScalarProblem::GenericScalarProblem(const std::string &name)
 			: Problem(name), is_all_(false)
 		{
+		}
+
+		void GenericScalarProblem::set_units(const assembler::Assembler &assembler, const Units &units)
+		{
+			// TODO?
+
+			for (auto &v : neumann_)
+				v.set_unit_type("");
+
+			for (auto &v : dirichlet_)
+				v.set_unit_type("");
+
+			for (auto &v : initial_solution_)
+				v.second.set_unit_type("");
+
+			rhs_.set_unit_type("");
+			exact_.set_unit_type("");
+
+			for (int i = 0; i < 3; ++i)
+				exact_grad_[i].set_unit_type("");
 		}
 
 		void GenericScalarProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const

@@ -51,6 +51,11 @@ namespace polyfem
 				double x = pts(0), y = pts(1), z = pts.size() == 3 ? pts(2) : 0.0;
 				return value(x, y, z, t) * interpolation->eval(t);
 			}
+
+			void set_unit_type(const std::string &unit_type)
+			{
+				value.set_unit_type(unit_type);
+			}
 		};
 
 		class GenericTensorProblem : public Problem
@@ -159,6 +164,7 @@ namespace polyfem
 		{
 		public:
 			GenericScalarProblem(const std::string &name);
+			void set_units(const assembler::Assembler &assembler, const Units &units) override;
 
 			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override { return rhs_.is_zero(); }

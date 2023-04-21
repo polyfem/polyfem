@@ -19,6 +19,7 @@ namespace polyfem
 		std::string velocity() const { return fmt::format("{}/{}", length, time); }
 		std::string acceleration() const { return fmt::format("{}/{}^2", length, time); }
 		std::string force() const { return fmt::format("{}*{}", mass, acceleration()); }
+		std::string pressure() const { return fmt::format("{}*{}/{}", mass, acceleration(), length); }
 		std::string energy() const { return fmt::format("{}*{}^2/{}^2", mass, length, time); }
 	};
 } // namespace polyfem
