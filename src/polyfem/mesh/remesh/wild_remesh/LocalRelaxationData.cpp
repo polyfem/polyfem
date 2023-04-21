@@ -77,9 +77,8 @@ namespace polyfem::mesh
 			*mesh, state.formulation(), bases, local_boundary, vertex_to_basis);
 
 		assert(m_n_bases == local_mesh.num_local_vertices());
-		assert(vertex_to_basis.size() == m_n_bases);
 		m_n_bases = local_mesh.num_vertices(); // the real n_bases includes the global boundary nodes
-		vertex_to_basis.conservativeResize(m_n_bases);
+		assert(vertex_to_basis.size() == m_n_bases);
 
 		const int start_i = local_mesh.num_local_vertices();
 		if (start_i < m_n_bases)

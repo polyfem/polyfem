@@ -109,6 +109,10 @@ namespace polyfem::mesh
 				for (int i = 0; i < M::FACETS_PER_ELEMENT; ++i)
 					facets_tuples.push_back(m.tuple_from_facet(m.element_id(elem), i));
 			unique_facet_tuples(m, facets_tuples);
+			if constexpr (std::is_same_v<M, TriMesh>)
+				m_boundary_ids = Remesher::EdgeMap<int>();
+			else
+				m_boundary_ids = Remesher::FaceMap<int>();
 			for (const Tuple &t : facets_tuples)
 			{
 				auto vids = m.facet_vids(t);
