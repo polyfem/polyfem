@@ -7,20 +7,9 @@
 #include <polyfem/State.hpp>
 #include <polyfem/solver/Optimizations.hpp>
 #include <polyfem/solver/AdjointTools.hpp>
-#include <polyfem/io/Evaluator.hpp>
-
+#include <polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp>
+#include <polyfem/solver/forms/adjoint_forms/AdjointForm.hpp>
 #include <polyfem/solver/AdjointNLProblem.hpp>
-
-#include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
-#include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
-#include <polyfem/solver/forms/adjoint_forms/CompositeForms.hpp>
-
-#include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
-#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
-
-#include <polyfem/solver/forms/ElasticForm.hpp>
-#include <polyfem/solver/forms/PeriodicContactForm.hpp>
-#include <polyfem/solver/NLHomoProblem.hpp>
 
 #include <paraviewo/VTUWriter.hpp>
 #include <finitediff.hpp>

@@ -702,6 +702,7 @@
         "type_name": "sdf-to-mesh",
         "type": "object",
         "required": [
+            "binary_path",
             "wire_path",
             "output_path"
         ],
@@ -715,6 +716,10 @@
         "pointer": "/variable_to_simulation/*/composition/*/use_volume_velocity",
         "type": "bool",
         "default": false
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/binary_path",
+        "type": "string"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/wire_path",

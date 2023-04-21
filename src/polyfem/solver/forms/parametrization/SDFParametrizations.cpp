@@ -74,7 +74,7 @@ namespace polyfem::solver
                 POLYFEM_SCOPED_TIMER("mesh inflation");
                 logger().info("isosurface inflator input: {}", x.transpose());
                 Eigen::MatrixXd vertex_normals, shape_vel;
-                utils::inflate(wire_path_, opts_, x_vec, Vout, Fout, vertex_normals, shape_vel);
+                utils::inflate(binary_path_, wire_path_, opts_, x_vec, Vout, Fout, vertex_normals, shape_vel);
                 Vout /= 2.0;
 
                 Eigen::VectorXd norms = vertex_normals.rowwise().norm();
@@ -86,8 +86,7 @@ namespace polyfem::solver
                 shape_velocity.setZero(shape_vel.rows(), vertex_normals.size());
                 for (int d = 0; d < dim_; d++)
                     for (int i = 0; i < vertex_normals.rows(); i++)
-                        for (int q = 0; q < shape_vel.rows(); q++)
-                            shape_velocity(q, dim_ * i + d) = shape_vel(q, i) * vertex_normals(i, d) / 2.0;
+                        shape_velocity.col(dim_ * i + d) = shape_vel.col(i) * vertex_normals(i, d) / 2.0;
             }
             
             write_msh(out_path_, Vout, Fout);
@@ -279,6 +278,8 @@ namespace polyfem::solver
         Eigen::MatrixXd V = Vout + utils::unflatten(shape_velocity.transpose() * (x - last_x), dim_);
         if (is_flipped(V, Fout))
             return Eigen::VectorXd();
+        
+        log_and_throw_error("Not implemented!");
         
         return utils::flatten(V);
     }

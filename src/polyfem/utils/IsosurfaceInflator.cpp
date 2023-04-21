@@ -21,7 +21,7 @@ namespace polyfem::utils
         }
     }
 
-    void inflate(const std::string wire_path, const json &options, std::vector<double> &params, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXd &vertex_normals, Eigen::MatrixXd &shape_vel)
+    void inflate(const std::string binary_path, const std::string wire_path, const json &options, std::vector<double> &params, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXd &vertex_normals, Eigen::MatrixXd &shape_vel)
     {
         const int dim = 2;
 
@@ -31,8 +31,9 @@ namespace polyfem::utils
         for (int i = 0; i < params.size(); i++)
             shape_params += to_string_with_precision(params[i], 16) + " ";
         shape_params += "\" ";
-        std::string command = "~/microstructures/build/isosurface_inflator/isosurface_cli " // binary path
-                            + std::string("2D_") + options["symmetry"].get<std::string>() + " " // symmetry
+        std::string command = binary_path + " " // binary path
+                            + std::to_string(dim) + std::string("D_") // dimension
+                            + options["symmetry"].get<std::string>() + " " // symmetry
                             + wire_path // wireframe path
                             + " -m meshing.json "
                             + shape_params // shape parameters
