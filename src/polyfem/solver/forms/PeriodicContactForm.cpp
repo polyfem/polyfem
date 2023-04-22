@@ -24,12 +24,12 @@ namespace polyfem::solver
 
         update_projection();
 
-        const Eigen::MatrixXd displaced = collision_mesh_.displace_vertices(
-            Eigen::MatrixXd::Zero(collision_mesh_.full_num_vertices(), collision_mesh_.dim()));
+        // const Eigen::MatrixXd displaced = collision_mesh_.displace_vertices(
+        //     Eigen::MatrixXd::Zero(collision_mesh_.full_num_vertices(), collision_mesh_.dim()));
 
-        io::OBJWriter::write(
-            "tiled.obj", displaced,
-            collision_mesh_.edges(), collision_mesh_.faces());
+        // io::OBJWriter::write(
+        //     "tiled.obj", displaced,
+        //     collision_mesh_.edges(), collision_mesh_.faces());
     }
 
     void PeriodicContactForm::update_projection() const

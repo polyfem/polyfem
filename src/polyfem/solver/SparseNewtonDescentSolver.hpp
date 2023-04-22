@@ -22,6 +22,8 @@ namespace cppoptlib
 
 		std::string name() const override { return "Newton"; }
 
+		bool is_saddle_point(ProblemType &objFunc, const TVector &x) override;
+
 	protected:
 		bool compute_update_direction(ProblemType &objFunc, const TVector &x, const TVector &grad, TVector &direction) override;
 

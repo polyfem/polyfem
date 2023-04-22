@@ -1936,7 +1936,8 @@
             "solver_info_log",
             "max_step_size",
             "min_step_size",
-            "force_psd_projection"
+            "force_psd_projection",
+            "check_saddle_point"
         ],
         "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
     },
@@ -2084,6 +2085,12 @@
         "default": false,
         "type": "bool",
         "doc": "Force the Hessian to be PSD when using second order solvers (i.e., Newton's method)."
+    },
+    {
+        "pointer": "/solver/nonlinear/check_saddle_point",
+        "default": false,
+        "type": "bool",
+        "doc": "Check if hessian is PSD when the nonlinear solve converges."
     },
     {
         "pointer": "/solver/augmented_lagrangian",

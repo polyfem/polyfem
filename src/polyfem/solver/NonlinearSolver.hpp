@@ -63,6 +63,7 @@ namespace cppoptlib
 		}
 
 		bool verify_gradient(ProblemType &objFunc, const TVector &x, const TVector &grad);
+		virtual bool is_saddle_point(ProblemType &objFunc, const TVector &x) { return false; }
 		size_t max_iterations() const { return this->m_stop.iterations; }
 		size_t &max_iterations() { return this->m_stop.iterations; }
 
@@ -136,6 +137,7 @@ namespace cppoptlib
 		double finite_diff_eps;
 
 		int fall_back_descent_strategy_period;
+		bool check_saddle_point;
 
 		// ====================================================================
 		//                                 END

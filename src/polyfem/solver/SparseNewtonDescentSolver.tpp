@@ -104,6 +104,31 @@ namespace cppoptlib
 	// =======================================================================
 
 	template <typename ProblemType>
+	bool SparseNewtonDescentSolver<ProblemType>::is_saddle_point(ProblemType &objFunc, const TVector &x)
+	{
+		POLYFEM_SCOPED_TIMER("assembly time", this->assembly_time);
+
+		polyfem::StiffnessMatrix hessian;
+		objFunc.set_project_to_psd(false);
+		objFunc.hessian(x, hessian);
+
+		linear_solver->analyzePattern(hessian, hessian.rows());
+
+		try
+		{
+			linear_solver->factorize(hessian);
+		}
+		catch (const std::runtime_error &err)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	// =======================================================================
+
+	template <typename ProblemType>
 	void SparseNewtonDescentSolver<ProblemType>::assemble_hessian(
 		ProblemType &objFunc, const TVector &x, polyfem::StiffnessMatrix &hessian)
 	{

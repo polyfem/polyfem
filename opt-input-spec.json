@@ -86,6 +86,7 @@
             "line_search",
             "export_energy",
             "export_energy_components",
+            "check_saddle_point",
             "first_grad_norm_tol"
         ],
         "doc": "Settings for optimization nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
@@ -95,6 +96,12 @@
         "default": 1,
         "type": "int",
         "doc": "TODO"
+    },
+    {
+        "pointer": "/solver/nonlinear/check_saddle_point",
+        "default": false,
+        "type": "bool",
+        "doc": "Check if hessian is PSD when the nonlinear solve converges."
     },
     {
         "pointer": "/solver/nonlinear/solver",
