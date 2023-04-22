@@ -164,17 +164,12 @@ int main(int argc, char **argv)
 
 		micro_state->args["output"]["paraview"]["file_name"] = "load_" + std::to_string(-l) + ".vtu";
 
-		Eigen::MatrixXd fluctuated;
-		micro_state->solve_homogenized_field(F, fluctuated, micro_state->args["boundary_conditions"]["fixed_macro_strain"], false);
-		
-		// recover extended solution as the initial guess for the next solve
-		Eigen::VectorXd extended(fluctuated.size() + F.size());
-		{
-			extended.head(fluctuated.size()) = fluctuated - io::Evaluator::generate_linear_field(micro_state->n_bases, micro_state->mesh_nodes, F);
-			extended.tail(F.size()) = utils::flatten(F);
-			micro_state->homo_initial_guess = extended;
-		}
+		Eigen::MatrixXd extended;
+		micro_state->solve_homogenized_field(F, extended, micro_state->args["boundary_conditions"]["fixed_macro_strain"], false);
+		micro_state->initial_guess = extended;
 
+		Eigen::MatrixXd fluctuated = extended.block(0,0,extended.size() - dim * dim,1) + io::Evaluator::generate_linear_field(micro_state->n_bases, micro_state->mesh_nodes, F);
+		
 		// effective energy = average energy over unit cell
 		double energy = micro_assembler.homogenize_energy(fluctuated);
 

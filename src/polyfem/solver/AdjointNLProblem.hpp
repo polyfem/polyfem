@@ -59,6 +59,10 @@ namespace polyfem::solver
 		const int solve_log_level;
 		const int save_freq;
 
+		const bool solve_in_parallel;
+		std::vector<int> solve_in_order;
+		const bool better_initial_guess;
+
 		Eigen::MatrixXd bounds_;
 	};
 } // namespace polyfem::solver

@@ -19,6 +19,7 @@
 #include <polysolve/FEMSolver.hpp>
 #include <unsupported/Eigen/SparseExtra>
 
+#include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/Evaluator.hpp>
 
 #include <ipc/ipc.hpp>
@@ -71,7 +72,7 @@ void State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, Eigen::MatrixXd 
         n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache,
         // Body form
         n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
-        n_boundary_samples(), rhs, sol_, mass_matrix_assembler->density(),
+        n_boundary_samples(), rhs, Eigen::VectorXd::Zero(ndof) /* only to set neumann BC, not used*/, mass_matrix_assembler->density(),
         // Inertia form
         args["solver"]["ignore_inertia"], mass, nullptr,
         // Lagged regularization form
@@ -141,20 +142,16 @@ void State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, Eigen::MatrixXd 
     }
 
     std::shared_ptr<cppoptlib::NonlinearSolver<NLHomoProblem>> nl_solver = make_nl_homo_solver<NLHomoProblem>(args["solver"]);
-
-    Eigen::MatrixXd pressure;
-    init_solve(sol_, pressure); // set solution to zero
     
     bool force_al = args["solver"]["augmented_lagrangian"]["force"];
 
-    Eigen::VectorXd extended_sol(ndof + dim * dim);
+    Eigen::VectorXd extended_sol;
+    extended_sol.setZero(ndof + dim * dim);
     if (!force_al)
-        extended_sol << sol_, utils::flatten(disp_grad); // if not forcing AL, start solve from pure compression
-    else
-        extended_sol << sol_, Eigen::VectorXd::Zero(dim * dim); // if forcing AL, start solve from rest pose
+        extended_sol.tail(dim * dim) = utils::flatten(disp_grad); // if not forcing AL, start solve from pure compression
     
-    if (homo_initial_guess.size() == extended_sol.size())
-        extended_sol = homo_initial_guess;
+    if (initial_guess.size() == extended_sol.size())
+        extended_sol = initial_guess;
 
     Eigen::MatrixXd disp_grad_out = disp_grad;
     {
@@ -202,7 +199,15 @@ void State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, Eigen::MatrixXd 
             logger().debug("Solving AL Problem with weight {}", al_weight);
 
             homo_problem->init(tmp_sol);
-            nl_solver->minimize(*homo_problem, tmp_sol);
+			try
+			{
+				nl_solver->minimize(*homo_problem, tmp_sol);
+			}
+			catch (const std::runtime_error &e)
+			{
+                logger().error("AL solve failed!");
+                export_data(homo_problem->reduced_to_full(tmp_sol), Eigen::MatrixXd());
+			}
 
             extended_sol = homo_problem->reduced_to_extended(tmp_sol);
             logger().debug("Current macro strain: {}", extended_sol.tail(dim * dim));
@@ -246,6 +251,13 @@ void State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, Eigen::MatrixXd 
 
     Eigen::VectorXd reduced_sol = homo_problem->extended_to_reduced(extended_sol);
 
+    // const Eigen::MatrixXd displaced = periodic_collision_mesh.displace_vertices(utils::unflatten(solve_data_tmp.periodic_contact_form->single_to_tiled(homo_problem->reduced_to_extended(reduced_sol)), dim));
+
+    // static int debug_id = 0;
+    // io::OBJWriter::write(
+    //     "tiled" + std::to_string(debug_id++) + ".obj", displaced,
+    //     periodic_collision_mesh.edges(), periodic_collision_mesh.faces());
+
     homo_problem->init(reduced_sol);
     nl_solver->minimize(*homo_problem, reduced_sol);
     
@@ -255,15 +267,15 @@ void State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, Eigen::MatrixXd 
         nl_solver->minimize(*homo_problem, reduced_sol);
     }
 
-    sol_ = homo_problem->reduced_to_full(reduced_sol);
     disp_grad = homo_problem->reduced_to_disp_grad(reduced_sol);
-
     logger().info("displacement grad {}", utils::flatten(disp_grad).transpose());
 
     if (args["optimization"]["enabled"])
-        cache_transient_adjoint_quantities(0, sol_, disp_grad);
+        cache_transient_adjoint_quantities(0, homo_problem->reduced_to_full(reduced_sol), disp_grad);
     
-    // homo_initial_guess = homo_problem->reduced_to_extended(reduced_sol);
+    sol_ = homo_problem->reduced_to_extended(reduced_sol);
+    
+    // initial_guess = homo_problem->reduced_to_extended(reduced_sol);
 
     // static int index = 0;
     // StiffnessMatrix H;

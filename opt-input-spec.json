@@ -58,7 +58,8 @@
         "type": "object",
         "default": null,
         "optional": [
-            "nonlinear"
+            "nonlinear",
+            "advanced"
         ],
         "doc": "TODO"
     },
@@ -861,5 +862,39 @@
     {
         "pointer": "/parameters/*/exclude_boundary_nodes",
         "type": "bool"
+    },
+    {
+        "pointer": "/solver/advanced",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solve_in_parallel",
+            "solve_in_order",
+            "better_initial_guess"
+        ],
+        "doc": "Advanced settings for arranging forward simulations"
+    },
+    {
+        "pointer": "/solver/advanced/solve_in_parallel",
+        "default": false,
+        "type": "bool",
+        "doc": "Run forward simulations in parallel."
+    },
+    {
+        "pointer": "/solver/advanced/solve_in_order",
+        "default": [],
+        "type": "list",
+        "doc": "Run forward simulations in order."
+    },
+    {
+        "pointer": "/solver/advanced/solve_in_order/*",
+        "type": "int",
+        "doc": "Id of forward simulations."
+    },
+    {
+        "pointer": "/solver/advanced/better_initial_guess",
+        "default": false,
+        "type": "bool",
+        "doc": "Given simulation ordering, use the last simulation result as the initial guess for the next one."
     }
 ]

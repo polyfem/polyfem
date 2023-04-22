@@ -108,7 +108,7 @@ namespace polyfem::assembler
 				Eigen::MatrixXd grad = def_grads[idx] - Eigen::MatrixXd::Identity(size(), size());
 				tmp.setZero();
 				state->solve_homogenized_field(grad, tmp, fixed_entry);
-				sols.col(idx) = tmp - io::Evaluator::generate_linear_field(state->n_bases, state->mesh_nodes, grad);
+				sols.col(idx) = tmp.block(0, 0, tmp.size() - size() * size(), 1);
 			}
 		});
 

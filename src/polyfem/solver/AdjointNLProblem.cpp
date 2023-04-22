@@ -17,9 +17,28 @@ namespace polyfem::solver
 		  variables_to_simulation_(variables_to_simulation),
 		  all_states_(all_states),
 		  solve_log_level(args["output"]["solve_log_level"]),
-		  save_freq(args["output"]["save_frequency"])
+		  save_freq(args["output"]["save_frequency"]),
+		  solve_in_parallel(args["solver"]["advanced"]["solve_in_parallel"]),
+		  better_initial_guess(args["solver"]["advanced"]["better_initial_guess"])
 	{
 		cur_grad.setZero(0);
+
+		solve_in_order.clear();
+		if (args["solver"]["advanced"]["solve_in_order"].size() > 0)
+		{
+			for (int i : args["solver"]["advanced"]["solve_in_order"])
+				solve_in_order.push_back(i);
+			
+			if (solve_in_parallel)
+				logger().error("Cannot solve both in order and in parallel, ignoring the order!");
+			
+			assert(solve_in_order.size() == all_states.size());
+		}
+		else
+		{
+			for (int i = 0; i < all_states_.size(); i++)
+				solve_in_order.push_back(i);
+		}
 
 		active_state_mask.assign(all_states_.size(), false);
 		for (int i = 0; i < all_states_.size(); i++)
@@ -217,19 +236,44 @@ namespace polyfem::solver
 	{
 		const auto cur_log_level = logger().level();
 		all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
-		utils::maybe_parallel_for(all_states_.size(), [&](int start, int end, int thread_id) {
-			for (int i = start; i < end; i++)
+		
+		if (solve_in_parallel)
+		{
+			logger().info("Run simulations in parallel...");
+
+			utils::maybe_parallel_for(all_states_.size(), [&](int start, int end, int thread_id) {
+				for (int i = start; i < end; i++)
+				{
+					auto state = all_states_[i];
+					if (active_state_mask[i] || state->diff_cached.size() == 0)
+					{
+						state->assemble_rhs();
+						state->assemble_mass_mat();
+						Eigen::MatrixXd sol, pressure; // solution is also cached in state
+						state->solve_problem(sol, pressure);
+					}
+				}
+			});
+		}
+		else
+		{
+			Eigen::MatrixXd sol, pressure; // solution is also cached in state
+			for (int i : solve_in_order)
 			{
 				auto state = all_states_[i];
 				if (active_state_mask[i] || state->diff_cached.size() == 0)
 				{
 					state->assemble_rhs();
 					state->assemble_mass_mat();
-					Eigen::MatrixXd sol, pressure; // solution is also cached in state
+
+					if (better_initial_guess && sol.size() > 0)
+						state->initial_guess = sol;
+
 					state->solve_problem(sol, pressure);
 				}
 			}
-		});
+		}
+
 		all_states_[0]->set_log_level(cur_log_level);
 
 		cur_grad.resize(0);

@@ -13,6 +13,7 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/io/Evaluator.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>
@@ -246,6 +247,7 @@ namespace polyfem::assembler
 			state->args["optimization"]["enabled"] = true;
 			nlohmann::adl_serializer<Eigen::VectorXi>::to_json(state->args["boundary_conditions"]["fixed_macro_strain"], Eigen::VectorXi::LinSpaced(size()*size(),0,size()*size()-1));
 			state->solve_problem(x, pressure);
+			x = x.block(0, 0, x.size() - def_grad.size(), 1).eval() + io::Evaluator::generate_linear_field(state->n_bases, state->mesh_nodes, state->disp_grad_);
 		}
 
 		// effective energy = average energy over unit cell
@@ -267,6 +269,7 @@ namespace polyfem::assembler
 			state->args["optimization"]["enabled"] = true;
 			nlohmann::adl_serializer<Eigen::VectorXi>::to_json(state->args["boundary_conditions"]["fixed_macro_strain"], Eigen::VectorXi::LinSpaced(size()*size(),0,size()*size()-1));
 			state->solve_problem(x, pressure);
+			x = x.block(0, 0, x.size() - def_grad.size(), 1).eval() + io::Evaluator::generate_linear_field(state->n_bases, state->mesh_nodes, state->disp_grad_);
 		}
 
 		// effective energy = average energy over unit cell
@@ -286,6 +289,7 @@ namespace polyfem::assembler
 			state->args["optimization"]["enabled"] = true;
 			nlohmann::adl_serializer<Eigen::VectorXi>::to_json(state->args["boundary_conditions"]["fixed_macro_strain"], Eigen::VectorXi::LinSpaced(size()*size(),0,size()*size()-1));
 			state->solve_problem(x, pressure);
+			x = x.block(0, 0, x.size() - def_grad.size(), 1).eval() + io::Evaluator::generate_linear_field(state->n_bases, state->mesh_nodes, state->disp_grad_);
 		}
 
 		// effective energy = average energy over unit cell

@@ -735,7 +735,7 @@ namespace polyfem
 		//---------------------------------------------------
 	public:
 		void solve_homogenized_field(Eigen::MatrixXd &disp_grad, Eigen::MatrixXd &sol_, const std::vector<int> &fixed_entry, bool for_bistable = false);
-		Eigen::VectorXd homo_initial_guess;
+		Eigen::VectorXd initial_guess;
 	};
 
 } // namespace polyfem
