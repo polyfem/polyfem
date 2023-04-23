@@ -44,13 +44,19 @@ namespace polyfem
 
 		bool ElementAssemblyValues::is_geom_mapping_positive(const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy) const
 		{
-			Eigen::Matrix2d tmp;
+			Eigen::MatrixXd tmp(2, dx.cols());
 			for (long i = 0; i < dx.rows(); ++i)
 			{
 				tmp.row(0) = dx.row(i);
 				tmp.row(1) = dy.row(i);
 
-				if (tmp.determinant() <= 0)
+				double det;
+				if (tmp.rows() == tmp.cols())
+					det = tmp.determinant();
+				else
+					det = (tmp*tmp.transpose()).determinant();
+
+				if (det <= 0.0)
 				{
 					// std::cout<<tmp.determinant()<<std::endl;
 					return false;
@@ -159,9 +165,10 @@ namespace polyfem
 			det.resize(val.rows(), 1);
 
 			for (std::size_t j = 0; j < basis_values.size(); ++j)
-				basis_values[j].finalize();
+				basis_values[j].grad_t_m.resize(basis_values[0].grad.rows(), gbasis.bases[0].global()[0].node.size());
+				// basis_values[j].finalize();
 
-			Eigen::Matrix2d tmp;
+			Eigen::MatrixXd tmp(2, gbasis.bases[0].global()[0].node.size());
 			jac_it.resize(val.rows());
 
 			// loop over points
@@ -173,7 +180,7 @@ namespace polyfem
 					const Basis &b = gbasis.bases[j];
 					assert(gbasis.has_parameterization);
 					assert(gbasis_values[j].grad.rows() == val.rows());
-					assert(gbasis_values[j].grad.cols() == 2);
+					// assert(gbasis_values[j].grad.cols() == 2);
 
 					for (std::size_t ii = 0; ii < b.global().size(); ++ii)
 					{
@@ -182,11 +189,19 @@ namespace polyfem
 					}
 				}
 
-				det(k) = tmp.determinant();
+				if (tmp.rows() == tmp.cols()) {
+					det(k) = tmp.determinant();
+					jac_it[k] = tmp.inverse().transpose();
+				}
+					
+				else {
+					det(k) = sqrt((tmp*tmp.transpose()).determinant());
+					jac_it[k] = ((tmp*tmp.transpose()).inverse())*tmp;
+				}
+					
 				// assert(det(k)>0);
 				// std::cout<<det(k)<<std::endl;
 
-				jac_it[k] = tmp.inverse().transpose();
 				for (std::size_t j = 0; j < basis_values.size(); ++j)
 					basis_values[j].grad_t_m.row(k) = basis_values[j].grad.row(k) * jac_it[k];
 			}
@@ -321,7 +336,7 @@ namespace polyfem
 
 			const auto &gbasis_values = (&basis == &gbasis) ? basis_values : g_basis_values_cache_;
 			assert(gbasis_values.size() == n_local_g_bases);
-			val.resize(pts.rows(), pts.cols());
+			val.resize(pts.rows(), gbasis.bases[0].global()[0].node.size());
 			val.setZero();
 			for (int j = 0; j < n_local_g_bases; ++j)
 			{
@@ -361,11 +376,11 @@ namespace polyfem
 
 			std::vector<AssemblyValues> tmp;
 
-			Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
-			Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
+			Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(quad.points.rows(), gbasis.bases[0].global()[0].node.size());
+			Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(quad.points.rows(), gbasis.bases[0].global()[0].node.size());
 			Eigen::MatrixXd dzmv;
 			if (is_volume)
-				dzmv = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
+				dzmv = Eigen::MatrixXd::Zero(quad.points.rows(), gbasis.bases[0].global()[0].node.size());
 
 			gbasis.evaluate_grads(quad.points, tmp);
 
@@ -388,7 +403,7 @@ namespace polyfem
 				}
 			}
 
-			return is_volume ? is_geom_mapping_positive(dxmv, dymv, dzmv) : is_geom_mapping_positive(dxmv, dymv);
+			return (is_volume ? is_geom_mapping_positive(dxmv, dymv, dzmv) : is_geom_mapping_positive(dxmv, dymv));
 		}
 	} // namespace assembler
 } // namespace polyfem

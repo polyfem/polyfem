@@ -97,7 +97,8 @@ namespace polyfem::mesh
 
 	std::unique_ptr<Mesh> Mesh::create(GEO::Mesh &meshin, const bool non_conforming)
 	{
-		if (is_planar(meshin))
+		// if (is_planar(meshin))
+		if (meshin.facets.nb_vertices(0) == 3)
 		{
 			generate_edges(meshin);
 			std::unique_ptr<Mesh> mesh = create(2, non_conforming);

@@ -25,7 +25,7 @@ namespace polyfem
 				return;
 			}
 
-			mapped = Eigen::MatrixXd::Zero(samples.rows(), samples.cols());
+			mapped = Eigen::MatrixXd::Zero(samples.rows(), bases[0].global()[0].node.size());
 			std::vector<AssemblyValues> tmp_val;
 			evaluate_bases(samples, tmp_val);
 

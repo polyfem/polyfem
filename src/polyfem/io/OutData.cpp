@@ -2191,7 +2191,7 @@ namespace polyfem::io
 
 		if (!use_curved_mesh_size)
 		{
-			mesh_in.get_edges(p0, p1);
+			mesh_in.get_edges(p0, p1, mesh_in.dimension());
 			p = p0 - p1;
 			min_edge_length = p.rowwise().norm().minCoeff();
 			average_edge_length = p.rowwise().norm().mean();

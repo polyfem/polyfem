@@ -22,6 +22,7 @@ namespace polyfem
 			Mesh2D(const Mesh2D &) = default;
 			Mesh2D &operator=(const Mesh2D &) = default;
 
+			// bool is_volume() const override { return (n_face_vertices(0) == 2 ? false : true); }
 			bool is_volume() const override { return false; }
 
 			int n_cells() const override { return 0; }
@@ -60,6 +61,7 @@ namespace polyfem
 			inline Navigation::Index next_around_vertex(Navigation::Index idx) const { return switch_face(switch_edge(idx)); }
 
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
+			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, int dim) const override;
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const override;
 		};
 	} // namespace mesh

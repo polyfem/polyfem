@@ -388,21 +388,29 @@ namespace polyfem
 		void CMesh2D::bounding_box(RowVectorNd &min, RowVectorNd &max) const
 		{
 			GEO::vec3 min_corner, max_corner;
+			int dim = mesh_.vertices.dimension();
+
 			GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
-			min.resize(2);
-			max.resize(2);
+			min.resize(dim);
+			max.resize(dim);
 
 			min(0) = min_corner.x;
 			min(1) = min_corner.y;
+			if (dim == 3)
+				min(2) = min_corner.z;
 
 			max(0) = max_corner.x;
 			max(1) = max_corner.y;
+			if (dim == 3)
+				max(2) = max_corner.z;
 		}
 
 		void CMesh2D::normalize()
 		{
 
 			GEO::vec3 min_corner, max_corner;
+			int dim = mesh_.vertices.dimension();
+
 			GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
 			GEO::vec3 extent = max_corner - min_corner;
 			double scaling = std::max(extent[0], std::max(extent[1], extent[2]));
@@ -412,8 +420,11 @@ namespace polyfem
 			{
 				mesh_.vertices.point(v) = (mesh_.vertices.point(v) - origin) / scaling;
 			}
-			Eigen::RowVector2d shift;
-			shift << origin[0], origin[1];
+			RowVectorNd shift(dim);
+			if (dim == 2)
+				shift << origin[0], origin[1];
+			else if (dim == 3)
+				shift << origin[0], origin[1], origin[2];
 			for (auto &n : edge_nodes_)
 			{
 				if (n.nodes.size() > 0)
@@ -425,18 +436,34 @@ namespace polyfem
 					n.nodes = (n.nodes.rowwise() - shift) / scaling;
 			}
 
-			logger().debug("-- bbox before normalization:");
-			logger().debug("   min   : {} {}", min_corner[0], min_corner[1]);
-			logger().debug("   max   : {} {}", max_corner[0], max_corner[1]);
-			logger().debug("   extent: {} {}", max_corner[0] - min_corner[0], max_corner[1] - min_corner[1]);
-			GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
-			logger().debug("-- bbox after normalization:");
-			logger().debug("   min   : {} {}", min_corner[0], min_corner[1]);
-			logger().debug("   max   : {} {}", max_corner[0], max_corner[1]);
-			logger().debug("   extent: {} {}", max_corner[0] - min_corner[0], max_corner[1] - min_corner[1]);
+			if (dim == 2)
+			{
+				logger().debug("-- bbox before normalization:");
+				logger().debug("   min   : {} {}", min_corner[0], min_corner[1]);
+				logger().debug("   max   : {} {}", max_corner[0], max_corner[1]);
+				logger().debug("   extent: {} {}", max_corner[0] - min_corner[0], max_corner[1] - min_corner[1]);
+				GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
+				logger().debug("-- bbox after normalization:");
+				logger().debug("   min   : {} {}", min_corner[0], min_corner[1]);
+				logger().debug("   max   : {} {}", max_corner[0], max_corner[1]);
+				logger().debug("   extent: {} {}", max_corner[0] - min_corner[0], max_corner[1] - min_corner[1]);
+			}
+			else if (dim == 3)
+			{
+				logger().debug("-- bbox before normalization:");
+				logger().debug("   min   : {} {} {}", min_corner[0], min_corner[1], min_corner[2]);
+				logger().debug("   max   : {} {} {}", max_corner[0], max_corner[1], max_corner[2]);
+				logger().debug("   extent: {} {} {}", max_corner[0] - min_corner[0], max_corner[1] - min_corner[1], max_corner[2] - min_corner[2]);
+				GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
+				logger().debug("-- bbox after normalization:");
+				logger().debug("   min   : {} {} {}", min_corner[0], min_corner[1], min_corner[2]);
+				logger().debug("   max   : {} {} {}", max_corner[0], max_corner[1], max_corner[2]);
+				logger().debug("   extent: {} {} {}", max_corner[0] - min_corner[0], max_corner[1] - min_corner[1], max_corner[2] - min_corner[2]);
+			}
+			
 
 			Eigen::MatrixXd p0, p1, p;
-			get_edges(p0, p1);
+			get_edges(p0, p1, dim);
 			p = p0 - p1;
 			logger().debug("-- edge length after normalization:");
 			logger().debug("   min: {}", p.rowwise().norm().minCoeff());
@@ -456,6 +483,8 @@ namespace polyfem
 		{
 			mesh_.vertices.point(global_index).x = p(0);
 			mesh_.vertices.point(global_index).y = p(1);
+			if (p.size() == 3)
+				mesh_.vertices.point(global_index).z = p(2);
 		}
 
 		RowVectorNd CMesh2D::point(const int global_index) const
@@ -464,6 +493,12 @@ namespace polyfem
 			RowVectorNd p(2);
 			p(0) = ptr[0];
 			p(1) = ptr[1];
+			if (mesh_.vertices.dimension() == 3)
+			{
+				p.resize(3);
+				p(2) = ptr[2];
+			}
+				
 			return p;
 		}
 
@@ -499,6 +534,8 @@ namespace polyfem
 				const int n_vertices = mesh_.facets.nb_vertices(f);
 
 				Eigen::MatrixXd face_pts(n_vertices, 2);
+				if (mesh_.vertices.dimension() == 3)
+					face_pts.resize(n_vertices, 3);
 				// Eigen::MatrixXi edges(n_vertices,2);
 				local_tris[f].resize(n_vertices - 2, 3);
 
@@ -508,6 +545,8 @@ namespace polyfem
 					const double *pt = mesh_.vertices.point_ptr(vertex);
 					face_pts(i, 0) = pt[0];
 					face_pts(i, 1) = pt[1];
+					if (mesh_.vertices.dimension() == 3)
+						face_pts(i, 2) = pt[2];
 
 					// edges(i, 0) = i;
 					// edges(i, 1) = (i+1) % n_vertices;

@@ -44,6 +44,7 @@ namespace polyfem
 			RowVectorNd cell_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j, const int k) const;
 
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
+			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, int dim) const override;
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const override;
 
 			// navigation wrapper

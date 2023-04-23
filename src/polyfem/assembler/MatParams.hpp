@@ -101,7 +101,7 @@ namespace polyfem::assembler
 		double operator()(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id) const
 		{
 			assert(param.size() == 2 || param.size() == 3);
-			assert(param.size() == p.size());
+			// assert(param.size() == p.size());
 			return (*this)(param(0), param(1), param.size() == 3 ? param(2) : 0.0,
 						   p(0), p(1), p.size() == 3 ? p(2) : 0.0,
 						   el_id);
