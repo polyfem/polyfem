@@ -283,6 +283,8 @@ namespace polyfem::mesh
 			assert(mesh->in_ordered_edges_.size() > 0);
 
 			mesh->in_ordered_faces_.resize(0, 0);
+
+			mesh->is_planar_ = true;
 		}
 		else
 		{
