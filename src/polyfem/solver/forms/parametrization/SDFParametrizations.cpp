@@ -65,14 +65,19 @@ namespace polyfem::solver
 
     bool SDF2Mesh::isosurface_inflator(const Eigen::VectorXd &x) const
     {
-        if (last_x.size() == x.size() && last_x == x)
+        auto y = x;
+        if (inactive_shape_params.size() > 0)
+            for (const auto& tuple : inactive_shape_params)
+                y(std::get<0>(tuple)) = std::get<1>(tuple);
+        
+        if (last_x.size() == y.size() && last_x == y)
             return true;
 
         {
-            std::vector<double> x_vec(x.data(), x.data() + x.size());
+            std::vector<double> x_vec(y.data(), y.data() + y.size());
             {
                 POLYFEM_SCOPED_TIMER("mesh inflation");
-                logger().info("isosurface inflator input: {}", x.transpose());
+                logger().info("isosurface inflator input: {}", y.transpose());
                 Eigen::MatrixXd vertex_normals, shape_vel;
                 utils::inflate(binary_path_, wire_path_, opts_, x_vec, Vout, Fout, vertex_normals, shape_vel);
                 Vout /= 2.0;
@@ -87,6 +92,13 @@ namespace polyfem::solver
                 for (int d = 0; d < dim_; d++)
                     for (int i = 0; i < vertex_normals.rows(); i++)
                         shape_velocity.col(dim_ * i + d) = shape_vel.col(i) * vertex_normals(i, d) / 2.0;
+                
+                if (inactive_shape_params.size() == 0)
+                {
+                    for (int q = 0; q < x.size(); q++)
+                        if (shape_velocity.row(q).norm() < 1e-8)
+                            inactive_shape_params.push_back(std::make_tuple(q, y(q)));
+                }
             }
             
             write_msh(out_path_, Vout, Fout);
@@ -393,7 +405,7 @@ namespace polyfem::solver
         }
 
         // clean duplicated vertices
-        const double eps = 1e-6;
+        const double eps = 1e-4;
         Eigen::VectorXi indices;
         {
             std::vector<int> tmp;
@@ -513,7 +525,7 @@ namespace polyfem::solver
         dependent_map.resize(n_verts);
         dependent_map.setConstant(-1);
 
-        const double eps = 1e-6 * scale_.maxCoeff();
+        const double eps = 1e-4 * scale_.maxCoeff();
         Eigen::VectorXi boundary_indices;
         {
             Eigen::VectorXi boundary_mask1 = ((V.rowwise() - min.transpose()).rowwise().minCoeff().array() < eps).select(Eigen::VectorXi::Ones(V.rows()), Eigen::VectorXi::Zero(V.rows()));
@@ -550,7 +562,7 @@ namespace polyfem::solver
                     {
                         dependent_map(boundary_indices[j]) = boundary_indices[i];
                         std::array<int, 2> pair = {{boundary_indices[i], boundary_indices[j]}};
-                        periodic_dependence[d].push_back(pair);
+                        periodic_dependence[d].insert(pair);
                         found_target = true;
                         break;
                     }
@@ -620,6 +632,12 @@ namespace polyfem::solver
 
         for (int i = 0; i < dependent_map.size(); i++)
             x.segment(dependent_map(i) * dim_, dim_) = z.segment(i * dim_, dim_).array() / scale.array();
+
+        if ((y - eval(x)).norm() > 1e-5)
+        {
+            std::cout << (y - eval(x)).transpose() << "\n";
+            log_and_throw_error("Bug in periodic mesh!");
+        }
 
         return x;
     }

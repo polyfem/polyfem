@@ -556,7 +556,7 @@ namespace polyfem
 	void State::build_periodic_index_mapping(const int n_bases_, const std::vector<basis::ElementBases> &bases_, const std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes_, Eigen::VectorXi &index_map, Eigen::VectorXi &periodic_mask) const
 	{
 		const int dim = mesh->dimension();
-		const double eps = 1e-6;
+		const double eps = 1e-4;
 
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
@@ -1410,7 +1410,7 @@ namespace polyfem
         std::vector<int> SVJ;
         SVI.setConstant(Vtmp.rows(), -1);
         int id = 0;
-		const double eps = 1e-6;
+		const double eps = 1e-4;
         for (int i = 0; i < Vtmp.rows(); i++)
         {
             if (SVI[i] < 0)

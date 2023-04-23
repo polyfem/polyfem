@@ -2,6 +2,7 @@
 
 #include "Parametrization.hpp"
 #include <polyfem/Common.hpp>
+#include <set>
 
 namespace polyfem::solver
 {
@@ -22,6 +23,8 @@ namespace polyfem::solver
         void extend_to_internal() const;
 
         const bool volume_velocity_;
+
+        mutable std::vector<std::tuple<int, double>> inactive_shape_params;
 
         const int dim_;
         const std::string binary_path_, wire_path_, out_path_;
@@ -92,6 +95,6 @@ namespace polyfem::solver
         int dim_;
         int n_periodic_dof_;
         Eigen::VectorXi dependent_map;
-        std::array<std::vector<std::array<int, 2>>, 3> periodic_dependence; // <id1, id2> for 2/3 axis
+        std::array<std::set<std::array<int, 2>>, 3> periodic_dependence; // <id1, id2> for 2/3 axis
     };
 }

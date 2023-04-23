@@ -12,10 +12,7 @@
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/MacroStrainALForm.hpp>
 #include <polyfem/solver/forms/MacroStrainLagrangianForm.hpp>
-#include <polyfem/solver/forms/ElasticForm.hpp>
-#include <polyfem/solver/forms/FrictionForm.hpp>
 
-#include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
 #include <unsupported/Eigen/SparseExtra>
 

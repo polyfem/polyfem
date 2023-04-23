@@ -21,7 +21,7 @@ namespace polyfem::utils
         }
     }
 
-    void inflate(const std::string binary_path, const std::string wire_path, const json &options, std::vector<double> &params, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXd &vertex_normals, Eigen::MatrixXd &shape_vel)
+    bool inflate(const std::string binary_path, const std::string wire_path, const json &options, std::vector<double> &params, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXd &vertex_normals, Eigen::MatrixXd &shape_vel)
     {
         const int dim = 2;
 
@@ -50,16 +50,23 @@ namespace polyfem::utils
         }
 
         int return_val;
+        bool failed = false;
         try 
         {
             return_val = system(command.c_str());
         }
-        catch (const std::exception &err)
+        catch (const std::runtime_error &err)
         {
-            log_and_throw_error("remesh command \"{}\" returns {}", command, return_val);
+            failed = true;
         }
 
-        logger().info("remesh command \"{}\" returns {}", command, return_val);
+        if (failed)
+        {
+            logger().error("remesh command \"{}\" returns {}", command, return_val);
+            return false;
+        }
+        else
+            logger().info("remesh command \"{}\" returns {}", command, return_val);
 
         {
             std::vector<std::vector<int>> elements;
@@ -77,6 +84,8 @@ namespace polyfem::utils
             for (int i = 1; i < node_data_name.size(); i++)
                 shape_vel.row(i - 1) = Eigen::Map<RowVectorNd>(node_data[i].data(), V.rows());
         }
+
+        return true;
 
         // const auto &vertices = inflator.vertices();
         // V.setZero(vertices.size(), dim);
