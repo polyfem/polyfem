@@ -391,17 +391,26 @@ namespace polyfem
 			int dim = mesh_.vertices.dimension();
 
 			GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
-			min.resize(dim);
-			max.resize(dim);
+			if (dim == 2 || is_planar_)
+			{
+				min.resize(2);
+				max.resize(2);
+			}
+			else
+			{
+				min.resize(3);
+				max.resize(3);
+			}
+			
 
 			min(0) = min_corner.x;
 			min(1) = min_corner.y;
-			if (dim == 3)
+			if (dim == 3 && !is_planar_)
 				min(2) = min_corner.z;
 
 			max(0) = max_corner.x;
 			max(1) = max_corner.y;
-			if (dim == 3)
+			if (dim == 3 && !is_planar_)
 				max(2) = max_corner.z;
 		}
 
@@ -421,9 +430,9 @@ namespace polyfem
 				mesh_.vertices.point(v) = (mesh_.vertices.point(v) - origin) / scaling;
 			}
 			RowVectorNd shift(dim);
-			if (dim == 2)
+			if (dim == 2 || is_planar_)
 				shift << origin[0], origin[1];
-			else if (dim == 3)
+			else
 				shift << origin[0], origin[1], origin[2];
 			for (auto &n : edge_nodes_)
 			{
@@ -436,7 +445,7 @@ namespace polyfem
 					n.nodes = (n.nodes.rowwise() - shift) / scaling;
 			}
 
-			if (dim == 2)
+			if (dim == 2 || is_planar_)
 			{
 				logger().debug("-- bbox before normalization:");
 				logger().debug("   min   : {} {}", min_corner[0], min_corner[1]);
@@ -448,7 +457,7 @@ namespace polyfem
 				logger().debug("   max   : {} {}", max_corner[0], max_corner[1]);
 				logger().debug("   extent: {} {}", max_corner[0] - min_corner[0], max_corner[1] - min_corner[1]);
 			}
-			else if (dim == 3)
+			else
 			{
 				logger().debug("-- bbox before normalization:");
 				logger().debug("   min   : {} {} {}", min_corner[0], min_corner[1], min_corner[2]);
@@ -463,7 +472,10 @@ namespace polyfem
 			
 
 			Eigen::MatrixXd p0, p1, p;
-			get_edges(p0, p1, dim);
+			if (dim == 2 || is_planar_)
+				get_edges(p0, p1, 2);
+			else
+				get_edges(p0, p1, 3);
 			p = p0 - p1;
 			logger().debug("-- edge length after normalization:");
 			logger().debug("   min: {}", p.rowwise().norm().minCoeff());
@@ -481,19 +493,23 @@ namespace polyfem
 
 		void CMesh2D::set_point(const int global_index, const RowVectorNd &p)
 		{
+			int dim = mesh_.vertices.dimension();
+			
 			mesh_.vertices.point(global_index).x = p(0);
 			mesh_.vertices.point(global_index).y = p(1);
-			if (p.size() == 3)
+			if (dim == 3 && !is_planar_)
 				mesh_.vertices.point(global_index).z = p(2);
 		}
 
 		RowVectorNd CMesh2D::point(const int global_index) const
 		{
+			int dim = mesh_.vertices.dimension();
+			
 			const double *ptr = mesh_.vertices.point_ptr(global_index);
 			RowVectorNd p(2);
 			p(0) = ptr[0];
 			p(1) = ptr[1];
-			if (mesh_.vertices.dimension() == 3)
+			if (dim == 3 && !is_planar_)
 			{
 				p.resize(3);
 				p(2) = ptr[2];
@@ -519,6 +535,8 @@ namespace polyfem
 
 		void CMesh2D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
 		{
+			int dim = mesh_.vertices.dimension();
+			
 			ranges.clear();
 
 			std::vector<Eigen::MatrixXi> local_tris(mesh_.facets.nb());
@@ -534,7 +552,7 @@ namespace polyfem
 				const int n_vertices = mesh_.facets.nb_vertices(f);
 
 				Eigen::MatrixXd face_pts(n_vertices, 2);
-				if (mesh_.vertices.dimension() == 3)
+				if (dim == 3 && !is_planar_)
 					face_pts.resize(n_vertices, 3);
 				// Eigen::MatrixXi edges(n_vertices,2);
 				local_tris[f].resize(n_vertices - 2, 3);
@@ -545,7 +563,7 @@ namespace polyfem
 					const double *pt = mesh_.vertices.point_ptr(vertex);
 					face_pts(i, 0) = pt[0];
 					face_pts(i, 1) = pt[1];
-					if (mesh_.vertices.dimension() == 3)
+					if (dim == 3 && !is_planar_)
 						face_pts(i, 2) = pt[2];
 
 					// edges(i, 0) = i;
