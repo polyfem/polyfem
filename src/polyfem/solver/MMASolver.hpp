@@ -17,6 +17,7 @@ namespace cppoptlib
 		MMASolver(const polyfem::json &solver_params, const double dt)
 			: Superclass(solver_params, dt)
 		{
+			this->m_line_search = NULL;
 		}
 
 		void set_constraints(const std::vector<std::shared_ptr<polyfem::solver::AdjointForm>> &constraints) { constraints_ = constraints; }

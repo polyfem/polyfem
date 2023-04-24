@@ -144,7 +144,8 @@ namespace cppoptlib
 		utils::Timer timer("non-linear solver", this->total_time);
 		timer.start();
 
-		m_line_search->use_grad_norm_tol = use_grad_norm_tol;
+		if (m_line_search)
+			m_line_search->use_grad_norm_tol = use_grad_norm_tol;
 
 		std::ofstream outfile;
 		if (export_energy_path != "")
@@ -291,7 +292,7 @@ namespace cppoptlib
 			// ---------------
 
 			// Perform a line_search to compute step scale
-			double rate = (name() == "MMA") ? 1.0 : line_search(x, delta_x, objFunc);
+			double rate = line_search(x, delta_x, objFunc);
 			if (std::isnan(rate))
 			{
 				// descent_strategy set by line_search upon failure
@@ -384,7 +385,7 @@ namespace cppoptlib
 
 		if (!m_line_search)
 			return 1; // no linesearch
-
+		// const double old_energy = objFunc.value(x);
 		double rate = m_line_search->line_search(x, delta_x, objFunc);
 
 		if (std::isnan(rate) && descent_strategy < 2) // 2 is the max, grad descent
@@ -402,6 +403,20 @@ namespace cppoptlib
 			this->m_status = Status::UserDefined; // Line search failed on gradient descent, so quit!
 			throw std::runtime_error("Line search failed on gradient descent");
 		}
+		// else // increase descent strategy if energy decrease is smaller than fDelta, not working
+		// {
+		// 	const double fdelta = std::abs(objFunc.value(x + rate * delta_x) - old_energy);
+		// 	if (fdelta < this->m_stop.fDelta)
+		// 	{
+		// 		objFunc.solution_changed(x);
+		// 		increase_descent_strategy();
+		// 		if (!disable_log)
+		// 			polyfem::logger().warn(
+		// 				"[{}] Line search energy decrease {} is smaller than fdelta {}; reverting to {}", name(), fdelta, this->m_stop.fDelta, descent_strategy_name());
+		// 		this->m_status = Status::Continue; // Try the step again with gradient descent
+		// 		rate = std::nan("");
+		// 	}
+		// }
 
 		return rate;
 	}
