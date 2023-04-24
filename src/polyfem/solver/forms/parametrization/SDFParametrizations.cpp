@@ -77,7 +77,7 @@ namespace polyfem::solver
             std::vector<double> x_vec(y.data(), y.data() + y.size());
             {
                 POLYFEM_SCOPED_TIMER("mesh inflation");
-                logger().info("isosurface inflator input: {}", y.transpose());
+                // logger().info("isosurface inflator input: {}", y.transpose());
                 Eigen::MatrixXd vertex_normals, shape_vel;
                 utils::inflate(binary_path_, wire_path_, opts_, x_vec, Vout, Fout, vertex_normals, shape_vel);
                 Vout /= 2.0;

@@ -122,6 +122,25 @@ namespace polyfem
 		// 		mesh->set_tag(el_id, ElementType::INTERIOR_POLYTOPE);
 		// }
 
+		// periodic BC and periodic mesh
+		periodic_dimensions = args["boundary_conditions"]["periodic_boundary"].get<std::vector<bool>>();
+		if (periodic_dimensions.size() != mesh->dimension())
+			periodic_dimensions.resize(mesh->dimension(), false);
+		
+		if (args["space"]["advanced"]["periodic_mesh"].get<bool>())
+		{
+			if (!all_direction_periodic())
+				log_and_throw_error("Periodic mesh representation is only used for PDE with periodic BC in all axial directions!");
+			
+			Eigen::MatrixXd V(mesh->n_vertices(), mesh->dimension());
+			for (int i = 0; i < mesh->n_vertices(); i++)
+				V.row(i) = mesh->point(i);
+			periodic_mesh_map = std::make_shared<solver::PeriodicMeshToMesh>(V);
+			periodic_mesh_representation = periodic_mesh_map->inverse_eval(utils::flatten(V));
+			
+			logger().info("Periodic Mesh vertices: {}", periodic_mesh_map->n_periodic_dof());
+		}
+
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
@@ -151,25 +170,6 @@ namespace polyfem
 			args["root_path"], mesh->dimension(), names, vertices, cells);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
-
-		// periodic BC and periodic mesh
-		periodic_dimensions = args["boundary_conditions"]["periodic_boundary"].get<std::vector<bool>>();
-		if (periodic_dimensions.size() != mesh->dimension())
-			periodic_dimensions.resize(mesh->dimension(), false);
-		
-		if (args["space"]["advanced"]["periodic_mesh"].get<bool>())
-		{
-			if (!all_direction_periodic())
-				log_and_throw_error("Periodic mesh representation is only used for PDE with periodic BC in all axial directions!");
-			
-			Eigen::MatrixXd V(mesh->n_vertices(), mesh->dimension());
-			for (int i = 0; i < mesh->n_vertices(); i++)
-				V.row(i) = mesh->point(i);
-			periodic_mesh_map = std::make_shared<solver::PeriodicMeshToMesh>(V);
-			periodic_mesh_representation = periodic_mesh_map->inverse_eval(utils::flatten(V));
-			
-			logger().info("Periodic Mesh vertices: {}", periodic_mesh_map->n_periodic_dof());
-		}
 
 		// build disp_grad
 		if (args["boundary_conditions"]["linear_displacement_offset"].size() > 0)
