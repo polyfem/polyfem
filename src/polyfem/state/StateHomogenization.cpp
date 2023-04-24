@@ -173,10 +173,13 @@ void State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, Eigen::MatrixXd 
         const double eta_tol = args["solver"]["augmented_lagrangian"]["eta"];
         const double scaling = args["solver"]["augmented_lagrangian"]["scaling"];
         const int max_al_steps = args["solver"]["augmented_lagrangian"]["max_solver_iters"];
+        const double error_tol = args["solver"]["augmented_lagrangian"]["error"];
         double al_weight = initial_weight;
 
         Eigen::VectorXd tmp_sol = homo_problem->extended_to_reduced(extended_sol);
+        const Eigen::VectorXd initial_sol = tmp_sol;
         const double initial_error = (extended_sol(al_indices).array() - al_values.array()).matrix().squaredNorm();
+        double current_error = initial_error;
         
         // try to enforce fixed values on macro strain
         extended_sol(al_indices) = al_values;
@@ -187,13 +190,14 @@ void State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, Eigen::MatrixXd 
 		while (force_al
 			   || !std::isfinite(homo_problem->value(reduced_sol))
 			   || !homo_problem->is_step_valid(tmp_sol, reduced_sol)
-			   || !homo_problem->is_step_collision_free(tmp_sol, reduced_sol))
+			   || !homo_problem->is_step_collision_free(tmp_sol, reduced_sol)
+               || current_error > error_tol)
         {
             force_al = false;
             homo_problem->line_search_end();
 
             al_form->set_weight(al_weight);
-            logger().debug("Solving AL Problem with weight {}", al_weight);
+            logger().info("Solving AL Problem with weight {}", al_weight);
 
             homo_problem->init(tmp_sol);
 			try
@@ -209,15 +213,37 @@ void State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, Eigen::MatrixXd 
             extended_sol = homo_problem->reduced_to_extended(tmp_sol);
             logger().debug("Current macro strain: {}", extended_sol.tail(dim * dim));
 
-            const double current_error = (extended_sol(al_indices).array() - al_values.array()).matrix().squaredNorm();
+            current_error = (extended_sol(al_indices).array() - al_values.array()).matrix().squaredNorm();
             const double eta = 1 - sqrt(current_error / initial_error);
 
-            logger().debug("Current eta = {}, current error = {}, initial error = {}", eta, current_error, initial_error);
+            logger().info("Current eta = {}, current error = {}, initial error = {}", eta, current_error, initial_error);
 
 			if (eta < eta_tol && al_weight < max_weight)
             	al_weight *= scaling;
             else
                 lagr_form->update_lagrangian(extended_sol, al_weight);
+            
+            if (eta <= 0)
+            {
+                args["solver"]["augmented_lagrangian"]["initial_weight"] = args["solver"]["augmented_lagrangian"]["initial_weight"].get<double>() * scaling;
+                {
+                    json tmp = json::object();
+                    tmp["/solver/augmented_lagrangian/initial_weight"_json_pointer] = args["solver"]["augmented_lagrangian"]["initial_weight"];
+                    in_args.merge_patch(tmp);
+                }
+                logger().warn("AL weight too small, increase weight and revert solution, new initial weight is {}", args["solver"]["augmented_lagrangian"]["initial_weight"]);
+                tmp_sol = initial_sol;
+            }
+            else if (current_error <= error_tol && al_steps == 0)
+            {
+                args["solver"]["augmented_lagrangian"]["initial_weight"] = args["solver"]["augmented_lagrangian"]["initial_weight"].get<double>() / scaling;
+                {
+                    json tmp = json::object();
+                    tmp["/solver/augmented_lagrangian/initial_weight"_json_pointer] = args["solver"]["augmented_lagrangian"]["initial_weight"];
+                    in_args.merge_patch(tmp);
+                }
+                logger().warn("AL weight too large, decrease initial weight to {}", args["solver"]["augmented_lagrangian"]["initial_weight"]);
+            }
 
             // try to enforce fixed values on macro strain
             extended_sol(al_indices) = al_values;
