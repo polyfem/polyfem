@@ -1,5 +1,9 @@
 var NAVTREEINDEX30 =
 {
+"namespacepolyfem_1_1utils_1_1_string_utils.html#a5ea2c1e360cb00a431694ced69344bea":[3,0,6,11,0,5],
+"namespacepolyfem_1_1utils_1_1_string_utils.html#a8df4a1f29bc95ee539adb419f19b83b7":[3,0,6,11,0,4],
+"namespacepolyfem_1_1utils_1_1_string_utils.html#a9425d6e696ee910680614d0439ba3fbe":[3,0,6,11,0,3],
+"namespacepolyfem_1_1utils_1_1_string_utils.html#ac716d9eff97c92c06c752fe151a714ae":[3,0,6,11,0,0],
 "namespacepolyfem_1_1utils_1_1_string_utils.html#af73165b653d0e64acc1e8b888fe93bca":[3,0,6,11,0,1],
 "namespacepretty__print.html":[3,0,7],
 "namespacepretty__print.html#a4c61a4500105714e7fea1f44029c7c64":[3,0,7,0],
@@ -245,9 +249,5 @@ var NAVTREEINDEX30 =
 "struct_d_scalar2.html#a3da7806e9de311a72709d4133e99dc25":[4,0,7,19],
 "struct_d_scalar2.html#a452415bbc44e4897fe03c061fa65e294":[4,0,7,35],
 "struct_d_scalar2.html#a47acca75053e634bff1ac5cb0088f58f":[4,0,7,18],
-"struct_d_scalar2.html#a4b0829d98285873b8bbc82276b934ac7":[4,0,7,38],
-"struct_d_scalar2.html#a51b7cd14e6f457142494c459bbcc7750":[4,0,7,24],
-"struct_d_scalar2.html#a561cdd3ae42960efc690d29f5fe633c9":[4,0,7,25],
-"struct_d_scalar2.html#a5a8f755ccfacec2566abf82507354d66":[4,0,7,15],
-"struct_d_scalar2.html#a60f1e4e2c029f87b8e10b83ec4867d4d":[4,0,7,33]
+"struct_d_scalar2.html#a4b0829d98285873b8bbc82276b934ac7":[4,0,7,38]
 };

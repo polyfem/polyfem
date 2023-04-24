@@ -97,16 +97,16 @@ var NAVTREEINDEX =
 "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html#aafcf24af79dac1d13f70fec76840394c",
 "classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#a2cd3cb6342ec0221176e4d181848f2f6",
 "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#aca263dd081a840295803435ca34578fa",
-"classpolyfem_1_1solver_1_1_form.html#aa88b23bfc5c51229123b96514d822fa7",
-"classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a0cee442797e4f03158350d9c74aceec9",
-"classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a0e63e913fd1df2799151f88d8233096d",
-"classpolyfem_1_1utils_1_1_expression_value.html#aa171f85236bf14a7f5c8bbfc1b8720e5",
-"classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a3e00c4542ce53427af4facd4f7ee53a8",
-"functions_p.html",
-"namespacepolyfem_1_1autogen.html#a4ed466f5717b1e96c5fd9f788f84249d",
-"namespacepolyfem_1_1utils_1_1_string_utils.html#af73165b653d0e64acc1e8b888fe93bca",
-"struct_d_scalar2.html#a613d16702f3528bb0bb4c71d7381ec36",
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#ab314a2e640520eddf2323a6ad83d27a3"
+"classpolyfem_1_1solver_1_1_form.html#a9cffeca817d2f65884dbdb0b05dbf8ae",
+"classpolyfem_1_1solver_1_1_operator_splitting_solver.html",
+"classpolyfem_1_1solver_1_1line__search_1_1_line_search.html",
+"classpolyfem_1_1utils_1_1_expression_value.html#a9b2e465dec2a0e7f224edd18283ba699",
+"classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a2db0237cd2bc0310712e00e2adfd39ed",
+"functions_l.html",
+"namespacepolyfem_1_1autogen.html#a267b3426fd266f23e433bd1b63eff38c",
+"namespacepolyfem_1_1utils_1_1_string_utils.html#a5ea2c1e360cb00a431694ced69344bea",
+"struct_d_scalar2.html#a51b7cd14e6f457142494c459bbcc7750",
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#aa6f04e4ad7a19d7439aabf66e6430319"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

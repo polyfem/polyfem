@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['e_0',['E',['../classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#aea8b1559cb29ca65fd14d461930d5e54',1,'polyfem::problem::ElasticCantileverExact']]],
-  ['e_1',['e',['../classpolyfem_1_1mesh_1_1_obstacle.html#a4f9dafcf9dffc6df2ea9c9994aa9abc4',1,'polyfem::mesh::Obstacle']]],
+  ['e_0',['e',['../classpolyfem_1_1mesh_1_1_obstacle.html#a4f9dafcf9dffc6df2ea9c9994aa9abc4',1,'polyfem::mesh::Obstacle']]],
+  ['e_1',['E',['../classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#aea8b1559cb29ca65fd14d461930d5e54',1,'polyfem::problem::ElasticCantileverExact']]],
   ['e_5f_2',['e_',['../classpolyfem_1_1mesh_1_1_obstacle.html#a2517abcf6fae9e92a6ddbdf7884923bd',1,'polyfem::mesh::Obstacle']]],
   ['edge_3',['edge',['../structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a3a4aa8f82431a4bd8fc60649450eb731',1,'polyfem::mesh::Navigation::Index::edge()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_vert.html#a4310447300f89d617acdef09605205aa',1,'polyfem::mesh::NCMesh2D::ncVert::edge()'],['../structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html#a5f555e4f35f8cb81139fc4cac52b7b46',1,'polyfem::mesh::Navigation3D::Index::edge()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html#a52e08aee316746e5a0a8d0a1f1f256b0',1,'polyfem::mesh::NCMesh3D::ncVert::edge()']]],
   ['edge_4',['Edge',['../structpolyfem_1_1mesh_1_1_edge.html',1,'polyfem::mesh']]],
@@ -118,8 +118,8 @@ var searchData=
   ['expressionvalue_115',['ExpressionValue',['../classpolyfem_1_1utils_1_1_expression_value.html#a76dc675f0165ead06fae6a1b4cd3510f',1,'polyfem::utils::ExpressionValue::ExpressionValue()'],['../classpolyfem_1_1utils_1_1_expression_value.html',1,'polyfem::utils::ExpressionValue']]],
   ['expressionvalue_2ecpp_116',['ExpressionValue.cpp',['../_expression_value_8cpp.html',1,'']]],
   ['expressionvalue_2ehpp_117',['ExpressionValue.hpp',['../_expression_value_8hpp.html',1,'']]],
-  ['extend_118',['extend',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#a594261dc63b365d258c363d365fa1d2d',1,'polyfem::utils::PiecewiseInterpolation']]],
-  ['extend_119',['Extend',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6d',1,'polyfem::utils::PiecewiseInterpolation']]],
+  ['extend_118',['Extend',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6d',1,'polyfem::utils::PiecewiseInterpolation']]],
+  ['extend_119',['extend',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#a594261dc63b365d258c363d365fa1d2d',1,'polyfem::utils::PiecewiseInterpolation']]],
   ['extend_5f_120',['extend_',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#aecb68e2239c1ee24a5221fa931f6247b',1,'polyfem::utils::PiecewiseInterpolation']]],
   ['external_5fforce_121',['external_force',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a4daebcfc8dc5dfd88491687bdf20a7d9',1,'polyfem::solver::OperatorSplittingSolver']]],
   ['extract_5fboundary_5fmesh_122',['extract_boundary_mesh',['../classpolyfem_1_1io_1_1_out_geometry_data.html#a7b3e2f650cb68b596b8b67ef6702f3b1',1,'polyfem::io::OutGeometryData']]],

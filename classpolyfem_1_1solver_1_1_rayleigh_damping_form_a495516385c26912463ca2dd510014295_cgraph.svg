@@ -58,9 +58,9 @@ var sectionId = 'dynsection-10';
 <g id="node1" class="node">
 <title>Node1</title>
 <g id="a_node1"><a xlink:title="Update lagged fields.">
-<polygon fill="#999999" stroke="#666666" points="167,-54 0,-54 0,-24 167,-24 167,-54"/>
-<text text-anchor="start" x="8" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
-<text text-anchor="middle" x="83.5" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::update_lagging</text>
+<polygon fill="#999999" stroke="#666666" points="167,-51 0,-51 0,-21 167,-21 167,-51"/>
+<text text-anchor="start" x="8" y="-39" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
+<text text-anchor="middle" x="83.5" y="-28" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::update_lagging</text>
 </a>
 </g>
 </g>
@@ -68,33 +68,33 @@ var sectionId = 'dynsection-10';
 <g id="node2" class="node">
 <title>Node2</title>
 <g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6" target="_top" xlink:title="Compute the second derivative of the value wrt x multiplied with the weigth.">
-<polygon fill="white" stroke="#666666" points="327,-78 203,-78 203,-48 327,-48 327,-78"/>
-<text text-anchor="start" x="211" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Form</text>
-<text text-anchor="middle" x="265" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::second_derivative</text>
+<polygon fill="white" stroke="#666666" points="327,-73 203,-73 203,-43 327,-43 327,-73"/>
+<text text-anchor="start" x="211" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Form</text>
+<text text-anchor="middle" x="265" y="-50" font-family="Helvetica,sans-Serif" font-size="10.00">::second_derivative</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
 <g id="edge1" class="edge">
 <title>Node1&#45;&gt;Node2</title>
-<path fill="none" stroke="#63b8ff" d="M167.16,-50.05C175.73,-51.2 184.38,-52.35 192.81,-53.48"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="192.58,-56.98 202.96,-54.84 193.51,-50.04 192.58,-56.98"/>
+<path fill="none" stroke="#63b8ff" d="M167.16,-46.13C175.73,-47.18 184.38,-48.24 192.81,-49.27"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="192.6,-52.78 202.96,-50.52 193.46,-45.83 192.6,-52.78"/>
 </g>
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#a85aceba87c663b1ba6f62f86609e2acd" target="_top" xlink:title="Get the form&#39;s multiplicative constant weight.">
-<polygon fill="white" stroke="#666666" points="327,-30 203,-30 203,0 327,0 327,-30"/>
-<text text-anchor="start" x="211" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Form</text>
-<text text-anchor="middle" x="265" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::weight</text>
+<g id="a_node4"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#a9cffeca817d2f65884dbdb0b05dbf8ae" target="_top" xlink:title="Get the form&#39;s multiplicative constant weight.">
+<polygon fill="white" stroke="#666666" points="512,-30 388,-30 388,0 512,0 512,-30"/>
+<text text-anchor="start" x="396" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Form</text>
+<text text-anchor="middle" x="450" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::weight</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge4" class="edge">
 <title>Node1&#45;&gt;Node4</title>
-<path fill="none" stroke="#63b8ff" d="M167.16,-27.95C175.73,-26.8 184.38,-25.65 192.81,-24.52"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="193.51,-27.96 202.96,-23.16 192.58,-21.02 193.51,-27.96"/>
+<path fill="none" stroke="#63b8ff" d="M167.21,-31.23C230.65,-27.58 317.3,-22.59 377.7,-19.11"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="378.13,-22.59 387.91,-18.52 377.73,-15.6 378.13,-22.59"/>
 </g>
 <!-- Node3 -->
 <g id="node3" class="node">
@@ -109,8 +109,14 @@ var sectionId = 'dynsection-10';
 <!-- Node2&#45;&gt;Node3 -->
 <g id="edge2" class="edge">
 <title>Node2&#45;&gt;Node3</title>
-<path fill="none" stroke="#63b8ff" d="M327.19,-63C335.41,-63 343.99,-63 352.63,-63"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="352.78,-66.5 362.78,-63 352.78,-59.5 352.78,-66.5"/>
+<path fill="none" stroke="#63b8ff" d="M327.19,-59.67C335.41,-59.9 343.99,-60.13 352.63,-60.37"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="352.69,-63.87 362.78,-60.64 352.88,-56.87 352.69,-63.87"/>
+</g>
+<!-- Node2&#45;&gt;Node4 -->
+<g id="edge3" class="edge">
+<title>Node2&#45;&gt;Node4</title>
+<path fill="none" stroke="#63b8ff" d="M327.19,-43.62C343.52,-39.78 361.3,-35.61 378.1,-31.66"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="378.93,-35.06 387.87,-29.36 377.33,-28.24 378.93,-35.06"/>
 </g>
 </g>
 </svg>
