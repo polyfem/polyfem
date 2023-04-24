@@ -42,6 +42,11 @@ namespace polyfem::solver
 		gradv = -current_rhs_;
 	}
 
+	void BodyForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
+	{
+		hessian.resize(x.size(), x.size());
+	}
+
 	void BodyForm::update_quantities(const double t, const Eigen::VectorXd &x)
 	{
 		this->t_ = t;
