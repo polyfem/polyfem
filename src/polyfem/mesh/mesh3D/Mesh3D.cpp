@@ -45,21 +45,6 @@ namespace polyfem
 			}
 		}
 
-		void Mesh3D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, int dim) const
-		{
-			p0.resize(n_edges(), dim);
-			p1.resize(p0.rows(), p0.cols());
-
-			for (std::size_t e = 0; e < n_edges(); ++e)
-			{
-				const int v0 = edge_vertex(e, 0);
-				const int v1 = edge_vertex(e, 1);
-
-				p0.row(e) = point(v0);
-				p1.row(e) = point(v1);
-			}
-		}
-
 		void Mesh3D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const
 		{
 			int count = 0;

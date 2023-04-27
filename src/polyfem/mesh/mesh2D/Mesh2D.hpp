@@ -61,7 +61,6 @@ namespace polyfem
 			inline Navigation::Index next_around_vertex(Navigation::Index idx) const { return switch_face(switch_edge(idx)); }
 
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
-			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, int dim) const override;
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const override;
 		};
 	} // namespace mesh

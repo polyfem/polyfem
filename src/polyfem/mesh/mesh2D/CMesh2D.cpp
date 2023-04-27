@@ -472,10 +472,7 @@ namespace polyfem
 			
 
 			Eigen::MatrixXd p0, p1, p;
-			if (dim == 2 || is_planar_)
-				get_edges(p0, p1, 2);
-			else
-				get_edges(p0, p1, 3);
+			get_edges(p0, p1);
 			p = p0 - p1;
 			logger().debug("-- edge length after normalization:");
 			logger().debug("   min: {}", p.rowwise().norm().minCoeff());

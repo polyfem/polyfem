@@ -521,12 +521,6 @@ namespace polyfem
 			/// @param[out] p0 edge first vertex
 			/// @param[out] p1 edge second vertex
 			virtual void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const = 0;
-			/// @brief Get all the edges handling dimension
-			///
-			/// @param[out] p0 edge first vertex
-			/// @param[out] p1 edge second vertex
-			/// @param[out] dim dimension
-			virtual void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, int dim) const = 0;
 			/// @brief Get all the edges according to valid_elements selection
 			///
 			/// @param[out] p0 edge first vertex
