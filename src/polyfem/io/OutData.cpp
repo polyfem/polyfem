@@ -1776,7 +1776,7 @@ namespace polyfem::io
 				collision_mesh, displaced_surface, dhat,
 				/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);
 
-			const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
+			const double barrier_stiffness = contact_form != nullptr ? contact_form->weight() : 1;
 
 			if (opts.contact_forces)
 			{
