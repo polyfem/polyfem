@@ -354,7 +354,7 @@ namespace cppoptlib
 		// Check if the solution is a saddle point
 		// -----------
 
-		if (is_saddle_point(objFunc, x))
+		if (check_saddle_point && is_saddle_point(objFunc, x))
 			log_and_throw_error("[{}] Solution is a saddle point", name());
 
 		// -----------
