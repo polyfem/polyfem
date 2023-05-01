@@ -160,6 +160,7 @@ namespace polyfem
 
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
 			// General
+			units,
 			mesh->dimension(), t,
 			// Elastic form
 			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache,
@@ -262,7 +263,7 @@ namespace polyfem
 		// ---------------------------------------------------------------------
 
 		// TODO: Make this more general
-		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2);
+		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2) * units.characteristic_length();
 
 		// Lagging loop (start at 1 because we already did an iteration above)
 		bool lagging_converged = !nl_problem.uses_lagging();
