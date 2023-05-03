@@ -1648,10 +1648,17 @@ namespace polyfem::io
 				Eigen::Map<Eigen::MatrixXd> tensor(tensor_flat[0].second.data(), actual_dim, actual_dim);
 				vect.row(i) = boundary_vis_normals.row(i) * tensor;
 
-				assembler::ElementAssemblyValues vals;
-				vals.compute(i, actual_dim == 3, bs, gbs);
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-				const double area = (vals.det.array() * quadrature.weights.array()).sum();
+				double area = 0;
+				if (mesh.is_volume())
+				{
+					if (mesh.is_simplex(el_index))
+						area = mesh.tri_area(boundary_vis_primitive_ids(i));
+					else if (mesh.is_cube(el_index))
+						area = mesh.quad_area(boundary_vis_primitive_ids(i));
+				}
+				else
+					area = mesh.edge_length(boundary_vis_primitive_ids(i));
+
 				vect.row(i) *= area;
 			}
 		}
