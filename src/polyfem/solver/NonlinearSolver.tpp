@@ -318,13 +318,12 @@ namespace cppoptlib
 			
 			const double step = (x - old_x).norm();
 
-			// TODO: removed feature
-			//  if (objFunc.stop(x))
-			//  {
-			//  	this->m_status = Status::UserDefined;
-			//  	m_error_code = ErrorCode::SUCCESS;
-			//  	logger().debug("[{}] Objective decided to stop", name());
-			//  }
+			 if (objFunc.stop(x))
+			 {
+			 	this->m_status = Status::UserDefined;
+			 	m_error_code = ErrorCode::SUCCESS;
+			 	logger().debug("[{}] Objective decided to stop", name());
+			 }
 
 			objFunc.post_step(this->m_current.iterations, x);
 
@@ -365,7 +364,7 @@ namespace cppoptlib
 			log_and_throw_error("[{}] Reached iteration limit (limit={})", name(), this->m_stop.iterations);
 		if (this->m_current.iterations == 0)
 			log_and_throw_error("[{}] Unable to take a step", name());
-		if (this->m_status == Status::UserDefined)
+		if (this->m_status == Status::UserDefined && m_error_code != ErrorCode::SUCCESS)
 			log_and_throw_error("[{}] Failed to find minimizer", name());
 
 		if (!disable_log)

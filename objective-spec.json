@@ -6,6 +6,7 @@
             "transient_integral",
             "power",
             "divide",
+            "plus-const",
             "target",
             "sdf-target",
             "mesh-target",
@@ -71,6 +72,21 @@
         "required": [
             "type",
             "objective"
+        ],
+        "optional": [
+            "weight",
+            "print_energy"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "plus-const",
+        "required": [
+            "type",
+            "objective",
+            "value"
         ],
         "optional": [
             "weight",
@@ -179,6 +195,11 @@
             "reference_cached_body_ids",
             "target_state"
         ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/value",
+        "type": "float",
         "doc": "TODO"
     },
     {

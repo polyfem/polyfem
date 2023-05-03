@@ -130,6 +130,11 @@ int main(int argc, char **argv)
 	/* forms */
 	std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(create_form(opt_args["functionals"], variable_to_simulations, states));
 
+	/* stopping conditions */
+	std::vector<std::shared_ptr<AdjointForm>> stopping_conditions;
+	for (const auto &arg : opt_args["stopping_conditions"])
+		stopping_conditions.push_back(create_form(arg, variable_to_simulations, states));
+
 	Eigen::VectorXd x;
 	x.setZero(ndof);
 	int accumulative = 0;
@@ -157,7 +162,7 @@ int main(int argc, char **argv)
 	for (auto &v2s : variable_to_simulations)
 		v2s->update(x);
 
-	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, stopping_conditions, variable_to_simulations, states, opt_args);
 
 	if (only_compute_energy)
 	{

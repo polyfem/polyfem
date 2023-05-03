@@ -9,6 +9,9 @@
 #include <igl/boundary_facets.h>
 #include <igl/writeOBJ.h>
 
+#include <polyfem/solver/forms/PeriodicContactForm.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
+
 namespace polyfem::solver
 {
 	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<CompositeForm> composite_form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
@@ -55,6 +58,11 @@ namespace polyfem::solver
 				}
 			}
 		}
+	}
+
+	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<CompositeForm> composite_form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args) : AdjointNLProblem(composite_form, variables_to_simulation, all_states, args)
+	{
+		stopping_conditions_ = stopping_conditions;
 	}
 
 	void AdjointNLProblem::hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
@@ -202,6 +210,22 @@ namespace polyfem::solver
 				F = igl::boundary_facets<Eigen::MatrixXi, Eigen::MatrixXi>(F);
 
 			io::OBJWriter::write(rest_mesh_path, V, F);
+
+			// if (!state->solve_data.periodic_contact_form)
+			// 	continue;
+			
+			// std::string collision_mesh_path = state->resolve_output_path(fmt::format("collision_state_{:d}_iter_{:d}.obj", id, iter));
+			// logger().debug("Save periodic collision mesh to file {} ...", collision_mesh_path);
+
+			// std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state->solve_data.nl_problem);
+			// Eigen::MatrixXd reduced_sol = homo_problem->full_to_reduced(state->diff_cached.u(0), state->diff_cached.disp_grad());
+			// Eigen::VectorXd extended_sol = homo_problem->reduced_to_extended(reduced_sol);
+			// Eigen::MatrixXd tiled_sol = utils::unflatten(state->solve_data.periodic_contact_form->single_to_tiled(extended_sol), state->mesh->dimension());
+			// const Eigen::MatrixXd displaced = state->periodic_collision_mesh.displace_vertices(tiled_sol);
+
+			// io::OBJWriter::write(
+			//     collision_mesh_path, displaced,
+			//     state->periodic_collision_mesh.edges(), state->periodic_collision_mesh.faces());
 		}
 	}
 
@@ -312,6 +336,20 @@ namespace polyfem::solver
 		// 	}
 		// }
 		return grads;
+	}
+
+	bool AdjointNLProblem::stop(const TVector &x)
+	{
+		if (stopping_conditions_.size() == 0)
+			return false;
+		
+		for (auto &obj : stopping_conditions_)
+		{
+			obj->solution_changed(x);
+			if (obj->value(x) > 0)
+				return false;
+		}
+		return true;
 	}
 
 } // namespace polyfem::solver

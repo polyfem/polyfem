@@ -3,6 +3,7 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/State.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 
 #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 
@@ -176,8 +177,10 @@ namespace polyfem::solver
 					continue;
 				
 				state_.ass_vals_cache.compute(e, state_.mesh->is_volume(), state_.bases[e], state_.geom_bases()[e], vals);
-				// state_.assembler->compute_tensor_value(e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step_), local_vals);
-				log_and_throw_error("Max stress form is deprecated!");
+				// std::vector<assembler::Assembler::NamedMatrix> result;
+				// state_.assembler->compute_tensor_value(e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step_), result);
+				std::dynamic_pointer_cast<assembler::ElasticityAssembler>(state_.assembler)->compute_stress_tensor(e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step_), ElasticityTensorType::PK1, local_vals);
+				
 				Eigen::VectorXd stress_norms = local_vals.rowwise().norm();
 				max_stress(e) = std::max(max_stress(e), stress_norms.maxCoeff());
 			}

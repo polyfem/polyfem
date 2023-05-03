@@ -113,6 +113,10 @@ namespace polyfem::solver
 				std::vector<std::shared_ptr<AdjointForm>> objs({obj1, obj2});
 				obj = std::make_shared<DivideForm>(objs);
 			}
+			else if (type == "plus-const")
+			{
+				obj = std::make_shared<PlusConstCompositeForm>(create_form(args["objective"], var2sim, states), args["value"]);
+			}
 			else if (type == "compliance")
 			{
 				obj = std::make_shared<ComplianceForm>(var2sim, *(states[args["state"]]), args);
@@ -564,6 +568,9 @@ namespace polyfem::solver
 			}
 		}
 		apply_objective_json_spec(args["functionals"], obj_rules);
+
+		if (args.contains("stopping_conditions"))
+			apply_objective_json_spec(args["stopping_conditions"], obj_rules);
 
 		return args;
 	}

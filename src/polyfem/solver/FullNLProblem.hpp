@@ -48,6 +48,8 @@ namespace polyfem::solver
 		virtual void save_to_file(const TVector &x0) {}
 		std::vector<std::shared_ptr<Form>> &forms() { return forms_; }
 
+		virtual bool stop(const TVector &x) { return false; }
+
 	protected:
 		std::vector<std::shared_ptr<Form>> forms_;
 	};

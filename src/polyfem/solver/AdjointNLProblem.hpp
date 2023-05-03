@@ -11,6 +11,7 @@ namespace polyfem
 
 namespace polyfem::solver
 {
+	class AdjointForm;
 	class CompositeForm;
 	class VariableToSimulation;
 
@@ -18,6 +19,7 @@ namespace polyfem::solver
 	{
 	public:
 		AdjointNLProblem(std::shared_ptr<CompositeForm> composite_form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
+		AdjointNLProblem(std::shared_ptr<CompositeForm> composite_form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
 
 		double value(const Eigen::VectorXd &x) override;
 
@@ -38,6 +40,7 @@ namespace polyfem::solver
 		void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		void line_search_end() override;
 		void post_step(const int iter_num, const Eigen::VectorXd &x) override;
+		bool stop(const TVector &x) override;
 
 		// virtual void set_project_to_psd(bool val) override;
 
@@ -63,6 +66,6 @@ namespace polyfem::solver
 		std::vector<int> solve_in_order;
 		const bool better_initial_guess;
 
-		Eigen::MatrixXd bounds_;
+		std::vector<std::shared_ptr<AdjointForm>> stopping_conditions_; // if all the stopping conditions are non-positive, stop the optimization
 	};
 } // namespace polyfem::solver
