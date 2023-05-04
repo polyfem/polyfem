@@ -3,7 +3,7 @@
 namespace polyfem::assembler
 {
 	MooneyRivlinElasticity::MooneyRivlinElasticity()
-		: c1_("c1"), c2_("c2"), k_("k")
+		: c1_("c1"), c2_("c2"), c3_("c3"), k_("k")
 	{
 	}
 
@@ -11,6 +11,7 @@ namespace polyfem::assembler
 	{
 		c1_.add_multimaterial(index, params);
 		c2_.add_multimaterial(index, params);
+		c3_.add_multimaterial(index, params);
 		k_.add_multimaterial(index, params);
 	}
 
@@ -24,6 +25,7 @@ namespace polyfem::assembler
 
 		const double c1 = c1_(p, t, el_id);
 		const double c2 = c2_(p, t, el_id);
+		const double c3 = c3_(p, t, el_id);
 		const double k = k_(p, t, el_id);
 
 		const T J = polyfem::utils::determinant(def_grad);
@@ -34,7 +36,7 @@ namespace polyfem::assembler
 		const auto I1_tilde = first_invariant(C_tilde);
 		const auto I2_tilde = second_invariant(C_tilde);
 
-		const T val = c1 * (I1_tilde - size()) + c2 * (I2_tilde - size()) + k / 2 * (log_J * log_J);
+		const T val = c1 * (I1_tilde - size()) + c2 * (I2_tilde - size()) + c3 * (I1_tilde - size()) * (I2_tilde - size()) + k / 2 * (log_J * log_J);
 
 		return val;
 	}
@@ -44,6 +46,7 @@ namespace polyfem::assembler
 		std::map<std::string, ParamFunc> res;
 		const auto &c1 = this->c1();
 		const auto &c2 = this->c2();
+		const auto &c3 = this->c3();
 		const auto &k = this->k();
 
 		res["c1"] = [&c1](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
@@ -52,6 +55,10 @@ namespace polyfem::assembler
 
 		res["c2"] = [&c2](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
 			return c2(p, t, e);
+		};
+
+		res["c3"] = [&c3](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+			return c3(p, t, e);
 		};
 
 		res["k"] = [&k](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
