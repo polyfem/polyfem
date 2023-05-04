@@ -284,7 +284,7 @@ namespace polyfem::solver
 		point_handles.block(0, 0, num_control_vertices_, 3) = control_points_;
 		point_handles.block(num_control_vertices_, 0, outer_loop.size(), 3) = V_outer_loop;
 
-		igl::writeOBJ("bbw_control_points.obj", point_handles, Eigen::MatrixXi::Zero(0, 3));
+		igl::writeOBJ("bbw_control_points_" + std::to_string(V.rows()) + ".obj", point_handles, Eigen::MatrixXi::Zero(0, 3));
 
 		Eigen::VectorXi b;
 		Eigen::MatrixXd bc;
