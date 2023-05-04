@@ -130,6 +130,8 @@ namespace polyfem::solver
 	{
 		Eigen::VectorXd y = parametrization_.eval(x);
 		assert(y.size() == dim);
+
+		logger().info("mesh scale: {}", y.transpose());
 		
 		for (auto state : states_)
 		{
