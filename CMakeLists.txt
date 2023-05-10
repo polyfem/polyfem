@@ -7,7 +7,7 @@ else()
 endif()
 
 # Check required CMake version
-set(REQUIRED_CMAKE_VERSION "3.14.0")
+set(REQUIRED_CMAKE_VERSION "3.24.0")
 if(POLYFEM_TOPLEVEL_PROJECT)
     cmake_minimum_required(VERSION ${REQUIRED_CMAKE_VERSION})
 else()
@@ -33,7 +33,7 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24")
 endif()
 
 ################################################################################
-project(PolyFEM DESCRIPTION "A polyvalent C++ FEM library" LANGUAGES C CXX)
+project(PolyFEM DESCRIPTION "A polyvalent C++ FEM library" LANGUAGES C CXX CUDA)
 ################################################################################
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -123,26 +123,11 @@ add_library(polyfem::polyfem ALIAS polyfem)
 ################################################################################
 
 if(IPC_TOOLKIT_WITH_CUDA OR POLYSOLVE_WITH_CUSOLVER)
-  include(CheckLanguage)
-  check_language(CUDA)
-  if(CMAKE_CUDA_COMPILER)
-    enable_language(CUDA)
-  else()
-    message(FATAL_ERROR "No CUDA support found!")
-  endif()
-
-  set_target_properties(polyfem PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-
-  # Nvidia RTX8000 -> compute_75
-  # Nvidia V100 -> compute_70
-  # Nvidia 1080/1080Ti -> compute_61
-  # Nvidia 3080Ti -> compute_86
-  if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-    set(CMAKE_CUDA_ARCHITECTURES 70 75 86)
-  endif()
-  set_target_properties(polyfem PROPERTIES CUDA_ARCHITECTURES "70;75;86")
-#   set_target_properties(PolyFEM_bin PROPERTIES CUDA_ARCHITECTURES "70;75;86")
+    include(cuda)
+    enable_cuda(polyfem)
 endif()
+
+################################################################################
 
 # Must be call in the same "CMakeLists.txt" where add_library(polyfem ...) is called
 polyfem_autogen(polyfem eigs.py auto_eigs)
