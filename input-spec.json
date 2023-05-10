@@ -1,5 +1,4 @@
-[
-    {
+[{
         "pointer": "/",
         "type": "object",
         "required": [
@@ -2064,7 +2063,21 @@
             "sweep_and_tiniest_queue",
             "STQ",
             "sweep_and_tiniest_queue_gpu",
-            "STQ_GPU"
+            "STQ_GPU",
+            "BROADMARK_GPU_LBVH",
+            "BROADMARK_KD",
+            "BROADMARK_GRID",
+            "BROADMARK_GRID_PARALLEL",
+            "BROADMARK_SAP",
+            "BROADMARK_SAP_PARALLEL",
+            "BROADMARK_DBVT_D",
+            "BROADMARK_DBVT_F",
+            "BROADMARK_ISAP",
+            "BROADMARK_TRACY",
+            "BROADMARK_TRACY_PARALLEL",
+            "BROADMARK_GRID_SAP",
+            "BROADMARK_GPU_GRID",
+            "BROADMARK_GPU_SAP"
         ],
         "doc": "Broad phase collision-detection algorithm to use"
     },

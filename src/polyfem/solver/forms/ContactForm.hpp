@@ -23,7 +23,22 @@ namespace ipc
 		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
 		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
 		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}})
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"},
+		 {ipc::BroadPhaseMethod::BROADMARK_GPU_LBVH, "BROADMARK_GPU_LBVH"},
+		 {ipc::BroadPhaseMethod::BROADMARK_KD, "BROADMARK_KD"},
+		 {ipc::BroadPhaseMethod::BROADMARK_GRID, "BROADMARK_GRID"},
+		 {ipc::BroadPhaseMethod::BROADMARK_GRID_PARALLEL, "BROADMARK_GRID_PARALLEL"},
+		 {ipc::BroadPhaseMethod::BROADMARK_SAP, "BROADMARK_SAP"},
+		 {ipc::BroadPhaseMethod::BROADMARK_SAP_PARALLEL, "BROADMARK_SAP_PARALLEL"},
+		 {ipc::BroadPhaseMethod::BROADMARK_DBVT_D, "BROADMARK_DBVT_D"},
+		 {ipc::BroadPhaseMethod::BROADMARK_DBVT_F, "BROADMARK_DBVT_F"},
+		 {ipc::BroadPhaseMethod::BROADMARK_ISAP, "BROADMARK_ISAP"},
+		 {ipc::BroadPhaseMethod::BROADMARK_TRACY, "BROADMARK_TRACY"},
+		 {ipc::BroadPhaseMethod::BROADMARK_TRACY_PARALLEL, "BROADMARK_TRACY_PARALLEL"},
+		 {ipc::BroadPhaseMethod::BROADMARK_GRID_SAP, "BROADMARK_GRID_SAP"},
+		 {ipc::BroadPhaseMethod::BROADMARK_GPU_GRID, "BROADMARK_GPU_GRID"},
+		 {ipc::BroadPhaseMethod::BROADMARK_GPU_SAP, "BROADMARK_GPU_SAP"}})
 } // namespace ipc
 
 namespace polyfem::solver
