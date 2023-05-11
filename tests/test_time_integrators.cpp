@@ -83,7 +83,7 @@ TEST_CASE("time integrator", "[time_integrator]")
 			Eigen::MatrixXd fhess;
 			fd::finite_jacobian(x, gradf, fhess);
 
-			if (!fd::compare_hessian(hess, fhess))
+			if (!fd::compare_hessian(Eigen::MatrixXd(hess), fhess))
 			{
 				std::cout << "Hessian mismatch" << std::endl;
 				std::cout << "Hessian:\n"
@@ -92,7 +92,7 @@ TEST_CASE("time integrator", "[time_integrator]")
 						  << fhess << std::endl;
 			}
 
-			CHECK(fd::compare_hessian(hess, fhess));
+			CHECK(fd::compare_hessian(Eigen::MatrixXd(hess), fhess));
 		}
 
 		x.setRandom();

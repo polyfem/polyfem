@@ -42,6 +42,8 @@ endif()
 add_library(Eigen3_Eigen INTERFACE)
 add_library(Eigen3::Eigen ALIAS Eigen3_Eigen)
 
+target_compile_definitions(Eigen3_Eigen INTERFACE EIGEN_DONT_VECTORIZE)
+
 include(GNUInstallDirs)
 target_include_directories(Eigen3_Eigen SYSTEM INTERFACE
     $<BUILD_INTERFACE:${EIGEN_INCLUDE_DIRS}>
