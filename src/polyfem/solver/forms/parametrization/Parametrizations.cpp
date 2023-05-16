@@ -240,7 +240,7 @@ namespace polyfem::solver
 		return grad_body;
 	}
 
-	SliceMap::SliceMap(const int from = -1, const int to = -1, const int total = -1) : from_(from), to_(to), total_(total)
+	SliceMap::SliceMap(const int from, const int to, const int total) : from_(from), to_(to), total_(total)
 	{
 		if (to_ - from_ < 0)
 			log_and_throw_error("Invalid Slice Map input!");
