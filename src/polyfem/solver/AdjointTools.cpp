@@ -1074,9 +1074,9 @@ namespace polyfem::solver
 						{
 							const auto nodes = bases[e].local_nodes_for_primitive(lb.global_primitive_id(j), *state.mesh);
 
-							for (long n = 0; n < nodes.size(); ++n)
+							for (long n = 0; n < n_loc_bases_; ++n)
 							{
-								const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
+								const assembler::AssemblyValues &v = vals.basis_values[n];
 								assert(v.global.size() == 1);
 								for (int d = 0; d < actual_dim; d++)
 								{
@@ -1086,13 +1086,7 @@ namespace polyfem::solver
 									if (result.cols() == grad_u.cols())
 									{
 										for (int q = 0; q < weights.size(); ++q)
-										{
-											Eigen::Matrix<double, -1, -1, Eigen::RowMajor> grad_phi;
-											grad_phi.setZero(actual_dim, dim);
-											grad_phi.row(d) = v.grad_t_m.row(q);
-											for (int k = d * dim; k < (d + 1) * dim; k++)
-												val += result(q, k) * grad_phi(k);
-										}
+											val += dot(result.block(q, d * dim, 1, dim), v.grad_t_m.row(q));
 									}
 									// j = j(x, u)
 									else
