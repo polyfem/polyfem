@@ -99,7 +99,6 @@ namespace polyfem::solver
 		return rhs;
 	}
 
-	// TODO: call local assemblers instead
 	IntegrableFunctional StressNormForm::get_integral_functional() const
 	{
 		IntegrableFunctional j;
@@ -107,38 +106,31 @@ namespace polyfem::solver
 		const std::string formulation = state_.formulation();
 		const int power = in_power_;
 
-		j.set_j([formulation, power](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([formulation, power, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);
-			Eigen::MatrixXd grad_u_q, stress;
+			int el_id = params["elem"];
+
+			Eigen::MatrixXd grad_u_q, stress, grad_unused;
 			for (int q = 0; q < grad_u.rows(); q++)
 			{
 				if (formulation == "Laplacian")
-				{
 					stress = grad_u.row(q);
-				}
-				else if (formulation == "LinearElasticity")
-				{
-					vector2matrix(grad_u.row(q), grad_u_q);
-					stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
-				}
-				else if (formulation == "NeoHookean")
-				{
-					vector2matrix(grad_u.row(q), grad_u_q);
-					Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols()) + grad_u_q;
-					Eigen::MatrixXd FmT = def_grad.inverse().transpose();
-					stress = mu(q) * (def_grad - FmT) + lambda(q) * std::log(def_grad.determinant()) * FmT;
-				}
 				else
-					log_and_throw_error("Unknown formulation!");
+				{
+					vector2matrix(grad_u.row(q), grad_u_q);
+					state.assembler->compute_stress_grad_multiply_mat(el_id, local_pts.row(q), pts.row(q), grad_u_q, Eigen::MatrixXd::Zero(grad_u_q.rows(), grad_u_q.cols()), stress, grad_unused);
+				}
 				val(q) = pow(stress.squaredNorm(), power / 2.);
 			}
 		});
 
-		j.set_dj_dgradu([formulation, power](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_dj_dgradu([formulation, power, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), grad_u.cols());
+			int el_id = params["elem"];
 			const int dim = sqrt(grad_u.cols());
 			const int actual_dim = (formulation == "Laplacian") ? 1 : dim;
-			Eigen::MatrixXd grad_u_q, stress, stress_dstress;
+
+			Eigen::MatrixXd grad_u_q, stress, stress_dstress, unused;
 			for (int q = 0; q < grad_u.rows(); q++)
 			{
 				if (formulation == "Laplacian")
@@ -146,22 +138,11 @@ namespace polyfem::solver
 					stress = grad_u.row(q);
 					stress_dstress = 2 * stress;
 				}
-				else if (formulation == "LinearElasticity")
-				{
-					vector2matrix(grad_u.row(q), grad_u_q);
-					stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
-					stress_dstress = mu(q) * (stress + stress.transpose()) + lambda(q) * stress.trace() * Eigen::MatrixXd::Identity(stress.rows(), stress.cols());
-				}
-				else if (formulation == "NeoHookean")
-				{
-					vector2matrix(grad_u.row(q), grad_u_q);
-					Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols()) + grad_u_q;
-					Eigen::MatrixXd FmT = def_grad.inverse().transpose();
-					stress = mu(q) * (def_grad - FmT) + lambda(q) * std::log(def_grad.determinant()) * FmT;
-					stress_dstress = mu(q) * stress + FmT * stress.transpose() * FmT * (mu(q) - lambda(q) * std::log(def_grad.determinant())) + (lambda(q) * (FmT.array() * stress.array()).sum()) * FmT;
-				}
 				else
-					log_and_throw_error("Unknown formulation!");
+				{
+					vector2matrix(grad_u.row(q), grad_u_q);
+					state.assembler->compute_stress_grad_multiply_stress(el_id, local_pts.row(q), pts.row(q), grad_u_q, stress, stress_dstress);
+				}
 
 				const double coef = power * pow(stress.squaredNorm(), power / 2. - 1.);
 				for (int i = 0; i < actual_dim; i++)
@@ -201,8 +182,9 @@ namespace polyfem::solver
 
 		const std::string formulation = state_.formulation();
 
-		j.set_j([formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);
+
 			Eigen::MatrixXd grad_u_q, stress;
 			for (int q = 0; q < grad_u.rows(); q++)
 			{
@@ -215,9 +197,10 @@ namespace polyfem::solver
 			}
 		});
 
-		j.set_dj_dgradu([formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_dj_dgradu([formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), grad_u.cols());
 			const int dim = sqrt(grad_u.cols());
+
 			for (int q = 0; q < grad_u.rows(); q++)
 			{
 				Eigen::MatrixXd grad_u_q, stress;
@@ -295,16 +278,16 @@ namespace polyfem::solver
 		IntegrableFunctional j;
 		const int dim = dim_;
 
-		j.set_j([dim](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([dim](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val = u.col(dim) + pts.col(dim);
 		});
 
-		j.set_dj_du([dim](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_dj_du([dim](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
 			val.col(dim).setOnes();
 		});
 
-		j.set_dj_dx([dim](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_dj_dx([dim](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(pts.rows(), pts.cols());
 			val.col(dim).setOnes();
 		});
@@ -318,16 +301,18 @@ namespace polyfem::solver
 		const int dim = this->dim_;
 		const int time_step = this->time_step_;
 
-		j.set_j([dim, time_step, &state = std::as_const(this->state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([dim, time_step, &state = std::as_const(this->state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			const int e = params["elem"];
+
 			Eigen::MatrixXd acc, grad_acc;
 			io::Evaluator::interpolate_at_local_vals(*(state.mesh), state.problem->is_scalar(), state.bases, state.geom_bases(), e, local_pts, state.diff_cached.acc(time_step), acc, grad_acc);
 
 			val = acc.col(dim);
 		});
 
-		j.set_dj_du([dim](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_dj_du([dim](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
+
 			log_and_throw_error("Not implemented!");
 		});
 
@@ -338,8 +323,9 @@ namespace polyfem::solver
 	{
 		IntegrableFunctional j;
 
-		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			const int e = params["elem"];
+
 			Eigen::MatrixXd v, grad_v;
 			io::Evaluator::interpolate_at_local_vals(*(state_.mesh), state_.problem->is_scalar(), state_.bases, state_.geom_bases(), e, local_pts, state_.diff_cached.v(time_step_), v, grad_v);
 
@@ -351,8 +337,9 @@ namespace polyfem::solver
 			}
 		});
 
-		j.set_dj_du([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_dj_du([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
+
 			log_and_throw_error("Not implemented!");
 		});
 
@@ -366,9 +353,10 @@ namespace polyfem::solver
 		{
 			assert(target_state_->diff_cached.size() > 0);
 
-			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), 1);
 				const int e = params["elem"];
+
 				int e_ref;
 				if (auto search = e_to_ref_e_.find(e); search != e_to_ref_e_.end())
 					e_ref = search->second;
@@ -389,9 +377,10 @@ namespace polyfem::solver
 				}
 			};
 
-			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), u.cols());
 				const int e = params["elem"];
+
 				int e_ref;
 				if (auto search = e_to_ref_e_.find(e); search != e_to_ref_e_.end())
 					e_ref = search->second;
@@ -419,8 +408,9 @@ namespace polyfem::solver
 		}
 		else if (have_target_func)
 		{
-			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), 1);
+
 				for (int q = 0; q < u.rows(); q++)
 				{
 					Eigen::VectorXd x = u.row(q) + pts.row(q);
@@ -428,8 +418,9 @@ namespace polyfem::solver
 				}
 			};
 
-			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), u.cols());
+
 				for (int q = 0; q < u.rows(); q++)
 				{
 					Eigen::VectorXd x = u.row(q) + pts.row(q);
@@ -442,11 +433,11 @@ namespace polyfem::solver
 			j.set_dj_du(djdu_func);
 			j.set_dj_dx(djdu_func); // only used for shape derivative
 		}
-		else // error wrt. a constant displacement
+		else                        // error wrt. a constant displacement
 		{
 			if (target_disp.size() == state_.mesh->dimension())
 			{
-				auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+				auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 					val.setZero(u.rows(), 1);
 
 					for (int q = 0; q < u.rows(); q++)
@@ -458,7 +449,7 @@ namespace polyfem::solver
 						val(q) = err.squaredNorm();
 					}
 				};
-				auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+				auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 					val.setZero(u.rows(), u.cols());
 
 					for (int q = 0; q < u.rows(); q++)
@@ -565,8 +556,9 @@ namespace polyfem::solver
 		std::string formulation = state_.formulation();
 		auto dimensions = dimensions_;
 
-		j.set_j([formulation, dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([formulation, dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);
+
 			Eigen::MatrixXd grad_u_q, stress;
 			for (int q = 0; q < grad_u.rows(); q++)
 			{
@@ -587,8 +579,9 @@ namespace polyfem::solver
 			}
 		});
 
-		j.set_dj_dgradu([formulation, dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_dj_dgradu([formulation, dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), grad_u.cols());
+
 			const int dim = sqrt(grad_u.cols());
 			Eigen::MatrixXd grad_u_q, stiffness, stress;
 			for (int q = 0; q < grad_u.rows(); q++)
@@ -663,13 +656,15 @@ namespace polyfem::solver
 
 		auto dimensions = dimensions_;
 
-		j.set_j([dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			const int dim = sqrt(grad_u.cols());
+
 			val = grad_u.col(dimensions[0] * dim + dimensions[1]);
 		});
 
-		j.set_dj_dgradu([dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_dj_dgradu([dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), grad_u.cols());
+
 			const int dim = sqrt(grad_u.cols());
 			val.col(dimensions[0] * dim + dimensions[1]).setOnes();
 		});
@@ -681,7 +676,7 @@ namespace polyfem::solver
 	{
 		IntegrableFunctional j;
 
-		j.set_j([](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setOnes(grad_u.rows(), 1);
 		});
 
@@ -848,7 +843,7 @@ namespace polyfem::solver
 	IntegrableFunctional SDFTargetForm::get_integral_functional() const
 	{
 		IntegrableFunctional j;
-		auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), 1);
 
 			for (int q = 0; q < u.rows(); q++)
@@ -860,7 +855,7 @@ namespace polyfem::solver
 			}
 		};
 
-		auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
 
 			for (int q = 0; q < u.rows(); q++)
@@ -947,7 +942,7 @@ namespace polyfem::solver
 	IntegrableFunctional MeshTargetForm::get_integral_functional() const
 	{
 		IntegrableFunctional j;
-		auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), 1);
 
 			for (int q = 0; q < u.rows(); q++)
@@ -959,7 +954,7 @@ namespace polyfem::solver
 			}
 		};
 
-		auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+		auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
 
 			for (int q = 0; q < u.rows(); q++)

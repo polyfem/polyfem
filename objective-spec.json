@@ -19,6 +19,7 @@
             "homo_disp_grad",
             "stress",
             "stress_norm",
+            "traction_norm",
             "max_stress",
             "compliance",
             "weighted_solution",
@@ -578,6 +579,22 @@
         ],
         "optional": [
             "volume_selection",
+            "power",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "Lp Norm of elastic stress over the volume selection"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "traction_norm",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "surface_selection",
             "power",
             "weight",
             "print_energy"
