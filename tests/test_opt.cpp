@@ -277,6 +277,8 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
 		log_and_throw_error("Failed to load optimization json file!");
 
+	opt_args = apply_opt_json_spec(opt_args, false);
+
 	for (auto &state_arg : opt_args["states"])
 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
 
