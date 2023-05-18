@@ -54,8 +54,6 @@ namespace polyfem::assembler
 				canonical_transformation_.push_back(transform_matrix);
 			}
 		}
-		if (params.contains("solve_displacement"))
-			solve_displacement = params["solve_displacement"].get<bool>();
 	}
 
 } // namespace polyfem::assembler
