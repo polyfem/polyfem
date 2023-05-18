@@ -579,6 +579,47 @@ namespace polyfem::assembler
 		result = mu * stress + FmT * stress.transpose() * FmT * (mu - lambda * std::log(def_grad.determinant())) + lambda * (FmT.array() * stress.array()).sum() * FmT;
 	}
 
+	void NeoHookeanElasticity::compute_stress_grad_multiply_vect(
+		const int el_id,
+		const Eigen::MatrixXd &local_pts,
+		const Eigen::MatrixXd &global_pts,
+		const Eigen::MatrixXd &grad_u_i,
+		const Eigen::MatrixXd &vect,
+		Eigen::MatrixXd &stress,
+		Eigen::MatrixXd &result) const
+	{
+		double lambda, mu;
+		params_.lambda_mu(local_pts, global_pts, el_id, lambda, mu);
+
+		Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_i.rows(), grad_u_i.cols()) + grad_u_i;
+		Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+
+		stress = mu * (def_grad - FmT) + lambda * std::log(def_grad.determinant()) * FmT;
+		result.setZero(size() * size(), size());
+		if (vect.rows() == 1)
+			for (int i = 0; i < size(); ++i)
+				for (int j = 0; j < size(); ++j)
+					for (int l = 0; l < size(); ++l)
+					{
+						result(i * size() + j, l) += mu * vect(i) * ((j == l) ? 1 : 0);
+						// For some reason, the second gives lower error. From the formula, though, it should be the following.
+						// result(i * size() + j, l) += (mu - lambda * std::log(def_grad.determinant())) * FmT(j, l) * (FmT.col(i).array() * vect.transpose().array()).sum();
+						result(i * size() + j, l) += (mu - lambda * std::log(def_grad.determinant())) * FmT(i, l) * (FmT.col(j).array() * vect.transpose().array()).sum();
+						result(i * size() + j, l) += lambda * FmT(i, j) * (FmT.col(l).array() * vect.transpose().array()).sum();
+					}
+		else
+			for (int i = 0; i < size(); ++i)
+				for (int j = 0; j < size(); ++j)
+					for (int k = 0; k < size(); ++k)
+					{
+						result(i * size() + j, k) += mu * vect(j) * ((i == k) ? 1 : 0);
+						// For some reason, the second gives lower error. From the formula, though, it should be the following.
+						// result(i * size() + j, k) += (mu - lambda * std::log(def_grad.determinant())) * FmT(k, j) * (FmT.row(i).array() * vect.transpose().array()).sum();
+						result(i * size() + j, k) += (mu - lambda * std::log(def_grad.determinant())) * FmT(k, i) * (FmT.row(j).array() * vect.transpose().array()).sum();
+						result(i * size() + j, k) += lambda * FmT(i, j) * (FmT.row(k).array() * vect.transpose().array()).sum();
+					}
+	}
+
 	void NeoHookeanElasticity::compute_dstress_dmu_dlambda(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &dstress_dmu, Eigen::MatrixXd &dstress_dlambda) const
 	{
 		Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_i.rows(), grad_u_i.cols()) + grad_u_i;
