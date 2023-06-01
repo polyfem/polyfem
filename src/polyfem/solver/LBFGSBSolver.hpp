@@ -48,7 +48,8 @@ namespace cppoptlib
 
 			m_bfgs.reset(m_prev_x.size(), m_history_size);
 
-			assert(this->descent_strategy <= 2);
+			if (this->descent_strategy > 2)
+				polyfem::log_and_throw_error("Invalid descent strategy!");
 		}
 
 	protected:
@@ -150,13 +151,13 @@ namespace cppoptlib
 					direction.dot(grad), this->descent_strategy_name());
 				return compute_update_direction(objFunc, x, grad, direction);
 			}
-			else if (grad.squaredNorm() != 0 && direction.dot(grad) > - grad.norm() * direction.norm() * 1e-2)
+			else if (grad.squaredNorm() != 0 && this->descent_strategy == 1 && direction.dot(grad) > - grad.norm() * direction.norm() * 1e-6)
 			{
 				reset_history(x.size());
 				increase_descent_strategy();
 				polyfem::logger().log(
 					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
-					"L-BFGS direction is not a good descent direction (Δx⋅g={}); reverting to {}",
+					"L-BFGS direction is not a descent direction (Δx⋅g={}); reverting to {}",
 					direction.dot(grad), this->descent_strategy_name());
 				return compute_update_direction(objFunc, x, grad, direction);
 			}

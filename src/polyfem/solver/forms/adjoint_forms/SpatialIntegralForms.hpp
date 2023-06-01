@@ -30,6 +30,23 @@ namespace polyfem::solver
 		SpatialIntegralType spatial_integral_type_;
 		std::set<int> ids_;
 	};
+	
+	class ElasticEnergyForm : public SpatialIntegralForm
+	{
+	public:
+		ElasticEnergyForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		{
+			set_integral_type(SpatialIntegralType::VOLUME);
+
+			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+		}
+
+		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+
+	protected:
+		IntegrableFunctional get_integral_functional() const override;
+	};
 
 	class StressNormForm : public SpatialIntegralForm
 	{

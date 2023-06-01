@@ -19,6 +19,7 @@
             "homo_disp_grad",
             "stress",
             "stress_norm",
+            "elastic_energy",
             "max_stress",
             "compliance",
             "weighted_solution",
@@ -567,6 +568,21 @@
         "pointer": "/dimensions",
         "default": [],
         "type": "list"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "elastic_energy",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "volume_selection",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "Elastic energy over the volume selection"
     },
     {
         "pointer": "/",

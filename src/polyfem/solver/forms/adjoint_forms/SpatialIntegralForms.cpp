@@ -99,6 +99,75 @@ namespace polyfem::solver
 		return rhs;
 	}
 
+	IntegrableFunctional ElasticEnergyForm::get_integral_functional() const
+	{
+		IntegrableFunctional j;
+
+		const std::string formulation = state_.formulation();
+
+		j.set_j([formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(grad_u.rows(), 1);
+			const int dim = u.cols();
+			Eigen::MatrixXd grad_u_q;
+			for (int q = 0; q < grad_u.rows(); q++)
+			{
+				grad_u_q = utils::unflatten(grad_u.row(q), u.cols());
+				Eigen::MatrixXd def_grad = grad_u_q + Eigen::MatrixXd::Identity(dim, dim);
+				double log_det_j = log(def_grad.determinant());
+				if (formulation == "NeoHookean")
+					val(q) = mu(q) / 2 * ((def_grad.transpose() * def_grad).trace() - dim - 2 * log_det_j) + lambda(q) / 2 * log_det_j * log_det_j;
+				else
+					log_and_throw_error("Unknown formulation!");
+			}
+		});
+
+		j.set_dj_dgradu([formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const json &params, Eigen::MatrixXd &val) {
+			val.setZero(grad_u.rows(), grad_u.cols());
+			Eigen::MatrixXd grad_u_q, def_grad, FmT, stress;
+			for (int q = 0; q < grad_u.rows(); q++)
+			{
+				grad_u_q = utils::unflatten(grad_u.row(q), u.cols());
+				if (formulation == "LinearElasticity")
+				{
+					stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
+				}
+				else if (formulation == "NeoHookean")
+				{
+					def_grad = Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols()) + grad_u_q;
+					FmT = def_grad.inverse().transpose();
+					stress = mu(q) * (def_grad - FmT) + lambda(q) * std::log(def_grad.determinant()) * FmT;
+				}
+				else
+					log_and_throw_error("Unknown formulation!");
+				val.row(q) = utils::flatten(stress);
+			}
+		});
+
+		return j;
+	}
+
+	void ElasticEnergyForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
+		for (const auto &param_map : variable_to_simulations_)
+		{
+			const auto &param_type = param_map->get_parameter_type();
+
+			for (const auto &state : param_map->get_states())
+			{
+				if (state.get() != &state_)
+					continue;
+
+				Eigen::VectorXd term;
+				if (param_type == ParameterType::Material)
+					log_and_throw_error("Doesn't support stress derivative wrt. material!");
+
+				if (term.size() > 0)
+					gradv += param_map->apply_parametrization_jacobian(term, x);
+			}
+		}
+	}
+
 	// TODO: call local assemblers instead
 	IntegrableFunctional StressNormForm::get_integral_functional() const
 	{

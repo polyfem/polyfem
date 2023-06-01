@@ -208,6 +208,10 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<StressNormForm>(var2sim, *(states[args["state"]]), args);
 			}
+			else if (type == "elastic_energy")
+			{
+				obj = std::make_shared<ElasticEnergyForm>(var2sim, *(states[args["state"]]), args);
+			}
 			else if (type == "max_stress")
 			{
 				obj = std::make_shared<MaxStressForm>(var2sim, *(states[args["state"]]), args);
