@@ -12,12 +12,13 @@ namespace polyfem
 
 	namespace assembler
 	{
-		namespace {
+		namespace
+		{
 			bool delta(int i, int j)
 			{
 				return (i == j) ? true : false;
 			}
-		}
+		} // namespace
 
 		void LinearElasticity::add_multimaterial(const int index, const json &params)
 		{
@@ -240,6 +241,15 @@ namespace polyfem
 
 			stress = mu * (grad_u_i + grad_u_i.transpose()) + lambda * grad_u_i.trace() * Eigen::MatrixXd::Identity(size(), size());
 			result = mu * (mat + mat.transpose()) + lambda * mat.trace() * Eigen::MatrixXd::Identity(size(), size());
+		}
+
+		void LinearElasticity::compute_stress_grad_multiply_stress(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const
+		{
+			double lambda, mu;
+			params_.lambda_mu(local_pts, global_pts, el_id, lambda, mu);
+
+			stress = mu * (grad_u_i + grad_u_i.transpose()) + lambda * grad_u_i.trace() * Eigen::MatrixXd::Identity(size(), size());
+			result = mu * (stress + stress.transpose()) + lambda * stress.trace() * Eigen::MatrixXd::Identity(size(), size());
 		}
 
 		void LinearElasticity::compute_dstress_dmu_dlambda(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &dstress_dmu, Eigen::MatrixXd &dstress_dlambda) const

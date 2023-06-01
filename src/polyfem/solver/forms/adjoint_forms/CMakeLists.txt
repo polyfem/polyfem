@@ -20,6 +20,8 @@ set(SOURCES
 	BarrierForms.hpp
 	SmoothingForms.hpp
 	SmoothingForms.cpp
+	TractionNormForm.hpp
+	TractionNormForm.cpp
 )
 
 prepend_current_path(SOURCES)

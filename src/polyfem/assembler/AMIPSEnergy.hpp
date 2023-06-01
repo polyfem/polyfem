@@ -34,9 +34,7 @@ namespace polyfem::assembler
 			const RowVectorNd &p,
 			const int el_id,
 			const DefGradMatrix<T> &def_grad) const;
-		
-		std::vector<Eigen::MatrixXd> canonical_transformation_;
 
-		bool solve_displacement = true;
+		std::vector<Eigen::MatrixXd> canonical_transformation_;
 	};
 } // namespace polyfem::assembler

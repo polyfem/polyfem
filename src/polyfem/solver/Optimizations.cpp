@@ -18,6 +18,7 @@
 #include <polyfem/solver/forms/adjoint_forms/SmoothingForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/AMIPSForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/BarrierForms.hpp>
+#include <polyfem/solver/forms/adjoint_forms/TractionNormForm.hpp>
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
@@ -211,6 +212,9 @@ namespace polyfem::solver
 			else if (type == "elastic_energy")
 			{
 				obj = std::make_shared<ElasticEnergyForm>(var2sim, *(states[args["state"]]), args);
+			else if (type == "traction_norm")
+			{
+				obj = std::make_shared<TractionNormForm>(var2sim, *(states[args["state"]]), args);
 			}
 			else if (type == "max_stress")
 			{
@@ -379,14 +383,13 @@ namespace polyfem::solver
 				cur_states.push_back(states[i]);
 		else
 			cur_states.push_back(states[args["state"]]);
-		
+
 		composite_map = CompositeParametrization(map_list);
 
 		const std::string composite_map_type = args["composite_map_type"];
 		Eigen::VectorXi output_indexing;
 		if (composite_map_type == "none")
 		{
-			
 		}
 		else if (composite_map_type == "interior")
 		{
@@ -466,7 +469,8 @@ namespace polyfem::solver
 
 		json in_args = args;
 		in_args["solver"]["max_threads"] = max_threads;
-		if (!args.contains("output") || !args["output"].contains("log") || !args["output"]["log"].contains("level")) {
+		if (!args.contains("output") || !args["output"].contains("log") || !args["output"]["log"].contains("level"))
+		{
 			auto tmp = R"({
 					"output": {
 						"log": {

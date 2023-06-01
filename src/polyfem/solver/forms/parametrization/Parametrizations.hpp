@@ -102,7 +102,7 @@ namespace polyfem::solver
 	class SliceMap : public Parametrization
 	{
 	public:
-		SliceMap(const int from, const int to, const int total);
+		SliceMap(const int from = -1, const int to = -1, const int total = -1);
 
 		int size(const int x_size) const override { return to_ - from_; }
 
