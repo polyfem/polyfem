@@ -212,6 +212,7 @@ namespace polyfem::solver
 			else if (type == "elastic_energy")
 			{
 				obj = std::make_shared<ElasticEnergyForm>(var2sim, *(states[args["state"]]), args);
+			}
 			else if (type == "traction_norm")
 			{
 				obj = std::make_shared<TractionNormForm>(var2sim, *(states[args["state"]]), args);
