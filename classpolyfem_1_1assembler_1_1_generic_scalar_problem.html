@@ -155,6 +155,20 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aea31b32c1834fef06b028268ec042560"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13ae1127a02b89c15d3997fef95b4896"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a13ae1127a02b89c15d3997fef95b4896">initial_solution</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const override</td></tr>
 <tr class="separator:a13ae1127a02b89c15d3997fef95b4896"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a581d22dc7d63a8b61617304ea0a52f50"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a581d22dc7d63a8b61617304ea0a52f50">dirichlet_nodal_value</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int node_id, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;pt, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const override</td></tr>
+<tr class="separator:a581d22dc7d63a8b61617304ea0a52f50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae76ab9703370242db85d92b45be0e056"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ae76ab9703370242db85d92b45be0e056">neumann_nodal_value</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const int node_id, const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;pt, const Eigen::MatrixXd &amp;normal, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const override</td></tr>
+<tr class="separator:ae76ab9703370242db85d92b45be0e056"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5405afd2aa29e9bceddfb4791c93d456"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a5405afd2aa29e9bceddfb4791c93d456">is_nodal_dirichlet_boundary</a> (const int n_id, const int tag) override</td></tr>
+<tr class="separator:a5405afd2aa29e9bceddfb4791c93d456"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0761c3b2d1b5cf73ce3abae60ae0f785"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a0761c3b2d1b5cf73ce3abae60ae0f785">is_nodal_neumann_boundary</a> (const int n_id, const int tag) override</td></tr>
+<tr class="separator:a0761c3b2d1b5cf73ce3abae60ae0f785"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11e5f2ec0a69603abe5ec4f06dc6d416"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a11e5f2ec0a69603abe5ec4f06dc6d416">has_nodal_dirichlet</a> () override</td></tr>
+<tr class="separator:a11e5f2ec0a69603abe5ec4f06dc6d416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7263a3babf86a2a0de99c6d294caa11d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a7263a3babf86a2a0de99c6d294caa11d">has_nodal_neumann</a> () override</td></tr>
+<tr class="separator:a7263a3babf86a2a0de99c6d294caa11d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f25b6e94ffe26d31a9a24643700ff0a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a3f25b6e94ffe26d31a9a24643700ff0a">update_nodes</a> (const Eigen::VectorXi &amp;in_node_to_node) override</td></tr>
+<tr class="separator:a3f25b6e94ffe26d31a9a24643700ff0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea048f90d8ae340782bf1756cfc6b6b4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aea048f90d8ae340782bf1756cfc6b6b4">has_exact_sol</a> () const override</td></tr>
 <tr class="separator:aea048f90d8ae340782bf1756cfc6b6b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa86b35163129fcd063f7595c61d0c44a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aa86b35163129fcd063f7595c61d0c44a">is_scalar</a> () const override</td></tr>
@@ -273,6 +287,12 @@ Private Attributes</h2></td></tr>
 <tr class="separator:aeef2772d66a6bc593b96c5dfd255e304"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a147a22030df98953f5a3383b1724abbf"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; int, <a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a147a22030df98953f5a3383b1724abbf">initial_solution_</a></td></tr>
 <tr class="separator:a147a22030df98953f5a3383b1724abbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3e9751756f5f98f3efe4e0d3f01e43a"><td class="memItemLeft" align="right" valign="top">std::map&lt; int, <a class="el" href="structpolyfem_1_1assembler_1_1_scalar_b_c_value.html">ScalarBCValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aa3e9751756f5f98f3efe4e0d3f01e43a">nodal_dirichlet_</a></td></tr>
+<tr class="separator:aa3e9751756f5f98f3efe4e0d3f01e43a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4ed4859a8b89d01b136853bc9aa67d1"><td class="memItemLeft" align="right" valign="top">std::map&lt; int, <a class="el" href="structpolyfem_1_1assembler_1_1_scalar_b_c_value.html">ScalarBCValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ae4ed4859a8b89d01b136853bc9aa67d1">nodal_neumann_</a></td></tr>
+<tr class="separator:ae4ed4859a8b89d01b136853bc9aa67d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcce216163e564b5422f68622867fc34"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Eigen::MatrixXd &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#afcce216163e564b5422f68622867fc34">nodal_dirichlet_mat_</a></td></tr>
+<tr class="separator:afcce216163e564b5422f68622867fc34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae347a586d5f85f4a65e12f364604226a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ae347a586d5f85f4a65e12f364604226a">rhs_</a></td></tr>
 <tr class="separator:ae347a586d5f85f4a65e12f364604226a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6365da4bb42d2c5b47d82682818ffb0b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1utils_1_1_expression_value.html">utils::ExpressionValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a6365da4bb42d2c5b47d82682818ffb0b">exact_</a></td></tr>
@@ -391,9 +411,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01379">1379</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01487">1487</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00068">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_interpolation_8cpp_source.html#l00015">polyfem::utils::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00197">dirichlet_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00068">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_interpolation_8cpp_source.html#l00015">polyfem::utils::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00205">dirichlet_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -503,9 +523,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01390">1390</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01498">1498</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_interpolation_8cpp_source.html#l00015">polyfem::utils::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00196">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00069">polyfem::assembler::Problem::neumann_boundary_ids_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_interpolation_8cpp_source.html#l00015">polyfem::utils::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00204">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00069">polyfem::assembler::Problem::neumann_boundary_ids_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -574,11 +594,11 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2563e3166f5ce50bb630575686b46ebd">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01447">1447</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01555">1555</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00042">polyfem::utils::ExpressionValue::clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01447">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00197">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00201">exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00202">exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00204">has_exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00205">has_exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00203">is_all_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00206">is_time_dept_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00196">neumann_</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00200">rhs_</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8cpp_source.html#l00042">polyfem::utils::ExpressionValue::clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01555">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00205">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00213">exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00214">exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00216">has_exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00217">has_exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00215">is_all_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00218">is_time_dept_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00204">neumann_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00208">nodal_dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00210">nodal_dirichlet_mat_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00209">nodal_neumann_</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00212">rhs_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01447">clear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01555">clear()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -656,11 +676,77 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01045">1045</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00068">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00197">dirichlet_</a>, <a class="el" href="_mesh_8hpp_source.html#l00459">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00203">is_all_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00068">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00205">dirichlet_</a>, <a class="el" href="_mesh_8hpp_source.html#l00459">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00215">is_all_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_scalar_problem_a0c7d66f60a9edb2ee7659368f514cd5b_cgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a581d22dc7d63a8b61617304ea0a52f50" name="a581d22dc7d63a8b61617304ea0a52f50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a581d22dc7d63a8b61617304ea0a52f50">&#9670;&#160;</a></span>dirichlet_nodal_value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::GenericScalarProblem::dirichlet_nodal_value </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>node_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>pt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ab13e20897bfe1f22d91fa2df4f54434e">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01152">1152</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00468">polyfem::mesh::Mesh::get_node_id()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00215">is_all_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00208">nodal_dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00210">nodal_dirichlet_mat_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_scalar_problem_a581d22dc7d63a8b61617304ea0a52f50_cgraph.svg" width="607" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -710,7 +796,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01123">1123</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00201">exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00163">has_exact_sol()</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00213">exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00171">has_exact_sol()</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -764,7 +850,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01136">1136</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00202">exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00205">has_exact_grad_</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00214">exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00217">has_exact_grad_</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 
 </div>
 </div>
@@ -793,9 +879,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9a5c59f709e69a5c183a6ea30e3448a9">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00163">163</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00171">171</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00204">has_exact_</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00216">has_exact_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01123">exact()</a>.</p>
 <div class="dynheader">
@@ -804,6 +890,66 @@ Here is the caller graph for this function:</div>
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_scalar_problem_aea048f90d8ae340782bf1756cfc6b6b4_icgraph.svg" width="408" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
+
+</div>
+</div>
+<a id="a11e5f2ec0a69603abe5ec4f06dc6d416" name="a11e5f2ec0a69603abe5ec4f06dc6d416"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11e5f2ec0a69603abe5ec4f06dc6d416">&#9670;&#160;</a></span>has_nodal_dirichlet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::GenericScalarProblem::has_nodal_dirichlet </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aff33b353989818b0e80d0a94edfb5e40">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01216">1216</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00210">nodal_dirichlet_mat_</a>.</p>
+
+</div>
+</div>
+<a id="a7263a3babf86a2a0de99c6d294caa11d" name="a7263a3babf86a2a0de99c6d294caa11d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7263a3babf86a2a0de99c6d294caa11d">&#9670;&#160;</a></span>has_nodal_neumann()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::GenericScalarProblem::has_nodal_neumann </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a135987ed8d0c8214f77507a20f69308e">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01221">1221</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
 </div>
 </div>
@@ -857,7 +1003,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01091">1091</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00485">polyfem::mesh::Mesh::get_body_id()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00198">initial_solution_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00485">polyfem::mesh::Mesh::get_body_id()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00206">initial_solution_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -892,9 +1038,93 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ad9568d26c49d9dcafebf429cd1025d78">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00167">167</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00175">175</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00206">is_time_dept_</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00218">is_time_dept_</a>.</p>
+
+</div>
+</div>
+<a id="a5405afd2aa29e9bceddfb4791c93d456" name="a5405afd2aa29e9bceddfb4791c93d456"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5405afd2aa29e9bceddfb4791c93d456">&#9670;&#160;</a></span>is_nodal_dirichlet_boundary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::GenericScalarProblem::is_nodal_dirichlet_boundary </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>tag</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#adf910233e7b1ba839fd2ad3171396fdf">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01194">1194</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00208">nodal_dirichlet_</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00210">nodal_dirichlet_mat_</a>.</p>
+
+</div>
+</div>
+<a id="a0761c3b2d1b5cf73ce3abae60ae0f785" name="a0761c3b2d1b5cf73ce3abae60ae0f785"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0761c3b2d1b5cf73ce3abae60ae0f785">&#9670;&#160;</a></span>is_nodal_neumann_boundary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::GenericScalarProblem::is_nodal_neumann_boundary </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>tag</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aa0ed3c91250b71932acd4534b60fdc19">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01211">1211</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00209">nodal_neumann_</a>.</p>
 
 </div>
 </div>
@@ -925,7 +1155,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00157">157</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00029">polyfem::utils::ExpressionValue::is_zero()</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00200">rhs_</a>.</p>
+<p class="reference">References <a class="el" href="_expression_value_8hpp_source.html#l00029">polyfem::utils::ExpressionValue::is_zero()</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00212">rhs_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01029">rhs()</a>.</p>
 <div class="dynheader">
@@ -968,7 +1198,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00164">164</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00172">172</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -997,9 +1227,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ae53c7b454f78ff1d8a4cd24d1a8cc923">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00165">165</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00173">173</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00206">is_time_dept_</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00218">is_time_dept_</a>.</p>
 
 </div>
 </div>
@@ -1028,9 +1258,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#aa5e9069b4bf80363dc85825bee00bf1e">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00168">168</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00176">176</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00203">is_all_</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00215">is_all_</a>.</p>
 
 </div>
 </div>
@@ -1102,11 +1332,83 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01071">1071</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00459">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00196">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00069">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00459">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00204">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00069">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_scalar_problem_aea31b32c1834fef06b028268ec042560_cgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="ae76ab9703370242db85d92b45be0e056" name="ae76ab9703370242db85d92b45be0e056"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae76ab9703370242db85d92b45be0e056">&#9670;&#160;</a></span>neumann_nodal_value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::GenericScalarProblem::neumann_nodal_value </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>node_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>pt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>normal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a53ea1fc8933fca5a88ce52e09a64e4b4">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01188">1188</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_scalar_problem_ae76ab9703370242db85d92b45be0e056_cgraph.svg" width="588" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -1162,7 +1464,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01029">1029</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00157">is_rhs_zero()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00200">rhs_</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00157">is_rhs_zero()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00212">rhs_</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1198,13 +1500,13 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a10ec97e704f516a2848ad65aadc8fee0">polyfem::assembler::Problem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01153">1153</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01238">1238</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00068">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_interpolation_8cpp_source.html#l00015">polyfem::utils::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00197">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00201">exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00202">exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00204">has_exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00205">has_exact_grad_</a>, <a class="el" href="_expression_value_8cpp_source.html#l00111">polyfem::utils::ExpressionValue::init()</a>, <a class="el" href="_problem_8hpp_source.html#l00018">polyfem::assembler::Problem::init()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00198">initial_solution_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00203">is_all_</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00129">polyfem::utils::is_param_valid()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00206">is_time_dept_</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00196">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00069">polyfem::assembler::Problem::neumann_boundary_ids_</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00200">rhs_</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00068">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_interpolation_8cpp_source.html#l00015">polyfem::utils::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00205">dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00213">exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00214">exact_grad_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00216">has_exact_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00217">has_exact_grad_</a>, <a class="el" href="_expression_value_8cpp_source.html#l00111">polyfem::utils::ExpressionValue::init()</a>, <a class="el" href="_problem_8hpp_source.html#l00018">polyfem::assembler::Problem::init()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00206">initial_solution_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00215">is_all_</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00129">polyfem::utils::is_param_valid()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00218">is_time_dept_</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00204">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00069">polyfem::assembler::Problem::neumann_boundary_ids_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00208">nodal_dirichlet_</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00210">nodal_dirichlet_mat_</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00015">polyfem::io::read_matrix()</a>, <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00212">rhs_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_scalar_problem_a1893d02c1123a15dccbe4b98f1e3c5d4_cgraph.svg" width="100%" height="538"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_scalar_problem_a1893d02c1123a15dccbe4b98f1e3c5d4_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -1234,9 +1536,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00166">166</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00174">174</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00206">is_time_dept_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00218">is_time_dept_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 
 </div>
 </div>
@@ -1306,9 +1608,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01401">1401</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01509">1509</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00068">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_interpolation_8cpp_source.html#l00015">polyfem::utils::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00197">dirichlet_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00068">polyfem::assembler::Problem::boundary_ids_</a>, <a class="el" href="_interpolation_8cpp_source.html#l00015">polyfem::utils::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00205">dirichlet_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1418,9 +1720,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01424">1424</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01532">1532</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_interpolation_8cpp_source.html#l00015">polyfem::utils::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00196">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00069">polyfem::assembler::Problem::neumann_boundary_ids_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_interpolation_8cpp_source.html#l00015">polyfem::utils::Interpolation::build()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00204">neumann_</a>, <a class="el" href="_problem_8hpp_source.html#l00069">polyfem::assembler::Problem::neumann_boundary_ids_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1464,6 +1766,38 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
+<a id="a3f25b6e94ffe26d31a9a24643700ff0a" name="a3f25b6e94ffe26d31a9a24643700ff0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f25b6e94ffe26d31a9a24643700ff0a">&#9670;&#160;</a></span>update_nodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::GenericScalarProblem::update_nodes </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
+          <td class="paramname"><em>in_node_to_node</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a92740a6fa985a4a8e4a8f5e88b35cda6">polyfem::assembler::Problem</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8cpp_source.html#l01226">1226</a> of file <a class="el" href="_generic_problem_8cpp_source.html">GenericProblem.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_generic_problem_8hpp_source.html#l00210">nodal_dirichlet_mat_</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="aeef2772d66a6bc593b96c5dfd255e304" name="aeef2772d66a6bc593b96c5dfd255e304"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aeef2772d66a6bc593b96c5dfd255e304">&#9670;&#160;</a></span>dirichlet_</h2>
@@ -1485,9 +1819,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00197">197</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00205">205</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01379">add_dirichlet_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01447">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01045">dirichlet_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01153">set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01401">update_dirichlet_boundary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01487">add_dirichlet_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01555">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01045">dirichlet_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01238">set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01509">update_dirichlet_boundary()</a>.</p>
 
 </div>
 </div>
@@ -1511,9 +1845,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00201">201</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00213">213</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01447">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01123">exact()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01153">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01555">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01123">exact()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01238">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -1537,9 +1871,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00202">202</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00214">214</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01447">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01136">exact_grad()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01153">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01555">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01136">exact_grad()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01238">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -1563,9 +1897,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00204">204</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00216">216</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01447">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00163">has_exact_sol()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01153">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01555">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00171">has_exact_sol()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01238">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -1589,9 +1923,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00205">205</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00217">217</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01447">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01136">exact_grad()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01153">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01555">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01136">exact_grad()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01238">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -1615,9 +1949,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00198">198</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00206">206</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01091">initial_solution()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01153">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01091">initial_solution()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01238">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -1641,9 +1975,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00203">203</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00215">215</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01447">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01045">dirichlet_bc()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00168">might_have_no_dirichlet()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01153">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01555">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01045">dirichlet_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01152">dirichlet_nodal_value()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00176">might_have_no_dirichlet()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01238">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -1667,9 +2001,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00206">206</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00218">218</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01447">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00167">is_constant_in_time()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00165">is_time_dependent()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01153">set_parameters()</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00166">set_time_dependent()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01555">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00175">is_constant_in_time()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00173">is_time_dependent()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01238">set_parameters()</a>, and <a class="el" href="_generic_problem_8hpp_source.html#l00174">set_time_dependent()</a>.</p>
 
 </div>
 </div>
@@ -1693,9 +2027,87 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00196">196</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00204">204</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01390">add_neumann_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01447">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01071">neumann_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01153">set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01424">update_neumann_boundary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01498">add_neumann_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01555">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01071">neumann_bc()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01238">set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01532">update_neumann_boundary()</a>.</p>
+
+</div>
+</div>
+<a id="aa3e9751756f5f98f3efe4e0d3f01e43a" name="aa3e9751756f5f98f3efe4e0d3f01e43a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3e9751756f5f98f3efe4e0d3f01e43a">&#9670;&#160;</a></span>nodal_dirichlet_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;int, <a class="el" href="structpolyfem_1_1assembler_1_1_scalar_b_c_value.html">ScalarBCValue</a>&gt; polyfem::assembler::GenericScalarProblem::nodal_dirichlet_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00208">208</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01555">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01152">dirichlet_nodal_value()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01194">is_nodal_dirichlet_boundary()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01238">set_parameters()</a>.</p>
+
+</div>
+</div>
+<a id="afcce216163e564b5422f68622867fc34" name="afcce216163e564b5422f68622867fc34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcce216163e564b5422f68622867fc34">&#9670;&#160;</a></span>nodal_dirichlet_mat_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;Eigen::MatrixXd&gt; polyfem::assembler::GenericScalarProblem::nodal_dirichlet_mat_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00210">210</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01555">clear()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01152">dirichlet_nodal_value()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01216">has_nodal_dirichlet()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01194">is_nodal_dirichlet_boundary()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01238">set_parameters()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01226">update_nodes()</a>.</p>
+
+</div>
+</div>
+<a id="ae4ed4859a8b89d01b136853bc9aa67d1" name="ae4ed4859a8b89d01b136853bc9aa67d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4ed4859a8b89d01b136853bc9aa67d1">&#9670;&#160;</a></span>nodal_neumann_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;int, <a class="el" href="structpolyfem_1_1assembler_1_1_scalar_b_c_value.html">ScalarBCValue</a>&gt; polyfem::assembler::GenericScalarProblem::nodal_neumann_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00209">209</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01555">clear()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01211">is_nodal_neumann_boundary()</a>.</p>
 
 </div>
 </div>
@@ -1719,9 +2131,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00200">200</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_problem_8hpp_source.html#l00212">212</a> of file <a class="el" href="_generic_problem_8hpp_source.html">GenericProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01447">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00157">is_rhs_zero()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01029">rhs()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01153">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l01555">clear()</a>, <a class="el" href="_generic_problem_8hpp_source.html#l00157">is_rhs_zero()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l01029">rhs()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l01238">set_parameters()</a>.</p>
 
 </div>
 </div>
