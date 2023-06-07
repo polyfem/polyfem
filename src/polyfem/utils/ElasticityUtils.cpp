@@ -74,8 +74,6 @@ namespace polyfem
 			grad = auto_diff_energy.getGradient();
 			break;
 		}
-		default:
-			throw std::runtime_error("gradient_from_energy: unknown size");
 		}
 
 		if (grad.size() <= 0)
@@ -172,8 +170,6 @@ namespace polyfem
 			hessian = auto_diff_energy.getHessian();
 			break;
 		}
-		default:
-			throw std::runtime_error("gradient_from_energy: unknown size");
 		}
 
 		if (hessian.size() <= 0)
