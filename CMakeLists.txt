@@ -7,7 +7,7 @@ else()
 endif()
 
 # Check required CMake version
-set(REQUIRED_CMAKE_VERSION "3.14.0")
+set(REQUIRED_CMAKE_VERSION "3.24.0")
 if(POLYFEM_TOPLEVEL_PROJECT)
     cmake_minimum_required(VERSION ${REQUIRED_CMAKE_VERSION})
 else()
@@ -117,6 +117,7 @@ include(sanitizers)
 # add_library() can only be called without any source since CMake 3.11 ...
 add_library(polyfem)
 add_library(polyfem::polyfem ALIAS polyfem)
+set_property(TARGET polyfem PROPERTY COMPILE_WARNING_AS_ERROR ON)
 
 ################################################################################
 # CUDA
