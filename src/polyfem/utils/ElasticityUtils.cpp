@@ -74,6 +74,8 @@ namespace polyfem
 			grad = auto_diff_energy.getGradient();
 			break;
 		}
+		default: // default handled after with grad size
+			break;
 		}
 
 		if (grad.size() <= 0)
@@ -170,6 +172,8 @@ namespace polyfem
 			hessian = auto_diff_energy.getHessian();
 			break;
 		}
+		default: // default handled after with hessian size
+			break;
 		}
 
 		if (hessian.size() <= 0)
