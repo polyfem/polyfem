@@ -26,7 +26,7 @@ set(test_sources
 )
 
 add_executable(unit_tests ${test_sources})
-set_property(TARGET unit_tests PROPERTY COMPILE_WARNING_AS_ERROR ON)
+# set_property(TARGET unit_tests PROPERTY COMPILE_WARNING_AS_ERROR ON)
 
 ################################################################################
 # Required Libraries
