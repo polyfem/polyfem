@@ -351,6 +351,19 @@
     },
     {
         "pointer": "/variable_to_simulation/*",
+        "type_name": "initial",
+        "type": "object",
+        "required": [
+            "state",
+            "type",
+            "composition"
+        ],
+        "optional": [
+            "composite_map_type"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
         "type_name": "sdf-shape",
         "type": "object",
         "required": [
@@ -421,6 +434,7 @@
         "type": "string",
         "options": [
             "per-body-to-per-elem",
+            "per-body-to-per-node",
             "E-nu-to-lambda-mu",
             "slice",
             "exp",
@@ -455,6 +469,9 @@
             "value",
             "size"
         ],
+        "optional": [
+            "start"
+        ],
         "doc": "Append repeated constant at the end of the input vector"
     },
     {
@@ -473,6 +490,11 @@
             "values"
         ],
         "doc": "Append a list of constants at the end of the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/start",
+        "type": "int",
+        "default": -1
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/values",
@@ -655,6 +677,15 @@
             "state"
         ],
         "doc": "From per volume selection to per element."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "per-body-to-per-node",
+        "type": "object",
+        "required": [
+            "state"
+        ],
+        "doc": "From per volume selection to per FE node."
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*",

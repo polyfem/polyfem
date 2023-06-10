@@ -1,5 +1,6 @@
 #include "Parametrizations.hpp"
 #include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
@@ -186,6 +187,80 @@ namespace polyfem::solver
 		return grad_E_nu;
 	}
 
+	PerBody2PerNode::PerBody2PerNode(const mesh::Mesh &mesh, const std::vector<basis::ElementBases> &bases, const int n_bases) : mesh_(mesh), bases_(bases), full_size_(n_bases)
+	{
+		reduced_size_ = 0;
+		for (int e = 0; e < mesh.n_elements(); e++)
+		{
+			const int body_id = mesh.get_body_id(e);
+			if (!body_id_map_.count(body_id))
+			{
+				body_id_map_[body_id] = {{e, reduced_size_}};
+				reduced_size_++;
+			}
+		}
+		logger().info("{} objects found!", reduced_size_);
+
+		node_id_to_body_id_.resize(full_size_);
+		node_id_to_body_id_.setConstant(-1);
+		for (int e = 0; e < mesh_.n_elements(); e++)
+		{
+			const int body_id = mesh_.get_body_id(e);
+			const auto &entry = body_id_map_.at(body_id);
+			for (const auto &bs : bases[e].bases)
+			{
+				for (const auto &g : bs.global())
+				{
+					if (node_id_to_body_id_(g.index) < 0)
+						node_id_to_body_id_(g.index) = entry[1];
+					else if (node_id_to_body_id_(g.index) != entry[1])
+						log_and_throw_error("Same node on different bodies!");
+				}
+			}
+		}
+	}
+
+	Eigen::VectorXd PerBody2PerNode::eval(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd y;
+		y.setZero(size(x.size()));
+		const int dim = x.size() / reduced_size_;
+
+		for (int i = 0; i < full_size_; i++)
+		{
+			for (int d = 0; d < dim; d++)
+			{
+				y(i * dim + d) = x(node_id_to_body_id_(i) * dim + d);
+			}
+		}
+
+		return y;
+	}
+
+	int PerBody2PerNode::size(const int x_size) const
+	{
+		assert(x_size % reduced_size_ == 0);
+		return (x_size / reduced_size_) * full_size_;
+	}
+
+	Eigen::VectorXd PerBody2PerNode::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
+	{
+		assert(grad.size() == size(x.size()));
+		Eigen::VectorXd grad_body;
+		grad_body.setZero(x.size());
+		const int dim = x.size() / reduced_size_;
+
+		for (int i = 0; i < full_size_; i++)
+		{
+			for (int d = 0; d < dim; d++)
+			{
+				grad_body(node_id_to_body_id_(i) * dim + d) += grad(i * dim + d);
+			}
+		}
+
+		return grad_body;
+	}
+
 	PerBody2PerElem::PerBody2PerElem(const mesh::Mesh &mesh) : mesh_(mesh), full_size_(mesh_.n_elements())
 	{
 		reduced_size_ = 0;
@@ -273,38 +348,64 @@ namespace polyfem::solver
 		return grad_full;
 	}
 
-	AppendConstantMap::AppendConstantMap(const int size, const double val)
+	InsertConstantMap::InsertConstantMap(const int size, const double val, const int start_index): start_index_(start_index)
 	{
 		if (size <= 0)
-			log_and_throw_error("Invalid AppendConstantMap input!");
+			log_and_throw_error("Invalid InsertConstantMap input!");
 		values_.setConstant(size, val);
 	}
 
-	AppendConstantMap::AppendConstantMap(const Eigen::VectorXd &values) : values_(values)
+	InsertConstantMap::InsertConstantMap(const Eigen::VectorXd &values) : values_(values)
 	{
 	}
 
-	int AppendConstantMap::size(const int x_size) const
+	int InsertConstantMap::size(const int x_size) const
 	{
 		return x_size + values_.size();
 	}
 
-	Eigen::VectorXd AppendConstantMap::inverse_eval(const Eigen::VectorXd &y)
+	Eigen::VectorXd InsertConstantMap::inverse_eval(const Eigen::VectorXd &y)
 	{
-		return y.head(y.size() - values_.size());
+		if (start_index_ >= 0)
+		{
+			Eigen::VectorXd x(y.size() - values_.size());
+			if (start_index_ > 0)
+				x.head(start_index_) = y.head(start_index_);
+			x.tail(x.size() - start_index_) = y.tail(y.size() - start_index_ - values_.size());
+			return x;
+		}
+		else
+			return y.head(y.size() - values_.size());
 	}
 
-	Eigen::VectorXd AppendConstantMap::eval(const Eigen::VectorXd &x) const
+	Eigen::VectorXd InsertConstantMap::eval(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd y;
 		y.setZero(size(x.size()));
-		y << x, values_;
+		if (start_index_ >= 0)
+		{
+			if (start_index_ > 0)
+				y.head(start_index_) = x.head(start_index_);
+			y.segment(start_index_, values_.size()) = values_;
+			y.tail(y.size() - start_index_ - values_.size()) = x.tail(x.size() - start_index_);
+		}
+		else
+			y << x, values_;
 
 		return y;
 	}
-	Eigen::VectorXd AppendConstantMap::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
+	Eigen::VectorXd InsertConstantMap::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
 	{
-		return grad.head(grad.size() - values_.size());
+		if (start_index_ >= 0)
+		{
+			Eigen::VectorXd reduced_grad(grad.size() - values_.size());
+			if (start_index_ > 0)
+				reduced_grad.head(start_index_) = grad.head(start_index_);
+			reduced_grad.tail(reduced_grad.size() - start_index_) = grad.tail(grad.size() - start_index_ - values_.size());
+			return reduced_grad;
+		}
+		else
+			return grad.head(grad.size() - values_.size());
 	}
 
 	LinearFilter::LinearFilter(const mesh::Mesh &mesh, const double radius)

@@ -9,6 +9,11 @@ namespace polyfem::mesh
 	class Mesh;
 }
 
+namespace polyfem::basis
+{
+	class ElementBases;
+}
+
 namespace polyfem::solver
 {
 	class ParametrizationFactory
@@ -83,6 +88,24 @@ namespace polyfem::solver
 		const bool is_volume_;
 	};
 
+	class PerBody2PerNode : public Parametrization
+	{
+	public:
+		PerBody2PerNode(const mesh::Mesh &mesh, const std::vector<basis::ElementBases> &bases, const int n_bases);
+
+		int size(const int x_size) const override;
+		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
+
+	private:
+		const mesh::Mesh &mesh_;
+		const std::vector<basis::ElementBases> &bases_;
+		int full_size_;
+		int reduced_size_;
+		std::map<int, std::array<int, 2>> body_id_map_; // from body_id to {elem_id, index}
+		Eigen::VectorXi node_id_to_body_id_;
+	};
+
 	class PerBody2PerElem : public Parametrization
 	{
 	public:
@@ -114,11 +137,11 @@ namespace polyfem::solver
 		const int from_, to_, total_;
 	};
 
-	class AppendConstantMap : public Parametrization
+	class InsertConstantMap : public Parametrization
 	{
 	public:
-		AppendConstantMap(const int size = -1, const double val = 0);
-		AppendConstantMap(const Eigen::VectorXd &values);
+		InsertConstantMap(const int size = -1, const double val = 0, const int start_index = -1);
+		InsertConstantMap(const Eigen::VectorXd &values);
 
 		int size(const int x_size) const override;
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
@@ -128,6 +151,7 @@ namespace polyfem::solver
 	private:
 		// const int size_;
 		// const double val_;
+		int start_index_ = -1;
 		Eigen::VectorXd values_;
 	};
 

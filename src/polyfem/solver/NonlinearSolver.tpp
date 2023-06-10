@@ -430,6 +430,7 @@ namespace cppoptlib
 		const std::string line_search_name = solver_info["line_search"];
 		solver_info = polyfem::json();
 		solver_info["line_search"] = line_search_name;
+		solver_info["iterations"] = 0;
 
 		reset_times();
 	}

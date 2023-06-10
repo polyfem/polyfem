@@ -275,6 +275,10 @@ namespace polyfem::solver
 		{
 			map = std::make_shared<PerBody2PerElem>(*(states[args["state"]]->mesh));
 		}
+		else if (type == "per-body-to-per-node")
+		{
+			map = std::make_shared<PerBody2PerNode>(*(states[args["state"]]->mesh), states[args["state"]]->bases, states[args["state"]]->n_bases);
+		}
 		else if (type == "E-nu-to-lambda-mu")
 		{
 			map = std::make_shared<ENu2LambdaMu>(args["is_volume"]);
@@ -324,11 +328,11 @@ namespace polyfem::solver
 		{
 			Eigen::VectorXd vals;
 			nlohmann::adl_serializer<Eigen::VectorXd>::from_json(args["values"], vals);
-			map = std::make_shared<AppendConstantMap>(vals);
+			map = std::make_shared<InsertConstantMap>(vals);
 		}
 		else if (type == "append-const")
 		{
-			map = std::make_shared<AppendConstantMap>(args["size"], args["value"]);
+			map = std::make_shared<InsertConstantMap>(args["size"], args["value"], args["start"]);
 		}
 		else if (type == "linear-filter")
 		{
