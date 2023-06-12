@@ -117,6 +117,14 @@ namespace polyfem
 		assert(!problem->is_scalar());                           // tensor
 		assert(mixed_assembler == nullptr);
 
+		if (args["optimization"]["enabled"])
+		{
+			if (initial_sol_update.size() == ndof())
+				sol = initial_sol_update;
+			else
+				initial_sol_update = sol;
+		}
+
 		///////////////////////////////////////////////////////////////////////
 		// Check for initial intersections
 		if (is_contact_enabled())
@@ -152,10 +160,6 @@ namespace polyfem
 
 				if (args["optimization"]["enabled"])
 				{
-					if (initial_sol_update.size() == ndof())
-						sol = initial_sol_update;
-					else
-						initial_sol_update = sol;
 					if (initial_vel_update.size() == ndof())
 						velocity = initial_vel_update;
 					else

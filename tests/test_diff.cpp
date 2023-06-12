@@ -998,26 +998,21 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(std::make_shared<InitialConditionVariableToSimulation>(state_ptr, CompositeParametrization()));
 
-	auto obj_aux = std::make_shared<TargetForm>(variable_to_simulations, state, opt_args["functionals"][0]);
-
-	std::vector<int> tmp_ids = opt_args["functionals"][0]["reference_cached_body_ids"];
-	std::set<int> reference_cached_body_ids = std::set(tmp_ids.begin(), tmp_ids.end());
-	obj_aux->set_reference(state_reference, reference_cached_body_ids);
-
-	TransientForm obj(variable_to_simulations, state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], {}, obj_aux);
+	std::vector<std::shared_ptr<State>> states({state_ptr, state_reference});
+	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
 	Eigen::MatrixXd velocity_discrete;
-	velocity_discrete.setZero(state.ndof() * 2, 1);
-	for (int i = 0; i < state.n_bases; i++)
-	{
-		velocity_discrete(state.ndof() + i * 2 + 0) = -2.;
-		velocity_discrete(state.ndof() + i * 2 + 1) = -1.;
-	}
+	velocity_discrete.setRandom(state.ndof() * 2, 1);
+	// for (int i = 0; i < state.n_bases; i++)
+	// {
+	// 	velocity_discrete(state.ndof() + i * 2 + 0) = -2.;
+	// 	velocity_discrete(state.ndof() + i * 2 + 1) = -1.;
+	// }
 
 	Eigen::VectorXd x(velocity_discrete.size());
 	x << state.initial_sol_update, state.initial_vel_update;
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-5, 1e-5);
+	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-5, 1e-5);
 }
 
 // TEST_CASE("barycenter", "[adjoint_method]")
