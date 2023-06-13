@@ -190,12 +190,13 @@ namespace polyfem::solver
 	PerBody2PerNode::PerBody2PerNode(const mesh::Mesh &mesh, const std::vector<basis::ElementBases> &bases, const int n_bases) : mesh_(mesh), bases_(bases), full_size_(n_bases)
 	{
 		reduced_size_ = 0;
+		std::map<int, int> body_id_map;
 		for (int e = 0; e < mesh.n_elements(); e++)
 		{
 			const int body_id = mesh.get_body_id(e);
-			if (!body_id_map_.count(body_id))
+			if (!body_id_map.count(body_id))
 			{
-				body_id_map_[body_id] = {{e, reduced_size_}};
+				body_id_map[body_id] = reduced_size_;
 				reduced_size_++;
 			}
 		}
@@ -203,17 +204,17 @@ namespace polyfem::solver
 
 		node_id_to_body_id_.resize(full_size_);
 		node_id_to_body_id_.setConstant(-1);
-		for (int e = 0; e < mesh_.n_elements(); e++)
+		for (int e = 0; e < bases.size(); e++)
 		{
 			const int body_id = mesh_.get_body_id(e);
-			const auto &entry = body_id_map_.at(body_id);
+			const int id = body_id_map.at(body_id);
 			for (const auto &bs : bases[e].bases)
 			{
 				for (const auto &g : bs.global())
 				{
 					if (node_id_to_body_id_(g.index) < 0)
-						node_id_to_body_id_(g.index) = entry[1];
-					else if (node_id_to_body_id_(g.index) != entry[1])
+						node_id_to_body_id_(g.index) = id;
+					else if (node_id_to_body_id_(g.index) != id)
 						log_and_throw_error("Same node on different bodies!");
 				}
 			}
@@ -396,16 +397,18 @@ namespace polyfem::solver
 	}
 	Eigen::VectorXd InsertConstantMap::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
 	{
+		assert(x.size() == grad.size() - values_.size());
+		Eigen::VectorXd reduced_grad(grad.size() - values_.size());
 		if (start_index_ >= 0)
 		{
-			Eigen::VectorXd reduced_grad(grad.size() - values_.size());
 			if (start_index_ > 0)
 				reduced_grad.head(start_index_) = grad.head(start_index_);
 			reduced_grad.tail(reduced_grad.size() - start_index_) = grad.tail(grad.size() - start_index_ - values_.size());
-			return reduced_grad;
 		}
 		else
-			return grad.head(grad.size() - values_.size());
+			reduced_grad = grad.head(grad.size() - values_.size());
+
+		return reduced_grad;
 	}
 
 	LinearFilter::LinearFilter(const mesh::Mesh &mesh, const double radius)

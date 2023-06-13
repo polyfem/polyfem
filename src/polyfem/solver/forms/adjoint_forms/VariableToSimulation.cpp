@@ -322,7 +322,10 @@ namespace polyfem::solver
 	{
 		for (auto state : states_)
 		{
-			assert(state_variable.size() == state->ndof() * 2);
+			if (state_variable.size() != state->ndof() * 2)
+			{
+				log_and_throw_error("Inconsistent number of parameters {} and number of dofs in forward {}!", state_variable.size(), state->ndof() * 2);
+			}
 			state->initial_sol_update = state_variable.head(state->ndof());
 			state->initial_vel_update = state_variable.tail(state->ndof());
 		}

@@ -1143,9 +1143,9 @@ namespace polyfem::solver
 						{
 							const auto nodes = bases[e].local_nodes_for_primitive(lb.global_primitive_id(l), *state.mesh);
 
-							for (long n = 0; n < n_loc_bases_; ++n)
+							for (long n = 0; n < nodes.size(); ++n)
 							{
-								const assembler::AssemblyValues &v = vals.basis_values[n];
+								const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
 								assert(v.global.size() == 1);
 								for (int d = 0; d < actual_dim; d++)
 								{

@@ -102,7 +102,6 @@ namespace polyfem::solver
 		const std::vector<basis::ElementBases> &bases_;
 		int full_size_;
 		int reduced_size_;
-		std::map<int, std::array<int, 2>> body_id_map_; // from body_id to {elem_id, index}
 		Eigen::VectorXi node_id_to_body_id_;
 	};
 
