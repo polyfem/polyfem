@@ -295,9 +295,9 @@ namespace polyfem::solver
 	}
 
 	void
-	TractionNormForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	TractionNormForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
+		SpatialIntegralForm::compute_partial_gradient_unweighted_step(time_step, x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &param_type = param_map->get_parameter_type();

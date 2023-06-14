@@ -18,7 +18,7 @@ namespace polyfem::solver
 				in_power_ = args["power"];
 		}
 
-		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
 		IntegrableFunctional get_integral_functional() const override;

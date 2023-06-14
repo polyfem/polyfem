@@ -42,15 +42,15 @@ namespace polyfem::solver
 		};
 	} // namespace
 
-	double SpatialIntegralForm::value_unweighted(const Eigen::VectorXd &x) const
+	double SpatialIntegralForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
-		assert(time_step_ < state_.diff_cached.size());
-		return AdjointTools::integrate_objective(state_, get_integral_functional(), state_.diff_cached.u(time_step_), ids_, spatial_integral_type_, time_step_);
+		assert(time_step < state_.diff_cached.size());
+		return AdjointTools::integrate_objective(state_, get_integral_functional(), state_.diff_cached.u(time_step), ids_, spatial_integral_type_, time_step);
 	}
 
-	void SpatialIntegralForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void SpatialIntegralForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		assert(time_step_ < state_.diff_cached.size());
+		assert(time_step < state_.diff_cached.size());
 		gradv.setZero(x.size());
 		for (const auto &param_map : variable_to_simulations_)
 		{
@@ -63,14 +63,14 @@ namespace polyfem::solver
 
 				Eigen::VectorXd term;
 				if (param_type == ParameterType::Shape)
-					AdjointTools::compute_shape_derivative_functional_term(state_, state_.diff_cached.u(time_step_), get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
+					AdjointTools::compute_shape_derivative_functional_term(state_, state_.diff_cached.u(time_step), get_integral_functional(), ids_, spatial_integral_type_, term, time_step);
 				else if (param_type == ParameterType::MacroStrain)
-					AdjointTools::compute_macro_strain_derivative_functional_term(state_, state_.diff_cached.u(time_step_), get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
+					AdjointTools::compute_macro_strain_derivative_functional_term(state_, state_.diff_cached.u(time_step), get_integral_functional(), ids_, spatial_integral_type_, term, time_step);
 				else if (param_type == ParameterType::PeriodicShape)
 				{
-					AdjointTools::compute_shape_derivative_functional_term(state_, state_.diff_cached.u(time_step_), get_integral_functional(), ids_, spatial_integral_type_, term, time_step_);
+					AdjointTools::compute_shape_derivative_functional_term(state_, state_.diff_cached.u(time_step), get_integral_functional(), ids_, spatial_integral_type_, term, time_step);
 
-					auto adjoint_rhs = compute_adjoint_rhs_unweighted_step(x, state_);
+					auto adjoint_rhs = compute_adjoint_rhs_unweighted_step(time_step, x, state_);
 					std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state_.solve_data.nl_problem);
 					// term += homo_problem->reduced_to_full_shape_derivative(state_.diff_cached.disp_grad(), adjoint_rhs);
 					{
@@ -86,15 +86,15 @@ namespace polyfem::solver
 		}
 	}
 
-	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
 	{
 		if (&state != &state_)
 			return Eigen::VectorXd::Zero(state.ndof());
 
-		assert(time_step_ < state_.diff_cached.size());
+		assert(time_step < state_.diff_cached.size());
 
 		Eigen::VectorXd rhs;
-		AdjointTools::dJ_du_step(state, get_integral_functional(), state.diff_cached.u(time_step_), ids_, spatial_integral_type_, time_step_, rhs);
+		AdjointTools::dJ_du_step(state, get_integral_functional(), state.diff_cached.u(time_step), ids_, spatial_integral_type_, time_step, rhs);
 
 		return rhs;
 	}
@@ -146,9 +146,9 @@ namespace polyfem::solver
 		return j;
 	}
 
-	void ElasticEnergyForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void ElasticEnergyForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
+		SpatialIntegralForm::compute_partial_gradient_unweighted_step(time_step, x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &param_type = param_map->get_parameter_type();
@@ -224,9 +224,9 @@ namespace polyfem::solver
 		return j;
 	}
 
-	void StressNormForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void StressNormForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
+		SpatialIntegralForm::compute_partial_gradient_unweighted_step(time_step, x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &param_type = param_map->get_parameter_type();
@@ -286,9 +286,9 @@ namespace polyfem::solver
 		return j;
 	}
 
-	void ComplianceForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void ComplianceForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
+		SpatialIntegralForm::compute_partial_gradient_unweighted_step(time_step, x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &param_type = param_map->get_parameter_type();
@@ -317,7 +317,7 @@ namespace polyfem::solver
 						Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
 						Eigen::MatrixXd u, grad_u;
-						io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, state.diff_cached.u(time_step_), u, grad_u);
+						io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, state.diff_cached.u(time_step), u, grad_u);
 
 						Eigen::MatrixXd grad_u_q;
 						for (int q = 0; q < quadrature.weights.size(); q++)
@@ -369,13 +369,12 @@ namespace polyfem::solver
 	{
 		IntegrableFunctional j;
 		const int dim = this->dim_;
-		const int time_step = this->time_step_;
 
-		j.set_j([dim, time_step, &state = std::as_const(this->state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([dim, &state = std::as_const(this->state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			const int e = params["elem"];
 
 			Eigen::MatrixXd acc, grad_acc;
-			io::Evaluator::interpolate_at_local_vals(*(state.mesh), state.problem->is_scalar(), state.bases, state.geom_bases(), e, local_pts, state.diff_cached.acc(time_step), acc, grad_acc);
+			io::Evaluator::interpolate_at_local_vals(*(state.mesh), state.problem->is_scalar(), state.bases, state.geom_bases(), e, local_pts, state.diff_cached.acc(params["step"]), acc, grad_acc);
 
 			val = acc.col(dim);
 		});
@@ -397,7 +396,7 @@ namespace polyfem::solver
 			const int e = params["elem"];
 
 			Eigen::MatrixXd v, grad_v;
-			io::Evaluator::interpolate_at_local_vals(*(state_.mesh), state_.problem->is_scalar(), state_.bases, state_.geom_bases(), e, local_pts, state_.diff_cached.v(time_step_), v, grad_v);
+			io::Evaluator::interpolate_at_local_vals(*(state_.mesh), state_.problem->is_scalar(), state_.bases, state_.geom_bases(), e, local_pts, state_.diff_cached.v(params["step"]), v, grad_v);
 
 			val.setZero(u.rows(), 1);
 			for (int q = 0; q < v.rows(); q++)
@@ -596,9 +595,9 @@ namespace polyfem::solver
 		have_target_func = true;
 	}
 
-	void StressForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void StressForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
+		SpatialIntegralForm::compute_partial_gradient_unweighted_step(time_step, x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &param_type = param_map->get_parameter_type();
@@ -697,9 +696,9 @@ namespace polyfem::solver
 		return j;
 	}
 
-	void DispGradForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void DispGradForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		SpatialIntegralForm::compute_partial_gradient_unweighted(x, gradv);
+		SpatialIntegralForm::compute_partial_gradient_unweighted_step(time_step, x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &param_type = param_map->get_parameter_type();
@@ -757,8 +756,6 @@ namespace polyfem::solver
 	{
 		AdjointForm::solution_changed(x);
 
-		assert(time_step_ < state_.diff_cached.size());
-
 		const auto &bases = state_.bases;
 		const auto &gbases = state_.geom_bases();
 		const int actual_dim = state_.problem->is_scalar() ? 1 : dim;
@@ -788,7 +785,7 @@ namespace polyfem::solver
 
 					assembler::ElementAssemblyValues &vals = local_storage.vals;
 					vals.compute(e, state_.mesh->is_volume(), points, bases[e], gbases[e]);
-					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, state_.diff_cached.u(time_step_), u, grad_u);
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, state_.diff_cached.u(0), u, grad_u);
 
 					normal = normal * vals.jac_it[0]; // assuming linear geometry
 
@@ -962,8 +959,6 @@ namespace polyfem::solver
 	{
 		AdjointForm::solution_changed(x);
 
-		assert(time_step_ < state_.diff_cached.size());
-
 		const auto &bases = state_.bases;
 		const auto &gbases = state_.geom_bases();
 		const int actual_dim = state_.problem->is_scalar() ? 1 : dim;
@@ -993,7 +988,7 @@ namespace polyfem::solver
 
 					assembler::ElementAssemblyValues &vals = local_storage.vals;
 					vals.compute(e, state_.mesh->is_volume(), points, bases[e], gbases[e]);
-					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, state_.diff_cached.u(time_step_), u, grad_u);
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, state_.diff_cached.u(0), u, grad_u);
 
 					normal = normal * vals.jac_it[0]; // assuming linear geometry
 

@@ -76,10 +76,20 @@ namespace polyfem::solver
 		return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
 	}
 
+	double StaticForm::value_unweighted(const Eigen::VectorXd &x) const
+	{
+		return value_unweighted_step(0, x);
+	}
+
+	void StaticForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		compute_partial_gradient_unweighted_step(0, x, gradv);
+	}
+
 	Eigen::MatrixXd StaticForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
 	{
 		Eigen::MatrixXd term = Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
-		term.col(time_step_) = compute_adjoint_rhs_unweighted_step(x, state);
+		term.col(0) = compute_adjoint_rhs_unweighted_step(0, x, state);
 
 		return term;
 	}
@@ -108,7 +118,7 @@ namespace polyfem::solver
 	NodeTargetForm::NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_) : StaticForm(variable_to_simulations), state_(state), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
 	{
 	}
-	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
 	{
 		Eigen::VectorXd rhs;
 		rhs.setZero(state.diff_cached.u(0).size());
@@ -118,7 +128,7 @@ namespace polyfem::solver
 		if (&state == &state_)
 		{
 			int i = 0;
-			Eigen::VectorXd disp = state_.diff_cached.u(time_step_);
+			Eigen::VectorXd disp = state_.diff_cached.u(time_step);
 			for (int v : active_nodes)
 			{
 				RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
@@ -129,12 +139,12 @@ namespace polyfem::solver
 
 		return rhs;
 	}
-	double NodeTargetForm::value_unweighted(const Eigen::VectorXd &x) const
+	double NodeTargetForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
 		const int dim = state_.mesh->dimension();
 		double val = 0;
 		int i = 0;
-		Eigen::VectorXd disp = state_.diff_cached.u(time_step_);
+		Eigen::VectorXd disp = state_.diff_cached.u(time_step);
 		for (int v : active_nodes)
 		{
 			RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
@@ -142,7 +152,7 @@ namespace polyfem::solver
 		}
 		return val;
 	}
-	void NodeTargetForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void NodeTargetForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv.setZero(x.size());
 		for (const auto &param_map : variable_to_simulations_)
@@ -164,7 +174,7 @@ namespace polyfem::solver
 		}
 	}
 
-	double MaxStressForm::value_unweighted(const Eigen::VectorXd &x) const
+	double MaxStressForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd max_stress;
 		max_stress.setZero(state_.bases.size());
@@ -178,8 +188,8 @@ namespace polyfem::solver
 				
 				state_.ass_vals_cache.compute(e, state_.mesh->is_volume(), state_.bases[e], state_.geom_bases()[e], vals);
 				// std::vector<assembler::Assembler::NamedMatrix> result;
-				// state_.assembler->compute_tensor_value(e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step_), result);
-				std::dynamic_pointer_cast<assembler::ElasticityAssembler>(state_.assembler)->compute_stress_tensor(e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step_), ElasticityTensorType::PK1, local_vals);
+				// state_.assembler->compute_tensor_value(e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step), result);
+				std::dynamic_pointer_cast<assembler::ElasticityAssembler>(state_.assembler)->compute_stress_tensor(e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step), ElasticityTensorType::PK1, local_vals);
 				
 				Eigen::VectorXd stress_norms = local_vals.rowwise().norm();
 				max_stress(e) = std::max(max_stress(e), stress_norms.maxCoeff());
@@ -188,10 +198,14 @@ namespace polyfem::solver
 
 		return max_stress.maxCoeff();
 	}
-	Eigen::VectorXd MaxStressForm::compute_adjoint_rhs_unweighted_step(const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd MaxStressForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
 	{
 		log_and_throw_error("MaxStressForm is not differentiable!");
 		return Eigen::VectorXd();
+	}
+	void MaxStressForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		log_and_throw_error("MaxStressForm is not differentiable!");
 	}
 	
 	double HomogenizedDispGradForm::value_unweighted(const Eigen::VectorXd &x) const

@@ -1,9 +1,34 @@
 #include "TransientForm.hpp"
 #include <polyfem/State.hpp>
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 namespace polyfem::solver
 {
+	namespace {
+		class LocalThreadScalarStorage
+		{
+		public:
+			double val;
+
+			LocalThreadScalarStorage()
+			{
+				val = 0;
+			}
+		};
+
+		class LocalThreadMatStorage
+		{
+		public:
+			Eigen::MatrixXd mat;
+
+			LocalThreadMatStorage(const int row, const int col = 1)
+			{
+				mat.resize(row, col);
+				mat.setZero();
+			}
+		};
+	}
 	std::vector<double> TransientForm::get_transient_quadrature_weights() const
 	{
 		std::vector<double> weights;
@@ -51,164 +76,132 @@ namespace polyfem::solver
 
 	double TransientForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		double value = 0;
 		std::vector<double> weights = get_transient_quadrature_weights();
-		for (int i = 0; i <= time_steps_; i++)
-		{
-			if (weights[i] == 0)
-				continue;
-			obj_->set_time_step(i);
-			const double tmp = obj_->value(x);
-			value += weights[i] * tmp;
-		}
+		auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
+
+		utils::maybe_parallel_for(time_steps_ + 1, [&](int start, int end, int thread_id) {
+			LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+			
+			for (int i = start; i < end; i++)
+			{
+				if (weights[i] == 0)
+					continue;
+				const double tmp = obj_->value_unweighted_step(i, x);
+				local_storage.val += (weights[i] * obj_->weight()) * tmp;
+			}
+		});
+
+		double value = 0;
+		for (const LocalThreadScalarStorage &local_storage : storage)
+			value += local_storage.val;
+		
 		return value;
 	}
 	Eigen::MatrixXd TransientForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
 	{
 		Eigen::MatrixXd terms;
 		terms.setZero(state.ndof(), time_steps_ + 1);
-
 		std::vector<double> weights = get_transient_quadrature_weights();
-		for (int i = 0; i <= time_steps_; i++)
-		{
-			if (weights[i] == 0)
-				continue;
-			obj_->set_time_step(i);
-			terms.col(i) = weights[i] * obj_->compute_adjoint_rhs_unweighted_step(x, state) * obj_->weight();
-		}
+
+		auto storage = utils::create_thread_storage(LocalThreadMatStorage(terms.rows(), terms.cols()));
+
+		utils::maybe_parallel_for(time_steps_ + 1, [&](int start, int end, int thread_id) {
+			LocalThreadMatStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+			
+			for (int i = start; i < end; i++)
+			{
+				if (weights[i] == 0)
+					continue;
+				local_storage.mat.col(i) = (weights[i] * obj_->weight()) * obj_->compute_adjoint_rhs_unweighted_step(i, x, state);
+			}
+		});
+
+		for (const LocalThreadMatStorage &local_storage : storage)
+			terms += local_storage.mat;
 
 		return terms;
 	}
 	void TransientForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv.setZero(x.size());
-
 		std::vector<double> weights = get_transient_quadrature_weights();
-		Eigen::VectorXd tmp;
-		for (int i = 0; i <= time_steps_; i++)
-		{
-			if (weights[i] == 0)
-				continue;
-			obj_->set_time_step(i);
-			obj_->compute_partial_gradient(x, tmp);
-			gradv += weights[i] * tmp;
-		}
+		auto storage = utils::create_thread_storage(LocalThreadMatStorage(gradv.size()));
+
+		utils::maybe_parallel_for(time_steps_ + 1, [&](int start, int end, int thread_id) {
+			LocalThreadMatStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+			
+			Eigen::VectorXd tmp;
+			for (int i = start; i < end; i++)
+			{
+				if (weights[i] == 0)
+					continue;
+				obj_->compute_partial_gradient_unweighted_step(i, x, tmp);
+				local_storage.mat += (weights[i] * obj_->weight()) * tmp;
+			}
+		});
+
+		for (const LocalThreadMatStorage &local_storage : storage)
+			gradv += local_storage.mat;
 	}
 
 	void TransientForm::init(const Eigen::VectorXd &x)
 	{
-		for (int i = 0; i <= time_steps_; i++)
-		{
-			obj_->set_time_step(i);
-			obj_->init(x);
-		}
+		obj_->init(x);
 	}
 
 	bool TransientForm::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		for (int i = 0; i <= time_steps_; i++)
-		{
-			obj_->set_time_step(i);
-			if (!obj_->is_step_valid(x0, x1))
-				return false;
-		}
-		return true;
+		return obj_->is_step_valid(x0, x1);
 	}
 
 	double TransientForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		double step = 1;
-		for (int i = 0; i <= time_steps_; i++)
-		{
-			obj_->set_time_step(i);
-			step = std::min(step, obj_->max_step_size(x0, x1));
-		}
-
-		return step;
+		return obj_->max_step_size(x0, x1);
 	}
 
 	void TransientForm::line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
-		for (int i = 0; i <= time_steps_; i++)
-		{
-			obj_->set_time_step(i);
-			obj_->line_search_begin(x0, x1);
-		}
+		obj_->line_search_begin(x0, x1);
 	}
 
 	void TransientForm::line_search_end()
 	{
-		for (int i = 0; i <= time_steps_; i++)
-		{
-			obj_->set_time_step(i);
-			obj_->line_search_end();
-		}
+		obj_->line_search_end();
 	}
 
 	void TransientForm::post_step(const int iter_num, const Eigen::VectorXd &x)
 	{
-		for (int i = 0; i <= time_steps_; i++)
-		{
-			obj_->set_time_step(i);
-			obj_->post_step(iter_num, x);
-		}
+		obj_->post_step(iter_num, x);
 	}
 
 	void TransientForm::solution_changed(const Eigen::VectorXd &new_x)
 	{
 		AdjointForm::solution_changed(new_x);
-
-		for (int i = 0; i <= time_steps_; i++)
-		{
-			obj_->set_time_step(i);
-			obj_->solution_changed(new_x);
-		}
+		obj_->solution_changed(new_x);
 	}
 
 	void TransientForm::update_quantities(const double t, const Eigen::VectorXd &x)
 	{
-		for (int i = 0; i <= time_steps_; i++)
-		{
-			obj_->set_time_step(i);
-			obj_->update_quantities(t, x);
-		}
+		obj_->update_quantities(t, x);
 	}
 
 	void TransientForm::init_lagging(const Eigen::VectorXd &x)
 	{
-		for (int i = 0; i <= time_steps_; i++)
-		{
-			obj_->set_time_step(i);
-			obj_->init_lagging(x);
-		}
+		obj_->init_lagging(x);
 	}
 
 	void TransientForm::update_lagging(const Eigen::VectorXd &x, const int iter_num)
 	{
-		for (int i = 0; i <= time_steps_; i++)
-		{
-			obj_->set_time_step(i);
-			obj_->update_lagging(x, iter_num);
-		}
+		obj_->update_lagging(x, iter_num);
 	}
 
 	void TransientForm::set_apply_DBC(const Eigen::VectorXd &x, bool apply_DBC)
 	{
-		for (int i = 0; i <= time_steps_; i++)
-		{
-			obj_->set_time_step(i);
-			obj_->set_apply_DBC(x, apply_DBC);
-		}
+		obj_->set_apply_DBC(x, apply_DBC);
 	}
 
 	bool TransientForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		for (int i = 0; i <= time_steps_; i++)
-		{
-			obj_->set_time_step(i);
-			if (!obj_->is_step_collision_free(x0, x1))
-				return false;
-		}
-		return true;
+		return obj_->is_step_collision_free(x0, x1);
 	}
 } // namespace polyfem::solver

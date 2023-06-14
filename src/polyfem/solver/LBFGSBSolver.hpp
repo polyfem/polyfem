@@ -137,6 +137,7 @@ namespace cppoptlib
 
 			if (x.size() < 100)
 			{
+				polyfem::logger().debug("x: {}", x.transpose());
 				polyfem::logger().debug("grad: {}", grad.transpose());
 				polyfem::logger().debug("direc: {}", direction.transpose());
 			}
