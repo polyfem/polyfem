@@ -351,6 +351,19 @@
     },
     {
         "pointer": "/variable_to_simulation/*",
+        "type_name": "friction",
+        "type": "object",
+        "required": [
+            "state",
+            "type",
+            "composition"
+        ],
+        "optional": [
+            "composite_map_type"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
         "type_name": "initial",
         "type": "object",
         "required": [

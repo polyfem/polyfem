@@ -22,6 +22,8 @@ set(SOURCES
 	SmoothingForms.cpp
 	TractionNormForm.hpp
 	TractionNormForm.cpp
+	TargetForms.hpp
+	TargetForms.cpp
 )
 
 prepend_current_path(SOURCES)

@@ -58,24 +58,7 @@ namespace polyfem::solver
 		virtual Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const = 0;
 		virtual void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const = 0;
 		virtual double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const = 0;
-	};
-
-	class NodeTargetForm : public StaticForm
-	{
-	public:
-		NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const json &args);
-		NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_);
-		~NodeTargetForm() = default;
-
-		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
-		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
-		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
-	
-	protected:
-		const State &state_;
-
-		Eigen::MatrixXd target_vertex_positions;
-		std::vector<int> active_nodes;
+		virtual void solution_changed_step(const int time_step, const Eigen::VectorXd &new_x) {}
 	};
 
 	class MaxStressForm : public StaticForm
