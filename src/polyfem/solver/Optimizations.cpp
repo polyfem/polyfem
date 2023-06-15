@@ -137,6 +137,10 @@ namespace polyfem::solver
 				tmp->set_reference(states[args["target_state"]], std::set(reference_cached.begin(), reference_cached.end()));
 				obj = tmp;
 			}
+			else if (type == "center-target")
+			{
+				obj = std::make_shared<BarycenterTargetForm>(var2sim, args, states[args["state"]], states[args["target_state"]]);
+			}
 			else if (type == "sdf-target")
 			{
 				std::shared_ptr<SDFTargetForm> tmp = std::make_shared<SDFTargetForm>(var2sim, *(states[args["state"]]), args);

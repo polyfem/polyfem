@@ -8,7 +8,6 @@
 
 namespace polyfem::solver
 {
-
 	class TargetForm : public SpatialIntegralForm
 	{
 	public:
@@ -115,5 +114,19 @@ namespace polyfem::solver
 
 		Eigen::MatrixXd target_vertex_positions;
 		std::vector<int> active_nodes;
+	};
+
+	class BarycenterTargetForm : public StaticForm
+	{
+	public:
+		BarycenterTargetForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const json &args, const std::shared_ptr<State> &state1, const std::shared_ptr<State> &state2);
+
+		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
+		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
+
+	private:
+		std::vector<std::shared_ptr<PositionForm>> center1, center2;
+		int dim;
 	};
 }

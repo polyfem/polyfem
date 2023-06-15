@@ -949,6 +949,47 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-6, 1e-5);
 }
 
+TEST_CASE("custom", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../result/diff-ipc-paper/debug-initial/");
+	json in_args;
+	load_json(path + "state.json", in_args);
+	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
+
+	json opt_args;
+	load_json(path + "opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
+
+	std::string root_path = "";
+	if (utils::is_param_valid(opt_args, "root_path"))
+		root_path = opt_args["root_path"].get<std::string>();
+
+	// compute reference solution
+	json in_args_ref;
+	load_json(path + "state-target.json", in_args_ref);
+	std::shared_ptr<State> state_reference = create_state_and_solve(in_args_ref);
+
+	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	variable_to_simulations.push_back(std::make_shared<InitialConditionVariableToSimulation>(state_ptr, CompositeParametrization()));
+
+	std::vector<std::shared_ptr<State>> states({state_ptr, state_reference});
+	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
+
+	Eigen::MatrixXd theta;
+	theta.setZero(state.ndof() * 2, 1);
+	for (int i = 0; i < state.n_bases; i++)
+	{
+		theta(state.ndof() + i * 2 + 0) = -2.;
+		theta(state.ndof() + i * 2 + 1) = -1.;
+	}
+
+	Eigen::VectorXd x(theta.size());
+	x << state.initial_sol_update, state.initial_vel_update;
+
+	verify_adjoint(variable_to_simulations, *obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"], 1e-5);
+}
+
 TEST_CASE("initial-contact", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
@@ -990,55 +1031,46 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-5, 1e-5);
 }
 
-// TEST_CASE("barycenter", "[adjoint_method]")
-// {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-// 	json in_args;
-// 	load_json(path + "barycenter.json", in_args);
+TEST_CASE("barycenter", "[adjoint_method]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
+	json in_args;
+	load_json(path + "barycenter.json", in_args);
+	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
 
-// 	json opt_args;
-// 	load_json(path + "barycenter-opt.json", opt_args);
-// 	opt_args = apply_opt_json_spec(opt_args, false);
+	json opt_args;
+	load_json(path + "barycenter-opt.json", opt_args);
+	opt_args = apply_opt_json_spec(opt_args, false);
 
-// 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-// 	State &state = *state_ptr;
+	std::string root_path = "";
+	if (utils::is_param_valid(opt_args, "root_path"))
+		root_path = opt_args["root_path"].get<std::string>();
 
-// 	json shape_arg = opt_args["parameters"][1];
+	// compute reference solution
+	json in_args_ref;
+	load_json(path + "barycenter-target.json", in_args_ref);
+	std::shared_ptr<State> state_reference = create_state_and_solve(in_args_ref);
 
-// 	Eigen::MatrixXd centers;
-// 	{
-// 		auto in_args_ref = in_args;
-// 		in_args_ref["initial_conditions"]["velocity"][0]["value"][0] = 4;
-// 		in_args_ref["initial_conditions"]["velocity"][0]["value"][1] = -1;
-// 		std::shared_ptr<State> state_reference = create_state_and_solve(in_args_ref);
-// 		std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-// 		std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, shape_arg);
-// 		BarycenterTargetObjective func_aux(*state_reference, shape_param, opt_args["functionals"][0], Eigen::MatrixXd::Zero(state_reference->diff_cached.size(), state_reference->mesh->dimension()));
-// 		centers.setZero(state_reference->diff_cached.size(), state_reference->mesh->dimension());
-// 		for (int t = 0; t < state_reference->diff_cached.size(); t++)
-// 		{
-// 			func_aux.set_time_step(t);
-// 			centers.row(t) = func_aux.get_barycenter();
-// 		}
-// 	}
+	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	variable_to_simulations.push_back(std::make_shared<InitialConditionVariableToSimulation>(state_ptr, CompositeParametrization()));
 
-// 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-// 	std::shared_ptr<ShapeParameter> shape_param = std::make_shared<ShapeParameter>(states_ptr, shape_arg);
-// 	std::shared_ptr<InitialConditionParameter> initial_param = std::make_shared<InitialConditionParameter>(states_ptr, opt_args["parameters"][0]);
+	std::vector<std::shared_ptr<State>> states({state_ptr, state_reference});
+	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
-// 	std::shared_ptr<StaticObjective> func_aux = std::make_shared<BarycenterTargetObjective>(state, shape_param, opt_args["functionals"][0], centers);
-// 	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], func_aux);
+	Eigen::MatrixXd velocity_discrete;
+	velocity_discrete.setZero(state.ndof() * 2, 1);
+	for (int i = 0; i < state.n_bases; i++)
+	{
+		velocity_discrete(state.ndof() + i * 2 + 0) = -2.;
+		velocity_discrete(state.ndof() + i * 2 + 1) = -1.;
+	}
 
-// 	Eigen::MatrixXd velocity_discrete;
-// 	velocity_discrete.setZero(state.ndof() * 2, 1);
-// 	for (int i = 0; i < state.n_bases; i++)
-// 	{
-// 		velocity_discrete(state.ndof() + i * 2 + 0) = -2.;
-// 		velocity_discrete(state.ndof() + i * 2 + 1) = -1.;
-// 	}
+	Eigen::VectorXd x(velocity_discrete.size());
+	x << state.initial_sol_update, state.initial_vel_update;
 
-// 	verify_adjoint(func, state, initial_param, "initial", velocity_discrete, 1e-6, 1e-5);
-// }
+	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-6, 1e-5);
+}
 
 // TEST_CASE("dirichlet-sdf", "[adjoint_method]")
 // {

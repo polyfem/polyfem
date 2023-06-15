@@ -10,6 +10,7 @@
             "target",
             "sdf-target",
             "mesh-target",
+            "center-target",
             "function-target",
             "node-target",
             "position",
@@ -195,6 +196,22 @@
             "print_energy",
             "surface_selection",
             "reference_cached_body_ids",
+            "target_state"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "center-target",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "weight",
+            "print_energy",
+            "volume_selection",
             "target_state"
         ],
         "doc": "TODO"
