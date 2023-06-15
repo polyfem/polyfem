@@ -949,47 +949,6 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-6, 1e-5);
 }
 
-TEST_CASE("custom", "[adjoint_method]")
-{
-	const std::string path = POLYFEM_DATA_DIR + std::string("/../result/diff-ipc-paper/debug-initial/");
-	json in_args;
-	load_json(path + "state.json", in_args);
-	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-	State &state = *state_ptr;
-
-	json opt_args;
-	load_json(path + "opt.json", opt_args);
-	opt_args = apply_opt_json_spec(opt_args, false);
-
-	std::string root_path = "";
-	if (utils::is_param_valid(opt_args, "root_path"))
-		root_path = opt_args["root_path"].get<std::string>();
-
-	// compute reference solution
-	json in_args_ref;
-	load_json(path + "state-target.json", in_args_ref);
-	std::shared_ptr<State> state_reference = create_state_and_solve(in_args_ref);
-
-	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<InitialConditionVariableToSimulation>(state_ptr, CompositeParametrization()));
-
-	std::vector<std::shared_ptr<State>> states({state_ptr, state_reference});
-	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
-
-	Eigen::MatrixXd theta;
-	theta.setZero(state.ndof() * 2, 1);
-	for (int i = 0; i < state.n_bases; i++)
-	{
-		theta(state.ndof() + i * 2 + 0) = -2.;
-		theta(state.ndof() + i * 2 + 1) = -1.;
-	}
-
-	Eigen::VectorXd x(theta.size());
-	x << state.initial_sol_update, state.initial_vel_update;
-
-	verify_adjoint(variable_to_simulations, *obj, state, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"], 1e-5);
-}
-
 TEST_CASE("initial-contact", "[adjoint_method]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
