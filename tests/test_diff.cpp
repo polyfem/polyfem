@@ -988,24 +988,24 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
-	Eigen::MatrixXd control_points;
-	Eigen::VectorXd knots;
-	double delta;
-	control_points.setZero(4, 2);
-	control_points << 1, 0.4,
-		0.66666667, 0.73333333,
-		0.43333333, 1,
-		0.1, 1;
-	knots.setZero(8);
-	knots << 0,
-		0,
-		0,
-		0,
-		1,
-		1,
-		1,
-		1;
-	delta = 0.05;
+	// Eigen::MatrixXd control_points;
+	// Eigen::VectorXd knots;
+	// double delta;
+	// control_points.setZero(4, 2);
+	// control_points << 1, 0.4,
+	// 	0.66666667, 0.73333333,
+	// 	0.43333333, 1,
+	// 	0.1, 1;
+	// knots.setZero(8);
+	// knots << 0,
+	// 	0,
+	// 	0,
+	// 	0,
+	// 	1,
+	// 	1,
+	// 	1,
+	// 	1;
+	// delta = 0.05;
 
 	auto obj = create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -1023,7 +1023,7 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 	state.get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-6, 1e-5);
+	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 1e-5);
 }
 
 TEST_CASE("custom", "[adjoint_method]")
