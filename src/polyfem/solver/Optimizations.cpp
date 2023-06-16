@@ -221,6 +221,10 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<TractionNormForm>(var2sim, *(states[args["state"]]), args);
 			}
+			else if (type == "contact_force_norm")
+			{
+				obj = std::make_shared<ContactForceForm>(var2sim, *(states[args["state"]]), args);
+			}
 			else if (type == "max_stress")
 			{
 				obj = std::make_shared<MaxStressForm>(var2sim, *(states[args["state"]]), args);

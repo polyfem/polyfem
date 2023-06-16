@@ -220,7 +220,9 @@ namespace polyfem::solver
 
 	void StressNormForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		SpatialIntegralForm::compute_partial_gradient_unweighted_step(time_step, x, gradv);
+		gradv.setZero(x.size());
+		Eigen::VectorXd term;
+		SpatialIntegralForm::compute_partial_gradient_unweighted_step(time_step, x, term);
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &param_type = param_map->get_parameter_type();
@@ -230,7 +232,6 @@ namespace polyfem::solver
 				if (state.get() != &state_)
 					continue;
 
-				Eigen::VectorXd term;
 				if (param_type == ParameterType::Material)
 					log_and_throw_error("Doesn't support stress derivative wrt. material!");
 

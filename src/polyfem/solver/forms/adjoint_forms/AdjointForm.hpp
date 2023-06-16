@@ -13,7 +13,11 @@ namespace polyfem::solver
 
 		double value(const Eigen::VectorXd &x) const override;
 
-		void enable_energy_print(const std::string &print_energy_keyword) { print_energy_keyword_ = print_energy_keyword; print_energy_ = 1; }
+		void enable_energy_print(const std::string &print_energy_keyword)
+		{
+			print_energy_keyword_ = print_energy_keyword;
+			print_energy_ = 1;
+		}
 
 		virtual void solution_changed(const Eigen::VectorXd &new_x) override;
 
@@ -56,9 +60,14 @@ namespace polyfem::solver
 		double value_unweighted(const Eigen::VectorXd &x) const final override;
 
 		virtual Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const = 0;
+		virtual Eigen::VectorXd compute_adjoint_rhs_unweighted_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state) const;
 		virtual void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const = 0;
 		virtual double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const = 0;
 		virtual void solution_changed_step(const int time_step, const Eigen::VectorXd &new_x) {}
+		virtual bool depends_on_step_prev() const final { return depends_on_step_prev_; }
+
+	protected:
+		bool depends_on_step_prev_ = false;
 	};
 
 	class MaxStressForm : public StaticForm
@@ -73,7 +82,7 @@ namespace polyfem::solver
 		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
 		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
-	
+
 	private:
 		std::set<int> interested_ids_;
 		const State &state_;
@@ -103,6 +112,7 @@ namespace polyfem::solver
 		double value_unweighted(const Eigen::VectorXd &x) const override;
 		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
 		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+
 	private:
 		Eigen::VectorXd coeffs;
 		const State &state_;

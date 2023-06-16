@@ -29,7 +29,7 @@ namespace polyfem::solver
 	{
 		log_and_throw_error("Not implemented");
 	}
-	
+
 	Eigen::MatrixXd AdjointForm::compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
 	{
 		Eigen::MatrixXd rhs = compute_adjoint_rhs_unweighted(x, state);
@@ -46,9 +46,9 @@ namespace polyfem::solver
 			return reduced;
 		}
 		else
-			return rhs;	
+			return rhs;
 	}
-	
+
 	void AdjointForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv.setZero(x.size());
@@ -85,8 +85,14 @@ namespace polyfem::solver
 		compute_partial_gradient_unweighted_step(0, x, gradv);
 	}
 
+	Eigen::VectorXd StaticForm::compute_adjoint_rhs_unweighted_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	{
+		return Eigen::MatrixXd::Zero(state.ndof(), 1);
+	}
+
 	Eigen::MatrixXd StaticForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
 	{
+		assert(!depends_on_step_prev());
 		Eigen::MatrixXd term = Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
 		term.col(0) = compute_adjoint_rhs_unweighted_step(0, x, state);
 
@@ -104,12 +110,12 @@ namespace polyfem::solver
 			{
 				if (interested_ids_.size() != 0 && interested_ids_.find(state_.mesh->get_body_id(e)) == interested_ids_.end())
 					continue;
-				
+
 				state_.ass_vals_cache.compute(e, state_.mesh->is_volume(), state_.bases[e], state_.geom_bases()[e], vals);
 				// std::vector<assembler::Assembler::NamedMatrix> result;
 				// state_.assembler->compute_tensor_value(e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step), result);
 				std::dynamic_pointer_cast<assembler::ElasticityAssembler>(state_.assembler)->compute_stress_tensor(e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step), ElasticityTensorType::PK1, local_vals);
-				
+
 				Eigen::VectorXd stress_norms = local_vals.rowwise().norm();
 				max_stress(e) = std::max(max_stress(e), stress_norms.maxCoeff());
 			}
@@ -126,7 +132,7 @@ namespace polyfem::solver
 	{
 		log_and_throw_error("MaxStressForm is not differentiable!");
 	}
-	
+
 	double HomogenizedDispGradForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		return state_.diff_cached.disp_grad()(dimensions_[0], dimensions_[1]);
@@ -148,11 +154,11 @@ namespace polyfem::solver
 		std::shared_ptr<NLHomoProblem> problem = std::dynamic_pointer_cast<NLHomoProblem>(state_.solve_data.nl_problem);
 		if (!problem)
 			log_and_throw_error("Homogenized displacement gradient objective only works in homogenization!");
-		
+
 		Eigen::MatrixXd disp_grad;
 		disp_grad.setZero(state.mesh->dimension(), state.mesh->dimension());
 		disp_grad(dimensions_[0], dimensions_[1]) = 1;
-		
+
 		Eigen::VectorXd rhs;
 		rhs.setZero(problem->reduced_size() + problem->macro_reduced_size());
 		rhs.tail(problem->macro_reduced_size()) = problem->macro_full_to_reduced_grad(utils::flatten(disp_grad));

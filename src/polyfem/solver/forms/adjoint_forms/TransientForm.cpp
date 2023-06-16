@@ -5,7 +5,8 @@
 
 namespace polyfem::solver
 {
-	namespace {
+	namespace
+	{
 		class LocalThreadScalarStorage
 		{
 		public:
@@ -28,7 +29,7 @@ namespace polyfem::solver
 				mat.setZero();
 			}
 		};
-	}
+	} // namespace
 	std::vector<double> TransientForm::get_transient_quadrature_weights() const
 	{
 		std::vector<double> weights;
@@ -65,7 +66,7 @@ namespace polyfem::solver
 			for (const int step : steps_)
 			{
 				assert(step > 0 && step < weights.size());
-				weights[step] = 1. / steps_.size();
+				weights[step] += 1. / steps_.size();
 			}
 		}
 		else
@@ -81,7 +82,7 @@ namespace polyfem::solver
 
 		utils::maybe_parallel_for(time_steps_ + 1, [&](int start, int end, int thread_id) {
 			LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-			
+
 			for (int i = start; i < end; i++)
 			{
 				if (weights[i] == 0)
@@ -94,7 +95,7 @@ namespace polyfem::solver
 		double value = 0;
 		for (const LocalThreadScalarStorage &local_storage : storage)
 			value += local_storage.val;
-		
+
 		return value;
 	}
 	Eigen::MatrixXd TransientForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
@@ -107,12 +108,14 @@ namespace polyfem::solver
 
 		utils::maybe_parallel_for(time_steps_ + 1, [&](int start, int end, int thread_id) {
 			LocalThreadMatStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-			
+
 			for (int i = start; i < end; i++)
 			{
 				if (weights[i] == 0)
 					continue;
 				local_storage.mat.col(i) = (weights[i] * obj_->weight()) * obj_->compute_adjoint_rhs_unweighted_step(i, x, state);
+				if (obj_->depends_on_step_prev() && i > 0)
+					local_storage.mat.col(i - 1) = (weights[i] * obj_->weight()) * obj_->compute_adjoint_rhs_unweighted_step_prev(i, x, state);
 			}
 		});
 
@@ -129,7 +132,7 @@ namespace polyfem::solver
 
 		utils::maybe_parallel_for(time_steps_ + 1, [&](int start, int end, int thread_id) {
 			LocalThreadMatStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-			
+
 			Eigen::VectorXd tmp;
 			for (int i = start; i < end; i++)
 			{
