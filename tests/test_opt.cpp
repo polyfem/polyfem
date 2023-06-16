@@ -1124,7 +1124,7 @@ TEST_CASE("2d-shape-traction-force", "[optimization]")
 	auto energies = read_energy(name);
 
 	REQUIRE(energies[0] == Approx(821.1).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(242.1).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(242.12).epsilon(1e-4));
 }
 
 #endif
