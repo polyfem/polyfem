@@ -21,7 +21,7 @@ set(SOURCES
 	SmoothingForms.hpp
 	SmoothingForms.cpp
 	SurfaceTractionForms.hpp
-	SurfaceTractionForms.hpp
+	SurfaceTractionForms.cpp
 	TargetForms.hpp
 	TargetForms.cpp
 )
