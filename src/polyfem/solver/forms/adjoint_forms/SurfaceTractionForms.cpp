@@ -1,4 +1,4 @@
-#include "TractionNormForm.hpp"
+#include "SurfaceTractionForms.hpp"
 
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>

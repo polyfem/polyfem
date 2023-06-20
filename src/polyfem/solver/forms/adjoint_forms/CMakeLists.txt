@@ -20,8 +20,8 @@ set(SOURCES
 	BarrierForms.hpp
 	SmoothingForms.hpp
 	SmoothingForms.cpp
-	TractionNormForm.hpp
-	TractionNormForm.cpp
+	SurfaceTractionForms.hpp
+	SurfaceTractionForms.hpp
 	TargetForms.hpp
 	TargetForms.cpp
 )

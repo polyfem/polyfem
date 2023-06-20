@@ -18,7 +18,7 @@
 #include <polyfem/solver/forms/adjoint_forms/SmoothingForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/AMIPSForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/BarrierForms.hpp>
-#include <polyfem/solver/forms/adjoint_forms/TractionNormForm.hpp>
+#include <polyfem/solver/forms/adjoint_forms/SurfaceTractionForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/TargetForms.hpp>
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
