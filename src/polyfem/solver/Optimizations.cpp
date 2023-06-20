@@ -11,7 +11,7 @@
 #include "MMASolver.hpp"
 #include "GradientDescentSolver.hpp"
 
-#include <polyfem/solver/forms/adjoint_forms/TargetForms.hpp>
+#include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/CompositeForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/TransientForm.hpp>
@@ -19,6 +19,7 @@
 #include <polyfem/solver/forms/adjoint_forms/AMIPSForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/BarrierForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/TractionNormForm.hpp>
+#include <polyfem/solver/forms/adjoint_forms/TargetForms.hpp>
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>

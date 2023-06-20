@@ -300,8 +300,6 @@ namespace polyfem::solver
 
 	void ContactForceForm::build_active_nodes()
 	{
-		assert(state_.solve_data.time_integrator != nullptr);
-		assert(state_.solve_data.contact_form != nullptr);
 
 		std::set<int> active_nodes_set = {};
 		dim_ = state_.mesh->dimension();
@@ -342,19 +340,23 @@ namespace polyfem::solver
 		epsv_ = state_.args["contact"]["epsv"];
 		dhat_ = state_.args["contact"]["dhat"];
 		friction_coefficient_ = state_.args["contact"]["friction_coefficient"];
-		barrier_stiffness_ = state_.solve_data.contact_form->weight();
-		depends_on_step_prev_ = (state_.solve_data.friction_form != nullptr) ? true : false;
+		depends_on_step_prev_ = (friction_coefficient_ > 0);
 	}
 
 	double ContactForceForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
+		assert(state_.solve_data.time_integrator != nullptr);
+		assert(state_.solve_data.contact_form != nullptr);
+
+		double barrier_stiffness = state_.solve_data.contact_form->weight();
+
 		const ipc::CollisionMesh &collision_mesh = state_.collision_mesh;
 		Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), dim_));
 
 		Eigen::MatrixXd forces = Eigen::MatrixXd::Zero(collision_mesh.ndof(), 1);
-		forces -= barrier_stiffness_ * state_.diff_cached.contact_set(time_step).compute_potential_gradient(collision_mesh, displaced_surface, dhat_);
+		forces -= barrier_stiffness * state_.diff_cached.contact_set(time_step).compute_potential_gradient(collision_mesh, displaced_surface, dhat_);
 		if (state_.solve_data.friction_form && time_step > 0)
-			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness_, epsv_ * state_.solve_data.time_integrator->dt());
+			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt());
 		forces = collision_mesh.to_full_dof(forces)(active_nodes_, Eigen::all);
 
 		double sum = (forces.array() * forces.array()).sum();
@@ -364,19 +366,24 @@ namespace polyfem::solver
 
 	Eigen::VectorXd ContactForceForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
 	{
+		assert(state_.solve_data.time_integrator != nullptr);
+		assert(state_.solve_data.contact_form != nullptr);
+
+		double barrier_stiffness = state_.solve_data.contact_form->weight();
+
 		const ipc::CollisionMesh &collision_mesh = state_.collision_mesh;
 		Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), dim_));
 
 		Eigen::MatrixXd forces = Eigen::MatrixXd::Zero(collision_mesh.ndof(), 1);
-		forces -= barrier_stiffness_ * state_.diff_cached.contact_set(time_step).compute_potential_gradient(collision_mesh, displaced_surface, dhat_);
+		forces -= barrier_stiffness * state_.diff_cached.contact_set(time_step).compute_potential_gradient(collision_mesh, displaced_surface, dhat_);
 		if (state_.solve_data.friction_form && time_step > 0)
-			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness_, epsv_ * state_.solve_data.time_integrator->dt());
+			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt());
 		forces = collision_mesh.to_full_dof(forces)(active_nodes_, Eigen::all);
 
 		StiffnessMatrix hessian(collision_mesh.ndof(), collision_mesh.ndof());
-		hessian -= barrier_stiffness_ * state_.diff_cached.contact_set(time_step).compute_potential_hessian(collision_mesh, displaced_surface, dhat_, false);
+		hessian -= barrier_stiffness * state_.diff_cached.contact_set(time_step).compute_potential_hessian(collision_mesh, displaced_surface, dhat_, false);
 		if (state_.solve_data.friction_form && time_step > 0)
-			hessian += state_.diff_cached.friction_constraint_set(time_step).compute_force_jacobian(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness_, epsv_ * state_.solve_data.time_integrator->dt(), ipc::FrictionConstraint::DiffWRT::U);
+			hessian += state_.diff_cached.friction_constraint_set(time_step).compute_force_jacobian(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt(), ipc::FrictionConstraint::DiffWRT::U);
 		hessian = collision_mesh.to_full_dof(hessian);
 
 		Eigen::VectorXd gradu = 2 * hessian.transpose() * active_nodes_mat_ * forces;
@@ -386,18 +393,23 @@ namespace polyfem::solver
 
 	Eigen::VectorXd ContactForceForm::compute_adjoint_rhs_unweighted_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state) const
 	{
+		assert(state_.solve_data.time_integrator != nullptr);
+		assert(state_.solve_data.contact_form != nullptr);
+
+		double barrier_stiffness = state_.solve_data.contact_form->weight();
+
 		const ipc::CollisionMesh &collision_mesh = state_.collision_mesh;
 		Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), dim_));
 
 		Eigen::MatrixXd forces = Eigen::MatrixXd::Zero(collision_mesh.ndof(), 1);
-		forces -= barrier_stiffness_ * state_.diff_cached.contact_set(time_step).compute_potential_gradient(collision_mesh, displaced_surface, dhat_);
+		forces -= barrier_stiffness * state_.diff_cached.contact_set(time_step).compute_potential_gradient(collision_mesh, displaced_surface, dhat_);
 		if (state_.solve_data.friction_form && time_step > 0)
-			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness_, epsv_ * state_.solve_data.time_integrator->dt());
+			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt());
 		forces = collision_mesh.to_full_dof(forces)(active_nodes_, Eigen::all);
 
 		StiffnessMatrix hessian_prev(collision_mesh.ndof(), collision_mesh.ndof());
 		if (state_.solve_data.friction_form && time_step > 0)
-			hessian_prev += state_.diff_cached.friction_constraint_set(time_step).compute_force_jacobian(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness_, epsv_ * state_.solve_data.time_integrator->dt(), ipc::FrictionConstraint::DiffWRT::Ut);
+			hessian_prev += state_.diff_cached.friction_constraint_set(time_step).compute_force_jacobian(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt(), ipc::FrictionConstraint::DiffWRT::Ut);
 		hessian_prev = collision_mesh.to_full_dof(hessian_prev);
 
 		Eigen::VectorXd gradu = 2 * hessian_prev.transpose() * active_nodes_mat_ * forces;
@@ -407,19 +419,24 @@ namespace polyfem::solver
 
 	void ContactForceForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
+		assert(state_.solve_data.time_integrator != nullptr);
+		assert(state_.solve_data.contact_form != nullptr);
+
+		double barrier_stiffness = state_.solve_data.contact_form->weight();
+
 		const ipc::CollisionMesh &collision_mesh = state_.collision_mesh;
 		Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), dim_));
 
 		Eigen::MatrixXd forces = Eigen::MatrixXd::Zero(collision_mesh.ndof(), 1);
-		forces -= barrier_stiffness_ * state_.diff_cached.contact_set(time_step).compute_potential_gradient(collision_mesh, displaced_surface, dhat_);
+		forces -= barrier_stiffness * state_.diff_cached.contact_set(time_step).compute_potential_gradient(collision_mesh, displaced_surface, dhat_);
 		if (state_.solve_data.friction_form && time_step > 0)
-			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness_, epsv_ * state_.solve_data.time_integrator->dt());
+			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt());
 		forces = collision_mesh.to_full_dof(forces)(active_nodes_, Eigen::all);
 
 		StiffnessMatrix shape_derivative(collision_mesh.ndof(), collision_mesh.ndof());
-		shape_derivative -= barrier_stiffness_ * state_.diff_cached.contact_set(time_step).compute_shape_derivative(collision_mesh, displaced_surface, dhat_);
+		shape_derivative -= barrier_stiffness * state_.diff_cached.contact_set(time_step).compute_shape_derivative(collision_mesh, displaced_surface, dhat_);
 		if (state_.solve_data.friction_form && time_step > 0)
-			shape_derivative += state_.diff_cached.friction_constraint_set(time_step).compute_force_jacobian(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness_, epsv_ * state_.solve_data.time_integrator->dt(), ipc::FrictionConstraint::DiffWRT::X);
+			shape_derivative += state_.diff_cached.friction_constraint_set(time_step).compute_force_jacobian(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt(), ipc::FrictionConstraint::DiffWRT::X);
 		shape_derivative = collision_mesh.to_full_dof(shape_derivative);
 
 		Eigen::VectorXd grads = 2 * shape_derivative.transpose() * active_nodes_mat_ * forces;

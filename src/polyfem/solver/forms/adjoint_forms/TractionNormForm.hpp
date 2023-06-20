@@ -57,6 +57,6 @@ namespace polyfem::solver
 		StiffnessMatrix active_nodes_mat_;
 		int dim_;
 
-		double dhat_, epsv_, barrier_stiffness_, friction_coefficient_;
+		double dhat_, epsv_, friction_coefficient_;
 	};
 } // namespace polyfem::solver
