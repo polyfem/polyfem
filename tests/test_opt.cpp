@@ -995,6 +995,8 @@ TEST_CASE("3d-bspline-shape-mesh-matching", "[optimization]")
 
 	opt_args = apply_opt_json_spec(opt_args, false);
 
+	opt_args["functionals"][0]["static_objective"]["mesh_path"] = resolve_output_path(root_folder, opt_args["functionals"][0]["static_objective"]["mesh_path"]);
+
 	for (auto &state_arg : opt_args["states"])
 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
 
