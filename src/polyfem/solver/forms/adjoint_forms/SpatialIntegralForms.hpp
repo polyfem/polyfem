@@ -18,7 +18,7 @@ namespace polyfem::solver
 		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
 		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
-	
+
 	protected:
 		virtual IntegrableFunctional get_integral_functional() const = 0;
 
@@ -26,7 +26,7 @@ namespace polyfem::solver
 		SpatialIntegralType spatial_integral_type_;
 		std::set<int> ids_;
 	};
-	
+
 	class ElasticEnergyForm : public SpatialIntegralForm
 	{
 	public:
@@ -57,8 +57,6 @@ namespace polyfem::solver
 			if (args["power"] > 0)
 				in_power_ = args["power"];
 		}
-
-		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
 		IntegrableFunctional get_integral_functional() const override;
