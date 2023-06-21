@@ -122,17 +122,14 @@ namespace polyfem::utils
 			return true;
 		}
 
-		const std::array<std::array<const Eigen::Vector2d *, 2>, 3> edges = {{
-			{{&t0, &t1}},
-			{{&t1, &t2}},
-			{{&t2, &t0}},
-		}};
-
 		const double radius_sqr = radius * radius;
 
-		for (const auto &e : edges)
-			if (ipc::point_edge_distance(center, *e[0], *e[1]) <= radius_sqr)
-				return true;
+		if (ipc::point_edge_distance(center, t0, t1) <= radius_sqr
+			|| ipc::point_edge_distance(center, t1, t2) <= radius_sqr
+			|| ipc::point_edge_distance(center, t2, t0) <= radius_sqr)
+		{
+			return true;
+		}
 
 		return false;
 	}
@@ -156,32 +153,29 @@ namespace polyfem::utils
 			return true;
 		}
 
-		const std::array<std::array<const Eigen::Vector3d *, 3>, 4> faces = {{
-			{{&t0, &t1, &t2}},
-			{{&t0, &t1, &t3}},
-			{{&t0, &t2, &t3}},
-			{{&t1, &t2, &t3}},
-		}};
-
 		const double radius_sqr = radius * radius;
 
-		for (const auto &f : faces)
-			if (ipc::point_triangle_distance(center, *f[0], *f[1], *f[2]) <= radius_sqr)
-				return true;
+		if (ipc::point_triangle_distance(center, t0, t1, t2) <= radius_sqr
+			|| ipc::point_triangle_distance(center, t0, t1, t3) <= radius_sqr
+			|| ipc::point_triangle_distance(center, t0, t2, t3) <= radius_sqr
+			|| ipc::point_triangle_distance(center, t1, t2, t3) <= radius_sqr)
+		{
+			return true;
+		}
 
 		return false;
 	}
 
 	bool are_edges_collinear(
-		const Eigen::VectorXd &ea0,
-		const Eigen::VectorXd &ea1,
-		const Eigen::VectorXd &eb0,
-		const Eigen::VectorXd &eb1,
+		const VectorNd &ea0,
+		const VectorNd &ea1,
+		const VectorNd &eb0,
+		const VectorNd &eb1,
 		const double tol)
 	{
 		assert((ea0 - ea1).norm() != 0 && (eb1 - eb0).norm() != 0);
-		const Eigen::VectorXd ea = (ea1 - ea0).normalized();
-		const Eigen::VectorXd eb = (eb1 - eb0).normalized();
+		const VectorNd ea = (ea1 - ea0).normalized();
+		const VectorNd eb = (eb1 - eb0).normalized();
 		return abs(ea.dot(eb)) > 1 - tol;
 	}
 
@@ -197,6 +191,15 @@ namespace polyfem::utils
 		const Eigen::Vector3d n0 = (t01 - t00).cross(t02 - t00).normalized();
 		const Eigen::Vector3d n1 = (t11 - t10).cross(t12 - t10).normalized();
 		return abs(n0.dot(n1)) > 1 - tol;
+	}
+
+	bool are_aabbs_intersecting(
+		const VectorNd &aabb0_min,
+		const VectorNd &aabb0_max,
+		const VectorNd &aabb1_min,
+		const VectorNd &aabb1_max)
+	{
+		return (aabb0_min.array() <= aabb1_max.array()).all() && (aabb1_min.array() <= aabb0_max.array()).all();
 	}
 
 	// =========================================================================

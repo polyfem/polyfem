@@ -240,6 +240,9 @@ namespace polyfem::mesh
 		/// @brief Get the vertex ids of an element.
 		std::array<size_t, VERTICES_PER_ELEMENT> element_vids(const Tuple &t) const;
 
+		/// @brief Get a AABB for an element.
+		void element_aabb(const Tuple &t, polyfem::VectorNd &el_min, polyfem::VectorNd &el_max) const;
+
 		/// @brief Reorder the element vertices so that the first vertex is v0.
 		/// @param conn The element vertices in oriented order
 		/// @param v0 The vertex to be the first vertex

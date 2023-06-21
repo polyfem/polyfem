@@ -17,6 +17,21 @@
 
 namespace polyfem::mesh
 {
+	namespace
+	{
+		// Assert there are no duplicates in elements
+		template <typename M>
+		bool has_duplicate_elements(const M &m, const std::vector<typename M::Tuple> &elements)
+		{
+			std::vector<size_t> ids;
+			for (const auto &t : elements)
+				ids.push_back(m.element_id(t));
+			std::sort(ids.begin(), ids.end());
+			ids.erase(std::unique(ids.begin(), ids.end()), ids.end());
+			return ids.size() != elements.size();
+		}
+	} // namespace
+
 	using TriMesh = WildRemesher<wmtk::TriMesh>;
 	using TetMesh = WildRemesher<wmtk::TetMesh>;
 
@@ -216,6 +231,8 @@ namespace polyfem::mesh
 		const M &m, const std::vector<Tuple> &one_ring, const int n)
 	{
 		POLYFEM_REMESHER_SCOPED_TIMER("LocalMesh::n_ring");
+		assert(!has_duplicate_elements(m, one_ring));
+
 		std::vector<Tuple> elements = one_ring;
 		std::unordered_set<size_t> visited_vertices;
 		std::unordered_set<size_t> visited_elements;
@@ -240,9 +257,9 @@ namespace polyfem::mesh
 					std::vector<Tuple> tmp = m.get_one_ring_elements_for_vertex(v);
 					for (auto &t1 : tmp)
 					{
-						if (visited_elements.find(t1.fid(m)) != visited_elements.end())
+						if (visited_elements.find(m.element_id(t1)) != visited_elements.end())
 							continue;
-						visited_elements.insert(t1.fid(m));
+						visited_elements.insert(m.element_id(t1));
 						elements.push_back(t1);
 						new_new_elements.push_back(t1);
 					}
@@ -252,6 +269,8 @@ namespace polyfem::mesh
 			if (new_elements.empty())
 				break;
 		}
+
+		assert(!has_duplicate_elements(m, elements));
 
 		return elements;
 	}
@@ -268,7 +287,7 @@ namespace polyfem::mesh
 		std::unordered_set<size_t> visited_vertices{{center.vid(m)}};
 		std::unordered_set<size_t> visited_faces;
 		for (const auto &element : elements)
-			visited_faces.insert(element.fid(m));
+			visited_faces.insert(m.element_id(element));
 
 		std::vector<Tuple> new_elements = elements;
 
@@ -291,9 +310,9 @@ namespace polyfem::mesh
 					std::vector<Tuple> tmp = m.get_one_ring_elements_for_vertex(v);
 					for (auto &t1 : tmp)
 					{
-						if (visited_faces.find(t1.fid(m)) != visited_faces.end())
+						if (visited_faces.find(m.element_id(t1)) != visited_faces.end())
 							continue;
-						visited_faces.insert(t1.fid(m));
+						visited_faces.insert(m.element_id(t1));
 						elements.push_back(t1);
 						new_new_elements.push_back(t1);
 					}
@@ -315,61 +334,91 @@ namespace polyfem::mesh
 		POLYFEM_REMESHER_SCOPED_TIMER("LocalMesh::ball_selection");
 
 		const int dim = m.dim();
-
 		const double radius = dim == 2 ? std::sqrt(volume / igl::PI) : std::cbrt(0.75 * volume / igl::PI);
-
-		Eigen::Array3d center3D = Eigen::Array3d::Zero();
-		center3D.head(dim) = center;
-
-		Eigen::MatrixXd V = m.rest_positions();
+		constexpr double eps_radius = 1e-10;
+		const VectorNd sphere_min = center.array() - radius;
+		const VectorNd sphere_max = center.array() + radius;
 
 		const std::vector<Tuple> elements = m.get_elements();
 
-		// Use a AABB tree to find all intersecting elements then loop over only those pairs
-		std::vector<std::array<Eigen::Vector3d, 2>> boxes(
-			elements.size(), {{Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero()}});
-		for (int i = 0; i < elements.size(); i++)
-		{
-			const auto vids = m.element_vids(elements[i]);
-			boxes[i][0].head(dim) = V(vids, Eigen::all).colwise().minCoeff();
-			boxes[i][1].head(dim) = V(vids, Eigen::all).colwise().maxCoeff();
-		}
+		// ---------------------------------------------------------------------
 
-		BVH::BVH bvh;
-		bvh.init(boxes);
-
-		std::vector<unsigned int> candidates;
-		bvh.intersect_box(center3D - radius, center3D + radius, candidates);
-
+		// Loop over all elements and find those that intersect with the ball
 		std::vector<Tuple> intersecting_elements;
 		std::unordered_set<size_t> intersecting_fid;
 		double intersecting_volume = 0;
-		for (unsigned int fi : candidates)
+		std::vector<Tuple> one_ring;
+		for (const Tuple &element : elements)
 		{
-			bool is_intersecting;
-			const auto vids = m.element_vids(elements[fi]);
+			VectorNd el_min, el_max;
+			m.element_aabb(element, el_min, el_max);
+
+			// Quick AABB check to see if the element intersects the sphere
+			if (!utils::are_aabbs_intersecting(sphere_min, sphere_max, el_min, el_max))
+				continue;
+
+			// Accurate check to see if the element intersects the sphere
+			const auto vids = m.element_vids(element);
 			if constexpr (std::is_same_v<M, TriMesh>)
 			{
-				is_intersecting = utils::triangle_intersects_disk(
-					V.row(vids[0]), V.row(vids[1]), V.row(vids[2]),
-					center, radius);
+				if (!utils::triangle_intersects_disk(
+						m.vertex_attrs[vids[0]].rest_position,
+						m.vertex_attrs[vids[1]].rest_position,
+						m.vertex_attrs[vids[2]].rest_position,
+						center, radius))
+				{
+					continue;
+				}
 			}
 			else
 			{
 				static_assert(std::is_same_v<M, TetMesh>);
-				is_intersecting = utils::tetrahedron_intersects_ball(
-					V.row(vids[0]), V.row(vids[1]), V.row(vids[2]), V.row(vids[3]),
-					center, radius);
+				if (!utils::tetrahedron_intersects_ball(
+						m.vertex_attrs[vids[0]].rest_position,
+						m.vertex_attrs[vids[1]].rest_position,
+						m.vertex_attrs[vids[2]].rest_position,
+						m.vertex_attrs[vids[3]].rest_position,
+						center, radius))
+				{
+					continue;
+				}
 			}
 
-			if (is_intersecting)
+			intersecting_elements.push_back(element);
+			intersecting_fid.insert(m.element_id(element));
+			intersecting_volume += m.element_volume(element);
+
+			// Accurate check to see if the element intersects the center point
+			if constexpr (std::is_same_v<M, TriMesh>)
 			{
-				intersecting_elements.push_back(elements[fi]);
-				intersecting_fid.insert(m.element_id(elements[fi]));
-				intersecting_volume += m.element_volume(elements[fi]);
+				if (!utils::triangle_intersects_disk(
+						m.vertex_attrs[vids[0]].rest_position,
+						m.vertex_attrs[vids[1]].rest_position,
+						m.vertex_attrs[vids[2]].rest_position,
+						center, eps_radius))
+				{
+					continue;
+				}
 			}
+			else
+			{
+				static_assert(std::is_same_v<M, TetMesh>);
+				if (!utils::tetrahedron_intersects_ball(
+						m.vertex_attrs[vids[0]].rest_position,
+						m.vertex_attrs[vids[1]].rest_position,
+						m.vertex_attrs[vids[2]].rest_position,
+						m.vertex_attrs[vids[3]].rest_position,
+						center, eps_radius))
+				{
+					continue;
+				}
+			}
+
+			one_ring.push_back(element);
 		}
 		assert(!intersecting_elements.empty());
+
+		// ---------------------------------------------------------------------
 
 		// Flood fill to fill out the desired volume
 		for (int i = 0; intersecting_volume < volume && i < intersecting_elements.size(); ++i)
@@ -396,44 +445,20 @@ namespace polyfem::mesh
 		}
 		assert(intersecting_volume >= volume);
 
-		// small tolerance around the point
-		const double eps_radius = 1e-10;
-		bvh.intersect_box(center3D - eps_radius, center3D + eps_radius, candidates);
+		// ---------------------------------------------------------------------
 
-		std::vector<Tuple> one_ring;
-		for (unsigned int fi : candidates)
-		{
-			bool is_intersecting;
-			const auto vids = m.element_vids(elements[fi]);
-			if constexpr (std::is_same_v<M, TriMesh>)
-			{
-				is_intersecting = utils::triangle_intersects_disk(
-					V.row(vids[0]), V.row(vids[1]), V.row(vids[2]),
-					center, eps_radius);
-			}
-			else
-			{
-				static_assert(std::is_same_v<M, TetMesh>);
-				is_intersecting = utils::tetrahedron_intersects_ball(
-					V.row(vids[0]), V.row(vids[1]), V.row(vids[2]), V.row(vids[3]),
-					center, eps_radius);
-			}
-
-			if (is_intersecting)
-				one_ring.push_back(elements[fi]);
-		}
+		// Expand the ball to include the n-ring
 		for (const auto &e : n_ring(m, one_ring, n_ring_size))
+		{
 			if (intersecting_fid.find(m.element_id(e)) == intersecting_fid.end())
+			{
 				intersecting_elements.push_back(e);
+				intersecting_fid.insert(m.element_id(e));
+				intersecting_volume += m.element_volume(e);
+			}
+		}
 
-#ifndef NDEBUG
-		std::vector<size_t> ids;
-		for (const auto &e : intersecting_elements)
-			ids.push_back(m.element_id(e));
-		std::sort(ids.begin(), ids.end());
-		ids.erase(std::unique(ids.begin(), ids.end()), ids.end());
-		assert(ids.size() == intersecting_elements.size());
-#endif
+		assert(!has_duplicate_elements(m, intersecting_elements));
 
 		return intersecting_elements;
 	}

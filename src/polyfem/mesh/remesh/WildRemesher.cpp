@@ -487,6 +487,19 @@ namespace polyfem::mesh
 	}
 
 	template <class WMTKMesh>
+	void WildRemesher<WMTKMesh>::element_aabb(const Tuple &t, polyfem::VectorNd &min, polyfem::VectorNd &max) const
+	{
+		min.setConstant(dim(), std::numeric_limits<double>::infinity());
+		max.setConstant(dim(), -std::numeric_limits<double>::infinity());
+
+		for (const size_t vid : element_vids(t))
+		{
+			min = min.cwiseMin(vertex_attrs[vid].rest_position);
+			max = max.cwiseMax(vertex_attrs[vid].rest_position);
+		}
+	}
+
+	template <class WMTKMesh>
 	void WildRemesher<WMTKMesh>::write_edge_ranks_mesh(
 		const EdgeMap<typename EdgeAttributes::EnergyRank> &elastic_ranks,
 		const EdgeMap<typename EdgeAttributes::EnergyRank> &contact_ranks) const
