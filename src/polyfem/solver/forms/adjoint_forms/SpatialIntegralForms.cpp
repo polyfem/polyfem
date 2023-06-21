@@ -218,6 +218,29 @@ namespace polyfem::solver
 		return j;
 	}
 
+	void StressNormForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		SpatialIntegralForm::compute_partial_gradient_unweighted_step(time_step, x, gradv);
+		for (const auto &param_map : variable_to_simulations_)
+		{
+			const auto &param_type = param_map->get_parameter_type();
+
+			for (const auto &state_ptr : param_map->get_states())
+			{
+				const auto &state = *state_ptr;
+				if (&state != &state_)
+					continue;
+
+				Eigen::VectorXd term;
+				if (param_type == ParameterType::Material)
+					log_and_throw_error("Doesn't support stress derivative wrt. material!");
+
+				if (term.size() > 0)
+					gradv += param_map->apply_parametrization_jacobian(term, x);
+			}
+		}
+	}
+
 	IntegrableFunctional ComplianceForm::get_integral_functional() const
 	{
 		IntegrableFunctional j;
