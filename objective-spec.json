@@ -23,6 +23,7 @@
             "elastic_energy",
             "traction_norm",
             "contact_force_norm",
+            "contact_force_match",
             "max_stress",
             "compliance",
             "weighted_solution",
@@ -650,6 +651,31 @@
             "print_energy"
         ],
         "doc": "Lp Norm of elastic stress over the volume selection"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "contact_force_match",
+        "required": [
+            "state",
+            "type",
+            "force_matching_function"
+        ],
+        "optional": [
+            "surface_selection",
+            "power",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "Lp Norm of elastic stress over the volume selection"
+    },
+    {
+        "pointer": "/force_matching_function",
+        "type": "list"
+    },
+    {
+        "pointer": "/force_matching_function/*",
+        "type": "string"
     },
     {
         "pointer": "/",
