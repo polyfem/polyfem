@@ -319,59 +319,6 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
 }
 
-TEST_CASE("shape-stress-opt-debug", "[optimization]")
-{
-	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + "shape-stress-opt-new" + "/";
-	json opt_args;
-	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-		log_and_throw_error("Failed to load optimization json file!");
-
-	for (auto &state_arg : opt_args["states"])
-		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
-
-	json state_args = opt_args["states"];
-	std::vector<std::shared_ptr<State>> states(state_args.size());
-	int i = 0;
-	for (const json &args : state_args)
-	{
-		json cur_args;
-		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-			log_and_throw_error("Can't find json for State {}", i);
-
-		states[i++] = create_state(cur_args);
-	}
-
-	Eigen::VectorXd x;
-	Eigen::MatrixXd V;
-	states[0]->get_vertices(V);
-	x = utils::flatten(V);
-
-	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	{
-		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
-	}
-
-	auto obj1 = std::make_shared<StressNormForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
-	obj1->set_weight(1.0);
-
-	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0]);
-	obj2->set_weight(1.0);
-
-	std::vector<std::shared_ptr<AdjointForm>> forms({obj2});
-
-	auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
-	sum->set_weight(1.0);
-
-	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
-
-	nl_problem->solution_changed(x);
-
-	auto nl_solver = make_nl_solver(opt_args["solver"]["nonlinear"]);
-	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
-
-	auto energies = read_energy("shape-stress-opt-new");
-}
-
 TEST_CASE("shape-stress-opt-new", "[optimization]")
 {
 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + "shape-stress-opt-new" + "/";
