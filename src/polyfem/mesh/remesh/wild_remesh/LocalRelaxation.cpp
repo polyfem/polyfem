@@ -3,9 +3,30 @@
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/NonlinearSolver.hpp>
+#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
 namespace polyfem::mesh
 {
+	void add_solver_timings(
+		decltype(Remesher::timings) &timings,
+		const polyfem::json &solver_info)
+	{
+		// Copy over timing data
+		const int solver_iters = solver_info["iterations"];
+		for (const auto &[key, value] : solver_info.items())
+		{
+			if (utils::StringUtils::startswith(key, "time_")
+				&& key != "total_time"
+				&& key != "time_line_search")
+			{
+				// The solver reports the time per iteration, so we need to
+				// multiply by the number of iterations.
+				const std::string new_key = "NonlinearSolver::" + key.substr(5, key.size() - 5);
+				timings[new_key] += solver_iters * value.get<double>();
+			}
+		}
+	}
+
 	template <class WMTKMesh>
 	bool PhysicsRemesher<WMTKMesh>::local_relaxation(
 		const std::vector<Tuple> &local_mesh_tuples,
@@ -65,6 +86,9 @@ namespace polyfem::mesh
 		}
 		logger().set_level(level_before);
 
+		// Copy over timing data
+		add_solver_timings(this->timings, nl_solver->get_info());
+
 		Eigen::VectorXd sol = solve_data.nl_problem->reduced_to_full(reduced_sol);
 
 		// --------------------------------------------------------------------
@@ -80,9 +104,11 @@ namespace polyfem::mesh
 		// const double global_energy_before = abs(starting_energy);
 		// const double rel_diff = abs_diff / global_energy_before;
 
-		// TODO: only use abs_diff
+		// NOTE: only use abs_diff
 		// accept = rel_diff >= energy_relative_tolerance && abs_diff >= energy_absolute_tolerance;
-		const bool accept = abs_diff >= acceptance_tolerance;
+		// NOTE: account for Δt² in energy by multiplying acceptance tol by Δt²
+		const double dt_sqr = solve_data.time_integrator ? solve_data.time_integrator->acceleration_scaling() : 1.0;
+		const bool accept = abs_diff >= dt_sqr * acceptance_tolerance;
 
 		// Update positions only on acceptance
 		if (accept)
@@ -100,7 +126,7 @@ namespace polyfem::mesh
 				logger().set_level(spdlog::level::warn);
 				try
 				{
-					POLYFEM_REMESHER_SCOPED_TIMER("Local relaxation solve");
+					POLYFEM_REMESHER_SCOPED_TIMER("Local relaxation resolve");
 					nl_solver->minimize(*(solve_data.nl_problem), reduced_sol);
 				}
 				catch (const std::runtime_error &e)
@@ -110,6 +136,9 @@ namespace polyfem::mesh
 					return false;
 				}
 				logger().set_level(level_before);
+
+				// Copy over timing data
+				add_solver_timings(this->timings, nl_solver->get_info());
 
 				sol = solve_data.nl_problem->reduced_to_full(reduced_sol);
 			}

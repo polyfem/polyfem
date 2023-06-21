@@ -405,20 +405,33 @@ namespace polyfem::mesh
 
 	void Remesher::log_timings()
 	{
+		if (!logger().should_log(spdlog::level::debug) || timings.empty())
+			return;
+
+		std::cout << "--------------------------------------------------------------------------------" << std::endl;
+
 		logger().debug("Total time: {:.3g}s", total_time);
 		double sum = 0;
-		for (const auto &[name, time] : timings)
+
+		// Copy key-value pair from Map to vector of pairs
+		std::vector<std::pair<std::string, utils::Timing>> sorted_timings(timings.begin(), timings.end());
+		// Sort timings by decreasing time
+		std::sort(sorted_timings.begin(), sorted_timings.end(), [](const auto &a, const auto &b) { return a.second > b.second; });
+		for (const auto &[name, time] : sorted_timings)
 		{
-			logger().debug("{}: {:.3g}s {:.1f}%", name, time, time / total_time * 100);
+			logger().debug("{:62s}: {:10.3g}s {:5.1f}% ({:6d} calls)", name, time, time / total_time * 100, time.count);
 			sum += time;
 		}
-		logger().debug("Miscellaneous: {:.3g}s {:.1f}%", total_time - sum, (total_time - sum) / total_time * 100);
+
+		// logger().debug("Miscellaneous: {:.3g}s {:.1f}%", total_time - sum, (total_time - sum) / total_time * 100);
 		if (num_solves > 0)
 			logger().debug("Avg. # DOF per solve: {}", total_ndofs / double(num_solves));
+
+		std::cout << "--------------------------------------------------------------------------------" << std::endl;
 	}
 
 	// Static members must be initialized in the source file:
-	std::map<std::string, double> Remesher::timings;
+	decltype(Remesher::timings) Remesher::timings;
 	double Remesher::total_time = 0;
 	size_t Remesher::num_solves = 0;
 	size_t Remesher::total_ndofs = 0;

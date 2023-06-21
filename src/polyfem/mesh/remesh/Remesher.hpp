@@ -4,7 +4,6 @@
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Timer.hpp>
 
-#include <map>
 #include <unordered_map>
 
 namespace polyfem::time_integrator
@@ -226,7 +225,7 @@ namespace polyfem::mesh
 		static void log_timings();
 
 		/// @brief Timings for the remeshing operations.
-		static std::map<std::string, double> timings;
+		static std::unordered_map<std::string, utils::Timing> timings;
 		static double total_time;  // = 0;
 		static size_t num_solves;  // = 0;
 		static size_t total_ndofs; // = 0;

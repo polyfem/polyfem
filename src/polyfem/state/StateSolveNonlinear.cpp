@@ -328,12 +328,10 @@ namespace polyfem
 			});
 
 		al_solver.post_subsolve = [&](const double al_weight) {
-			json info;
-			nl_solver->get_info(info);
 			stats.solver_info.push_back(
 				{{"type", al_weight > 0 ? "al" : "rc"},
 				 {"t", t}, // TODO: null if static?
-				 {"info", info}});
+				 {"info", nl_solver->get_info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
 			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
@@ -398,13 +396,11 @@ namespace polyfem
 			sol = nl_problem.reduced_to_full(tmp_sol);
 
 			// Save the subsolve sequence for debugging and info
-			json info;
-			nl_solver->get_info(info);
 			stats.solver_info.push_back(
 				{{"type", "rc"},
 				 {"t", t}, // TODO: null if static?
 				 {"lag_i", lag_i},
-				 {"info", info}});
+				 {"info", nl_solver->get_info()}});
 			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 		}
 	}
