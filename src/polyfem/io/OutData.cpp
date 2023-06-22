@@ -5,6 +5,7 @@
 #include <polyfem/State.hpp>
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/AssemblyValues.hpp>
 #include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/assembler/Mass.hpp>
 
@@ -48,6 +49,74 @@ extern "C" size_t getPeakRSS();
 
 namespace polyfem::io
 {
+	namespace
+	{
+		void compute_traction_forces(const State &state, const Eigen::MatrixXd &solution, Eigen::MatrixXd &traction_forces, bool skip_dirichlet = true)
+		{
+
+			int actual_dim = 1;
+			if (!state.problem->is_scalar())
+				actual_dim = state.mesh->dimension();
+			else
+				return;
+
+			const std::vector<basis::ElementBases> &bases = state.bases;
+			const std::vector<basis::ElementBases> &gbases = state.geom_bases();
+
+			Eigen::MatrixXd uv, samples, gtmp, rhs_fun, deform_mat, trafo;
+			Eigen::VectorXi global_primitive_ids;
+			Eigen::MatrixXd points, normals;
+			Eigen::VectorXd weights;
+			polyfem::assembler::ElementAssemblyValues vals;
+
+			traction_forces.setZero(state.n_bases * actual_dim, 1);
+
+			for (const auto &lb : state.total_local_boundary)
+			{
+				const int e = lb.element_id();
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state.n_boundary_samples(), *state.mesh, false, uv, points, normals, weights, global_primitive_ids);
+
+				if (!has_samples)
+					continue;
+
+				const basis::ElementBases &gbs = gbases[e];
+				const basis::ElementBases &bs = bases[e];
+
+				vals.compute(e, state.mesh->is_volume(), points, bs, gbs);
+
+				for (int n = 0; n < normals.rows(); ++n)
+				{
+					normals.row(n) = normals.row(n) * vals.jac_it[n];
+					normals.row(n).normalize();
+				}
+
+				std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
+				state.assembler->compute_tensor_value(e, bs, gbs, points, solution, tensor_flat);
+
+				for (long n = 0; n < vals.basis_values.size(); ++n)
+				{
+					const polyfem::assembler::AssemblyValues &v = vals.basis_values[n];
+
+					const int g_index = v.global[0].index * actual_dim;
+					const bool is_dirichlet = std::find(state.boundary_nodes.begin(), state.boundary_nodes.end(), g_index) != state.boundary_nodes.end();
+
+					if (skip_dirichlet && is_dirichlet)
+						continue;
+
+					for (int q = 0; q < points.rows(); ++q)
+					{
+						// TF computed only from cauchy stress
+						assert(tensor_flat[0].first == "cauchy_stess");
+						assert(tensor_flat[0].second.row(q).size() == actual_dim * actual_dim);
+
+						Eigen::MatrixXd stress_tensor = utils::unflatten(tensor_flat[0].second.row(q), actual_dim);
+
+						traction_forces.block(g_index, 0, actual_dim, 1) += stress_tensor * normals.row(q).transpose() * v.val(q) * weights(q);
+					}
+				}
+			}
+		}
+	} // namespace
 
 	void OutGeometryData::extract_boundary_mesh(
 		const mesh::Mesh &mesh,
@@ -302,18 +371,21 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const std::vector<mesh::LocalBoundary> &total_local_boundary,
+		const Eigen::MatrixXd &solution,
+		const int problem_dim,
 		Eigen::MatrixXd &boundary_vis_vertices,
 		Eigen::MatrixXd &boundary_vis_local_vertices,
 		Eigen::MatrixXi &boundary_vis_elements,
 		Eigen::MatrixXi &boundary_vis_elements_ids,
 		Eigen::MatrixXi &boundary_vis_primitive_ids,
-		Eigen::MatrixXd &boundary_vis_normals) const
+		Eigen::MatrixXd &boundary_vis_normals,
+		Eigen::MatrixXd &displaced_boundary_vis_normals) const
 	{
 		using namespace polyfem::mesh;
 
-		std::vector<Eigen::MatrixXd> lv, vertices, allnormals;
+		std::vector<Eigen::MatrixXd> lv, vertices, allnormals, displaced_allnormals;
 		std::vector<int> el_ids, global_primitive_ids;
-		Eigen::MatrixXd uv, local_pts, tmp_n, normals;
+		Eigen::MatrixXd uv, local_pts, tmp_n, normals, displaced_normals, trafo, deform_mat;
 		assembler::ElementAssemblyValues vals;
 		const auto &sampler = ref_element_sampler;
 		const int n_samples = sampler.num_samples();
@@ -427,14 +499,37 @@ namespace polyfem::io
 				}
 
 				normals.resize(vals.jac_it.size(), tmp_n.cols());
+				displaced_normals.resize(vals.jac_it.size(), tmp_n.cols());
 
 				for (int n = 0; n < vals.jac_it.size(); ++n)
 				{
+					trafo = vals.jac_it[n].inverse();
+
+					if (problem_dim == 2 || problem_dim == 3)
+					{
+
+						if (solution.size() > 0)
+						{
+							deform_mat.resize(problem_dim, problem_dim);
+							deform_mat.setZero();
+							for (const auto &b : vals.basis_values)
+								for (const auto &g : b.global)
+									for (int d = 0; d < problem_dim; ++d)
+										deform_mat.row(d) += solution(g.index * problem_dim + d) * b.grad.row(n);
+
+							trafo += deform_mat;
+						}
+					}
+
 					normals.row(n) = tmp_n * vals.jac_it[n];
 					normals.row(n).normalize();
+
+					displaced_normals.row(n) = tmp_n * trafo.inverse();
+					displaced_normals.row(n).normalize();
 				}
 
 				allnormals.push_back(normals);
+				displaced_allnormals.push_back(displaced_normals);
 
 				tmp_n.setZero();
 				for (int n = 0; n < vals.jac_it.size(); ++n)
@@ -468,6 +563,7 @@ namespace polyfem::io
 		boundary_vis_elements_ids.resize(size, 1);
 		boundary_vis_primitive_ids.resize(size, 1);
 		boundary_vis_normals.resize(size, vertices.front().cols());
+		displaced_boundary_vis_normals.resize(size, vertices.front().cols());
 
 		if (mesh.is_volume())
 			boundary_vis_elements.resize(tris.size(), 3);
@@ -489,6 +585,13 @@ namespace polyfem::io
 		for (const auto &n : allnormals)
 		{
 			boundary_vis_normals.block(index, 0, n.rows(), n.cols()) = n;
+			index += n.rows();
+		}
+
+		index = 0;
+		for (const auto &n : displaced_allnormals)
+		{
+			displaced_boundary_vis_normals.block(index, 0, n.rows(), n.cols()) = n;
 			index += n.rows();
 		}
 
@@ -1014,7 +1117,7 @@ namespace polyfem::io
 
 		if (opts.volume)
 		{
-			save_volume(base_path + opts.file_extension(), state, sol, pressure, t, opts, solution_frames);
+			save_volume(base_path + opts.file_extension(), state, sol, pressure, t, dt, opts, solution_frames);
 		}
 
 		if (opts.surface)
@@ -1062,6 +1165,7 @@ namespace polyfem::io
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &pressure,
 		const double t,
+		const double dt,
 		const ExportOptions &opts,
 		std::vector<SolutionFrame> &solution_frames) const
 	{
@@ -1463,6 +1567,30 @@ namespace polyfem::io
 		// interpolate_function(pts_index, rhs, fun, opts.boundary_only);
 		// writer.add_field("rhs", fun);
 
+		{
+			Eigen::MatrixXd traction_forces, traction_forces_fun;
+			compute_traction_forces(state, sol, traction_forces, false);
+
+			Evaluator::interpolate_function(
+				mesh, problem.is_scalar(), bases, state.disc_orders,
+				state.polys, state.polys_3d, ref_element_sampler,
+				points.rows(), traction_forces, traction_forces_fun, opts.use_sampler, opts.boundary_only);
+
+			writer.add_field("traction_force", traction_forces_fun);
+		}
+
+		{
+			Eigen::MatrixXd potential_grad, potential_grad_fun;
+			state.assembler->assemble_gradient(mesh.is_volume(), state.n_bases, bases, gbases, state.ass_vals_cache, dt, sol, sol, potential_grad);
+
+			Evaluator::interpolate_function(
+				mesh, problem.is_scalar(), bases, state.disc_orders,
+				state.polys, state.polys_3d, ref_element_sampler,
+				points.rows(), potential_grad, potential_grad_fun, opts.use_sampler, opts.boundary_only);
+
+			writer.add_field("gradient_of_potential", potential_grad_fun);
+		}
+
 		// Write the solution last so it is the default for warp-by-vector
 		if (opts.solve_export_to_file)
 			writer.add_field("solution", fun);
@@ -1570,6 +1698,7 @@ namespace polyfem::io
 		const assembler::Assembler &assembler = *state.assembler;
 		const assembler::Problem &problem = *state.problem;
 		const mesh::Mesh &mesh = *state.mesh;
+		int problem_dim = (problem.is_scalar() ? 1 : mesh.dimension());
 
 		Eigen::MatrixXd boundary_vis_vertices;
 		Eigen::MatrixXd boundary_vis_local_vertices;
@@ -1577,10 +1706,12 @@ namespace polyfem::io
 		Eigen::MatrixXi boundary_vis_elements_ids;
 		Eigen::MatrixXi boundary_vis_primitive_ids;
 		Eigen::MatrixXd boundary_vis_normals;
+		Eigen::MatrixXd displaced_boundary_vis_normals;
 
-		build_vis_boundary_mesh(mesh, bases, gbases, state.total_local_boundary,
+		build_vis_boundary_mesh(mesh, bases, gbases, state.total_local_boundary, sol, problem_dim,
 								boundary_vis_vertices, boundary_vis_local_vertices, boundary_vis_elements,
-								boundary_vis_elements_ids, boundary_vis_primitive_ids, boundary_vis_normals);
+								boundary_vis_elements_ids, boundary_vis_primitive_ids, boundary_vis_normals,
+								displaced_boundary_vis_normals);
 
 		Eigen::MatrixXd fun, interp_p, discr, vect, b_sidesets;
 
@@ -1674,6 +1805,7 @@ namespace polyfem::io
 		{
 
 			writer.add_field("normals", boundary_vis_normals);
+			writer.add_field("displaced_normals", displaced_boundary_vis_normals);
 			if (state.mixed_assembler != nullptr)
 				writer.add_field("pressure", interp_p);
 			writer.add_field("discr", discr);
@@ -1682,7 +1814,9 @@ namespace polyfem::io
 			if (actual_dim == 1)
 				writer.add_field("solution_grad", vect);
 			else
+			{
 				writer.add_field("traction_force", vect);
+			}
 		}
 		else
 		{
