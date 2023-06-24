@@ -1,14 +1,30 @@
 #include "GenericElastic.hpp"
 
+#include <polyfem/assembler/MooneyRivlinElasticity.hpp>
+#include <polyfem/assembler/OgdenElasticity.hpp>
+#include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
+#include <polyfem/assembler/AMIPSEnergy.hpp>
+
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::assembler
 {
-	GenericElastic::GenericElastic()
+	template <typename Derived>
+	GenericElastic<Derived>::GenericElastic()
 	{
 	}
 
-	void GenericElastic::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	template <typename Derived>
+	void GenericElastic<Derived>::assign_stress_tensor(
+		const int el_id,
+		const basis::ElementBases &bs,
+		const basis::ElementBases &gbs,
+		const Eigen::MatrixXd &local_pts,
+		const Eigen::MatrixXd &displacement,
+		const int all_size,
+		const ElasticityTensorType &type,
+		Eigen::MatrixXd &all,
+		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		Eigen::MatrixXd deformation_grad(size(), size());
 		Eigen::MatrixXd stress_tensor(size(), size());
@@ -45,7 +61,7 @@ namespace polyfem::assembler
 					def_grad(d1, d2) = Diff(d1 * size() + d2, deformation_grad(d1, d2));
 			}
 
-			const auto val = elastic_energy(local_pts.row(p), vals.element_id, def_grad);
+			const auto val = derived().elastic_energy(local_pts.row(p), vals.element_id, def_grad);
 
 			for (int d1 = 0; d1 < size(); ++d1)
 			{
@@ -64,12 +80,14 @@ namespace polyfem::assembler
 		}
 	}
 
-	double GenericElastic::compute_energy(const NonLinearAssemblerData &data) const
+	template <typename Derived>
+	double GenericElastic<Derived>::compute_energy(const NonLinearAssemblerData &data) const
 	{
 		return compute_energy_aux<double>(data);
 	}
 
-	Eigen::VectorXd GenericElastic::assemble_gradient(const NonLinearAssemblerData &data) const
+	template <typename Derived>
+	Eigen::VectorXd GenericElastic<Derived>::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		const int n_bases = data.vals.basis_values.size();
 		return polyfem::gradient_from_energy(
@@ -87,7 +105,8 @@ namespace polyfem::assembler
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::VectorXd>>(data); });
 	}
 
-	Eigen::MatrixXd GenericElastic::assemble_hessian(const NonLinearAssemblerData &data) const
+	template <typename Derived>
+	Eigen::MatrixXd GenericElastic<Derived>::assemble_hessian(const NonLinearAssemblerData &data) const
 	{
 		const int n_bases = data.vals.basis_values.size();
 		return polyfem::hessian_from_energy(
@@ -104,7 +123,8 @@ namespace polyfem::assembler
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(data); });
 	}
 
-	void GenericElastic::compute_stress_grad_multiply_mat(
+	template <typename Derived>
+	void GenericElastic<Derived>::compute_stress_grad_multiply_mat(
 		const int el_id,
 		const Eigen::MatrixXd &local_pts,
 		const Eigen::MatrixXd &global_pts,
@@ -127,7 +147,7 @@ namespace polyfem::assembler
 			for (int j = 0; j < size(); ++j)
 				def_grad(i, j) = Diff(i + j * size(), F(i, j));
 
-		auto energy = elastic_energy(global_pts, el_id, def_grad);
+		auto energy = derived().elastic_energy(global_pts, el_id, def_grad);
 
 		// Grad is ∂W(F)/∂F_ij
 		Eigen::MatrixXd grad = energy.getGradient().reshaped(size(), size());
@@ -140,7 +160,8 @@ namespace polyfem::assembler
 		result = (hess * mat.reshaped(size() * size(), 1)).reshaped(size(), size());
 	}
 
-	void GenericElastic::compute_stress_grad_multiply_stress(
+	template <typename Derived>
+	void GenericElastic<Derived>::compute_stress_grad_multiply_stress(
 		const int el_id,
 		const Eigen::MatrixXd &local_pts,
 		const Eigen::MatrixXd &global_pts,
@@ -162,7 +183,7 @@ namespace polyfem::assembler
 			for (int j = 0; j < size(); ++j)
 				def_grad(i, j) = Diff(i + j * size(), F(i, j));
 
-		auto energy = elastic_energy(global_pts, el_id, def_grad);
+		auto energy = derived().elastic_energy(global_pts, el_id, def_grad);
 
 		// Grad is ∂W(F)/∂F_ij
 		Eigen::MatrixXd grad = energy.getGradient().reshaped(size(), size());
@@ -175,7 +196,8 @@ namespace polyfem::assembler
 		result = (hess * stress.reshaped(size() * size(), 1)).reshaped(size(), size());
 	}
 
-	void GenericElastic::compute_stress_grad_multiply_vect(
+	template <typename Derived>
+	void GenericElastic<Derived>::compute_stress_grad_multiply_vect(
 		const int el_id,
 		const Eigen::MatrixXd &local_pts,
 		const Eigen::MatrixXd &global_pts,
@@ -198,7 +220,7 @@ namespace polyfem::assembler
 			for (int j = 0; j < size(); ++j)
 				def_grad(i, j) = Diff(i + j * size(), F(i, j));
 
-		auto energy = elastic_energy(global_pts, el_id, def_grad);
+		auto energy = derived().elastic_energy(global_pts, el_id, def_grad);
 
 		// Grad is ∂W(F)/∂F_ij
 		Eigen::MatrixXd grad = energy.getGradient().reshaped(size(), size());
@@ -216,4 +238,9 @@ namespace polyfem::assembler
 				// Compute ∂S_ij/∂F_kl * v_l, same as ∂S_ij/∂F_kl * v_j since the hessian is symmetric
 				result.row(i) = hess.row(i).reshaped(size(), size()) * vect;
 	}
+	template class GenericElastic<MooneyRivlinElasticity>;
+	template class GenericElastic<AMIPSEnergy>;
+	template class GenericElastic<UnconstrainedOgdenElasticity>;
+	template class GenericElastic<IncompressibleOgdenElasticity>;
+	template class GenericElastic<NeoHookeanAutodiff>;
 } // namespace polyfem::assembler

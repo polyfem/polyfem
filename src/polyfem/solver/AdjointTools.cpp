@@ -777,7 +777,7 @@ namespace polyfem::solver
 				{
 					state.solve_data.contact_form->force_shape_derivative(state.diff_cached.contact_set(i), state.diff_cached.u(i), cur_p, contact_term);
 					contact_term = state.down_sampling_mat * contact_term;
-					contact_term /= beta_dt * beta_dt;
+					// contact_term /= beta_dt * beta_dt;
 				}
 				else
 					contact_term.setZero(mass_term.size());
@@ -786,7 +786,7 @@ namespace polyfem::solver
 				{
 					state.solve_data.friction_form->force_shape_derivative(state.diff_cached.u(i - 1), state.diff_cached.u(i), cur_p, state.diff_cached.friction_constraint_set(i), friction_term);
 					friction_term = state.down_sampling_mat * friction_term;
-					friction_term /= beta_dt * beta_dt;
+					// friction_term /= beta_dt * beta_dt;
 				}
 				else
 					friction_term.setZero(mass_term.size());

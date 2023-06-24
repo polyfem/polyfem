@@ -247,7 +247,7 @@ namespace polyfem
 					// 	std::cout << "force Ut derivative error " << (fgrad - hessian_prev).norm() << " " << hessian_prev.norm() << "\n";
 					// }
 				
-					hessian_prev = collision_mesh.to_full_dof(hessian_prev) / (beta * dt) / (beta * dt);
+					hessian_prev = collision_mesh.to_full_dof(hessian_prev); // / (beta * dt) / (beta * dt);
 				}
 
 				if (damping_assembler->is_valid())

@@ -159,8 +159,8 @@ TEST_CASE("material-opt", "[optimization]")
 	}
 	auto energies = read_energy(name);
 
-	REQUIRE(energies[0] == Approx(5.95915).epsilon(1e-2));
-	REQUIRE(energies[energies.size() - 1] == Approx(0.00100982).epsilon(1e-2));
+	REQUIRE(energies[0] == Approx(5.95342).epsilon(1e-2));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.0010191).epsilon(1e-2));
 }
 
 // TEST_CASE("friction-opt", "[optimization]")
@@ -266,8 +266,8 @@ TEST_CASE("topology-opt", "[optimization]")
 
 	// check if the objective at these steps are correct
 	auto energies = read_energy(name);
-	REQUIRE(energies[0] == Approx(136.013542195).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(0.726565337285).epsilon(1e-4));
+	REQUIRE(energies[0] == Approx(136.014).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.726565).epsilon(1e-4));
 }
 
 TEST_CASE("AMIPS-debug", "[optimization]")
@@ -319,9 +319,9 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
 }
 
-TEST_CASE("shape-stress-opt-new", "[optimization]")
+TEST_CASE("shape-stress-opt", "[optimization]")
 {
-	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + "shape-stress-opt-new" + "/";
+	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + "shape-stress-opt" + "/";
 	json opt_args;
 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
 		log_and_throw_error("Failed to load optimization json file!");
@@ -448,7 +448,7 @@ TEST_CASE("shape-stress-opt-new", "[optimization]")
 	auto nl_solver = make_nl_solver(opt_args["solver"]["nonlinear"]);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
 
-	auto energies = read_energy("shape-stress-opt-new");
+	auto energies = read_energy("shape-stress-opt");
 
 	REQUIRE(energies[0] == Approx(8.9795).epsilon(1e-4));
 	REQUIRE(energies[energies.size() - 1] == Approx(8.75743).epsilon(1e-4));

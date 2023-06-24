@@ -160,6 +160,14 @@ namespace polyfem
 			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
 			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
+			void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val) const override;
+			void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const override;
+			bool is_nodal_dirichlet_boundary(const int n_id, const int tag) override;
+			bool is_nodal_neumann_boundary(const int n_id, const int tag) override;
+			bool has_nodal_dirichlet() override;
+			bool has_nodal_neumann() override;
+			void update_nodes(const Eigen::VectorXi &in_node_to_node) override;
+
 			bool has_exact_sol() const override { return has_exact_; }
 			bool is_scalar() const override { return true; }
 			bool is_time_dependent() const override { return is_time_dept_; }
@@ -196,6 +204,10 @@ namespace polyfem
 			std::vector<ScalarBCValue> neumann_;
 			std::vector<ScalarBCValue> dirichlet_;
 			std::vector<std::pair<int, utils::ExpressionValue>> initial_solution_;
+
+			std::map<int, ScalarBCValue> nodal_dirichlet_;
+			std::map<int, ScalarBCValue> nodal_neumann_;
+			std::vector<Eigen::MatrixXd> nodal_dirichlet_mat_;
 
 			utils::ExpressionValue rhs_;
 			utils::ExpressionValue exact_;

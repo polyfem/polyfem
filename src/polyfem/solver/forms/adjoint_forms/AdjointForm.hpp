@@ -25,13 +25,13 @@ namespace polyfem::solver
 
 		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const final
 		{
-			return compute_reduced_adjoint_rhs_unweighted(x, state) * weight_;
+			return compute_reduced_adjoint_rhs_unweighted(x, state) * weight();
 		}
 
 		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final
 		{
 			compute_partial_gradient_unweighted(x, gradv);
-			gradv *= weight_;
+			gradv *= weight();
 		}
 
 		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const;

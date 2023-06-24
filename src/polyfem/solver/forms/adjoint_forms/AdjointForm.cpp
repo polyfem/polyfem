@@ -58,7 +58,7 @@ namespace polyfem::solver
 			gradv += adjoint_term;
 		}
 
-		gradv /= weight_;
+		gradv /= weight();
 
 		Eigen::VectorXd partial_grad;
 		compute_partial_gradient_unweighted(x, partial_grad);
