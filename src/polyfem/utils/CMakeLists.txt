@@ -26,6 +26,8 @@ set(SOURCES
 	JSONUtils.hpp
 	Logger.cpp
 	Logger.hpp
+	MatrixCache.cpp
+	MatrixCache.hpp
 	MatrixUtils.cpp
 	MatrixUtils.hpp
 	MaybeParallelFor.hpp
