@@ -437,7 +437,7 @@ namespace polyfem::solver
 			if (args["composite_map_indices"].is_string())
 			{
 				Eigen::MatrixXi tmp_mat;
-				polyfem::io::read_matrix(args["composite_map_indices"].get<std::string>(), tmp_mat);
+				polyfem::io::read_matrix(states[0]->resolve_input_path(args["composite_map_indices"].get<std::string>()), tmp_mat);
 				output_indexing = tmp_mat;
 			}
 			else if (args["composite_map_indices"].is_array())

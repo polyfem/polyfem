@@ -326,6 +326,8 @@ TEST_CASE("shape-stress-opt", "[optimization]")
 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
 		log_and_throw_error("Failed to load optimization json file!");
 
+	opt_args = apply_opt_json_spec(opt_args, false);
+
 	for (auto &state_arg : opt_args["states"])
 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
 
@@ -341,117 +343,59 @@ TEST_CASE("shape-stress-opt", "[optimization]")
 		states[i++] = create_state(cur_args);
 	}
 
-	Eigen::VectorXd x;
-	int opt_bnodes = 0;
-	int opt_inodes = 0;
-	int dim;
+	/* DOF */
+	int ndof = 0;
+	std::vector<int> variable_sizes;
+	for (const auto &arg : opt_args["parameters"])
 	{
-		const auto &mesh = states[0]->mesh;
-		const auto &bases = states[0]->bases;
-		const auto &gbases = states[0]->geom_bases();
-		dim = mesh->dimension();
-
-		std::set<int> node_ids;
-		std::set<int> total_bnode_ids;
-		for (const auto &lb : states[0]->total_local_boundary)
-		{
-			const int e = lb.element_id();
-			for (int i = 0; i < lb.size(); ++i)
-			{
-				const int primitive_global_id = lb.global_primitive_id(i);
-				const int boundary_id = mesh->get_boundary_id(primitive_global_id);
-				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
-
-				if (boundary_id == 10 || boundary_id == 11)
-					for (long n = 0; n < nodes.size(); ++n)
-						node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
-				for (long n = 0; n < nodes.size(); ++n)
-					total_bnode_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
-			}
-		}
-		std::vector<int> selected_bnode_ids;
-		std::set_difference(total_bnode_ids.begin(), total_bnode_ids.end(), node_ids.begin(), node_ids.end(), std::back_inserter(selected_bnode_ids));
-		opt_bnodes = selected_bnode_ids.size();
-
-		node_ids = {};
-		for (int e = 0; e < gbases.size(); e++)
-		{
-			const int body_id = mesh->get_body_id(e);
-			if (body_id == 1)
-				for (const auto &gbs : gbases[e].bases)
-					for (const auto &g : gbs.global())
-						if (!total_bnode_ids.count(g.index))
-							node_ids.insert(g.index);
-		}
-		opt_inodes = node_ids.size();
+		int size = compute_variable_size(arg, states);
+		ndof += size;
+		variable_sizes.push_back(size);
 	}
-	x.resize((opt_bnodes + opt_inodes) * dim);
 
+	/* variable to simulations */
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	for (const auto &arg : opt_args["variable_to_simulation"])
+		variable_to_simulations.push_back(create_variable_to_simulation(arg, states, variable_sizes));
+
+	Eigen::VectorXd x;
+	x.setZero(ndof);
+	int accumulative = 0;
+	int var = 0;
+	for (const auto &arg : opt_args["parameters"])
 	{
-		std::vector<std::shared_ptr<Parametrization>> boundary_map_list = {std::make_shared<SliceMap>(0, opt_bnodes * dim, -1)};
-		std::vector<std::shared_ptr<Parametrization>> interior_map_list = {std::make_shared<SliceMap>(opt_bnodes * dim, (opt_bnodes + opt_inodes) * dim, -1)};
+		Eigen::VectorXd tmp(variable_sizes[var]);
+		if (arg["initial"].is_array() && arg["initial"].size() > 0)
+		{
+			nlohmann::adl_serializer<Eigen::VectorXd>::from_json(arg["initial"], tmp);
+			x.segment(accumulative, tmp.size()) = tmp;
+		}
+		else if (arg["initial"].is_number())
+		{
+			tmp.setConstant(arg["initial"].get<double>());
+			x.segment(accumulative, tmp.size()) = tmp;
+		}
+		else
+			x += variable_to_simulations[var]->inverse_eval();
 
-		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization(boundary_map_list)));
-		VariableToBoundaryNodesExclusive variable_to_node1(*states[0], {10, 11});
-		variable_to_simulations[0]->set_output_indexing(variable_to_node1.get_output_indexing());
-
-		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization(interior_map_list)));
-		VariableToInteriorNodes variable_to_node2(*states[0], 1);
-		variable_to_simulations[1]->set_output_indexing(variable_to_node2.get_output_indexing());
+		accumulative += tmp.size();
+		var++;
 	}
 
-	{
-		Eigen::MatrixXd V;
-		states[0]->get_vertices(V);
-		Eigen::VectorXd V_flat = utils::flatten(V);
+	for (auto &v2s : variable_to_simulations)
+		v2s->update(x);
 
-		auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
-		assert(b_idx.size() == (opt_bnodes * dim));
-		for (int i = 0; i < opt_bnodes; ++i)
-			for (int k = 0; k < dim; ++k)
-				x(i * dim + k) = V_flat(b_idx(i * dim + k));
+	/* forms */
+	std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(create_form(opt_args["functionals"], variable_to_simulations, states));
 
-		auto i_idx = variable_to_simulations[1]->get_output_indexing(x);
-		assert(i_idx.size() == (opt_inodes * dim));
-		for (int i = 0; i < opt_inodes; ++i)
-			for (int k = 0; k < dim; ++k)
-				x(opt_bnodes * dim + i * dim + k) = V_flat(i_idx(i * dim + k));
-	}
-
-	auto obj1 = std::make_shared<StressNormForm>(variable_to_simulations, *states[0], opt_args["functionals"][0]);
-	obj1->set_weight(1.0);
-
-	auto obj2 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0]);
-	obj2->set_weight(0.01);
-
-	auto obj3 = std::make_shared<BoundarySmoothingForm>(variable_to_simulations, *states[0], false, 2);
-	obj3->set_weight(8);
-
-	std::vector<std::shared_ptr<AdjointForm>> volume_form = {std::make_shared<VolumeForm>(variable_to_simulations, *states[0], opt_args["functionals"][0])};
-	Eigen::VectorXd volume_bounds(2);
-	volume_bounds << 0, 2.36226e-1;
-	auto obj4 = std::make_shared<InequalityConstraintForm>(volume_form, volume_bounds);
-	obj4->set_weight(10);
-
-	auto obj5 = std::make_shared<CollisionBarrierForm>(variable_to_simulations, *states[0], 1e-3);
-
-	std::vector<std::shared_ptr<AdjointForm>> forms({obj1, obj2, obj3, obj4, obj5});
-
-	auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
-	sum->set_weight(1.0);
-
-	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
-
-	nl_problem->solution_changed(x);
-
+	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 	auto nl_solver = make_nl_solver(opt_args["solver"]["nonlinear"]);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
 
 	auto energies = read_energy("shape-stress-opt");
 
-	REQUIRE(energies[0] == Approx(8.9795).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(8.75743).epsilon(1e-4));
+	REQUIRE(energies[0] == Approx(0.105955475999).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.0589966856256).epsilon(1e-4));
 
 	// REQUIRE(energies[0] == Approx(12.0735).epsilon(1e-4));
 	// REQUIRE(energies[energies.size() - 1] == Approx(11.3886).epsilon(1e-4));
