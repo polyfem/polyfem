@@ -29,6 +29,8 @@
 #include <polyfem/solver/forms/adjoint_forms/ParametrizedProductForm.hpp>
 
 #include <polyfem/io/OBJReader.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/io/MatrixIO.hpp>
 
 namespace polyfem::solver
 {
@@ -249,6 +251,10 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<AMIPSForm>(var2sim, *(states[args["state"]]));
 			}
+			else if (type == "boundary_smoothing")
+			{
+				obj = std::make_shared<BoundarySmoothingForm>(var2sim, *(states[args["state"]]), args["scale_invariant"], args["power"]);
+			}
 			else if (type == "collision_barrier")
 			{
 				obj = std::make_shared<CollisionBarrierForm>(var2sim, *(states[args["state"]]), args["dhat"]);
@@ -425,6 +431,19 @@ namespace polyfem::solver
 				excluded_surfaces.push_back(s);
 			VariableToBoundaryNodesExclusive variable_to_node(*cur_states[0], excluded_surfaces);
 			output_indexing = variable_to_node.get_output_indexing();
+		}
+		else if (composite_map_type == "indices")
+		{
+			if (args["composite_map_indices"].is_string())
+			{
+				Eigen::MatrixXi tmp_mat;
+				polyfem::io::read_matrix(args["composite_map_indices"].get<std::string>(), tmp_mat);
+				output_indexing = tmp_mat;
+			}
+			else if (args["composite_map_indices"].is_array())
+				nlohmann::adl_serializer<Eigen::VectorXi>::from_json(args["composite_map_indices"], output_indexing);
+			else
+				log_and_throw_error("Invalid composite map indices type!");
 		}
 
 		if (type == "shape")

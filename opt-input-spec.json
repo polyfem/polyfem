@@ -320,7 +320,8 @@
             "composition"
         ],
         "optional": [
-            "composite_map_type"
+            "composite_map_type",
+            "composite_map_indices"
         ]
     },
     {
@@ -333,7 +334,8 @@
             "composition"
         ],
         "optional": [
-            "composite_map_type"
+            "composite_map_type",
+            "composite_map_indices"
         ]
     },
     {
@@ -346,7 +348,8 @@
             "composition"
         ],
         "optional": [
-            "composite_map_type"
+            "composite_map_type",
+            "composite_map_indices"
         ]
     },
     {
@@ -359,7 +362,8 @@
             "composition"
         ],
         "optional": [
-            "composite_map_type"
+            "composite_map_type",
+            "composite_map_indices"
         ]
     },
     {
@@ -372,7 +376,8 @@
             "composition"
         ],
         "optional": [
-            "composite_map_type"
+            "composite_map_type",
+            "composite_map_indices"
         ]
     },
     {
@@ -387,7 +392,8 @@
             "composition"
         ],
         "optional": [
-            "composite_map_type"
+            "composite_map_type",
+            "composite_map_indices"
         ]
     },
     {
@@ -401,7 +407,8 @@
             "composition"
         ],
         "optional": [
-            "composite_map_type"
+            "composite_map_type",
+            "composite_map_indices"
         ]
     },
     {
@@ -414,7 +421,8 @@
             "composition"
         ],
         "optional": [
-            "composite_map_type"
+            "composite_map_type",
+            "composite_map_indices"
         ]
     },
     {
@@ -838,6 +846,19 @@
         "pointer": "/variable_to_simulation/*/composite_map_type",
         "type": "string",
         "default": "none"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composite_map_indices",
+        "type": "file"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composite_map_indices",
+        "type": "list",
+        "default": []
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composite_map_indices/*",
+        "type": "int"
     },
     {
         "pointer": "/parameters",

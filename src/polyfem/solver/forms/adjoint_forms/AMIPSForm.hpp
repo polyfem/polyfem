@@ -192,7 +192,6 @@ namespace polyfem::solver
 			state_.get_elements(F);
 			X_init = utils::flatten(V);
 			init_geom_bases_ = state_.geom_bases();
-			init_ass_vals_cache_ = state_.ass_vals_cache;
 		}
 
 		double value_unweighted(const Eigen::VectorXd &x) const override
@@ -209,7 +208,7 @@ namespace polyfem::solver
 			Eigen::VectorXd X = get_updated_mesh_nodes(x);
 
 			Eigen::MatrixXd grad;
-			amips_energy_->assemble_gradient(state_.mesh->is_volume(), state_.n_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_init), Eigen::VectorXd(), grad); // grad wrt. gbases
+			amips_energy_->assemble_gradient(state_.mesh->is_volume(), state_.n_geom_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_init), Eigen::VectorXd(), grad); // grad wrt. gbases
 			grad = AdjointTools::map_node_to_primitive_order(state_, grad);                                                                                                                                                             // grad wrt. vertices
 
 			assert(grad.cols() == 1);

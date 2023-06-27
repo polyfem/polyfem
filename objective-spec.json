@@ -53,18 +53,6 @@
         "doc": "TODO"
     },
     {
-        "pointer": "/adjust_weight_period",
-        "type": "int",
-        "default": 1000000,
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/adjustment_coeff",
-        "type": "float",
-        "default": 1.0,
-        "doc": "TODO"
-    },
-    {
         "pointer": "/scale_invariant",
         "type": "bool",
         "default": true,
@@ -754,15 +742,14 @@
         "type": "object",
         "type_name": "boundary_smoothing",
         "required": [
-            "type"
+            "type",
+            "state"
         ],
         "optional": [
             "scale_invariant",
             "power",
             "weight",
             "print_energy",
-            "adjust_weight_period",
-            "adjustment_coeff",
             "surface_selection"
         ],
         "doc": "TODO"
