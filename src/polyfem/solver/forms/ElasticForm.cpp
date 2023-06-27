@@ -6,7 +6,7 @@
 
 namespace polyfem::solver
 {
-	static constexpr size_t MAX_DENSE_CACHE_SIZE = 1000;
+	static constexpr size_t MAX_DENSE_CACHE_SIZE = 300;
 
 	ElasticForm::ElasticForm(const int n_bases,
 							 const std::vector<basis::ElementBases> &bases,
@@ -25,7 +25,7 @@ namespace polyfem::solver
 	{
 		if (assembler_.is_linear())
 			compute_cached_stiffness();
-		if (n_bases <= MAX_DENSE_CACHE_SIZE) // TODO: Expose this choice
+		if (n_bases * (is_volume ? 3 : 2) <= MAX_DENSE_CACHE_SIZE) // TODO: Expose this choice
 			mat_cache_ = std::make_shared<utils::DenseMatrixCache>();
 		else
 			mat_cache_ = std::make_shared<utils::SparseMatrixCache>();
