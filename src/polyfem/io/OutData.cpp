@@ -98,7 +98,6 @@ namespace polyfem::io
 					const polyfem::assembler::AssemblyValues &v = vals.basis_values[n];
 
 					const int g_index = v.global[0].index * actual_dim;
-					const bool is_dirichlet = std::find(state.boundary_nodes.begin(), state.boundary_nodes.end(), g_index) != state.boundary_nodes.end();
 
 					for (int q = 0; q < points.rows(); ++q)
 					{
