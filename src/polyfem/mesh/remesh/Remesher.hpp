@@ -5,6 +5,7 @@
 #include <polyfem/utils/Timer.hpp>
 
 #include <unordered_map>
+#include <variant>
 
 namespace polyfem::time_integrator
 {

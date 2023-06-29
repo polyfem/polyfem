@@ -5,6 +5,8 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
+#include <memory>
+
 namespace polyfem::utils
 {
 	class MatrixCache

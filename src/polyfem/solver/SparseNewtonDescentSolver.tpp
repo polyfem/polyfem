@@ -41,7 +41,7 @@ namespace cppoptlib
 	void SparseNewtonDescentSolver<ProblemType>::increase_descent_strategy()
 	{
 		// if (this->descent_strategy == 1 && reg_weight < reg_weight_max)
-		//     reg_weight = std::clamp(reg_weight_inc * reg_weight, reg_weight_min, reg_weight_max);
+		// 	reg_weight = std::clamp(reg_weight_inc * reg_weight, reg_weight_min, reg_weight_max);
 		// else
 		this->descent_strategy++;
 		// if (this->descent_strategy == 1 && reg_weight > 0)
