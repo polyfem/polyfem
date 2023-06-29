@@ -7,6 +7,7 @@
 
 #include <ipc/barrier/barrier.hpp>
 #include <ipc/utils/local_to_global.hpp>
+#include <ipc/utils/eigen_ext.hpp>
 
 namespace polyfem::solver
 {
@@ -89,9 +90,12 @@ namespace polyfem::solver
 
 				const double rest_volume = element_volume(rest_positions_(elements_.row(i), Eigen::all));
 
-				const Eigen::MatrixXd local_hess =
+				Eigen::MatrixXd local_hess =
 					(scale * rest_volume * ipc::barrier_hessian(volume, vhat_)) * volume_grad * volume_grad.transpose()
 					+ (scale * rest_volume * ipc::barrier_gradient(volume, vhat_)) * element_volume_hessian(element_vertices);
+
+                                if (project_to_psd_)
+				    local_hess = ipc::project_to_psd(local_hess);
 
 				ipc::local_hessian_to_global_triplets(local_hess, elements_.row(i), dim_, hess_triplets);
 			}

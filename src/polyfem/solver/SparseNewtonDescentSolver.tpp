@@ -40,10 +40,10 @@ namespace cppoptlib
 	template <typename ProblemType>
 	void SparseNewtonDescentSolver<ProblemType>::increase_descent_strategy()
 	{
-		if (this->descent_strategy == 0 || reg_weight > reg_weight_max)
-			this->descent_strategy++;
-		else
-			reg_weight = std::max(reg_weight_inc * reg_weight, reg_weight_min);
+		// if (this->descent_strategy == 1 && reg_weight < reg_weight_max)
+		//     reg_weight = std::clamp(reg_weight_inc * reg_weight, reg_weight_min, reg_weight_max);
+		// else
+		this->descent_strategy++;
 		// if (this->descent_strategy == 1 && reg_weight > 0)
 		// 	polyfem::log_and_throw_error("no projected Newton w/ regularization");
 		if (this->descent_strategy == 2)
