@@ -70,7 +70,7 @@ namespace polyfem::solver
             for (const auto& tuple : inactive_shape_params)
                 y(std::get<0>(tuple)) = std::get<1>(tuple);
         
-        if (last_x.size() == y.size() && last_x == y)
+        if (last_x.size() == x.size() && last_x == x)
             return true;
 
         {
