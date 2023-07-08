@@ -1143,7 +1143,6 @@
         "optional": [
             "discr_order_max",
             "isoparametric",
-            "periodic_basis",
             "periodic_mesh",
             "bc_method",
             "n_boundary_samples",
@@ -1169,12 +1168,6 @@
         "default": false,
         "type": "bool",
         "doc": "Forces geometric map basis to be the same degree as the main variable basis, irrespective of the degree associated with the geom. map degrees associated with the elements of the geometry."
-    },
-    {
-        "pointer": "/space/advanced/periodic_basis",
-        "default": false,
-        "type": "bool",
-        "doc": "Use periodic basis when periodic boundary condition is applied."
     },
     {
         "pointer": "/space/advanced/periodic_mesh",

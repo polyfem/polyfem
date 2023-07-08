@@ -383,10 +383,6 @@ namespace polyfem
 			}
 			return true;
 		}
-		bool need_periodic_reduction() const
-		{
-			return has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"];
-		}
 		void build_periodic_index_mapping(const int n_bases_, const std::vector<basis::ElementBases> &bases_, const std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes_, Eigen::VectorXi &index_map, Eigen::VectorXi &periodic_mask) const;
 
 		// compute the matrix/vector under periodic basis, if the size is larger than #periodic_basis, the extra rows are kept
@@ -394,7 +390,7 @@ namespace polyfem
 		int full_to_periodic(Eigen::MatrixXd &b, bool accumulate) const;
 		void full_to_periodic(std::vector<int> &boundary_nodes_) const
 		{
-			if (need_periodic_reduction())
+			if (has_periodic_bc())
 			{
 				for (int i = 0; i < boundary_nodes_.size(); i++)
 					boundary_nodes_[i] = bases_to_periodic_map(boundary_nodes_[i]);

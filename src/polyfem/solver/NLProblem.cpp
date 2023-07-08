@@ -48,7 +48,7 @@ namespace polyfem::solver
 		: FullNLProblem(forms),
 		  boundary_nodes_(boundary_nodes),
 		  full_size_(full_size),
-		  reduced_size_((state.need_periodic_reduction() ? (state.bases_to_periodic_map.maxCoeff() + 1) : full_size) - boundary_nodes.size()),
+		  reduced_size_((state.has_periodic_bc() ? (state.bases_to_periodic_map.maxCoeff() + 1) : full_size) - boundary_nodes.size()),
 		  rhs_assembler_(&rhs_assembler),
 		  local_boundary_(&local_boundary),
 		  n_boundary_samples_(n_boundary_samples),
@@ -62,7 +62,7 @@ namespace polyfem::solver
 
 	int NLProblem::current_size() const
 	{
-		if (current_size_ == CurrentSize::FULL_SIZE && state_.need_periodic_reduction() && reduced_size_ < full_size_)
+		if (current_size_ == CurrentSize::FULL_SIZE && state_.has_periodic_bc() && reduced_size_ < full_size_)
 			log_and_throw_error("Periodic BC doesn't support AL solve!");
 		return current_size_ == CurrentSize::FULL_SIZE ? full_size() : reduced_size();
 	}
@@ -199,7 +199,7 @@ namespace polyfem::solver
 		reduced.resize(reduced_size, 1);
 
 		Eigen::MatrixXd tmp = full;
-		if (state_.need_periodic_reduction())
+		if (state_.has_periodic_bc())
 			state_.full_to_periodic(tmp, false);
 		
 		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
@@ -252,7 +252,7 @@ namespace polyfem::solver
 			tmp(i) = reduced(j++);
 		}
 
-		if (state_.need_periodic_reduction())
+		if (state_.has_periodic_bc())
 			full = state_.periodic_to_full(full_size, tmp);
 		else
 			full = tmp;
@@ -275,7 +275,7 @@ namespace polyfem::solver
 		reduced.resize(reduced_size, 1);
 
 		Eigen::MatrixXd tmp = full;
-		if (state_.need_periodic_reduction())
+		if (state_.has_periodic_bc())
 			state_.full_to_periodic(tmp, true);
 
 		long j = 0;
@@ -296,9 +296,8 @@ namespace polyfem::solver
 	{
 		// POLYFEM_SCOPED_TIMER("\tfull hessian to reduced hessian");
 		THessian tmp = full;
-		state_.apply_lagrange_multipliers(tmp);
 		
-		if (state_.need_periodic_reduction())
+		if (state_.has_periodic_bc())
 			state_.full_to_periodic(tmp);
 
 		if (current_size() < full_size())

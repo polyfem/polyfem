@@ -82,12 +82,9 @@ namespace polyfem
 		const int full_size = A.rows();
 		int precond_num = problem_dim * n_bases;
 
-		apply_lagrange_multipliers(A);
-		b.conservativeResizeLike(Eigen::VectorXd::Zero(A.rows()));
-
 		std::vector<int> boundary_nodes_tmp = boundary_nodes;
 		full_to_periodic(boundary_nodes_tmp);
-		if (need_periodic_reduction())
+		if (has_periodic_bc())
 		{
 			precond_num = full_to_periodic(A);
  			Eigen::MatrixXd tmp = b;
@@ -117,8 +114,7 @@ namespace polyfem
 		else
 			logger().debug("Solver error: {}", error);
 
-		x.conservativeResize(x.size() - n_lagrange_multipliers());
- 		if (need_periodic_reduction())
+ 		if (has_periodic_bc())
  			sol = periodic_to_full(full_size, x);
  		else
  			sol = x; // Explicit copy because sol is a MatrixXd (with one column)

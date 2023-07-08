@@ -972,20 +972,6 @@ namespace polyfem
 					for (int d = 0; d < problem_dim; d++)
 						bases_to_periodic_map(i * problem_dim + d) = tmp_map(i) * problem_dim + d;
 			}
-
-			if (args["space"]["advanced"]["periodic_basis"].get<bool>())
-			{
-				for (auto &bs : bases)
-					for (auto &b : bs.bases)
-						for (auto &g : b.global())
-						{
-							int idx = bases_to_periodic_map(g.index * problem_dim) / problem_dim;
-							if (idx != g.index)
-								g.index = idx;
-						}
-
-				n_bases = (bases_to_periodic_map.maxCoeff() + 1) / problem_dim;
-			}
 		}
 		if (args["space"]["advanced"]["count_flipped_els"])
 			stats.count_flipped_elements(*mesh, geom_bases());
@@ -1458,12 +1444,6 @@ namespace polyfem
 		
 		if (tiled_to_single.maxCoeff() + 1 != V.rows())
 			log_and_throw_error("Failed to tile mesh!");
-
-		if (args["space"]["advanced"]["periodic_basis"].get<bool>())
-		{
-			for (int i = 0; i < tiled_to_single.size(); i++)
-				tiled_to_single(i) = bases_to_periodic_map(tiled_to_single(i));
-		}
 	}
 
 	void State::build_collision_mesh(

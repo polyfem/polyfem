@@ -296,13 +296,12 @@ namespace polyfem
 			const int full_size = A.rows();
 			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 			int precond_num = problem_dim * n_bases;
-			apply_lagrange_multipliers(A);
 
 			b.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), b.cols()));
 
 			std::vector<int> boundary_nodes_tmp = boundary_nodes;
 			full_to_periodic(boundary_nodes_tmp);
-			if (need_periodic_reduction())
+			if (has_periodic_bc())
 			{
 				precond_num = full_to_periodic(A);
 				Eigen::MatrixXd tmp = b;
@@ -315,9 +314,8 @@ namespace polyfem
 				Eigen::VectorXd x, tmp;
 				tmp = b.col(i);
 				dirichlet_solve_prefactorized(*lin_solver_cached, A, tmp, boundary_nodes_tmp, x);
-				x.conservativeResize(x.size() - n_lagrange_multipliers());
 
-				if (need_periodic_reduction())
+				if (has_periodic_bc())
 					adjoint.col(i) = periodic_to_full(full_size, x);
 				else
 					adjoint.col(i) = x;
@@ -341,7 +339,6 @@ namespace polyfem
 					Eigen::VectorXd x;
 					x.setZero(tmp.size());
 					solver->solve(tmp, x);
-					x.conservativeResize(x.size() - n_lagrange_multipliers());
 
 					adjoint.col(i) = solve_data.nl_problem->reduced_to_full(x);
 				}
