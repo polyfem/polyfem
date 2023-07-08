@@ -2347,40 +2347,6 @@
         "doc": "Material Parameters lists including ID pointing to volume selection, Young's modulus ($E$), Poisson's ratio ($\\nu$), Density ($\\rho$), or Lamé constants ($\\lambda$ and $\\mu$)."
     },
     {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "Multiscale",
-        "required": [
-            "type",
-            "microstructure"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "MultiscaleRB",
-        "required": [
-            "type",
-            "microstructure"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "n_dir_samples",
-            "n_reduced_basis",
-            "save_reduced_basis",
-            "load_reduced_basis",
-            "det_samples",
-            "amp_samples"
-        ],
-        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
-    },
-    {
         "pointer": "/materials/*/microstructure",
         "type": "object",
         "doc": "microstructure model configuration"
@@ -2793,8 +2759,6 @@
             "SaintVenant",
             "NeoHookean",
             "NeoHookeanAutodiff",
-            "MultiscaleRB",
-            "Multiscale",
             "MooneyRivlin",
             "UnconstrainedOgden",
             "IncompressibleOgden",

@@ -83,7 +83,7 @@ namespace polyfem
 		State();
 
 		/// @param[in] max_threads max number of threads
-		void set_max_threads(const unsigned int max_threads = std::numeric_limits<unsigned int>::max(), const bool skip_thread_initialization = false);
+		void set_max_threads(const unsigned int max_threads = std::numeric_limits<unsigned int>::max());
 
 		/// initialize the polyfem solver with a json settings
 		/// @param[in] args input arguments
@@ -388,11 +388,6 @@ namespace polyfem
 			return has_periodic_bc() && !args["space"]["advanced"]["periodic_basis"];
 		}
 		void build_periodic_index_mapping(const int n_bases_, const std::vector<basis::ElementBases> &bases_, const std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes_, Eigen::VectorXi &index_map, Eigen::VectorXi &periodic_mask) const;
-
-		// add lagrangian multiplier rows for pure neumann/periodic boundary condition, returns the number of rows added
-		int n_lagrange_multipliers() const;
-		void apply_lagrange_multipliers(StiffnessMatrix &A) const;
-		void apply_lagrange_multipliers(StiffnessMatrix &A, const Eigen::MatrixXd &coeffs) const;
 
 		// compute the matrix/vector under periodic basis, if the size is larger than #periodic_basis, the extra rows are kept
 		int full_to_periodic(StiffnessMatrix &A) const;

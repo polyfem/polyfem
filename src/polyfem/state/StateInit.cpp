@@ -373,13 +373,12 @@ namespace polyfem
 		}
 	}
 
-	void State::set_max_threads(const unsigned int max_threads, const bool skip_thread_initialization)
+	void State::set_max_threads(const unsigned int max_threads)
 	{
 		const unsigned int num_threads = std::max(1u, std::min(max_threads, std::thread::hardware_concurrency()));
 		NThread::get().num_threads = num_threads;
 #ifdef POLYFEM_WITH_TBB
-		if (!skip_thread_initialization)
-			thread_limiter = std::make_shared<tbb::global_control>(tbb::global_control::max_allowed_parallelism, num_threads);
+		thread_limiter = std::make_shared<tbb::global_control>(tbb::global_control::max_allowed_parallelism, num_threads);
 #endif
 		Eigen::setNbThreads(num_threads);
 	}
