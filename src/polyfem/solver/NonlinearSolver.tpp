@@ -160,6 +160,10 @@ namespace cppoptlib
 				name(), objFunc.value(x), this->m_current.gradNorm, this->m_stop.iterations,
 				this->m_stop.fDelta, this->m_stop.gradNorm, this->m_stop.xDelta);
 
+		update_solver_info();
+		if (solver_info_log)
+			std::cout << solver_info << std::endl;
+
 		do
 		{
 			if (name() == "MMA") {
