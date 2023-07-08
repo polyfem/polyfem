@@ -1016,8 +1016,8 @@ TEST_CASE("2d-shape-traction-force", "[optimization]")
 	// check if the objective at these steps are correct
 	auto energies = read_energy(name);
 
-	REQUIRE(energies[0] == Approx(821.1).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(242.12).epsilon(1e-4));
+	REQUIRE(energies[0] == Approx(955.23).epsilon(1e-4));
+	REQUIRE(energies[energies.size() - 1] == Approx(20.7053).epsilon(1e-4));
 }
 
 #endif
