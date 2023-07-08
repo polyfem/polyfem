@@ -73,13 +73,6 @@ namespace polyfem::time_integrator
 		/// \f]
 		Eigen::VectorXd weighted_sum_v_prevs() const;
 
-	protected:
-		/// @brief Get the maximum number of steps to use for integration.
-		int max_steps() const override { return max_steps_; }
-
-		/// @brief The maximum number of steps to use for integration.
-		int max_steps_ = 1;
-
 		/// @brief Retrieve the alphas used for BDF with `i` steps.
 		/// @param i number of steps
 		/// @see https://en.wikipedia.org/wiki/Backward_differentiation_formula#General_formula
@@ -89,5 +82,12 @@ namespace polyfem::time_integrator
 		/// @param i number of steps
 		/// @see https://en.wikipedia.org/wiki/Backward_differentiation_formula#General_formula
 		static double betas(const int i);
+
+	protected:
+		/// @brief Get the maximum number of steps to use for integration.
+		int max_steps() const override { return max_steps_; }
+
+		/// @brief The maximum number of steps to use for integration.
+		int max_steps_ = 1;
 	};
 } // namespace polyfem::time_integrator

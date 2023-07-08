@@ -30,6 +30,8 @@ namespace polyfem
 												const double starting_step_size = 1e-1,
 												const int num_samples = 1000);
 
+				void set_min_step_size(const double min_step_size_) { min_step_size = min_step_size_; };
+
 				virtual void reset_times()
 				{
 					iterations = 0;
@@ -48,6 +50,8 @@ namespace polyfem
 				double classical_line_search_time;
 
 				double use_grad_norm_tol = -1;
+
+				bool disable_log = false;
 
 			protected:
 				double min_step_size = 0;

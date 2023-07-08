@@ -27,6 +27,9 @@
 
 #include <ipc/utils/logger.hpp>
 
+#include <polyfem/mesh/mesh2D/Mesh2D.hpp>
+#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+
 #include <sstream>
 
 namespace spdlog::level
@@ -156,9 +159,17 @@ namespace polyfem
 		ipc::logger().set_level(log_level);
 	}
 
+	void State::set_log_level(const spdlog::level::level_enum log_level)
+	{
+		spdlog::set_level(log_level);
+		logger().set_level(log_level);
+		ipc::logger().set_level(log_level);
+	}
+
 	void State::init(const json &p_args_in, const bool strict_validation)
 	{
 		json args_in = p_args_in; // mutable copy
+		in_args = p_args_in;
 
 		apply_common_params(args_in);
 
@@ -192,6 +203,13 @@ namespace polyfem
 				rules[i]["default"] = polysolve::LinearSolver::defaultPrecond();
 				rules[i]["options"] = polysolve::LinearSolver::availablePrecond();
 			}
+			else if (rules[i]["pointer"] == "/solver/linear/adjoint_solver")
+			{
+				const auto ss = polysolve::LinearSolver::availableSolvers();
+				const bool solver_found = args_in.contains("solver") && args_in["solver"].contains("linear") && args_in["solver"]["linear"].contains("solver") && (std::find(ss.begin(), ss.end(), args_in["solver"]["linear"]["solver"]) != ss.end());
+				rules[i]["default"] = solver_found ? args_in["solver"]["linear"]["solver"].get<std::string>() : polysolve::LinearSolver::defaultSolver();
+				rules[i]["options"] = polysolve::LinearSolver::availableSolvers();
+			}
 		}
 
 		const bool valid_input = jse.verify_json(args_in, rules);
@@ -216,6 +234,18 @@ namespace polyfem
 			{
 				logger().warn("Solver {} is invalid, falling back to {}", s_json, polysolve::LinearSolver::defaultSolver());
 				this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
+			}
+		}
+
+		if (fallback_solver)
+		{
+			const std::string s_json = this->args["solver"]["linear"]["adjoint_solver"];
+			const auto ss = polysolve::LinearSolver::availableSolvers();
+			const auto solver_found = std::find(ss.begin(), ss.end(), s_json);
+			if (solver_found == ss.end())
+			{
+				logger().warn("Adjoint solver {} is invalid, falling back to {}", s_json, this->args["solver"]["linear"]["solver"]);
+				this->args["solver"]["linear"]["adjoint_solver"] = this->args["solver"]["linear"]["solver"];
 			}
 		}
 
@@ -265,6 +295,7 @@ namespace polyfem
 		{
 			args["solver"]["contact"]["friction_iterations"] = 0;
 			args["contact"]["friction_coefficient"] = 0;
+			args["contact"]["periodic"] = false;
 		}
 
 		const std::string formulation = this->formulation();
@@ -317,14 +348,38 @@ namespace polyfem
 			// important for the BC
 			problem->set_parameters(args["preset_problem"]);
 		}
+	
+		if (args["optimization"]["enabled"])
+		{
+			if (is_contact_enabled())
+			{
+				if (!args["contact"]["use_convergent_formulation"])
+				{
+					args["contact"]["use_convergent_formulation"] = true;
+					logger().info("Use convergent formulation for differentiable contact...");
+				}
+				if (args["/solver/contact/barrier_stiffness"_json_pointer].is_string())
+				{
+					logger().error("Only constant barrier stiffness is supported in differentiable contact!");
+				}
+			}
+
+			if (args.contains("boundary_conditions") && args["boundary_conditions"].contains("rhs"))
+			{
+				json rhs = args["boundary_conditions"]["rhs"];
+				if ((rhs.is_array() && rhs.size() > 0 && rhs[0].is_string()) || rhs.is_string())
+					logger().error("Only constant rhs over space is supported in differentiable code!");
+			}
+		}
 	}
 
-	void State::set_max_threads(const unsigned int max_threads)
+	void State::set_max_threads(const unsigned int max_threads, const bool skip_thread_initialization)
 	{
 		const unsigned int num_threads = std::max(1u, std::min(max_threads, std::thread::hardware_concurrency()));
 		NThread::get().num_threads = num_threads;
 #ifdef POLYFEM_WITH_TBB
-		thread_limiter = std::make_shared<tbb::global_control>(tbb::global_control::max_allowed_parallelism, num_threads);
+		if (!skip_thread_initialization)
+			thread_limiter = std::make_shared<tbb::global_control>(tbb::global_control::max_allowed_parallelism, num_threads);
 #endif
 		Eigen::setNbThreads(num_threads);
 	}
@@ -419,6 +474,76 @@ namespace polyfem
 
 		if (!utils::is_param_valid(args, "materials"))
 			return;
+
+		if (!args["materials"].is_array() && args["materials"]["type"] == "AMIPS")
+		{
+			json transform_params = {};
+			transform_params["canonical_transformation"] = json::array();
+			if (!mesh->is_volume())
+			{
+				Eigen::MatrixXd regular_tri(3, 3);
+				regular_tri << 0, 0, 1,
+					1, 0, 1,
+					1. / 2., std::sqrt(3) / 2., 1;
+				regular_tri.transposeInPlace();
+				Eigen::MatrixXd regular_tri_inv = regular_tri.inverse();
+
+				const auto &mesh2d = *dynamic_cast<mesh::Mesh2D *>(mesh.get());
+				for (int e = 0; e < mesh->n_elements(); e++)
+				{
+					Eigen::MatrixXd transform;
+					mesh2d.compute_face_jacobian(e, regular_tri_inv, transform);
+					transform_params["canonical_transformation"].push_back(json({
+						{
+							transform(0, 0),
+							transform(0, 1),
+						},
+						{
+							transform(1, 0),
+							transform(1, 1),
+						},
+					}));
+				}
+			}
+			else
+			{
+				Eigen::MatrixXd regular_tet(4, 4);
+				regular_tet << 0, 0, 0, 1,
+					1, 0, 0, 1,
+					1. / 2., std::sqrt(3) / 2., 0, 1,
+					1. / 2., 1. / 2. / std::sqrt(3), std::sqrt(3) / 2., 1;
+				regular_tet.transposeInPlace();
+				Eigen::MatrixXd regular_tet_inv = regular_tet.inverse();
+
+				const auto &mesh3d = *dynamic_cast<mesh::Mesh3D *>(mesh.get());
+				for (int e = 0; e < mesh->n_elements(); e++)
+				{
+					Eigen::MatrixXd transform;
+					mesh3d.compute_cell_jacobian(e, regular_tet_inv, transform);
+					transform_params["canonical_transformation"].push_back(json({
+						{
+							transform(0, 0),
+							transform(0, 1),
+							transform(0, 2),
+						},
+						{
+							transform(1, 0),
+							transform(1, 1),
+							transform(1, 2),
+						},
+						{
+							transform(2, 0),
+							transform(2, 1),
+							transform(2, 2),
+						},
+					}));
+				}
+			}
+			transform_params["solve_displacement"] = true;
+			assembler->set_materials({}, transform_params);
+
+			return;
+		}
 
 		std::vector<int> body_ids(mesh->n_elements());
 		for (int i = 0; i < mesh->n_elements(); ++i)

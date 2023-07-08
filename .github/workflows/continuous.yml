@@ -16,7 +16,7 @@ jobs:
 
   Linux:
     name: ${{ matrix.name }} (${{ matrix.config }}, ${{ matrix.threading }})
-    runs-on: ${{ matrix.os }}
+    runs-on: [self-hosted,Linux]
     strategy:
       fail-fast: false
       matrix:
@@ -34,12 +34,6 @@ jobs:
 
       - name: Dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get -o Acquire::Retries=3 install \
-          libblas-dev \
-          libglu1-mesa-dev \
-          xorg-dev \
-          ccache
           echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
 
       - name: Cache Build
@@ -82,7 +76,7 @@ jobs:
 
   MacOS:
     name: ${{ matrix.name }}-${{ matrix.arc }} (${{ matrix.config }}, ${{ matrix.threading }})
-    runs-on: ${{ matrix.os }}
+    runs-on: [self-hosted,macOS]
     strategy:
       fail-fast: false
       matrix:
@@ -153,7 +147,7 @@ jobs:
   ####################
 
   Windows:
-    runs-on: windows-2022
+    runs-on: [self-hosted,Windows]
     env:
       SCCACHE_IDLE_TIMEOUT: "12000"
     strategy:
@@ -170,15 +164,15 @@ jobs:
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@master
 
-      - name: Stetup Conda
-        uses: s-weigand/setup-conda@v1
-        with:
-          update-conda: true
-          conda-channels: anaconda, conda-forge
+      # - name: Stetup Conda
+      #   uses: s-weigand/setup-conda@v1
+      #   with:
+      #     update-conda: true
+      #     conda-channels: anaconda, conda-forge
 
-      - name: Install Dependencies
-        run: |
-          conda install libblas libcblas suitesparse -y
+      # - name: Install Dependencies
+      #   run: |
+      #     conda install libblas libcblas suitesparse -y
 
       - name: Set env
         run: |
@@ -190,22 +184,22 @@ jobs:
         id: cache-build
         uses: actions/cache@v3
         with:
-          path: ${{ env.appdata }}\Mozilla\sccache
+          path: D:\sccache
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
           restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
 
-      - name: Prepare sccache
-        run: |
-          iwr -useb 'https://raw.githubusercontent.com/scoopinstaller/install/master/install.ps1' -outfile 'install.ps1'
-          .\install.ps1 -RunAsAdmin
-          scoop install sccache --global
-          # Scoop modifies the PATH so we make it available for the next steps of the job
-          echo "${env:PATH}" >> ${env:GITHUB_PATH}
+      # - name: Prepare sccache
+      #   run: |
+      #     iwr -useb 'https://raw.githubusercontent.com/scoopinstaller/install/master/install.ps1' -outfile 'install.ps1'
+      #     .\install.ps1 -RunAsAdmin
+      #     scoop install sccache --global
+      #     # Scoop modifies the PATH so we make it available for the next steps of the job
+      #     echo "${env:PATH}" >> ${env:GITHUB_PATH}
 
       - name: Configure and Build
         shell: cmd
         run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          call "D:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
           cmake -G Ninja ^
             -DCMAKE_CXX_FLAGS="/Z7 /DEBUG:FASTLINK /DWIN32" ^
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^

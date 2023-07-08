@@ -55,7 +55,17 @@ namespace polyfem
 	double von_mises_stress_for_stress_tensor(const Eigen::MatrixXd &stress);
 	Eigen::MatrixXd pk1_from_cauchy(const Eigen::MatrixXd &stress, const Eigen::MatrixXd &F);
 	Eigen::MatrixXd pk2_from_cauchy(const Eigen::MatrixXd &stress, const Eigen::MatrixXd &F);
+	void compute_diplacement_grad(const int size, const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad);
 	void compute_diplacement_grad(const int size, const basis::ElementBases &bs, const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad);
+
+	double convert_to_lambda(const bool is_volume, const double E, const double nu);
+	double convert_to_mu(const double E, const double nu);
+	Eigen::Matrix2d d_lambda_mu_d_E_nu(const bool is_volume, const double E, const double nu);
+	Eigen::Matrix2d d_E_nu_d_lambda_mu(const bool is_volume, const double lambda, const double mu);
+	double convert_to_E(const bool is_volume, const double lambda, const double mu);
+	double convert_to_nu(const bool is_volume, const double lambda, const double mu);
+
+	typedef std::array<double, 2> DampingParameters;
 
 	template <typename AutoDiffVect>
 	void get_local_disp(

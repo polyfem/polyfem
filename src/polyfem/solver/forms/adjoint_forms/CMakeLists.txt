@@ -1,0 +1,31 @@
+set(SOURCES
+	AdjointForm.cpp
+	AdjointForm.hpp
+	ParametrizationForm.hpp
+	ParametrizationForm.cpp
+	SpatialIntegralForms.cpp
+	SpatialIntegralForms.hpp
+	SDFVariableToSimulation.cpp
+	VariableToSimulation.cpp
+	VariableToSimulation.hpp
+	CompositeForm.hpp
+	CompositeForms.cpp
+	CompositeForms.hpp
+	SumCompositeForm.hpp
+	AMIPSForm.hpp
+	WeightedVolumeForm.hpp
+	ParametrizedProductForm.hpp
+	TransientForm.hpp
+	TransientForm.cpp
+	BarrierForms.hpp
+	SmoothingForms.hpp
+	SmoothingForms.cpp
+	SurfaceTractionForms.hpp
+	SurfaceTractionForms.cpp
+	TargetForms.hpp
+	TargetForms.cpp
+)
+
+prepend_current_path(SOURCES)
+polyfem_set_source_group(${SOURCES})
+target_sources(polyfem PRIVATE ${SOURCES})

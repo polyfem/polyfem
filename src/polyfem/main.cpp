@@ -134,10 +134,8 @@ int main(int argc, char **argv)
 
 	// Mesh was not loaded successfully; load_mesh() logged the error.
 	if (state.mesh == nullptr)
-	{
 		// Cannot proceed without a mesh.
 		return EXIT_FAILURE;
-	}
 
 	state.stats.compute_mesh_stats(*state.mesh);
 

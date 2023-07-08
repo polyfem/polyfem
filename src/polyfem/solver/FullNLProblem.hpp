@@ -23,6 +23,9 @@ namespace polyfem::solver
 		virtual void gradient(const TVector &x, TVector &gradv) override;
 		virtual void hessian(const TVector &x, THessian &hessian);
 
+		virtual TVector component_values(const TVector &x);
+		virtual Eigen::MatrixXd component_gradients(const TVector &x);
+
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) const;
 		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1) const;
 		virtual double max_step_size(const TVector &x0, const TVector &x1) const;
@@ -40,7 +43,12 @@ namespace polyfem::solver
 		int max_lagging_iterations() const;
 		bool uses_lagging() const;
 
+		virtual bool remesh(TVector &x) { return false; }
+		virtual bool smoothing(const TVector &x, const TVector &new_x, TVector &smoothed_x) { return false; }
+		virtual void save_to_file(const TVector &x0) {}
 		std::vector<std::shared_ptr<Form>> &forms() { return forms_; }
+
+		virtual bool stop(const TVector &x) { return false; }
 
 	protected:
 		std::vector<std::shared_ptr<Form>> forms_;

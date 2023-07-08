@@ -40,11 +40,22 @@ namespace polyfem::solver
 
 		prev_distance_ = -1;
 		constraint_set_.set_use_convergent_formulation(use_convergent_formulation);
+		constraint_set_.set_are_shape_derivatives_enabled(true);
 	}
 
 	void ContactForm::init(const Eigen::VectorXd &x)
 	{
 		update_constraint_set(compute_displaced_surface(x));
+	}
+
+	void ContactForm::force_shape_derivative(const ipc::CollisionConstraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
+	{
+		// Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
+		// Eigen::MatrixXd X = collision_mesh_.vertices(boundary_nodes_pos_);
+		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(solution);
+
+		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(contact_set.compute_shape_derivative(collision_mesh_, displaced_surface, dhat_));
+		term = barrier_stiffness() * dq_h.transpose() * adjoint_sol;
 	}
 
 	void ContactForm::update_quantities(const double t, const Eigen::VectorXd &x)

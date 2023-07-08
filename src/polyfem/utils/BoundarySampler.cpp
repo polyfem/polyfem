@@ -574,5 +574,51 @@ namespace polyfem
 
 			return true;
 		}
+
+		bool utils::BoundarySampler::boundary_quadrature(const mesh::LocalBoundary &local_boundary, const int order, const mesh::Mesh &mesh, const int i, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::MatrixXd &normals, Eigen::VectorXd &weights)
+		{
+			assert (local_boundary.size() > i);
+				
+			uv.resize(0, 0);
+			points.resize(0, 0);
+			weights.resize(0);
+			const int gid = local_boundary.global_primitive_id(i);
+
+			Eigen::MatrixXd normal;
+			switch (local_boundary.type())
+			{
+			case BoundaryType::TRI_LINE:
+				quadrature_for_tri_edge(local_boundary[i], order, gid, mesh, uv, points, weights);
+				normal_for_tri_edge(local_boundary[i], normal);
+				break;
+			case BoundaryType::QUAD_LINE:
+				quadrature_for_quad_edge(local_boundary[i], order, gid, mesh, uv, points, weights);
+				normal_for_quad_edge(local_boundary[i], normal);
+				break;
+			case BoundaryType::QUAD:
+				quadrature_for_quad_face(local_boundary[i], order, gid, mesh, uv, points, weights);
+				normal_for_quad_face(local_boundary[i], normal);
+				break;
+			case BoundaryType::TRI:
+				quadrature_for_tri_face(local_boundary[i], order, gid, mesh, uv, points, weights);
+				normal_for_tri_face(local_boundary[i], normal);
+				break;
+			case BoundaryType::POLYGON:
+				quadrature_for_polygon_edge(local_boundary.element_id(), gid, order, mesh, uv, points, weights);
+				normal_for_polygon_edge(local_boundary.element_id(), gid, mesh, normal);
+				break;
+			case BoundaryType::INVALID:
+				assert(false);
+				break;
+			default:
+				assert(false);
+			}
+
+			normals.resize(points.rows(), normal.size());
+			for (int k = 0; k < normals.rows(); ++k)
+				normals.row(k) = normal;
+
+			return true;
+		}
 	} // namespace utils
 } // namespace polyfem

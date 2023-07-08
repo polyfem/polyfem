@@ -73,7 +73,7 @@ option(POLYFEM_BUILD_DOCS       "Build documentation using Doxygen" OFF)
 
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
-set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
+set(POLYFEM_THREADING "CPP" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 
 option(POLYFEM_WITH_REMESHING "Uses VMTK for remeshing"                     OFF)
@@ -167,6 +167,8 @@ target_compile_definitions(polyfem PUBLIC -DPOLYFEM_SMALL_N=${POLYFEM_SMALL_N})
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
 
 target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${CMAKE_SOURCE_DIR}/input-spec.json")
+target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${CMAKE_SOURCE_DIR}/opt-input-spec.json")
+target_compile_definitions(polyfem PUBLIC POLYFEM_OBJECTIVE_INPUT_SPEC="${CMAKE_SOURCE_DIR}/objective-spec.json")
 
 if (MSVC)
     add_compile_options(/bigobj)
@@ -219,6 +221,10 @@ polyfem_target_link_system_libraries(polyfem PUBLIC BVH_lib)
 # MSHIO
 include(mshio)
 polyfem_target_link_system_libraries(polyfem PUBLIC mshio)
+
+# Nanospline
+include(nanospline)
+polyfem_target_link_system_libraries(polyfem PUBLIC nanospline)
 
 # Geogram
 include(geogram)
@@ -287,6 +293,13 @@ if(POLYFEM_WITH_CLIPPER)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
 endif()
 
+include(finite_diff)
+polyfem_target_link_system_libraries(polyfem PUBLIC finitediff::finitediff)
+
+# Microstructures
+# include(inflator)
+# target_link_libraries(polyfem INTERFACE Microstructures)
+
 # Extra warnings (link this here so it has top priority)
 target_link_libraries(polyfem PRIVATE polyfem::warnings)
 
@@ -297,6 +310,8 @@ target_link_libraries(polyfem PRIVATE polyfem::warnings)
 # Main executable
 if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
+    add_executable(optimization src/polyfem/main_optimization.cpp)
+    # add_executable(homogenization src/polyfem/main_homo.cpp)
 
     target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
 
@@ -304,6 +319,22 @@ if(POLYFEM_TOPLEVEL_PROJECT)
 
     include(cli11)
     polyfem_target_link_system_libraries(${PROJECT_NAME}_bin PUBLIC CLI11::CLI11)
+
+    target_compile_features(optimization PUBLIC ${CXX14_FEATURES})
+    target_link_libraries(optimization
+        PUBLIC
+            polyfem::polyfem
+            polyfem::warnings
+            CLI11::CLI11
+    )
+
+    # target_compile_features(homogenization PUBLIC ${CXX14_FEATURES})
+    # target_link_libraries(homogenization
+    #     PUBLIC
+    #         polyfem::polyfem
+    #         polyfem::warnings
+    #         CLI11::CLI11
+    # )
 
     if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
         set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)

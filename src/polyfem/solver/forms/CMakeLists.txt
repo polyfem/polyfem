@@ -18,6 +18,12 @@ set(SOURCES
 	FrictionForm.hpp
 	ContactForm.cpp
 	ContactForm.hpp
+	PeriodicContactForm.cpp
+	PeriodicContactForm.hpp
+	MacroStrainLagrangianForm.cpp
+	MacroStrainLagrangianForm.hpp
+	MacroStrainALForm.cpp
+	MacroStrainALForm.hpp
 	RayleighDampingForm.cpp
 	RayleighDampingForm.hpp
 )
@@ -26,3 +32,5 @@ prepend_current_path(SOURCES)
 polyfem_set_source_group(${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})
 
+add_subdirectory(parametrization)
+add_subdirectory(adjoint_forms)

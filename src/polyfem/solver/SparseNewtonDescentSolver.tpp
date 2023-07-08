@@ -1,6 +1,8 @@
 #pragma once
 
 #include "SparseNewtonDescentSolver.hpp"
+#include <finitediff.hpp>
+#include <unsupported/Eigen/SparseExtra>
 
 namespace cppoptlib
 {
@@ -12,6 +14,9 @@ namespace cppoptlib
 		linear_solver = polysolve::LinearSolver::create(
 			linear_solver_params["solver"], linear_solver_params["precond"]);
 		linear_solver->setParameters(linear_solver_params);
+
+		verify_hessian = solver_params["verify_hessian"];
+		disable_project_psd = solver_params["disable_project_psd"];
 		force_psd_projection = solver_params["force_psd_projection"];
 	}
 
@@ -99,19 +104,76 @@ namespace cppoptlib
 	// =======================================================================
 
 	template <typename ProblemType>
+	bool SparseNewtonDescentSolver<ProblemType>::is_saddle_point(ProblemType &objFunc, const TVector &x)
+	{
+		POLYFEM_SCOPED_TIMER("assembly time", this->assembly_time);
+
+		polyfem::StiffnessMatrix hessian;
+		objFunc.set_project_to_psd(false);
+		objFunc.hessian(x, hessian);
+
+		linear_solver->analyzePattern(hessian, hessian.rows());
+
+		try
+		{
+			linear_solver->factorize(hessian);
+		}
+		catch (const std::runtime_error &err)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	// =======================================================================
+
+	template <typename ProblemType>
 	void SparseNewtonDescentSolver<ProblemType>::assemble_hessian(
 		ProblemType &objFunc, const TVector &x, polyfem::StiffnessMatrix &hessian)
 	{
 		POLYFEM_SCOPED_TIMER("assembly time", this->assembly_time);
 
-		if (this->descent_strategy == 1)
+		if (!disable_project_psd && this->descent_strategy == 1)
 			objFunc.set_project_to_psd(true);
-		else if (this->descent_strategy == 0)
-			objFunc.set_project_to_psd(false);
 		else
-			assert(false);
+			objFunc.set_project_to_psd(false);
 
 		objFunc.hessian(x, hessian);
+
+		if (verify_hessian && this->descent_strategy == 0)
+		{
+			Eigen::MatrixXd fhess;
+			fd::finite_jacobian(
+				x,
+				[&](const Eigen::VectorXd &y) -> Eigen::VectorXd {
+					Eigen::VectorXd grad;
+					objFunc.solution_changed(y);
+					objFunc.gradient(y, grad);
+					return grad;
+				},
+				fhess);
+			// fd::finite_hessian(
+			// 	x,
+			// 	[&](const Eigen::VectorXd &y) -> double {
+			// 		Eigen::VectorXd grad;
+			// 		objFunc.solution_changed(y);
+			// 		return objFunc.value(y);
+			// 	},
+			// 	fhess);
+			
+			polyfem::StiffnessMatrix fhess_ = fhess.sparseView(0, 1e-9);
+			const double error = (hessian - fhess_).norm();
+			const double norm = hessian.norm();
+			std::cout << "hessian FD error " << error << ", matrix norm " << norm << "\n";
+			// if (error > 1e-5 * norm)
+			// {
+			// 	Eigen::saveMarket(hessian, "hess.mat");
+			// 	Eigen::saveMarket(fhess_, "fhess.mat");
+			// 	exit(0);
+			// }
+			objFunc.solution_changed(x);
+		}
 
 		if (reg_weight > 0)
 		{
@@ -128,6 +190,8 @@ namespace cppoptlib
 		POLYFEM_SCOPED_TIMER("linear solve", this->inverting_time);
 		// TODO: get the correct size
 		linear_solver->analyzePattern(hessian, hessian.rows());
+
+		TVector b = -grad;
 
 		try
 		{
@@ -146,20 +210,10 @@ namespace cppoptlib
 			return false;
 		}
 
-		linear_solver->solve(-grad, direction); // H Δx = -g
+		linear_solver->solve(b, direction); // H Δx = -g
 
-		return true;
-	}
-
-	// =======================================================================
-
-	template <typename ProblemType>
-	bool SparseNewtonDescentSolver<ProblemType>::check_direction(
-		const polyfem::StiffnessMatrix &hessian, const TVector &grad, const TVector &direction)
-	{
-		// gradient descent, check descent direction
-		const double residual = (hessian * direction + grad).norm(); // H Δx + g = 0
-		if (std::isnan(residual) || residual > std::max(1e-8 * grad.norm(), 1e-5))
+		const double residual = (hessian * direction - b).norm(); // H Δx + g = 0
+		if (std::isnan(residual) || residual > std::max(1e-8 * b.norm(), 1e-5))
 		{
 			increase_descent_strategy();
 
@@ -172,16 +226,26 @@ namespace cppoptlib
 		}
 		else
 		{
-			polyfem::logger().trace("linear solve residual {}", residual);
+			polyfem::logger().trace("relative linear solve residual {}", residual / b.norm());
 		}
 
+		return true;
+	}
+
+	// =======================================================================
+
+	template <typename ProblemType>
+	bool SparseNewtonDescentSolver<ProblemType>::check_direction(
+		const polyfem::StiffnessMatrix &hessian, const TVector &grad, const TVector &direction)
+	{
 		// do this check here because we need to repeat the solve without resetting reg_weight
 		if (grad.dot(direction) >= 0)
 		{
 			increase_descent_strategy();
-			polyfem::logger().log(
-				log_level(), "[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
-				name(), direction.dot(grad), descent_strategy_name());
+			if (!this->disable_log)
+				polyfem::logger().log(
+					log_level(), "[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
+					name(), direction.dot(grad), descent_strategy_name());
 			return false;
 		}
 

@@ -64,6 +64,7 @@ namespace polyfem
 
 			// Node position from node id
 			RowVectorNd node_position(int node_id) const { return nodes_.row(node_to_primitive_[node_id]); }
+			void set_node_position(int node_id, const RowVectorNd &pos) { assert(node_id < nodes_.rows()); nodes_.row(node_to_primitive_[node_id]) = pos; }
 
 			// Whether a node is on the mesh boundary or not
 			bool is_boundary(int node_id) const { return is_boundary_[node_to_primitive_[node_id]]; }

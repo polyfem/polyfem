@@ -37,6 +37,10 @@ set(SOURCES
 	NavierStokes.hpp
 	NeoHookeanElasticity.cpp
 	NeoHookeanElasticity.hpp
+	MultiscaleRB.cpp
+	MultiscaleRB.hpp
+	Multiscale.cpp
+	Multiscale.hpp
 	NeoHookeanElasticityAutodiff.cpp
 	NeoHookeanElasticityAutodiff.hpp
 	OgdenElasticity.cpp
@@ -48,10 +52,14 @@ set(SOURCES
 	RhsAssembler.hpp
 	SaintVenantElasticity.cpp
 	SaintVenantElasticity.hpp
+	ViscousDamping.cpp
+	ViscousDamping.hpp
 	Stokes.cpp
 	Stokes.hpp
 	ViscousDamping.cpp
 	ViscousDamping.hpp
+	AMIPSEnergy.hpp
+	AMIPSEnergy.cpp
 )
 
 prepend_current_path(SOURCES)

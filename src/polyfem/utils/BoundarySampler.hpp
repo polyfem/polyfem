@@ -43,6 +43,8 @@ namespace polyfem
 			static bool sample_boundary(const mesh::LocalBoundary &local_boundary, const int n_samples, const mesh::Mesh &mesh, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &samples, Eigen::VectorXi &global_primitive_ids);
 			//compute quadrature for boundary facet, uv are local (ref) values, samples are global coordinates
 			static bool boundary_quadrature(const mesh::LocalBoundary &local_boundary, const int order, const mesh::Mesh &mesh, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::MatrixXd &normals, Eigen::VectorXd &weights, Eigen::VectorXi &global_primitive_ids);
+			//compute quadrature for one boundary facet, uv are local (ref) values, samples are global coordinates
+			static bool boundary_quadrature(const mesh::LocalBoundary &local_boundary, const int order, const mesh::Mesh &mesh, const int i, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::MatrixXd &normal, Eigen::VectorXd &weights);
 		};
 	} // namespace utils
 } // namespace polyfem

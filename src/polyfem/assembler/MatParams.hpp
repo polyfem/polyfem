@@ -82,6 +82,8 @@ namespace polyfem::assembler
 				el_id, lambda, mu);
 		}
 
+		Eigen::MatrixXd lambda_mat_, mu_mat_;
+
 	private:
 		void set_e_nu(const int index, const json &E, const json &nu);
 
@@ -96,7 +98,13 @@ namespace polyfem::assembler
 		Density();
 
 		void add_multimaterial(const int index, const json &params);
-
+		void init_multimaterial(const Eigen::MatrixXd &mat) { rho_[0].init(mat); }
+		void get_multimaterial(Eigen::MatrixXd &mat)
+		{
+			assert(is_mat());
+			mat = rho_[0].get_mat();
+		}
+		
 		double operator()(double px, double py, double pz, double x, double y, double z, int el_id) const;
 		double operator()(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id) const
 		{
@@ -106,6 +114,8 @@ namespace polyfem::assembler
 						   p(0), p(1), p.size() == 3 ? p(2) : 0.0,
 						   el_id);
 		}
+
+		bool is_mat() const { return (rho_.size() == 1) && rho_[0].is_mat(); }
 
 	private:
 		void set_rho(const json &rho);

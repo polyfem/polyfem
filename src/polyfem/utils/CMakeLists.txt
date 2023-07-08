@@ -22,6 +22,8 @@ set(SOURCES
 	InterpolatedFunction.hpp
 	Interpolation.cpp
 	Interpolation.hpp
+	IsosurfaceInflator.cpp
+	IsosurfaceInflator.hpp
 	JSONUtils.cpp
 	JSONUtils.hpp
 	Logger.cpp
@@ -38,12 +40,18 @@ set(SOURCES
 	RBFInterpolation.hpp
 	RefElementSampler.cpp
 	RefElementSampler.hpp
+	CubicHermiteSplineParametrization.hpp
+	BSplineParametrization.cpp
+	BSplineParametrization.hpp
 	Selection.cpp
 	Selection.hpp
 	StringUtils.cpp
 	StringUtils.hpp
 	Timer.hpp
 	Types.hpp
+	LazyCubicInterpolator.cpp
+	LazyCubicInterpolator.hpp
+	PolarDecomposition.hpp
 )
 
 prepend_current_path(SOURCES)

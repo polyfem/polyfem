@@ -63,6 +63,23 @@ namespace polyfem::solver
 			}
 		}
 
+		/// @brief Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adjoint_sol.
+		/// @param[in] n_verts Number of vertices
+		/// @param[in] x Current solution
+		/// @param[in] adjoint Current adjoint solution
+		/// @param[out] term Derivative of force multiplied by the adjoint
+		void force_shape_derivative(
+			const int n_verts,
+			const double t,
+			const Eigen::MatrixXd &x,
+			const Eigen::MatrixXd &adjoint,
+			Eigen::VectorXd &term);
+
+		void hessian_wrt_u_prev(
+			const Eigen::VectorXd &u_prev,
+			const double t,
+			StiffnessMatrix &hessian) const;
+
 	private:
 		double t_;       ///< Current time
 		const int ndof_; ///< Number of degrees of freedom

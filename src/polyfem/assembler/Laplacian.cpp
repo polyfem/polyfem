@@ -2,6 +2,13 @@
 
 namespace polyfem::assembler
 {
+	namespace {
+		bool delta(int i, int j)
+		{
+			return (i == j) ? true : false;
+		}
+	}
+	
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> Laplacian::assemble(const LinearAssemblerData &data) const
 	{
 		const Eigen::MatrixXd &gradi = data.vals.basis_values[data.i].grad_t_m;
@@ -36,4 +43,27 @@ namespace polyfem::assembler
 
 		return res;
 	}
-} // namespace polyfem::assembler
+
+	void Laplacian::compute_stress_grad_multiply_mat(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const
+	{
+		stress = grad_u_i;
+		result = mat;
+	}
+
+	void Laplacian::compute_stiffness_value(const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const
+	{
+		const int dim = local_pts.cols();
+		tensor.resize(local_pts.rows(), dim * dim);
+		assert(displacement.cols() == 1);
+
+		for (long p = 0; p < local_pts.rows(); ++p)
+		{
+			for (int i = 0, idx = 0; i < dim; i++)
+			for (int j = 0; j < dim; j++)
+			{
+				tensor(p, idx) = delta(i, j);
+				idx++;
+			}
+		}
+	}
+} // namespace assembler

@@ -18,7 +18,8 @@
             "initial_conditions",
             "output",
             "input",
-            "tests"
+            "tests",
+            "optimization"
         ],
         "doc": "Root of the configuration file."
     },
@@ -1142,6 +1143,8 @@
         "optional": [
             "discr_order_max",
             "isoparametric",
+            "periodic_basis",
+            "periodic_mesh",
             "bc_method",
             "n_boundary_samples",
             "quadrature_order",
@@ -1168,8 +1171,20 @@
         "doc": "Forces geometric map basis to be the same degree as the main variable basis, irrespective of the degree associated with the geom. map degrees associated with the elements of the geometry."
     },
     {
+        "pointer": "/space/advanced/periodic_basis",
+        "default": false,
+        "type": "bool",
+        "doc": "Use periodic basis when periodic boundary condition is applied."
+    },
+    {
+        "pointer": "/space/advanced/periodic_mesh",
+        "default": false,
+        "type": "bool",
+        "doc": "Use periodic mesh representation in shape optimization for periodic PDE."
+    },
+    {
         "pointer": "/space/advanced/bc_method",
-        "default": "lsq",
+        "default": "sample",
         "options": [
             "lsq",
             "sample"
@@ -1298,18 +1313,10 @@
     },
     {
         "pointer": "/time/integrator",
-        "type": "string",
-        "default": "ImplicitEuler",
-        "options": [
-            "ImplicitEuler",
-            "BDF",
-            "ImplicitNewmark"
-        ],
-        "doc": "Time integrator"
-    },
-    {
-        "pointer": "/time/integrator",
         "type": "object",
+        "default": {
+            "type": "ImplicitEuler"
+        },
         "type_name": "ImplicitEuler",
         "required": [
             "type"
@@ -1385,7 +1392,8 @@
             "dhat_percentage",
             "epsv",
             "friction_coefficient",
-            "use_convergent_formulation"
+            "use_convergent_formulation",
+            "periodic"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1428,6 +1436,12 @@
         "doc": "Whether to use the convergent (area weighted) formulation of IPC."
     },
     {
+        "pointer": "/contact/periodic",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to use a 3x3 tiling of the mesh to detect collision under periodic BC."
+    },
+    {
         "pointer": "/solver",
         "default": null,
         "type": "object",
@@ -1457,6 +1471,7 @@
         "optional": [
             "enable_overwrite_solver",
             "solver",
+            "adjoint_solver",
             "precond",
             "Eigen::LeastSquaresConjugateGradient",
             "Eigen::DGMRES",
@@ -1488,6 +1503,32 @@
             "Eigen::UmfPackLU",
             "Eigen::SuperLU",
             "Eigen::PardisoLDLT",
+            "Eigen::PardisoLLT",
+            "Eigen::PardisoLU",
+            "Pardiso",
+            "Hypre",
+            "AMGCL",
+            "Eigen::LeastSquaresConjugateGradient",
+            "Eigen::DGMRES",
+            "Eigen::ConjugateGradient",
+            "Eigen::BiCGSTAB",
+            "Eigen::GMRES",
+            "Eigen::MINRES"
+        ]
+    },
+    {
+        "pointer": "/solver/linear/adjoint_solver",
+        "default": "",
+        "type": "string",
+        "doc": "Adjoint linear solver type.",
+        "options": [
+            "Eigen::SimplicialLDLT",
+            "Eigen::SparseLU",
+            "Eigen::CholmodSupernodalLLT",
+            "Eigen::UmfPackLU",
+            "Eigen::SuperLU",
+            "Eigen::PardisoLDLT",
+            "Eigen::PardisoLLT",
             "Eigen::PardisoLU",
             "Pardiso",
             "Hypre",
@@ -1880,14 +1921,85 @@
             "solver",
             "f_delta",
             "x_delta",
+            "debug_fd",
+            "debug_fd_eps",
+            "disable_project_psd",
+            "verify_hessian",
+            "fall_back_descent_strategy_period",
             "grad_norm",
             "first_grad_norm_tol",
             "max_iterations",
             "relative_gradient",
             "line_search",
-            "force_psd_projection"
+            "export_energy",
+            "export_energy_components",
+            "solver_info_log",
+            "max_step_size",
+            "min_step_size",
+            "force_psd_projection",
+            "check_saddle_point"
         ],
         "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
+    },
+    {
+        "pointer": "/solver/nonlinear/disable_project_psd",
+        "default": false,
+        "type": "bool",
+        "doc": "Disable projection to PSD in newton solve."
+    },
+    {
+        "pointer": "/solver/nonlinear/verify_hessian",
+        "default": false,
+        "type": "bool",
+        "doc": "Use finite difference to verify gradient in optimization"
+    },
+    {
+        "pointer": "/solver/nonlinear/debug_fd",
+        "default": false,
+        "type": "bool",
+        "doc": "Use finite difference to verify gradient in optimization"
+    },
+    {
+        "pointer": "/solver/nonlinear/debug_fd_eps",
+        "default": 1e-7,
+        "type": "float",
+        "doc": "Use finite difference to verify gradient in optimization"
+    },
+    {
+        "pointer": "/solver/nonlinear/fall_back_descent_strategy_period",
+        "default": 1,
+        "type": "int",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/solver/nonlinear/max_step_size",
+        "default": 1,
+        "type": "float",
+        "doc": "Max step size in line search"
+    },
+    {
+        "pointer": "/solver/nonlinear/solver_info_log",
+        "default": false,
+        "type": "bool",
+        "doc": "Print optimization nonlinear solver statistics to log in json format at every iter"
+    },
+    {
+        "pointer": "/solver/nonlinear/min_step_size",
+        "default": 0,
+        "type": "float",
+        "doc": "Minimum step size in line search"
+    },
+    {
+        "pointer": "/solver/nonlinear/export_energy",
+        "default": "",
+        "type": "string",
+        "doc": "Save energy and gradient in optimizations to file"
+    },
+    {
+        "pointer": "/solver/nonlinear/export_energy_components",
+        "default": false,
+        "type": "bool",
+        "doc": "Save energy and gradient components"
     },
     {
         "pointer": "/solver/nonlinear/solver",
@@ -1895,6 +2007,7 @@
         "type": "string",
         "options": [
             "newton",
+            "GradientDescent",
             "lbfgs"
         ],
         "doc": "Nonlinear solver type"
@@ -1974,6 +2087,12 @@
         "doc": "Force the Hessian to be PSD when using second order solvers (i.e., Newton's method)."
     },
     {
+        "pointer": "/solver/nonlinear/check_saddle_point",
+        "default": false,
+        "type": "bool",
+        "doc": "Check if hessian is PSD when the nonlinear solve converges."
+    },
+    {
         "pointer": "/solver/augmented_lagrangian",
         "default": null,
         "type": "object",
@@ -1983,7 +2102,8 @@
             "max_weight",
             "eta",
             "max_solver_iters",
-            "force"
+            "force",
+            "error"
         ],
         "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes E + a/2*AL^2 - lambda AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a *= scaling` until `max_weight`. See IPC additional material"
     },
@@ -1993,6 +2113,13 @@
         "min": 0,
         "type": "float",
         "doc": "Initial weight for AL"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/error",
+        "default": 1e-2,
+        "min": 0,
+        "type": "float",
+        "doc": "Don't stop AL unless the error is smaller than this number."
     },
     {
         "pointer": "/solver/augmented_lagrangian/scaling",
@@ -2026,6 +2153,14 @@
         "default": false,
         "type": "bool",
         "doc": "Always enable AL, even when BC can be imposed"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/threshold",
+        "default": 0.05,
+        "min": 0,
+        "max": 1,
+        "type": "float",
+        "doc": "Stop AL when BC is close enough to the imposed one"
     },
     {
         "pointer": "/solver/contact",
@@ -2178,7 +2313,8 @@
             "cache_size",
             "lump_mass_matrix",
             "lagged_regularization_weight",
-            "lagged_regularization_iterations"
+            "lagged_regularization_iterations",
+            "bistable"
         ],
         "doc": "Advanced settings for the solver"
     },
@@ -2207,9 +2343,90 @@
         "doc": "Number of regularize singular static problems."
     },
     {
+        "pointer": "/solver/advanced/bistable",
+        "default": false,
+        "type": "bool",
+        "doc": "To find the bistable state of a microstructure."
+    },
+    {
         "pointer": "/materials",
         "type": "list",
         "doc": "Material Parameters lists including ID pointing to volume selection, Young's modulus ($E$), Poisson's ratio ($\\nu$), Density ($\\rho$), or Lamé constants ($\\lambda$ and $\\mu$)."
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "Multiscale",
+        "required": [
+            "type",
+            "microstructure"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "MultiscaleRB",
+        "required": [
+            "type",
+            "microstructure"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "n_dir_samples",
+            "n_reduced_basis",
+            "save_reduced_basis",
+            "load_reduced_basis",
+            "det_samples",
+            "amp_samples"
+        ],
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*/microstructure",
+        "type": "object",
+        "doc": "microstructure model configuration"
+    },
+    {
+        "pointer": "/materials/*/load_reduced_basis",
+        "default": "",
+        "type": "string",
+        "doc": "path to load reduced basis"
+    },
+    {
+        "pointer": "/materials/*/save_reduced_basis",
+        "default": "",
+        "type": "string",
+        "doc": "path to save reduced basis"
+    },
+    {
+        "pointer": "/materials/*/det_samples",
+        "default": [],
+        "type": "list",
+        "doc": "array of determinant samples"
+    },
+    {
+        "pointer": "/materials/*/amp_samples",
+        "default": [],
+        "type": "list",
+        "doc": "array of amplitude samples"
+    },
+    {
+        "pointer": "/materials/*/n_dir_samples",
+        "type": "int",
+        "default": 5,
+        "doc": "number of directional samples"
+    },
+    {
+        "pointer": "/materials/*/n_reduced_basis",
+        "type": "int",
+        "default": 5,
+        "doc": "number of reduced basis"
     },
     {
         "pointer": "/materials/*",
@@ -2257,7 +2474,8 @@
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "c3"
         ],
         "doc": "Material Parameters including ID, for Mooney-Rivlin"
     },
@@ -2486,6 +2704,18 @@
         "doc": "Material Parameters including ID, density ($\\rho$)"
     },
     {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "AMIPS",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "id"
+        ],
+        "doc": "Material Parameters including ID"
+    },
+    {
         "pointer": "/materials/*/id",
         "type": "int",
         "default": 0,
@@ -2569,6 +2799,9 @@
             "HookeLinearElasticity",
             "SaintVenant",
             "NeoHookean",
+            "NeoHookeanAutodiff",
+            "MultiscaleRB",
+            "Multiscale",
             "MooneyRivlin",
             "UnconstrainedOgden",
             "IncompressibleOgden",
@@ -2577,7 +2810,8 @@
             "IncompressibleLinearElasticity",
             "Laplacian",
             "Helmholtz",
-            "Bilaplacian"
+            "Bilaplacian",
+            "AMIPS"
         ],
         "doc": "Type of material"
     },
@@ -2600,6 +2834,12 @@
         "pointer": "/materials/*/c2",
         "type": "float",
         "doc": "Second Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/c3",
+        "type": "float",
+        "default": 0,
+        "doc": "Optional Third Parameter for 3 parameter Mooney-Rivlin"
     },
     {
         "pointer": "/materials/*/alphas",
@@ -2683,11 +2923,41 @@
         "optional": [
             "rhs",
             "dirichlet_boundary",
+            "periodic_boundary",
             "neumann_boundary",
             "pressure_boundary",
-            "obstacle_displacements"
+            "obstacle_displacements",
+            "linear_displacement_offset",
+            "fixed_macro_strain"
         ],
         "doc": "The settings for boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/fixed_macro_strain",
+        "type": "list",
+        "default": [],
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/fixed_macro_strain/*",
+        "type": "int",
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/linear_displacement_offset",
+        "type": "list",
+        "default": [],
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/linear_displacement_offset/*",
+        "type": "list",
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/linear_displacement_offset/*/*",
+        "type": "float",
+        "doc": ""
     },
     {
         "pointer": "/boundary_conditions/rhs",
@@ -2720,7 +2990,18 @@
         "pointer": "/boundary_conditions/dirichlet_boundary",
         "default": [],
         "type": "list",
-        "doc": "The list of Dirichlet boundary conditions for the main variable. Elements of the list are assignment pairs (ID, value) where ID is assigned by surface selection."
+        "doc": "The list of Dirichlet boundary conditions for the main variable. Elements of the list are assignment pairs (id, value) where id is assigned by surface selection."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary",
+        "default": [],
+        "type": "list",
+        "doc": "Whether to enforce periodic boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/*",
+        "type": "bool",
+        "doc": ""
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
@@ -2731,8 +3012,9 @@
             "value"
         ],
         "optional": [
-            "interpolation",
-            "dimension"
+            "dimension",
+            "time_reference",
+            "interpolation"
         ],
         "doc": "Dirichlet boundary condition."
     },
@@ -2769,7 +3051,22 @@
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
         "type": "float",
-        "doc": "Values of Dirichlet boundary condition for each dimension."
+        "doc": "Values of Dirichlet boundary condition for each dimension"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
+        "type": "list",
+        "doc": "List of Dirichlet boundary condition for each dimension over time"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*/*",
+        "type": "float",
+        "doc": "Values of Dirichlet boundary condition for each dimension over time"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*/*",
+        "type": "string",
+        "doc": "Values of Dirichlet boundary condition for each dimension over time"
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension",
@@ -2786,6 +3083,17 @@
         "type": "bool",
         "default": true,
         "doc": "value"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference",
+        "default": [],
+        "type": "list",
+        "doc": "List of times when the Dirichlet boundary condition is specified"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference/*",
+        "type": "float",
+        "doc": "Values of Dirichlet boundary condition for timestep"
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",
@@ -3591,6 +3899,21 @@
         "doc": "value as a function of $x,y,z,t$"
     },
     {
+        "pointer": "/optimization",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/optimization/enabled",
+        "type": "bool",
+        "default": false,
+        "doc": "Cache transient solutions for differentiability of PDE solution."
+    },
+    {
         "pointer": "/output",
         "default": null,
         "type": "object",
@@ -3741,9 +4064,11 @@
         "optional": [
             "use_hdf5",
             "material",
+            "topology",
             "body_ids",
             "contact_forces",
             "friction_forces",
+            "tensor_values",
             "velocity",
             "acceleration"
         ],
@@ -3762,6 +4087,12 @@
         "doc": "If true, write out material values sampled on the vertices of the mesh"
     },
     {
+        "pointer": "/output/paraview/options/topology",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out topology values sampled on the vertices of the mesh"
+    },
+    {
         "pointer": "/output/paraview/options/body_ids",
         "default": false,
         "type": "bool",
@@ -3778,6 +4109,12 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out friction forces for surface"
+    },
+    {
+        "pointer": "/output/paraview/options/tensor_values",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, write out stress values for volume"
     },
     {
         "pointer": "/output/paraview/options/velocity",

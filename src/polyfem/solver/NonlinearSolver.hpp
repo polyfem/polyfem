@@ -10,6 +10,8 @@
 
 #include <cppoptlib/solver/isolver.h>
 
+extern "C" size_t getPeakRSS();
+
 namespace cppoptlib
 {
 	enum class ErrorCode
@@ -33,6 +35,8 @@ namespace cppoptlib
 		/// @param dt time step size (use 1 if not time-dependent)
 		NonlinearSolver(const polyfem::json &solver_params, const double dt);
 
+		virtual double compute_grad_norm(const Eigen::VectorXd &x, const Eigen::VectorXd &grad) const;
+
 		virtual std::string name() const = 0;
 
 		void set_line_search(const std::string &line_search_name);
@@ -42,6 +46,9 @@ namespace cppoptlib
 		double line_search(const TVector &x, const TVector &delta_x, ProblemType &objFunc);
 
 		void get_info(polyfem::json &params) { params = solver_info; }
+
+		void disable_logging() { disable_log = true; m_line_search->disable_log = true; }
+		void enable_logging() { disable_log = false; m_line_search->disable_log = false; }
 
 		ErrorCode error_code() const { return m_error_code; }
 
@@ -55,6 +62,8 @@ namespace cppoptlib
 				   || this->m_status == Status::GradNormTolerance;
 		}
 
+		bool verify_gradient(ProblemType &objFunc, const TVector &x, const TVector &grad);
+		virtual bool is_saddle_point(ProblemType &objFunc, const TVector &x) { return false; }
 		size_t max_iterations() const { return this->m_stop.iterations; }
 		size_t &max_iterations() { return this->m_stop.iterations; }
 
@@ -64,8 +73,11 @@ namespace cppoptlib
 		// ====================================================================
 
 		bool normalize_gradient;
+		bool solver_info_log;
 		double use_grad_norm_tol;
 		double first_grad_norm_tol;
+		double min_step_size;
+		double max_step_size;
 		double dt;
 
 		// ====================================================================
@@ -75,8 +87,15 @@ namespace cppoptlib
 		// Reset the solver at the start of a minimization
 		virtual void reset(const int ndof);
 
+		virtual void remesh_reset(const ProblemType &objFunc, const TVector &x)
+		{
+			m_error_code = ErrorCode::SUCCESS;
+			descent_strategy = default_descent_strategy();
+		}
+
 		// Compute the search/update direction
-		virtual bool compute_update_direction(ProblemType &objFunc, const TVector &x_vec, const TVector &grad, TVector &direction) = 0;
+		virtual bool compute_update_direction(
+			ProblemType &objFunc, const TVector &x_vec, const TVector &grad, TVector &direction) = 0;
 
 		virtual int default_descent_strategy() = 0;
 		virtual void increase_descent_strategy() = 0;
@@ -99,6 +118,7 @@ namespace cppoptlib
 		polyfem::json solver_info;
 
 		double total_time;
+		double cumulative_total_time;
 		double grad_time;
 		double assembly_time;
 		double inverting_time;
@@ -106,7 +126,18 @@ namespace cppoptlib
 		double constraint_set_update_time;
 		double obj_fun_time;
 
+		std::string export_energy_path;
+		bool export_energy_components;
+
 		ErrorCode m_error_code;
+
+		bool disable_log = false;
+
+		bool debug_finite_diff;
+		double finite_diff_eps;
+
+		int fall_back_descent_strategy_period;
+		bool check_saddle_point;
 
 		// ====================================================================
 		//                                 END

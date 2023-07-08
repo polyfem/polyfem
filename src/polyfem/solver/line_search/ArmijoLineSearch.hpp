@@ -136,10 +136,11 @@ namespace polyfem
 							objFunc.line_search_end();
 						}
 
-						logger().warn(
-							"Line search failed to find descent step (f(x)={:g} f(x+αΔx)={:g} α_CCD={:g} α={:g}, ||Δx||={:g} is_step_valid={} iter={:d})",
-							f_in, f, default_alpha_init, alpha, searchDir.norm(),
-							valid ? "true" : "false", this->cur_iter);
+						if (!this->disable_log)
+							logger().warn(
+								"Line search failed to find descent step (f(x)={:g} f(x+αΔx)={:g} α_CCD={:g} α={:g}, ||Δx||={:g} is_step_valid={} iter={:d})",
+								f_in, f, default_alpha_init, alpha, searchDir.norm(),
+								valid ? "true" : "false", this->cur_iter);
 						return std::nan("");
 					}
 
@@ -160,9 +161,10 @@ namespace polyfem
 						objFunc.line_search_end();
 					}
 
-					logger().debug(
-						"Line search finished (nan_free_step_size={} collision_free_step_size={} descent_step_size={} final_step_size={})",
-						nan_free_step_size, collision_free_step_size, descent_step_size, alpha);
+					if (!this->disable_log)
+						logger().debug(
+							"Line search finished (nan_free_step_size={} collision_free_step_size={} descent_step_size={} final_step_size={})",
+							nan_free_step_size, collision_free_step_size, descent_step_size, alpha);
 
 					return alpha;
 				}

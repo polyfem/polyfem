@@ -5,6 +5,7 @@
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/MeshNodes.hpp>
 
 #include <polyfem/utils/RefElementSampler.hpp>
 
@@ -145,6 +146,15 @@ namespace polyfem::io
 			const std::vector<basis::ElementBases> &gbases,
 			const int el_index,
 			const Eigen::MatrixXd &local_pts,
+			const Eigen::MatrixXd &fun,
+			Eigen::MatrixXd &result,
+			Eigen::MatrixXd &result_grad);
+
+		static void interpolate_at_local_vals(
+			const int el_index, 
+			const int dim,
+			const int actual_dim,
+			const assembler::ElementAssemblyValues &vals,
 			const Eigen::MatrixXd &fun,
 			Eigen::MatrixXd &result,
 			Eigen::MatrixXd &result_grad);
@@ -386,5 +396,14 @@ namespace polyfem::io
 			Eigen::MatrixXd &pts,
 			Eigen::MatrixXi &faces,
 			Eigen::MatrixXd &sidesets);
+
+		static Eigen::MatrixXd generate_linear_field(
+			const int n_bases,
+			const std::shared_ptr<mesh::MeshNodes> mesh_nodes,
+			const Eigen::MatrixXd &grad);
+
+		static Eigen::MatrixXd get_bases_position(
+			const int n_bases,
+			const std::shared_ptr<mesh::MeshNodes> mesh_nodes);
 	};
 } // namespace polyfem::io

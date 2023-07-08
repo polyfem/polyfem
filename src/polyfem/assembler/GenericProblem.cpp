@@ -670,11 +670,6 @@ namespace polyfem
 					for (size_t k = 0; k < rr.size(); ++k)
 						rhs_[k].init(rr[k]);
 				}
-				else
-				{
-					logger().warn("Invalid problem rhs: should be an array.");
-					assert(false);
-				}
 			}
 
 			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "solution"))
@@ -753,6 +748,8 @@ namespace polyfem
 						for (size_t k = 0; k < ff.size(); ++k)
 						{
 							displacements_[i].value[k].init(ff[k]);
+							if (j_boundary[i - offset].contains("time_reference") && j_boundary[i - offset]["time_reference"].size() > 0)
+								displacements_[i].value[k].set_t(j_boundary[i - offset]["time_reference"]);
 							nodal_dirichlet_[current_id].value[k].init(ff[k]);
 						}
 					}

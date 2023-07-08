@@ -22,6 +22,8 @@ namespace cppoptlib
 
 		std::string name() const override { return "Newton"; }
 
+		bool is_saddle_point(ProblemType &objFunc, const TVector &x) override;
+
 	protected:
 		bool compute_update_direction(ProblemType &objFunc, const TVector &x, const TVector &grad, TVector &direction) override;
 
@@ -39,6 +41,9 @@ namespace cppoptlib
 		static constexpr double reg_weight_max = 1e8;
 		static constexpr double reg_weight_inc = 10;
 		static constexpr double reg_weight_dec = 2;
+
+		bool disable_project_psd;
+		bool verify_hessian;
 
 		// ====================================================================
 		//                           Solver state

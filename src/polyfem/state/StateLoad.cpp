@@ -8,6 +8,8 @@
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 
+#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
+
 #include <polyfem/utils/Selection.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
@@ -120,6 +122,25 @@ namespace polyfem
 		// 		mesh->set_tag(el_id, ElementType::INTERIOR_POLYTOPE);
 		// }
 
+		// periodic BC and periodic mesh
+		periodic_dimensions = args["boundary_conditions"]["periodic_boundary"].get<std::vector<bool>>();
+		if (periodic_dimensions.size() != mesh->dimension())
+			periodic_dimensions.resize(mesh->dimension(), false);
+		
+		if (args["space"]["advanced"]["periodic_mesh"].get<bool>())
+		{
+			if (!all_direction_periodic())
+				log_and_throw_error("Periodic mesh representation is only used for PDE with periodic BC in all axial directions!");
+			
+			Eigen::MatrixXd V(mesh->n_vertices(), mesh->dimension());
+			for (int i = 0; i < mesh->n_vertices(); i++)
+				V.row(i) = mesh->point(i);
+			periodic_mesh_map = std::make_shared<solver::PeriodicMeshToMesh>(V);
+			periodic_mesh_representation = periodic_mesh_map->inverse_eval(utils::flatten(V));
+			
+			logger().info("Periodic Mesh vertices: {}", periodic_mesh_map->n_periodic_dof());
+		}
+
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
@@ -149,6 +170,24 @@ namespace polyfem
 			args["root_path"], mesh->dimension(), names, vertices, cells);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
+
+		// build disp_grad
+		if (args["boundary_conditions"]["linear_displacement_offset"].size() > 0)
+		{
+			disp_grad_.setZero(mesh->dimension(), mesh->dimension());
+			int i = 0;
+			for (const auto &row : args["boundary_conditions"]["linear_displacement_offset"])
+			{
+				int j = 0;
+				for (const auto &x : row)
+					disp_grad_(i, j++) = x;
+				i++;
+			}
+
+			logger().info("Underlying linear displacement field: {}", utils::flatten(disp_grad_).transpose());
+		}
+		else
+			disp_grad_.resize(0, 0);
 	}
 
 	void State::build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F)
