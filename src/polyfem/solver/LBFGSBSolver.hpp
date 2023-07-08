@@ -84,13 +84,6 @@ namespace cppoptlib
 			this->descent_strategy = 1;
 		}
 
-		void remesh_reset(const ProblemType &objFunc, const TVector &x) override
-		{
-			Superclass::remesh_reset(objFunc, x);
-
-			reset_history(x.size());
-		}
-
 		virtual bool compute_update_direction(
 			ProblemType &objFunc,
 			const TVector &x,

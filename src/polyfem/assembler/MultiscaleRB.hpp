@@ -112,7 +112,6 @@ namespace polyfem
 			void post_step(const int iter_num, const TVector &x) {}
 			bool smoothing(const TVector &x, const TVector &new_x, TVector &smoothed_x) { return false; }
 			bool stop(const TVector &x) { return false; }
-			bool remesh(TVector &x) { return false; }
 			double max_step_size(const TVector &x0, const TVector &x1) { return 1; }
 			bool is_step_collision_free(const TVector &x0, const TVector &x1) { return true; }
 

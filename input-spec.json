@@ -1925,7 +1925,6 @@
             "debug_fd_eps",
             "disable_project_psd",
             "verify_hessian",
-            "fall_back_descent_strategy_period",
             "grad_norm",
             "first_grad_norm_tol",
             "max_iterations",
@@ -1966,16 +1965,10 @@
         "doc": "Use finite difference to verify gradient in optimization"
     },
     {
-        "pointer": "/solver/nonlinear/fall_back_descent_strategy_period",
-        "default": 1,
-        "type": "int",
-        "doc": "TODO"
-    },
-    {
         "pointer": "/solver/nonlinear/max_step_size",
         "default": 1,
         "type": "float",
-        "doc": "Max step size in line search"
+        "doc": "The descent direction in the nonlinear solves is multiplied by this value, for problems with too small/large gradient."
     },
     {
         "pointer": "/solver/nonlinear/solver_info_log",

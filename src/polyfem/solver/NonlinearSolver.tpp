@@ -33,8 +33,6 @@ namespace cppoptlib
 
 		check_saddle_point = solver_params["check_saddle_point"];
 
-		fall_back_descent_strategy_period = solver_params["fall_back_descent_strategy_period"];
-
 		set_line_search(solver_params["line_search"]["method"]);
 	}
 
@@ -75,10 +73,7 @@ namespace cppoptlib
 		bool match = abs(fd - analytic) < 1e-8 || abs(fd - analytic) < 1e-1 * abs(analytic);
 
 		// Log error in either case to make it more visible in the logs.
-		if (match)
-			polyfem::logger().error("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
-		else
-			polyfem::logger().error("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
+		polyfem::logger().log(match ? spdlog::level::info : spdlog::level::err, "step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
 
 		objFunc.solution_changed(x);
 
@@ -132,10 +127,9 @@ namespace cppoptlib
 		{
 			POLYFEM_SCOPED_TIMER("compute objective function", obj_fun_time);
 			this->m_current.fDelta = objFunc.value(x);
-			if (!disable_log)
-				logger().info(
-					"[{}] Not even starting, {} (f={:g} ‖∇f‖={:g} g={:g} tol={:g})",
-					name(), this->m_status, this->m_current.fDelta, first_grad_norm, this->m_current.gradNorm, this->m_stop.gradNorm);
+			logger().info(
+				"[{}] Not even starting, {} (f={:g} ‖∇f‖={:g} g={:g} tol={:g})",
+				name(), this->m_status, this->m_current.fDelta, first_grad_norm, this->m_current.gradNorm, this->m_stop.gradNorm);
 			update_solver_info();
 			return;
 		}
@@ -153,12 +147,11 @@ namespace cppoptlib
 
 		objFunc.save_to_file(x);
 
-		if (!disable_log)
-			logger().debug(
-				"Starting {} solve f₀={:g} ‖∇f₀‖={:g} "
-				"(stopping criteria: max_iters={:d} Δf={:g} ‖∇f‖={:g} ‖Δx‖={:g})",
-				name(), objFunc.value(x), this->m_current.gradNorm, this->m_stop.iterations,
-				this->m_stop.fDelta, this->m_stop.gradNorm, this->m_stop.xDelta);
+		logger().debug(
+			"Starting {} solve f₀={:g} ‖∇f₀‖={:g} "
+			"(stopping criteria: max_iters={:d} Δf={:g} ‖∇f‖={:g} ‖Δx‖={:g})",
+			name(), objFunc.value(x), this->m_current.gradNorm, this->m_stop.iterations,
+			this->m_stop.fDelta, this->m_stop.gradNorm, this->m_stop.xDelta);
 
 		update_solver_info();
 		if (solver_info_log)
@@ -194,6 +187,7 @@ namespace cppoptlib
 			{
 				POLYFEM_SCOPED_TIMER("verify gradient", grad_time);
 				verify_gradient(objFunc, x, grad);
+				// not implemented yet
 				// values = objFunc.component_values(x);
 				// grads = objFunc.component_gradients(x);
 			}
@@ -240,10 +234,9 @@ namespace cppoptlib
 			if (grad_norm != 0 && delta_x.dot(grad) >= 0 && name() != "MMA")
 			{
 				increase_descent_strategy();
-				if (!disable_log)
-					logger().debug(
-						"[{}] direction is not a descent direction (Δx⋅g={:g}≥0); reverting to {}",
-						name(), delta_x.dot(grad), descent_strategy_name());
+				logger().debug(
+					"[{}] direction is not a descent direction (Δx⋅g={:g}≥0); reverting to {}",
+					name(), delta_x.dot(grad), descent_strategy_name());
 				this->m_status = Status::Continue;
 				continue;
 			}
@@ -271,7 +264,7 @@ namespace cppoptlib
 			old_energy = energy;
 
 			// ---------------
-			// Plot energy over descent direction
+			// Plot energy along descent direction
 			// ---------------
 
 			// if (this->m_current.iterations > 8) {
@@ -305,22 +298,16 @@ namespace cppoptlib
 				else
 					break;
 			}
-			auto old_x = x;
-			x = old_x + rate * delta_x;
 
-			this->m_current.xDelta = (x - old_x).array().abs().maxCoeff();
+			x += rate * delta_x;
 
 			// -----------
 			// Post update
 			// -----------
 
-			{
-				static int fall_back_descent_strategy_iter = 0;
-				if (++fall_back_descent_strategy_iter % fall_back_descent_strategy_period == 0)
-					descent_strategy = default_descent_strategy(); // Reset this for the next iterations
-			}
-			
-			const double step = (x - old_x).norm();
+			descent_strategy = default_descent_strategy(); // Reset this for the next iterations
+
+			const double step = (rate * delta_x).norm();
 
 			 if (objFunc.stop(x))
 			 {
@@ -331,11 +318,10 @@ namespace cppoptlib
 
 			objFunc.post_step(this->m_current.iterations, x);
 
-			if (!disable_log)
-				logger().debug(
-					"[{}] iter={:d} f={:g} Δf={:g} ‖∇f‖={:g} ‖Δx‖={:g} Δx⋅∇f(x)={:g} rate={:g} ‖step‖={:g}",
-					name(), this->m_current.iterations, energy, this->m_current.fDelta,
-					this->m_current.gradNorm, this->m_current.xDelta, delta_x.dot(grad), rate, step);
+			logger().debug(
+				"[{}] iter={:d} f={:g} Δf={:g} ‖∇f‖={:g} ‖Δx‖={:g} Δx⋅∇f(x)={:g} rate={:g} ‖step‖={:g}",
+				name(), this->m_current.iterations, energy, this->m_current.fDelta,
+				this->m_current.gradNorm, this->m_current.xDelta, delta_x.dot(grad), rate, step);
 
 			if (++this->m_current.iterations >= this->m_stop.iterations)
 				this->m_status = Status::IterationLimit;
@@ -343,9 +329,6 @@ namespace cppoptlib
 			update_solver_info();
 			if (solver_info_log)
 				std::cout << solver_info << std::endl;
-
-			if (objFunc.remesh(x))
-				remesh_reset(objFunc, x);
 
 			objFunc.save_to_file(x);
 
@@ -371,11 +354,10 @@ namespace cppoptlib
 		if (this->m_status == Status::UserDefined && m_error_code != ErrorCode::SUCCESS)
 			log_and_throw_error("[{}] Failed to find minimizer", name());
 
-		if (!disable_log)
-			logger().info(
-				"[{}] Finished: {} Took {:g}s (niters={:d} f={:g} Δf={:g} ‖∇f‖={:g} ‖Δx‖={:g} fdelta={} ftol={})",
-				name(), this->m_status, timer.getElapsedTimeInSec(), this->m_current.iterations,
-				old_energy, this->m_current.fDelta, this->m_current.gradNorm, this->m_current.xDelta, this->m_current.fDelta, this->m_stop.fDelta);
+		logger().info(
+			"[{}] Finished: {} Took {:g}s (niters={:d} f={:g} Δf={:g} ‖∇f‖={:g} ‖Δx‖={:g} fdelta={} ftol={})",
+			name(), this->m_status, timer.getElapsedTimeInSec(), this->m_current.iterations,
+			old_energy, this->m_current.fDelta, this->m_current.gradNorm, this->m_current.xDelta, this->m_current.fDelta, this->m_stop.fDelta);
 
 		log_times();
 		update_solver_info();
@@ -388,15 +370,14 @@ namespace cppoptlib
 
 		if (!m_line_search)
 			return 1; // no linesearch
-		// const double old_energy = objFunc.value(x);
+
 		double rate = m_line_search->line_search(x, delta_x, objFunc);
 
 		if (std::isnan(rate) && descent_strategy < 2) // 2 is the max, grad descent
 		{
 			increase_descent_strategy();
-			if (!disable_log)
-				polyfem::logger().warn(
-					"[{}] Line search failed; reverting to {}", name(), descent_strategy_name());
+			polyfem::logger().warn(
+				"[{}] Line search failed; reverting to {}", name(), descent_strategy_name());
 			this->m_status = Status::Continue; // Try the step again with gradient descent
 		}
 		else if (std::isnan(rate))
@@ -406,14 +387,13 @@ namespace cppoptlib
 			this->m_status = Status::UserDefined; // Line search failed on gradient descent, so quit!
 			throw std::runtime_error("Line search failed on gradient descent");
 		}
-		// else // increase descent strategy if energy decrease is smaller than fDelta, not working
+		// else // increase descent strategy if energy decrease is smaller than fDelta, buggy
 		// {
 		// 	const double fdelta = std::abs(objFunc.value(x + rate * delta_x) - old_energy);
 		// 	if (fdelta < this->m_stop.fDelta)
 		// 	{
 		// 		objFunc.solution_changed(x);
 		// 		increase_descent_strategy();
-		// 		if (!disable_log)
 		// 			polyfem::logger().warn(
 		// 				"[{}] Line search energy decrease {} is smaller than fdelta {}; reverting to {}", name(), fdelta, this->m_stop.fDelta, descent_strategy_name());
 		// 		this->m_status = Status::Continue; // Try the step again with gradient descent
@@ -502,18 +482,17 @@ namespace cppoptlib
 	template <typename ProblemType>
 	void NonlinearSolver<ProblemType>::log_times()
 	{
-		if (!disable_log)
-			polyfem::logger().debug(
-				"[{}] grad {:.3g}s, assembly {:.3g}s, inverting {:.3g}s, "
-				"line_search {:.3g}s, constraint_set_update {:.3g}s, "
-				"obj_fun {:.3g}s, checking_for_nan_inf {:.3g}s, "
-				"broad_phase_ccd {:.3g}s, ccd {:.3g}s, "
-				"classical_line_search {:.3g}s",
-				fmt::format(fmt::fg(fmt::terminal_color::magenta), "timing"),
-				grad_time, assembly_time, inverting_time, line_search_time,
-				constraint_set_update_time + (m_line_search ? m_line_search->constraint_set_update_time : 0),
-				obj_fun_time, m_line_search ? m_line_search->checking_for_nan_inf_time : 0,
-				m_line_search ? m_line_search->broad_phase_ccd_time : 0, m_line_search ? m_line_search->ccd_time : 0,
-				m_line_search ? m_line_search->classical_line_search_time : 0);
+		polyfem::logger().debug(
+			"[{}] grad {:.3g}s, assembly {:.3g}s, inverting {:.3g}s, "
+			"line_search {:.3g}s, constraint_set_update {:.3g}s, "
+			"obj_fun {:.3g}s, checking_for_nan_inf {:.3g}s, "
+			"broad_phase_ccd {:.3g}s, ccd {:.3g}s, "
+			"classical_line_search {:.3g}s",
+			fmt::format(fmt::fg(fmt::terminal_color::magenta), "timing"),
+			grad_time, assembly_time, inverting_time, line_search_time,
+			constraint_set_update_time + (m_line_search ? m_line_search->constraint_set_update_time : 0),
+			obj_fun_time, m_line_search ? m_line_search->checking_for_nan_inf_time : 0,
+			m_line_search ? m_line_search->broad_phase_ccd_time : 0, m_line_search ? m_line_search->ccd_time : 0,
+			m_line_search ? m_line_search->classical_line_search_time : 0);
 	}
 } // namespace cppoptlib

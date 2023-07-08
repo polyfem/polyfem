@@ -149,11 +149,10 @@ namespace cppoptlib
 		{
 			increase_descent_strategy();
 
-			if (!this->disable_log)
-				polyfem::logger().log(
-					log_level(),
-					"[{}] large (or nan) linear solve residual {} (||∇f||={}); reverting to {}",
-					name(), residual, grad.norm(), this->descent_strategy_name());
+			polyfem::logger().log(
+				log_level(),
+				"[{}] large (or nan) linear solve residual {} (||∇f||={}); reverting to {}",
+				name(), residual, grad.norm(), this->descent_strategy_name());
 
 			return false;
 		}
@@ -175,10 +174,9 @@ namespace cppoptlib
 		if (grad.dot(direction) >= 0)
 		{
 			increase_descent_strategy();
-			if (!this->disable_log)
-				polyfem::logger().log(
-					log_level(), "[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
-					name(), direction.dot(grad), descent_strategy_name());
+			polyfem::logger().log(
+				log_level(), "[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
+				name(), direction.dot(grad), descent_strategy_name());
 			return false;
 		}
 

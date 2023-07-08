@@ -47,9 +47,6 @@ namespace cppoptlib
 
 		void get_info(polyfem::json &params) { params = solver_info; }
 
-		void disable_logging() { disable_log = true; m_line_search->disable_log = true; }
-		void enable_logging() { disable_log = false; m_line_search->disable_log = false; }
-
 		ErrorCode error_code() const { return m_error_code; }
 
 		const typename Superclass::TCriteria &getStopCriteria() { return this->m_stop; }
@@ -87,15 +84,8 @@ namespace cppoptlib
 		// Reset the solver at the start of a minimization
 		virtual void reset(const int ndof);
 
-		virtual void remesh_reset(const ProblemType &objFunc, const TVector &x)
-		{
-			m_error_code = ErrorCode::SUCCESS;
-			descent_strategy = default_descent_strategy();
-		}
-
 		// Compute the search/update direction
-		virtual bool compute_update_direction(
-			ProblemType &objFunc, const TVector &x_vec, const TVector &grad, TVector &direction) = 0;
+		virtual bool compute_update_direction(ProblemType &objFunc, const TVector &x_vec, const TVector &grad, TVector &direction) = 0;
 
 		virtual int default_descent_strategy() = 0;
 		virtual void increase_descent_strategy() = 0;
@@ -118,7 +108,6 @@ namespace cppoptlib
 		polyfem::json solver_info;
 
 		double total_time;
-		double cumulative_total_time;
 		double grad_time;
 		double assembly_time;
 		double inverting_time;
@@ -131,12 +120,9 @@ namespace cppoptlib
 
 		ErrorCode m_error_code;
 
-		bool disable_log = false;
-
 		bool debug_finite_diff;
 		double finite_diff_eps;
 
-		int fall_back_descent_strategy_period;
 		bool check_saddle_point;
 
 		// ====================================================================

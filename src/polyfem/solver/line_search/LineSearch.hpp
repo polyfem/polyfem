@@ -51,8 +51,6 @@ namespace polyfem
 
 				double use_grad_norm_tol = -1;
 
-				bool disable_log = false;
-
 			protected:
 				double min_step_size = 0;
 				int max_step_size_iter = 100;

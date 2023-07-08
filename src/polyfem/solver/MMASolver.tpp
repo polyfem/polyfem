@@ -12,13 +12,6 @@ namespace cppoptlib
     }
 
     template <typename ProblemType>
-    void MMASolver<ProblemType>::remesh_reset(const ProblemType &objFunc, const TVector &x)
-    {
-        Superclass::remesh_reset(objFunc, x);
-        mma.reset();
-    }
-
-    template <typename ProblemType>
     bool MMASolver<ProblemType>::compute_update_direction(
         ProblemType &objFunc,
         const TVector &x,

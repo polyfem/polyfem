@@ -51,7 +51,6 @@ namespace cppoptlib
 		std::vector<std::shared_ptr<polyfem::solver::AdjointForm>> constraints_;
 
 		void reset(const int ndof) override;
-		void remesh_reset(const ProblemType &objFunc, const TVector &x) override;
 
 		virtual bool compute_update_direction(
 			ProblemType &objFunc,

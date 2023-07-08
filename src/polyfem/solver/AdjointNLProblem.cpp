@@ -103,22 +103,6 @@ namespace polyfem::solver
 		return true;
 	}
 
-	bool AdjointNLProblem::remesh(Eigen::VectorXd &x)
-	{
-		bool remesh = false;
-		// TODO: remesh changes size of parameters, need to be careful
-		// int cumulative = 0;
-		// for (const auto &p : parameters_)
-		// {
-		// 	Eigen::VectorXd tmp = x.segment(cumulative, p->optimization_dim());
-		// 	remesh |= p->remesh(tmp);
-		// 	assert(tmp.size() == p->optimization_dim());
-		// 	x.segment(cumulative, p->optimization_dim()) = tmp;
-		// 	cumulative += p->optimization_dim();
-		// }
-		return remesh;
-	}
-
 	bool AdjointNLProblem::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
 		return composite_form_->is_step_valid(x0, x1);

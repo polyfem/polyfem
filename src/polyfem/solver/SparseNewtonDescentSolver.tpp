@@ -136,8 +136,10 @@ namespace cppoptlib
 
 		if (!disable_project_psd && this->descent_strategy == 1)
 			objFunc.set_project_to_psd(true);
-		else
+		else if (this->descent_strategy == 0)
 			objFunc.set_project_to_psd(false);
+		else
+			assert(false);
 
 		objFunc.hessian(x, hessian);
 
@@ -191,8 +193,6 @@ namespace cppoptlib
 		// TODO: get the correct size
 		linear_solver->analyzePattern(hessian, hessian.rows());
 
-		TVector b = -grad;
-
 		try
 		{
 			linear_solver->factorize(hessian);
@@ -210,10 +210,20 @@ namespace cppoptlib
 			return false;
 		}
 
-		linear_solver->solve(b, direction); // H Δx = -g
+		linear_solver->solve(-grad, direction); // H Δx = -g
 
-		const double residual = (hessian * direction - b).norm(); // H Δx + g = 0
-		if (std::isnan(residual) || residual > std::max(1e-8 * b.norm(), 1e-5))
+		return true;
+	}
+
+	// =======================================================================
+
+	template <typename ProblemType>
+	bool SparseNewtonDescentSolver<ProblemType>::check_direction(
+		const polyfem::StiffnessMatrix &hessian, const TVector &grad, const TVector &direction)
+	{
+		// gradient descent, check descent direction
+		const double residual = (hessian * direction + grad).norm(); // H Δx + g = 0
+		if (std::isnan(residual) || residual > std::max(1e-8 * grad.norm(), 1e-5))
 		{
 			increase_descent_strategy();
 
@@ -226,26 +236,16 @@ namespace cppoptlib
 		}
 		else
 		{
-			polyfem::logger().trace("relative linear solve residual {}", residual / b.norm());
+			polyfem::logger().trace("linear solve residual {}", residual);
 		}
 
-		return true;
-	}
-
-	// =======================================================================
-
-	template <typename ProblemType>
-	bool SparseNewtonDescentSolver<ProblemType>::check_direction(
-		const polyfem::StiffnessMatrix &hessian, const TVector &grad, const TVector &direction)
-	{
 		// do this check here because we need to repeat the solve without resetting reg_weight
 		if (grad.dot(direction) >= 0)
 		{
 			increase_descent_strategy();
-			if (!this->disable_log)
-				polyfem::logger().log(
-					log_level(), "[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
-					name(), direction.dot(grad), descent_strategy_name());
+			polyfem::logger().log(
+				log_level(), "[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
+				name(), direction.dot(grad), descent_strategy_name());
 			return false;
 		}
 
