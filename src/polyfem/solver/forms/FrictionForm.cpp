@@ -4,9 +4,6 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
-#include <finitediff.hpp>
-#include <iostream>
-
 namespace polyfem::solver
 {
 	FrictionForm::FrictionForm(
@@ -90,14 +87,13 @@ namespace polyfem::solver
 	Eigen::MatrixXd FrictionForm::compute_surface_velocities(const Eigen::VectorXd &x) const
 	{
 		// In the case of a static problem, the velocity is the displacement
-		// const Eigen::VectorXd v = time_integrator_ != nullptr ? time_integrator_->compute_velocity(x) : x;
-		const Eigen::VectorXd v = time_integrator_ != nullptr ? (x - time_integrator_->x_prev()) / time_integrator_->dt() : x;
+		const Eigen::VectorXd v = time_integrator_ != nullptr ? time_integrator_->compute_velocity(x) : x;
 		return collision_mesh_.map_displacements(utils::unflatten(v, collision_mesh_.dim()));
 	}
 
 	double FrictionForm::dv_dx() const
 	{
-		return time_integrator_ != nullptr ? 1. / time_integrator_->dt() : 1;
+		return time_integrator_ != nullptr ? time_integrator_->dv_dx() : 1;
 	}
 
 	double FrictionForm::value_unweighted(const Eigen::VectorXd &x) const
@@ -106,7 +102,8 @@ namespace polyfem::solver
 	}
 	void FrictionForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		const Eigen::VectorXd grad_friction = friction_constraint_set_.compute_potential_gradient(collision_mesh_, compute_surface_velocities(x), epsv_);
+		const Eigen::VectorXd grad_friction = friction_constraint_set_.compute_potential_gradient(
+			collision_mesh_, compute_surface_velocities(x), epsv_);
 		gradv = collision_mesh_.to_full_dof(grad_friction);
 	}
 

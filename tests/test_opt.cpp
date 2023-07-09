@@ -159,8 +159,8 @@ TEST_CASE("material-opt", "[optimization]")
 	}
 	auto energies = read_energy(name);
 
-	REQUIRE(energies[0] == Approx(5.95342).epsilon(1e-2));
-	REQUIRE(energies[energies.size() - 1] == Approx(0.0010191).epsilon(1e-2));
+	REQUIRE(energies[0] == Approx(6.13934).epsilon(1e-2));
+	REQUIRE(energies[energies.size() - 1] == Approx(0.0105856).epsilon(1e-2));
 }
 
 // TEST_CASE("friction-opt", "[optimization]")

@@ -785,7 +785,7 @@ namespace polyfem::solver
 				if (state.solve_data.friction_form)
 				{
 					state.solve_data.friction_form->force_shape_derivative(state.diff_cached.u(i - 1), state.diff_cached.u(i), cur_p, state.diff_cached.friction_constraint_set(i), friction_term);
-					friction_term = state.down_sampling_mat * friction_term;
+					friction_term = state.down_sampling_mat * (friction_term / beta);
 					// friction_term /= beta_dt * beta_dt;
 				}
 				else
