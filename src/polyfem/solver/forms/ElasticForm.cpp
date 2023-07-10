@@ -14,7 +14,6 @@ namespace polyfem::solver
 {
 	namespace
 	{
-
 		class LocalThreadVecStorage
 		{
 		public:
@@ -31,6 +30,7 @@ namespace polyfem::solver
 
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 	} // namespace
+	
 	ElasticForm::ElasticForm(const int n_bases,
 							 const std::vector<basis::ElementBases> &bases,
 							 const std::vector<basis::ElementBases> &geom_bases,

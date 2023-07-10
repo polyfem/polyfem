@@ -540,10 +540,16 @@ namespace polyfem
 
 		if (has_periodic_bc())
 			return false;
+		
+		if (args["optimization"]["enabled"])
+			return false;
 
 		if (mesh->orders().size() <= 0)
 		{
-			return args["space"]["advanced"]["isoparametric"];
+			if (args["space"]["discr_order"] == 1)
+				return true;
+			else
+				return args["space"]["advanced"]["isoparametric"];
 		}
 
 		if (mesh->orders().minCoeff() != mesh->orders().maxCoeff())
@@ -813,6 +819,8 @@ namespace polyfem
 			}
 		}
 
+		const bool use_continuous_gbasis = args["optimization"]["enabled"];
+
 		if (mesh->is_volume())
 		{
 			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh.get());
@@ -833,7 +841,7 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, false, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
+					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, !use_continuous_gbasis, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
 
 				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
@@ -865,7 +873,7 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					n_geom_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, false, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
+					n_geom_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, !use_continuous_gbasis, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
 
 				n_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
@@ -890,12 +898,13 @@ namespace polyfem
 
 		timer.stop();
 
+		build_polygonal_basis();
+
 		if (n_geom_bases == 0)
 			n_geom_bases = n_bases;
 
 		auto &gbases = geom_bases();
 
-		build_polygonal_basis();
 
 		// if (is_contact_enabled())
 		if (args["optimization"]["enabled"])
@@ -1001,11 +1010,6 @@ namespace polyfem
 						  bases, geom_bases(), pressure_bases,
 						  local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes,
 						  dirichlet_nodes, neumann_nodes);
-		const bool has_pressure_stablization = (args["materials"].contains("delta2") && (args["materials"]["delta2"].get<double>() > 0));
-		const bool has_neumann = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size || has_pressure_stablization;
-		use_avg_pressure = !has_neumann;
-		if (args["materials"].contains("use_avg_pressure"))
-			use_avg_pressure = args["materials"]["use_avg_pressure"];
 
 		// setp nodal values
 		{
@@ -1070,6 +1074,9 @@ namespace polyfem
 			}
 		}
 
+		const bool has_neumann = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size;
+		use_avg_pressure = !has_neumann;
+
 		for (int i = prev_bases; i < n_bases; ++i)
 		{
 			for (int d = 0; d < problem_dim; ++d)
@@ -1080,9 +1087,9 @@ namespace polyfem
 		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
 
-		if (boundary_nodes.size() == 0 && !problem->is_scalar())
+		// for pure neumann problem, find an internal node to force zero dirichlet
+		if (!problem->is_time_dependent() && boundary_nodes.size() == 0 && !problem->is_scalar())
 		{
-			// find an internal node to force zero dirichlet
 			int i = 0;
 			for (; i < mesh->n_vertices(); i++)
 				if (!mesh->is_boundary_vertex(i))
@@ -1150,7 +1157,7 @@ namespace polyfem
 
 		if (!problem->is_time_dependent() && boundary_nodes.empty())
 		{
-			logger().warn("Static problem without Dirichlet nodes, will use Lagrange multipliers to find a unique solution!");
+			log_and_throw_error("Static problem need to have some Dirichlet nodes!");
 		}
 	}
 
@@ -1505,15 +1512,15 @@ namespace polyfem
 		}
 
 		collision_mesh_ = ipc::CollisionMesh(is_on_surface,
-											 node_positions,
-											 boundary_edges,
-											 boundary_triangles,
-											 displacement_map);
+											node_positions,
+											boundary_edges,
+											boundary_triangles,
+											displacement_map);
 
 		collision_mesh_.can_collide = [&](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles
 			return !this->is_obstacle_vertex(collision_mesh_.to_full_vertex_id(vi))
-				   || !this->is_obstacle_vertex(collision_mesh_.to_full_vertex_id(vj));
+					|| !this->is_obstacle_vertex(collision_mesh_.to_full_vertex_id(vj));
 		};
 
 		collision_mesh_.init_area_jacobians();

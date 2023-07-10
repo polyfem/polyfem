@@ -387,19 +387,6 @@ namespace cppoptlib
 			this->m_status = Status::UserDefined; // Line search failed on gradient descent, so quit!
 			throw std::runtime_error("Line search failed on gradient descent");
 		}
-		// else // increase descent strategy if energy decrease is smaller than fDelta, buggy
-		// {
-		// 	const double fdelta = std::abs(objFunc.value(x + rate * delta_x) - old_energy);
-		// 	if (fdelta < this->m_stop.fDelta)
-		// 	{
-		// 		objFunc.solution_changed(x);
-		// 		increase_descent_strategy();
-		// 			polyfem::logger().warn(
-		// 				"[{}] Line search energy decrease {} is smaller than fdelta {}; reverting to {}", name(), fdelta, this->m_stop.fDelta, descent_strategy_name());
-		// 		this->m_status = Status::Continue; // Try the step again with gradient descent
-		// 		rate = std::nan("");
-		// 	}
-		// }
 
 		return rate;
 	}

@@ -670,6 +670,11 @@ namespace polyfem
 					for (size_t k = 0; k < rr.size(); ++k)
 						rhs_[k].init(rr[k]);
 				}
+				else
+				{
+					logger().warn("Invalid problem rhs: should be an array.");
+					assert(false);
+				}
 			}
 
 			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "solution"))

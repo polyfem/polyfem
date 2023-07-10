@@ -23,6 +23,7 @@ namespace polyfem::solver
 							 const bool use_convergent_formulation,
 							 const bool use_adaptive_barrier_stiffness,
 							 const bool is_time_dependent,
+							 const bool enable_shape_derivatives,
 							 const ipc::BroadPhaseMethod broad_phase_method,
 							 const double ccd_tolerance,
 							 const int ccd_max_iterations)
@@ -31,6 +32,7 @@ namespace polyfem::solver
 		  avg_mass_(avg_mass),
 		  use_adaptive_barrier_stiffness_(use_adaptive_barrier_stiffness),
 		  is_time_dependent_(is_time_dependent),
+		  enable_shape_derivatives_(enable_shape_derivatives),
 		  broad_phase_method_(broad_phase_method),
 		  ccd_tolerance_(ccd_tolerance),
 		  ccd_max_iterations_(ccd_max_iterations)
@@ -40,7 +42,7 @@ namespace polyfem::solver
 
 		prev_distance_ = -1;
 		constraint_set_.set_use_convergent_formulation(use_convergent_formulation);
-		constraint_set_.set_are_shape_derivatives_enabled(true);
+		constraint_set_.set_are_shape_derivatives_enabled(enable_shape_derivatives);
 	}
 
 	void ContactForm::init(const Eigen::VectorXd &x)

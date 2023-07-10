@@ -71,6 +71,7 @@ namespace polyfem::solver
 		const ipc::BroadPhaseMethod broad_phase,
 		const double ccd_tolerance,
 		const long ccd_max_iterations,
+		const bool enable_shape_derivatives,
 
 		// Periodic contact
 		const bool periodic_contact,
@@ -167,7 +168,7 @@ namespace polyfem::solver
 			{
 				periodic_contact_form = std::make_shared<PeriodicContactForm>(
 					collision_mesh, tiled_to_single, dhat, avg_mass, use_convergent_contact_formulation,
-					use_adaptive_barrier_stiffness, is_time_dependent, broad_phase, ccd_tolerance,
+					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance,
 					ccd_max_iterations);
 
 				if (use_adaptive_barrier_stiffness)
@@ -187,7 +188,7 @@ namespace polyfem::solver
 			{
 				contact_form = std::make_shared<ContactForm>(
 					collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
-					use_adaptive_barrier_stiffness, is_time_dependent, broad_phase, ccd_tolerance,
+					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance,
 					ccd_max_iterations);
 
 				if (use_adaptive_barrier_stiffness)
@@ -205,9 +206,8 @@ namespace polyfem::solver
 				
 				if (contact_form)
 					forms.push_back(contact_form);
-
-				// ----------------------------------------------------------------
 			}
+			// ----------------------------------------------------------------
 
 			if (friction_coefficient != 0)
 			{

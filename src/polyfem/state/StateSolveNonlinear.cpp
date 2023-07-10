@@ -125,7 +125,7 @@ namespace polyfem
 				initial_sol_update = sol;
 		}
 
-		///////////////////////////////////////////////////////////////////////
+		// --------------------------------------------------------------------
 		// Check for initial intersections
 		if (is_contact_enabled())
 		{
@@ -207,6 +207,7 @@ namespace polyfem
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
+			args["optimization"]["enabled"],
 			// Periodic contact
 			args["contact"]["periodic"], tiled_to_single,
 			// Friction form
@@ -285,10 +286,6 @@ namespace polyfem
 				 {"info", info}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
-			
-			n_linear_solves += info["iterations"].get<int>();
-			n_nonlinear_solves += 1;
-
 			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 		};
 

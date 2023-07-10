@@ -5,9 +5,19 @@
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
-#include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/assembler/Mass.hpp>
-#include <polyfem/assembler/AssemblyValsCache.hpp>
+namespace polyfem
+{
+	namespace assembler
+	{
+		class Mass;
+		class AssemblyValsCache;
+	}
+	
+	namespace basis
+	{
+		class ElementBases;
+	}
+}
 
 namespace polyfem::solver
 {

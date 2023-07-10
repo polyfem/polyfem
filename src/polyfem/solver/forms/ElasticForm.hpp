@@ -65,12 +65,6 @@ namespace polyfem::solver
 		/// @param[out] term Derivative of force multiplied by the adjoint
 		void force_shape_derivative(const int n_verts, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term);
 
-		/// @brief Compute the derivative of the force wrt topology, then multiply the resulting matrix with adjoint_sol.
-		/// @param[in] x Current solution
-		/// @param[in] adjoint Current adjoint solution
-		/// @param[out] term Derivative of force multiplied by the adjoint
-		void foce_topology_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term);
-		
 	private:
 		const int n_bases_;
 		const std::vector<basis::ElementBases> &bases_;

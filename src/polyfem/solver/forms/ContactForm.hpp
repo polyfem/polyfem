@@ -47,6 +47,7 @@ namespace polyfem::solver
 					const bool use_convergent_formulation,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
+					const bool enable_shape_derivatives,
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
 					const int ccd_max_iterations);
@@ -122,6 +123,8 @@ namespace polyfem::solver
 		/// @brief Get use_convergent_formulation
 		bool use_convergent_formulation() const { return constraint_set_.use_convergent_formulation(); }
 
+		bool enable_shape_derivatives() const { return enable_shape_derivatives_; }
+
 		double weight() const override { return weight_ * barrier_stiffness_; }
 
 		/// @brief If true, output debug files
@@ -156,6 +159,9 @@ namespace polyfem::solver
 
 		/// @brief Is the simulation time dependent?
 		const bool is_time_dependent_;
+
+		/// @brief Enable shape derivatives computation
+		const bool enable_shape_derivatives_;
 
 		/// @brief Broad phase method to use for distance and CCD evaluations
 		const ipc::BroadPhaseMethod broad_phase_method_;

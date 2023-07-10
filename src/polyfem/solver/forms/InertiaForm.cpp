@@ -5,6 +5,10 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/io/Evaluator.hpp>
 
+#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/AssemblyValsCache.hpp>
+
 namespace polyfem::solver
 {
 	namespace {

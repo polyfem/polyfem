@@ -29,7 +29,6 @@ namespace polyfem::solver
 		Eigen::VectorXd component_values(const Eigen::VectorXd &x) override;
 		Eigen::MatrixXd component_gradients(const Eigen::VectorXd &x) override;
 
-		bool smoothing(const Eigen::VectorXd &x, const Eigen::VectorXd &new_x, Eigen::VectorXd &smoothed_x) override;
 		void save_to_file(const Eigen::VectorXd &x0) override;
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;

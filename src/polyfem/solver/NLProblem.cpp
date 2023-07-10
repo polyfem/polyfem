@@ -198,15 +198,15 @@ namespace polyfem::solver
 		assert(full.cols() == 1);
 		reduced.resize(reduced_size, 1);
 
-		Eigen::MatrixXd tmp = full;
+		Eigen::MatrixXd mid = full;
 		if (state_.has_periodic_bc())
-			state_.full_to_periodic(tmp, false);
+			state_.full_to_periodic(mid, false);
 		
 		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
 
 		long j = 0;
 		size_t k = 0;
-		for (int i = 0; i < tmp.size(); ++i)
+		for (int i = 0; i < mid.size(); ++i)
 		{
 			if (k < boundary_nodes.size() && boundary_nodes[k] == i)
 			{
@@ -215,7 +215,7 @@ namespace polyfem::solver
 			}
 
 			assert(j < reduced.size());
-			reduced(j++) = tmp(i);
+			reduced(j++) = mid(i);
 		}
 	}
 
@@ -239,23 +239,20 @@ namespace polyfem::solver
 
 		long j = 0;
 		size_t k = 0;
-		Eigen::MatrixXd tmp(reduced_size + boundary_nodes.size(), 1);
-		for (int i = 0; i < tmp.size(); ++i)
+		Eigen::MatrixXd mid(reduced_size + boundary_nodes.size(), 1);
+		for (int i = 0; i < mid.size(); ++i)
 		{
 			if (k < boundary_nodes.size() && boundary_nodes[k] == i)
 			{
 				++k;
-				tmp(i) = rhs(i);
+				mid(i) = rhs(i);
 				continue;
 			}
 
-			tmp(i) = reduced(j++);
+			mid(i) = reduced(j++);
 		}
-
-		if (state_.has_periodic_bc())
-			full = state_.periodic_to_full(full_size, tmp);
-		else
-			full = tmp;
+		
+		full = state_.has_periodic_bc() ? state_.periodic_to_full(full_size, mid) : mid;
 	}
 
 	template <class FullMat, class ReducedMat>
@@ -274,13 +271,13 @@ namespace polyfem::solver
 		assert(full.cols() == 1);
 		reduced.resize(reduced_size, 1);
 
-		Eigen::MatrixXd tmp = full;
+		Eigen::MatrixXd mid = full;
 		if (state_.has_periodic_bc())
-			state_.full_to_periodic(tmp, true);
+			state_.full_to_periodic(mid, true);
 
 		long j = 0;
 		size_t k = 0;
-		for (int i = 0; i < tmp.size(); ++i)
+		for (int i = 0; i < mid.size(); ++i)
 		{
 			if (k < boundary_nodes.size() && boundary_nodes[k] == i)
 			{
@@ -288,21 +285,21 @@ namespace polyfem::solver
 				continue;
 			}
 
-			reduced(j++) = tmp(i);
+			reduced(j++) = mid(i);
 		}
 	}
 
 	void NLProblem::full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const
 	{
 		// POLYFEM_SCOPED_TIMER("\tfull hessian to reduced hessian");
-		THessian tmp = full;
+		THessian mid = full;
 		
 		if (state_.has_periodic_bc())
-			state_.full_to_periodic(tmp);
+			state_.full_to_periodic(mid);
 
 		if (current_size() < full_size())
-			utils::full_to_reduced_matrix(tmp.rows(), tmp.rows() - boundary_nodes_.size(), boundary_nodes_, tmp, reduced);
+			utils::full_to_reduced_matrix(mid.rows(), mid.rows() - boundary_nodes_.size(), boundary_nodes_, mid, reduced);
 		else
-			reduced = tmp;
+			reduced = mid;
 	}
 } // namespace polyfem::solver

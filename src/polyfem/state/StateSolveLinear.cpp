@@ -9,12 +9,9 @@
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
-
-#include <polyfem/utils/Timer.hpp>
-
 #include <polysolve/FEMSolver.hpp>
 
-#include <igl/Timer.h>
+#include <polyfem/utils/Timer.hpp>
 
 #include <unsupported/Eigen/SparseExtra>
 
@@ -204,7 +201,7 @@ namespace polyfem
 		}
 		solve_data.update_dt();
 	}
-	
+
 	void State::solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		assert(problem->is_time_dependent());

@@ -123,7 +123,7 @@ namespace polyfem::solver
 
 		ipc::CollisionConstraints constraint_set;
 		constraint_set.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
-		constraint_set.set_are_shape_derivatives_enabled(true);
+		constraint_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
 		constraint_set.build(
 			collision_mesh_, displaced_surface, dhat_,
 			/*dmin=*/0, broad_phase_method_);

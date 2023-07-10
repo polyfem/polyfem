@@ -98,11 +98,6 @@ namespace polyfem::solver
 		}
 	}
 
-	bool AdjointNLProblem::smoothing(const Eigen::VectorXd &x, const Eigen::VectorXd &new_x, Eigen::VectorXd &smoothed_x)
-	{
-		return true;
-	}
-
 	bool AdjointNLProblem::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
 		return composite_form_->is_step_valid(x0, x1);

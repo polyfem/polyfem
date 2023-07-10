@@ -95,6 +95,7 @@ namespace polyfem
 
 		/// main input arguments containing all defaults
 		json args;
+		/// main input arguments before applying defaults
 		json in_args;
 
 		//---------------------------------------------------
@@ -248,6 +249,8 @@ namespace polyfem
 
 	private:
 		/// splits the solution in solution and pressure for mixed problems
+		/// @param[in/out] sol solution
+		/// @param[out] pressure pressure
 		void sol_to_pressure(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
 		/// builds bases for polygons, called inside build_basis
 		void build_polygonal_basis();
@@ -600,18 +603,6 @@ namespace polyfem
 		/// @param[in] pressure pressure
 		void save_subsolve(const int i, const int t, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure);
 
-		/// saves a timestep
-		/// @param[in] time time in secs
-		/// @param[in] t time index
-		/// @param[in] t0 initial time
-		/// @param[in] dt delta t
-		void save_timestep(const double time, const int t, const double t0, const double dt);
-
-		/// saves a subsolve when save_solve_sequence_debug is true
-		/// @param[in] i sub solve index
-		/// @param[in] t time index
-		void save_subsolve(const int i, const int t);
-
 		/// saves the output statistic to a stream
 		/// @param[in] sol solution
 		/// @param[out] out stream to write output
@@ -657,9 +648,6 @@ namespace polyfem
 		solver::DiffCache diff_cached;
 
 		std::unique_ptr<polysolve::LinearSolver> lin_solver_cached; // matrix factorization of last linear solve
-
-		int n_linear_solves = 0;
-		int n_nonlinear_solves = 0;
 
 		int ndof() const
 		{
@@ -716,9 +704,9 @@ namespace polyfem
 		void compute_total_surface_node_ids(std::vector<int> &node_ids) const;
 		void compute_volume_node_ids(const int volume_selection, std::vector<int> &node_ids) const;
 
-		// to replace the initial condition
+		// to replace the initial condition in json during initial condition optimization
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
-		// downsample grad on P2 nodes to grad on P1 nodes, only for P2 contact shape derivative
+		// mapping from positions of geometric nodes to positions of FE basis nodes
 		StiffnessMatrix down_sampling_mat;
 
 		//---------------------------------------------------

@@ -84,6 +84,7 @@ void State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, Eigen::MatrixXd 
         args["solver"]["contact"]["CCD"]["broad_phase"],
         args["solver"]["contact"]["CCD"]["tolerance"],
         args["solver"]["contact"]["CCD"]["max_iterations"],
+        args["optimization"]["enabled"],
         // Periodic contact
         args["contact"]["periodic"], tiled_to_single,
         // Friction form
