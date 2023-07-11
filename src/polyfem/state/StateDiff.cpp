@@ -313,15 +313,15 @@ namespace polyfem
 
 			b.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), b.cols()));
 
-			std::vector<int> boundary_nodes_tmp = boundary_nodes;
-			full_to_periodic(boundary_nodes_tmp);
+			std::vector<int> boundary_nodes_tmp;
 			if (has_periodic_bc())
 			{
-				precond_num = full_to_periodic(A);
-				Eigen::MatrixXd tmp = b;
-				full_to_periodic(tmp, true);
-				b = tmp;
+				boundary_nodes_tmp = periodic_bc->full_to_periodic(boundary_nodes);
+				precond_num = periodic_bc->full_to_periodic(A);
+				b = periodic_bc->full_to_periodic(b, true);
 			}
+			else
+				boundary_nodes_tmp = boundary_nodes;
 
 			for (int i = 0; i < b.cols(); i++)
 			{
@@ -330,7 +330,7 @@ namespace polyfem
 				dirichlet_solve_prefactorized(*lin_solver_cached, A, tmp, boundary_nodes_tmp, x);
 
 				if (has_periodic_bc())
-					adjoint.col(i) = periodic_to_full(full_size, x);
+					adjoint.col(i) = periodic_bc->periodic_to_full(full_size, x);
 				else
 					adjoint.col(i) = x;
 			}

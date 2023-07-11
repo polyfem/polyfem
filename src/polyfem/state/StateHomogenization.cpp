@@ -121,12 +121,9 @@ void State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, Eigen::MatrixXd 
         }
     }
 
-    std::vector<int> boundary_nodes_tmp = boundary_nodes;
-    full_to_periodic(boundary_nodes_tmp);
-
     std::shared_ptr<NLHomoProblem> homo_problem = std::make_shared<NLHomoProblem>(
         ndof,
-        boundary_nodes_tmp,
+        boundary_nodes,
         local_boundary,
         n_boundary_samples(),
         *solve_data_tmp.rhs_assembler, *this, 0, forms, solve_symmetric_flag);

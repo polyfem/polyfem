@@ -565,109 +565,6 @@ namespace polyfem
 		return args["space"]["advanced"]["isoparametric"];
 	}
 
-	void State::build_periodic_index_mapping(const int n_bases_, const std::vector<basis::ElementBases> &bases_, const std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes_, Eigen::VectorXi &index_map, Eigen::VectorXi &periodic_mask) const
-	{
-		const int dim = mesh->dimension();
-		const double eps = 1e-4;
-
-		RowVectorNd min, max;
-		mesh->bounding_box(min, max);
-		const double bbox_size = (max - min).maxCoeff();
-
-		index_map.setConstant(n_bases_, 1, -1);
-
-		Eigen::VectorXi dependent_map(n_bases_);
-		dependent_map.setConstant(-1);
-
-		int n_pairs = 0;
-
-		// find corresponding periodic boundary nodes
-		Eigen::Vector3i dependent_face({1, 2, 5}), target_face({3, 4, 6});
-		for (int d = 0; d < dim; d++)
-		{
-			if (!periodic_dimensions[d])
-				continue;
-
-			const int dependent_boundary_id = dependent_face(d);
-			const int target_boundary_id = target_face(d);
-
-			std::set<int> dependent_ids, target_ids;
-
-			for (const auto &lb : total_local_boundary)
-			{
-				const int e = lb.element_id();
-				const basis::ElementBases &bs = bases_[e];
-
-				for (int i = 0; i < lb.size(); ++i)
-				{
-					const int primitive_global_id = lb.global_primitive_id(i);
-					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, *mesh);
-
-					for (long n = 0; n < nodes.size(); ++n)
-					{
-						for (int j = 0; j < bs.bases[nodes(n)].global().size(); j++)
-						{
-							const int gid = bs.bases[nodes(n)].global()[j].index;
-							if (mesh->get_boundary_id(primitive_global_id) == dependent_boundary_id)
-								dependent_ids.insert(gid);
-							else if (mesh->get_boundary_id(primitive_global_id) == target_boundary_id)
-								target_ids.insert(gid);
-						}
-					}
-				}
-			}
-
-			for (int i : dependent_ids)
-			{
-				bool found_target = false;
-				for (int j : target_ids)
-				{
-					RowVectorNd projected_diff = mesh_nodes_->node_position(j) - mesh_nodes_->node_position(i);
-					projected_diff(d) = 0;
-					if (projected_diff.norm() < eps * bbox_size)
-					{
-						dependent_map(i) = j;
-						n_pairs++;
-						found_target = true;
-						break;
-					}
-				}
-				if (!found_target)
-					throw std::runtime_error("Periodic boundary condition failed to find corresponding nodes!");
-			}
-		}
-
-		{
-			periodic_mask.setZero(n_bases_);
-			for (int i = 0; i < dependent_map.size(); i++)
-			{
-				if (dependent_map(i) >= 0)
-				{
-					periodic_mask(dependent_map(i)) = 1;
-					periodic_mask(i) = 1;
-				}
-			}
-		}
-
-		// break dependency chains into direct dependency
-		for (int d = 0; d < dim; d++)
-			for (int i = 0; i < dependent_map.size(); i++)
-				if (dependent_map(i) >= 0 && dependent_map(dependent_map(i)) >= 0)
-					dependent_map(i) = dependent_map(dependent_map(i));
-
-		// new indexing for independent dof
-		int independent_dof = 0;
-		for (int i = 0; i < dependent_map.size(); i++)
-		{
-			if (dependent_map(i) < 0)
-				index_map(i) = independent_dof++;
-		}
-
-		for (int i = 0; i < dependent_map.size(); i++)
-			if (dependent_map(i) >= 0)
-				index_map(i) = index_map(dependent_map(i));
-	}
-
 	void State::build_basis()
 	{
 		if (!mesh)
@@ -819,6 +716,7 @@ namespace polyfem
 			}
 		}
 
+		// shape optimization needs continuous geometric basis
 		const bool use_continuous_gbasis = args["optimization"]["enabled"];
 
 		if (mesh->is_volume())
@@ -968,20 +866,10 @@ namespace polyfem
 		// handle periodic bc
 		if (has_periodic_bc())
 		{
-			// periodic bases mapping
-			{
-				logger().warn("Periodic BC can only apply on nodes on the bounding box!");
-
-				Eigen::VectorXi tmp_map;
-				build_periodic_index_mapping(n_bases, bases, mesh_nodes, tmp_map, periodic_bases_mask);
-
-				const int old_size = tmp_map.size();
-				bases_to_periodic_map.setZero(old_size * problem_dim);
-				for (int i = 0; i < old_size; i++)
-					for (int d = 0; d < problem_dim; d++)
-						bases_to_periodic_map(i * problem_dim + d) = tmp_map(i) * problem_dim + d;
-			}
+			logger().debug("Periodic BC can only apply on nodes on the bounding box!");
+			periodic_bc = std::make_shared<PeriodicBoundary>(*mesh, total_local_boundary, problem->is_scalar(), n_bases, bases, mesh_nodes, periodic_dimensions);
 		}
+		
 		if (args["space"]["advanced"]["count_flipped_els"])
 			stats.count_flipped_elements(*mesh, geom_bases());
 
@@ -990,7 +878,7 @@ namespace polyfem
 
 		logger().info("Building collision mesh...");
 		build_collision_mesh(collision_mesh, n_bases, bases);
-		if (args["contact"]["periodic"])
+		if (periodic_bc && args["contact"]["periodic"])
 			build_periodic_collision_mesh();
 		logger().info("Done!");
 
@@ -1087,8 +975,8 @@ namespace polyfem
 		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
 
-		// for pure neumann problem, find an internal node to force zero dirichlet
-		if (!problem->is_time_dependent() && boundary_nodes.size() == 0 && !problem->is_scalar())
+		// for elastic pure periodic problem, find an internal node and force zero dirichlet
+		if (!problem->is_time_dependent() && boundary_nodes.size() == 0 && !problem->is_scalar() && has_periodic_bc())
 		{
 			int i = 0;
 			for (; i < mesh->n_vertices(); i++)
@@ -1349,7 +1237,7 @@ namespace polyfem
 			std::vector<int> ind;
 			for (int i = 0; i < E.rows(); i++)
 			{
-				if (!periodic_bases_mask(E(i, 0)) || !periodic_bases_mask(E(i, 1)))
+				if (!periodic_bc->is_periodic_dof(E(i, 0)) || !periodic_bc->is_periodic_dof(E(i, 1)))
 					ind.push_back(i);
 			}
 			E = E(ind, Eigen::all).eval();
@@ -1388,7 +1276,7 @@ namespace polyfem
             std::vector<int> tmp;
             for (int i = 0; i < V.rows(); i++)
             {
-                if (periodic_bases_mask(i))
+                if (periodic_bc->is_periodic_dof(i))
                     tmp.push_back(i);
             }
 

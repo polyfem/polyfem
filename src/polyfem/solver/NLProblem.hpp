@@ -3,11 +3,7 @@
 #include <polyfem/solver/FullNLProblem.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
-
-namespace polyfem
-{
-	class State;
-}
+#include <polyfem/utils/PeriodicBoundary.hpp>
 
 namespace polyfem::solver
 {
@@ -22,7 +18,6 @@ namespace polyfem::solver
 		NLProblem(
 			const int full_size,
 			const std::vector<int> &boundary_nodes,
-			const State &state,
 			const std::vector<std::shared_ptr<Form>> &forms);
 
 	public:
@@ -31,8 +26,8 @@ namespace polyfem::solver
 				  const std::vector<mesh::LocalBoundary> &local_boundary,
 				  const int n_boundary_samples,
 				  const assembler::RhsAssembler &rhs_assembler,
-				  const State &state,
-				  const double t, 
+				  const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
+				  const double t,
 				  const std::vector<std::shared_ptr<Form>> &forms);
 
 		virtual double value(const TVector &x) override;
@@ -76,9 +71,9 @@ namespace polyfem::solver
 		const int full_size_;    ///< Size of the full problem
 		const int reduced_size_; ///< Size of the reduced problem
 
-		const State &state_;
+		std::shared_ptr<utils::PeriodicBoundary> periodic_bc_;
 
-		enum CurrentSize
+		enum class CurrentSize
 		{
 			FULL_SIZE,
 			REDUCED_SIZE

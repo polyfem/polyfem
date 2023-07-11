@@ -24,6 +24,7 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/PeriodicBoundary.hpp>
 
 #include <polyfem/io/OutData.hpp>
 
@@ -363,11 +364,8 @@ namespace polyfem
 			const std::string &linear_solver_type = "") const;
 
 		/// periodic BC and periodic mesh utils
-		Eigen::VectorXi bases_to_periodic_map; // size = ndof(), from full dof to periodic dof
-		Eigen::VectorXi periodic_bases_mask; // size = n_bases, mark periodic indices
-		std::shared_ptr<solver::PeriodicMeshToMesh> periodic_mesh_map; // chain rule for periodic mesh optimization
-		Eigen::VectorXd periodic_mesh_representation;
 		std::vector<bool> periodic_dimensions;
+		std::shared_ptr<utils::PeriodicBoundary> periodic_bc;
 		bool has_periodic_bc() const
 		{
 			for (const bool &r : periodic_dimensions)
@@ -377,34 +375,9 @@ namespace polyfem
 			}
 			return false;
 		}
-		bool all_direction_periodic() const
-		{
-			for (const bool &r : periodic_dimensions)
-			{
-				if (!r)
-					return false;
-			}
-			return true;
-		}
-		void build_periodic_index_mapping(const int n_bases_, const std::vector<basis::ElementBases> &bases_, const std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes_, Eigen::VectorXi &index_map, Eigen::VectorXi &periodic_mask) const;
 
-		// compute the matrix/vector under periodic basis, if the size is larger than #periodic_basis, the extra rows are kept
-		int full_to_periodic(StiffnessMatrix &A) const;
-		int full_to_periodic(Eigen::MatrixXd &b, bool accumulate) const;
-		void full_to_periodic(std::vector<int> &boundary_nodes_) const
-		{
-			if (has_periodic_bc())
-			{
-				for (int i = 0; i < boundary_nodes_.size(); i++)
-					boundary_nodes_[i] = bases_to_periodic_map(boundary_nodes_[i]);
-
-				std::sort(boundary_nodes_.begin(), boundary_nodes_.end());
-				auto it = std::unique(boundary_nodes_.begin(), boundary_nodes_.end());
-				boundary_nodes_.resize(std::distance(boundary_nodes_.begin(), it));
-			}
-		}
-
-		Eigen::MatrixXd periodic_to_full(const int ndofs, const Eigen::MatrixXd &x_periodic) const;
+		std::shared_ptr<solver::PeriodicMeshToMesh> periodic_mesh_map; // chain rule for periodic mesh optimization
+		Eigen::VectorXd periodic_mesh_representation;
 
 		/// @brief Solve the linear problem with the given solver and system.
 		/// @param solver Linear solver.

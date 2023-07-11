@@ -129,8 +129,9 @@ namespace polyfem
 		
 		if (args["space"]["advanced"]["periodic_mesh"].get<bool>())
 		{
-			if (!all_direction_periodic())
-				log_and_throw_error("Periodic mesh representation is only used for PDE with periodic BC in all axial directions!");
+			for (const bool &r : periodic_dimensions)
+				if (!r)
+					log_and_throw_error("Periodic mesh representation is only used for PDE with periodic BC in all axial directions!");
 			
 			Eigen::MatrixXd V(mesh->n_vertices(), mesh->dimension());
 			for (int i = 0; i < mesh->n_vertices(); i++)

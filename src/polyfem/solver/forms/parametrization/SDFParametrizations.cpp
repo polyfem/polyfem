@@ -183,18 +183,19 @@ namespace polyfem::solver
         auto solver = polysolve::LinearSolver::create(state.args["solver"]["linear"]["solver"], state.args["solver"]["linear"]["precond"]);
         solver->setParameters(state.args["solver"]["linear"]);
 
+        std::vector<int> boundary_nodes = state.periodic_bc ? state.periodic_bc->full_to_periodic(state.boundary_nodes) : state.boundary_nodes;
+
         StiffnessMatrix A;
-        state.build_stiffness_mat(A);
-        std::vector<int> boundary_nodes_tmp = state.boundary_nodes;
+        state.build_stiffness_mat(A);        
         {
             const int full_size = A.rows();
             int precond_num = full_size;
 
-            state.full_to_periodic(boundary_nodes_tmp);
-            precond_num = state.full_to_periodic(A);
+            if (state.periodic_bc)
+                precond_num = state.periodic_bc->full_to_periodic(A);
 
             StiffnessMatrix Atmp = A;
-            prefactorize(*solver, Atmp, boundary_nodes_tmp, precond_num, state.args["output"]["data"]["stiffness_mat"]);
+            prefactorize(*solver, Atmp, boundary_nodes, precond_num, state.args["output"]["data"]["stiffness_mat"]);
         }
 
         Eigen::MatrixXd rhs;
@@ -204,13 +205,14 @@ namespace polyfem::solver
                 for (int i : state.boundary_nodes)
                     rhs(i, q * dim + d) = shape_velocity(q, node_to_primitive[i] * dim + d);
 
-        state.full_to_periodic(rhs, true);
+        if (state.periodic_bc)
+            rhs = state.periodic_bc->full_to_periodic(rhs, true);
     
         // enforce dirichlet boundary on rhs
         {
             Eigen::VectorXd N;
             N.setZero(A.rows());
-            N(boundary_nodes_tmp).setOnes();
+            N(boundary_nodes).setOnes();
             rhs -= ((1.0 - N.array()).matrix()).asDiagonal() * (A * (N.asDiagonal() * rhs));
         }
 
@@ -223,7 +225,10 @@ namespace polyfem::solver
                 x.setZero(rhs.rows());
                 solver->solve(rhs.col(q * dim + d), x);
 
-                sol.col(d) = state.periodic_to_full(state.ndof(), x);
+                if (state.periodic_bc)
+                    sol.col(d) = state.periodic_bc->periodic_to_full(state.ndof(), x);
+                else
+                    sol.col(d) = x;
             }
             extended_velocity.row(q) = utils::flatten(sol(primitive_to_node, Eigen::all)).transpose();
 

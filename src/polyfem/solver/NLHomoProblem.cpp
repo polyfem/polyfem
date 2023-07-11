@@ -14,7 +14,7 @@ namespace polyfem::solver
                 const assembler::RhsAssembler &rhs_assembler,
                 const State &state,
                 const double t, const std::vector<std::shared_ptr<Form>> &forms, 
-                const bool solve_symmetric_macro_strain) : NLProblem(full_size, boundary_nodes, local_boundary, n_boundary_samples, rhs_assembler, state, t, forms), only_symmetric(solve_symmetric_macro_strain)
+                const bool solve_symmetric_macro_strain) : NLProblem(full_size, boundary_nodes, local_boundary, n_boundary_samples, rhs_assembler, state.periodic_bc, t, forms), state_(state), only_symmetric(solve_symmetric_macro_strain)
     {
         init_projection();
     }

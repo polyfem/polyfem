@@ -2,6 +2,11 @@
 
 #include "NLProblem.hpp"
 
+namespace polyfem
+{
+	class State;
+}
+
 namespace polyfem::solver
 {
     class NLHomoProblem : public NLProblem
@@ -73,7 +78,8 @@ namespace polyfem::solver
 		void init_projection();
 
 		Eigen::MatrixXd constraint_grad() const;
-
+		
+		const State &state_;
 		const bool only_symmetric;
 		Eigen::VectorXi fixed_mask_;
 		Eigen::VectorXd fixed_values_;

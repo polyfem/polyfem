@@ -79,15 +79,16 @@ namespace polyfem
 		const int full_size = A.rows();
 		int precond_num = problem_dim * n_bases;
 
-		std::vector<int> boundary_nodes_tmp = boundary_nodes;
-		full_to_periodic(boundary_nodes_tmp);
+		std::vector<int> boundary_nodes_tmp;
 		if (has_periodic_bc())
 		{
-			precond_num = full_to_periodic(A);
- 			Eigen::MatrixXd tmp = b;
- 			full_to_periodic(tmp, true);
+			boundary_nodes_tmp = periodic_bc->full_to_periodic(boundary_nodes);
+			precond_num = periodic_bc->full_to_periodic(A);
+ 			Eigen::MatrixXd tmp = periodic_bc->full_to_periodic(b, true);
  			b = tmp;
 		}
+		else
+			boundary_nodes_tmp = boundary_nodes;
 
 		Eigen::VectorXd x;
 		if (args["optimization"]["enabled"])
@@ -112,7 +113,7 @@ namespace polyfem
 			logger().debug("Solver error: {}", error);
 
  		if (has_periodic_bc())
- 			sol = periodic_to_full(full_size, x);
+ 			sol = periodic_bc->periodic_to_full(full_size, x);
  		else
  			sol = x; // Explicit copy because sol is a MatrixXd (with one column)
 

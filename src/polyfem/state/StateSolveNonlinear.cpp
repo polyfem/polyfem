@@ -226,13 +226,10 @@ namespace polyfem
 		// --------------------------------------------------------------------
 		// Initialize nonlinear problems
 
-		std::vector<int> boundary_nodes_tmp = boundary_nodes;
-		full_to_periodic(boundary_nodes_tmp);
-
 		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
-			ndof, boundary_nodes_tmp, local_boundary, n_boundary_samples(),
-			*solve_data.rhs_assembler, *this, t, forms);
+			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
+			*solve_data.rhs_assembler, periodic_bc, t, forms);
 
 		// --------------------------------------------------------------------
 

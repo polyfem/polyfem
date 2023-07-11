@@ -34,6 +34,8 @@ set(SOURCES
 	MaybeParallelFor.tpp
 	par_for.cpp
 	par_for.hpp
+	PeriodicBoundary.hpp
+	PeriodicBoundary.cpp
 	raster.cpp
 	raster.hpp
 	RBFInterpolation.cpp

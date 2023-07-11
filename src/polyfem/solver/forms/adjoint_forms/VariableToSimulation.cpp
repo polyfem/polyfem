@@ -151,7 +151,7 @@ namespace polyfem::solver
 		Eigen::MatrixXd V;
 		state.get_vertices(V);
 
-		assert(state.args["space"]["advanced"]["periodic_mesh"].get<bool>() && state.all_direction_periodic());
+		assert(state.args["space"]["advanced"]["periodic_mesh"].get<bool>() && state.periodic_bc->all_direction_periodic());
 		return parametrization_.inverse_eval(state.periodic_mesh_map->inverse_eval(utils::flatten(V)));
 	}
 
