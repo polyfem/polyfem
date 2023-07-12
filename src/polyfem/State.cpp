@@ -132,6 +132,12 @@ namespace polyfem
 			// Map vertices
 			// ------------
 
+			if (in_ordered_vertices.rows() != n_vertices)
+			{
+				logger().warn("Node ordering disabled, in_ordered_vertices != n_vertices, {} != {}", in_ordered_vertices.rows(), n_vertices);
+				return false;
+			}
+
 			in_primitive_to_primitive.head(n_vertices) = in_ordered_vertices;
 
 			int in_offset = n_vertices;
