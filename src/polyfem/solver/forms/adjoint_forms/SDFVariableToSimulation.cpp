@@ -15,13 +15,14 @@ namespace polyfem::solver
 		int start = 0, end = 0; // start vertex index of the mesh
 		for (auto state : states_)
 		{
-			state->in_args["geometry"][mesh_id_]["mesh"] = mesh_path_;
-			state->in_args["geometry"][mesh_id_].erase("transformation");
+			state->args["geometry"][mesh_id_]["mesh"] = mesh_path_;
+			state->args["geometry"][mesh_id_].erase("transformation");
 
 			state->mesh = nullptr;
 			state->assembler->update_lame_params(Eigen::MatrixXd(), Eigen::MatrixXd());
 
-			state->init(state->in_args, false);
+			json in_args = state->args;
+			state->init(in_args, false);
 
 			{
 				assert(state->args["geometry"].is_array());
@@ -73,22 +74,23 @@ namespace polyfem::solver
 
 		for (auto state : states_)
 		{
-			if (state->in_args["geometry"].is_array())
+			if (state->args["geometry"].is_array())
 			{
-				assert(state->in_args["geometry"].size() == 1);
-				state->in_args["geometry"][0]["mesh"] = mesh_path_;
-				state->in_args["geometry"][0].erase("transformation");
+				assert(state->args["geometry"].size() == 1);
+				state->args["geometry"][0]["mesh"] = mesh_path_;
+				state->args["geometry"][0].erase("transformation");
 			}
 			else
 			{
-				state->in_args["geometry"]["mesh"] = mesh_path_;
-				state->in_args["geometry"].erase("transformation");
+				state->args["geometry"]["mesh"] = mesh_path_;
+				state->args["geometry"].erase("transformation");
 			}
 
 			state->mesh = nullptr;
 			state->assembler->update_lame_params(Eigen::MatrixXd(), Eigen::MatrixXd());
 
-			state->init(state->in_args, false);
+			json in_args = state->args;
+			state->init(state->args, false);
 
 			state->load_mesh();
 			state->stats.compute_mesh_stats(*state->mesh);

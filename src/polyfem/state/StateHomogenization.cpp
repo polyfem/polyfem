@@ -224,22 +224,12 @@ void State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, Eigen::MatrixXd 
             if (eta <= 0)
             {
                 args["solver"]["augmented_lagrangian"]["initial_weight"] = args["solver"]["augmented_lagrangian"]["initial_weight"].get<double>() * scaling;
-                {
-                    json tmp = json::object();
-                    tmp["/solver/augmented_lagrangian/initial_weight"_json_pointer] = args["solver"]["augmented_lagrangian"]["initial_weight"];
-                    in_args.merge_patch(tmp);
-                }
                 logger().warn("AL weight too small, increase weight and revert solution, new initial weight is {}", args["solver"]["augmented_lagrangian"]["initial_weight"]);
                 tmp_sol = initial_sol;
             }
             else if (current_error <= error_tol && al_steps == 0)
             {
                 args["solver"]["augmented_lagrangian"]["initial_weight"] = args["solver"]["augmented_lagrangian"]["initial_weight"].get<double>() / scaling;
-                {
-                    json tmp = json::object();
-                    tmp["/solver/augmented_lagrangian/initial_weight"_json_pointer] = args["solver"]["augmented_lagrangian"]["initial_weight"];
-                    in_args.merge_patch(tmp);
-                }
                 logger().warn("AL weight too large, decrease initial weight to {}", args["solver"]["augmented_lagrangian"]["initial_weight"]);
             }
 
