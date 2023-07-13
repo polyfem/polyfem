@@ -665,6 +665,7 @@ namespace polyfem
 					normals.row(n) = normals.row(n) * trafo.inverse();
 					normals.row(n).normalize();
 				}
+
 				// problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, rhs_fun);
 				nf(global_primitive_ids, uv, vals.val, normals, rhs_fun);
 
@@ -677,62 +678,6 @@ namespace polyfem
 				{
 					const int primitive_global_id = lb.global_primitive_id(i);
 					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
-
-					// Area scaling of deformed mesh
-					// {
-					// if (displacement.size() > 0 && mesh_.is_simplex(e))
-					// {
-					// 	double displaced_area_scaling = 1.;
-
-					// 	const auto geom_nodes = gbs.local_nodes_for_primitive(primitive_global_id, mesh_);
-
-					// 	Eigen::MatrixXd node_points;
-					// 	if (mesh_.is_volume())
-					// 		autogen::p_nodes_3d(1, node_points);
-					// 	else
-					// 		autogen::p_nodes_2d(1, node_points);
-					// 	Eigen::MatrixXd u, grad_u;
-					// 	io::Evaluator::interpolate_at_local_vals(mesh_, mesh_.is_volume() ? 3 : 2, bases_, gbases_, e, node_points(geom_nodes, Eigen::all), displacement, u, grad_u);
-
-					// 	if (mesh_.is_volume() && lb.type() == BoundaryType::TRI)
-					// 	{
-					// 		Eigen::Matrix3d V;
-					// 		V.row(0) = gbases_[e].bases[geom_nodes(0)].global()[0].node;
-					// 		V.row(1) = gbases_[e].bases[geom_nodes(1)].global()[0].node;
-					// 		V.row(2) = gbases_[e].bases[geom_nodes(2)].global()[0].node;
-
-					// 		double rest_area = (0.5) * (V.row(1) - V.row(0)).transpose().cross((V.row(2) - V.row(0)).transpose()).norm();
-
-					// 		for (int k = 0; k < 3; ++k)
-					// 			V.row(k) += u.row(k);
-
-					// 		double displaced_area = (0.5) * (V.row(1) - V.row(0)).transpose().cross((V.row(2) - V.row(0)).transpose()).norm();
-
-					// 		displaced_area_scaling = displaced_area / rest_area;
-					// 	}
-					// 	else if (!mesh_.is_volume() && lb.type() == BoundaryType::TRI_LINE)
-					// 	{
-					// 		Eigen::MatrixXd V(2, 2);
-					// 		V.row(0) = gbases_[e].bases[geom_nodes(0)].global()[0].node;
-					// 		V.row(1) = gbases_[e].bases[geom_nodes(1)].global()[0].node;
-
-					// 		double rest_area = (V.row(1) - V.row(0)).norm();
-
-					// 		for (int k = 0; k < 2; ++k)
-					// 			V.row(k) += u.row(k);
-
-					// 		double displaced_area = (V.row(1) - V.row(0)).norm();
-
-					// 		displaced_area_scaling = displaced_area / rest_area;
-					// 	}
-
-					// 	const bool is_pressure = problem_.is_boundary_pressure(mesh_.get_boundary_id(primitive_global_id));
-					// 	if (is_pressure)
-					// 	{
-					// 		rhs_fun *= displaced_area_scaling;
-					// 	}
-					// }
-					// }
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
@@ -884,9 +829,6 @@ namespace polyfem
 
 				for (int n = 0; n < vals.jac_it.size(); ++n)
 				{
-					Eigen::MatrixXd ppp(1, size_);
-					ppp = vals.val.row(n);
-
 					trafo = vals.jac_it[n].inverse();
 
 					if (displacement.size() > 0)
@@ -901,8 +843,6 @@ namespace polyfem
 								for (int d = 0; d < size_; ++d)
 								{
 									deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
-
-									ppp(d) += displacement(g.index * size_ + d) * b.val(n);
 								}
 							}
 						}
@@ -1043,65 +983,6 @@ namespace polyfem
 					}
 
 					grad_normal.push_back(grad);
-
-					// std::cout << "trafo " << trafo << std::endl;
-
-					// check grad by fd
-					// {
-					// 	auto compute_normals = [vals](const int size_, const int n, const Eigen::MatrixXd &normals, const Eigen::MatrixXd &displacement) {
-					// 		Eigen::MatrixXd trafo = vals.jac_it[n].inverse();
-
-					// 		Eigen::MatrixXd deform_mat(size_, size_);
-					// 		deform_mat.setZero();
-					// 		for (const auto &b : vals.basis_values)
-					// 			for (const auto &g : b.global)
-					// 				for (int d = 0; d < size_; ++d)
-					// 					deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
-
-					// 		trafo += deform_mat;
-					// 		trafo = trafo.inverse();
-
-					// 		Eigen::VectorXd value = normals.row(n) * trafo;
-					// 		value /= value.norm();
-					// 		// Eigen::VectorXd value = trafo * normals.row(n).transpose();
-					// 		return value;
-					// 	};
-
-					// 	std::cout << "n " << n << std::endl;
-					// 	std::cout << "jac mat " << jac_mat << std::endl;
-
-					// 	for (int j = 0; j < size_; ++j)
-					// 		std::cout << "grad " << grad[j] << std::endl;
-
-					// 	double eps = 1e-7;
-					// 	Eigen::MatrixXd sol;
-					// 	for (int i = 0; i < vals.basis_values.size(); ++i)
-					// 	{
-					// 		for (int j = 0; j < size_; ++j)
-					// 		{
-					// 			sol = displacement;
-					// 			sol(vals.basis_values[i].global[0].index * size_ + j) += eps;
-					// 			Eigen::VectorXd normal_plus = compute_normals(size_, n, reference_normals, sol);
-					// 			sol(vals.basis_values[i].global[0].index * size_ + j) -= 2 * eps;
-					// 			Eigen::VectorXd normal_minus = compute_normals(size_, n, reference_normals, sol);
-
-					// 			Eigen::VectorXd fd = (normal_plus - normal_minus) / (2 * eps);
-
-					// 			std::cout << "ij " << i << " " << j << std::endl;
-					// 			std::cout << "fd " << fd << std::endl;
-					// 			// for (int k = 0; k < size_; ++k)
-					// 			// 	assert(abs(fd(k) - grad[k](j, i)) < 1e-5);
-
-					// 			// grad.col(i * size_ + j) = fd;
-					// 			// for (int k = 0; k < size_; ++k)
-					// 			// 	grad[k](j, i) = fd(k);
-					// 		}
-					// 	}
-
-					// 	std::cout << std::endl;
-					// }
-
-					// grad_normal.push_back(grad);
 				}
 				Eigen::MatrixXd rhs_fun;
 				problem_.neumann_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, rhs_fun);

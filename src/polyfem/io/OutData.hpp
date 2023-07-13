@@ -169,6 +169,7 @@ namespace polyfem::io
 		/// @param[in] sol solution
 		/// @param[in] pressure pressure
 		/// @param[in] t time
+		/// @param[in] dt delta t
 		/// @param[in] opts export options
 		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_volume(const std::string &path,
@@ -176,6 +177,7 @@ namespace polyfem::io
 						 const Eigen::MatrixXd &sol,
 						 const Eigen::MatrixXd &pressure,
 						 const double t,
+						 const double dt,
 						 const ExportOptions &opts,
 						 std::vector<SolutionFrame> &solution_frames) const;
 
