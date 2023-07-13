@@ -125,7 +125,7 @@ namespace polyfem
 
 			/* advection */
 			logger().info("Advection...");
-			if (args["space"]["advanced"]["particle"])
+			if (args["space"]["advanced"]["use_particle_advection"])
 				ss.advection_FLIP(*mesh, gbases, bases, sol, dt, local_pts);
 			else
 				ss.advection(*mesh, gbases, bases, sol, dt, local_pts);
