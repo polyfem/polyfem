@@ -192,16 +192,37 @@ namespace polyfem
 			}
 		}
 
+		const auto lin_solver_ptr = "/solver/linear/solver"_json_pointer;
+		if (args_in.contains(lin_solver_ptr) && args_in[lin_solver_ptr].is_array())
+		{
+			const std::vector<std::string> solvers = args_in[lin_solver_ptr];
+			const std::vector<std::string> available_solvers = polysolve::LinearSolver::availableSolvers();
+			std::string accepted_solver = "";
+			for (const std::string &solver : solvers)
+			{
+				if (std::find(available_solvers.begin(), available_solvers.end(), solver) != available_solvers.end())
+				{
+					accepted_solver = solver;
+					break;
+				}
+			}
+			if (!accepted_solver.empty())
+				logger().info("Solver {} is the highest priority availble solver; using it.", accepted_solver);
+			else
+				logger().warn("No valid solver found in the list of specified solvers!");
+			args_in[lin_solver_ptr] = accepted_solver;
+		}
+
 		// Fallback to default linear solver if the specified solver is invalid
 		if (args_in.value("/solver/linear/enable_overwrite_solver"_json_pointer, false))
 		{
-			const auto ptr = "/solver/linear/solver"_json_pointer;
 			const auto ss = polysolve::LinearSolver::availableSolvers();
 			std::string s_json = "null";
-			if (!args_in.contains(ptr) || !args_in[ptr].is_string() || std::find(ss.begin(), ss.end(), s_json = args_in[ptr].get<std::string>()) == ss.end())
+			if (!args_in.contains(lin_solver_ptr) || !args_in[lin_solver_ptr].is_string()
+				|| std::find(ss.begin(), ss.end(), s_json = args_in[lin_solver_ptr].get<std::string>()) == ss.end())
 			{
 				logger().warn("Solver {} is invalid, falling back to {}", s_json, polysolve::LinearSolver::defaultSolver());
-				args_in[ptr] = polysolve::LinearSolver::defaultSolver();
+				args_in[lin_solver_ptr] = polysolve::LinearSolver::defaultSolver();
 			}
 		}
 
