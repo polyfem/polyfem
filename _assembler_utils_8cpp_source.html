@@ -206,7 +206,7 @@ $(document).ready(function(){initNavTree('_assembler_utils_8cpp_source.html','')
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (formulation == <span class="stringliteral">&quot;NavierStokes&quot;</span>)</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                <span class="keywordflow">return</span> std::make_shared&lt;NavierStokesVelocity&gt;();</div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (formulation == <span class="stringliteral">&quot;OperatorSplitting&quot;</span>)</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                <span class="keywordflow">return</span> std::make_shared&lt;StokesVelocity&gt;();</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                <span class="keywordflow">return</span> std::make_shared&lt;OperatorSplitting&gt;();</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(<span class="stringliteral">&quot;Inavalid assembler name {}&quot;</span>, formulation);</div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        }</div>

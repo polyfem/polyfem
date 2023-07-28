@@ -16,7 +16,7 @@ var searchData=
   ['grad_5ft_5fm_13',['grad_t_m',['../classpolyfem_1_1assembler_1_1_assembly_values.html#aafc00c4359176133c0d65d930c8918d6',1,'polyfem::assembler::AssemblyValues']]],
   ['grad_5ftime_14',['grad_time',['../classcppoptlib_1_1_nonlinear_solver.html#af29c29fba5a56d0c9e64e69281f5d5a9',1,'cppoptlib::NonlinearSolver']]],
   ['gradnorm_15',['gradNorm',['../classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a7edb18d72295feeb690808b2c7b9cd2f',1,'polyfem::solver::NavierStokesSolver::gradNorm()'],['../classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#ade83a13fd06d36a236fdad9d4c4a15b5',1,'polyfem::solver::TransientNavierStokesSolver::gradNorm()']]],
-  ['grid_5fcell_5fnum_16',['grid_cell_num',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a921337bef2f24255ff5b7c9f401f1555',1,'polyfem::solver::OperatorSplittingSolver']]],
+  ['grid_5fcell_5fnum_16',['grid_cell_num',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#abbd83dd04e0a8d72273b56321836e898',1,'polyfem::solver::OperatorSplittingSolver']]],
   ['grid_5fpoints_17',['grid_points',['../classpolyfem_1_1io_1_1_out_geometry_data.html#a21f6f6b8b2aee01fc23ee4b7d3aa09e2',1,'polyfem::io::OutGeometryData']]],
   ['grid_5fpoints_5fbc_18',['grid_points_bc',['../classpolyfem_1_1io_1_1_out_geometry_data.html#a1180446e5cc8941d379a7f663023576d',1,'polyfem::io::OutGeometryData']]],
   ['grid_5fpoints_5fto_5felements_19',['grid_points_to_elements',['../classpolyfem_1_1io_1_1_out_geometry_data.html#af28fa518b23cc5863f4300deb38caacc',1,'polyfem::io::OutGeometryData']]]

@@ -21,7 +21,7 @@ var searchData=
   ['pos_18',['pos',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_vert.html#a9396305a2ea0f1703c2d0c9e8fb216d0',1,'polyfem::mesh::NCMesh2D::ncVert::pos()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html#a2ed1c72e33574d1b93985451d8968192',1,'polyfem::mesh::NCMesh3D::ncVert::pos()']]],
   ['position_19',['position',['../classpolyfem_1_1renderer_1_1_vertex_attributes.html#a903b714b28e264af924f31886fd0f667',1,'polyfem::renderer::VertexAttributes']]],
   ['position_5f_20',['position_',['../classpolyfem_1_1utils_1_1_axis_plane_selection.html#aab44eb9fd4a83d151f5aab19e8fc68e8',1,'polyfem::utils::AxisPlaneSelection']]],
-  ['position_5fparticle_21',['position_particle',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aadbf2d1db0cfce91b378fabc1e694b35',1,'polyfem::solver::OperatorSplittingSolver']]],
+  ['position_5fparticle_21',['position_particle',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a78fa20d8ffbb27725715f5d1b4230264',1,'polyfem::solver::OperatorSplittingSolver']]],
   ['post_5fsubsolve_22',['post_subsolve',['../classpolyfem_1_1solver_1_1_a_l_solver.html#a7489c829f3486531fdfecb24519e2cc9',1,'polyfem::solver::ALSolver']]],
   ['precond_5ftype_23',['precond_type',['../classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a83bb56bea2377973ef9a300d545d8b96',1,'polyfem::solver::NavierStokesSolver::precond_type()'],['../classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#a09ced5cb398c7812949a9e8d36dc8ceb',1,'polyfem::solver::TransientNavierStokesSolver::precond_type()']]],
   ['preconditioner_5f_24',['preconditioner_',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0e7f15c317f4cce8a96bc9e9459645d4',1,'polyfem::assembler::RhsAssembler']]],

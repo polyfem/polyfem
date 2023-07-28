@@ -53,6 +53,7 @@ var annotated_dup =
         [ "NeoHookeanElasticity", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity" ],
         [ "NLAssembler", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", "classpolyfem_1_1assembler_1_1_n_l_assembler" ],
         [ "NonLinearAssemblerData", "classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html", "classpolyfem_1_1assembler_1_1_non_linear_assembler_data" ],
+        [ "OperatorSplitting", "classpolyfem_1_1assembler_1_1_operator_splitting.html", "classpolyfem_1_1assembler_1_1_operator_splitting" ],
         [ "Problem", "classpolyfem_1_1assembler_1_1_problem.html", "classpolyfem_1_1assembler_1_1_problem" ],
         [ "RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html", "classpolyfem_1_1assembler_1_1_rhs_assembler" ],
         [ "SaintVenantElasticity", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity" ],

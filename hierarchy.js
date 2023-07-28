@@ -41,7 +41,9 @@ var hierarchy =
         [ "polyfem::assembler::LinearElasticity", "classpolyfem_1_1assembler_1_1_linear_elasticity.html", null ],
         [ "polyfem::assembler::Mass", "classpolyfem_1_1assembler_1_1_mass.html", null ],
         [ "polyfem::assembler::StokesPressure", "classpolyfem_1_1assembler_1_1_stokes_pressure.html", null ],
-        [ "polyfem::assembler::StokesVelocity", "classpolyfem_1_1assembler_1_1_stokes_velocity.html", null ]
+        [ "polyfem::assembler::StokesVelocity", "classpolyfem_1_1assembler_1_1_stokes_velocity.html", [
+          [ "polyfem::assembler::OperatorSplitting", "classpolyfem_1_1assembler_1_1_operator_splitting.html", null ]
+        ] ]
       ] ],
       [ "polyfem::assembler::NLAssembler", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", [
         [ "polyfem::assembler::GenericElastic< IncompressibleOgdenElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],

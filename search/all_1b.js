@@ -22,9 +22,10 @@ var searchData=
   ['_7encvert_19',['~ncVert',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_vert.html#a378f488ec992c17fab0c1b7d9e43b8db',1,'polyfem::mesh::NCMesh2D::ncVert::~ncVert()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html#ad9d0f9708ed8b304872812850cef9f1d',1,'polyfem::mesh::NCMesh3D::ncVert::~ncVert()']]],
   ['_7enlassembler_20',['~NLAssembler',['../classpolyfem_1_1assembler_1_1_n_l_assembler.html#a576186cc89d73e8daadb5a9626182a8c',1,'polyfem::assembler::NLAssembler']]],
   ['_7eobstacle_21',['~Obstacle',['../classpolyfem_1_1mesh_1_1_obstacle.html#ae7bb4805f07778cc2b4528bc2ce390ec',1,'polyfem::mesh::Obstacle']]],
-  ['_7eproblem_22',['~Problem',['../classpolyfem_1_1assembler_1_1_problem.html#acbc7a8f28a87fb9a4f0fb51502ba8983',1,'polyfem::assembler::Problem']]],
-  ['_7eproblemwithsolution_23',['~ProblemWithSolution',['../classpolyfem_1_1problem_1_1_problem_with_solution.html#a3c02bef20f52ba9e5fee8c62d29a8f34',1,'polyfem::problem::ProblemWithSolution']]],
-  ['_7eselection_24',['~Selection',['../classpolyfem_1_1utils_1_1_selection.html#afb6aaafa0f609198f966c6bce2442894',1,'polyfem::utils::Selection']]],
-  ['_7estate_25',['~State',['../classpolyfem_1_1_state.html#a80eb52cce88b5ffab25a27892174b6e4',1,'polyfem::State']]],
-  ['_7etimer_26',['~Timer',['../classpolyfem_1_1utils_1_1_timer.html#a2f566e08413b0bb9ddf9a3b1819f186e',1,'polyfem::utils::Timer']]]
+  ['_7eoperatorsplitting_22',['~OperatorSplitting',['../classpolyfem_1_1assembler_1_1_operator_splitting.html#ae60039c686fdff2163880f584b62478d',1,'polyfem::assembler::OperatorSplitting']]],
+  ['_7eproblem_23',['~Problem',['../classpolyfem_1_1assembler_1_1_problem.html#acbc7a8f28a87fb9a4f0fb51502ba8983',1,'polyfem::assembler::Problem']]],
+  ['_7eproblemwithsolution_24',['~ProblemWithSolution',['../classpolyfem_1_1problem_1_1_problem_with_solution.html#a3c02bef20f52ba9e5fee8c62d29a8f34',1,'polyfem::problem::ProblemWithSolution']]],
+  ['_7eselection_25',['~Selection',['../classpolyfem_1_1utils_1_1_selection.html#afb6aaafa0f609198f966c6bce2442894',1,'polyfem::utils::Selection']]],
+  ['_7estate_26',['~State',['../classpolyfem_1_1_state.html#a80eb52cce88b5ffab25a27892174b6e4',1,'polyfem::State']]],
+  ['_7etimer_27',['~Timer',['../classpolyfem_1_1utils_1_1_timer.html#a2f566e08413b0bb9ddf9a3b1819f186e',1,'polyfem::utils::Timer']]]
 ];
