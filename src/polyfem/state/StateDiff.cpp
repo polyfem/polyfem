@@ -11,7 +11,6 @@
 #include <polyfem/io/Evaluator.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/NLHomoProblem.hpp>
 
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
@@ -169,14 +168,7 @@ namespace polyfem
 			else
 			{
 				solve_data.nl_problem->set_project_to_psd(false);
-				Eigen::VectorXd reduced;
-				if (disp_grad_.size() != 0)
-				{
-					std::shared_ptr<solver::NLHomoProblem> homo_problem = std::dynamic_pointer_cast<solver::NLHomoProblem>(solve_data.nl_problem);
-					reduced = homo_problem->full_to_reduced(sol, disp_grad);
-				}
-				else
-					reduced = solve_data.nl_problem->full_to_reduced(sol);
+				Eigen::VectorXd reduced = solve_data.nl_problem->full_to_reduced(sol);
 
 				solve_data.nl_problem->solution_changed(reduced);
 				solve_data.nl_problem->hessian(reduced, hessian);
@@ -311,28 +303,12 @@ namespace polyfem
 			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 			int precond_num = problem_dim * n_bases;
 
-			b.conservativeResizeLike(Eigen::MatrixXd::Zero(A.rows(), b.cols()));
-
-			std::vector<int> boundary_nodes_tmp;
-			if (has_periodic_bc())
-			{
-				boundary_nodes_tmp = periodic_bc->full_to_periodic(boundary_nodes);
-				precond_num = periodic_bc->full_to_periodic(A);
-				b = periodic_bc->full_to_periodic(b, true);
-			}
-			else
-				boundary_nodes_tmp = boundary_nodes;
-
 			for (int i = 0; i < b.cols(); i++)
 			{
 				Eigen::VectorXd x, tmp;
 				tmp = b.col(i);
-				dirichlet_solve_prefactorized(*lin_solver_cached, A, tmp, boundary_nodes_tmp, x);
-
-				if (has_periodic_bc())
-					adjoint.col(i) = periodic_bc->periodic_to_full(full_size, x);
-				else
-					adjoint.col(i) = x;
+				dirichlet_solve_prefactorized(*lin_solver_cached, A, tmp, boundary_nodes, x);
+				adjoint.col(i) = x;
 			}
 		}
 		else

@@ -208,10 +208,6 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<DispGradForm>(var2sim, *(states[args["state"]]), args);
 			}
-			else if (type == "homo_disp_grad")
-			{
-				obj = std::make_shared<HomogenizedDispGradForm>(var2sim, *(states[args["state"]]), args);
-			}
 			else if (type == "stress_norm")
 			{
 				obj = std::make_shared<StressNormForm>(var2sim, *(states[args["state"]]), args);
@@ -231,10 +227,6 @@ namespace polyfem::solver
 			else if (type == "max_stress")
 			{
 				obj = std::make_shared<MaxStressForm>(var2sim, *(states[args["state"]]), args);
-			}
-			else if (type == "weighted_solution")
-			{
-				obj = std::make_shared<WeightedSolution>(var2sim, *(states[args["state"]]), args);
 			}
 			else if (type == "volume")
 			{
@@ -463,10 +455,6 @@ namespace polyfem::solver
 		{
 			var2sim = std::make_shared<DampingCoeffientVariableToSimulation>(cur_states, composite_map);
 		}
-		else if (type == "macro-strain")
-		{
-			var2sim = std::make_shared<MacroStrainVariableToSimulation>(cur_states, composite_map);
-		}
 		else if (type == "initial")
 		{
 			var2sim = std::make_shared<InitialConditionVariableToSimulation>(cur_states, composite_map);
@@ -474,18 +462,6 @@ namespace polyfem::solver
 		else if (type == "sdf-shape")
 		{
 			var2sim = std::make_shared<SDFShapeVariableToSimulation>(cur_states, composite_map, args);
-		}
-		else if (type == "sdf-periodic-shape")
-		{
-			var2sim = std::make_shared<SDFPeriodicShapeVariableToSimulation>(cur_states, composite_map, args);
-		}
-		else if (type == "periodic-shape-scale")
-		{
-			var2sim = std::make_shared<PeriodicShapeScaleVariableToSimulation>(cur_states, composite_map, args);
-		}
-		else if (type == "periodic-shape")
-		{
-			var2sim = std::make_shared<PeriodicShapeVariableToSimulation>(cur_states, composite_map);
 		}
 		else if (type == "dirichlet")
 		{

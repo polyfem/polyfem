@@ -10,12 +10,12 @@
 #include <polyfem/utils/BoundarySampler.hpp>
 
 #include <polyfem/solver/forms/ElasticForm.hpp>
-#include <polyfem/solver/forms/PeriodicContactForm.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 
-#include <polyfem/solver/NLHomoProblem.hpp>
+#include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 
 #include <polyfem/time_integrator/BDF.hpp>
@@ -637,102 +637,6 @@ namespace polyfem::solver
 		}
 
 		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
-	}
-
-	void AdjointTools::dJ_shape_homogenization_adjoint_term(
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &adjoint,
-		Eigen::VectorXd &one_form)
-	{
-		Eigen::VectorXd elasticity_term, contact_term;
-
-		std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state.solve_data.nl_problem);
-		assert(homo_problem);
-
-		const int dim = state.mesh->dimension();
-		one_form.setZero(state.n_geom_bases * dim);
-
-		Eigen::MatrixXd reduced_sol = homo_problem->full_to_reduced(sol, state.diff_cached.disp_grad());
-		Eigen::VectorXd extended_sol = homo_problem->reduced_to_extended(reduced_sol);
-		Eigen::MatrixXd affine_sol = homo_problem->reduced_to_disp_grad(reduced_sol);
-
-		const Eigen::VectorXd disp_grad_values = homo_problem->get_fixed_values();
-		homo_problem->set_fixed_values(Eigen::VectorXd::Zero(disp_grad_values.size()));
-
-		Eigen::VectorXd full_adjoint = homo_problem->reduced_to_full(adjoint);
-		Eigen::VectorXd extended_adjoint = homo_problem->reduced_to_extended(adjoint);
-		Eigen::MatrixXd affine_adjoint = homo_problem->reduced_to_disp_grad(adjoint);
-
-		{
-			state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, sol, sol, full_adjoint, elasticity_term);
-
-			// assert (!state.solve_data.body_form);
-
-			// if (state.solve_data.periodic_contact_form)
-			// {
-			// 	state.solve_data.periodic_contact_form->force_shape_derivative(state.solve_data.periodic_contact_form->get_constraint_set(), extended_sol, extended_adjoint, contact_term);
-			// 	contact_term = state.down_sampling_mat * contact_term;
-			// }
-			// assert(!state.solve_data.periodic_contact_form);
-			if (state.solve_data.contact_form)
-			{
-				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.contact_set(0), sol, full_adjoint, contact_term);
-				contact_term = state.down_sampling_mat * contact_term;
-			}
-			else
-				contact_term.setZero(elasticity_term.size());
-
-			one_form = -(elasticity_term + contact_term);
-		}
-
-		Eigen::VectorXd force;
-		homo_problem->FullNLProblem::gradient(sol, force);
-		one_form -= state.down_sampling_mat * utils::flatten(utils::unflatten(force, dim) * affine_adjoint);
-
-		homo_problem->set_fixed_values(disp_grad_values);
-		one_form = utils::flatten(utils::unflatten(one_form, dim)(state.primitive_to_node(), Eigen::all));
-	}
-
-	void AdjointTools::dJ_periodic_shape_adjoint_term(
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &adjoint,
-		Eigen::VectorXd &one_form)
-	{
-		std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state.solve_data.nl_problem);
-		assert(homo_problem);
-
-		Eigen::MatrixXd reduced_sol = homo_problem->full_to_reduced(sol, state.diff_cached.disp_grad());
-		Eigen::VectorXd extended_sol = homo_problem->reduced_to_extended(reduced_sol);
-
-		const Eigen::VectorXd disp_grad_values = homo_problem->get_fixed_values();
-		homo_problem->set_fixed_values(Eigen::VectorXd::Zero(disp_grad_values.size()));
-
-		Eigen::VectorXd extended_adjoint = homo_problem->reduced_to_extended(adjoint);
-
-		const int dim = state.mesh->dimension();
-
-		dJ_shape_homogenization_adjoint_term(state, sol, adjoint, one_form);
-
-		StiffnessMatrix hessian;
-		homo_problem->set_project_to_psd(false);
-		homo_problem->FullNLProblem::hessian(sol, hessian);
-		Eigen::VectorXd partial_term = homo_problem->reduced_to_full(adjoint).transpose() * hessian;
-		partial_term = state.down_sampling_mat * utils::flatten(utils::unflatten(partial_term, dim) * state.diff_cached.disp_grad());
-		one_form -= utils::flatten(utils::unflatten(partial_term, dim)(state.primitive_to_node(), Eigen::all));
-
-		one_form = state.periodic_mesh_map->apply_jacobian(one_form, state.periodic_mesh_representation);
-
-		if (state.solve_data.periodic_contact_form)
-		{
-			Eigen::VectorXd contact_term;
-			state.solve_data.periodic_contact_form->force_periodic_shape_derivative(state, state.solve_data.periodic_contact_form->get_constraint_set(), extended_sol, extended_adjoint, contact_term);
-
-			one_form -= contact_term;
-		}
-
-		homo_problem->set_fixed_values(disp_grad_values);
 	}
 
 	void AdjointTools::dJ_shape_transient_adjoint_term(

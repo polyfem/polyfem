@@ -87,34 +87,4 @@ namespace polyfem::solver
 		std::set<int> interested_ids_;
 		const State &state_;
 	};
-
-	class HomogenizedDispGradForm : public AdjointForm
-	{
-	public:
-		HomogenizedDispGradForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : AdjointForm(variable_to_simulations), state_(state)
-		{
-			dimensions_ = args["dimensions"].get<std::vector<int>>();
-		}
-
-		double value_unweighted(const Eigen::VectorXd &x) const override;
-		Eigen::MatrixXd compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
-
-	protected:
-		std::vector<int> dimensions_;
-		const State &state_;
-	};
-
-	class WeightedSolution : public AdjointForm
-	{
-	public:
-		WeightedSolution(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args);
-
-		double value_unweighted(const Eigen::VectorXd &x) const override;
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
-		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
-
-	private:
-		Eigen::VectorXd coeffs;
-		const State &state_;
-	};
 } // namespace polyfem::solver

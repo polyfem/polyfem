@@ -1,4 +1,5 @@
 #include "NLProblem.hpp"
+
 #include <polyfem/io/OBJWriter.hpp>
 
 /*
@@ -39,14 +40,12 @@ namespace polyfem::solver
 		const std::vector<mesh::LocalBoundary> &local_boundary,
 		const int n_boundary_samples,
 		const assembler::RhsAssembler &rhs_assembler,
-		const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 		const double t,
 		const std::vector<std::shared_ptr<Form>> &forms)
 		: FullNLProblem(forms),
-		  boundary_nodes_(periodic_bc ? periodic_bc->full_to_periodic(boundary_nodes) : boundary_nodes),
+		  boundary_nodes_(boundary_nodes),
 		  full_size_(full_size),
-		  reduced_size_((periodic_bc ? periodic_bc->n_periodic_dof() : full_size) - boundary_nodes_.size()),
-		  periodic_bc_(periodic_bc),
+		  reduced_size_(full_size_ - boundary_nodes.size()),
 		  rhs_assembler_(&rhs_assembler),
 		  local_boundary_(&local_boundary),
 		  n_boundary_samples_(n_boundary_samples),
@@ -55,13 +54,6 @@ namespace polyfem::solver
 		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
 		assert(boundary_nodes.size() == 0 || (boundary_nodes.front() >= 0 && boundary_nodes.back() < full_size_));
 		use_reduced_size();
-	}
-
-	int NLProblem::current_size() const
-	{
-		if (current_size_ == CurrentSize::FULL_SIZE && periodic_bc_ && reduced_size_ < full_size_)
-			log_and_throw_error("Periodic BC doesn't support AL solve!");
-		return current_size_ == CurrentSize::FULL_SIZE ? full_size() : reduced_size();
 	}
 
 	void NLProblem::init_lagging(const TVector &x)
@@ -112,15 +104,16 @@ namespace polyfem::solver
 	{
 		TVector full_grad;
 		FullNLProblem::gradient(reduced_to_full(x), full_grad);
-		grad = full_to_reduced_grad(full_grad);
+		grad = full_to_reduced(full_grad);
 	}
 
 	void NLProblem::hessian(const TVector &x, THessian &hessian)
 	{
 		THessian full_hessian;
 		FullNLProblem::hessian(reduced_to_full(x), full_hessian);
-
-		full_hessian_to_reduced_hessian(full_hessian, hessian);
+		assert(full_hessian.rows() == full_size());
+		assert(full_hessian.cols() == full_size());
+		utils::full_to_reduced_matrix(full_size(), current_size(), boundary_nodes_, full_hessian, hessian);
 	}
 
 	void NLProblem::solution_changed(const TVector &newX)
@@ -157,13 +150,6 @@ namespace polyfem::solver
 		return reduced;
 	}
 
-	NLProblem::TVector NLProblem::full_to_reduced_grad(const TVector &full) const
-	{
-		TVector reduced;
-		full_to_reduced_aux_grad(boundary_nodes_, full_size(), current_size(), full, reduced);
-		return reduced;
-	}
-
 	NLProblem::TVector NLProblem::reduced_to_full(const TVector &reduced) const
 	{
 		TVector full;
@@ -180,7 +166,7 @@ namespace polyfem::solver
 	}
 
 	template <class FullMat, class ReducedMat>
-	void NLProblem::full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const
+	void NLProblem::full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
 	{
 		using namespace polyfem;
 
@@ -195,17 +181,11 @@ namespace polyfem::solver
 		assert(full.cols() == 1);
 		reduced.resize(reduced_size, 1);
 
-		Eigen::MatrixXd mid;
-		if (periodic_bc_)
-			mid = periodic_bc_->full_to_periodic(full, false);
-		else
-			mid = full;
-		
 		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
 
 		long j = 0;
 		size_t k = 0;
-		for (int i = 0; i < mid.size(); ++i)
+		for (int i = 0; i < full.size(); ++i)
 		{
 			if (k < boundary_nodes.size() && boundary_nodes[k] == i)
 			{
@@ -213,13 +193,13 @@ namespace polyfem::solver
 				continue;
 			}
 
-			assert(j < reduced.size());
-			reduced(j++) = mid(i);
+			reduced(j++) = full(i);
 		}
+		assert(j == reduced.size());
 	}
 
 	template <class ReducedMat, class FullMat>
-	void NLProblem::reduced_to_full_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full) const
+	void NLProblem::reduced_to_full_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full)
 	{
 		using namespace polyfem;
 
@@ -238,69 +218,18 @@ namespace polyfem::solver
 
 		long j = 0;
 		size_t k = 0;
-		Eigen::MatrixXd mid(reduced_size + boundary_nodes.size(), 1);
-		for (int i = 0; i < mid.size(); ++i)
+		for (int i = 0; i < full.size(); ++i)
 		{
 			if (k < boundary_nodes.size() && boundary_nodes[k] == i)
 			{
 				++k;
-				mid(i) = rhs(i);
+				full(i) = rhs(i);
 				continue;
 			}
 
-			mid(i) = reduced(j++);
-		}
-		
-		full = periodic_bc_ ? periodic_bc_->periodic_to_full(full_size, mid) : mid;
-	}
-
-	template <class FullMat, class ReducedMat>
-	void NLProblem::full_to_reduced_aux_grad(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const
-	{
-		using namespace polyfem;
-
-		// Reduced is already at the full size
-		if (full_size == reduced_size || full.size() == reduced_size)
-		{
-			reduced = full;
-			return;
+			full(i) = reduced(j++);
 		}
 
-		assert(full.size() == full_size);
-		assert(full.cols() == 1);
-		reduced.resize(reduced_size, 1);
-
-		Eigen::MatrixXd mid;
-		if (periodic_bc_)
-			mid = periodic_bc_->full_to_periodic(full, true);
-		else
-			mid = full;
-
-		long j = 0;
-		size_t k = 0;
-		for (int i = 0; i < mid.size(); ++i)
-		{
-			if (k < boundary_nodes.size() && boundary_nodes[k] == i)
-			{
-				++k;
-				continue;
-			}
-
-			reduced(j++) = mid(i);
-		}
-	}
-
-	void NLProblem::full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const
-	{
-		// POLYFEM_SCOPED_TIMER("\tfull hessian to reduced hessian");
-		THessian mid = full;
-		
-		if (periodic_bc_)
-			periodic_bc_->full_to_periodic(mid);
-
-		if (current_size() < full_size())
-			utils::full_to_reduced_matrix(mid.rows(), mid.rows() - boundary_nodes_.size(), boundary_nodes_, mid, reduced);
-		else
-			reduced = mid;
+		assert(j == reduced.size());
 	}
 } // namespace polyfem::solver

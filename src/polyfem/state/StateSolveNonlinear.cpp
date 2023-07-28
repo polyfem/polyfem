@@ -23,8 +23,6 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 
-#include <polyfem/io/Evaluator.hpp>
-
 #include <ipc/ipc.hpp>
 
 namespace polyfem
@@ -182,6 +180,7 @@ namespace polyfem
 		damping_assembler = std::make_shared<assembler::ViscousDamping>();
 		set_materials(*damping_assembler);
 
+		// for backward solve
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
 		set_materials(*damping_prev_assembler);
 
@@ -201,15 +200,13 @@ namespace polyfem
 			// Augmented lagrangian form
 			obstacle,
 			// Contact form
-			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
+			args["contact"]["enabled"], collision_mesh, args["contact"]["dhat"],
 			avg_mass, args["contact"]["use_convergent_formulation"],
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
 			args["optimization"]["enabled"],
-			// Periodic contact
-			args["contact"]["periodic"], tiled_to_single,
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
@@ -229,7 +226,7 @@ namespace polyfem
 		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
-			*solve_data.rhs_assembler, periodic_bc, t, forms);
+			*solve_data.rhs_assembler, t, forms);
 
 		// --------------------------------------------------------------------
 
@@ -293,6 +290,7 @@ namespace polyfem
 
 		// TODO: Make this more general
 		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2);
+
 
 		if (!args["optimization"]["enabled"])
 		{

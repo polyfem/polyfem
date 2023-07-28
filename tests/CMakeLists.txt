@@ -11,7 +11,6 @@ set(test_sources
   test_geometry_utils.cpp
   test_ncmesh.cpp
   test_normal.cpp
-  test_periodic.cpp
   test_problem.cpp
   test_quadrature.cpp
   test_rbf.cpp

@@ -17,7 +17,7 @@
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
-#include <polyfem/solver/forms/PeriodicContactForm.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 

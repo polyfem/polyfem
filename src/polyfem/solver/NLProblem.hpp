@@ -3,7 +3,6 @@
 #include <polyfem/solver/FullNLProblem.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
-#include <polyfem/utils/PeriodicBoundary.hpp>
 
 namespace polyfem::solver
 {
@@ -26,7 +25,6 @@ namespace polyfem::solver
 				  const std::vector<mesh::LocalBoundary> &local_boundary,
 				  const int n_boundary_samples,
 				  const assembler::RhsAssembler &rhs_assembler,
-				  const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 				  const double t,
 				  const std::vector<std::shared_ptr<Form>> &forms);
 
@@ -57,8 +55,6 @@ namespace polyfem::solver
 		void use_reduced_size() { current_size_ = CurrentSize::REDUCED_SIZE; }
 
 		virtual TVector full_to_reduced(const TVector &full) const;
-		virtual TVector full_to_reduced_grad(const TVector &full) const;
-		virtual void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
 		virtual TVector reduced_to_full(const TVector &reduced) const;
 
 		void set_apply_DBC(const TVector &x, const bool val);
@@ -66,12 +62,10 @@ namespace polyfem::solver
 	protected:
 		virtual Eigen::MatrixXd boundary_values() const;
 
-		const std::vector<int> boundary_nodes_;
+		const std::vector<int> &boundary_nodes_;
 
 		const int full_size_;    ///< Size of the full problem
 		const int reduced_size_; ///< Size of the reduced problem
-
-		std::shared_ptr<utils::PeriodicBoundary> periodic_bc_;
 
 		enum class CurrentSize
 		{
@@ -79,7 +73,10 @@ namespace polyfem::solver
 			REDUCED_SIZE
 		};
 		CurrentSize current_size_; ///< Current size of the problem (either full or reduced size)
-		int current_size() const;
+		int current_size() const
+		{
+			return current_size_ == CurrentSize::FULL_SIZE ? full_size() : reduced_size();
+		}
 
 	private:
 		const assembler::RhsAssembler *rhs_assembler_;
@@ -88,12 +85,9 @@ namespace polyfem::solver
 		double t_;
 
 		template <class FullMat, class ReducedMat>
-		void full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
+		static void full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced);
 
 		template <class ReducedMat, class FullMat>
-		void reduced_to_full_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full) const;
-
-		template <class FullMat, class ReducedMat>
-		void full_to_reduced_aux_grad(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
+		static void reduced_to_full_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full);
 	};
 } // namespace polyfem::solver

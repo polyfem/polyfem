@@ -24,7 +24,6 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/utils/PeriodicBoundary.hpp>
 
 #include <polyfem/io/OutData.hpp>
 
@@ -65,11 +64,6 @@ namespace polyfem
 		class Mesh2D;
 		class Mesh3D;
 	} // namespace mesh
-
-	namespace solver
-	{
-		class PeriodicMeshToMesh;
-	}
 
 	/// main class that contains the polyfem solver and all its state
 	class State
@@ -361,22 +355,6 @@ namespace polyfem
 		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(
 			const std::string &linear_solver_type = "") const;
 
-		/// periodic BC and periodic mesh utils
-		std::vector<bool> periodic_dimensions;
-		std::shared_ptr<utils::PeriodicBoundary> periodic_bc;
-		bool has_periodic_bc() const
-		{
-			for (const bool &r : periodic_dimensions)
-			{
-				if (r)
-					return true;
-			}
-			return false;
-		}
-
-		std::shared_ptr<solver::PeriodicMeshToMesh> periodic_mesh_map; // chain rule for periodic mesh optimization
-		Eigen::VectorXd periodic_mesh_representation;
-
 		/// @brief Solve the linear problem with the given solver and system.
 		/// @param solver Linear solver.
 		/// @param A Linear system matrix.
@@ -504,18 +482,11 @@ namespace polyfem
 		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
 
-		/// @brief IPC collision mesh under periodic BC
-		ipc::CollisionMesh periodic_collision_mesh;
-		/// index mapping from tiled mesh to original periodic mesh
-		Eigen::VectorXi tiled_to_single;
-
 		/// extracts the boundary mesh for collision, called in build_basis
 		void build_collision_mesh(
 			ipc::CollisionMesh &collision_mesh_,
 			const int n_bases_,
 			const std::vector<basis::ElementBases> &bases_) const;
-
-		void build_periodic_collision_mesh();
 
 		/// checks if vertex is obstacle
 		/// @param[in] vi vertex index
@@ -679,13 +650,6 @@ namespace polyfem
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
 		// mapping from positions of geometric nodes to positions of FE basis nodes
 		StiffnessMatrix down_sampling_mat;
-
-		//---------------------------------------------------
-		//-----------------homogenization--------------------
-		//---------------------------------------------------
-	public:
-		void solve_homogenized_field(Eigen::MatrixXd &disp_grad, Eigen::MatrixXd &sol_, const std::vector<int> &fixed_entry, bool for_bistable = false);
-		Eigen::VectorXd initial_guess;
 	};
 
 } // namespace polyfem

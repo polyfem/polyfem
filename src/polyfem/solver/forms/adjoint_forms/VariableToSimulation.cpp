@@ -68,12 +68,8 @@ namespace polyfem::solver
 				AdjointTools::dJ_shape_transient_adjoint_term(*state, adjoint_nu, adjoint_p, cur_term);
 			}
 			else
-			{
-				if (state->disp_grad_.size() == 0)
-					AdjointTools::dJ_shape_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
-				else
-					AdjointTools::dJ_shape_homogenization_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
-			}
+				AdjointTools::dJ_shape_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+
 			if (term.size() != cur_term.size())
 				term = cur_term;
 			else
@@ -101,58 +97,6 @@ namespace polyfem::solver
 			x(i) = V_flat(indices(i));
 
 		return parametrization_.inverse_eval(x);
-	}
-
-	Eigen::VectorXd PeriodicShapeVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
-	{
-		Eigen::VectorXd term, cur_term;
-		for (auto state : states_)
-		{
-			if (state->problem->is_time_dependent())
-			{
-				log_and_throw_error("Not implemented!");
-			}
-			else
-			{
-				AdjointTools::dJ_periodic_shape_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
-			}
-			if (term.size() != cur_term.size())
-				term = cur_term;
-			else
-				term += cur_term;
-		}
-		return apply_parametrization_jacobian(term, x);
-	}
-	void PeriodicShapeVariableToSimulation::update(const Eigen::VectorXd &x)
-	{
-		Eigen::VectorXd y = parametrization_.eval(x);
-
-		for (auto state : states_)
-		{
-			const int dim = state->mesh->dimension();
-			const int n_verts = state->mesh->n_vertices();
-			const auto primitive_to_node = state->primitive_to_node();
-
-			Eigen::MatrixXd V = utils::unflatten(state->periodic_mesh_map->eval(y), state->mesh->dimension());
-			for (int i = 0; i < n_verts; i++)
-				state->set_mesh_vertex(i, V.row(i));
-			
-			state->periodic_mesh_representation = y;
-		}
-	}
-	Eigen::VectorXd PeriodicShapeVariableToSimulation::inverse_eval()
-	{
-		const auto &state = *(states_[0]);
-		const int dim = state.mesh->dimension();
-		const int n_verts = state.mesh->n_vertices();
-		const auto primitive_to_node = state.primitive_to_node();
-
-		// Eigen::VectorXd x(dim * state.gbases_to_periodic_map.maxCoeff() + dim);
-		Eigen::MatrixXd V;
-		state.get_vertices(V);
-
-		assert(state.args["space"]["advanced"]["periodic_mesh"].get<bool>() && state.periodic_bc->all_direction_periodic());
-		return parametrization_.inverse_eval(state.periodic_mesh_map->inverse_eval(utils::flatten(V)));
 	}
 
 	void ElasticVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
@@ -403,40 +347,6 @@ namespace polyfem::solver
 		return "";
 	}
 	Eigen::VectorXd DirichletVariableToSimulation::inverse_eval()
-	{
-		log_and_throw_error("Not implemented!");
-		return Eigen::VectorXd();
-	}
-
-	void MacroStrainVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
-	{
-		for (auto state : states_)
-		{
-			assert(state_variable.size() == state->mesh->dimension() * state->mesh->dimension());
-			state->disp_grad_ = utils::unflatten(state_variable, state->mesh->dimension());
-		}
-	}
-	Eigen::VectorXd MacroStrainVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
-	{
-		Eigen::VectorXd term, cur_term;
-		for (auto state : states_)
-		{
-			if (state->problem->is_time_dependent())
-			{
-				log_and_throw_error("Transient macro strain optimization not supported!");
-			}
-			else
-			{
-				AdjointTools::dJ_macro_strain_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
-			}
-			if (term.size() != cur_term.size())
-				term = cur_term;
-			else
-				term += cur_term;
-		}
-		return apply_parametrization_jacobian(term, x);
-	}
-	Eigen::VectorXd MacroStrainVariableToSimulation::inverse_eval()
 	{
 		log_and_throw_error("Not implemented!");
 		return Eigen::VectorXd();

@@ -5,8 +5,7 @@
 #include <polyfem/solver/forms/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/BCPenaltyForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
-#include <polyfem/solver/forms/PeriodicContactForm.hpp>
-#include <polyfem/solver/forms/MacroStrainALForm.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
@@ -72,10 +71,6 @@ namespace polyfem::solver
 		const double ccd_tolerance,
 		const long ccd_max_iterations,
 		const bool enable_shape_derivatives,
-
-		// Periodic contact
-		const bool periodic_contact,
-		const Eigen::VectorXi &tiled_to_single,
 
 		// Friction form
 		const double friction_coefficient,
@@ -158,55 +153,30 @@ namespace polyfem::solver
 		}
 
 		contact_form = nullptr;
-		periodic_contact_form = nullptr;
 		friction_form = nullptr;
 		if (contact_enabled)
 		{
 			const bool use_adaptive_barrier_stiffness = !barrier_stiffness.is_number();
 
-			if (periodic_contact)
-			{
-				periodic_contact_form = std::make_shared<PeriodicContactForm>(
-					collision_mesh, tiled_to_single, dhat, avg_mass, use_convergent_contact_formulation,
-					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance,
-					ccd_max_iterations);
+			contact_form = std::make_shared<ContactForm>(
+				collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
+				use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance,
+				ccd_max_iterations);
 
-				if (use_adaptive_barrier_stiffness)
-				{
-					periodic_contact_form->set_barrier_stiffness(1);
-					// logger().debug("Using adaptive barrier stiffness");
-				}
-				else
-				{
-					assert(barrier_stiffness.is_number());
-					assert(barrier_stiffness.get<double>() > 0);
-					periodic_contact_form->set_barrier_stiffness(barrier_stiffness);
-					// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
-				}
+			if (use_adaptive_barrier_stiffness)
+			{
+				contact_form->set_barrier_stiffness(1);
+				// logger().debug("Using adaptive barrier stiffness");
 			}
 			else
 			{
-				contact_form = std::make_shared<ContactForm>(
-					collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
-					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance,
-					ccd_max_iterations);
-
-				if (use_adaptive_barrier_stiffness)
-				{
-					contact_form->set_barrier_stiffness(1);
-					// logger().debug("Using adaptive barrier stiffness");
-				}
-				else
-				{
-					assert(barrier_stiffness.is_number());
-					assert(barrier_stiffness.get<double>() > 0);
-					contact_form->set_barrier_stiffness(barrier_stiffness);
-					// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
-				}
-				
-				if (contact_form)
-					forms.push_back(contact_form);
+				assert(barrier_stiffness.get<double>() > 0);
+				contact_form->set_barrier_stiffness(barrier_stiffness);
+				// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
 			}
+
+			forms.push_back(contact_form);
+
 			// ----------------------------------------------------------------
 
 			if (friction_coefficient != 0)

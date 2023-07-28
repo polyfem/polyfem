@@ -1143,7 +1143,6 @@
         "optional": [
             "discr_order_max",
             "isoparametric",
-            "periodic_mesh",
             "bc_method",
             "n_boundary_samples",
             "quadrature_order",
@@ -1168,12 +1167,6 @@
         "default": false,
         "type": "bool",
         "doc": "Forces geometric map basis to be the same degree as the main variable basis, irrespective of the degree associated with the geom. map degrees associated with the elements of the geometry."
-    },
-    {
-        "pointer": "/space/advanced/periodic_mesh",
-        "default": false,
-        "type": "bool",
-        "doc": "Use periodic mesh representation in shape optimization for periodic PDE."
     },
     {
         "pointer": "/space/advanced/bc_method",
@@ -1385,8 +1378,7 @@
             "dhat_percentage",
             "epsv",
             "friction_coefficient",
-            "use_convergent_formulation",
-            "periodic"
+            "use_convergent_formulation"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1427,12 +1419,6 @@
         "default": false,
         "type": "bool",
         "doc": "Whether to use the convergent (area weighted) formulation of IPC."
-    },
-    {
-        "pointer": "/contact/periodic",
-        "default": false,
-        "type": "bool",
-        "doc": "Whether to use a 2x2 tiling of the mesh to detect collision under periodic BC."
     },
     {
         "pointer": "/solver",
@@ -2873,7 +2859,6 @@
         "optional": [
             "rhs",
             "dirichlet_boundary",
-            "periodic_boundary",
             "neumann_boundary",
             "pressure_boundary",
             "obstacle_displacements",
@@ -2941,17 +2926,6 @@
         "default": [],
         "type": "list",
         "doc": "The list of Dirichlet boundary conditions for the main variable. Elements of the list are assignment pairs (id, value) where id is assigned by surface selection."
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary",
-        "default": [],
-        "type": "list",
-        "doc": "Whether to enforce periodic boundary conditions."
-    },
-    {
-        "pointer": "/boundary_conditions/periodic_boundary/*",
-        "type": "bool",
-        "doc": ""
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",

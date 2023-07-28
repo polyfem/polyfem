@@ -1,7 +1,6 @@
 set(SOURCES
 	StateInit.cpp
 	StateLoad.cpp
-	StateHomogenization.cpp
 	StateSolve.cpp
 	StateDiff.cpp
 	StateSolveLinear.cpp

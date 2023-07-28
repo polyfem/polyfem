@@ -537,9 +537,6 @@ namespace polyfem
 
 		if (args["space"]["use_p_ref"])
 			return false;
-
-		if (has_periodic_bc())
-			return false;
 		
 		if (args["optimization"]["enabled"])
 			return false;
@@ -862,13 +859,6 @@ namespace polyfem
 
 		const int dim = mesh->dimension();
 		const int problem_dim = problem->is_scalar() ? 1 : dim;
-
-		// handle periodic bc
-		if (has_periodic_bc())
-		{
-			logger().debug("Periodic BC can only apply on nodes on the bounding box!");
-			periodic_bc = std::make_shared<PeriodicBoundary>(*mesh, total_local_boundary, problem->is_scalar(), n_bases, bases, mesh_nodes, periodic_dimensions);
-		}
 		
 		if (args["space"]["advanced"]["count_flipped_els"])
 			stats.count_flipped_elements(*mesh, geom_bases());
@@ -878,8 +868,6 @@ namespace polyfem
 
 		logger().info("Building collision mesh...");
 		build_collision_mesh(collision_mesh, n_bases, bases);
-		if (periodic_bc && args["contact"]["periodic"])
-			build_periodic_collision_mesh();
 		logger().info("Done!");
 
 		{
@@ -974,22 +962,6 @@ namespace polyfem
 		std::sort(boundary_nodes.begin(), boundary_nodes.end());
 		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
-
-		// for elastic pure periodic problem, find an internal node and force zero dirichlet
-		if (!problem->is_time_dependent() && boundary_nodes.size() == 0 && !problem->is_scalar() && has_periodic_bc())
-		{
-			int i = 0;
-			for (; i < mesh->n_vertices(); i++)
-				if (!mesh->is_boundary_vertex(i))
-					break;
-			if (i >= mesh->n_vertices())
-				log_and_throw_error("Failed to find an internal vertex!");
-			for (int d = 0; d < mesh->dimension(); d++)
-			{
-				if (periodic_dimensions[d])
-					boundary_nodes.push_back(i * mesh->dimension() + d);
-			}
-		}
 
 		const auto &curret_bases = geom_bases();
 		const int n_samples = 10;
@@ -1210,135 +1182,6 @@ namespace polyfem
 		logger().info(" took {}s", timings.computing_poly_basis_time);
 
 		n_bases += new_bases;
-	}
-
-	void State::build_periodic_collision_mesh()
-	{
-		assert(!mesh->is_volume());
-		const int n_tiles = 2;
-
-		Eigen::MatrixXd V(n_bases, mesh->dimension());
-		for (const auto &bs : bases)
-			for (const auto &b : bs.bases)
-				for (const auto &g : b.global())
-					V.row(g.index) = g.node;
-		
-		Eigen::MatrixXi E = collision_mesh.edges();
-		for (int i = 0; i < E.size(); i++)
-			E(i) = collision_mesh.to_full_vertex_id(E(i));
-
-        Eigen::MatrixXd bbox(V.cols(), 2);
-        bbox.col(0) = V.colwise().minCoeff();
-        bbox.col(1) = V.colwise().maxCoeff();
-        Eigen::VectorXd size = bbox.col(1) - bbox.col(0);
-
-		// remove boundary edges on periodic BC, buggy
-		{
-			std::vector<int> ind;
-			for (int i = 0; i < E.rows(); i++)
-			{
-				if (!periodic_bc->is_periodic_dof(E(i, 0)) || !periodic_bc->is_periodic_dof(E(i, 1)))
-					ind.push_back(i);
-			}
-			E = E(ind, Eigen::all).eval();
-		}
-
-        Eigen::MatrixXd Vtmp, Vnew;
-        Eigen::MatrixXi Etmp, Enew;
-        Vtmp.setZero(V.rows() * n_tiles * n_tiles, V.cols());
-        Etmp.setZero(E.rows() * n_tiles * n_tiles, E.cols());
-
-		Eigen::VectorXd tile_offset = size;
-		if (periodic_mesh_map)
-		{
-			if (periodic_mesh_representation.size() != periodic_mesh_map->input_size())
-				log_and_throw_error("Inconsistent mesh and periodic representation!");
-			else
-				tile_offset = periodic_mesh_representation.tail(mesh->dimension());
-		}
-
-		for (int i = 0, idx = 0; i < n_tiles; i++)
-		{
-			for (int j = 0; j < n_tiles; j++)
-			{
-				Vtmp.middleRows(idx * V.rows(), V.rows()) = V;
-				Vtmp.block(idx * V.rows(), 0, V.rows(), 1).array() += tile_offset(0) * i;
-				Vtmp.block(idx * V.rows(), 1, V.rows(), 1).array() += tile_offset(1) * j;
-
-				Etmp.middleRows(idx * E.rows(), E.rows()) = E.array() + idx * V.rows();
-				idx += 1;
-			}
-		}
-
-        // clean duplicated vertices
-        Eigen::VectorXi indices;
-        {
-            std::vector<int> tmp;
-            for (int i = 0; i < V.rows(); i++)
-            {
-                if (periodic_bc->is_periodic_dof(i))
-                    tmp.push_back(i);
-            }
-
-            indices.resize(tmp.size() * n_tiles * n_tiles);
-            for (int i = 0; i < n_tiles * n_tiles; i++)
-            {
-                indices.segment(i * tmp.size(), tmp.size()) = Eigen::Map<Eigen::VectorXi, Eigen::Unaligned>(tmp.data(), tmp.size());
-                indices.segment(i * tmp.size(), tmp.size()).array() += i * V.rows();
-            }
-        }
-
-        Eigen::VectorXi potentially_duplicate_mask(Vtmp.rows());
-        potentially_duplicate_mask.setZero();
-        potentially_duplicate_mask(indices).array() = 1;
-        Eigen::MatrixXd candidates = Vtmp(indices, Eigen::all);
-
-        Eigen::VectorXi SVI;
-        std::vector<int> SVJ;
-        SVI.setConstant(Vtmp.rows(), -1);
-        int id = 0;
-		const double eps = 1e-4;
-        for (int i = 0; i < Vtmp.rows(); i++)
-        {
-            if (SVI[i] < 0)
-            {
-                SVI[i] = id;
-                SVJ.push_back(i);
-                if (potentially_duplicate_mask(i))
-                {
-                    Eigen::VectorXd diffs = (candidates.rowwise() - Vtmp.row(i)).rowwise().norm();
-                    for (int j = 0; j < diffs.size(); j++)
-                        if (diffs(j) < eps)
-                            SVI[indices[j]] = id;
-                }
-                id++;
-            }
-        }
-        Vnew = Vtmp(SVJ, Eigen::all);
-
-        Enew.resizeLike(Etmp);
-        for (int d = 0; d < Etmp.cols(); d++)
-            Enew.col(d) = SVI(Etmp.col(d));
-
-		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(Vnew.rows(), Enew);
-
-		Eigen::MatrixXi boundary_triangles;
-		Eigen::SparseMatrix<double> displacement_map;
-		periodic_collision_mesh = ipc::CollisionMesh(is_on_surface,
-											 Vnew,
-											 Enew,
-											 boundary_triangles,
-											 displacement_map);
-		
-		periodic_collision_mesh.init_area_jacobians();
-
-		tiled_to_single.setConstant(Vnew.rows(), -1);
-		for (int i = 0; i < V.rows(); i++)
-			for (int j = 0; j < n_tiles * n_tiles; j++)
-				tiled_to_single(SVI[j * V.rows() + i]) = i;
-		
-		if (tiled_to_single.maxCoeff() + 1 != V.rows())
-			log_and_throw_error("Failed to tile mesh!");
 	}
 
 	void State::build_collision_mesh(
@@ -1654,8 +1497,6 @@ namespace polyfem
 		{
 			if (assembler->name() == "NavierStokes")
 				solve_navier_stokes(sol, pressure);
-			else if (disp_grad_.size() > 0)
-				solve_homogenized_field(disp_grad_, sol, args["boundary_conditions"]["fixed_macro_strain"].get<std::vector<int>>(), args["solver"]["advanced"]["bistable"].get<bool>());
 			else if (assembler->is_linear() && !is_contact_enabled())
 			{
 				init_linear_solve(sol);

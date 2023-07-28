@@ -9,8 +9,7 @@
 #include <igl/boundary_facets.h>
 #include <igl/writeOBJ.h>
 
-#include <polyfem/solver/forms/PeriodicContactForm.hpp>
-#include <polyfem/solver/NLHomoProblem.hpp>
+#include <polyfem/solver/NLProblem.hpp>
 
 namespace polyfem::solver
 {
@@ -189,22 +188,6 @@ namespace polyfem::solver
 				F = igl::boundary_facets<Eigen::MatrixXi, Eigen::MatrixXi>(F);
 
 			io::OBJWriter::write(rest_mesh_path, V, F);
-
-			// if (!state->solve_data.periodic_contact_form)
-			// 	continue;
-			
-			// std::string collision_mesh_path = state->resolve_output_path(fmt::format("collision_state_{:d}_iter_{:d}.obj", id, iter));
-			// logger().debug("Save periodic collision mesh to file {} ...", collision_mesh_path);
-
-			// std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state->solve_data.nl_problem);
-			// Eigen::MatrixXd reduced_sol = homo_problem->full_to_reduced(state->diff_cached.u(0), state->diff_cached.disp_grad());
-			// Eigen::VectorXd extended_sol = homo_problem->reduced_to_extended(reduced_sol);
-			// Eigen::MatrixXd tiled_sol = utils::unflatten(state->solve_data.periodic_contact_form->single_to_tiled(extended_sol), state->mesh->dimension());
-			// const Eigen::MatrixXd displaced = state->periodic_collision_mesh.displace_vertices(tiled_sol);
-
-			// io::OBJWriter::write(
-			//     collision_mesh_path, displaced,
-			//     state->periodic_collision_mesh.edges(), state->periodic_collision_mesh.faces());
 		}
 	}
 
@@ -216,7 +199,7 @@ namespace polyfem::solver
 		for (const auto &v : variables_to_simulation_)
 		{
 			v->update(newX);
-			if (v->get_parameter_type() == ParameterType::Shape || v->get_parameter_type() == ParameterType::PeriodicShape)
+			if (v->get_parameter_type() == ParameterType::Shape)
 				need_rebuild_basis = true;
 		}
 
@@ -268,9 +251,6 @@ namespace polyfem::solver
 				{
 					state->assemble_rhs();
 					state->assemble_mass_mat();
-
-					if (better_initial_guess && sol.size() > 0)
-						state->initial_guess = sol;
 
 					state->solve_problem(sol, pressure);
 				}

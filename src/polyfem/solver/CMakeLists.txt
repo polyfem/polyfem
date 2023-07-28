@@ -16,8 +16,6 @@ set(SOURCES
 	NavierStokesSolver.hpp
 	NLProblem.cpp
 	NLProblem.hpp
-	NLHomoProblem.cpp
-	NLHomoProblem.hpp
 	NonlinearSolver.hpp
 	NonlinearSolver.tpp
 	OperatorSplittingSolver.hpp

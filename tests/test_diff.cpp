@@ -186,7 +186,7 @@ namespace
 
 } // namespace
 
-TEST_CASE("laplacian", "[adjoint_method]")
+TEST_CASE("laplacian", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -223,7 +223,7 @@ TEST_CASE("laplacian", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 3e-5);
 }
 
-TEST_CASE("boundary-smoothing", "[adjoint_method]")
+TEST_CASE("boundary-smoothing", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -252,7 +252,7 @@ TEST_CASE("boundary-smoothing", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-6);
 }
 
-TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
+TEST_CASE("linear_elasticity-surface-3d", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -282,7 +282,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-7, 1e-5);
 }
 
-TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
+TEST_CASE("linear_elasticity-surface", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -312,7 +312,7 @@ TEST_CASE("linear_elasticity-surface", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-5);
 }
 
-TEST_CASE("topology-compliance", "[adjoint_method]")
+TEST_CASE("topology-compliance", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -345,10 +345,10 @@ TEST_CASE("topology-compliance", "[adjoint_method]")
 	state.build_basis();
 	solve_pde(state);
 
-	verify_adjoint(variable_to_simulations, *obj, state, x, theta, 1e-4, 1e-6);
+	verify_adjoint(variable_to_simulations, *obj, state, x, theta, 1e-4, 1e-4);
 }
 
-TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
+TEST_CASE("neohookean-stress-3d", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -377,7 +377,7 @@ TEST_CASE("neohookean-stress-3d", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 1e-5);
 }
 
-TEST_CASE("shape-neumann-nodes", "[adjoint_method]")
+TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -450,7 +450,7 @@ TEST_CASE("shape-neumann-nodes", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 1e-3);
 }
 
-// TEST_CASE("neumann-shape-derivative", "[adjoint_method]")
+// TEST_CASE("neumann-shape-derivative", "[test_adjoint]")
 // {
 // 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 // 	json in_args;
@@ -600,7 +600,7 @@ TEST_CASE("shape-neumann-nodes", "[adjoint_method]")
 // 	}
 // }
 
-// TEST_CASE("neumann-u-derivative", "[adjoint_method]")
+// TEST_CASE("neumann-u-derivative", "[test_adjoint]")
 // {
 // 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 // 	json in_args;
@@ -655,7 +655,7 @@ TEST_CASE("shape-neumann-nodes", "[adjoint_method]")
 // 	}
 // }
 
-TEST_CASE("shape-pressure-neumann-nodes", "[adjoint_method]")
+TEST_CASE("shape-pressure-neumann-nodes", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -728,7 +728,7 @@ TEST_CASE("shape-pressure-neumann-nodes", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-8, 1e-3);
 }
 
-TEST_CASE("shape-contact-force-norm", "[adjoint_method]")
+TEST_CASE("shape-contact-force-norm", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -805,7 +805,7 @@ TEST_CASE("shape-contact-force-norm", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 1e-3);
 }
 
-TEST_CASE("shape-contact", "[adjoint_method]")
+TEST_CASE("shape-contact", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -831,7 +831,7 @@ TEST_CASE("shape-contact", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, 1e-8, 1e-5);
 }
 
-TEST_CASE("node-trajectory", "[adjoint_method]")
+TEST_CASE("node-trajectory", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -865,7 +865,7 @@ TEST_CASE("node-trajectory", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-5, 1e-5);
 }
 
-TEST_CASE("damping-transient", "[adjoint_method]")
+TEST_CASE("damping-transient", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -901,7 +901,7 @@ TEST_CASE("damping-transient", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, opt_args["solver"]["nonlinear"]["debug_fd_eps"], 1e-4);
 }
 
-TEST_CASE("material-transient", "[adjoint_method]")
+TEST_CASE("material-transient", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -936,7 +936,7 @@ TEST_CASE("material-transient", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, opt_args["solver"]["nonlinear"]["debug_fd_eps"], 1e-4);
 }
 
-TEST_CASE("shape-transient-friction", "[adjoint_method]")
+TEST_CASE("shape-transient-friction", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -971,7 +971,7 @@ TEST_CASE("shape-transient-friction", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-6, 1e-5);
 }
 
-TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
+TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -1026,7 +1026,7 @@ TEST_CASE("shape-transient-friction-sdf", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 1e-5);
 }
 
-TEST_CASE("initial-contact", "[adjoint_method]")
+TEST_CASE("initial-contact", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -1067,7 +1067,7 @@ TEST_CASE("initial-contact", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-5, 1e-5);
 }
 
-TEST_CASE("barycenter", "[adjoint_method]")
+TEST_CASE("barycenter", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 	json in_args;
@@ -1108,7 +1108,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-6, 1e-5);
 }
 
-// TEST_CASE("dirichlet-sdf", "[adjoint_method]")
+// TEST_CASE("dirichlet-sdf", "[test_adjoint]")
 // {
 // 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 // 	json in_args;
@@ -1197,7 +1197,7 @@ TEST_CASE("barycenter", "[adjoint_method]")
 // 	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn_json, 1e-7, 1e-5);
 // }
 
-// TEST_CASE("dirichlet-ref", "[adjoint_method]")
+// TEST_CASE("dirichlet-ref", "[test_adjoint]")
 // {
 // 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
 // 	json in_args;

@@ -76,33 +76,22 @@ namespace polyfem
 		assert(solve_data.rhs_assembler != nullptr);
 
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-		const int full_size = A.rows();
-		int precond_num = problem_dim * n_bases;
-
-		std::vector<int> boundary_nodes_tmp;
-		if (has_periodic_bc())
-		{
-			boundary_nodes_tmp = periodic_bc->full_to_periodic(boundary_nodes);
-			precond_num = periodic_bc->full_to_periodic(A);
- 			Eigen::MatrixXd tmp = periodic_bc->full_to_periodic(b, true);
- 			b = tmp;
-		}
-		else
-			boundary_nodes_tmp = boundary_nodes;
+		const int precond_num = problem_dim * n_bases;
 
 		Eigen::VectorXd x;
 		if (args["optimization"]["enabled"])
 		{
 			auto A_tmp = A;
-			prefactorize(*solver, A, boundary_nodes_tmp, precond_num, args["output"]["data"]["stiffness_mat"]);
-			dirichlet_solve_prefactorized(*solver, A_tmp, b, boundary_nodes_tmp, x);
+			prefactorize(*solver, A, boundary_nodes, precond_num, args["output"]["data"]["stiffness_mat"]);
+			dirichlet_solve_prefactorized(*solver, A_tmp, b, boundary_nodes, x);
 		}
 		else
 		{
 			stats.spectrum = dirichlet_solve(
-				*solver, A, b, boundary_nodes_tmp, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
+				*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
 				assembler->is_fluid(), use_avg_pressure);
 		}
+		sol = x; // Explicit copy because sol is a MatrixXd (with one column)
 
 		solver->getInfo(stats.solver_info);
 
@@ -111,11 +100,6 @@ namespace polyfem
 			logger().error("Solver error: {}", error);
 		else
 			logger().debug("Solver error: {}", error);
-
- 		if (has_periodic_bc())
- 			sol = periodic_bc->periodic_to_full(full_size, x);
- 		else
- 			sol = x; // Explicit copy because sol is a MatrixXd (with one column)
 
 		if (mixed_assembler != nullptr)
 			sol_to_pressure(sol, pressure);
@@ -129,7 +113,7 @@ namespace polyfem
 		// --------------------------------------------------------------------
 		if (lin_solver_cached)
 			lin_solver_cached.reset();
-		
+
 		lin_solver_cached =
 			polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
 		lin_solver_cached->setParameters(args["solver"]["linear"]);

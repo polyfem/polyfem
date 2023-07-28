@@ -53,7 +53,7 @@ void verify_apply_jacobian(Parametrization &parametrization, const Eigen::Vector
 	}
 }
 
-TEST_CASE("SplineParametrization", "[parametrization]")
+TEST_CASE("SplineParametrization", "[test_parametrization]")
 {
 	Eigen::MatrixXd control_points(4, 2);
 	control_points << 0, -1,
@@ -87,7 +87,7 @@ TEST_CASE("SplineParametrization", "[parametrization]")
 	verify_apply_jacobian(parametrization, V);
 }
 
-TEST_CASE("SplineParametrizationExcludeEnds", "[parametrization]")
+TEST_CASE("SplineParametrizationExcludeEnds", "[test_parametrization]")
 {
 	Eigen::MatrixXd control_points(4, 2);
 	control_points << 0, -1,
@@ -121,7 +121,7 @@ TEST_CASE("SplineParametrizationExcludeEnds", "[parametrization]")
 	verify_apply_jacobian(parametrization, V);
 }
 
-TEST_CASE("BoundedBiharmonicWeights", "[parametrization]")
+TEST_CASE("BoundedBiharmonicWeights", "[test_parametrization]")
 {
 	Eigen::MatrixXd V;
 	Eigen::MatrixXi F;
@@ -143,21 +143,6 @@ TEST_CASE("BoundedBiharmonicWeights", "[parametrization]")
 	// 	V_.col(2) += bbw_weights.col(i);
 	// 	polyfem::io::OBJWriter::write(fmt::format("bbw_weights_{}.obj", i), V_, F);
 	// }
-}
-
-TEST_CASE("PeriodicMesh", "[parametrization]")
-{
-	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	std::vector<std::vector<int>> e;
-	std::vector<std::vector<double>> w;
-	std::vector<int> ids;
-	const std::string path = POLYFEM_DATA_DIR;
-	polyfem::io::MshReader::load(path + "/../cross2d.msh", V, F, e, w, ids);
-	assert(V.size() > 0);
-
-	PeriodicMeshToMesh parametrization(V);
-	verify_apply_jacobian(parametrization, utils::flatten(V));
 }
 
 #endif

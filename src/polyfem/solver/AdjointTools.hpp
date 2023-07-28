@@ -14,7 +14,6 @@ namespace polyfem::solver
 	enum class ParameterType
 	{
 		Shape,
-		PeriodicShape,
 		Material,
 		FrictionCoeff,
 		DampingCoeff,
@@ -74,16 +73,6 @@ namespace polyfem::solver
 			Eigen::VectorXd &term,
 			const int cur_time_step);
 		static void dJ_shape_static_adjoint_term(
-			const State &state,
-			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd &adjoint,
-			Eigen::VectorXd &one_form);
-		static void dJ_shape_homogenization_adjoint_term(
-			const State &state,
-			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd &adjoint,
-			Eigen::VectorXd &one_form);
-		static void dJ_periodic_shape_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &sol,
 			const Eigen::MatrixXd &adjoint,
