@@ -357,9 +357,16 @@ namespace polyfem
 
 	Eigen::MatrixXd State::solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs) const
 	{
-		const int bdf_order = get_bdf_order();
 		const double dt = args["time"]["dt"];
 		const int time_steps = args["time"]["time_steps"];
+
+		int bdf_order = 1;
+		if (args["time"]["integrator"]["type"] == "ImplicitEuler")
+			bdf_order = 1;
+		else if (args["time"]["integrator"]["type"] == "BDF")
+			bdf_order = args["time"]["integrator"]["steps"].get<int>();
+		else
+			log_and_throw_error("Integrator type not supported for differentiability.");
 
 		assert(adjoint_rhs.cols() == time_steps + 1);
 

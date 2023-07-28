@@ -29,6 +29,23 @@ Reminders:
 
 using namespace polyfem::utils;
 
+namespace
+{
+
+	int get_bdf_order(const polyfem::State &state)
+	{
+		if (state.args["time"]["integrator"]["type"] == "ImplicitEuler")
+			return 1;
+		else if (state.args["time"]["integrator"]["type"] == "BDF")
+			return state.args["time"]["integrator"]["steps"].get<int>();
+		else
+		{
+			polyfem::log_and_throw_error("Integrator type not supported for differentiability.");
+			return -1;
+		}
+	}
+}
+
 namespace polyfem::solver
 {
 	namespace
@@ -648,7 +665,7 @@ namespace polyfem::solver
 		const double t0 = state.args["time"]["t0"];
 		const double dt = state.args["time"]["dt"];
 		const int time_steps = state.args["time"]["time_steps"];
-		const int bdf_order = state.get_bdf_order();
+		const int bdf_order = get_bdf_order(state);
 
 		Eigen::VectorXd elasticity_term, rhs_term, damping_term, mass_term, contact_term, friction_term;
 		one_form.setZero(state.n_geom_bases * state.mesh->dimension());
@@ -735,7 +752,7 @@ namespace polyfem::solver
 	{
 		const double dt = state.args["time"]["dt"];
 		const int time_steps = state.args["time"]["time_steps"];
-		const int bdf_order = state.get_bdf_order();
+		const int bdf_order = get_bdf_order(state);
 
 		one_form.setZero(state.bases.size() * 2);
 
@@ -772,7 +789,7 @@ namespace polyfem::solver
 		const double mu = state.solve_data.friction_form->mu();
 		const int time_steps = state.args["time"]["time_steps"];
 		const int dim = state.mesh->dimension();
-		const int bdf_order = state.get_bdf_order();
+		const int bdf_order = get_bdf_order(state);
 
 		one_form.setZero(1);
 
@@ -810,7 +827,7 @@ namespace polyfem::solver
 	{
 		const double dt = state.args["time"]["dt"];
 		const int time_steps = state.args["time"]["time_steps"];
-		const int bdf_order = state.get_bdf_order();
+		const int bdf_order = get_bdf_order(state);
 
 		one_form.setZero(2);
 
@@ -865,7 +882,7 @@ namespace polyfem::solver
 	{
 		const double dt = state.args["time"]["dt"];
 		const int time_steps = state.args["time"]["time_steps"];
-		const int bdf_order = state.get_bdf_order();
+		const int bdf_order = get_bdf_order(state);
 		const int n_dirichlet_dof = state.boundary_nodes.size();
 
 		one_form.setZero(time_steps * n_dirichlet_dof);

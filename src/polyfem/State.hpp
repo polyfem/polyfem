@@ -600,18 +600,6 @@ namespace polyfem
 				return actual_dim * n_bases + n_pressure_bases;
 		}
 
-		int get_bdf_order() const
-		{
-			if (args["time"]["integrator"]["type"] == "ImplicitEuler")
-				return 1;
-			else if (args["time"]["integrator"]["type"] == "BDF")
-				return args["time"]["integrator"]["steps"].get<int>();
-			else
-			{
-				log_and_throw_error("Integrator type not supported for differentiability.");
-				return -1;
-			}
-		}
 		// Aux functions for setting up adjoint equations
 		void compute_force_hessian(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian);
 		void compute_force_hessian_prev(const int force_step, const int sol_step, StiffnessMatrix &hessian_prev) const;
