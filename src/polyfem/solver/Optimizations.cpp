@@ -51,7 +51,7 @@ namespace polyfem::solver
 		}
 	} // namespace
 
-	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> make_nl_solver(const json &solver_params)
+	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> AdjointOptUtils::make_nl_solver(const json &solver_params)
 	{
 		const std::string name = solver_params["solver"].template get<std::string>();
 		if (name == "GradientDescent" || name == "gradientdescent" || name == "gradient")
@@ -85,7 +85,7 @@ namespace polyfem::solver
 		}
 	}
 
-	std::shared_ptr<AdjointForm> create_form(const json &args, const std::vector<std::shared_ptr<VariableToSimulation>> &var2sim, const std::vector<std::shared_ptr<State>> &states)
+	std::shared_ptr<AdjointForm> AdjointOptUtils::create_form(const json &args, const std::vector<std::shared_ptr<VariableToSimulation>> &var2sim, const std::vector<std::shared_ptr<State>> &states)
 	{
 		std::shared_ptr<AdjointForm> obj;
 		if (args.is_array())
@@ -274,7 +274,7 @@ namespace polyfem::solver
 		return obj;
 	}
 
-	std::shared_ptr<Parametrization> create_parametrization(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
+	std::shared_ptr<Parametrization> AdjointOptUtils::create_parametrization(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
 	{
 		std::shared_ptr<Parametrization> map;
 		const std::string type = args["type"];
@@ -379,7 +379,7 @@ namespace polyfem::solver
 		return map;
 	}
 
-	std::shared_ptr<VariableToSimulation> create_variable_to_simulation(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
+	std::shared_ptr<VariableToSimulation> AdjointOptUtils::create_variable_to_simulation(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
 	{
 		std::shared_ptr<VariableToSimulation> var2sim;
 		const std::string type = args["type"];
@@ -471,7 +471,7 @@ namespace polyfem::solver
 		return var2sim;
 	}
 
-	std::shared_ptr<State> create_state(const json &args, const int max_threads)
+	std::shared_ptr<State> AdjointOptUtils::create_state(const json &args, const int max_threads)
 	{
 		std::shared_ptr<State> state = std::make_shared<State>();
 		state->set_max_threads(max_threads);
@@ -504,7 +504,7 @@ namespace polyfem::solver
 		return state;
 	}
 
-	void solve_pde(State &state)
+	void AdjointOptUtils::solve_pde(State &state)
 	{
 		state.assemble_rhs();
 		state.assemble_mass_mat();
@@ -540,7 +540,7 @@ namespace polyfem::solver
 		}
 	}
 
-	json apply_opt_json_spec(const json &input_args, bool strict_validation)
+	json AdjointOptUtils::apply_opt_json_spec(const json &input_args, bool strict_validation)
 	{
 		json args_in = input_args;
 
@@ -592,7 +592,7 @@ namespace polyfem::solver
 		return args;
 	}
 
-	int compute_variable_size(const json &args, const std::vector<std::shared_ptr<State>> &states)
+	int AdjointOptUtils::compute_variable_size(const json &args, const std::vector<std::shared_ptr<State>> &states)
 	{
 		if (args["number"].is_number())
 		{

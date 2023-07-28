@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 	if (!load_json(json_file, opt_args))
 		log_and_throw_error("Failed to load optimization json file!");
 
-	opt_args = apply_opt_json_spec(opt_args, false);
+	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
 	/* states */
 	json state_args = opt_args["states"];
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
 				cur_args.merge_patch(tmp);
 			}
 
-			states[i++] = create_state(cur_args, max_threads);
+			states[i++] = AdjointOptUtils::create_state(cur_args, max_threads);
 		}
 	}
 
@@ -117,7 +117,7 @@ int main(int argc, char **argv)
 	std::vector<int> variable_sizes;
 	for (const auto &arg : opt_args["parameters"])
 	{
-		int size = compute_variable_size(arg, states);
+		int size = AdjointOptUtils::compute_variable_size(arg, states);
 		ndof += size;
 		variable_sizes.push_back(size);
 	}
@@ -125,15 +125,15 @@ int main(int argc, char **argv)
 	/* variable to simulations */
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	for (const auto &arg : opt_args["variable_to_simulation"])
-		variable_to_simulations.push_back(create_variable_to_simulation(arg, states, variable_sizes));
+		variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
 
 	/* forms */
-	std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(create_form(opt_args["functionals"], variable_to_simulations, states));
+	std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states));
 
 	/* stopping conditions */
 	std::vector<std::shared_ptr<AdjointForm>> stopping_conditions;
 	for (const auto &arg : opt_args["stopping_conditions"])
-		stopping_conditions.push_back(create_form(arg, variable_to_simulations, states));
+		stopping_conditions.push_back(AdjointOptUtils::create_form(arg, variable_to_simulations, states));
 
 	Eigen::VectorXd x;
 	x.setZero(ndof);
@@ -171,7 +171,7 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 
-	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nl_solver = make_nl_solver(opt_args["solver"]["nonlinear"]);
+	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
 	nl_solver->minimize(*nl_problem, x);
 
 	return EXIT_SUCCESS;

@@ -13,7 +13,7 @@ namespace polyfem::solver
 	public:
 		TractionNormForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::SURFACE);
+			set_integral_type(SpatialIntegralType::surface);
 
 			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());

@@ -24,9 +24,9 @@ namespace polyfem::solver
 
 	enum class SpatialIntegralType
 	{
-		VOLUME,
-		SURFACE,
-		VERTEX_SUM
+		volume,
+		surface,
+		vertex_sum
 	};
 
 	class AdjointTools

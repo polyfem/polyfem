@@ -1,5 +1,3 @@
-// L-BFGS solver (Using the LBFGSpp under MIT License).
-
 #pragma once
 
 #include <polyfem/Common.hpp>

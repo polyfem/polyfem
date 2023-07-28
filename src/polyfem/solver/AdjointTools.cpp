@@ -214,7 +214,7 @@ namespace polyfem::solver
 		const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0.0;
 
 		double integral = 0;
-		if (spatial_integral_type == SpatialIntegralType::VOLUME)
+		if (spatial_integral_type == SpatialIntegralType::volume)
 		{
 			auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
 			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
@@ -250,7 +250,7 @@ namespace polyfem::solver
 			for (const LocalThreadScalarStorage &local_storage : storage)
 				integral += local_storage.val;
 		}
-		else if (spatial_integral_type == SpatialIntegralType::SURFACE)
+		else if (spatial_integral_type == SpatialIntegralType::surface)
 		{
 			auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
 			utils::maybe_parallel_for(state.total_local_boundary.size(), [&](int start, int end, int thread_id) {
@@ -298,7 +298,7 @@ namespace polyfem::solver
 			for (const LocalThreadScalarStorage &local_storage : storage)
 				integral += local_storage.val;
 		}
-		else if (spatial_integral_type == SpatialIntegralType::VERTEX_SUM)
+		else if (spatial_integral_type == SpatialIntegralType::vertex_sum)
 		{
 			std::vector<bool> traversed(state.n_bases, false);
 			json params = {};
@@ -360,7 +360,7 @@ namespace polyfem::solver
 		// 		global_positions.block(gbs[i].global()[0].index * dim, 0, dim, 1) = pos.row(i).transpose();
 		// }
 
-		if (spatial_integral_type == SpatialIntegralType::VOLUME)
+		if (spatial_integral_type == SpatialIntegralType::volume)
 		{
 			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
 				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
@@ -426,7 +426,7 @@ namespace polyfem::solver
 				}
 			});
 		}
-		else if (spatial_integral_type == SpatialIntegralType::SURFACE)
+		else if (spatial_integral_type == SpatialIntegralType::surface)
 		{
 			utils::maybe_parallel_for(state.total_local_boundary.size(), [&](int start, int end, int thread_id) {
 				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
@@ -555,7 +555,7 @@ namespace polyfem::solver
 				}
 			});
 		}
-		else if (spatial_integral_type == SpatialIntegralType::VERTEX_SUM)
+		else if (spatial_integral_type == SpatialIntegralType::vertex_sum)
 		{
 			log_and_throw_error("Shape derivative of vertex sum type functional is not implemented!");
 		}
@@ -587,7 +587,7 @@ namespace polyfem::solver
 
 		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 
-		if (spatial_integral_type == SpatialIntegralType::VOLUME)
+		if (spatial_integral_type == SpatialIntegralType::volume)
 		{
 			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
 				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
@@ -917,7 +917,7 @@ namespace polyfem::solver
 		if (!j.depend_on_u() && !j.depend_on_gradu() && !j.depend_on_gradu_local())
 			return;
 
-		if (spatial_integral_type == SpatialIntegralType::VOLUME)
+		if (spatial_integral_type == SpatialIntegralType::volume)
 		{
 			auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
@@ -994,7 +994,7 @@ namespace polyfem::solver
 			for (const LocalThreadVecStorage &local_storage : storage)
 				term += local_storage.vec;
 		}
-		else if (spatial_integral_type == SpatialIntegralType::SURFACE)
+		else if (spatial_integral_type == SpatialIntegralType::surface)
 		{
 			auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 			utils::maybe_parallel_for(state.total_local_boundary.size(), [&](int start, int end, int thread_id) {
@@ -1100,7 +1100,7 @@ namespace polyfem::solver
 			for (const LocalThreadVecStorage &local_storage : storage)
 				term += local_storage.vec;
 		}
-		else if (spatial_integral_type == SpatialIntegralType::VERTEX_SUM)
+		else if (spatial_integral_type == SpatialIntegralType::vertex_sum)
 		{
 			std::vector<bool> traversed(state.n_bases, false);
 			json params = {};
