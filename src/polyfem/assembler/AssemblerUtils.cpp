@@ -82,7 +82,7 @@ namespace polyfem
 			else if (formulation == "NavierStokes")
 				return std::make_shared<NavierStokesVelocity>();
 			else if (formulation == "OperatorSplitting")
-				return std::make_shared<StokesVelocity>();
+				return std::make_shared<OperatorSplitting>();
 
 			log_and_throw_error("Inavalid assembler name {}", formulation);
 		}
