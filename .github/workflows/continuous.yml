@@ -216,7 +216,7 @@ jobs:
             -DPOLYSOLVE_WITH_MKL=OFF ^
             -B build ^
             -S .
-          cmake --build build -j2
+          cmake --build build -j1
 
       - name: Tests
         run: |
