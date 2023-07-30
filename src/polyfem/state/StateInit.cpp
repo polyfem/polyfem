@@ -156,8 +156,10 @@ namespace polyfem
 		ipc::logger().set_level(log_level);
 	}
 
-	void State::init(json args_in, const bool strict_validation)
+	void State::init(const json &p_args_in, const bool strict_validation)
 	{
+		json args_in = p_args_in; // mutable copy
+
 		apply_common_params(args_in);
 
 		// CHECK validity json

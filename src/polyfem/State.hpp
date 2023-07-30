@@ -80,7 +80,7 @@ namespace polyfem
 		/// initialize the polyfem solver with a json settings
 		/// @param[in] args input arguments
 		/// @param[in] strict_validation strict validation of input
-		void init(json args, const bool strict_validation);
+		void init(const json &args, const bool strict_validation);
 
 		/// initialize time settings if args contains "time"
 		void init_time();
