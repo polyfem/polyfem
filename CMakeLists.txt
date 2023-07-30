@@ -170,6 +170,10 @@ target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${CMAKE_SOURCE_DIR
 
 if (MSVC)
     add_compile_options(/bigobj)
+    string(APPEND CMAKE_CXX_FLAGS " /FS")
+    if(IPC_TOOLKIT_WITH_CUDA OR POLYSOLVE_WITH_CUSOLVER)
+        string(APPEND CMAKE_CUDA_FLAGS " -Xcompiler /FS")
+    endif()
 endif ()
 
 ################################################################################

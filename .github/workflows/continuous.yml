@@ -163,7 +163,7 @@ jobs:
         threading: [TBB]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3.5.3
         with:
           fetch-depth: 10
 
@@ -171,7 +171,7 @@ jobs:
         uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: Stetup Conda
-        uses: s-weigand/setup-conda@v1
+        uses: s-weigand/setup-conda@v1.2.1
         with:
           update-conda: true
           conda-channels: anaconda, conda-forge
@@ -184,7 +184,6 @@ jobs:
         run: |
           echo "appdata=$env:LOCALAPPDATA" >> ${env:GITHUB_ENV}
           conda init powershell
-
 
       - name: Cache build
         id: cache-build
