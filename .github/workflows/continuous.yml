@@ -178,7 +178,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          conda install libblas libcblas suitesparse -y
+          conda install libblas libcblas -y
 
       - name: Set env
         run: |
