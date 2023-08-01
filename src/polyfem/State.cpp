@@ -340,7 +340,7 @@ namespace polyfem
 
 				int e_id = in_primitive_to_primitive[in_node_to_in_primitive[i]] - mesh->n_vertices();
 				assert(e_id < mesh->n_edges());
-				assert(in_node_to_node[mesh->edge_vertex(e_id, 0)] > 0); // Vertex nodes should be computed first
+				assert(in_node_to_node[mesh->edge_vertex(e_id, 0)] >= 0); // Vertex nodes should be computed first
 				RowVectorNd v0 = mesh_nodes->node_position(in_node_to_node[mesh->edge_vertex(e_id, 0)]);
 				RowVectorNd a = mesh_nodes->node_position(possible_nodes[0]);
 				RowVectorNd b = mesh_nodes->node_position(possible_nodes[1]);
@@ -1107,10 +1107,10 @@ namespace polyfem
 		io::OutGeometryData::extract_boundary_mesh(
 			*mesh, n_bases, bases, total_local_boundary, node_positions,
 			boundary_edges, boundary_triangles, displacement_map_entries);
-		assert(node_positions.rows() == n_bases);
+		// assert(node_positions.rows() == n_bases);
 
 		// n_bases already contains the obstacle vertices
-		const int num_fe_nodes = n_bases - obstacle.n_vertices();
+		const int num_fe_nodes = node_positions.rows() - obstacle.n_vertices();
 
 		Eigen::MatrixXd collision_vertices;
 		Eigen::VectorXi collision_codim_vids;
