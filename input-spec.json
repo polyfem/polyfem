@@ -3797,7 +3797,8 @@
             "contact_forces",
             "friction_forces",
             "velocity",
-            "acceleration"
+            "acceleration",
+            "forces"
         ],
         "doc": "Optional fields in the output"
     },
@@ -3842,6 +3843,12 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out accelerations"
+    },
+    {
+        "pointer": "/output/paraview/options/forces",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out all variational forces on the FE mesh "
     },
     {
         "pointer": "/output/data",
