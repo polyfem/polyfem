@@ -1163,6 +1163,8 @@ namespace polyfem
 			return !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vi))
 				   || !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vj));
 		};
+
+		collision_mesh.init_adjacencies();
 	}
 
 	void State::assemble_mass_mat()
