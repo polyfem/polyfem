@@ -1116,9 +1116,9 @@ namespace polyfem
 		Eigen::VectorXi collision_codim_vids;
 		Eigen::MatrixXi collision_edges, collision_triangles;
 
-		if (utils::is_param_valid(args, "collision_mesh") && args["collision_mesh"]["enabled"].get<bool>())
+		if (args.value("/contact/collision_mesh/enabled"_json_pointer, false))
 		{
-			const json collision_mesh_args = args["collision_mesh"];
+			const json collision_mesh_args = args["/contact/collision_mesh"_json_pointer];
 			assert(displacement_map_entries.empty());
 
 			Eigen::MatrixXi codim_edges;

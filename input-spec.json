@@ -1436,6 +1436,35 @@
         "doc": "Whether to use the convergent (area weighted) formulation of IPC."
     },
     {
+        "pointer": "/contact/collision_mesh",
+        "type": "object",
+        "required": [
+            "mesh",
+            "linear_map"
+        ],
+        "optional": [
+            "enabled"
+        ],
+        "default": "skip",
+        "doc": ""
+    },
+    {
+        "pointer": "/contact/collision_mesh/mesh",
+        "type": "string",
+        "doc": ""
+    },
+    {
+        "pointer": "/contact/collision_mesh/linear_map",
+        "type": "string",
+        "doc": ""
+    },
+    {
+        "pointer": "/contact/collision_mesh/enabled",
+        "type": "bool",
+        "default": true,
+        "doc": ""
+    },
+    {
         "pointer": "/solver",
         "default": null,
         "type": "object",
@@ -4709,34 +4738,5 @@
             "TestProblem",
             "BilaplacianProblemWithSolution"
         ]
-    },
-    {
-        "pointer": "/collision_mesh",
-        "type": "object",
-        "required": [
-            "mesh",
-            "linear_map"
-        ],
-        "optional": [
-            "enabled"
-        ],
-        "default": "skip",
-        "doc": ""
-    },
-    {
-        "pointer": "/collision_mesh/mesh",
-        "type": "string",
-        "doc": ""
-    },
-    {
-        "pointer": "/collision_mesh/linear_map",
-        "type": "string",
-        "doc": ""
-    },
-    {
-        "pointer": "/collision_mesh/enabled",
-        "type": "bool",
-        "default": true,
-        "doc": ""
     }
 ]

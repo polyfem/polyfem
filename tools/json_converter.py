@@ -167,6 +167,7 @@ def PolyFEM_convert(old):
     copy_entry("epsv", old, j["contact"])
     rename_entry("mu", old, "friction_coefficient", j["contact"])
     rename_entry("coeff_friction", old, "friction_coefficient", j["contact"])
+    copy_entry("collision_mesh", old, j["contact"])
 
     # Solver
 
@@ -427,8 +428,6 @@ def PolyFEM_convert(old):
                 if "is_obstacle" in t and t["is_obstacle"]:
                     continue
                 t["surface_selection"].append(n)
-
-    copy_entry("collision_mesh", old, j)
 
     remove_empty_dicts_from_dict(j)
 

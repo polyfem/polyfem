@@ -1062,6 +1062,7 @@ namespace polyfem::io
 		sol_on_grid = args["output"]["advanced"]["sol_on_grid"] > 0;
 		velocity = args["output"]["paraview"]["options"]["velocity"];
 		acceleration = args["output"]["paraview"]["options"]["acceleration"];
+		forces = args["output"]["paraview"]["options"]["forces"] && !is_problem_scalar;
 
 		use_spline = args["space"]["basis_type"] == "Spline";
 
@@ -1324,25 +1325,27 @@ namespace polyfem::io
 			}
 		}
 
-		// TODO: wrap this in an if (opts.all_forces)
-		for (const auto &[name, form] : state.solve_data.named_forms())
+		if (opts.forces)
 		{
-			// NOTE: Assumes this form will be null for the entire sim
-			if (form == nullptr)
-				continue;
-
-			Eigen::VectorXd force;
-			if (form->enabled())
+			for (const auto &[name, form] : state.solve_data.named_forms())
 			{
-				form->first_derivative(sol, force);
-				force *= -1.0;
-			}
-			else
-			{
-				force.setZero(sol.size());
-			}
+				// NOTE: Assumes this form will be null for the entire sim
+				if (form == nullptr)
+					continue;
 
-			save_volume_vector_field(state, points, opts, name + "_forces", force, writer);
+				Eigen::VectorXd force;
+				if (form->enabled())
+				{
+					form->first_derivative(sol, force);
+					force *= -1.0;
+				}
+				else
+				{
+					force.setZero(sol.size());
+				}
+
+				save_volume_vector_field(state, points, opts, name + "_forces", force, writer);
+			}
 		}
 
 		// if(problem->is_mixed())
