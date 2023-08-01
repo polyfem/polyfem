@@ -18,8 +18,7 @@
             "initial_conditions",
             "output",
             "input",
-            "tests",
-            "collision_mesh"
+            "tests"
         ],
         "doc": "Root of the configuration file."
     },
@@ -1393,7 +1392,8 @@
             "dhat_percentage",
             "epsv",
             "friction_coefficient",
-            "use_convergent_formulation"
+            "use_convergent_formulation",
+            "collision_mesh"
         ],
         "doc": "Contact handling parameters."
     },
