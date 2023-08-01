@@ -1605,6 +1605,12 @@ namespace polyfem::io
 				state.polys, state.polys_3d, ref_element_sampler,
 				points.rows(), traction_forces, traction_forces_fun, opts.use_sampler, opts.boundary_only);
 
+			if (obstacle.n_vertices() > 0)
+			{
+				traction_forces_fun.conservativeResize(traction_forces_fun.rows() + obstacle.n_vertices(), traction_forces_fun.cols());
+				fun.bottomRows(obstacle.n_vertices()).setZero();
+			}
+
 			writer.add_field("traction_force", traction_forces_fun);
 		}
 
@@ -1616,6 +1622,12 @@ namespace polyfem::io
 				mesh, problem.is_scalar(), bases, state.disc_orders,
 				state.polys, state.polys_3d, ref_element_sampler,
 				points.rows(), potential_grad, potential_grad_fun, opts.use_sampler, opts.boundary_only);
+
+			if (obstacle.n_vertices() > 0)
+			{
+				potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.n_vertices(), potential_grad_fun.cols());
+				fun.bottomRows(obstacle.n_vertices()).setZero();
+			}
 
 			writer.add_field("gradient_of_potential", potential_grad_fun);
 		}
