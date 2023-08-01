@@ -221,4 +221,4 @@ jobs:
       - name: Tests
         run: |
           cd build
-          ctest --verbose --output-on-failure
+          ctest --extra-verbose --output-on-failure --debug --stop-on-failure
