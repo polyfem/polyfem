@@ -13,7 +13,7 @@ def rename_entry(key, f, key2, t):
 
 
 def remove_empty_dicts_from_list(li):
-    assert(type(li) == list)
+    assert (type(li) == list)
     for val in li:
         if type(val) is dict:
             remove_empty_dicts_from_dict(val)

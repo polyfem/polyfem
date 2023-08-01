@@ -628,7 +628,7 @@ namespace polyfem
 					Eigen::MatrixXd ppp(1, size_);
 					ppp = vals.val.row(n);
 
-					trafo = vals.jac_it[n];
+					trafo = vals.jac_it[n].inverse();
 
 					if (displacement.size() > 0)
 					{
@@ -641,7 +641,7 @@ namespace polyfem
 							{
 								for (int d = 0; d < size_; ++d)
 								{
-									deform_mat.col(d) += displacement(g.index * size_ + d) * b.grad_t_m.row(n);
+									deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
 
 									ppp(d) += displacement(g.index * size_ + d) * b.val(n);
 								}
@@ -651,7 +651,7 @@ namespace polyfem
 						trafo += deform_mat;
 					}
 
-					normals.row(n) = normals.row(n) * trafo;
+					normals.row(n) = normals.row(n) * trafo.inverse();
 					normals.row(n).normalize();
 				}
 
@@ -800,7 +800,7 @@ namespace polyfem
 
 			ElementAssemblyValues vals;
 			// Neumann
-			Eigen::MatrixXd points, uv, normals, deform_mat;
+			Eigen::MatrixXd points, uv, normals, deform_mat, trafo;
 			Eigen::VectorXd weights;
 			Eigen::VectorXi global_primitive_ids;
 			for (const auto &lb : local_neumann_boundary)
@@ -818,7 +818,28 @@ namespace polyfem
 
 				for (int n = 0; n < vals.jac_it.size(); ++n)
 				{
-					normals.row(n) = normals.row(n) * vals.jac_it[n];
+					trafo = vals.jac_it[n].inverse();
+
+					if (displacement.size() > 0)
+					{
+						assert(size_ == 2 || size_ == 3);
+						deform_mat.resize(size_, size_);
+						deform_mat.setZero();
+						for (const auto &b : vals.basis_values)
+						{
+							for (const auto &g : b.global)
+							{
+								for (int d = 0; d < size_; ++d)
+								{
+									deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
+								}
+							}
+						}
+
+						trafo += deform_mat;
+					}
+
+					normals.row(n) = normals.row(n) * trafo.inverse();
 					normals.row(n).normalize();
 				}
 				problem_.neumann_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, forces);

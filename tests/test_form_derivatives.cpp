@@ -3,6 +3,8 @@
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 
+#include <polyfem/solver/forms/BCLagrangianForm.hpp>
+#include <polyfem/solver/forms/BCPenaltyForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
@@ -157,7 +159,8 @@ TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
 	BodyForm form(ndof, state_ptr->n_pressure_bases,
 				  state_ptr->boundary_nodes,
 				  state_ptr->local_boundary,
-				  state_ptr->local_neumann_boundary, state_ptr->n_boundary_samples(),
+				  state_ptr->local_neumann_boundary,
+				  state_ptr->n_boundary_samples(),
 				  state_ptr->rhs,
 				  *rhs_assembler_ptr,
 				  state_ptr->mass_matrix_assembler->density(),
@@ -227,7 +230,7 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 		ccd_tolerance, ccd_max_iterations);
 
 	FrictionForm form(
-		state_ptr->collision_mesh, epsv, mu, dhat, broad_phase_method, dt,
+		state_ptr->collision_mesh, nullptr, epsv, mu, dhat, broad_phase_method,
 		contact_form, /*n_lagging_iters=*/-1);
 
 	test_form(form, *state_ptr);
@@ -302,6 +305,92 @@ TEST_CASE("Rayleigh damping form derivatives", "[form][form_derivatives][rayleig
 
 	RayleighDampingForm form(
 		elastic_form, time_integrator, true, 0.1, 1);
+
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("BC lagrangian form derivatives", "[form][form_derivatives][bc_lagr_form]")
+{
+	static const int n_rand = 10;
+
+	const auto state_ptr = get_state();
+	const int dim = state_ptr->mesh->dimension();
+	const int ndof = state_ptr->n_bases * dim;
+	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
+
+	assembler::Mass mass_mat_assembler;
+	mass_mat_assembler.set_size(dim);
+	StiffnessMatrix mass_tmp;
+	mass_mat_assembler.assemble(dim == 3,
+								state_ptr->n_bases,
+								state_ptr->bases,
+								state_ptr->geom_bases(),
+								state_ptr->mass_ass_vals_cache,
+								mass_tmp,
+								true);
+
+	BCLagrangianForm form(
+		ndof,
+		state_ptr->boundary_nodes,
+		state_ptr->local_boundary,
+		state_ptr->local_neumann_boundary,
+		state_ptr->n_boundary_samples(),
+		mass_tmp,
+		*rhs_assembler_ptr,
+		state_ptr->obstacle,
+		state_ptr->problem->is_time_dependent(),
+		0);
+
+	Eigen::VectorXd x = Eigen::VectorXd::Zero(ndof);
+	double k_al = 0;
+
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<> dis(1e6, 1e8);
+
+	for (int i = 0; i < n_rand; ++i)
+	{
+		form.update_lagrangian(x, k_al);
+		test_form(form, *state_ptr);
+
+		x.setRandom();
+		x /= 100;
+
+		k_al = dis(gen);
+	}
+}
+
+TEST_CASE("BC penalty form derivatives", "[form][form_derivatives][bc_penalty_form]")
+{
+	static const int n_rand = 10;
+
+	const auto state_ptr = get_state();
+	const int dim = state_ptr->mesh->dimension();
+	const int ndof = state_ptr->n_bases * dim;
+	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
+
+	assembler::Mass mass_mat_assembler;
+	mass_mat_assembler.set_size(dim);
+	StiffnessMatrix mass_tmp;
+	mass_mat_assembler.assemble(dim == 3,
+								state_ptr->n_bases,
+								state_ptr->bases,
+								state_ptr->geom_bases(),
+								state_ptr->mass_ass_vals_cache,
+								mass_tmp,
+								true);
+
+	BCPenaltyForm form(
+		ndof,
+		state_ptr->boundary_nodes,
+		state_ptr->local_boundary,
+		state_ptr->local_neumann_boundary,
+		state_ptr->n_boundary_samples(),
+		mass_tmp,
+		*rhs_assembler_ptr,
+		state_ptr->obstacle,
+		state_ptr->problem->is_time_dependent(),
+		0);
 
 	test_form(form, *state_ptr);
 }
