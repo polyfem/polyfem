@@ -1099,6 +1099,8 @@ namespace polyfem
 
 	void State::build_collision_mesh()
 	{
+		logger().critical("building collision mesh");
+
 		Eigen::MatrixXd node_positions;
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
 		std::vector<Eigen::Triplet<double>> displacement_map_entries;
