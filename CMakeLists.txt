@@ -257,10 +257,6 @@ polyfem_target_link_system_libraries(polyfem PUBLIC natsort::natsort)
 include(glob)
 polyfem_target_link_system_libraries(polyfem PUBLIC Glob::Glob)
 
-# Tracy library
-# include(tracy)
-# target_link_libraries(polyfem PUBLIC Tracy::TracyClient)
-
 ################################################################################
 # Optional libraries
 ################################################################################
@@ -283,11 +279,10 @@ if(POLYFEM_WITH_CLIPPER)
     include(clipper)
     polyfem_target_link_system_libraries(polyfem PUBLIC clipper::clipper)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
+else()
+    include(polyclipper)
+    target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
 endif()
-# else()
-include(polyclipper)
-target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
-# endif()
 
 # Extra warnings (link this here so it has top priority)
 target_link_libraries(polyfem PRIVATE polyfem::warnings)

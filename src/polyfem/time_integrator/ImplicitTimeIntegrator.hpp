@@ -43,11 +43,6 @@ namespace polyfem::time_integrator
 		/// @param x new solution vector
 		virtual void update_quantities(const Eigen::VectorXd &x) = 0;
 
-		/// @brief Update the time integration quantities (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
-		/// @param x new solution vector
-		/// @param quasistatic whether to update quasistaticly (i.e., without updating the velocity and acceleration)
-		void update_quantities(const Eigen::VectorXd &x, const bool quasistatic);
-
 		/// @brief Compute the predicted solution to be used in the inertia term \f$(x-\tilde{x})^TM(x-\tilde{x})\f$.
 		/// @return value for \f$\tilde{x}\f$
 		virtual Eigen::VectorXd x_tilde() const = 0;

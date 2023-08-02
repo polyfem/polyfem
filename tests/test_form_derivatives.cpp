@@ -13,7 +13,6 @@
 #include <polyfem/solver/forms/InversionBarrierForm.hpp>
 #include <polyfem/solver/forms/L2ProjectionForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
-#include <polyfem/solver/forms/LinearForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
 
 #include <polyfem/time_integrator/ImplicitEuler.hpp>
@@ -394,16 +393,6 @@ TEST_CASE("BC penalty form derivatives", "[form][form_derivatives][bc_penalty_fo
 		state_ptr->obstacle.ndof(),
 		state_ptr->problem->is_time_dependent(),
 		0);
-
-	test_form(form, *state_ptr);
-}
-
-TEST_CASE("Linear form derivatives", "[form][form_derivatives][linear_form]")
-{
-	const auto state_ptr = get_state();
-
-	const Eigen::VectorXd coeffs = Eigen::VectorXd::Random(state_ptr->n_bases * 2);
-	LinearForm form(coeffs);
 
 	test_form(form, *state_ptr);
 }

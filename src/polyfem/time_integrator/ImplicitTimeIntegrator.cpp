@@ -55,16 +55,6 @@ namespace polyfem
 			dt_ = dt;
 		}
 
-		void ImplicitTimeIntegrator::update_quantities(const Eigen::VectorXd &x, const bool quasistatic)
-		{
-			update_quantities(x);
-			if (quasistatic)
-			{
-				set_v_prev(Eigen::VectorXd::Zero(x.size()));
-				set_a_prev(Eigen::VectorXd::Zero(x.size()));
-			}
-		}
-
 		void ImplicitTimeIntegrator::save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const
 		{
 			if (!x_path.empty())

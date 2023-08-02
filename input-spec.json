@@ -1,5 +1,4 @@
-[
-    {
+[{
         "pointer": "/",
         "type": "object",
         "required": [
@@ -1613,7 +1612,7 @@
         "pointer": "/time/quasistatic",
         "type": "bool",
         "default": false,
-        "doc": "Quasistatic time integration (i.e., zero out velocity after each time step)."
+        "doc": "Ignore inertia in time dependent. Used for doing incremental load."
     },
     {
         "pointer": "/contact",
@@ -1663,7 +1662,7 @@
     },
     {
         "pointer": "/contact/use_convergent_formulation",
-        "default": true,
+        "default": false,
         "type": "bool",
         "doc": "Whether to use the convergent (area weighted) formulation of IPC."
     },
@@ -1678,7 +1677,6 @@
             "augmented_lagrangian",
             "contact",
             "rayleigh_damping",
-            "ignore_inertia",
             "advanced"
         ],
         "doc": "The settings for the solver including linear solver, nonlinear solver, and some advanced options."
@@ -2403,12 +2401,6 @@
         "default": 1,
         "type": "int",
         "doc": "Maximum number of update iterations for lagging."
-    },
-    {
-        "pointer": "/solver/ignore_inertia",
-        "default": false,
-        "type": "bool",
-        "doc": "Ignore inertia in time dependent. Used for doing incremental load."
     },
     {
         "pointer": "/solver/advanced",
@@ -4066,13 +4058,13 @@
         "pointer": "/output/paraview/options/discretization_order",
         "default": true,
         "type": "bool",
-        "doc": "If true, write out tensor values"
+        "doc": "If true, write out discretization order"
     },
     {
         "pointer": "/output/paraview/options/nodes",
         "default": true,
         "type": "bool",
-        "doc": "If true, write out tensor values"
+        "doc": "If true, write out node order"
     },
     {
         "pointer": "/output/data",

@@ -154,7 +154,7 @@ namespace polyfem
 			{
 				POLYFEM_SCOPED_TIMER("Update quantities");
 
-				solve_data.time_integrator->update_quantities(sol, args["time"]["quasistatic"]);
+				solve_data.time_integrator->update_quantities(sol);
 
 				solve_data.nl_problem->update_quantities(t0 + (t + 1) * dt, sol);
 
@@ -250,7 +250,7 @@ namespace polyfem
 			n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
 			n_boundary_samples(), rhs, sol, mass_matrix_assembler->density(),
 			// Inertia form
-			args["solver"]["ignore_inertia"], mass, damping_assembler->is_valid() ? damping_assembler : nullptr,
+			args["time"]["quasistatic"], mass, damping_assembler->is_valid() ? damping_assembler : nullptr,
 			// Lagged regularization form
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
