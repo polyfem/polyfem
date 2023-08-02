@@ -19,7 +19,9 @@
 #include <polyfem/solver/SolveData.hpp>
 #include <polyfem/io/MshWriter.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+#ifdef POLYFEM_WITH_REMESHING
 #include <polyfem/mesh/remesh/Remesh.hpp>
+#endif
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
@@ -127,6 +129,7 @@ namespace polyfem
 			save_energy(save_i);
 			save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
+#ifdef POLYFEM_WITH_REMESHING
 			if (remesh_enabled)
 			{
 				timer.start();
@@ -150,6 +153,7 @@ namespace polyfem
 				save_energy(save_i);
 				save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 			}
+#endif
 
 			{
 				POLYFEM_SCOPED_TIMER("Update quantities");

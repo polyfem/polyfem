@@ -26,7 +26,9 @@
 #include <spdlog/sinks/ostream_sink.h>
 
 #include <ipc/utils/logger.hpp>
+#ifdef POLYFEM_WITH_REMESHING
 #include <wmtk/utils/Logger.hpp>
+#endif
 
 #include <sstream>
 
@@ -156,8 +158,10 @@ namespace polyfem
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
 		ipc::logger().set_level(log_level);
 
+#ifdef POLYFEM_WITH_REMESHING
 		wmtk::set_logger(std::make_shared<spdlog::logger>("wmtk", sinks.begin(), sinks.end()));
 		wmtk::logger().set_level(log_level);
+#endif
 	}
 
 	void State::init(const json &p_args_in, const bool strict_validation)
