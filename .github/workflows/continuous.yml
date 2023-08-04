@@ -224,7 +224,4 @@ jobs:
           cd build
           ctest --verbose --output-on-failure
 
-      - name: Setup tmate session
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
 
