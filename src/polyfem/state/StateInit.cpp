@@ -194,6 +194,25 @@ namespace polyfem
 			}
 		}
 
+		// Fallback to default linear solver if the specified solver is invalid
+		// NOTE: I do not know why .value() causes a segfault only on Windows
+		// const bool fallback_solver = args_in.value("/solver/linear/enable_overwrite_solver"_json_pointer, false);
+		const bool fallback_solver =
+			args_in.contains("/solver/linear/enable_overwrite_solver"_json_pointer)
+				? args_in.at("/solver/linear/enable_overwrite_solver"_json_pointer).get<bool>()
+				: false;
+		if (fallback_solver)
+		{
+			const json::json_pointer ptr = "/solver/linear/solver"_json_pointer;
+			const std::vector<std::string> ss = polysolve::LinearSolver::availableSolvers();
+			std::string s_json = "null";
+			if (!args_in.contains(ptr) || !args_in[ptr].is_string() || std::find(ss.begin(), ss.end(), s_json = args_in[ptr]) == ss.end())
+			{
+				logger().warn("Solver {} is invalid, falling back to {}", s_json, polysolve::LinearSolver::defaultSolver());
+				args_in[ptr] = polysolve::LinearSolver::defaultSolver();
+			}
+		}
+
 		const bool valid_input = jse.verify_json(args_in, rules);
 
 		if (!valid_input)
@@ -204,20 +223,6 @@ namespace polyfem
 		// end of check
 
 		this->args = jse.inject_defaults(args_in, rules);
-
-		const bool fallback_solver = this->args["solver"]["linear"]["enable_overwrite_solver"];
-		// Fallback to default linear solver if the specified solver is invalid
-		if (fallback_solver)
-		{
-			const std::string s_json = this->args["solver"]["linear"]["solver"];
-			const auto ss = polysolve::LinearSolver::availableSolvers();
-			const auto solver_found = std::find(ss.begin(), ss.end(), s_json);
-			if (solver_found == ss.end())
-			{
-				logger().warn("Solver {} is invalid, falling back to {}", s_json, polysolve::LinearSolver::defaultSolver());
-				this->args["solver"]["linear"]["solver"] = polysolve::LinearSolver::defaultSolver();
-			}
-		}
 
 		// Save output directory and resolve output paths dynamically
 		const std::string output_dir = resolve_input_path(this->args["output"]["directory"]);
