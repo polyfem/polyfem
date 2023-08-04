@@ -216,7 +216,12 @@ namespace polyfem
 		}
 
 		// Fallback to default linear solver if the specified solver is invalid
-		const bool fallback_solver = args_in.value("/solver/linear/enable_overwrite_solver"_json_pointer, false);
+		// NOTE: I do not know why .value() causes a segfault only on Windows
+		// const bool fallback_solver = args_in.value("/solver/linear/enable_overwrite_solver"_json_pointer, false);
+		const bool fallback_solver =
+			args_in.contains("/solver/linear/enable_overwrite_solver"_json_pointer)
+				? args_in.at("/solver/linear/enable_overwrite_solver"_json_pointer).get<bool>()
+				: false;
 		if (fallback_solver)
 		{
 			const std::vector<std::string> ss = polysolve::LinearSolver::availableSolvers();
@@ -240,7 +245,7 @@ namespace polyfem
 
 		this->args = jse.inject_defaults(args_in, rules);
 
-		// Save output directory and resolve output paths dynamically
+    // Save output directory and resolve output paths dynamically
 		const std::string output_dir = resolve_input_path(this->args["output"]["directory"]);
 		if (!output_dir.empty())
 		{
