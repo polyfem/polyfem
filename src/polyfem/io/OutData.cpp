@@ -1563,6 +1563,7 @@ namespace polyfem::io
 		// interpolate_function(pts_index, rhs, fun, opts.boundary_only);
 		// writer.add_field("rhs", fun);
 
+		if (fun.cols() != 1)
 		{
 			Eigen::MatrixXd traction_forces, traction_forces_fun;
 			compute_traction_forces(state, sol, traction_forces, false);
@@ -1581,6 +1582,7 @@ namespace polyfem::io
 			writer.add_field("traction_force", traction_forces_fun);
 		}
 
+		if (fun.cols() != 1)
 		{
 			Eigen::MatrixXd potential_grad, potential_grad_fun;
 			state.assembler->assemble_gradient(mesh.is_volume(), state.n_bases, bases, gbases, state.ass_vals_cache, dt, sol, sol, potential_grad);

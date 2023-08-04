@@ -122,6 +122,9 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 
 	state.compute_errors(sol);
 
+	state.save_json(sol);
+	state.export_data(sol, pressure);
+
 	json out = json({});
 	out["err_l2"] = state.stats.l2_err;
 	out["err_h1"] = state.stats.h1_err;

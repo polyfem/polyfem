@@ -20,7 +20,23 @@ namespace polyfem
 		class OperatorSplittingSolver
 		{
 		public:
-			OperatorSplittingSolver();
+			void initialize_grid(const mesh::Mesh &mesh,
+								 const std::vector<basis::ElementBases> &gbases,
+								 const std::vector<basis::ElementBases> &bases,
+								 const double &density_dx);
+
+			void initialize_mesh(const mesh::Mesh &mesh,
+								 const int shape, const int n_el,
+								 const std::vector<mesh::LocalBoundary> &local_boundary);
+
+			void initialize_hashtable(const mesh::Mesh &mesh);
+
+			OperatorSplittingSolver() {}
+
+			void initialize_solver(const mesh::Mesh &mesh,
+								   const int shape_, const int n_el_,
+								   const std::vector<mesh::LocalBoundary> &local_boundary,
+								   const std::vector<int> &bnd_nodes);
 
 			OperatorSplittingSolver(const mesh::Mesh &mesh,
 									const int shape, const int n_el,
@@ -41,25 +57,7 @@ namespace polyfem
 									const double &viscosity_,
 									const std::string &solver_type,
 									const std::string &precond,
-									const json &params,
-									const std::string &save_path);
-
-		private:
-			void initialize_grid(const mesh::Mesh &mesh,
-								 const std::vector<basis::ElementBases> &gbases,
-								 const std::vector<basis::ElementBases> &bases,
-								 const double &density_dx);
-
-			void initialize_mesh(const mesh::Mesh &mesh,
-								 const int shape, const int n_el,
-								 const std::vector<mesh::LocalBoundary> &local_boundary);
-
-			void initialize_hashtable(const mesh::Mesh &mesh);
-
-			void initialize_solver(const mesh::Mesh &mesh,
-								   const int shape_, const int n_el_,
-								   const std::vector<mesh::LocalBoundary> &local_boundary,
-								   const std::vector<int> &bnd_nodes);
+									const json &params);
 
 			int handle_boundary_advection(RowVectorNd &pos);
 
@@ -105,25 +103,11 @@ namespace polyfem
 								const double dt,
 								const int RK = 3);
 
-			void advection_FLIP(const mesh::Mesh &mesh,
-								const std::vector<basis::ElementBases> &gbases,
-								const std::vector<basis::ElementBases> &bases,
-								Eigen::MatrixXd &sol,
-								const double dt,
-								const Eigen::MatrixXd &local_pts,
-								const int order = 1);
+			void advection_FLIP(const mesh::Mesh &mesh, const std::vector<basis::ElementBases> &gbases, const std::vector<basis::ElementBases> &bases, Eigen::MatrixXd &sol, const double dt, const Eigen::MatrixXd &local_pts, const int order = 1);
 
-			void advection_PIC(const mesh::Mesh &mesh,
-							   const std::vector<basis::ElementBases> &gbases,
-							   const std::vector<basis::ElementBases> &bases,
-							   Eigen::MatrixXd &sol,
-							   const double dt,
-							   const Eigen::MatrixXd &local_pts,
-							   const int order = 1);
+			void advection_PIC(const mesh::Mesh &mesh, const std::vector<basis::ElementBases> &gbases, const std::vector<basis::ElementBases> &bases, Eigen::MatrixXd &sol, const double dt, const Eigen::MatrixXd &local_pts, const int order = 1);
 
-			void solve_diffusion_1st(const StiffnessMatrix &mass,
-									 const std::vector<int> &bnd_nodes,
-									 Eigen::MatrixXd &sol);
+			void solve_diffusion_1st(const StiffnessMatrix &mass, const std::vector<int> &bnd_nodes, Eigen::MatrixXd &sol);
 
 			void external_force(const mesh::Mesh &mesh,
 								const assembler::Assembler &assembler,
@@ -135,16 +119,9 @@ namespace polyfem
 								const std::shared_ptr<assembler::Problem> problem,
 								const double time);
 
-			void solve_pressure(const StiffnessMatrix &mixed_stiffness,
-								const std::vector<int> &pressure_boundary_nodes,
-								Eigen::MatrixXd &sol,
-								Eigen::MatrixXd &pressure);
+			void solve_pressure(const StiffnessMatrix &mixed_stiffness, const std::vector<int> &pressure_boundary_nodes, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
 
-			void projection(const StiffnessMatrix &velocity_mass,
-							const StiffnessMatrix &mixed_stiffness,
-							const std::vector<int> &boundary_nodes_,
-							Eigen::MatrixXd &sol,
-							const Eigen::MatrixXd &pressure);
+			void projection(const StiffnessMatrix &velocity_mass, const StiffnessMatrix &mixed_stiffness, const std::vector<int> &boundary_nodes_, Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure);
 
 			void projection(int n_bases,
 							const std::vector<basis::ElementBases> &gbases,
@@ -156,21 +133,13 @@ namespace polyfem
 
 			void initialize_density(const std::shared_ptr<assembler::Problem> &problem);
 
-		private:
-			long search_cell(const std::vector<basis::ElementBases> &gbases,
-							 const RowVectorNd &pos,
-							 Eigen::MatrixXd &local_pts);
+			long search_cell(const std::vector<basis::ElementBases> &gbases, const RowVectorNd &pos, Eigen::MatrixXd &local_pts);
 
-			bool outside_quad(const std::vector<RowVectorNd> &vert,
-							  const RowVectorNd &pos);
+			bool outside_quad(const std::vector<RowVectorNd> &vert, const RowVectorNd &pos);
 
-			void compute_gbase_val(const int elem_idx,
-								   const Eigen::MatrixXd &local_pos,
-								   Eigen::MatrixXd &pos);
+			void compute_gbase_val(const int elem_idx, const Eigen::MatrixXd &local_pos, Eigen::MatrixXd &pos);
 
-			void compute_gbase_jacobi(const int elem_idx,
-									  const Eigen::MatrixXd &local_pos,
-									  Eigen::MatrixXd &jacobi);
+			void compute_gbase_jacobi(const int elem_idx, const Eigen::MatrixXd &local_pos, Eigen::MatrixXd &jacobi);
 
 			void calculate_local_pts(const basis::ElementBases &gbase,
 									 const int elem_idx,
@@ -190,10 +159,10 @@ namespace polyfem
 			Eigen::MatrixXi T;
 
 			std::vector<std::vector<long>> hash_table;
-			std::array<long, 3> hash_table_cell_num;
+			Eigen::Matrix<long, Eigen::Dynamic, 1, Eigen::ColMajor, 3, 1> hash_table_cell_num;
 
-			std::vector<RowVectorNd> position_particle;
-			std::vector<RowVectorNd> velocity_particle;
+			std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic, Eigen::RowMajor, 1, 3>> position_particle;
+			std::vector<Eigen::Matrix<double, 1, Eigen::Dynamic, Eigen::RowMajor, 1, 3>> velocity_particle;
 			std::vector<int> cellI_particle;
 			Eigen::MatrixXd new_sol;
 			Eigen::MatrixXd new_sol_w;
@@ -213,7 +182,7 @@ namespace polyfem
 			Eigen::VectorXd density;
 			// Eigen::VectorXi density_cell_no;
 			// std::vector<ElementAssemblyValues> density_local_weights;
-			RowVectorNd grid_cell_num;
+			Eigen::Matrix<double, 1, Eigen::Dynamic, Eigen::RowMajor, 1, 3> grid_cell_num;
 			double resolution;
 		};
 	} // namespace solver
