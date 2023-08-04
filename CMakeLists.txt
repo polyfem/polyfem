@@ -184,7 +184,7 @@ polyfem_target_link_system_libraries(polyfem PUBLIC Eigen3::Eigen)
 include(polysolver)
 polyfem_target_link_system_libraries(polyfem PUBLIC polysolve)
 
-# paraviewo
+# paraviewo (includes HDF5 and h5pp)
 include(paraviewo)
 polyfem_target_link_system_libraries(polyfem PUBLIC paraviewo::paraviewo)
 
@@ -247,13 +247,6 @@ polyfem_target_link_system_libraries(polyfem PUBLIC tinyxml2)
 # JSON Specification Engine library
 include(jse)
 polyfem_target_link_system_libraries(polyfem PUBLIC jse::jse)
-
-# HighFive + HDF5 library
-include(hdf5)
-polyfem_target_link_system_libraries(polyfem PUBLIC hdf5::hdf5)
-
-include(high_five)
-polyfem_target_link_system_libraries(polyfem PUBLIC HighFive::HighFive)
 
 # natsort library
 include(natsort)
