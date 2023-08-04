@@ -248,13 +248,6 @@ polyfem_target_link_system_libraries(polyfem PUBLIC tinyxml2)
 include(jse)
 polyfem_target_link_system_libraries(polyfem PUBLIC jse::jse)
 
-# HighFive + HDF5 library
-include(hdf5)
-polyfem_target_link_system_libraries(polyfem PUBLIC hdf5::hdf5)
-
-include(high_five)
-polyfem_target_link_system_libraries(polyfem PUBLIC HighFive::HighFive)
-
 # natsort library
 include(natsort)
 polyfem_target_link_system_libraries(polyfem PUBLIC natsort::natsort)

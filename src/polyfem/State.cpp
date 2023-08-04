@@ -1134,13 +1134,12 @@ namespace polyfem
 			// TODO: transform the collision mesh in the same way the rest of the mesh is transformed
 			// V = V * T.transpose();
 
-			H5Easy::File file(resolve_input_path(collision_mesh_args["linear_map"]));
-			std::array<long, 2> shape;
-			file.getGroup("weight_triplets").getAttribute("shape").read(shape);
+			h5pp::File file(resolve_input_path(collision_mesh_args["linear_map"]), h5pp::FileAccess::READONLY);
+			const std::array<long, 2> shape = file.readAttribute<std::array<long, 2>>("weight_triplets", "shape");
 			assert(shape[0] == collision_vertices.rows() && shape[1] == num_fe_nodes);
-			Eigen::VectorXd values = H5Easy::load<Eigen::VectorXd>(file, "weight_triplets/values");
-			Eigen::VectorXi rows = H5Easy::load<Eigen::VectorXi>(file, "weight_triplets/rows");
-			Eigen::VectorXi cols = H5Easy::load<Eigen::VectorXi>(file, "weight_triplets/cols");
+			Eigen::VectorXd values = file.readDataset<Eigen::VectorXd>("weight_triplets/values");
+			Eigen::VectorXi rows = file.readDataset<Eigen::VectorXi>("weight_triplets/rows");
+			Eigen::VectorXi cols = file.readDataset<Eigen::VectorXi>("weight_triplets/cols");
 			assert(rows.maxCoeff() < collision_vertices.rows());
 			assert(cols.maxCoeff() < num_fe_nodes);
 
