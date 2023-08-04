@@ -156,8 +156,10 @@ namespace polyfem
 		ipc::logger().set_level(log_level);
 	}
 
-	void State::init(json args_in, const bool strict_validation)
+	void State::init(const json &p_args_in, const bool strict_validation)
 	{
+		json args_in = p_args_in; // mutable copy
+
 		apply_common_params(args_in);
 
 		// CHECK validity json
@@ -214,9 +216,10 @@ namespace polyfem
 		}
 
 		// Fallback to default linear solver if the specified solver is invalid
-		if (args_in.value("/solver/linear/enable_overwrite_solver"_json_pointer, false))
+		const bool fallback_solver = args_in.value("/solver/linear/enable_overwrite_solver"_json_pointer, false);
+		if (fallback_solver)
 		{
-			const auto ss = polysolve::LinearSolver::availableSolvers();
+			const std::vector<std::string> ss = polysolve::LinearSolver::availableSolvers();
 			std::string s_json = "null";
 			if (!args_in.contains(lin_solver_ptr) || !args_in[lin_solver_ptr].is_string()
 				|| std::find(ss.begin(), ss.end(), s_json = args_in[lin_solver_ptr].get<std::string>()) == ss.end())
