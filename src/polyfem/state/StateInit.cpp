@@ -195,7 +195,16 @@ namespace polyfem
 		}
 
 		// Fallback to default linear solver if the specified solver is invalid
-		if (args_in.value("/solver/linear/enable_overwrite_solver"_json_pointer, false))
+		bool fallback_solver;
+		try
+		{
+			fallback_solver = args_in["solver"]["linear"]["enable_overwrite_solver"];
+		}
+		catch (...)
+		{
+			fallback_solver = false;
+		}
+		if (fallback_solver)
 		{
 			const json::json_pointer ptr = "/solver/linear/solver"_json_pointer;
 			const std::vector<std::string> ss = polysolve::LinearSolver::availableSolvers();
