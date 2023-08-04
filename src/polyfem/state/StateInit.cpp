@@ -198,7 +198,7 @@ namespace polyfem
 		bool fallback_solver;
 		try
 		{
-			fallback_solver = args_in["solver"]["linear"]["enable_overwrite_solver"];
+			fallback_solver = args_in.at("/solver/linear/enable_overwrite_solver"_json_pointer);
 		}
 		catch (...)
 		{
