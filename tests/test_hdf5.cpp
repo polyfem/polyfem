@@ -6,7 +6,7 @@
 
 TEST_CASE("HDF5", "[hdf5]")
 {
-	using MatrixXl = Eigen::Matrix<long, Eigen::Dynamic, Eigen::Dynamic>;
+	using MatrixXl = Eigen::Matrix<int64_t, Eigen::Dynamic, Eigen::Dynamic>;
 
 	const std::string hdf5_file = std::string(POLYFEM_DATA_DIR) + "/test.hdf5";
 	h5pp::File file(hdf5_file, h5pp::FileAccess::READONLY);
