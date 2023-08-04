@@ -89,6 +89,8 @@ int main(int argc, char **argv)
 	}
 	else if (!hdf5_file.empty())
 	{
+		using MatrixXl = Eigen::Matrix<int64_t, Eigen::Dynamic, Eigen::Dynamic>;
+
 		h5pp::File file(hdf5_file, h5pp::FileAccess::READONLY);
 		std::string json_string = file.readDataset<std::string>("json");
 
@@ -102,7 +104,6 @@ int main(int argc, char **argv)
 		for (size_t i = 0; i < names.size(); ++i)
 		{
 			const std::string &name = names[i];
-			using MatrixXl = Eigen::Matrix<long, Eigen::Dynamic, Eigen::Dynamic>;
 			cells[i] = file.readDataset<MatrixXl>("/meshes/" + name + "/c").cast<int>();
 			vertices[i] = file.readDataset<Eigen::MatrixXd>("/meshes/" + name + "/v");
 		}
