@@ -184,7 +184,7 @@ polyfem_target_link_system_libraries(polyfem PUBLIC Eigen3::Eigen)
 include(polysolver)
 polyfem_target_link_system_libraries(polyfem PUBLIC polysolve)
 
-# paraviewo
+# paraviewo (includes HDF5 and h5pp)
 include(paraviewo)
 polyfem_target_link_system_libraries(polyfem PUBLIC paraviewo::paraviewo)
 
