@@ -184,10 +184,6 @@ polyfem_target_link_system_libraries(polyfem PUBLIC Eigen3::Eigen)
 include(polysolver)
 polyfem_target_link_system_libraries(polyfem PUBLIC polysolve)
 
-# paraviewo (includes HDF5 and h5pp)
-include(paraviewo)
-polyfem_target_link_system_libraries(polyfem PUBLIC paraviewo::paraviewo)
-
 include(ipc_toolkit)
 polyfem_target_link_system_libraries(polyfem PUBLIC ipc::toolkit)
 
@@ -223,6 +219,10 @@ polyfem_target_link_system_libraries(polyfem PUBLIC mshio)
 # Geogram
 include(geogram)
 polyfem_target_link_system_libraries(polyfem PUBLIC geogram)
+
+# paraviewo (includes HDF5 and h5pp)
+include(paraviewo)
+polyfem_target_link_system_libraries(polyfem PUBLIC paraviewo::paraviewo)
 
 # spdlog
 include(spdlog)
