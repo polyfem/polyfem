@@ -53,7 +53,7 @@ namespace polyfem::io
 		else
 		{
 			logger().warn("Uknown output matrix format (\"{}\"). Using ASCII format.");
-			return write_matrix_ascii(path + ".txt", mat);
+			return write_matrix_ascii(path, mat);
 		}
 	}
 
