@@ -21,8 +21,9 @@ namespace polyfem::solver
 		  mu_(mu),
 		  dhat_(dhat),
 		  broad_phase_method_(broad_phase_method),
-		  contact_form_(contact_form),
-		  n_lagging_iters_(n_lagging_iters < 0 ? std::numeric_limits<int>::max() : n_lagging_iters)
+		  n_lagging_iters_(n_lagging_iters < 0 ? std::numeric_limits<int>::max() : n_lagging_iters),
+		  contact_form_(contact_form)
+
 	{
 		assert(epsv_ > 0);
 	}

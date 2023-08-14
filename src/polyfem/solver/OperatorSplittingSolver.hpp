@@ -80,6 +80,7 @@ namespace polyfem
 
 			void interpolator(const RowVectorNd &pos, double &val);
 
+		public:
 			void advection(const mesh::Mesh &mesh,
 						   const std::vector<basis::ElementBases> &gbases,
 						   const std::vector<basis::ElementBases> &bases,

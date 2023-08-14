@@ -148,12 +148,12 @@ namespace polyfem
 				}
 
 				{ // clang-format off
-				#pragma STDC FENV_ACCESS ON
+				//#pragma STDC FENV_ACCESS ON
 				const int current_round = std::fegetround();
 				std::fesetround(FE_DOWNWARD);
 				step_size *= max_step_size; // TODO: check me if correct
 				std::fesetround(current_round);
-			} // clang-format on
+				} // clang-format on
 
 				// logger().trace("\t\tpre TOI={}, ss={}", max_step_size, step_size);
 

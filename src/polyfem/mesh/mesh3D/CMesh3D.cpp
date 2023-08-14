@@ -95,7 +95,7 @@ namespace polyfem
 				return false;
 
 			int nv, np, nh;
-			fscanf(f, "%d %d %d", &nv, &np, &nh);
+			auto _ = fscanf(f, "%d %d %d", &nv, &np, &nh);
 			nh /= 3;
 
 			mesh_.points.resize(3, nv);
@@ -104,7 +104,7 @@ namespace polyfem
 			for (int i = 0; i < nv; i++)
 			{
 				double x, y, z;
-				fscanf(f, "%lf %lf %lf", &x, &y, &z);
+				auto _ = fscanf(f, "%lf %lf %lf", &x, &y, &z);
 				mesh_.points(0, i) = x;
 				mesh_.points(1, i) = y;
 				mesh_.points(2, i) = z;
@@ -119,11 +119,11 @@ namespace polyfem
 				p.id = i;
 				int nw;
 
-				fscanf(f, "%d", &nw);
+				auto _ = fscanf(f, "%d", &nw);
 				p.vs.resize(nw);
 				for (int j = 0; j < nw; j++)
 				{
-					fscanf(f, "%u", &(p.vs[j]));
+					auto _ = fscanf(f, "%u", &(p.vs[j]));
 				}
 			}
 			mesh_.elements.resize(nh);
@@ -133,12 +133,12 @@ namespace polyfem
 				h.id = i;
 
 				int nf;
-				fscanf(f, "%d", &nf);
+				auto _ = fscanf(f, "%d", &nf);
 				h.fs.resize(nf);
 
 				for (int j = 0; j < nf; j++)
 				{
-					fscanf(f, "%u", &(h.fs[j]));
+					auto _ = fscanf(f, "%u", &(h.fs[j]));
 				}
 
 				for (auto fid : h.fs)
@@ -147,18 +147,18 @@ namespace polyfem
 				h.vs.erase(unique(h.vs.begin(), h.vs.end()), h.vs.end());
 
 				int tmp;
-				fscanf(f, "%d", &tmp);
+				auto __ = fscanf(f, "%d", &tmp);
 				for (int j = 0; j < nf; j++)
 				{
 					int s;
-					fscanf(f, "%d", &s);
+					auto _ = fscanf(f, "%d", &s);
 					h.fs_flag.push_back(s);
 				}
 			}
 			for (int i = 0; i < nh; i++)
 			{
 				int tmp;
-				fscanf(f, "%d", &tmp);
+				auto _ = fscanf(f, "%d", &tmp);
 				mesh_.elements[i].hex = tmp;
 			}
 
@@ -166,7 +166,7 @@ namespace polyfem
 			int find = false, num = 0;
 			while (!feof(f) && !find)
 			{
-				fgets(s, 1024, f);
+				auto _ = fgets(s, 1024, f);
 				if (sscanf(s, "%s%d", sread, &num) == 2 && (strcmp(sread, "KERNEL") == 0))
 					find = true;
 			}
@@ -175,7 +175,7 @@ namespace polyfem
 				for (int i = 0; i < nh; i++)
 				{
 					double x, y, z;
-					fscanf(f, "%lf %lf %lf", &x, &y, &z);
+					auto _ = fscanf(f, "%lf %lf %lf", &x, &y, &z);
 					mesh_.elements[i].v_in_Kernel.push_back(x);
 					mesh_.elements[i].v_in_Kernel.push_back(y);
 					mesh_.elements[i].v_in_Kernel.push_back(z);
