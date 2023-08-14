@@ -2100,7 +2100,7 @@ $(document).ready(function(){initNavTree('_lagrange_basis3d_8cpp_source.html',''
 <div class="line"><a id="l02010" name="l02010"></a><span class="lineno"> 2010</span>                                for (size_t ii = 0; ii &lt; global_.size(); ii++)</div>
 <div class="line"><a id="l02011" name="l02011"></a><span class="lineno"> 2011</span>                                {</div>
 <div class="line"><a id="l02012" name="l02012"></a><span class="lineno"> 2012</span>                                    auto pair = list.insert({global_[ii].index, global_[ii]});</div>
-<div class="line"><a id="l02013" name="l02013"></a><span class="lineno"> 2013</span>                                    if (!pair.second)</div>
+<div class="line"><a id="l02013" name="l02013"></a><span class="lineno"> 2013</span>                                    if (!pair.second &amp;&amp; pair.first != list.end())</div>
 <div class="line"><a id="l02014" name="l02014"></a><span class="lineno"> 2014</span>                                    {</div>
 <div class="line"><a id="l02015" name="l02015"></a><span class="lineno"> 2015</span>                                        assert((pair.first-&gt;second.node - global_[ii].node).norm() &lt; 1e-12);</div>
 <div class="line"><a id="l02016" name="l02016"></a><span class="lineno"> 2016</span>                                        pair.first-&gt;second.val += global_[ii].val;</div>

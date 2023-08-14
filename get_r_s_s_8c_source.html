@@ -153,7 +153,7 @@ $(document).ready(function(){initNavTree('get_r_s_s_8c_source.html',''); initRes
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#error &quot;Cannot define getPeakRSS( ) or getCurrentRSS( ) for an unknown OS.&quot;</span></div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="_out_data_8cpp.html#a4915f71ef0e010b76fb7fa6086233ec1">   37</a></span><span class="keywordtype">size_t</span> <a class="code hl_function" href="get_r_s_s_8c.html#a4915f71ef0e010b76fb7fa6086233ec1">getPeakRSS</a>()</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="_out_data_8cpp.html#a4915f71ef0e010b76fb7fa6086233ec1">   37</a></span><span class="keywordtype">size_t</span> <a class="code hl_function" href="get_r_s_s_8c.html#a1b63b75d05bcc786d0f45106704b78fe">getPeakRSS</a>(<span class="keywordtype">void</span>)</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>{</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="preprocessor">#if defined(_WIN32)</span></div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="comment">/* Windows -------------------------------------------------- */</span></div>
@@ -191,7 +191,7 @@ $(document).ready(function(){initNavTree('get_r_s_s_8c_source.html',''); initRes
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="get_r_s_s_8c.html#a04ca71f0a6ce75f1d8d1402edc70bcdc">   79</a></span><span class="keywordtype">size_t</span> <a class="code hl_function" href="get_r_s_s_8c.html#a04ca71f0a6ce75f1d8d1402edc70bcdc">getCurrentRSS</a>()</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="get_r_s_s_8c.html#a8a5c7f9731dfe1f991cdaa336934cdc8">   79</a></span><span class="keywordtype">size_t</span> <a class="code hl_function" href="get_r_s_s_8c.html#a8a5c7f9731dfe1f991cdaa336934cdc8">getCurrentRSS</a>(<span class="keywordtype">void</span>)</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>{</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="preprocessor">#if defined(_WIN32)</span></div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="comment">/* Windows -------------------------------------------------- */</span></div>
@@ -228,8 +228,8 @@ $(document).ready(function(){initNavTree('get_r_s_s_8c_source.html',''); initRes
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">return</span> (<span class="keywordtype">size_t</span>)0L; <span class="comment">/* Unsupported. */</span></div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>}</div>
-<div class="ttc" id="aget_r_s_s_8c_html_a04ca71f0a6ce75f1d8d1402edc70bcdc"><div class="ttname"><a href="get_r_s_s_8c.html#a04ca71f0a6ce75f1d8d1402edc70bcdc">getCurrentRSS</a></div><div class="ttdeci">size_t getCurrentRSS()</div><div class="ttdoc">Returns the current resident set size (physical memory use) measured in bytes, or zero if the value c...</div><div class="ttdef"><b>Definition:</b> <a href="get_r_s_s_8c_source.html#l00079">getRSS.c:79</a></div></div>
-<div class="ttc" id="aget_r_s_s_8c_html_a4915f71ef0e010b76fb7fa6086233ec1"><div class="ttname"><a href="get_r_s_s_8c.html#a4915f71ef0e010b76fb7fa6086233ec1">getPeakRSS</a></div><div class="ttdeci">size_t getPeakRSS()</div><div class="ttdoc">Returns the peak (maximum so far) resident set size (physical memory use) measured in bytes,...</div><div class="ttdef"><b>Definition:</b> <a href="get_r_s_s_8c_source.html#l00037">getRSS.c:37</a></div></div>
+<div class="ttc" id="aget_r_s_s_8c_html_a1b63b75d05bcc786d0f45106704b78fe"><div class="ttname"><a href="get_r_s_s_8c.html#a1b63b75d05bcc786d0f45106704b78fe">getPeakRSS</a></div><div class="ttdeci">size_t getPeakRSS(void)</div><div class="ttdoc">Returns the peak (maximum so far) resident set size (physical memory use) measured in bytes,...</div><div class="ttdef"><b>Definition:</b> <a href="get_r_s_s_8c_source.html#l00037">getRSS.c:37</a></div></div>
+<div class="ttc" id="aget_r_s_s_8c_html_a8a5c7f9731dfe1f991cdaa336934cdc8"><div class="ttname"><a href="get_r_s_s_8c.html#a8a5c7f9731dfe1f991cdaa336934cdc8">getCurrentRSS</a></div><div class="ttdeci">size_t getCurrentRSS(void)</div><div class="ttdoc">Returns the current resident set size (physical memory use) measured in bytes, or zero if the value c...</div><div class="ttdef"><b>Definition:</b> <a href="get_r_s_s_8c_source.html#l00079">getRSS.c:79</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

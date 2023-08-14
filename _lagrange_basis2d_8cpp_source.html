@@ -1209,7 +1209,7 @@ $(document).ready(function(){initNavTree('_lagrange_basis2d_8cpp_source.html',''
 <div class="line"><a id="l01117" name="l01117"></a><span class="lineno"> 1117</span>                            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> ii = 0; ii &lt; global_.size(); ii++)</div>
 <div class="line"><a id="l01118" name="l01118"></a><span class="lineno"> 1118</span>                            {</div>
 <div class="line"><a id="l01119" name="l01119"></a><span class="lineno"> 1119</span>                                <span class="keyword">auto</span> pair = list.insert({global_[ii].index, global_[ii]});</div>
-<div class="line"><a id="l01120" name="l01120"></a><span class="lineno"> 1120</span>                                <span class="keywordflow">if</span> (!pair.second)</div>
+<div class="line"><a id="l01120" name="l01120"></a><span class="lineno"> 1120</span>                                <span class="keywordflow">if</span> (!pair.second &amp;&amp; pair.first != list.end())</div>
 <div class="line"><a id="l01121" name="l01121"></a><span class="lineno"> 1121</span>                                {</div>
 <div class="line"><a id="l01122" name="l01122"></a><span class="lineno"> 1122</span>                                    assert((pair.first-&gt;second.node - global_[ii].node).norm() &lt; 1e-12);</div>
 <div class="line"><a id="l01123" name="l01123"></a><span class="lineno"> 1123</span>                                    pair.first-&gt;second.val += global_[ii].val;</div>

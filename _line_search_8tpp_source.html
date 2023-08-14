@@ -272,12 +272,12 @@ $(document).ready(function(){initNavTree('_line_search_8tpp_source.html',''); in
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                }</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
 <div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>                { // clang-format off</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>                #pragma STDC FENV_ACCESS ON</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>                //#pragma STDC FENV_ACCESS ON</div>
 <div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>                const int current_round = std::fegetround();</div>
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>                std::fesetround(FE_DOWNWARD);</div>
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>                step_size *= max_step_size; // TODO: check me if correct</div>
 <div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>                std::fesetround(current_round);</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>            } // clang-format on</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>                } // clang-format on</div>
 <div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
 <div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>                // logger().trace(&quot;\t\tpre TOI={}, ss={}&quot;, max_step_size, step_size);</div>
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
