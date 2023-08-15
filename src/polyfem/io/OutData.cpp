@@ -199,6 +199,8 @@ namespace polyfem::io
 						continue;
 					}
 
+					// TODO prism
+
 					if (!mesh.is_simplex(lb.element_id()))
 					{
 						logger().trace("skipping element {} since it is not a simplex or hex", eid);
@@ -2630,6 +2632,7 @@ namespace polyfem::io
 		using namespace polyfem::mesh;
 
 		simplex_count = 0;
+		prism_count = 0;
 		regular_count = 0;
 		regular_boundary_count = 0;
 		simple_singular_count = 0;
@@ -2650,6 +2653,9 @@ namespace polyfem::io
 			{
 			case ElementType::SIMPLEX:
 				simplex_count++;
+				break;
+			case ElementType::PRISM:
+				prism_count++;
 				break;
 			case ElementType::REGULAR_INTERIOR_CUBE:
 				regular_count++;
@@ -2685,6 +2691,7 @@ namespace polyfem::io
 		}
 
 		logger().info("simplex_count: \t{}", simplex_count);
+		logger().info("prism_count: \t{}", prism_count);
 		logger().info("regular_count: \t{}", regular_count);
 		logger().info("regular_boundary_count: \t{}", regular_boundary_count);
 		logger().info("simple_singular_count: \t{}", simple_singular_count);
@@ -2768,6 +2775,7 @@ namespace polyfem::io
 		j["solver_info"] = solver_info;
 
 		j["count_simplex"] = simplex_count;
+		j["count_prism"] = prism_count;
 		j["count_regular"] = regular_count;
 		j["count_regular_boundary"] = regular_boundary_count;
 		j["count_simple_singular"] = simple_singular_count;

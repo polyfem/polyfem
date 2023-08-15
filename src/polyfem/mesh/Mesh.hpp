@@ -31,6 +31,7 @@ namespace polyfem
 			INTERFACE_CUBE,                /// Quad/hex that is at the interface with a polytope (if a cube has both external boundary and and interface with a polytope, it is marked as interface)
 			INTERIOR_POLYTOPE,             /// Interior polytope
 			BOUNDARY_POLYTOPE,             /// Boundary polytope
+			PRISM,                         /// Prism
 			UNDEFINED,                     /// For invalid configurations
 		};
 
@@ -376,11 +377,16 @@ namespace polyfem
 			/// @param[in] el_id element id
 			/// @return is polygon compatible
 			bool is_polytope(const int el_id) const;
-			/// @brief checks if element is simples compatible
+			/// @brief checks if element is simplex
 			///
 			/// @param[in] el_id element id
-			/// @return is simples compatible
+			/// @return is simplex
 			bool is_simplex(const int el_id) const;
+			/// @brief checks if element is a prism
+			///
+			/// @param[in] el_id element id
+			/// @return is a prism
+			bool is_prism(const int el_id) const;
 
 			/// @brief Returns the elements types
 			///
@@ -449,7 +455,7 @@ namespace polyfem
 				if (is_volume() ? is_boundary_face(primitive) : is_boundary_edge(primitive))
 					return std::numeric_limits<int>::max(); // default for no selected boundary
 				else
-					return -1; // default for no boundary
+					return -1;                              // default for no boundary
 			}
 
 			/// @brief Get the boundary selection of an element (face in 3d, edge in 2d)
