@@ -385,6 +385,43 @@ namespace polyfem
 			return v;
 		}
 
+		//   v5
+		//   ╱┆ \
+		// v3─┼──v4
+		//  │v2   |
+		//  │╱  \ │
+		// v0────v1
+		std::array<int, 6> Mesh3D::get_ordered_vertices_from_prism(const int element_index) const
+		{
+			assert(is_prism(element_index));
+			auto idx = get_index_from_element(element_index);
+			std::array<int, 6> v;
+
+			Navigation3D::Index start = idx;
+
+			for (int i = 0; i < 3; ++i)
+				idx = next_around_face(idx);
+
+			if (idx.vertex != start.vertex)
+				start = switch_face(idx);
+
+			for (int i = 0; i < 3; ++i)
+			{
+				v[i] = start.vertex;
+				start = next_around_face(start);
+			}
+			assert(start.vertex == v[0]);
+
+			start = switch_face(switch_edge(switch_vertex(switch_edge(switch_face(start)))));
+			for (int i = 0; i < 3; ++i)
+			{
+				v[i + 3] = start.vertex;
+				start = next_around_face(start);
+			}
+			assert(start.vertex == v[3]);
+			return v;
+		}
+
 		void Mesh3D::elements_boxes(std::vector<std::array<Eigen::Vector3d, 2>> &boxes) const
 		{
 			boxes.resize(n_elements());

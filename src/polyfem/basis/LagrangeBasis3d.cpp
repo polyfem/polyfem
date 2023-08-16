@@ -143,7 +143,9 @@ namespace
 		for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf)
 		{
 			auto idx = mesh.get_index_from_element(c, lf, 0);
-			assert(mesh.n_face_vertices(idx.face) == 4);
+			if (mesh.n_face_vertices(idx.face) != 4)
+				continue;
+
 			std::array<int, 4> u;
 			for (int lv = 0; lv < mesh.n_face_vertices(idx.face); ++lv)
 			{
@@ -182,6 +184,21 @@ namespace
 		std::array<int, 8> l2g;
 		int lv = 0;
 		for (int vi : mesh.get_ordered_vertices_from_hex(c))
+		{
+			l2g[lv++] = vi;
+		}
+
+		return l2g;
+	}
+
+	std::array<int, 6> prism_vertices_local_to_global(const Mesh3D &mesh, int c)
+	{
+		assert(mesh.is_prism(c));
+
+		// Vertex nodes
+		std::array<int, 6> l2g;
+		int lv = 0;
+		for (int vi : mesh.get_ordered_vertices_from_prism(c))
 		{
 			l2g[lv++] = vi;
 		}
@@ -520,6 +537,139 @@ namespace
 		assert(res.size() == size_t(8 + n_edge_nodes + n_face_nodes + n_cell_nodes));
 	}
 
+	void prism_local_to_global(const int p, const int q, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, std::vector<int> &res, MeshNodes &nodes)
+	{
+		assert(mesh.is_prism(c));
+
+		const int n_edge_nodest = p > 1 ? ((p - 1) * 3) : 0;
+		const int nnt = p > 2 ? (p - 2) : 0;
+		const int n_face_nodest = nnt * (nnt + 1) / 2;
+
+		const int nnq = q > 1 ? (q - 1) : 0;
+		const int n_face_nodesq = nnq * nnq;
+
+		const int n_edge_nodes = n_edge_nodest * 2 + nnq * 3;
+		const int n_face_nodes = n_face_nodest * 2 + n_face_nodesq * 3;
+		const int n_cell_nodes = n_face_nodest * nnq;
+
+		if (p == 0 && q == 0)
+		{
+			res.push_back(nodes.node_id_from_cell(c));
+			return;
+		}
+
+		res.reserve(6 + n_edge_nodes + n_face_nodes + n_cell_nodes);
+
+		// Vertex nodes
+		auto v = prism_vertices_local_to_global(mesh, c);
+
+		// Edge nodes
+		Eigen::Matrix<Navigation3D::Index, 9, 1> e;
+		Eigen::Matrix<int, 9, 2> ev;
+		ev.row(0) << v[0], v[1];
+		ev.row(1) << v[1], v[2];
+		ev.row(2) << v[2], v[0];
+		ev.row(3) << v[3], v[4];
+		ev.row(4) << v[4], v[5];
+		ev.row(5) << v[5], v[3];
+		ev.row(6) << v[0], v[3];
+		ev.row(7) << v[1], v[4];
+		ev.row(8) << v[2], v[5];
+
+		for (int le = 0; le < e.rows(); ++le)
+		{
+			e[le] = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1));
+		}
+
+		// Face nodes
+		Eigen::Matrix<Navigation3D::Index, 5, 1> f;
+		Eigen::Matrix<int, 2, 3> fvt;
+		fvt.row(0) << v[0], v[1], v[2];
+		fvt.row(1) << v[3], v[4], v[5];
+		for (int lf = 0; lf < fvt.rows(); ++lf)
+		{
+			const auto index = mesh.get_index_from_element_face(c, fvt(lf, 0), fvt(lf, 1), fvt(lf, 2));
+			f[lf] = index;
+		}
+
+		Eigen::Matrix<int, 3, 4> fvq;
+		fvq.row(0) << v[0], v[1], v[4], v[3];
+		fvq.row(1) << v[1], v[2], v[5], v[4];
+		fvq.row(2) << v[2], v[0], v[3], v[5];
+		for (int lf = 0; lf < fvq.rows(); ++lf)
+		{
+			const auto index = find_quad_face(mesh, c, fvq(lf, 0), fvq(lf, 1), fvq(lf, 2), fvq(lf, 3));
+			f[lf + 2] = index;
+		}
+
+		// vertices
+		for (size_t lv = 0; lv < v.size(); ++lv)
+		{
+			res.push_back(nodes.node_id_from_primitive(v[lv]));
+		}
+		assert(res.size() == size_t(6));
+
+		// Edges
+		for (int le = 0; le < e.rows(); ++le)
+		{
+			const auto index = e[le];
+			auto neighs = mesh.edge_neighs(index.edge);
+			int min_q = discr_order.size() > 0 ? discr_order(c) : 0;
+
+			// TODO prism: not conforming
+			// for (auto cid : neighs)
+			// {
+			// 	min_q = std::min(min_q, discr_order.size() > 0 ? discr_order(cid) : 0);
+			// }
+
+			// if (discr_order.size() > 0 && discr_order(c) > min_q)
+			// {
+			// 	for (int tmp = 0; tmp < q - 1; ++tmp)
+			// 		res.push_back(-le - 10);
+			// }
+			// else
+			{
+				auto node_ids = nodes.node_ids_from_edge(index, (le < 6 ? p : q) - 1);
+				res.insert(res.end(), node_ids.begin(), node_ids.end());
+			}
+		}
+		assert(res.size() == size_t(6 + n_edge_nodes));
+
+		// faces
+		for (int lf = 0; lf < f.rows(); ++lf)
+		{
+			const auto index = f[lf];
+			const auto other_cell = mesh.switch_element(index).element;
+
+			// TODO prism: not conforming
+			//  const bool skip_other = discr_order.size() > 0 && other_cell >= 0 && discr_order(c) > discr_order(other_cell);
+
+			// if (skip_other)
+			// {
+			// 	for (int tmp = 0; tmp < n_loc_f; ++tmp)
+			// 		res.push_back(-lf - 1);
+			// }
+			// else
+			{
+				auto node_ids = nodes.node_ids_from_face(index, (lf < 2 ? p : q) - 1);
+				// assert(node_ids.size() == n_loc_f);
+				res.insert(res.end(), node_ids.begin(), node_ids.end());
+			}
+		}
+		assert(res.size() == size_t(6 + n_edge_nodes + n_face_nodes));
+
+		// cells
+		if (n_cell_nodes > 0)
+		{
+			throw "not implemented";
+			const auto index = f[0];
+
+			auto node_ids = nodes.node_ids_from_cell(index, q - 1);
+			res.insert(res.end(), node_ids.begin(), node_ids.end());
+		}
+
+		assert(res.size() == size_t(6 + n_edge_nodes + n_face_nodes + n_cell_nodes));
+	}
 	// -----------------------------------------------------------------------------
 
 	///
@@ -618,6 +768,49 @@ namespace
 
 				if (!lb.empty())
 					local_boundary.emplace_back(lb);
+			}
+			else if (mesh.is_prism(c))
+			{
+				// TODO prism: discr orders separate
+				prism_local_to_global(discr_order, discr_order, mesh, c, discr_orders, element_nodes_id[c], nodes);
+
+				auto v = prism_vertices_local_to_global(mesh, c);
+				Eigen::Matrix<int, 2, 3> fvt;
+				fvt.row(0) << v[0], v[1], v[2];
+				fvt.row(1) << v[3], v[4], v[5];
+
+				LocalBoundary lbt(c, BoundaryType::TRI);
+				for (long i = 0; i < fvt.rows(); ++i)
+				{
+					const int f = mesh.get_index_from_element_face(c, fvt(i, 0), fvt(i, 1), fvt(i, 2)).face;
+
+					if (mesh.is_boundary_face(f))
+					{
+						lbt.add_boundary_primitive(f, i);
+					}
+				}
+
+				if (!lbt.empty())
+					local_boundary.emplace_back(lbt);
+
+				Eigen::Matrix<int, 3, 4> fvq;
+				fvq.row(0) << v[0], v[1], v[4], v[3];
+				fvq.row(1) << v[1], v[2], v[5], v[4];
+				fvq.row(2) << v[2], v[0], v[3], v[5];
+
+				LocalBoundary lbq(c, BoundaryType::QUAD);
+				for (long i = 0; i < fvq.rows(); ++i)
+				{
+					const int f = find_quad_face(mesh, c, fvq(i, 0), fvq(i, 1), fvq(i, 2), fvq(i, 3)).face;
+
+					if (mesh.is_boundary_face(f))
+					{
+						lbq.add_boundary_primitive(f, i);
+					}
+				}
+
+				if (!lbq.empty())
+					local_boundary.emplace_back(lbq);
 			}
 		}
 
@@ -1548,6 +1741,56 @@ int LagrangeBasis3d::build_bases(
 				b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_grad_basis_value_3d(discr_order, j, uv, val); });
 			}
 		}
+		else if (mesh.is_prism(e))
+		{
+			// TODO prism: discr roders
+			const int tmp_orderp = AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
+			const int tmp_orderq = AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 1);
+
+			const int tmp_mass_orderp = AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
+			const int tmp_mass_orderq = AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 1);
+
+			const int real_order = quadrature_order > 0 ? quadrature_order : (tmp_orderp + tmp_orderq);
+			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : (tmp_mass_orderp + tmp_mass_orderq);
+
+			exit(0);
+			// implement me
+			b.set_quadrature([real_order](Quadrature &quad) {
+				TetQuadrature tet_quadrature;
+				tet_quadrature.get_quadrature(real_order, quad);
+			});
+			b.set_mass_quadrature([real_mass_order](Quadrature &quad) {
+				TetQuadrature tet_quadrature;
+				tet_quadrature.get_quadrature(real_mass_order, quad);
+			});
+
+			// TODO prism: discr order
+			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh) {
+				const auto &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
+				Navigation3D::Index index;
+
+				for (int lf = 0; lf < mesh3d.n_cell_faces(e); ++lf)
+				{
+					index = mesh3d.get_index_from_element(e, lf, 0);
+					if (index.face == primitive_id)
+						break;
+				}
+				assert(index.face == primitive_id);
+				return mesh3d.n_face_vertices(primitive_id) == 3 ? tet_face_local_nodes(discr_order, mesh3d, index) : hex_face_local_nodes(false, discr_order, mesh3d, index);
+			});
+
+			for (int j = 0; j < n_el_bases; ++j)
+			{ // implement me
+				const int global_index = element_nodes_id[e][j];
+				if (!skip_interface_element)
+				{
+					b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
+				}
+
+				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_basis_value_3d(discr_order, j, uv, val); });
+				b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_grad_basis_value_3d(discr_order, j, uv, val); });
+			}
+		}
 		else
 		{
 			// Polyhedra bases are built later on
@@ -2044,7 +2287,7 @@ int LagrangeBasis3d::build_bases(
 					if (discr_order != pp)
 						continue;
 
-					if (mesh.is_cube(e))
+					if (mesh.is_cube(e) || mesh.is_prism(e))
 					{
 						// TODO
 						assert(false);
