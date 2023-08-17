@@ -104,7 +104,7 @@ TEST_CASE("material-opt", "[optimization]")
 	const std::string name = "material-opt";
 	// run_opt_new(name);
 	{
-		const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + name + "/";
+		const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
 		json opt_args;
 		if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
 			log_and_throw_error("Failed to load optimization json file!");
@@ -193,7 +193,7 @@ TEST_CASE("material-opt", "[optimization]")
 TEST_CASE("topology-opt", "[optimization]")
 {
 	const std::string name = "topology-opt";
-	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + name + "/";
+	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
 	json opt_args;
 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
 		log_and_throw_error("Failed to load optimization json file!");
@@ -272,7 +272,7 @@ TEST_CASE("topology-opt", "[optimization]")
 
 TEST_CASE("AMIPS-debug", "[optimization]")
 {
-	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + "AMIPS-debug" + "/";
+	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + "AMIPS-debug" + "/";
 	json opt_args;
 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
 		log_and_throw_error("Failed to load optimization json file!");
@@ -321,7 +321,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 
 TEST_CASE("shape-stress-opt", "[optimization]")
 {
-	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + "shape-stress-opt" + "/";
+	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + "shape-stress-opt" + "/";
 	json opt_args;
 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
 		log_and_throw_error("Failed to load optimization json file!");
@@ -636,7 +636,7 @@ TEST_CASE("shape-stress-opt", "[optimization]")
 TEST_CASE("shape-stress-bbw-opt", "[optimization]")
 {
 	const std::string name = "shape-stress-bbw-opt";
-	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + name + "/";
+	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
 	json opt_args;
 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
 		log_and_throw_error("Failed to load optimization json file!");
@@ -808,7 +808,7 @@ TEST_CASE("shape-stress-bbw-opt", "[optimization]")
 TEST_CASE("3d-bspline-shape-matching", "[optimization]")
 {
 	std::string name = "3d-bspline-shape-matching";
-	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + name + "/";
+	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
 	json opt_args;
 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
 		log_and_throw_error("Failed to load optimization json file!");
@@ -879,7 +879,7 @@ TEST_CASE("3d-bspline-shape-matching", "[optimization]")
 TEST_CASE("3d-bspline-shape-mesh-matching", "[optimization]")
 {
 	std::string name = "3d-bspline-shape-mesh-matching";
-	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + name + "/";
+	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
 	json opt_args;
 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
 		log_and_throw_error("Failed to load optimization json file!");
@@ -952,7 +952,7 @@ TEST_CASE("3d-bspline-shape-mesh-matching", "[optimization]")
 TEST_CASE("2d-shape-traction-force", "[optimization]")
 {
 	std::string name = "2d-shape-traction-force";
-	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + name + "/";
+	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
 	json opt_args;
 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
 		log_and_throw_error("Failed to load optimization json file!");

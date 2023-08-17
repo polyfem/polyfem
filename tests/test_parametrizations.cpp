@@ -129,7 +129,7 @@ TEST_CASE("BoundedBiharmonicWeights", "[test_parametrization]")
 	std::vector<std::vector<double>> w;
 	std::vector<int> ids;
 	const std::string path = POLYFEM_DATA_DIR;
-	polyfem::io::MshReader::load(path + "/../cube_dense.msh", V, F, e, w, ids);
+	polyfem::io::MshReader::load(path + "/differentiable/cube_dense.msh", V, F, e, w, ids);
 	V.conservativeResize(V.rows(), 3);
 	V.col(2) = Eigen::VectorXd::Zero(V.rows());
 
