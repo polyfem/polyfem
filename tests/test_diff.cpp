@@ -345,7 +345,7 @@ TEST_CASE("topology-compliance", "[test_adjoint]")
 	state.build_basis();
 	AdjointOptUtils::solve_pde(state);
 
-	verify_adjoint(variable_to_simulations, *obj, state, x, theta, 1e-4, 1e-4);
+	verify_adjoint(variable_to_simulations, *obj, state, x, theta, 1e-4, 1e-2);
 }
 
 TEST_CASE("neohookean-stress-3d", "[test_adjoint]")

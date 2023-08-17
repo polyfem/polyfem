@@ -17,6 +17,7 @@ jobs:
   Linux:
     name: ${{ matrix.name }} (${{ matrix.config }}, ${{ matrix.threading }})
     runs-on: [self-hosted,Linux]
+    timeout-minutes: 360
     strategy:
       fail-fast: false
       matrix:
@@ -64,6 +65,7 @@ jobs:
         run: cd build; make -j2; ccache --show-stats
 
       - name: Tests
+        timeout-minutes: 360
         run: cd build; OMP_NUM_THREADS=1 ctest --verbose --output-on-failure
 
       # - name: Setup tmate session
