@@ -95,9 +95,13 @@ namespace
 
 } // namespace
 
-#if defined(__linux__)
+#if defined(NDEBUG) && !defined(WIN32)
+std::string tags = "[optimization]";
+#else
+std::string tags = "[.][optimization]";
+#endif
 
-TEST_CASE("material-opt", "[optimization]")
+TEST_CASE("material-opt", tags)
 {
 	const std::string name = "material-opt";
 	// run_opt_new(name);
@@ -321,7 +325,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
 }
 
-TEST_CASE("shape-stress-opt", "[optimization]")
+TEST_CASE("shape-stress-opt", tags)
 {
 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + "shape-stress-opt" + "/";
 	json opt_args;
@@ -1024,5 +1028,3 @@ TEST_CASE("shape-stress-opt", "[optimization]")
 // 	REQUIRE(energies[0] == Approx(955.23).epsilon(1e-4));
 // 	REQUIRE(energies[energies.size() - 1] == Approx(20.7053).epsilon(1e-4));
 // }
-
-#endif

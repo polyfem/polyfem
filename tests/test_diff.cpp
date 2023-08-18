@@ -348,7 +348,13 @@ TEST_CASE("topology-compliance", "[test_adjoint]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, theta, 1e-4, 1e-2);
 }
 
-TEST_CASE("neohookean-stress-3d", "[test_adjoint]")
+#if defined(NDEBUG) && !defined(WIN32)
+std::string tags = "[test_adjoint]";
+#else
+std::string tags = "[.][test_adjoint]";
+#endif
+
+TEST_CASE("neohookean-stress-3d", tags)
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
 	json in_args;
