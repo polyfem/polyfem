@@ -8,6 +8,8 @@
             "divide",
             "plus-const",
             "target",
+            "sdf-target",
+            "mesh-target",
             "center-target",
             "function-target",
             "node-target",
@@ -19,6 +21,9 @@
             "stress",
             "stress_norm",
             "elastic_energy",
+            "traction_norm",
+            "contact_force_norm",
+            "contact_force_match",
             "max_stress",
             "compliance",
             "weighted_solution",
@@ -94,6 +99,44 @@
             "power",
             "weight",
             "print_energy"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "sdf-target",
+        "required": [
+            "state",
+            "type",
+            "delta"
+        ],
+        "optional": [
+            "control_points",
+            "control_points_grid",
+            "knots",
+            "knots_u",
+            "knots_v",
+            "weight",
+            "print_energy",
+            "surface_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "mesh-target",
+        "required": [
+            "state",
+            "type",
+            "delta",
+            "mesh_path"
+        ],
+        "optional": [
+            "weight",
+            "print_energy",
+            "surface_selection"
         ],
         "doc": "TODO"
     },
@@ -559,6 +602,55 @@
         ],
         "optional": [
             "volume_selection",
+            "power",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "Lp Norm of elastic stress over the volume selection"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "traction_norm",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "surface_selection",
+            "power",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "Lp Norm of elastic stress over the volume selection"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "contact_force_norm",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "surface_selection",
+            "power",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "Lp Norm of elastic stress over the volume selection"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "contact_force_match",
+        "required": [
+            "state",
+            "type",
+            "force_matching_function"
+        ],
+        "optional": [
+            "surface_selection",
             "power",
             "weight",
             "print_energy"

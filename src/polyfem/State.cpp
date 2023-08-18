@@ -537,7 +537,7 @@ namespace polyfem
 
 		if (args["space"]["use_p_ref"])
 			return false;
-
+		
 		if (args["optimization"]["enabled"])
 			return false;
 
@@ -576,6 +576,7 @@ namespace polyfem
 		pressure_bases.clear();
 		geom_bases_.clear();
 		boundary_nodes.clear();
+		input_dirichlet.clear();
 		dirichlet_nodes.clear();
 		neumann_nodes.clear();
 		local_boundary.clear();
@@ -799,6 +800,7 @@ namespace polyfem
 
 		auto &gbases = geom_bases();
 
+
 		// if (is_contact_enabled())
 		if (args["optimization"]["enabled"])
 		{
@@ -817,7 +819,7 @@ namespace polyfem
 					else
 						autogen::q_nodes_3d(order, local_pts);
 				}
-				else
+				else 
 				{
 					if (mesh->is_simplex(e))
 						autogen::p_nodes_2d(order, local_pts);
@@ -847,7 +849,7 @@ namespace polyfem
 			for (const auto &iter : pairs)
 				for (int d = 0; d < dim; d++)
 					coeffs.emplace_back(iter.first[0] * dim + d, iter.first[1] * dim + d, iter.second);
-
+			
 			down_sampling_mat.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
 			down_sampling_mat.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
@@ -857,7 +859,7 @@ namespace polyfem
 
 		const int dim = mesh->dimension();
 		const int problem_dim = problem->is_scalar() ? 1 : dim;
-
+		
 		if (args["space"]["advanced"]["count_flipped_els"])
 			stats.count_flipped_elements(*mesh, geom_bases());
 
@@ -1241,15 +1243,15 @@ namespace polyfem
 		}
 
 		collision_mesh_ = ipc::CollisionMesh(is_on_surface,
-											 node_positions,
-											 boundary_edges,
-											 boundary_triangles,
-											 displacement_map);
+											node_positions,
+											boundary_edges,
+											boundary_triangles,
+											displacement_map);
 
 		collision_mesh_.can_collide = [&](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles
 			return !this->is_obstacle_vertex(collision_mesh_.to_full_vertex_id(vi))
-				   || !this->is_obstacle_vertex(collision_mesh_.to_full_vertex_id(vj));
+					|| !this->is_obstacle_vertex(collision_mesh_.to_full_vertex_id(vj));
 		};
 
 		collision_mesh_.init_area_jacobians();
