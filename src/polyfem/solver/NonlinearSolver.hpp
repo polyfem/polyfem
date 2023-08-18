@@ -10,8 +10,6 @@
 
 #include <cppoptlib/solver/isolver.h>
 
-extern "C" size_t getPeakRSS();
-
 namespace cppoptlib
 {
 	enum class ErrorCode
@@ -59,8 +57,6 @@ namespace cppoptlib
 				   || this->m_status == Status::GradNormTolerance;
 		}
 
-		bool verify_gradient(ProblemType &objFunc, const TVector &x, const TVector &grad);
-		virtual bool is_saddle_point(ProblemType &objFunc, const TVector &x) { return false; }
 		size_t max_iterations() const { return this->m_stop.iterations; }
 		size_t &max_iterations() { return this->m_stop.iterations; }
 
@@ -70,11 +66,8 @@ namespace cppoptlib
 		// ====================================================================
 
 		bool normalize_gradient;
-		bool solver_info_log;
 		double use_grad_norm_tol;
 		double first_grad_norm_tol;
-		double min_step_size;
-		double max_step_size;
 		double dt;
 
 		// ====================================================================
@@ -116,12 +109,8 @@ namespace cppoptlib
 		double obj_fun_time;
 
 		std::string export_energy_path;
-		bool export_energy_components;
 
 		ErrorCode m_error_code;
-
-		bool debug_finite_diff;
-		double finite_diff_eps;
 
 		// ====================================================================
 		//                                 END

@@ -78,31 +78,19 @@
             "solver",
             "bounds",
             "f_delta",
-            "debug_fd",
-            "debug_fd_eps",
-            "fall_back_descent_strategy_period",
             "max_step_size",
             "max_change",
             "better_initial_guess",
             "x_delta",
-            "solver_info_log",
             "grad_norm",
             "max_iterations",
-            "min_step_size",
             "use_grad_norm",
             "relative_gradient",
             "line_search",
             "export_energy",
-            "export_energy_components",
             "first_grad_norm_tol"
         ],
         "doc": "Settings for optimization nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
-    },
-    {
-        "pointer": "/solver/nonlinear/fall_back_descent_strategy_period",
-        "default": 1,
-        "type": "int",
-        "doc": "TODO"
     },
     {
         "pointer": "/solver/nonlinear/solver",
@@ -113,7 +101,7 @@
             "lbfgs",
             "bfgs",
             "lbfgsb",
-            "gradientdescent"
+            "gradient_descent"
         ],
         "doc": "Nonlinear solver type"
     },
@@ -150,28 +138,10 @@
         "doc": "Box constraint values"
     },
     {
-        "pointer": "/solver/nonlinear/export_energy_components",
-        "default": false,
-        "type": "bool",
-        "doc": "Save energy and gradient components"
-    },
-    {
         "pointer": "/solver/nonlinear/export_energy",
         "default": "runtime.csv",
         "type": "string",
         "doc": "Save energy and gradient in optimizations to file"
-    },
-    {
-        "pointer": "/solver/nonlinear/debug_fd",
-        "default": false,
-        "type": "bool",
-        "doc": "Use finite difference to verify gradient in optimization"
-    },
-    {
-        "pointer": "/solver/nonlinear/debug_fd_eps",
-        "default": 1e-7,
-        "type": "float",
-        "doc": "Use finite difference to verify gradient in optimization"
     },
     {
         "pointer": "/solver/nonlinear/max_change",
@@ -214,12 +184,6 @@
         "doc": "Stopping criterion: minimal change of the variable x for the iterations to continue"
     },
     {
-        "pointer": "/solver/nonlinear/solver_info_log",
-        "default": true,
-        "type": "bool",
-        "doc": "Print optimization nonlinear solver statistics to log in json format at every iter"
-    },
-    {
         "pointer": "/solver/nonlinear/grad_norm",
         "default": 1e-08,
         "type": "float",
@@ -230,12 +194,6 @@
         "default": 1e-8,
         "type": "float",
         "doc": "Minimal gradient norm for the iterations to not start, assume we already are at a minimum."
-    },
-    {
-        "pointer": "/solver/nonlinear/min_step_size",
-        "default": 0,
-        "type": "float",
-        "doc": "Minimum step size in line search"
     },
     {
         "pointer": "/solver/nonlinear/max_iterations",

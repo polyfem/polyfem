@@ -1907,65 +1907,15 @@
             "solver",
             "f_delta",
             "x_delta",
-            "debug_fd",
-            "debug_fd_eps",
-            "disable_project_psd",
-            "verify_hessian",
             "grad_norm",
             "first_grad_norm_tol",
             "max_iterations",
             "relative_gradient",
             "line_search",
             "export_energy",
-            "export_energy_components",
-            "solver_info_log",
-            "max_step_size",
-            "min_step_size",
             "force_psd_projection"
         ],
         "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
-    },
-    {
-        "pointer": "/solver/nonlinear/disable_project_psd",
-        "default": false,
-        "type": "bool",
-        "doc": "Disable projection to PSD in newton solve."
-    },
-    {
-        "pointer": "/solver/nonlinear/verify_hessian",
-        "default": false,
-        "type": "bool",
-        "doc": "Use finite difference to verify gradient in optimization"
-    },
-    {
-        "pointer": "/solver/nonlinear/debug_fd",
-        "default": false,
-        "type": "bool",
-        "doc": "Use finite difference to verify gradient in optimization"
-    },
-    {
-        "pointer": "/solver/nonlinear/debug_fd_eps",
-        "default": 1e-7,
-        "type": "float",
-        "doc": "Use finite difference to verify gradient in optimization"
-    },
-    {
-        "pointer": "/solver/nonlinear/max_step_size",
-        "default": 1,
-        "type": "float",
-        "doc": "The descent direction in the nonlinear solves is multiplied by this value, for problems with too small/large gradient."
-    },
-    {
-        "pointer": "/solver/nonlinear/solver_info_log",
-        "default": false,
-        "type": "bool",
-        "doc": "Print optimization nonlinear solver statistics to log in json format at every iter"
-    },
-    {
-        "pointer": "/solver/nonlinear/min_step_size",
-        "default": 0,
-        "type": "float",
-        "doc": "Minimum step size in line search"
     },
     {
         "pointer": "/solver/nonlinear/export_energy",
@@ -1974,18 +1924,12 @@
         "doc": "Save energy and gradient in optimizations to file"
     },
     {
-        "pointer": "/solver/nonlinear/export_energy_components",
-        "default": false,
-        "type": "bool",
-        "doc": "Save energy and gradient components"
-    },
-    {
         "pointer": "/solver/nonlinear/solver",
         "default": "newton",
         "type": "string",
         "options": [
             "newton",
-            "GradientDescent",
+            "gradient_descent",
             "lbfgs"
         ],
         "doc": "Nonlinear solver type"

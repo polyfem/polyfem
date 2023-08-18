@@ -53,7 +53,7 @@ namespace polyfem::solver
 	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> AdjointOptUtils::make_nl_solver(const json &solver_params)
 	{
 		const std::string name = solver_params["solver"].template get<std::string>();
-		if (name == "GradientDescent" || name == "gradientdescent" || name == "gradient")
+		if (name == "GradientDescent" || name == "gradient_descent" || name == "gradient")
 		{
 			return std::make_shared<cppoptlib::GradientDescentSolver<AdjointNLProblem>>(
 				solver_params, 0.);

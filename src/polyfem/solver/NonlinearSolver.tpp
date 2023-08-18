@@ -18,18 +18,10 @@ namespace cppoptlib
 		this->setStopCriteria(criteria);
 
 		normalize_gradient = solver_params["relative_gradient"];
-		min_step_size = solver_params["min_step_size"];
-		max_step_size = solver_params["max_step_size"];
 		use_grad_norm_tol = solver_params["line_search"]["use_grad_norm_tol"];
-		solver_info_log = solver_params["solver_info_log"];
-
 		export_energy_path = solver_params["export_energy"];
-		export_energy_components = solver_params["export_energy_components"];
 
 		first_grad_norm_tol = solver_params["first_grad_norm_tol"];
-
-		debug_finite_diff = solver_params["debug_fd"];
-		finite_diff_eps = solver_params["debug_fd_eps"];
 
 		set_line_search(solver_params["line_search"]["method"]);
 	}
@@ -45,37 +37,6 @@ namespace cppoptlib
 	{
 		m_line_search = polyfem::solver::line_search::LineSearch<ProblemType>::construct_line_search(line_search_name);
 		solver_info["line_search"] = line_search_name;
-
-		m_line_search->set_min_step_size(min_step_size);
-	}
-
-	template <typename ProblemType>
-	bool NonlinearSolver<ProblemType>::verify_gradient(ProblemType &objFunc, const TVector &x, const TVector &grad)
-	{
-		if (!debug_finite_diff)
-			return true;
-		
-		Eigen::VectorXd direc = grad.normalized();
-		Eigen::VectorXd x2 = x + direc * finite_diff_eps;
-		Eigen::VectorXd x1 = x - direc * finite_diff_eps;
-
-		objFunc.solution_changed(x2);
-		double J2 = objFunc.value(x2);
-
-		objFunc.solution_changed(x1);
-		double J1 = objFunc.value(x1);
-
-		double fd = (J2 - J1) / 2 / finite_diff_eps;
-		double analytic = direc.dot(grad);
-
-		bool match = abs(fd - analytic) < 1e-8 || abs(fd - analytic) < 1e-1 * abs(analytic);
-
-		// Log error in either case to make it more visible in the logs.
-		polyfem::logger().log(match ? spdlog::level::info : spdlog::level::err, "step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
-
-		objFunc.solution_changed(x);
-
-		return match;
 	}
 
 	template <typename ProblemType>
@@ -152,8 +113,6 @@ namespace cppoptlib
 			this->m_stop.fDelta, this->m_stop.gradNorm, this->m_stop.xDelta);
 
 		update_solver_info();
-		if (solver_info_log)
-			std::cout << solver_info << std::endl;
 
 		do
 		{
@@ -180,16 +139,6 @@ namespace cppoptlib
 				objFunc.gradient(x, grad);
 			}
 
-			Eigen::VectorXd values;
-			Eigen::MatrixXd grads;
-			{
-				POLYFEM_SCOPED_TIMER("verify gradient", grad_time);
-				verify_gradient(objFunc, x, grad);
-				// not implemented yet
-				// values = objFunc.component_values(x);
-				// grads = objFunc.component_gradients(x);
-			}
-
 			const double grad_norm = compute_grad_norm(x, grad);
 			if (std::isnan(grad_norm))
 			{
@@ -201,18 +150,7 @@ namespace cppoptlib
 
 			if (outfile.is_open())
 			{
-				assert(values.size() == grads.cols());
 				outfile << std::setprecision(12) << energy << ", " << grad_norm;
-				if (export_energy_components)
-				{
-					outfile << ", ";
-					for (int i = 0; i < values.size(); i++)
-					{
-						outfile << std::setprecision(12) << values(i) << ", " << grads.col(i).norm();
-						if (i < values.size() - 1)
-							outfile << ", ";
-					}
-				}
 				outfile << "\n";
 				outfile.flush();
 			}
@@ -227,7 +165,6 @@ namespace cppoptlib
 				this->m_status = Status::Continue;
 				continue;
 			}
-			delta_x *= max_step_size;
 
 			if (grad_norm != 0 && delta_x.dot(grad) >= 0 && name() != "MMA")
 			{
@@ -260,27 +197,6 @@ namespace cppoptlib
 			this->m_status = checkConvergence(this->m_stop, this->m_current);
 
 			old_energy = energy;
-
-			// ---------------
-			// Plot energy along descent direction
-			// ---------------
-
-			// if (this->m_current.iterations > 8) {
-			// 	const double value_ = objFunc.value(x);
-			// 	const double rate_ = delta_x.dot(grad);
-			// 	std::cout << "descent rate " << rate_ << "\n";
-			// 	std::cout << std::setprecision(20) << 0 << " " << value_ << " " << grad.dot(delta_x) << "\n";
-			// 	double dt_ = 1e-4;
-			// 	while (dt_ < 1e2)
-			// 	{
-			// 		objFunc.solution_changed(x + delta_x * dt_);
-			// 		Eigen::VectorXd grad_;
-			// 		objFunc.gradient(x, grad_);
-			// 		std::cout << std::setprecision(20) << dt_ << " " << objFunc.value(x + delta_x * dt_) << " " << grad.dot(delta_x) << "\n";
-			// 		dt_ *= 1.2;
-			// 	}
-			// 	exit(0);
-			// }
 
 			// ---------------
 			// Variable update
@@ -325,8 +241,6 @@ namespace cppoptlib
 				this->m_status = Status::IterationLimit;
 
 			update_solver_info();
-			if (solver_info_log)
-				std::cout << solver_info << std::endl;
 
 			objFunc.save_to_file(x);
 
@@ -426,7 +340,6 @@ namespace cppoptlib
 		solver_info["gradNorm"] = crit.gradNorm;
 		solver_info["condition"] = crit.condition;
 		solver_info["relative_gradient"] = normalize_gradient;
-		solver_info["peak_memory"] = getPeakRSS() / (double)(1024 * 1024);
 
 		double per_iteration = crit.iterations ? crit.iterations : 1;
 

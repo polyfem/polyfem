@@ -848,8 +848,8 @@ namespace polyfem
 				for (int d = 0; d < dim; d++)
 					coeffs.emplace_back(iter.first[0] * dim + d, iter.first[1] * dim + d, iter.second);
 
-			down_sampling_mat.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
-			down_sampling_mat.setFromTriplets(coeffs.begin(), coeffs.end());
+			gbasis_nodes_to_basis_nodes.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
+			gbasis_nodes_to_basis_nodes.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
 
 		for (const auto &lb : local_boundary)

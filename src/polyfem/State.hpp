@@ -632,7 +632,7 @@ namespace polyfem
 		// to replace the initial condition in json during initial condition optimization
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
 		// mapping from positions of geometric nodes to positions of FE basis nodes
-		StiffnessMatrix down_sampling_mat;
+		StiffnessMatrix gbasis_nodes_to_basis_nodes;
 	};
 
 } // namespace polyfem

@@ -646,7 +646,7 @@ namespace polyfem::solver
 			if (state.is_contact_enabled())
 			{
 				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.contact_set(0), sol, adjoint, contact_term);
-				contact_term = state.down_sampling_mat * contact_term;
+				contact_term = state.gbasis_nodes_to_basis_nodes * contact_term;
 			}
 			else
 				contact_term.setZero(elasticity_term.size());
@@ -697,7 +697,7 @@ namespace polyfem::solver
 				if (state.is_contact_enabled())
 				{
 					state.solve_data.contact_form->force_shape_derivative(state.diff_cached.contact_set(i), state.diff_cached.u(i), cur_p, contact_term);
-					contact_term = state.down_sampling_mat * contact_term;
+					contact_term = state.gbasis_nodes_to_basis_nodes * contact_term;
 					// contact_term /= beta_dt * beta_dt;
 				}
 				else
@@ -706,7 +706,7 @@ namespace polyfem::solver
 				if (state.solve_data.friction_form)
 				{
 					state.solve_data.friction_form->force_shape_derivative(state.diff_cached.u(i - 1), state.diff_cached.u(i), cur_p, state.diff_cached.friction_constraint_set(i), friction_term);
-					friction_term = state.down_sampling_mat * (friction_term / beta);
+					friction_term = state.gbasis_nodes_to_basis_nodes * (friction_term / beta);
 					// friction_term /= beta_dt * beta_dt;
 				}
 				else
