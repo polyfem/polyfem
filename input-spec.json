@@ -1914,8 +1914,7 @@
             "solver_info_log",
             "max_step_size",
             "min_step_size",
-            "force_psd_projection",
-            "check_saddle_point"
+            "force_psd_projection"
         ],
         "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
     },
@@ -2057,12 +2056,6 @@
         "default": false,
         "type": "bool",
         "doc": "Force the Hessian to be PSD when using second order solvers (i.e., Newton's method)."
-    },
-    {
-        "pointer": "/solver/nonlinear/check_saddle_point",
-        "default": false,
-        "type": "bool",
-        "doc": "Check if hessian is PSD when the nonlinear solve converges."
     },
     {
         "pointer": "/solver/augmented_lagrangian",
@@ -2861,38 +2854,9 @@
             "dirichlet_boundary",
             "neumann_boundary",
             "pressure_boundary",
-            "obstacle_displacements",
-            "linear_displacement_offset",
-            "fixed_macro_strain"
+            "obstacle_displacements"
         ],
         "doc": "The settings for boundary conditions."
-    },
-    {
-        "pointer": "/boundary_conditions/fixed_macro_strain",
-        "type": "list",
-        "default": [],
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/fixed_macro_strain/*",
-        "type": "int",
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/linear_displacement_offset",
-        "type": "list",
-        "default": [],
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/linear_displacement_offset/*",
-        "type": "list",
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/linear_displacement_offset/*/*",
-        "type": "float",
-        "doc": ""
     },
     {
         "pointer": "/boundary_conditions/rhs",
@@ -3988,7 +3952,6 @@
         "optional": [
             "use_hdf5",
             "material",
-            "topology",
             "body_ids",
             "contact_forces",
             "friction_forces",
@@ -4009,12 +3972,6 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out material values sampled on the vertices of the mesh"
-    },
-    {
-        "pointer": "/output/paraview/options/topology",
-        "default": false,
-        "type": "bool",
-        "doc": "If true, write out topology values sampled on the vertices of the mesh"
     },
     {
         "pointer": "/output/paraview/options/body_ids",

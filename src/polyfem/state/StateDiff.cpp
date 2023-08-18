@@ -158,7 +158,7 @@ namespace polyfem
 		}
 		else // static formulation
 		{
-			if (assembler->is_linear() && !is_contact_enabled() && disp_grad_.size() == 0)
+			if (assembler->is_linear() && !is_contact_enabled()) // && disp_grad_.size() == 0)
 			{
 				hessian.setZero();
 				StiffnessMatrix stiffness;
@@ -320,7 +320,7 @@ namespace polyfem
 			solver->analyzePattern(A, A.rows());
 			solver->factorize(A);
 
-			if (disp_grad_.size() == 0)
+			if (true) // (disp_grad_.size() == 0)
 			{
 				for (int i = 0; i < b.cols(); i++)
 				{

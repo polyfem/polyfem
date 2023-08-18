@@ -123,8 +123,6 @@ namespace cppoptlib
 		bool debug_finite_diff;
 		double finite_diff_eps;
 
-		bool check_saddle_point;
-
 		// ====================================================================
 		//                                 END
 		// ====================================================================

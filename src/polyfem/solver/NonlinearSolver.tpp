@@ -31,8 +31,6 @@ namespace cppoptlib
 		debug_finite_diff = solver_params["debug_fd"];
 		finite_diff_eps = solver_params["debug_fd_eps"];
 
-		check_saddle_point = solver_params["check_saddle_point"];
-
 		set_line_search(solver_params["line_search"]["method"]);
 	}
 
@@ -335,13 +333,6 @@ namespace cppoptlib
 		} while (objFunc.callback(this->m_current, x) && (this->m_status == Status::Continue));
 
 		timer.stop();
-
-		// -----------
-		// Check if the solution is a saddle point
-		// -----------
-
-		if (check_saddle_point && is_saddle_point(objFunc, x))
-			log_and_throw_error("[{}] Solution is a saddle point", name());
 
 		// -----------
 		// Log results
