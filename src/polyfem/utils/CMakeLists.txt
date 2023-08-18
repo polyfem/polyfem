@@ -42,6 +42,7 @@ set(SOURCES
 	RefElementSampler.hpp
 	BSplineParametrization.cpp
 	BSplineParametrization.hpp
+	CubicHermiteSplineParametrization.hpp
 	Selection.cpp
 	Selection.hpp
 	StringUtils.cpp
