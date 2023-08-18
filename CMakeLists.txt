@@ -282,9 +282,6 @@ if(POLYFEM_WITH_CLIPPER)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
 endif()
 
-include(finite_diff)
-polyfem_target_link_system_libraries(polyfem PUBLIC finitediff::finitediff)
-
 # Extra warnings (link this here so it has top priority)
 target_link_libraries(polyfem PRIVATE polyfem::warnings)
 

@@ -23,7 +23,6 @@
 #include <ipc/ipc.hpp>
 #include <ipc/barrier/barrier.hpp>
 #include <ipc/utils/local_to_global.hpp>
-#include <finitediff.hpp>
 
 #include <Eigen/Dense>
 #include <unsupported/Eigen/SparseExtra>
