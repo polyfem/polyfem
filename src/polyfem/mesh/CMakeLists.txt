@@ -19,3 +19,4 @@ target_sources(polyfem PRIVATE ${SOURCES})
 
 add_subdirectory(mesh2D)
 add_subdirectory(mesh3D)
+add_subdirectory(collision_proxy)

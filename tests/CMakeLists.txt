@@ -22,6 +22,7 @@ set(test_sources
   test_solver.cpp
   test_tbb.cpp
   test_time_integrators.cpp
+  test_upsample_mesh.cpp
   test_utils.cpp
   verify_run.cpp
 )

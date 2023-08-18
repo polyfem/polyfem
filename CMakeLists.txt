@@ -80,26 +80,7 @@ option(POLYFEM_WITH_REMESHING "Uses VMTK for remeshing"                     OFF)
 option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"               OFF)
-
-# Options for libigl modules
-option(LIBIGL_USE_STATIC_LIBRARY          "Use libigl as static library" OFF)
-option(LIBIGL_WITH_ANTTWEAKBAR            "Use AntTweakBar"              OFF)
-option(LIBIGL_WITH_CGAL                   "Use CGAL"                     OFF)
-option(LIBIGL_WITH_COMISO                 "Use CoMiso"                   OFF)
-option(LIBIGL_WITH_CORK                   "Use Cork"                     OFF)
-option(LIBIGL_WITH_EMBREE                 "Use Embree"                   OFF)
-option(LIBIGL_WITH_LIM                    "Use LIM"                      OFF)
-option(LIBIGL_WITH_MATLAB                 "Use Matlab"                   OFF)
-option(LIBIGL_WITH_MOSEK                  "Use MOSEK"                    OFF)
-option(LIBIGL_WITH_OPENGL                 "Use OpenGL"                   OFF)
-option(LIBIGL_WITH_OPENGL_GLFW            "Use GLFW"                     OFF)
-option(LIBIGL_WITH_OPENGL_GLFW_IMGUI      "Use ImGui"                    OFF)
-option(LIBIGL_WITH_PNG                    "Use PNG"                      OFF)
-option(LIBIGL_WITH_PYTHON                 "Use Python"                   OFF)
-option(LIBIGL_WITH_TRIANGLE               "Use Triangle"                 OFF)
-option(LIBIGL_WITH_VIEWER                 "Use OpenGL viewer"            OFF)
-option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
-option(LIBIGL_WITH_TETGEN "Use Tetgen" OFF)
+option(POLYFEM_WITH_TRIANGLE  "Build target igl_restricted::triangle"       OFF)
 
 ################################################################################
 
@@ -203,8 +184,8 @@ endif()
 include(libigl)
 polyfem_target_link_system_libraries(polyfem PUBLIC igl::core)
 
-if(LIBIGL_WITH_TRIANGLE)
-    polyfem_target_link_system_libraries(polyfem PUBLIC igl::triangle)
+if(POLYFEM_WITH_TRIANGLE)
+    polyfem_target_link_system_libraries(polyfem PUBLIC igl_restricted::triangle)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TRIANGLE)
 endif()
 
