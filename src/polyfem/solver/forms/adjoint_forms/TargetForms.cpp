@@ -3,9 +3,6 @@
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 
-#include <nanospline/BSpline.h>
-#include <nanospline/BSplinePatch.h>
-
 #include <polyfem/State.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
