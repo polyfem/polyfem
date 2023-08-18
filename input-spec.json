@@ -2901,7 +2901,6 @@
         ],
         "optional": [
             "dimension",
-            "time_reference",
             "interpolation"
         ],
         "doc": "Dirichlet boundary condition."
@@ -2971,17 +2970,6 @@
         "type": "bool",
         "default": true,
         "doc": "value"
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference",
-        "default": [],
-        "type": "list",
-        "doc": "List of times when the Dirichlet boundary condition is specified"
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference/*",
-        "type": "float",
-        "doc": "Values of Dirichlet boundary condition for timestep"
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation",

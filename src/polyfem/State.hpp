@@ -388,8 +388,6 @@ namespace polyfem
 		std::vector<mesh::LocalBoundary> local_neumann_boundary;
 		/// nodes on the boundary of polygonal elements, used for harmonic bases
 		std::map<int, basis::InterfaceData> poly_edge_to_data;
-		/// Matrices containing the input per node dirichelt
-		std::vector<Eigen::MatrixXd> input_dirichlet;
 		/// per node dirichlet
 		std::vector<int> dirichlet_nodes;
 		std::vector<RowVectorNd> dirichlet_nodes_position;

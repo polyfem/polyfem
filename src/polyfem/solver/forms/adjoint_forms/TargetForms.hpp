@@ -4,7 +4,6 @@
 
 #include <igl/AABB.h>
 #include <polyfem/utils/ExpressionValue.hpp>
-#include <polyfem/utils/LazyCubicInterpolator.hpp>
 
 namespace polyfem::solver
 {
@@ -39,65 +38,6 @@ namespace polyfem::solver
 		std::array<utils::ExpressionValue, 3> target_func_grad;
 	};
 
-	class SDFTargetForm : public SpatialIntegralForm
-	{
-	public:
-		SDFTargetForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
-		{
-			set_integral_type(SpatialIntegralType::surface);
-
-			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
-			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
-		}
-
-		void solution_changed_step(const int time_step, const Eigen::VectorXd &new_x) override;
-		void set_bspline_target(const Eigen::MatrixXd &control_points, const Eigen::VectorXd &knots, const double delta);
-		void set_bspline_target(const Eigen::MatrixXd &control_points, const Eigen::VectorXd &knots_u, const Eigen::VectorXd &knots_v, const double delta);
-
-	protected:
-		IntegrableFunctional get_integral_functional() const override;
-
-	private:
-		void compute_distance(const Eigen::MatrixXd &point, double &distance) const;
-
-		int dim;
-		double delta_;
-
-		Eigen::MatrixXd t_or_uv_sampling;
-		Eigen::MatrixXd point_sampling;
-		int samples;
-
-		std::unique_ptr<LazyCubicInterpolator> interpolation_fn;
-	};
-
-	class MeshTargetForm : public SpatialIntegralForm
-	{
-	public:
-		MeshTargetForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
-		{
-			set_integral_type(SpatialIntegralType::surface);
-
-			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
-			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
-		}
-
-		void solution_changed_step(const int time_step, const Eigen::VectorXd &new_x) override;
-		void set_surface_mesh_target(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const double delta);
-
-	protected:
-		IntegrableFunctional get_integral_functional() const override;
-
-	private:
-		int dim;
-		double delta_;
-
-		Eigen::MatrixXd V_;
-		Eigen::MatrixXi F_;
-		igl::AABB<Eigen::MatrixXd, 3> tree_;
-
-		std::unique_ptr<LazyCubicInterpolator> interpolation_fn;
-	};
-
 	class NodeTargetForm : public StaticForm
 	{
 	public:
@@ -108,7 +48,7 @@ namespace polyfem::solver
 		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
 		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
-	
+
 	protected:
 		const State &state_;
 
@@ -129,4 +69,4 @@ namespace polyfem::solver
 		std::vector<std::shared_ptr<PositionForm>> center1, center2;
 		int dim;
 	};
-}
+} // namespace polyfem::solver
