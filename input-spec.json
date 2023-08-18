@@ -1,4 +1,5 @@
-[{
+[
+    {
         "pointer": "/",
         "type": "object",
         "required": [
@@ -1150,7 +1151,8 @@
             "force_no_ref_for_harmonic",
             "B",
             "h1_formula",
-            "count_flipped_els"
+            "count_flipped_els",
+            "use_particle_advection"
         ],
         "doc": "Advanced settings for the FE space."
     },
@@ -1229,6 +1231,12 @@
         "default": true,
         "type": "bool",
         "doc": "Count the number of elements with Jacobian of the geometric map not positive at quadrature points."
+    },
+    {
+        "pointer": "/space/advanced/use_particle_advection",
+        "default": false,
+        "type": "bool",
+        "doc": "Use particle advection in splitting method for solving NS equation."
     },
     {
         "pointer": "/time",
@@ -1979,30 +1987,46 @@
         "optional": [
             "initial_weight",
             "scaling",
-            "max_steps",
+            "max_weight",
+            "eta",
+            "max_solver_iters",
             "force"
         ],
-        "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes a*E + (1-a)*AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a /= scaling` `max_steps` times."
+        "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes E + a/2*AL^2 - lambda AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a *= scaling` until `max_weight`. See IPC additional material"
     },
     {
         "pointer": "/solver/augmented_lagrangian/initial_weight",
-        "default": 0.5,
+        "default": 1e6,
         "min": 0,
-        "max": 1,
         "type": "float",
         "doc": "Initial weight for AL"
     },
     {
         "pointer": "/solver/augmented_lagrangian/scaling",
-        "default": 10.0,
+        "default": 2.0,
         "type": "float",
-        "doc": "Division factor"
+        "doc": "Multiplication factor"
     },
     {
-        "pointer": "/solver/augmented_lagrangian/max_steps",
-        "default": 20,
+        "pointer": "/solver/augmented_lagrangian/max_weight",
+        "default": 1e8,
+        "type": "float",
+        "doc": "Maximum weigth"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/eta",
+        "default": 0.99,
+        "min": 0,
+        "max": 1,
+        "type": "float",
+        "doc": "Tolerance for increasing the weight or updating the lagrangian"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/max_solver_iters",
+        "min": 1,
+        "default": 500,
         "type": "int",
-        "doc": "Maximum number of divisions"
+        "doc": "Maximum number of iterations of the nonlinear solver inside the AL steps."
     },
     {
         "pointer": "/solver/augmented_lagrangian/force",
@@ -2401,6 +2425,20 @@
     {
         "pointer": "/materials/*",
         "type": "object",
+        "type_name": "OperatorSplitting",
+        "required": [
+            "type",
+            "viscosity"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, viscosity, density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
         "type_name": "IncompressibleLinearElasticity",
         "required": [
             "type",
@@ -2557,6 +2595,7 @@
             "IncompressibleOgden",
             "Stokes",
             "NavierStokes",
+            "OperatorSplitting",
             "IncompressibleLinearElasticity",
             "Laplacian",
             "Helmholtz",
@@ -2727,6 +2766,8 @@
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/id",
         "type": "int",
+        "min": 0,
+        "max": 2147483646,
         "doc": "ID of Dirichlet boundary condition from surface selection."
     },
     {
@@ -2837,6 +2878,20 @@
         "doc": "interpolation of boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_cubic",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/interpolation/*/type",
         "type": "string",
         "options": [
@@ -2844,7 +2899,8 @@
             "linear",
             "linear_ramp",
             "piecewise_constant",
-            "piecewise_linear"
+            "piecewise_linear",
+            "piecewise_cubic"
         ],
         "doc": "type of interpolation of boundary condition"
     },
@@ -2913,6 +2969,8 @@
     {
         "pointer": "/boundary_conditions/neumann_boundary/*/id",
         "type": "int",
+        "min": 0,
+        "max": 2147483646,
         "doc": "ID of Neumann boundary condition"
     },
     {
@@ -2999,6 +3057,20 @@
         "doc": "interpolation of boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_cubic",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*/type",
         "type": "string",
         "options": [
@@ -3006,7 +3078,8 @@
             "linear",
             "linear_ramp",
             "piecewise_constant",
-            "piecewise_linear"
+            "piecewise_linear",
+            "piecewise_cubic"
         ],
         "doc": "type of interpolation of boundary condition"
     },
@@ -3076,20 +3149,17 @@
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/id",
         "type": "int",
+        "min": 0,
+        "max": 2147483646,
         "doc": "ID for the pressure Neumann boundary condition"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/value",
-        "type": "list",
-        "doc": "Values of pressure Neumann boundary condition"
-    },
-    {
-        "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
         "type": "string",
         "doc": "Values of pressure Neumann boundary condition as a function of $x,y,z,t$"
     },
     {
-        "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
+        "pointer": "/boundary_conditions/pressure_boundary/*/value",
         "type": "float",
         "doc": "Values of pressure Neumann boundary condition"
     },
@@ -3172,6 +3242,20 @@
         "doc": "interpolation of boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/*",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_cubic",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/pressure_boundary/*/interpolation/type",
         "type": "string",
         "options": [
@@ -3179,7 +3263,8 @@
             "linear",
             "linear_ramp",
             "piecewise_constant",
-            "piecewise_linear"
+            "piecewise_linear",
+            "piecewise_cubic"
         ],
         "doc": "type of interpolation of boundary condition"
     },
@@ -3334,6 +3419,20 @@
         "doc": "interpolation of boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_cubic",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/obstacle_displacements/*/interpolation/*/type",
         "type": "string",
         "options": [
@@ -3341,7 +3440,8 @@
             "linear",
             "linear_ramp",
             "piecewise_constant",
-            "piecewise_linear"
+            "piecewise_linear",
+            "piecewise_cubic"
         ],
         "doc": "type of interpolation of boundary condition"
     },

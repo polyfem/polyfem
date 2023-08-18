@@ -1,21 +1,8 @@
 #include "Bilaplacian.hpp"
 
-#include <polyfem/basis/Basis.hpp>
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
-#include <polyfem/utils/ElasticityUtils.hpp>
-
 namespace polyfem::assembler
 {
-	Eigen::Matrix<double, 1, 1>
-	BilaplacianMain::compute_rhs(const AutodiffHessianPt &pt) const
-	{
-		assert(pt.size() == size());
-		Eigen::Matrix<double, 1, 1> res(size());
-		assert(false);
-		return res;
-	}
-
-	Eigen::Matrix<double, 1, 1>
+	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 	BilaplacianMixed::assemble(const MixedAssemblerData &data) const
 	{
 		const Eigen::MatrixXd &gradi = data.psi_vals.basis_values[data.i].grad_t_m;
@@ -30,7 +17,7 @@ namespace polyfem::assembler
 		return Eigen::Matrix<double, 1, 1>::Constant(res);
 	}
 
-	Eigen::Matrix<double, 1, 1>
+	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 	BilaplacianAux::assemble(const LinearAssemblerData &data) const
 	{
 		const double tmp = (data.vals.basis_values[data.i].val.array() * data.vals.basis_values[data.j].val.array() * data.da.array()).sum();

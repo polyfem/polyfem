@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        config: [Debug, Release]
+        config: [DebugNoSymbols, Release]
         threading: [TBB]
         include:
           - os: ubuntu-latest
@@ -40,11 +40,12 @@ jobs:
           libglu1-mesa-dev \
           xorg-dev \
           ccache
-          echo 'CACHE_PATH=~/.ccache' >> "$GITHUB_ENV"
+          echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
 
       - name: Cache Build
         id: cache-build
         uses: actions/cache@v3
+        if: matrix.config == 'Release' # debug cache is not working
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
@@ -52,7 +53,7 @@ jobs:
 
       - name: Prepare ccache
         run: |
-          ccache --max-size=1.0G
+          # ccache --max-size=1.0G
           ccache -V && ccache --show-stats && ccache --zero-stats
 
       - name: Configure
@@ -62,6 +63,7 @@ jobs:
           cmake .. \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
@@ -87,7 +89,7 @@ jobs:
       matrix:
         os: [macos-latest]
         arc: [x86]
-        config: [Debug]
+        config: [DebugNoSymbols]
         threading: [TBB]
         include:
           - os: macos-latest
@@ -125,6 +127,7 @@ jobs:
           cmake .. \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
@@ -136,6 +139,7 @@ jobs:
           cmake .. \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DCMAKE_OSX_ARCHITECTURES=arm64 \
             -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
@@ -158,11 +162,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: [Debug]
+        config: [DebugNoSymbols]
         threading: [TBB]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3.5.3
         with:
           fetch-depth: 10
 
@@ -170,20 +174,19 @@ jobs:
         uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: Stetup Conda
-        uses: s-weigand/setup-conda@v1
+        uses: s-weigand/setup-conda@v1.2.1
         with:
           update-conda: true
           conda-channels: anaconda, conda-forge
 
       - name: Install Dependencies
         run: |
-          conda install libblas libcblas suitesparse -y
+          conda install libblas libcblas -y
 
       - name: Set env
         run: |
           echo "appdata=$env:LOCALAPPDATA" >> ${env:GITHUB_ENV}
           conda init powershell
-
 
       - name: Cache build
         id: cache-build
@@ -208,7 +211,9 @@ jobs:
           cmake -G Ninja ^
             -DCMAKE_CXX_FLAGS="/Z7 /DEBUG:FASTLINK /DWIN32" ^
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
+            -DCMAKE_CONFIGURATION_TYPES="Release;Debug;RelWithDebInfo;MinSizeRel;DebugNoSymbols" ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="/Od" -DCMAKE_EXE_LINKER_FLAGS_DEBUGNOSYMBOLS="" ^
             -DPOLYFEM_WITH_CLIPPER=OFF ^
             -DPOLYFEM_THREADING=${{ matrix.threading }} ^
             -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
@@ -222,3 +227,5 @@ jobs:
         run: |
           cd build
           ctest --verbose --output-on-failure
+
+

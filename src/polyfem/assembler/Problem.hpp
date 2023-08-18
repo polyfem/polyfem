@@ -1,16 +1,9 @@
 #pragma once
 
-#include "AssemblerUtils.hpp"
-
+#include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/mesh/Mesh.hpp>
-
-#include <polyfem/Common.hpp>
-
-#include <vector>
-#include <Eigen/Dense>
-#include <memory>
 
 namespace polyfem
 {
@@ -27,7 +20,7 @@ namespace polyfem
 
 			virtual bool is_scalar() const = 0;
 
-			virtual void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
+			virtual void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
 			virtual bool is_rhs_zero() const = 0;
 
 			virtual void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;

@@ -1,77 +1,53 @@
 #pragma once
 
-#include "AssemblerData.hpp"
-
-#include <polyfem/Common.hpp>
-
-#include <polyfem/basis/ElementBases.hpp>
-
+#include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 
-#include <Eigen/Dense>
-#include <functional>
-
-namespace polyfem
+namespace polyfem::assembler
 {
-	namespace assembler
+	// local assembler for bilaplacian, see laplacian
+	//  0 L
+	//  L M
+	class BilaplacianMain : public LinearAssembler
 	{
-		// local assembler for bilaplacian, see laplacian
-		//  0 L
-		//  L M
-		class BilaplacianMain
+	public:
+		using LinearAssembler::assemble;
+
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+		assemble(const LinearAssemblerData &data) const override
 		{
-		public:
-			Eigen::Matrix<double, 1, 1>
-			assemble(const LinearAssemblerData &data) const
-			{
-				return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
-			}
+			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
+		}
 
-			Eigen::Matrix<double, 1, 1>
-			compute_rhs(const AutodiffHessianPt &pt) const;
+		std::string name() const override { return "BiLaplacian"; }
+		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
+	};
 
-			inline int size() const { return 1; }
+	class BilaplacianMixed : public MixedAssembler
+	{
+	public:
+		std::string name() const override { return "BilaplacianMixed"; }
 
-			void add_multimaterial(const int index, const json &params) {}
-		};
+		using MixedAssembler::assemble;
 
-		class BilaplacianMixed
-		{
-		public:
-			// res is R
-			Eigen::Matrix<double, 1, 1>
-			assemble(const MixedAssemblerData &data) const;
+		// res is R
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
+		assemble(const MixedAssemblerData &data) const override;
 
-			Eigen::Matrix<double, 1, 1>
-			compute_rhs(const AutodiffHessianPt &pt) const
-			{
-				assert(false);
-				return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
-			}
+		inline int rows() const override { return 1; }
+		inline int cols() const override { return 1; }
+	};
 
-			inline int rows() const { return 1; }
-			inline int cols() const { return 1; }
+	class BilaplacianAux : public LinearAssembler
+	{
+	public:
+		using LinearAssembler::assemble;
 
-			void add_multimaterial(const int index, const json &params) {}
-		};
+		// res is R
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+		assemble(const LinearAssemblerData &data) const override;
 
-		class BilaplacianAux
-		{
-		public:
-			// res is R
-			Eigen::Matrix<double, 1, 1>
-			assemble(const LinearAssemblerData &data) const;
-
-			Eigen::Matrix<double, 1, 1>
-			compute_rhs(const AutodiffHessianPt &pt) const
-			{
-				assert(false);
-				return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
-			}
-
-			inline int size() const { return 1; }
-
-			void add_multimaterial(const int index, const json &params) {}
-		};
-	} // namespace assembler
-} // namespace polyfem
+		std::string name() const override { return "BiLaplacianAux"; }
+		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
+	};
+} // namespace polyfem::assembler

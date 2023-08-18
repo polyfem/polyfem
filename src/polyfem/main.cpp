@@ -2,8 +2,7 @@
 
 #include <CLI/CLI.hpp>
 
-#include <highfive/H5File.hpp>
-#include <highfive/H5Easy.hpp>
+#include <h5pp/h5pp.h>
 
 #include <polyfem/State.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
@@ -90,24 +89,23 @@ int main(int argc, char **argv)
 	}
 	else if (!hdf5_file.empty())
 	{
-		HighFive::File file(hdf5_file, HighFive::File::ReadOnly);
-		std::string json_string = H5Easy::load<std::string>(file, "json");
+		using MatrixXl = Eigen::Matrix<int64_t, Eigen::Dynamic, Eigen::Dynamic>;
+
+		h5pp::File file(hdf5_file, h5pp::FileAccess::READONLY);
+		std::string json_string = file.readDataset<std::string>("json");
 
 		in_args = json::parse(json_string);
 		in_args["root_path"] = hdf5_file;
 
-		HighFive::Group meshes = file.getGroup("meshes");
-		names = meshes.listObjectNames();
+		names = file.findGroups("", "/meshes");
 		cells.resize(names.size());
 		vertices.resize(names.size());
 
 		for (size_t i = 0; i < names.size(); ++i)
 		{
-			const auto &s = names[i];
-			const auto &tmp = meshes.getGroup(s);
-
-			tmp.getDataSet("c").read(cells[i]);
-			tmp.getDataSet("v").read(vertices[i]);
+			const std::string &name = names[i];
+			cells[i] = file.readDataset<MatrixXl>("/meshes/" + name + "/c").cast<int>();
+			vertices[i] = file.readDataset<Eigen::MatrixXd>("/meshes/" + name + "/v");
 		}
 	}
 	else
@@ -144,7 +142,7 @@ int main(int argc, char **argv)
 	state.build_basis();
 
 	state.assemble_rhs();
-	state.assemble_stiffness_mat();
+	state.assemble_mass_mat();
 
 	Eigen::MatrixXd sol;
 	Eigen::MatrixXd pressure;

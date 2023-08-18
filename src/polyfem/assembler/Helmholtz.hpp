@@ -1,29 +1,29 @@
 #pragma once
 
-#include "AssemblerData.hpp"
-
-#include <polyfem/Common.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
-
-#include <Eigen/Dense>
 
 // local assembler for helmolhz equation, see Laplace
 namespace polyfem::assembler
 {
-	class Helmholtz
+	class Helmholtz : public LinearAssembler
 	{
 	public:
-		Eigen::Matrix<double, 1, 1> assemble(const LinearAssemblerData &data) const;
-		Eigen::Matrix<double, 1, 1> compute_rhs(const AutodiffHessianPt &pt) const;
+		using LinearAssembler::assemble;
 
-		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const int dim, const AutodiffScalarGrad &r) const;
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+		assemble(const LinearAssemblerData &data) const override;
+		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 
-		inline int size() const { return 1; }
+		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const override;
 
 		// sets the k parameter
-		void add_multimaterial(const int index, const json &params);
+		void add_multimaterial(const int index, const json &params) override;
 
 		double k() const { return k_; }
+
+		std::string name() const override { return "Helmholtz"; }
+		std::map<std::string, ParamFunc> parameters() const override;
 
 	private:
 		double k_ = 1;

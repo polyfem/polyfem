@@ -1,13 +1,8 @@
 #pragma once
 
-#include "Problem.hpp"
+#include <polyfem/assembler/Problem.hpp>
 #include <polyfem/utils/ExpressionValue.hpp>
 #include <polyfem/utils/Interpolation.hpp>
-
-#include <Eigen/Dense>
-
-#include <array>
-#include <vector>
 
 namespace polyfem
 {
@@ -19,24 +14,7 @@ namespace polyfem
 			std::vector<std::shared_ptr<utils::Interpolation>> interpolation;
 			Eigen::Matrix<bool, 1, 3> dirichlet_dimension;
 
-			double eval(const RowVectorNd &pts, const int dim, const double t, const int el_id = -1) const
-			{
-				double x = pts(0), y = pts(1), z = pts.size() == 2 ? 0 : pts(2);
-				double val = value[dim](x, y, z, t, el_id);
-
-				if (interpolation.empty())
-				{
-				}
-				else if (interpolation.size() == 1)
-					val *= interpolation[0]->eval(t);
-				else
-				{
-					assert(dim < interpolation.size());
-					val *= interpolation[dim]->eval(t);
-				}
-
-				return val;
-			}
+			double eval(const RowVectorNd &pts, const int dim, const double t, const int el_id = -1) const;
 		};
 
 		struct ScalarBCValue
@@ -44,11 +22,7 @@ namespace polyfem
 			utils::ExpressionValue value;
 			std::shared_ptr<utils::Interpolation> interpolation;
 
-			double eval(const RowVectorNd &pts, const double t) const
-			{
-				double x = pts(0), y = pts(1), z = pts.size() == 2 ? 0 : pts(2);
-				return value(x, y, z, t) * interpolation->eval(t);
-			}
+			double eval(const RowVectorNd &pts, const double t) const;
 		};
 
 		class GenericTensorProblem : public Problem
@@ -56,7 +30,7 @@ namespace polyfem
 		public:
 			GenericTensorProblem(const std::string &name);
 
-			void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override
 			{
 				for (int i = 0; i < 3; ++i)
@@ -157,12 +131,20 @@ namespace polyfem
 		public:
 			GenericScalarProblem(const std::string &name);
 
-			void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override { return rhs_.is_zero(); }
 
 			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
 			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+
+			void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val) const override;
+			void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const override;
+			bool is_nodal_dirichlet_boundary(const int n_id, const int tag) override;
+			bool is_nodal_neumann_boundary(const int n_id, const int tag) override;
+			bool has_nodal_dirichlet() override;
+			bool has_nodal_neumann() override;
+			void update_nodes(const Eigen::VectorXi &in_node_to_node) override;
 
 			bool has_exact_sol() const override { return has_exact_; }
 			bool is_scalar() const override { return true; }
@@ -200,6 +182,10 @@ namespace polyfem
 			std::vector<ScalarBCValue> neumann_;
 			std::vector<ScalarBCValue> dirichlet_;
 			std::vector<std::pair<int, utils::ExpressionValue>> initial_solution_;
+
+			std::map<int, ScalarBCValue> nodal_dirichlet_;
+			std::map<int, ScalarBCValue> nodal_neumann_;
+			std::vector<Eigen::MatrixXd> nodal_dirichlet_mat_;
 
 			utils::ExpressionValue rhs_;
 			utils::ExpressionValue exact_;

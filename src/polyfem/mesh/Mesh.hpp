@@ -21,7 +21,7 @@ namespace polyfem
 		/// are tagged as boundary, and vertices incident to a polytope are also considered as boundary.
 		enum class ElementType
 		{
-			SIMPLEX,                       /// Triangle/tet element
+			SIMPLEX = 0,                   /// Triangle/tet element
 			REGULAR_INTERIOR_CUBE,         /// Regular quad/hex inside a 3^n patch
 			SIMPLE_SINGULAR_INTERIOR_CUBE, /// Quad/hex incident to exactly 1 singular vertex (in 2D) or edge (in 3D)
 			MULTI_SINGULAR_INTERIOR_CUBE,  /// Quad/Hex incident to more than 1 singular vertices (should not happen in 2D)
@@ -440,18 +440,25 @@ namespace polyfem
 			/// @param[in] body_ids vector of labels, one per element
 			virtual void set_body_ids(const std::vector<int> &body_ids) { body_ids_ = body_ids; }
 
+			/// @brief Get the default boundary selection of an element (face in 3d, edge in 2d)
+			///
+			/// @param[in] primitive element id
+			/// @return default label of element
+			virtual int get_default_boundary_id(const int primitive) const
+			{
+				if (is_volume() ? is_boundary_face(primitive) : is_boundary_edge(primitive))
+					return std::numeric_limits<int>::max(); // default for no selected boundary
+				else
+					return -1; // default for no boundary
+			}
+
 			/// @brief Get the boundary selection of an element (face in 3d, edge in 2d)
 			///
 			/// @param[in] primitive element id
 			/// @return label of element
 			virtual int get_boundary_id(const int primitive) const
 			{
-				if (has_boundary_ids())
-					return boundary_ids_.at(primitive);
-				else if (is_volume() ? is_boundary_face(primitive) : is_boundary_edge(primitive))
-					return std::numeric_limits<int>::max(); // default for no selected boundary
-				else
-					return -1; // default for no boundary
+				return has_boundary_ids() ? (boundary_ids_.at(primitive)) : get_default_boundary_id(primitive);
 			}
 
 			/// @brief Get the boundary selection of a node
@@ -641,11 +648,11 @@ namespace polyfem
 			/// stores if the mesh is rational
 			bool is_rational_ = false;
 
-			/// high-oder nodes associates to edges
+			/// high-order nodes associates to edges
 			std::vector<EdgeNodes> edge_nodes_;
-			/// high-oder nodes associates to faces
+			/// high-order nodes associates to faces
 			std::vector<FaceNodes> face_nodes_;
-			/// high-oder nodes associates to cells
+			/// high-order nodes associates to cells
 			std::vector<CellNodes> cell_nodes_;
 			/// weights associates to cells for rational polynomail meshes
 			std::vector<std::vector<double>> cell_weights_;

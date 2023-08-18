@@ -1,7 +1,5 @@
 #include "ProblemWithSolution.hpp"
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
-
 namespace polyfem
 {
 	namespace problem
@@ -11,7 +9,7 @@ namespace polyfem
 		{
 		}
 
-		void ProblemWithSolution::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void ProblemWithSolution::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			const int size = size_for(pts);
 			val.resize(pts.rows(), size);
@@ -26,7 +24,7 @@ namespace polyfem
 
 				const auto res = eval_fun(pt, t);
 
-				val.row(i) = assembler.compute_rhs(formulation, res).transpose();
+				val.row(i) = assembler.compute_rhs(res).transpose();
 			}
 		}
 
@@ -73,7 +71,7 @@ namespace polyfem
 		{
 		}
 
-		void BilaplacianProblemWithSolution::rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void BilaplacianProblemWithSolution::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), 1);
 

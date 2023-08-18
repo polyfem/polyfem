@@ -1,8 +1,4 @@
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
-#include <polyfem/utils/Logger.hpp>
-
-#include <igl/Timer.h>
-#include <memory>
+#include "ElementAssemblyValues.hpp"
 
 namespace polyfem
 {
@@ -103,7 +99,7 @@ namespace polyfem
 			Eigen::Matrix3d tmp;
 			jac_it.resize(val.rows());
 
-			//loop over points
+			// loop over points
 			for (long k = 0; k < val.rows(); ++k)
 			{
 				tmp.setZero();
@@ -168,7 +164,7 @@ namespace polyfem
 			Eigen::Matrix2d tmp;
 			jac_it.resize(val.rows());
 
-			//loop over points
+			// loop over points
 			for (long k = 0; k < val.rows(); ++k)
 			{
 				tmp.setZero();

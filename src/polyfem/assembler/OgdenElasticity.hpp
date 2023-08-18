@@ -1,23 +1,11 @@
 #pragma once
 
-#include "GenericElastic.hpp"
-#include "MatParams.hpp"
-
-#include <polyfem/Common.hpp>
-#include <polyfem/utils/ElasticityUtils.hpp>
-
-#include <polyfem/autogen/auto_eigs.hpp>
-#include <polyfem/utils/AutodiffTypes.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
-#include <polyfem/utils/Types.hpp>
-#include <polyfem/utils/Logger.hpp>
-
-#include <Eigen/Dense>
-#include <array>
+#include <polyfem/assembler/GenericElastic.hpp>
+#include <polyfem/assembler/MatParams.hpp>
 
 namespace polyfem::assembler
 {
-	class UnconstrainedOgdenElasticity : public GenericElastic
+	class UnconstrainedOgdenElasticity : public GenericElastic<UnconstrainedOgdenElasticity>
 	{
 	public:
 		UnconstrainedOgdenElasticity();
@@ -29,24 +17,22 @@ namespace polyfem::assembler
 		const GenericMatParams &mus() const { return mus_; }
 		const GenericMatParams &Ds() const { return Ds_; }
 
-		// This macro defines the overriden functions that compute the energy:
-		// template <typename T>
-		// T elastic_energy(const RowVectorNd &p, const int el_id, const DefGradMatrix<T> &def_grad) const override { elastic_energy_T<T>(p, el_id, def_grad); };
-		POLYFEM_OVERRIDE_ELASTIC_ENERGY
+		std::string name() const override { return "UnconstrainedOgden"; }
+		std::map<std::string, ParamFunc> parameters() const override;
 
-	private:
 		template <typename T>
-		T elastic_energy_T(
+		T elastic_energy(
 			const RowVectorNd &p,
 			const int el_id,
 			const DefGradMatrix<T> &def_grad) const;
 
+	private:
 		GenericMatParams alphas_;
 		GenericMatParams mus_;
 		GenericMatParams Ds_;
 	};
 
-	class IncompressibleOgdenElasticity : public GenericElastic
+	class IncompressibleOgdenElasticity : public GenericElastic<IncompressibleOgdenElasticity>
 	{
 	public:
 		IncompressibleOgdenElasticity();
@@ -64,20 +50,20 @@ namespace polyfem::assembler
 		/// Number of terms in the Ogden model
 		int num_terms() const { return coefficients_.size(); }
 
-		// This macro defines the overriden functions that compute the energy:
-		// template <typename T>
-		// T elastic_energy(const RowVectorNd &p, const int el_id, const DefGradMatrix<T> &def_grad) const override { elastic_energy_T<T>(p, el_id, def_grad); };
-		POLYFEM_OVERRIDE_ELASTIC_ENERGY
+		std::string name() const override { return "IncompressibleOgden"; }
+		std::map<std::string, ParamFunc> parameters() const override;
 
-	private:
 		template <typename T>
-		T elastic_energy_T(
+		T elastic_energy(
 			const RowVectorNd &p,
 			const int el_id,
 			const DefGradMatrix<T> &def_grad) const;
 
+	private:
 		GenericMatParams coefficients_;
 		GenericMatParams expoenents_;
 		GenericMatParam bulk_modulus_;
 	};
 } // namespace polyfem::assembler
+
+#include "OgdenElasticity.tpp"

@@ -37,7 +37,7 @@ namespace cppoptlib
 
 		void set_line_search(const std::string &line_search_name);
 
-		void minimize(ProblemType &objFunc, TVector &x);
+		void minimize(ProblemType &objFunc, TVector &x) override;
 
 		double line_search(const TVector &x, const TVector &delta_x, ProblemType &objFunc);
 
@@ -54,6 +54,9 @@ namespace cppoptlib
 				   || this->m_status == Status::FDeltaTolerance
 				   || this->m_status == Status::GradNormTolerance;
 		}
+
+		size_t max_iterations() const { return this->m_stop.iterations; }
+		size_t &max_iterations() { return this->m_stop.iterations; }
 
 	protected:
 		// ====================================================================

@@ -168,6 +168,7 @@ namespace polyfem::io
 		/// @param[in] sol solution
 		/// @param[in] pressure pressure
 		/// @param[in] t time
+		/// @param[in] dt delta t
 		/// @param[in] opts export options
 		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_volume(const std::string &path,
@@ -175,6 +176,7 @@ namespace polyfem::io
 						 const Eigen::MatrixXd &sol,
 						 const Eigen::MatrixXd &pressure,
 						 const double t,
+						 const double dt,
 						 const ExportOptions &opts,
 						 std::vector<SolutionFrame> &solution_frames) const;
 
@@ -197,6 +199,27 @@ namespace polyfem::io
 						  const ExportOptions &opts,
 						  const bool is_contact_enabled,
 						  std::vector<SolutionFrame> &solution_frames) const;
+
+		/// saves the  surface vtu file for for constact quantites, eg contact or friction forces
+		/// @param[in] export_surface filename
+		/// @param[in] state state to get the data
+		/// @param[in] sol solution
+		/// @param[in] pressure pressure
+		/// @param[in] t time
+		/// @param[in] dt_in delta_t
+		/// @param[in] opts export options
+		/// @param[in] is_contact_enabled if contact is enabled
+		/// @param[out] solution_frames saves the output here instead of vtu
+		void save_contact_surface(
+			const std::string &export_surface,
+			const State &state,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &pressure,
+			const double t,
+			const double dt_in,
+			const ExportOptions &opts,
+			const bool is_contact_enabled,
+			std::vector<SolutionFrame> &solution_frames) const;
 
 		/// saves the wireframe
 		/// @param[in] name filename
@@ -251,23 +274,29 @@ namespace polyfem::io
 		/// @param[in] bases bases
 		/// @param[in] gbases geometric bases
 		/// @param[in] total_local_boundary boundaries
+		/// @param[in] solution solution
+		/// @param[in] problem_dim dimension of the problem
 		/// @param[out] boundary_vis_vertices boundary visualization mesh vertices
 		/// @param[out] boundary_vis_local_vertices boundary visualization mesh vertices pre image in ref element
 		/// @param[out] boundary_vis_elements boundary visualization mesh connectivity
 		/// @param[out] boundary_vis_elements_ids boundary visualization mesh elements ids
 		/// @param[out] boundary_vis_primitive_ids boundary visualization mesh edge/face id
 		/// @param[out] boundary_vis_normals boundary visualization mesh normals
+		/// @param[out] displaced_boundary_vis_normals boundary visualization mesh normals after displacement is applied
 		void build_vis_boundary_mesh(
 			const mesh::Mesh &mesh,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const std::vector<mesh::LocalBoundary> &total_local_boundary,
+			const Eigen::MatrixXd &solution,
+			const int problem_dim,
 			Eigen::MatrixXd &boundary_vis_vertices,
 			Eigen::MatrixXd &boundary_vis_local_vertices,
 			Eigen::MatrixXi &boundary_vis_elements,
 			Eigen::MatrixXi &boundary_vis_elements_ids,
 			Eigen::MatrixXi &boundary_vis_primitive_ids,
-			Eigen::MatrixXd &boundary_vis_normals) const;
+			Eigen::MatrixXd &boundary_vis_normals,
+			Eigen::MatrixXd &displaced_boundary_vis_normals) const;
 
 		/// builds visualzation mesh, upsampled mesh used for visualization
 		/// the visualization mesh is a dense mesh per element all disconnected
@@ -305,7 +334,7 @@ namespace polyfem::io
 		/// @param[out] elements mesh high-order cells
 		/// @param[out] el_id mapping from points to elements id
 		/// @param[out] discr mapping from points to discretization order
-		void build_high_oder_vis_mesh(
+		void build_high_order_vis_mesh(
 			const mesh::Mesh &mesh,
 			const Eigen::VectorXi &disc_orders,
 			const std::vector<basis::ElementBases> &bases,
@@ -335,6 +364,8 @@ namespace polyfem::io
 		double computing_poly_basis_time;
 		/// time to assembly
 		double assembling_stiffness_mat_time;
+		/// time to assembly mass
+		double assembling_mass_mat_time;
 		/// time to computing the rhs
 		double assigning_rhs_time;
 		/// time to solve
@@ -344,7 +375,7 @@ namespace polyfem::io
 		/// @return total time
 		double total_time()
 		{
-			return building_basis_time + assembling_stiffness_mat_time + solving_time;
+			return building_basis_time + assembling_mass_mat_time + assembling_stiffness_mat_time + solving_time;
 		}
 	};
 

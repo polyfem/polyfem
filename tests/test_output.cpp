@@ -67,7 +67,7 @@ TEST_CASE("full sim", "[.][full_sim]")
 	state.build_basis();
 
 	state.assemble_rhs();
-	state.assemble_stiffness_mat();
+	state.assemble_mass_mat();
 
 	Eigen::MatrixXd sol;
 	Eigen::MatrixXd pressure;

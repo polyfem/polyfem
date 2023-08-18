@@ -2010,7 +2010,7 @@ int LagrangeBasis3d::build_bases(
 								for (size_t ii = 0; ii < global_.size(); ii++)
 								{
 									auto pair = list.insert({global_[ii].index, global_[ii]});
-									if (!pair.second)
+									if (!pair.second && pair.first != list.end())
 									{
 										assert((pair.first->second.node - global_[ii].node).norm() < 1e-12);
 										pair.first->second.val += global_[ii].val;

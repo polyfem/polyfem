@@ -63,7 +63,7 @@ Eigen::MatrixXd run_sim(State &state, const json &args)
 {
 	state.init(args, true);
 	state.set_max_threads(1);
-	spdlog::set_level(spdlog::level::info);
+	logger().set_level(spdlog::level::info);
 	state.load_mesh();
 
 	if (state.mesh == nullptr)
@@ -75,7 +75,7 @@ Eigen::MatrixXd run_sim(State &state, const json &args)
 	state.build_basis();
 
 	state.assemble_rhs();
-	state.assemble_stiffness_mat();
+	state.assemble_mass_mat();
 
 	Eigen::MatrixXd sol;
 	Eigen::MatrixXd pressure;

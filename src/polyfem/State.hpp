@@ -9,6 +9,7 @@
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/assembler/Problem.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polyfem/mesh/Mesh.hpp>
@@ -48,6 +49,11 @@ namespace cppoptlib
 	class NonlinearSolver;
 }
 
+namespace polyfem::assembler
+{
+	class Mass;
+} // namespace polyfem::assembler
+
 namespace polyfem
 {
 	namespace mesh
@@ -61,7 +67,7 @@ namespace polyfem
 	{
 	public:
 		//---------------------------------------------------
-		//-----------------initializtion---------------------
+		//-----------------initialization--------------------
 		//---------------------------------------------------
 
 		~State() = default;
@@ -86,13 +92,13 @@ namespace polyfem
 		//-----------------logger----------------------------
 		//---------------------------------------------------
 
-		/// initalizing the logger
+		/// initializing the logger
 		/// @param[in] log_file is to write it to a file (use log_file="") to output to stdout
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
 		/// @param[in] is_quit quiets the log
 		void init_logger(const std::string &log_file, const spdlog::level::level_enum log_level, const bool is_quiet);
 
-		/// initalizing the logger writes to an output stream
+		/// initializing the logger writes to an output stream
 		/// @param[in] os output stream
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
 		void init_logger(std::ostream &os, const spdlog::level::level_enum log_level);
@@ -108,7 +114,7 @@ namespace polyfem
 
 		/// gets the output log as json
 		/// this is *not* what gets printed but more informative
-		/// information, eg it contains runtimes, errors, etc.
+		/// information, e.g., it contains runtimes, errors, etc.
 		std::string get_log(const Eigen::MatrixXd &sol)
 		{
 			std::stringstream ss;
@@ -117,7 +123,7 @@ namespace polyfem
 		}
 
 	private:
-		/// initalizing the logger meant for internal usage
+		/// initializing the logger meant for internal usage
 		void init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level);
 
 	public:
@@ -125,8 +131,13 @@ namespace polyfem
 		//-----------------assembly--------------------------
 		//---------------------------------------------------
 
-		/// assembler, it dispatches call to the different assembers based on the formulation
-		assembler::AssemblerUtils assembler;
+		/// assemblers
+		std::shared_ptr<assembler::Assembler> assembler = nullptr;
+		std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
+
+		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
+		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
+
 		/// current problem, it contains rhs and bc
 		std::shared_ptr<assembler::Problem> problem;
 
@@ -147,7 +158,7 @@ namespace polyfem
 		/// polyhedra, used since poly have no geom mapping
 		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> polys_3d;
 
-		/// vector of discretization oders, used when not all elements have the same degree, one per element
+		/// vector of discretization orders, used when not all elements have the same degree, one per element
 		Eigen::VectorXi disc_orders;
 
 		/// Mapping from input nodes to FE nodes
@@ -159,23 +170,20 @@ namespace polyfem
 		/// used to store assembly values for pressure for small problems
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
 
-		/// Stiffness matrix, it is not compute for nonlinear problems
-		StiffnessMatrix stiffness;
-
 		/// Mass matrix, it is computed only for time dependent problems
 		StiffnessMatrix mass;
 		/// average system mass, used for contact with IPC
 		double avg_mass;
 
-		/// System righ-hand side.
+		/// System right-hand side.
 		Eigen::MatrixXd rhs;
 
 		/// use average pressure for stokes problem to fix the additional dofs, true by default
 		/// if false, it will fix one pressure node to zero
 		bool use_avg_pressure;
 
-		/// return the formulation (checks if the problem is scalar or not and delas with multiphisics)
-		/// @return fomulation
+		/// return the formulation (checks if the problem is scalar or not and deals with multiphysics)
+		/// @return formulation
 		std::string formulation() const;
 
 		/// check if using iso parametric bases
@@ -193,8 +201,8 @@ namespace polyfem
 		void build_basis();
 		/// compute rhs, step 3 of solve
 		void assemble_rhs();
-		/// assemble matrices, step 4 of solve
-		void assemble_stiffness_mat();
+		/// assemble mass, step 4 of solve
+		void assemble_mass_mat();
 
 		/// build a RhsAssembler for the problem
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler(
@@ -230,16 +238,12 @@ namespace polyfem
 		void build_polygonal_basis();
 
 	public:
-		/// set the multimaterial
-		void set_materials()
-		{
-			if (!utils::is_param_valid(args, "materials"))
-				return;
-			std::vector<int> body_ids(mesh->n_elements());
-			for (int i = 0; i < mesh->n_elements(); ++i)
-				body_ids[i] = mesh->get_body_id(i);
-			assembler.set_materials(body_ids, args["materials"]);
-		}
+		/// set the material and the problem dimension
+		/// @param[in/out] list of assembler to set
+		void set_materials(std::vector<std::shared_ptr<assembler::Assembler>> &assemblers) const;
+		/// utility to set the material and the problem dimension to only 1 assembler
+		/// @param[in/out] assembler to set
+		void set_materials(assembler::Assembler &assembler) const;
 
 		//---------------------------------------------------
 		//-----------------solver----------------------------
@@ -265,7 +269,7 @@ namespace polyfem
 			build_basis();
 
 			assemble_rhs();
-			assemble_stiffness_mat();
+			assemble_mass_mat();
 
 			solve_export_to_file = false;
 			solution_frames.clear();
@@ -322,7 +326,7 @@ namespace polyfem
 		/// @param[in] t (optional) time step id
 		void solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t = 0, const bool init_lagging = true);
 
-		/// factory to create the nl solver depdending on input
+		/// factory to create the nl solver depending on input
 		/// @return nonlinear solver (eg newton or LBFGS)
 		template <typename ProblemType>
 		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(
@@ -353,6 +357,11 @@ namespace polyfem
 			const bool compute_spectrum,
 			Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
 
+	public:
+		/// @brief utility that builds the stiffness matrix and collects stats, used only for linear problems
+		/// @param[out] stiffness matrix
+		void build_stiffness_mat(StiffnessMatrix &stiffness);
+
 		//---------------------------------------------------
 		//-----------------nodes flags-----------------------
 		//---------------------------------------------------
@@ -370,7 +379,7 @@ namespace polyfem
 		std::vector<mesh::LocalBoundary> local_neumann_boundary;
 		/// nodes on the boundary of polygonal elements, used for harmonic bases
 		std::map<int, basis::InterfaceData> poly_edge_to_data;
-		/// per node dirichelt
+		/// per node dirichlet
 		std::vector<int> dirichlet_nodes;
 		std::vector<RowVectorNd> dirichlet_nodes_position;
 		/// per node neumann
@@ -414,7 +423,7 @@ namespace polyfem
 
 		/// loads the mesh from V and F,
 		/// @param[in] V is #vertices x dim
-		/// @param[in] F is #elements x size (size = 3 for triangle mesh, size=4 for a quaud mesh if dim is 2)
+		/// @param[in] F is #elements x size (size = 3 for triangle mesh, size=4 for a quad mesh if dim is 2)
 		/// @param[in] non_conforming creates a conforming/non conforming mesh
 		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming = false)
 		{
@@ -521,7 +530,7 @@ namespace polyfem
 		/// @param[out] out stream to write output
 		void save_json(const Eigen::MatrixXd &sol, std::ostream &out);
 
-		/// saves the output statistic to disc accoding to params
+		/// saves the output statistic to disc according to params
 		/// @param[in] sol solution
 		void save_json(const Eigen::MatrixXd &sol);
 

@@ -34,4 +34,12 @@ namespace polyfem::assembler
 		density_.add_multimaterial(index, params);
 	}
 
+	std::map<std::string, Assembler::ParamFunc> Mass::parameters() const
+	{
+		std::map<std::string, ParamFunc> res;
+		res["rho"] = [this](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) { return this->density_(uv, p, e); };
+
+		return res;
+	}
+
 } // namespace polyfem::assembler

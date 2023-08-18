@@ -83,6 +83,8 @@ set(POLYFEM_WARNING_FLAGS
 
     -Wno-sign-compare
 
+    -Wsuggest-override
+
     ###########
     # GCC 6.1 #
     ###########

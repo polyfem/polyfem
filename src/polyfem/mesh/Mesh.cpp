@@ -10,6 +10,7 @@
 #include <polyfem/io/MshReader.hpp>
 
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <geogram/mesh/mesh_io.h>
 #include <geogram/mesh/mesh_geometry.h>
@@ -522,7 +523,7 @@ namespace polyfem::mesh
 		{
 			boundary_ids_.resize(n_boundary_elements());
 			for (int i = 0; i < boundary_ids_.size(); ++i)
-				boundary_ids_[i] = get_boundary_id(i); // results in default if boundary_ids_ is empty
+				boundary_ids_[i] = get_default_boundary_id(i);
 		}
 
 		if (mesh.has_boundary_ids())
@@ -533,7 +534,7 @@ namespace polyfem::mesh
 		{
 			boundary_ids_.resize(n_boundary_elements() + mesh.n_boundary_elements());
 			for (int i = 0; i < mesh.n_boundary_elements(); ++i)
-				boundary_ids_[n_boundary_elements() + i] = mesh.get_boundary_id(i); // results in default if boundary_ids_ is empty
+				boundary_ids_[n_boundary_elements() + i] = mesh.get_boundary_id(i); // results in default if mesh.boundary_ids_ is empty
 		}
 
 		// --------------------------------------------------------------------
@@ -592,13 +593,21 @@ namespace polyfem::mesh
 		in_ordered_vertices_.conservativeResize(in_ordered_vertices_.rows() + mesh.in_ordered_vertices_.rows(), in_ordered_vertices_.cols());
 		in_ordered_vertices_.bottomRows(mesh.in_ordered_vertices_.rows()) = mesh.in_ordered_vertices_.array() + n_vertices;
 
-		assert(in_ordered_edges_.cols() == mesh.in_ordered_edges_.cols());
-		in_ordered_edges_.conservativeResize(in_ordered_edges_.rows() + mesh.in_ordered_edges_.rows(), in_ordered_edges_.cols());
-		in_ordered_edges_.bottomRows(mesh.in_ordered_edges_.rows()) = mesh.in_ordered_edges_.array() + n_vertices;
+		if (in_ordered_edges_.size() == 0 || mesh.in_ordered_edges_.size() == 0)
+			in_ordered_edges_.resize(0, 0);
+		else
+		{
+			assert(in_ordered_edges_.cols() == mesh.in_ordered_edges_.cols());
+			utils::append_rows(in_ordered_edges_, mesh.in_ordered_edges_.array() + n_vertices);
+		}
 
-		assert(in_ordered_faces_.cols() == mesh.in_ordered_faces_.cols());
-		in_ordered_faces_.conservativeResize(in_ordered_faces_.rows() + mesh.in_ordered_faces_.rows(), in_ordered_faces_.cols());
-		in_ordered_faces_.bottomRows(mesh.in_ordered_faces_.rows()) = mesh.in_ordered_faces_.array() + n_vertices;
+		if (in_ordered_faces_.size() == 0 || mesh.in_ordered_faces_.size() == 0)
+			in_ordered_faces_.resize(0, 0);
+		else
+		{
+			assert(in_ordered_faces_.cols() == mesh.in_ordered_faces_.cols());
+			utils::append_rows(in_ordered_faces_, mesh.in_ordered_faces_.array() + n_vertices);
+		}
 	}
 
 	void Mesh::apply_affine_transformation(const MatrixNd &A, const VectorNd &b)

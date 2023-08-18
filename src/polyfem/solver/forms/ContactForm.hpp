@@ -5,7 +5,7 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
 
-#include <ipc/ipc.hpp>
+#include <ipc/collisions/collision_constraints.hpp>
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
 
@@ -28,9 +28,6 @@ namespace ipc
 
 namespace polyfem::solver
 {
-	class NLProblem;
-	class FrictionForm;
-
 	/// @brief Form representing the contact potential and forces
 	class ContactForm : public Form
 	{
@@ -103,59 +100,73 @@ namespace polyfem::solver
 		/// @param x Current solution
 		void post_step(const int iter_num, const Eigen::VectorXd &x) override;
 
-		/// @brief returns the current barrier stiffness
-		/// @return double the current barrier stifness
-		double barrier_stiffness() const { return weight_; }
-
 		/// @brief Checks if the step is collision free
 		/// @return True if the step is collision free else false
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
 		/// @brief Update the barrier stiffness based on the current elasticity energy
 		/// @param x Current solution
-		/// @param nl_problem Nonlinear problem to use for computing the gradient
-		/// @param friction_form Pointer to the friction form
-		void update_barrier_stiffness(
-			const Eigen::VectorXd &x,
-			NLProblem &nl_problem,
-			std::shared_ptr<FrictionForm> friction_form);
-
-		/// @brief Update the barrier stiffness based on the current elasticity energy
-		/// @param x Current solution
 		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
-
-		inline bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
-		inline bool use_convergent_formulation() const { return constraint_set_.use_convergent_formulation; }
-
-		bool save_ccd_debug_meshes = false; ///< If true, output debug files
-
-	private:
-		const ipc::CollisionMesh &collision_mesh_;
-
-		const double dhat_; ///< Barrier activation distance
-
-		const double avg_mass_;
-
-		const bool use_adaptive_barrier_stiffness_; ///< If true, use an adaptive barrier stiffness
-		double max_barrier_stiffness_;              ///< Maximum barrier stiffness to use when using adaptive barrier stiffness
-
-		const bool is_time_dependent_; ///< Is the simulation time dependent?
-
-		const ipc::BroadPhaseMethod broad_phase_method_; ///< Broad phase method to use for distance and CCD evaluations
-		const double ccd_tolerance_;                     ///< Continuous collision detection tolerance
-		const int ccd_max_iterations_;                   ///< Continuous collision detection maximum iterations
-
-		double prev_distance_; ///< Previous minimum distance between all elements
-
-		bool use_cached_candidates_ = false; ///< If true, use the cached candidate set for the current solution
-		ipc::Constraints constraint_set_;    ///< Cached constraint set for the current solution
-		ipc::Candidates candidates_;         ///< Cached candidate set for the current solution
 
 		/// @brief Compute the displaced positions of the surface nodes
 		Eigen::MatrixXd compute_displaced_surface(const Eigen::VectorXd &x) const;
 
+		/// @brief Get the current barrier stiffness
+		double barrier_stiffness() const { return barrier_stiffness_; }
+		/// @brief Get the current barrier stiffness
+		void set_barrier_stiffness(const double barrier_stiffness) { barrier_stiffness_ = barrier_stiffness; }
+		/// @brief Get use_adaptive_barrier_stiffness
+		bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
+		/// @brief Get use_convergent_formulation
+		bool use_convergent_formulation() const { return constraint_set_.use_convergent_formulation(); }
+
+		double weight() const override { return weight_ * barrier_stiffness_; }
+
+		/// @brief If true, output debug files
+		bool save_ccd_debug_meshes = false;
+
+	private:
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution
 		void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
+
+		/// @brief Collision mesh
+		const ipc::CollisionMesh &collision_mesh_;
+
+		/// @brief Barrier activation distance
+		const double dhat_;
+
+		/// @brief Minimum distance between elements
+		const double dmin_ = 0;
+
+		/// @brief If true, use an adaptive barrier stiffness
+		const bool use_adaptive_barrier_stiffness_;
+		/// @brief Barrier stiffness
+		double barrier_stiffness_;
+		/// @brief Maximum barrier stiffness to use when using adaptive barrier stiffness
+		double max_barrier_stiffness_;
+
+		/// @brief Average mass of the mesh (used for adaptive barrier stiffness)
+		const double avg_mass_;
+
+		/// @brief Is the simulation time dependent?
+		const bool is_time_dependent_;
+
+		/// @brief Broad phase method to use for distance and CCD evaluations
+		const ipc::BroadPhaseMethod broad_phase_method_;
+		/// @brief Continuous collision detection tolerance
+		const double ccd_tolerance_;
+		/// @brief Continuous collision detection maximum iterations
+		const int ccd_max_iterations_;
+
+		/// @brief Previous minimum distance between all elements
+		double prev_distance_;
+
+		/// @brief If true, use the cached candidate set for the current solution
+		bool use_cached_candidates_ = false;
+		/// @brief Cached constraint set for the current solution
+		ipc::CollisionConstraints constraint_set_;
+		/// @brief Cached candidate set for the current solution
+		ipc::Candidates candidates_;
 	};
 } // namespace polyfem::solver
