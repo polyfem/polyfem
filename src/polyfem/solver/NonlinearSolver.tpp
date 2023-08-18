@@ -19,7 +19,6 @@ namespace cppoptlib
 
 		normalize_gradient = solver_params["relative_gradient"];
 		use_grad_norm_tol = solver_params["line_search"]["use_grad_norm_tol"];
-		export_energy_path = solver_params["export_energy"];
 
 		first_grad_norm_tol = solver_params["first_grad_norm_tol"];
 
@@ -89,7 +88,7 @@ namespace cppoptlib
 			logger().info(
 				"[{}] Not even starting, {} (f={:g} ‖∇f‖={:g} g={:g} tol={:g})",
 				name(), this->m_status, this->m_current.fDelta, first_grad_norm, this->m_current.gradNorm, this->m_stop.gradNorm);
-			update_solver_info();
+			update_solver_info(this->m_current.fDelta);
 			return;
 		}
 		this->m_stop.gradNorm = current_g_norm;
@@ -100,10 +99,6 @@ namespace cppoptlib
 		if (m_line_search)
 			m_line_search->use_grad_norm_tol = use_grad_norm_tol;
 
-		std::ofstream outfile;
-		if (export_energy_path != "")
-			outfile.open(export_energy_path);
-
 		objFunc.save_to_file(x);
 
 		logger().debug(
@@ -112,7 +107,7 @@ namespace cppoptlib
 			name(), objFunc.value(x), this->m_current.gradNorm, this->m_stop.iterations,
 			this->m_stop.fDelta, this->m_stop.gradNorm, this->m_stop.xDelta);
 
-		update_solver_info();
+		update_solver_info(objFunc.value(x));
 
 		do
 		{
@@ -141,13 +136,6 @@ namespace cppoptlib
 				m_error_code = ErrorCode::NAN_ENCOUNTERED;
 				log_and_throw_error("[{}] Gradient is nan; stopping", name());
 				break;
-			}
-
-			if (outfile.is_open())
-			{
-				outfile << std::setprecision(12) << energy << ", " << grad_norm;
-				outfile << "\n";
-				outfile.flush();
 			}
 
 			// ------------------------
@@ -235,7 +223,7 @@ namespace cppoptlib
 			if (++this->m_current.iterations >= this->m_stop.iterations)
 				this->m_status = Status::IterationLimit;
 
-			update_solver_info();
+			update_solver_info(energy);
 
 			objFunc.save_to_file(x);
 
@@ -260,7 +248,7 @@ namespace cppoptlib
 			old_energy, this->m_current.fDelta, this->m_current.gradNorm, this->m_current.xDelta, this->m_current.fDelta, this->m_stop.fDelta);
 
 		log_times();
-		update_solver_info();
+		update_solver_info(objFunc.value(x));
 	}
 
 	template <typename ProblemType>
@@ -323,11 +311,11 @@ namespace cppoptlib
 	}
 
 	template <typename ProblemType>
-	void NonlinearSolver<ProblemType>::update_solver_info()
+	void NonlinearSolver<ProblemType>::update_solver_info(const double energy)
 	{
 		solver_info["status"] = this->status();
 		solver_info["error_code"] = m_error_code;
-
+		solver_info["energy"] = energy;
 		const auto &crit = this->criteria();
 		solver_info["iterations"] = crit.iterations;
 		solver_info["xDelta"] = crit.xDelta;

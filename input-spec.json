@@ -1912,16 +1912,9 @@
             "max_iterations",
             "relative_gradient",
             "line_search",
-            "export_energy",
             "force_psd_projection"
         ],
         "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
-    },
-    {
-        "pointer": "/solver/nonlinear/export_energy",
-        "default": "",
-        "type": "string",
-        "doc": "Save energy and gradient in optimizations to file"
     },
     {
         "pointer": "/solver/nonlinear/solver",
