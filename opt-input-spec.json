@@ -417,20 +417,8 @@
             "custom-symmetric",
             "sdf-to-mesh",
             "periodic-mesh-tile",
-            "mesh-affine",
-            "bounded-biharmonic-weights"
+            "mesh-affine"
         ]
-    },
-    {
-        "pointer": "/variable_to_simulation/*/composition/*",
-        "type_name": "bounded-biharmonic-weights",
-        "type": "object",
-        "required": [
-            "num_control_vertices",
-            "num_vertices",
-            "allow_rotations"
-        ],
-        "doc": "TODO"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*",
