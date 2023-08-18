@@ -20,6 +20,7 @@
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
+#include <polyfem/solver/forms/parametrization/SplineParametrizations.hpp>
 
 #include <iostream>
 #include <fstream>
