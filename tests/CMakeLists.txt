@@ -3,29 +3,31 @@
 ################################################################################
 
 set(test_sources
-	main.cpp
-	test_assembler.cpp
-	test_bases.cpp
-	test_matrix.cpp
+  main.cpp
+  test_assembler.cpp
+  test_bases.cpp
   test_cmesh.cpp
-  test_geometry_utils.cpp
-  test_ncmesh.cpp
-	test_normal.cpp
-	test_problem.cpp
-	test_quadrature.cpp
-	test_rbf.cpp
-	test_solver.cpp
-	test_tbb.cpp
-	test_utils.cpp
   test_form_derivatives.cpp
+  test_geometry_utils.cpp
+  test_hdf5.cpp
   test_interpolation.cpp
-  test_time_integrators.cpp
-  verify_run.cpp
+  test_matrix.cpp
+  test_ncmesh.cpp
+  test_normal.cpp
   test_output.cpp
+  test_problem.cpp
+  test_quadrature.cpp
+  test_rbf.cpp
   test_restart.cpp
+  test_solver.cpp
+  test_tbb.cpp
+  test_time_integrators.cpp
+  test_utils.cpp
+  verify_run.cpp
 )
 
 add_executable(unit_tests ${test_sources})
+# set_property(TARGET unit_tests PROPERTY COMPILE_WARNING_AS_ERROR ON)
 
 ################################################################################
 # Required Libraries

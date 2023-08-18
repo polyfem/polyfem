@@ -20,7 +20,7 @@ namespace polyfem::assembler
 
 		double viscosity() const { return viscosity_; }
 
-		std::string name() const override { return "Stokes"; }
+		virtual std::string name() const override { return "Stokes"; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 		bool is_fluid() const override { return true; }
@@ -62,5 +62,14 @@ namespace polyfem::assembler
 		bool is_fluid() const override { return true; }
 
 		void set_size(const int) override { size_ = 1; }
+	};
+
+	class OperatorSplitting : public StokesVelocity
+	{
+	public:
+		OperatorSplitting() = default;
+		~OperatorSplitting() = default;
+		
+		std::string name() const override { return "OperatorSplitting"; }
 	};
 } // namespace polyfem::assembler

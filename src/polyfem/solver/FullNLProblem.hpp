@@ -16,6 +16,9 @@ namespace polyfem::solver
 		using typename cppoptlib::Problem<double>::TVector;
 		typedef StiffnessMatrix THessian;
 
+		// disable warning for dense hessian
+		using cppoptlib::Problem<double>::hessian;
+
 		FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms);
 		virtual void init(const TVector &x0);
 
