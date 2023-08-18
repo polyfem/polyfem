@@ -16,6 +16,7 @@ namespace polyfem::assembler
 
 		const GenericMatParam &c1() const { return c1_; }
 		const GenericMatParam &c2() const { return c2_; }
+		const GenericMatParam &c3() const { return c3_; }
 		const GenericMatParam &k() const { return k_; }
 
 		std::string name() const override { return "MooneyRivlin"; }
@@ -49,6 +50,7 @@ namespace polyfem::assembler
 	private:
 		GenericMatParam c1_;
 		GenericMatParam c2_;
+		GenericMatParam c3_;
 		GenericMatParam k_;
 	};
 } // namespace polyfem::assembler
