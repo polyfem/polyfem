@@ -222,6 +222,10 @@ polyfem_target_link_system_libraries(polyfem PUBLIC BVH_lib)
 include(mshio)
 polyfem_target_link_system_libraries(polyfem PUBLIC mshio)
 
+# Nanospline
+include(nanospline)
+polyfem_target_link_system_libraries(polyfem PUBLIC nanospline)
+
 # Geogram
 include(geogram)
 polyfem_target_link_system_libraries(polyfem PUBLIC geogram)
