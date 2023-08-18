@@ -538,7 +538,7 @@ namespace polyfem
 		if (args["space"]["use_p_ref"])
 			return false;
 
-		if (args["optimization"]["enabled"])
+		if (optimization_enabled)
 			return false;
 
 		if (mesh->orders().size() <= 0)
@@ -713,7 +713,7 @@ namespace polyfem
 		}
 
 		// shape optimization needs continuous geometric basis
-		const bool use_continuous_gbasis = args["optimization"]["enabled"];
+		const bool use_continuous_gbasis = optimization_enabled;
 
 		if (mesh->is_volume())
 		{
@@ -799,8 +799,7 @@ namespace polyfem
 
 		auto &gbases = geom_bases();
 
-		// if (is_contact_enabled())
-		if (args["optimization"]["enabled"])
+		if (optimization_enabled)
 		{
 			std::map<std::array<int, 2>, double> pairs;
 			for (int e = 0; e < gbases.size(); e++)
@@ -1499,7 +1498,7 @@ namespace polyfem
 			{
 				init_linear_solve(sol);
 				solve_linear(sol, pressure);
-				if (args["optimization"]["enabled"])
+				if (optimization_enabled)
 					cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 			}
 			else if (!assembler->is_linear() && problem->is_scalar())
@@ -1508,7 +1507,7 @@ namespace polyfem
 			{
 				init_nonlinear_tensor_solve(sol);
 				solve_tensor_nonlinear(sol);
-				if (args["optimization"]["enabled"])
+				if (optimization_enabled)
 					cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 				const std::string u_path = resolve_output_path(args["output"]["data"]["u_path"]);
 				if (!u_path.empty())

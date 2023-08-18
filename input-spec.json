@@ -18,8 +18,7 @@
             "initial_conditions",
             "output",
             "input",
-            "tests",
-            "optimization"
+            "tests"
         ],
         "doc": "Root of the configuration file."
     },
@@ -3652,21 +3651,6 @@
         "pointer": "/initial_conditions/acceleration/*/value/*",
         "type": "string",
         "doc": "value as a function of $x,y,z,t$"
-    },
-    {
-        "pointer": "/optimization",
-        "default": null,
-        "type": "object",
-        "optional": [
-            "enabled"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/optimization/enabled",
-        "type": "bool",
-        "default": false,
-        "doc": "Cache transient solutions for differentiability of PDE solution."
     },
     {
         "pointer": "/output",

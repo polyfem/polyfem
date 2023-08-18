@@ -63,14 +63,14 @@ namespace polyfem
 
 		save_timestep(t0, 0, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 
-		if (args["optimization"]["enabled"])
+		if (optimization_enabled)
 			cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			solve_tensor_nonlinear(sol, t);
 
-			if (args["optimization"]["enabled"])
+			if (optimization_enabled)
 				cache_transient_adjoint_quantities(t, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 
 			{
@@ -115,7 +115,7 @@ namespace polyfem
 		assert(!problem->is_scalar());                           // tensor
 		assert(mixed_assembler == nullptr);
 
-		if (args["optimization"]["enabled"])
+		if (optimization_enabled)
 		{
 			if (initial_sol_update.size() == ndof())
 				sol = initial_sol_update;
@@ -156,7 +156,7 @@ namespace polyfem
 				initial_acceleration(acceleration);
 				assert(acceleration.size() == sol.size());
 
-				if (args["optimization"]["enabled"])
+				if (optimization_enabled)
 				{
 					if (initial_vel_update.size() == ndof())
 						velocity = initial_vel_update;
@@ -206,7 +206,7 @@ namespace polyfem
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
-			args["optimization"]["enabled"],
+			optimization_enabled,
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
@@ -291,8 +291,7 @@ namespace polyfem
 		// TODO: Make this more general
 		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2);
 
-
-		if (!args["optimization"]["enabled"])
+		if (!optimization_enabled)
 		{
 			// Lagging loop (start at 1 because we already did an iteration above)
 			bool lagging_converged = !nl_problem.uses_lagging();
@@ -349,9 +348,9 @@ namespace polyfem
 				nl_solver->get_info(info);
 				stats.solver_info.push_back(
 					{{"type", "rc"},
-					{"t", t}, // TODO: null if static?
-					{"lag_i", lag_i},
-					{"info", info}});
+					 {"t", t}, // TODO: null if static?
+					 {"lag_i", lag_i},
+					 {"info", info}});
 				save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 			}
 		}

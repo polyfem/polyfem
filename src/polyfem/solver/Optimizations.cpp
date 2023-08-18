@@ -427,7 +427,7 @@ namespace polyfem::solver
 			in_args.merge_patch(tmp);
 		}
 
-		in_args["optimization"]["enabled"] = true;
+		state->optimization_enabled = true;
 		state->init(in_args, false);
 		state->load_mesh();
 		Eigen::MatrixXd sol, pressure;

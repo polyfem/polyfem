@@ -274,7 +274,7 @@ namespace polyfem
 
 		this->args = jse.inject_defaults(args_in, rules);
 
-    // Save output directory and resolve output paths dynamically
+		// Save output directory and resolve output paths dynamically
 		const std::string output_dir = resolve_input_path(this->args["output"]["directory"]);
 		if (!output_dir.empty())
 		{
@@ -372,8 +372,8 @@ namespace polyfem
 			// important for the BC
 			problem->set_parameters(args["preset_problem"]);
 		}
-	
-		if (args["optimization"]["enabled"])
+
+		if (optimization_enabled)
 		{
 			if (is_contact_enabled())
 			{

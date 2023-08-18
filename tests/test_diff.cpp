@@ -1191,7 +1191,7 @@ TEST_CASE("barycenter", "[test_adjoint]")
 // 				for (int i = 0; i < 3; ++i)
 // 					temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t].get<double>() + dx(t * 3 * 3 + i * 3 + k);
 // 		state->init(temp_args, false);
-// 		state->args["optimization"]["enabled"] = true;
+// 		state->optimization_enabled = true;
 // 	};
 
 // 	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn_json, 1e-7, 1e-5);
@@ -1254,7 +1254,7 @@ TEST_CASE("barycenter", "[test_adjoint]")
 // 				for (int i = 0; i < 3; ++i)
 // 					temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t].get<double>() + dx(t * 3 * 3 + i * 3 + k);
 // 		state->init(temp_args, false);
-// 		state->args["optimization"]["enabled"] = true;
+// 		state->optimization_enabled = true;
 // 	};
 
 // 	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn_json, 1e-7, 1e-5);

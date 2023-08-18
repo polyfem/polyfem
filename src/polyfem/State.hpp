@@ -581,6 +581,7 @@ namespace polyfem
 		//-----------------differentiable--------------------
 		//---------------------------------------------------
 	public:
+		bool optimization_enabled = false;
 		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
 		solver::DiffCache diff_cached;
 
