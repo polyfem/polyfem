@@ -38,7 +38,6 @@ set(SOURCES
 	RBFInterpolation.hpp
 	RefElementSampler.cpp
 	RefElementSampler.hpp
-	CubicHermiteSplineParametrization.hpp
 	Selection.cpp
 	Selection.hpp
 	StringUtils.cpp
