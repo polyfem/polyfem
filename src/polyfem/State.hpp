@@ -200,11 +200,6 @@ namespace polyfem
 			return iso_parametric() ? bases : geom_bases_;
 		}
 
-		std::vector<basis::ElementBases> &geom_bases()
-		{
-			return iso_parametric() ? bases : geom_bases_;
-		}
-
 		/// builds the bases step 2 of solve
 		void build_basis();
 		/// compute rhs, step 3 of solve

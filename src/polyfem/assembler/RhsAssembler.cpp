@@ -29,17 +29,6 @@ namespace polyfem
 					val = 0;
 				}
 			};
-
-			Eigen::MatrixXd kronecker_product(const Eigen::MatrixXd &a, const Eigen::MatrixXd &b)
-			{
-				Eigen::MatrixXd result(a.rows() * b.rows(), a.cols() * b.cols());
-				for (int i = 0; i < a.rows(); ++i)
-					for (int j = 0; j < a.cols(); ++j)
-						result.block(i * b.rows(), j * b.cols(), b.rows(), b.cols()) = a(i, j) * b;
-
-				return result;
-			}
-
 		} // namespace
 
 		RhsAssembler::RhsAssembler(const Assembler &assembler, const Mesh &mesh, const Obstacle &obstacle,

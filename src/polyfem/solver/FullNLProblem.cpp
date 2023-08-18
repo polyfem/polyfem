@@ -130,17 +130,4 @@ namespace polyfem::solver
 		for (auto &f : forms_)
 			f->post_step(iter_num, x);
 	}
-
-	FullNLProblem::TVector FullNLProblem::component_values(const TVector &x)
-	{
-		TVector val(1);
-		val(0) = value(x);
-		return val;
-	}
-	Eigen::MatrixXd FullNLProblem::component_gradients(const TVector &x)
-	{
-		Eigen::VectorXd grad(x.size());
-		gradient(x, grad);
-		return grad;
-	}
 } // namespace polyfem::solver

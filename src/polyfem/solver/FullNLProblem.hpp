@@ -26,9 +26,6 @@ namespace polyfem::solver
 		virtual void gradient(const TVector &x, TVector &gradv) override;
 		virtual void hessian(const TVector &x, THessian &hessian);
 
-		virtual TVector component_values(const TVector &x);
-		virtual Eigen::MatrixXd component_gradients(const TVector &x);
-
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) const;
 		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1) const;
 		virtual double max_step_size(const TVector &x0, const TVector &x1) const;
