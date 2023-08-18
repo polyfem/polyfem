@@ -11,7 +11,6 @@ namespace polyfem::assembler
 	{
 		c1_.add_multimaterial(index, params);
 		c2_.add_multimaterial(index, params);
-		c3_.add_multimaterial(index, params);
 		k_.add_multimaterial(index, params);
 	}
 

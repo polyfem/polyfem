@@ -388,10 +388,7 @@ void polyfem::utils::vector2matrix(const Eigen::VectorXd &vec, Eigen::MatrixXd &
 	int size = sqrt(vec.size());
 	assert(size * size == vec.size());
 
-	mat.resize(size, size);
-	for (int i = 0; i < size; i++)
-		for (int j = 0; j < size; j++)
-			mat(i, j) = vec(i * size + j);
+	mat = unflatten(vec, size);
 }
 
 Eigen::SparseMatrix<double> polyfem::utils::lump_matrix(const Eigen::SparseMatrix<double> &M)
