@@ -2412,8 +2412,7 @@
         ],
         "optional": [
             "id",
-            "rho",
-            "c3"
+            "rho"
         ],
         "doc": "Material Parameters including ID, for Mooney-Rivlin"
     },
@@ -2770,12 +2769,6 @@
         "pointer": "/materials/*/c2",
         "type": "float",
         "doc": "Second Parameter for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/materials/*/c3",
-        "type": "float",
-        "default": 0,
-        "doc": "Optional Third Parameter for 3 parameter Mooney-Rivlin"
     },
     {
         "pointer": "/materials/*/alphas",
