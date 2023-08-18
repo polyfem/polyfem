@@ -7,10 +7,6 @@ set(SOURCES
 	LBFGSSolver.tpp
 	LBFGSBSolver.hpp
 	BFGSSolver.hpp
-	MMASolver.hpp
-	MMASolver.tpp
-	MMASolverAux.hpp
-	MMASolverAux.cpp
 	GradientDescentSolver.hpp
 	NavierStokesSolver.cpp
 	NavierStokesSolver.hpp
