@@ -160,7 +160,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: [DebugNoSymbols]
+        config: [DebugNoSymbols, Release]
         threading: [NONE]
     steps:
       - name: Checkout repository
