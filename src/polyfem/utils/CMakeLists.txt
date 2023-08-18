@@ -49,8 +49,6 @@ set(SOURCES
 	StringUtils.hpp
 	Timer.hpp
 	Types.hpp
-	LazyCubicInterpolator.cpp
-	LazyCubicInterpolator.hpp
 	PolarDecomposition.hpp
 )
 

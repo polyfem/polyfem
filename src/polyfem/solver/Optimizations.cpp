@@ -18,7 +18,6 @@
 #include <polyfem/solver/forms/adjoint_forms/SmoothingForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/AMIPSForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/BarrierForms.hpp>
-#include <polyfem/solver/forms/adjoint_forms/SurfaceTractionForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/TargetForms.hpp>
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
@@ -144,52 +143,6 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<BarycenterTargetForm>(var2sim, args, states[args["state"]], states[args["target_state"]]);
 			}
-			else if (type == "sdf-target")
-			{
-				std::shared_ptr<SDFTargetForm> tmp = std::make_shared<SDFTargetForm>(var2sim, *(states[args["state"]]), args);
-				double delta = args["delta"].get<double>();
-				if (!states[args["state"]]->mesh->is_volume())
-				{
-					int dim = 2;
-					Eigen::MatrixXd control_points(args["control_points"].size(), dim);
-					for (int i = 0; i < control_points.rows(); ++i)
-						for (int j = 0; j < control_points.cols(); ++j)
-							control_points(i, j) = args["control_points"][i][j].get<double>();
-					Eigen::VectorXd knots(args["knots"].size());
-					for (int i = 0; i < knots.size(); ++i)
-						knots(i) = args["knots"][i].get<double>();
-					tmp->set_bspline_target(control_points, knots, delta);
-				}
-				else
-				{
-					int dim = 3;
-					Eigen::MatrixXd control_points_grid(args["control_points_grid"].size(), dim);
-					for (int i = 0; i < control_points_grid.rows(); ++i)
-						for (int j = 0; j < control_points_grid.cols(); ++j)
-							control_points_grid(i, j) = args["control_points_grid"][i][j].get<double>();
-					Eigen::VectorXd knots_u(args["knots_u"].size());
-					for (int i = 0; i < knots_u.size(); ++i)
-						knots_u(i) = args["knots_u"][i].get<double>();
-					Eigen::VectorXd knots_v(args["knots_v"].size());
-					for (int i = 0; i < knots_v.size(); ++i)
-						knots_v(i) = args["knots_v"][i].get<double>();
-					tmp->set_bspline_target(control_points_grid, knots_u, knots_v, delta);
-				}
-
-				obj = tmp;
-			}
-			else if (type == "mesh-target")
-			{
-				std::shared_ptr<MeshTargetForm> tmp = std::make_shared<MeshTargetForm>(var2sim, *(states[args["state"]]), args);
-				double delta = args["delta"].get<double>();
-				Eigen::MatrixXd V;
-				Eigen::MatrixXi E, F;
-				bool read = polyfem::io::OBJReader::read(args["mesh_path"], V, E, F);
-				if (!read)
-					log_and_throw_error(fmt::format("Could not read mesh! {}", args["mesh"]));
-				tmp->set_surface_mesh_target(V, F, delta);
-				obj = tmp;
-			}
 			else if (type == "function-target")
 			{
 				std::shared_ptr<TargetForm> tmp = std::make_shared<TargetForm>(var2sim, *(states[args["state"]]), args);
@@ -215,14 +168,6 @@ namespace polyfem::solver
 			else if (type == "elastic_energy")
 			{
 				obj = std::make_shared<ElasticEnergyForm>(var2sim, *(states[args["state"]]), args);
-			}
-			else if (type == "traction_norm")
-			{
-				obj = std::make_shared<TractionNormForm>(var2sim, *(states[args["state"]]), args);
-			}
-			else if (type == "contact_force_norm")
-			{
-				obj = std::make_shared<ContactForceForm>(var2sim, *(states[args["state"]]), args);
 			}
 			else if (type == "max_stress")
 			{
