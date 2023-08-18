@@ -101,7 +101,7 @@ namespace polyfem
 		if (current_step == 0)
 			diff_cached.init(ndof(), problem->is_time_dependent() ? args["time"]["time_steps"].get<int>() : 0);
 		if (!problem->is_time_dependent() || current_step > 0)
-			compute_force_hessian(sol, disp_grad, gradu_h);
+			compute_force_jacobian(sol, disp_grad, gradu_h);
 
 		auto cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::CollisionConstraints();
 		auto cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_constraint_set() : ipc::FrictionConstraints();
@@ -141,7 +141,7 @@ namespace polyfem
 		}
 	}
 
-	void State::compute_force_hessian(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian)
+	void State::compute_force_jacobian(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian)
 	{
 		if (problem->is_time_dependent())
 		{
@@ -175,7 +175,7 @@ namespace polyfem
 		}
 	}
 
-	void State::compute_force_hessian_prev(const int force_step, const int sol_step, StiffnessMatrix &hessian_prev) const
+	void State::compute_force_jacobian_prev(const int force_step, const int sol_step, StiffnessMatrix &hessian_prev) const
 	{
 		assert(force_step > 0);
 		assert(force_step > sol_step);
@@ -360,7 +360,9 @@ namespace polyfem
 		const int time_steps = args["time"]["time_steps"];
 
 		int bdf_order = 1;
-		if (args["time"]["integrator"]["type"] == "ImplicitEuler")
+		if (args["time"]["integrator"].is_string())
+			bdf_order = 1;
+		else if (args["time"]["integrator"]["type"] == "ImplicitEuler")
 			bdf_order = 1;
 		else if (args["time"]["integrator"]["type"] == "BDF")
 			bdf_order = args["time"]["integrator"]["steps"].get<int>();
@@ -401,7 +403,7 @@ namespace polyfem
 					break;
 				
 				StiffnessMatrix gradu_h_prev;
-				compute_force_hessian_prev(i + j, i, gradu_h_prev);
+				compute_force_jacobian_prev(i + j, i, gradu_h_prev);
 				Eigen::VectorXd tmp = adjoints.col(i + j) * (time_integrator::BDF::betas(diff_cached.bdf_order(i + j) - 1) * dt);
 				tmp(boundary_nodes).setZero();
 				rhs_ += -gradu_h_prev.transpose() * tmp;

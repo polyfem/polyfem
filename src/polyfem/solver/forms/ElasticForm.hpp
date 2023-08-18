@@ -56,7 +56,7 @@ namespace polyfem::solver
 		/// @param[in] x Current solution
 		/// @param[in] adjoint Current adjoint solution
 		/// @param[out] term Derivative of force multiplied by the adjoint
-		void foce_material_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term);
+		void force_material_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term);
 
 		/// @brief Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adjoint_sol.
 		/// @param[in] n_verts Number of vertices

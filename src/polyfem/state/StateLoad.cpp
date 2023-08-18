@@ -8,8 +8,6 @@
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 
-#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
-
 #include <polyfem/utils/Selection.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>

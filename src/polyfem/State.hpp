@@ -592,8 +592,8 @@ namespace polyfem
 		}
 
 		// Aux functions for setting up adjoint equations
-		void compute_force_hessian(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian);
-		void compute_force_hessian_prev(const int force_step, const int sol_step, StiffnessMatrix &hessian_prev) const;
+		void compute_force_jacobian(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian);
+		void compute_force_jacobian_prev(const int force_step, const int sol_step, StiffnessMatrix &hessian_prev) const;
 		// Solves the adjoint PDE for derivatives and caches
 		void solve_adjoint_cached(const Eigen::MatrixXd &rhs);
 		Eigen::MatrixXd solve_adjoint(const Eigen::MatrixXd &rhs) const;
