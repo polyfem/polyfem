@@ -1305,10 +1305,18 @@
     },
     {
         "pointer": "/time/integrator",
+        "type": "string",
+        "default": "ImplicitEuler",
+        "options": [
+            "ImplicitEuler",
+            "BDF",
+            "ImplicitNewmark"
+        ],
+        "doc": "Time integrator"
+    },
+    {
+        "pointer": "/time/integrator",
         "type": "object",
-        "default": {
-            "type": "ImplicitEuler"
-        },
         "type_name": "ImplicitEuler",
         "required": [
             "type"

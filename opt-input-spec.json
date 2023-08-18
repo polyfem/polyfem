@@ -408,7 +408,6 @@
             "append-const",
             "linear-filter",
             "custom-symmetric",
-            "sdf-to-mesh",
             "periodic-mesh-tile",
             "mesh-affine"
         ]
@@ -694,21 +693,6 @@
     {
         "pointer": "/variable_to_simulation/*/composition/*/radius",
         "type": "float"
-    },
-    {
-        "pointer": "/variable_to_simulation/*/composition/*",
-        "type_name": "sdf-to-mesh",
-        "type": "object",
-        "required": [
-            "binary_path",
-            "wire_path",
-            "output_path"
-        ],
-        "optional": [
-            "options",
-            "use_volume_velocity"
-        ],
-        "doc": "Append a list of constants at the end of the input vector"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/use_volume_velocity",

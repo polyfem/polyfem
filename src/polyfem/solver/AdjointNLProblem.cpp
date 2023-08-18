@@ -262,41 +262,6 @@ namespace polyfem::solver
 		cur_grad.resize(0);
 	}
 
-	Eigen::VectorXd AdjointNLProblem::component_values(const Eigen::VectorXd &x)
-	{
-		Eigen::VectorXd values;
-		values.setZero(composite_form_->n_objs());
-		// for (int i = 0; i < composite_form_->n_objs(); i++)
-		// {
-		// 	values(i) = composite_form_->get_weight(i) * composite_form_->get_obj(i)->value();
-		// }
-		return values;
-	}
-	Eigen::MatrixXd AdjointNLProblem::component_gradients(const Eigen::VectorXd &x)
-	{
-		Eigen::MatrixXd grads;
-		grads.setZero(x.size(), composite_form_->n_objs());
-
-		// for (int i = 0; i < composite_form_->n_objs(); i++)
-		// {
-		// 	auto obj = composite_form_->get_obj(i);
-		// 	std::vector<Eigen::MatrixXd> adjoints;
-		// 	adjoints.reserve(all_states_.size());
-		// 	for (auto &state_ptr : all_states_)
-		// 		adjoints.push_back(state_ptr->solve_adjoint(obj->compute_adjoint_rhs(*state_ptr)));
-
-		// 	int cumulative = 0;
-		// 	for (const auto &p : parameters_)
-		// 	{
-		// 		Eigen::VectorXd gradv_param = composite_form_->get_weight(i) * obj->gradient(all_states_, adjoints, *p, x.segment(cumulative, p->optimization_dim()));
-
-		// 		grads.block(cumulative, i, p->optimization_dim(), 1) += gradv_param;
-		// 		cumulative += p->optimization_dim();
-		// 	}
-		// }
-		return grads;
-	}
-
 	bool AdjointNLProblem::stop(const TVector &x)
 	{
 		if (stopping_conditions_.size() == 0)

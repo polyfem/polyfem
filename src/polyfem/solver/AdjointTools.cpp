@@ -34,15 +34,15 @@ namespace
 
 	int get_bdf_order(const polyfem::State &state)
 	{
+		if (state.args["time"]["integrator"].is_string())
+			return 1;
 		if (state.args["time"]["integrator"]["type"] == "ImplicitEuler")
 			return 1;
-		else if (state.args["time"]["integrator"]["type"] == "BDF")
+		if (state.args["time"]["integrator"]["type"] == "BDF")
 			return state.args["time"]["integrator"]["steps"].get<int>();
-		else
-		{
-			polyfem::log_and_throw_error("Integrator type not supported for differentiability.");
-			return -1;
-		}
+
+		polyfem::log_and_throw_error("Integrator type not supported for differentiability.");
+		return -1;
 	}
 }
 
@@ -741,7 +741,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
 	{
-		state.solve_data.elastic_form->foce_material_derivative(sol, sol, adjoint, one_form);
+		state.solve_data.elastic_form->force_material_derivative(sol, sol, adjoint, one_form);
 	}
 
 	void AdjointTools::dJ_material_transient_adjoint_term(
@@ -770,7 +770,7 @@ namespace polyfem::solver
 				Eigen::VectorXd cur_p = adjoint_p.col(i);
 				cur_p(state.boundary_nodes).setZero();
 
-				state.solve_data.elastic_form->foce_material_derivative(state.diff_cached.u(i), state.diff_cached.u(i - 1), -cur_p, elasticity_term);
+				state.solve_data.elastic_form->force_material_derivative(state.diff_cached.u(i), state.diff_cached.u(i - 1), -cur_p, elasticity_term);
 				local_storage.vec += beta_dt * elasticity_term;
 			}
 		});
@@ -845,7 +845,7 @@ namespace polyfem::solver
 				Eigen::VectorXd cur_p = adjoint_p.col(t);
 				cur_p(state.boundary_nodes).setZero();
 
-				state.solve_data.damping_form->foce_material_derivative(state.diff_cached.u(t), state.diff_cached.u(t - 1), -cur_p, damping_term);
+				state.solve_data.damping_form->force_material_derivative(state.diff_cached.u(t), state.diff_cached.u(t - 1), -cur_p, damping_term);
 				local_storage.vec += (beta * dt) * damping_term;
 			}
 		});

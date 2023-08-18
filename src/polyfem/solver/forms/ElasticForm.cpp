@@ -110,7 +110,7 @@ namespace polyfem::solver
 		}
 	}
 
-	void ElasticForm::foce_material_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
+	void ElasticForm::force_material_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
 	{
 		const int dim = is_volume_ ? 3 : 2;
 
