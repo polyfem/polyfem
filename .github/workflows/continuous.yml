@@ -89,7 +89,7 @@ jobs:
       matrix:
         os: [macos-latest]
         arc: [x86]
-        config: [DebugNoSymbols]
+        config: [DebugNoSymbols, Release]
         threading: [TBB]
         include:
           - os: macos-latest
@@ -162,7 +162,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: [DebugNoSymbols]
+        config: [DebugNoSymbols, Release]
         threading: [TBB]
     steps:
       - name: Checkout repository
