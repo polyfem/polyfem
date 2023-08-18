@@ -96,12 +96,12 @@ namespace
 } // namespace
 
 #if defined(NDEBUG) && !defined(WIN32)
-std::string tags = "[optimization]";
+std::string tagsopt = "[optimization]";
 #else
-std::string tags = "[.][optimization]";
+std::string tagsopt = "[.][optimization]";
 #endif
 
-TEST_CASE("material-opt", tags)
+TEST_CASE("material-opt", tagsopt)
 {
 	const std::string name = "material-opt";
 	// run_opt_new(name);
@@ -325,7 +325,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
 }
 
-TEST_CASE("shape-stress-opt", tags)
+TEST_CASE("shape-stress-opt", tagsopt)
 {
 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + "shape-stress-opt" + "/";
 	json opt_args;

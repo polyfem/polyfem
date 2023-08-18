@@ -349,12 +349,12 @@ TEST_CASE("topology-compliance", "[test_adjoint]")
 }
 
 #if defined(NDEBUG) && !defined(WIN32)
-std::string tags = "[test_adjoint]";
+std::string tagsdiff = "[test_adjoint]";
 #else
-std::string tags = "[.][test_adjoint]";
+std::string tagsdiff = "[.][test_adjoint]";
 #endif
 
-TEST_CASE("neohookean-stress-3d", tags)
+TEST_CASE("neohookean-stress-3d", tagsdiff)
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
 	json in_args;
