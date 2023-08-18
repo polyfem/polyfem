@@ -40,7 +40,6 @@ set(SOURCES
 	RBFInterpolation.hpp
 	RefElementSampler.cpp
 	RefElementSampler.hpp
-	CubicHermiteSplineParametrization.hpp
 	BSplineParametrization.cpp
 	BSplineParametrization.hpp
 	Selection.cpp
