@@ -1152,7 +1152,8 @@
             "force_no_ref_for_harmonic",
             "B",
             "h1_formula",
-            "count_flipped_els"
+            "count_flipped_els",
+            "use_particle_advection"
         ],
         "doc": "Advanced settings for the FE space."
     },
@@ -1231,6 +1232,12 @@
         "default": true,
         "type": "bool",
         "doc": "Count the number of elements with Jacobian of the geometric map not positive at quadrature points."
+    },
+    {
+        "pointer": "/space/advanced/use_particle_advection",
+        "default": false,
+        "type": "bool",
+        "doc": "Use particle advection in splitting method for solving NS equation."
     },
     {
         "pointer": "/time",
@@ -2503,6 +2510,20 @@
     {
         "pointer": "/materials/*",
         "type": "object",
+        "type_name": "OperatorSplitting",
+        "required": [
+            "type",
+            "viscosity"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, viscosity, density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
         "type_name": "IncompressibleLinearElasticity",
         "required": [
             "type",
@@ -2672,6 +2693,7 @@
             "IncompressibleOgden",
             "Stokes",
             "NavierStokes",
+            "OperatorSplitting",
             "IncompressibleLinearElasticity",
             "Laplacian",
             "Helmholtz",

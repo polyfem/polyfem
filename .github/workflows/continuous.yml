@@ -159,28 +159,27 @@ jobs:
         threading: [TBB]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3.5.3
         with:
           fetch-depth: 10
 
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@master
 
-      # - name: Stetup Conda
-      #   uses: s-weigand/setup-conda@v1
-      #   with:
-      #     update-conda: true
-      #     conda-channels: anaconda, conda-forge
+      - name: Stetup Conda
+        uses: s-weigand/setup-conda@v1.2.1
+        with:
+          update-conda: true
+          conda-channels: anaconda, conda-forge
 
-      # - name: Install Dependencies
-      #   run: |
-      #     conda install libblas libcblas suitesparse -y
+      - name: Install Dependencies
+        run: |
+          conda install libblas libcblas -y
 
       - name: Set env
         run: |
           echo "appdata=$env:LOCALAPPDATA" >> ${env:GITHUB_ENV}
           conda init powershell
-
 
       - name: Cache build
         id: cache-build
@@ -219,3 +218,5 @@ jobs:
         run: |
           cd build
           ctest --verbose --output-on-failure
+
+

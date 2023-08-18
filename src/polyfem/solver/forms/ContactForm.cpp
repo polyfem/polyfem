@@ -29,8 +29,8 @@ namespace polyfem::solver
 							 const int ccd_max_iterations)
 		: collision_mesh_(collision_mesh),
 		  dhat_(dhat),
-		  avg_mass_(avg_mass),
 		  use_adaptive_barrier_stiffness_(use_adaptive_barrier_stiffness),
+		  avg_mass_(avg_mass),
 		  is_time_dependent_(is_time_dependent),
 		  enable_shape_derivatives_(enable_shape_derivatives),
 		  broad_phase_method_(broad_phase_method),
