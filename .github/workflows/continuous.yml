@@ -88,7 +88,7 @@ jobs:
       matrix:
         os: [macos-latest]
         arc: [x86]
-        config: [Debug]
+        config: [Debug, Release]
         threading: [TBB]
         include:
           - os: macos-latest
