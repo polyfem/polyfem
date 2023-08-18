@@ -53,6 +53,74 @@ void verify_apply_jacobian(Parametrization &parametrization, const Eigen::Vector
 	}
 }
 
+TEST_CASE("SplineParametrization", "[test_parametrization]")
+{
+	Eigen::MatrixXd control_points(4, 2);
+	control_points << 0, -1,
+		0., -0.33333333,
+		0., 0.33333333,
+		0, 1;
+
+	Eigen::VectorXd knots(8);
+	knots << 0,
+		0,
+		0,
+		0,
+		1,
+		1,
+		1,
+		1;
+
+	Eigen::VectorXd V(20);
+	V << 0., -1.,
+		0., -0.77777778,
+		0., -0.55555556,
+		0., -0.33333333,
+		0., -0.11111111,
+		0., 0.11111111,
+		0., 0.33333333,
+		0., 0.55555556,
+		0., 0.77777778,
+		0., 1.;
+
+	BSplineParametrization1DTo2D parametrization(control_points, knots, 10, false);
+	verify_apply_jacobian(parametrization, V);
+}
+
+TEST_CASE("SplineParametrizationExcludeEnds", "[test_parametrization]")
+{
+	Eigen::MatrixXd control_points(4, 2);
+	control_points << 0, -1,
+		0., -0.33333333,
+		0., 0.33333333,
+		0, 1;
+
+	Eigen::VectorXd knots(8);
+	knots << 0,
+		0,
+		0,
+		0,
+		1,
+		1,
+		1,
+		1;
+
+	Eigen::VectorXd V(20);
+	V << 0., -1.,
+		0., -0.77777778,
+		0., -0.55555556,
+		0., -0.33333333,
+		0., -0.11111111,
+		0., 0.11111111,
+		0., 0.33333333,
+		0., 0.55555556,
+		0., 0.77777778,
+		0., 1.;
+
+	BSplineParametrization1DTo2D parametrization(control_points, knots, 10, true);
+	verify_apply_jacobian(parametrization, V);
+}
+
 TEST_CASE("BoundedBiharmonicWeights", "[test_parametrization]")
 {
 	Eigen::MatrixXd V;
