@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        config: [Debug, Release]
+        config: [DebugNoSymbols, Release]
         threading: [CPP, TBB, NONE]
         include:
           - os: ubuntu-latest
@@ -65,6 +65,7 @@ jobs:
           cmake .. \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
@@ -86,7 +87,7 @@ jobs:
       matrix:
         os: [macos-latest]
         arc: [x86]
-        config: [Debug, Release]
+        config: [DebugNoSymbols, Release]
         threading: [CPP, TBB, NONE]
         include:
           - os: macos-latest
@@ -124,6 +125,7 @@ jobs:
           cmake .. \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
@@ -135,6 +137,7 @@ jobs:
           cmake .. \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DCMAKE_OSX_ARCHITECTURES=arm64 \
             -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
@@ -157,7 +160,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: [Debug]
+        config: [DebugNoSymbols]
         threading: [NONE]
     steps:
       - name: Checkout repository
@@ -207,7 +210,9 @@ jobs:
           cmake -G Ninja ^
             -DCMAKE_CXX_FLAGS="/Z7 /DEBUG:FASTLINK /DWIN32" ^
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
+            -DCMAKE_CONFIGURATION_TYPES="Release;Debug;RelWithDebInfo;MinSizeRel;DebugNoSymbols" ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="/Od" -DCMAKE_EXE_LINKER_FLAGS_DEBUGNOSYMBOLS="" ^
             -DPOLYFEM_WITH_CLIPPER=OFF ^
             -DPOLYFEM_THREADING=${{ matrix.threading }} ^
             -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
