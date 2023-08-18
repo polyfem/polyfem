@@ -2067,8 +2067,7 @@
             "max_weight",
             "eta",
             "max_solver_iters",
-            "force",
-            "error"
+            "force"
         ],
         "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes E + a/2*AL^2 - lambda AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a *= scaling` until `max_weight`. See IPC additional material"
     },
@@ -2078,13 +2077,6 @@
         "min": 0,
         "type": "float",
         "doc": "Initial weight for AL"
-    },
-    {
-        "pointer": "/solver/augmented_lagrangian/error",
-        "default": 1e-2,
-        "min": 0,
-        "type": "float",
-        "doc": "Don't stop AL unless the error is smaller than this number."
     },
     {
         "pointer": "/solver/augmented_lagrangian/scaling",
@@ -2118,14 +2110,6 @@
         "default": false,
         "type": "bool",
         "doc": "Always enable AL, even when BC can be imposed"
-    },
-    {
-        "pointer": "/solver/augmented_lagrangian/threshold",
-        "default": 0.05,
-        "min": 0,
-        "max": 1,
-        "type": "float",
-        "doc": "Stop AL when BC is close enough to the imposed one"
     },
     {
         "pointer": "/solver/contact",
@@ -2278,8 +2262,7 @@
             "cache_size",
             "lump_mass_matrix",
             "lagged_regularization_weight",
-            "lagged_regularization_iterations",
-            "bistable"
+            "lagged_regularization_iterations"
         ],
         "doc": "Advanced settings for the solver"
     },
@@ -2308,56 +2291,9 @@
         "doc": "Number of regularize singular static problems."
     },
     {
-        "pointer": "/solver/advanced/bistable",
-        "default": false,
-        "type": "bool",
-        "doc": "To find the bistable state of a microstructure."
-    },
-    {
         "pointer": "/materials",
         "type": "list",
         "doc": "Material Parameters lists including ID pointing to volume selection, Young's modulus ($E$), Poisson's ratio ($\\nu$), Density ($\\rho$), or Lamé constants ($\\lambda$ and $\\mu$)."
-    },
-    {
-        "pointer": "/materials/*/microstructure",
-        "type": "object",
-        "doc": "microstructure model configuration"
-    },
-    {
-        "pointer": "/materials/*/load_reduced_basis",
-        "default": "",
-        "type": "string",
-        "doc": "path to load reduced basis"
-    },
-    {
-        "pointer": "/materials/*/save_reduced_basis",
-        "default": "",
-        "type": "string",
-        "doc": "path to save reduced basis"
-    },
-    {
-        "pointer": "/materials/*/det_samples",
-        "default": [],
-        "type": "list",
-        "doc": "array of determinant samples"
-    },
-    {
-        "pointer": "/materials/*/amp_samples",
-        "default": [],
-        "type": "list",
-        "doc": "array of amplitude samples"
-    },
-    {
-        "pointer": "/materials/*/n_dir_samples",
-        "type": "int",
-        "default": 5,
-        "doc": "number of directional samples"
-    },
-    {
-        "pointer": "/materials/*/n_reduced_basis",
-        "type": "int",
-        "default": 5,
-        "doc": "number of reduced basis"
     },
     {
         "pointer": "/materials/*",
@@ -2889,7 +2825,7 @@
         "pointer": "/boundary_conditions/dirichlet_boundary",
         "default": [],
         "type": "list",
-        "doc": "The list of Dirichlet boundary conditions for the main variable. Elements of the list are assignment pairs (id, value) where id is assigned by surface selection."
+        "doc": "The list of Dirichlet boundary conditions for the main variable. Elements of the list are assignment pairs (ID, value) where ID is assigned by surface selection."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
@@ -2900,8 +2836,8 @@
             "value"
         ],
         "optional": [
-            "dimension",
-            "interpolation"
+            "interpolation",
+            "dimension"
         ],
         "doc": "Dirichlet boundary condition."
     },
@@ -2938,22 +2874,7 @@
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
         "type": "float",
-        "doc": "Values of Dirichlet boundary condition for each dimension"
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
-        "type": "list",
-        "doc": "List of Dirichlet boundary condition for each dimension over time"
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*/*",
-        "type": "float",
-        "doc": "Values of Dirichlet boundary condition for each dimension over time"
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*/*",
-        "type": "string",
-        "doc": "Values of Dirichlet boundary condition for each dimension over time"
+        "doc": "Values of Dirichlet boundary condition for each dimension."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension",
