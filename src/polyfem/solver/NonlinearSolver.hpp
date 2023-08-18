@@ -94,7 +94,7 @@ namespace cppoptlib
 		//                            Solver info
 		// ====================================================================
 
-		virtual void update_solver_info();
+		virtual void update_solver_info(const double energy);
 		void reset_times();
 		void log_times();
 
@@ -107,8 +107,6 @@ namespace cppoptlib
 		double line_search_time;
 		double constraint_set_update_time;
 		double obj_fun_time;
-
-		std::string export_energy_path;
 
 		ErrorCode m_error_code;
 

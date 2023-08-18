@@ -87,7 +87,6 @@
             "use_grad_norm",
             "relative_gradient",
             "line_search",
-            "export_energy",
             "first_grad_norm_tol"
         ],
         "doc": "Settings for optimization nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
@@ -135,12 +134,6 @@
         "pointer": "/solver/nonlinear/bounds/*",
         "type": "float",
         "doc": "Box constraint values"
-    },
-    {
-        "pointer": "/solver/nonlinear/export_energy",
-        "default": "runtime.csv",
-        "type": "string",
-        "doc": "Save energy and gradient in optimizations to file"
     },
     {
         "pointer": "/solver/nonlinear/max_change",
