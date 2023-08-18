@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SparseNewtonDescentSolver.hpp"
-#include <finitediff.hpp>
 #include <unsupported/Eigen/SparseExtra>
 
 namespace cppoptlib
