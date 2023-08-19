@@ -153,6 +153,10 @@ if __name__ == "__main__":
 
         cppg = f"#include \"{nameg}.hpp\"\n\n\n"
         cppg = cppg + "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
+        if dim==3:
+            cppg="#include <Eigen/Dense>\n namespace polyfem {\nnamespace autogen {"
+
+        eextern=""
 
         hppv = "#pragma once\n\n#include <Eigen/Dense>\n\n"
         hppv = hppv + "namespace polyfem {\nnamespace autogen " + "{\n"
@@ -494,6 +498,8 @@ if __name__ == "__main__":
             nodes = "void q_" + orderN + "_nodes" + suffix + "(Eigen::MatrixXd &res) {\n res.resize(" + str(len(indices)) + ", " + str(dim) + "); res << \n"
             unique_nodes = unique_nodes + "\tcase " + str(order) + ": " + "q_" + orderN + "_nodes" + suffix + "(val); break;\n"
 
+            eextern = eextern + f"extern \"C++\" void q_{orderN}_basis_grad_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);\n"
+
             for ii in indices:
                 nodes = nodes + ccode(fe.points[ii][0]) + ", " + ccode(fe.points[ii][1]) + ((", " + ccode(fe.points[ii][2])) if dim == 3 else "") + ",\n"
             nodes = nodes[:-2]
@@ -549,6 +555,13 @@ if __name__ == "__main__":
             cppg = cppg + dbase + "}\n\n"
             cppn = cppn + nodes + "\n\n"
 
+            if dim == 3:
+                with open(os.path.join(path, f"{nameg}_{order}.cpp"), "w") as file:
+                    file.write(cppg+"}}")
+                    cppg="#include <Eigen/Dense>\n namespace polyfem {\nnamespace autogen {"
+
+        if dim == 3:
+            cppg=""
         unique_nodes = unique_nodes + "\tdefault: assert(false);\n}}"
 
         unique_fun = unique_fun + "\tdefault: assert(false);\n}}"
@@ -556,7 +569,8 @@ if __name__ == "__main__":
 
         cppv = cppv + "}\n\n"
         cppn = cppn + "}\n\n"
-        cppg = cppg + "}\n\n"
+        if dim != 3:
+            cppg = cppg + "}\n\n"
 
         cppn = cppn + unique_nodes + "\n}}\n"
         cppv = cppv + unique_fun + "\n}}\n"
@@ -564,6 +578,12 @@ if __name__ == "__main__":
         hppv = hppv + "\n}}\n"
         hppn = hppn + "\n}}\n"
         hppg = hppg + "\n}}\n"
+
+        if dim == 3:
+            tcppg = f"#include \"{nameg}.hpp\"\n\n\n"
+            tcppg = tcppg + "namespace polyfem {\nnamespace autogen {\n"
+            tcppg = tcppg + eextern + "\n"
+            cppg=tcppg+cppg
 
         print("saving...")
         with open(os.path.join(path, f"{namev}.cpp"), "w") as file:
