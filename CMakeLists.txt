@@ -231,10 +231,6 @@ target_link_libraries(polyfem PUBLIC LBFGSpp::LBFGSpp)
 include(tinyexpr)
 target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
 
-# TinyXML library
-include(tinyxml)
-target_link_libraries(polyfem PUBLIC tinyxml2)
-
 # JSON Specification Engine library
 include(jse)
 target_link_libraries(polyfem PUBLIC jse::jse)
