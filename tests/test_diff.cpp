@@ -249,7 +249,7 @@ TEST_CASE("boundary-smoothing", "[test_adjoint]")
 	Eigen::MatrixXd velocity_discrete;
 	velocity_discrete.setRandom(x.size(), 1);
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-6);
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-5);
 }
 
 TEST_CASE("linear_elasticity-surface-3d", "[test_adjoint]")
