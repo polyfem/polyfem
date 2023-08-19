@@ -27,7 +27,7 @@ endif()
 # Enable ccache if available
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
-  option(POLYFEM_WITH_CCACHE "Enable ccache when building PolyFEM" ${IPC_TOOLKIT_TOPLEVEL_PROJECT})
+  option(POLYFEM_WITH_CCACHE "Enable ccache when building PolyFEM" ${POLYFEM_TOPLEVEL_PROJECT})
 else()
   option(POLYFEM_WITH_CCACHE "Enable ccache when building PolyFEM" OFF)
 endif()
