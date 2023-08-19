@@ -1,4 +1,4 @@
-# tinyxml
+# tinyxml (https://github.com/leethomason/tinyxml2)
 # License: zlib
 
 if(TARGET tinyxml2)
@@ -11,11 +11,5 @@ SET(BUILD_SHARED_LIBS OFF)
 SET(BUILD_STATIC_LIBS ON)
 SET(BUILD_TESTING OFF)
 
-include(FetchContent)
-FetchContent_Declare(
-    tinyxml
-    GIT_REPOSITORY https://github.com/leethomason/tinyxml2.git
-    GIT_TAG 9.0.0
-    GIT_SHALLOW FALSE
-)
-FetchContent_MakeAvailable(tinyxml)
+include(CPM)
+CPMAddPackage("gh:leethomason/tinyxml2#9.0.0")

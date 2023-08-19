@@ -7,11 +7,5 @@ endif()
 
 message(STATUS "Third-party: creating target 'ipc::toolkit'")
 
-include(FetchContent)
-FetchContent_Declare(
-    ipc_toolkit
-    GIT_REPOSITORY https://github.com/ipc-sim/ipc-toolkit.git
-    GIT_TAG c844956c748d6a086613f22361c5304ecaa16303
-    GIT_SHALLOW FALSE
-)
-FetchContent_MakeAvailable(ipc_toolkit)
+include(CPM)
+CPMAddPackage("gh:ipc-sim/ipc-toolkit#46e17802d0fc9079885898f3944ad9572968dd1a")

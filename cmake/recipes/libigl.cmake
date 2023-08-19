@@ -1,4 +1,5 @@
-## libigl MPL
+# libigl (https://github.com/libigl/libigl)
+# License: MPL
 
 #
 # Copyright 2020 Adobe. All rights reserved.
@@ -11,6 +12,7 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 #
+
 if(TARGET igl::core)
     return()
 endif()
@@ -21,11 +23,5 @@ set(LIBIGL_PREDICATES ON CACHE BOOL "Use exact predicates" FORCE)
 
 include(eigen)
 
-include(FetchContent)
-FetchContent_Declare(
-    libigl
-    GIT_REPOSITORY https://github.com/libigl/libigl.git
-    GIT_TAG v2.4.0
-    GIT_SHALLOW TRUE
-)
-FetchContent_MakeAvailable(libigl)
+include(CPM)
+CPMAddPackage("gh:libigl/libigl@2.4.0")

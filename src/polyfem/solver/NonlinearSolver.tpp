@@ -2,8 +2,12 @@
 
 #include "NonlinearSolver.hpp"
 
+#include <fmt/format.h>
+
 namespace cppoptlib
 {
+	inline auto format_as(cppoptlib::Status s) { return fmt::underlying(s); }
+
 	template <typename ProblemType>
 	NonlinearSolver<ProblemType>::NonlinearSolver(const polyfem::json &solver_params, const double dt)
 		: dt(dt)
