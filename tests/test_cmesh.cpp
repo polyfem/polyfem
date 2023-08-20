@@ -2,7 +2,7 @@
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/State.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <iostream>
 #include <fstream>
 ////////////////////////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ using namespace polyfem::mesh;
 
 TEST_CASE("append_2d", "[mesh_test]")
 {
-	//Used to init geogram
+	// Used to init geogram
 	State state;
 
 	const std::string path = POLYFEM_DATA_DIR;

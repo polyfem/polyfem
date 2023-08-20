@@ -3,7 +3,9 @@
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+
 #include <iostream>
 
 using namespace polyfem;
@@ -53,7 +55,7 @@ TEST_CASE("hessian_lin", "[assembler]")
 										  state.bases, state.bases, state.ass_vals_cache, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
 
 		const StiffnessMatrix tmp = stiffness - hessian;
-		const auto val = Approx(0).margin(1e-8);
+		const auto val = Catch::Approx(0).margin(1e-8);
 
 		for (int k = 0; k < tmp.outerSize(); ++k)
 		{
@@ -108,7 +110,7 @@ TEST_CASE("hessian_hooke", "[assembler]")
 										  state.bases, state.bases, state.ass_vals_cache, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
 
 		const StiffnessMatrix tmp = stiffness - hessian;
-		const auto val = Approx(0).margin(1e-8);
+		const auto val = Catch::Approx(0).margin(1e-8);
 
 		for (int k = 0; k < tmp.outerSize(); ++k)
 		{
@@ -186,7 +188,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 			if (std::isnan(e))
 				REQUIRE(std::isnan(ea));
 			else
-				REQUIRE(ea == Approx(e).margin(1e-12));
+				REQUIRE(ea == Catch::Approx(e).margin(1e-12));
 		}
 
 		// grad
@@ -201,7 +203,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 				if (std::isnan(grad(i)))
 					REQUIRE(std::isnan(grada(i)));
 				else
-					REQUIRE(grada(i) == Approx(grad(i)).margin(1e-12));
+					REQUIRE(grada(i) == Catch::Approx(grad(i)).margin(1e-12));
 			}
 		}
 
@@ -217,7 +219,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 				if (std::isnan(hessian(i)))
 					REQUIRE(std::isnan(hessiana(i)));
 				else
-					REQUIRE(hessiana(i) == Approx(hessian(i)).margin(1e-12));
+					REQUIRE(hessiana(i) == Catch::Approx(hessian(i)).margin(1e-12));
 			}
 		}
 
@@ -232,7 +234,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 				if (std::isnan(stress(i)))
 					REQUIRE(std::isnan(stressa(i)));
 				else
-					REQUIRE(stressa(i) == Approx(stress(i)).margin(1e-12));
+					REQUIRE(stressa(i) == Catch::Approx(stress(i)).margin(1e-12));
 			}
 		}
 
@@ -247,7 +249,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 				if (std::isnan(stress(i)))
 					REQUIRE(std::isnan(stressa(i)));
 				else
-					REQUIRE(stressa(i) == Approx(stress(i)).margin(1e-12));
+					REQUIRE(stressa(i) == Catch::Approx(stress(i)).margin(1e-12));
 			}
 		}
 
@@ -262,7 +264,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 				if (std::isnan(stress(i)))
 					REQUIRE(std::isnan(stressa(i)));
 				else
-					REQUIRE(stressa(i) == Approx(stress(i)).margin(1e-12));
+					REQUIRE(stressa(i) == Catch::Approx(stress(i)).margin(1e-12));
 			}
 		}
 
@@ -277,7 +279,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 				if (std::isnan(stress(i)))
 					REQUIRE(std::isnan(stressa(i)));
 				else
-					REQUIRE(stressa(i) == Approx(stress(i)).margin(1e-12));
+					REQUIRE(stressa(i) == Catch::Approx(stress(i)).margin(1e-12));
 			}
 		}
 	}
