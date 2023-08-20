@@ -1,4 +1,5 @@
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
 
 #include <polyfem/utils/GeometryUtils.hpp>
 
@@ -11,15 +12,15 @@ TEST_CASE("Triangle area", "[geometry]")
 		1, 0, 0,
 		0, 1, 0;
 
-	CHECK(triangle_area(V.leftCols<2>()) == Approx(0.5));
-	CHECK(triangle_area(V) == Approx(0.5));
+	CHECK(triangle_area(V.leftCols<2>()) == Catch::Approx(0.5));
+	CHECK(triangle_area(V) == Catch::Approx(0.5));
 
 	Eigen::Matrix3d V_flipped = V;
 	V_flipped.row(1) = V.row(2);
 	V_flipped.row(2) = V.row(1);
 
-	CHECK(triangle_area(V_flipped.leftCols<2>()) == Approx(-0.5));
-	CHECK(triangle_area(V_flipped) == Approx(0.5));
+	CHECK(triangle_area(V_flipped.leftCols<2>()) == Catch::Approx(-0.5));
+	CHECK(triangle_area(V_flipped) == Catch::Approx(0.5));
 }
 
 TEST_CASE("Tetrahedron volume", "[geometry]")
@@ -32,11 +33,11 @@ TEST_CASE("Tetrahedron volume", "[geometry]")
 		0, 1, 0,
 		0, 0, 1;
 
-	CHECK(tetrahedron_volume(V) == Approx(1 / 6.));
+	CHECK(tetrahedron_volume(V) == Catch::Approx(1 / 6.));
 
 	Eigen::Matrix<double, 4, 3> V_flipped = V;
 	V_flipped.row(2) = V.row(3);
 	V_flipped.row(3) = V.row(2);
 
-	CHECK(tetrahedron_volume(V_flipped) == Approx(-1 / 6.));
+	CHECK(tetrahedron_volume(V_flipped) == Catch::Approx(-1 / 6.));
 }
