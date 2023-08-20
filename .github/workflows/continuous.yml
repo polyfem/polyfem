@@ -209,7 +209,7 @@ jobs:
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
           cmake -G Ninja ^
-            -DCMAKE_CXX_FLAGS="/Z7 /DEBUG:FASTLINK /DWIN32" ^
+            -DCMAKE_CXX_FLAGS="/Z7 /DEBUG:FASTLINK /DWIN32 /B2" ^
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
             -DCMAKE_CONFIGURATION_TYPES="Release;Debug;RelWithDebInfo;MinSizeRel;DebugNoSymbols" ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
