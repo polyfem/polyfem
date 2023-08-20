@@ -14,7 +14,7 @@
 #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <math.h>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -111,7 +111,7 @@ namespace
 		std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
 		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 
-		REQUIRE(derivative == Approx(finite_difference).epsilon(tol));
+		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
 	}
 
 	void verify_adjoint(std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, AdjointForm &obj, State &state, const Eigen::VectorXd &x, const Eigen::MatrixXd &theta, const double dt, const double tol, bool print_grad = false)
@@ -142,7 +142,7 @@ namespace
 		std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
 		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 		std::cout << std::setprecision(12) << "relative error: " << abs((finite_difference - derivative) / derivative) << "\n";
-		REQUIRE(derivative == Approx(finite_difference).epsilon(tol));
+		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
 	}
 
 	void verify_adjoint_expensive(std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, AdjointForm &obj, State &state, const Eigen::VectorXd &x, const double dt)

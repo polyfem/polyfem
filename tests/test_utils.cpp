@@ -123,9 +123,9 @@ TEST_CASE("inverse", "[utils]")
 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat2_inv = mat2.inverse();
 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat3_inv = mat3.inverse();
 
-	REQUIRE(((utils::inverse(mat) - mat_inv)).norm() == Approx(0).margin(1e-12));
-	REQUIRE(((utils::inverse(mat2) - mat2_inv)).norm() == Approx(0).margin(1e-12));
-	REQUIRE(((utils::inverse(mat3) - mat3_inv)).norm() == Approx(0).margin(1e-12));
+	REQUIRE(((utils::inverse(mat) - mat_inv)).norm() == Catch::Approx(0).margin(1e-12));
+	REQUIRE(((utils::inverse(mat2) - mat2_inv)).norm() == Catch::Approx(0).margin(1e-12));
+	REQUIRE(((utils::inverse(mat3) - mat3_inv)).norm() == Catch::Approx(0).margin(1e-12));
 }
 
 #ifdef POLYFEM_WITH_REMESHING

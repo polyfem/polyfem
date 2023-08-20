@@ -44,7 +44,7 @@ namespace
 		polyfem::log_and_throw_error("Integrator type not supported for differentiability.");
 		return -1;
 	}
-}
+} // namespace
 
 namespace polyfem::solver
 {
@@ -203,7 +203,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &solution,
 		const std::set<int> &interested_ids, // either body id or surface id
 		const SpatialIntegralType spatial_integral_type,
-		const int cur_step)                  // current time step
+		const int cur_step) // current time step
 	{
 		const auto &bases = state.bases;
 		const auto &gbases = state.geom_bases();
@@ -803,10 +803,22 @@ namespace polyfem::solver
 				const int real_order = std::min(bdf_order, t);
 				double beta = time_integrator::BDF::betas(real_order - 1);
 
-				Eigen::MatrixXd surface_solution_prev = state.collision_mesh.vertices(utils::unflatten(state.diff_cached.u(t - 1), dim));
-				Eigen::MatrixXd surface_solution = state.collision_mesh.vertices(utils::unflatten(state.diff_cached.u(t), dim));
+				const Eigen::MatrixXd surface_solution_prev = state.collision_mesh.vertices(utils::unflatten(state.diff_cached.u(t - 1), dim));
+				const Eigen::MatrixXd surface_solution = state.collision_mesh.vertices(utils::unflatten(state.diff_cached.u(t), dim));
 
-				Eigen::MatrixXd force = state.collision_mesh.to_full_dof(-state.diff_cached.friction_constraint_set(t).compute_force(state.collision_mesh, state.collision_mesh.rest_positions(), surface_solution_prev, surface_solution, state.solve_data.contact_form->dhat(), state.solve_data.contact_form->barrier_stiffness(), state.solve_data.friction_form->epsv() * dt));
+				// TODO: use the time integration to compute the velocity
+				const Eigen::MatrixXd surface_velocities = (surface_solution - surface_solution_prev) / dt;
+
+				Eigen::MatrixXd force = state.collision_mesh.to_full_dof(
+					-state.diff_cached.friction_constraint_set(t)
+						 .compute_force(
+							 state.collision_mesh,
+							 state.collision_mesh.rest_positions(),
+							 /*lagged_displacements=*/surface_solution_prev,
+							 surface_velocities,
+							 state.solve_data.contact_form->dhat(),
+							 state.solve_data.contact_form->barrier_stiffness(),
+							 state.solve_data.friction_form->epsv()));
 
 				Eigen::VectorXd cur_p = adjoint_p.col(t);
 				cur_p(state.boundary_nodes).setZero();

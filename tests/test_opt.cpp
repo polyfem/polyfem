@@ -22,7 +22,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -158,15 +158,15 @@ TEST_CASE("material-opt", tagsopt)
 		}
 
 		auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
-		CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+		CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
 		nl_solver->get_info(params);
 		std::cout << "final energy " << params["energy"].get<double>() << "\n";
 	}
 	// auto energies = read_energy(name);
 
-	// REQUIRE(energies[0] == Approx(6.13934).epsilon(1e-2));
-	REQUIRE(params["energy"].get<double>() == Approx(0.0105856).epsilon(1e-2));
+	// REQUIRE(energies[0] == Catch::Approx(6.13934).epsilon(1e-2));
+	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.0105856).epsilon(1e-2));
 }
 
 // TEST_CASE("friction-opt", "[optimization]")
@@ -174,8 +174,8 @@ TEST_CASE("material-opt", tagsopt)
 // 	run_opt_new("friction-opt");
 // 	auto energies = read_energy("friction-opt");
 
-// 	REQUIRE(energies[0] == Approx(0.000103767819516).epsilon(1e-1));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(3.26161994783e-07).epsilon(1e-1));
+// 	REQUIRE(energies[0] == Catch::Approx(0.000103767819516).epsilon(1e-1));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(3.26161994783e-07).epsilon(1e-1));
 // }
 
 // TEST_CASE("damping-opt", "[optimization]")
@@ -183,8 +183,8 @@ TEST_CASE("material-opt", tagsopt)
 // 	run_opt_new("damping-opt");
 // 	auto energies = read_energy("damping-opt");
 
-// 	REQUIRE(energies[0] == Approx(4.14517346014e-07).epsilon(1e-3));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(2.12684299792e-09).epsilon(1e-3));
+// 	REQUIRE(energies[0] == Catch::Approx(4.14517346014e-07).epsilon(1e-3));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(2.12684299792e-09).epsilon(1e-3));
 // }
 
 // // TEST_CASE("initial-opt", "[optimization]")
@@ -192,8 +192,8 @@ TEST_CASE("material-opt", tagsopt)
 // // 	run_trajectory_opt("initial-opt");
 // // 	auto energies = read_energy("initial-opt");
 
-// // 	REQUIRE(energies[0] == Approx(0.147092).epsilon(1e-4));
-// // 	REQUIRE(energies[energies.size() - 1] == Approx(0.109971).epsilon(1e-4));
+// // 	REQUIRE(energies[0] == Catch::Approx(0.147092).epsilon(1e-4));
+// // 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(0.109971).epsilon(1e-4));
 // // }
 
 // TEST_CASE("topology-opt", "[optimization]")
@@ -268,12 +268,12 @@ TEST_CASE("material-opt", tagsopt)
 // 	}
 
 // 	// run the optimization for a few steps
-// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
 // 	// check if the objective at these steps are correct
 // 	auto energies = read_energy(name);
-// 	REQUIRE(energies[0] == Approx(136.014).epsilon(1e-4));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(0.726565).epsilon(1e-4));
+// 	REQUIRE(energies[0] == Catch::Approx(136.014).epsilon(1e-4));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(0.726565).epsilon(1e-4));
 // }
 
 TEST_CASE("AMIPS-debug", "[optimization]")
@@ -322,7 +322,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
 
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
-	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 }
 
 TEST_CASE("shape-stress-opt", tagsopt)
@@ -396,17 +396,17 @@ TEST_CASE("shape-stress-opt", tagsopt)
 
 	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
-	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
 	json params;
 	nl_solver->get_info(params);
 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
-	// REQUIRE(energies[0] == Approx(0.105955475999).epsilon(1e-4));
-	REQUIRE(params["energy"].get<double>() == Approx(0.0589966856256).epsilon(1e-4));
+	// REQUIRE(energies[0] == Catch::Approx(0.105955475999).epsilon(1e-4));
+	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.0589966856256).epsilon(1e-4));
 
-	// REQUIRE(energies[0] == Approx(12.0735).epsilon(1e-4));
-	// REQUIRE(energies[energies.size() - 1] == Approx(11.3886).epsilon(1e-4));
+	// REQUIRE(energies[0] == Catch::Approx(12.0735).epsilon(1e-4));
+	// REQUIRE(energies[energies.size() - 1] == Catch::Approx(11.3886).epsilon(1e-4));
 }
 
 // TEST_CASE("shape-trajectory-surface-opt-new", "[optimization]")
@@ -414,8 +414,8 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	run_opt_new("shape-trajectory-surface-opt-new");
 // 	auto energies = read_energy("shape-trajectory-surface-opt-new");
 
-// 	REQUIRE(energies[0] == Approx(6.1658e-05).epsilon(1e-3));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(3.6194e-05).epsilon(1e-3));
+// 	REQUIRE(energies[0] == Catch::Approx(6.1658e-05).epsilon(1e-3));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(3.6194e-05).epsilon(1e-3));
 // }
 
 // TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
@@ -511,8 +511,8 @@ TEST_CASE("shape-stress-opt", tagsopt)
 
 // 	auto energies = read_energy("shape-trajectory-surface-opt-bspline");
 
-// 	REQUIRE(energies[0] == Approx(8.1934e-04).epsilon(1e-3));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(6.809e-14).epsilon(1e-3));
+// 	REQUIRE(energies[0] == Catch::Approx(8.1934e-04).epsilon(1e-3));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(6.809e-14).epsilon(1e-3));
 // }
 
 // TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
@@ -633,12 +633,12 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	nl_problem->solution_changed(x);
 
 // 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
-// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
 // 	auto energies = read_energy("shape-trajectory-surface-opt-bspline");
 
-// 	REQUIRE(energies[0] == Approx(6.1658e-05).epsilon(1e-3));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(1.056e-8).epsilon(1e-3));
+// 	REQUIRE(energies[0] == Catch::Approx(6.1658e-05).epsilon(1e-3));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(1.056e-8).epsilon(1e-3));
 // }
 
 // TEST_CASE("shape-stress-bbw-opt", "[optimization]")
@@ -703,14 +703,14 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
 
 // 	// run the optimization for a few steps
-// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
 // 	json params;
 // 	nl_solver->get_info(params);
 // 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
-// 	// REQUIRE(energies[0] == Approx(26.158).epsilon(1e-3));
-// 	REQUIRE(params["energy"].get<double>() == Approx(24.846).epsilon(1e-3));
+// 	// REQUIRE(energies[0] == Catch::Approx(26.158).epsilon(1e-3));
+// 	REQUIRE(params["energy"].get<double>() == Catch::Approx(24.846).epsilon(1e-3));
 // }
 
 // TEST_CASE("multiparameter-sdf-trajectory-surface-opt", "[optimization]")
@@ -718,8 +718,8 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	run_opt_new("multiparameter-sdf-trajectory-surface-opt");
 // 	auto energies = read_energy("multiparameter-sdf-trajectory-surface-opt");
 
-// 	REQUIRE(energies[0] == Approx(0.15327).epsilon(1e-3));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(0.11259).epsilon(1e-3));
+// 	REQUIRE(energies[0] == Catch::Approx(0.15327).epsilon(1e-3));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(0.11259).epsilon(1e-3));
 // }
 
 // // TEST_CASE("sdf-test", "[optimization]")
@@ -810,8 +810,8 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	run_opt_new("3d-bspline-shape-trajectory-opt");
 // 	auto energies = read_energy("3d-bspline-shape-trajectory-opt");
 
-// 	REQUIRE(energies[0] == Approx(0.00473695).epsilon(1e-3));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(0.0004626948).epsilon(1e-4));
+// 	REQUIRE(energies[0] == Catch::Approx(0.00473695).epsilon(1e-3));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(0.0004626948).epsilon(1e-4));
 // }
 
 // TEST_CASE("3d-bspline-shape-matching", "[optimization]")
@@ -876,13 +876,13 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
 
 // 	// run the optimization for a few steps
-// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
 // 	// check if the objective at these steps are correct
 // 	auto energies = read_energy(name);
 
-// 	REQUIRE(energies[0] == Approx(0.03155).epsilon(1e-4));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(0.0028353).epsilon(1e-4));
+// 	REQUIRE(energies[0] == Catch::Approx(0.03155).epsilon(1e-4));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(0.0028353).epsilon(1e-4));
 // }
 
 // TEST_CASE("3d-bspline-shape-mesh-matching", "[optimization]")
@@ -949,13 +949,13 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
 
 // 	// run the optimization for a few steps
-// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
 // 	// check if the objective at these steps are correct
 // 	auto energies = read_energy(name);
 
-// 	REQUIRE(energies[0] == Approx(0.03155).epsilon(1e-4));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(0.0028360).epsilon(1e-4));
+// 	REQUIRE(energies[0] == Catch::Approx(0.03155).epsilon(1e-4));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(0.0028360).epsilon(1e-4));
 // }
 
 // TEST_CASE("2d-shape-traction-force", "[optimization]")
@@ -1020,11 +1020,11 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
 
 // 	// run the optimization for a few steps
-// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
 // 	// check if the objective at these steps are correct
 // 	auto energies = read_energy(name);
 
-// 	REQUIRE(energies[0] == Approx(955.23).epsilon(1e-4));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(20.7053).epsilon(1e-4));
+// 	REQUIRE(energies[0] == Catch::Approx(955.23).epsilon(1e-4));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(20.7053).epsilon(1e-4));
 // }

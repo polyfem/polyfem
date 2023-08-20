@@ -200,14 +200,35 @@ namespace polyfem
 						Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(utils::unflatten(u_prev, mesh->dimension()));
 						Eigen::MatrixXd surface_solution = collision_mesh.vertices(utils::unflatten(u, mesh->dimension()));
 
-						hessian_prev = -diff_cached.friction_constraint_set(force_step).compute_force_jacobian(
-							collision_mesh,
-							collision_mesh.rest_positions(),
-							surface_solution_prev,
-							surface_solution,
-							solve_data.contact_form->dhat(), solve_data.contact_form->barrier_stiffness(), solve_data.friction_form->epsv() * dt,
-							ipc::FrictionConstraint::DiffWRT::Ut);
-					
+						// TODO: use the time integration to compute the velocity
+						const Eigen::MatrixXd surface_velocities = (surface_solution - surface_solution_prev) / dt;
+						const double dv_dut = -1 / dt;
+
+						hessian_prev =
+							diff_cached.friction_constraint_set(force_step)
+								.compute_force_jacobian(
+									collision_mesh,
+									collision_mesh.rest_positions(),
+									/*lagged_displacements=*/surface_solution_prev,
+									surface_velocities,
+									solve_data.contact_form->dhat(),
+									solve_data.contact_form->barrier_stiffness(),
+									solve_data.friction_form->epsv(),
+									ipc::FrictionConstraint::DiffWRT::LAGGED_DISPLACEMENTS)
+							+ diff_cached.friction_constraint_set(force_step)
+									  .compute_force_jacobian(
+										  collision_mesh,
+										  collision_mesh.rest_positions(),
+										  /*lagged_displacements=*/surface_solution_prev,
+										  surface_velocities,
+										  solve_data.contact_form->dhat(),
+										  solve_data.contact_form->barrier_stiffness(),
+										  solve_data.friction_form->epsv(),
+										  ipc::FrictionConstraint::DiffWRT::VELOCITIES)
+								  * dv_dut;
+
+						hessian_prev *= -1;
+
 						// {
 						// 	Eigen::MatrixXd X = collision_mesh.rest_positions();
 						// 	Eigen::VectorXd x = utils::flatten(surface_solution_prev);
@@ -218,7 +239,7 @@ namespace polyfem
 
 						// 	Eigen::MatrixXd fgrad;
 						// 	fd::finite_jacobian(
-						// 		x, [&](const Eigen::VectorXd &y) -> Eigen::VectorXd 
+						// 		x, [&](const Eigen::VectorXd &y) -> Eigen::VectorXd
 						// 		{
 						// 			Eigen::MatrixXd fd_Ut = utils::unflatten(y, surface_solution_prev.cols());
 
@@ -231,16 +252,14 @@ namespace polyfem
 						// 			fd_friction_constraints.build(
 						// 				collision_mesh, X + fd_Ut, fd_constraints, dhat, barrier_stiffness,
 						// 				mu);
-									
-						// 			// return -fd_friction_constraints.compute_force(
-						//     			// collision_mesh, X, fd_Ut, surface_solution, dhat, barrier_stiffness, epsv);
+
 						// 			return fd_friction_constraints.compute_potential_gradient(collision_mesh, (surface_solution - fd_Ut) / dt, epsv);
 
 						// 		}, fgrad, fd::AccuracyOrder::SECOND, 1e-8);
-							
+
 						// 	std::cout << "force Ut derivative error " << (fgrad - hessian_prev).norm() << " " << hessian_prev.norm() << "\n";
 						// }
-					
+
 						hessian_prev = collision_mesh.to_full_dof(hessian_prev); // / (beta * dt) / (beta * dt);
 					}
 					else
@@ -401,7 +420,7 @@ namespace polyfem
 			{
 				if (i + j > time_steps)
 					break;
-				
+
 				StiffnessMatrix gradu_h_prev;
 				compute_force_jacobian_prev(i + j, i, gradu_h_prev);
 				Eigen::VectorXd tmp = adjoints.col(i + j) * (time_integrator::BDF::betas(diff_cached.bdf_order(i + j) - 1) * dt);
