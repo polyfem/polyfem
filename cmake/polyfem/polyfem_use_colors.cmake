@@ -35,7 +35,7 @@ else()
       -fdiagnostics-color=always # GCC
       -fcolor-diagnostics # Clang
   )
-  polyfem_filter_flags(IPC_TOOLKIT_GLOBAL_FLAGS)
-  message(STATUS "Adding global flags: ${IPC_TOOLKIT_GLOBAL_FLAGS}")
-  add_compile_options(${IPC_TOOLKIT_GLOBAL_FLAGS})
+  polyfem_filter_flags(POLYFEM_GLOBAL_FLAGS)
+  message(STATUS "Adding global flags: ${POLYFEM_GLOBAL_FLAGS}")
+  add_compile_options(${POLYFEM_GLOBAL_FLAGS})
 endif()
