@@ -1,6 +1,6 @@
 #include <polyfem/mesh/collision_proxy/UpsampleMesh.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 
 #include <igl/readPLY.h>
 #include <igl/writePLY.h>
