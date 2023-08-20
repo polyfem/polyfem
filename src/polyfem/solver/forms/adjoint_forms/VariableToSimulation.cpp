@@ -134,10 +134,11 @@ namespace polyfem::solver
 	Eigen::VectorXd ElasticVariableToSimulation::inverse_eval()
 	{
 		auto &state = *(states_[0]);
+		auto params_map = state.assembler->parameters();
 
-		auto search_lambda = state.assembler->parameters().find("lambda");
-		auto search_mu = state.assembler->parameters().find("mu");
-		if (search_lambda == state.assembler->parameters().end() || search_mu == state.assembler->parameters().end())
+		auto search_lambda = params_map.find("lambda");
+		auto search_mu = params_map.find("mu");
+		if (search_lambda == params_map.end() || search_mu == params_map.end())
 		{
 			log_and_throw_error("Failed to find Lame parameters!");
 			return Eigen::VectorXd();
