@@ -135,18 +135,38 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
+    path = os.path.abspath(args.output)
 
     dims = [2, 3]
     orders = [0, 1, 2, 3, -2]
 
-
-    cpp = "#include \"auto_q_bases.hpp\"\n\n\n"
-    cpp = cpp + "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
-
-    hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"
-    hpp = hpp + "namespace polyfem {\nnamespace autogen " + "{\n"
-
     for dim in dims:
+        namev = f"auto_q_bases_{dim}d_val"
+        namen = f"auto_q_bases_{dim}d_nodes"
+        nameg = f"auto_q_bases_{dim}d_grad"
+
+        cppv = f"#include \"{namev}.hpp\"\n\n\n"
+        cppv = cppv + "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
+
+        cppn = f"#include \"{namen}.hpp\"\n\n\n"
+        cppn = cppn + "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
+
+        cppg = f"#include \"{nameg}.hpp\"\n\n\n"
+        cppg = cppg + "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
+        if dim==3:
+            cppg="#include <Eigen/Dense>\n namespace polyfem {\nnamespace autogen {"
+
+        eextern=""
+
+        hppv = "#pragma once\n\n#include <Eigen/Dense>\n\n"
+        hppv = hppv + "namespace polyfem {\nnamespace autogen " + "{\n"
+
+        hppn = "#pragma once\n\n#include <Eigen/Dense>\n\n"
+        hppn = hppn + "namespace polyfem {\nnamespace autogen " + "{\n"
+
+        hppg = "#pragma once\n\n#include <Eigen/Dense>\n\n"
+        hppg = hppg + "namespace polyfem {\nnamespace autogen " + "{\n"
+
         print(str(dim) + "D")
         suffix = "_2d" if dim == 2 else "_3d"
 
@@ -155,10 +175,10 @@ if __name__ == "__main__":
         unique_fun = "void q_basis_value" + suffix + "(const int q, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
         dunique_fun = "void q_grad_basis_value" + suffix + "(const int q, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
 
-        hpp = hpp + unique_nodes + ";\n\n"
+        hppn = hppn + unique_nodes + ";\n\n"
 
-        hpp = hpp + unique_fun + ";\n\n"
-        hpp = hpp + dunique_fun + ";\n\n"
+        hppv = hppv + unique_fun + ";\n\n"
+        hppg = hppg + dunique_fun + ";\n\n"
 
         unique_nodes = unique_nodes + "{\nswitch(q)" + "{\n"
 
@@ -478,6 +498,8 @@ if __name__ == "__main__":
             nodes = "void q_" + orderN + "_nodes" + suffix + "(Eigen::MatrixXd &res) {\n res.resize(" + str(len(indices)) + ", " + str(dim) + "); res << \n"
             unique_nodes = unique_nodes + "\tcase " + str(order) + ": " + "q_" + orderN + "_nodes" + suffix + "(val); break;\n"
 
+            eextern = eextern + f"extern \"C++\" void q_{orderN}_basis_grad_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);\n"
+
             for ii in indices:
                 nodes = nodes + ccode(fe.points[ii][0]) + ", " + ccode(fe.points[ii][1]) + ((", " + ccode(fe.points[ii][2])) if dim == 3 else "") + ",\n"
             nodes = nodes[:-2]
@@ -526,31 +548,71 @@ if __name__ == "__main__":
             base = base + "\tdefault: assert(false);\n}"
             dbase = dbase + "\tdefault: assert(false);\n}"
 
-            cpp = cpp + func + "{\n\n"
-            cpp = cpp + base + "}\n"
+            cppv = cppv + func + "{\n\n"
+            cppv = cppv + base + "}\n"
 
-            cpp = cpp + dfunc + "{\n\n"
-            cpp = cpp + dbase + "}\n\n\n" + nodes + "\n\n\n"
+            cppg = cppg + dfunc + "{\n\n"
+            cppg = cppg + dbase + "}\n\n"
+            cppn = cppn + nodes + "\n\n"
 
+            if dim == 3:
+                with open(os.path.join(path, f"{nameg}_{order}.cpp"), "w") as file:
+                    file.write(cppg+"}}")
+                    cppg="#include <Eigen/Dense>\n namespace polyfem {\nnamespace autogen {"
+
+        if dim == 3:
+            cppg=""
         unique_nodes = unique_nodes + "\tdefault: assert(false);\n}}"
 
         unique_fun = unique_fun + "\tdefault: assert(false);\n}}"
         dunique_fun = dunique_fun + "\tdefault: assert(false);\n}}"
 
-        cpp = cpp + "}\n\n" + unique_nodes + "\n" + unique_fun + "\n\n" + dunique_fun + "\n" + "\nnamespace " + "{\n"
-        hpp = hpp + "\n"
+        cppv = cppv + "}\n\n"
+        cppn = cppn + "}\n\n"
+        if dim != 3:
+            cppg = cppg + "}\n\n"
 
+        cppn = cppn + unique_nodes + "\n}}\n"
+        cppv = cppv + unique_fun + "\n}}\n"
+        cppg = cppg + dunique_fun + "\n}}\n"
+        hppv = hppv + "\n}}\n"
+        hppn = hppn + "\n}}\n"
+        hppg = hppg + "\n}}\n"
+
+        if dim == 3:
+            tcppg = f"#include \"{nameg}.hpp\"\n\n\n"
+            tcppg = tcppg + "namespace polyfem {\nnamespace autogen {\n"
+            tcppg = tcppg + eextern + "\n"
+            cppg=tcppg+cppg
+
+        print("saving...")
+        with open(os.path.join(path, f"{namev}.cpp"), "w") as file:
+            file.write(cppv)
+        with open(os.path.join(path, f"{namen}.cpp"), "w") as file:
+            file.write(cppn)
+        with open(os.path.join(path, f"{nameg}.cpp"), "w") as file:
+            file.write(cppg)
+
+        with open(os.path.join(path, f"{namev}.hpp"), "w") as file:
+            file.write(hppv)
+        with open(os.path.join(path, f"{namen}.hpp"), "w") as file:
+            file.write(hppn)
+        with open(os.path.join(path, f"{nameg}.hpp"), "w") as file:
+            file.write(hppg)
+
+
+    hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"
+    for dim in dims:
+        hpp = hpp + f"#include \"auto_q_bases_{dim}d_val.hpp\"\n"
+        hpp = hpp + f"#include \"auto_q_bases_{dim}d_nodes.hpp\"\n"
+        hpp = hpp + f"#include \"auto_q_bases_{dim}d_grad.hpp\"\n"
+    hpp = hpp + "\n\nnamespace polyfem {\nnamespace autogen " + "{\n"
     hpp = hpp + "\nstatic const int MAX_Q_BASES = " + str(max(orders)) + ";\n"
-
-    cpp = cpp + "\n}}}\n"
     hpp = hpp + "\n}}\n"
 
-    path = os.path.abspath(args.output)
+
 
     print("saving...")
-    with open(os.path.join(path, "auto_q_bases.cpp"), "w") as file:
-        file.write(cpp)
-
     with open(os.path.join(path, "auto_q_bases.hpp"), "w") as file:
         file.write(hpp)
 
