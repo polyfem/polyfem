@@ -7,18 +7,13 @@ endif()
 
 message(STATUS "Third-party: creating target 'tinyexpr::tinyexpr'")
 
-include(FetchContent)
-FetchContent_Declare(
-    tinyexpr
-    GIT_REPOSITORY https://github.com/codeplea/tinyexpr.git
+include(CPM)
+CPMAddPackage(
+    NAME tinyexpr
+    GITHUB_REPOSITORY codeplea/tinyexpr
     GIT_TAG 4e8cc0067a1e2378faae23eb2dfdd21e9e9907c2
-    GIT_SHALLOW FALSE
+    DOWNLOAD_ONLY TRUE
 )
-
-FetchContent_GetProperties(tinyexpr)
-if(NOT tinyexpr_POPULATED)
-    FetchContent_Populate(tinyexpr)
-endif()
 
 add_library(tinyexpr "${tinyexpr_SOURCE_DIR}/tinyexpr.c")
 target_include_directories(tinyexpr SYSTEM PUBLIC "${tinyexpr_SOURCE_DIR}")
