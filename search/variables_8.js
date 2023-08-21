@@ -18,5 +18,8 @@ var searchData=
   ['hf_15',['HF',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a24eb261043d5703973b1c353592c9382',1,'polyfem::mesh::Mesh3DStorage']]],
   ['hooke_5f_16',['hooke_',['../classpolyfem_1_1assembler_1_1_multi_model.html#aa3e52fd8394e56f36648163b8c07ed94',1,'polyfem::assembler::MultiModel']]],
   ['hpp_17',['hpp',['../namespaceeigs.html#a4613abfdcf4356a51bf82b0ceabe26a5',1,'eigs.hpp()'],['../namespaceelasticity__rhs.html#a58d3488e1b1421e46ba8072a95b6a261',1,'elasticity_rhs.hpp()'],['../namespacep__bases.html#aeebf777187840c3134b16458a2afcbb7',1,'p_bases.hpp()'],['../namespaceq__bases.html#a5d0406ad9fe83a8dda0fff37204faf2f',1,'q_bases.hpp()']]],
-  ['hv_18',['HV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a9a175bd416cdd8b4f8cecc8f1457fa33',1,'polyfem::mesh::Mesh3DStorage']]]
+  ['hppg_18',['hppg',['../namespaceq__bases.html#a6e898b07081483d9a4f2661685109be2',1,'q_bases']]],
+  ['hppn_19',['hppn',['../namespaceq__bases.html#a1ce9f79a7e86476874e5bde2bd6acedf',1,'q_bases']]],
+  ['hppv_20',['hppv',['../namespaceq__bases.html#a5d70b9110f33eff249527f3f65985b61',1,'q_bases']]],
+  ['hv_21',['HV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a9a175bd416cdd8b4f8cecc8f1457fa33',1,'polyfem::mesh::Mesh3DStorage']]]
 ];

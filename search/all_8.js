@@ -33,11 +33,11 @@ var searchData=
   ['helmholtz_2ecpp_30',['Helmholtz.cpp',['../_helmholtz_8cpp.html',1,'']]],
   ['helmholtz_2ehpp_31',['Helmholtz.hpp',['../_helmholtz_8hpp.html',1,'']]],
   ['hess_32',['hess',['../struct_d_scalar2.html#a15737f75543ecbaba980e825dee51bdb',1,'DScalar2']]],
-  ['hessian_33',['Hessian',['../struct_d_scalar2.html#a192fd9cbce7292219ae2da43787cd57e',1,'DScalar2']]],
-  ['hessian_34',['hessian',['../classpolyfem_1_1solver_1_1_n_l_problem.html#ac5391ca8bfaf7182e806ea462405c8a9',1,'polyfem::solver::NLProblem::hessian()'],['../classpolyfem_1_1solver_1_1_full_n_l_problem.html#a1c9df48eaa86babc1355b4f4226bba58',1,'polyfem::solver::FullNLProblem::hessian()']]],
+  ['hessian_33',['hessian',['../classpolyfem_1_1solver_1_1_full_n_l_problem.html#a1c9df48eaa86babc1355b4f4226bba58',1,'polyfem::solver::FullNLProblem::hessian()'],['../classpolyfem_1_1solver_1_1_n_l_problem.html#ac5391ca8bfaf7182e806ea462405c8a9',1,'polyfem::solver::NLProblem::hessian()']]],
+  ['hessian_34',['Hessian',['../struct_d_scalar2.html#a192fd9cbce7292219ae2da43787cd57e',1,'DScalar2']]],
   ['hessian_5ffrom_5fenergy_35',['hessian_from_energy',['../namespacepolyfem.html#a62aec6e705390cac4c531c6bf2cd7441',1,'polyfem']]],
-  ['hex_36',['HEX',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa58c9566f3c750ce7147b045fdd14202b',1,'polyfem::mesh']]],
-  ['hex_37',['hex',['../structpolyfem_1_1mesh_1_1_element.html#aa2790260d3b42914666de332abcab16f',1,'polyfem::mesh::Element']]],
+  ['hex_36',['hex',['../structpolyfem_1_1mesh_1_1_element.html#aa2790260d3b42914666de332abcab16f',1,'polyfem::mesh::Element']]],
+  ['hex_37',['HEX',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa58c9566f3c750ce7147b045fdd14202b',1,'polyfem::mesh']]],
   ['hex_5fface_5flocal_5fnodes_38',['hex_face_local_nodes',['../classpolyfem_1_1basis_1_1_lagrange_basis3d.html#a2c2b08f4a3a5621aa452f8516b05d1df',1,'polyfem::basis::LagrangeBasis3d']]],
   ['hex_5fface_5ftable_39',['hex_face_table',['../namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a1de1a2dd8709669d68f19f19b3510749',1,'polyfem::mesh::MeshProcessing3D']]],
   ['hex_5flocal_5fnode_5fcoordinates_5ffrom_5fface_40',['hex_local_node_coordinates_from_face',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a7d837e24efe5b9e75db8487e39f4c8a9',1,'polyfem::utils::BoundarySampler']]],
@@ -54,6 +54,9 @@ var searchData=
   ['hookelinearelasticity_2ecpp_51',['HookeLinearElasticity.cpp',['../_hooke_linear_elasticity_8cpp.html',1,'']]],
   ['hookelinearelasticity_2ehpp_52',['HookeLinearElasticity.hpp',['../_hooke_linear_elasticity_8hpp.html',1,'']]],
   ['hpp_53',['hpp',['../namespaceeigs.html#a4613abfdcf4356a51bf82b0ceabe26a5',1,'eigs.hpp()'],['../namespaceelasticity__rhs.html#a58d3488e1b1421e46ba8072a95b6a261',1,'elasticity_rhs.hpp()'],['../namespacep__bases.html#aeebf777187840c3134b16458a2afcbb7',1,'p_bases.hpp()'],['../namespaceq__bases.html#a5d0406ad9fe83a8dda0fff37204faf2f',1,'q_bases.hpp()']]],
-  ['hv_54',['HV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a9a175bd416cdd8b4f8cecc8f1457fa33',1,'polyfem::mesh::Mesh3DStorage']]],
-  ['hyb_55',['HYB',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa774778f8f5b2180a7d3cfd86a25615d4',1,'polyfem::mesh']]]
+  ['hppg_54',['hppg',['../namespaceq__bases.html#a6e898b07081483d9a4f2661685109be2',1,'q_bases']]],
+  ['hppn_55',['hppn',['../namespaceq__bases.html#a1ce9f79a7e86476874e5bde2bd6acedf',1,'q_bases']]],
+  ['hppv_56',['hppv',['../namespaceq__bases.html#a5d70b9110f33eff249527f3f65985b61',1,'q_bases']]],
+  ['hv_57',['HV',['../classpolyfem_1_1mesh_1_1_mesh3_d_storage.html#a9a175bd416cdd8b4f8cecc8f1457fa33',1,'polyfem::mesh::Mesh3DStorage']]],
+  ['hyb_58',['HYB',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa774778f8f5b2180a7d3cfd86a25615d4',1,'polyfem::mesh']]]
 ];

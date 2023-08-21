@@ -159,14 +159,32 @@ Variables</h2></td></tr>
 <tr class="separator:a5f98b0aab32fa2e9d9aa5e8e991f78fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2360a2c83912aad89610988623a146a4"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a2360a2c83912aad89610988623a146a4">q_bases.args</a> = parse_args()</td></tr>
 <tr class="separator:a2360a2c83912aad89610988623a146a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaacd5e190b3a6acc6d7d2cd743b49524"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#aaacd5e190b3a6acc6d7d2cd743b49524">q_bases.path</a> = os.path.abspath(args.output)</td></tr>
+<tr class="separator:aaacd5e190b3a6acc6d7d2cd743b49524"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9ee1db492ab9311fe8a9a6e72eb862a"><td class="memItemLeft" align="right" valign="top">list&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#af9ee1db492ab9311fe8a9a6e72eb862a">q_bases.dims</a> = [2, 3]</td></tr>
 <tr class="separator:af9ee1db492ab9311fe8a9a6e72eb862a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2f254a6c65a88e651f3163c68327535"><td class="memItemLeft" align="right" valign="top">list&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#ab2f254a6c65a88e651f3163c68327535">q_bases.orders</a> = [0, 1, 2, 3, -2]</td></tr>
 <tr class="separator:ab2f254a6c65a88e651f3163c68327535"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab38e5b5bdfa1ee3b515fe658f5d86115"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#ab38e5b5bdfa1ee3b515fe658f5d86115">q_bases.cpp</a> = &quot;#include \&quot;auto_q_bases.hpp\&quot;\n\n\n&quot;</td></tr>
-<tr class="separator:ab38e5b5bdfa1ee3b515fe658f5d86115"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d0406ad9fe83a8dda0fff37204faf2f"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a5d0406ad9fe83a8dda0fff37204faf2f">q_bases.hpp</a> = &quot;#pragma once\n\n#include &lt;Eigen/Dense&gt;\n\n&quot;</td></tr>
-<tr class="separator:a5d0406ad9fe83a8dda0fff37204faf2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef080792e65553395d4219e8da0685e8"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#aef080792e65553395d4219e8da0685e8">q_bases.namev</a> = f&quot;auto_q_bases_{dim}d_val&quot;</td></tr>
+<tr class="separator:aef080792e65553395d4219e8da0685e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a608e79330b0b5b46f4252120847893c7"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a608e79330b0b5b46f4252120847893c7">q_bases.namen</a> = f&quot;auto_q_bases_{dim}d_nodes&quot;</td></tr>
+<tr class="separator:a608e79330b0b5b46f4252120847893c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26db60ec68d454ef529d1ba8f7aa1f95"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a26db60ec68d454ef529d1ba8f7aa1f95">q_bases.nameg</a> = f&quot;auto_q_bases_{dim}d_grad&quot;</td></tr>
+<tr class="separator:a26db60ec68d454ef529d1ba8f7aa1f95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd1d1698adb25dc7a00e125c9fa2aa06"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#abd1d1698adb25dc7a00e125c9fa2aa06">q_bases.cppv</a> = f&quot;#include \&quot;{namev}.hpp\&quot;\n\n\n&quot;</td></tr>
+<tr class="separator:abd1d1698adb25dc7a00e125c9fa2aa06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b6b07c120bf5a2645fcd802ec5db4d4"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a9b6b07c120bf5a2645fcd802ec5db4d4">q_bases.cppn</a> = f&quot;#include \&quot;{namen}.hpp\&quot;\n\n\n&quot;</td></tr>
+<tr class="separator:a9b6b07c120bf5a2645fcd802ec5db4d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9997537cd4587436fee73cd356b8bbf"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#aa9997537cd4587436fee73cd356b8bbf">q_bases.cppg</a> = f&quot;#include \&quot;{nameg}.hpp\&quot;\n\n\n&quot;</td></tr>
+<tr class="separator:aa9997537cd4587436fee73cd356b8bbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af00138b637e950a3f62bfb15b17423db"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#af00138b637e950a3f62bfb15b17423db">q_bases.eextern</a> = &quot;&quot;</td></tr>
+<tr class="separator:af00138b637e950a3f62bfb15b17423db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d70b9110f33eff249527f3f65985b61"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a5d70b9110f33eff249527f3f65985b61">q_bases.hppv</a> = &quot;#pragma once\n\n#include &lt;Eigen/Dense&gt;\n\n&quot;</td></tr>
+<tr class="separator:a5d70b9110f33eff249527f3f65985b61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ce9f79a7e86476874e5bde2bd6acedf"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a1ce9f79a7e86476874e5bde2bd6acedf">q_bases.hppn</a> = &quot;#pragma once\n\n#include &lt;Eigen/Dense&gt;\n\n&quot;</td></tr>
+<tr class="separator:a1ce9f79a7e86476874e5bde2bd6acedf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e898b07081483d9a4f2661685109be2"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a6e898b07081483d9a4f2661685109be2">q_bases.hppg</a> = &quot;#pragma once\n\n#include &lt;Eigen/Dense&gt;\n\n&quot;</td></tr>
+<tr class="separator:a6e898b07081483d9a4f2661685109be2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0049f6e47cc2d7c900d43b6630ae21d1"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a0049f6e47cc2d7c900d43b6630ae21d1">q_bases.suffix</a> = 2 else &quot;_3d&quot;</td></tr>
 <tr class="separator:a0049f6e47cc2d7c900d43b6630ae21d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53832db9881fbd26bde33ee31c8f36da"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a53832db9881fbd26bde33ee31c8f36da">q_bases.unique_nodes</a> = &quot;void q_nodes&quot; + suffix + &quot;(const int q, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)&quot;</td></tr>
@@ -215,8 +233,10 @@ Variables</h2></td></tr>
 <tr class="separator:ae5567cc3ff8c51169b59f2d6fdb8b962"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a828481552cc7bd78335c5b519f7fed46"><td class="memItemLeft" align="right" valign="top">list&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a828481552cc7bd78335c5b519f7fed46">q_bases.real_index</a> = indices[i]</td></tr>
 <tr class="separator:a828481552cc7bd78335c5b519f7fed46"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaacd5e190b3a6acc6d7d2cd743b49524"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#aaacd5e190b3a6acc6d7d2cd743b49524">q_bases.path</a> = os.path.abspath(args.output)</td></tr>
-<tr class="separator:aaacd5e190b3a6acc6d7d2cd743b49524"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c05b0f24482af2aac8ccec73f1320ae"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a0c05b0f24482af2aac8ccec73f1320ae">q_bases.tcppg</a> = f&quot;#include \&quot;{nameg}.hpp\&quot;\n\n\n&quot;</td></tr>
+<tr class="separator:a0c05b0f24482af2aac8ccec73f1320ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d0406ad9fe83a8dda0fff37204faf2f"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceq__bases.html#a5d0406ad9fe83a8dda0fff37204faf2f">q_bases.hpp</a> = &quot;#pragma once\n\n#include &lt;Eigen/Dense&gt;\n\n&quot;</td></tr>
+<tr class="separator:a5d0406ad9fe83a8dda0fff37204faf2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->
