@@ -2412,8 +2412,24 @@
         ],
         "optional": [
             "id",
-            "rho",
-            "c3"
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "MooneyRivlin3Param",
+        "required": [
+            "type",
+            "c1",
+            "c2",
+            "c3",
+            "d1"
+        ],
+        "optional": [
+            "id",
+            "rho"
         ],
         "doc": "Material Parameters including ID, for Mooney-Rivlin"
     },
@@ -3352,7 +3368,8 @@
         ],
         "optional": [
             "interpolation",
-            "dimension"
+            "dimension",
+            "constant_volume"
         ],
         "doc": "pressure BC entry"
     },
@@ -3362,6 +3379,12 @@
         "min": 0,
         "max": 2147483646,
         "doc": "ID for the pressure Neumann boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/constant_volume",
+        "type": "bool",
+        "default": false,
+        "doc": "Whether to adjust the pressure according to a closed volume, following ideal gas law"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/value",
