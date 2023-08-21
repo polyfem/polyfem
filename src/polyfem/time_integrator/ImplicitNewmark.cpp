@@ -37,8 +37,12 @@ namespace polyfem::time_integrator
 		return beta() * dt() * dt();
 	}
 
-	double ImplicitNewmark::dv_dx() const
+	double ImplicitNewmark::dv_dx(const unsigned prev_ti) const
 	{
-		return gamma() / beta() / dt();
+		assert(prev_ti <= 0);
+		const double c = gamma() / beta();
+		if (prev_ti == 0)
+			return c / dt();
+		throw std::runtime_error("ImplicitNewmark::dv_dx not implemented for prev_ti != 0");
 	}
 } // namespace polyfem::time_integrator

@@ -30,8 +30,10 @@ namespace polyfem::time_integrator
 		return dt() * dt();
 	}
 
-	double ImplicitEuler::dv_dx() const
+	double ImplicitEuler::dv_dx(const unsigned prev_ti) const
 	{
-		return 1.0 / dt();
+		if (prev_ti > 1)
+			return 0;
+		return (prev_ti == 0 ? 1 : -1) / dt();
 	}
 } // namespace polyfem::time_integrator

@@ -62,7 +62,8 @@ namespace polyfem::time_integrator
 		virtual double acceleration_scaling() const = 0;
 
 		/// @brief Compute the derivative of the velocity with respect to the solution.
-		virtual double dv_dx() const = 0;
+		/// @param prev_ti index of the previous solution to use (0 -> current; 1 -> previous; 2 -> second previous; etc.)
+		virtual double dv_dx(const unsigned prev_ti = 0) const = 0;
 
 		/// @brief Access the time step size.
 		const double &dt() const { return dt_; }
