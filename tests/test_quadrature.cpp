@@ -7,7 +7,8 @@
 #include <cmath>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -127,7 +128,7 @@ namespace
 			expected->build_stiffness_mat(exp_st);
 
 			StiffnessMatrix tmp = st - exp_st;
-			const auto val = Approx(0).margin(margin);
+			const auto val = Catch::Approx(0).margin(margin);
 
 			REQUIRE(tmp.rows() > 8);
 
@@ -211,7 +212,7 @@ TEST_CASE("weights", "[quadrature]")
 		LineQuadrature tri;
 		Quadrature quadr;
 		tri.get_quadrature(order, quadr);
-		REQUIRE(quadr.weights.sum() == Approx(1.0).margin(1e-12));
+		REQUIRE(quadr.weights.sum() == Catch::Approx(1.0).margin(1e-12));
 		REQUIRE(quadr.points.minCoeff() >= 0.0);
 		REQUIRE(quadr.points.maxCoeff() <= 1.0);
 	}
@@ -222,7 +223,7 @@ TEST_CASE("weights", "[quadrature]")
 		TriQuadrature tri;
 		Quadrature quadr;
 		tri.get_quadrature(order, quadr);
-		REQUIRE(quadr.weights.sum() == Approx(0.5).margin(1e-12));
+		REQUIRE(quadr.weights.sum() == Catch::Approx(0.5).margin(1e-12));
 		REQUIRE(quadr.points.minCoeff() >= 0.0);
 		REQUIRE(quadr.points.maxCoeff() <= 1.0);
 	}
@@ -233,7 +234,7 @@ TEST_CASE("weights", "[quadrature]")
 		TetQuadrature tri;
 		Quadrature quadr;
 		tri.get_quadrature(order, quadr);
-		REQUIRE(quadr.weights.sum() == Approx(1.0 / 6.0).margin(1e-12));
+		REQUIRE(quadr.weights.sum() == Catch::Approx(1.0 / 6.0).margin(1e-12));
 		REQUIRE(quadr.points.minCoeff() >= 0.0);
 		REQUIRE(quadr.points.maxCoeff() <= 1.0);
 	}
@@ -246,5 +247,5 @@ TEST_CASE("weights", "[quadrature]")
 //		tri.get_quadrature(order, quadr);
 //	}
 //
-//	// REQUIRE(poly_fem::determinant(mat) == Approx(mat.determinant()).margin(1e-12));
+//	// REQUIRE(poly_fem::determinant(mat) == Catch::Approx(mat.determinant()).margin(1e-12));
 // }
