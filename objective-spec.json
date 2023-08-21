@@ -802,7 +802,7 @@
         "type": "object",
         "type_name": "layer_thickness",
         "optional": [
-            "adjacent_boundary_id",
+            "boundary_ids",
             "dmin",
             "dhat",
             "weight",
@@ -817,9 +817,14 @@
         "doc": "The support size of barrier function"
     },
     {
-        "pointer": "/adjacent_boundary_id",
+        "pointer": "/boundary_ids",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/boundary_ids/*",
         "type": "int",
-        "default": -1,
         "doc": "TODO"
     },
     {

@@ -4,15 +4,16 @@
 #include "VariableToSimulation.hpp"
 
 #include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/utils/BoundarySampler.hpp>
 
 namespace polyfem::solver
 {
 	class CollisionBarrierForm : public AdjointForm
 	{
 	public:
-		CollisionBarrierForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state, const double dhat) : AdjointForm(variable_to_simulation), state_(state), dhat_(dhat)
+		CollisionBarrierForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state, const double dhat, const double dmin = 0) : AdjointForm(variable_to_simulation), state_(state), dhat_(dhat), dmin_(dmin)
 		{
-			state_.build_collision_mesh(collision_mesh_, state.n_geom_bases, state_.geom_bases());
+			build_collision_mesh();
 
 			Eigen::MatrixXd V;
 			state_.get_vertices(V);
@@ -73,7 +74,7 @@ namespace polyfem::solver
 				collision_mesh_.vertices(V0),
 				collision_mesh_.vertices(V1),
 				broad_phase_method_,
-				1e-6, 1e6);
+				dmin_, 1e-6, 1e6);
 
 			return is_valid;
 		}
@@ -87,19 +88,24 @@ namespace polyfem::solver
 				collision_mesh_,
 				collision_mesh_.vertices(V0),
 				collision_mesh_.vertices(V1),
-				broad_phase_method_, 1e-6, 1e6);
+				broad_phase_method_, dmin_, 1e-6, 1e6);
 
 			return max_step;
 		}
 
-	private:
+	protected:
+		virtual void build_collision_mesh()
+		{
+			state_.build_collision_mesh(collision_mesh_, state_.n_geom_bases, state_.geom_bases());
+		};
+
 		void build_constraint_set(const Eigen::MatrixXd &displaced_surface)
 		{
 			static Eigen::MatrixXd cached_displaced_surface;
 			if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
 				return;
 
-			constraint_set.build(collision_mesh_, displaced_surface, dhat_, 0, broad_phase_method_);
+			constraint_set.build(collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_method_);
 
 			cached_displaced_surface = displaced_surface;
 		}
@@ -131,14 +137,84 @@ namespace polyfem::solver
 		ipc::CollisionMesh collision_mesh_;
 		ipc::CollisionConstraints constraint_set;
 		const double dhat_;
+		const double dmin_;
 		ipc::BroadPhaseMethod broad_phase_method_;
 	};
 
-	// class LayerThicknessForm : public ParametrizationForm
-	// {
-	// public:
-	// 	LayerThicknessForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const State &state) : ParametrizationForm(variable_to_simulations, parametrizations), state_(state)
-	// 	{
-	// 	}
-	// }
+	class LayerThicknessForm : public CollisionBarrierForm
+	{
+	public:
+		LayerThicknessForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations,
+						   const State &state,
+						   const std::vector<int> &boundary_ids,
+						   const double dhat,
+						   const double dmin) : CollisionBarrierForm(variable_to_simulations, state, dhat, dmin),
+												boundary_ids_(boundary_ids)
+		{
+		}
+
+	private:
+		virtual void build_collision_mesh() override
+		{
+			Eigen::MatrixXd node_positions;
+			Eigen::MatrixXi boundary_edges, boundary_triangles;
+			std::vector<Eigen::Triplet<double>> displacement_map_entries;
+			io::OutGeometryData::extract_boundary_mesh(*state_.mesh, state_.n_bases, state_.bases, state_.total_local_boundary,
+													   node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
+
+			std::vector<bool> is_on_surface;
+			is_on_surface.resize(node_positions.rows(), false);
+
+			assembler::ElementAssemblyValues vals;
+			Eigen::MatrixXd points, uv, normals;
+			Eigen::VectorXd weights;
+			Eigen::VectorXi global_primitive_ids;
+			for (const auto &lb : state_.total_local_boundary)
+			{
+				const int e = lb.element_id();
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state_.n_boundary_samples(), *state_.mesh, false, uv, points, normals, weights, global_primitive_ids);
+
+				if (!has_samples)
+					continue;
+
+				const basis::ElementBases &gbs = state_.geom_bases()[e];
+				const basis::ElementBases &bs = state_.bases[e];
+
+				vals.compute(e, state_.mesh->is_volume(), points, bs, gbs);
+
+				for (int i = 0; i < lb.size(); ++i)
+				{
+					const int primitive_global_id = lb.global_primitive_id(i);
+					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, *state_.mesh);
+					const int boundary_id = state_.mesh->get_boundary_id(primitive_global_id);
+
+					if (!std::count(boundary_ids_.begin(), boundary_ids_.end(), boundary_id))
+						continue;
+
+					for (long n = 0; n < nodes.size(); ++n)
+					{
+						const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
+						is_on_surface[v.global[0].index] = true;
+					}
+				}
+			}
+
+			Eigen::SparseMatrix<double> displacement_map;
+			if (!displacement_map_entries.empty())
+			{
+				displacement_map.resize(node_positions.rows(), state_.n_bases);
+				displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
+			}
+
+			collision_mesh_ = ipc::CollisionMesh(is_on_surface,
+												 node_positions,
+												 boundary_edges,
+												 boundary_triangles,
+												 displacement_map);
+
+			collision_mesh_.init_area_jacobians();
+		}
+
+		std::vector<int> boundary_ids_;
+	};
 } // namespace polyfem::solver

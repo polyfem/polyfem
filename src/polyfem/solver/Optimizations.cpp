@@ -224,6 +224,10 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<ContactForceForm>(var2sim, *(states[args["state"]]), args);
 			}
+			else if (type == "contact_force_match")
+			{
+				obj = std::make_shared<ContactForceMatchForm>(var2sim, *(states[args["state"]]), args);
+			}
 			else if (type == "max_stress")
 			{
 				obj = std::make_shared<MaxStressForm>(var2sim, *(states[args["state"]]), args);
@@ -250,6 +254,10 @@ namespace polyfem::solver
 			else if (type == "collision_barrier")
 			{
 				obj = std::make_shared<CollisionBarrierForm>(var2sim, *(states[args["state"]]), args["dhat"]);
+			}
+			else if (type == "layer_thickness")
+			{
+				obj = std::make_shared<LayerThicknessForm>(var2sim, *(states[args["state"]]), args["boundary_ids"].get<std::vector<int>>(), args["dhat"], args["dmin"]);
 			}
 			else if (type == "parametrized_product")
 			{

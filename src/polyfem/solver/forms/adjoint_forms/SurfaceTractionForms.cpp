@@ -462,4 +462,240 @@ namespace polyfem::solver
 		}
 	}
 
+	void ContactForceMatchForm::build_active_nodes(const std::vector<std::string> &closed_form_forces)
+	{
+
+		std::set<int> active_nodes_set = {};
+		std::map<int, double> node_area_scaling_map;
+		dim_ = state_.mesh->dimension();
+		for (const auto &lb : state_.total_local_boundary)
+		{
+			const int e = lb.element_id();
+			const basis::ElementBases &bs = state_.bases[e];
+
+			for (int i = 0; i < lb.size(); i++)
+			{
+				const int global_primitive_id = lb.global_primitive_id(i);
+				const auto nodes = bs.local_nodes_for_primitive(global_primitive_id, *state_.mesh);
+
+				double area_scaling;
+				if (state_.mesh->is_volume())
+					area_scaling = state_.mesh->tri_area(global_primitive_id) / 3;
+				else
+					area_scaling = state_.mesh->edge_length(global_primitive_id) / 2;
+				// std::cout << "area scaling: " << area_scaling << std::endl;
+
+				for (long n = 0; n < nodes.size(); ++n)
+				{
+					const auto &b = bs.bases[nodes(n)];
+					const int index = b.global()[0].index;
+
+					for (int d = 0; d < dim_; ++d)
+					{
+						if (node_area_scaling_map.count(index * dim_ + d) == 0)
+							node_area_scaling_map[index * dim_ + d] = area_scaling;
+						else
+							node_area_scaling_map[index * dim_ + d] += area_scaling;
+					}
+				}
+
+				if (ids_.size() != 0 && ids_.find(state_.mesh->get_boundary_id(global_primitive_id)) == ids_.end())
+					continue;
+
+				for (long n = 0; n < nodes.size(); ++n)
+				{
+					const auto &b = bs.bases[nodes(n)];
+					const int index = b.global()[0].index;
+
+					for (int d = 0; d < dim_; ++d)
+					{
+						active_nodes_set.insert(index * dim_ + d);
+					}
+				}
+			}
+		}
+
+		active_nodes_.resize(active_nodes_set.size());
+		node_area_scaling_.resize(active_nodes_set.size());
+		active_nodes_mat_.resize(state_.collision_mesh.full_ndof(), active_nodes_set.size());
+		std::vector<Eigen::Triplet<double>> active_nodes_i;
+		int count = 0;
+		for (const auto node : active_nodes_set)
+		{
+			active_nodes_i.emplace_back(node, count, 1.0);
+			active_nodes_(count) = node;
+			node_area_scaling_(count) = node_area_scaling_map[node];
+			count++;
+		}
+		active_nodes_mat_.setFromTriplets(active_nodes_i.begin(), active_nodes_i.end());
+		// for (const auto kv : node_area_scaling_map)
+		// 	std::cout << "k: " << kv.first << " v: " << kv.second << std::endl;
+
+		if (closed_form_forces.size() != dim_)
+			log_and_throw_error("Specified function dim for force matching function does not match problem dim!");
+		std::vector<ExpressionValue> matching_expr;
+		for (int i = 0; i < dim_; ++i)
+		{
+			matching_expr.push_back(ExpressionValue());
+			matching_expr[i].init(closed_form_forces[i]);
+		}
+		Eigen::MatrixXd V;
+		state_.get_vertices(V);
+		V = utils::unflatten(AdjointTools::map_primitive_to_node_order(state_, utils::flatten(V)), dim_);
+		matched_forces_.resize(active_nodes_.size(), 1);
+		for (int i = 0; i < active_nodes_.size(); ++i)
+		{
+			int n = active_nodes_[i] / dim_;
+			int d = active_nodes_[i] % dim_;
+			if (state_.mesh->is_volume())
+				matched_forces_(i) = matching_expr[d](V(n, 0), V(n, 1), V(n, 2));
+			else
+				matched_forces_(i) = matching_expr[d](V(n, 0), V(n, 1));
+
+			if (d == 0)
+				std::cout << "[";
+			std::cout << V(n, d);
+			if (d < dim_ - 1)
+				std::cout << ", ";
+			else if (d == dim_ - 1)
+				std::cout << "],\n";
+		}
+		std::cout << "matched forces:\n"
+				  << utils::unflatten(matched_forces_, dim_).col(1) << std::endl;
+
+		epsv_ = state_.args["contact"]["epsv"];
+		dhat_ = state_.args["contact"]["dhat"];
+		friction_coefficient_ = state_.args["contact"]["friction_coefficient"];
+		depends_on_step_prev_ = (friction_coefficient_ > 0);
+	}
+
+	double ContactForceMatchForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
+	{
+		assert(state_.solve_data.time_integrator != nullptr);
+		assert(state_.solve_data.contact_form != nullptr);
+
+		double barrier_stiffness = state_.solve_data.contact_form->weight();
+
+		const ipc::CollisionMesh &collision_mesh = state_.collision_mesh;
+		Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), dim_));
+
+		Eigen::MatrixXd forces = Eigen::MatrixXd::Zero(collision_mesh.ndof(), 1);
+		forces -= barrier_stiffness * state_.diff_cached.contact_set(time_step).compute_potential_gradient(collision_mesh, displaced_surface, dhat_);
+		if (state_.solve_data.friction_form && time_step > 0)
+			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt());
+		forces = collision_mesh.to_full_dof(forces)(active_nodes_, Eigen::all);
+		forces = forces.array() / node_area_scaling_.array();
+		std::cout << "actual forces:\n"
+				  << utils::unflatten(forces, dim_) << std::endl;
+		forces -= matched_forces_;
+
+		double sum = (forces.array() * forces.array()).sum();
+
+		return sum;
+	}
+
+	Eigen::VectorXd ContactForceMatchForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	{
+		assert(state_.solve_data.time_integrator != nullptr);
+		assert(state_.solve_data.contact_form != nullptr);
+
+		double barrier_stiffness = state_.solve_data.contact_form->weight();
+
+		const ipc::CollisionMesh &collision_mesh = state_.collision_mesh;
+		Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), dim_));
+
+		Eigen::MatrixXd forces = Eigen::MatrixXd::Zero(collision_mesh.ndof(), 1);
+		forces -= barrier_stiffness * state_.diff_cached.contact_set(time_step).compute_potential_gradient(collision_mesh, displaced_surface, dhat_);
+		if (state_.solve_data.friction_form && time_step > 0)
+			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt());
+		forces = collision_mesh.to_full_dof(forces)(active_nodes_, Eigen::all);
+		forces = forces.array() / node_area_scaling_.array() / node_area_scaling_.array();
+		forces -= matched_forces_;
+
+		StiffnessMatrix hessian(collision_mesh.ndof(), collision_mesh.ndof());
+		hessian -= barrier_stiffness * state_.diff_cached.contact_set(time_step).compute_potential_hessian(collision_mesh, displaced_surface, dhat_, false);
+		if (state_.solve_data.friction_form && time_step > 0)
+			hessian += state_.diff_cached.friction_constraint_set(time_step).compute_force_jacobian(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt(), ipc::FrictionConstraint::DiffWRT::U);
+		hessian = collision_mesh.to_full_dof(hessian);
+
+		Eigen::VectorXd gradu = 2 * hessian.transpose() * active_nodes_mat_ * forces;
+
+		return gradu;
+	}
+
+	Eigen::VectorXd ContactForceMatchForm::compute_adjoint_rhs_unweighted_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	{
+		assert(state_.solve_data.time_integrator != nullptr);
+		assert(state_.solve_data.contact_form != nullptr);
+
+		double barrier_stiffness = state_.solve_data.contact_form->weight();
+
+		const ipc::CollisionMesh &collision_mesh = state_.collision_mesh;
+		Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), dim_));
+
+		Eigen::MatrixXd forces = Eigen::MatrixXd::Zero(collision_mesh.ndof(), 1);
+		forces -= barrier_stiffness * state_.diff_cached.contact_set(time_step).compute_potential_gradient(collision_mesh, displaced_surface, dhat_);
+		if (state_.solve_data.friction_form && time_step > 0)
+			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt());
+		forces = collision_mesh.to_full_dof(forces)(active_nodes_, Eigen::all);
+		forces = forces.array() / node_area_scaling_.array() / node_area_scaling_.array();
+		forces -= matched_forces_;
+
+		StiffnessMatrix hessian_prev(collision_mesh.ndof(), collision_mesh.ndof());
+		if (state_.solve_data.friction_form && time_step > 0)
+			hessian_prev += state_.diff_cached.friction_constraint_set(time_step).compute_force_jacobian(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt(), ipc::FrictionConstraint::DiffWRT::Ut);
+		hessian_prev = collision_mesh.to_full_dof(hessian_prev);
+
+		Eigen::VectorXd gradu = 2 * hessian_prev.transpose() * active_nodes_mat_ * forces;
+
+		return gradu;
+	}
+
+	void ContactForceMatchForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		assert(state_.solve_data.time_integrator != nullptr);
+		assert(state_.solve_data.contact_form != nullptr);
+
+		double barrier_stiffness = state_.solve_data.contact_form->weight();
+
+		const ipc::CollisionMesh &collision_mesh = state_.collision_mesh;
+		Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), dim_));
+
+		Eigen::MatrixXd forces = Eigen::MatrixXd::Zero(collision_mesh.ndof(), 1);
+		forces -= barrier_stiffness * state_.diff_cached.contact_set(time_step).compute_potential_gradient(collision_mesh, displaced_surface, dhat_);
+		if (state_.solve_data.friction_form && time_step > 0)
+			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt());
+		forces = collision_mesh.to_full_dof(forces)(active_nodes_, Eigen::all);
+		forces = forces.array() / node_area_scaling_.array() / node_area_scaling_.array();
+		forces -= matched_forces_;
+
+		StiffnessMatrix shape_derivative(collision_mesh.ndof(), collision_mesh.ndof());
+		shape_derivative -= barrier_stiffness * state_.diff_cached.contact_set(time_step).compute_shape_derivative(collision_mesh, displaced_surface, dhat_);
+		if (state_.solve_data.friction_form && time_step > 0)
+			shape_derivative += state_.diff_cached.friction_constraint_set(time_step).compute_force_jacobian(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt(), ipc::FrictionConstraint::DiffWRT::X);
+		shape_derivative = collision_mesh.to_full_dof(shape_derivative);
+
+		Eigen::VectorXd grads = 2 * shape_derivative.transpose() * active_nodes_mat_ * forces;
+		grads = AdjointTools::map_node_to_primitive_order(state_, grads);
+
+		gradv.setZero(x.size());
+
+		for (const auto &param_map : variable_to_simulations_)
+		{
+			const auto &param_type = param_map->get_parameter_type();
+
+			for (const auto &state : param_map->get_states())
+			{
+				if (state.get() != &state_)
+					continue;
+
+				if (param_type != ParameterType::Shape)
+					log_and_throw_error("Only support contact force derivative wrt. shape!");
+
+				if (grads.size() > 0)
+					gradv += param_map->apply_parametrization_jacobian(grads, x);
+			}
+		}
+	}
+
 } // namespace polyfem::solver
