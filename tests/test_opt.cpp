@@ -323,6 +323,8 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
+
+	REQUIRE(true);
 }
 
 TEST_CASE("shape-stress-opt", tagsopt)
