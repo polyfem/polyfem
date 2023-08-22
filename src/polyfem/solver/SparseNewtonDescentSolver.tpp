@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SparseNewtonDescentSolver.hpp"
+#include <unsupported/Eigen/SparseExtra>
 
 namespace cppoptlib
 {
@@ -12,6 +13,7 @@ namespace cppoptlib
 		linear_solver = polysolve::LinearSolver::create(
 			linear_solver_params["solver"], linear_solver_params["precond"]);
 		linear_solver->setParameters(linear_solver_params);
+
 		force_psd_projection = solver_params["force_psd_projection"];
 	}
 
@@ -191,9 +193,9 @@ namespace cppoptlib
 	// =======================================================================
 
 	template <typename ProblemType>
-	void SparseNewtonDescentSolver<ProblemType>::update_solver_info()
+	void SparseNewtonDescentSolver<ProblemType>::update_solver_info(const double energy)
 	{
-		Superclass::update_solver_info();
+		Superclass::update_solver_info(energy);
 		this->solver_info["internal_solver"] = internal_solver_info;
 	}
 

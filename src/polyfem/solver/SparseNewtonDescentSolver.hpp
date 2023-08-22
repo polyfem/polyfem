@@ -65,7 +65,7 @@ namespace cppoptlib
 		//                            Solver info
 		// ====================================================================
 
-		void update_solver_info() override;
+		void update_solver_info(const double energy) override;
 
 		json internal_solver_info = json::array();
 

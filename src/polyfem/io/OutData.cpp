@@ -939,11 +939,11 @@ namespace polyfem::io
 			logger().error("Build the bases first!");
 			return;
 		}
-		if (rhs.size() <= 0)
-		{
-			logger().error("Assemble the rhs first!");
-			return;
-		}
+		// if (rhs.size() <= 0)
+		// {
+		// 	logger().error("Assemble the rhs first!");
+		// 	return;
+		// }
 		if (sol.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -1054,6 +1054,7 @@ namespace polyfem::io
 		points = args["output"]["paraview"]["points"];
 		contact_forces = args["output"]["paraview"]["options"]["contact_forces"] && !is_problem_scalar;
 		friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !is_problem_scalar;
+		tensor_values = args["output"]["paraview"]["options"]["tensor_values"];
 
 		use_sampler = !(is_mesh_linear && solve_export_to_file && args["output"]["paraview"]["high_order_mesh"]);
 		boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
@@ -1096,11 +1097,11 @@ namespace polyfem::io
 			logger().error("Build the bases first!");
 			return;
 		}
-		if (rhs.size() <= 0)
-		{
-			logger().error("Assemble the rhs first!");
-			return;
-		}
+		// if (rhs.size() <= 0)
+		// {
+		// 	logger().error("Assemble the rhs first!");
+		// 	return;
+		// }
 		if (sol.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -1387,7 +1388,7 @@ namespace polyfem::io
 			else if (vals.size() > 0)
 				solution_frames.back().scalar_value = vals[0].second;
 
-			if (opts.solve_export_to_file)
+			if (opts.solve_export_to_file && opts.tensor_values)
 			{
 				Evaluator::compute_tensor_value(
 					mesh, problem.is_scalar(), bases, gbases, state.disc_orders,
@@ -1787,7 +1788,7 @@ namespace polyfem::io
 				assert(tensor_flat[0].second.size() == actual_dim * actual_dim);
 
 				Eigen::Map<Eigen::MatrixXd> tensor(tensor_flat[0].second.data(), actual_dim, actual_dim);
-				vect.row(i) = boundary_vis_normals.row(i) * tensor;
+				vect.row(i) = displaced_boundary_vis_normals.row(i) * tensor;
 
 				double area = 0;
 				if (mesh.is_volume())

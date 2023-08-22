@@ -140,11 +140,11 @@ namespace polyfem
 			logger().error("Build the bases first!");
 			return;
 		}
-		if (rhs.size() <= 0)
-		{
-			logger().error("Assemble the rhs first!");
-			return;
-		}
+		// if (rhs.size() <= 0)
+		// {
+		// 	logger().error("Assemble the rhs first!");
+		// 	return;
+		// }
 		if (sol.size() <= 0)
 		{
 			logger().error("Solve the problem first!");

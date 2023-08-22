@@ -82,6 +82,8 @@ namespace polyfem::assembler
 				el_id, lambda, mu);
 		}
 
+		Eigen::MatrixXd lambda_mat_, mu_mat_;
+
 	private:
 		void set_e_nu(const int index, const json &E, const json &nu);
 
