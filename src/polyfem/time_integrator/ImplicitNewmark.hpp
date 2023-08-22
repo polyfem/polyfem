@@ -67,6 +67,8 @@ namespace polyfem::time_integrator
 		/// @param prev_ti index of the previous solution to use (0 -> current; 1 -> previous; 2 -> second previous; etc.)
 		double dv_dx(const unsigned prev_ti = 0) const override;
 
+		double da_dx(const unsigned prev_ti = 0) const;
+
 		/// @brief \f$\beta\f$ parameter for blending accelerations in the solution update.
 		double beta() const { return beta_; }
 		/// @brief \f$\gamma\f$ parameter for blending accelerations in the velocity update.
