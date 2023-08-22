@@ -1290,13 +1290,13 @@ namespace polyfem
 			displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
 		}
 
-		collision_mesh = ipc::CollisionMesh(is_on_surface,
-											collision_vertices,
-											collision_edges,
-											collision_triangles,
-											displacement_map);
+		collision_mesh_ = ipc::CollisionMesh(is_on_surface,
+											 collision_vertices,
+											 collision_edges,
+											 collision_triangles,
+											 displacement_map);
 
-		collision_mesh.can_collide = [this, n_v](size_t vi, size_t vj) {
+		collision_mesh_.can_collide = [this, n_v](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles
 			return this->collision_mesh.to_full_vertex_id(vi) < n_v
 				   || this->collision_mesh.to_full_vertex_id(vj) < n_v;
