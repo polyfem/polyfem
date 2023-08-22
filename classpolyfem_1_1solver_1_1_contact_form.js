@@ -1,9 +1,13 @@
 var classpolyfem_1_1solver_1_1_contact_form =
 [
-    [ "ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html#a91a57e4276cdd8ec464f93df6faa29f7", null ],
+    [ "ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html#ab7d50032b2d64d411f0424f677d7fd61", null ],
     [ "barrier_stiffness", "classpolyfem_1_1solver_1_1_contact_form.html#a41dcdd4761553a2e08ed5c44056d0440", null ],
     [ "compute_displaced_surface", "classpolyfem_1_1solver_1_1_contact_form.html#a41111805fab863090ce87259bb024995", null ],
+    [ "dhat", "classpolyfem_1_1solver_1_1_contact_form.html#a891722aad2290a8a2684cadc742d6561", null ],
+    [ "enable_shape_derivatives", "classpolyfem_1_1solver_1_1_contact_form.html#a7aadb732b6df116dd2374bdb64d0826c", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_contact_form.html#ac654311b96207d936de3f8e115d4cd52", null ],
+    [ "force_shape_derivative", "classpolyfem_1_1solver_1_1_contact_form.html#ababfb5b7cb31b8059a61ac6f3d419797", null ],
+    [ "get_constraint_set", "classpolyfem_1_1solver_1_1_contact_form.html#aa703c686353e86897c2874cb35655e7d", null ],
     [ "init", "classpolyfem_1_1solver_1_1_contact_form.html#a2a11c35e1a44e6f8ad2ca4602ab158bb", null ],
     [ "is_step_collision_free", "classpolyfem_1_1solver_1_1_contact_form.html#aee65aa9ea94cac5dea17f77b65ef2006", null ],
     [ "line_search_begin", "classpolyfem_1_1solver_1_1_contact_form.html#ab011ec40a36b9125803eb58bbfae853c", null ],
@@ -30,6 +34,7 @@ var classpolyfem_1_1solver_1_1_contact_form =
     [ "constraint_set_", "classpolyfem_1_1solver_1_1_contact_form.html#ab39ed05914677de50b28e9a3f726b1ef", null ],
     [ "dhat_", "classpolyfem_1_1solver_1_1_contact_form.html#ae7c67afb6fd4cf38153e5e7029ba869b", null ],
     [ "dmin_", "classpolyfem_1_1solver_1_1_contact_form.html#a1d5a12c0e6924379374e826fbf097f82", null ],
+    [ "enable_shape_derivatives_", "classpolyfem_1_1solver_1_1_contact_form.html#a80cde93e954fae5d1ed9ba561e4efc99", null ],
     [ "is_time_dependent_", "classpolyfem_1_1solver_1_1_contact_form.html#afec9402e40be461c8b303c028dbd3dc5", null ],
     [ "max_barrier_stiffness_", "classpolyfem_1_1solver_1_1_contact_form.html#a6c460cdb21a8fc372635b45b85de154f", null ],
     [ "prev_distance_", "classpolyfem_1_1solver_1_1_contact_form.html#a79b6fa1277b911e4d87eb081c9ae9539", null ],

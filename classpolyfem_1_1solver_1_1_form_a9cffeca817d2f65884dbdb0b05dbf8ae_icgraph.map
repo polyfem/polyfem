@@ -1,14 +1,23 @@
 <map id="polyfem::solver::Form::weight" name="polyfem::solver::Form::weight">
-<area shape="rect" id="node1" title="Get the form&#39;s multiplicative constant weight." alt="" coords="777,127,943,167"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1solver_1_1_form.html#a2c8aac126073d7bd5ce46de58e30cdaa" title="Compute the first derivative of the value wrt x multiplied with the weigth." alt="" coords="564,5,729,45"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6" title="Compute the second derivative of the value wrt x multiplied with the weigth." alt="" coords="564,69,729,109"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a495516385c26912463ca2dd510014295" title="Update lagged fields." alt="" coords="285,97,507,137"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1solver_1_1_form.html#a6d82bbde92a18b72b0630dd40ff59136" title="Set the form&#39;s multiplicative constant weight." alt="" coords="564,184,729,224"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1solver_1_1_form.html#a14d2ee6928c73fc77eb7a7fa1542d27a" title="Compute the value of the form multiplied with the weigth." alt="" coords="564,248,729,288"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1solver_1_1_elastic_form.html#af2f0f857ec53a4bc3e282fce304446a0" title="Determine if a step from solution x0 to solution x1 is allowed." alt="" coords="309,5,483,45"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a6809f0a008ca0f00423ef3133d3e3369" title="Initialize lagged fields." alt="" coords="17,97,216,137"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a05f4cc1007e09d23c8866bac2c70f66f" title="Initialize the masked lumped mass matrix." alt="" coords="276,216,516,256"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a2a4d8527ae1ab6981a29f16f540bcd57" title="Initialize the masked lumped mass matrix." alt="" coords="276,280,516,320"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a0b0be50c9e6d6de1b641fccb18554e4c" title="Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary." alt="" coords="5,216,228,256"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a7f6855ef9b1244ee946f218478fac440" title="Construct a new BCPenaltyForm object with a time dependent Dirichlet boundary." alt="" coords="17,280,216,320"/>
+<area shape="rect" id="node1" title="Get the form&#39;s multiplicative constant weight." alt="" coords="811,257,976,297"/>
+<area shape="rect" id="node2" href="$classpolyfem_1_1solver_1_1_adjoint_form.html#aa5848914ae87f71ccebd5c84fbef661e" title=" " alt="" coords="564,5,763,45"/>
+<area shape="rect" id="node3" href="$classpolyfem_1_1solver_1_1_adjoint_form.html#abebce2dce813977787698b3476d9a748" title=" " alt="" coords="574,70,753,125"/>
+<area shape="rect" id="node4" href="$classpolyfem_1_1solver_1_1_form.html#a96dfee30f817cfe008e3aefb04c3544b" title="Compute the first derivative of the value wrt x multiplied with the weigth." alt="" coords="581,149,746,189"/>
+<area shape="rect" id="node6" href="$classpolyfem_1_1solver_1_1_adjoint_form.html#a49dc3a90b9176f980eb81981fe934e05" title="Compute the first derivative of the value wrt x." alt="" coords="574,214,753,269"/>
+<area shape="rect" id="node7" href="$classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6" title="Compute the second derivative of the value wrt x multiplied with the weigth." alt="" coords="581,293,746,333"/>
+<area shape="rect" id="node8" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a495516385c26912463ca2dd510014295" title="Update lagged fields." alt="" coords="285,293,507,333"/>
+<area shape="rect" id="node10" href="$classpolyfem_1_1solver_1_1_form.html#a6d82bbde92a18b72b0630dd40ff59136" title="Set the form&#39;s multiplicative constant weight." alt="" coords="581,408,746,448"/>
+<area shape="rect" id="node11" href="$classpolyfem_1_1solver_1_1_form.html#a5cf0de6bac08f31cdd37503d5d2218fd" title="Compute the value of the form multiplied with the weigth." alt="" coords="581,479,746,519"/>
+<area shape="rect" id="node5" href="$classpolyfem_1_1solver_1_1_elastic_form.html#af2f0f857ec53a4bc3e282fce304446a0" title="Determine if a step from solution x0 to solution x1 is allowed." alt="" coords="309,149,483,189"/>
+<area shape="rect" id="node9" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a6809f0a008ca0f00423ef3133d3e3369" title="Initialize lagged fields." alt="" coords="17,293,216,333"/>
+<area shape="rect" id="node12" href="$classpolyfem_1_1solver_1_1_inertia_form.html#ae4a6e56fdad0440265869c7ea7a94d93" title=" " alt="" coords="289,357,503,397"/>
+<area shape="rect" id="node13" href="$classpolyfem_1_1solver_1_1_body_form.html#a5dd3812e581ac1ca48508abd65fe6c07" title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj..." alt="" coords="297,421,495,461"/>
+<area shape="rect" id="node14" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a05f4cc1007e09d23c8866bac2c70f66f" title="Initialize the masked lumped mass matrix." alt="" coords="276,485,516,525"/>
+<area shape="rect" id="node16" href="$classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a2a4d8527ae1ab6981a29f16f540bcd57" title="Initialize the masked lumped mass matrix." alt="" coords="276,549,516,589"/>
+<area shape="rect" id="node18" href="$classpolyfem_1_1solver_1_1_adjoint_form.html#a83da86e0efba5cfcba61af6b05796801" title="Compute the value of the form multiplied with the weigth." alt="" coords="307,684,485,724"/>
+<area shape="rect" id="node15" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a0b0be50c9e6d6de1b641fccb18554e4c" title="Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary." alt="" coords="5,485,228,525"/>
+<area shape="rect" id="node17" href="$classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a7f6855ef9b1244ee946f218478fac440" title="Construct a new BCPenaltyForm object with a time dependent Dirichlet boundary." alt="" coords="17,549,216,589"/>
+<area shape="rect" id="node19" href="$classpolyfem_1_1solver_1_1_barycenter_target_form.html#a3a149e6b557410f863703169916d0537" title=" " alt="" coords="11,638,223,693"/>
+<area shape="rect" id="node20" href="$classpolyfem_1_1solver_1_1_barycenter_target_form.html#a7d425b07831f20429c34a769dc02b034" title=" " alt="" coords="12,717,221,771"/>
+<area shape="rect" id="node21" href="$classpolyfem_1_1solver_1_1_transient_form.html#a21567315041e870c6169a9e175ff4b10" title="Compute the value of the form." alt="" coords="21,796,212,836"/>
 </map>

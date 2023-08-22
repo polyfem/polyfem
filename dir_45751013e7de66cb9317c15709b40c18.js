@@ -19,6 +19,7 @@ var dir_45751013e7de66cb9317c15709b40c18 =
     [ "GeometryUtils.hpp", "_geometry_utils_8hpp.html", "_geometry_utils_8hpp" ],
     [ "getRSS.c", "get_r_s_s_8c.html", "get_r_s_s_8c" ],
     [ "HashUtils.hpp", "_hash_utils_8hpp.html", "_hash_utils_8hpp" ],
+    [ "IntegrableFunctional.hpp", "_integrable_functional_8hpp.html", "_integrable_functional_8hpp" ],
     [ "InterpolatedFunction.cpp", "_interpolated_function_8cpp.html", null ],
     [ "InterpolatedFunction.hpp", "_interpolated_function_8hpp.html", "_interpolated_function_8hpp" ],
     [ "Interpolation.cpp", "_interpolation_8cpp.html", "_interpolation_8cpp" ],

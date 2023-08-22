@@ -8,6 +8,7 @@ var classpolyfem_1_1solver_1_1line__search_1_1_line_search =
     [ "compute_nan_free_step_size", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#af35a5d0f24305a5400176e5bc8669d59", null ],
     [ "line_search", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#aa83f2a2f12125d3b48b5384bfc742921", null ],
     [ "reset_times", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a4a9d3142ceecbb0b63e8a2783bb6479e", null ],
+    [ "set_min_step_size", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a3419dbf64e46ab116a07b157e8c18566", null ],
     [ "broad_phase_ccd_time", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a5cfb5b4f209cc03e3a36fa8c36f823e1", null ],
     [ "ccd_time", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a5903e76e0529bcdc7c3a67cf6802cceb", null ],
     [ "checking_for_nan_inf_time", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a4d8c9054c23fe46766eb28bef54fcf1a", null ],

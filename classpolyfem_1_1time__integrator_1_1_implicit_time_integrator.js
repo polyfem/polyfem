@@ -8,7 +8,7 @@ var classpolyfem_1_1time__integrator_1_1_implicit_time_integrator =
     [ "compute_acceleration", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a3bd3509695a4928c041bfaded22e4b58", null ],
     [ "compute_velocity", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a989602df205d37bdd86de6d8fc70e88b", null ],
     [ "dt", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932", null ],
-    [ "dv_dx", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a8a67fbb860dfb3592f2369b82b21cf50", null ],
+    [ "dv_dx", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ae2ea9843952763bbfc733ad20e1f4e55", null ],
     [ "init", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa19b9d1885d166f24557a23e1612b2af", null ],
     [ "init", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ac2990824ca3da5fb44ee3f415df1b183", null ],
     [ "max_steps", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a6f3c8db8f18b3e251fa1aa4d83fe4796", null ],

@@ -8,8 +8,15 @@ var classpolyfem_1_1assembler_1_1_assembler =
     [ "assemble_energy", "classpolyfem_1_1assembler_1_1_assembler.html#a1c049eeffcf6e33adab761c3c7f3d051", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_assembler.html#ad876d5f518e470fc58496efd18bd397f", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_assembler.html#a2bf5a67173bf7b042e14f1d65e3079de", null ],
+    [ "compute_dstress_dmu_dlambda", "classpolyfem_1_1assembler_1_1_assembler.html#affec51f3374101a49aadc3052e130d9a", null ],
     [ "compute_rhs", "classpolyfem_1_1assembler_1_1_assembler.html#ac3b31adacd89c796c137867e4ab2fd70", null ],
     [ "compute_scalar_value", "classpolyfem_1_1assembler_1_1_assembler.html#ada61bfb64e086585c09fc66d60ade635", null ],
+    [ "compute_stiffness_value", "classpolyfem_1_1assembler_1_1_assembler.html#a567f32b38bb7ab48a18d991eb2daac9b", null ],
+    [ "compute_stress_grad", "classpolyfem_1_1assembler_1_1_assembler.html#afaa1838e28a5f2c51bb24a9bb7c9f2f6", null ],
+    [ "compute_stress_grad_multiply_mat", "classpolyfem_1_1assembler_1_1_assembler.html#ae81ff4ac6f8a979a9e368875f73bbd49", null ],
+    [ "compute_stress_grad_multiply_stress", "classpolyfem_1_1assembler_1_1_assembler.html#a6647d262cf0a4617d1e774ab2489c45a", null ],
+    [ "compute_stress_grad_multiply_vect", "classpolyfem_1_1assembler_1_1_assembler.html#a043ebde6a58cdc87b69a015c1f378007", null ],
+    [ "compute_stress_prev_grad", "classpolyfem_1_1assembler_1_1_assembler.html#a827906287abb4ae41e8bfcce18d82bc6", null ],
     [ "compute_tensor_value", "classpolyfem_1_1assembler_1_1_assembler.html#a05a391ffee6dad03741212322c25d906", null ],
     [ "is_fluid", "classpolyfem_1_1assembler_1_1_assembler.html#ac90010fe8eddf43fb759d11942e5e8a0", null ],
     [ "is_linear", "classpolyfem_1_1assembler_1_1_assembler.html#ad816288354f5093a053de6fdd0a102d1", null ],
@@ -21,5 +28,6 @@ var classpolyfem_1_1assembler_1_1_assembler =
     [ "set_materials", "classpolyfem_1_1assembler_1_1_assembler.html#ad9854f3751938da18ef77fda5e6a3acb", null ],
     [ "set_size", "classpolyfem_1_1assembler_1_1_assembler.html#aaa2c54aec247b0afd91f9fa242764c8a", null ],
     [ "size", "classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4", null ],
+    [ "update_lame_params", "classpolyfem_1_1assembler_1_1_assembler.html#a4dc3aedabca1d63c5a489cb129916679", null ],
     [ "size_", "classpolyfem_1_1assembler_1_1_assembler.html#ae5e7302dd8929a9170c7dd93b69a0757", null ]
 ];

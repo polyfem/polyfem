@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['h_5fsur_0',['H_SUR',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa0d27639ad8f1ffe40d0211c0a744ac47',1,'polyfem::mesh']]],
-  ['hex_1',['HEX',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa58c9566f3c750ce7147b045fdd14202b',1,'polyfem::mesh']]],
-  ['hyb_2',['HYB',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa774778f8f5b2180a7d3cfd86a25615d4',1,'polyfem::mesh']]]
+  ['f_0',['F',['../namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012',1,'polyfem']]],
+  ['frictioncoeff_1',['FrictionCoeff',['../namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a434e3f38d82d009df521aaa0fc45b0f3',1,'polyfem::solver']]],
+  ['full_5fsize_2',['FULL_SIZE',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a826a60dbefdaed8e34377c2c11086197ab69ff8721a4c15de6f2736e3a9e21744',1,'polyfem::solver::NLProblem']]]
 ];

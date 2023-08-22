@@ -1,24 +1,38 @@
 <map id="polyfem::State::solve_navier_stokes" name="polyfem::State::solve_navier_stokes">
-<area shape="rect" id="node1" title="solves a navier stokes" alt="" coords="5,450,167,490"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="243,95,405,135"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a4cb783f40a4cc5b8f9494303f96a494f" title=" " alt="" coords="215,249,433,289"/>
-<area shape="rect" id="node18" href="$classpolyfem_1_1_state.html#a0f244ce7a68b1230a497746a9e4fa5b4" title="quadrature used for projecting boundary conditions" alt="" coords="223,450,425,490"/>
-<area shape="rect" id="node20" href="$classpolyfem_1_1_state.html#a3de46d5d59fbeaa652577e8c99f3fba5" title="set the material and the problem dimension" alt="" coords="251,514,397,554"/>
-<area shape="rect" id="node22" href="$classpolyfem_1_1_state.html#a15c6a567afbf3e32d7b48300222f6386" title="splits the solution in solution and pressure for mixed problems" alt="" coords="251,578,397,618"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" title="check if using iso parametric bases" alt="" coords="533,6,679,46"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1assembler_1_1_assembler.html#ab48bd60e1023f09136d318f0d91f0b71" title=" " alt="" coords="521,313,691,353"/>
-<area shape="rect" id="node7" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="1027,360,1152,385"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1assembler_1_1_mixed_assembler.html#a33b300a3f7ed4d7ceb62b904ce26fca2" title=" " alt="" coords="501,70,711,110"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#aaf6064d65afd290473d37c71e256b1b5" title=" " alt="" coords="779,5,957,60"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a857c5ada41c637408f008f0b4fd91bef" title=" " alt="" coords="497,185,715,225"/>
-<area shape="rect" id="node17" href="$classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#ae33ed1b2b8c2d555fa08fce19dc00f76" title=" " alt="" coords="500,249,712,289"/>
-<area shape="rect" id="node6" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="779,293,957,333"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69" title=" " alt="" coords="792,357,944,397"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a281d55042966d52583c50115fa5c3150" title=" " alt="" coords="784,84,952,139"/>
-<area shape="rect" id="node16" href="$classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a47835d60981a83d3919d1a37751b4917" title=" " alt="" coords="784,163,952,217"/>
-<area shape="rect" id="node13" href="$classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#adea671d239e5a65558e49760ca60235e" title=" " alt="" coords="1005,124,1173,179"/>
-<area shape="rect" id="node15" href="$classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#af8ae92910f6b7011d03cf6d79366a9e1" title=" " alt="" coords="1005,45,1173,100"/>
-<area shape="rect" id="node14" href="$classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4" title=" " alt="" coords="1221,93,1373,133"/>
-<area shape="rect" id="node19" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a80818109ce6766a1fae1733a0b2e87dc" title=" " alt="" coords="481,457,731,497"/>
-<area shape="rect" id="node21" href="$namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a" title=" " alt="" coords="541,521,671,561"/>
+<area shape="rect" id="node1" title="solves a navier stokes" alt="" coords="5,272,167,312"/>
+<area shape="rect" id="node2" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="243,25,405,65"/>
+<area shape="rect" id="node4" href="$classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a4cb783f40a4cc5b8f9494303f96a494f" title=" " alt="" coords="215,272,433,312"/>
+<area shape="rect" id="node18" href="$classpolyfem_1_1_state.html#a0f244ce7a68b1230a497746a9e4fa5b4" title="quadrature used for projecting boundary conditions" alt="" coords="223,407,425,447"/>
+<area shape="rect" id="node20" href="$classpolyfem_1_1_state.html#a3de46d5d59fbeaa652577e8c99f3fba5" title="set the material and the problem dimension" alt="" coords="251,740,397,780"/>
+<area shape="rect" id="node36" href="$classpolyfem_1_1_state.html#a15c6a567afbf3e32d7b48300222f6386" title="splits the solution in solution and pressure for mixed problems" alt="" coords="251,129,397,169"/>
+<area shape="rect" id="node3" href="$classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" title="check if using iso parametric bases" alt="" coords="533,5,679,45"/>
+<area shape="rect" id="node5" href="$classpolyfem_1_1assembler_1_1_assembler.html#ab48bd60e1023f09136d318f0d91f0b71" title=" " alt="" coords="521,235,691,275"/>
+<area shape="rect" id="node7" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="1042,182,1167,207"/>
+<area shape="rect" id="node9" href="$classpolyfem_1_1assembler_1_1_mixed_assembler.html#a33b300a3f7ed4d7ceb62b904ce26fca2" title=" " alt="" coords="501,349,711,389"/>
+<area shape="rect" id="node10" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#aaf6064d65afd290473d37c71e256b1b5" title=" " alt="" coords="780,299,959,354"/>
+<area shape="rect" id="node11" href="$classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a857c5ada41c637408f008f0b4fd91bef" title=" " alt="" coords="497,413,715,453"/>
+<area shape="rect" id="node17" href="$classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#ae33ed1b2b8c2d555fa08fce19dc00f76" title=" " alt="" coords="500,171,712,211"/>
+<area shape="rect" id="node6" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="780,235,959,275"/>
+<area shape="rect" id="node8" href="$classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69" title=" " alt="" coords="793,171,945,211"/>
+<area shape="rect" id="node12" href="$classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a281d55042966d52583c50115fa5c3150" title=" " alt="" coords="785,430,953,485"/>
+<area shape="rect" id="node16" href="$classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a47835d60981a83d3919d1a37751b4917" title=" " alt="" coords="785,509,953,563"/>
+<area shape="rect" id="node13" href="$classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#adea671d239e5a65558e49760ca60235e" title=" " alt="" coords="1021,351,1189,406"/>
+<area shape="rect" id="node15" href="$classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#af8ae92910f6b7011d03cf6d79366a9e1" title=" " alt="" coords="1021,430,1189,485"/>
+<area shape="rect" id="node14" href="$classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4" title=" " alt="" coords="1249,399,1401,439"/>
+<area shape="rect" id="node19" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a80818109ce6766a1fae1733a0b2e87dc" title=" " alt="" coords="481,477,731,517"/>
+<area shape="rect" id="node21" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#a2fc808fdbd5fbbe5fed1f485ccace7c3" title=" " alt="" coords="515,708,697,748"/>
+<area shape="rect" id="node30" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#ae606e1855fbac8a38dbadf825e027962" title=" " alt="" coords="514,772,698,812"/>
+<area shape="rect" id="node35" href="$namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a" title=" " alt="" coords="541,836,671,876"/>
+<area shape="rect" id="node22" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#ad6d21fb4c79bcfb88e03f70af01975cb" title=" " alt="" coords="779,629,960,683"/>
+<area shape="rect" id="node28" href="$classpolyfem_1_1mesh_1_1_mesh.html#a62e57386728f26b8feafea1043b65c21" title="checks if element is simples compatible" alt="" coords="788,708,951,748"/>
+<area shape="rect" id="node29" href="$classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366" title="point coordinates" alt="" coords="788,772,951,812"/>
+<area shape="rect" id="node23" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#a04627e0048f0e5d66c44bbb137661277" title=" " alt="" coords="1008,509,1201,549"/>
+<area shape="rect" id="node24" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#ae0acaf2aa88d5ceaf4451df11659f285" title=" " alt="" coords="1014,573,1195,613"/>
+<area shape="rect" id="node25" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#ab2a59e977bce042ef0e75782536f49c4" title=" " alt="" coords="1014,637,1195,677"/>
+<area shape="rect" id="node26" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#aec1e0ed9175c9fa82237cdf19a8f01e6" title=" " alt="" coords="1014,701,1195,741"/>
+<area shape="rect" id="node27" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#afd5e8a487b0eecbfaa2ca5438f29ef2f" title=" " alt="" coords="1014,765,1195,805"/>
+<area shape="rect" id="node31" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111" title=" " alt="" coords="779,900,960,940"/>
+<area shape="rect" id="node32" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a655514850b93a4d71b22c5a301c8984b" title=" " alt="" coords="779,836,960,876"/>
+<area shape="rect" id="node33" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a126b7c7206e56ae3728e1bd251fa6581" title=" " alt="" coords="1014,833,1195,873"/>
+<area shape="rect" id="node34" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a8763fa8b0b83980f2d18184895b75d42" title=" " alt="" coords="1014,897,1195,937"/>
 </map>

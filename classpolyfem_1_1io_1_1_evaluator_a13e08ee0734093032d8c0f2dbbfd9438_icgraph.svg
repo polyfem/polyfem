@@ -46,7 +46,7 @@ if (edges && edges.length) {
         </defs>
 
 <script type="text/javascript">
-var viewWidth = 627;
+var viewWidth = 774;
 var viewHeight = 49;
 var sectionId = 'dynsection-6';
 </script>
@@ -58,10 +58,10 @@ var sectionId = 'dynsection-6';
 <g id="node1" class="node">
 <title>Node1</title>
 <g id="a_node1"><a xlink:title="compute von mises stress at quadrature points for the function fun, also compute the interpolated fun...">
-<polygon fill="#999999" stroke="#666666" points="619,-41 446,-41 446,0 619,0 619,-41"/>
-<text text-anchor="start" x="454" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
-<text text-anchor="start" x="454" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_stress_at_quadrature</text>
-<text text-anchor="middle" x="532.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_points</text>
+<polygon fill="#999999" stroke="#666666" points="766,-41 593,-41 593,0 766,0 766,-41"/>
+<text text-anchor="start" x="601" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
+<text text-anchor="start" x="601" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_stress_at_quadrature</text>
+<text text-anchor="middle" x="679.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_points</text>
 </a>
 </g>
 </g>
@@ -69,47 +69,62 @@ var sectionId = 'dynsection-6';
 <g id="node2" class="node">
 <title>Node2</title>
 <g id="a_node2"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#a9826defd7d8f3c4c12df2ba9c4c45320" target="_top" xlink:title="exports everytihng, txt, vtu, etc">
-<polygon fill="white" stroke="#666666" points="410,-35.5 266,-35.5 266,-5.5 410,-5.5 410,-35.5"/>
-<text text-anchor="start" x="274" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
-<text text-anchor="middle" x="338" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">Data::export_data</text>
+<polygon fill="white" stroke="#666666" points="557,-35.5 413,-35.5 413,-5.5 557,-5.5 557,-35.5"/>
+<text text-anchor="start" x="421" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
+<text text-anchor="middle" x="485" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">Data::export_data</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
 <g id="edge1" class="edge">
 <title>Node1&#45;&gt;Node2</title>
-<path fill="none" stroke="#63b8ff" d="M435.83,-20.5C427.19,-20.5 418.55,-20.5 410.18,-20.5"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="435.95,-24 445.95,-20.5 435.95,-17 435.95,-24"/>
+<path fill="none" stroke="#63b8ff" d="M582.83,-20.5C574.19,-20.5 565.55,-20.5 557.18,-20.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="582.95,-24 592.95,-20.5 582.95,-17 582.95,-24"/>
 </g>
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
 <g id="a_node3"><a xlink:href="classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e" target="_top" xlink:title="saves all data on the disk according to the input params">
-<polygon fill="white" stroke="#666666" points="230,-30 77,-30 77,-11 230,-11 230,-30"/>
-<text text-anchor="middle" x="153.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::export_data</text>
+<polygon fill="white" stroke="#666666" points="377,-30 224,-30 224,-11 377,-11 377,-30"/>
+<text text-anchor="middle" x="300.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::export_data</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
 <g id="edge2" class="edge">
 <title>Node2&#45;&gt;Node3</title>
-<path fill="none" stroke="#63b8ff" d="M255.67,-20.5C247.2,-20.5 238.62,-20.5 230.21,-20.5"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="255.92,-24 265.92,-20.5 255.92,-17 255.92,-24"/>
+<path fill="none" stroke="#63b8ff" d="M402.67,-20.5C394.2,-20.5 385.62,-20.5 377.21,-20.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="402.92,-24 412.92,-20.5 402.92,-17 402.92,-24"/>
 </g>
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="41,-30 0,-30 0,-11 41,-11 41,-30"/>
-<text text-anchor="middle" x="20.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">main</text>
+<g id="a_node4"><a xlink:href="main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="188,-30 77,-30 77,-11 188,-11 188,-30"/>
+<text text-anchor="middle" x="132.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">forward_simulation</text>
 </a>
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
 <g id="edge3" class="edge">
 <title>Node3&#45;&gt;Node4</title>
-<path fill="none" stroke="#63b8ff" d="M66.67,-20.5C57.26,-20.5 48.46,-20.5 41.18,-20.5"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="66.68,-24 76.68,-20.5 66.68,-17 66.68,-24"/>
+<path fill="none" stroke="#63b8ff" d="M213.66,-20.5C205.03,-20.5 196.44,-20.5 188.27,-20.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="213.79,-24 223.79,-20.5 213.79,-17 213.79,-24"/>
+</g>
+<!-- Node5 -->
+<g id="node5" class="node">
+<title>Node5</title>
+<g id="a_node5"><a xlink:href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="41,-30 0,-30 0,-11 41,-11 41,-30"/>
+<text text-anchor="middle" x="20.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">main</text>
+</a>
+</g>
+</g>
+<!-- Node4&#45;&gt;Node5 -->
+<g id="edge4" class="edge">
+<title>Node4&#45;&gt;Node5</title>
+<path fill="none" stroke="#63b8ff" d="M66.64,-20.5C57.35,-20.5 48.45,-20.5 41.05,-20.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="66.82,-24 76.82,-20.5 66.82,-17 66.82,-24"/>
 </g>
 </g>
 </svg>

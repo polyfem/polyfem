@@ -125,6 +125,15 @@ $(document).ready(function(){initNavTree('_body_form_8cpp.html',''); initResizab
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>&quot;</code><br />
+<code>#include &lt;<a class="el" href="_evaluator_8hpp_source.html">polyfem/io/Evaluator.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_maybe_parallel_for_8hpp_source.html">polyfem/utils/MaybeParallelFor.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_boundary_sampler_8hpp_source.html">polyfem/utils/BoundarySampler.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_element_bases_8hpp_source.html">polyfem/basis/ElementBases.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_assembler_utils_8hpp_source.html">polyfem/assembler/AssemblerUtils.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_assembly_vals_cache_8hpp_source.html">polyfem/assembler/AssemblyValsCache.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="auto__p__bases_8hpp_source.html">polyfem/autogen/auto_p_bases.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_adjoint_tools_8hpp_source.html">polyfem/solver/AdjointTools.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for BodyForm.cpp:</div>
 <div class="dyncontent">
@@ -141,6 +150,73 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacepolyfem_1_1solver"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html">polyfem::solver</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a8e8ee90d91b64973bc4ad946fd461666" name="a8e8ee90d91b64973bc4ad946fd461666"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e8ee90d91b64973bc4ad946fd461666">&#9670;&#160;</a></span>da</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QuadratureVector da</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_body_form_8cpp_source.html#l00026">26</a> of file <a class="el" href="_body_form_8cpp_source.html">BodyForm.cpp</a>.</p>
+
+</div>
+</div>
+<a id="af3ccbfad25a3b1900a6ca73c130a479e" name="af3ccbfad25a3b1900a6ca73c130a479e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3ccbfad25a3b1900a6ca73c130a479e">&#9670;&#160;</a></span>gvals</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">assembler::ElementAssemblyValues gvals</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_body_form_8cpp_source.html#l00025">25</a> of file <a class="el" href="_body_form_8cpp_source.html">BodyForm.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_operator_splitting_solver_8cpp_source.html#l00792">polyfem::solver::OperatorSplittingSolver::advection_PIC()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00333">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, <a class="el" href="_inertia_form_8cpp_source.html#l00059">polyfem::solver::InertiaForm::force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>, and <a class="el" href="_elastic_form_8cpp_source.html#l00203">polyfem::solver::ElasticForm::force_shape_derivative()</a>.</p>
+
+</div>
+</div>
+<a id="a6d7da657bd3e8e7f77abb347aebb7d19" name="a6d7da657bd3e8e7f77abb347aebb7d19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d7da657bd3e8e7f77abb347aebb7d19">&#9670;&#160;</a></span>vals</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">assembler::ElementAssemblyValues vals</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_body_form_8cpp_source.html#l00025">25</a> of file <a class="el" href="_body_form_8cpp_source.html">BodyForm.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a0ceb8b1b1b63245b857fa3d925c17858" name="a0ceb8b1b1b63245b857fa3d925c17858"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ceb8b1b1b63245b857fa3d925c17858">&#9670;&#160;</a></span>vec</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd vec</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_body_form_8cpp_source.html#l00024">24</a> of file <a class="el" href="_body_form_8cpp_source.html">BodyForm.cpp</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

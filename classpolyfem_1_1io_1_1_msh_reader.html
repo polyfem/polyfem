@@ -132,13 +132,15 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1io_1_1_msh_reader.html
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a5658ce8a7801dca50f265efe95ec6e64"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_msh_reader.html#a5658ce8a7801dca50f265efe95ec6e64">load</a> (const std::string &amp;path, Eigen::MatrixXd &amp;vertices, Eigen::MatrixXi &amp;cells, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;elements, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;weights, std::vector&lt; int &gt; &amp;body_ids)</td></tr>
 <tr class="separator:a5658ce8a7801dca50f265efe95ec6e64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac87645e61c7c10df09b99997b250fc09"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_msh_reader.html#ac87645e61c7c10df09b99997b250fc09">load</a> (const std::string &amp;path, Eigen::MatrixXd &amp;vertices, Eigen::MatrixXi &amp;cells, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;elements, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;weights, std::vector&lt; int &gt; &amp;body_ids, std::vector&lt; std::string &gt; &amp;node_data_name, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;node_data)</td></tr>
+<tr class="separator:ac87645e61c7c10df09b99997b250fc09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_msh_reader_8hpp_source.html#l00009">9</a> of file <a class="el" href="_msh_reader_8hpp_source.html">MshReader.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a5658ce8a7801dca50f265efe95ec6e64" name="a5658ce8a7801dca50f265efe95ec6e64"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5658ce8a7801dca50f265efe95ec6e64">&#9670;&#160;</a></span>load()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a5658ce8a7801dca50f265efe95ec6e64">&#9670;&#160;</a></span>load() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -197,19 +199,101 @@ Static Public Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_msh_reader_8cpp_source.html#l00029">29</a> of file <a class="el" href="_msh_reader_8cpp_source.html">MshReader.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_msh_reader_8cpp_source.html#l00018">polyfem::io::map_entity_tag_to_physical_tag()</a>.</p>
+<p class="reference">References <a class="el" href="_msh_reader_8cpp_source.html#l00029">load()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00173">polyfem::mesh::Mesh::create()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l01091">polyfem::mesh::read_surface_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_s_d_f_parametrizations_8cpp_source.html#l00109">polyfem::solver::MeshTiling::apply_jacobian()</a>, <a class="el" href="_mesh_8cpp_source.html#l00173">polyfem::mesh::Mesh::create()</a>, <a class="el" href="_s_d_f_parametrizations_8cpp_source.html#l00080">polyfem::solver::MeshTiling::eval()</a>, <a class="el" href="_s_d_f_parametrizations_8cpp_source.html#l00244">polyfem::solver::MeshAffine::eval()</a>, <a class="el" href="_msh_reader_8cpp_source.html#l00029">load()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01091">polyfem::mesh::read_surface_mesh()</a>, <a class="el" href="_s_d_f_parametrizations_8cpp_source.html#l00070">polyfem::solver::MeshTiling::size()</a>, and <a class="el" href="_s_d_f_parametrizations_8cpp_source.html#l00130">polyfem::solver::MeshTiling::tiling()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_msh_reader_a5658ce8a7801dca50f265efe95ec6e64_cgraph.svg" width="415" height="102"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_msh_reader_a5658ce8a7801dca50f265efe95ec6e64_cgraph.svg" width="188" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_msh_reader_a5658ce8a7801dca50f265efe95ec6e64_icgraph.svg" width="100%" height="472"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_msh_reader_a5658ce8a7801dca50f265efe95ec6e64_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="ac87645e61c7c10df09b99997b250fc09" name="ac87645e61c7c10df09b99997b250fc09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac87645e61c7c10df09b99997b250fc09">&#9670;&#160;</a></span>load() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::io::MshReader::load </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>cells</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; int &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>elements</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; double &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>weights</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>body_ids</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>node_data_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::vector&lt; double &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>node_data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_msh_reader_8cpp_source.html#l00037">37</a> of file <a class="el" href="_msh_reader_8cpp_source.html">MshReader.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_msh_reader_8cpp_source.html#l00018">polyfem::io::map_entity_tag_to_physical_tag()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_msh_reader_ac87645e61c7c10df09b99997b250fc09_cgraph.svg" width="415" height="102"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 

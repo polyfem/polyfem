@@ -121,6 +121,7 @@ $(document).ready(function(){initNavTree('_elasticity_utils_8hpp.html',''); init
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
@@ -157,6 +158,11 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacepolyfem"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html">polyfem</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:af58dfb237ba25d3f9a4bf3a80f870e43"><td class="memItemLeft" align="right" valign="top">typedef std::array&lt; double, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#af58dfb237ba25d3f9a4bf3a80f870e43">polyfem::DampingParameters</a></td></tr>
+<tr class="separator:af58dfb237ba25d3f9a4bf3a80f870e43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:ab904d08a2b6012d82ab5cdc90909e4d1"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1">polyfem::ElasticityTensorType</a> { <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a9d0e3157464d10e95bff71bbcf0001ad">polyfem::CAUCHY</a>
@@ -178,8 +184,22 @@ Functions</h2></td></tr>
 <tr class="separator:aaf867383bfea72c587035f4e3346bb21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e0e4c0eef41d449e66abee527fc8e13"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a2e0e4c0eef41d449e66abee527fc8e13">polyfem::pk2_from_cauchy</a> (const Eigen::MatrixXd &amp;stress, const Eigen::MatrixXd &amp;F)</td></tr>
 <tr class="separator:a2e0e4c0eef41d449e66abee527fc8e13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c92d8a4b1a73baab24a2ecef44f9440"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a9c92d8a4b1a73baab24a2ecef44f9440">polyfem::compute_diplacement_grad</a> (const int size, const ElementAssemblyValues &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, const Eigen::MatrixXd &amp;local_pts, const int p, const Eigen::MatrixXd &amp;displacement, Eigen::MatrixXd &amp;displacement_grad)</td></tr>
+<tr class="separator:a9c92d8a4b1a73baab24a2ecef44f9440"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe7d5ac326e47bbc47caa5539c4f8172"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#afe7d5ac326e47bbc47caa5539c4f8172">polyfem::compute_diplacement_grad</a> (const int size, const ElementBases &amp;bs, const ElementAssemblyValues &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, const Eigen::MatrixXd &amp;local_pts, const int p, const Eigen::MatrixXd &amp;displacement, Eigen::MatrixXd &amp;displacement_grad)</td></tr>
 <tr class="separator:afe7d5ac326e47bbc47caa5539c4f8172"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7d5a2d4407b8790621fdba815de479e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#ad7d5a2d4407b8790621fdba815de479e">polyfem::convert_to_lambda</a> (const bool is_volume, const double E, const double nu)</td></tr>
+<tr class="separator:ad7d5a2d4407b8790621fdba815de479e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a869023aefa896d263b89a68a7f24c4c1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a869023aefa896d263b89a68a7f24c4c1">polyfem::convert_to_mu</a> (const double E, const double nu)</td></tr>
+<tr class="separator:a869023aefa896d263b89a68a7f24c4c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af50dca98c7a28e276c5b3cc9ab6c622e"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix2d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#af50dca98c7a28e276c5b3cc9ab6c622e">polyfem::d_lambda_mu_d_E_nu</a> (const bool is_volume, const double E, const double nu)</td></tr>
+<tr class="separator:af50dca98c7a28e276c5b3cc9ab6c622e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2ee1fd43a8bc67f783f3caeae1ab194"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix2d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#ae2ee1fd43a8bc67f783f3caeae1ab194">polyfem::d_E_nu_d_lambda_mu</a> (const bool is_volume, const double lambda, const double mu)</td></tr>
+<tr class="separator:ae2ee1fd43a8bc67f783f3caeae1ab194"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a689385e4e09ee320a80a0c35b78c7e7b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a689385e4e09ee320a80a0c35b78c7e7b">polyfem::convert_to_E</a> (const bool is_volume, const double lambda, const double mu)</td></tr>
+<tr class="separator:a689385e4e09ee320a80a0c35b78c7e7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c251b3fed11368a07bb8b3ed6d93f09"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a9c251b3fed11368a07bb8b3ed6d93f09">polyfem::convert_to_nu</a> (const bool is_volume, const double lambda, const double mu)</td></tr>
+<tr class="separator:a9c251b3fed11368a07bb8b3ed6d93f09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3c7c48e526af400b4beb3738e168c35"><td class="memTemplParams" colspan="2">template&lt;typename AutoDiffVect &gt; </td></tr>
 <tr class="memitem:aa3c7c48e526af400b4beb3738e168c35"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#aa3c7c48e526af400b4beb3738e168c35">polyfem::get_local_disp</a> (const assembler::NonLinearAssemblerData &amp;data, const int size, AutoDiffVect &amp;local_disp)</td></tr>
 <tr class="separator:aa3c7c48e526af400b4beb3738e168c35"><td class="memSeparator" colspan="2">&#160;</td></tr>

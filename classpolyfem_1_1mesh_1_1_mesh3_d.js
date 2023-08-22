@@ -8,6 +8,7 @@ var classpolyfem_1_1mesh_1_1_mesh3_d =
     [ "cell_edge", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a3ff76dbfc406b591c3fa82bd6c6269e7", null ],
     [ "cell_face", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a862d425f30ed31588e17a69f6209d8c7", null ],
     [ "cell_node", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a80b054325b086a022c02327cd63655dd", null ],
+    [ "compute_cell_jacobian", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a2fc808fdbd5fbbe5fed1f485ccace7c3", null ],
     [ "compute_element_barycenters", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a69333860e46800d576a18b50e4efd03d", null ],
     [ "edge_neighs", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a8bae5d8ae2745f6f2a599d2d6a75d6a4", null ],
     [ "edge_node", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a1c0058f1c9fa91b7269926e5ed85a9a2", null ],

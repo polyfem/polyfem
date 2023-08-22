@@ -2,6 +2,7 @@ var classcppoptlib_1_1_nonlinear_solver =
 [
     [ "Superclass", "classcppoptlib_1_1_nonlinear_solver.html#aa848ff8acc24d5cb997cdf2dfcd5f0ae", null ],
     [ "NonlinearSolver", "classcppoptlib_1_1_nonlinear_solver.html#a4644d12ebe36b4b2ef7c0df4ea538d6d", null ],
+    [ "compute_grad_norm", "classcppoptlib_1_1_nonlinear_solver.html#a31f25c9e212dc6294aeaae6e10d42f65", null ],
     [ "compute_update_direction", "classcppoptlib_1_1_nonlinear_solver.html#a50ae1ef959df52fddb792fb9880e9f80", null ],
     [ "converged", "classcppoptlib_1_1_nonlinear_solver.html#ab1835d25631fe50ed3a88c011838c841", null ],
     [ "default_descent_strategy", "classcppoptlib_1_1_nonlinear_solver.html#a2a5108b56a7a989b5edc1c455c09d36b", null ],
@@ -20,7 +21,7 @@ var classcppoptlib_1_1_nonlinear_solver =
     [ "reset", "classcppoptlib_1_1_nonlinear_solver.html#a5d761918e6e4e6f5859c732c81c35f84", null ],
     [ "reset_times", "classcppoptlib_1_1_nonlinear_solver.html#af5404ccd80ca403e5b781db58456afc1", null ],
     [ "set_line_search", "classcppoptlib_1_1_nonlinear_solver.html#a00d6d792fa782a996c3322f09de84cf6", null ],
-    [ "update_solver_info", "classcppoptlib_1_1_nonlinear_solver.html#a08c477575ee1b685c81be5ac62090e24", null ],
+    [ "update_solver_info", "classcppoptlib_1_1_nonlinear_solver.html#a4a9a493c6cf2d827de3aacf6ca0d852b", null ],
     [ "assembly_time", "classcppoptlib_1_1_nonlinear_solver.html#a9bc129fb40312b11fb73f982d4e127c5", null ],
     [ "constraint_set_update_time", "classcppoptlib_1_1_nonlinear_solver.html#a672065a5cd3466edda0e143f08922aaa", null ],
     [ "descent_strategy", "classcppoptlib_1_1_nonlinear_solver.html#a7fde555a657401aa47a76322b1d86e37", null ],

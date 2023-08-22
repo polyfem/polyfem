@@ -53,6 +53,7 @@ var namespacepolyfem_1_1utils =
     [ "full_to_reduced_matrix", "namespacepolyfem_1_1utils.html#af03329969960f2decea3c0752c243b2a", null ],
     [ "get_local_thread_storage", "namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b", null ],
     [ "get_n_threads", "namespacepolyfem_1_1utils.html#a3b3a8934d13e48dc3a51ed8efe25e11e", null ],
+    [ "inverse", "namespacepolyfem_1_1utils.html#a81d53daf4d77bf87d802589c5ec3c1c4", null ],
     [ "is_param_valid", "namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a", null ],
     [ "json_as_array", "namespacepolyfem_1_1utils.html#a96bdecaf2191cf4146f7bb0d850c47f3", null ],
     [ "lump_matrix", "namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226", null ],
@@ -82,5 +83,6 @@ var namespacepolyfem_1_1utils =
     [ "triangle_intersects_disk", "namespacepolyfem_1_1utils.html#ae05141c057d8d87bcc1e8c4ed8318d50", null ],
     [ "triangle_to_clockwise_order", "namespacepolyfem_1_1utils.html#aa0e8392d10fa2db5792e3c4fe260a211", null ],
     [ "unflatten", "namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5", null ],
-    [ "unreorder_matrix", "namespacepolyfem_1_1utils.html#aac783c2b2ed8d267c159ea45235b17f4", null ]
+    [ "unreorder_matrix", "namespacepolyfem_1_1utils.html#aac783c2b2ed8d267c159ea45235b17f4", null ],
+    [ "vector2matrix", "namespacepolyfem_1_1utils.html#a75043e8afe913f3bc6279fd5349a4fd4", null ]
 ];

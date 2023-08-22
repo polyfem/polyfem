@@ -1,14 +1,15 @@
 <map id="polyfem::time_integrator::BDF::update_quantities" name="polyfem::time_integrator::BDF::update_quantities">
-<area shape="rect" id="node1" title="Update the time integration quantities (i.e., , , and )." alt="" coords="5,306,191,346"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#abf301b8b70f17554a716d4d3ade7b27b" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="239,127,447,167"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ad28f289bf146086323e3127e8876c3cf" title="Get the current number of steps to use for integration." alt="" coords="760,241,979,281"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a1b0164a957fe05ad87d21f00f3e521c0" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="250,249,435,289"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a673feb34f073f4c9667f7e70d8cfff41" title="Get the maximum number of steps to use for integration." alt="" coords="250,421,435,461"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a36931fc9cd7efc6ec431d49ddf7330a6" title="Retrieve the value of beta used for BDF with i steps." alt="" coords="511,191,696,231"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932" title="Access the time step size." alt="" coords="505,127,702,167"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a4fef8dd2a5fb4d5c80be56933ff8628f" title="Compute the weighted sum of the previous velocities." alt="" coords="495,13,712,53"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a7c8caaa5a781eebfc98153597974ff42" title="Retrieve the alphas used for BDF with i steps." alt="" coords="777,127,962,167"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a1c90c8ab75ceea7bfd197921a9b5ad81" title="Get the most recent previous velocity value." alt="" coords="777,5,962,60"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a6f77c2777ad1e125180a18d5abf2f47b" title="Compute the weighted sum of the previous solutions." alt="" coords="495,306,712,346"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2fe34aebb01d011703495a63a0dc5eb0" title="Get the most recent previous solution value." alt="" coords="777,305,962,360"/>
+<area shape="rect" id="node1" title="Update the time integration quantities (i.e., , , and )." alt="" coords="5,120,191,160"/>
+<area shape="rect" id="node2" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#abf301b8b70f17554a716d4d3ade7b27b" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="239,27,447,67"/>
+<area shape="rect" id="node6" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ad28f289bf146086323e3127e8876c3cf" title="Get the current number of steps to use for integration." alt="" coords="760,133,979,173"/>
+<area shape="rect" id="node10" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a1b0164a957fe05ad87d21f00f3e521c0" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="250,91,435,131"/>
+<area shape="rect" id="node13" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a673feb34f073f4c9667f7e70d8cfff41" title="Get the maximum number of steps to use for integration." alt="" coords="250,205,435,245"/>
+<area shape="rect" id="node3" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#adee1f06a38af8a9dd442ccfcd5f3f11e" title="Compute ." alt="" coords="511,69,696,109"/>
+<area shape="rect" id="node7" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a4fef8dd2a5fb4d5c80be56933ff8628f" title="Compute the weighted sum of the previous velocities." alt="" coords="495,205,712,245"/>
+<area shape="rect" id="node4" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a36931fc9cd7efc6ec431d49ddf7330a6" title="Retrieve the value of beta used for BDF with i steps." alt="" coords="777,5,962,45"/>
+<area shape="rect" id="node5" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932" title="Access the time step size." alt="" coords="771,69,968,109"/>
+<area shape="rect" id="node8" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a7c8caaa5a781eebfc98153597974ff42" title="Retrieve the alphas used for BDF with i steps." alt="" coords="777,277,962,317"/>
+<area shape="rect" id="node9" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a1c90c8ab75ceea7bfd197921a9b5ad81" title="Get the most recent previous velocity value." alt="" coords="777,198,962,253"/>
+<area shape="rect" id="node11" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a6f77c2777ad1e125180a18d5abf2f47b" title="Compute the weighted sum of the previous solutions." alt="" coords="495,273,712,313"/>
+<area shape="rect" id="node12" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2fe34aebb01d011703495a63a0dc5eb0" title="Get the most recent previous solution value." alt="" coords="777,342,962,397"/>
 </map>

@@ -1,52 +1,52 @@
 <map id="main" name="main">
-<area shape="rect" id="node1" title=" " alt="" coords="5,1621,60,1646"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1_state.html#a1ccc0343cb326880d9d241517170efb0" title="assemble mass, step 4 of solve" alt="" coords="386,123,575,163"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1_state.html#a92ca4b0169412ddc297a77744bd0e724" title="compute rhs, step 3 of solve" alt="" coords="108,339,324,365"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b" title="builds the bases step 2 of solve" alt="" coords="137,1016,295,1056"/>
-<area shape="rect" id="node32" href="$classpolyfem_1_1_state.html#a2351c47a48235103aca219b6363b6353" title="computes all errors" alt="" coords="389,389,572,429"/>
-<area shape="rect" id="node34" href="$classpolyfem_1_1io_1_1_out_stats_data.html#ad2a27e4251aa12bf821c2c68242a1ed5" title="compute stats (counts els type, mesh lenght, etc), step 1 of solve" alt="" coords="385,1588,576,1628"/>
-<area shape="rect" id="node35" href="$classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e" title="saves all data on the disk according to the input params" alt="" coords="114,1717,318,1742"/>
-<area shape="rect" id="node38" href="$main_8cpp.html#acbb63e1d425765e52625e23aabf97aa5" title=" " alt="" coords="179,1646,253,1671"/>
-<area shape="rect" id="node39" href="$classpolyfem_1_1_state.html#a184100545465d3feab07312e3f9c32a4" title="initialize the polyfem solver with a json settings" alt="" coords="143,2078,289,2103"/>
-<area shape="rect" id="node47" href="$classpolyfem_1_1_state.html#a37cc0825d6cd66410b5c1a0c46778a9f" title="loads the mesh from the json arguments" alt="" coords="382,2519,579,2545"/>
-<area shape="rect" id="node48" href="$classpolyfem_1_1_state.html#a462069032b8e7c6663c8d777dc60965f" title="saves the output statistic to a stream" alt="" coords="643,98,834,123"/>
-<area shape="rect" id="node49" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="135,1847,297,1887"/>
-<area shape="rect" id="node50" href="$classpolyfem_1_1io_1_1_out_runtime_data.html#a43bff3598fb9149a2288df4529c9b4e5" title="computes total time" alt="" coords="109,2179,323,2219"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="657,453,820,493"/>
-<area shape="rect" id="node5" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="898,1570,1023,1595"/>
-<area shape="rect" id="node6" href="$namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226" title="Lump each row of a matrix into the diagonal." alt="" coords="662,148,815,188"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" title="check if using iso parametric bases" alt="" coords="888,272,1033,312"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1_state.html#abce55034e96d581019c98957d4841e7b" title="build a RhsAssembler for the problem" alt="" coords="401,211,560,251"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1_state.html#a0f244ce7a68b1230a497746a9e4fa5b4" title="quadrature used for projecting boundary conditions" alt="" coords="379,275,582,315"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f" title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)" alt="" coords="387,1119,575,1145"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1basis_1_1_lagrange_basis2d.html#a1690ad5c21dbaac0954721a21529e9d4" title="Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1, Q2 over quads)." alt="" coords="387,669,574,709"/>
-<area shape="rect" id="node13" href="$classpolyfem_1_1basis_1_1_spline_basis2d.html#af9647481c1a62ac9b81c9394ff36a2ea" title=" " alt="" coords="372,733,589,773"/>
-<area shape="rect" id="node15" href="$classpolyfem_1_1basis_1_1_lagrange_basis3d.html#a998eb7a3ebc581ad4332d8fa370a62b4" title="Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes)." alt="" coords="387,797,574,837"/>
-<area shape="rect" id="node16" href="$classpolyfem_1_1basis_1_1_spline_basis3d.html#a714401935be3ae9842e606a9b56718f7" title=" " alt="" coords="372,861,589,901"/>
-<area shape="rect" id="node17" href="$classpolyfem_1_1_state.html#ae73637bc6b2260ba3b25d50cc9b212cc" title="extracts the boundary mesh for collision, called in build_basis" alt="" coords="401,925,560,965"/>
-<area shape="rect" id="node18" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db" title=" " alt="" coords="646,953,831,993"/>
-<area shape="rect" id="node19" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a72f26a24843b7e470674f13241a8bc05" title="builds the grid to export the solution" alt="" coords="643,1352,835,1392"/>
-<area shape="rect" id="node20" href="$classpolyfem_1_1_state.html#a5b47ee508fd45069d3f0b84cb41f3179" title="build the mapping from input nodes to polyfem nodes" alt="" coords="659,1416,818,1456"/>
-<area shape="rect" id="node21" href="$classpolyfem_1_1_state.html#a202f2494b8f46d4bf22edfc0a36ddb32" title="builds bases for polygons, called inside build_basis" alt="" coords="659,517,818,557"/>
-<area shape="rect" id="node22" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a5dfa837551731809bc88c9eb6f491187" title=" " alt="" coords="400,1041,561,1095"/>
-<area shape="rect" id="node23" href="$classpolyfem_1_1io_1_1_out_stats_data.html#a84cfce0e3e38ec71cb85e303d53b7333" title="computes the mesh size, it samples every edges n_samples times uses curved_mesh_size (false by defaul..." alt="" coords="643,1480,834,1520"/>
-<area shape="rect" id="node24" href="$classpolyfem_1_1io_1_1_out_stats_data.html#a59e33cd83c220e21830ee199e2ce68b2" title="counts the number of flipped elements" alt="" coords="385,1652,576,1692"/>
-<area shape="rect" id="node26" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="649,1989,828,2029"/>
-<area shape="rect" id="node27" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a568826dcf14775118883ecbf6bd72f15" title=" " alt="" coords="385,1169,576,1209"/>
-<area shape="rect" id="node28" href="$classpolyfem_1_1_state.html#ae48e7478cf500860b285dfc3f4a80fee" title="does the simulation has contact" alt="" coords="412,1817,549,1857"/>
-<area shape="rect" id="node29" href="$classpolyfem_1_1refinement_1_1_a_priori.html#a51742768faaf3bb9905096d748f69751" title="compute a priori prefinement" alt="" coords="403,1257,558,1297"/>
-<area shape="rect" id="node30" href="$namespacepolyfem_1_1io.html#a37878272b4408db3e9e1d7a9efd1ae09" title="Reads a matrix from a file. Determines the file format based on the path&#39;s extension." alt="" coords="389,555,572,581"/>
-<area shape="rect" id="node31" href="$classpolyfem_1_1io_1_1_out_stats_data.html#abb956b11c2d5d90d1fce4a2d0f022f0f" title="clears all stats" alt="" coords="385,605,576,645"/>
-<area shape="rect" id="node14" href="$classpolyfem_1_1mesh_1_1_mesh.html#a0140181b551c7bf0c162d6898155f294" title="utitlity to return the number of elements, cells or faces in 3d and 2d" alt="" coords="657,861,820,901"/>
-<area shape="rect" id="node25" href="$classpolyfem_1_1mesh_1_1_mesh.html#ac2a2887f2bb1ca46c62bb01fcb9efbe6" title="Returns the elements types." alt="" coords="657,1645,820,1685"/>
-<area shape="rect" id="node33" href="$classpolyfem_1_1io_1_1_out_stats_data.html#a82dd3ebdfe11404430cc1beb193abe79" title="compute errors" alt="" coords="643,389,834,429"/>
-<area shape="rect" id="node36" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a9826defd7d8f3c4c12df2ba9c4c45320" title="exports everytihng, txt, vtu, etc" alt="" coords="385,1524,577,1564"/>
-<area shape="rect" id="node37" href="$classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a" title="Resolve output path relative to output_dir if the path is not absolute." alt="" coords="393,1932,568,1972"/>
-<area shape="rect" id="node40" href="$namespacepolyfem_1_1utils.html#aa79eb723c652651a8079603fba4ebef9" title=" " alt="" coords="403,2071,559,2111"/>
-<area shape="rect" id="node41" href="$classpolyfem_1_1problem_1_1_problem_factory.html#aa0b0d09b559f11aeb691c69b593ec4e6" title=" " alt="" coords="381,2265,581,2305"/>
-<area shape="rect" id="node42" href="$classpolyfem_1_1_state.html#a0acd0b93140ea778ac836ee0a1a29dfd" title="return the formulation (checks if the problem is scalar or not and deals with multiphysics)" alt="" coords="637,2283,840,2309"/>
-<area shape="rect" id="node43" href="$classpolyfem_1_1problem_1_1_problem_factory.html#ac6f349b50bb9005320043fc708d128f3" title=" " alt="" coords="639,2368,839,2408"/>
-<area shape="rect" id="node44" href="$classpolyfem_1_1_state.html#a3fcaafabef9ac580a3af1ca8228fdf8c" title="initializing the logger" alt="" coords="407,2404,554,2444"/>
-<area shape="rect" id="node45" href="$classpolyfem_1_1_state.html#a9ab77adaf8c76e9b42f9ce38f2bbefc1" title="initialize time settings if args contains &quot;time&quot;" alt="" coords="389,1997,573,2022"/>
-<area shape="rect" id="node46" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#af1cdc00ad2c7026f0d4482b072ba322e" title=" " alt="" coords="394,2135,567,2190"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,491,60,517"/>
+<area shape="rect" id="node2" href="$main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" title=" " alt="" coords="108,1090,256,1115"/>
+<area shape="rect" id="node25" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="869,503,1048,543"/>
+<area shape="rect" id="node43" href="$main_8cpp.html#a2af6e3fbd4aaa80375a7399896703035" title=" " alt="" coords="643,466,727,491"/>
+<area shape="rect" id="node44" href="$main_8cpp.html#a7607b836801dfeb981ad326666df4c33" title=" " alt="" coords="322,273,502,298"/>
+<area shape="rect" id="node3" href="$classpolyfem_1_1_state.html#a1ccc0343cb326880d9d241517170efb0" title="assemble mass, step 4 of solve" alt="" coords="317,2561,507,2601"/>
+<area shape="rect" id="node6" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="1116,1202,1241,1227"/>
+<area shape="rect" id="node8" href="$classpolyfem_1_1_state.html#a92ca4b0169412ddc297a77744bd0e724" title="compute rhs, step 3 of solve" alt="" coords="304,979,520,1005"/>
+<area shape="rect" id="node12" href="$classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b" title="builds the bases step 2 of solve" alt="" coords="333,1825,491,1865"/>
+<area shape="rect" id="node34" href="$classpolyfem_1_1_state.html#a2351c47a48235103aca219b6363b6353" title="computes all errors" alt="" coords="321,2209,503,2249"/>
+<area shape="rect" id="node35" href="$classpolyfem_1_1io_1_1_out_stats_data.html#ad2a27e4251aa12bf821c2c68242a1ed5" title="compute stats (counts els type, mesh lenght, etc), step 1 of solve" alt="" coords="863,2708,1054,2748"/>
+<area shape="rect" id="node36" href="$classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e" title="saves all data on the disk according to the input params" alt="" coords="310,906,514,931"/>
+<area shape="rect" id="node37" href="$main_8cpp.html#acbb63e1d425765e52625e23aabf97aa5" title=" " alt="" coords="375,857,449,882"/>
+<area shape="rect" id="node38" href="$classpolyfem_1_1_state.html#a184100545465d3feab07312e3f9c32a4" title="initialize the polyfem solver with a json settings" alt="" coords="339,795,485,821"/>
+<area shape="rect" id="node39" href="$classpolyfem_1_1_state.html#a37cc0825d6cd66410b5c1a0c46778a9f" title="loads the mesh from the json arguments" alt="" coords="586,567,783,593"/>
+<area shape="rect" id="node40" href="$classpolyfem_1_1_state.html#a462069032b8e7c6663c8d777dc60965f" title="saves the output statistic to a stream" alt="" coords="589,1253,780,1278"/>
+<area shape="rect" id="node41" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="331,719,493,759"/>
+<area shape="rect" id="node42" href="$classpolyfem_1_1io_1_1_out_runtime_data.html#a43bff3598fb9149a2288df4529c9b4e5" title="computes total time" alt="" coords="305,1303,519,1343"/>
+<area shape="rect" id="node4" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="603,2529,766,2569"/>
+<area shape="rect" id="node7" href="$namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226" title="Lump each row of a matrix into the diagonal." alt="" coords="608,2593,761,2633"/>
+<area shape="rect" id="node5" href="$classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" title="check if using iso parametric bases" alt="" coords="886,2192,1031,2232"/>
+<area shape="rect" id="node9" href="$classpolyfem_1_1_state.html#abce55034e96d581019c98957d4841e7b" title="build a RhsAssembler for the problem" alt="" coords="605,908,764,948"/>
+<area shape="rect" id="node10" href="$classpolyfem_1_1_state.html#a0f244ce7a68b1230a497746a9e4fa5b4" title="quadrature used for projecting boundary conditions" alt="" coords="583,972,786,1012"/>
+<area shape="rect" id="node11" href="$classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f" title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)" alt="" coords="591,834,779,859"/>
+<area shape="rect" id="node13" href="$classpolyfem_1_1basis_1_1_lagrange_basis2d.html#a1690ad5c21dbaac0954721a21529e9d4" title="Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1, Q2 over quads)." alt="" coords="591,1761,778,1801"/>
+<area shape="rect" id="node14" href="$classpolyfem_1_1basis_1_1_spline_basis2d.html#af9647481c1a62ac9b81c9394ff36a2ea" title=" " alt="" coords="576,1825,793,1865"/>
+<area shape="rect" id="node15" href="$classpolyfem_1_1basis_1_1_lagrange_basis3d.html#a998eb7a3ebc581ad4332d8fa370a62b4" title="Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes)." alt="" coords="591,1889,778,1929"/>
+<area shape="rect" id="node16" href="$classpolyfem_1_1basis_1_1_spline_basis3d.html#a714401935be3ae9842e606a9b56718f7" title=" " alt="" coords="576,1953,793,1993"/>
+<area shape="rect" id="node17" href="$classpolyfem_1_1_state.html#a21a66eb08bf1c02cd237d9dfbecb8024" title="extracts the boundary mesh for collision, called in build_basis" alt="" coords="605,2313,764,2353"/>
+<area shape="rect" id="node18" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db" title=" " alt="" coords="866,2317,1051,2357"/>
+<area shape="rect" id="node19" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a72f26a24843b7e470674f13241a8bc05" title="builds the grid to export the solution" alt="" coords="863,1681,1055,1721"/>
+<area shape="rect" id="node20" href="$classpolyfem_1_1_state.html#a5b47ee508fd45069d3f0b84cb41f3179" title="build the mapping from input nodes to polyfem nodes" alt="" coords="879,2389,1038,2429"/>
+<area shape="rect" id="node21" href="$classpolyfem_1_1_state.html#a202f2494b8f46d4bf22edfc0a36ddb32" title="builds bases for polygons, called inside build_basis" alt="" coords="605,2249,764,2289"/>
+<area shape="rect" id="node22" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a5dfa837551731809bc88c9eb6f491187" title=" " alt="" coords="604,2069,765,2123"/>
+<area shape="rect" id="node23" href="$classpolyfem_1_1io_1_1_out_stats_data.html#a84cfce0e3e38ec71cb85e303d53b7333" title="computes the mesh size, it samples every edges n_samples times uses curved_mesh_size (false by defaul..." alt="" coords="863,2468,1054,2508"/>
+<area shape="rect" id="node24" href="$classpolyfem_1_1io_1_1_out_stats_data.html#a59e33cd83c220e21830ee199e2ce68b2" title="counts the number of flipped elements" alt="" coords="589,1137,780,1177"/>
+<area shape="rect" id="node26" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a568826dcf14775118883ecbf6bd72f15" title=" " alt="" coords="589,1353,780,1393"/>
+<area shape="rect" id="node27" href="$classpolyfem_1_1_state.html#ae48e7478cf500860b285dfc3f4a80fee" title="does the simulation has contact" alt="" coords="616,719,753,759"/>
+<area shape="rect" id="node28" href="$namespacepolyfem_1_1autogen.html#a81e7dfa1d60c099807060e6f1bc78e94" title=" " alt="" coords="608,1417,761,1457"/>
+<area shape="rect" id="node29" href="$namespacepolyfem_1_1autogen.html#a9c2688a6744801097c2f8baa081ab3a7" title=" " alt="" coords="608,1481,761,1521"/>
+<area shape="rect" id="node30" href="$classpolyfem_1_1refinement_1_1_a_priori.html#a51742768faaf3bb9905096d748f69751" title="compute a priori prefinement" alt="" coords="607,1569,762,1609"/>
+<area shape="rect" id="node31" href="$namespacepolyfem_1_1autogen.html#a18ee2912d770a6bc9cfe2a485a9ecb25" title=" " alt="" coords="608,1633,761,1673"/>
+<area shape="rect" id="node32" href="$namespacepolyfem_1_1autogen.html#ae625b6539e6dfcbb11dee43af4a58bc0" title=" " alt="" coords="608,1697,761,1737"/>
+<area shape="rect" id="node33" href="$namespacepolyfem_1_1io.html#a37878272b4408db3e9e1d7a9efd1ae09" title="Reads a matrix from a file. Determines the file format based on the path&#39;s extension." alt="" coords="867,1101,1050,1126"/>
+<area shape="rect" id="node45" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#ab38613c0efb3df98a160a828cca64963" title=" " alt="" coords="849,283,1068,323"/>
+<area shape="rect" id="node46" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#ad82bbac53921639b992a821cc1b53520" title=" " alt="" coords="568,323,801,363"/>
+<area shape="rect" id="node47" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a942feaefaec441b75ea37d155b5c7582" title=" " alt="" coords="595,208,774,248"/>
+<area shape="rect" id="node48" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a2bf1dbb0a632e66f27c0ed426651376a" title=" " alt="" coords="595,5,774,45"/>
+<area shape="rect" id="node49" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acde7d7162b22bde1a3605e9e363ab46c" title=" " alt="" coords="593,387,777,442"/>
+<area shape="rect" id="node50" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a8c5764cfe47228f236717ff9d0423f04" title=" " alt="" coords="592,69,777,109"/>
 </map>

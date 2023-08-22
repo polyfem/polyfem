@@ -170,9 +170,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aed3a8c4dec0c01f69caefae756cb2999"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed3a8c4dec0c01f69caefae756cb2999">acceleration_scaling</a> () const =0</td></tr>
 <tr class="memdesc:aed3a8c4dec0c01f69caefae756cb2999"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the acceleration scaling used to scale forces when integrating a second order ODE.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed3a8c4dec0c01f69caefae756cb2999">More...</a><br /></td></tr>
 <tr class="separator:aed3a8c4dec0c01f69caefae756cb2999"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a67fbb860dfb3592f2369b82b21cf50"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a8a67fbb860dfb3592f2369b82b21cf50">dv_dx</a> () const =0</td></tr>
-<tr class="memdesc:a8a67fbb860dfb3592f2369b82b21cf50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the derivative of the velocity with respect to the solution.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a8a67fbb860dfb3592f2369b82b21cf50">More...</a><br /></td></tr>
-<tr class="separator:a8a67fbb860dfb3592f2369b82b21cf50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2ea9843952763bbfc733ad20e1f4e55"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ae2ea9843952763bbfc733ad20e1f4e55">dv_dx</a> (const unsigned prev_ti=0) const =0</td></tr>
+<tr class="memdesc:ae2ea9843952763bbfc733ad20e1f4e55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the derivative of the velocity with respect to the solution.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ae2ea9843952763bbfc733ad20e1f4e55">More...</a><br /></td></tr>
+<tr class="separator:ae2ea9843952763bbfc733ad20e1f4e55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71f55b2644a8023c1310c756a1f42932"><td class="memItemLeft" align="right" valign="top">const double &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932">dt</a> () const</td></tr>
 <tr class="memdesc:a71f55b2644a8023c1310c756a1f42932"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access the time step size.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932">More...</a><br /></td></tr>
 <tr class="separator:a71f55b2644a8023c1310c756a1f42932"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -323,11 +323,11 @@ Protected Attributes</h2></td></tr>
 
 <p>Get the most recent previous acceleration value. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00092">92</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00093">93</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00117">a_prevs_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00118">a_prevs_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8cpp_source.html#l00030">polyfem::time_integrator::ImplicitNewmark::compute_acceleration()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">polyfem::time_integrator::ImplicitNewmark::compute_velocity()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00058">save_raw()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00124">set_a_prev()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00019">polyfem::time_integrator::ImplicitNewmark::x_tilde()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8cpp_source.html#l00030">polyfem::time_integrator::ImplicitNewmark::compute_acceleration()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">polyfem::time_integrator::ImplicitNewmark::compute_velocity()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00058">save_raw()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00125">set_a_prev()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00019">polyfem::time_integrator::ImplicitNewmark::x_tilde()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -362,9 +362,9 @@ Here is the caller graph for this function:</div>
 
 <p>Get the (relevant) history of previous acceleration value. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00099">99</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00100">100</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00117">a_prevs_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00118">a_prevs_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00032">init()</a>.</p>
 <div class="dynheader">
@@ -525,7 +525,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00106">polyfem::State::init_nonlinear_tensor_solve()</a>, and <a class="el" href="_state_solve_linear_8cpp_source.html#l00122">polyfem::State::solve_transient_linear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_linear_8cpp_source.html#l00138">polyfem::State::init_linear_solve()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00112">polyfem::State::init_nonlinear_tensor_solve()</a>, and <a class="el" href="_state_solve_linear_8cpp_source.html#l00190">polyfem::State::solve_transient_linear()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -535,7 +535,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator_a2f90eeb189f31e345957c60aed5e30cc_icgraph.svg" width="100%" height="401"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator_a2f90eeb189f31e345957c60aed5e30cc_icgraph.svg" width="100%" height="448"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -566,11 +566,11 @@ Here is the caller graph for this function:</div>
 
 <p>Access the time step size. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00068">68</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00069">69</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00110">dt_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00111">dt_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_d_f_8cpp_source.html#l00108">polyfem::time_integrator::BDF::acceleration_scaling()</a>, <a class="el" href="_implicit_euler_8cpp_source.html#l00028">polyfem::time_integrator::ImplicitEuler::acceleration_scaling()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00035">polyfem::time_integrator::ImplicitNewmark::acceleration_scaling()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00119">polyfem::time_integrator::BDF::beta_dt()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00101">polyfem::time_integrator::BDF::compute_acceleration()</a>, <a class="el" href="_implicit_euler_8cpp_source.html#l00023">polyfem::time_integrator::ImplicitEuler::compute_acceleration()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00030">polyfem::time_integrator::ImplicitNewmark::compute_acceleration()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00094">polyfem::time_integrator::BDF::compute_velocity()</a>, <a class="el" href="_implicit_euler_8cpp_source.html#l00018">polyfem::time_integrator::ImplicitEuler::compute_velocity()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">polyfem::time_integrator::ImplicitNewmark::compute_velocity()</a>, <a class="el" href="_implicit_euler_8cpp_source.html#l00033">polyfem::time_integrator::ImplicitEuler::dv_dx()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00040">polyfem::time_integrator::ImplicitNewmark::dv_dx()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00074">polyfem::solver::RayleighDampingForm::stiffness()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00088">polyfem::time_integrator::BDF::x_tilde()</a>, <a class="el" href="_implicit_euler_8cpp_source.html#l00013">polyfem::time_integrator::ImplicitEuler::x_tilde()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00019">polyfem::time_integrator::ImplicitNewmark::x_tilde()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_d_f_8cpp_source.html#l00103">polyfem::time_integrator::BDF::acceleration_scaling()</a>, <a class="el" href="_implicit_euler_8cpp_source.html#l00028">polyfem::time_integrator::ImplicitEuler::acceleration_scaling()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00035">polyfem::time_integrator::ImplicitNewmark::acceleration_scaling()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00118">polyfem::time_integrator::BDF::beta_dt()</a>, <a class="el" href="_implicit_euler_8cpp_source.html#l00023">polyfem::time_integrator::ImplicitEuler::compute_acceleration()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00030">polyfem::time_integrator::ImplicitNewmark::compute_acceleration()</a>, <a class="el" href="_implicit_euler_8cpp_source.html#l00018">polyfem::time_integrator::ImplicitEuler::compute_velocity()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">polyfem::time_integrator::ImplicitNewmark::compute_velocity()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00052">polyfem::time_integrator::ImplicitNewmark::da_dx()</a>, <a class="el" href="_implicit_euler_8cpp_source.html#l00033">polyfem::time_integrator::ImplicitEuler::dv_dx()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00040">polyfem::time_integrator::ImplicitNewmark::dv_dx()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00074">polyfem::solver::RayleighDampingForm::stiffness()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00088">polyfem::time_integrator::BDF::x_tilde()</a>, <a class="el" href="_implicit_euler_8cpp_source.html#l00013">polyfem::time_integrator::ImplicitEuler::x_tilde()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00019">polyfem::time_integrator::ImplicitNewmark::x_tilde()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -580,8 +580,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a8a67fbb860dfb3592f2369b82b21cf50" name="a8a67fbb860dfb3592f2369b82b21cf50"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8a67fbb860dfb3592f2369b82b21cf50">&#9670;&#160;</a></span>dv_dx()</h2>
+<a id="ae2ea9843952763bbfc733ad20e1f4e55" name="ae2ea9843952763bbfc733ad20e1f4e55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2ea9843952763bbfc733ad20e1f4e55">&#9670;&#160;</a></span>dv_dx()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -592,7 +592,8 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">virtual double polyfem::time_integrator::ImplicitTimeIntegrator::dv_dx </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">const unsigned&#160;</td>
+          <td class="paramname"><em>prev_ti</em> = <code>0</code></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -604,14 +605,20 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Compute the derivative of the velocity with respect to the solution. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">prev_ti</td><td>index of the previous solution to use (0 -&gt; current; 1 -&gt; previous; 2 -&gt; second previous; etc.) </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Implemented in <a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#ad56af985a63f8d2761b6645c25617815">polyfem::time_integrator::BDF</a>, <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#affdb55ab50c3210da040bb1c400d61f3">polyfem::time_integrator::ImplicitEuler</a>, and <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#aa1fa3cbf13859811aba33c04ef7db0a5">polyfem::time_integrator::ImplicitNewmark</a>.</p>
+<p>Implemented in <a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#a00b554c770831deea82a109f93d57ee1">polyfem::time_integrator::BDF</a>, <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a537267d9973bf52946af383ce03ac314">polyfem::time_integrator::ImplicitEuler</a>, and <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#aefd945855d7a20b6433fe8d38a155e4d">polyfem::time_integrator::ImplicitNewmark</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00056">polyfem::solver::RayleighDampingForm::second_derivative_unweighted()</a>, and <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00044">polyfem::solver::RayleighDampingForm::value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator_a8a67fbb860dfb3592f2369b82b21cf50_icgraph.svg" width="523" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator_ae2ea9843952763bbfc733ad20e1f4e55_icgraph.svg" width="523" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -706,7 +713,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">17</a> of file <a class="el" href="_implicit_time_integrator_8cpp_source.html">ImplicitTimeIntegrator.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00092">a_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00117">a_prevs_</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00068">dt()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00110">dt_</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00090">v_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00115">v_prevs_</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00088">x_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00113">x_prevs_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00093">a_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00118">a_prevs_</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00069">dt()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00111">dt_</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00091">v_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00116">v_prevs_</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00089">x_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00114">x_prevs_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00166">polyfem::State::solve_transient_navier_stokes()</a>.</p>
 <div class="dynheader">
@@ -718,7 +725,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator_aa19b9d1885d166f24557a23e1612b2af_icgraph.svg" width="100%" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator_aa19b9d1885d166f24557a23e1612b2af_icgraph.svg" width="100%" height="413"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -775,7 +782,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00032">32</a> of file <a class="el" href="_implicit_time_integrator_8cpp_source.html">ImplicitTimeIntegrator.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00099">a_prevs()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00117">a_prevs_</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00068">dt()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00110">dt_</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00106">max_steps()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00097">v_prevs()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00115">v_prevs_</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00095">x_prevs()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00113">x_prevs_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00100">a_prevs()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00118">a_prevs_</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00069">dt()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00111">dt_</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00107">max_steps()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00098">v_prevs()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00116">v_prevs_</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00096">x_prevs()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00114">x_prevs_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -812,7 +819,7 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#a673feb34f073f4c9667f7e70d8cfff41">polyfem::time_integrator::BDF</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00106">106</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00107">107</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00032">init()</a>.</p>
 <div class="dynheader">
@@ -876,7 +883,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00058">58</a> of file <a class="el" href="_implicit_time_integrator_8cpp_source.html">ImplicitTimeIntegrator.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00092">a_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00090">v_prev()</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00039">polyfem::io::write_matrix()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00088">x_prev()</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00093">a_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00091">v_prev()</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00039">polyfem::io::write_matrix()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00089">x_prev()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -912,9 +919,9 @@ Here is the call graph for this function:</div>
 
 <p>Convenience functions for setting the most recent previous acceleration. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00124">124</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00125">125</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00092">a_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00117">a_prevs_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00093">a_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00118">a_prevs_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_implicit_euler_8cpp_source.html#l00005">polyfem::time_integrator::ImplicitEuler::update_quantities()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00011">polyfem::time_integrator::ImplicitNewmark::update_quantities()</a>.</p>
 <div class="dynheader">
@@ -996,9 +1003,9 @@ Here is the caller graph for this function:</div>
 
 <p>Convenience functions for setting the most recent previous velocity. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00122">122</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00123">123</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00090">v_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00115">v_prevs_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00091">v_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00116">v_prevs_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_implicit_euler_8cpp_source.html#l00005">polyfem::time_integrator::ImplicitEuler::update_quantities()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00011">polyfem::time_integrator::ImplicitNewmark::update_quantities()</a>.</p>
 <div class="dynheader">
@@ -1042,9 +1049,9 @@ Here is the caller graph for this function:</div>
 
 <p>Convenience functions for setting the most recent previous solution. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00120">120</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00121">121</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00088">x_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00113">x_prevs_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00089">x_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00114">x_prevs_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_implicit_euler_8cpp_source.html#l00005">polyfem::time_integrator::ImplicitEuler::update_quantities()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00011">polyfem::time_integrator::ImplicitNewmark::update_quantities()</a>.</p>
 <div class="dynheader">
@@ -1087,11 +1094,11 @@ Here is the caller graph for this function:</div>
 
 <p>Get the current number of steps to use for integration. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00102">102</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00103">103</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00113">x_prevs_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00114">x_prevs_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_d_f_8cpp_source.html#l00108">polyfem::time_integrator::BDF::acceleration_scaling()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00119">polyfem::time_integrator::BDF::beta_dt()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00101">polyfem::time_integrator::BDF::compute_acceleration()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00094">polyfem::time_integrator::BDF::compute_velocity()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00068">polyfem::time_integrator::BDF::update_quantities()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00055">polyfem::time_integrator::BDF::weighted_sum_v_prevs()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00042">polyfem::time_integrator::BDF::weighted_sum_x_prevs()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00088">polyfem::time_integrator::BDF::x_tilde()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_d_f_8cpp_source.html#l00103">polyfem::time_integrator::BDF::acceleration_scaling()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00118">polyfem::time_integrator::BDF::beta_dt()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00109">polyfem::time_integrator::BDF::dv_dx()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00068">polyfem::time_integrator::BDF::update_quantities()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00055">polyfem::time_integrator::BDF::weighted_sum_v_prevs()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00042">polyfem::time_integrator::BDF::weighted_sum_x_prevs()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00088">polyfem::time_integrator::BDF::x_tilde()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1162,11 +1169,11 @@ Here is the caller graph for this function:</div>
 
 <p>Get the most recent previous velocity value. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00090">90</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00091">91</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00115">v_prevs_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00116">v_prevs_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_implicit_euler_8cpp_source.html#l00023">polyfem::time_integrator::ImplicitEuler::compute_acceleration()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00030">polyfem::time_integrator::ImplicitNewmark::compute_acceleration()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">polyfem::time_integrator::ImplicitNewmark::compute_velocity()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00058">save_raw()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00122">set_v_prev()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00055">polyfem::time_integrator::BDF::weighted_sum_v_prevs()</a>, <a class="el" href="_implicit_euler_8cpp_source.html#l00013">polyfem::time_integrator::ImplicitEuler::x_tilde()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00019">polyfem::time_integrator::ImplicitNewmark::x_tilde()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_diff_8cpp_source.html#l00098">polyfem::State::cache_transient_adjoint_quantities()</a>, <a class="el" href="_implicit_euler_8cpp_source.html#l00023">polyfem::time_integrator::ImplicitEuler::compute_acceleration()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00030">polyfem::time_integrator::ImplicitNewmark::compute_acceleration()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">polyfem::time_integrator::ImplicitNewmark::compute_velocity()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00058">save_raw()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00123">set_v_prev()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00055">polyfem::time_integrator::BDF::weighted_sum_v_prevs()</a>, <a class="el" href="_implicit_euler_8cpp_source.html#l00013">polyfem::time_integrator::ImplicitEuler::x_tilde()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00019">polyfem::time_integrator::ImplicitNewmark::x_tilde()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1201,9 +1208,9 @@ Here is the caller graph for this function:</div>
 
 <p>Get the (relevant) history of previous velocity value. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00097">97</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00098">98</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00115">v_prevs_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00116">v_prevs_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00032">init()</a>.</p>
 <div class="dynheader">
@@ -1240,11 +1247,11 @@ Here is the caller graph for this function:</div>
 
 <p>Get the most recent previous solution value. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00088">88</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00089">89</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00113">x_prevs_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00114">x_prevs_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_implicit_euler_8cpp_source.html#l00018">polyfem::time_integrator::ImplicitEuler::compute_velocity()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">polyfem::time_integrator::ImplicitNewmark::compute_velocity()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00058">save_raw()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00120">set_x_prev()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00042">polyfem::time_integrator::BDF::weighted_sum_x_prevs()</a>, <a class="el" href="_implicit_euler_8cpp_source.html#l00013">polyfem::time_integrator::ImplicitEuler::x_tilde()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00019">polyfem::time_integrator::ImplicitNewmark::x_tilde()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_implicit_euler_8cpp_source.html#l00018">polyfem::time_integrator::ImplicitEuler::compute_velocity()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">polyfem::time_integrator::ImplicitNewmark::compute_velocity()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00058">save_raw()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00121">set_x_prev()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00042">polyfem::time_integrator::BDF::weighted_sum_x_prevs()</a>, <a class="el" href="_implicit_euler_8cpp_source.html#l00013">polyfem::time_integrator::ImplicitEuler::x_tilde()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00019">polyfem::time_integrator::ImplicitNewmark::x_tilde()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1279,9 +1286,9 @@ Here is the caller graph for this function:</div>
 
 <p>Get the (relevant) history of previous solution value. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00095">95</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00096">96</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00113">x_prevs_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00114">x_prevs_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00032">init()</a>.</p>
 <div class="dynheader">
@@ -1321,7 +1328,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implemented in <a class="el" href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#af40959a3d993bbe0a575d2412bed1b06">polyfem::time_integrator::BDF</a>, <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a8c5e5e5a9a440d0acb2ed8aa03d27264">polyfem::time_integrator::ImplicitEuler</a>, and <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a97d855c75a16cbf65ad5d6ae70f5b2c7">polyfem::time_integrator::ImplicitNewmark</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_inertia_form_8cpp_source.html#l00023">polyfem::solver::InertiaForm::first_derivative_unweighted()</a>, and <a class="el" href="_inertia_form_8cpp_source.html#l00014">polyfem::solver::InertiaForm::value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_inertia_form_8cpp_source.html#l00049">polyfem::solver::InertiaForm::first_derivative_unweighted()</a>, and <a class="el" href="_inertia_form_8cpp_source.html#l00040">polyfem::solver::InertiaForm::value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1354,9 +1361,9 @@ Here is the caller graph for this function:</div>
 
 <p>Store the necessary previous values of the acceleration for single or multi-step integration. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00117">117</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00118">118</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00092">a_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00099">a_prevs()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00124">set_a_prev()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00068">polyfem::time_integrator::BDF::update_quantities()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00093">a_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00100">a_prevs()</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00125">set_a_prev()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00068">polyfem::time_integrator::BDF::update_quantities()</a>.</p>
 
 </div>
 </div>
@@ -1383,9 +1390,9 @@ Here is the caller graph for this function:</div>
 <p>Time step size. </p>
 <p >Default of one for static sims, this should be set using <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa19b9d1885d166f24557a23e1612b2af" title="Initialize the time integrator with the previous values for , , and .">init()</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00110">110</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00111">111</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00068">dt()</a>, and <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00069">dt()</a>, and <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>.</p>
 
 </div>
 </div>
@@ -1411,9 +1418,9 @@ Here is the caller graph for this function:</div>
 
 <p>Store the necessary previous values of the velocity for single or multi-step integration. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00115">115</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00116">116</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00122">set_v_prev()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00068">polyfem::time_integrator::BDF::update_quantities()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00090">v_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00097">v_prevs()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00055">polyfem::time_integrator::BDF::weighted_sum_v_prevs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00123">set_v_prev()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00068">polyfem::time_integrator::BDF::update_quantities()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00091">v_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00098">v_prevs()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00055">polyfem::time_integrator::BDF::weighted_sum_v_prevs()</a>.</p>
 
 </div>
 </div>
@@ -1439,9 +1446,9 @@ Here is the caller graph for this function:</div>
 
 <p>Store the necessary previous values of the solution for single or multi-step integration. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00113">113</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00114">114</a> of file <a class="el" href="_implicit_time_integrator_8hpp_source.html">ImplicitTimeIntegrator.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00120">set_x_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00102">steps()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00068">polyfem::time_integrator::BDF::update_quantities()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00042">polyfem::time_integrator::BDF::weighted_sum_x_prevs()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00088">x_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00095">x_prevs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00017">init()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00121">set_x_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00103">steps()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00068">polyfem::time_integrator::BDF::update_quantities()</a>, <a class="el" href="_b_d_f_8cpp_source.html#l00042">polyfem::time_integrator::BDF::weighted_sum_x_prevs()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00089">x_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00096">x_prevs()</a>.</p>
 
 </div>
 </div>

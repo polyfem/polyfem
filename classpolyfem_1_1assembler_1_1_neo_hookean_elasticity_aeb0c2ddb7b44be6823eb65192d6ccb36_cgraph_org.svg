@@ -81,19 +81,19 @@
 <path fill="none" stroke="#63b8ff" d="M130.18,-90.96C144.85,-87.52 160.55,-83.84 175.59,-80.32"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="176.42,-83.72 185.36,-78.03 174.82,-76.9 176.42,-83.72"/>
 </g>
-<!-- Node7 -->
-<g id="node7" class="node">
-<title>Node7</title>
-<g id="a_node7"><a xlink:href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4" target="_top" xlink:title=" ">
+<!-- Node9 -->
+<g id="node9" class="node">
+<title>Node9</title>
+<g id="a_node9"><a xlink:href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="307.5,-30 193.5,-30 193.5,0 307.5,0 307.5,-30"/>
 <text text-anchor="start" x="201.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="250.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::Assembler::size</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node7 -->
-<g id="edge6" class="edge">
-<title>Node1&#45;&gt;Node7</title>
+<!-- Node1&#45;&gt;Node9 -->
+<g id="edge8" class="edge">
+<title>Node1&#45;&gt;Node9</title>
 <path fill="none" stroke="#63b8ff" d="M91.82,-85.42C111.27,-70.75 139.09,-51.51 166,-39 171.66,-36.37 177.66,-33.97 183.76,-31.78"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="185.03,-35.05 193.38,-28.53 182.78,-28.42 185.03,-35.05"/>
 </g>
@@ -101,17 +101,48 @@
 <g id="node5" class="node">
 <title>Node5</title>
 <g id="a_node5"><a xlink:href="struct_diff_scalar_base.html#a9ec9c3461abcd98164a36ba6f4e7dfb7" target="_top" xlink:title="Set the independent variable count used by the automatic differentiation layer.">
-<polygon fill="white" stroke="#666666" points="520,-121 371,-121 371,-91 520,-91 520,-121"/>
-<text text-anchor="start" x="379" y="-109" font-family="Helvetica,sans-Serif" font-size="10.00">DiffScalarBase::setVariable</text>
-<text text-anchor="middle" x="445.5" y="-98" font-family="Helvetica,sans-Serif" font-size="10.00">Count</text>
+<polygon fill="white" stroke="#666666" points="520,-126 371,-126 371,-96 520,-96 520,-126"/>
+<text text-anchor="start" x="379" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">DiffScalarBase::setVariable</text>
+<text text-anchor="middle" x="445.5" y="-103" font-family="Helvetica,sans-Serif" font-size="10.00">Count</text>
 </a>
 </g>
 </g>
 <!-- Node4&#45;&gt;Node5 -->
 <g id="edge4" class="edge">
 <title>Node4&#45;&gt;Node5</title>
-<path fill="none" stroke="#63b8ff" d="M317.11,-106C331.14,-106 346.14,-106 360.75,-106"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="360.78,-109.5 370.78,-106 360.78,-102.5 360.78,-109.5"/>
+<path fill="none" stroke="#63b8ff" d="M317.11,-107.7C331.14,-108.06 346.14,-108.45 360.75,-108.83"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="360.69,-112.33 370.78,-109.09 360.87,-105.33 360.69,-112.33"/>
+</g>
+<!-- Node7 -->
+<g id="node7" class="node">
+<title>Node7</title>
+<g id="a_node7"><a xlink:href="namespacepolyfem.html#ad7d5a2d4407b8790621fdba815de479e" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="503,-78 388,-78 388,-48 503,-48 503,-78"/>
+<text text-anchor="start" x="396" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::convert_to</text>
+<text text-anchor="middle" x="445.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">_lambda</text>
+</a>
+</g>
+</g>
+<!-- Node6&#45;&gt;Node7 -->
+<g id="edge6" class="edge">
+<title>Node6&#45;&gt;Node7</title>
+<path fill="none" stroke="#63b8ff" d="M335.03,-63C349.24,-63 363.83,-63 377.53,-63"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="377.83,-66.5 387.83,-63 377.83,-59.5 377.83,-66.5"/>
+</g>
+<!-- Node8 -->
+<g id="node8" class="node">
+<title>Node8</title>
+<g id="a_node8"><a xlink:href="namespacepolyfem.html#a869023aefa896d263b89a68a7f24c4c1" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="513.5,-29.5 377.5,-29.5 377.5,-10.5 513.5,-10.5 513.5,-29.5"/>
+<text text-anchor="middle" x="445.5" y="-17.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::convert_to_mu</text>
+</a>
+</g>
+</g>
+<!-- Node6&#45;&gt;Node8 -->
+<g id="edge7" class="edge">
+<title>Node6&#45;&gt;Node8</title>
+<path fill="none" stroke="#63b8ff" d="M319,-47.96C342.85,-42.65 369.31,-36.75 391.75,-31.75"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="392.76,-35.11 401.76,-29.52 391.24,-28.28 392.76,-35.11"/>
 </g>
 </g>
 </svg>

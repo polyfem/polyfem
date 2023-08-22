@@ -1,38 +1,47 @@
 <map id="polyfem::mesh::Mesh2D::switch_edge" name="polyfem::mesh::Mesh2D::switch_edge">
-<area shape="rect" id="node1" title=" " alt="" coords="2501,443,2683,483"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a655514850b93a4d71b22c5a301c8984b" title=" " alt="" coords="2272,411,2453,451"/>
-<area shape="rect" id="node36" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a61b06dff45269d1802eccd079802d7a1" title=" " alt="" coords="2272,475,2453,515"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#adee7e38b7b60601cb04eff9b365b90c5" title="attach high order nodes" alt="" coords="1994,104,2201,144"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a65982e1f2bf0893fc9f8ad1d70acc583" title="constructs barycentric coodiantes for a point p." alt="" coords="2007,168,2188,208"/>
-<area shape="rect" id="node5" href="$namespacepolyfem_1_1basis.html#a499aa1c6971b36fc766d06a74a7e1482" title=" " alt="" coords="977,356,1159,396"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a082d08ab7c5377d72bb4301f91376021" title="constructs a box around every element (3d cell, 2d face)" alt="" coords="2007,411,2188,451"/>
-<area shape="rect" id="node13" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a47f4f34ea25a5a7e1026121999cbf8d4" title="face barycenter" alt="" coords="2007,475,2188,515"/>
-<area shape="rect" id="node16" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a7b5ce1cd9d3337d3eb7a57101f109a08" title="Get all the edges according to valid_elements selection." alt="" coords="2007,539,2188,579"/>
-<area shape="rect" id="node17" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a6d6af3e70809917f468ea0daa49df7b2" title="is cell boundary" alt="" coords="2002,603,2193,643"/>
-<area shape="rect" id="node18" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#aa925326e2e2dfa5e305959154ed99ca5" title=" " alt="" coords="1971,296,2224,336"/>
-<area shape="rect" id="node33" href="$classpolyfem_1_1refinement_1_1_a_priori.html#ad08ea2e656178cd96294ad2064ada07e" title="compute a priori prefinement in 2d" alt="" coords="2020,667,2175,707"/>
-<area shape="rect" id="node34" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a02cf0bca8805defe581ac1902403ced2" title=" " alt="" coords="2006,731,2189,786"/>
-<area shape="rect" id="node35" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#acb587c61b43b393260dba4a5a95c090b" title=" " alt="" coords="1982,232,2213,272"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1basis_1_1_polygonal_basis2d.html#ac44c9f77e8d3a1328e6288ed5aec07b2" title="Build bases over the remaining polygons of a mesh." alt="" coords="733,356,924,396"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1basis_1_1_polygonal_basis3d.html#a3d41a5e1d493240fb9a088a5229a27d7" title="Build bases over the remaining polygons of a mesh." alt="" coords="733,420,924,460"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1_state.html#a202f2494b8f46d4bf22edfc0a36ddb32" title="builds bases for polygons, called inside build_basis" alt="" coords="497,420,655,460"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b" title="builds the bases step 2 of solve" alt="" coords="237,260,396,300"/>
-<area shape="rect" id="node9" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="59,203,113,229"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="5,259,167,285"/>
-<area shape="rect" id="node14" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ac60b1aaa66f661887a9db06df808edf4" title="computes boundary selections based on a function" alt="" coords="1712,443,1903,483"/>
-<area shape="rect" id="node15" href="$classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#adbdc52456dfa2873999a0ac23ff8f8a9" title="computes boundary selections based on a function" alt="" coords="1707,507,1907,547"/>
-<area shape="rect" id="node19" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a64a28ee005ac8965605f23b42b311e84" title="builds the boundary mesh for visualization" alt="" coords="1692,232,1923,272"/>
-<area shape="rect" id="node20" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a3ced1e4da4617f574fe2f30b4d2eca84" title="saves the surface vtu file for for surface quantites, eg traction forces" alt="" coords="1452,195,1644,235"/>
-<area shape="rect" id="node21" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aa3fbccda3a6e6f7fd5a7b3bcbd146793" title="saves the vtu file for time t" alt="" coords="1212,156,1404,196"/>
-<area shape="rect" id="node22" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a9826defd7d8f3c4c12df2ba9c4c45320" title="exports everytihng, txt, vtu, etc" alt="" coords="972,5,1164,45"/>
-<area shape="rect" id="node24" href="$classpolyfem_1_1_state.html#a29b1283c20475e19b79a39cd324ac5aa" title="saves a subsolve when save_solve_sequence_debug is true" alt="" coords="989,109,1147,149"/>
-<area shape="rect" id="node28" href="$classpolyfem_1_1_state.html#a442fa686e1d08a0a104f3869a6fa2948" title="saves a timestep" alt="" coords="750,211,907,251"/>
-<area shape="rect" id="node23" href="$classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e" title="saves all data on the disk according to the input params" alt="" coords="215,57,419,82"/>
-<area shape="rect" id="node25" href="$classpolyfem_1_1_state.html#acdb194af25d840fa14cec97b19e04577" title="solves nonlinear problems" alt="" coords="748,100,909,140"/>
-<area shape="rect" id="node26" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="236,196,397,236"/>
-<area shape="rect" id="node27" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="475,100,677,140"/>
-<area shape="rect" id="node29" href="$classpolyfem_1_1_state.html#ac5c4dd2be369c759c68e0a36a45bfcc7" title="initialize solver" alt="" coords="503,356,649,396"/>
-<area shape="rect" id="node30" href="$classpolyfem_1_1_state.html#af5afb70dc127d3ce190116321e83f190" title="solves transient linear problem" alt="" coords="495,164,657,204"/>
-<area shape="rect" id="node31" href="$classpolyfem_1_1_state.html#ac42074a324e693f8eef5d7a96a56dc38" title="solves transient navier stokes with FEM" alt="" coords="484,228,668,268"/>
-<area shape="rect" id="node32" href="$classpolyfem_1_1_state.html#a9fa28a682c746974ee171d8cfa6a8558" title="solves transient navier stokes with operator splitting" alt="" coords="467,292,685,332"/>
+<area shape="rect" id="node1" title=" " alt="" coords="2643,449,2824,489"/>
+<area shape="rect" id="node2" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a655514850b93a4d71b22c5a301c8984b" title=" " alt="" coords="2413,417,2595,457"/>
+<area shape="rect" id="node45" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a61b06dff45269d1802eccd079802d7a1" title=" " alt="" coords="2413,481,2595,521"/>
+<area shape="rect" id="node3" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#adee7e38b7b60601cb04eff9b365b90c5" title="attach high order nodes" alt="" coords="2135,88,2342,128"/>
+<area shape="rect" id="node4" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a65982e1f2bf0893fc9f8ad1d70acc583" title="constructs barycentric coodiantes for a point p." alt="" coords="2148,152,2329,192"/>
+<area shape="rect" id="node5" href="$namespacepolyfem_1_1basis.html#a499aa1c6971b36fc766d06a74a7e1482" title=" " alt="" coords="1111,541,1293,581"/>
+<area shape="rect" id="node13" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#ae606e1855fbac8a38dbadf825e027962" title=" " alt="" coords="1357,113,1541,153"/>
+<area shape="rect" id="node23" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a082d08ab7c5377d72bb4301f91376021" title="constructs a box around every element (3d cell, 2d face)" alt="" coords="2148,445,2329,485"/>
+<area shape="rect" id="node24" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a47f4f34ea25a5a7e1026121999cbf8d4" title="face barycenter" alt="" coords="2148,509,2329,549"/>
+<area shape="rect" id="node28" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a7b5ce1cd9d3337d3eb7a57101f109a08" title="Get all the edges according to valid_elements selection." alt="" coords="2148,573,2329,613"/>
+<area shape="rect" id="node29" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a6d6af3e70809917f468ea0daa49df7b2" title="is cell boundary" alt="" coords="2143,637,2334,677"/>
+<area shape="rect" id="node30" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#aa925326e2e2dfa5e305959154ed99ca5" title=" " alt="" coords="2112,267,2365,307"/>
+<area shape="rect" id="node42" href="$classpolyfem_1_1refinement_1_1_a_priori.html#ad08ea2e656178cd96294ad2064ada07e" title="compute a priori prefinement in 2d" alt="" coords="2161,701,2316,741"/>
+<area shape="rect" id="node43" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a02cf0bca8805defe581ac1902403ced2" title=" " alt="" coords="2147,766,2330,821"/>
+<area shape="rect" id="node44" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#acb587c61b43b393260dba4a5a95c090b" title=" " alt="" coords="2123,331,2354,371"/>
+<area shape="rect" id="node6" href="$classpolyfem_1_1basis_1_1_polygonal_basis2d.html#ac44c9f77e8d3a1328e6288ed5aec07b2" title="Build bases over the remaining polygons of a mesh." alt="" coords="857,541,1047,581"/>
+<area shape="rect" id="node12" href="$classpolyfem_1_1basis_1_1_polygonal_basis3d.html#a3d41a5e1d493240fb9a088a5229a27d7" title="Build bases over the remaining polygons of a mesh." alt="" coords="857,605,1047,645"/>
+<area shape="rect" id="node7" href="$classpolyfem_1_1_state.html#a202f2494b8f46d4bf22edfc0a36ddb32" title="builds bases for polygons, called inside build_basis" alt="" coords="617,541,775,581"/>
+<area shape="rect" id="node8" href="$classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b" title="builds the bases step 2 of solve" alt="" coords="357,489,516,529"/>
+<area shape="rect" id="node9" href="$main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" title=" " alt="" coords="123,439,271,465"/>
+<area shape="rect" id="node11" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="117,351,278,377"/>
+<area shape="rect" id="node10" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,439,60,465"/>
+<area shape="rect" id="node14" href="$classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#ae984024827d348ac57171a0ca13df559" title=" " alt="" coords="1099,49,1305,89"/>
+<area shape="rect" id="node15" href="$classpolyfem_1_1_state.html#a3de46d5d59fbeaa652577e8c99f3fba5" title="set the material and the problem dimension" alt="" coords="1129,113,1275,153"/>
+<area shape="rect" id="node16" href="$classpolyfem_1_1_state.html#ae0de6ea3bdc69e3e21ddfbcdb144180b" title="initialize the nonlinear solver" alt="" coords="862,113,1042,153"/>
+<area shape="rect" id="node20" href="$classpolyfem_1_1_state.html#a2d7e06f66912cc77b1d942340211ddb9" title="loads the mesh from a geogram mesh" alt="" coords="853,63,1051,89"/>
+<area shape="rect" id="node21" href="$classpolyfem_1_1_state.html#a76dfcaee0e24beeab2fda9449f404fe5" title="solves a navier stokes" alt="" coords="615,5,777,45"/>
+<area shape="rect" id="node22" href="$classpolyfem_1_1_state.html#ac42074a324e693f8eef5d7a96a56dc38" title="solves transient navier stokes with FEM" alt="" coords="604,235,788,275"/>
+<area shape="rect" id="node17" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="356,267,517,307"/>
+<area shape="rect" id="node19" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="595,120,797,160"/>
+<area shape="rect" id="node18" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,267,287,307"/>
+<area shape="rect" id="node25" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ac60b1aaa66f661887a9db06df808edf4" title="computes boundary selections based on a function" alt="" coords="1853,445,2044,485"/>
+<area shape="rect" id="node26" href="$classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#adbdc52456dfa2873999a0ac23ff8f8a9" title="computes boundary selections based on a function" alt="" coords="1849,509,2049,549"/>
+<area shape="rect" id="node27" href="$classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#ae5ea9ac1e730b966126b5946b82535ab" title=" " alt="" coords="1861,574,2036,629"/>
+<area shape="rect" id="node31" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a64a28ee005ac8965605f23b42b311e84" title="builds the boundary mesh for visualization" alt="" coords="1833,299,2064,339"/>
+<area shape="rect" id="node32" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a3ced1e4da4617f574fe2f30b4d2eca84" title="saves the surface vtu file for for surface quantites, eg traction forces" alt="" coords="1593,299,1785,339"/>
+<area shape="rect" id="node33" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aa3fbccda3a6e6f7fd5a7b3bcbd146793" title="saves the vtu file for time t" alt="" coords="1353,299,1545,339"/>
+<area shape="rect" id="node34" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a9826defd7d8f3c4c12df2ba9c4c45320" title="exports everytihng, txt, vtu, etc" alt="" coords="1106,416,1298,456"/>
+<area shape="rect" id="node36" href="$classpolyfem_1_1_state.html#a29b1283c20475e19b79a39cd324ac5aa" title="saves a subsolve when save_solve_sequence_debug is true" alt="" coords="1123,209,1281,249"/>
+<area shape="rect" id="node38" href="$classpolyfem_1_1_state.html#a442fa686e1d08a0a104f3869a6fa2948" title="saves a timestep" alt="" coords="873,299,1031,339"/>
+<area shape="rect" id="node35" href="$classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e" title="saves all data on the disk according to the input params" alt="" coords="335,439,539,465"/>
+<area shape="rect" id="node37" href="$classpolyfem_1_1_state.html#acdb194af25d840fa14cec97b19e04577" title="solves nonlinear problems" alt="" coords="871,177,1033,217"/>
+<area shape="rect" id="node39" href="$classpolyfem_1_1_state.html#ac5c4dd2be369c759c68e0a36a45bfcc7" title="initialize solver" alt="" coords="623,427,769,467"/>
+<area shape="rect" id="node40" href="$classpolyfem_1_1_state.html#af5afb70dc127d3ce190116321e83f190" title="solves transient linear problem" alt="" coords="615,299,777,339"/>
+<area shape="rect" id="node41" href="$classpolyfem_1_1_state.html#a9fa28a682c746974ee171d8cfa6a8558" title="solves transient navier stokes with operator splitting" alt="" coords="587,363,805,403"/>
 </map>

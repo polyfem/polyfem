@@ -154,10 +154,24 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:abbe3634139d4e9dce0cb4a3af95a896a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d184d98f852cd3b2bda2286a5b218a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a3d184d98f852cd3b2bda2286a5b218a3">compute_rhs</a> (const <a class="el" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;pt) const override</td></tr>
 <tr class="separator:a3d184d98f852cd3b2bda2286a5b218a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6c2fa6f12bcd2d5a76c36534052b005"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#ac6c2fa6f12bcd2d5a76c36534052b005">compute_stiffness_value</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, Eigen::MatrixXd &amp;tensor) const override</td></tr>
+<tr class="separator:ac6c2fa6f12bcd2d5a76c36534052b005"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a347298b3a26b691c4b932376b5d3fe5c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a347298b3a26b691c4b932376b5d3fe5c">compute_stress_grad_multiply_mat</a> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, const Eigen::MatrixXd &amp;<a class="el" href="_transient_form_8cpp.html#aca46d143aa5c7474d00d969201e78fc5">mat</a>, Eigen::MatrixXd &amp;stress, Eigen::MatrixXd &amp;result) const override</td></tr>
+<tr class="separator:a347298b3a26b691c4b932376b5d3fe5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31d61bfa8d0f6d3738f1f8bd4f0ac7b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a31d61bfa8d0f6d3738f1f8bd4f0ac7b5">compute_stress_grad_multiply_stress</a> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, Eigen::MatrixXd &amp;stress, Eigen::MatrixXd &amp;result) const override</td></tr>
+<tr class="separator:a31d61bfa8d0f6d3738f1f8bd4f0ac7b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd41507aa0595e96811e87c58ef164c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#abd41507aa0595e96811e87c58ef164c0">compute_stress_grad_multiply_vect</a> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, const Eigen::MatrixXd &amp;vect, Eigen::MatrixXd &amp;stress, Eigen::MatrixXd &amp;result) const override</td></tr>
+<tr class="separator:abd41507aa0595e96811e87c58ef164c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd7f28fa18bc9b1845ab01c69a048b62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#abd7f28fa18bc9b1845ab01c69a048b62">compute_dstress_dmu_dlambda</a> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, Eigen::MatrixXd &amp;dstress_dmu, Eigen::MatrixXd &amp;dstress_dlambda) const override</td></tr>
+<tr class="separator:abd7f28fa18bc9b1845ab01c69a048b62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2deb8f39413130bb878912563a6da958"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a2deb8f39413130bb878912563a6da958">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params) override</td></tr>
 <tr class="separator:a2deb8f39413130bb878912563a6da958"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d8a0f078d148d1c6bd9e4862e41932c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a8d8a0f078d148d1c6bd9e4862e41932c">set_params</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_lame_parameters.html">LameParameters</a> &amp;params)</td></tr>
 <tr class="separator:a8d8a0f078d148d1c6bd9e4862e41932c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5714007a064c360a95bad3df98328f6"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_lame_parameters.html">LameParameters</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#ab5714007a064c360a95bad3df98328f6">lame_params</a> () const</td></tr>
+<tr class="separator:ab5714007a064c360a95bad3df98328f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99d32c425cba49ce053cdec66eac9485"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a99d32c425cba49ce053cdec66eac9485">update_lame_params</a> (const Eigen::MatrixXd &amp;lambdas, const Eigen::MatrixXd &amp;mus) override</td></tr>
+<tr class="separator:a99d32c425cba49ce053cdec66eac9485"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b5f016e3e82527e4fce98393d0d350a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a1b5f016e3e82527e4fce98393d0d350a">name</a> () const override</td></tr>
 <tr class="separator:a1b5f016e3e82527e4fce98393d0d350a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19bf61613ba2ccafc98f0ccde29442ce"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">ParamFunc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a19bf61613ba2ccafc98f0ccde29442ce">parameters</a> () const override</td></tr>
@@ -209,6 +223,20 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ada61bfb64e086585c09fc66d60ade635 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05a391ffee6dad03741212322c25d906 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a05a391ffee6dad03741212322c25d906">compute_tensor_value</a> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;fun, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a> &gt; &amp;result) const</td></tr>
 <tr class="separator:a05a391ffee6dad03741212322c25d906 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a567f32b38bb7ab48a18d991eb2daac9b inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a567f32b38bb7ab48a18d991eb2daac9b">compute_stiffness_value</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, Eigen::MatrixXd &amp;tensor) const</td></tr>
+<tr class="separator:a567f32b38bb7ab48a18d991eb2daac9b inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affec51f3374101a49aadc3052e130d9a inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#affec51f3374101a49aadc3052e130d9a">compute_dstress_dmu_dlambda</a> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, Eigen::MatrixXd &amp;dstress_dmu, Eigen::MatrixXd &amp;dstress_dlambda) const</td></tr>
+<tr class="separator:affec51f3374101a49aadc3052e130d9a inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae81ff4ac6f8a979a9e368875f73bbd49 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ae81ff4ac6f8a979a9e368875f73bbd49">compute_stress_grad_multiply_mat</a> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, const Eigen::MatrixXd &amp;<a class="el" href="_transient_form_8cpp.html#aca46d143aa5c7474d00d969201e78fc5">mat</a>, Eigen::MatrixXd &amp;stress, Eigen::MatrixXd &amp;result) const</td></tr>
+<tr class="separator:ae81ff4ac6f8a979a9e368875f73bbd49 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6647d262cf0a4617d1e774ab2489c45a inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a6647d262cf0a4617d1e774ab2489c45a">compute_stress_grad_multiply_stress</a> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, Eigen::MatrixXd &amp;stress, Eigen::MatrixXd &amp;result) const</td></tr>
+<tr class="separator:a6647d262cf0a4617d1e774ab2489c45a inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a043ebde6a58cdc87b69a015c1f378007 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a043ebde6a58cdc87b69a015c1f378007">compute_stress_grad_multiply_vect</a> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, const Eigen::MatrixXd &amp;vect, Eigen::MatrixXd &amp;stress, Eigen::MatrixXd &amp;result) const</td></tr>
+<tr class="separator:a043ebde6a58cdc87b69a015c1f378007 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afaa1838e28a5f2c51bb24a9bb7c9f2f6 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#afaa1838e28a5f2c51bb24a9bb7c9f2f6">compute_stress_grad</a> (const int el_id, const double dt, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, const Eigen::MatrixXd &amp;prev_grad_u_i, Eigen::MatrixXd &amp;stress, Eigen::MatrixXd &amp;result) const</td></tr>
+<tr class="separator:afaa1838e28a5f2c51bb24a9bb7c9f2f6 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a827906287abb4ae41e8bfcce18d82bc6 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a827906287abb4ae41e8bfcce18d82bc6">compute_stress_prev_grad</a> (const int el_id, const double dt, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, const Eigen::MatrixXd &amp;prev_grad_u_i, Eigen::MatrixXd &amp;result) const</td></tr>
+<tr class="separator:a827906287abb4ae41e8bfcce18d82bc6 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf4ca5a2d5825696036c2ad59f80d89b inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">ParamFunc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#abf4ca5a2d5825696036c2ad59f80d89b">parameters</a> () const =0</td></tr>
 <tr class="separator:abf4ca5a2d5825696036c2ad59f80d89b inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3b31adacd89c796c137867e4ab2fd70 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ac3b31adacd89c796c137867e4ab2fd70">compute_rhs</a> (const <a class="el" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;pt) const</td></tr>
@@ -219,6 +247,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ad9854f3751938da18ef77fda5e6a3acb inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add7e99e08b57e08a241938ec1b360105 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#add7e99e08b57e08a241938ec1b360105">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
 <tr class="separator:add7e99e08b57e08a241938ec1b360105 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4dc3aedabca1d63c5a489cb129916679 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a4dc3aedabca1d63c5a489cb129916679">update_lame_params</a> (const Eigen::MatrixXd &amp;lambdas, const Eigen::MatrixXd &amp;mus)</td></tr>
+<tr class="separator:a4dc3aedabca1d63c5a489cb129916679 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad816288354f5093a053de6fdd0a102d1 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad816288354f5093a053de6fdd0a102d1">is_linear</a> () const =0</td></tr>
 <tr class="separator:ad816288354f5093a053de6fdd0a102d1 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40fad32c421398dc8455c9f18f5189e5 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a40fad32c421398dc8455c9f18f5189e5">is_solution_displacement</a> () const</td></tr>
@@ -256,10 +286,6 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a298ab647c01320afe34610fc1e188509"><td class="memTemplParams" colspan="2">template&lt;int n_basis, int dim&gt; </td></tr>
 <tr class="memitem:a298ab647c01320afe34610fc1e188509"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a298ab647c01320afe34610fc1e188509">compute_energy_aux_gradient_fast</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data, Eigen::VectorXd &amp;G_flattened) const</td></tr>
 <tr class="separator:a298ab647c01320afe34610fc1e188509"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b39f0843081d7ed6832d57faca3114b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a0b39f0843081d7ed6832d57faca3114b">compute_dstress_dgradu_multiply_mat</a> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, const Eigen::MatrixXd &amp;mat, Eigen::MatrixXd &amp;stress, Eigen::MatrixXd &amp;result) const</td></tr>
-<tr class="separator:a0b39f0843081d7ed6832d57faca3114b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a654cf6e8591ee7757924e270f9196b85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a654cf6e8591ee7757924e270f9196b85">compute_dstress_dmu_dlambda</a> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, Eigen::MatrixXd &amp;dstress_dmu, Eigen::MatrixXd &amp;dstress_dlambda) const</td></tr>
-<tr class="separator:a654cf6e8591ee7757924e270f9196b85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -304,7 +330,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00007">7</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00015">15</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
 </div>
 </div>
@@ -345,9 +371,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#add7e99e08b57e08a241938ec1b360105">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00011">11</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00019">19</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00340">polyfem::assembler::LameParameters::add_multimaterial()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00038">params_</a>, and <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00346">polyfem::assembler::LameParameters::add_multimaterial()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, and <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00024">polyfem::assembler::MultiModel::add_multimaterial()</a>.</p>
 <div class="dynheader">
@@ -431,7 +457,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a5de7744258b1171ceed1f7ddb9f0b201">polyfem::assembler::NLAssembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00173">173</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00242">242</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
 
 </div>
 </div>
@@ -541,7 +567,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a83fef57dc75dab91705eed56f86baf88">polyfem::assembler::NLAssembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00039">39</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00047">47</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
 
@@ -707,7 +733,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#aa0ad546418de6445ce58c2dba5c3c040">polyfem::assembler::NLAssembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00109">109</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00170">170</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
 
@@ -833,15 +859,15 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#aca4985dff819f02b30ac49d823f7d0c1">polyfem::assembler::ElasticityAssembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00186">186</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00247">247</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00207">polyfem::compute_diplacement_grad()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_mat_params_8cpp_source.html#l00311">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00038">params_</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e">polyfem::PK1</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00255">polyfem::pk1_from_cauchy()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ab13248d68ac5516c015337b68346fc21">polyfem::PK2</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00260">polyfem::pk2_from_cauchy()</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00276">polyfem::compute_diplacement_grad()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_mat_params_8cpp_source.html#l00311">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e">polyfem::PK1</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00349">polyfem::pk1_from_cauchy()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ab13248d68ac5516c015337b68346fc21">polyfem::PK2</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00354">polyfem::pk2_from_cauchy()</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00128">polyfem::assembler::MultiModel::assign_stress_tensor()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity_aa47039bf1de90e80ae91612907595305_cgraph.svg" width="100%" height="504"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity_aa47039bf1de90e80ae91612907595305_cgraph.svg" width="100%" height="499"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
@@ -853,84 +879,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a0b39f0843081d7ed6832d57faca3114b" name="a0b39f0843081d7ed6832d57faca3114b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0b39f0843081d7ed6832d57faca3114b">&#9670;&#160;</a></span>compute_dstress_dgradu_multiply_mat()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::NeoHookeanElasticity::compute_dstress_dgradu_multiply_mat </td>
-          <td>(</td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>el_id</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>local_pts</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>global_pts</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>grad_u_i</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>mat</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>stress</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>result</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00497">497</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00311">polyfem::assembler::LameParameters::lambda_mu()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00038">params_</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity_a0b39f0843081d7ed6832d57faca3114b_cgraph.svg" width="478" height="80"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
-</div>
-</div>
-
-</div>
-</div>
-<a id="a654cf6e8591ee7757924e270f9196b85" name="a654cf6e8591ee7757924e270f9196b85"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a654cf6e8591ee7757924e270f9196b85">&#9670;&#160;</a></span>compute_dstress_dmu_dlambda()</h2>
+<a id="abd7f28fa18bc9b1845ab01c69a048b62" name="abd7f28fa18bc9b1845ab01c69a048b62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd7f28fa18bc9b1845ab01c69a048b62">&#9670;&#160;</a></span>compute_dstress_dmu_dlambda()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -982,12 +932,14 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00509">509</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#affec51f3374101a49aadc3052e130d9a">polyfem::assembler::Assembler</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00623">623</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
 </div>
 </div>
@@ -1017,7 +969,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a39372bf562743b694ddc311f807dc57b">polyfem::assembler::NLAssembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00224">224</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00285">285</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00102">polyfem::assembler::MultiModel::compute_energy()</a>.</p>
 <div class="dynheader">
@@ -1055,9 +1007,9 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00231">231</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00292">292</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00096">polyfem::compute_disp_grad_at_quad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00017">polyfem::utils::determinant()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00061">polyfem::get_local_disp()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00311">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00038">params_</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00021">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::val</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00106">polyfem::compute_disp_grad_at_quad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00017">polyfem::utils::determinant()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00071">polyfem::get_local_disp()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00311">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00021">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::val</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1095,13 +1047,13 @@ template&lt;int n_basis, int dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00295">295</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00356">356</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00019">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_mat_params_8cpp_source.html#l00311">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00038">params_</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00021">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00022">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00019">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_mat_params_8cpp_source.html#l00311">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00021">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00022">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity_a3181de6231691b0b0330fceedcf045b1_cgraph.svg" width="547" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity_a3181de6231691b0b0330fceedcf045b1_cgraph.svg" width="100%" height="407"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -1181,13 +1133,13 @@ template&lt;int n_basis, int dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00386">386</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00447">447</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00019">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_mat_params_8cpp_source.html#l00311">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00038">params_</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00021">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00022">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00019">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_mat_params_8cpp_source.html#l00311">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00021">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00022">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity_a5306ffa2e688fa3e3380cb7cf43c9dc9_cgraph.svg" width="480" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity_a5306ffa2e688fa3e3380cb7cf43c9dc9_cgraph.svg" width="100%" height="407"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -1219,15 +1171,332 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ac3b31adacd89c796c137867e4ab2fd70">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00019">19</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00027">27</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00311">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00639">polyfem::autogen::neo_hookean_2d_function()</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00705">polyfem::autogen::neo_hookean_3d_function()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00038">params_</a>, and <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00311">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00639">polyfem::autogen::neo_hookean_2d_function()</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00705">polyfem::autogen::neo_hookean_3d_function()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, and <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity_a3d184d98f852cd3b2bda2286a5b218a3_cgraph.svg" width="458" height="243"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity_a3d184d98f852cd3b2bda2286a5b218a3_cgraph.svg" width="100%" height="503"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
+
+</div>
+</div>
+<a id="ac6c2fa6f12bcd2d5a76c36534052b005" name="ac6c2fa6f12bcd2d5a76c36534052b005"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6c2fa6f12bcd2d5a76c36534052b005">&#9670;&#160;</a></span>compute_stiffness_value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::NeoHookeanElasticity::compute_stiffness_value </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;&#160;</td>
+          <td class="paramname"><em>vals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>displacement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>tensor</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a567f32b38bb7ab48a18d991eb2daac9b">polyfem::assembler::Assembler</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00116">116</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_elasticity_utils_8cpp_source.html#l00276">polyfem::compute_diplacement_grad()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00351">polyfem::utils::flatten()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00311">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity_ac6c2fa6f12bcd2d5a76c36534052b005_cgraph.svg" width="100%" height="461"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a347298b3a26b691c4b932376b5d3fe5c" name="a347298b3a26b691c4b932376b5d3fe5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a347298b3a26b691c4b932376b5d3fe5c">&#9670;&#160;</a></span>compute_stress_grad_multiply_mat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::NeoHookeanElasticity::compute_stress_grad_multiply_mat </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>el_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>global_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>grad_u_i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>mat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>stress</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ae81ff4ac6f8a979a9e368875f73bbd49">polyfem::assembler::Assembler</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00558">558</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00311">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00024">mat</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity_a347298b3a26b691c4b932376b5d3fe5c_cgraph.svg" width="100%" height="376"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a31d61bfa8d0f6d3738f1f8bd4f0ac7b5" name="a31d61bfa8d0f6d3738f1f8bd4f0ac7b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31d61bfa8d0f6d3738f1f8bd4f0ac7b5">&#9670;&#160;</a></span>compute_stress_grad_multiply_stress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::NeoHookeanElasticity::compute_stress_grad_multiply_stress </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>el_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>global_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>grad_u_i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>stress</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a6647d262cf0a4617d1e774ab2489c45a">polyfem::assembler::Assembler</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00570">570</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00311">polyfem::assembler::LameParameters::lambda_mu()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity_a31d61bfa8d0f6d3738f1f8bd4f0ac7b5_cgraph.svg" width="100%" height="376"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="abd41507aa0595e96811e87c58ef164c0" name="abd41507aa0595e96811e87c58ef164c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd41507aa0595e96811e87c58ef164c0">&#9670;&#160;</a></span>compute_stress_grad_multiply_vect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::NeoHookeanElasticity::compute_stress_grad_multiply_vect </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>el_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>local_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>global_pts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>grad_u_i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>vect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>stress</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a043ebde6a58cdc87b69a015c1f378007">polyfem::assembler::Assembler</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00582">582</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00311">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, and <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity_abd41507aa0595e96811e87c58ef164c0_cgraph.svg" width="100%" height="407"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="ab5714007a064c360a95bad3df98328f6" name="ab5714007a064c360a95bad3df98328f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5714007a064c360a95bad3df98328f6">&#9670;&#160;</a></span>lame_params()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classpolyfem_1_1assembler_1_1_lame_parameters.html">LameParameters</a> &amp; polyfem::assembler::NeoHookeanElasticity::lame_params </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00038">38</a> of file <a class="el" href="_neo_hookean_elasticity_8hpp_source.html">NeoHookeanElasticity.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>.</p>
 
 </div>
 </div>
@@ -1256,7 +1525,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00032">32</a> of file <a class="el" href="_neo_hookean_elasticity_8hpp_source.html">NeoHookeanElasticity.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00046">46</a> of file <a class="el" href="_neo_hookean_elasticity_8hpp_source.html">NeoHookeanElasticity.hpp</a>.</p>
 
 </div>
 </div>
@@ -1285,9 +1554,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#abf4ca5a2d5825696036c2ad59f80d89b">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00517">517</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00631">631</a> of file <a class="el" href="_neo_hookean_elasticity_8cpp_source.html">NeoHookeanElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00038">params_</a>, and <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>.</p>
+<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>, and <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1321,9 +1590,51 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00030">30</a> of file <a class="el" href="_neo_hookean_elasticity_8hpp_source.html">NeoHookeanElasticity.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00037">37</a> of file <a class="el" href="_neo_hookean_elasticity_8hpp_source.html">NeoHookeanElasticity.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00038">params_</a>.</p>
+<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>.</p>
+
+</div>
+</div>
+<a id="a99d32c425cba49ce053cdec66eac9485" name="a99d32c425cba49ce053cdec66eac9485"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99d32c425cba49ce053cdec66eac9485">&#9670;&#160;</a></span>update_lame_params()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::NeoHookeanElasticity::update_lame_params </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>lambdas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>mus</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a4dc3aedabca1d63c5a489cb129916679">polyfem::assembler::Assembler</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00040">40</a> of file <a class="el" href="_neo_hookean_elasticity_8hpp_source.html">NeoHookeanElasticity.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00085">polyfem::assembler::LameParameters::lambda_mat_</a>, <a class="el" href="_mat_params_8hpp_source.html#l00085">polyfem::assembler::LameParameters::mu_mat_</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">params_</a>.</p>
 
 </div>
 </div>
@@ -1348,9 +1659,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00038">38</a> of file <a class="el" href="_neo_hookean_elasticity_8hpp_source.html">NeoHookeanElasticity.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00052">52</a> of file <a class="el" href="_neo_hookean_elasticity_8hpp_source.html">NeoHookeanElasticity.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00011">add_multimaterial()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00186">assign_stress_tensor()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00497">compute_dstress_dgradu_multiply_mat()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00231">compute_energy_aux()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00295">compute_energy_aux_gradient_fast()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00386">compute_energy_hessian_aux_fast()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00019">compute_rhs()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00517">parameters()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00030">set_params()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00019">add_multimaterial()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00247">assign_stress_tensor()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00292">compute_energy_aux()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00356">compute_energy_aux_gradient_fast()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00447">compute_energy_hessian_aux_fast()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00027">compute_rhs()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00116">compute_stiffness_value()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00558">compute_stress_grad_multiply_mat()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00570">compute_stress_grad_multiply_stress()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00582">compute_stress_grad_multiply_vect()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00038">lame_params()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00631">parameters()</a>, <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00037">set_params()</a>, and <a class="el" href="_neo_hookean_elasticity_8hpp_source.html#l00040">update_lame_params()</a>.</p>
 
 </div>
 </div>

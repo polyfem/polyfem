@@ -1,39 +1,42 @@
 <map id="polyfem::assembler::Problem::is_scalar" name="polyfem::assembler::Problem::is_scalar">
-<area shape="rect" id="node1" title=" " alt="" coords="1699,379,1851,419"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1io_1_1_out_stats_data.html#a82dd3ebdfe11404430cc1beb193abe79" title="compute errors" alt="" coords="1449,100,1640,140"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a9826defd7d8f3c4c12df2ba9c4c45320" title="exports everytihng, txt, vtu, etc" alt="" coords="947,349,1139,389"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#af14667877fc2174de0f495dffeb38456" title=" " alt="" coords="1439,164,1651,204"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#ab0e74deabcecef2c1a43eea386ac116d" title=" " alt="" coords="1459,228,1631,268"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#afb35068e86e9b7c8e2340b953d0e1c20" title=" " alt="" coords="1444,292,1645,332"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1io_1_1_out_stats_data.html#a0d254feaf1956524ab954de0fef7860b" title="saves the output statistic to a json object" alt="" coords="1449,36,1640,76"/>
-<area shape="rect" id="node14" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a0bbb475da4c709c20ab95304a76cf6df" title="saves the nodal values" alt="" coords="1449,407,1641,447"/>
-<area shape="rect" id="node26" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a3ced1e4da4617f574fe2f30b4d2eca84" title="saves the surface vtu file for for surface quantites, eg traction forces" alt="" coords="1449,471,1641,511"/>
-<area shape="rect" id="node27" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a79dfcef5587ebfc0a492f4beff251d01" title="saves the volume vtu file" alt="" coords="1449,535,1641,575"/>
-<area shape="rect" id="node28" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a25fe9752910991469a316afa6687dcde" title="saves the wireframe" alt="" coords="1449,599,1641,639"/>
-<area shape="rect" id="node29" href="$classpolyfem_1_1assembler_1_1_problem.html#a767747047947f319222d4e0d9c2ee942" title=" " alt="" coords="1469,663,1621,703"/>
-<area shape="rect" id="node30" href="$classpolyfem_1_1problem_1_1_problem_with_solution.html#a716a632d5e87de82fd6a81932bf75af1" title=" " alt="" coords="1445,727,1645,767"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1_state.html#a2351c47a48235103aca219b6363b6353" title="computes all errors" alt="" coords="225,136,408,176"/>
-<area shape="rect" id="node4" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="59,173,113,198"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e" title="saves all data on the disk according to the input params" alt="" coords="215,201,419,226"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1_state.html#a462069032b8e7c6663c8d777dc60965f" title="saves the output statistic to a stream" alt="" coords="1195,43,1386,69"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1_state.html#a3ded3e26faeb339787050e8fb2bb4534" title="gets the output log as json this is not what gets printed but more informative information,..." alt="" coords="955,43,1130,69"/>
-<area shape="rect" id="node13" href="$classpolyfem_1_1_state.html#a8e4831838628c59b209c7fa60f70f657" title="saves the output statistic to disc according to params" alt="" coords="947,93,1138,118"/>
-<area shape="rect" id="node15" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aa3fbccda3a6e6f7fd5a7b3bcbd146793" title="saves the vtu file for time t" alt="" coords="1195,471,1387,511"/>
-<area shape="rect" id="node16" href="$classpolyfem_1_1_state.html#a29b1283c20475e19b79a39cd324ac5aa" title="saves a subsolve when save_solve_sequence_debug is true" alt="" coords="964,488,1121,528"/>
-<area shape="rect" id="node21" href="$classpolyfem_1_1_state.html#a442fa686e1d08a0a104f3869a6fa2948" title="saves a timestep" alt="" coords="735,399,893,439"/>
-<area shape="rect" id="node17" href="$classpolyfem_1_1_state.html#acdb194af25d840fa14cec97b19e04577" title="solves nonlinear problems" alt="" coords="733,507,895,547"/>
-<area shape="rect" id="node18" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="236,379,397,419"/>
-<area shape="rect" id="node20" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="475,507,677,547"/>
-<area shape="rect" id="node19" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="5,386,167,411"/>
-<area shape="rect" id="node22" href="$classpolyfem_1_1_state.html#ac5c4dd2be369c759c68e0a36a45bfcc7" title="initialize solver" alt="" coords="503,251,649,291"/>
-<area shape="rect" id="node23" href="$classpolyfem_1_1_state.html#af5afb70dc127d3ce190116321e83f190" title="solves transient linear problem" alt="" coords="495,315,657,355"/>
-<area shape="rect" id="node24" href="$classpolyfem_1_1_state.html#ac42074a324e693f8eef5d7a96a56dc38" title="solves transient navier stokes with FEM" alt="" coords="484,379,668,419"/>
-<area shape="rect" id="node25" href="$classpolyfem_1_1_state.html#a9fa28a682c746974ee171d8cfa6a8558" title="solves transient navier stokes with operator splitting" alt="" coords="467,443,685,483"/>
-<area shape="rect" id="node31" href="$classpolyfem_1_1problem_1_1_problem_with_solution.html#a7a2e8c1d3f156d7e16e2fe9fa52fd891" title=" " alt="" coords="1191,631,1391,671"/>
-<area shape="rect" id="node34" href="$classpolyfem_1_1problem_1_1_problem_with_solution.html#af5ad4a407d0ba561ea823dd28d647697" title=" " alt="" coords="1191,695,1391,735"/>
-<area shape="rect" id="node35" href="$classpolyfem_1_1problem_1_1_kernel_problem.html#a6d23254ebf04f49597121aa74a878397" title=" " alt="" coords="1197,759,1384,799"/>
-<area shape="rect" id="node36" href="$classpolyfem_1_1problem_1_1_problem_with_solution.html#a24d2aba136e3d02cf1eab72d59c79b5c" title=" " alt="" coords="1191,823,1391,863"/>
-<area shape="rect" id="node32" href="$classpolyfem_1_1problem_1_1_problem_with_solution.html#a7b0a5bced75f5295ce5aee7750d8ec16" title=" " alt="" coords="943,595,1143,635"/>
-<area shape="rect" id="node33" href="$classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#af7be02bcf8da99c6e992470f4326a783" title=" " alt="" coords="944,659,1141,714"/>
-<area shape="rect" id="node37" href="$classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#ab124ce7b5ee624850580f4b252bdb4c5" title=" " alt="" coords="945,823,1141,863"/>
+<area shape="rect" id="node1" title=" " alt="" coords="1819,412,1971,452"/>
+<area shape="rect" id="node2" href="$classpolyfem_1_1io_1_1_out_stats_data.html#a82dd3ebdfe11404430cc1beb193abe79" title="compute errors" alt="" coords="1569,99,1760,139"/>
+<area shape="rect" id="node6" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a9826defd7d8f3c4c12df2ba9c4c45320" title="exports everytihng, txt, vtu, etc" alt="" coords="1067,412,1259,452"/>
+<area shape="rect" id="node8" href="$classpolyfem_1_1solver_1_1_body_form.html#a5dd3812e581ac1ca48508abd65fe6c07" title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj..." alt="" coords="1565,163,1764,203"/>
+<area shape="rect" id="node9" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#af14667877fc2174de0f495dffeb38456" title=" " alt="" coords="1559,227,1771,267"/>
+<area shape="rect" id="node10" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#ab0e74deabcecef2c1a43eea386ac116d" title=" " alt="" coords="1579,291,1751,331"/>
+<area shape="rect" id="node11" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#afb35068e86e9b7c8e2340b953d0e1c20" title=" " alt="" coords="1564,355,1765,395"/>
+<area shape="rect" id="node12" href="$classpolyfem_1_1io_1_1_out_stats_data.html#a0d254feaf1956524ab954de0fef7860b" title="saves the output statistic to a json object" alt="" coords="1569,35,1760,75"/>
+<area shape="rect" id="node16" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a0bbb475da4c709c20ab95304a76cf6df" title="saves the nodal values" alt="" coords="1569,533,1761,573"/>
+<area shape="rect" id="node29" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a3ced1e4da4617f574fe2f30b4d2eca84" title="saves the surface vtu file for for surface quantites, eg traction forces" alt="" coords="1569,597,1761,637"/>
+<area shape="rect" id="node30" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a79dfcef5587ebfc0a492f4beff251d01" title="saves the volume vtu file" alt="" coords="1569,661,1761,701"/>
+<area shape="rect" id="node31" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a25fe9752910991469a316afa6687dcde" title="saves the wireframe" alt="" coords="1569,469,1761,509"/>
+<area shape="rect" id="node32" href="$classpolyfem_1_1assembler_1_1_problem.html#aabe7f1275be3a2caf156de7ece49ada8" title=" " alt="" coords="1589,725,1741,765"/>
+<area shape="rect" id="node33" href="$classpolyfem_1_1problem_1_1_problem_with_solution.html#a716a632d5e87de82fd6a81932bf75af1" title=" " alt="" coords="1565,789,1765,829"/>
+<area shape="rect" id="node3" href="$classpolyfem_1_1_state.html#a2351c47a48235103aca219b6363b6353" title="computes all errors" alt="" coords="345,155,528,195"/>
+<area shape="rect" id="node4" href="$main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" title=" " alt="" coords="123,191,271,217"/>
+<area shape="rect" id="node5" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,191,60,217"/>
+<area shape="rect" id="node7" href="$classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e" title="saves all data on the disk according to the input params" alt="" coords="335,221,539,246"/>
+<area shape="rect" id="node13" href="$classpolyfem_1_1_state.html#a462069032b8e7c6663c8d777dc60965f" title="saves the output statistic to a stream" alt="" coords="1315,43,1506,69"/>
+<area shape="rect" id="node14" href="$classpolyfem_1_1_state.html#a3ded3e26faeb339787050e8fb2bb4534" title="gets the output log as json this is not what gets printed but more informative information,..." alt="" coords="1075,43,1250,69"/>
+<area shape="rect" id="node15" href="$classpolyfem_1_1_state.html#a8e4831838628c59b209c7fa60f70f657" title="saves the output statistic to disc according to params" alt="" coords="1067,93,1258,118"/>
+<area shape="rect" id="node17" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aa3fbccda3a6e6f7fd5a7b3bcbd146793" title="saves the vtu file for time t" alt="" coords="1315,531,1507,571"/>
+<area shape="rect" id="node18" href="$classpolyfem_1_1_state.html#a29b1283c20475e19b79a39cd324ac5aa" title="saves a subsolve when save_solve_sequence_debug is true" alt="" coords="1084,531,1241,571"/>
+<area shape="rect" id="node24" href="$classpolyfem_1_1_state.html#a442fa686e1d08a0a104f3869a6fa2948" title="saves a timestep" alt="" coords="855,435,1013,475"/>
+<area shape="rect" id="node19" href="$classpolyfem_1_1_state.html#acdb194af25d840fa14cec97b19e04577" title="solves nonlinear problems" alt="" coords="853,531,1015,571"/>
+<area shape="rect" id="node20" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="356,403,517,443"/>
+<area shape="rect" id="node23" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="595,531,797,571"/>
+<area shape="rect" id="node21" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="117,438,278,463"/>
+<area shape="rect" id="node22" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,373,287,413"/>
+<area shape="rect" id="node25" href="$classpolyfem_1_1_state.html#ac5c4dd2be369c759c68e0a36a45bfcc7" title="initialize solver" alt="" coords="623,275,769,315"/>
+<area shape="rect" id="node26" href="$classpolyfem_1_1_state.html#af5afb70dc127d3ce190116321e83f190" title="solves transient linear problem" alt="" coords="615,339,777,379"/>
+<area shape="rect" id="node27" href="$classpolyfem_1_1_state.html#ac42074a324e693f8eef5d7a96a56dc38" title="solves transient navier stokes with FEM" alt="" coords="604,403,788,443"/>
+<area shape="rect" id="node28" href="$classpolyfem_1_1_state.html#a9fa28a682c746974ee171d8cfa6a8558" title="solves transient navier stokes with operator splitting" alt="" coords="587,467,805,507"/>
+<area shape="rect" id="node34" href="$classpolyfem_1_1problem_1_1_problem_with_solution.html#a7a2e8c1d3f156d7e16e2fe9fa52fd891" title=" " alt="" coords="1311,693,1511,733"/>
+<area shape="rect" id="node37" href="$classpolyfem_1_1problem_1_1_problem_with_solution.html#af5ad4a407d0ba561ea823dd28d647697" title=" " alt="" coords="1311,757,1511,797"/>
+<area shape="rect" id="node38" href="$classpolyfem_1_1problem_1_1_kernel_problem.html#a6d23254ebf04f49597121aa74a878397" title=" " alt="" coords="1317,821,1504,861"/>
+<area shape="rect" id="node39" href="$classpolyfem_1_1problem_1_1_problem_with_solution.html#a24d2aba136e3d02cf1eab72d59c79b5c" title=" " alt="" coords="1311,885,1511,925"/>
+<area shape="rect" id="node35" href="$classpolyfem_1_1problem_1_1_problem_with_solution.html#a7b0a5bced75f5295ce5aee7750d8ec16" title=" " alt="" coords="1063,657,1263,697"/>
+<area shape="rect" id="node36" href="$classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#af7be02bcf8da99c6e992470f4326a783" title=" " alt="" coords="1064,722,1261,777"/>
+<area shape="rect" id="node40" href="$classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#ab124ce7b5ee624850580f4b252bdb4c5" title=" " alt="" coords="1065,885,1261,925"/>
 </map>

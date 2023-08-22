@@ -13,6 +13,7 @@ var structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options =
     [ "sol_on_grid", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a4a8fc3968f7782b38809d9bd489906fa", null ],
     [ "solve_export_to_file", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a8895bcd7f83152e8b309b6b584cdddc4", null ],
     [ "surface", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a9e51bea3166ca250ed6dd6d4bc6d8c78", null ],
+    [ "tensor_values", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#aab0f9924e13e4d7692a8c01d1983dbb2", null ],
     [ "use_hdf5", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a836e498642f74e5e6b4b6ee2c632b07b", null ],
     [ "use_sampler", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a16b1c6d540f8e91ffb603f7b79b1aa45", null ],
     [ "use_spline", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#ab43f215f17671955cc2687c9961f480f", null ],

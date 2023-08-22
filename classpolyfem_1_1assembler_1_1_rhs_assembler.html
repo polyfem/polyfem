@@ -138,7 +138,7 @@ Collaboration diagram for polyfem::assembler::RhsAssembler:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a132a8a171cff5e77653c7d636071fdc1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a132a8a171cff5e77653c7d636071fdc1">RhsAssembler</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">Assembler</a> &amp;assembler, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">mesh::Obstacle</a> &amp;obstacle, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const std::vector&lt; int &gt; &amp;neumann_nodes, const std::vector&lt; <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &gt; &amp;dirichlet_nodes_position, const std::vector&lt; <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &gt; &amp;neumann_nodes_position, const int n_basis, const int size, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;ass_vals_cache, const <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">Problem</a> &amp;problem, const std::string bc_method, const std::string &amp;solver, const std::string &amp;preconditioner, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;solver_params)</td></tr>
+<tr class="memitem:a132a8a171cff5e77653c7d636071fdc1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a132a8a171cff5e77653c7d636071fdc1">RhsAssembler</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">Assembler</a> &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a97719fe113df5d24a8993e19dad8cea5">assembler</a>, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a43e01a7e7652431b753f7c89bee66202">mesh</a>, const <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">mesh::Obstacle</a> &amp;obstacle, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const std::vector&lt; int &gt; &amp;neumann_nodes, const std::vector&lt; <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &gt; &amp;dirichlet_nodes_position, const std::vector&lt; <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &gt; &amp;neumann_nodes_position, const int n_basis, const int size, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#af97de8857e80cd0acb28b87ebaf55466">bases</a>, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#ac63e2e7c87427ae1774d5ed344295e85">gbases</a>, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a24586fcdb60aabb348a29855e43cbe6e">ass_vals_cache</a>, const <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">Problem</a> &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a4e2fb8d7059e5523cb6381bb4f142857">problem</a>, const std::string bc_method, const std::string &amp;solver, const std::string &amp;preconditioner, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;solver_params)</td></tr>
 <tr class="separator:a132a8a171cff5e77653c7d636071fdc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada9462079ff85433ec41e09fa55d96a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#ada9462079ff85433ec41e09fa55d96a5">assemble</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_density.html">Density</a> &amp;density, Eigen::MatrixXd &amp;rhs, const double t=1) const</td></tr>
 <tr class="separator:ada9462079ff85433ec41e09fa55d96a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -154,6 +154,20 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a78a4eec50d291e10302e5b9274169aad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a717039c1647c3261c8acc5ab68caac54"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a717039c1647c3261c8acc5ab68caac54">compute_energy_grad</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;bounday_nodes, const <a class="el" href="classpolyfem_1_1assembler_1_1_density.html">Density</a> &amp;density, const int resolution, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_neumann_boundary, const Eigen::MatrixXd &amp;final_rhs, const double t, Eigen::MatrixXd &amp;rhs) const</td></tr>
 <tr class="separator:a717039c1647c3261c8acc5ab68caac54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91fda8cbdede56c6e57a3a67fcbe3a79"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a91fda8cbdede56c6e57a3a67fcbe3a79">compute_energy_hess</a> (const std::vector&lt; int &gt; &amp;bounday_nodes, const int resolution, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_neumann_boundary, const Eigen::MatrixXd &amp;displacement, const double t, const bool project_to_psd, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hess) const</td></tr>
+<tr class="separator:a91fda8cbdede56c6e57a3a67fcbe3a79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e2fb8d7059e5523cb6381bb4f142857"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">Problem</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a4e2fb8d7059e5523cb6381bb4f142857">problem</a> () const</td></tr>
+<tr class="separator:a4e2fb8d7059e5523cb6381bb4f142857"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43e01a7e7652431b753f7c89bee66202"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a43e01a7e7652431b753f7c89bee66202">mesh</a> () const</td></tr>
+<tr class="separator:a43e01a7e7652431b753f7c89bee66202"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af97de8857e80cd0acb28b87ebaf55466"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#af97de8857e80cd0acb28b87ebaf55466">bases</a> () const</td></tr>
+<tr class="separator:af97de8857e80cd0acb28b87ebaf55466"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac63e2e7c87427ae1774d5ed344295e85"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#ac63e2e7c87427ae1774d5ed344295e85">gbases</a> () const</td></tr>
+<tr class="separator:ac63e2e7c87427ae1774d5ed344295e85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24586fcdb60aabb348a29855e43cbe6e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a24586fcdb60aabb348a29855e43cbe6e">ass_vals_cache</a> () const</td></tr>
+<tr class="separator:a24586fcdb60aabb348a29855e43cbe6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97719fe113df5d24a8993e19dad8cea5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">Assembler</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a97719fe113df5d24a8993e19dad8cea5">assembler</a> () const</td></tr>
+<tr class="separator:a97719fe113df5d24a8993e19dad8cea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -327,7 +341,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_rhs_assembler_8cpp_source.html#l00034">34</a> of file <a class="el" href="_rhs_assembler_8cpp_source.html">RhsAssembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00085">ass_vals_cache_</a>, and <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00020">polyfem::assembler::AssemblyValsCache::is_mass()</a>.</p>
+<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00095">ass_vals_cache_</a>, and <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00020">polyfem::assembler::AssemblyValsCache::is_mass()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -338,6 +352,43 @@ Here is the call graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a24586fcdb60aabb348a29855e43cbe6e" name="a24586fcdb60aabb348a29855e43cbe6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24586fcdb60aabb348a29855e43cbe6e">&#9670;&#160;</a></span>ass_vals_cache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp; polyfem::assembler::RhsAssembler::ass_vals_cache </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00058">58</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00095">ass_vals_cache_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_rhs_assembler_a24586fcdb60aabb348a29855e43cbe6e_icgraph.svg" width="411" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
 <a id="ada9462079ff85433ec41e09fa55d96a5" name="ada9462079ff85433ec41e09fa55d96a5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ada9462079ff85433ec41e09fa55d96a5">&#9670;&#160;</a></span>assemble()</h2>
 
@@ -372,7 +423,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">63</a> of file <a class="el" href="_rhs_assembler_8cpp_source.html">RhsAssembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00085">ass_vals_cache_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00078">assembler_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00083">bases_</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00032">polyfem::assembler::AssemblyValsCache::compute()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00084">gbases_</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00017">polyfem::assembler::AssemblyValues::global</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2f7a9a8e77a2f7814de1e92fc6670837">polyfem::assembler::Problem::is_rhs_zero()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00079">mesh_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00081">n_basis_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00086">problem_</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9e01aba9cf417181f5671d52d126ab2b">polyfem::assembler::Problem::rhs()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00082">size_</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00020">polyfem::assembler::AssemblyValues::val</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>.</p>
+<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00095">ass_vals_cache_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00088">assembler_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00093">bases_</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00032">polyfem::assembler::AssemblyValsCache::compute()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00094">gbases_</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00017">polyfem::assembler::AssemblyValues::global</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2f7a9a8e77a2f7814de1e92fc6670837">polyfem::assembler::Problem::is_rhs_zero()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00089">mesh_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00091">n_basis_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00096">problem_</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9e01aba9cf417181f5671d52d126ab2b">polyfem::assembler::Problem::rhs()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00092">size_</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00020">polyfem::assembler::AssemblyValues::val</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00711">compute_energy_grad()</a>.</p>
 <div class="dynheader">
@@ -385,6 +436,80 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_rhs_assembler_ada9462079ff85433ec41e09fa55d96a5_icgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a97719fe113df5d24a8993e19dad8cea5" name="a97719fe113df5d24a8993e19dad8cea5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97719fe113df5d24a8993e19dad8cea5">&#9670;&#160;</a></span>assembler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">Assembler</a> &amp; polyfem::assembler::RhsAssembler::assembler </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00059">59</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00088">assembler_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_rhs_assembler_a97719fe113df5d24a8993e19dad8cea5_icgraph.svg" width="456" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="af97de8857e80cd0acb28b87ebaf55466" name="af97de8857e80cd0acb28b87ebaf55466"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af97de8857e80cd0acb28b87ebaf55466">&#9670;&#160;</a></span>bases()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp; polyfem::assembler::RhsAssembler::bases </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00056">56</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00093">bases_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_rhs_assembler_af97de8857e80cd0acb28b87ebaf55466_icgraph.svg" width="427" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -436,9 +561,9 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_rhs_assembler_8cpp_source.html#l00735">735</a> of file <a class="el" href="_rhs_assembler_8cpp_source.html">RhsAssembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00085">ass_vals_cache_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00078">assembler_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00083">bases_</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00462">polyfem::utils::BoundarySampler::boundary_quadrature()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00032">polyfem::assembler::AssemblyValsCache::compute()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_assembler_8cpp_source.html#l00023">da</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00084">gbases_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2f7a9a8e77a2f7814de1e92fc6670837">polyfem::assembler::Problem::is_rhs_zero()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00079">mesh_</a>, <a class="el" href="_problem_8hpp_source.html#l00027">polyfem::assembler::Problem::neumann_bc()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00086">problem_</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9e01aba9cf417181f5671d52d126ab2b">polyfem::assembler::Problem::rhs()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00082">size_</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>.</p>
+<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00095">ass_vals_cache_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00088">assembler_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00093">bases_</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00462">polyfem::utils::BoundarySampler::boundary_quadrature()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00032">polyfem::assembler::AssemblyValsCache::compute()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_assembler_8cpp_source.html#l00023">da</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00094">gbases_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a2f7a9a8e77a2f7814de1e92fc6670837">polyfem::assembler::Problem::is_rhs_zero()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00089">mesh_</a>, <a class="el" href="_problem_8hpp_source.html#l00027">polyfem::assembler::Problem::neumann_bc()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00096">problem_</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9e01aba9cf417181f5671d52d126ab2b">polyfem::assembler::Problem::rhs()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00092">size_</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00034">polyfem::solver::BodyForm::value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00064">polyfem::solver::BodyForm::value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -518,9 +643,9 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_rhs_assembler_8cpp_source.html#l00711">711</a> of file <a class="el" href="_rhs_assembler_8cpp_source.html">RhsAssembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_problem_8hpp_source.html#l00043">polyfem::assembler::Problem::is_constant_in_time()</a>, and <a class="el" href="_rhs_assembler_8hpp_source.html#l00086">problem_</a>.</p>
+<p class="reference">References <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_problem_8hpp_source.html#l00045">polyfem::assembler::Problem::is_constant_in_time()</a>, and <a class="el" href="_rhs_assembler_8hpp_source.html#l00096">problem_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00056">polyfem::solver::BodyForm::update_current_rhs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00086">polyfem::solver::BodyForm::update_current_rhs()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -531,6 +656,119 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_rhs_assembler_a717039c1647c3261c8acc5ab68caac54_icgraph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a91fda8cbdede56c6e57a3a67fcbe3a79" name="a91fda8cbdede56c6e57a3a67fcbe3a79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91fda8cbdede56c6e57a3a67fcbe3a79">&#9670;&#160;</a></span>compute_energy_hess()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::RhsAssembler::compute_energy_hess </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bounday_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>resolution</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>local_neumann_boundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>displacement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>project_to_psd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>hess</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8cpp_source.html#l00876">876</a> of file <a class="el" href="_rhs_assembler_8cpp_source.html">RhsAssembler.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00093">bases_</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00462">polyfem::utils::BoundarySampler::boundary_quadrature()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00094">gbases_</a>, <a class="el" href="_mesh_8hpp_source.html#l00466">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00017">polyfem::assembler::AssemblyValues::global</a>, <a class="el" href="_problem_8hpp_source.html#l00029">polyfem::assembler::Problem::is_boundary_pressure()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00032">polyfem::basis::ElementBases::local_nodes_for_primitive()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00089">mesh_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00091">n_basis_</a>, <a class="el" href="_problem_8hpp_source.html#l00027">polyfem::assembler::Problem::neumann_bc()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00096">problem_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00092">size_</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00020">polyfem::assembler::AssemblyValues::val</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, and <a class="el" href="_assembler_8cpp_source.html#l00056">vec</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00340">polyfem::solver::BodyForm::hessian_wrt_u_prev()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_rhs_assembler_a91fda8cbdede56c6e57a3a67fcbe3a79_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_rhs_assembler_a91fda8cbdede56c6e57a3a67fcbe3a79_icgraph.svg" width="446" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="ac63e2e7c87427ae1774d5ed344295e85" name="ac63e2e7c87427ae1774d5ed344295e85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac63e2e7c87427ae1774d5ed344295e85">&#9670;&#160;</a></span>gbases()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp; polyfem::assembler::RhsAssembler::gbases </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00057">57</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00094">gbases_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_rhs_assembler_ac63e2e7c87427ae1774d5ed344295e85_icgraph.svg" width="435" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -554,7 +792,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_rhs_assembler_8cpp_source.html#l00124">124</a> of file <a class="el" href="_rhs_assembler_8cpp_source.html">RhsAssembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00047">polyfem::assembler::Problem::initial_acceleration()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00086">problem_</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00049">polyfem::assembler::Problem::initial_acceleration()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00055">mesh()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00096">problem_</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -582,7 +820,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_rhs_assembler_8cpp_source.html#l00108">108</a> of file <a class="el" href="_rhs_assembler_8cpp_source.html">RhsAssembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00045">polyfem::assembler::Problem::initial_solution()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00086">problem_</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00047">polyfem::assembler::Problem::initial_solution()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00055">mesh()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00096">problem_</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -610,7 +848,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_rhs_assembler_8cpp_source.html#l00116">116</a> of file <a class="el" href="_rhs_assembler_8cpp_source.html">RhsAssembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00046">polyfem::assembler::Problem::initial_velocity()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00086">problem_</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00048">polyfem::assembler::Problem::initial_velocity()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00055">mesh()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00096">problem_</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -674,7 +912,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_rhs_assembler_8cpp_source.html#l00483">483</a> of file <a class="el" href="_rhs_assembler_8cpp_source.html">RhsAssembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00056">polyfem::assembler::Problem::all_dimensions_dirichlet()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00083">bases_</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00462">polyfem::utils::BoundarySampler::boundary_quadrature()</a>, <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00084">gbases_</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00017">polyfem::assembler::AssemblyValues::global</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00032">polyfem::basis::ElementBases::local_nodes_for_primitive()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00079">mesh_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00081">n_basis_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00086">problem_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00082">size_</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00020">polyfem::assembler::AssemblyValues::val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00058">polyfem::assembler::Problem::all_dimensions_dirichlet()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00093">bases_</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00462">polyfem::utils::BoundarySampler::boundary_quadrature()</a>, <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00094">gbases_</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00017">polyfem::assembler::AssemblyValues::global</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00032">polyfem::basis::ElementBases::local_nodes_for_primitive()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00089">mesh_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00091">n_basis_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00096">problem_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00092">size_</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00020">polyfem::assembler::AssemblyValues::val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -738,11 +976,85 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">228</a> of file <a class="el" href="_rhs_assembler_8cpp_source.html">RhsAssembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00056">polyfem::assembler::Problem::all_dimensions_dirichlet()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00083">bases_</a>, <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00019">polyfem::basis::ElementBases::eval_geom_mapping()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00067">polyfem::basis::ElementBases::evaluate_bases()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00084">gbases_</a>, <a class="el" href="_mesh_8hpp_source.html#l00459">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_basis_8hpp_source.html#l00091">polyfem::basis::Basis::global()</a>, <a class="el" href="_problem_8hpp_source.html#l00053">polyfem::assembler::Problem::is_dimension_dirichet()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00079">mesh_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00081">n_basis_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00088">preconditioner_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00086">problem_</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00529">polyfem::utils::BoundarySampler::sample_boundary()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00082">size_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00088">solver_</a>, and <a class="el" href="_rhs_assembler_8hpp_source.html#l00089">solver_params_</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00058">polyfem::assembler::Problem::all_dimensions_dirichlet()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00093">bases_</a>, <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00019">polyfem::basis::ElementBases::eval_geom_mapping()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00067">polyfem::basis::ElementBases::evaluate_bases()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00094">gbases_</a>, <a class="el" href="_mesh_8hpp_source.html#l00466">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_basis_8hpp_source.html#l00091">polyfem::basis::Basis::global()</a>, <a class="el" href="_problem_8hpp_source.html#l00055">polyfem::assembler::Problem::is_dimension_dirichet()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00024">mat</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00089">mesh_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00091">n_basis_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00098">preconditioner_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00096">problem_</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00529">polyfem::utils::BoundarySampler::sample_boundary()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00092">size_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00098">solver_</a>, and <a class="el" href="_rhs_assembler_8hpp_source.html#l00099">solver_params_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_rhs_assembler_ab0e74deabcecef2c1a43eea386ac116d_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a43e01a7e7652431b753f7c89bee66202" name="a43e01a7e7652431b753f7c89bee66202"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43e01a7e7652431b753f7c89bee66202">&#9670;&#160;</a></span>mesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp; polyfem::assembler::RhsAssembler::mesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00055">55</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00089">mesh_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00124">initial_acceleration()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00108">initial_solution()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00116">initial_velocity()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_rhs_assembler_a43e01a7e7652431b753f7c89bee66202_icgraph.svg" width="424" height="288"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a4e2fb8d7059e5523cb6381bb4f142857" name="a4e2fb8d7059e5523cb6381bb4f142857"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e2fb8d7059e5523cb6381bb4f142857">&#9670;&#160;</a></span>problem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">Problem</a> &amp; polyfem::assembler::RhsAssembler::problem </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00054">54</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00096">problem_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_rhs_assembler_a4e2fb8d7059e5523cb6381bb4f142857_icgraph.svg" width="443" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -796,7 +1108,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_rhs_assembler_8cpp_source.html#l00416">416</a> of file <a class="el" href="_rhs_assembler_8cpp_source.html">RhsAssembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00056">polyfem::assembler::Problem::all_dimensions_dirichlet()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00083">bases_</a>, <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_8hpp_source.html#l00459">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_problem_8hpp_source.html#l00053">polyfem::assembler::Problem::is_dimension_dirichet()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00032">polyfem::basis::ElementBases::local_nodes_for_primitive()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00079">mesh_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00081">n_basis_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00086">problem_</a>, and <a class="el" href="_rhs_assembler_8hpp_source.html#l00082">size_</a>.</p>
+<p class="reference">References <a class="el" href="_problem_8hpp_source.html#l00058">polyfem::assembler::Problem::all_dimensions_dirichlet()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00093">bases_</a>, <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_mesh_8hpp_source.html#l00466">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_problem_8hpp_source.html#l00055">polyfem::assembler::Problem::is_dimension_dirichet()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00032">polyfem::basis::ElementBases::local_nodes_for_primitive()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00089">mesh_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00091">n_basis_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00096">problem_</a>, and <a class="el" href="_rhs_assembler_8hpp_source.html#l00092">size_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -940,7 +1252,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00160">polyfem::solver::NLProblem::boundary_values()</a>, <a class="el" href="_body_form_8cpp_source.html#l00056">polyfem::solver::BodyForm::update_current_rhs()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00115">polyfem::solver::BCLagrangianForm::update_target()</a>, and <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00104">polyfem::solver::BCPenaltyForm::update_target()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00160">polyfem::solver::NLProblem::boundary_values()</a>, <a class="el" href="_body_form_8cpp_source.html#l00086">polyfem::solver::BodyForm::update_current_rhs()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00115">polyfem::solver::BCLagrangianForm::update_target()</a>, and <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00104">polyfem::solver::BCPenaltyForm::update_target()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -986,7 +1298,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">132</a> of file <a class="el" href="_rhs_assembler_8cpp_source.html">RhsAssembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00085">ass_vals_cache_</a>, <a class="el" href="_mass_8cpp_source.html#l00005">polyfem::assembler::Mass::assemble()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00078">assembler_</a>, <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00083">bases_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00087">bc_method_</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00032">polyfem::assembler::AssemblyValsCache::compute()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00084">gbases_</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00017">polyfem::assembler::AssemblyValues::global</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00079">mesh_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00081">n_basis_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00036">polyfem::mesh::Obstacle::n_vertices()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00040">polyfem::mesh::Obstacle::ndof()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00080">obstacle_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00088">preconditioner_</a>, <a class="el" href="_assembler_8hpp_source.html#l00060">polyfem::assembler::Assembler::set_size()</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00082">size_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00088">solver_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00089">solver_params_</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00020">polyfem::assembler::AssemblyValues::val</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>.</p>
+<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00095">ass_vals_cache_</a>, <a class="el" href="_mass_8cpp_source.html#l00005">polyfem::assembler::Mass::assemble()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00088">assembler_</a>, <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00093">bases_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00097">bc_method_</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00032">polyfem::assembler::AssemblyValsCache::compute()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00094">gbases_</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00017">polyfem::assembler::AssemblyValues::global</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00089">mesh_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00091">n_basis_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00036">polyfem::mesh::Obstacle::n_vertices()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00040">polyfem::mesh::Obstacle::ndof()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00090">obstacle_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00098">preconditioner_</a>, <a class="el" href="_assembler_8hpp_source.html#l00060">polyfem::assembler::Assembler::set_size()</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00092">size_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00098">solver_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00099">solver_params_</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00020">polyfem::assembler::AssemblyValues::val</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00124">initial_acceleration()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00108">initial_solution()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00116">initial_velocity()</a>.</p>
 <div class="dynheader">
@@ -1025,9 +1337,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00085">85</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00095">95</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00735">compute_energy()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00034">RhsAssembler()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8hpp_source.html#l00058">ass_vals_cache()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00735">compute_energy()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00034">RhsAssembler()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
 
 </div>
 </div>
@@ -1051,9 +1363,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00078">78</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00088">88</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00735">compute_energy()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00059">assembler()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00735">compute_energy()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
 
 </div>
 </div>
@@ -1077,9 +1389,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00083">83</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00093">93</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00735">compute_energy()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00483">integrate_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">lsq_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00416">sample_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00056">bases()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00735">compute_energy()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00876">compute_energy_hess()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00483">integrate_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">lsq_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00416">sample_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
 
 </div>
 </div>
@@ -1103,7 +1415,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00087">87</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00097">97</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
 
@@ -1129,7 +1441,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00090">90</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00100">100</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
 </div>
 </div>
@@ -1153,7 +1465,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00091">91</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00101">101</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
 </div>
 </div>
@@ -1177,9 +1489,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00084">84</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00094">94</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00735">compute_energy()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00483">integrate_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">lsq_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00735">compute_energy()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00876">compute_energy_hess()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00057">gbases()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00483">integrate_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">lsq_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
 
 </div>
 </div>
@@ -1203,9 +1515,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00079">79</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00089">89</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00735">compute_energy()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00483">integrate_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">lsq_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00416">sample_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00735">compute_energy()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00876">compute_energy_hess()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00483">integrate_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">lsq_bc()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00055">mesh()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00416">sample_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
 
 </div>
 </div>
@@ -1229,9 +1541,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00081">81</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00091">91</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00483">integrate_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">lsq_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00416">sample_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00876">compute_energy_hess()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00483">integrate_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">lsq_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00416">sample_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
 
 </div>
 </div>
@@ -1255,7 +1567,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00092">92</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00102">102</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
 </div>
 </div>
@@ -1279,7 +1591,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00093">93</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00103">103</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
 </div>
 </div>
@@ -1303,7 +1615,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00080">80</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00090">90</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
 
@@ -1329,7 +1641,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00088">88</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00098">98</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">lsq_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
 
@@ -1355,9 +1667,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00086">86</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00096">96</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00735">compute_energy()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00711">compute_energy_grad()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00124">initial_acceleration()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00108">initial_solution()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00116">initial_velocity()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00483">integrate_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">lsq_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00416">sample_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00735">compute_energy()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00711">compute_energy_grad()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00876">compute_energy_hess()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00124">initial_acceleration()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00108">initial_solution()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00116">initial_velocity()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00483">integrate_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">lsq_bc()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00054">problem()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00416">sample_bc()</a>.</p>
 
 </div>
 </div>
@@ -1381,9 +1693,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00082">82</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00092">92</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00735">compute_energy()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00483">integrate_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">lsq_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00416">sample_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00735">compute_energy()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00876">compute_energy_hess()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00483">integrate_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">lsq_bc()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00416">sample_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
 
 </div>
 </div>
@@ -1407,7 +1719,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00088">88</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00098">98</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">lsq_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
 
@@ -1433,7 +1745,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00089">89</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rhs_assembler_8hpp_source.html#l00099">99</a> of file <a class="el" href="_rhs_assembler_8hpp_source.html">RhsAssembler.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00228">lsq_bc()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">time_bc()</a>.</p>
 

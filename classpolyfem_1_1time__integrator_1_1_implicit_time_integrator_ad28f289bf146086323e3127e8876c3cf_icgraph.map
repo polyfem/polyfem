@@ -1,16 +1,21 @@
 <map id="polyfem::time_integrator::ImplicitTimeIntegrator::steps" name="polyfem::time_integrator::ImplicitTimeIntegrator::steps">
-<area shape="rect" id="node1" title="Get the current number of steps to use for integration." alt="" coords="1423,196,1641,236"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#ad89c12b8bf6489e2fe641e298ba7db52" title="Compute the acceleration scaling used to scale forces when integrating a second order ODE." alt="" coords="656,64,853,104"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#adee1f06a38af8a9dd442ccfcd5f3f11e" title="Compute ." alt="" coords="1173,59,1359,99"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#abf301b8b70f17554a716d4d3ade7b27b" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="901,189,1109,229"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#abc79187d3edb8fbf4c8ec1d0866b9abe" title="Update the time integration quantities (i.e., , , and )." alt="" coords="662,189,847,229"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a1b0164a957fe05ad87d21f00f3e521c0" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="913,332,1098,372"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a4fef8dd2a5fb4d5c80be56933ff8628f" title="Compute the weighted sum of the previous velocities." alt="" coords="1157,224,1375,264"/>
-<area shape="rect" id="node13" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#af40959a3d993bbe0a575d2412bed1b06" title="Compute the predicted solution to be used in the inertia term ." alt="" coords="913,268,1098,308"/>
-<area shape="rect" id="node14" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a6f77c2777ad1e125180a18d5abf2f47b" title="Compute the weighted sum of the previous solutions." alt="" coords="1157,389,1375,429"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1_state.html#ac42074a324e693f8eef5d7a96a56dc38" title="solves transient navier stokes with FEM" alt="" coords="424,189,608,229"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="215,189,376,229"/>
-<area shape="rect" id="node5" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="59,171,113,197"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="5,221,167,246"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#ad56af985a63f8d2761b6645c25617815" title="Compute the derivative of the velocity with respect to the solution." alt="" coords="913,59,1098,99"/>
+<area shape="rect" id="node1" title="Get the current number of steps to use for integration." alt="" coords="1575,137,1793,177"/>
+<area shape="rect" id="node2" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#ad89c12b8bf6489e2fe641e298ba7db52" title="Compute the acceleration scaling used to scale forces when integrating a second order ODE." alt="" coords="801,13,999,53"/>
+<area shape="rect" id="node9" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#adee1f06a38af8a9dd442ccfcd5f3f11e" title="Compute ." alt="" coords="1325,137,1511,177"/>
+<area shape="rect" id="node11" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#abc79187d3edb8fbf4c8ec1d0866b9abe" title="Update the time integration quantities (i.e., , , and )." alt="" coords="807,145,993,185"/>
+<area shape="rect" id="node13" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a00b554c770831deea82a109f93d57ee1" title="Compute the derivative of the velocity with respect to the solution." alt="" coords="1065,73,1250,113"/>
+<area shape="rect" id="node14" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a4fef8dd2a5fb4d5c80be56933ff8628f" title="Compute the weighted sum of the previous velocities." alt="" coords="1309,281,1527,321"/>
+<area shape="rect" id="node18" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#af40959a3d993bbe0a575d2412bed1b06" title="Compute the predicted solution to be used in the inertia term ." alt="" coords="1065,367,1250,407"/>
+<area shape="rect" id="node19" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a6f77c2777ad1e125180a18d5abf2f47b" title="Compute the weighted sum of the previous solutions." alt="" coords="1309,207,1527,247"/>
+<area shape="rect" id="node3" href="$classpolyfem_1_1_state.html#ac42074a324e693f8eef5d7a96a56dc38" title="solves transient navier stokes with FEM" alt="" coords="553,152,737,192"/>
+<area shape="rect" id="node4" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="335,273,496,313"/>
+<area shape="rect" id="node5" href="$main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" title=" " alt="" coords="123,231,271,257"/>
+<area shape="rect" id="node7" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="117,281,278,306"/>
+<area shape="rect" id="node8" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,331,287,371"/>
+<area shape="rect" id="node6" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,231,60,257"/>
+<area shape="rect" id="node10" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#abf301b8b70f17554a716d4d3ade7b27b" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="1053,201,1261,241"/>
+<area shape="rect" id="node12" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a1b0164a957fe05ad87d21f00f3e521c0" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="1065,137,1250,177"/>
+<area shape="rect" id="node15" href="$classpolyfem_1_1_state.html#a09d8bb72177bc7ed3ea1fc1a3aa429d0" title=" " alt="" coords="795,316,1005,356"/>
+<area shape="rect" id="node16" href="$classpolyfem_1_1_state.html#af5afb70dc127d3ce190116321e83f190" title="solves transient linear problem" alt="" coords="565,359,726,399"/>
+<area shape="rect" id="node17" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="544,244,747,284"/>
 </map>

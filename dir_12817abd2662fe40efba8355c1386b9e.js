@@ -1,5 +1,7 @@
 var dir_12817abd2662fe40efba8355c1386b9e =
 [
+    [ "AMIPSEnergy.cpp", "_a_m_i_p_s_energy_8cpp.html", null ],
+    [ "AMIPSEnergy.hpp", "_a_m_i_p_s_energy_8hpp.html", "_a_m_i_p_s_energy_8hpp" ],
     [ "Assembler.cpp", "_assembler_8cpp.html", "_assembler_8cpp" ],
     [ "Assembler.hpp", "_assembler_8hpp.html", "_assembler_8hpp" ],
     [ "AssemblerData.hpp", "_assembler_data_8hpp.html", "_assembler_data_8hpp" ],

@@ -166,9 +166,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a19009346a86585458fb56c159c37dc12"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a19009346a86585458fb56c159c37dc12">acceleration_scaling</a> () const override</td></tr>
 <tr class="memdesc:a19009346a86585458fb56c159c37dc12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the acceleration scaling used to scale forces when integrating a second order ODE.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a19009346a86585458fb56c159c37dc12">More...</a><br /></td></tr>
 <tr class="separator:a19009346a86585458fb56c159c37dc12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1fa3cbf13859811aba33c04ef7db0a5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#aa1fa3cbf13859811aba33c04ef7db0a5">dv_dx</a> () const override</td></tr>
-<tr class="memdesc:aa1fa3cbf13859811aba33c04ef7db0a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the derivative of the velocity with respect to the solution.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#aa1fa3cbf13859811aba33c04ef7db0a5">More...</a><br /></td></tr>
-<tr class="separator:aa1fa3cbf13859811aba33c04ef7db0a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefd945855d7a20b6433fe8d38a155e4d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#aefd945855d7a20b6433fe8d38a155e4d">dv_dx</a> (const unsigned prev_ti=0) const override</td></tr>
+<tr class="memdesc:aefd945855d7a20b6433fe8d38a155e4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the derivative of the velocity with respect to the solution.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#aefd945855d7a20b6433fe8d38a155e4d">More...</a><br /></td></tr>
+<tr class="separator:aefd945855d7a20b6433fe8d38a155e4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d8041c1c701fedf188002c0fdab97a6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a3d8041c1c701fedf188002c0fdab97a6">da_dx</a> (const unsigned prev_ti=0) const</td></tr>
+<tr class="separator:a3d8041c1c701fedf188002c0fdab97a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06343b9fb8c270eaaca03b546dd80494"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a06343b9fb8c270eaaca03b546dd80494">beta</a> () const</td></tr>
 <tr class="memdesc:a06343b9fb8c270eaaca03b546dd80494"><td class="mdescLeft">&#160;</td><td class="mdescRight">\(\beta\) parameter for blending accelerations in the solution update.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a06343b9fb8c270eaaca03b546dd80494">More...</a><br /></td></tr>
 <tr class="separator:a06343b9fb8c270eaaca03b546dd80494"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -204,9 +206,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aed3a8c4dec0c01f69caefae756cb2999 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed3a8c4dec0c01f69caefae756cb2999">acceleration_scaling</a> () const =0</td></tr>
 <tr class="memdesc:aed3a8c4dec0c01f69caefae756cb2999 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the acceleration scaling used to scale forces when integrating a second order ODE.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aed3a8c4dec0c01f69caefae756cb2999">More...</a><br /></td></tr>
 <tr class="separator:aed3a8c4dec0c01f69caefae756cb2999 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a67fbb860dfb3592f2369b82b21cf50 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a8a67fbb860dfb3592f2369b82b21cf50">dv_dx</a> () const =0</td></tr>
-<tr class="memdesc:a8a67fbb860dfb3592f2369b82b21cf50 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the derivative of the velocity with respect to the solution.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a8a67fbb860dfb3592f2369b82b21cf50">More...</a><br /></td></tr>
-<tr class="separator:a8a67fbb860dfb3592f2369b82b21cf50 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2ea9843952763bbfc733ad20e1f4e55 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ae2ea9843952763bbfc733ad20e1f4e55">dv_dx</a> (const unsigned prev_ti=0) const =0</td></tr>
+<tr class="memdesc:ae2ea9843952763bbfc733ad20e1f4e55 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the derivative of the velocity with respect to the solution.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ae2ea9843952763bbfc733ad20e1f4e55">More...</a><br /></td></tr>
+<tr class="separator:ae2ea9843952763bbfc733ad20e1f4e55 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71f55b2644a8023c1310c756a1f42932 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memItemLeft" align="right" valign="top">const double &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932">dt</a> () const</td></tr>
 <tr class="memdesc:a71f55b2644a8023c1310c756a1f42932 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access the time step size.  <a href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932">More...</a><br /></td></tr>
 <tr class="separator:a71f55b2644a8023c1310c756a1f42932 inherit pub_methods_classpolyfem_1_1time__integrator_1_1_implicit_time_integrator"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -354,7 +356,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00035">35</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00064">beta()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00068">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00073">beta()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00069">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -389,15 +391,15 @@ Here is the call graph for this function:</div>
 
 <p>\(\beta\) parameter for blending accelerations in the solution update. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00064">64</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00073">73</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00070">beta_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00079">beta_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_implicit_newmark_8cpp_source.html#l00035">acceleration_scaling()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">compute_velocity()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00040">dv_dx()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00019">x_tilde()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1time__integrator_1_1_implicit_newmark_a06343b9fb8c270eaaca03b546dd80494_icgraph.svg" width="100%" height="505"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1time__integrator_1_1_implicit_newmark_a06343b9fb8c270eaaca03b546dd80494_icgraph.svg" width="100%" height="523"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -445,7 +447,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00030">30</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00092">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00068">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_newmark_8hpp_source.html#l00066">gamma()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00090">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00093">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00069">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_newmark_8hpp_source.html#l00075">gamma()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00091">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_implicit_newmark_8cpp_source.html#l00011">update_quantities()</a>.</p>
 <div class="dynheader">
@@ -507,7 +509,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">24</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00092">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev()</a>, <a class="el" href="_implicit_newmark_8hpp_source.html#l00064">beta()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00068">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_newmark_8hpp_source.html#l00066">gamma()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00090">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00088">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00093">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev()</a>, <a class="el" href="_implicit_newmark_8hpp_source.html#l00073">beta()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00069">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_newmark_8hpp_source.html#l00075">gamma()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00091">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00089">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_implicit_newmark_8cpp_source.html#l00011">update_quantities()</a>.</p>
 <div class="dynheader">
@@ -525,8 +527,44 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="aa1fa3cbf13859811aba33c04ef7db0a5" name="aa1fa3cbf13859811aba33c04ef7db0a5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa1fa3cbf13859811aba33c04ef7db0a5">&#9670;&#160;</a></span>dv_dx()</h2>
+<a id="a3d8041c1c701fedf188002c0fdab97a6" name="a3d8041c1c701fedf188002c0fdab97a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d8041c1c701fedf188002c0fdab97a6">&#9670;&#160;</a></span>da_dx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::time_integrator::ImplicitNewmark::da_dx </td>
+          <td>(</td>
+          <td class="paramtype">const unsigned&#160;</td>
+          <td class="paramname"><em>prev_ti</em> = <code>0</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00052">52</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_implicit_newmark_8cpp_source.html#l00052">da_dx()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00069">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00040">dv_dx()</a>, and <a class="el" href="_implicit_newmark_8hpp_source.html#l00075">gamma()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8cpp_source.html#l00052">da_dx()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00040">dv_dx()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1time__integrator_1_1_implicit_newmark_a3d8041c1c701fedf188002c0fdab97a6_cgraph.svg" width="100%" height="438"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1time__integrator_1_1_implicit_newmark_a3d8041c1c701fedf188002c0fdab97a6_icgraph.svg" width="438" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="aefd945855d7a20b6433fe8d38a155e4d" name="aefd945855d7a20b6433fe8d38a155e4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefd945855d7a20b6433fe8d38a155e4d">&#9670;&#160;</a></span>dv_dx()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -537,7 +575,8 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">double polyfem::time_integrator::ImplicitNewmark::dv_dx </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">const unsigned&#160;</td>
+          <td class="paramname"><em>prev_ti</em> = <code>0</code></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -554,16 +593,40 @@ Here is the caller graph for this function:</div>
     \frac{\partial v}{\partial x} = \frac{\gamma}{\beta\Delta t}
 \]
 </p>
- 
-<p>Implements <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a8a67fbb860dfb3592f2369b82b21cf50">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
+  <p class="formulaDsp">
+\[
+    \frac{\partial v}{\partial x^t} = ?
+\]
+</p>
+  <p class="formulaDsp">
+\[
+    \frac{\partial v}{\partial x^{t-1}} = ?
+\]
+</p>
+ <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">prev_ti</td><td>index of the previous solution to use (0 -&gt; current; 1 -&gt; previous; 2 -&gt; second previous; etc.) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ae2ea9843952763bbfc733ad20e1f4e55">polyfem::time_integrator::ImplicitTimeIntegrator</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00040">40</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00064">beta()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00068">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, and <a class="el" href="_implicit_newmark_8hpp_source.html#l00066">gamma()</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00073">beta()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00052">da_dx()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00069">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00040">dv_dx()</a>, and <a class="el" href="_implicit_newmark_8hpp_source.html#l00075">gamma()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8cpp_source.html#l00052">da_dx()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00040">dv_dx()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1time__integrator_1_1_implicit_newmark_aa1fa3cbf13859811aba33c04ef7db0a5_cgraph.svg" width="448" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1time__integrator_1_1_implicit_newmark_aefd945855d7a20b6433fe8d38a155e4d_cgraph.svg" width="100%" height="464"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1time__integrator_1_1_implicit_newmark_aefd945855d7a20b6433fe8d38a155e4d_icgraph.svg" width="438" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -594,15 +657,15 @@ Here is the call graph for this function:</div>
 
 <p>\(\gamma\) parameter for blending accelerations in the velocity update. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00066">66</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00075">75</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00072">gamma_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00081">gamma_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8cpp_source.html#l00030">compute_acceleration()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">compute_velocity()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00040">dv_dx()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8cpp_source.html#l00030">compute_acceleration()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">compute_velocity()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00052">da_dx()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00040">dv_dx()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1time__integrator_1_1_implicit_newmark_ab002513111de64bdfa2a223e0445375e_icgraph.svg" width="100%" height="457"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1time__integrator_1_1_implicit_newmark_ab002513111de64bdfa2a223e0445375e_icgraph.svg" width="100%" height="493"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -644,7 +707,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00005">5</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00070">beta_</a>, and <a class="el" href="_implicit_newmark_8hpp_source.html#l00072">gamma_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_newmark_8hpp_source.html#l00079">beta_</a>, and <a class="el" href="_implicit_newmark_8hpp_source.html#l00081">gamma_</a>.</p>
 
 </div>
 </div>
@@ -684,7 +747,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00011">11</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_newmark_8cpp_source.html#l00030">compute_acceleration()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">compute_velocity()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00124">polyfem::time_integrator::ImplicitTimeIntegrator::set_a_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00122">polyfem::time_integrator::ImplicitTimeIntegrator::set_v_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00120">polyfem::time_integrator::ImplicitTimeIntegrator::set_x_prev()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_newmark_8cpp_source.html#l00030">compute_acceleration()</a>, <a class="el" href="_implicit_newmark_8cpp_source.html#l00024">compute_velocity()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00125">polyfem::time_integrator::ImplicitTimeIntegrator::set_a_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00123">polyfem::time_integrator::ImplicitTimeIntegrator::set_v_prev()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00121">polyfem::time_integrator::ImplicitTimeIntegrator::set_x_prev()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -729,7 +792,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_implicit_newmark_8cpp_source.html#l00019">19</a> of file <a class="el" href="_implicit_newmark_8cpp_source.html">ImplicitNewmark.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00092">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev()</a>, <a class="el" href="_implicit_newmark_8hpp_source.html#l00064">beta()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00068">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00090">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00088">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00093">polyfem::time_integrator::ImplicitTimeIntegrator::a_prev()</a>, <a class="el" href="_implicit_newmark_8hpp_source.html#l00073">beta()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00069">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00091">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, and <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00089">polyfem::time_integrator::ImplicitTimeIntegrator::x_prev()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -762,9 +825,9 @@ Here is the call graph for this function:</div>
 
 <p>\(\beta\) parameter for blending accelerations in the solution update. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00070">70</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00079">79</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8hpp_source.html#l00064">beta()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00005">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8hpp_source.html#l00073">beta()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00005">set_parameters()</a>.</p>
 
 </div>
 </div>
@@ -790,9 +853,9 @@ Here is the call graph for this function:</div>
 
 <p>\(\gamma\) parameter for blending accelerations in the velocity update. </p>
 
-<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00072">72</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_implicit_newmark_8hpp_source.html#l00081">81</a> of file <a class="el" href="_implicit_newmark_8hpp_source.html">ImplicitNewmark.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8hpp_source.html#l00066">gamma()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00005">set_parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_implicit_newmark_8hpp_source.html#l00075">gamma()</a>, and <a class="el" href="_implicit_newmark_8cpp_source.html#l00005">set_parameters()</a>.</p>
 
 </div>
 </div>

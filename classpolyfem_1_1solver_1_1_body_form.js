@@ -2,7 +2,9 @@ var classpolyfem_1_1solver_1_1_body_form =
 [
     [ "BodyForm", "classpolyfem_1_1solver_1_1_body_form.html#ae79c6932d834cbe1dba199ba0cbfec12", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_body_form.html#a65c2eb2d991ce8c46a32b25656a14db1", null ],
+    [ "force_shape_derivative", "classpolyfem_1_1solver_1_1_body_form.html#a5dd3812e581ac1ca48508abd65fe6c07", null ],
     [ "get_apply_DBC", "classpolyfem_1_1solver_1_1_body_form.html#a479616172545ad47d9f20ffe0205287e", null ],
+    [ "hessian_wrt_u_prev", "classpolyfem_1_1solver_1_1_body_form.html#ae0566a90f9083afa1ed76557c05151a9", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_body_form.html#a1d7d1ae62b781e56482589599116142e", null ],
     [ "set_apply_DBC", "classpolyfem_1_1solver_1_1_body_form.html#a638bd0d14aeb801284b8ffc8b0cbf261", null ],
     [ "update_current_rhs", "classpolyfem_1_1solver_1_1_body_form.html#ac565e4b704690c5a47c2862ca09ce0a1", null ],

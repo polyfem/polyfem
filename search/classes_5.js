@@ -12,6 +12,7 @@ var searchData=
   ['framebufferattributes_9',['FrameBufferAttributes',['../classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html',1,'polyfem::renderer']]],
   ['frankeproblem_10',['FrankeProblem',['../classpolyfem_1_1problem_1_1_franke_problem.html',1,'polyfem::problem']]],
   ['frankeproblemold_11',['FrankeProblemOld',['../classpolyfem_1_1problem_1_1_franke_problem_old.html',1,'polyfem::problem']]],
-  ['frictionform_12',['FrictionForm',['../classpolyfem_1_1solver_1_1_friction_form.html',1,'polyfem::solver']]],
-  ['fullnlproblem_13',['FullNLProblem',['../classpolyfem_1_1solver_1_1_full_n_l_problem.html',1,'polyfem::solver']]]
+  ['frictioncoeffientvariabletosimulation_12',['FrictionCoeffientVariableToSimulation',['../classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html',1,'polyfem::solver']]],
+  ['frictionform_13',['FrictionForm',['../classpolyfem_1_1solver_1_1_friction_form.html',1,'polyfem::solver']]],
+  ['fullnlproblem_14',['FullNLProblem',['../classpolyfem_1_1solver_1_1_full_n_l_problem.html',1,'polyfem::solver']]]
 ];

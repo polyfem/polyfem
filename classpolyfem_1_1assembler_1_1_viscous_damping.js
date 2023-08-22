@@ -12,13 +12,15 @@ var classpolyfem_1_1assembler_1_1_viscous_damping =
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a4741ac33c11937ef36c638c28242db46", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a13177d61bf5a947f5fb58ad53884e0b2", null ],
     [ "compute_stress_aux", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a2345d9fb16bb9da27ffe4a862db11d53", null ],
+    [ "compute_stress_grad", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a47ef9eb627bd216784643381a05e62fd", null ],
     [ "compute_stress_grad_aux", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a8aff59ecb3b7cf563ac42cda836a19fa", null ],
+    [ "compute_stress_prev_grad", "classpolyfem_1_1assembler_1_1_viscous_damping.html#af21744b05c073f5136d90c97b07e3dd9", null ],
+    [ "damping_params", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a69a517e525bbd7e83c99e74e376e28da", null ],
     [ "get_phi", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a60c53c834ec722e919b7b357fbdb99cc", null ],
     [ "get_psi", "classpolyfem_1_1assembler_1_1_viscous_damping.html#afb85b67dc8dc01804a6059e27ddd0615", null ],
     [ "is_valid", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a4094d3897027c843f180305e8e7b2999", null ],
     [ "name", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a89be650e486747f38de8d1f44f939ce8", null ],
     [ "parameters", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a5c2ecbe554404dbf65436b5dd80f9413", null ],
     [ "set_params", "classpolyfem_1_1assembler_1_1_viscous_damping.html#ab3aa41a47ed4d69dafb0fbfe2b2aa3fc", null ],
-    [ "phi_", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a0048710d2ca3c5db66cc96d76a7d7fa6", null ],
-    [ "psi_", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a3ac8c1a5d0f5ecef86350819d09a4ed5", null ]
+    [ "damping_params_", "classpolyfem_1_1assembler_1_1_viscous_damping.html#af830fafceb61fc6a221e1a044a2047d6", null ]
 ];

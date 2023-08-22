@@ -1,12 +1,42 @@
 <map id="polyfem::utils::maybe_parallel_for" name="polyfem::utils::maybe_parallel_for">
-<area shape="rect" id="node1" title=" " alt="" coords="716,163,881,203"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1assembler_1_1_n_l_assembler.html#a5de7744258b1171ceed1f7ddb9f0b201" title=" " alt="" coords="471,5,659,60"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#a78a4eec50d291e10302e5b9274169aad" title=" " alt="" coords="471,84,659,139"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a568826dcf14775118883ecbf6bd72f15" title=" " alt="" coords="469,163,660,203"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a5c307988a8f4f48f0e0b139468eac0e3" title=" " alt="" coords="461,227,668,267"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#aac7143218315642e2c7103e6f69b1774" title=" " alt="" coords="461,291,668,331"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1solver_1_1_body_form.html#ae8e6ef01b568dc58996b461788a420d0" title="Compute the value of the body force form." alt="" coords="215,91,413,131"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b" title="builds the bases step 2 of solve" alt="" coords="235,163,393,203"/>
-<area shape="rect" id="node7" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="59,145,113,171"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="5,195,167,220"/>
+<area shape="rect" id="node1" title=" " alt="" coords="988,822,1153,862"/>
+<area shape="rect" id="node2" href="$classpolyfem_1_1assembler_1_1_n_l_assembler.html#a5de7744258b1171ceed1f7ddb9f0b201" title=" " alt="" coords="727,5,915,60"/>
+<area shape="rect" id="node3" href="$classpolyfem_1_1solver_1_1_transient_form.html#a0d8e31622c6e688c3c6987714239c897" title=" " alt="" coords="721,84,920,139"/>
+<area shape="rect" id="node4" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#a78a4eec50d291e10302e5b9274169aad" title=" " alt="" coords="727,163,915,217"/>
+<area shape="rect" id="node6" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#a91b3995fb0dd7c11f3661876ab89da62" title=" " alt="" coords="715,241,927,296"/>
+<area shape="rect" id="node7" href="$classpolyfem_1_1solver_1_1_transient_form.html#aa570482284f23360e42b4f087be50780" title=" " alt="" coords="705,320,936,375"/>
+<area shape="rect" id="node8" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#aa650adfcea9ae851fdf1642e5171b29b" title=" " alt="" coords="701,399,940,453"/>
+<area shape="rect" id="node15" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#ae883020211d75b1f28aa7a221e151094" title=" " alt="" coords="719,477,923,532"/>
+<area shape="rect" id="node17" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#afd1c5f4891c34a48045ce552f6f28e3f" title=" " alt="" coords="731,557,910,597"/>
+<area shape="rect" id="node19" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#a5ac63404b8f363b91018bbb64975f76e" title=" " alt="" coords="724,621,917,676"/>
+<area shape="rect" id="node21" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#a7e609116916d3b45b0361f0b93629a55" title=" " alt="" coords="731,700,910,755"/>
+<area shape="rect" id="node22" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#a8c5bd48aac94f33974b81900015f979b" title=" " alt="" coords="719,779,922,833"/>
+<area shape="rect" id="node24" href="$classpolyfem_1_1solver_1_1_elastic_form.html#a4cd17b1d3a5510cccdc6b59084e165cd" title="Compute the derivative of the force wrt lame/damping parameters, then multiply the resulting matrix w..." alt="" coords="705,858,936,898"/>
+<area shape="rect" id="node25" href="$classpolyfem_1_1solver_1_1_inertia_form.html#ae4a6e56fdad0440265869c7ea7a94d93" title=" " alt="" coords="713,922,928,962"/>
+<area shape="rect" id="node26" href="$classpolyfem_1_1solver_1_1_body_form.html#a5dd3812e581ac1ca48508abd65fe6c07" title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj..." alt="" coords="721,986,920,1026"/>
+<area shape="rect" id="node27" href="$classpolyfem_1_1solver_1_1_elastic_form.html#a3f5a989495a7a288ab2bd7ba54535822" title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj..." alt="" coords="713,1050,928,1090"/>
+<area shape="rect" id="node28" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a568826dcf14775118883ecbf6bd72f15" title=" " alt="" coords="725,1114,916,1154"/>
+<area shape="rect" id="node33" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#a4c93693417aa7c2cf7f03e5bd0ac03dd" title=" " alt="" coords="726,1178,915,1218"/>
+<area shape="rect" id="node35" href="$classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a5c307988a8f4f48f0e0b139468eac0e3" title=" " alt="" coords="717,1242,924,1282"/>
+<area shape="rect" id="node36" href="$classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#aac7143218315642e2c7103e6f69b1774" title=" " alt="" coords="717,1306,924,1346"/>
+<area shape="rect" id="node37" href="$classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#ac89accbf89e18855baeb901c88c09eb2" title=" " alt="" coords="731,1370,910,1410"/>
+<area shape="rect" id="node39" href="$classpolyfem_1_1solver_1_1_transient_form.html#a21567315041e870c6169a9e175ff4b10" title="Compute the value of the form." alt="" coords="725,1434,916,1474"/>
+<area shape="rect" id="node40" href="$classpolyfem_1_1solver_1_1_max_stress_form.html#aeaad05aea4edff2bc31a667c7e4770c9" title=" " alt="" coords="712,1498,929,1538"/>
+<area shape="rect" id="node5" href="$classpolyfem_1_1solver_1_1_body_form.html#ae8e6ef01b568dc58996b461788a420d0" title="Compute the value of the body force form." alt="" coords="421,170,619,210"/>
+<area shape="rect" id="node9" href="$classpolyfem_1_1solver_1_1_spatial_integral_form.html#a215cb78e5ae1ccc9a4ddd1e35a91658d" title=" " alt="" coords="395,396,645,451"/>
+<area shape="rect" id="node10" href="$classpolyfem_1_1solver_1_1_elastic_energy_form.html#a297e740b9c30353e734397679719a7ee" title=" " alt="" coords="116,239,331,293"/>
+<area shape="rect" id="node11" href="$classpolyfem_1_1solver_1_1_stress_norm_form.html#a5833930db4dcea6badebdf727c9d7baa" title=" " alt="" coords="108,317,339,372"/>
+<area shape="rect" id="node12" href="$classpolyfem_1_1solver_1_1_compliance_form.html#af7eba4310771b49215ceb4bd1c863876" title=" " alt="" coords="108,396,339,451"/>
+<area shape="rect" id="node13" href="$classpolyfem_1_1solver_1_1_stress_form.html#af831d0f221b997432f4a484d3444cf44" title=" " alt="" coords="121,475,326,529"/>
+<area shape="rect" id="node14" href="$classpolyfem_1_1solver_1_1_disp_grad_form.html#a2a90d292c4c9fa8cdca6a0b0aaef9a4c" title=" " alt="" coords="108,553,339,608"/>
+<area shape="rect" id="node16" href="$classpolyfem_1_1solver_1_1_damping_coeffient_variable_to_simulation.html#a71759bd7ccaffbc2b6b191106be7e94d" title=" " alt="" coords="411,475,629,529"/>
+<area shape="rect" id="node18" href="$classpolyfem_1_1solver_1_1_spatial_integral_form.html#ae6d0bea38bff2aebee5b30d56afd29f1" title=" " alt="" coords="411,553,629,608"/>
+<area shape="rect" id="node20" href="$classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#a3f07e6f8d3dccd177ae47eb6eb07a55b" title=" " alt="" coords="411,632,629,687"/>
+<area shape="rect" id="node23" href="$classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#a22c326ff74722077734beaccc1301647" title=" " alt="" coords="433,779,607,833"/>
+<area shape="rect" id="node29" href="$classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b" title="builds the bases step 2 of solve" alt="" coords="441,1114,599,1154"/>
+<area shape="rect" id="node30" href="$main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" title=" " alt="" coords="149,1096,297,1121"/>
+<area shape="rect" id="node32" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="143,1145,304,1171"/>
+<area shape="rect" id="node31" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,1096,60,1121"/>
+<area shape="rect" id="node34" href="$classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac5641105d5303178b79b4c23ef0d7387" title=" " alt="" coords="387,1178,653,1218"/>
+<area shape="rect" id="node38" href="$classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a9e400a4eb1a5fefdec09ff9184e8c363" title=" " alt="" coords="413,1370,627,1410"/>
 </map>

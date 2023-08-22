@@ -1,24 +1,26 @@
 <map id="polyfem::mesh::Mesh::is_boundary_element" name="polyfem::mesh::Mesh::is_boundary_element">
-<area shape="rect" id="node1" title="is cell boundary" alt="" coords="1903,133,2073,173"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a00efe14eb0828837150f06a2ddb20c9c" title="builds visualzation mesh, upsampled mesh used for visualization the visualization mesh is a dense mes..." alt="" coords="1663,5,1855,45"/>
-<area shape="rect" id="node18" href="$classpolyfem_1_1io_1_1_evaluator.html#a9ee846c35328f2e866b83b7cb17cdb2f" title="checks if mises are not nan" alt="" coords="1675,69,1842,109"/>
-<area shape="rect" id="node19" href="$classpolyfem_1_1io_1_1_evaluator.html#af943b83dd7b643edae1ac15096d386cd" title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)" alt="" coords="1671,197,1847,237"/>
-<area shape="rect" id="node21" href="$classpolyfem_1_1io_1_1_evaluator.html#a4ba83419056824fdae4d81cca72a1e94" title="compute tensor quantity (ie stress tensor or velocy)" alt="" coords="1669,133,1848,173"/>
-<area shape="rect" id="node22" href="$classpolyfem_1_1io_1_1_evaluator.html#a4462bc654fb511f3cff3c2e90158bf5d" title="interpolate the function fun." alt="" coords="1675,261,1842,301"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a79dfcef5587ebfc0a492f4beff251d01" title="saves the volume vtu file" alt="" coords="1423,133,1615,173"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aa3fbccda3a6e6f7fd5a7b3bcbd146793" title="saves the vtu file for time t" alt="" coords="1183,165,1375,205"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a9826defd7d8f3c4c12df2ba9c4c45320" title="exports everytihng, txt, vtu, etc" alt="" coords="943,80,1135,120"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1_state.html#a29b1283c20475e19b79a39cd324ac5aa" title="saves a subsolve when save_solve_sequence_debug is true" alt="" coords="960,165,1117,205"/>
-<area shape="rect" id="node13" href="$classpolyfem_1_1_state.html#a442fa686e1d08a0a104f3869a6fa2948" title="saves a timestep" alt="" coords="735,272,893,312"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e" title="saves all data on the disk according to the input params" alt="" coords="215,133,419,158"/>
-<area shape="rect" id="node7" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="59,194,113,219"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1_state.html#acdb194af25d840fa14cec97b19e04577" title="solves nonlinear problems" alt="" coords="733,165,895,205"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="236,240,397,280"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="475,176,677,216"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="5,247,167,273"/>
-<area shape="rect" id="node14" href="$classpolyfem_1_1_state.html#ac5c4dd2be369c759c68e0a36a45bfcc7" title="initialize solver" alt="" coords="503,240,649,280"/>
-<area shape="rect" id="node15" href="$classpolyfem_1_1_state.html#af5afb70dc127d3ce190116321e83f190" title="solves transient linear problem" alt="" coords="495,304,657,344"/>
-<area shape="rect" id="node16" href="$classpolyfem_1_1_state.html#ac42074a324e693f8eef5d7a96a56dc38" title="solves transient navier stokes with FEM" alt="" coords="484,368,668,408"/>
-<area shape="rect" id="node17" href="$classpolyfem_1_1_state.html#a9fa28a682c746974ee171d8cfa6a8558" title="solves transient navier stokes with operator splitting" alt="" coords="467,432,685,472"/>
-<area shape="rect" id="node20" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a25fe9752910991469a316afa6687dcde" title="saves the wireframe" alt="" coords="1423,197,1615,237"/>
+<area shape="rect" id="node1" title="is cell boundary" alt="" coords="2023,133,2193,173"/>
+<area shape="rect" id="node2" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a00efe14eb0828837150f06a2ddb20c9c" title="builds visualzation mesh, upsampled mesh used for visualization the visualization mesh is a dense mes..." alt="" coords="1783,5,1975,45"/>
+<area shape="rect" id="node20" href="$classpolyfem_1_1io_1_1_evaluator.html#a9ee846c35328f2e866b83b7cb17cdb2f" title="checks if mises are not nan" alt="" coords="1795,69,1962,109"/>
+<area shape="rect" id="node21" href="$classpolyfem_1_1io_1_1_evaluator.html#af943b83dd7b643edae1ac15096d386cd" title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)" alt="" coords="1791,197,1967,237"/>
+<area shape="rect" id="node23" href="$classpolyfem_1_1io_1_1_evaluator.html#a4ba83419056824fdae4d81cca72a1e94" title="compute tensor quantity (ie stress tensor or velocy)" alt="" coords="1789,133,1968,173"/>
+<area shape="rect" id="node24" href="$classpolyfem_1_1io_1_1_evaluator.html#a4462bc654fb511f3cff3c2e90158bf5d" title="interpolate the function fun." alt="" coords="1795,261,1962,301"/>
+<area shape="rect" id="node3" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a79dfcef5587ebfc0a492f4beff251d01" title="saves the volume vtu file" alt="" coords="1543,133,1735,173"/>
+<area shape="rect" id="node4" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aa3fbccda3a6e6f7fd5a7b3bcbd146793" title="saves the vtu file for time t" alt="" coords="1303,165,1495,205"/>
+<area shape="rect" id="node5" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a9826defd7d8f3c4c12df2ba9c4c45320" title="exports everytihng, txt, vtu, etc" alt="" coords="1063,80,1255,120"/>
+<area shape="rect" id="node9" href="$classpolyfem_1_1_state.html#a29b1283c20475e19b79a39cd324ac5aa" title="saves a subsolve when save_solve_sequence_debug is true" alt="" coords="1080,165,1237,205"/>
+<area shape="rect" id="node15" href="$classpolyfem_1_1_state.html#a442fa686e1d08a0a104f3869a6fa2948" title="saves a timestep" alt="" coords="855,272,1013,312"/>
+<area shape="rect" id="node6" href="$classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e" title="saves all data on the disk according to the input params" alt="" coords="335,163,539,189"/>
+<area shape="rect" id="node7" href="$main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" title=" " alt="" coords="123,178,271,203"/>
+<area shape="rect" id="node8" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,178,60,203"/>
+<area shape="rect" id="node10" href="$classpolyfem_1_1_state.html#acdb194af25d840fa14cec97b19e04577" title="solves nonlinear problems" alt="" coords="853,165,1015,205"/>
+<area shape="rect" id="node11" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="356,240,517,280"/>
+<area shape="rect" id="node14" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="595,176,797,216"/>
+<area shape="rect" id="node12" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="117,231,278,257"/>
+<area shape="rect" id="node13" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,281,287,321"/>
+<area shape="rect" id="node16" href="$classpolyfem_1_1_state.html#ac5c4dd2be369c759c68e0a36a45bfcc7" title="initialize solver" alt="" coords="623,240,769,280"/>
+<area shape="rect" id="node17" href="$classpolyfem_1_1_state.html#af5afb70dc127d3ce190116321e83f190" title="solves transient linear problem" alt="" coords="615,304,777,344"/>
+<area shape="rect" id="node18" href="$classpolyfem_1_1_state.html#ac42074a324e693f8eef5d7a96a56dc38" title="solves transient navier stokes with FEM" alt="" coords="604,368,788,408"/>
+<area shape="rect" id="node19" href="$classpolyfem_1_1_state.html#a9fa28a682c746974ee171d8cfa6a8558" title="solves transient navier stokes with operator splitting" alt="" coords="587,432,805,472"/>
+<area shape="rect" id="node22" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a25fe9752910991469a316afa6687dcde" title="saves the wireframe" alt="" coords="1543,197,1735,237"/>
 </map>

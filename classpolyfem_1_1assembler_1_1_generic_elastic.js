@@ -13,6 +13,9 @@ var classpolyfem_1_1assembler_1_1_generic_elastic =
     [ "assign_stress_tensor", "classpolyfem_1_1assembler_1_1_generic_elastic.html#aae6773a035aaa4045d429282f65b7ee6", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_generic_elastic.html#ad98572dfc1d43134a9d1e2cb985290e1", null ],
     [ "compute_energy_aux", "classpolyfem_1_1assembler_1_1_generic_elastic.html#adf501147e2009ccc941abb36db4cf911", null ],
+    [ "compute_stress_grad_multiply_mat", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a34f57d278c53c182c80b9e7a68efe293", null ],
+    [ "compute_stress_grad_multiply_stress", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a08cd8087b6675a082e2668eb32366f0a", null ],
+    [ "compute_stress_grad_multiply_vect", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a1ea7435a1c0493e24d3bd9dc07339b13", null ],
     [ "derived", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a4637a1b610240c23e12a5c68aef2505a", null ],
     [ "derived", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a54697166c61b941694dbb0232b27bd2b", null ]
 ];
