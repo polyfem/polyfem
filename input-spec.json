@@ -2753,8 +2753,8 @@
             "HookeLinearElasticity",
             "SaintVenant",
             "NeoHookean",
-            "NeoHookeanAutodiff",
             "MooneyRivlin",
+            "MooneyRivlin3Param",
             "UnconstrainedOgden",
             "IncompressibleOgden",
             "Stokes",
@@ -2790,8 +2790,12 @@
     {
         "pointer": "/materials/*/c3",
         "type": "float",
-        "default": 0,
-        "doc": "Optional Third Parameter for 3 parameter Mooney-Rivlin"
+        "doc": "Third Parameter for 3 parameter Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/d1",
+        "type": "float",
+        "doc": "Fourth Parameter for 3 parameter Mooney-Rivlin"
     },
     {
         "pointer": "/materials/*/alphas",
