@@ -9,6 +9,7 @@
 #include <polyfem/assembler/LinearElasticity.hpp>
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MooneyRivlinElasticity.hpp>
+#include <polyfem/assembler/AMIPSEnergy.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
 #include <polyfem/assembler/NavierStokes.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
@@ -83,6 +84,9 @@ namespace polyfem
 				return std::make_shared<NavierStokesVelocity>();
 			else if (formulation == "OperatorSplitting")
 				return std::make_shared<OperatorSplitting>();
+			
+			else if (formulation == "AMIPS")
+				return std::make_shared<AMIPSEnergy>();
 
 			log_and_throw_error("Inavalid assembler name {}", formulation);
 		}

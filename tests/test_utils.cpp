@@ -5,6 +5,7 @@
 #include <polyfem/utils/ExpressionValue.hpp>
 #include <polyfem/io/MshReader.hpp>
 #include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #ifdef POLYFEM_WITH_REMESHING
 #include <wmtk/TriMesh.h>
@@ -111,6 +112,20 @@ TEST_CASE("mshreader", "[utils]")
 	Eigen::MatrixXi cells;
 	const auto mesh = Mesh::create(path + "/circle2.msh");
 	REQUIRE(mesh);
+}
+
+TEST_CASE("inverse", "[utils]")
+{
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat = Eigen::MatrixXd::Random(1, 1);
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat2 = Eigen::MatrixXd::Random(2, 2);
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat3 = Eigen::MatrixXd::Random(3, 3);
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat_inv = mat.inverse();
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat2_inv = mat2.inverse();
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat3_inv = mat3.inverse();
+
+	REQUIRE(((utils::inverse(mat) - mat_inv)).norm() == Catch::Approx(0).margin(1e-12));
+	REQUIRE(((utils::inverse(mat2) - mat2_inv)).norm() == Catch::Approx(0).margin(1e-12));
+	REQUIRE(((utils::inverse(mat3) - mat3_inv)).norm() == Catch::Approx(0).margin(1e-12));
 }
 
 #ifdef POLYFEM_WITH_REMESHING

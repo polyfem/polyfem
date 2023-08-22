@@ -2,6 +2,7 @@ set(SOURCES
 	StateInit.cpp
 	StateLoad.cpp
 	StateSolve.cpp
+	StateDiff.cpp
 	StateSolveLinear.cpp
 	StateSolveNavierStokes.cpp
 	StateSolveNonlinear.cpp

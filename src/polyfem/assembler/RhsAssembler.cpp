@@ -4,7 +4,7 @@
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
-
+#include <ipc/utils/eigen_ext.hpp>
 #include <polysolve/LinearSolver.hpp>
 
 namespace polyfem
@@ -871,6 +871,200 @@ namespace polyfem
 			}
 
 			return res;
+		}
+
+		void RhsAssembler::compute_energy_hess(
+			const std::vector<int> &bounday_nodes,
+			const int resolution,
+			const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
+			const Eigen::MatrixXd &displacement,
+			const double t,
+			const bool project_to_psd,
+			StiffnessMatrix &hess) const
+		{
+			hess.resize(n_basis_ * size_, n_basis_ * size_);
+			if (displacement.size() == 0)
+				return;
+
+			std::vector<Eigen::Triplet<double>> entries, entries_t;
+
+			ElementAssemblyValues vals;
+			Eigen::MatrixXd uv, samples, gtmp, rhs_fun, deform_mat, jac_mat, trafo;
+			Eigen::VectorXi global_primitive_ids;
+			Eigen::MatrixXd points, normals;
+			Eigen::VectorXd weights;
+			Eigen::MatrixXd local_hessian;
+
+			for (const auto &lb : local_neumann_boundary)
+			{
+				const int e = lb.element_id();
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, points, normals, weights, global_primitive_ids);
+
+				if (!has_samples)
+					continue;
+
+				const basis::ElementBases &gbs = gbases_[e];
+				const basis::ElementBases &bs = bases_[e];
+
+				Eigen::MatrixXd reference_normals = normals;
+
+				vals.compute(e, mesh_.is_volume(), points, bs, gbs);
+
+				std::vector<std::vector<Eigen::MatrixXd>> grad_normal;
+				for (int n = 0; n < vals.jac_it.size(); ++n)
+				{
+					trafo = vals.jac_it[n].inverse();
+
+					assert(size_ == 2 || size_ == 3);
+					deform_mat.resize(size_, size_);
+					deform_mat.setZero();
+					jac_mat.resize(size_, vals.basis_values.size());
+					int b_idx = 0;
+					for (const auto &b : vals.basis_values)
+					{
+						jac_mat.col(b_idx++) = b.grad.row(n);
+
+						for (const auto &g : b.global)
+							for (int d = 0; d < size_; ++d)
+								deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
+					}
+
+					trafo += deform_mat;
+					trafo = trafo.inverse();
+
+					Eigen::VectorXd displaced_normal = normals.row(n) * trafo;
+					normals.row(n) = displaced_normal / displaced_normal.norm();
+
+					std::vector<Eigen::MatrixXd> grad;
+					{
+						Eigen::MatrixXd vec = -(jac_mat.transpose() * trafo * reference_normals.row(n).transpose());
+						// Gradient of the displaced normal computation
+						for (int k = 0; k < size_; ++k)
+						{
+							Eigen::MatrixXd grad_i(jac_mat.rows(), jac_mat.cols());
+							grad_i.setZero();
+							for (int m = 0; m < jac_mat.rows(); ++m)
+								for (int l = 0; l < jac_mat.cols(); ++l)
+									grad_i(m, l) = -(reference_normals.row(n) * trafo)(m) * (jac_mat.transpose() * trafo)(l, k);
+							grad.push_back(grad_i);
+						}
+					}
+
+					{
+						Eigen::MatrixXd normalization_chain_rule = (normals.row(n).transpose() * normals.row(n));
+						normalization_chain_rule = Eigen::MatrixXd::Identity(size_, size_) - normalization_chain_rule;
+						normalization_chain_rule /= displaced_normal.norm();
+
+						Eigen::VectorXd vec(size_);
+						b_idx = 0;
+						for (const auto &b : vals.basis_values)
+						{
+							for (int d = 0; d < size_; ++d)
+							{
+								for (int k = 0; k < size_; ++k)
+									vec(k) = grad[k](d, b_idx);
+								vec = normalization_chain_rule * vec;
+								for (int k = 0; k < size_; ++k)
+									grad[k](d, b_idx) = vec(k);
+							}
+							b_idx++;
+						}
+					}
+
+					grad_normal.push_back(grad);
+				}
+				Eigen::MatrixXd rhs_fun;
+				problem_.neumann_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, rhs_fun);
+
+				for (int i = 0; i < lb.size(); ++i)
+				{
+					const int primitive_global_id = lb.global_primitive_id(i);
+					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
+
+					const bool is_pressure = problem_.is_boundary_pressure(mesh_.get_boundary_id(primitive_global_id));
+					if (!is_pressure)
+						continue;
+
+					local_hessian.setZero(vals.basis_values.size() * size_, vals.basis_values.size() * size_);
+
+					for (long n = 0; n < nodes.size(); ++n)
+					{
+						// const auto &b = bs.bases[nodes(n)];
+						const AssemblyValues &v = vals.basis_values[nodes(n)];
+						for (int d = 0; d < size_; ++d)
+						{
+							for (size_t g = 0; g < v.global.size(); ++g)
+							{
+								const int g_index = v.global[g].index * size_ + d;
+								const bool is_neumann = std::find(bounday_nodes.begin(), bounday_nodes.end(), g_index) == bounday_nodes.end();
+
+								if (is_neumann)
+								{
+									for (long ni = 0; ni < nodes.size(); ++ni)
+									{
+										const AssemblyValues &vi = vals.basis_values[nodes(ni)];
+										for (int di = 0; di < size_; ++di)
+										{
+											for (size_t gi = 0; gi < vi.global.size(); ++gi)
+											{
+												const int gi_index = vi.global[gi].index * size_ + di;
+												double value = 0;
+
+												for (int q = 0; q < vals.jac_it.size(); ++q)
+												{
+													double pressure_val = rhs_fun.row(q).dot(normals.row(q));
+
+													// value += grad_normal[ni](d, nodes(ni) * size_ + di) * pressure_val * weights(q) * vi.val(q);
+													value += grad_normal[q][d](di, nodes(ni)) * pressure_val * weights(q) * vi.val(q);
+												}
+
+												value *= v.global[g].val;
+
+												const bool is_neumann_i = std::find(bounday_nodes.begin(), bounday_nodes.end(), gi_index) == bounday_nodes.end();
+
+												if (is_neumann_i)
+												{
+													local_hessian(nodes(n) * size_ + d, nodes(ni) * size_ + di) = value;
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+
+					if (project_to_psd)
+						local_hessian = ipc::project_to_psd(local_hessian);
+
+					for (long n = 0; n < nodes.size(); ++n)
+					{
+						const AssemblyValues &v = vals.basis_values[nodes(n)];
+						for (int d = 0; d < size_; ++d)
+						{
+							for (size_t g = 0; g < v.global.size(); ++g)
+							{
+								const int g_index = v.global[g].index * size_ + d;
+
+								for (long ni = 0; ni < nodes.size(); ++ni)
+								{
+									const AssemblyValues &vi = vals.basis_values[nodes(ni)];
+									for (int di = 0; di < size_; ++di)
+									{
+										for (size_t gi = 0; gi < vi.global.size(); ++gi)
+										{
+											const int gi_index = vi.global[gi].index * size_ + di;
+											entries.push_back(Eigen::Triplet<double>(g_index, gi_index, local_hessian(nodes(n) * size_ + d, nodes(ni) * size_ + di)));
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			hess.setFromTriplets(entries.begin(), entries.end());
 		}
 	} // namespace assembler
 } // namespace polyfem

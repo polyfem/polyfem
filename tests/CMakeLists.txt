@@ -1,10 +1,12 @@
-################################################################################
+# ###############################################################################
 # Tests
-################################################################################
+# ###############################################################################
 
 set(test_sources
   test_assembler.cpp
   test_bases.cpp
+  test_diff.cpp
+  test_opt.cpp
   test_cmesh.cpp
   test_form_derivatives.cpp
   test_geometry_utils.cpp
@@ -14,6 +16,7 @@ set(test_sources
   test_ncmesh.cpp
   test_normal.cpp
   test_output.cpp
+  test_parametrizations.cpp
   test_problem.cpp
   test_quadrature.cpp
   test_rbf.cpp

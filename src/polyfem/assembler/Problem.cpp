@@ -15,6 +15,7 @@ namespace polyfem
 
 		void Problem::setup_bc(const Mesh &mesh,
 							   const int n_bases, const std::vector<ElementBases> &bases,
+							   const std::vector<basis::ElementBases> &geom_bases,
 							   const std::vector<ElementBases> &pressure_bases,
 							   std::vector<LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes,
 							   std::vector<LocalBoundary> &local_neumann_boundary,
@@ -24,6 +25,7 @@ namespace polyfem
 			std::vector<LocalBoundary> new_local_boundary;
 			std::vector<LocalBoundary> new_local_pressure_dirichlet_boundary;
 			local_neumann_boundary.clear();
+			
 			for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
 			{
 				const auto &lb = *it;

@@ -1494,6 +1494,7 @@
         "optional": [
             "enable_overwrite_solver",
             "solver",
+            "adjoint_solver",
             "precond",
             "Eigen::LeastSquaresConjugateGradient",
             "Eigen::DGMRES",
@@ -1525,6 +1526,32 @@
             "Eigen::UmfPackLU",
             "Eigen::SuperLU",
             "Eigen::PardisoLDLT",
+            "Eigen::PardisoLLT",
+            "Eigen::PardisoLU",
+            "Pardiso",
+            "Hypre",
+            "AMGCL",
+            "Eigen::LeastSquaresConjugateGradient",
+            "Eigen::DGMRES",
+            "Eigen::ConjugateGradient",
+            "Eigen::BiCGSTAB",
+            "Eigen::GMRES",
+            "Eigen::MINRES"
+        ]
+    },
+    {
+        "pointer": "/solver/linear/adjoint_solver",
+        "default": "",
+        "type": "string",
+        "doc": "Adjoint linear solver type.",
+        "options": [
+            "Eigen::SimplicialLDLT",
+            "Eigen::SparseLU",
+            "Eigen::CholmodSupernodalLLT",
+            "Eigen::UmfPackLU",
+            "Eigen::SuperLU",
+            "Eigen::PardisoLDLT",
+            "Eigen::PardisoLLT",
             "Eigen::PardisoLU",
             "Pardiso",
             "Hypre",
@@ -1932,6 +1959,7 @@
         "type": "string",
         "options": [
             "newton",
+            "gradient_descent",
             "lbfgs"
         ],
         "doc": "Nonlinear solver type"
@@ -2537,6 +2565,18 @@
         "doc": "Material Parameters including ID, density ($\\rho$)"
     },
     {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "AMIPS",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "id"
+        ],
+        "doc": "Material Parameters including ID"
+    },
+    {
         "pointer": "/materials/*/id",
         "type": "int",
         "default": 0,
@@ -2628,7 +2668,8 @@
             "IncompressibleLinearElasticity",
             "Laplacian",
             "Helmholtz",
-            "Bilaplacian"
+            "Bilaplacian",
+            "AMIPS"
         ],
         "doc": "Type of material"
     },
@@ -3795,6 +3836,7 @@
             "body_ids",
             "contact_forces",
             "friction_forces",
+            "tensor_values",
             "velocity",
             "acceleration",
             "forces"
@@ -3830,6 +3872,12 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out friction forces for surface"
+    },
+    {
+        "pointer": "/output/paraview/options/tensor_values",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, write out stress values for volume"
     },
     {
         "pointer": "/output/paraview/options/velocity",

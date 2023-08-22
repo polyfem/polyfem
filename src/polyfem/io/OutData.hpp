@@ -52,6 +52,7 @@ namespace polyfem::io
 			bool contact_forces;
 			bool friction_forces;
 			bool forces;
+			bool tensor_values;
 
 			bool use_sampler;
 			bool boundary_only;
