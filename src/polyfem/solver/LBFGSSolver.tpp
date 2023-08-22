@@ -10,6 +10,7 @@ namespace cppoptlib
 	LBFGSSolver<ProblemType>::LBFGSSolver(const json &solver_params, const double dt, const double characteristic_length)
 		: Superclass(solver_params, dt, characteristic_length)
 	{
+		m_history_size = solver_params.value("history_size", 6);
 	}
 
 	template <typename ProblemType>

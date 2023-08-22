@@ -29,6 +29,52 @@ namespace polyfem
 			return T(0);
 		}
 
+		template <typename T>
+		Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> inverse(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &mat)
+		{
+			assert(mat.rows() == mat.cols());
+
+			if (mat.rows() == 1)
+			{
+				Eigen::Matrix<T, 1, 1> inv;
+				inv(0, 0) = T(1.) / mat(0);
+
+				return inv;
+			}
+			else if (mat.rows() == 2)
+			{
+				Eigen::Matrix<T, 2, 2> inv;
+				T det = determinant(mat);
+				inv(0, 0) = mat(1, 1) / det;
+				inv(0, 1) = -mat(0, 1) / det;
+				inv(1, 0) = -mat(1, 0) / det;
+				inv(1, 1) = mat(0, 0) / det;
+
+				return inv;
+			}
+			else if (mat.rows() == 3)
+			{
+				Eigen::Matrix<T, 3, 3> inv;
+				T det = determinant(mat);
+				inv(0, 0) = (-mat(1, 2) * mat(2, 1) + mat(1, 1) * mat(2, 2)) / det;
+				inv(0, 1) = (mat(0, 2) * mat(2, 1) - mat(0, 1) * mat(2, 2)) / det;
+				inv(0, 2) = (-mat(0, 2) * mat(1, 1) + mat(0, 1) * mat(1, 2)) / det;
+				inv(1, 0) = (mat(1, 2) * mat(2, 0) - mat(1, 0) * mat(2, 2)) / det;
+				inv(1, 1) = (-mat(0, 2) * mat(2, 0) + mat(0, 0) * mat(2, 2)) / det;
+				inv(1, 2) = (mat(0, 2) * mat(1, 0) - mat(0, 0) * mat(1, 2)) / det;
+				inv(2, 0) = (-mat(1, 1) * mat(2, 0) + mat(1, 0) * mat(2, 1)) / det;
+				inv(2, 1) = (mat(0, 1) * mat(2, 0) - mat(0, 0) * mat(2, 1)) / det;
+				inv(2, 2) = (-mat(0, 1) * mat(1, 0) + mat(0, 0) * mat(1, 1)) / det;
+
+				return inv;
+			}
+
+			assert(false);
+			Eigen::Matrix<T, 1, 1> inv;
+			inv(0, 0) = T(0);
+			return inv;
+		}
+
 		inline Eigen::SparseMatrix<double> sparse_identity(int rows, int cols)
 		{
 			Eigen::SparseMatrix<double> I(rows, cols);
@@ -97,6 +143,8 @@ namespace polyfem
 
 		/// Unflatten rowwises, so every dim elements in x become a row.
 		Eigen::MatrixXd unflatten(const Eigen::VectorXd &x, int dim);
+
+		void vector2matrix(const Eigen::VectorXd &vec, Eigen::MatrixXd &mat);
 
 		/// @brief Lump each row of a matrix into the diagonal.
 		/// @param M Matrix to lump.

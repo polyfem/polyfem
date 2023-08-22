@@ -127,6 +127,8 @@ target_compile_definitions(polyfem PUBLIC -DPOLYFEM_SMALL_N=${POLYFEM_SMALL_N})
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
 
 target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${CMAKE_SOURCE_DIR}/input-spec.json")
+target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${CMAKE_SOURCE_DIR}/opt-input-spec.json")
+target_compile_definitions(polyfem PUBLIC POLYFEM_OBJECTIVE_INPUT_SPEC="${CMAKE_SOURCE_DIR}/objective-spec.json")
 
 if (MSVC)
     add_compile_options(/bigobj)
@@ -244,7 +246,7 @@ target_link_libraries(polyfem PUBLIC Glob::Glob)
 
 # polysolve
 include(units)
-polyfem_target_link_system_libraries(polyfem PUBLIC units::units)
+target_link_libraries(polyfem PUBLIC units::units)
 
 ################################################################################
 # Optional libraries

@@ -335,6 +335,12 @@ namespace polyfem::assembler
 			mu = mmu;
 		}
 
+		if (lambda_mat_.size() > el_id && mu_mat_.size() > el_id)
+		{
+			lambda = lambda_mat_(el_id);
+			mu = mu_mat_(el_id);
+		}
+		
 		assert(!std::isnan(lambda));
 		assert(!std::isnan(mu));
 		assert(!std::isinf(lambda));

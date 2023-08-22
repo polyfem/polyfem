@@ -96,6 +96,7 @@ namespace polyfem::solver
 			const ipc::BroadPhaseMethod broad_phase,
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
+			const bool enable_shape_derivatives,
 
 			// Friction form
 			const double friction_coefficient,

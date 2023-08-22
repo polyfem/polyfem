@@ -71,6 +71,7 @@ namespace polyfem::solver
 		const ipc::BroadPhaseMethod broad_phase,
 		const double ccd_tolerance,
 		const long ccd_max_iterations,
+		const bool enable_shape_derivatives,
 
 		// Friction form
 		const double friction_coefficient,
@@ -160,7 +161,7 @@ namespace polyfem::solver
 
 			contact_form = std::make_shared<ContactForm>(
 				collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
-				use_adaptive_barrier_stiffness, is_time_dependent, broad_phase, ccd_tolerance * units.characteristic_length(),
+				use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
 				ccd_max_iterations);
 
 			if (use_adaptive_barrier_stiffness)
