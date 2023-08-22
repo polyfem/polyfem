@@ -1,5 +1,8 @@
 #pragma once
 
+#include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/LocalBoundary.hpp>
+#include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Core>
@@ -62,4 +65,13 @@ namespace polyfem::mesh
 		Eigen::MatrixXd &V_out,
 		Eigen::MatrixXi &F_out);
 #endif
+
+	void build_collision_proxy(
+		const mesh::Mesh &mesh,
+		const int n_bases,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<mesh::LocalBoundary> &total_local_boundary,
+		Eigen::MatrixXd &proxy_vertices,
+		Eigen::MatrixXi &proxy_faces,
+		Eigen::SparseMatrix<double> &displacement_map);
 } // namespace polyfem::mesh

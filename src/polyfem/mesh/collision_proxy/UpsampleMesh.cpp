@@ -240,4 +240,26 @@ namespace polyfem::mesh
 		stitch_mesh(V_tmp, F_tmp, V_out, F_out);
 	}
 #endif
+
+	void build_collision_proxy(
+		const mesh::Mesh &mesh,
+		const int n_bases,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<mesh::LocalBoundary> &p,
+		const double max_edge_length,
+		Eigen::MatrixXd &proxy_vertices,
+		Eigen::MatrixXi &proxy_faces,
+		Eigen::SparseMatrix<double> &displacement_map)
+	{
+		// for each boundary element (f):
+		//     tessilate f with triangles of max edge length (fₜ)
+		//     for each node (x) of fₜ with global index (i):
+		//         for each basis (ϕⱼ) in f's parent element:
+		//             evaluate ϕⱼ(g⁻¹(x)) where g is the geometry mapping of f
+		//             set W(i, j) = ϕⱼ(g⁻¹(x))
+		// caveats:
+		// • if x is provided in parametric coordinates, we can skip evaluating g⁻¹
+		// • the tessilations of all faces need to be stitched together
+		//   - this means duplicate weights should be removed
+	}
 } // namespace polyfem::mesh
