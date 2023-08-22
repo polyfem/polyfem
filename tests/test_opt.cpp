@@ -303,6 +303,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	Eigen::VectorXd x(2);
 	x << 0., 1.;
 
+	states[0]->set_log_level(static_cast<spdlog::level::level_enum>(1));
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	{
 		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
@@ -322,9 +323,13 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
 
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
-	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
+	nl_solver->minimize(*nl_problem, x);
 
-	REQUIRE(true);
+	json params;
+	nl_solver->get_info(params);
+	std::cout << "final energy " << params["energy"].get<double>() << "\n";
+
+	REQUIRE(params["energy"].get<double>() == Catch::Approx(1.00006).epsilon(1e-4));
 }
 
 TEST_CASE("shape-stress-opt", tagsopt)
