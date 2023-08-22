@@ -56,7 +56,14 @@ namespace polyfem::time_integrator
 		/// \f[
 		/// 	\frac{\partial v}{\partial x} = \frac{1}{\beta \Delta t}
 		/// \f]
-		double dv_dx() const override;
+		/// \f[
+		/// 	\frac{\partial v}{\partial x^{t-i}} = \frac{-\alpha_i}{\beta \Delta t}
+		/// \f]
+		/// \f[
+		/// 	\frac{\partial v}{\partial x^{t-n}} = 0
+		/// \f]
+		/// @param prev_ti index of the previous solution to use (0 -> current; 1 -> previous; 2 -> second previous; etc.)
+		double dv_dx(const unsigned prev_ti = 0) const override;
 
 		/// @brief Compute \f$\beta\Delta t\f$
 		double beta_dt() const;
