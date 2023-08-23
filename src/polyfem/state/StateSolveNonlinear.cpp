@@ -284,7 +284,7 @@ namespace polyfem
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
-		al_solver.solve(nl_problem, sol, args["solver"]["augmented_lagrangian"]["force"]);
+		al_solver.solve(nl_problem, sol);
 
 		// ---------------------------------------------------------------------
 
