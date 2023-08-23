@@ -200,7 +200,7 @@ def PolyFEM_convert(old):
                  j["solver"]["nonlinear"]['line_search'])
 
     j["solver"]["augmented_lagrangian"] = {}
-    rename_entry("force_al", old, "force", j["solver"]["augmented_lagrangian"])
+    # rename_entry("force_al", old, "force", j["solver"]["augmented_lagrangian"])
     rename_entry("al_weight", old, "initial_weight",
                  j["solver"]["augmented_lagrangian"])
     rename_entry("max_al_weight", old, "max_weight",
