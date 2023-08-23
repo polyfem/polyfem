@@ -1,15 +1,57 @@
 #include "UpsampleMesh.hpp"
 
 #include <polyfem/utils/GeometryUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <igl/remove_duplicate_vertices.h>
 #ifdef POLYFEM_WITH_TRIANGLE
 #include <igl/triangle/triangulate.h>
 #endif
-#include <fmt/format.h>
 
 namespace polyfem::mesh
 {
+	void stitch_mesh(
+		const Eigen::MatrixXd &V,
+		const Eigen::MatrixXi &F,
+		const std::vector<Eigen::Triplet<double>> &W,
+		Eigen::MatrixXd &V_out,
+		Eigen::MatrixXi &F_out,
+		std::vector<Eigen::Triplet<double>> &W_out,
+		const double epsilon = 1e-5)
+	{
+		/// indices: #V_out by 1 list of indices so V_out = V(indices,:)
+		/// inverse: #V by 1 list of indices so V = V_out(inverse,:)
+		Eigen::VectorXi indices, inverse;
+		igl::remove_duplicate_vertices(
+			V, F, epsilon, V_out, indices, inverse, F_out);
+		assert(indices.size() == V_out.rows());
+		assert(inverse.size() == V.rows());
+
+		// Find indices of vertices that were removed
+		std::sort(indices.data(), indices.data() + indices.size());
+		std::vector<int> removed_indices;
+		removed_indices.reserve(V.rows() - indices.size());
+		for (int i = 0, j = 0; i < V.rows(); i++)
+		{
+			if (j < indices.size() && indices(j) == i)
+				j++;
+			else
+				removed_indices.push_back(i);
+		}
+		assert(removed_indices.size() == V.rows() - indices.size());
+		assert(std::is_sorted(removed_indices.begin(), removed_indices.end()));
+
+		// Filter out the weights that correspond to duplicate vertices
+		W_out.clear();
+		W_out.reserve(W.size());
+		for (const Eigen::Triplet<double> &w : W)
+		{
+			if (!std::binary_search(removed_indices.begin(), removed_indices.end(), w.row()))
+				W_out.emplace_back(inverse(w.row()), w.col(), w.value());
+		}
+	}
+
 	void stitch_mesh(
 		const Eigen::MatrixXd &V,
 		const Eigen::MatrixXi &F,
@@ -17,9 +59,8 @@ namespace polyfem::mesh
 		Eigen::MatrixXi &F_out,
 		const double epsilon)
 	{
-		Eigen::MatrixXi indices, inverse;
-		igl::remove_duplicate_vertices(
-			V, F, epsilon, V_out, indices, inverse, F_out);
+		std::vector<Eigen::Triplet<double>> _, __;
+		stitch_mesh(V, F, _, V_out, F_out, __, epsilon);
 	}
 
 	double max_edge_length(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
@@ -245,21 +286,103 @@ namespace polyfem::mesh
 		const mesh::Mesh &mesh,
 		const int n_bases,
 		const std::vector<basis::ElementBases> &bases,
-		const std::vector<mesh::LocalBoundary> &p,
+		const std::vector<basis::ElementBases> &geom_bases,
+		const std::vector<LocalBoundary> &total_local_boundary,
 		const double max_edge_length,
 		Eigen::MatrixXd &proxy_vertices,
 		Eigen::MatrixXi &proxy_faces,
-		Eigen::SparseMatrix<double> &displacement_map)
+		std::vector<Eigen::Triplet<double>> &displacement_map_entries)
 	{
 		// for each boundary element (f):
 		//     tessilate f with triangles of max edge length (fₜ)
 		//     for each node (x) of fₜ with global index (i):
 		//         for each basis (ϕⱼ) in f's parent element:
-		//             evaluate ϕⱼ(g⁻¹(x)) where g is the geometry mapping of f
-		//             set W(i, j) = ϕⱼ(g⁻¹(x))
+		//             set Vᵢ = x where Vᵢ is the i-th proxy vertex
+		//             set W(i, j) = ϕⱼ(g⁻¹(x)) where g is the geometry mapping of f
 		// caveats:
 		// • if x is provided in parametric coordinates, we can skip evaluating g⁻¹
+		//   - but Vᵢ = g(x) instead
 		// • the tessilations of all faces need to be stitched together
 		//   - this means duplicate weights should be removed
+
+		if (!mesh.is_conforming())
+			log_and_throw_error("build_collision_proxy() is only implemented for conforming meshes!");
+
+		std::vector<Eigen::Triplet<double>> displacement_map_entries_tmp;
+		Eigen::MatrixXi proxy_faces_tmp;
+		Eigen::MatrixXd proxy_vertices_tmp;
+
+		Eigen::MatrixXd UV;
+		Eigen::MatrixXi F_local;
+		// TODO: use max_edge_length to determine the tessilation
+		regular_grid_triangle_barycentric_coordinates(/*n=*/10, UV, F_local);
+
+		for (const LocalBoundary &local_boundary : total_local_boundary)
+		{
+			if (local_boundary.type() != BoundaryType::TRI)
+				log_and_throw_error("build_collision_proxy() is only implemented for triangles!");
+
+			const basis::ElementBases elm = bases[local_boundary.element_id()];
+			const basis::ElementBases g = geom_bases[local_boundary.element_id()];
+			for (int fi = 0; fi < local_boundary.size(); fi++)
+			{
+				const int local_fid = local_boundary.local_primitive_id(fi);
+				// const int global_fid = local_boundary.global_primitive_id(fi);
+				// const Eigen::VectorXi nodes = elm.local_nodes_for_primitive(global_fid, mesh);
+
+				// TODO: use the shape of f to determine the tessilation
+
+				// Convert UV to appropirate UVW based on the local face id
+				Eigen::MatrixXd UVW = Eigen::MatrixXd::Zero(UV.rows(), 3);
+				switch (local_fid)
+				{
+				case 0:
+					UVW.leftCols(2) = UV;
+					break;
+				case 1:
+					UVW.col(0) = UV.col(0);
+					UVW.col(2) = UV.col(1);
+					break;
+				case 2:
+					UVW.leftCols(2) = UV;
+					UVW.col(2) = 1 - UV.col(0).array() - UV.col(1).array();
+					break;
+				case 3:
+					UVW.col(1) = UV.col(1);
+					UVW.col(2) = UV.col(0);
+					break;
+				default:
+					continue;
+					log_and_throw_error("build_collision_proxy(): unknown local_fid={}", local_fid);
+				}
+
+				Eigen::MatrixXd V_local;
+				g.eval_geom_mapping(UVW, V_local);
+				assert(V_local.rows() == UV.rows());
+
+				const int offset = proxy_vertices_tmp.rows();
+				utils::append_rows(proxy_vertices_tmp, V_local);
+				utils::append_rows(proxy_faces_tmp, F_local.array() + offset);
+
+				for (const basis::Basis &basis : elm.bases)
+				{
+					assert(basis.global().size() == 1);
+					const int basis_id = basis.global()[0].index;
+
+					const Eigen::MatrixXd basis_values = basis(UVW);
+
+					for (int i = 0; i < basis_values.size(); i++)
+					{
+						displacement_map_entries_tmp.emplace_back(
+							offset + i, basis_id, basis_values(i));
+					}
+				}
+			}
+		}
+
+		// stitch collision proxy together
+		stitch_mesh(
+			proxy_vertices_tmp, proxy_faces_tmp, displacement_map_entries_tmp,
+			proxy_vertices, proxy_faces, displacement_map_entries);
 	}
 } // namespace polyfem::mesh

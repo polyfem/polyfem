@@ -283,7 +283,6 @@ namespace polyfem::io
 					}
 					else
 					{
-
 						print_warning << loc_nodes.size() << " ";
 						// assert(false);
 					}
