@@ -1980,7 +1980,7 @@
     },
     {
         "pointer": "/solver/nonlinear/f_delta",
-        "default": 0,
+        "default": 1e-10,
         "type": "float",
         "min": 0,
         "doc": "Stopping criterion: minimal change of the energy f for the iterations to continue."
@@ -2042,7 +2042,7 @@
     },
     {
         "pointer": "/solver/nonlinear/line_search/use_grad_norm_tol",
-        "default": 1e-7,
+        "default": 0.0001,
         "type": "float",
         "doc": "When the energy is smaller than use_grad_norm_tol, line-search uses norm of gradient instead of energy"
     },

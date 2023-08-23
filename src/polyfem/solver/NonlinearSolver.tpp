@@ -214,12 +214,12 @@ namespace cppoptlib
 
 			const double step = (rate * delta_x).norm();
 
-			 if (objFunc.stop(x))
-			 {
-			 	this->m_status = Status::UserDefined;
-			 	m_error_code = ErrorCode::SUCCESS;
-			 	logger().debug("[{}] Objective decided to stop", name());
-			 }
+			if (objFunc.stop(x))
+			{
+				this->m_status = Status::UserDefined;
+				m_error_code = ErrorCode::SUCCESS;
+				logger().debug("[{}] Objective decided to stop", name());
+			}
 
 			objFunc.post_step(this->m_current.iterations, x);
 
