@@ -1,3 +1,4 @@
+#include <polyfem/mesh/collision_proxy/CollisionProxy.hpp>
 #include <polyfem/mesh/collision_proxy/UpsampleMesh.hpp>
 
 #include <polyfem/State.hpp>

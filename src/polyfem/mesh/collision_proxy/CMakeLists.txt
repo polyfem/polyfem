@@ -1,4 +1,6 @@
 set(SOURCES
+	CollisionProxy.cpp
+	CollisionProxy.hpp
 	UpsampleMesh.cpp
 	UpsampleMesh.hpp
 )
