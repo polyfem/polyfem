@@ -1963,7 +1963,7 @@
     },
     {
         "pointer": "/solver/nonlinear/max_iterations",
-        "default": 100,
+        "default": 500,
         "type": "int",
         "doc": "Maximum number of iterations for a nonlinear solve."
     },
@@ -2052,7 +2052,7 @@
     {
         "pointer": "/solver/augmented_lagrangian/max_solver_iters",
         "min": 1,
-        "default": 50,
+        "default": 100,
         "type": "int",
         "doc": "Maximum number of iterations of the nonlinear solver inside the AL steps."
     },
