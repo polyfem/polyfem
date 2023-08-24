@@ -99,7 +99,7 @@ namespace polyfem::mesh
 		return max_edge_length;
 	}
 
-	// Regular tessilation
+	// Regular tessellation
 
 	void regular_grid_triangle_barycentric_coordinates(
 		const int n, Eigen::MatrixXd &V, Eigen::MatrixXi &F)
@@ -145,7 +145,7 @@ namespace polyfem::mesh
 		F.conservativeResize(fi, Eigen::NoChange);
 	}
 
-	void regular_grid_tessilation(
+	void regular_grid_tessellation(
 		const Eigen::MatrixXd &V,
 		const Eigen::MatrixXi &F,
 		const double out_max_edge_length,
@@ -176,7 +176,7 @@ namespace polyfem::mesh
 	}
 
 	// ------------------------------------------------------------------------
-	// Irregular tessilation
+	// Irregular tessellation
 	// ------------------------------------------------------------------------
 
 	Eigen::MatrixXd
@@ -214,7 +214,6 @@ namespace polyfem::mesh
 		}
 	}
 
-#ifdef POLYFEM_WITH_TRIANGLE
 	void irregular_triangle(
 		const Eigen::Vector3d &a,
 		const Eigen::Vector3d &b,
@@ -223,6 +222,7 @@ namespace polyfem::mesh
 		Eigen::MatrixXd &V,
 		Eigen::MatrixXi &F)
 	{
+#ifdef POLYFEM_WITH_TRIANGLE
 		const double p = 3.0 * max_edge_length / 2.0;
 		const double max_area = sqrt(p * std::pow(p - max_edge_length, 3));
 
@@ -258,6 +258,9 @@ namespace polyfem::mesh
 			}
 		}
 		F.conservativeResize(fi, Eigen::NoChange);
+#else
+		log_and_throw_error("irregular_triangle(): POLYFEM_WITH_TRIANGLE is not enabled!");
+#endif
 	}
 
 	void irregular_triangle_barycentric_coordinates(
@@ -282,7 +285,7 @@ namespace polyfem::mesh
 		}
 	}
 
-	void irregular_tessilation(
+	void irregular_tessellation(
 		const Eigen::MatrixXd &V,
 		const Eigen::MatrixXi &F,
 		const double max_edge_length,
@@ -308,5 +311,4 @@ namespace polyfem::mesh
 
 		stitch_mesh(V_tmp, F_tmp, V_out, F_out);
 	}
-#endif
 } // namespace polyfem::mesh

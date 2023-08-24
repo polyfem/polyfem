@@ -6,6 +6,59 @@
 
 namespace polyfem::mesh
 {
+	namespace
+	{
+		/// @brief Convert from 2D barycentric coordinates (BCs) of a triangle to 3D BCs in a tet.
+		/// @param uv 2D BCs of a triangular face
+		/// @param local_fid which face do the 2D BCs coorespond to
+		/// @return 3D BCs in the tet
+		Eigen::MatrixXd uv_to_uvw(const Eigen::MatrixXd &uv, const int local_fid)
+		{
+			assert(uv.cols() == 2);
+
+			Eigen::MatrixXd uvw = Eigen::MatrixXd::Zero(uv.rows(), 3);
+			// u * A + v * B + w * C + (1 - u - v - w) * D
+			switch (local_fid)
+			{
+			case 0:
+				uvw.col(0) = uv.col(1);
+				uvw.col(1) = uv.col(0);
+				break;
+			case 1:
+				uvw.col(0) = uv.col(0);
+				uvw.col(2) = uv.col(1);
+				break;
+			case 2:
+				uvw.leftCols(2) = uv;
+				uvw.col(2) = 1 - uv.col(0).array() - uv.col(1).array();
+				break;
+			case 3:
+				uvw.col(1) = uv.col(1);
+				uvw.col(2) = uv.col(0);
+				break;
+			default:
+				log_and_throw_error("build_collision_proxy(): unknown local_fid={}", local_fid);
+			}
+			return uvw;
+		}
+
+		Eigen::MatrixXd extract_face_vertices(
+			const basis::ElementBases &element, const int local_fid)
+		{
+			Eigen::MatrixXd UV(3, 2);
+			// u * A + b * B + (1-u-v) * C
+			UV.row(0) << 1, 0;
+			UV.row(1) << 0, 1;
+			UV.row(2) << 0, 0;
+			const Eigen::MatrixXd UVW = uv_to_uvw(UV, local_fid);
+
+			Eigen::MatrixXd V;
+			element.eval_geom_mapping(UVW, V);
+
+			return V;
+		}
+	} // namespace
+
 	void build_collision_proxy(
 		const mesh::Mesh &mesh,
 		const int n_bases,
@@ -15,7 +68,8 @@ namespace polyfem::mesh
 		const double max_edge_length,
 		Eigen::MatrixXd &proxy_vertices,
 		Eigen::MatrixXi &proxy_faces,
-		std::vector<Eigen::Triplet<double>> &displacement_map_entries)
+		std::vector<Eigen::Triplet<double>> &displacement_map_entries,
+		const CollisionProxyTessellation tessellation)
 	{
 		// for each boundary element (f):
 		//     tessilate f with triangles of max edge length (fₜ)
@@ -26,7 +80,7 @@ namespace polyfem::mesh
 		// caveats:
 		// • if x is provided in parametric coordinates, we can skip evaluating g⁻¹
 		//   - but Vᵢ = g(x) instead
-		// • the tessilations of all faces need to be stitched together
+		// • the tessellations of all faces need to be stitched together
 		//   - this means duplicate weights should be removed
 
 		if (!mesh.is_conforming())
@@ -38,8 +92,11 @@ namespace polyfem::mesh
 
 		Eigen::MatrixXd UV;
 		Eigen::MatrixXi F_local;
-		// TODO: use max_edge_length to determine the tessilation
-		regular_grid_triangle_barycentric_coordinates(/*n=*/10, UV, F_local);
+		if (tessellation == CollisionProxyTessellation::REGULAR)
+		{
+			// TODO: use max_edge_length to determine the tessellation
+			regular_grid_triangle_barycentric_coordinates(/*n=*/10, UV, F_local);
+		}
 
 		for (const LocalBoundary &local_boundary : total_local_boundary)
 		{
@@ -51,34 +108,18 @@ namespace polyfem::mesh
 			for (int fi = 0; fi < local_boundary.size(); fi++)
 			{
 				const int local_fid = local_boundary.local_primitive_id(fi);
-				// const int global_fid = local_boundary.global_primitive_id(fi);
-				// const Eigen::VectorXi nodes = elm.local_nodes_for_primitive(global_fid, mesh);
 
-				// TODO: use the shape of f to determine the tessilation
+				if (tessellation == CollisionProxyTessellation::IRREGULAR)
+				{
+					// Use the shape of f to determine the tessellation
+					const Eigen::MatrixXd node_positions = extract_face_vertices(g, local_fid);
+					irregular_triangle_barycentric_coordinates(
+						node_positions.row(0), node_positions.row(1), node_positions.row(2),
+						max_edge_length, UV, F_local);
+				}
 
 				// Convert UV to appropirate UVW based on the local face id
-				Eigen::MatrixXd UVW = Eigen::MatrixXd::Zero(UV.rows(), 3);
-				switch (local_fid)
-				{
-				case 0:
-					UVW.leftCols(2) = UV;
-					break;
-				case 1:
-					UVW.col(0) = UV.col(0);
-					UVW.col(2) = UV.col(1);
-					break;
-				case 2:
-					UVW.leftCols(2) = UV;
-					UVW.col(2) = 1 - UV.col(0).array() - UV.col(1).array();
-					break;
-				case 3:
-					UVW.col(1) = UV.col(1);
-					UVW.col(2) = UV.col(0);
-					break;
-				default:
-					continue;
-					log_and_throw_error("build_collision_proxy(): unknown local_fid={}", local_fid);
-				}
+				Eigen::MatrixXd UVW = uv_to_uvw(UV, local_fid);
 
 				Eigen::MatrixXd V_local;
 				g.eval_geom_mapping(UVW, V_local);

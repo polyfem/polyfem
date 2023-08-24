@@ -198,7 +198,7 @@ include(libigl)
 target_link_libraries(polyfem PUBLIC igl::core)
 
 if(POLYFEM_WITH_TRIANGLE)
-    polyfem_target_link_system_libraries(polyfem PUBLIC igl_restricted::triangle)
+    target_link_libraries(polyfem PUBLIC igl_restricted::triangle)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TRIANGLE)
 endif()
 

@@ -47,7 +47,7 @@ namespace polyfem::mesh
 	/// @param F triangular faces
 	double max_edge_length(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F);
 
-	// Regular tessilation
+	// Regular tessellation
 
 	/// @brief Compute the barycentric coordinates of a regular grid of triangles
 	/// @param[in] n Number of triangles along each edge
@@ -62,14 +62,14 @@ namespace polyfem::mesh
 	/// @param max_edge_length maximum edge length
 	/// @param V_out tessilated vertices
 	/// @param F_out tessilated faces
-	void regular_grid_tessilation(
+	void regular_grid_tessellation(
 		const Eigen::MatrixXd &V,
 		const Eigen::MatrixXi &F,
 		const double max_edge_length,
 		Eigen::MatrixXd &V_out,
 		Eigen::MatrixXi &F_out);
 
-	// Irregular tessilation
+	// Irregular tessellation
 
 	/// @brief Refine an edge (a, b) so each refined edge has length at most max_edge_length
 	/// @param a first vertex of the edge
@@ -94,9 +94,8 @@ namespace polyfem::mesh
 		Eigen::MatrixXd &V,
 		Eigen::MatrixXi &E);
 
-#ifdef POLYFEM_WITH_TRIANGLE
 	/// @brief Refine a triangle (a, b, c) into a well shaped triangle mesh
-	/// @note Uses Triangle to perform the refinement.
+	/// @note Uses Triangle to perform the refinement (requires POLYFEM_WITH_TRIANGLE).
 	/// @param a first vertex of the triangle
 	/// @param b second vertex of the triangle
 	/// @param c third vertex of the triangle
@@ -112,7 +111,7 @@ namespace polyfem::mesh
 		Eigen::MatrixXi &F);
 
 	/// @brief Refine a triangle (a, b, c) into a well shaped triangle mesh
-	/// @note Uses Triangle to perform the refinement.
+	/// @note Uses Triangle to perform the refinement (requires POLYFEM_WITH_TRIANGLE).
 	/// @param a first vertex of the triangle
 	/// @param b second vertex of the triangle
 	/// @param c third vertex of the triangle
@@ -128,16 +127,16 @@ namespace polyfem::mesh
 		Eigen::MatrixXi &F);
 
 	/// @brief Tessilate a triangle mesh (V, F) with well shaped triangles
+	/// @note Uses Triangle to perform the refinement (requires POLYFEM_WITH_TRIANGLE).
 	/// @param V vertices
 	/// @param F triangular faces
 	/// @param max_edge_length maximum edge length
 	/// @param V_out tessilated vertices
 	/// @param F_out tessilated faces
-	void irregular_tessilation(
+	void irregular_tessellation(
 		const Eigen::MatrixXd &V,
 		const Eigen::MatrixXi &F,
 		const double max_edge_length,
 		Eigen::MatrixXd &V_out,
 		Eigen::MatrixXi &F_out);
-#endif
 } // namespace polyfem::mesh

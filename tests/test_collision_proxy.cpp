@@ -20,9 +20,11 @@ namespace
 		in_args["/materials/nu"_json_pointer] = 0.3;
 		in_args["/materials/rho"_json_pointer] = 1e3;
 		in_args["/space/discr_order"_json_pointer] = 1;
-		in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/simple/sphere/coarse/P4.msh";
 		// in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/simple/tet/tet-corner.msh";
 		// in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/simple/cube.msh";
+		in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/simple/sphere/coarse/P4.msh";
+		// in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/creatures/armadillo/ArmadilloP4.msh";
+		// in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/microstructure/P4.msh";
 		in_args["/time/time_steps"_json_pointer] = 1;
 		in_args["/time/tend"_json_pointer] = 1;
 		in_args["/output/log/level"_json_pointer] = "warning";
@@ -51,41 +53,52 @@ TEST_CASE("upsample mesh", "[upsample_mesh]")
 
 	Eigen::MatrixXd V_grid;
 	Eigen::MatrixXi F_grid;
-	polyfem::mesh::regular_grid_tessilation(V, F, max_edge_length, V_grid, F_grid);
+	polyfem::mesh::regular_grid_tessellation(V, F, max_edge_length, V_grid, F_grid);
 
 	CHECK(V_grid.rows() == 126802);
 	CHECK(F_grid.rows() == 253600);
 
-	// REQUIRE(igl::writePLY("octocat-regular-tessilation.ply", V_grid, F_grid));
+	// REQUIRE(igl::writePLY("octocat-regular-tessellation.ply", V_grid, F_grid));
 
 #ifdef POLYFEM_WITH_TRIANGLE
 	Eigen::MatrixXd V_irregular;
 	Eigen::MatrixXi F_irregular;
-	polyfem::mesh::irregular_tessilation(V, F, max_edge_length, V_irregular, F_irregular);
+	polyfem::mesh::irregular_tessellation(V, F, max_edge_length, V_irregular, F_irregular);
 
 	CHECK(V_irregular.rows() == 12645);
 	CHECK(F_irregular.rows() == 25286);
 
-	// REQUIRE(igl::writePLY("octocat-irregular-tessilation.ply", V_irregular, F_irregular));
+	// REQUIRE(igl::writePLY("octocat-irregular-tessellation.ply", V_irregular, F_irregular));
 #endif
 }
 
 TEST_CASE("build collision proxy", "[build_collision_proxy]")
 {
+	using namespace polyfem::mesh;
+	const CollisionProxyTessellation tessellation =
+		GENERATE(CollisionProxyTessellation::REGULAR, CollisionProxyTessellation::IRREGULAR);
+
 	const auto state = get_state();
 
 	Eigen::MatrixXd proxy_vertices;
 	Eigen::MatrixXi proxy_faces;
 	std::vector<Eigen::Triplet<double>> displacement_map_entries;
-	polyfem::mesh::build_collision_proxy(
+	build_collision_proxy(
 		*state->mesh, state->n_bases, state->bases, state->geom_bases(), state->total_local_boundary,
-		/*max_edge_length=*/0.1,
-		proxy_vertices, proxy_faces, displacement_map_entries);
+		/*max_edge_length=*/0.1, proxy_vertices, proxy_faces, displacement_map_entries, tessellation);
 
-	CHECK(proxy_vertices.rows() == 1217);
-	CHECK(proxy_faces.rows() == 2430);
-
-	// REQUIRE(igl::writePLY("proxy.ply", proxy_vertices, proxy_faces));
+	if (tessellation == CollisionProxyTessellation::REGULAR)
+	{
+		CHECK(proxy_vertices.rows() == 1217);
+		CHECK(proxy_faces.rows() == 2430);
+		// REQUIRE(igl::writePLY("proxy-regular.ply", proxy_vertices, proxy_faces));
+	}
+	else if (tessellation == CollisionProxyTessellation::IRREGULAR)
+	{
+		CHECK(proxy_vertices.rows() == 1801);
+		CHECK(proxy_faces.rows() == 3598);
+		// REQUIRE(igl::writePLY("proxy-irregular.ply", proxy_vertices, proxy_faces));
+	}
 
 	Eigen::MatrixXd V;
 	Eigen::MatrixXi F, T;

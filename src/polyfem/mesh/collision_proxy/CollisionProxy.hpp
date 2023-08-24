@@ -9,6 +9,12 @@
 
 namespace polyfem::mesh
 {
+	enum class CollisionProxyTessellation
+	{
+		REGULAR,  ///< @brief Regular tessellation of the mesh
+		IRREGULAR ///< @brief Irregular tessellation of the mesh (requires POLYFEM_WITH_TRIANGLE)
+	};
+
 	void build_collision_proxy(
 		const mesh::Mesh &mesh,
 		const int n_bases,
@@ -18,5 +24,6 @@ namespace polyfem::mesh
 		const double max_edge_length,
 		Eigen::MatrixXd &proxy_vertices,
 		Eigen::MatrixXi &proxy_faces,
-		std::vector<Eigen::Triplet<double>> &displacement_map);
+		std::vector<Eigen::Triplet<double>> &displacement_map,
+		const CollisionProxyTessellation tessellation = CollisionProxyTessellation::REGULAR);
 } // namespace polyfem::mesh
