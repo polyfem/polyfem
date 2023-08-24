@@ -8,6 +8,9 @@ namespace polyfem::mesh
 {
 	namespace
 	{
+		template <typename T>
+		using RowMajorMatrixX = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+
 		/// @brief Convert from 2D barycentric coordinates (BCs) of a triangle to 3D BCs in a tet.
 		/// @param uv 2D BCs of a triangular face
 		/// @param local_fid which face do the 2D BCs coorespond to
@@ -60,11 +63,11 @@ namespace polyfem::mesh
 	} // namespace
 
 	void build_collision_proxy(
-		const mesh::Mesh &mesh,
-		const int n_bases,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &geom_bases,
 		const std::vector<LocalBoundary> &total_local_boundary,
+		const int n_bases,
+		const int dim,
 		const double max_edge_length,
 		Eigen::MatrixXd &proxy_vertices,
 		Eigen::MatrixXi &proxy_faces,
@@ -83,12 +86,9 @@ namespace polyfem::mesh
 		// • the tessellations of all faces need to be stitched together
 		//   - this means duplicate weights should be removed
 
-		if (!mesh.is_conforming())
-			log_and_throw_error("build_collision_proxy() is only implemented for conforming meshes!");
-
+		std::vector<double> proxy_vertices_list;
+		std::vector<int> proxy_faces_list;
 		std::vector<Eigen::Triplet<double>> displacement_map_entries_tmp;
-		Eigen::MatrixXi proxy_faces_tmp;
-		Eigen::MatrixXd proxy_vertices_tmp;
 
 		Eigen::MatrixXd UV;
 		Eigen::MatrixXi F_local;
@@ -125,9 +125,11 @@ namespace polyfem::mesh
 				g.eval_geom_mapping(UVW, V_local);
 				assert(V_local.rows() == UV.rows());
 
-				const int offset = proxy_vertices_tmp.rows();
-				utils::append_rows(proxy_vertices_tmp, V_local);
-				utils::append_rows(proxy_faces_tmp, F_local.array() + offset);
+				const int offset = proxy_vertices_list.size() / dim;
+				for (const double x : V_local.reshaped<Eigen::RowMajor>())
+					proxy_vertices_list.push_back(x);
+				for (const int i : F_local.reshaped<Eigen::RowMajor>())
+					proxy_faces_list.push_back(i + offset);
 
 				for (const basis::Basis &basis : elm.bases)
 				{
@@ -147,7 +149,9 @@ namespace polyfem::mesh
 
 		// stitch collision proxy together
 		stitch_mesh(
-			proxy_vertices_tmp, proxy_faces_tmp, displacement_map_entries_tmp,
+			Eigen::Map<RowMajorMatrixX<double>>(proxy_vertices_list.data(), proxy_vertices_list.size() / dim, dim),
+			Eigen::Map<RowMajorMatrixX<int>>(proxy_faces_list.data(), proxy_faces_list.size() / dim, dim),
+			displacement_map_entries_tmp,
 			proxy_vertices, proxy_faces, displacement_map_entries);
 	}
 } // namespace polyfem::mesh

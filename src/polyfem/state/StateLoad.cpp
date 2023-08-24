@@ -163,13 +163,13 @@ namespace polyfem
 		for (int i = 0; i < bases.size(); i++)
 		{
 			const basis::ElementBases &element = bases[i];
-			assert(element.bases.size() == F.cols());
 			for (int j = 0; j < element.bases.size(); j++)
 			{
 				const basis::Basis &basis = element.bases[j];
 				assert(basis.global().size() == 1);
 				V.row(basis.global()[0].index) = basis.global()[0].node;
-				F(i, j) = basis.global()[0].index;
+				if (j < F.cols()) // Only grab the corners of the triangles/tetrahedra
+					F(i, j) = basis.global()[0].index;
 			}
 		}
 	}

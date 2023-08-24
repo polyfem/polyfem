@@ -16,11 +16,11 @@ namespace polyfem::mesh
 	};
 
 	void build_collision_proxy(
-		const mesh::Mesh &mesh,
-		const int n_bases,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &geom_bases,
 		const std::vector<mesh::LocalBoundary> &total_local_boundary,
+		const int n_bases,
+		const int dim,
 		const double max_edge_length,
 		Eigen::MatrixXd &proxy_vertices,
 		Eigen::MatrixXi &proxy_faces,

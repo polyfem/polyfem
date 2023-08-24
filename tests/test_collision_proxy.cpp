@@ -19,7 +19,7 @@ namespace
 		in_args["/materials/E"_json_pointer] = 1e5;
 		in_args["/materials/nu"_json_pointer] = 0.3;
 		in_args["/materials/rho"_json_pointer] = 1e3;
-		in_args["/space/discr_order"_json_pointer] = 1;
+		in_args["/space/discr_order"_json_pointer] = 4;
 		// in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/simple/tet/tet-corner.msh";
 		// in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/simple/cube.msh";
 		in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/simple/sphere/coarse/P4.msh";
@@ -36,8 +36,8 @@ namespace
 		state->load_mesh();
 
 		state->build_basis();
-		state->assemble_rhs();
-		state->assemble_mass_mat();
+		// state->assemble_rhs();
+		// state->assemble_mass_mat();
 
 		return state;
 	}
@@ -84,7 +84,7 @@ TEST_CASE("build collision proxy", "[build_collision_proxy]")
 	Eigen::MatrixXi proxy_faces;
 	std::vector<Eigen::Triplet<double>> displacement_map_entries;
 	build_collision_proxy(
-		*state->mesh, state->n_bases, state->bases, state->geom_bases(), state->total_local_boundary,
+		state->bases, state->geom_bases(), state->total_local_boundary, state->n_bases, state->mesh->dimension(),
 		/*max_edge_length=*/0.1, proxy_vertices, proxy_faces, displacement_map_entries, tessellation);
 
 	if (tessellation == CollisionProxyTessellation::REGULAR)
