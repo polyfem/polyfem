@@ -78,6 +78,11 @@ TEST_CASE("build collision proxy", "[build_collision_proxy]")
 	const CollisionProxyTessellation tessellation =
 		GENERATE(CollisionProxyTessellation::REGULAR, CollisionProxyTessellation::IRREGULAR);
 
+#ifndef POLYFEM_WITH_TRIANGLE
+	if (tessellation == CollisionProxyTessellation::IRREGULAR)
+		return;
+#endif
+
 	const auto state = get_state();
 
 	Eigen::MatrixXd proxy_vertices;
