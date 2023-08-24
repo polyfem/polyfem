@@ -5,6 +5,7 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 
 #include <igl/remove_duplicate_vertices.h>
+#include <igl/barycentric_coordinates.h>
 #ifdef POLYFEM_WITH_TRIANGLE
 #include <igl/triangle/triangulate.h>
 #endif
@@ -174,7 +175,9 @@ namespace polyfem::mesh
 		stitch_mesh(V_tmp, F_tmp, V_out, F_out);
 	}
 
+	// ------------------------------------------------------------------------
 	// Irregular tessilation
+	// ------------------------------------------------------------------------
 
 	Eigen::MatrixXd
 	refine_edge(const VectorNd &a, const VectorNd &b, const double max_edge_length)
@@ -255,6 +258,28 @@ namespace polyfem::mesh
 			}
 		}
 		F.conservativeResize(fi, Eigen::NoChange);
+	}
+
+	void irregular_triangle_barycentric_coordinates(
+		const Eigen::Vector3d &a,
+		const Eigen::Vector3d &b,
+		const Eigen::Vector3d &c,
+		const double max_edge_length,
+		Eigen::MatrixXd &UV,
+		Eigen::MatrixXi &F)
+	{
+		Eigen::MatrixXd V;
+		irregular_triangle(a, b, c, max_edge_length, V, F);
+
+		// Convert the triangle vertices to barycentric coordinates
+		UV.resize(V.rows(), 2);
+		for (int i = 0; i < UV.rows(); i++)
+		{
+			Eigen::RowVector3d tmp;
+			igl::barycentric_coordinates(
+				V.row(i), a.transpose(), b.transpose(), c.transpose(), tmp);
+			UV.row(i) = tmp.head<2>();
+		}
 	}
 
 	void irregular_tessilation(

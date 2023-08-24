@@ -101,6 +101,22 @@ namespace polyfem::mesh
 	/// @param b second vertex of the triangle
 	/// @param c third vertex of the triangle
 	/// @param max_edge_len maximum edge length of the refined triangle mesh
+	/// @param UV barycentric coordinates of the refined triangle
+	/// @param F faces of the refined triangle
+	void irregular_triangle_barycentric_coordinates(
+		const Eigen::Vector3d &a,
+		const Eigen::Vector3d &b,
+		const Eigen::Vector3d &c,
+		const double max_edge_length,
+		Eigen::MatrixXd &UV,
+		Eigen::MatrixXi &F);
+
+	/// @brief Refine a triangle (a, b, c) into a well shaped triangle mesh
+	/// @note Uses Triangle to perform the refinement.
+	/// @param a first vertex of the triangle
+	/// @param b second vertex of the triangle
+	/// @param c third vertex of the triangle
+	/// @param max_edge_len maximum edge length of the refined triangle mesh
 	/// @param V vertices of the refined triangle
 	/// @param F faces of the refined triangle
 	void irregular_triangle(
