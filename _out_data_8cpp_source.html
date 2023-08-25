@@ -1701,7 +1701,7 @@ $(document).ready(function(){initNavTree('_out_data_8cpp_source.html',''); initR
 <div class="line"><a id="l01577" name="l01577"></a><span class="lineno"> 1577</span>            <span class="keywordflow">if</span> (obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a>() &gt; 0)</div>
 <div class="line"><a id="l01578" name="l01578"></a><span class="lineno"> 1578</span>            {</div>
 <div class="line"><a id="l01579" name="l01579"></a><span class="lineno"> 1579</span>                traction_forces_fun.conservativeResize(traction_forces_fun.rows() + obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a>(), traction_forces_fun.cols());</div>
-<div class="line"><a id="l01580" name="l01580"></a><span class="lineno"> 1580</span>                fun.bottomRows(obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a>()).setZero();</div>
+<div class="line"><a id="l01580" name="l01580"></a><span class="lineno"> 1580</span>                traction_forces_fun.bottomRows(obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a>()).setZero();</div>
 <div class="line"><a id="l01581" name="l01581"></a><span class="lineno"> 1581</span>            }</div>
 <div class="line"><a id="l01582" name="l01582"></a><span class="lineno"> 1582</span> </div>
 <div class="line"><a id="l01583" name="l01583"></a><span class="lineno"> 1583</span>            writer.add_field(<span class="stringliteral">&quot;traction_force&quot;</span>, traction_forces_fun);</div>
@@ -1720,7 +1720,7 @@ $(document).ready(function(){initNavTree('_out_data_8cpp_source.html',''); initR
 <div class="line"><a id="l01596" name="l01596"></a><span class="lineno"> 1596</span>            <span class="keywordflow">if</span> (obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a>() &gt; 0)</div>
 <div class="line"><a id="l01597" name="l01597"></a><span class="lineno"> 1597</span>            {</div>
 <div class="line"><a id="l01598" name="l01598"></a><span class="lineno"> 1598</span>                potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a>(), potential_grad_fun.cols());</div>
-<div class="line"><a id="l01599" name="l01599"></a><span class="lineno"> 1599</span>                fun.bottomRows(obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a>()).setZero();</div>
+<div class="line"><a id="l01599" name="l01599"></a><span class="lineno"> 1599</span>                potential_grad_fun.bottomRows(obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a>()).setZero();</div>
 <div class="line"><a id="l01600" name="l01600"></a><span class="lineno"> 1600</span>            }</div>
 <div class="line"><a id="l01601" name="l01601"></a><span class="lineno"> 1601</span> </div>
 <div class="line"><a id="l01602" name="l01602"></a><span class="lineno"> 1602</span>            writer.add_field(<span class="stringliteral">&quot;gradient_of_potential&quot;</span>, potential_grad_fun);</div>
