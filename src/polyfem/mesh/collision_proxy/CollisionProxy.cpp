@@ -169,6 +169,10 @@ namespace polyfem::mesh
 		Eigen::MatrixXi &faces,
 		std::vector<Eigen::Triplet<double>> &displacement_map_entries)
 	{
+#ifndef NDEBUG
+		const size_t num_fe_nodes = in_node_to_node.size();
+#endif
+
 		Eigen::MatrixXi codim_edges;
 		read_surface_mesh(mesh_filename, vertices, codim_vertices, codim_edges, faces);
 
@@ -182,11 +186,11 @@ namespace polyfem::mesh
 
 		h5pp::File file(weights_filename, h5pp::FileAccess::READONLY);
 		const std::array<long, 2> shape = file.readAttribute<std::array<long, 2>>("weight_triplets", "shape");
-		assert(shape[0] == collision_vertices.rows() && shape[1] == num_fe_nodes);
+		assert(shape[0] == vertices.rows() && shape[1] == num_fe_nodes);
 		Eigen::VectorXd values = file.readDataset<Eigen::VectorXd>("weight_triplets/values");
 		Eigen::VectorXi rows = file.readDataset<Eigen::VectorXi>("weight_triplets/rows");
 		Eigen::VectorXi cols = file.readDataset<Eigen::VectorXi>("weight_triplets/cols");
-		assert(rows.maxCoeff() < collision_vertices.rows());
+		assert(rows.maxCoeff() < vertices.rows());
 		assert(cols.maxCoeff() < num_fe_nodes);
 
 		// TODO: use these to build the in_node_to_node map

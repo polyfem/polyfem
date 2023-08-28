@@ -104,7 +104,7 @@ namespace polyfem
 			inline const std::vector<Local2Global> &global() const { return global_; }
 			inline std::vector<Local2Global> &global() { return global_; }
 
-			// setting the basis lambda and its gradint
+			// setting the basis lambda and its gradient
 			inline void set_basis(const Fun &fun) { basis_ = fun; }
 			inline void set_grad(const Fun &fun) { grad_ = fun; }
 
