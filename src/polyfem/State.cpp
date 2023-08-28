@@ -13,6 +13,7 @@
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
+#include <polyfem/mesh/collision_proxy/CollisionProxy.hpp>
 
 #include <polyfem/basis/LagrangeBasis2d.hpp>
 #include <polyfem/basis/LagrangeBasis3d.hpp>
@@ -41,6 +42,8 @@
 
 #include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
+
+#include <polyfem/io/OBJWriter.hpp>
 
 #include <igl/edges.h>
 #include <igl/Timer.h>
@@ -879,7 +882,7 @@ namespace polyfem
 		}
 
 		logger().info("Building collision mesh...");
-		build_collision_mesh(collision_mesh, n_bases, bases);
+		build_collision_mesh();
 		logger().info("Done!");
 
 		const int prev_b_size = local_boundary.size();
@@ -1185,16 +1188,31 @@ namespace polyfem
 		n_bases += new_bases;
 	}
 
+	void State::build_collision_mesh()
+	{
+		build_collision_mesh(
+			*mesh, n_bases, bases, geom_bases(), total_local_boundary, obstacle,
+			args, [this](const std::string &p) { return resolve_input_path(p); },
+			in_node_to_node, collision_mesh);
+	}
+
 	void State::build_collision_mesh(
-		ipc::CollisionMesh &collision_mesh_,
-		const int n_bases_,
-		const std::vector<basis::ElementBases> &bases_) const
+		const mesh::Mesh &mesh,
+		const int n_bases,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &geom_bases,
+		const std::vector<mesh::LocalBoundary> &total_local_boundary,
+		const mesh::Obstacle &obstacle,
+		const json &args,
+		const std::function<std::string(const std::string &)> &resolve_input_path,
+		const Eigen::VectorXi &in_node_to_node,
+		ipc::CollisionMesh &collision_mesh)
 	{
 		Eigen::MatrixXd node_positions;
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
 		std::vector<Eigen::Triplet<double>> displacement_map_entries;
 		io::OutGeometryData::extract_boundary_mesh(
-			*mesh, n_bases_, bases_, total_local_boundary, node_positions,
+			mesh, n_bases, bases, total_local_boundary, node_positions,
 			boundary_edges, boundary_triangles, displacement_map_entries);
 
 		// n_bases already contains the obstacle vertices
@@ -1207,44 +1225,39 @@ namespace polyfem
 		if (args.contains("/contact/collision_mesh"_json_pointer)
 			&& args.at("/contact/collision_mesh/enabled"_json_pointer).get<bool>())
 		{
-			const json collision_mesh_args = args["/contact/collision_mesh"_json_pointer];
-			assert(displacement_map_entries.empty());
-
-			Eigen::MatrixXi codim_edges;
-			mesh::read_surface_mesh(
-				resolve_input_path(collision_mesh_args["mesh"]),
-				collision_vertices, collision_codim_vids, codim_edges, collision_triangles);
-
-			if (collision_triangles.size())
-				igl::edges(collision_triangles, collision_edges);
-
-			append_rows(collision_edges, codim_edges);
-
-			// TODO: transform the collision mesh in the same way the rest of the mesh is transformed
-			// V = V * T.transpose();
-
-			h5pp::File file(resolve_input_path(collision_mesh_args["linear_map"]), h5pp::FileAccess::READONLY);
-			const std::array<long, 2> shape = file.readAttribute<std::array<long, 2>>("weight_triplets", "shape");
-			assert(shape[0] == collision_vertices.rows() && shape[1] == num_fe_nodes);
-			Eigen::VectorXd values = file.readDataset<Eigen::VectorXd>("weight_triplets/values");
-			Eigen::VectorXi rows = file.readDataset<Eigen::VectorXi>("weight_triplets/rows");
-			Eigen::VectorXi cols = file.readDataset<Eigen::VectorXi>("weight_triplets/cols");
-			assert(rows.maxCoeff() < collision_vertices.rows());
-			assert(cols.maxCoeff() < num_fe_nodes);
-
-			// TODO: use these to build the in_node_to_node map
-			// const Eigen::VectorXi in_ordered_vertices = file.exist("ordered_vertices") ? H5Easy::load<Eigen::VectorXi>(file, "ordered_vertices") : mesh->in_ordered_vertices();
-			// const Eigen::MatrixXi in_ordered_edges = file.exist("ordered_edges") ? H5Easy::load<Eigen::MatrixXi>(file, "ordered_edges") : mesh->in_ordered_edges();
-			// const Eigen::MatrixXi in_ordered_faces = file.exist("ordered_faces") ? H5Easy::load<Eigen::MatrixXi>(file, "ordered_faces") : mesh->in_ordered_faces();
-
-			displacement_map_entries.clear();
-			displacement_map_entries.reserve(values.size() + obstacle.n_vertices());
-
-			assert(in_node_to_node.size() == num_fe_nodes);
-			for (int i = 0; i < values.size(); i++)
+			const json collision_mesh_args = args.at("/contact/collision_mesh"_json_pointer);
+			if (collision_mesh_args.contains("linear_map"))
 			{
-				// Rearrange the columns based on the FEM mesh node order
-				displacement_map_entries.emplace_back(rows[i], in_node_to_node[cols[i]], values[i]);
+				assert(displacement_map_entries.empty());
+				assert(collision_mesh_args.contains("mesh"));
+				const std::string root_path = utils::json_value<std::string>(args, "root_path", "");
+				mesh::load_collision_proxy(
+					utils::resolve_path(collision_mesh_args["mesh"], root_path),
+					utils::resolve_path(collision_mesh_args["linear_map"], root_path),
+					in_node_to_node, collision_vertices, collision_codim_vids,
+					collision_edges, collision_triangles, displacement_map_entries);
+			}
+			else
+			{
+				assert(collision_mesh_args.contains("max_edge_length"));
+				logger().debug(
+					"Building collision proxy with max edge length={} ...",
+					collision_mesh_args["max_edge_length"].get<double>());
+				igl::Timer timer;
+				timer.start();
+				build_collision_proxy(
+					bases, geom_bases, total_local_boundary, n_bases, mesh.dimension(),
+					collision_mesh_args["max_edge_length"], collision_vertices,
+					collision_triangles, displacement_map_entries,
+					collision_mesh_args["tessellation_type"]);
+				if (collision_triangles.size())
+					igl::edges(collision_triangles, collision_edges);
+				timer.stop();
+				logger().debug(fmt::format(
+					std::locale("en_US.UTF-8"),
+					"Done (took {:g}s, {:L} vertices, {:L} triangles)",
+					timer.getElapsedTime(),
+					collision_vertices.rows(), collision_triangles.rows()));
 			}
 		}
 		else
@@ -1266,6 +1279,7 @@ namespace polyfem
 
 			if (!displacement_map_entries.empty())
 			{
+				displacement_map_entries.reserve(displacement_map_entries.size() + obstacle.n_vertices());
 				for (int i = 0; i < obstacle.n_vertices(); i++)
 				{
 					displacement_map_entries.emplace_back(n_v + i, num_fe_nodes + i, 1.0);
@@ -1273,8 +1287,8 @@ namespace polyfem
 			}
 		}
 
-		// io::OBJWriter::save(resolve_output_path("fem_input.obj"), node_positions, boundary_edges, boundary_triangles);
-		// io::OBJWriter::save(resolve_output_path("collision_mesh_0.obj"), collision_vertices, collision_edges, collision_triangles);
+		// io::OBJWriter::write("fem_input.obj", node_positions, boundary_edges, boundary_triangles);
+		// io::OBJWriter::write("collision_mesh.obj", collision_vertices, collision_edges, collision_triangles);
 
 		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(
 			collision_vertices.rows(), collision_edges);
@@ -1290,19 +1304,17 @@ namespace polyfem
 			displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
 		}
 
-		collision_mesh_ = ipc::CollisionMesh(is_on_surface,
-											 collision_vertices,
-											 collision_edges,
-											 collision_triangles,
-											 displacement_map);
+		collision_mesh = ipc::CollisionMesh(
+			is_on_surface, collision_vertices, collision_edges, collision_triangles,
+			displacement_map);
 
-		collision_mesh_.can_collide = [this, n_v](size_t vi, size_t vj) {
+		collision_mesh.can_collide = [&collision_mesh, n_v](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles
-			return this->collision_mesh.to_full_vertex_id(vi) < n_v
-				   || this->collision_mesh.to_full_vertex_id(vj) < n_v;
+			return collision_mesh.to_full_vertex_id(vi) < n_v
+				   || collision_mesh.to_full_vertex_id(vj) < n_v;
 		};
 
-		collision_mesh_.init_area_jacobians();
+		collision_mesh.init_area_jacobians();
 	}
 
 	void State::assemble_mass_mat()

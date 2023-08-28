@@ -1,8 +1,12 @@
 #include "CollisionProxy.hpp"
 
 #include <polyfem/mesh/collision_proxy/UpsampleMesh.hpp>
+#include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+
+#include <igl/edges.h>
+#include <h5pp/h5pp.h>
 
 namespace polyfem::mesh
 {
@@ -153,5 +157,51 @@ namespace polyfem::mesh
 			Eigen::Map<RowMajorMatrixX<int>>(proxy_faces_list.data(), proxy_faces_list.size() / dim, dim),
 			displacement_map_entries_tmp,
 			proxy_vertices, proxy_faces, displacement_map_entries);
+	}
+
+	void load_collision_proxy(
+		const std::string &mesh_filename,
+		const std::string &weights_filename,
+		const Eigen::VectorXi &in_node_to_node,
+		Eigen::MatrixXd &vertices,
+		Eigen::VectorXi &codim_vertices,
+		Eigen::MatrixXi &edges,
+		Eigen::MatrixXi &faces,
+		std::vector<Eigen::Triplet<double>> &displacement_map_entries)
+	{
+		Eigen::MatrixXi codim_edges;
+		read_surface_mesh(mesh_filename, vertices, codim_vertices, codim_edges, faces);
+
+		if (faces.size())
+			igl::edges(faces, edges);
+
+		utils::append_rows(edges, codim_edges);
+
+		// TODO: transform the collision mesh in the same way the rest of the mesh is transformed
+		// V = V * T.transpose();
+
+		h5pp::File file(weights_filename, h5pp::FileAccess::READONLY);
+		const std::array<long, 2> shape = file.readAttribute<std::array<long, 2>>("weight_triplets", "shape");
+		assert(shape[0] == collision_vertices.rows() && shape[1] == num_fe_nodes);
+		Eigen::VectorXd values = file.readDataset<Eigen::VectorXd>("weight_triplets/values");
+		Eigen::VectorXi rows = file.readDataset<Eigen::VectorXi>("weight_triplets/rows");
+		Eigen::VectorXi cols = file.readDataset<Eigen::VectorXi>("weight_triplets/cols");
+		assert(rows.maxCoeff() < collision_vertices.rows());
+		assert(cols.maxCoeff() < num_fe_nodes);
+
+		// TODO: use these to build the in_node_to_node map
+		// const Eigen::VectorXi in_ordered_vertices = file.exist("ordered_vertices") ? H5Easy::load<Eigen::VectorXi>(file, "ordered_vertices") : mesh->in_ordered_vertices();
+		// const Eigen::MatrixXi in_ordered_edges = file.exist("ordered_edges") ? H5Easy::load<Eigen::MatrixXi>(file, "ordered_edges") : mesh->in_ordered_edges();
+		// const Eigen::MatrixXi in_ordered_faces = file.exist("ordered_faces") ? H5Easy::load<Eigen::MatrixXi>(file, "ordered_faces") : mesh->in_ordered_faces();
+
+		displacement_map_entries.clear();
+		displacement_map_entries.reserve(values.size());
+
+		assert(in_node_to_node.size() == num_fe_nodes);
+		for (int i = 0; i < values.size(); i++)
+		{
+			// Rearrange the columns based on the FEM mesh node order
+			displacement_map_entries.emplace_back(rows[i], in_node_to_node[cols[i]], values[i]);
+		}
 	}
 } // namespace polyfem::mesh
