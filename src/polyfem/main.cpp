@@ -138,6 +138,12 @@ int forward_simulation(const CLI::App &command_line,
 	std::vector<Eigen::MatrixXi> cells;
 	std::vector<Eigen::MatrixXd> vertices;
 
+	if (in_args.empty() && hdf5_file.empty())
+	{
+		logger().error("No input file specified!");
+		return command_line.exit(CLI::RequiredError("--json or --hdf5"));
+	}
+
 	if (in_args.empty() && !hdf5_file.empty())
 	{
 		using MatrixXl = Eigen::Matrix<int64_t, Eigen::Dynamic, Eigen::Dynamic>;
@@ -158,11 +164,6 @@ int forward_simulation(const CLI::App &command_line,
 			cells[i] = file.readDataset<MatrixXl>("/meshes/" + name + "/c").cast<int>();
 			vertices[i] = file.readDataset<Eigen::MatrixXd>("/meshes/" + name + "/v");
 		}
-	}
-	else
-	{
-		logger().error("No input file specified!");
-		return command_line.exit(CLI::RequiredError("--json or --hdf5"));
 	}
 
 	json tmp = json::object();

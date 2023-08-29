@@ -1577,7 +1577,7 @@ namespace polyfem::io
 			if (obstacle.n_vertices() > 0)
 			{
 				traction_forces_fun.conservativeResize(traction_forces_fun.rows() + obstacle.n_vertices(), traction_forces_fun.cols());
-				fun.bottomRows(obstacle.n_vertices()).setZero();
+				traction_forces_fun.bottomRows(obstacle.n_vertices()).setZero();
 			}
 
 			writer.add_field("traction_force", traction_forces_fun);
@@ -1596,7 +1596,7 @@ namespace polyfem::io
 			if (obstacle.n_vertices() > 0)
 			{
 				potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.n_vertices(), potential_grad_fun.cols());
-				fun.bottomRows(obstacle.n_vertices()).setZero();
+				potential_grad_fun.bottomRows(obstacle.n_vertices()).setZero();
 			}
 
 			writer.add_field("gradient_of_potential", potential_grad_fun);
