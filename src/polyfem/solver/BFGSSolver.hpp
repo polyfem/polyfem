@@ -23,8 +23,8 @@ namespace cppoptlib
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		BFGSSolver(const json &solver_params, const double dt)
-			: Superclass(solver_params, dt)
+		BFGSSolver(const json &solver_params, const double dt, const double characteristic_length)
+			: Superclass(solver_params, dt, characteristic_length)
 		{
 		}
 
@@ -59,7 +59,7 @@ namespace cppoptlib
 		TVector m_prev_x;    // Previous x
 		TVector m_prev_grad; // Previous gradient
 
-        Eigen::MatrixXd hess;
+		Eigen::MatrixXd hess;
 
 		void reset(const int ndof) override
 		{
@@ -73,7 +73,7 @@ namespace cppoptlib
 			m_prev_x.resize(ndof);
 			m_prev_grad.resize(ndof);
 
-            hess.setIdentity(ndof, ndof);
+			hess.setIdentity(ndof, ndof);
 
 			// Use gradient descent for first iteration
 			this->descent_strategy = 2;
@@ -85,23 +85,23 @@ namespace cppoptlib
 			const TVector &grad,
 			TVector &direction) override
 		{
-            if (this->descent_strategy == 2)
-            {
-                direction = -grad;
-            }
-            else
-            {
-                direction = hess.ldlt().solve(-grad);
+			if (this->descent_strategy == 2)
+			{
+				direction = -grad;
+			}
+			else
+			{
+				direction = hess.ldlt().solve(-grad);
 
-                TVector y = grad - m_prev_grad;
-                TVector s = x - m_prev_x;
-                
-                double y_s = y.dot(s);
-                TVector Bs = hess * s;
-                double sBs = s.transpose() * Bs;
+				TVector y = grad - m_prev_grad;
+				TVector s = x - m_prev_x;
 
-                hess += (y * y.transpose()) / y_s - (Bs * Bs.transpose()) / sBs;
-            }
+				double y_s = y.dot(s);
+				TVector Bs = hess * s;
+				double sBs = s.transpose() * Bs;
+
+				hess += (y * y.transpose()) / y_s - (Bs * Bs.transpose()) / sBs;
+			}
 
 			m_prev_x = x;
 			m_prev_grad = grad;

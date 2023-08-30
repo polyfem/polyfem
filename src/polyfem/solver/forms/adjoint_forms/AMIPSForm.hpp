@@ -185,7 +185,7 @@ namespace polyfem::solver
 				}
 			}
 			transform_params["solve_displacement"] = true;
-			amips_energy_->add_multimaterial(0, transform_params);
+			amips_energy_->add_multimaterial(0, transform_params, state.units);
 
 			Eigen::MatrixXd V;
 			state_.get_vertices(V);
@@ -209,7 +209,7 @@ namespace polyfem::solver
 
 			Eigen::MatrixXd grad;
 			amips_energy_->assemble_gradient(state_.mesh->is_volume(), state_.n_geom_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_init), Eigen::VectorXd(), grad); // grad wrt. gbases
-			grad = AdjointTools::map_node_to_primitive_order(state_, grad);                                                                                                                                                             // grad wrt. vertices
+			grad = AdjointTools::map_node_to_primitive_order(state_, grad);                                                                                                                                                                       // grad wrt. vertices
 
 			assert(grad.cols() == 1);
 

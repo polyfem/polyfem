@@ -1,5 +1,7 @@
 #pragma once
 
+#include <polyfem/Units.hpp>
+
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
@@ -13,6 +15,8 @@ namespace polyfem
 		{
 		public:
 			Problem(const std::string &name);
+			virtual void set_units(const assembler::Assembler &assembler, const Units &units) {}
+
 			virtual ~Problem() {}
 
 			virtual void init(const mesh::Mesh &mesh) {}

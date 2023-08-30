@@ -14,7 +14,14 @@ namespace polyfem
 			std::vector<std::shared_ptr<utils::Interpolation>> interpolation;
 			Eigen::Matrix<bool, 1, 3> dirichlet_dimension;
 
+			void set_unit_type(const std::string &unit_type)
+			{
+				for (auto &v : value)
+					v.set_unit_type(unit_type);
+			}
+
 			double eval(const RowVectorNd &pts, const int dim, const double t, const int el_id = -1) const;
+
 		};
 
 		struct ScalarBCValue
@@ -22,6 +29,11 @@ namespace polyfem
 			utils::ExpressionValue value;
 			std::shared_ptr<utils::Interpolation> interpolation;
 
+			void set_unit_type(const std::string &unit_type)
+			{
+				value.set_unit_type(unit_type);
+			}
+      
 			double eval(const RowVectorNd &pts, const double t) const;
 		};
 
@@ -29,6 +41,7 @@ namespace polyfem
 		{
 		public:
 			GenericTensorProblem(const std::string &name);
+			void set_units(const assembler::Assembler &assembler, const Units &units) override;
 
 			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override
@@ -130,6 +143,7 @@ namespace polyfem
 		{
 		public:
 			GenericScalarProblem(const std::string &name);
+			void set_units(const assembler::Assembler &assembler, const Units &units) override;
 
 			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override { return rhs_.is_zero(); }

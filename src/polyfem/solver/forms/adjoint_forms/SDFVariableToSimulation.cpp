@@ -42,9 +42,9 @@ namespace polyfem::solver
 						start = state->mesh ? state->mesh->n_vertices() : 0;
 
 					if (state->mesh == nullptr)
-						state->mesh = mesh::read_fem_mesh(geometry, state->args["root_path"], false);
+						state->mesh = mesh::read_fem_mesh(state->units, geometry, state->args["root_path"], false);
 					else
-						state->mesh->append(mesh::read_fem_mesh(geometry, state->args["root_path"], false));
+						state->mesh->append(mesh::read_fem_mesh(state->units, geometry, state->args["root_path"], false));
 
 					if (i == mesh_id_)
 						end = state->mesh->n_vertices();
@@ -63,4 +63,4 @@ namespace polyfem::solver
 		const int dim = states_[0]->mesh->dimension();
 		set_output_indexing(Eigen::VectorXi::LinSpaced((end - start) * dim, start * dim, end * dim - 1));
 	}
-}
+} // namespace polyfem::solver

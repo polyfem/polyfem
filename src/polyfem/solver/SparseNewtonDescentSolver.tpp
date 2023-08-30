@@ -7,8 +7,8 @@ namespace cppoptlib
 {
 	template <typename ProblemType>
 	SparseNewtonDescentSolver<ProblemType>::SparseNewtonDescentSolver(
-		const json &solver_params, const json &linear_solver_params, const double dt)
-		: Superclass(solver_params, dt)
+		const json &solver_params, const json &linear_solver_params, const double dt, const double characteristic_length)
+		: Superclass(solver_params, dt, characteristic_length), characteristic_length(characteristic_length)
 	{
 		linear_solver = polysolve::LinearSolver::create(
 			linear_solver_params["solver"], linear_solver_params["precond"]);
@@ -161,7 +161,7 @@ namespace cppoptlib
 	{
 		// gradient descent, check descent direction
 		const double residual = (hessian * direction + grad).norm(); // H Δx + g = 0
-		if (std::isnan(residual) || residual > std::max(1e-8 * grad.norm(), 1e-5))
+		if (std::isnan(residual) || residual > std::max(1e-8 * grad.norm(), 1e-5) * characteristic_length)
 		{
 			increase_descent_strategy();
 

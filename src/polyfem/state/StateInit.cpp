@@ -273,6 +273,7 @@ namespace polyfem
 		// end of check
 
 		this->args = jse.inject_defaults(args_in, rules);
+		units.init(this->args["units"]);
 
 		// Save output directory and resolve output paths dynamically
 		const std::string output_dir = resolve_input_path(this->args["output"]["directory"]);
@@ -373,6 +374,8 @@ namespace polyfem
 			problem->set_parameters(args["preset_problem"]);
 		}
 
+		problem->set_units(*assembler, units);
+
 		if (optimization_enabled)
 		{
 			if (is_contact_enabled())
@@ -412,7 +415,7 @@ namespace polyfem
 		if (!is_param_valid(args, "time"))
 			return;
 
-		const double t0 = args["time"]["t0"];
+		const double t0 = Units::convert(args["time"]["t0"], units.time());
 		double tend, dt;
 		int time_steps;
 
@@ -428,11 +431,11 @@ namespace polyfem
 		{
 			if (is_param_valid(args["time"], "tend"))
 			{
-				tend = args["time"]["tend"];
+				tend = Units::convert(args["time"]["tend"], units.time());
 				assert(tend > t0);
 				if (is_param_valid(args["time"], "dt"))
 				{
-					dt = args["time"]["dt"];
+					dt = Units::convert(args["time"]["dt"], units.time());
 					assert(dt > 0);
 					time_steps = int(ceil((tend - t0) / dt));
 					assert(time_steps > 0);
@@ -454,7 +457,7 @@ namespace polyfem
 				// tend is already confirmed to be invalid, so time_steps must be valid
 				assert(is_param_valid(args["time"], "time_steps"));
 
-				dt = args["time"]["dt"];
+				dt = Units::convert(args["time"]["dt"], units.time());
 				assert(dt > 0);
 
 				time_steps = args["time"]["time_steps"];
@@ -470,8 +473,8 @@ namespace polyfem
 		}
 		else if (num_valid == 3)
 		{
-			tend = args["time"]["tend"];
-			dt = args["time"]["dt"];
+			tend = Units::convert(args["time"]["tend"], units.time());
+			dt = Units::convert(args["time"]["dt"], units.time());
 			time_steps = args["time"]["time_steps"];
 
 			// Check that all parameters agree
@@ -563,7 +566,7 @@ namespace polyfem
 				}
 			}
 			transform_params["solve_displacement"] = true;
-			assembler->set_materials({}, transform_params);
+			assembler->set_materials({}, transform_params, units);
 
 			return;
 		}
@@ -573,7 +576,7 @@ namespace polyfem
 			body_ids[i] = mesh->get_body_id(i);
 
 		for (auto &a : assemblers)
-			a->set_materials(body_ids, args["materials"]);
+			a->set_materials(body_ids, args["materials"], units);
 	}
 
 	void State::set_materials(assembler::Assembler &assembler) const
@@ -588,7 +591,7 @@ namespace polyfem
 		for (int i = 0; i < mesh->n_elements(); ++i)
 			body_ids[i] = mesh->get_body_id(i);
 
-		assembler.set_materials(body_ids, args["materials"]);
+		assembler.set_materials(body_ids, args["materials"], units);
 	}
 
 } // namespace polyfem

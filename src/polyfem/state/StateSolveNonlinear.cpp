@@ -45,11 +45,11 @@ namespace polyfem
 			if (!linear_solver_type.empty())
 				linear_solver_params["solver"] = linear_solver_type;
 			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
-				args["solver"]["nonlinear"], linear_solver_params, dt);
+				args["solver"]["nonlinear"], linear_solver_params, dt, units.characteristic_length());
 		}
 		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
 		{
-			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(args["solver"]["nonlinear"], dt);
+			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(args["solver"]["nonlinear"], dt, units.characteristic_length());
 		}
 		else
 		{
@@ -186,6 +186,7 @@ namespace polyfem
 
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
 			// General
+			units,
 			mesh->dimension(), t,
 			// Elastic form
 			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache,
@@ -289,7 +290,7 @@ namespace polyfem
 		// ---------------------------------------------------------------------
 
 		// TODO: Make this more general
-		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2);
+		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2) * units.characteristic_length();
 
 		if (!optimization_enabled)
 		{

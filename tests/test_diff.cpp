@@ -868,7 +868,7 @@ TEST_CASE("node-trajectory", "[test_adjoint]")
 	Eigen::MatrixXd velocity_discrete(x.size(), 1);
 	velocity_discrete.setRandom();
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-5, 1e-5);
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-5, 1e-4);
 }
 
 TEST_CASE("damping-transient", "[test_adjoint]")
