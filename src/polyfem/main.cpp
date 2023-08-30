@@ -55,6 +55,7 @@ int forward_simulation(const CLI::App &command_line,
 int optimization_simulation(const CLI::App &command_line,
 							const size_t max_threads,
 							const bool is_strict,
+							const spdlog::level::level_enum &log_level,
 							json &opt_args);
 
 int main(int argc, char **argv)
@@ -115,7 +116,7 @@ int main(int argc, char **argv)
 			log_and_throw_error(fmt::format("unable to open {} file", json_file));
 
 		if (in_args.contains("states"))
-			return optimization_simulation(command_line, max_threads, is_strict, in_args);
+			return optimization_simulation(command_line, max_threads, is_strict, log_level, in_args);
 		else
 			return forward_simulation(command_line, "", output_dir, max_threads,
 									  is_strict, fallback_solver, log_level, in_args);
@@ -214,6 +215,7 @@ int forward_simulation(const CLI::App &command_line,
 int optimization_simulation(const CLI::App &command_line,
 							const size_t max_threads,
 							const bool is_strict,
+							const spdlog::level::level_enum &log_level,
 							json &opt_args)
 {
 	// TODO fix gobal stuff threads log level etc
@@ -230,6 +232,20 @@ int optimization_simulation(const CLI::App &command_line,
 			json cur_args;
 			if (!load_json(args["path"], cur_args))
 				log_and_throw_error("Can't find json for State {}", i);
+
+			{
+				auto tmp = R"({
+						"output": {
+							"log": {
+								"level": -1
+							}
+						}
+					})"_json;
+
+				tmp["output"]["log"]["level"] = int(log_level);
+
+				cur_args.merge_patch(tmp);
+			}
 
 			states[i++] = AdjointOptUtils::create_state(cur_args, max_threads);
 		}

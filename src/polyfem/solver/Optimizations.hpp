@@ -26,7 +26,7 @@ namespace polyfem::solver
 
 		static std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> make_nl_solver(const json &solver_params);
 
-		static std::shared_ptr<State> create_state(const json &args, const int max_threads = 32);
+		static std::shared_ptr<State> create_state(const json &args, const size_t max_threads = 32);
 
 		static void solve_pde(State &state);
 

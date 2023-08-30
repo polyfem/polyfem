@@ -401,7 +401,7 @@ namespace polyfem::solver
 		return var2sim;
 	}
 
-	std::shared_ptr<State> AdjointOptUtils::create_state(const json &args, const int max_threads)
+	std::shared_ptr<State> AdjointOptUtils::create_state(const json &args, const size_t max_threads)
 	{
 		std::shared_ptr<State> state = std::make_shared<State>();
 		state->set_max_threads(max_threads);
