@@ -5,6 +5,7 @@
 #include <polyfem/mesh/MeshNodes.hpp>
 #include <polyfem/quadrature/TetQuadrature.hpp>
 #include <polyfem/quadrature/HexQuadrature.hpp>
+#include <polyfem/quadrature/PrismQuadrature.hpp>
 
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
@@ -1744,24 +1745,19 @@ int LagrangeBasis3d::build_bases(
 		else if (mesh.is_prism(e))
 		{
 			// TODO prism: discr roders
-			const int tmp_orderp = AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
-			const int tmp_orderq = AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 1);
+			const int orderp = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
+			const int orderq = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 1);
 
-			const int tmp_mass_orderp = AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
-			const int tmp_mass_orderq = AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 1);
+			const int mass_orderp = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
+			const int mass_orderq = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 1);
 
-			const int real_order = quadrature_order > 0 ? quadrature_order : (tmp_orderp + tmp_orderq);
-			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : (tmp_mass_orderp + tmp_mass_orderq);
-
-			exit(0);
-			// implement me
-			b.set_quadrature([real_order](Quadrature &quad) {
-				TetQuadrature tet_quadrature;
-				tet_quadrature.get_quadrature(real_order, quad);
+			b.set_quadrature([orderp, orderq](Quadrature &quad) {
+				PrismQuadrature tet_quadrature;
+				tet_quadrature.get_quadrature(orderp, orderq, quad);
 			});
-			b.set_mass_quadrature([real_mass_order](Quadrature &quad) {
-				TetQuadrature tet_quadrature;
-				tet_quadrature.get_quadrature(real_mass_order, quad);
+			b.set_mass_quadrature([mass_orderp, mass_orderq](Quadrature &quad) {
+				PrismQuadrature tet_quadrature;
+				tet_quadrature.get_quadrature(mass_orderp, mass_orderq, quad);
 			});
 
 			// TODO prism: discr order
@@ -1778,6 +1774,9 @@ int LagrangeBasis3d::build_bases(
 				assert(index.face == primitive_id);
 				return mesh3d.n_face_vertices(primitive_id) == 3 ? tet_face_local_nodes(discr_order, mesh3d, index) : hex_face_local_nodes(false, discr_order, mesh3d, index);
 			});
+
+			exit(0);
+			// implement me
 
 			for (int j = 0; j < n_el_bases; ++j)
 			{ // implement me
