@@ -190,7 +190,7 @@ TEST_CASE("contact form derivatives", "[form][form_derivatives][contact_form]")
 	ContactForm form(
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
 		use_convergent_formulation, use_adaptive_barrier_stiffness,
-		is_time_dependent, broad_phase_method, ccd_tolerance,
+		is_time_dependent, false, broad_phase_method, ccd_tolerance,
 		ccd_max_iterations);
 
 	test_form(form, *state_ptr);
@@ -228,7 +228,7 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 
 	const ContactForm contact_form(
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, use_convergent_formulation,
-		use_adaptive_barrier_stiffness, is_time_dependent, broad_phase_method,
+		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations);
 
 	FrictionForm form(
@@ -320,16 +320,14 @@ TEST_CASE("BC lagrangian form derivatives", "[form][form_derivatives][bc_lagr_fo
 	const int ndof = state_ptr->n_bases * dim;
 	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
 
-	assembler::Mass mass_mat_assembler;
-	mass_mat_assembler.set_size(dim);
 	StiffnessMatrix mass_tmp;
-	mass_mat_assembler.assemble(dim == 3,
-								state_ptr->n_bases,
-								state_ptr->bases,
-								state_ptr->geom_bases(),
-								state_ptr->mass_ass_vals_cache,
-								mass_tmp,
-								true);
+	state_ptr->mass_matrix_assembler->assemble(dim == 3,
+											   state_ptr->n_bases,
+											   state_ptr->bases,
+											   state_ptr->geom_bases(),
+											   state_ptr->mass_ass_vals_cache,
+											   mass_tmp,
+											   true);
 
 	BCLagrangianForm form(
 		ndof,
@@ -371,16 +369,14 @@ TEST_CASE("BC penalty form derivatives", "[form][form_derivatives][bc_penalty_fo
 	const int ndof = state_ptr->n_bases * dim;
 	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
 
-	assembler::Mass mass_mat_assembler;
-	mass_mat_assembler.set_size(dim);
 	StiffnessMatrix mass_tmp;
-	mass_mat_assembler.assemble(dim == 3,
-								state_ptr->n_bases,
-								state_ptr->bases,
-								state_ptr->geom_bases(),
-								state_ptr->mass_ass_vals_cache,
-								mass_tmp,
-								true);
+	state_ptr->mass_matrix_assembler->assemble(dim == 3,
+											   state_ptr->n_bases,
+											   state_ptr->bases,
+											   state_ptr->geom_bases(),
+											   state_ptr->mass_ass_vals_cache,
+											   mass_tmp,
+											   true);
 
 	BCPenaltyForm form(
 		ndof,

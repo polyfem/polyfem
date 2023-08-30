@@ -1,26 +1,42 @@
 #pragma once
 
+#include <iomanip>
 #include "NonlinearSolver.hpp"
 
 namespace cppoptlib
 {
 	template <typename ProblemType>
-	NonlinearSolver<ProblemType>::NonlinearSolver(const polyfem::json &solver_params, const double dt)
+	NonlinearSolver<ProblemType>::NonlinearSolver(const polyfem::json &solver_params, const double dt, const double characteristic_length)
 		: dt(dt)
 	{
 		TCriteria criteria = TCriteria::defaults();
 		criteria.xDelta = solver_params["x_delta"];
 		criteria.fDelta = solver_params["f_delta"];
 		criteria.gradNorm = solver_params["grad_norm"];
+
+		criteria.xDelta *= characteristic_length;
+		criteria.fDelta *= characteristic_length;
+		criteria.gradNorm *= characteristic_length;
+
 		criteria.iterations = solver_params["max_iterations"];
 		// criteria.condition = solver_params["condition"];
 		this->setStopCriteria(criteria);
 
 		normalize_gradient = solver_params["relative_gradient"];
 		use_grad_norm_tol = solver_params["line_search"]["use_grad_norm_tol"];
+
 		first_grad_norm_tol = solver_params["first_grad_norm_tol"];
 
+		use_grad_norm_tol *= characteristic_length;
+		first_grad_norm_tol *= characteristic_length;
+
 		set_line_search(solver_params["line_search"]["method"]);
+	}
+
+	template <typename ProblemType>
+	double NonlinearSolver<ProblemType>::compute_grad_norm(const Eigen::VectorXd &x, const Eigen::VectorXd &grad) const
+	{
+		return grad.norm();
 	}
 
 	template <typename ProblemType>
@@ -58,7 +74,7 @@ namespace cppoptlib
 			POLYFEM_SCOPED_TIMER("compute gradient", grad_time);
 			objFunc.gradient(x, grad);
 		}
-		double first_grad_norm = grad.norm();
+		double first_grad_norm = compute_grad_norm(x, grad);
 		if (std::isnan(first_grad_norm))
 		{
 			this->m_status = Status::UserDefined;
@@ -80,7 +96,7 @@ namespace cppoptlib
 			logger().info(
 				"[{}] Not even starting, {} (f={:g} ‖∇f‖={:g} g={:g} tol={:g})",
 				name(), this->m_status, this->m_current.fDelta, first_grad_norm, this->m_current.gradNorm, this->m_stop.gradNorm);
-			update_solver_info();
+			update_solver_info(this->m_current.fDelta);
 			return;
 		}
 		this->m_stop.gradNorm = current_g_norm;
@@ -88,7 +104,10 @@ namespace cppoptlib
 		utils::Timer timer("non-linear solver", this->total_time);
 		timer.start();
 
-		m_line_search->use_grad_norm_tol = use_grad_norm_tol;
+		if (m_line_search)
+			m_line_search->use_grad_norm_tol = use_grad_norm_tol;
+
+		objFunc.save_to_file(x);
 
 		logger().debug(
 			"Starting {} solve f₀={:g} ‖∇f₀‖={:g} "
@@ -96,13 +115,10 @@ namespace cppoptlib
 			name(), objFunc.value(x), this->m_current.gradNorm, this->m_stop.iterations,
 			this->m_stop.fDelta, this->m_stop.gradNorm, this->m_stop.xDelta);
 
+		update_solver_info(objFunc.value(x));
+
 		do
 		{
-			{
-				POLYFEM_SCOPED_TIMER("constraint set update", constraint_set_update_time);
-				objFunc.solution_changed(x);
-			}
-
 			double energy;
 			{
 				POLYFEM_SCOPED_TIMER("compute objective function", obj_fun_time);
@@ -121,7 +137,7 @@ namespace cppoptlib
 				objFunc.gradient(x, grad);
 			}
 
-			const double grad_norm = grad.norm();
+			const double grad_norm = compute_grad_norm(x, grad);
 			if (std::isnan(grad_norm))
 			{
 				this->m_status = Status::UserDefined;
@@ -198,13 +214,12 @@ namespace cppoptlib
 
 			const double step = (rate * delta_x).norm();
 
-			// TODO: removed feature
-			//  if (objFunc.stop(x))
-			//  {
-			//  	this->m_status = Status::UserDefined;
-			//  	m_error_code = ErrorCode::SUCCESS;
-			//  	logger().debug("[{}] Objective decided to stop", name());
-			//  }
+			if (objFunc.stop(x))
+			{
+				this->m_status = Status::UserDefined;
+				m_error_code = ErrorCode::SUCCESS;
+				logger().debug("[{}] Objective decided to stop", name());
+			}
 
 			objFunc.post_step(this->m_current.iterations, x);
 
@@ -215,6 +230,10 @@ namespace cppoptlib
 
 			if (++this->m_current.iterations >= this->m_stop.iterations)
 				this->m_status = Status::IterationLimit;
+
+			update_solver_info(energy);
+
+			objFunc.save_to_file(x);
 
 		} while (objFunc.callback(this->m_current, x) && (this->m_status == Status::Continue));
 
@@ -228,16 +247,16 @@ namespace cppoptlib
 			log_and_throw_error("[{}] Reached iteration limit (limit={})", name(), this->m_stop.iterations);
 		if (this->m_current.iterations == 0)
 			log_and_throw_error("[{}] Unable to take a step", name());
-		if (this->m_status == Status::UserDefined)
+		if (this->m_status == Status::UserDefined && m_error_code != ErrorCode::SUCCESS)
 			log_and_throw_error("[{}] Failed to find minimizer", name());
 
 		logger().info(
-			"[{}] Finished: {} Took {:g}s (niters={:d} f={:g} Δf={:g} ‖∇f‖={:g} ‖Δx‖={:g})",
+			"[{}] Finished: {} Took {:g}s (niters={:d} f={:g} Δf={:g} ‖∇f‖={:g} ‖Δx‖={:g} fdelta={} ftol={})",
 			name(), this->m_status, timer.getElapsedTimeInSec(), this->m_current.iterations,
-			old_energy, this->m_current.fDelta, this->m_current.gradNorm, this->m_current.xDelta);
+			old_energy, this->m_current.fDelta, this->m_current.gradNorm, this->m_current.xDelta, this->m_current.fDelta, this->m_stop.fDelta);
 
 		log_times();
-		update_solver_info();
+		update_solver_info(objFunc.value(x));
 	}
 
 	template <typename ProblemType>
@@ -259,7 +278,7 @@ namespace cppoptlib
 		}
 		else if (std::isnan(rate))
 		{
-			assert(descent_strategy == 2); // failed on gradient descent
+			assert(descent_strategy == 2);        // failed on gradient descent
 			polyfem::logger().error("[{}] Line search failed on gradient descent; stopping", name());
 			this->m_status = Status::UserDefined; // Line search failed on gradient descent, so quit!
 			throw std::runtime_error("Line search failed on gradient descent");
@@ -278,6 +297,7 @@ namespace cppoptlib
 		const std::string line_search_name = solver_info["line_search"];
 		solver_info = polyfem::json();
 		solver_info["line_search"] = line_search_name;
+		solver_info["iterations"] = 0;
 
 		reset_times();
 	}
@@ -299,11 +319,11 @@ namespace cppoptlib
 	}
 
 	template <typename ProblemType>
-	void NonlinearSolver<ProblemType>::update_solver_info()
+	void NonlinearSolver<ProblemType>::update_solver_info(const double energy)
 	{
 		solver_info["status"] = this->status();
 		solver_info["error_code"] = m_error_code;
-
+		solver_info["energy"] = energy;
 		const auto &crit = this->criteria();
 		solver_info["iterations"] = crit.iterations;
 		solver_info["xDelta"] = crit.xDelta;

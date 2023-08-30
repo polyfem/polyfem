@@ -157,8 +157,8 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 	autodiff.set_size(2);
 	real.set_size(2);
 
-	autodiff.add_multimaterial(0, in_args["materials"]);
-	real.add_multimaterial(0, in_args["materials"]);
+	autodiff.add_multimaterial(0, in_args["materials"], state.units);
+	real.add_multimaterial(0, in_args["materials"], state.units);
 
 	const int el_id = 0;
 	const auto &bs = state.bases[el_id];

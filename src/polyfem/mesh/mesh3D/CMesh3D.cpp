@@ -413,6 +413,59 @@ namespace polyfem
 			return true;
 		}
 
+		bool CMesh3D::save(const std::string &path) const
+		{
+
+			if (!StringUtils::endswith(path, ".HYBRID"))
+			{
+				GEO::Mesh M;
+				to_geogram_mesh(*this, M);
+				GEO::mesh_save(M, path);
+				return true;
+			}
+
+			std::fstream f(path, std::ios::out);
+
+			f << mesh_.points.cols() << " " << mesh_.faces.size() << " " << 3 * mesh_.elements.size() << std::endl;
+			for (int i = 0; i < mesh_.points.cols(); i++)
+				f << mesh_.points(0, i) << " " << mesh_.points(1, i) << " " << mesh_.points(2, i) << std::endl;
+
+			for (auto f_ : mesh_.faces)
+			{
+				f << f_.vs.size() << " ";
+				for (auto vid : f_.vs)
+					f << vid << " ";
+				f << std::endl;
+			}
+
+			for (uint32_t i = 0; i < mesh_.elements.size(); i++)
+			{
+				f << mesh_.elements[i].fs.size() << " ";
+				for (auto fid : mesh_.elements[i].fs)
+					f << fid << " ";
+				f << std::endl;
+				f << mesh_.elements[i].fs_flag.size() << " ";
+				for (auto f_flag : mesh_.elements[i].fs_flag)
+					f << f_flag << " ";
+				f << std::endl;
+			}
+
+			for (uint32_t i = 0; i < mesh_.elements.size(); i++)
+			{
+				f << mesh_.elements[i].hex << std::endl;
+			}
+
+			f << "KERNEL"
+			<< " " << mesh_.elements.size() << std::endl;
+			for (uint32_t i = 0; i < mesh_.elements.size(); i++)
+			{
+				f << mesh_.elements[i].v_in_Kernel[0] << " " << mesh_.elements[i].v_in_Kernel[1] << " " << mesh_.elements[i].v_in_Kernel[2] << std::endl;
+			}
+			f.close();
+
+			return true;
+		}
+
 		bool CMesh3D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 		{
 			assert(F.cols() == 4 || F.cols() == 6 || F.cols() == 8);
@@ -1264,21 +1317,21 @@ namespace polyfem
 			}
 		}
 
+		void CMesh3D::set_point(const int global_index, const RowVectorNd &p)
+		{
+			mesh_.points.col(global_index) = p.transpose();
+			if (mesh_.vertices[global_index].v.size() == 3)
+			{
+				mesh_.vertices[global_index].v[0] = p[0];
+				mesh_.vertices[global_index].v[1] = p[1];
+				mesh_.vertices[global_index].v[2] = p[2];
+			}
+		}
+
 		RowVectorNd CMesh3D::point(const int global_index) const
 		{
 			RowVectorNd pt = mesh_.points.col(global_index).transpose();
 			return pt;
-		}
-
-		void CMesh3D::set_point(const int global_index, const RowVectorNd &pt)
-		{
-			mesh_.points.col(global_index) = pt.transpose();
-			if (mesh_.vertices[global_index].v.size() == 3)
-			{
-				mesh_.vertices[global_index].v[0] = pt[0];
-				mesh_.vertices[global_index].v[1] = pt[1];
-				mesh_.vertices[global_index].v[2] = pt[2];
-			}
 		}
 
 		RowVectorNd CMesh3D::kernel(const int c) const

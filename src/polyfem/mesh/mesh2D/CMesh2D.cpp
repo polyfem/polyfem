@@ -162,6 +162,14 @@ namespace polyfem
 			return true;
 		}
 
+		bool CMesh2D::save(const std::string &path) const
+		{
+			if (!mesh_save(mesh_, path))
+				return false;
+
+			return true;
+		}
+
 		bool CMesh2D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 		{
 			edge_nodes_.clear();
@@ -317,6 +325,9 @@ namespace polyfem
 					assert(false);
 				}
 			}
+
+			if (orders_.maxCoeff() == 1)
+				orders_.resize(0, 0);
 		}
 
 		RowVectorNd CMesh2D::edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const

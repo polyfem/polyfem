@@ -98,6 +98,26 @@ namespace polyfem
 			igl::barycentric_coordinates(p, A, B, C, coords);
 		}
 
+		void Mesh2D::compute_face_jacobian(const int el_id, const Eigen::MatrixXd &reference_map, Eigen::MatrixXd &jacobian) const
+		{
+			assert(is_simplex(el_id));
+
+			auto index = get_index_from_face(el_id);
+			const auto A = point(index.vertex);
+			index = next_around_face(index);
+			const auto B = point(index.vertex);
+			index = next_around_face(index);
+			const auto C = point(index.vertex);
+
+			Eigen::MatrixXd coords(3, 3);
+			coords << A, 1, B, 1, C, 1;
+			coords.transposeInPlace();
+
+			jacobian = coords * reference_map;
+
+			assert(jacobian.determinant() > 0);
+		}
+
 		void Mesh2D::elements_boxes(std::vector<std::array<Eigen::Vector3d, 2>> &boxes) const
 		{
 			boxes.resize(n_elements());

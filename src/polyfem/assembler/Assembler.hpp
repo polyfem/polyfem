@@ -1,5 +1,7 @@
 #pragma once
 
+#include <polyfem/Units.hpp>
+
 #include <polyfem/assembler/AssemblerData.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
@@ -124,13 +126,82 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &fun,
 			std::vector<NamedMatrix> &result) const {}
 
+		// computes tensor, assembler is the name of the formulation
+		virtual void compute_stiffness_value(
+			const assembler::ElementAssemblyValues &vals,
+			const Eigen::MatrixXd &local_pts,
+			const Eigen::MatrixXd &displacement,
+			Eigen::MatrixXd &tensor) const { log_and_throw_error("Not implemented!"); }
+
+		virtual void compute_dstress_dmu_dlambda(
+			const int el_id,
+			const Eigen::MatrixXd &local_pts,
+			const Eigen::MatrixXd &global_pts,
+			const Eigen::MatrixXd &grad_u_i,
+			Eigen::MatrixXd &dstress_dmu,
+			Eigen::MatrixXd &dstress_dlambda) const { log_and_throw_error("Not implemented!"); }
+
+		virtual void compute_stress_grad_multiply_mat(
+			const int el_id,
+			const Eigen::MatrixXd &local_pts,
+			const Eigen::MatrixXd &global_pts,
+			const Eigen::MatrixXd &grad_u_i,
+			const Eigen::MatrixXd &mat,
+			Eigen::MatrixXd &stress,
+			Eigen::MatrixXd &result) const { log_and_throw_error("Not implemented!"); }
+
+		virtual void compute_stress_grad_multiply_stress(
+			const int el_id,
+			const Eigen::MatrixXd &local_pts,
+			const Eigen::MatrixXd &global_pts,
+			const Eigen::MatrixXd &grad_u_i,
+			Eigen::MatrixXd &stress,
+			Eigen::MatrixXd &result) const
+		{
+			Eigen::MatrixXd unused;
+			compute_stress_grad_multiply_mat(el_id, local_pts, global_pts, grad_u_i, Eigen::MatrixXd::Zero(grad_u_i.rows(), grad_u_i.cols()), stress, unused);
+			compute_stress_grad_multiply_mat(el_id, local_pts, global_pts, grad_u_i, stress, unused, result);
+		}
+
+		virtual void compute_stress_grad_multiply_vect(
+			const int el_id,
+			const Eigen::MatrixXd &local_pts,
+			const Eigen::MatrixXd &global_pts,
+			const Eigen::MatrixXd &grad_u_i,
+			const Eigen::MatrixXd &vect,
+			Eigen::MatrixXd &stress,
+			Eigen::MatrixXd &result) const { log_and_throw_error("Not implemented!"); }
+
+		virtual void compute_stress_grad(
+			const int el_id,
+			const double dt,
+			const Eigen::MatrixXd &local_pts,
+			const Eigen::MatrixXd &global_pts,
+			const Eigen::MatrixXd &grad_u_i,
+			const Eigen::MatrixXd &prev_grad_u_i,
+			Eigen::MatrixXd &stress,
+			Eigen::MatrixXd &result) const { log_and_throw_error("Not implemented!"); }
+		virtual void compute_stress_prev_grad(
+			const int el_id,
+			const double dt,
+			const Eigen::MatrixXd &local_pts,
+			const Eigen::MatrixXd &global_pts,
+			const Eigen::MatrixXd &grad_u_i,
+			const Eigen::MatrixXd &prev_grad_u_i,
+			Eigen::MatrixXd &result) const { log_and_throw_error("Not implemented!"); }
+
 		virtual std::map<std::string, ParamFunc> parameters() const = 0;
 		virtual VectorNd compute_rhs(const AutodiffHessianPt &pt) const { log_and_throw_error("Rhs not supported by {}!", name()); }
 
 		virtual Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const { log_and_throw_error("Kernel not supported by {}!", name()); }
 
-		void set_materials(const std::vector<int> &body_ids, const json &body_params);
-		virtual void add_multimaterial(const int index, const json &params) {}
+		void set_materials(const std::vector<int> &body_ids, const json &body_params, const Units &units);
+		virtual void add_multimaterial(const int index, const json &params, const Units &units) {}
+
+		virtual void update_lame_params(const Eigen::MatrixXd &lambdas, const Eigen::MatrixXd &mus)
+		{
+			log_and_throw_error("Not implemented!");
+		}
 
 		virtual bool is_linear() const = 0;
 		virtual bool is_solution_displacement() const { return false; }

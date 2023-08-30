@@ -71,7 +71,7 @@ namespace polyfem
 					// -----------------------------
 
 					{
-						POLYFEM_SCOPED_TIMER("CCD broad-phase", this->broad_phase_ccd_time);
+						POLYFEM_SCOPED_TIMER("Line Search Begin - CCD broad-phase", this->broad_phase_ccd_time);
 						TVector new_x = x + step_size * delta_x;
 						objFunc.line_search_begin(x, new_x);
 					}
@@ -152,9 +152,16 @@ namespace polyfem
 
 						TVector new_x = x + step_size * delta_x;
 
-						{
-							POLYFEM_SCOPED_TIMER("constraint set update in LS", this->constraint_set_update_time);
+						try {
+							POLYFEM_SCOPED_TIMER("solution changed - constraint set update in LS", this->constraint_set_update_time);
 							objFunc.solution_changed(new_x);
+						}
+						catch (const std::runtime_error &e) {
+							logger().warn("Failed to take step due to \"{}\", reduce step size...", e.what());
+
+							step_size /= 2.0;
+							this->cur_iter++;
+							continue;
 						}
 
 						if (use_grad_norm)
@@ -189,8 +196,8 @@ namespace polyfem
 							"Line search failed to find descent step (f(x)={:g} f(x+αΔx)={:g} α_CCD={:g} α={:g}, ||Δx||={:g} is_step_valid={} use_grad_norm={} iter={:d})",
 							old_energy, cur_energy, starting_step_size, step_size, delta_x.norm(),
 							is_step_valid, use_grad_norm, this->cur_iter);
-#ifndef NDEBUG
 						objFunc.solution_changed(x);
+#ifndef NDEBUG
 						// tolerance for rounding error due to multithreading
 						assert(abs(old_energy_in - objFunc.value(x)) < 1e-15);
 #endif

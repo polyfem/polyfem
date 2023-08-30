@@ -42,6 +42,8 @@ namespace polyfem
 				return RowVectorNd(2);
 			}
 
+			void compute_face_jacobian(const int el_id, const Eigen::MatrixXd &reference_map, Eigen::MatrixXd &jacobian) const;
+
 			// Navigation wrapper
 			virtual Navigation::Index get_index_from_face(int f, int lv = 0) const = 0;
 
