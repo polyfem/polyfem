@@ -19,7 +19,9 @@
 
 #include <polyfem/State.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
+
 #include <iostream>
 #include <memory>
 ////////////////////////////////////////////////////////////////////////////////
@@ -193,14 +195,14 @@ void test_form(Form &form, const State &state)
 				},
 				fhess);
 
-			if (!fd::compare_hessian(hess, fhess))
+			if (!fd::compare_hessian(Eigen::MatrixXd(hess), fhess))
 			{
 				std::cout << "Hessian mismatch" << std::endl;
 				std::cout << "Hessian: " << hess << std::endl;
 				std::cout << "Finite hessian: " << fhess << std::endl;
 			}
 
-			CHECK(fd::compare_hessian(hess, fhess));
+			CHECK(fd::compare_hessian(Eigen::MatrixXd(hess), fhess));
 		}
 
 		x.setRandom();
