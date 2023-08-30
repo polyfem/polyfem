@@ -6,13 +6,18 @@
 namespace cppoptlib
 {
 	template <typename ProblemType>
-	NonlinearSolver<ProblemType>::NonlinearSolver(const polyfem::json &solver_params, const double dt)
+	NonlinearSolver<ProblemType>::NonlinearSolver(const polyfem::json &solver_params, const double dt, const double characteristic_length)
 		: dt(dt)
 	{
 		TCriteria criteria = TCriteria::defaults();
 		criteria.xDelta = solver_params["x_delta"];
 		criteria.fDelta = solver_params["f_delta"];
 		criteria.gradNorm = solver_params["grad_norm"];
+
+		criteria.xDelta *= characteristic_length;
+		criteria.fDelta *= characteristic_length;
+		criteria.gradNorm *= characteristic_length;
+
 		criteria.iterations = solver_params["max_iterations"];
 		// criteria.condition = solver_params["condition"];
 		this->setStopCriteria(criteria);
@@ -21,6 +26,9 @@ namespace cppoptlib
 		use_grad_norm_tol = solver_params["line_search"]["use_grad_norm_tol"];
 
 		first_grad_norm_tol = solver_params["first_grad_norm_tol"];
+
+		use_grad_norm_tol *= characteristic_length;
+		first_grad_norm_tol *= characteristic_length;
 
 		set_line_search(solver_params["line_search"]["method"]);
 	}
@@ -206,12 +214,12 @@ namespace cppoptlib
 
 			const double step = (rate * delta_x).norm();
 
-			 if (objFunc.stop(x))
-			 {
-			 	this->m_status = Status::UserDefined;
-			 	m_error_code = ErrorCode::SUCCESS;
-			 	logger().debug("[{}] Objective decided to stop", name());
-			 }
+			if (objFunc.stop(x))
+			{
+				this->m_status = Status::UserDefined;
+				m_error_code = ErrorCode::SUCCESS;
+				logger().debug("[{}] Objective decided to stop", name());
+			}
 
 			objFunc.post_step(this->m_current.iterations, x);
 
@@ -270,7 +278,7 @@ namespace cppoptlib
 		}
 		else if (std::isnan(rate))
 		{
-			assert(descent_strategy == 2); // failed on gradient descent
+			assert(descent_strategy == 2);        // failed on gradient descent
 			polyfem::logger().error("[{}] Line search failed on gradient descent; stopping", name());
 			this->m_status = Status::UserDefined; // Line search failed on gradient descent, so quit!
 			throw std::runtime_error("Line search failed on gradient descent");

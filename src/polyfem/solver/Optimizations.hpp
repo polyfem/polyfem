@@ -24,7 +24,7 @@ namespace polyfem::solver
 	{
 		static json apply_opt_json_spec(const json &input_args, bool strict_validation);
 
-		static std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> make_nl_solver(const json &solver_params);
+		static std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> make_nl_solver(const json &solver_params, const double characteristic_length);
 
 		static std::shared_ptr<State> create_state(const json &args, const int max_threads = 32);
 

@@ -21,7 +21,7 @@ namespace polyfem::assembler
 		AMIPSEnergy();
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
 		std::string name() const override { return "AMIPS"; }
 		std::map<std::string, ParamFunc> parameters() const override;
@@ -50,7 +50,7 @@ namespace polyfem::assembler
 
 			return val;
 		}
-		
+
 	private:
 		std::vector<Eigen::MatrixXd> canonical_transformation_;
 	};

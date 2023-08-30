@@ -55,7 +55,6 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24")
 endif()
 
 ################################################################################
-
 project(PolyFEM DESCRIPTION "A polyvalent C++ FEM library" LANGUAGES C CXX)
 
 # Polyfem options
@@ -245,6 +244,10 @@ target_link_libraries(polyfem PUBLIC natsort::natsort)
 include(glob)
 target_link_libraries(polyfem PUBLIC Glob::Glob)
 
+# polysolve
+include(units)
+target_link_libraries(polyfem PUBLIC units::units)
+
 ################################################################################
 # Optional libraries
 ################################################################################
@@ -282,6 +285,7 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
 
     target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+
 
     target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem::polyfem polyfem::warnings)
 

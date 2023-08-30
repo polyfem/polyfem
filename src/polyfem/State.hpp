@@ -2,6 +2,8 @@
 
 #include <polyfem/Common.hpp>
 
+#include <polyfem/Units.hpp>
+
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
 
@@ -128,6 +130,8 @@ namespace polyfem
 		//---------------------------------------------------
 		//-----------------assembly--------------------------
 		//---------------------------------------------------
+
+		Units units;
 
 		/// assemblers
 		std::shared_ptr<assembler::Assembler> assembler = nullptr;

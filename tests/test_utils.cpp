@@ -100,6 +100,10 @@ TEST_CASE("expression", "[utils]")
 	utils::ExpressionValue val;
 	val.init(jval["value"]);
 
+	expr.set_unit_type("");
+	expr2d.set_unit_type("");
+	val.set_unit_type("");
+
 	REQUIRE(expr(2, 3, 4) == Catch::Approx(2. * 2. + sqrt(2. * 3.) + sin(4.) * 2.).margin(1e-10));
 	REQUIRE(expr2d(2, 3) == Catch::Approx(2. * 2. + sqrt(2. * 3.)).margin(1e-10));
 	REQUIRE(val(2, 3, 4) == Catch::Approx(1).margin(1e-16));

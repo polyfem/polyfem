@@ -84,7 +84,7 @@ namespace polyfem
 				return std::make_shared<NavierStokesVelocity>();
 			else if (formulation == "OperatorSplitting")
 				return std::make_shared<OperatorSplitting>();
-			
+
 			else if (formulation == "AMIPS")
 				return std::make_shared<AMIPSEnergy>();
 

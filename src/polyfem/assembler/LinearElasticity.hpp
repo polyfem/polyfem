@@ -44,7 +44,7 @@ namespace polyfem::assembler
 		void compute_dstress_dmu_dlambda(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &dstress_dmu, Eigen::MatrixXd &dstress_dlambda) const override;
 
 		// inialize material parameter
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
 		// class that stores and compute lame parameters per point
 		const LameParameters &lame_params() const { return params_; }

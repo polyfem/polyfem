@@ -302,7 +302,7 @@ int optimization_simulation(const CLI::App &command_line,
 	//  }
 
 	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nl_solver =
-		AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
+		AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], states.front()->units.characteristic_length());
 	nl_solver->minimize(*nl_problem, x);
 
 	return EXIT_SUCCESS;
