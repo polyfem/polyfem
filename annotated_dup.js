@@ -330,7 +330,8 @@ var annotated_dup =
       [ "AutoDiffAllocator", "classpolyfem_1_1_auto_diff_allocator.html", "classpolyfem_1_1_auto_diff_allocator" ],
       [ "AutoDiffAllocator< double >", "classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html", "classpolyfem_1_1_auto_diff_allocator_3_01double_01_4" ],
       [ "IntegrableFunctional", "classpolyfem_1_1_integrable_functional.html", "classpolyfem_1_1_integrable_functional" ],
-      [ "State", "classpolyfem_1_1_state.html", "classpolyfem_1_1_state" ]
+      [ "State", "classpolyfem_1_1_state.html", "classpolyfem_1_1_state" ],
+      [ "Units", "classpolyfem_1_1_units.html", "classpolyfem_1_1_units" ]
     ] ],
     [ "q_bases", "namespaceq__bases.html", [
       [ "Lagrange", "classq__bases_1_1_lagrange.html", "classq__bases_1_1_lagrange" ],

@@ -1,6 +1,6 @@
 var classpolyfem_1_1assembler_1_1_helmholtz =
 [
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_helmholtz.html#ab3a067ab73c526f5c78421891f5b1380", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_helmholtz.html#a0dffcdbbc5e1347d63ccd9c1d2a8c575", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_helmholtz.html#a83e70fd7a778342c0d7750416661a575", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_helmholtz.html#aea87230e031406685bc4a0d1d4516c3f", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_helmholtz.html#adc7b5a738074ba44208a49ea1027fd14", null ],

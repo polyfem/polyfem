@@ -26,6 +26,7 @@ var classpolyfem_1_1mesh_1_1_obstacle =
     [ "n_vertices", "classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db", null ],
     [ "ndof", "classpolyfem_1_1mesh_1_1_obstacle.html#a7e4641b4e7d3130e1618237978eee875", null ],
     [ "planes", "classpolyfem_1_1mesh_1_1_obstacle.html#a4547dd5282b65fce078989fd4ddbdc94", null ],
+    [ "set_units", "classpolyfem_1_1mesh_1_1_obstacle.html#a83413f326926b6c687959961c8e05906", null ],
     [ "set_zero", "classpolyfem_1_1mesh_1_1_obstacle.html#a6e1e78c30df24229f0e9409cc5445580", null ],
     [ "update_displacement", "classpolyfem_1_1mesh_1_1_obstacle.html#a7f676c678626887e7fef558a70a19467", null ],
     [ "v", "classpolyfem_1_1mesh_1_1_obstacle.html#acd4b860705bf9f9c6af1206b64c3e6f5", null ],

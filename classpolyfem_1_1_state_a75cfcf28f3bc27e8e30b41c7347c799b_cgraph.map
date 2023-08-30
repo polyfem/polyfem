@@ -1,52 +1,52 @@
 <map id="polyfem::State::build_basis" name="polyfem::State::build_basis">
-<area shape="rect" id="node1" title="builds the bases step 2 of solve" alt="" coords="5,1853,164,1893"/>
+<area shape="rect" id="node1" title="builds the bases step 2 of solve" alt="" coords="5,1667,164,1707"/>
 <area shape="rect" id="node2" href="$classpolyfem_1_1basis_1_1_lagrange_basis2d.html#a1690ad5c21dbaac0954721a21529e9d4" title="Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1, Q2 over quads)." alt="" coords="227,373,414,413"/>
 <area shape="rect" id="node3" href="$classpolyfem_1_1basis_1_1_spline_basis2d.html#af9647481c1a62ac9b81c9394ff36a2ea" title=" " alt="" coords="212,437,429,477"/>
-<area shape="rect" id="node16" href="$classpolyfem_1_1basis_1_1_lagrange_basis3d.html#a998eb7a3ebc581ad4332d8fa370a62b4" title="Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes)." alt="" coords="227,2032,414,2072"/>
+<area shape="rect" id="node16" href="$classpolyfem_1_1basis_1_1_lagrange_basis3d.html#a998eb7a3ebc581ad4332d8fa370a62b4" title="Builds FE basis functions over the entire mesh (P1, P2 over tets, Q1, Q2 over hes)." alt="" coords="227,1759,414,1799"/>
 <area shape="rect" id="node17" href="$classpolyfem_1_1basis_1_1_spline_basis3d.html#a714401935be3ae9842e606a9b56718f7" title=" " alt="" coords="212,629,429,669"/>
-<area shape="rect" id="node20" href="$namespacepolyfem_1_1autogen.html#ae625b6539e6dfcbb11dee43af4a58bc0" title=" " alt="" coords="808,924,961,964"/>
-<area shape="rect" id="node22" href="$classpolyfem_1_1_state.html#a21a66eb08bf1c02cd237d9dfbecb8024" title="extracts the boundary mesh for collision, called in build_basis" alt="" coords="241,1499,400,1539"/>
-<area shape="rect" id="node26" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="822,1239,947,1265"/>
-<area shape="rect" id="node29" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db" title=" " alt="" coords="792,1649,977,1689"/>
-<area shape="rect" id="node31" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a72f26a24843b7e470674f13241a8bc05" title="builds the grid to export the solution" alt="" coords="225,1739,417,1779"/>
-<area shape="rect" id="node35" href="$classpolyfem_1_1_state.html#a5b47ee508fd45069d3f0b84cb41f3179" title="build the mapping from input nodes to polyfem nodes" alt="" coords="241,1335,400,1375"/>
-<area shape="rect" id="node36" href="$classpolyfem_1_1_state.html#a202f2494b8f46d4bf22edfc0a36ddb32" title="builds bases for polygons, called inside build_basis" alt="" coords="241,1853,400,1893"/>
-<area shape="rect" id="node37" href="$classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" title="check if using iso parametric bases" alt="" coords="538,2051,683,2091"/>
-<area shape="rect" id="node38" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a5dfa837551731809bc88c9eb6f491187" title=" " alt="" coords="240,2097,401,2151"/>
-<area shape="rect" id="node39" href="$classpolyfem_1_1io_1_1_out_stats_data.html#a84cfce0e3e38ec71cb85e303d53b7333" title="computes the mesh size, it samples every edges n_samples times uses curved_mesh_size (false by defaul..." alt="" coords="225,984,416,1024"/>
-<area shape="rect" id="node40" href="$classpolyfem_1_1io_1_1_out_stats_data.html#a59e33cd83c220e21830ee199e2ce68b2" title="counts the number of flipped elements" alt="" coords="225,1099,416,1139"/>
-<area shape="rect" id="node41" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="521,1149,700,1189"/>
-<area shape="rect" id="node42" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="239,1917,402,1957"/>
-<area shape="rect" id="node43" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a568826dcf14775118883ecbf6bd72f15" title=" " alt="" coords="225,2176,416,2216"/>
-<area shape="rect" id="node44" href="$classpolyfem_1_1_state.html#ae48e7478cf500860b285dfc3f4a80fee" title="does the simulation has contact" alt="" coords="252,2240,389,2280"/>
-<area shape="rect" id="node45" href="$namespacepolyfem_1_1autogen.html#a81e7dfa1d60c099807060e6f1bc78e94" title=" " alt="" coords="244,2304,397,2344"/>
-<area shape="rect" id="node46" href="$namespacepolyfem_1_1autogen.html#a9c2688a6744801097c2f8baa081ab3a7" title=" " alt="" coords="244,2368,397,2408"/>
-<area shape="rect" id="node47" href="$classpolyfem_1_1refinement_1_1_a_priori.html#a51742768faaf3bb9905096d748f69751" title="compute a priori prefinement" alt="" coords="243,2456,398,2496"/>
-<area shape="rect" id="node48" href="$namespacepolyfem_1_1autogen.html#a18ee2912d770a6bc9cfe2a485a9ecb25" title=" " alt="" coords="244,2520,397,2560"/>
-<area shape="rect" id="node49" href="$namespacepolyfem_1_1io.html#a37878272b4408db3e9e1d7a9efd1ae09" title="Reads a matrix from a file. Determines the file format based on the path&#39;s extension." alt="" coords="229,2585,412,2610"/>
-<area shape="rect" id="node50" href="$classpolyfem_1_1io_1_1_out_stats_data.html#abb956b11c2d5d90d1fce4a2d0f022f0f" title="clears all stats" alt="" coords="225,2635,416,2675"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111" title=" " alt="" coords="520,133,701,173"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1quadrature_1_1_quad_quadrature.html#a41998014d01e8a77d8c609ff1543bafc" title=" " alt="" coords="527,198,694,253"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1mesh_1_1_mesh.html#a11e698a1c82ee90edab1e7a607808779" title="checks if element is polygon compatible" alt="" coords="529,933,692,973"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1mesh_1_1_mesh.html#a6adb866818837b8eb10297b32db964fe" title="checks if element is spline compatible" alt="" coords="527,405,694,445"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a6c29651fa089917c4230422725299bd5" title="checks if mesh is volume" alt="" coords="520,5,701,45"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1mesh_1_1_mesh.html#a0140181b551c7bf0c162d6898155f294" title="utitlity to return the number of elements, cells or faces in 3d and 2d" alt="" coords="529,469,692,509"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html#a8e222f339075e91de499bb7e5a8c11e5" title=" " alt="" coords="509,533,713,573"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1basis_1_1_lagrange_basis2d.html#a9be8d6ae31693ad7076f1fcc816b7512" title=" " alt="" coords="493,69,729,109"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a80818109ce6766a1fae1733a0b2e87dc" title=" " alt="" coords="486,597,735,637"/>
-<area shape="rect" id="node13" href="$classpolyfem_1_1basis_1_1_element_bases.html#a4d8eaf01d57981f0e7449692a742ceb4" title=" " alt="" coords="477,661,744,701"/>
-<area shape="rect" id="node14" href="$classpolyfem_1_1basis_1_1_element_bases.html#ae914f65d4ff93b4c3f78f06a339ef843" title=" " alt="" coords="501,277,720,317"/>
-<area shape="rect" id="node15" href="$classpolyfem_1_1basis_1_1_element_bases.html#a2f199c4f37379930fb492028060f9a1c" title=" " alt="" coords="501,341,720,381"/>
+<area shape="rect" id="node20" href="$namespacepolyfem_1_1autogen.html#ae625b6539e6dfcbb11dee43af4a58bc0" title=" " alt="" coords="808,867,961,907"/>
+<area shape="rect" id="node22" href="$classpolyfem_1_1_state.html#a21a66eb08bf1c02cd237d9dfbecb8024" title="extracts the boundary mesh for collision, called in build_basis" alt="" coords="241,1465,400,1505"/>
+<area shape="rect" id="node26" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="822,1226,947,1251"/>
+<area shape="rect" id="node29" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db" title=" " alt="" coords="792,1752,977,1792"/>
+<area shape="rect" id="node31" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a72f26a24843b7e470674f13241a8bc05" title="builds the grid to export the solution" alt="" coords="225,1152,417,1192"/>
+<area shape="rect" id="node32" href="$classpolyfem_1_1_state.html#a5b47ee508fd45069d3f0b84cb41f3179" title="build the mapping from input nodes to polyfem nodes" alt="" coords="241,1221,400,1261"/>
+<area shape="rect" id="node33" href="$classpolyfem_1_1_state.html#a202f2494b8f46d4bf22edfc0a36ddb32" title="builds bases for polygons, called inside build_basis" alt="" coords="241,1580,400,1620"/>
+<area shape="rect" id="node34" href="$classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" title="check if using iso parametric bases" alt="" coords="538,1860,683,1900"/>
+<area shape="rect" id="node35" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a5dfa837551731809bc88c9eb6f491187" title=" " alt="" coords="240,1823,401,1878"/>
+<area shape="rect" id="node36" href="$classpolyfem_1_1io_1_1_out_stats_data.html#a84cfce0e3e38ec71cb85e303d53b7333" title="computes the mesh size, it samples every edges n_samples times uses curved_mesh_size (false by defaul..." alt="" coords="225,1035,416,1075"/>
+<area shape="rect" id="node37" href="$classpolyfem_1_1_units.html#a7c6ff57874a82614bdc55a91cdf7b08b" title=" " alt="" coords="233,1926,408,1951"/>
+<area shape="rect" id="node38" href="$classpolyfem_1_1io_1_1_out_stats_data.html#a59e33cd83c220e21830ee199e2ce68b2" title="counts the number of flipped elements" alt="" coords="225,1297,416,1337"/>
+<area shape="rect" id="node39" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="521,1301,700,1341"/>
+<area shape="rect" id="node40" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="239,1695,402,1735"/>
+<area shape="rect" id="node41" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a568826dcf14775118883ecbf6bd72f15" title=" " alt="" coords="225,1976,416,2016"/>
+<area shape="rect" id="node42" href="$classpolyfem_1_1_state.html#ae48e7478cf500860b285dfc3f4a80fee" title="does the simulation has contact" alt="" coords="252,2040,389,2080"/>
+<area shape="rect" id="node43" href="$classpolyfem_1_1_units.html#afc8f93a6ece667e1b93d94dc8265e20b" title=" " alt="" coords="237,2105,404,2130"/>
+<area shape="rect" id="node44" href="$namespacepolyfem_1_1autogen.html#a81e7dfa1d60c099807060e6f1bc78e94" title=" " alt="" coords="244,2155,397,2195"/>
+<area shape="rect" id="node45" href="$namespacepolyfem_1_1autogen.html#a9c2688a6744801097c2f8baa081ab3a7" title=" " alt="" coords="244,2219,397,2259"/>
+<area shape="rect" id="node46" href="$classpolyfem_1_1refinement_1_1_a_priori.html#a51742768faaf3bb9905096d748f69751" title="compute a priori prefinement" alt="" coords="243,2307,398,2347"/>
+<area shape="rect" id="node47" href="$namespacepolyfem_1_1autogen.html#a18ee2912d770a6bc9cfe2a485a9ecb25" title=" " alt="" coords="244,2371,397,2411"/>
+<area shape="rect" id="node48" href="$namespacepolyfem_1_1io.html#a37878272b4408db3e9e1d7a9efd1ae09" title="Reads a matrix from a file. Determines the file format based on the path&#39;s extension." alt="" coords="229,2435,412,2461"/>
+<area shape="rect" id="node49" href="$classpolyfem_1_1io_1_1_out_stats_data.html#abb956b11c2d5d90d1fce4a2d0f022f0f" title="clears all stats" alt="" coords="225,2485,416,2525"/>
+<area shape="rect" id="node50" href="$classpolyfem_1_1_units.html#a7bfe2242576da6434b6a6e8fd5f15134" title=" " alt="" coords="231,2550,410,2575"/>
+<area shape="rect" id="node4" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#ac65697f6e350c21881013348cd1f6111" title=" " alt="" coords="520,5,701,45"/>
+<area shape="rect" id="node5" href="$classpolyfem_1_1quadrature_1_1_quad_quadrature.html#a41998014d01e8a77d8c609ff1543bafc" title=" " alt="" coords="527,70,694,125"/>
+<area shape="rect" id="node6" href="$classpolyfem_1_1mesh_1_1_mesh.html#a11e698a1c82ee90edab1e7a607808779" title="checks if element is polygon compatible" alt="" coords="529,984,692,1024"/>
+<area shape="rect" id="node7" href="$classpolyfem_1_1mesh_1_1_mesh.html#a6adb866818837b8eb10297b32db964fe" title="checks if element is spline compatible" alt="" coords="527,469,694,509"/>
+<area shape="rect" id="node8" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#a6c29651fa089917c4230422725299bd5" title="checks if mesh is volume" alt="" coords="520,149,701,189"/>
+<area shape="rect" id="node9" href="$classpolyfem_1_1mesh_1_1_mesh.html#a0140181b551c7bf0c162d6898155f294" title="utitlity to return the number of elements, cells or faces in 3d and 2d" alt="" coords="529,533,692,573"/>
+<area shape="rect" id="node10" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html#a8e222f339075e91de499bb7e5a8c11e5" title=" " alt="" coords="509,597,713,637"/>
+<area shape="rect" id="node11" href="$classpolyfem_1_1basis_1_1_lagrange_basis2d.html#a9be8d6ae31693ad7076f1fcc816b7512" title=" " alt="" coords="493,213,729,253"/>
+<area shape="rect" id="node12" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a80818109ce6766a1fae1733a0b2e87dc" title=" " alt="" coords="486,661,735,701"/>
+<area shape="rect" id="node13" href="$classpolyfem_1_1basis_1_1_element_bases.html#a4d8eaf01d57981f0e7449692a742ceb4" title=" " alt="" coords="477,277,744,317"/>
+<area shape="rect" id="node14" href="$classpolyfem_1_1basis_1_1_element_bases.html#ae914f65d4ff93b4c3f78f06a339ef843" title=" " alt="" coords="501,341,720,381"/>
+<area shape="rect" id="node15" href="$classpolyfem_1_1basis_1_1_element_bases.html#a2f199c4f37379930fb492028060f9a1c" title=" " alt="" coords="501,405,720,445"/>
 <area shape="rect" id="node18" href="$classpolyfem_1_1quadrature_1_1_hex_quadrature.html#a128b6d0db71f191128e772899c0871ff" title=" " alt="" coords="531,726,690,781"/>
 <area shape="rect" id="node19" href="$classpolyfem_1_1basis_1_1_lagrange_basis3d.html#a2c2b08f4a3a5621aa452f8516b05d1df" title=" " alt="" coords="499,805,723,845"/>
 <area shape="rect" id="node21" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#ac9544a097b95623a07d842237c388aa6" title="checks if mesh is volume" alt="" coords="520,869,701,909"/>
-<area shape="rect" id="node23" href="$classpolyfem_1_1mesh_1_1_obstacle.html#aef7ebfe2a4ee186cbd7e306ce1e5ae7e" title=" " alt="" coords="518,1315,703,1355"/>
-<area shape="rect" id="node24" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a4f9dafcf9dffc6df2ea9c9994aa9abc4" title=" " alt="" coords="510,1379,711,1405"/>
-<area shape="rect" id="node25" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a7b3e2f650cb68b596b8b67ef6702f3b1" title="extracts the boundary mesh" alt="" coords="501,1528,720,1568"/>
-<area shape="rect" id="node27" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a746b2457bb47688d5005a8d0d20311ea" title=" " alt="" coords="511,1429,710,1454"/>
-<area shape="rect" id="node28" href="$classpolyfem_1_1_state.html#acd8e8dc2e05969c2e9901ba03bfcb48d" title="checks if vertex is obstacle" alt="" coords="542,1592,679,1632"/>
-<area shape="rect" id="node30" href="$classpolyfem_1_1mesh_1_1_obstacle.html#acd4b860705bf9f9c6af1206b64c3e6f5" title=" " alt="" coords="510,1478,711,1503"/>
-<area shape="rect" id="node32" href="$classpolyfem_1_1mesh_1_1_mesh.html#a399b7b652be1ffcc392b46a6d1572fec" title="constructs barycentric coodiantes for a point p." alt="" coords="529,1707,692,1747"/>
-<area shape="rect" id="node33" href="$classpolyfem_1_1mesh_1_1_mesh.html#a37244a7f1a8b69a2fc9ec3bc2a20a840" title="computes the bbox of the mesh" alt="" coords="529,1771,692,1811"/>
-<area shape="rect" id="node34" href="$classpolyfem_1_1mesh_1_1_mesh.html#af1d92506a3031ea11d6c3ba2879c157d" title="constructs a box around every element (3d cell, 2d face)" alt="" coords="529,1885,692,1925"/>
+<area shape="rect" id="node23" href="$classpolyfem_1_1mesh_1_1_obstacle.html#aef7ebfe2a4ee186cbd7e306ce1e5ae7e" title=" " alt="" coords="518,1529,703,1569"/>
+<area shape="rect" id="node24" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a4f9dafcf9dffc6df2ea9c9994aa9abc4" title=" " alt="" coords="510,1594,711,1619"/>
+<area shape="rect" id="node25" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a7b3e2f650cb68b596b8b67ef6702f3b1" title="extracts the boundary mesh" alt="" coords="501,1465,720,1505"/>
+<area shape="rect" id="node27" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a746b2457bb47688d5005a8d0d20311ea" title=" " alt="" coords="511,1366,710,1391"/>
+<area shape="rect" id="node28" href="$classpolyfem_1_1_state.html#acd8e8dc2e05969c2e9901ba03bfcb48d" title="checks if vertex is obstacle" alt="" coords="542,1644,679,1684"/>
+<area shape="rect" id="node30" href="$classpolyfem_1_1mesh_1_1_obstacle.html#acd4b860705bf9f9c6af1206b64c3e6f5" title=" " alt="" coords="510,1415,711,1441"/>
 </map>

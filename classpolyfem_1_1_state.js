@@ -135,5 +135,6 @@ var classpolyfem_1_1_state =
     [ "stats", "classpolyfem_1_1_state.html#a8ed2ea7be90ae8d0385ac4a22042e4c4", null ],
     [ "timings", "classpolyfem_1_1_state.html#a0181690b83435d59481076329edec8bc", null ],
     [ "total_local_boundary", "classpolyfem_1_1_state.html#abf09081852101c2cdef90ae1aeff500e", null ],
+    [ "units", "classpolyfem_1_1_state.html#a584dbcabc47bd61bf6ba831f3645cec6", null ],
     [ "use_avg_pressure", "classpolyfem_1_1_state.html#a2c6c57f7ebcb9808be8e53671afafe48", null ]
 ];

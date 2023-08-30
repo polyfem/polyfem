@@ -1,7 +1,7 @@
 var classcppoptlib_1_1_l_b_f_g_s_b_solver =
 [
     [ "Superclass", "classcppoptlib_1_1_l_b_f_g_s_b_solver.html#af8fe95478a74a0432c0b445d8749a659", null ],
-    [ "LBFGSBSolver", "classcppoptlib_1_1_l_b_f_g_s_b_solver.html#a5b121fedc3cc220ed9f81ce32de95c3f", null ],
+    [ "LBFGSBSolver", "classcppoptlib_1_1_l_b_f_g_s_b_solver.html#a396c859ace55b3f7ca7126242d64c4f8", null ],
     [ "compute_update_direction", "classcppoptlib_1_1_l_b_f_g_s_b_solver.html#a6a3f658fd2721c8192eb32f7fb1792a3", null ],
     [ "default_descent_strategy", "classcppoptlib_1_1_l_b_f_g_s_b_solver.html#a9c5769aab4a21583c36a4ea0418de101", null ],
     [ "descent_strategy_name", "classcppoptlib_1_1_l_b_f_g_s_b_solver.html#a574e75e6be729cefab9f23ab6885c533", null ],

@@ -1,7 +1,7 @@
 var classcppoptlib_1_1_solver_with_box_constraints =
 [
     [ "Superclass", "classcppoptlib_1_1_solver_with_box_constraints.html#a45ad30665c4ecee5eb03a35c5ffd952b", null ],
-    [ "SolverWithBoxConstraints", "classcppoptlib_1_1_solver_with_box_constraints.html#ad0dc3b760f2467f6db98ede918b21ec0", null ],
+    [ "SolverWithBoxConstraints", "classcppoptlib_1_1_solver_with_box_constraints.html#ad669c8a4e601fdfcedcbf05f9cc6e3a6", null ],
     [ "compute_grad_norm", "classcppoptlib_1_1_solver_with_box_constraints.html#a813dd8590f1bb75580db4c94c36bbd1c", null ],
     [ "get_lower_bound", "classcppoptlib_1_1_solver_with_box_constraints.html#a474aecf4e3a86fb8bf2067a85e348934", null ],
     [ "get_max_change", "classcppoptlib_1_1_solver_with_box_constraints.html#ade6e5f675519a5313625a168a39abcd6", null ],

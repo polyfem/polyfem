@@ -28,6 +28,7 @@ var classpolyfem_1_1assembler_1_1_generic_scalar_problem =
     [ "rhs", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a1cd5b360096c9a0f3910beb9ce474b9c", null ],
     [ "set_parameters", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a1893d02c1123a15dccbe4b98f1e3c5d4", null ],
     [ "set_time_dependent", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ad65948c645dd5271889a5914add45adb", null ],
+    [ "set_units", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ad1a65ec58b4e1fcf8d41339b77759234", null ],
     [ "update_dirichlet_boundary", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#abbf2774ef056fae90f21dc0d94170c65", null ],
     [ "update_dirichlet_boundary", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ad9aa00932183d8cf97e222d45bfb8594", null ],
     [ "update_dirichlet_boundary", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aac41e594e8734c72b5e912a19f347e18", null ],

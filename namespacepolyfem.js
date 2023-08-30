@@ -54,6 +54,7 @@ var namespacepolyfem =
     [ "AutoDiffAllocator< double >", "classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html", "classpolyfem_1_1_auto_diff_allocator_3_01double_01_4" ],
     [ "IntegrableFunctional", "classpolyfem_1_1_integrable_functional.html", "classpolyfem_1_1_integrable_functional" ],
     [ "State", "classpolyfem_1_1_state.html", "classpolyfem_1_1_state" ],
+    [ "Units", "classpolyfem_1_1_units.html", "classpolyfem_1_1_units" ],
     [ "AutodiffGradPt", "namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4", null ],
     [ "AutodiffHessianPt", "namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c", null ],
     [ "AutodiffScalarGrad", "namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc", null ],

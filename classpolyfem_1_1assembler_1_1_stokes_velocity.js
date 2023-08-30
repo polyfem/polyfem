@@ -1,6 +1,6 @@
 var classpolyfem_1_1assembler_1_1_stokes_velocity =
 [
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_stokes_velocity.html#a52f7952d77c8e0cda076ef7827b85971", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_stokes_velocity.html#ab197d5bec6c975fc9bda573e1802a481", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_stokes_velocity.html#a83e70fd7a778342c0d7750416661a575", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_stokes_velocity.html#a2841f38a6068418e7420bb3a18accb83", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_stokes_velocity.html#adc7b5a738074ba44208a49ea1027fd14", null ],

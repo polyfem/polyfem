@@ -13,10 +13,14 @@ var classpolyfem_1_1utils_1_1_expression_value =
     [ "init", "classpolyfem_1_1utils_1_1_expression_value.html#a7c91d2b63cdbbe2ade03b3df44262b4b", null ],
     [ "is_zero", "classpolyfem_1_1utils_1_1_expression_value.html#a9cc0294637e7eb6eb9cf43d839f49f35", null ],
     [ "operator()", "classpolyfem_1_1utils_1_1_expression_value.html#ad762696d2188a5d149b0b5f78141261f", null ],
+    [ "set_unit_type", "classpolyfem_1_1utils_1_1_expression_value.html#ab9aa558b6b62910dc87c8ada3626fefd", null ],
     [ "expr_", "classpolyfem_1_1utils_1_1_expression_value.html#a98484d50dcbca8e955f04ae8f7bd17ee", null ],
     [ "mat_", "classpolyfem_1_1utils_1_1_expression_value.html#acba4698f4d7b6185c254e2ecc5643231", null ],
     [ "sfunc_", "classpolyfem_1_1utils_1_1_expression_value.html#a9b2e465dec2a0e7f224edd18283ba699", null ],
     [ "tfunc_", "classpolyfem_1_1utils_1_1_expression_value.html#aa1e94718a12856488932068e599ddc0d", null ],
     [ "tfunc_coo_", "classpolyfem_1_1utils_1_1_expression_value.html#a4fc6c8daab0ed01e76542d310e873b20", null ],
+    [ "unit_", "classpolyfem_1_1utils_1_1_expression_value.html#a9a77bd7a9d7c54c850ef725c530e80eb", null ],
+    [ "unit_type_", "classpolyfem_1_1utils_1_1_expression_value.html#ab95e04c1de52f61f6b75d76bf7891fd4", null ],
+    [ "unit_type_set_", "classpolyfem_1_1utils_1_1_expression_value.html#ad637bbe96569934cf5e87d60920c24cb", null ],
     [ "value_", "classpolyfem_1_1utils_1_1_expression_value.html#a334b1e3fce0065123090b2ce1a0bbf6b", null ]
 ];

@@ -147,8 +147,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ad3dfa0714411c7b024bbd63f6517efd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b23e8249b9b144240149100b7ba5cc0"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mass.html#a5b23e8249b9b144240149100b7ba5cc0">compute_rhs</a> (const <a class="el" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;pt) const override</td></tr>
 <tr class="separator:a5b23e8249b9b144240149100b7ba5cc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b573e0f2717a3863c126990feb7af3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mass.html#a3b573e0f2717a3863c126990feb7af3f">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params) override</td></tr>
-<tr class="separator:a3b573e0f2717a3863c126990feb7af3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f90cb936e582826b4dd0349ce059156"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mass.html#a3f90cb936e582826b4dd0349ce059156">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units) override</td></tr>
+<tr class="separator:a3f90cb936e582826b4dd0349ce059156"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bce5b04ec0a5d8b518b8691d7ea4d1f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_density.html">Density</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mass.html#a0bce5b04ec0a5d8b518b8691d7ea4d1f">density</a> () const</td></tr>
 <tr class="separator:a0bce5b04ec0a5d8b518b8691d7ea4d1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3864ce2191abe9472997eb3330e02a3d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mass.html#a3864ce2191abe9472997eb3330e02a3d">name</a> () const override</td></tr>
@@ -209,10 +209,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac3b31adacd89c796c137867e4ab2fd70 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d1b1cbf118c32444235f562625f51fe inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual Eigen::Matrix&lt; <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a>, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a6d1b1cbf118c32444235f562625f51fe">kernel</a> (const int dim, const <a class="el" href="namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4">AutodiffGradPt</a> &amp;rvect, const <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a> &amp;r) const</td></tr>
 <tr class="separator:a6d1b1cbf118c32444235f562625f51fe inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9854f3751938da18ef77fda5e6a3acb inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad9854f3751938da18ef77fda5e6a3acb">set_materials</a> (const std::vector&lt; int &gt; &amp;body_ids, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;body_params)</td></tr>
-<tr class="separator:ad9854f3751938da18ef77fda5e6a3acb inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add7e99e08b57e08a241938ec1b360105 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#add7e99e08b57e08a241938ec1b360105">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:add7e99e08b57e08a241938ec1b360105 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a273f2d775aed424e295e5e8c5c28247d inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a273f2d775aed424e295e5e8c5c28247d">set_materials</a> (const std::vector&lt; int &gt; &amp;body_ids, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;body_params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units)</td></tr>
+<tr class="separator:a273f2d775aed424e295e5e8c5c28247d inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5e3a9574045efc89230afa8044d05af inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ae5e3a9574045efc89230afa8044d05af">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units)</td></tr>
+<tr class="separator:ae5e3a9574045efc89230afa8044d05af inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4dc3aedabca1d63c5a489cb129916679 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a4dc3aedabca1d63c5a489cb129916679">update_lame_params</a> (const Eigen::MatrixXd &amp;lambdas, const Eigen::MatrixXd &amp;mus)</td></tr>
 <tr class="separator:a4dc3aedabca1d63c5a489cb129916679 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad816288354f5093a053de6fdd0a102d1 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad816288354f5093a053de6fdd0a102d1">is_linear</a> () const =0</td></tr>
@@ -244,8 +244,8 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_mass_8hpp_source.html#l00009">9</a> of file <a class="el" href="_mass_8hpp_source.html">Mass.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a3b573e0f2717a3863c126990feb7af3f" name="a3b573e0f2717a3863c126990feb7af3f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3b573e0f2717a3863c126990feb7af3f">&#9670;&#160;</a></span>add_multimaterial()</h2>
+<a id="a3f90cb936e582826b4dd0349ce059156" name="a3f90cb936e582826b4dd0349ce059156"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f90cb936e582826b4dd0349ce059156">&#9670;&#160;</a></span>add_multimaterial()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -263,7 +263,13 @@ Additional Inherited Members</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em>&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;&#160;</td>
+          <td class="paramname"><em>units</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -278,15 +284,23 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#add7e99e08b57e08a241938ec1b360105">polyfem::assembler::Assembler</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ae5e3a9574045efc89230afa8044d05af">polyfem::assembler::Assembler</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_mass_8cpp_source.html#l00030">30</a> of file <a class="el" href="_mass_8cpp_source.html">Mass.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00399">polyfem::assembler::Density::add_multimaterial()</a>, <a class="el" href="_mass_8hpp_source.html#l00034">density_</a>, and <a class="el" href="_assembler_8hpp_source.html#l00210">polyfem::assembler::Assembler::size_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00410">polyfem::assembler::Density::add_multimaterial()</a>, <a class="el" href="_units_8hpp_source.html#l00025">polyfem::Units::density()</a>, <a class="el" href="_mass_8hpp_source.html#l00034">density_</a>, and <a class="el" href="_assembler_8hpp_source.html#l00212">polyfem::assembler::Assembler::size_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">polyfem::assembler::RhsAssembler::time_bc()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_mass_a3b573e0f2717a3863c126990feb7af3f_cgraph.svg" width="458" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_mass_a3f90cb936e582826b4dd0349ce059156_cgraph.svg" width="458" height="102"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_mass_a3f90cb936e582826b4dd0349ce059156_icgraph.svg" width="650" height="223"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -358,7 +372,7 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a83e70fd7a778342c0d7750416661a575">polyfem::assembler::LinearAssembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00064">64</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8hpp_source.html#l00066">66</a> of file <a class="el" href="_assembler_8hpp_source.html">Assembler.hpp</a>.</p>
 
 </div>
 </div>
@@ -390,7 +404,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mass_8cpp_source.html#l00005">5</a> of file <a class="el" href="_mass_8cpp_source.html">Mass.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00045">polyfem::assembler::LinearAssemblerData::da</a>, <a class="el" href="_mass_8hpp_source.html#l00034">density_</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00041">polyfem::assembler::LinearAssemblerData::i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00043">polyfem::assembler::LinearAssemblerData::j</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00021">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::val</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00039">polyfem::assembler::LinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00045">polyfem::assembler::LinearAssemblerData::da</a>, <a class="el" href="_mass_8hpp_source.html#l00034">density_</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00041">polyfem::assembler::LinearAssemblerData::i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00043">polyfem::assembler::LinearAssemblerData::j</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00021">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_8hpp_source.html#l00061">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::val</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00039">polyfem::assembler::LinearAssemblerData::vals</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00132">polyfem::assembler::RhsAssembler::time_bc()</a>.</p>
 <div class="dynheader">

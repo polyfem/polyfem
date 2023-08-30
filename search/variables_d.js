@@ -19,7 +19,7 @@ var searchData=
   ['masked_5flumped_5fmass_5f_16',['masked_lumped_mass_',['../classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a046b1ba721202640c42dff412a798208',1,'polyfem::solver::BCPenaltyForm']]],
   ['masked_5flumped_5fmass_5fsqrt_5f_17',['masked_lumped_mass_sqrt_',['../classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a90bbdbe15bdc616d9678bdf03a906e51',1,'polyfem::solver::BCLagrangianForm']]],
   ['mass_18',['mass',['../classpolyfem_1_1_state.html#a702330df4565849e4b2abe429afe7663',1,'polyfem::State']]],
-  ['mass_5f_19',['mass_',['../classpolyfem_1_1solver_1_1_inertia_form.html#af3279075df7d1a03d6985f1ca7763946',1,'polyfem::solver::InertiaForm']]],
+  ['mass_5f_19',['mass_',['../classpolyfem_1_1solver_1_1_inertia_form.html#af3279075df7d1a03d6985f1ca7763946',1,'polyfem::solver::InertiaForm::mass_()'],['../classpolyfem_1_1_units.html#a3ccb8e88e21a60e190519fd6aa1bb42a',1,'polyfem::Units::mass_()']]],
   ['mass_5fass_5fvals_5fcache_20',['mass_ass_vals_cache',['../classpolyfem_1_1_state.html#accd0a9edb699ad586baac3759745cda0',1,'polyfem::State']]],
   ['mass_5fmatrix_5fassembler_21',['mass_matrix_assembler',['../classpolyfem_1_1_state.html#a59dc389e25521f023b8fff2469fcac66',1,'polyfem::State']]],
   ['mass_5fquadrature_5fbuilder_5f_22',['mass_quadrature_builder_',['../classpolyfem_1_1basis_1_1_element_bases.html#af287300a27416fc5a1c1773b355435c4',1,'polyfem::basis::ElementBases']]],

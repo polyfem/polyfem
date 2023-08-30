@@ -145,8 +145,8 @@ Collaboration diagram for polyfem::assembler::MooneyRivlinElasticity:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aa1faac837f786dac98abbe3f3d50d052"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#aa1faac837f786dac98abbe3f3d50d052">MooneyRivlinElasticity</a> ()</td></tr>
 <tr class="separator:aa1faac837f786dac98abbe3f3d50d052"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0249e146e358a4137a242731fec6c62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#ac0249e146e358a4137a242731fec6c62">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params) override</td></tr>
-<tr class="separator:ac0249e146e358a4137a242731fec6c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e1e0a1626b219a4548a3c0267f69d90"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#a8e1e0a1626b219a4548a3c0267f69d90">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units) override</td></tr>
+<tr class="separator:a8e1e0a1626b219a4548a3c0267f69d90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70a7f14057bb420554cde23eadcc8732"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_generic_mat_param.html">GenericMatParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#a70a7f14057bb420554cde23eadcc8732">c1</a> () const</td></tr>
 <tr class="separator:a70a7f14057bb420554cde23eadcc8732"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7a2e9a40357ae918c8af3a227770042"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_generic_mat_param.html">GenericMatParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html#af7a2e9a40357ae918c8af3a227770042">c2</a> () const</td></tr>
@@ -179,8 +179,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8d6bf601b1232c4000ba7506c5dd448b inherit pub_methods_classpolyfem_1_1assembler_1_1_generic_elastic"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2e994c678b777f3eb669cbfc78c35f2 inherit pub_methods_classpolyfem_1_1assembler_1_1_generic_elastic"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#ad2e994c678b777f3eb669cbfc78c35f2">assemble_gradient</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data) const =0</td></tr>
 <tr class="separator:ad2e994c678b777f3eb669cbfc78c35f2 inherit pub_methods_classpolyfem_1_1assembler_1_1_generic_elastic"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac69b08effe7b89e84bd0686539180665 inherit pub_methods_classpolyfem_1_1assembler_1_1_generic_elastic"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#ac69b08effe7b89e84bd0686539180665">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params) override=0</td></tr>
-<tr class="separator:ac69b08effe7b89e84bd0686539180665 inherit pub_methods_classpolyfem_1_1assembler_1_1_generic_elastic"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae6773a035aaa4045d429282f65b7ee6 inherit pub_methods_classpolyfem_1_1assembler_1_1_generic_elastic"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#aae6773a035aaa4045d429282f65b7ee6">assign_stress_tensor</a> (const int el_id, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;bs, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbs, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;displacement, const int all_size, const <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1">ElasticityTensorType</a> &amp;type, Eigen::MatrixXd &amp;all, const std::function&lt; Eigen::MatrixXd(const Eigen::MatrixXd &amp;)&gt; &amp;fun) const override</td></tr>
 <tr class="separator:aae6773a035aaa4045d429282f65b7ee6 inherit pub_methods_classpolyfem_1_1assembler_1_1_generic_elastic"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34f57d278c53c182c80b9e7a68efe293 inherit pub_methods_classpolyfem_1_1assembler_1_1_generic_elastic"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a34f57d278c53c182c80b9e7a68efe293">compute_stress_grad_multiply_mat</a> (const int el_id, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;global_pts, const Eigen::MatrixXd &amp;grad_u_i, const Eigen::MatrixXd &amp;<a class="el" href="_transient_form_8cpp.html#aca46d143aa5c7474d00d969201e78fc5">mat</a>, Eigen::MatrixXd &amp;stress, Eigen::MatrixXd &amp;result) const override</td></tr>
@@ -195,6 +193,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a54697166c61b941694dbb0232b27bd2b inherit pub_methods_classpolyfem_1_1assembler_1_1_generic_elastic"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html">MooneyRivlinElasticity</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a54697166c61b941694dbb0232b27bd2b">derived</a> () const</td></tr>
 <tr class="memdesc:a54697166c61b941694dbb0232b27bd2b inherit pub_methods_classpolyfem_1_1assembler_1_1_generic_elastic"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns this as a const reference to derived class.  <a href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a54697166c61b941694dbb0232b27bd2b">More...</a><br /></td></tr>
 <tr class="separator:a54697166c61b941694dbb0232b27bd2b inherit pub_methods_classpolyfem_1_1assembler_1_1_generic_elastic"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92baa3466d5fef85ddd462c948c9dfc2 inherit pub_methods_classpolyfem_1_1assembler_1_1_generic_elastic"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a92baa3466d5fef85ddd462c948c9dfc2">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units) override=0</td></tr>
+<tr class="separator:a92baa3466d5fef85ddd462c948c9dfc2 inherit pub_methods_classpolyfem_1_1assembler_1_1_generic_elastic"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5de7744258b1171ceed1f7ddb9f0b201 inherit pub_methods_classpolyfem_1_1assembler_1_1_generic_elastic"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a5de7744258b1171ceed1f7ddb9f0b201">assemble_energy</a> (const bool is_volume, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#aa9f8769d176bc34ee17a5e52e84aa9cb">cache</a>, const double dt, const Eigen::MatrixXd &amp;displacement, const Eigen::MatrixXd &amp;displacement_prev) const override</td></tr>
 <tr class="separator:a5de7744258b1171ceed1f7ddb9f0b201 inherit pub_methods_classpolyfem_1_1assembler_1_1_generic_elastic"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1assembler_1_1_n_l_assembler"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1assembler_1_1_n_l_assembler')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html">polyfem::assembler::NLAssembler</a></td></tr>
@@ -249,10 +249,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac3b31adacd89c796c137867e4ab2fd70 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d1b1cbf118c32444235f562625f51fe inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual Eigen::Matrix&lt; <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a>, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a6d1b1cbf118c32444235f562625f51fe">kernel</a> (const int dim, const <a class="el" href="namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4">AutodiffGradPt</a> &amp;rvect, const <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a> &amp;r) const</td></tr>
 <tr class="separator:a6d1b1cbf118c32444235f562625f51fe inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9854f3751938da18ef77fda5e6a3acb inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad9854f3751938da18ef77fda5e6a3acb">set_materials</a> (const std::vector&lt; int &gt; &amp;body_ids, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;body_params)</td></tr>
-<tr class="separator:ad9854f3751938da18ef77fda5e6a3acb inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add7e99e08b57e08a241938ec1b360105 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#add7e99e08b57e08a241938ec1b360105">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:add7e99e08b57e08a241938ec1b360105 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a273f2d775aed424e295e5e8c5c28247d inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a273f2d775aed424e295e5e8c5c28247d">set_materials</a> (const std::vector&lt; int &gt; &amp;body_ids, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;body_params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units)</td></tr>
+<tr class="separator:a273f2d775aed424e295e5e8c5c28247d inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5e3a9574045efc89230afa8044d05af inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ae5e3a9574045efc89230afa8044d05af">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units)</td></tr>
+<tr class="separator:ae5e3a9574045efc89230afa8044d05af inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4dc3aedabca1d63c5a489cb129916679 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a4dc3aedabca1d63c5a489cb129916679">update_lame_params</a> (const Eigen::MatrixXd &amp;lambdas, const Eigen::MatrixXd &amp;mus)</td></tr>
 <tr class="separator:a4dc3aedabca1d63c5a489cb129916679 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad816288354f5093a053de6fdd0a102d1 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad816288354f5093a053de6fdd0a102d1">is_linear</a> () const =0</td></tr>
@@ -333,8 +333,8 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ac0249e146e358a4137a242731fec6c62" name="ac0249e146e358a4137a242731fec6c62"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac0249e146e358a4137a242731fec6c62">&#9670;&#160;</a></span>add_multimaterial()</h2>
+<a id="a8e1e0a1626b219a4548a3c0267f69d90" name="a8e1e0a1626b219a4548a3c0267f69d90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e1e0a1626b219a4548a3c0267f69d90">&#9670;&#160;</a></span>add_multimaterial()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -352,7 +352,13 @@ Additional Inherited Members</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em>&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;&#160;</td>
+          <td class="paramname"><em>units</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -367,23 +373,23 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#ac69b08effe7b89e84bd0686539180665">polyfem::assembler::GenericElastic&lt; MooneyRivlinElasticity &gt;</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_generic_elastic.html#a92baa3466d5fef85ddd462c948c9dfc2">polyfem::assembler::GenericElastic&lt; MooneyRivlinElasticity &gt;</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_mooney_rivlin_elasticity_8cpp_source.html#l00010">10</a> of file <a class="el" href="_mooney_rivlin_elasticity_8cpp_source.html">MooneyRivlinElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00028">polyfem::assembler::GenericMatParam::add_multimaterial()</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00050">c1_</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00051">c2_</a>, and <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00052">k_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00028">polyfem::assembler::GenericMatParam::add_multimaterial()</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00050">c1_</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00051">c2_</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00052">k_</a>, and <a class="el" href="_units_8hpp_source.html#l00024">polyfem::Units::stress()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00024">polyfem::assembler::MultiModel::add_multimaterial()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity_ac0249e146e358a4137a242731fec6c62_cgraph.svg" width="416" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity_a8e1e0a1626b219a4548a3c0267f69d90_cgraph.svg" width="416" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity_ac0249e146e358a4137a242731fec6c62_icgraph.svg" width="468" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity_a8e1e0a1626b219a4548a3c0267f69d90_icgraph.svg" width="468" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -507,7 +513,7 @@ template&lt;typename T &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00025">25</a> of file <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html">MooneyRivlinElasticity.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00017">c1()</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00050">c1_</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00018">c2()</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00051">c2_</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00017">polyfem::utils::determinant()</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00140">polyfem::first_invariant()</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00019">k()</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00052">k_</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00146">polyfem::second_invariant()</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00017">c1()</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00050">c1_</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00018">c2()</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00051">c2_</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00017">polyfem::utils::determinant()</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00140">polyfem::first_invariant()</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00019">k()</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00052">k_</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00146">polyfem::second_invariant()</a>, <a class="el" href="_assembler_8hpp_source.html#l00061">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

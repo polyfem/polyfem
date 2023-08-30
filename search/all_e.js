@@ -150,7 +150,7 @@ var searchData=
   ['non_5fregular_5fcount_147',['non_regular_count',['../classpolyfem_1_1io_1_1_out_stats_data.html#a96260e7a17c7720f72890a42deff6ceb',1,'polyfem::io::OutStatsData']]],
   ['non_5fzeros_148',['non_zeros',['../classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a1620ff2b05c375a4156750e92fdf889c',1,'polyfem::utils::SparseMatrixCache']]],
   ['nonlinearassemblerdata_149',['NonLinearAssemblerData',['../classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html#a7fb9d113cb19a072e2f6db8de692fe87',1,'polyfem::assembler::NonLinearAssemblerData::NonLinearAssemblerData()'],['../classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html',1,'polyfem::assembler::NonLinearAssemblerData']]],
-  ['nonlinearsolver_150',['NonlinearSolver',['../classcppoptlib_1_1_nonlinear_solver.html',1,'cppoptlib::NonlinearSolver&lt; ProblemType &gt;'],['../classcppoptlib_1_1_nonlinear_solver.html#a4644d12ebe36b4b2ef7c0df4ea538d6d',1,'cppoptlib::NonlinearSolver::NonlinearSolver()']]],
+  ['nonlinearsolver_150',['NonlinearSolver',['../classcppoptlib_1_1_nonlinear_solver.html',1,'cppoptlib::NonlinearSolver&lt; ProblemType &gt;'],['../classcppoptlib_1_1_nonlinear_solver.html#a62cc4c52726b11a338fbd443aa744f73',1,'cppoptlib::NonlinearSolver::NonlinearSolver()']]],
   ['nonlinearsolver_2ehpp_151',['NonlinearSolver.hpp',['../_nonlinear_solver_8hpp.html',1,'']]],
   ['nonlinearsolver_2etpp_152',['NonlinearSolver.tpp',['../_nonlinear_solver_8tpp.html',1,'']]],
   ['norm_153',['norm',['../namespaceq__bases.html#a8b1d732b13b56898a34d63998f17b40e',1,'q_bases.norm()'],['../namespacep__bases.html#acba70df422a2d777f6d2e130b804b5a6',1,'p_bases.norm()']]],

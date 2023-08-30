@@ -156,8 +156,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a281d55042966d52583c50115fa5c3150"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a588452fff934f1c86c4cfa52d819fcc4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a588452fff934f1c86c4cfa52d819fcc4">compute_rhs</a> (const <a class="el" href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">AutodiffHessianPt</a> &amp;pt) const override</td></tr>
 <tr class="separator:a588452fff934f1c86c4cfa52d819fcc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11dc66a33d42aed8f51bb66dd4e454cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a11dc66a33d42aed8f51bb66dd4e454cf">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params) override</td></tr>
-<tr class="separator:a11dc66a33d42aed8f51bb66dd4e454cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40545084c0865df4acf81fca8c1e0fa2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a40545084c0865df4acf81fca8c1e0fa2">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units) override</td></tr>
+<tr class="separator:a40545084c0865df4acf81fca8c1e0fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59637e08a7f2113b7ba507b52b316d9d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a59637e08a7f2113b7ba507b52b316d9d">is_fluid</a> () const override</td></tr>
 <tr class="separator:a59637e08a7f2113b7ba507b52b316d9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47835d60981a83d3919d1a37751b4917"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a47835d60981a83d3919d1a37751b4917">set_picard</a> (const bool <a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)</td></tr>
@@ -224,10 +224,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac3b31adacd89c796c137867e4ab2fd70 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d1b1cbf118c32444235f562625f51fe inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual Eigen::Matrix&lt; <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a>, Eigen::Dynamic, 1, 0, 3, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a6d1b1cbf118c32444235f562625f51fe">kernel</a> (const int dim, const <a class="el" href="namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4">AutodiffGradPt</a> &amp;rvect, const <a class="el" href="namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc">AutodiffScalarGrad</a> &amp;r) const</td></tr>
 <tr class="separator:a6d1b1cbf118c32444235f562625f51fe inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9854f3751938da18ef77fda5e6a3acb inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad9854f3751938da18ef77fda5e6a3acb">set_materials</a> (const std::vector&lt; int &gt; &amp;body_ids, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;body_params)</td></tr>
-<tr class="separator:ad9854f3751938da18ef77fda5e6a3acb inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add7e99e08b57e08a241938ec1b360105 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#add7e99e08b57e08a241938ec1b360105">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:add7e99e08b57e08a241938ec1b360105 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a273f2d775aed424e295e5e8c5c28247d inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a273f2d775aed424e295e5e8c5c28247d">set_materials</a> (const std::vector&lt; int &gt; &amp;body_ids, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;body_params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units)</td></tr>
+<tr class="separator:a273f2d775aed424e295e5e8c5c28247d inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5e3a9574045efc89230afa8044d05af inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ae5e3a9574045efc89230afa8044d05af">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units)</td></tr>
+<tr class="separator:ae5e3a9574045efc89230afa8044d05af inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4dc3aedabca1d63c5a489cb129916679 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a4dc3aedabca1d63c5a489cb129916679">update_lame_params</a> (const Eigen::MatrixXd &amp;lambdas, const Eigen::MatrixXd &amp;mus)</td></tr>
 <tr class="separator:a4dc3aedabca1d63c5a489cb129916679 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad816288354f5093a053de6fdd0a102d1 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad816288354f5093a053de6fdd0a102d1">is_linear</a> () const =0</td></tr>
@@ -274,8 +274,8 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_8hpp_source.html#l00009">9</a> of file <a class="el" href="_navier_stokes_8hpp_source.html">NavierStokes.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a11dc66a33d42aed8f51bb66dd4e454cf" name="a11dc66a33d42aed8f51bb66dd4e454cf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a11dc66a33d42aed8f51bb66dd4e454cf">&#9670;&#160;</a></span>add_multimaterial()</h2>
+<a id="a40545084c0865df4acf81fca8c1e0fa2" name="a40545084c0865df4acf81fca8c1e0fa2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40545084c0865df4acf81fca8c1e0fa2">&#9670;&#160;</a></span>add_multimaterial()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -293,7 +293,13 @@ Additional Inherited Members</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em>&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;&#160;</td>
+          <td class="paramname"><em>units</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -308,15 +314,15 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#add7e99e08b57e08a241938ec1b360105">polyfem::assembler::Assembler</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ae5e3a9574045efc89230afa8044d05af">polyfem::assembler::Assembler</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00006">6</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00047">viscosity_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8hpp_source.html#l00061">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00047">viscosity_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_navier_stokes_velocity_a11dc66a33d42aed8f51bb66dd4e454cf_cgraph.svg" width="379" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_navier_stokes_velocity_a40545084c0865df4acf81fca8c1e0fa2_cgraph.svg" width="379" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -388,7 +394,7 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a5de7744258b1171ceed1f7ddb9f0b201">polyfem::assembler::NLAssembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00242">242</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembler_8cpp_source.html#l00244">244</a> of file <a class="el" href="_assembler_8cpp_source.html">Assembler.cpp</a>.</p>
 
 </div>
 </div>
@@ -498,9 +504,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a83fef57dc75dab91705eed56f86baf88">polyfem::assembler::NLAssembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00035">35</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00036">36</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_8hpp_source.html#l00061">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -656,9 +662,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#aa0ad546418de6445ce58c2dba5c3c040">polyfem::assembler::NLAssembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00042">42</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00043">43</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_8cpp_source.html#l00055">compute_N()</a>, <a class="el" href="_navier_stokes_8cpp_source.html#l00133">compute_W()</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00050">full_gradient_</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_8cpp_source.html#l00056">compute_N()</a>, <a class="el" href="_navier_stokes_8cpp_source.html#l00134">compute_W()</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00050">full_gradient_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00149">polyfem::solver::NavierStokesSolver::minimize_aux()</a>, and <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00162">polyfem::solver::TransientNavierStokesSolver::minimize_aux()</a>.</p>
 <div class="dynheader">
@@ -758,11 +764,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00055">55</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00056">56</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00019">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00022">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00019">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_assembler_8hpp_source.html#l00061">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00022">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_8cpp_source.html#l00042">assemble_hessian()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_8cpp_source.html#l00043">assemble_hessian()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -804,9 +810,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ac3b31adacd89c796c137867e4ab2fd70">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00017">17</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00018">18</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00047">viscosity_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8hpp_source.html#l00061">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00047">viscosity_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -840,11 +846,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00133">133</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00134">134</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00019">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_assembler_8hpp_source.html#l00059">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00022">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00017">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00019">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_assembler_8hpp_source.html#l00061">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00020">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00022">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_8cpp_source.html#l00042">assemble_hessian()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_8cpp_source.html#l00043">assemble_hessian()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -951,7 +957,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#abf4ca5a2d5825696036c2ad59f80d89b">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00213">213</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00214">214</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_navier_stokes_8hpp_source.html#l00047">viscosity_</a>.</p>
 
@@ -1018,7 +1024,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_8hpp_source.html#l00050">50</a> of file <a class="el" href="_navier_stokes_8hpp_source.html">NavierStokes.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_8cpp_source.html#l00042">assemble_hessian()</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00044">set_picard()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_8cpp_source.html#l00043">assemble_hessian()</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00044">set_picard()</a>.</p>
 
 </div>
 </div>
@@ -1044,7 +1050,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_8hpp_source.html#l00047">47</a> of file <a class="el" href="_navier_stokes_8hpp_source.html">NavierStokes.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_8cpp_source.html#l00006">add_multimaterial()</a>, <a class="el" href="_navier_stokes_8cpp_source.html#l00017">compute_rhs()</a>, and <a class="el" href="_navier_stokes_8cpp_source.html#l00213">parameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_8cpp_source.html#l00006">add_multimaterial()</a>, <a class="el" href="_navier_stokes_8cpp_source.html#l00018">compute_rhs()</a>, and <a class="el" href="_navier_stokes_8cpp_source.html#l00214">parameters()</a>.</p>
 
 </div>
 </div>

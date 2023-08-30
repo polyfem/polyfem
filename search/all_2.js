@@ -49,7 +49,7 @@ var searchData=
   ['beta_5fdt_46',['beta_dt',['../classpolyfem_1_1time__integrator_1_1_b_d_f.html#adee1f06a38af8a9dd442ccfcd5f3f11e',1,'polyfem::time_integrator::BDF']]],
   ['betas_47',['betas',['../classpolyfem_1_1time__integrator_1_1_b_d_f.html#a36931fc9cd7efc6ec431d49ddf7330a6',1,'polyfem::time_integrator::BDF']]],
   ['better_5finitial_5fguess_48',['better_initial_guess',['../classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a4bdc75e9a2a97060b3e60c4b5677cfd2',1,'polyfem::solver::AdjointNLProblem']]],
-  ['bfgssolver_49',['BFGSSolver',['../classcppoptlib_1_1_b_f_g_s_solver.html#a5e43a4504e58faaa66989c10f76a61c9',1,'cppoptlib::BFGSSolver::BFGSSolver()'],['../classcppoptlib_1_1_b_f_g_s_solver.html',1,'cppoptlib::BFGSSolver&lt; ProblemType &gt;']]],
+  ['bfgssolver_49',['BFGSSolver',['../classcppoptlib_1_1_b_f_g_s_solver.html#a0c78f4344aaeac90410efebe1e62f857',1,'cppoptlib::BFGSSolver::BFGSSolver()'],['../classcppoptlib_1_1_b_f_g_s_solver.html',1,'cppoptlib::BFGSSolver&lt; ProblemType &gt;']]],
   ['bfgssolver_2ehpp_50',['BFGSSolver.hpp',['../_b_f_g_s_solver_8hpp.html',1,'']]],
   ['big_5fn_51',['BIG_N',['../namespacepolyfem.html#a7e39c0bd50dd86944f79d8ddcad979a4',1,'polyfem']]],
   ['bilaplacian_2ecpp_52',['Bilaplacian.cpp',['../_bilaplacian_8cpp.html',1,'']]],

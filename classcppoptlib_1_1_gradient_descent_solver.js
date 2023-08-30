@@ -1,7 +1,7 @@
 var classcppoptlib_1_1_gradient_descent_solver =
 [
     [ "Superclass", "classcppoptlib_1_1_gradient_descent_solver.html#a32833a22e7f62c389daa04959df88519", null ],
-    [ "GradientDescentSolver", "classcppoptlib_1_1_gradient_descent_solver.html#a576b83498a9da8203460a91411f55fe7", null ],
+    [ "GradientDescentSolver", "classcppoptlib_1_1_gradient_descent_solver.html#aa96aea65663dad1cd85cd9cbde3f30bf", null ],
     [ "compute_update_direction", "classcppoptlib_1_1_gradient_descent_solver.html#ab31ef85add39e068313861647a101470", null ],
     [ "default_descent_strategy", "classcppoptlib_1_1_gradient_descent_solver.html#a568880912813cee90202f96c58383255", null ],
     [ "descent_strategy_name", "classcppoptlib_1_1_gradient_descent_solver.html#a107a4558ff1894a3373b8ef1ae408b91", null ],

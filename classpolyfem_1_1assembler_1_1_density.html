@@ -134,8 +134,8 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1assembler_1_1_density.
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a45842b3cacf3a36390e47be124a7b1d3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_density.html#a45842b3cacf3a36390e47be124a7b1d3">Density</a> ()</td></tr>
 <tr class="separator:a45842b3cacf3a36390e47be124a7b1d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2e23201e790c94bf8132296a495e9d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_density.html#ad2e23201e790c94bf8132296a495e9d7">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:ad2e23201e790c94bf8132296a495e9d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d48b19ebc812f9818a1d94f6fb882fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_density.html#a5d48b19ebc812f9818a1d94f6fb882fd">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;density_unit)</td></tr>
+<tr class="separator:a5d48b19ebc812f9818a1d94f6fb882fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf752b4682da722f962e1e889062c84f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_density.html#adf752b4682da722f962e1e889062c84f">operator()</a> (double px, double py, double pz, double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, int el_id) const</td></tr>
 <tr class="separator:adf752b4682da722f962e1e889062c84f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c5538e2a86e7f1087a38b1ebdb9f547"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_density.html#a0c5538e2a86e7f1087a38b1ebdb9f547">operator()</a> (const Eigen::MatrixXd &amp;param, const Eigen::MatrixXd &amp;p, int el_id) const</td></tr>
@@ -170,15 +170,15 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00382">382</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00393">393</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00115">rho_</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ad2e23201e790c94bf8132296a495e9d7" name="ad2e23201e790c94bf8132296a495e9d7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad2e23201e790c94bf8132296a495e9d7">&#9670;&#160;</a></span>add_multimaterial()</h2>
+<a id="a5d48b19ebc812f9818a1d94f6fb882fd" name="a5d48b19ebc812f9818a1d94f6fb882fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d48b19ebc812f9818a1d94f6fb882fd">&#9670;&#160;</a></span>add_multimaterial()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -193,7 +193,13 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em>&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>density_unit</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -203,7 +209,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00399">399</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00410">410</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00115">rho_</a>.</p>
 
@@ -211,7 +217,7 @@ Private Attributes</h2></td></tr>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_density_ad2e23201e790c94bf8132296a495e9d7_icgraph.svg" width="458" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_density_a5d48b19ebc812f9818a1d94f6fb882fd_icgraph.svg" width="100%" height="467"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -317,7 +323,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00388">388</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00399">399</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00115">rho_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 
@@ -372,7 +378,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00115">115</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00399">add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00382">Density()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00388">operator()()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00410">add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00393">Density()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00399">operator()()</a>.</p>
 
 </div>
 </div>

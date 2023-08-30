@@ -1,7 +1,7 @@
 var classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity =
 [
     [ "IncompressibleOgdenElasticity", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html#a3360aca4667fe8b615efb5a9c604d345", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html#ae5a298d2b857dd366b37a9b5eb5a9282", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html#a0f06f0673b1c383d07164a789b5bbc63", null ],
     [ "bulk_modulus", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html#a8474a3ef46507a5a7ff1fd661f56257e", null ],
     [ "coefficients", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html#adb4785ce1573a8810815ade82b6602ea", null ],
     [ "elastic_energy", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html#ab29c1bb355489d580040f8b883feeb2d", null ],

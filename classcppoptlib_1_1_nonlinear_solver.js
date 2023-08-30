@@ -1,7 +1,7 @@
 var classcppoptlib_1_1_nonlinear_solver =
 [
     [ "Superclass", "classcppoptlib_1_1_nonlinear_solver.html#aa848ff8acc24d5cb997cdf2dfcd5f0ae", null ],
-    [ "NonlinearSolver", "classcppoptlib_1_1_nonlinear_solver.html#a4644d12ebe36b4b2ef7c0df4ea538d6d", null ],
+    [ "NonlinearSolver", "classcppoptlib_1_1_nonlinear_solver.html#a62cc4c52726b11a338fbd443aa744f73", null ],
     [ "compute_grad_norm", "classcppoptlib_1_1_nonlinear_solver.html#a31f25c9e212dc6294aeaae6e10d42f65", null ],
     [ "compute_update_direction", "classcppoptlib_1_1_nonlinear_solver.html#a50ae1ef959df52fddb792fb9880e9f80", null ],
     [ "converged", "classcppoptlib_1_1_nonlinear_solver.html#ab1835d25631fe50ed3a88c011838c841", null ],

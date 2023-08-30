@@ -19,7 +19,7 @@ var searchData=
   ['beta_16',['beta',['../classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a06343b9fb8c270eaaca03b546dd80494',1,'polyfem::time_integrator::ImplicitNewmark']]],
   ['beta_5fdt_17',['beta_dt',['../classpolyfem_1_1time__integrator_1_1_b_d_f.html#adee1f06a38af8a9dd442ccfcd5f3f11e',1,'polyfem::time_integrator::BDF']]],
   ['betas_18',['betas',['../classpolyfem_1_1time__integrator_1_1_b_d_f.html#a36931fc9cd7efc6ec431d49ddf7330a6',1,'polyfem::time_integrator::BDF']]],
-  ['bfgssolver_19',['BFGSSolver',['../classcppoptlib_1_1_b_f_g_s_solver.html#a5e43a4504e58faaa66989c10f76a61c9',1,'cppoptlib::BFGSSolver']]],
+  ['bfgssolver_19',['BFGSSolver',['../classcppoptlib_1_1_b_f_g_s_solver.html#a0c78f4344aaeac90410efebe1e62f857',1,'cppoptlib::BFGSSolver']]],
   ['bilaplacianproblemwithsolution_20',['BilaplacianProblemWithSolution',['../classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html#a43d39a6e7a396ef07f1f6b70a77800ef',1,'polyfem::problem::BilaplacianProblemWithSolution']]],
   ['bodyform_21',['BodyForm',['../classpolyfem_1_1solver_1_1_body_form.html#ae79c6932d834cbe1dba199ba0cbfec12',1,'polyfem::solver::BodyForm']]],
   ['boundary_5felement_5fvertex_22',['boundary_element_vertex',['../classpolyfem_1_1mesh_1_1_mesh.html#afeda8cefadaa5bf91c03183075c53d71',1,'polyfem::mesh::Mesh']]],

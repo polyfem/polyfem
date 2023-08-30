@@ -138,8 +138,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a364ddc07b98177881dcebf9f897f4a91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afcb956da21c181ba91eca8a5573e6d73"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_mat_param.html#afcb956da21c181ba91eca8a5573e6d73">operator()</a> (double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t, int index) const</td></tr>
 <tr class="separator:afcb956da21c181ba91eca8a5573e6d73"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58c03696d0b2c2ea0379b4f7e253ff0d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_mat_param.html#a58c03696d0b2c2ea0379b4f7e253ff0d">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params)</td></tr>
-<tr class="separator:a58c03696d0b2c2ea0379b4f7e253ff0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cb86dd99e7a321fcc03bebab00c6996"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_generic_mat_param.html#a2cb86dd99e7a321fcc03bebab00c6996">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;unit_type)</td></tr>
+<tr class="separator:a2cb86dd99e7a321fcc03bebab00c6996"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -178,8 +178,8 @@ Friends</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a58c03696d0b2c2ea0379b4f7e253ff0d" name="a58c03696d0b2c2ea0379b4f7e253ff0d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a58c03696d0b2c2ea0379b4f7e253ff0d">&#9670;&#160;</a></span>add_multimaterial()</h2>
+<a id="a2cb86dd99e7a321fcc03bebab00c6996" name="a2cb86dd99e7a321fcc03bebab00c6996"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cb86dd99e7a321fcc03bebab00c6996">&#9670;&#160;</a></span>add_multimaterial()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -194,7 +194,13 @@ Friends</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em>&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>unit_type</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -208,11 +214,11 @@ Friends</h2></td></tr>
 
 <p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00021">param_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00020">param_name_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mooney_rivlin_elasticity_8cpp_source.html#l00010">polyfem::assembler::MooneyRivlinElasticity::add_multimaterial()</a>, and <a class="el" href="_ogden_elasticity_8cpp_source.html#l00052">polyfem::assembler::IncompressibleOgdenElasticity::add_multimaterial()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mooney_rivlin_elasticity_8cpp_source.html#l00010">polyfem::assembler::MooneyRivlinElasticity::add_multimaterial()</a>, and <a class="el" href="_ogden_elasticity_8cpp_source.html#l00053">polyfem::assembler::IncompressibleOgdenElasticity::add_multimaterial()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_mat_param_a58c03696d0b2c2ea0379b4f7e253ff0d_icgraph.svg" width="100%" height="408"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_generic_mat_param_a2cb86dd99e7a321fcc03bebab00c6996_icgraph.svg" width="100%" height="408"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -250,7 +256,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00039">39</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00042">42</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 
@@ -300,7 +306,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00048">48</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00051">51</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00021">param_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 
@@ -354,7 +360,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00021">21</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00028">add_multimaterial()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00048">operator()()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00028">add_multimaterial()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00051">operator()()</a>.</p>
 
 </div>
 </div>

@@ -1,7 +1,7 @@
 var classpolyfem_1_1assembler_1_1_neo_hookean_elasticity =
 [
     [ "NeoHookeanElasticity", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a4948c73846ce32e7a889bde9e4ee8b09", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a2deb8f39413130bb878912563a6da958", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#ab33652b868bd4553f3bbb62a17584658", null ],
     [ "assemble_energy", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a5de7744258b1171ceed1f7ddb9f0b201", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a8d6bf601b1232c4000ba7506c5dd448b", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#accc46c40a18067df6d28f70c932fe9d7", null ],

@@ -37,6 +37,7 @@ var classpolyfem_1_1assembler_1_1_generic_tensor_problem =
     [ "set_parameters", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a3286b846bdcde273f9713d019d6053d2", null ],
     [ "set_rhs", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a4cfa2e07afdd64419a9ad645a9c43f9e", null ],
     [ "set_time_dependent", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a6dd70ffe7823cb8bb97bb882226e3611", null ],
+    [ "set_units", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aeb7bc1bff905955ea5b89e514cd6e5de", null ],
     [ "update_dirichlet_boundary", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a8b7488f4f433d9c0e777d4447efd194c", null ],
     [ "update_dirichlet_boundary", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a59cc80428b158cddb140fb3f74f3e00c", null ],
     [ "update_dirichlet_boundary", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ac76d4859f1d2b6b521649a3ab0884471", null ],

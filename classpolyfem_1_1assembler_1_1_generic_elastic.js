@@ -2,7 +2,7 @@ var classpolyfem_1_1assembler_1_1_generic_elastic =
 [
     [ "GenericElastic", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a4f3927f38ec516b71a2eb82f77f19354", null ],
     [ "~GenericElastic", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a74e97bc9d3e075255e9bf0a75b977ca6", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_generic_elastic.html#ac69b08effe7b89e84bd0686539180665", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a92baa3466d5fef85ddd462c948c9dfc2", null ],
     [ "assemble_energy", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a5de7744258b1171ceed1f7ddb9f0b201", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_generic_elastic.html#a8d6bf601b1232c4000ba7506c5dd448b", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_generic_elastic.html#aa84dfc9edb199e2634ba0fcc9d899da2", null ],

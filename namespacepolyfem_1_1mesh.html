@@ -229,21 +229,21 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aa89f56a9f54a72d55430b772c5fd3bc5"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aa89f56a9f54a72d55430b772c5fd3bc5">read_fem_mesh</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;j_mesh, const std::string &amp;root_path, const bool non_conforming=false)</td></tr>
-<tr class="memdesc:aa89f56a9f54a72d55430b772c5fd3bc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">read a FEM mesh from a geometry JSON  <a href="namespacepolyfem_1_1mesh.html#aa89f56a9f54a72d55430b772c5fd3bc5">More...</a><br /></td></tr>
-<tr class="separator:aa89f56a9f54a72d55430b772c5fd3bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe913b5ef00d49c9ce25b6c414e39129"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#afe913b5ef00d49c9ce25b6c414e39129">read_fem_geometry</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;geometry, const std::string &amp;root_path, const std::vector&lt; std::string &gt; &amp;names=std::vector&lt; std::string &gt;(), const std::vector&lt; Eigen::MatrixXd &gt; &amp;vertices=std::vector&lt; Eigen::MatrixXd &gt;(), const std::vector&lt; Eigen::MatrixXi &gt; &amp;cells=std::vector&lt; Eigen::MatrixXi &gt;(), const bool non_conforming=false)</td></tr>
-<tr class="memdesc:afe913b5ef00d49c9ce25b6c414e39129"><td class="mdescLeft">&#160;</td><td class="mdescRight">read FEM meshes from a geometry JSON array (or single)  <a href="namespacepolyfem_1_1mesh.html#afe913b5ef00d49c9ce25b6c414e39129">More...</a><br /></td></tr>
-<tr class="separator:afe913b5ef00d49c9ce25b6c414e39129"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab600d90ff9cc84e9d420c36b2ce10681"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ab600d90ff9cc84e9d420c36b2ce10681">read_obstacle_mesh</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;j_mesh, const std::string &amp;root_path, const int dim, Eigen::MatrixXd &amp;vertices, Eigen::VectorXi &amp;codim_vertices, Eigen::MatrixXi &amp;codim_edges, Eigen::MatrixXi &amp;faces)</td></tr>
-<tr class="memdesc:ab600d90ff9cc84e9d420c36b2ce10681"><td class="mdescLeft">&#160;</td><td class="mdescRight">read a obstacle mesh from a geometry JSON  <a href="namespacepolyfem_1_1mesh.html#ab600d90ff9cc84e9d420c36b2ce10681">More...</a><br /></td></tr>
-<tr class="separator:ab600d90ff9cc84e9d420c36b2ce10681"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7cf3dd6d3ed0fc2c22b2b89a62eaf3dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">Obstacle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a7cf3dd6d3ed0fc2c22b2b89a62eaf3dc">read_obstacle_geometry</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &gt; &amp;displacements, const std::vector&lt; <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &gt; &amp;dirichlets, const std::string &amp;root_path, const int dim, const std::vector&lt; std::string &gt; &amp;names=std::vector&lt; std::string &gt;(), const std::vector&lt; Eigen::MatrixXd &gt; &amp;vertices=std::vector&lt; Eigen::MatrixXd &gt;(), const std::vector&lt; Eigen::MatrixXi &gt; &amp;cells=std::vector&lt; Eigen::MatrixXi &gt;(), const bool non_conforming=false)</td></tr>
-<tr class="memdesc:a7cf3dd6d3ed0fc2c22b2b89a62eaf3dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">read a FEM mesh from a geometry JSON  <a href="namespacepolyfem_1_1mesh.html#a7cf3dd6d3ed0fc2c22b2b89a62eaf3dc">More...</a><br /></td></tr>
-<tr class="separator:a7cf3dd6d3ed0fc2c22b2b89a62eaf3dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abdfeb621cc713f15135b0ab62a7ac6cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#abdfeb621cc713f15135b0ab62a7ac6cb">construct_affine_transformation</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;transform, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;mesh_dimensions, <a class="el" href="namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2">MatrixNd</a> &amp;A, <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;b)</td></tr>
-<tr class="memdesc:abdfeb621cc713f15135b0ab62a7ac6cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an affine transformation \(Ax+b\).  <a href="namespacepolyfem_1_1mesh.html#abdfeb621cc713f15135b0ab62a7ac6cb">More...</a><br /></td></tr>
-<tr class="separator:abdfeb621cc713f15135b0ab62a7ac6cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a778e805ac1a3193ae27fca02a121c77b"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a778e805ac1a3193ae27fca02a121c77b">read_fem_mesh</a> (const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;j_mesh, const std::string &amp;root_path, const bool non_conforming=false)</td></tr>
+<tr class="memdesc:a778e805ac1a3193ae27fca02a121c77b"><td class="mdescLeft">&#160;</td><td class="mdescRight">read a FEM mesh from a geometry JSON  <a href="namespacepolyfem_1_1mesh.html#a778e805ac1a3193ae27fca02a121c77b">More...</a><br /></td></tr>
+<tr class="separator:a778e805ac1a3193ae27fca02a121c77b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72e21b96b5cdfa9d82fe80b56a4151be"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a72e21b96b5cdfa9d82fe80b56a4151be">read_fem_geometry</a> (const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;geometry, const std::string &amp;root_path, const std::vector&lt; std::string &gt; &amp;names=std::vector&lt; std::string &gt;(), const std::vector&lt; Eigen::MatrixXd &gt; &amp;vertices=std::vector&lt; Eigen::MatrixXd &gt;(), const std::vector&lt; Eigen::MatrixXi &gt; &amp;cells=std::vector&lt; Eigen::MatrixXi &gt;(), const bool non_conforming=false)</td></tr>
+<tr class="memdesc:a72e21b96b5cdfa9d82fe80b56a4151be"><td class="mdescLeft">&#160;</td><td class="mdescRight">read FEM meshes from a geometry JSON array (or single)  <a href="namespacepolyfem_1_1mesh.html#a72e21b96b5cdfa9d82fe80b56a4151be">More...</a><br /></td></tr>
+<tr class="separator:a72e21b96b5cdfa9d82fe80b56a4151be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0998cc6c7de5ec57108b351c79ba171e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a0998cc6c7de5ec57108b351c79ba171e">read_obstacle_mesh</a> (const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;j_mesh, const std::string &amp;root_path, const int dim, Eigen::MatrixXd &amp;vertices, Eigen::VectorXi &amp;codim_vertices, Eigen::MatrixXi &amp;codim_edges, Eigen::MatrixXi &amp;faces)</td></tr>
+<tr class="memdesc:a0998cc6c7de5ec57108b351c79ba171e"><td class="mdescLeft">&#160;</td><td class="mdescRight">read a obstacle mesh from a geometry JSON  <a href="namespacepolyfem_1_1mesh.html#a0998cc6c7de5ec57108b351c79ba171e">More...</a><br /></td></tr>
+<tr class="separator:a0998cc6c7de5ec57108b351c79ba171e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47496a714e0b233ab918bfbbe7c4626f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">Obstacle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a47496a714e0b233ab918bfbbe7c4626f">read_obstacle_geometry</a> (const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;geometry, const std::vector&lt; <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &gt; &amp;displacements, const std::vector&lt; <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &gt; &amp;dirichlets, const std::string &amp;root_path, const int dim, const std::vector&lt; std::string &gt; &amp;names=std::vector&lt; std::string &gt;(), const std::vector&lt; Eigen::MatrixXd &gt; &amp;vertices=std::vector&lt; Eigen::MatrixXd &gt;(), const std::vector&lt; Eigen::MatrixXi &gt; &amp;cells=std::vector&lt; Eigen::MatrixXi &gt;(), const bool non_conforming=false)</td></tr>
+<tr class="memdesc:a47496a714e0b233ab918bfbbe7c4626f"><td class="mdescLeft">&#160;</td><td class="mdescRight">read a FEM mesh from a geometry JSON  <a href="namespacepolyfem_1_1mesh.html#a47496a714e0b233ab918bfbbe7c4626f">More...</a><br /></td></tr>
+<tr class="separator:a47496a714e0b233ab918bfbbe7c4626f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a255f46e00ca412d64d2551b10bd43437"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a255f46e00ca412d64d2551b10bd43437">construct_affine_transformation</a> (const double unit_scale, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;transform, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;mesh_dimensions, <a class="el" href="namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2">MatrixNd</a> &amp;A, <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;b)</td></tr>
+<tr class="memdesc:a255f46e00ca412d64d2551b10bd43437"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an affine transformation \(Ax+b\).  <a href="namespacepolyfem_1_1mesh.html#a255f46e00ca412d64d2551b10bd43437">More...</a><br /></td></tr>
+<tr class="separator:a255f46e00ca412d64d2551b10bd43437"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c9e86a0cbb90821ce9b4c1f37b8df6c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a2c9e86a0cbb90821ce9b4c1f37b8df6c">find</a> (const Eigen::VectorXi &amp;<a class="el" href="_assembler_8cpp.html#a0ceb8b1b1b63245b857fa3d925c17858">vec</a>, int <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
 <tr class="separator:a2c9e86a0cbb90821ce9b4c1f37b8df6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add37eb917dcfad1ce25e9f2aca7ca9db"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#add37eb917dcfad1ce25e9f2aca7ca9db">line_weight</a> (Eigen::Matrix&lt; double, 2, 2 &gt; &amp;e, Eigen::VectorXd &amp;v)</td></tr>
@@ -664,8 +664,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="abdfeb621cc713f15135b0ab62a7ac6cb" name="abdfeb621cc713f15135b0ab62a7ac6cb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abdfeb621cc713f15135b0ab62a7ac6cb">&#9670;&#160;</a></span>construct_affine_transformation()</h2>
+<a id="a255f46e00ca412d64d2551b10bd43437" name="a255f46e00ca412d64d2551b10bd43437"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a255f46e00ca412d64d2551b10bd43437">&#9670;&#160;</a></span>construct_affine_transformation()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -673,6 +673,12 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">void polyfem::mesh::construct_affine_transformation </td>
           <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>unit_scale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
           <td class="paramname"><em>transform</em>, </td>
         </tr>
@@ -713,21 +719,21 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00577">577</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00593">593</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_j_s_o_n_utils_8hpp_source.html#l00017">polyfem::utils::deg2rad()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, and <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00059">polyfem::utils::to_rotation_matrix()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_optimizations_8cpp_source.html#l00215">polyfem::solver::AdjointOptUtils::create_parametrization()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00025">read_fem_mesh()</a>, and <a class="el" href="_geometry_reader_8cpp_source.html#l00286">read_obstacle_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_optimizations_8cpp_source.html#l00215">polyfem::solver::AdjointOptUtils::create_parametrization()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00025">read_fem_mesh()</a>, and <a class="el" href="_geometry_reader_8cpp_source.html#l00294">read_obstacle_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_abdfeb621cc713f15135b0ab62a7ac6cb_cgraph.svg" width="647" height="160"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a255f46e00ca412d64d2551b10bd43437_cgraph.svg" width="647" height="160"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_abdfeb621cc713f15135b0ab62a7ac6cb_icgraph.svg" width="100%" height="560"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a255f46e00ca412d64d2551b10bd43437_icgraph.svg" width="100%" height="560"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
@@ -1744,8 +1750,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="afe913b5ef00d49c9ce25b6c414e39129" name="afe913b5ef00d49c9ce25b6c414e39129"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afe913b5ef00d49c9ce25b6c414e39129">&#9670;&#160;</a></span>read_fem_geometry()</h2>
+<a id="a72e21b96b5cdfa9d82fe80b56a4151be" name="a72e21b96b5cdfa9d82fe80b56a4151be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72e21b96b5cdfa9d82fe80b56a4151be">&#9670;&#160;</a></span>read_fem_geometry()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1753,6 +1759,12 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt; polyfem::mesh::read_fem_geometry </td>
           <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;&#160;</td>
+          <td class="paramname"><em>units</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
           <td class="paramname"><em>geometry</em>, </td>
         </tr>
@@ -1804,28 +1816,28 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>created <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html" title="Abstract mesh class to capture 2d/3d conforming and non-conforming meshes.">Mesh</a> object </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00223">223</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00230">230</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_j_s_o_n_utils_8hpp_source.html#l00029">polyfem::utils::json_as_array()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, and <a class="el" href="_geometry_reader_8cpp_source.html#l00025">read_fem_mesh()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_load_8cpp_source.html#l00089">polyfem::State::load_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_load_8cpp_source.html#l00091">polyfem::State::load_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_afe913b5ef00d49c9ce25b6c414e39129_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a72e21b96b5cdfa9d82fe80b56a4151be_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_afe913b5ef00d49c9ce25b6c414e39129_icgraph.svg" width="100%" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a72e21b96b5cdfa9d82fe80b56a4151be_icgraph.svg" width="100%" height="364"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
 </div>
 </div>
-<a id="aa89f56a9f54a72d55430b772c5fd3bc5" name="aa89f56a9f54a72d55430b772c5fd3bc5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa89f56a9f54a72d55430b772c5fd3bc5">&#9670;&#160;</a></span>read_fem_mesh()</h2>
+<a id="a778e805ac1a3193ae27fca02a121c77b" name="a778e805ac1a3193ae27fca02a121c77b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a778e805ac1a3193ae27fca02a121c77b">&#9670;&#160;</a></span>read_fem_mesh()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1833,6 +1845,12 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt; polyfem::mesh::read_fem_mesh </td>
           <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;&#160;</td>
+          <td class="paramname"><em>units</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
           <td class="paramname"><em>j_mesh</em>, </td>
         </tr>
@@ -1869,26 +1887,26 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00025">25</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_selection_8cpp_source.html#l00045">polyfem::utils::Selection::build_selections()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00577">construct_affine_transformation()</a>, <a class="el" href="_mesh_8cpp_source.html#l00173">polyfem::mesh::Mesh::create()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00129">polyfem::utils::is_param_valid()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
+<p class="reference">References <a class="el" href="_selection_8cpp_source.html#l00045">polyfem::utils::Selection::build_selections()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00593">construct_affine_transformation()</a>, <a class="el" href="_units_8cpp_source.html#l00031">polyfem::Units::convert()</a>, <a class="el" href="_mesh_8cpp_source.html#l00173">polyfem::mesh::Mesh::create()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00129">polyfem::utils::is_param_valid()</a>, <a class="el" href="_units_8hpp_source.html#l00019">polyfem::Units::length()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00223">read_fem_geometry()</a>, and <a class="el" href="_s_d_f_variable_to_simulation_8cpp_source.html#l00011">polyfem::solver::SDFShapeVariableToSimulation::update()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00230">read_fem_geometry()</a>, and <a class="el" href="_s_d_f_variable_to_simulation_8cpp_source.html#l00011">polyfem::solver::SDFShapeVariableToSimulation::update()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_aa89f56a9f54a72d55430b772c5fd3bc5_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a778e805ac1a3193ae27fca02a121c77b_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_aa89f56a9f54a72d55430b772c5fd3bc5_icgraph.svg" width="100%" height="400"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a778e805ac1a3193ae27fca02a121c77b_icgraph.svg" width="100%" height="400"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 
 </div>
 </div>
-<a id="a7cf3dd6d3ed0fc2c22b2b89a62eaf3dc" name="a7cf3dd6d3ed0fc2c22b2b89a62eaf3dc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7cf3dd6d3ed0fc2c22b2b89a62eaf3dc">&#9670;&#160;</a></span>read_obstacle_geometry()</h2>
+<a id="a47496a714e0b233ab918bfbbe7c4626f" name="a47496a714e0b233ab918bfbbe7c4626f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47496a714e0b233ab918bfbbe7c4626f">&#9670;&#160;</a></span>read_obstacle_geometry()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1896,6 +1914,12 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname"><a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">Obstacle</a> polyfem::mesh::read_obstacle_geometry </td>
           <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;&#160;</td>
+          <td class="paramname"><em>units</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
           <td class="paramname"><em>geometry</em>, </td>
         </tr>
@@ -1967,28 +1991,28 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>created <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">Obstacle</a> object </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00373">373</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00387">387</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8cpp_source.html#l00096">polyfem::mesh::Obstacle::append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00124">polyfem::mesh::Obstacle::append_mesh_sequence()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00163">polyfem::mesh::Obstacle::append_plane()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00129">polyfem::utils::is_param_valid()</a>, <a class="el" href="_j_s_o_n_utils_8hpp_source.html#l00029">polyfem::utils::json_as_array()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00286">read_obstacle_mesh()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8cpp_source.html#l00096">polyfem::mesh::Obstacle::append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00124">polyfem::mesh::Obstacle::append_mesh_sequence()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00163">polyfem::mesh::Obstacle::append_plane()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00129">polyfem::utils::is_param_valid()</a>, <a class="el" href="_j_s_o_n_utils_8hpp_source.html#l00029">polyfem::utils::json_as_array()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00294">read_obstacle_mesh()</a>, <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>, and <a class="el" href="_obstacle_8cpp_source.html#l00245">polyfem::mesh::Obstacle::set_units()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_load_8cpp_source.html#l00041">polyfem::State::load_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a7cf3dd6d3ed0fc2c22b2b89a62eaf3dc_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a47496a714e0b233ab918bfbbe7c4626f_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a7cf3dd6d3ed0fc2c22b2b89a62eaf3dc_icgraph.svg" width="414" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a47496a714e0b233ab918bfbbe7c4626f_icgraph.svg" width="414" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
 </div>
 </div>
-<a id="ab600d90ff9cc84e9d420c36b2ce10681" name="ab600d90ff9cc84e9d420c36b2ce10681"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab600d90ff9cc84e9d420c36b2ce10681">&#9670;&#160;</a></span>read_obstacle_mesh()</h2>
+<a id="a0998cc6c7de5ec57108b351c79ba171e" name="a0998cc6c7de5ec57108b351c79ba171e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0998cc6c7de5ec57108b351c79ba171e">&#9670;&#160;</a></span>read_obstacle_mesh()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1996,6 +2020,12 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">void polyfem::mesh::read_obstacle_mesh </td>
           <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;&#160;</td>
+          <td class="paramname"><em>units</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
           <td class="paramname"><em>j_mesh</em>, </td>
         </tr>
@@ -2056,21 +2086,21 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00286">286</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00294">294</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_geometry_reader_8cpp_source.html#l00577">construct_affine_transformation()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00129">polyfem::utils::is_param_valid()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01091">read_surface_mesh()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
+<p class="reference">References <a class="el" href="_geometry_reader_8cpp_source.html#l00593">construct_affine_transformation()</a>, <a class="el" href="_units_8cpp_source.html#l00031">polyfem::Units::convert()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00129">polyfem::utils::is_param_valid()</a>, <a class="el" href="_units_8hpp_source.html#l00019">polyfem::Units::length()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01091">read_surface_mesh()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00373">read_obstacle_geometry()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00387">read_obstacle_geometry()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_ab600d90ff9cc84e9d420c36b2ce10681_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a0998cc6c7de5ec57108b351c79ba171e_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_ab600d90ff9cc84e9d420c36b2ce10681_icgraph.svg" width="619" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a0998cc6c7de5ec57108b351c79ba171e_icgraph.svg" width="619" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -2136,7 +2166,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_string_utils_8cpp_source.html#l00048">polyfem::utils::StringUtils::endswith()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01052">extract_triangle_surface_from_tets()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00986">find_codim_vertices()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00031">is_planar()</a>, <a class="el" href="_msh_reader_8cpp_source.html#l00029">polyfem::io::MshReader::load()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_o_b_j_reader_8cpp_source.html#l00032">polyfem::io::OBJReader::read()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00286">read_obstacle_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00294">read_obstacle_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

@@ -363,6 +363,7 @@ var hierarchy =
     [ "polyfem::solver::TransientNavierStokesSolver", "classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html", null ],
     [ "polyfem::quadrature::TriQuadrature", "classpolyfem_1_1quadrature_1_1_tri_quadrature.html", null ],
     [ "polyfem::renderer::UniformAttributes", "classpolyfem_1_1renderer_1_1_uniform_attributes.html", null ],
+    [ "polyfem::Units", "classpolyfem_1_1_units.html", null ],
     [ "polyfem::solver::VariableToNodes", "classpolyfem_1_1solver_1_1_variable_to_nodes.html", [
       [ "polyfem::solver::VariableToBoundaryNodes", "classpolyfem_1_1solver_1_1_variable_to_boundary_nodes.html", null ],
       [ "polyfem::solver::VariableToBoundaryNodesExclusive", "classpolyfem_1_1solver_1_1_variable_to_boundary_nodes_exclusive.html", null ],
