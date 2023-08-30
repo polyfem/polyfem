@@ -37,6 +37,8 @@ namespace polyfem::solver
 						 const bool is_time_dependent,
 						 const double t);
 
+		std::string name() const override { return "bc-lagrangian"; }
+
 		/// @brief Construct a new BCLagrangianForm object with a fixed Dirichlet boundary
 		/// @param ndof Number of degrees of freedom
 		/// @param boundary_nodes DoFs that are part of the Dirichlet boundary
