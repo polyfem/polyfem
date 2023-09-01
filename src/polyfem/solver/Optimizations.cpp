@@ -8,6 +8,7 @@
 #include "LBFGSBSolver.hpp"
 #include "LBFGSSolver.hpp"
 #include "BFGSSolver.hpp"
+#include "MMASolver.hpp"
 #include "GradientDescentSolver.hpp"
 
 #include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
@@ -69,6 +70,11 @@ namespace polyfem::solver
 		else if (name == "lbfgsb" || name == "LBFGSB" || name == "L-BFGS-B")
 		{
 			return std::make_shared<cppoptlib::LBFGSBSolver<AdjointNLProblem>>(
+				solver_params, 0., characteristic_length);
+		}
+		else if (name == "mma" || name == "MMA")
+		{
+			return std::make_shared<cppoptlib::MMASolver<AdjointNLProblem>>(
 				solver_params, 0., characteristic_length);
 		}
 		else

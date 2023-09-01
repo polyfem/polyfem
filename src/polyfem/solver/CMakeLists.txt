@@ -32,6 +32,10 @@ set(SOURCES
 	AdjointTools.hpp
 	AdjointNLProblem.hpp
 	AdjointNLProblem.cpp
+	MMASolver.hpp
+	MMASolver.tpp
+	MMASolverAux.hpp
+	MMASolverAux.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})

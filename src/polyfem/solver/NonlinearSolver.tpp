@@ -119,6 +119,11 @@ namespace cppoptlib
 
 		do
 		{
+			if (name() == "MMA") {
+				POLYFEM_SCOPED_TIMER("constraint set update", constraint_set_update_time);
+				objFunc.solution_changed(x);
+			}
+
 			double energy;
 			{
 				POLYFEM_SCOPED_TIMER("compute objective function", obj_fun_time);
@@ -157,7 +162,7 @@ namespace cppoptlib
 				continue;
 			}
 
-			if (grad_norm != 0 && delta_x.dot(grad) >= 0)
+			if (name() != "MMA" && grad_norm != 0 && delta_x.dot(grad) >= 0)
 			{
 				increase_descent_strategy();
 				logger().debug(
