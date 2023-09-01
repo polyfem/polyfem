@@ -213,8 +213,6 @@ void test_form(Form &form, const State &state)
 TEST_CASE("body form derivatives 3d", "[form][form_derivatives][body_form]")
 {
 	const auto state_ptr = get_state_3d();
-	for (const auto a : state_ptr->node_to_primitive())
-		std::cout << a << std::endl;
 	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
 	const bool apply_DBC = false; // GENERATE(true, false);
 	const int ndof = state_ptr->n_bases * state_ptr->mesh->dimension();

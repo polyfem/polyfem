@@ -614,60 +614,61 @@ namespace polyfem
 			for (const auto &lb : local_neumann_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, points, normals, weights, global_primitive_ids);
-
-				if (!has_samples)
-					continue;
-
 				const basis::ElementBases &gbs = gbases_[e];
 				const basis::ElementBases &bs = bases_[e];
-
-				vals.compute(e, mesh_.is_volume(), points, bs, gbs);
-
-				for (int n = 0; n < vals.jac_it.size(); ++n)
-				{
-					Eigen::MatrixXd ppp(1, size_);
-					ppp = vals.val.row(n);
-
-					trafo = vals.jac_it[n].inverse();
-
-					if (displacement.size() > 0)
-					{
-						assert(size_ == 2 || size_ == 3);
-						deform_mat.resize(size_, size_);
-						deform_mat.setZero();
-						for (const auto &b : vals.basis_values)
-						{
-							for (const auto &g : b.global)
-							{
-								for (int d = 0; d < size_; ++d)
-								{
-									deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
-
-									ppp(d) += displacement(g.index * size_ + d) * b.val(n);
-								}
-							}
-						}
-
-						trafo += deform_mat;
-					}
-
-					normals.row(n) = normals.row(n) * trafo.inverse();
-					normals.row(n).normalize();
-				}
-
-				// problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, rhs_fun);
-				nf(global_primitive_ids, uv, vals.val, normals, rhs_fun);
-
-				// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(0,1,0));
-
-				for (int d = 0; d < size_; ++d)
-					rhs_fun.col(d) = rhs_fun.col(d).array() * weights.array();
 
 				for (int i = 0; i < lb.size(); ++i)
 				{
 					const int primitive_global_id = lb.global_primitive_id(i);
 					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
+
+					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, i, false, uv, points, normals, weights);
+
+					if (!has_samples)
+						continue;
+
+					global_primitive_ids.setConstant(weights.size(), primitive_global_id);
+					vals.compute(e, mesh_.is_volume(), points, bs, gbs);
+
+					for (int n = 0; n < vals.jac_it.size(); ++n)
+					{
+						Eigen::MatrixXd ppp(1, size_);
+						ppp = vals.val.row(n);
+
+						trafo = vals.jac_it[n].inverse();
+
+						if (displacement.size() > 0)
+						{
+							assert(size_ == 2 || size_ == 3);
+							deform_mat.resize(size_, size_);
+							deform_mat.setZero();
+							for (const auto &b : vals.basis_values)
+							{
+								for (const auto &g : b.global)
+								{
+									for (int d = 0; d < size_; ++d)
+									{
+										deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
+
+										ppp(d) += displacement(g.index * size_ + d) * b.val(n);
+									}
+								}
+							}
+
+							trafo += deform_mat;
+						}
+
+						normals.row(n) = normals.row(n) * trafo.inverse();
+						normals.row(n).normalize();
+					}
+
+					// problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, rhs_fun);
+					nf(global_primitive_ids, uv, vals.val, normals, rhs_fun);
+
+					// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(0,1,0));
+
+					for (int d = 0; d < size_; ++d)
+						rhs_fun.col(d) = rhs_fun.col(d).array() * weights.array();
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
@@ -899,88 +900,90 @@ namespace polyfem
 			for (const auto &lb : local_neumann_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, points, normals, weights, global_primitive_ids);
-
-				if (!has_samples)
-					continue;
-
 				const basis::ElementBases &gbs = gbases_[e];
 				const basis::ElementBases &bs = bases_[e];
-
-				Eigen::MatrixXd reference_normals = normals;
-
-				vals.compute(e, mesh_.is_volume(), points, bs, gbs);
-
-				std::vector<std::vector<Eigen::MatrixXd>> grad_normal;
-				for (int n = 0; n < vals.jac_it.size(); ++n)
-				{
-					trafo = vals.jac_it[n].inverse();
-
-					assert(size_ == 2 || size_ == 3);
-					deform_mat.resize(size_, size_);
-					deform_mat.setZero();
-					jac_mat.resize(size_, vals.basis_values.size());
-					int b_idx = 0;
-					for (const auto &b : vals.basis_values)
-					{
-						jac_mat.col(b_idx++) = b.grad.row(n);
-
-						for (const auto &g : b.global)
-							for (int d = 0; d < size_; ++d)
-								deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
-					}
-
-					trafo += deform_mat;
-					trafo = trafo.inverse();
-
-					Eigen::VectorXd displaced_normal = normals.row(n) * trafo;
-					normals.row(n) = displaced_normal / displaced_normal.norm();
-
-					std::vector<Eigen::MatrixXd> grad;
-					{
-						Eigen::MatrixXd vec = -(jac_mat.transpose() * trafo * reference_normals.row(n).transpose());
-						// Gradient of the displaced normal computation
-						for (int k = 0; k < size_; ++k)
-						{
-							Eigen::MatrixXd grad_i(jac_mat.rows(), jac_mat.cols());
-							grad_i.setZero();
-							for (int m = 0; m < jac_mat.rows(); ++m)
-								for (int l = 0; l < jac_mat.cols(); ++l)
-									grad_i(m, l) = -(reference_normals.row(n) * trafo)(m) * (jac_mat.transpose() * trafo)(l, k);
-							grad.push_back(grad_i);
-						}
-					}
-
-					{
-						Eigen::MatrixXd normalization_chain_rule = (normals.row(n).transpose() * normals.row(n));
-						normalization_chain_rule = Eigen::MatrixXd::Identity(size_, size_) - normalization_chain_rule;
-						normalization_chain_rule /= displaced_normal.norm();
-
-						Eigen::VectorXd vec(size_);
-						b_idx = 0;
-						for (const auto &b : vals.basis_values)
-						{
-							for (int d = 0; d < size_; ++d)
-							{
-								for (int k = 0; k < size_; ++k)
-									vec(k) = grad[k](d, b_idx);
-								vec = normalization_chain_rule * vec;
-								for (int k = 0; k < size_; ++k)
-									grad[k](d, b_idx) = vec(k);
-							}
-							b_idx++;
-						}
-					}
-
-					grad_normal.push_back(grad);
-				}
-				Eigen::MatrixXd rhs_fun;
-				problem_.neumann_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, rhs_fun);
 
 				for (int i = 0; i < lb.size(); ++i)
 				{
 					const int primitive_global_id = lb.global_primitive_id(i);
 					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
+
+					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, i, false, uv, points, normals, weights);
+
+					if (!has_samples)
+						continue;
+
+					global_primitive_ids.setConstant(weights.size(), primitive_global_id);
+
+					Eigen::MatrixXd reference_normals = normals;
+
+					vals.compute(e, mesh_.is_volume(), points, bs, gbs);
+
+					std::vector<std::vector<Eigen::MatrixXd>> grad_normal;
+					for (int n = 0; n < vals.jac_it.size(); ++n)
+					{
+						trafo = vals.jac_it[n].inverse();
+
+						assert(size_ == 2 || size_ == 3);
+						deform_mat.resize(size_, size_);
+						deform_mat.setZero();
+						jac_mat.resize(size_, vals.basis_values.size());
+						int b_idx = 0;
+						for (const auto &b : vals.basis_values)
+						{
+							jac_mat.col(b_idx++) = b.grad.row(n);
+
+							for (const auto &g : b.global)
+								for (int d = 0; d < size_; ++d)
+									deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
+						}
+
+						trafo += deform_mat;
+						trafo = trafo.inverse();
+
+						Eigen::VectorXd displaced_normal = normals.row(n) * trafo;
+						normals.row(n) = displaced_normal / displaced_normal.norm();
+
+						std::vector<Eigen::MatrixXd> grad;
+						{
+							Eigen::MatrixXd vec = -(jac_mat.transpose() * trafo * reference_normals.row(n).transpose());
+							// Gradient of the displaced normal computation
+							for (int k = 0; k < size_; ++k)
+							{
+								Eigen::MatrixXd grad_i(jac_mat.rows(), jac_mat.cols());
+								grad_i.setZero();
+								for (int m = 0; m < jac_mat.rows(); ++m)
+									for (int l = 0; l < jac_mat.cols(); ++l)
+										grad_i(m, l) = -(reference_normals.row(n) * trafo)(m) * (jac_mat.transpose() * trafo)(l, k);
+								grad.push_back(grad_i);
+							}
+						}
+
+						{
+							Eigen::MatrixXd normalization_chain_rule = (normals.row(n).transpose() * normals.row(n));
+							normalization_chain_rule = Eigen::MatrixXd::Identity(size_, size_) - normalization_chain_rule;
+							normalization_chain_rule /= displaced_normal.norm();
+
+							Eigen::VectorXd vec(size_);
+							b_idx = 0;
+							for (const auto &b : vals.basis_values)
+							{
+								for (int d = 0; d < size_; ++d)
+								{
+									for (int k = 0; k < size_; ++k)
+										vec(k) = grad[k](d, b_idx);
+									vec = normalization_chain_rule * vec;
+									for (int k = 0; k < size_; ++k)
+										grad[k](d, b_idx) = vec(k);
+								}
+								b_idx++;
+							}
+						}
+
+						grad_normal.push_back(grad);
+					}
+					Eigen::MatrixXd rhs_fun;
+					problem_.neumann_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, rhs_fun);
 
 					const bool is_pressure = problem_.is_boundary_pressure(mesh_.get_boundary_id(primitive_global_id));
 					if (!is_pressure)
