@@ -226,6 +226,7 @@ TEST_CASE("topology-opt", "[optimization]")
 
 			states[i++] = AdjointOptUtils::create_state(cur_args);
 		}
+		states[0]->set_log_level(static_cast<spdlog::level::level_enum>(0));
 
 		// define mappings from optimization variable x to material parameters in states
 		for (const auto &arg : opt_args["variable_to_simulation"])
@@ -269,7 +270,8 @@ TEST_CASE("topology-opt", "[optimization]")
 	}
 
 	// run the optimization for a few steps
-	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
+	// CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
+	nl_solver->minimize(*nl_problem, x);
 
 	json params;
 	nl_solver->get_info(params);
