@@ -411,13 +411,13 @@ TEST_CASE("BC lagrangian form derivatives", "[form][form_derivatives][bc_lagr_fo
 	assembler::Mass mass_mat_assembler;
 	mass_mat_assembler.set_size(dim);
 	StiffnessMatrix mass_tmp;
-	mass_mat_assembler.assemble(dim == 3,
-								state_ptr->n_bases,
-								state_ptr->bases,
-								state_ptr->geom_bases(),
-								state_ptr->mass_ass_vals_cache,
-								mass_tmp,
-								true);
+	state_ptr->mass_matrix_assembler->assemble(dim == 3,
+											   state_ptr->n_bases,
+											   state_ptr->bases,
+											   state_ptr->geom_bases(),
+											   state_ptr->mass_ass_vals_cache,
+											   mass_tmp,
+											   true);
 
 	BCLagrangianForm form(
 		ndof,
@@ -462,13 +462,13 @@ TEST_CASE("BC penalty form derivatives", "[form][form_derivatives][bc_penalty_fo
 	assembler::Mass mass_mat_assembler;
 	mass_mat_assembler.set_size(dim);
 	StiffnessMatrix mass_tmp;
-	mass_mat_assembler.assemble(dim == 3,
-								state_ptr->n_bases,
-								state_ptr->bases,
-								state_ptr->geom_bases(),
-								state_ptr->mass_ass_vals_cache,
-								mass_tmp,
-								true);
+	state_ptr->mass_matrix_assembler->assemble(dim == 3,
+											   state_ptr->n_bases,
+											   state_ptr->bases,
+											   state_ptr->geom_bases(),
+											   state_ptr->mass_ass_vals_cache,
+											   mass_tmp,
+											   true);
 
 	BCPenaltyForm form(
 		ndof,
