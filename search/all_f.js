@@ -41,7 +41,7 @@ var searchData=
   ['operatorsplittingsolver_2ecpp_38',['OperatorSplittingSolver.cpp',['../_operator_splitting_solver_8cpp.html',1,'']]],
   ['operatorsplittingsolver_2ehpp_39',['OperatorSplittingSolver.hpp',['../_operator_splitting_solver_8hpp.html',1,'']]],
   ['optimization_5fenabled_40',['optimization_enabled',['../classpolyfem_1_1_state.html#ab1a7f9cd993bb4b26496eece766a9523',1,'polyfem::State']]],
-  ['optimization_5fsimulation_41',['optimization_simulation',['../main_8cpp.html#a7607b836801dfeb981ad326666df4c33',1,'main.cpp']]],
+  ['optimization_5fsimulation_41',['optimization_simulation',['../main_8cpp.html#a96a4708feb2ee82789b510a85aad3741',1,'main.cpp']]],
   ['optimizations_2ecpp_42',['Optimizations.cpp',['../_optimizations_8cpp.html',1,'']]],
   ['optimizations_2ehpp_43',['Optimizations.hpp',['../_optimizations_8hpp.html',1,'']]],
   ['order_44',['order',['../classp__bases_1_1_lagrange.html#a04e32b1aa59b0068c7c054f975371809',1,'p_bases.Lagrange.order()'],['../classq__bases_1_1_lagrange.html#a8931b44255e71403315ddeda3999db00',1,'q_bases.Lagrange.order()'],['../classpolyfem_1_1basis_1_1_basis.html#a0c0b0cce4c9db9e4fca0b35bab342014',1,'polyfem::basis::Basis::order() const']]],
