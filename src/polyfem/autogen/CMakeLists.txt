@@ -20,6 +20,9 @@ set(AUTOGEN_BASES
 	auto_q_bases_3d_grad_2.cpp
 	auto_q_bases_3d_grad_3.cpp
 	auto_q_bases_3d_grad_-2.cpp
+
+	prism_bases.cpp
+	prism_bases.hpp
 )
 
 set(AUTOGEN

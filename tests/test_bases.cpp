@@ -6,13 +6,17 @@
 #include <polyfem/quadrature/LineQuadrature.hpp>
 #include <polyfem/quadrature/QuadQuadrature.hpp>
 #include <polyfem/quadrature/HexQuadrature.hpp>
+#include <polyfem/quadrature/PrismQuadrature.hpp>
 
 #include <polyfem/basis/LagrangeBasis3d.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
+#include <polyfem/autogen/prism_bases.hpp>
 
 #include <polyfem/basis/barycentric/MVPolygonalBasis2d.hpp>
 #include <polyfem/basis/barycentric/WSPolygonalBasis2d.hpp>
+
+#include <finitediff.hpp>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
@@ -1276,6 +1280,65 @@ TEST_CASE("WS_2d", "[bases]")
 
 			REQUIRE(b_prime(j, 0) == Catch::Approx(dx).margin(delta * 10));
 			REQUIRE(b_prime(j, 1) == Catch::Approx(dy).margin(delta * 10));
+		}
+	}
+}
+
+TEST_CASE("Prism", "[bases]")
+{
+	const int max_p_deg = 4;
+	const int max_q_deg = 5;
+
+	Eigen::MatrixXd nodes, val, grad, pts;
+	Eigen::VectorXd fgrad;
+
+	for (int p = 1; p <= max_p_deg; ++p)
+	{
+		for (int q = 1; q <= max_q_deg; ++q)
+		{
+			PrismQuadrature rule;
+			Quadrature quad;
+			rule.get_quadrature(p + 1, q + 1, quad);
+			pts = quad.points;
+
+			polyfem::autogen::prism_nodes_3d(p, q, nodes);
+			for (int i = 0; i < nodes.rows(); ++i)
+			{
+				// interpolation
+				polyfem::autogen::prism_basis_value_3d(p, q, i, nodes, val);
+				for (int j = 0; j < val.size(); ++j)
+				{
+					if (j == i)
+						REQUIRE(val(j) == Catch::Approx(1).margin(1e-10));
+					else
+						REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
+				}
+
+				// gradients
+				polyfem::autogen::prism_grad_basis_value_3d(p, q, i, pts, grad);
+
+				for (int j = 0; j < pts.rows(); ++j)
+				{
+
+					fd::finite_gradient(
+						pts.row(j), [p, q, i](const Eigen::VectorXd &x) -> double {
+							Eigen::MatrixXd tmp;
+							polyfem::autogen::prism_basis_value_3d(p, q, i, x.transpose(), tmp);
+							assert(tmp.size() == 1);
+							return tmp(0);
+						},
+						fgrad);
+
+					if (!fd::compare_gradient(grad.row(j), fgrad))
+					{
+						std::cout << "Gradient mismatch" << std::endl;
+						std::cout << "Gradient: " << grad.row(j) << std::endl;
+						std::cout << "Finite gradient: " << fgrad.transpose() << std::endl;
+					}
+
+					CHECK(fd::compare_gradient(grad.row(j), fgrad));
+				}
+			}
 		}
 	}
 }
