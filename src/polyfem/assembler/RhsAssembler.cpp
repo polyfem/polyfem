@@ -632,9 +632,6 @@ namespace polyfem
 
 					for (int n = 0; n < vals.jac_it.size(); ++n)
 					{
-						Eigen::MatrixXd ppp(1, size_);
-						ppp = vals.val.row(n);
-
 						trafo = vals.jac_it[n].inverse();
 
 						if (displacement.size() > 0)
@@ -649,8 +646,6 @@ namespace polyfem
 									for (int d = 0; d < size_; ++d)
 									{
 										deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
-
-										ppp(d) += displacement(g.index * size_ + d) * b.val(n);
 									}
 								}
 							}
