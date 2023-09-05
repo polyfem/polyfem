@@ -19,8 +19,8 @@ namespace cppoptlib
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		GradientDescentSolver(const json &solver_params_, const double dt)
-			: Superclass(solver_params_, dt)
+		GradientDescentSolver(const json &solver_params_, const double dt, const double characteristic_length)
+			: Superclass(solver_params_, dt, characteristic_length)
 		{
 		}
 

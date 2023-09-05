@@ -21,7 +21,7 @@ namespace polyfem::assembler
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> compute_rhs(const AutodiffHessianPt &pt) const override;
 
 		// inialize material parameter
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
 		// class that stores and compute density per point
 		const Density &density() const { return density_; }

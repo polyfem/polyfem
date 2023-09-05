@@ -206,6 +206,7 @@ namespace polyfem
 				{
 					assembler::Mass mass_mat_assembler;
 					mass_mat_assembler.set_size(assembler_.size());
+					mass_mat_assembler.add_multimaterial(0, json({}), Units());
 					StiffnessMatrix mass;
 					const int n_fe_basis = n_basis_ - obstacle_.n_vertices();
 					mass_mat_assembler.assemble(size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, mass, true);

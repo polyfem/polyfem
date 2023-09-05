@@ -17,8 +17,8 @@ namespace cppoptlib
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		LBFGSBSolver(const polyfem::json &solver_params, const double dt)
-			: Superclass(solver_params, dt)
+		LBFGSBSolver(const polyfem::json &solver_params, const double dt, const double characteristic_length)
+			: Superclass(solver_params, dt, characteristic_length)
 		{
 			m_history_size = solver_params.value("history_size", 6);
 		}
@@ -125,7 +125,7 @@ namespace cppoptlib
 				LBFGSpp::Cauchy<Scalar>::get_cauchy_point(m_bfgs, x, grad, lower_bound, upper_bound, cauchy_point, vecc, newact_set, fv_set);
 
 				LBFGSpp::SubspaceMin<Scalar>::subspace_minimize(m_bfgs, x, cauchy_point, grad, lower_bound, upper_bound,
-                vecc, newact_set, fv_set, /*Maximum number of iterations*/ max_submin, direction);
+																vecc, newact_set, fv_set, /*Maximum number of iterations*/ max_submin, direction);
 			}
 
 			if (x.size() < 100)
@@ -145,7 +145,7 @@ namespace cppoptlib
 					direction.dot(grad), this->descent_strategy_name());
 				return compute_update_direction(objFunc, x, grad, direction);
 			}
-			else if (grad.squaredNorm() != 0 && this->descent_strategy == 1 && direction.dot(grad) > - grad.norm() * direction.norm() * 1e-6)
+			else if (grad.squaredNorm() != 0 && this->descent_strategy == 1 && direction.dot(grad) > -grad.norm() * direction.norm() * 1e-6)
 			{
 				reset_history(x.size());
 				increase_descent_strategy();

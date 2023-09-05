@@ -12,10 +12,10 @@ namespace polyfem::assembler
 
 	std::map<std::string, Assembler::ParamFunc> AMIPSEnergy::parameters() const
 	{
-		return std::map<std::string, ParamFunc>();	
+		return std::map<std::string, ParamFunc>();
 	}
 
-	void AMIPSEnergy::add_multimaterial(const int index, const json &params)
+	void AMIPSEnergy::add_multimaterial(const int index, const json &params, const Units &)
 	{
 		if (params.contains("canonical_transformation"))
 		{

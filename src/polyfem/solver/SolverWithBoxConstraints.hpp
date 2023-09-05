@@ -10,20 +10,20 @@ namespace cppoptlib
 {
 	template <typename ProblemType>
 	class SolverWithBoxConstraints : public NonlinearSolver<ProblemType>
-    {
+	{
 	public:
 		using Superclass = NonlinearSolver<ProblemType>;
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		SolverWithBoxConstraints(const polyfem::json &solver_params, const double dt)
-			: Superclass(solver_params, dt)
+		SolverWithBoxConstraints(const polyfem::json &solver_params, const double dt, const double characteristic_length)
+			: Superclass(solver_params, dt, characteristic_length)
 		{
 			if (solver_params["max_change"].is_number())
 				max_change_val_ = solver_params["max_change"];
 			else
 				nlohmann::adl_serializer<Eigen::VectorXd>::from_json(solver_params["max_change"], max_change_);
-			
+
 			if (solver_params.contains("bounds"))
 			{
 				if (solver_params["bounds"].is_string())
@@ -64,7 +64,7 @@ namespace cppoptlib
 			// for (int i = 0; i < x.size(); i++)
 			// 	if (x(i) < min(i) + 1e-14 || x(i) > max(i) - 1e-14)
 			// 		proj_grad(i) = 0;
-			
+
 			// return proj_grad.norm();
 		}
 
@@ -77,7 +77,7 @@ namespace cppoptlib
 				min = Eigen::VectorXd::Constant(x.size(), 1, bounds_(0));
 			else
 				polyfem::log_and_throw_error("Invalid bounds!");
-			
+
 			if (consider_max_change)
 				return min.array().max(x.array() - get_max_change(x).array());
 			else
@@ -92,7 +92,7 @@ namespace cppoptlib
 				max = Eigen::VectorXd::Constant(x.size(), 1, bounds_(1));
 			else
 				polyfem::log_and_throw_error("Invalid bounds!");
-			
+
 			if (consider_max_change)
 				return max.array().min(x.array() + get_max_change(x).array());
 			else
@@ -107,15 +107,15 @@ namespace cppoptlib
 				return Eigen::VectorXd::Ones(x.size()) * max_change_val_;
 			else
 				throw std::runtime_error("Invalid max change!");
-			
+
 			return Eigen::VectorXd();
 		}
 
 	private:
 		Eigen::MatrixXd bounds_;
-		
+
 		double max_change_val_ = 0;
 		Eigen::VectorXd max_change_;
 	};
 
-}
+} // namespace cppoptlib

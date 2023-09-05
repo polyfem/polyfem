@@ -981,15 +981,19 @@ namespace polyfem
 				min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
 			}
 
-			if (!has_dhat && args["contact"]["dhat"] > min_boundary_edge_length)
+			double dhat = Units::convert(args["contact"]["dhat"], units.length());
+			args["contact"]["epsv"] = Units::convert(args["contact"]["epsv"], units.velocity());
+			args["contact"]["dhat"] = dhat;
+
+			if (!has_dhat && dhat > min_boundary_edge_length)
 			{
 				args["contact"]["dhat"] = double(args["contact"]["dhat_percentage"]) * min_boundary_edge_length;
 				logger().info("dhat set to {}", double(args["contact"]["dhat"]));
 			}
 			else
 			{
-				if (args["contact"]["dhat"] > min_boundary_edge_length)
-					logger().warn("dhat larger than min boundary edge, {} > {}", double(args["contact"]["dhat"]), min_boundary_edge_length);
+				if (dhat > min_boundary_edge_length)
+					logger().warn("dhat larger than min boundary edge, {} > {}", dhat, min_boundary_edge_length);
 			}
 		}
 
