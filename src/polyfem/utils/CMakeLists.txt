@@ -44,6 +44,7 @@ set(SOURCES
 	StringUtils.hpp
 	Timer.hpp
 	Types.hpp
+	Rational.hpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})

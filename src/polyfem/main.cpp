@@ -43,6 +43,8 @@ bool load_json(const std::string &json_file, json &out)
 	return true;
 }
 
+std::string hdf5_out = "";
+
 int forward_simulation(const CLI::App &command_line,
 					   const std::string &hdf5_file,
 					   const std::string output_dir,
@@ -73,6 +75,8 @@ int main(int argc, char **argv)
 
 	std::string json_file = "";
 	command_line.add_option("-j,--json", json_file, "Simulation JSON file")->check(CLI::ExistingFile);
+
+	command_line.add_option("--out", hdf5_out, "Out hdf5 file");
 
 	std::string hdf5_file = "";
 	command_line.add_option("--hdf5", hdf5_file, "Simulation hdf5 file")->check(CLI::ExistingFile);
@@ -208,6 +212,8 @@ int forward_simulation(const CLI::App &command_line,
 
 	state.save_json(sol);
 	state.export_data(sol, pressure);
+
+	state.dump_basis_nodes(hdf5_out, sol);
 
 	return EXIT_SUCCESS;
 }

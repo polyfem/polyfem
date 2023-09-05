@@ -5,6 +5,12 @@
 
 #include <filesystem>
 
+#include <paraviewo/ParaviewWriter.hpp>
+#include <paraviewo/VTUWriter.hpp>
+#include <paraviewo/HDF5VTUWriter.hpp>
+
+#include <polyfem/utils/Rational.hpp>
+
 namespace polyfem
 {
 	void State::compute_errors(const Eigen::MatrixXd &sol)
@@ -251,5 +257,41 @@ namespace polyfem
 
 		std::ofstream file(resolve_output_path(fmt::format(restart_json_path, t)));
 		file << restart_json;
+	}
+
+	void State::dump_basis_nodes(const std::string &path, const Eigen::MatrixXd &u) const
+	{
+		const int dim = mesh->dimension();
+		const int n_loc_nodes = bases[0].bases.size();
+		Eigen::MatrixXd nodes;
+		nodes.setZero(bases.size() * n_loc_nodes, dim);
+		std::vector<std::string> nodes_rational;
+		nodes_rational.resize(bases.size() * n_loc_nodes * 2 * dim);
+
+		size_t lastindex = path.find_last_of("."); 
+		std::string rawname = path.substr(0, lastindex); 
+
+		for (int e = 0; e < bases.size(); e++)
+		{
+			const auto& bs = bases[e];
+			
+			for (int i = 0; i < bs.bases.size(); i++)
+			{
+				const int idx = i + n_loc_nodes * e;
+				assert(bs.bases[i].global().size() == 1);
+				nodes.row(idx) = bs.bases[i].global()[0].node;
+				nodes.row(idx) += u.block(bs.bases[i].global()[0].index * dim, 0, dim, 1).transpose();
+
+				for (int d = 0; d < dim; d++)
+				{
+					utils::Rational num(nodes(idx, d));
+					nodes_rational[idx * (2 * dim) + d * 2 + 0] = num.get_numerator_str();
+					nodes_rational[idx * (2 * dim) + d * 2 + 1] = num.get_denominator_str();
+				}
+			}
+		}
+		paraviewo::HDF5MatrixWriter::write_matrix(rawname + ".hdf5", dim, bases.size(), n_loc_nodes, nodes);
+		paraviewo::HDF5MatrixWriter::write_matrix(rawname + "-rational.hdf5", dim, bases.size(), n_loc_nodes, nodes_rational);
+		logger().info("Save to {}.hdf5", rawname);
 	}
 } // namespace polyfem
