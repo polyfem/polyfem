@@ -65,6 +65,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_WITH_CLIPPER=OFF \
+            -DPOLYFEM_WITH_TRIANGLE=ON \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
@@ -129,6 +130,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_WITH_CLIPPER=OFF \
+            -DPOLYFEM_WITH_TRIANGLE=ON \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Configure arm64
@@ -142,6 +144,7 @@ jobs:
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DCMAKE_OSX_ARCHITECTURES=arm64 \
             -DPOLYFEM_WITH_CLIPPER=OFF \
+            -DPOLYFEM_WITH_TRIANGLE=ON \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
@@ -215,6 +218,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="/Od" -DCMAKE_EXE_LINKER_FLAGS_DEBUGNOSYMBOLS="" ^
             -DPOLYFEM_WITH_CLIPPER=OFF ^
+            -DPOLYFEM_WITH_TRIANGLE=ON ^
             -DPOLYFEM_THREADING=${{ matrix.threading }} ^
             -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
             -DPOLYSOLVE_WITH_AMGCL=OFF ^

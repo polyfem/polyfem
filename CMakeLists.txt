@@ -245,9 +245,13 @@ target_link_libraries(polyfem PUBLIC natsort::natsort)
 include(glob)
 target_link_libraries(polyfem PUBLIC Glob::Glob)
 
-# polysolve
+# units
 include(units)
 target_link_libraries(polyfem PUBLIC units::units)
+
+# FCPW
+include(fcpw)
+target_link_libraries(polyfem PUBLIC fcpw::fcpw)
 
 ################################################################################
 # Optional libraries

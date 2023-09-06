@@ -1,5 +1,6 @@
 #include <polyfem/mesh/collision_proxy/CollisionProxy.hpp>
 #include <polyfem/mesh/collision_proxy/UpsampleMesh.hpp>
+#include <polyfem/mesh/MeshUtils.hpp>
 
 #include <polyfem/State.hpp>
 
@@ -11,20 +12,27 @@
 
 namespace
 {
-	std::shared_ptr<polyfem::State> get_state()
+	std::shared_ptr<polyfem::State> get_state(const std::string mesh_path = "", const int discr_order = 4)
 	{
-		const std::string path = POLYFEM_DATA_DIR;
 		json in_args;
 		in_args["/materials/type"_json_pointer] = "NeoHookean";
 		in_args["/materials/E"_json_pointer] = 1e5;
 		in_args["/materials/nu"_json_pointer] = 0.3;
 		in_args["/materials/rho"_json_pointer] = 1e3;
-		in_args["/space/discr_order"_json_pointer] = 4;
-		// in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/simple/tet/tet-corner.msh";
-		// in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/simple/cube.msh";
-		in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/simple/sphere/coarse/P4.msh";
-		// in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/creatures/armadillo/ArmadilloP4.msh";
-		// in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/microstructure/P4.msh";
+		in_args["/space/discr_order"_json_pointer] = discr_order;
+		if (mesh_path == "")
+		{
+			const std::string path = POLYFEM_DATA_DIR;
+			// in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/simple/tet/tet-corner.msh";
+			// in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/simple/cube.msh";
+			in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/simple/sphere/coarse/P4.msh";
+			// in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/creatures/armadillo/ArmadilloP4.msh";
+			// in_args["/geometry/0/mesh"_json_pointer] = path + "/contact/meshes/3D/microstructure/P4.msh";
+		}
+		else
+		{
+			in_args["/geometry/0/mesh"_json_pointer] = mesh_path;
+		}
 		in_args["/time/time_steps"_json_pointer] = 1;
 		in_args["/time/tend"_json_pointer] = 1;
 		in_args["/output/log/level"_json_pointer] = "warning";
@@ -123,4 +131,38 @@ TEST_CASE("build collision proxy", "[build_collision_proxy]")
 	const Eigen::MatrixXd U_proxy = W * U;
 
 	// REQUIRE(igl::writePLY("deformed_proxy.ply", proxy_vertices + U_proxy, proxy_faces));
+}
+
+TEST_CASE("build collision proxy displacement map", "[build_collision_proxy]")
+{
+	const int discr_order = GENERATE(1, 2, 3, 4);
+	const int n_nodes_per_element = (std::array<int, 4>{{4, 10, 20, 35}})[discr_order - 1];
+
+	const std::string path = POLYFEM_DATA_DIR;
+	std::string fe_mesh_path, proxy_mesh_path;
+	SECTION("sphere-to-cube")
+	{
+		fe_mesh_path = path + "/contact/meshes/3D/simple/cube.msh";
+		proxy_mesh_path = path + "/contact/meshes/3D/simple/sphere/sphere5K.msh";
+	}
+	SECTION("cube-to-sphere")
+	{
+		fe_mesh_path = path + "/contact/meshes/3D/simple/sphere/sphere5K.msh";
+		proxy_mesh_path = path + "/contact/meshes/3D/simple/cube.msh";
+	}
+
+	const auto state = get_state(fe_mesh_path, discr_order);
+
+	Eigen::MatrixXd vertices;
+	Eigen::VectorXi _;
+	Eigen::MatrixXi __, faces;
+	polyfem::mesh::read_surface_mesh(proxy_mesh_path, vertices, _, __, faces);
+
+	std::vector<Eigen::Triplet<double>> displacement_map_entries;
+	polyfem::mesh::build_collision_proxy_displacement_maps(
+		state->bases, state->geom_bases(), state->total_local_boundary,
+		state->n_bases, state->mesh->dimension(), vertices,
+		displacement_map_entries);
+
+	CHECK(displacement_map_entries.size() == vertices.rows() * n_nodes_per_element);
 }
