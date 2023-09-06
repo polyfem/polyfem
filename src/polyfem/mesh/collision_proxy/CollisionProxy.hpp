@@ -36,6 +36,7 @@ namespace polyfem::mesh
 		const std::string &mesh_filename,
 		const std::string &weights_filename,
 		const Eigen::VectorXi &in_node_to_node,
+		const json &transformation,
 		Eigen::MatrixXd &vertices,
 		Eigen::VectorXi &codim_vertices,
 		Eigen::MatrixXi &edges,

@@ -2,6 +2,7 @@
 
 #include <polyfem/mesh/collision_proxy/UpsampleMesh.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
+#include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
@@ -163,6 +164,7 @@ namespace polyfem::mesh
 		const std::string &mesh_filename,
 		const std::string &weights_filename,
 		const Eigen::VectorXi &in_node_to_node,
+		const json &transformation,
 		Eigen::MatrixXd &vertices,
 		Eigen::VectorXi &codim_vertices,
 		Eigen::MatrixXi &edges,
@@ -207,5 +209,19 @@ namespace polyfem::mesh
 			// Rearrange the columns based on the FEM mesh node order
 			displacement_map_entries.emplace_back(rows[i], in_node_to_node[cols[i]], values[i]);
 		}
+
+		// Transform the collision proxy
+		std::array<RowVectorNd, 2> bbox;
+		bbox[0] = vertices.colwise().minCoeff();
+		bbox[1] = vertices.colwise().maxCoeff();
+
+		MatrixNd A;
+		VectorNd b;
+		// TODO: pass correct unit scale
+		construct_affine_transformation(
+			/*unit_scale=*/1, transformation,
+			(bbox[1] - bbox[0]).cwiseAbs().transpose(),
+			A, b);
+		vertices = (vertices * A.transpose()).rowwise() + b.transpose();
 	}
 } // namespace polyfem::mesh
