@@ -1,5 +1,7 @@
 #pragma once
 
+#include <polyfem/Units.hpp>
+
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
@@ -13,6 +15,8 @@ namespace polyfem
 		{
 		public:
 			Problem(const std::string &name);
+			virtual void set_units(const assembler::Assembler &assembler, const Units &units) {}
+
 			virtual ~Problem() {}
 
 			virtual void init(const mesh::Mesh &mesh) {}
@@ -25,6 +29,8 @@ namespace polyfem
 
 			virtual void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
 			virtual void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const {}
+
+			virtual bool is_boundary_pressure(const int boundary_id) const { return std::find(pressure_boundary_ids_.begin(), pressure_boundary_ids_.end(), boundary_id) != pressure_boundary_ids_.end(); }
 
 			virtual void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val) const {}
 			virtual void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const {}
@@ -56,7 +62,7 @@ namespace polyfem
 			virtual bool all_dimensions_dirichlet() const { return true; } // here for efficiency reasons
 
 			void setup_bc(const mesh::Mesh &mesh,
-						  const int n_bases, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &pressure_bases,
+						  const int n_bases, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &geom_bases, const std::vector<basis::ElementBases> &pressure_bases,
 						  std::vector<mesh::LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes,
 						  std::vector<mesh::LocalBoundary> &local_neumann_boundary,
 						  std::vector<int> &pressure_boundary_nodes,

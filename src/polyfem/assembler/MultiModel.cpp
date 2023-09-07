@@ -21,18 +21,18 @@ namespace polyfem::assembler
 		incompressible_ogden_elasticity_.set_size(size);
 	}
 
-	void MultiModel::add_multimaterial(const int index, const json &params)
+	void MultiModel::add_multimaterial(const int index, const json &params, const Units &units)
 	{
 		assert(size() == 2 || size() == 3);
 
-		saint_venant_.add_multimaterial(index, params);
-		neo_hookean_.add_multimaterial(index, params);
-		linear_elasticity_.add_multimaterial(index, params);
+		saint_venant_.add_multimaterial(index, params, units);
+		neo_hookean_.add_multimaterial(index, params, units);
+		linear_elasticity_.add_multimaterial(index, params, units);
 
-		hooke_.add_multimaterial(index, params);
-		mooney_rivlin_elasticity_.add_multimaterial(index, params);
-		unconstrained_ogden_elasticity_.add_multimaterial(index, params);
-		incompressible_ogden_elasticity_.add_multimaterial(index, params);
+		hooke_.add_multimaterial(index, params, units);
+		mooney_rivlin_elasticity_.add_multimaterial(index, params, units);
+		unconstrained_ogden_elasticity_.add_multimaterial(index, params, units);
+		incompressible_ogden_elasticity_.add_multimaterial(index, params, units);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>

@@ -242,6 +242,14 @@ namespace polyfem
 			sol.bottomRows(v_.rows() * (sol.cols() == 1 ? dim_ : 1)).setZero();
 		}
 
+		void Obstacle::set_units(const Units &units)
+		{
+			for (auto &d : displacements_)
+			{
+				d.set_unit_type(units.length());
+			}
+		}
+
 		void Obstacle::Plane::construct_vis_mesh()
 		{
 			constexpr int size_x = 10;
@@ -306,5 +314,6 @@ namespace polyfem
 				igl::edges(vis_f_, vis_e_);
 			}
 		}
+
 	} // namespace mesh
 } // namespace polyfem

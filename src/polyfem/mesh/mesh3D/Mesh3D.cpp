@@ -420,5 +420,26 @@ namespace polyfem
 
 			igl::barycentric_coordinates(p, A, B, C, D, coord);
 		}
+
+		void Mesh3D::compute_cell_jacobian(const int el_id, const Eigen::MatrixXd &reference_map, Eigen::MatrixXd &jacobian) const
+		{
+			assert(is_simplex(el_id));
+
+			const auto indices = get_ordered_vertices_from_tet(el_id);
+
+			const auto A = point(indices[0]);
+			const auto B = point(indices[1]);
+			const auto C = point(indices[2]);
+			const auto D = point(indices[3]);
+
+			Eigen::MatrixXd coords(4, 4);
+			coords << A, 1, B, 1, C, 1, D, 1;
+			coords.transposeInPlace();
+
+			jacobian = coords * reference_map;
+
+			assert(jacobian.determinant() > 0);
+		}
+
 	} // namespace mesh
 } // namespace polyfem

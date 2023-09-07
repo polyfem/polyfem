@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include "polyfem/utils/JSONUtils.hpp"
 #include "polyfem/State.hpp"
@@ -169,11 +169,11 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 }
 
 #if defined(NDEBUG) && !defined(WIN32)
-std::string tags = "[run]";
+std::string tagsrun = "[run]";
 #else
-std::string tags = "[.][run]";
+std::string tagsrun = "[.][run]";
 #endif
-TEST_CASE("runners", tags)
+TEST_CASE("runners", tagsrun)
 {
 	// Disabled on Windows CI, due to the requirement for Pardiso.
 	std::ifstream file(POLYFEM_TEST_DIR "/system_test_list.txt");

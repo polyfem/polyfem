@@ -28,6 +28,14 @@ namespace polyfem::io
 
 	bool MshReader::load(const std::string &path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights, std::vector<int> &body_ids)
 	{
+		std::vector<std::string> node_data_name;
+		std::vector<std::vector<double>> node_data;
+
+		return load(path, vertices, cells, elements, weights, body_ids, node_data_name, node_data);
+	}
+
+	bool MshReader::load(const std::string &path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights, std::vector<int> &body_ids, std::vector<std::string> &node_data_name, std::vector<std::vector<double>> &node_data)
+	{
 		if (!std::filesystem::exists(path))
 		{
 			logger().error("Msh file does not exist: {}", path);
@@ -163,6 +171,20 @@ namespace polyfem::io
 					++cell_index;
 				}
 			}
+		}
+
+		node_data.resize(spec.node_data.size());
+		int i = 0;
+		for (const auto &data : spec.node_data)
+		{
+			for (const auto &str : data.header.string_tags)
+				node_data_name.push_back(str);
+			
+			for (const auto &entry : data.entries)
+				for (const auto &d : entry.data)
+					node_data[i].push_back(d);
+			
+			i++;
 		}
 
 		// std::ifstream infile(path.c_str());

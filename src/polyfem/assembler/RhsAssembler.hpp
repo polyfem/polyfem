@@ -78,6 +78,16 @@ namespace polyfem
 				const double t,
 				Eigen::MatrixXd &rhs) const;
 
+			// compute body hessian wrt to previous solution
+			void compute_energy_hess(const std::vector<int> &bounday_nodes, const int resolution, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &displacement, const double t, const bool project_to_psd, StiffnessMatrix &hess) const;
+
+			inline const Problem &problem() const { return problem_; }
+			inline const mesh::Mesh &mesh() const { return mesh_; }
+			inline const std::vector<basis::ElementBases> &bases() const { return bases_; }
+			inline const std::vector<basis::ElementBases> &gbases() const { return gbases_; }
+			inline const AssemblyValsCache &ass_vals_cache() const { return ass_vals_cache_; }
+			inline const Assembler &assembler() const { return assembler_; }
+
 		private:
 			// leastsquares fit bc
 			void lsq_bc(const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,

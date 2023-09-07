@@ -53,6 +53,8 @@ namespace polyfem
 
 			bool is_boundary_element(const int element_global_id) const override;
 
+			bool save(const std::string &path) const override;
+
 			bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
 
 			void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;

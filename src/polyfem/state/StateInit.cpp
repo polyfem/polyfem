@@ -30,6 +30,9 @@
 #include <wmtk/utils/Logger.hpp>
 #endif
 
+#include <polyfem/mesh/mesh2D/Mesh2D.hpp>
+#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+
 #include <sstream>
 
 namespace spdlog::level
@@ -164,6 +167,13 @@ namespace polyfem
 #endif
 	}
 
+	void State::set_log_level(const spdlog::level::level_enum log_level)
+	{
+		spdlog::set_level(log_level);
+		logger().set_level(log_level);
+		ipc::logger().set_level(log_level);
+	}
+
 	void State::init(const json &p_args_in, const bool strict_validation)
 	{
 		json args_in = p_args_in; // mutable copy
@@ -199,6 +209,13 @@ namespace polyfem
 			{
 				rules[i]["default"] = polysolve::LinearSolver::defaultPrecond();
 				rules[i]["options"] = polysolve::LinearSolver::availablePrecond();
+			}
+			else if (rules[i]["pointer"] == "/solver/linear/adjoint_solver")
+			{
+				const auto ss = polysolve::LinearSolver::availableSolvers();
+				const bool solver_found = args_in.contains("solver") && args_in["solver"].contains("linear") && args_in["solver"]["linear"].contains("solver") && (std::find(ss.begin(), ss.end(), args_in["solver"]["linear"]["solver"]) != ss.end());
+				rules[i]["default"] = solver_found ? args_in["solver"]["linear"]["solver"].get<std::string>() : polysolve::LinearSolver::defaultSolver();
+				rules[i]["options"] = polysolve::LinearSolver::availableSolvers();
 			}
 		}
 
@@ -242,6 +259,18 @@ namespace polyfem
 			}
 		}
 
+		if (fallback_solver)
+		{
+			const std::string s_json = this->args["solver"]["linear"]["adjoint_solver"];
+			const auto ss = polysolve::LinearSolver::availableSolvers();
+			const auto solver_found = std::find(ss.begin(), ss.end(), s_json);
+			if (solver_found == ss.end())
+			{
+				logger().warn("Adjoint solver {} is invalid, falling back to {}", s_json, this->args["solver"]["linear"]["solver"]);
+				this->args["solver"]["linear"]["adjoint_solver"] = this->args["solver"]["linear"]["solver"];
+			}
+		}
+
 		const bool valid_input = jse.verify_json(args_in, rules);
 
 		if (!valid_input)
@@ -252,8 +281,9 @@ namespace polyfem
 		// end of check
 
 		this->args = jse.inject_defaults(args_in, rules);
+		units.init(this->args["units"]);
 
-    // Save output directory and resolve output paths dynamically
+		// Save output directory and resolve output paths dynamically
 		const std::string output_dir = resolve_input_path(this->args["output"]["directory"]);
 		if (!output_dir.empty())
 		{
@@ -351,6 +381,31 @@ namespace polyfem
 			// important for the BC
 			problem->set_parameters(args["preset_problem"]);
 		}
+
+		problem->set_units(*assembler, units);
+
+		if (optimization_enabled)
+		{
+			if (is_contact_enabled())
+			{
+				if (!args["contact"]["use_convergent_formulation"])
+				{
+					args["contact"]["use_convergent_formulation"] = true;
+					logger().info("Use convergent formulation for differentiable contact...");
+				}
+				if (args["/solver/contact/barrier_stiffness"_json_pointer].is_string())
+				{
+					logger().error("Only constant barrier stiffness is supported in differentiable contact!");
+				}
+			}
+
+			if (args.contains("boundary_conditions") && args["boundary_conditions"].contains("rhs"))
+			{
+				json rhs = args["boundary_conditions"]["rhs"];
+				if ((rhs.is_array() && rhs.size() > 0 && rhs[0].is_string()) || rhs.is_string())
+					logger().error("Only constant rhs over space is supported in differentiable code!");
+			}
+		}
 	}
 
 	void State::set_max_threads(const unsigned int max_threads)
@@ -368,7 +423,7 @@ namespace polyfem
 		if (!is_param_valid(args, "time"))
 			return;
 
-		const double t0 = args["time"]["t0"];
+		const double t0 = Units::convert(args["time"]["t0"], units.time());
 		double tend, dt;
 		int time_steps;
 
@@ -384,11 +439,11 @@ namespace polyfem
 		{
 			if (is_param_valid(args["time"], "tend"))
 			{
-				tend = args["time"]["tend"];
+				tend = Units::convert(args["time"]["tend"], units.time());
 				assert(tend > t0);
 				if (is_param_valid(args["time"], "dt"))
 				{
-					dt = args["time"]["dt"];
+					dt = Units::convert(args["time"]["dt"], units.time());
 					assert(dt > 0);
 					time_steps = int(ceil((tend - t0) / dt));
 					assert(time_steps > 0);
@@ -410,7 +465,7 @@ namespace polyfem
 				// tend is already confirmed to be invalid, so time_steps must be valid
 				assert(is_param_valid(args["time"], "time_steps"));
 
-				dt = args["time"]["dt"];
+				dt = Units::convert(args["time"]["dt"], units.time());
 				assert(dt > 0);
 
 				time_steps = args["time"]["time_steps"];
@@ -426,8 +481,8 @@ namespace polyfem
 		}
 		else if (num_valid == 3)
 		{
-			tend = args["time"]["tend"];
-			dt = args["time"]["dt"];
+			tend = Units::convert(args["time"]["tend"], units.time());
+			dt = Units::convert(args["time"]["dt"], units.time());
 			time_steps = args["time"]["time_steps"];
 
 			// Check that all parameters agree
@@ -454,12 +509,82 @@ namespace polyfem
 		if (!utils::is_param_valid(args, "materials"))
 			return;
 
+		if (!args["materials"].is_array() && args["materials"]["type"] == "AMIPS")
+		{
+			json transform_params = {};
+			transform_params["canonical_transformation"] = json::array();
+			if (!mesh->is_volume())
+			{
+				Eigen::MatrixXd regular_tri(3, 3);
+				regular_tri << 0, 0, 1,
+					1, 0, 1,
+					1. / 2., std::sqrt(3) / 2., 1;
+				regular_tri.transposeInPlace();
+				Eigen::MatrixXd regular_tri_inv = regular_tri.inverse();
+
+				const auto &mesh2d = *dynamic_cast<mesh::Mesh2D *>(mesh.get());
+				for (int e = 0; e < mesh->n_elements(); e++)
+				{
+					Eigen::MatrixXd transform;
+					mesh2d.compute_face_jacobian(e, regular_tri_inv, transform);
+					transform_params["canonical_transformation"].push_back(json({
+						{
+							transform(0, 0),
+							transform(0, 1),
+						},
+						{
+							transform(1, 0),
+							transform(1, 1),
+						},
+					}));
+				}
+			}
+			else
+			{
+				Eigen::MatrixXd regular_tet(4, 4);
+				regular_tet << 0, 0, 0, 1,
+					1, 0, 0, 1,
+					1. / 2., std::sqrt(3) / 2., 0, 1,
+					1. / 2., 1. / 2. / std::sqrt(3), std::sqrt(3) / 2., 1;
+				regular_tet.transposeInPlace();
+				Eigen::MatrixXd regular_tet_inv = regular_tet.inverse();
+
+				const auto &mesh3d = *dynamic_cast<mesh::Mesh3D *>(mesh.get());
+				for (int e = 0; e < mesh->n_elements(); e++)
+				{
+					Eigen::MatrixXd transform;
+					mesh3d.compute_cell_jacobian(e, regular_tet_inv, transform);
+					transform_params["canonical_transformation"].push_back(json({
+						{
+							transform(0, 0),
+							transform(0, 1),
+							transform(0, 2),
+						},
+						{
+							transform(1, 0),
+							transform(1, 1),
+							transform(1, 2),
+						},
+						{
+							transform(2, 0),
+							transform(2, 1),
+							transform(2, 2),
+						},
+					}));
+				}
+			}
+			transform_params["solve_displacement"] = true;
+			assembler->set_materials({}, transform_params, units);
+
+			return;
+		}
+
 		std::vector<int> body_ids(mesh->n_elements());
 		for (int i = 0; i < mesh->n_elements(); ++i)
 			body_ids[i] = mesh->get_body_id(i);
 
 		for (auto &a : assemblers)
-			a->set_materials(body_ids, args["materials"]);
+			a->set_materials(body_ids, args["materials"], units);
 	}
 
 	void State::set_materials(assembler::Assembler &assembler) const
@@ -474,7 +599,7 @@ namespace polyfem
 		for (int i = 0; i < mesh->n_elements(); ++i)
 			body_ids[i] = mesh->get_body_id(i);
 
-		assembler.set_materials(body_ids, args["materials"]);
+		assembler.set_materials(body_ids, args["materials"], units);
 	}
 
 } // namespace polyfem

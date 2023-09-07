@@ -8,7 +8,8 @@
 
 #include <Eigen/Dense>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -19,7 +20,7 @@ TEST_CASE("determinant2", "[matrix]")
 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat(2, 2);
 	mat.setRandom();
 
-	REQUIRE(determinant(mat) == Approx(mat.determinant()).margin(1e-12));
+	REQUIRE(determinant(mat) == Catch::Approx(mat.determinant()).margin(1e-12));
 }
 
 TEST_CASE("determinant3", "[matrix]")
@@ -27,7 +28,7 @@ TEST_CASE("determinant3", "[matrix]")
 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat(3, 3);
 	mat.setRandom();
 
-	REQUIRE(determinant(mat) == Approx(mat.determinant()).margin(1e-12));
+	REQUIRE(determinant(mat) == Catch::Approx(mat.determinant()).margin(1e-12));
 }
 
 TEST_CASE("eigs2id", "[matrix]")
@@ -38,8 +39,8 @@ TEST_CASE("eigs2id", "[matrix]")
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> actual_eigs(2);
 	autogen::eigs_2d<double>(mat, actual_eigs);
 
-	const auto e0 = Approx(1).margin(1e-8);
-	const auto e1 = Approx(1).margin(1e-8);
+	const auto e0 = Catch::Approx(1).margin(1e-8);
+	const auto e1 = Catch::Approx(1).margin(1e-8);
 
 	REQUIRE(actual_eigs(0) == e0);
 	REQUIRE(actual_eigs(1) == e1);
@@ -54,8 +55,8 @@ TEST_CASE("eigs2", "[matrix]")
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> actual_eigs(2);
 	autogen::eigs_2d<double>(mat, actual_eigs);
 
-	const auto e0 = Approx(0.184043491073894).margin(1e-8);
-	const auto e1 = Approx(2.150571333457448).margin(1e-8);
+	const auto e0 = Catch::Approx(0.184043491073894).margin(1e-8);
+	const auto e1 = Catch::Approx(2.150571333457448).margin(1e-8);
 
 	REQUIRE(actual_eigs(0) == e0);
 	REQUIRE(actual_eigs(1) == e1);
@@ -78,8 +79,8 @@ TEST_CASE("eigs2autodiff", "[matrix]")
 	Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> actual_eigs(2);
 	autogen::eigs_2d<T>(mat, actual_eigs);
 
-	const auto e0 = Approx(0.184043491073894).margin(1e-8);
-	const auto e1 = Approx(2.150571333457448).margin(1e-8);
+	const auto e0 = Catch::Approx(0.184043491073894).margin(1e-8);
+	const auto e1 = Catch::Approx(2.150571333457448).margin(1e-8);
 
 	REQUIRE(actual_eigs(0).getValue() == e0);
 	REQUIRE(actual_eigs(1).getValue() == e1);
@@ -93,9 +94,9 @@ TEST_CASE("eigs3id", "[matrix]")
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> actual_eigs(3);
 	autogen::eigs_3d<double>(mat, actual_eigs);
 
-	const auto e0 = Approx(1).margin(1e-15);
-	const auto e1 = Approx(1).margin(1e-15);
-	const auto e2 = Approx(1).margin(1e-15);
+	const auto e0 = Catch::Approx(1).margin(1e-15);
+	const auto e1 = Catch::Approx(1).margin(1e-15);
+	const auto e2 = Catch::Approx(1).margin(1e-15);
 
 	REQUIRE(actual_eigs(0) == e0);
 	REQUIRE(actual_eigs(1) == e1);
@@ -112,9 +113,9 @@ TEST_CASE("eigs3", "[matrix]")
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> actual_eigs(3);
 	autogen::eigs_3d<double>(mat, actual_eigs);
 
-	const auto e0 = Approx(4.147907219689489).margin(1e-8);
-	const auto e1 = Approx(0.002128421644668).margin(1e-8);
-	const auto e2 = Approx(0.366887383112958).margin(1e-8);
+	const auto e0 = Catch::Approx(4.147907219689489).margin(1e-8);
+	const auto e1 = Catch::Approx(0.002128421644668).margin(1e-8);
+	const auto e2 = Catch::Approx(0.366887383112958).margin(1e-8);
 
 	REQUIRE(actual_eigs(0) == e0);
 	REQUIRE(actual_eigs(1) == e1);
@@ -138,9 +139,9 @@ TEST_CASE("eigs3autodiff", "[matrix]")
 	Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> actual_eigs(3);
 	autogen::eigs_3d<T>(mat, actual_eigs);
 
-	const auto e0 = Approx(4.147907219689489).margin(1e-8);
-	const auto e1 = Approx(0.002128421644668).margin(1e-8);
-	const auto e2 = Approx(0.366887383112958).margin(1e-8);
+	const auto e0 = Catch::Approx(4.147907219689489).margin(1e-8);
+	const auto e1 = Catch::Approx(0.002128421644668).margin(1e-8);
+	const auto e2 = Catch::Approx(0.366887383112958).margin(1e-8);
 
 	REQUIRE(actual_eigs(0).getValue() == e0);
 	REQUIRE(actual_eigs(1).getValue() == e1);
@@ -175,9 +176,9 @@ TEST_CASE("eigs3idautodiff", "[matrix]")
 	Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> actual_eigs(3);
 	autogen::eigs_3d<T>(mat, actual_eigs);
 
-	const auto e0 = Approx(1).margin(1e-15);
-	const auto e1 = Approx(1).margin(1e-15);
-	const auto e2 = Approx(1).margin(1e-15);
+	const auto e0 = Catch::Approx(1).margin(1e-15);
+	const auto e1 = Catch::Approx(1).margin(1e-15);
+	const auto e2 = Catch::Approx(1).margin(1e-15);
 
 	REQUIRE(actual_eigs(0).getValue() == e0);
 	REQUIRE(actual_eigs(1).getValue() == e1);
