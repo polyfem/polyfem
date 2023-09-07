@@ -6,12 +6,22 @@
 <!-- Title: polyfem::utils::to_rotation_matrix Pages: 1 -->
 <svg width="274pt" height="51pt"
  viewBox="0.00 0.00 274.00 50.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 46.5)">
 <title>polyfem::utils::to_rotation_matrix</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="100,-30 0,-30 0,0 100,0 100,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::to</text>
 <text text-anchor="middle" x="50" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_rotation_matrix</text>
@@ -19,25 +29,46 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="266,-24.5 136,-24.5 136,-5.5 266,-5.5 266,-24.5"/>
 <text text-anchor="middle" x="201" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::deg2rad</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M100.2,-15C108.43,-15 117.12,-15 125.8,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="125.97,-18.5 135.97,-15 125.97,-11.5 125.97,-18.5"/>
+</a>
+</g>
 </g>
 <!-- Node2&#45;&gt;Node2 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000002" class="edge">
 <title>Node2&#45;&gt;Node2</title>
+<g id="a_edge2_Node000002_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M177.88,-24.58C166.63,-33.23 174.34,-42.5 201,-42.5 218.5,-42.5 227.83,-38.51 229,-33.32"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="232.05,-31.61 224.12,-24.58 225.94,-35.02 232.05,-31.61"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

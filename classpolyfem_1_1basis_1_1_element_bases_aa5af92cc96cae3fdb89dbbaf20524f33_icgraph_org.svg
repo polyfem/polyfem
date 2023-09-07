@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 168)">
 <title>polyfem::basis::ElementBases::set_grads_func</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="1088,-121 924,-121 924,-91 1088,-91 1088,-121"/>
 <text text-anchor="start" x="932" y="-109" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::ElementBases</text>
 <text text-anchor="middle" x="1006" y="-98" font-family="Helvetica,sans-Serif" font-size="10.00">::set_grads_func</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1basis_1_1_polygonal_basis2d.html#ac44c9f77e8d3a1328e6288ed5aec07b2" target="_top" xlink:title="Build bases over the remaining polygons of a mesh.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1basis_1_1_polygonal_basis2d.html#ac44c9f77e8d3a1328e6288ed5aec07b2" target="_top" xlink:title="Build bases over the remaining polygons of a mesh.">
 <polygon fill="white" stroke="#666666" points="694.5,-164 551.5,-164 551.5,-134 694.5,-134 694.5,-164"/>
 <text text-anchor="start" x="559.5" y="-152" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::Polygonal</text>
 <text text-anchor="middle" x="623" y="-141" font-family="Helvetica,sans-Serif" font-size="10.00">Basis2d::build_bases</text>
@@ -29,15 +29,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M929.46,-123C915.72,-125.66 901.47,-128.14 888,-130 822.79,-139 747.9,-143.87 694.57,-146.42"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="930.23,-126.41 939.36,-121.03 928.87,-119.55 930.23,-126.41"/>
+</a>
+</g>
 </g>
 <!-- Node8 -->
-<g id="node8" class="node">
+<g id="Node000008" class="node">
 <title>Node8</title>
-<g id="a_node8"><a xlink:href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html#a3d41a5e1d493240fb9a088a5229a27d7" target="_top" xlink:title="Build bases over the remaining polygons of a mesh.">
+<g id="a_Node000008"><a xlink:href="classpolyfem_1_1basis_1_1_polygonal_basis3d.html#a3d41a5e1d493240fb9a088a5229a27d7" target="_top" xlink:title="Build bases over the remaining polygons of a mesh.">
 <polygon fill="white" stroke="#666666" points="884.5,-121 741.5,-121 741.5,-91 884.5,-91 884.5,-121"/>
 <text text-anchor="start" x="749.5" y="-109" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::Polygonal</text>
 <text text-anchor="middle" x="813" y="-98" font-family="Helvetica,sans-Serif" font-size="10.00">Basis3d::build_bases</text>
@@ -45,15 +48,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node8 -->
-<g id="edge7" class="edge">
+<g id="edge7_Node000001_Node000008" class="edge">
 <title>Node1&#45;&gt;Node8</title>
+<g id="a_edge7_Node000001_Node000008"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M913.8,-106C903.97,-106 894.08,-106 884.55,-106"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="914,-109.5 924,-106 914,-102.5 914,-109.5"/>
+</a>
+</g>
 </g>
 <!-- Node9 -->
-<g id="node9" class="node">
+<g id="Node000009" class="node">
 <title>Node9</title>
-<g id="a_node9"><a xlink:href="classpolyfem_1_1basis_1_1_barycentric_basis2d.html#a2703ee0b52b532c9921bec4624d846da" target="_top" xlink:title=" ">
+<g id="a_Node000009"><a xlink:href="classpolyfem_1_1basis_1_1_barycentric_basis2d.html#a2703ee0b52b532c9921bec4624d846da" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="888,-73 738,-73 738,-43 888,-43 888,-73"/>
 <text text-anchor="start" x="746" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::Barycentric</text>
 <text text-anchor="middle" x="813" y="-50" font-family="Helvetica,sans-Serif" font-size="10.00">Basis2d::build_bases</text>
@@ -61,15 +67,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node9 -->
-<g id="edge9" class="edge">
+<g id="edge9_Node000001_Node000009" class="edge">
 <title>Node1&#45;&gt;Node9</title>
+<g id="a_edge9_Node000001_Node000009"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M935.32,-88.49C915.11,-83.41 893.24,-77.91 873.7,-73"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="934.54,-91.9 945.09,-90.94 936.25,-85.11 934.54,-91.9"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1_state.html#a202f2494b8f46d4bf22edfc0a36ddb32" target="_top" xlink:title="builds bases for polygons, called inside build_basis">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1_state.html#a202f2494b8f46d4bf22edfc0a36ddb32" target="_top" xlink:title="builds bases for polygons, called inside build_basis">
 <polygon fill="white" stroke="#666666" points="508,-99 389,-99 389,-69 508,-69 508,-99"/>
 <text text-anchor="start" x="397" y="-87" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::build</text>
 <text text-anchor="middle" x="448.5" y="-76" font-family="Helvetica,sans-Serif" font-size="10.00">_polygonal_basis</text>
@@ -77,15 +86,18 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M571.65,-130.35C562.45,-126.92 552.93,-123.36 544,-120 525.93,-113.2 505.94,-105.59 489.01,-99.13"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="570.5,-133.65 581.09,-133.86 572.94,-127.09 570.5,-133.65"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b" target="_top" xlink:title="builds the bases step 2 of solve">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b" target="_top" xlink:title="builds the bases step 2 of solve">
 <polygon fill="white" stroke="#666666" points="353,-99 234,-99 234,-69 353,-69 353,-99"/>
 <text text-anchor="start" x="242" y="-87" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::build</text>
 <text text-anchor="middle" x="293.5" y="-76" font-family="Helvetica,sans-Serif" font-size="10.00">_basis</text>
@@ -93,66 +105,81 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M378.51,-84C370.01,-84 361.38,-84 353.06,-84"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="378.78,-87.5 388.78,-84 378.78,-80.5 378.78,-87.5"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="193,-112.5 82,-112.5 82,-93.5 193,-93.5 193,-112.5"/>
 <text text-anchor="middle" x="137.5" y="-100.5" font-family="Helvetica,sans-Serif" font-size="10.00">forward_simulation</text>
 </a>
 </g>
 </g>
 <!-- Node4&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000004_Node000005" class="edge">
 <title>Node4&#45;&gt;Node5</title>
+<g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M223.71,-92.49C213.49,-93.75 203.08,-95.03 193.2,-96.25"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="224.34,-95.94 233.84,-91.24 223.49,-88.99 224.34,-95.94"/>
+</a>
+</g>
 </g>
 <!-- Node7 -->
-<g id="node7" class="node">
+<g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_node7"><a xlink:href="classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" target="_top" xlink:title="solves the problem, call other methods">
+<g id="a_Node000007"><a xlink:href="classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" target="_top" xlink:title="solves the problem, call other methods">
 <polygon fill="white" stroke="#666666" points="198,-75.5 77,-75.5 77,-56.5 198,-56.5 198,-75.5"/>
 <text text-anchor="middle" x="137.5" y="-63.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 </a>
 </g>
 </g>
 <!-- Node4&#45;&gt;Node7 -->
-<g id="edge6" class="edge">
+<g id="edge6_Node000004_Node000007" class="edge">
 <title>Node4&#45;&gt;Node7</title>
+<g id="a_edge6_Node000004_Node000007"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M223.83,-75.97C215.22,-74.97 206.47,-73.94 198.02,-72.96"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="223.5,-79.46 233.84,-77.14 224.31,-72.51 223.5,-79.46"/>
+</a>
+</g>
 </g>
 <!-- Node6 -->
-<g id="node6" class="node">
+<g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" target="_top" xlink:title=" ">
+<g id="a_Node000006"><a xlink:href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="41,-112.5 0,-112.5 0,-93.5 41,-93.5 41,-112.5"/>
 <text text-anchor="middle" x="20.5" y="-100.5" font-family="Helvetica,sans-Serif" font-size="10.00">main</text>
 </a>
 </g>
 </g>
 <!-- Node5&#45;&gt;Node6 -->
-<g id="edge5" class="edge">
+<g id="edge5_Node000005_Node000006" class="edge">
 <title>Node5&#45;&gt;Node6</title>
+<g id="a_edge5_Node000005_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M71.45,-103C60.37,-103 49.66,-103 41.02,-103"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="71.69,-106.5 81.69,-103 71.69,-99.5 71.69,-106.5"/>
+</a>
+</g>
 </g>
 <!-- Node8&#45;&gt;Node3 -->
-<g id="edge8" class="edge">
+<g id="edge8_Node000008_Node000003" class="edge">
 <title>Node8&#45;&gt;Node3</title>
+<g id="a_edge8_Node000008_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M731.05,-101.09C663.43,-96.98 568.6,-91.23 508.11,-87.56"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="731.05,-104.59 741.25,-101.71 731.48,-97.61 731.05,-104.59"/>
+</a>
+</g>
 </g>
 <!-- Node10 -->
-<g id="node10" class="node">
+<g id="Node000010" class="node">
 <title>Node10</title>
-<g id="a_node10"><a xlink:href="classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html#a96c68c7820d06a39ee2948b548c4a64d" target="_top" xlink:title=" ">
+<g id="a_Node000010"><a xlink:href="classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html#a96c68c7820d06a39ee2948b548c4a64d" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="702,-78 544,-78 544,-48 702,-48 702,-78"/>
 <text text-anchor="start" x="552" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::MVPolygonal</text>
 <text text-anchor="middle" x="623" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">Basis2d::build_bases</text>
@@ -160,15 +187,18 @@
 </g>
 </g>
 <!-- Node9&#45;&gt;Node10 -->
-<g id="edge10" class="edge">
+<g id="edge10_Node000009_Node000010" class="edge">
 <title>Node9&#45;&gt;Node10</title>
+<g id="a_edge10_Node000009_Node000010"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M727.72,-60.24C719.26,-60.47 710.69,-60.69 702.3,-60.92"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="728.06,-63.73 737.97,-59.97 727.88,-56.74 728.06,-63.73"/>
+</a>
+</g>
 </g>
 <!-- Node11 -->
-<g id="node11" class="node">
+<g id="Node000011" class="node">
 <title>Node11</title>
-<g id="a_node11"><a xlink:href="classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html#a5fe45bd8fb2b0b8d16e20d7eab13296a" target="_top" xlink:title=" ">
+<g id="a_Node000011"><a xlink:href="classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html#a5fe45bd8fb2b0b8d16e20d7eab13296a" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="702,-30 544,-30 544,0 702,0 702,-30"/>
 <text text-anchor="start" x="552" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::WSPolygonal</text>
 <text text-anchor="middle" x="623" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Basis2d::build_bases</text>
@@ -176,22 +206,31 @@
 </g>
 </g>
 <!-- Node9&#45;&gt;Node11 -->
-<g id="edge12" class="edge">
+<g id="edge12_Node000009_Node000011" class="edge">
 <title>Node9&#45;&gt;Node11</title>
+<g id="a_edge12_Node000009_Node000011"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M736.24,-40.67C720.83,-37.15 704.74,-33.47 689.72,-30.03"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="735.72,-44.14 746.25,-42.96 737.28,-37.32 735.72,-44.14"/>
+</a>
+</g>
 </g>
 <!-- Node10&#45;&gt;Node3 -->
-<g id="edge11" class="edge">
+<g id="edge11_Node000010_Node000003" class="edge">
 <title>Node10&#45;&gt;Node3</title>
+<g id="a_edge11_Node000010_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M533.64,-73.76C524.96,-74.81 516.31,-75.87 508.04,-76.87"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="534.32,-77.2 543.83,-72.52 533.48,-70.25 534.32,-77.2"/>
+</a>
+</g>
 </g>
 <!-- Node11&#45;&gt;Node3 -->
-<g id="edge13" class="edge">
+<g id="edge13_Node000011_Node000003" class="edge">
 <title>Node11&#45;&gt;Node3</title>
+<g id="a_edge13_Node000011_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M559.61,-33.3C554.3,-35.13 549.03,-37.04 544,-39 521.48,-47.77 496.85,-59.58 478.39,-68.89"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="560.82,-36.59 569.19,-30.1 558.6,-29.95 560.82,-36.59"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

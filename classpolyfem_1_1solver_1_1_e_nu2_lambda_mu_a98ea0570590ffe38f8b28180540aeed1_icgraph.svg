@@ -6,12 +6,22 @@
 <!-- Title: polyfem::solver::ENu2LambdaMu::size Pages: 1 -->
 <svg width="372pt" height="134pt"
  viewBox="0.00 0.00 372.00 134.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 130)">
 <title>polyfem::solver::ENu2LambdaMu::size</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="364,-78 200,-78 200,-48 364,-48 364,-78"/>
 <text text-anchor="start" x="208" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::ENu2Lambda</text>
 <text text-anchor="middle" x="282" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">Mu::size</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html#a017d043a92c3ffb81b69a8fdefd2dcbf" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html#a017d043a92c3ffb81b69a8fdefd2dcbf" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="164,-126 0,-126 0,-96 164,-96 164,-126"/>
 <text text-anchor="start" x="8" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::ENu2Lambda</text>
 <text text-anchor="middle" x="82" y="-103" font-family="Helvetica,sans-Serif" font-size="10.00">Mu::apply_jacobian</text>
@@ -29,15 +39,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M209.05,-80.44C188.02,-85.54 165.23,-91.07 144.88,-96"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="210,-83.81 218.89,-78.06 208.35,-77.01 210,-83.81"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html#a4c4444c765fa9bbbf666a8716fd6af42" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html#a4c4444c765fa9bbbf666a8716fd6af42" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="164,-78 0,-78 0,-48 164,-48 164,-78"/>
 <text text-anchor="start" x="8" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::ENu2Lambda</text>
 <text text-anchor="middle" x="82" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">Mu::eval</text>
@@ -45,15 +58,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M189.64,-63C181.18,-63 172.65,-63 164.3,-63"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="189.89,-66.5 199.89,-63 189.89,-59.5 189.89,-66.5"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html#ae72f46224dfdfb36633d937aa6a30f8f" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html#ae72f46224dfdfb36633d937aa6a30f8f" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="164,-30 0,-30 0,0 164,0 164,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::ENu2Lambda</text>
 <text text-anchor="middle" x="82" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Mu::inverse_eval</text>
@@ -61,10 +77,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M209.05,-45.56C188.02,-40.46 165.23,-34.93 144.88,-30"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="208.35,-48.99 218.89,-47.94 210,-42.19 208.35,-48.99"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

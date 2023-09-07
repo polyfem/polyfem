@@ -1,8 +1,8 @@
 var classp__bases_1_1_lagrange =
 [
-    [ "__init__", "classp__bases_1_1_lagrange.html#abe47c9933a83cf25f3cec39779c1dc39", null ],
-    [ "compute_basis", "classp__bases_1_1_lagrange.html#a27cb3499317e4f48e28666ea44d8c5be", null ],
-    [ "nbf", "classp__bases_1_1_lagrange.html#a46769603e076f2b6d354e467d06cbab2", null ],
+    [ "__init__", "classp__bases_1_1_lagrange.html#ad7ac5dc4bd967f2800e51021021aa745", null ],
+    [ "compute_basis", "classp__bases_1_1_lagrange.html#ae54ca16bda6b0c5a9fedccd9fbae283b", null ],
+    [ "nbf", "classp__bases_1_1_lagrange.html#a92c99e0b10e5519ee007b1cd89dc798c", null ],
     [ "N", "classp__bases_1_1_lagrange.html#a2aa24d0d4233c46d69fddf025e494ef2", null ],
     [ "nsd", "classp__bases_1_1_lagrange.html#a9714dc533a0108d8aa857bf353a21279", null ],
     [ "order", "classp__bases_1_1_lagrange.html#a04e32b1aa59b0068c7c054f975371809", null ],

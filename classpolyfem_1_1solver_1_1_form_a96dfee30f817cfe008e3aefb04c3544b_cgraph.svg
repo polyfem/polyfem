@@ -6,12 +6,22 @@
 <!-- Title: polyfem::solver::Form::first_derivative Pages: 1 -->
 <svg width="326pt" height="86pt"
  viewBox="0.00 0.00 326.00 86.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 82)">
 <title>polyfem::solver::Form::first_derivative</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Compute the first derivative of the value wrt x multiplied with the weigth.">
+<g id="a_Node000001"><a xlink:title="Compute the first derivative of the value wrt x multiplied with the weigth.">
 <polygon fill="#999999" stroke="#666666" points="124,-54 0,-54 0,-24 124,-24 124,-54"/>
 <text text-anchor="start" x="8" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Form</text>
 <text text-anchor="middle" x="62" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">::first_derivative</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a" target="_top" xlink:title="Compute the first derivative of the value wrt x.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a" target="_top" xlink:title="Compute the first derivative of the value wrt x.">
 <polygon fill="white" stroke="#666666" points="318,-78 160,-78 160,-48 318,-48 318,-78"/>
 <text text-anchor="start" x="168" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Form</text>
 <text text-anchor="middle" x="239" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::first_derivative_unweighted</text>
@@ -29,15 +39,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M124.21,-47.39C132.5,-48.53 141.13,-49.72 149.78,-50.9"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="149.53,-54.4 159.91,-52.29 150.48,-47.46 149.53,-54.4"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#a9cffeca817d2f65884dbdb0b05dbf8ae" target="_top" xlink:title="Get the form&#39;s multiplicative constant weight.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#a9cffeca817d2f65884dbdb0b05dbf8ae" target="_top" xlink:title="Get the form&#39;s multiplicative constant weight.">
 <polygon fill="white" stroke="#666666" points="301,-30 177,-30 177,0 301,0 301,-30"/>
 <text text-anchor="start" x="185" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Form</text>
 <text text-anchor="middle" x="239" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::weight</text>
@@ -45,10 +58,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M124.21,-30.61C137.93,-28.72 152.6,-26.71 166.69,-24.78"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="167.4,-28.22 176.83,-23.39 166.45,-21.28 167.4,-28.22"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

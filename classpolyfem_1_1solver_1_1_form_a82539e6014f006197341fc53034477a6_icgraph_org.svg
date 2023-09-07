@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 34)">
 <title>polyfem::solver::Form::second_derivative</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Compute the second derivative of the value wrt x multiplied with the weigth.">
+<g id="a_Node000001"><a xlink:title="Compute the second derivative of the value wrt x multiplied with the weigth.">
 <polygon fill="#999999" stroke="#666666" points="512,-30 388,-30 388,0 512,0 512,-30"/>
 <text text-anchor="start" x="396" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Form</text>
 <text text-anchor="middle" x="450" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::second_derivative</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a495516385c26912463ca2dd510014295" target="_top" xlink:title="Update lagged fields.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a495516385c26912463ca2dd510014295" target="_top" xlink:title="Update lagged fields.">
 <polygon fill="white" stroke="#666666" points="352,-30 185,-30 185,0 352,0 352,-30"/>
 <text text-anchor="start" x="193" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
 <text text-anchor="middle" x="268.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::update_lagging</text>
@@ -29,15 +29,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M377.86,-15C369.46,-15 360.83,-15 352.29,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="377.98,-18.5 387.98,-15 377.98,-11.5 377.98,-18.5"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a6809f0a008ca0f00423ef3133d3e3369" target="_top" xlink:title="Initialize lagged fields.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a6809f0a008ca0f00423ef3133d3e3369" target="_top" xlink:title="Initialize lagged fields.">
 <polygon fill="white" stroke="#666666" points="149,-30 0,-30 0,0 149,0 149,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
 <text text-anchor="middle" x="74.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::init_lagging</text>
@@ -45,10 +48,13 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M174.88,-15C166.26,-15 157.6,-15 149.19,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="174.96,-18.5 184.96,-15 174.96,-11.5 174.96,-18.5"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

@@ -6,12 +6,22 @@
 <!-- Title: polyfem::assembler::HookeLinearElasticity::compute_energy_aux Pages: 1 -->
 <svg width="490pt" height="124pt"
  viewBox="0.00 0.00 490.00 124.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 120)">
 <title>polyfem::assembler::HookeLinearElasticity::compute_energy_aux</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="128,-78.5 0,-78.5 0,-37.5 128,-37.5 128,-78.5"/>
 <text text-anchor="start" x="8" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="8" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00">::HookeLinearElasticity</text>
@@ -20,9 +30,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="namespacepolyfem.html#a4c7c05580a3be89a6cc9482963513a46" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="namespacepolyfem.html#a4c7c05580a3be89a6cc9482963513a46" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="296,-116 165,-116 165,-86 296,-86 296,-116"/>
 <text text-anchor="start" x="173" y="-104" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::compute_disp</text>
 <text text-anchor="middle" x="230.5" y="-93" font-family="Helvetica,sans-Serif" font-size="10.00">_grad_at_quad</text>
@@ -30,30 +40,36 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M128.13,-74.5C139.27,-77.41 150.91,-80.46 162.16,-83.4"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="161.37,-86.81 171.93,-85.95 163.14,-80.04 161.37,-86.81"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="namespacepolyfem.html#aa3c7c48e526af400b4beb3738e168c35" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="namespacepolyfem.html#aa3c7c48e526af400b4beb3738e168c35" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="297,-67.5 164,-67.5 164,-48.5 297,-48.5 297,-67.5"/>
 <text text-anchor="middle" x="230.5" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::get_local_disp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M128.13,-58C136.53,-58 145.21,-58 153.8,-58"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="153.81,-61.5 163.81,-58 153.81,-54.5 153.81,-61.5"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="287.5,-30 173.5,-30 173.5,0 287.5,0 287.5,-30"/>
 <text text-anchor="start" x="181.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="230.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::Assembler::size</text>
@@ -61,15 +77,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000001_Node000005" class="edge">
 <title>Node1&#45;&gt;Node5</title>
+<g id="a_edge4_Node000001_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M128.13,-41.5C139.74,-38.46 151.89,-35.29 163.57,-32.23"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="164.47,-35.62 173.26,-29.7 162.7,-28.84 164.47,-35.62"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="struct_diff_scalar_base.html#a9ec9c3461abcd98164a36ba6f4e7dfb7" target="_top" xlink:title="Set the independent variable count used by the automatic differentiation layer.">
+<g id="a_Node000004"><a xlink:href="struct_diff_scalar_base.html#a9ec9c3461abcd98164a36ba6f4e7dfb7" target="_top" xlink:title="Set the independent variable count used by the automatic differentiation layer.">
 <polygon fill="white" stroke="#666666" points="482,-73 333,-73 333,-43 482,-43 482,-73"/>
 <text text-anchor="start" x="341" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">DiffScalarBase::setVariable</text>
 <text text-anchor="middle" x="407.5" y="-50" font-family="Helvetica,sans-Serif" font-size="10.00">Count</text>
@@ -77,10 +96,28 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M297.16,-58C305.53,-58 314.18,-58 322.78,-58"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="322.83,-61.5 332.83,-58 322.83,-54.5 322.83,-61.5"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

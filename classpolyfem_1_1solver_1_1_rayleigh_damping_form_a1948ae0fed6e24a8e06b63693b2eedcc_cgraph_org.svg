@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 82)">
 <title>polyfem::solver::RayleighDampingForm::second_derivative_unweighted</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Compute the second derivative of the value wrt x.">
+<g id="a_Node000001"><a xlink:title="Compute the second derivative of the value wrt x.">
 <polygon fill="#999999" stroke="#666666" points="181,-59.5 0,-59.5 0,-18.5 181,-18.5 181,-59.5"/>
 <text text-anchor="start" x="8" y="-47.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
 <text text-anchor="start" x="8" y="-36.5" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::second_derivative</text>
@@ -20,9 +20,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ae2ea9843952763bbfc733ad20e1f4e55" target="_top" xlink:title="Compute the derivative of the velocity with respect to the solution.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ae2ea9843952763bbfc733ad20e1f4e55" target="_top" xlink:title="Compute the derivative of the velocity with respect to the solution.">
 <polygon fill="white" stroke="#666666" points="384,-78 217,-78 217,-48 384,-48 384,-78"/>
 <text text-anchor="start" x="225" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="middle" x="300.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator::dv_dx</text>
@@ -30,15 +30,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M181.22,-49.35C189.75,-50.34 198.42,-51.34 206.98,-52.32"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="206.63,-55.81 216.97,-53.48 207.44,-48.85 206.63,-55.81"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#aeb1a14e9ef7a9a1f27332d6f80956472" target="_top" xlink:title="Get the stiffness of the form.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#aeb1a14e9ef7a9a1f27332d6f80956472" target="_top" xlink:title="Get the stiffness of the form.">
 <polygon fill="white" stroke="#666666" points="371.5,-30 229.5,-30 229.5,0 371.5,0 371.5,-30"/>
 <text text-anchor="start" x="237.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
 <text text-anchor="middle" x="300.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::stiffness</text>
@@ -46,15 +49,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M181.22,-28.65C193.76,-27.2 206.58,-25.72 218.94,-24.3"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="219.66,-27.74 229.2,-23.11 218.86,-20.78 219.66,-27.74"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932" target="_top" xlink:title="Access the time step size.">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932" target="_top" xlink:title="Access the time step size.">
 <polygon fill="white" stroke="#666666" points="568,-30 420,-30 420,0 568,0 568,-30"/>
 <text text-anchor="start" x="428" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="middle" x="494" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator::dt</text>
@@ -62,10 +68,13 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M371.72,-15C384.1,-15 397.1,-15 409.79,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="409.9,-18.5 419.9,-15 409.9,-11.5 409.9,-18.5"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

@@ -1,19 +1,35 @@
 <map id="polyfem::mesh::Mesh::face_barycenter" name="polyfem::mesh::Mesh::face_barycenter">
-<area shape="rect" id="node1" title="face barycenter" alt="" coords="789,277,952,317"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1mesh_1_1_mesh.html#a6441cc4f2ce2b2f378294ad31f248305" title="all face barycenters" alt="" coords="558,101,721,141"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1io_1_1_evaluator.html#a018d5895da038557902f72ad0bef27a4" title="returns a triangulated representation of the sideset." alt="" coords="556,165,723,205"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1io_1_1_evaluator.html#a8a20b3ef05c1ce19dc0494739e877b7b" title="computes integrated solution (fun) per surface face." alt="" coords="555,230,724,285"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1io_1_1_evaluator.html#a1a59e2051376f7b9c94b658324740312" title="computes integrated solution (fun) per surface face vertex." alt="" coords="555,309,724,363"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1io_1_1_evaluator.html#a60d3991b9c7117254f306d4be49a12e3" title="computes traction forces for fun (tensor * surface normal) result, stress tensor, and von mises,..." alt="" coords="555,387,724,442"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html#a0f09e10c3915a40fcb82b1779f7791e1" title=" " alt="" coords="537,499,741,539"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#ae12a37c56b98ea95b3a65983b924220c" title="utility for 2d/3d." alt="" coords="257,5,489,45"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1solver_1_1_linear_filter.html#a33a282a99fbcaa50566c0ed835126bf5" title=" " alt="" coords="271,69,476,109"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a64cfaa0c7c2c6369783f1ae865f3bd78" title="generate a triangular representation of every face" alt="" coords="278,133,469,173"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a672d9b8453c5bcd4205c795c068c4945" title="generate a triangular representation of every face" alt="" coords="273,197,473,237"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1io_1_1_evaluator.html#a4a6a141fac462279241b851e57a310ef" title="same as interpolate_boundary_tensor_function with disp=0" alt="" coords="289,355,458,410"/>
-<area shape="rect" id="node13" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html#a597d9bffce941c3f4f7f42a78679efb5" title=" " alt="" coords="271,435,475,475"/>
-<area shape="rect" id="node15" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html#aa61fd19e3fdc208d01cf5e6ffdf2e23b" title=" " alt="" coords="271,499,475,539"/>
-<area shape="rect" id="node16" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html#a8e3a91225f0eb6ae9475908f195ec8c2" title=" " alt="" coords="271,563,475,603"/>
-<area shape="rect" id="node17" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html#a6804a79d2c2257831209b64a174c4a17" title=" " alt="" coords="271,627,475,667"/>
-<area shape="rect" id="node14" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html#a4baf697b2269357b504251d2a806a35e" title=" " alt="" coords="5,435,209,475"/>
+<area shape="rect" id="Node000001" title="face barycenter" alt="" coords="789,277,952,317"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1mesh_1_1_mesh.html#a6441cc4f2ce2b2f378294ad31f248305" title="all face barycenters" alt="" coords="558,101,721,141"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="847,268,802,210,773,181,740,156,718,144,720,139,743,151,776,177,806,207,851,264"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1io_1_1_evaluator.html#a018d5895da038557902f72ad0bef27a4" title="returns a triangulated representation of the sideset." alt="" coords="556,165,723,205"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="829,272,787,245,740,220,711,208,713,203,742,215,790,240,832,267"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1io_1_1_evaluator.html#a8a20b3ef05c1ce19dc0494739e877b7b" title="computes integrated solution (fun) per surface face." alt="" coords="555,230,724,285"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="775,284,724,275,724,269,776,278"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1io_1_1_evaluator.html#a1a59e2051376f7b9c94b658324740312" title="computes integrated solution (fun) per surface face vertex." alt="" coords="555,309,724,363"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="776,316,724,325,724,319,775,311"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1io_1_1_evaluator.html#a60d3991b9c7117254f306d4be49a12e3" title="computes traction forces for fun (tensor * surface normal) result, stress tensor, and von mises,..." alt="" coords="555,387,724,442"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="829,327,743,377,715,390,713,385,740,372,826,323"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html#a0f09e10c3915a40fcb82b1779f7791e1" title=" " alt="" coords="537,499,741,539"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="850,331,804,391,743,455,711,480,679,501,676,496,708,476,740,451,800,388,846,327"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_mesh2_d.html#ae12a37c56b98ea95b3a65983b924220c" title="utility for 2d/3d." alt="" coords="257,5,489,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="582,98,488,60,451,48,453,43,490,55,584,93"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_linear_filter.html#a33a282a99fbcaa50566c0ed835126bf5" title=" " alt="" coords="271,69,476,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="544,113,476,104,477,99,545,107"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a64cfaa0c7c2c6369783f1ae865f3bd78" title="generate a triangular representation of every face" alt="" coords="278,133,469,173"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="545,135,469,145,468,139,544,130"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a672d9b8453c5bcd4205c795c068c4945" title="generate a triangular representation of every face" alt="" coords="273,197,473,237"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="554,149,539,156,515,172,491,188,459,200,457,195,488,183,512,167,536,151,552,144"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1io_1_1_evaluator.html#a4a6a141fac462279241b851e57a310ef" title="same as interpolate_boundary_tensor_function with disp=0" alt="" coords="289,355,458,410"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="540,405,458,395,458,390,541,400"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html#a597d9bffce941c3f4f7f42a78679efb5" title=" " alt="" coords="271,435,475,475"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="542,498,456,477,458,472,543,493"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html#aa61fd19e3fdc208d01cf5e6ffdf2e23b" title=" " alt="" coords="271,499,475,539"/>
+<area shape="poly" id="edge14_Node000012_Node000015" title=" " alt="" coords="524,521,476,521,476,516,524,516"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html#a8e3a91225f0eb6ae9475908f195ec8c2" title=" " alt="" coords="271,563,475,603"/>
+<area shape="poly" id="edge15_Node000012_Node000016" title=" " alt="" coords="543,545,458,565,456,560,542,539"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html#a6804a79d2c2257831209b64a174c4a17" title=" " alt="" coords="271,627,475,667"/>
+<area shape="poly" id="edge16_Node000012_Node000017" title=" " alt="" coords="603,549,551,584,490,617,459,629,457,624,488,612,548,580,600,545"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1mesh_1_1_mesh_nodes.html#a4baf697b2269357b504251d2a806a35e" title=" " alt="" coords="5,435,209,475"/>
+<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="258,457,210,457,210,452,258,452"/>
 </map>

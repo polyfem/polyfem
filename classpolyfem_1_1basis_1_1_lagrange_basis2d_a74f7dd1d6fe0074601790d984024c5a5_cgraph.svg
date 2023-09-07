@@ -6,12 +6,22 @@
 <!-- Title: polyfem::basis::LagrangeBasis2d::tri_edge_local_nodes Pages: 1 -->
 <svg width="344pt" height="86pt"
  viewBox="0.00 0.00 344.00 86.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 82)">
 <title>polyfem::basis::LagrangeBasis2d::tri_edge_local_nodes</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="164,-54 0,-54 0,-24 164,-24 164,-54"/>
 <text text-anchor="start" x="8" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::Lagrange</text>
 <text text-anchor="middle" x="82" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">Basis2d::tri_edge_local_nodes</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html#a62e57386728f26b8feafea1043b65c21" target="_top" xlink:title="checks if element is simples compatible">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html#a62e57386728f26b8feafea1043b65c21" target="_top" xlink:title="checks if element is simples compatible">
 <polygon fill="white" stroke="#666666" points="329,-78 207,-78 207,-48 329,-48 329,-78"/>
 <text text-anchor="start" x="215" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh</text>
 <text text-anchor="middle" x="268" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::is_simplex</text>
@@ -29,15 +39,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M164.24,-49.6C175.11,-51.01 186.18,-52.46 196.84,-53.85"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="196.55,-57.34 206.91,-55.16 197.45,-50.4 196.55,-57.34"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a8763fa8b0b83980f2d18184895b75d42" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh2_d.html#a8763fa8b0b83980f2d18184895b75d42" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="336,-30 200,-30 200,0 336,0 336,-30"/>
 <text text-anchor="start" x="208" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh2D</text>
 <text text-anchor="middle" x="268" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::switch_vertex</text>
@@ -45,10 +58,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M164.24,-28.4C172.73,-27.3 181.34,-26.17 189.78,-25.07"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="190.51,-28.51 199.97,-23.74 189.6,-21.57 190.51,-28.51"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

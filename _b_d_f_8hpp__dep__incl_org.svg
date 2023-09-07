@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 100)">
 <title>src/polyfem/time_integrator/BDF.hpp</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="555,-96 402,-96 402,-66 555,-66 555,-96"/>
 <text text-anchor="start" x="410" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/time_integrator</text>
 <text text-anchor="middle" x="478.5" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">/BDF.hpp</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="_adjoint_tools_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="_adjoint_tools_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="107,-30 0,-30 0,0 107,0 107,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
 <text text-anchor="middle" x="53.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/AdjointTools.cpp</text>
@@ -29,30 +29,36 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M391.8,-70.04C318.27,-61.11 210.13,-46.84 116.5,-30 113.41,-29.44 110.25,-28.84 107.06,-28.21"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="391.6,-73.54 401.94,-71.26 392.43,-66.59 391.6,-73.54"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="_state_diff_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="_state_diff_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="293.5,-24.5 125.5,-24.5 125.5,-5.5 293.5,-5.5 293.5,-24.5"/>
 <text text-anchor="middle" x="209.5" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/state/StateDiff.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M409.56,-63.6C357.12,-51.12 287.08,-34.46 245.3,-24.52"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="408.93,-67.05 419.47,-65.95 410.55,-60.24 408.93,-67.05"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="_state_solve_linear_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="_state_solve_linear_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="469.5,-30 311.5,-30 311.5,0 469.5,0 469.5,-30"/>
 <text text-anchor="start" x="319.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/state/StateSolve</text>
 <text text-anchor="middle" x="390.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Linear.cpp</text>
@@ -60,15 +66,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M450.66,-59.75C437.43,-50.13 421.93,-38.86 409.98,-30.16"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="448.82,-62.75 458.97,-65.8 452.94,-57.08 448.82,-62.75"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="_state_solve_navier_stokes_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="_state_solve_navier_stokes_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="645.5,-30 487.5,-30 487.5,0 645.5,0 645.5,-30"/>
 <text text-anchor="start" x="495.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/state/StateSolve</text>
 <text text-anchor="middle" x="566.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">NavierStokes.cpp</text>
@@ -76,15 +85,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000001_Node000005" class="edge">
 <title>Node1&#45;&gt;Node5</title>
+<g id="a_edge4_Node000001_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M506.34,-59.75C519.57,-50.13 535.07,-38.86 547.02,-30.16"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="504.06,-57.08 498.03,-65.8 508.18,-62.75 504.06,-57.08"/>
+</a>
+</g>
 </g>
 <!-- Node6 -->
-<g id="node6" class="node">
+<g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:href="_b_d_f_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000006"><a xlink:href="_b_d_f_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="817,-30 664,-30 664,0 817,0 817,-30"/>
 <text text-anchor="start" x="672" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/time_integrator</text>
 <text text-anchor="middle" x="740.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/BDF.cpp</text>
@@ -92,15 +104,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node6 -->
-<g id="edge5" class="edge">
+<g id="edge5_Node000001_Node000006" class="edge">
 <title>Node1&#45;&gt;Node6</title>
+<g id="a_edge5_Node000001_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M545.98,-63.52C588.47,-53.14 642.73,-39.88 683.14,-30.01"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="544.88,-60.18 536,-65.95 546.54,-66.98 544.88,-60.18"/>
+</a>
+</g>
 </g>
 <!-- Node7 -->
-<g id="node7" class="node">
+<g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_node7"><a xlink:href="_implicit_time_integrator_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000007"><a xlink:href="_implicit_time_integrator_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="988,-30 835,-30 835,0 988,0 988,-30"/>
 <text text-anchor="start" x="843" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/time_integrator</text>
 <text text-anchor="middle" x="911.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/ImplicitTimeIntegrator.cpp</text>
@@ -108,10 +123,13 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node7 -->
-<g id="edge6" class="edge">
+<g id="edge6_Node000001_Node000007" class="edge">
 <title>Node1&#45;&gt;Node7</title>
+<g id="a_edge6_Node000001_Node000007"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M565.44,-68.01C635.88,-58.18 737.67,-43.7 826.5,-30 829.16,-29.59 831.87,-29.17 834.6,-28.74"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="564.7,-64.58 555.28,-69.43 565.67,-71.51 564.7,-64.58"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

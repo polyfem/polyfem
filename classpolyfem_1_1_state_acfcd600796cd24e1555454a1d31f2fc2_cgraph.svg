@@ -6,12 +6,22 @@
 <!-- Title: polyfem::State::resolve_input_path Pages: 1 -->
 <svg width="462pt" height="70pt"
  viewBox="0.00 0.00 462.00 69.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 65.5)">
 <title>polyfem::State::resolve_input_path</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Resolve input path relative to root_path() if the path is not absolute.">
+<g id="a_Node000001"><a xlink:title="Resolve input path relative to root_path() if the path is not absolute.">
 <polygon fill="#999999" stroke="#666666" points="131,-48 0,-48 0,-18 131,-18 131,-48"/>
 <text text-anchor="start" x="8" y="-36" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::resolve</text>
 <text text-anchor="middle" x="65.5" y="-25" font-family="Helvetica,sans-Serif" font-size="10.00">_input_path</text>
@@ -19,39 +29,45 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="namespacepolyfem_1_1utils.html#a4dc2e59d21d66809d2273ae115be0b73" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="namespacepolyfem_1_1utils.html#a4dc2e59d21d66809d2273ae115be0b73" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="320,-61.5 167,-61.5 167,-42.5 320,-42.5 320,-61.5"/>
 <text text-anchor="middle" x="243.5" y="-49.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::resolve_path</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M131.04,-39.97C139.43,-40.87 148.13,-41.81 156.79,-42.75"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="156.62,-46.25 166.94,-43.84 157.37,-39.29 156.62,-46.25"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f" target="_top" xlink:title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f" target="_top" xlink:title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)">
 <polygon fill="white" stroke="#666666" points="314,-24.5 173,-24.5 173,-5.5 314,-5.5 314,-24.5"/>
 <text text-anchor="middle" x="243.5" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::root_path</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M131.04,-26.4C141.37,-25.34 152.17,-24.24 162.81,-23.15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="163.34,-26.61 172.93,-22.11 162.63,-19.65 163.34,-26.61"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="454,-30 356,-30 356,0 454,0 454,-30"/>
 <text text-anchor="start" x="364" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::is</text>
 <text text-anchor="middle" x="405" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_param_valid</text>
@@ -59,10 +75,28 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M314.46,-15C324.77,-15 335.31,-15 345.36,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="345.63,-18.5 355.63,-15 345.63,-11.5 345.63,-18.5"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

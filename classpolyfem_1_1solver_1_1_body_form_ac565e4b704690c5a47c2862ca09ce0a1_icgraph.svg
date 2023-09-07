@@ -6,12 +6,22 @@
 <!-- Title: polyfem::solver::BodyForm::update_current_rhs Pages: 1 -->
 <svg width="342pt" height="134pt"
  viewBox="0.00 0.00 342.00 134.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 130)">
 <title>polyfem::solver::BodyForm::update_current_rhs</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Update current_rhs.">
+<g id="a_Node000001"><a xlink:title="Update current_rhs.">
 <polygon fill="#999999" stroke="#666666" points="334,-78 185,-78 185,-48 334,-48 334,-78"/>
 <text text-anchor="start" x="193" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BodyForm</text>
 <text text-anchor="middle" x="259.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::update_current_rhs</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_body_form.html#ae79c6932d834cbe1dba199ba0cbfec12" target="_top" xlink:title="Construct a new Body Form object.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_body_form.html#ae79c6932d834cbe1dba199ba0cbfec12" target="_top" xlink:title="Construct a new Body Form object.">
 <polygon fill="white" stroke="#666666" points="149,-126 0,-126 0,-96 149,-96 149,-126"/>
 <text text-anchor="start" x="8" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BodyForm</text>
 <text text-anchor="middle" x="74.5" y="-103" font-family="Helvetica,sans-Serif" font-size="10.00">::BodyForm</text>
@@ -29,15 +39,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M191.21,-80.65C172,-85.69 151.25,-91.13 132.7,-96"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="192.31,-83.98 201.1,-78.06 190.54,-77.21 192.31,-83.98"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_body_form.html#a638bd0d14aeb801284b8ffc8b0cbf261" target="_top" xlink:title="Set if the Dirichlet boundary conditions should be enforced.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_body_form.html#a638bd0d14aeb801284b8ffc8b0cbf261" target="_top" xlink:title="Set if the Dirichlet boundary conditions should be enforced.">
 <polygon fill="white" stroke="#666666" points="149,-78 0,-78 0,-48 149,-48 149,-78"/>
 <text text-anchor="start" x="8" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BodyForm</text>
 <text text-anchor="middle" x="74.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::set_apply_DBC</text>
@@ -45,15 +58,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M174.61,-63C166.16,-63 157.62,-63 149.29,-63"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="174.86,-66.5 184.86,-63 174.86,-59.5 174.86,-66.5"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1solver_1_1_body_form.html#a59038ae41bd1beec9805dacdf2194d85" target="_top" xlink:title="Update time dependent quantities.">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1solver_1_1_body_form.html#a59038ae41bd1beec9805dacdf2194d85" target="_top" xlink:title="Update time dependent quantities.">
 <polygon fill="white" stroke="#666666" points="149,-30 0,-30 0,0 149,0 149,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BodyForm</text>
 <text text-anchor="middle" x="74.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::update_quantities</text>
@@ -61,10 +77,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M191.21,-45.35C172,-40.31 151.25,-34.87 132.7,-30"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="190.54,-48.79 201.1,-47.94 192.31,-42.02 190.54,-48.79"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

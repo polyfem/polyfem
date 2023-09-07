@@ -6,12 +6,22 @@
 <!-- Title: polyfem::basis::QuadraticBSpline3d::derivative Pages: 1 -->
 <svg width="328pt" height="122pt"
  viewBox="0.00 0.00 328.00 122.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 118)">
 <title>polyfem::basis::QuadraticBSpline3d::derivative</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="142,-63 0,-63 0,-33 142,-33 142,-63"/>
 <text text-anchor="start" x="8" y="-51" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::Quadratic</text>
 <text text-anchor="middle" x="71" y="-40" font-family="Helvetica,sans-Serif" font-size="10.00">BSpline3d::derivative</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#ae155943a730782f90fa6fd4086d1a836" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#ae155943a730782f90fa6fd4086d1a836" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="320,-96 178,-96 178,-66 320,-66 320,-96"/>
 <text text-anchor="start" x="186" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::Quadratic</text>
 <text text-anchor="middle" x="249" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">BSpline::derivative</text>
@@ -29,15 +39,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M142.07,-61.14C150.54,-62.73 159.25,-64.36 167.85,-65.97"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="167.41,-69.45 177.89,-67.85 168.7,-62.57 167.41,-69.45"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a29e9bd02780bf46faa2384cf93bf0fd9" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1basis_1_1_quadratic_b_spline.html#a29e9bd02780bf46faa2384cf93bf0fd9" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="320,-30 178,-30 178,0 320,0 320,-30"/>
 <text text-anchor="start" x="186" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::Quadratic</text>
 <text text-anchor="middle" x="249" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">BSpline::interpolate</text>
@@ -45,22 +58,46 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge3_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M142.07,-34.86C150.54,-33.27 159.25,-31.64 167.85,-30.03"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="168.7,-33.43 177.89,-28.15 167.41,-26.55 168.7,-33.43"/>
+</a>
+</g>
 </g>
 <!-- Node2&#45;&gt;Node2 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000002" class="edge">
 <title>Node2&#45;&gt;Node2</title>
+<g id="a_edge2_Node000002_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M217.71,-96.28C210.76,-105.41 221.19,-114 249,-114 265.51,-114 275.9,-110.97 280.16,-106.6"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="283.66,-106.32 280.29,-96.28 276.66,-106.23 283.66,-106.32"/>
+</a>
+</g>
 </g>
 <!-- Node3&#45;&gt;Node3 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000003_Node000003" class="edge">
 <title>Node3&#45;&gt;Node3</title>
+<g id="a_edge4_Node000003_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M217.71,-30.28C210.76,-39.41 221.19,-48 249,-48 265.51,-48 275.9,-44.97 280.16,-40.6"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="283.66,-40.32 280.29,-30.28 276.66,-40.23 283.66,-40.32"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

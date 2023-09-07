@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 34)">
 <title>polyfem::solver::RayleighDampingForm::RayleighDampingForm</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Construct a new Lagged Regularization Form object.">
+<g id="a_Node000001"><a xlink:title="Construct a new Lagged Regularization Form object.">
 <polygon fill="#999999" stroke="#666666" points="203,-30 0,-30 0,0 203,0 203,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
 <text text-anchor="middle" x="101.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::RayleighDampingForm</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#aeb1a14e9ef7a9a1f27332d6f80956472" target="_top" xlink:title="Get the stiffness of the form.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#aeb1a14e9ef7a9a1f27332d6f80956472" target="_top" xlink:title="Get the stiffness of the form.">
 <polygon fill="white" stroke="#666666" points="381,-30 239,-30 239,0 381,0 381,-30"/>
 <text text-anchor="start" x="247" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
 <text text-anchor="middle" x="310" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::stiffness</text>
@@ -29,15 +29,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M203.03,-15C211.63,-15 220.26,-15 228.68,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="228.82,-18.5 238.82,-15 228.82,-11.5 228.82,-18.5"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932" target="_top" xlink:title="Access the time step size.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932" target="_top" xlink:title="Access the time step size.">
 <polygon fill="white" stroke="#666666" points="565,-30 417,-30 417,0 565,0 565,-30"/>
 <text text-anchor="start" x="425" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="middle" x="491" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator::dt</text>
@@ -45,10 +48,13 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M381.23,-15C389.52,-15 398.04,-15 406.48,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="406.73,-18.5 416.73,-15 406.73,-11.5 406.73,-18.5"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

@@ -6,12 +6,22 @@
 <!-- Title: polyfem::solver::BCPenaltyForm::update_target Pages: 1 -->
 <svg width="342pt" height="86pt"
  viewBox="0.00 0.00 342.00 86.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 82)">
 <title>polyfem::solver::BCPenaltyForm::update_target</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Update target x to the Dirichlet boundary values at time t.">
+<g id="a_Node000001"><a xlink:title="Update target x to the Dirichlet boundary values at time t.">
 <polygon fill="#999999" stroke="#666666" points="334,-54 185,-54 185,-24 334,-24 334,-54"/>
 <text text-anchor="start" x="193" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BCPenalty</text>
 <text text-anchor="middle" x="259.5" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">Form::update_target</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a7f6855ef9b1244ee946f218478fac440" target="_top" xlink:title="Construct a new BCPenaltyForm object with a time dependent Dirichlet boundary.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a7f6855ef9b1244ee946f218478fac440" target="_top" xlink:title="Construct a new BCPenaltyForm object with a time dependent Dirichlet boundary.">
 <polygon fill="white" stroke="#666666" points="149,-78 0,-78 0,-48 149,-48 149,-78"/>
 <text text-anchor="start" x="8" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BCPenalty</text>
 <text text-anchor="middle" x="74.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">Form::BCPenaltyForm</text>
@@ -29,15 +39,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M174.89,-49.97C166.35,-51.09 157.72,-52.22 149.29,-53.32"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="175.4,-53.43 184.86,-48.66 174.49,-46.49 175.4,-53.43"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a4abff93789ea47f89f61c7efcd579a35" target="_top" xlink:title="Update time dependent quantities.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a4abff93789ea47f89f61c7efcd579a35" target="_top" xlink:title="Update time dependent quantities.">
 <polygon fill="white" stroke="#666666" points="149,-30 0,-30 0,0 149,0 149,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BCPenalty</text>
 <text text-anchor="middle" x="74.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Form::update_quantities</text>
@@ -45,10 +58,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M174.89,-28.03C166.35,-26.91 157.72,-25.78 149.29,-24.68"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="174.49,-31.51 184.86,-29.34 175.4,-24.57 174.49,-31.51"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

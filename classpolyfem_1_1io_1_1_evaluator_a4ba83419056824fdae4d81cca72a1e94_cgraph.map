@@ -1,20 +1,38 @@
 <map id="polyfem::io::Evaluator::compute_tensor_value" name="polyfem::io::Evaluator::compute_tensor_value">
-<area shape="rect" id="node1" title="compute tensor quantity (ie stress tensor or velocy)" alt="" coords="5,449,184,489"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1assembler_1_1_assembler.html#a05a391ffee6dad03741212322c25d906" title=" " alt="" coords="256,5,420,60"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1utils_1_1_ref_element_sampler.html#aa195d36423c2ad8799303dd9b6555467" title=" " alt="" coords="240,85,436,125"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="257,149,419,189"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="492,178,655,218"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1mesh_1_1_mesh.html#af71fd4b4fd8eb19cb6315af09263c09c" title="is cell boundary" alt="" coords="253,263,423,303"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1mesh_1_1_mesh.html#a4ac6c05b7775df67b96087dc9721ee0a" title="checks if element is cube compatible" alt="" coords="257,327,419,367"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1mesh_1_1_mesh.html#a62e57386728f26b8feafea1043b65c21" title="checks if element is simples compatible" alt="" coords="257,391,419,431"/>
-<area shape="rect" id="node9" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="275,456,401,481"/>
-<area shape="rect" id="node10" href="$namespacepolyfem_1_1autogen.html#a81e7dfa1d60c099807060e6f1bc78e94" title=" " alt="" coords="261,506,415,546"/>
-<area shape="rect" id="node12" href="$namespacepolyfem_1_1autogen.html#a9c2688a6744801097c2f8baa081ab3a7" title=" " alt="" coords="261,570,415,610"/>
-<area shape="rect" id="node14" href="$namespacepolyfem_1_1autogen.html#a18ee2912d770a6bc9cfe2a485a9ecb25" title=" " alt="" coords="261,634,415,674"/>
-<area shape="rect" id="node15" href="$namespacepolyfem_1_1autogen.html#ae625b6539e6dfcbb11dee43af4a58bc0" title=" " alt="" coords="261,698,415,738"/>
-<area shape="rect" id="node16" href="$classpolyfem_1_1utils_1_1_ref_element_sampler.html#a3f7010c355152a152997097c1543e16f" title=" " alt="" coords="240,762,436,802"/>
-<area shape="rect" id="node17" href="$classpolyfem_1_1utils_1_1_ref_element_sampler.html#a747e43b420e9ef348218dea62e4a8cf9" title=" " alt="" coords="232,826,444,866"/>
-<area shape="rect" id="node18" href="$classpolyfem_1_1utils_1_1_ref_element_sampler.html#a6139f11a17d03d061c67f901d12a5f26" title=" " alt="" coords="240,890,436,930"/>
-<area shape="rect" id="node11" href="$namespacepolyfem_1_1autogen.html#ae638aa088cd1fdcfc3e3f0e60ef6d7ad" title=" " alt="" coords="497,506,650,546"/>
-<area shape="rect" id="node13" href="$namespacepolyfem_1_1autogen.html#a354a4b5cbfcf4c5768a35a8ed4f2cdb7" title=" " alt="" coords="497,570,650,610"/>
+<area shape="rect" id="Node000001" title="compute tensor quantity (ie stress tensor or velocy)" alt="" coords="5,449,184,489"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_assembler.html#a05a391ffee6dad03741212322c25d906" title=" " alt="" coords="256,5,420,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="94,448,102,378,123,278,141,223,164,168,193,117,230,71,242,60,246,64,234,75,198,120,169,171,146,224,129,279,108,379,100,449"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1utils_1_1_ref_element_sampler.html#aa195d36423c2ad8799303dd9b6555467" title=" " alt="" coords="240,85,436,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="96,448,106,387,129,303,147,258,169,213,197,171,230,135,236,130,239,134,234,139,201,175,174,216,152,260,134,305,111,388,101,449"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="257,149,419,189"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="99,448,114,399,140,334,178,266,203,234,230,205,248,193,251,197,234,209,207,237,183,269,145,337,119,401,104,449"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="492,178,655,218"/>
+<area shape="poly" id="edge8_Node000001_Node000005" title=" " alt="" coords="100,447,116,405,143,350,181,295,204,270,231,249,274,231,337,218,478,201,479,207,338,223,276,236,233,254,208,274,185,298,147,353,121,407,105,449"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_mesh.html#af71fd4b4fd8eb19cb6315af09263c09c" title="is cell boundary" alt="" coords="253,263,423,303"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="106,447,155,381,190,345,231,313,241,307,244,312,233,318,194,349,159,385,111,450"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_mesh.html#a4ac6c05b7775df67b96087dc9721ee0a" title="checks if element is cube compatible" alt="" coords="257,327,419,367"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="120,446,170,411,231,377,248,370,250,375,233,382,173,416,123,451"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_mesh.html#a62e57386728f26b8feafea1043b65c21" title="checks if element is simples compatible" alt="" coords="257,391,419,431"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="180,446,243,431,244,436,181,451"/>
+<area shape="rect" id="Node000009" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="275,456,401,481"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="184,466,261,466,261,471,184,471"/>
+<area shape="rect" id="Node000010" href="$namespacepolyfem_1_1autogen.html#a81e7dfa1d60c099807060e6f1bc78e94" title=" " alt="" coords="261,506,415,546"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="181,486,248,502,247,507,180,491"/>
+<area shape="rect" id="Node000012" href="$namespacepolyfem_1_1autogen.html#a9c2688a6744801097c2f8baa081ab3a7" title=" " alt="" coords="261,570,415,610"/>
+<area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="123,487,173,521,233,556,250,563,248,568,231,560,170,526,120,491"/>
+<area shape="rect" id="Node000014" href="$namespacepolyfem_1_1autogen.html#a18ee2912d770a6bc9cfe2a485a9ecb25" title=" " alt="" coords="261,634,415,674"/>
+<area shape="poly" id="edge14_Node000001_Node000014" title=" " alt="" coords="111,487,159,553,194,589,233,620,250,629,248,634,231,624,190,593,155,556,106,490"/>
+<area shape="rect" id="Node000015" href="$namespacepolyfem_1_1autogen.html#ae625b6539e6dfcbb11dee43af4a58bc0" title=" " alt="" coords="261,698,415,738"/>
+<area shape="poly" id="edge15_Node000001_Node000015" title=" " alt="" coords="105,488,122,529,150,582,187,637,209,662,234,684,250,694,247,699,230,688,205,666,182,640,145,585,118,531,101,490"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1utils_1_1_ref_element_sampler.html#a3f7010c355152a152997097c1543e16f" title=" " alt="" coords="240,762,436,802"/>
+<area shape="poly" id="edge16_Node000001_Node000016" title=" " alt="" coords="102,488,116,540,141,610,158,648,179,684,205,718,234,748,240,753,237,757,230,752,200,722,175,687,154,650,136,612,111,542,97,489"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1utils_1_1_ref_element_sampler.html#a747e43b420e9ef348218dea62e4a8cf9" title=" " alt="" coords="232,826,444,866"/>
+<area shape="poly" id="edge17_Node000001_Node000017" title=" " alt="" coords="101,488,110,551,133,638,150,685,172,731,200,774,234,812,238,816,235,820,230,816,196,778,168,734,145,687,128,640,105,552,95,489"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1utils_1_1_ref_element_sampler.html#a6139f11a17d03d061c67f901d12a5f26" title=" " alt="" coords="240,890,436,930"/>
+<area shape="poly" id="edge18_Node000001_Node000018" title=" " alt="" coords="99,489,105,562,125,666,142,722,165,778,196,830,234,876,238,880,235,884,230,880,191,833,160,780,137,724,120,667,100,562,94,489"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="420,176,479,184,478,189,419,181"/>
+<area shape="rect" id="Node000011" href="$namespacepolyfem_1_1autogen.html#ae638aa088cd1fdcfc3e3f0e60ef6d7ad" title=" " alt="" coords="497,506,650,546"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="415,523,483,523,483,529,415,529"/>
+<area shape="rect" id="Node000013" href="$namespacepolyfem_1_1autogen.html#a354a4b5cbfcf4c5768a35a8ed4f2cdb7" title=" " alt="" coords="497,570,650,610"/>
+<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="415,587,483,587,483,593,415,593"/>
 </map>

@@ -6,12 +6,22 @@
 <!-- Title: polyfem::time_integrator::ImplicitNewmark::acceleration_scaling Pages: 1 -->
 <svg width="365pt" height="86pt"
  viewBox="0.00 0.00 365.00 86.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 82)">
 <title>polyfem::time_integrator::ImplicitNewmark::acceleration_scaling</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Compute the acceleration scaling used to scale forces when integrating a second order ODE.">
+<g id="a_Node000001"><a xlink:title="Compute the acceleration scaling used to scale forces when integrating a second order ODE.">
 <polygon fill="#999999" stroke="#666666" points="173,-59.5 0,-59.5 0,-18.5 173,-18.5 173,-59.5"/>
 <text text-anchor="start" x="8" y="-47.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="start" x="8" y="-36.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::acceleration</text>
@@ -20,9 +30,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a06343b9fb8c270eaaca03b546dd80494" target="_top" xlink:title="parameter for blending accelerations in the solution update.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a06343b9fb8c270eaaca03b546dd80494" target="_top" xlink:title="parameter for blending accelerations in the solution update.">
 <polygon fill="white" stroke="#666666" points="352.5,-78 213.5,-78 213.5,-48 352.5,-48 352.5,-78"/>
 <text text-anchor="start" x="221.5" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="middle" x="283" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::beta</text>
@@ -30,15 +40,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M173.09,-49.56C183.08,-50.79 193.23,-52.05 203.12,-53.27"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="202.96,-56.77 213.31,-54.52 203.81,-49.83 202.96,-56.77"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932" target="_top" xlink:title="Access the time step size.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932" target="_top" xlink:title="Access the time step size.">
 <polygon fill="white" stroke="#666666" points="357,-30 209,-30 209,0 357,0 357,-30"/>
 <text text-anchor="start" x="217" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="middle" x="283" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator::dt</text>
@@ -46,10 +59,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M173.09,-28.44C181.66,-27.38 190.36,-26.31 198.9,-25.25"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="199.35,-28.72 208.85,-24.03 198.49,-21.78 199.35,-28.72"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

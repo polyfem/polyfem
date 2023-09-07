@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 130)">
 <title>polyfem::solver::ContactForm::use_convergent_formulation</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Get use_convergent_formulation.">
+<g id="a_Node000001"><a xlink:title="Get use_convergent_formulation.">
 <polygon fill="#999999" stroke="#666666" points="559,-78 372,-78 372,-48 559,-48 559,-78"/>
 <text text-anchor="start" x="380" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Contact</text>
 <text text-anchor="middle" x="465.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">Form::use_convergent_formulation</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_contact_form.html#ab7d50032b2d64d411f0424f677d7fd61" target="_top" xlink:title="Construct a new Contact Form object.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_contact_form.html#ab7d50032b2d64d411f0424f677d7fd61" target="_top" xlink:title="Construct a new Contact Form object.">
 <polygon fill="white" stroke="#666666" points="322,-126 185,-126 185,-96 322,-96 322,-126"/>
 <text text-anchor="start" x="193" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Contact</text>
 <text text-anchor="middle" x="253.5" y="-103" font-family="Helvetica,sans-Serif" font-size="10.00">Form::ContactForm</text>
@@ -29,15 +29,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M388.8,-80.3C366.33,-85.44 341.91,-91.02 320.14,-96"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="389.66,-83.7 398.63,-78.06 388.1,-76.87 389.66,-83.7"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_contact_form.html#ab7f5b55a31f0829c3ae3002b1b1959a7" target="_top" xlink:title="Update the barrier stiffness based on the current elasticity energy.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_contact_form.html#ab7f5b55a31f0829c3ae3002b1b1959a7" target="_top" xlink:title="Update the barrier stiffness based on the current elasticity energy.">
 <polygon fill="white" stroke="#666666" points="336,-78 171,-78 171,-48 336,-48 336,-78"/>
 <text text-anchor="start" x="179" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Contact</text>
 <text text-anchor="middle" x="253.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">Form::update_barrier_stiffness</text>
@@ -45,15 +48,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M361.73,-63C353.15,-63 344.55,-63 336.16,-63"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="361.78,-66.5 371.78,-63 361.78,-59.5 361.78,-66.5"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1solver_1_1_friction_form.html#a2d39d4abbf850fbe702a89befd07da70" target="_top" xlink:title="Update lagged fields.">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1solver_1_1_friction_form.html#a2d39d4abbf850fbe702a89befd07da70" target="_top" xlink:title="Update lagged fields.">
 <polygon fill="white" stroke="#666666" points="321,-30 186,-30 186,0 321,0 321,-30"/>
 <text text-anchor="start" x="194" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Friction</text>
 <text text-anchor="middle" x="253.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Form::update_lagging</text>
@@ -61,15 +67,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M388.8,-45.7C366.33,-40.56 341.91,-34.98 320.14,-30"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="388.1,-49.13 398.63,-47.94 389.66,-42.3 388.1,-49.13"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1solver_1_1_friction_form.html#a13496c772de23a6a34114dc4a6a725df" target="_top" xlink:title="Initialize lagged fields.">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1solver_1_1_friction_form.html#a13496c772de23a6a34114dc4a6a725df" target="_top" xlink:title="Initialize lagged fields.">
 <polygon fill="white" stroke="#666666" points="135,-30 0,-30 0,0 135,0 135,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Friction</text>
 <text text-anchor="middle" x="67.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Form::init_lagging</text>
@@ -77,10 +86,13 @@
 </g>
 </g>
 <!-- Node4&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000004_Node000005" class="edge">
 <title>Node4&#45;&gt;Node5</title>
+<g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M175.66,-15C162.24,-15 148.39,-15 135.27,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="175.81,-18.5 185.81,-15 175.81,-11.5 175.81,-18.5"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

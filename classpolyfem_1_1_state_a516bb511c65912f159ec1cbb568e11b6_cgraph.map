@@ -1,17 +1,33 @@
 <map id="polyfem::State::initial_solution" name="polyfem::State::initial_solution">
-<area shape="rect" id="node1" title="Load or compute the initial solution." alt="" coords="5,152,168,192"/>
-<area shape="rect" id="node2" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="219,5,398,45"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a7e4641b4e7d3130e1618237978eee875" title=" " alt="" coords="216,69,401,109"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5" title=" " alt="" coords="231,134,386,159"/>
-<area shape="rect" id="node8" href="$namespacepolyfem_1_1io.html#a37878272b4408db3e9e1d7a9efd1ae09" title="Reads a matrix from a file. Determines the file format based on the path&#39;s extension." alt="" coords="217,183,400,209"/>
-<area shape="rect" id="node11" href="$namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1" title="Reorder row blocks in a matrix." alt="" coords="225,233,392,273"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1_state.html#acfcd600796cd24e1555454a1d31f2fc2" title="Resolve input path relative to root_path() if the path is not absolute." alt="" coords="221,297,396,337"/>
-<area shape="rect" id="node3" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="719,183,844,209"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a729f1878fafca845d043f4f2ead84dbc" title=" " alt="" coords="449,62,668,87"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db" title=" " alt="" coords="466,112,651,152"/>
-<area shape="rect" id="node9" href="$namespacepolyfem_1_1io.html#a9b84370fb8325fed647d02c0cf45b207" title=" " alt="" coords="467,176,650,216"/>
-<area shape="rect" id="node10" href="$namespacepolyfem_1_1io.html#a3902e7a61e7b7af5da5c629e92af9008" title=" " alt="" coords="467,240,650,280"/>
-<area shape="rect" id="node13" href="$namespacepolyfem_1_1utils.html#a4dc2e59d21d66809d2273ae115be0b73" title=" " alt="" coords="457,305,661,330"/>
-<area shape="rect" id="node14" href="$classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f" title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)" alt="" coords="465,354,653,379"/>
-<area shape="rect" id="node15" href="$namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a" title=" " alt="" coords="716,347,847,387"/>
+<area shape="rect" id="Node000001" title="Load or compute the initial solution." alt="" coords="5,152,168,192"/>
+<area shape="rect" id="Node000002" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="219,5,398,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="104,150,151,103,182,78,215,55,226,49,229,53,217,60,185,82,155,107,108,154"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a7e4641b4e7d3130e1618237978eee875" title=" " alt="" coords="216,69,401,109"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="137,149,215,119,235,112,237,117,217,124,139,154"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5" title=" " alt="" coords="231,134,386,159"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="168,160,217,154,218,160,169,165"/>
+<area shape="rect" id="Node000008" href="$namespacepolyfem_1_1io.html#a37878272b4408db3e9e1d7a9efd1ae09" title="Reads a matrix from a file. Determines the file format based on the path&#39;s extension." alt="" coords="217,183,400,209"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="169,178,204,182,204,187,168,183"/>
+<area shape="rect" id="Node000011" href="$namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1" title="Reorder row blocks in a matrix." alt="" coords="225,233,392,273"/>
+<area shape="poly" id="edge12_Node000001_Node000011" title=" " alt="" coords="140,190,217,219,237,226,235,231,215,224,138,195"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1_state.html#acfcd600796cd24e1555454a1d31f2fc2" title="Resolve input path relative to root_path() if the path is not absolute." alt="" coords="221,297,396,337"/>
+<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="108,190,155,236,185,261,217,283,229,289,227,294,215,288,182,266,151,240,104,194"/>
+<area shape="rect" id="Node000003" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="719,183,844,209"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="398,9,461,6,531,8,602,21,637,32,669,47,704,73,733,106,756,140,771,169,767,172,751,142,729,109,701,77,667,52,635,37,601,26,530,14,461,11,398,14"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a729f1878fafca845d043f4f2ead84dbc" title=" " alt="" coords="449,62,668,87"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="401,81,435,79,436,85,402,87"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db" title=" " alt="" coords="466,112,651,152"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="402,102,453,111,452,117,401,108"/>
+<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1io.html#a9b84370fb8325fed647d02c0cf45b207" title=" " alt="" coords="467,176,650,216"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="400,193,454,193,454,199,400,199"/>
+<area shape="rect" id="Node000010" href="$namespacepolyfem_1_1io.html#a3902e7a61e7b7af5da5c629e92af9008" title=" " alt="" coords="467,240,650,280"/>
+<area shape="poly" id="edge10_Node000008_Node000010" title=" " alt="" coords="360,206,467,234,466,239,359,211"/>
+<area shape="poly" id="edge9_Node000009_Node000003" title=" " alt="" coords="650,193,705,193,705,199,650,199"/>
+<area shape="poly" id="edge11_Node000010_Node000003" title=" " alt="" coords="628,237,722,210,724,215,630,242"/>
+<area shape="rect" id="Node000013" href="$namespacepolyfem_1_1utils.html#a4dc2e59d21d66809d2273ae115be0b73" title=" " alt="" coords="457,305,661,330"/>
+<area shape="poly" id="edge14_Node000012_Node000013" title=" " alt="" coords="396,315,443,315,443,320,396,320"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f" title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)" alt="" coords="465,354,653,379"/>
+<area shape="poly" id="edge15_Node000012_Node000014" title=" " alt="" coords="397,332,481,349,480,354,396,337"/>
+<area shape="rect" id="Node000015" href="$namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a" title=" " alt="" coords="716,347,847,387"/>
+<area shape="poly" id="edge16_Node000014_Node000015" title=" " alt="" coords="653,364,702,364,702,369,653,369"/>
 </map>

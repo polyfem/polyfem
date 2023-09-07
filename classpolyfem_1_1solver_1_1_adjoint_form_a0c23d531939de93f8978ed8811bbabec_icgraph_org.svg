@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 45)">
 <title>polyfem::solver::AdjointForm::compute_adjoint_rhs_unweighted</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="493,-41 359,-41 359,0 493,0 493,-41"/>
 <text text-anchor="start" x="367" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Adjoint</text>
 <text text-anchor="start" x="367" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">Form::compute_adjoint</text>
@@ -20,9 +20,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_adjoint_form.html#a75339fa2280050eb0a11e9c1564c2463" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_adjoint_form.html#a75339fa2280050eb0a11e9c1564c2463" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="323,-41 185,-41 185,0 323,0 323,-41"/>
 <text text-anchor="start" x="193" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Adjoint</text>
 <text text-anchor="start" x="193" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">Form::compute_reduced</text>
@@ -31,15 +31,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M348.58,-20.5C340.15,-20.5 331.6,-20.5 323.27,-20.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="348.79,-24 358.79,-20.5 348.79,-17 348.79,-24"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_adjoint_form.html#aa5848914ae87f71ccebd5c84fbef661e" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_adjoint_form.html#aa5848914ae87f71ccebd5c84fbef661e" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="149,-35.5 0,-35.5 0,-5.5 149,-5.5 149,-35.5"/>
 <text text-anchor="start" x="8" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Adjoint</text>
 <text text-anchor="middle" x="74.5" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">Form::compute_adjoint_rhs</text>
@@ -47,10 +50,13 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M174.6,-20.5C166.1,-20.5 157.48,-20.5 149.04,-20.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="174.88,-24 184.88,-20.5 174.88,-17 174.88,-24"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

@@ -6,12 +6,22 @@
 <!-- Title: polyfem::solver::InsertConstantMap::size Pages: 1 -->
 <svg width="384pt" height="86pt"
  viewBox="0.00 0.00 384.00 86.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 82)">
 <title>polyfem::solver::InsertConstantMap::size</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="376,-54 206,-54 206,-24 376,-24 376,-54"/>
 <text text-anchor="start" x="214" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::InsertConstant</text>
 <text text-anchor="middle" x="291" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">Map::size</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_insert_constant_map.html#a926643909e0a8a4d276fa7fab331a2d8" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_insert_constant_map.html#a926643909e0a8a4d276fa7fab331a2d8" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="170,-78 0,-78 0,-48 170,-48 170,-78"/>
 <text text-anchor="start" x="8" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::InsertConstant</text>
 <text text-anchor="middle" x="85" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">Map::eval</text>
@@ -29,15 +39,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M195.88,-50.07C187.34,-51.08 178.73,-52.09 170.29,-53.08"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="196.33,-53.54 205.85,-48.9 195.51,-46.59 196.33,-53.54"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_insert_constant_map.html#ae62999a2fe1dbae810ff0be50c7fbf82" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_insert_constant_map.html#ae62999a2fe1dbae810ff0be50c7fbf82" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="170,-30 0,-30 0,0 170,0 170,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::InsertConstant</text>
 <text text-anchor="middle" x="85" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Map::InsertConstantMap</text>
@@ -45,10 +58,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M195.88,-27.93C187.34,-26.92 178.73,-25.91 170.29,-24.92"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="195.51,-31.41 205.85,-29.1 196.33,-24.46 195.51,-31.41"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

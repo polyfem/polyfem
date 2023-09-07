@@ -6,12 +6,22 @@
 <!-- Title: polyfem::mesh::Mesh::load_boundary_ids Pages: 1 -->
 <svg width="455pt" height="134pt"
  viewBox="0.00 0.00 455.00 134.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 130)">
 <title>polyfem::mesh::Mesh::load_boundary_ids</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="loads the boundary selections for a file">
+<g id="a_Node000001"><a xlink:title="loads the boundary selections for a file">
 <polygon fill="#999999" stroke="#666666" points="122,-78 0,-78 0,-48 122,-48 122,-78"/>
 <text text-anchor="start" x="8" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh</text>
 <text text-anchor="middle" x="61" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::load_boundary_ids</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html#ad45e1e9607532dbcfe63d08ed334b85c" target="_top" xlink:title="utitlity to return the number of boundary elements, faces or edges in 3d and 2d">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html#ad45e1e9607532dbcfe63d08ed334b85c" target="_top" xlink:title="utitlity to return the number of boundary elements, faces or edges in 3d and 2d">
 <polygon fill="white" stroke="#666666" points="289,-78 158,-78 158,-48 289,-48 289,-78"/>
 <text text-anchor="start" x="166" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh</text>
 <text text-anchor="middle" x="223.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::n_boundary_elements</text>
@@ -29,15 +39,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M122.22,-63C130.6,-63 139.28,-63 147.88,-63"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="147.91,-66.5 157.91,-63 147.91,-59.5 147.91,-66.5"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" target="_top" xlink:title="checks if mesh is volume">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" target="_top" xlink:title="checks if mesh is volume">
 <polygon fill="white" stroke="#666666" points="447,-126 325,-126 325,-96 447,-96 447,-126"/>
 <text text-anchor="start" x="333" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh</text>
 <text text-anchor="middle" x="386" y="-103" font-family="Helvetica,sans-Serif" font-size="10.00">::is_volume</text>
@@ -45,15 +58,18 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M274.84,-78.06C290.83,-82.84 308.66,-88.17 325.24,-93.13"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="324.25,-96.49 334.84,-96 326.26,-89.78 324.25,-96.49"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html#aeda3afe06090b4cccbbf7f5d9440de69" target="_top" xlink:title="number of edges">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html#aeda3afe06090b4cccbbf7f5d9440de69" target="_top" xlink:title="number of edges">
 <polygon fill="white" stroke="#666666" points="447,-78 325,-78 325,-48 447,-48 447,-78"/>
 <text text-anchor="start" x="333" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh</text>
 <text text-anchor="middle" x="386" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::n_edges</text>
@@ -61,15 +77,18 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000002_Node000004" class="edge">
 <title>Node2&#45;&gt;Node4</title>
+<g id="a_edge3_Node000002_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M289.32,-63C297.67,-63 306.25,-63 314.68,-63"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="314.87,-66.5 324.87,-63 314.87,-59.5 314.87,-66.5"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2" target="_top" xlink:title="number of faces">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2" target="_top" xlink:title="number of faces">
 <polygon fill="white" stroke="#666666" points="447,-30 325,-30 325,0 447,0 447,-30"/>
 <text text-anchor="start" x="333" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh</text>
 <text text-anchor="middle" x="386" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::n_faces</text>
@@ -77,10 +96,28 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000002_Node000005" class="edge">
 <title>Node2&#45;&gt;Node5</title>
+<g id="a_edge4_Node000002_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M274.84,-47.94C290.83,-43.16 308.66,-37.83 325.24,-32.87"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="326.26,-36.22 334.84,-30 324.25,-29.51 326.26,-36.22"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 106)">
 <title>polyfem::basis::RBFWithQuadratic::setup_monomials_strong_2d</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="184,-54 0,-54 0,-24 184,-24 184,-54"/>
 <text text-anchor="start" x="8" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::RBFWithQuadratic</text>
 <text text-anchor="middle" x="92" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">::setup_monomials_strong_2d</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1assembler_1_1_assembler.html#ac3b31adacd89c796c137867e4ab2fd70" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1assembler_1_1_assembler.html#ac3b31adacd89c796c137867e4ab2fd70" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="366,-78 223,-78 223,-48 366,-48 366,-78"/>
 <text text-anchor="start" x="231" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="294.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::Assembler::compute_rhs</text>
@@ -29,15 +29,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M184.16,-49.91C193.73,-51.06 203.41,-52.22 212.85,-53.35"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="212.64,-56.85 222.99,-54.56 213.48,-49.9 212.64,-56.85"/>
+</a>
+</g>
 </g>
 <!-- Node6 -->
-<g id="node6" class="node">
+<g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:href="struct_diff_scalar_base.html#a9ec9c3461abcd98164a36ba6f4e7dfb7" target="_top" xlink:title="Set the independent variable count used by the automatic differentiation layer.">
+<g id="a_Node000006"><a xlink:href="struct_diff_scalar_base.html#a9ec9c3461abcd98164a36ba6f4e7dfb7" target="_top" xlink:title="Set the independent variable count used by the automatic differentiation layer.">
 <polygon fill="white" stroke="#666666" points="369,-30 220,-30 220,0 369,0 369,-30"/>
 <text text-anchor="start" x="228" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">DiffScalarBase::setVariable</text>
 <text text-anchor="middle" x="294.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Count</text>
@@ -45,15 +48,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node6 -->
-<g id="edge5" class="edge">
+<g id="edge5_Node000001_Node000006" class="edge">
 <title>Node1&#45;&gt;Node6</title>
+<g id="a_edge5_Node000001_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M184.16,-28.09C192.78,-27.06 201.5,-26.01 210.04,-24.99"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="210.47,-28.46 219.99,-23.8 209.64,-21.51 210.47,-28.46"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="539,-102 405,-102 405,-72 539,-72 539,-102"/>
 <text text-anchor="start" x="413" y="-90" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::log_and_throw</text>
 <text text-anchor="middle" x="472" y="-79" font-family="Helvetica,sans-Serif" font-size="10.00">_error</text>
@@ -61,15 +67,18 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M366.12,-72.66C375.5,-73.94 385.14,-75.26 394.61,-76.55"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="394.4,-80.06 404.78,-77.94 395.35,-73.12 394.4,-80.06"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="529,-54 415,-54 415,-24 529,-24 529,-54"/>
 <text text-anchor="start" x="423" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="472" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">::Assembler::name</text>
@@ -77,25 +86,31 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000002_Node000005" class="edge">
 <title>Node2&#45;&gt;Node5</title>
+<g id="a_edge4_Node000002_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M366.12,-53.34C378.9,-51.59 392.18,-49.78 404.82,-48.05"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="405.37,-51.51 414.81,-46.68 404.42,-44.57 405.37,-51.51"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
+<g id="a_Node000004"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
 <polygon fill="white" stroke="#666666" points="669,-96.5 575,-96.5 575,-77.5 669,-77.5 669,-96.5"/>
 <text text-anchor="middle" x="622" y="-84.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::logger</text>
 </a>
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M539.21,-87C547.74,-87 556.42,-87 564.77,-87"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="564.77,-90.5 574.77,-87 564.77,-83.5 564.77,-90.5"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

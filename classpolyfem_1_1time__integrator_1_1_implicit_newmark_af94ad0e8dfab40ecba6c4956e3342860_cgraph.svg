@@ -5,59 +5,59 @@
  -->
 <!-- Title: polyfem::time_integrator::ImplicitNewmark::update_quantities Pages: 1 -->
 <!--zoomable 313 -->
+
 <svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
 <style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
 .edge:hover path { stroke: red; }
 .edge:hover polygon { stroke: red; fill: red; }
 ]]></style>
-<script type="text/javascript"><![CDATA[
-var edges = document.getElementsByTagName('g');
-if (edges && edges.length) {
-  for (var i=0;i<edges.length;i++) {
-    if (edges[i].id.substr(0,4)=='edge') {
-      edges[i].setAttribute('class','edge');
-    }
-  }
-}
-]]></script>
-        <defs>
-                <circle id="rim" cx="0" cy="0" r="7"/>
-                <circle id="rim2" cx="0" cy="0" r="3.5"/>
-                <g id="zoomPlus">
-                        <use xlink:href="#rim" fill="#404040">
-                                <set attributeName="fill" to="#808080" begin="zoomplus.mouseover" end="zoomplus.mouseout"/>
-                        </use>
-                        <path d="M-4,0h8M0,-4v8" fill="none" stroke="white" stroke-width="1.5" pointer-events="none"/>
-                </g>
-                <g id="zoomMin">
-                        <use xlink:href="#rim" fill="#404040">
-                                <set attributeName="fill" to="#808080" begin="zoomminus.mouseover" end="zoomminus.mouseout"/>
-                        </use>
-                        <path d="M-4,0h8" fill="none" stroke="white" stroke-width="1.5" pointer-events="none"/>
-                </g>
-                <g id="dirArrow">
-                        <path fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
-                </g>
-               <g id="resetDef">
-                       <use xlink:href="#rim2" fill="#404040">
-                               <set attributeName="fill" to="#808080" begin="reset.mouseover" end="reset.mouseout"/>
-                       </use>
-               </g>
-        </defs>
 
-<script type="text/javascript">
+<defs>
+  <circle id="rim" cx="0" cy="0" r="7"/>
+  <circle id="rim2" cx="0" cy="0" r="3.5"/>
+  <g id="zoomPlus">
+    <use xlink:href="#rim" fill="#404040"><set attributeName="fill" to="#808080" begin="zoomplus.mouseover" end="zoomplus.mouseout"/></use>
+    <path d="M-4,0h8M0,-4v8" fill="none" stroke="white" stroke-width="1.5" pointer-events="none"/>
+  </g>
+  <g id="zoomMin">
+    <use xlink:href="#rim" fill="#404040"><set attributeName="fill" to="#808080" begin="zoomminus.mouseover" end="zoomminus.mouseout"/></use>
+    <path d="M-4,0h8" fill="none" stroke="white" stroke-width="1.5" pointer-events="none"/>
+  </g>
+  <g id="arrowUp" transform="translate(30 24)">
+    <use xlink:href="#rim"/>
+    <path pointer-events="none" fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
+  </g>
+  <g id="arrowRight" transform="rotate(90) translate(36 -43)">
+    <use xlink:href="#rim"/>
+    <path pointer-events="none" fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
+  </g>
+  <g id="arrowDown" transform="rotate(180) translate(-30 -48)">
+    <use xlink:href="#rim"/>
+    <path pointer-events="none" fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
+  </g>
+  <g id="arrowLeft" transform="rotate(270) translate(-36 17)">
+    <use xlink:href="#rim"/>
+    <path pointer-events="none" fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
+  </g>
+  <g id="resetDef">
+    <use xlink:href="#rim2" fill="#404040"><set attributeName="fill" to="#808080" begin="reset.mouseover" end="reset.mouseout"/></use>
+  </g>
+</defs>
+<script type="application/ecmascript">
 var viewWidth = 531;
 var viewHeight = 313;
 var sectionId = 'dynsection-13';
 </script>
-<script xlink:href="svgpan.js"/>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
 <svg id="graph" class="graph">
 <g id="viewport">
 <title>polyfem::time_integrator::ImplicitNewmark::update_quantities</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Update the time integration quantities (i.e., , , and ).">
+<g id="a_Node000001"><a xlink:title="Update the time integration quantities (i.e., , , and ).">
 <polygon fill="#999999" stroke="#666666" points="146,-187 0,-187 0,-146 146,-146 146,-187"/>
 <text text-anchor="start" x="8" y="-175" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="start" x="8" y="-164" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::update</text>
@@ -66,9 +66,9 @@ var sectionId = 'dynsection-13';
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c" target="_top" xlink:title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)...">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c" target="_top" xlink:title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)...">
 <polygon fill="white" stroke="#666666" points="337,-246 182,-246 182,-205 337,-205 337,-246"/>
 <text text-anchor="start" x="190" y="-234" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="start" x="190" y="-223" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::compute</text>
@@ -77,15 +77,18 @@ var sectionId = 'dynsection-13';
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M138.27,-187.05C153.11,-191.8 169.03,-196.89 184.26,-201.76"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="183.56,-205.21 194.15,-204.92 185.69,-198.54 183.56,-205.21"/>
+</a>
+</g>
 </g>
 <!-- Node7 -->
-<g id="node7" class="node">
+<g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_node7"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55" target="_top" xlink:title="Compute the current velocity given the current solution and using the stored previous solution(s).">
+<g id="a_Node000007"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55" target="_top" xlink:title="Compute the current velocity given the current solution and using the stored previous solution(s).">
 <polygon fill="white" stroke="#666666" points="337,-187 182,-187 182,-146 337,-146 337,-187"/>
 <text text-anchor="start" x="190" y="-175" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="start" x="190" y="-164" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::compute</text>
@@ -94,15 +97,18 @@ var sectionId = 'dynsection-13';
 </g>
 </g>
 <!-- Node1&#45;&gt;Node7 -->
-<g id="edge6" class="edge">
+<g id="edge6_Node000001_Node000007" class="edge">
 <title>Node1&#45;&gt;Node7</title>
+<g id="a_edge6_Node000001_Node000007"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M146.13,-166.5C154.55,-166.5 163.21,-166.5 171.81,-166.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="171.86,-170 181.86,-166.5 171.86,-163 171.86,-170"/>
+</a>
+</g>
 </g>
 <!-- Node10 -->
-<g id="node10" class="node">
+<g id="Node000010" class="node">
 <title>Node10</title>
-<g id="a_node10"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a399a0bf25a479de6771d9d3d6ed1d744" target="_top" xlink:title="Convenience functions for setting the most recent previous acceleration.">
+<g id="a_Node000010"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a399a0bf25a479de6771d9d3d6ed1d744" target="_top" xlink:title="Convenience functions for setting the most recent previous acceleration.">
 <polygon fill="white" stroke="#666666" points="329,-305 190,-305 190,-264 329,-264 329,-305"/>
 <text text-anchor="start" x="198" y="-293" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="start" x="198" y="-282" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator</text>
@@ -111,15 +117,18 @@ var sectionId = 'dynsection-13';
 </g>
 </g>
 <!-- Node1&#45;&gt;Node10 -->
-<g id="edge13" class="edge">
+<g id="edge13_Node000001_Node000010" class="edge">
 <title>Node1&#45;&gt;Node10</title>
+<g id="a_edge13_Node000001_Node000010"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M94.77,-187.17C115.44,-206.85 148.8,-236.23 182,-255.5 184.34,-256.86 186.75,-258.17 189.22,-259.44"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="187.79,-262.64 198.32,-263.86 190.85,-256.35 187.79,-262.64"/>
+</a>
+</g>
 </g>
 <!-- Node11 -->
-<g id="node11" class="node">
+<g id="Node000011" class="node">
 <title>Node11</title>
-<g id="a_node11"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a5a5cf8c74c6b8877831f0c357dfcab68" target="_top" xlink:title="Convenience functions for setting the most recent previous velocity.">
+<g id="a_Node000011"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a5a5cf8c74c6b8877831f0c357dfcab68" target="_top" xlink:title="Convenience functions for setting the most recent previous velocity.">
 <polygon fill="white" stroke="#666666" points="329,-128 190,-128 190,-87 329,-87 329,-128"/>
 <text text-anchor="start" x="198" y="-116" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="start" x="198" y="-105" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator</text>
@@ -128,15 +137,18 @@ var sectionId = 'dynsection-13';
 </g>
 </g>
 <!-- Node1&#45;&gt;Node11 -->
-<g id="edge15" class="edge">
+<g id="edge15_Node000001_Node000011" class="edge">
 <title>Node1&#45;&gt;Node11</title>
+<g id="a_edge15_Node000001_Node000011"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M138.27,-145.95C153.11,-141.2 169.03,-136.11 184.26,-131.24"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="185.69,-134.46 194.15,-128.08 183.56,-127.79 185.69,-134.46"/>
+</a>
+</g>
 </g>
 <!-- Node12 -->
-<g id="node12" class="node">
+<g id="Node000012" class="node">
 <title>Node12</title>
-<g id="a_node12"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#adffdea1615eb26fb703f7e5743ac7d04" target="_top" xlink:title="Convenience functions for setting the most recent previous solution.">
+<g id="a_Node000012"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#adffdea1615eb26fb703f7e5743ac7d04" target="_top" xlink:title="Convenience functions for setting the most recent previous solution.">
 <polygon fill="white" stroke="#666666" points="329,-55 190,-55 190,-14 329,-14 329,-55"/>
 <text text-anchor="start" x="198" y="-43" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="start" x="198" y="-32" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator</text>
@@ -145,15 +157,18 @@ var sectionId = 'dynsection-13';
 </g>
 </g>
 <!-- Node1&#45;&gt;Node12 -->
-<g id="edge17" class="edge">
+<g id="edge17_Node000001_Node000012" class="edge">
 <title>Node1&#45;&gt;Node12</title>
+<g id="a_edge17_Node000001_Node000012"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M97.16,-145.78C118.47,-127.17 151.32,-99.62 182,-78.5 191.18,-72.18 201.32,-65.9 211.13,-60.15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="213.1,-63.05 220.01,-55.03 209.6,-56.99 213.1,-63.05"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab2bc11437f8f2f8077ddf4f6e9814d3e" target="_top" xlink:title="Get the most recent previous acceleration value.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab2bc11437f8f2f8077ddf4f6e9814d3e" target="_top" xlink:title="Get the most recent previous acceleration value.">
 <polygon fill="white" stroke="#666666" points="517.5,-305 378.5,-305 378.5,-264 517.5,-264 517.5,-305"/>
 <text text-anchor="start" x="386.5" y="-293" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="start" x="386.5" y="-282" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator</text>
@@ -162,15 +177,18 @@ var sectionId = 'dynsection-13';
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M325.47,-246.05C340.61,-250.84 356.86,-255.98 372.39,-260.9"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="371.36,-264.24 381.95,-263.92 373.47,-257.57 371.36,-264.24"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932" target="_top" xlink:title="Access the time step size.">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932" target="_top" xlink:title="Access the time step size.">
 <polygon fill="white" stroke="#666666" points="522,-245.5 374,-245.5 374,-215.5 522,-215.5 522,-245.5"/>
 <text text-anchor="start" x="382" y="-233.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="middle" x="448" y="-222.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator::dt</text>
@@ -178,15 +196,18 @@ var sectionId = 'dynsection-13';
 </g>
 </g>
 <!-- Node2&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000002_Node000004" class="edge">
 <title>Node2&#45;&gt;Node4</title>
+<g id="a_edge3_Node000002_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M337.16,-227.56C345.9,-227.79 354.84,-228.03 363.66,-228.27"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="363.85,-231.77 373.94,-228.54 364.03,-224.77 363.85,-231.77"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab002513111de64bdfa2a223e0445375e" target="_top" xlink:title="parameter for blending accelerations in the velocity update.">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab002513111de64bdfa2a223e0445375e" target="_top" xlink:title="parameter for blending accelerations in the velocity update.">
 <polygon fill="white" stroke="#666666" points="523,-197.5 373,-197.5 373,-167.5 523,-167.5 523,-197.5"/>
 <text text-anchor="start" x="381" y="-185.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="middle" x="448" y="-174.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::gamma</text>
@@ -194,15 +215,18 @@ var sectionId = 'dynsection-13';
 </g>
 </g>
 <!-- Node2&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000002_Node000005" class="edge">
 <title>Node2&#45;&gt;Node5</title>
+<g id="a_edge4_Node000002_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M337.16,-207.82C348.66,-205.17 360.51,-202.44 371.98,-199.8"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="372.98,-203.16 381.94,-197.5 371.41,-196.34 372.98,-203.16"/>
+</a>
+</g>
 </g>
 <!-- Node6 -->
-<g id="node6" class="node">
+<g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a1c90c8ab75ceea7bfd197921a9b5ad81" target="_top" xlink:title="Get the most recent previous velocity value.">
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a1c90c8ab75ceea7bfd197921a9b5ad81" target="_top" xlink:title="Get the most recent previous velocity value.">
 <polygon fill="white" stroke="#666666" points="517.5,-149 378.5,-149 378.5,-108 517.5,-108 517.5,-149"/>
 <text text-anchor="start" x="386.5" y="-137" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="start" x="386.5" y="-126" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator</text>
@@ -211,39 +235,54 @@ var sectionId = 'dynsection-13';
 </g>
 </g>
 <!-- Node2&#45;&gt;Node6 -->
-<g id="edge5" class="edge">
+<g id="edge5_Node000002_Node000006" class="edge">
 <title>Node2&#45;&gt;Node6</title>
+<g id="a_edge5_Node000002_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M322.28,-204.93C327.41,-202.38 332.39,-199.57 337,-196.5 356.37,-183.61 353.78,-171.61 373,-158.5 375.36,-156.89 377.82,-155.34 380.35,-153.86"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="382.05,-156.92 389.17,-149.07 378.71,-150.77 382.05,-156.92"/>
+</a>
+</g>
 </g>
 <!-- Node7&#45;&gt;Node3 -->
-<g id="edge7" class="edge">
+<g id="edge7_Node000007_Node000003" class="edge">
 <title>Node7&#45;&gt;Node3</title>
+<g id="a_edge7_Node000007_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M323.38,-187.17C328.22,-189.93 332.83,-193.03 337,-196.5 360.31,-215.92 349.8,-234.95 373,-254.5 374.55,-255.81 376.17,-257.06 377.83,-258.27"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="376.24,-261.41 386.54,-263.89 380.04,-255.52 376.24,-261.41"/>
+</a>
+</g>
 </g>
 <!-- Node7&#45;&gt;Node4 -->
-<g id="edge9" class="edge">
+<g id="edge9_Node000007_Node000004" class="edge">
 <title>Node7&#45;&gt;Node4</title>
+<g id="a_edge9_Node000007_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M317.34,-187.06C335.12,-193.4 354.85,-200.33 373,-206.5 378.57,-208.39 384.39,-210.34 390.21,-212.26"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="389.37,-215.67 399.96,-215.46 391.55,-209.02 389.37,-215.67"/>
+</a>
+</g>
 </g>
 <!-- Node7&#45;&gt;Node5 -->
-<g id="edge10" class="edge">
+<g id="edge10_Node000007_Node000005" class="edge">
 <title>Node7&#45;&gt;Node5</title>
+<g id="a_edge10_Node000007_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M337.16,-173.08C345.52,-173.79 354.06,-174.53 362.51,-175.25"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="362.48,-178.76 372.74,-176.13 363.07,-171.79 362.48,-178.76"/>
+</a>
+</g>
 </g>
 <!-- Node7&#45;&gt;Node6 -->
-<g id="edge11" class="edge">
+<g id="edge11_Node000007_Node000006" class="edge">
 <title>Node7&#45;&gt;Node6</title>
+<g id="a_edge11_Node000007_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M337.16,-150.88C347.52,-148.77 358.15,-146.6 368.54,-144.49"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="369.3,-147.9 378.4,-142.48 367.91,-141.04 369.3,-147.9"/>
+</a>
+</g>
 </g>
 <!-- Node8 -->
-<g id="node8" class="node">
+<g id="Node000008" class="node">
 <title>Node8</title>
-<g id="a_node8"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a06343b9fb8c270eaaca03b546dd80494" target="_top" xlink:title="parameter for blending accelerations in the solution update.">
+<g id="a_Node000008"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a06343b9fb8c270eaaca03b546dd80494" target="_top" xlink:title="parameter for blending accelerations in the solution update.">
 <polygon fill="white" stroke="#666666" points="517.5,-89.5 378.5,-89.5 378.5,-59.5 517.5,-59.5 517.5,-89.5"/>
 <text text-anchor="start" x="386.5" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="middle" x="448" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::beta</text>
@@ -251,15 +290,18 @@ var sectionId = 'dynsection-13';
 </g>
 </g>
 <!-- Node7&#45;&gt;Node8 -->
-<g id="edge8" class="edge">
+<g id="edge8_Node000007_Node000008" class="edge">
 <title>Node7&#45;&gt;Node8</title>
+<g id="a_edge8_Node000007_Node000008"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M322.28,-145.93C327.41,-143.38 332.39,-140.57 337,-137.5 356.37,-124.61 353.4,-112.04 373,-99.5 376.16,-97.48 379.49,-95.61 382.93,-93.87"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="384.62,-96.95 392.24,-89.59 381.69,-90.59 384.62,-96.95"/>
+</a>
+</g>
 </g>
 <!-- Node9 -->
-<g id="node9" class="node">
+<g id="Node000009" class="node">
 <title>Node9</title>
-<g id="a_node9"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2fe34aebb01d011703495a63a0dc5eb0" target="_top" xlink:title="Get the most recent previous solution value.">
+<g id="a_Node000009"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2fe34aebb01d011703495a63a0dc5eb0" target="_top" xlink:title="Get the most recent previous solution value.">
 <polygon fill="white" stroke="#666666" points="517.5,-41 378.5,-41 378.5,0 517.5,0 517.5,-41"/>
 <text text-anchor="start" x="386.5" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="start" x="386.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator</text>
@@ -268,70 +310,76 @@ var sectionId = 'dynsection-13';
 </g>
 </g>
 <!-- Node7&#45;&gt;Node9 -->
-<g id="edge12" class="edge">
+<g id="edge12_Node000007_Node000009" class="edge">
 <title>Node7&#45;&gt;Node9</title>
+<g id="a_edge12_Node000007_Node000009"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M326.58,-145.78C330.32,-143.32 333.84,-140.57 337,-137.5 367.03,-108.36 343.3,-79.98 373,-50.5 374.11,-49.4 375.26,-48.34 376.45,-47.32"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="378.89,-49.87 384.83,-41.1 374.71,-44.25 378.89,-49.87"/>
+</a>
+</g>
 </g>
 <!-- Node10&#45;&gt;Node3 -->
-<g id="edge14" class="edge">
+<g id="edge14_Node000010_Node000003" class="edge">
 <title>Node10&#45;&gt;Node3</title>
+<g id="a_edge14_Node000010_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M329.15,-284.5C341.85,-284.5 355.21,-284.5 368.19,-284.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="368.49,-288 378.49,-284.5 368.49,-281 368.49,-288"/>
+</a>
+</g>
 </g>
 <!-- Node11&#45;&gt;Node6 -->
-<g id="edge16" class="edge">
+<g id="edge16_Node000011_Node000006" class="edge">
 <title>Node11&#45;&gt;Node6</title>
+<g id="a_edge16_Node000011_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M329.15,-115.23C341.85,-116.66 355.21,-118.16 368.19,-119.63"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="368.17,-123.15 378.49,-120.79 368.95,-116.19 368.17,-123.15"/>
+</a>
+</g>
 </g>
 <!-- Node12&#45;&gt;Node9 -->
-<g id="edge18" class="edge">
+<g id="edge18_Node000012_Node000009" class="edge">
 <title>Node12&#45;&gt;Node9</title>
+<g id="a_edge18_Node000012_Node000009"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M329.15,-29.35C341.85,-28.39 355.21,-27.39 368.19,-26.42"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="368.78,-29.88 378.49,-25.64 368.26,-22.9 368.78,-29.88"/>
+</a>
+</g>
 </g>
 </g>
 </svg>
-        <g id="navigator" transform="translate(0 0)" fill="#404254">
-                <rect fill="#f2f5e9" fill-opacity="0.5" stroke="#606060" stroke-width=".5" x="0" y="0" width="60" height="60"/>
-                <use id="zoomplus" xlink:href="#zoomPlus" x="17" y="9" onmousedown="handleZoom(evt,'in')"/>
-                <use id="zoomminus" xlink:href="#zoomMin" x="42" y="9" onmousedown="handleZoom(evt,'out')"/>
-                <use id="reset" xlink:href="#resetDef" x="30" y="36" onmousedown="handleReset()"/>
-                <g id="arrowUp" xlink:href="#dirArrow" transform="translate(30 24)" onmousedown="handlePan(0,-1)">
-                  <use xlink:href="#rim" fill="#404040">
-                        <set attributeName="fill" to="#808080" begin="arrowUp.mouseover" end="arrowUp.mouseout"/>
-                  </use>
-                  <path fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
-                </g>
-                <g id="arrowRight" xlink:href="#dirArrow" transform="rotate(90) translate(36 -43)" onmousedown="handlePan(1,0)">
-                  <use xlink:href="#rim" fill="#404040">
-                        <set attributeName="fill" to="#808080" begin="arrowRight.mouseover" end="arrowRight.mouseout"/>
-                  </use>
-                  <path fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
-                </g>
-                <g id="arrowDown" xlink:href="#dirArrow" transform="rotate(180) translate(-30 -48)" onmousedown="handlePan(0,1)">
-                  <use xlink:href="#rim" fill="#404040">
-                        <set attributeName="fill" to="#808080" begin="arrowDown.mouseover" end="arrowDown.mouseout"/>
-                  </use>
-                  <path fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
-                </g>
-                <g id="arrowLeft" xlink:href="#dirArrow" transform="rotate(270) translate(-36 17)" onmousedown="handlePan(-1,0)">
-                  <use xlink:href="#rim" fill="#404040">
-                        <set attributeName="fill" to="#808080" begin="arrowLeft.mouseover" end="arrowLeft.mouseout"/>
-                  </use>
-                  <path fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
-                </g>
-        </g>
-        <svg viewBox="0 0 15 15" width="100%" height="30px" preserveAspectRatio="xMaxYMin meet">
-         <g id="arrow_out" transform="scale(0.3 0.3)">
-          <a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark_af94ad0e8dfab40ecba6c4956e3342860_cgraph_org.svg" target="_base">
-           <rect id="button" ry="5" rx="5" y="6" x="6" height="38" width="38"
-                fill="#f2f5e9" fill-opacity="0.5" stroke="#606060" stroke-width="1.0"/>
-           <path id="arrow"
-             d="M 11.500037,31.436501 C 11.940474,20.09759 22.043105,11.32322 32.158766,21.979434 L 37.068811,17.246167 C 37.068811,17.246167 37.088388,32 37.088388,32 L 22.160133,31.978069 C 22.160133,31.978069 26.997745,27.140456 26.997745,27.140456 C 18.528582,18.264221 13.291696,25.230495 11.500037,31.436501 z"
-             style="fill:#404040;"/>
-          </a>
-         </g>
-        </svg>
+
+<g id="navigator" transform="translate(0 0)" fill="#404254">
+  <rect fill="#f2f5e9" fill-opacity="0.5" stroke="#606060" stroke-width=".5" x="0" y="0" width="60" height="60"/>
+  <use id="zoomplus" xlink:href="#zoomPlus" x="17" y="9" onmousedown="handleZoom(evt,'in')"/>
+  <use id="zoomminus" xlink:href="#zoomMin" x="42" y="9" onmousedown="handleZoom(evt,'out')"/>
+  <use id="reset" xlink:href="#resetDef" x="30" y="36" onmousedown="handleReset()"/>
+   <use id="arrowup" xlink:href="#arrowUp" x="0" y="0" onmousedown="handlePan(0,-1)"/>
+  <use id="arrowright" xlink:href="#arrowRight" x="0" y="0" onmousedown="handlePan(1,0)"/>
+  <use id="arrowdown" xlink:href="#arrowDown" x="0" y="0" onmousedown="handlePan(0,1)"/>
+  <use id="arrowleft" xlink:href="#arrowLeft" x="0" y="0" onmousedown="handlePan(-1,0)"/>
+</g>
+<svg viewBox="0 0 15 15" width="100%" height="30px" preserveAspectRatio="xMaxYMin meet">
+ <g id="arrow_out" transform="scale(0.3 0.3)">
+  <a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark_af94ad0e8dfab40ecba6c4956e3342860_cgraph_org.svg" target="_base">
+   <rect id="button" ry="5" rx="5" y="6" x="6" height="38" width="38"
+        fill="#f2f5e9" fill-opacity="0.5" stroke="#606060" stroke-width="1.0"/>
+   <path id="arrow"
+     d="M 11.500037,31.436501 C 11.940474,20.09759 22.043105,11.32322 32.158766,21.979434 L 37.068811,17.246167 C 37.068811,17.246167 37.088388,32 37.088388,32 L 22.160133,31.978069 C 22.160133,31.978069 26.997745,27.140456 26.997745,27.140456 C 18.528582,18.264221 13.291696,25.230495 11.500037,31.436501 z"
+     style="fill:#404040;"/>
+  </a>
+ </g>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

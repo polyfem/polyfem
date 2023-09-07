@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 82)">
 <title>polyfem::mesh::Navigation3D::next_around_2Dedge</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="155,-54 0,-54 0,-24 155,-24 155,-54"/>
 <text text-anchor="start" x="8" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Navigation3</text>
 <text text-anchor="middle" x="77.5" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">D::next_around_2Dedge</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="namespacepolyfem_1_1mesh_1_1_navigation3_d.html#acf2f94f81c7bf65de4afa6af74bdf131" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="namespacepolyfem_1_1mesh_1_1_navigation3_d.html#acf2f94f81c7bf65de4afa6af74bdf131" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="346,-78 191,-78 191,-48 346,-48 346,-78"/>
 <text text-anchor="start" x="199" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Navigation3</text>
 <text text-anchor="middle" x="268.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">D::switch_face</text>
@@ -29,15 +29,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M155.1,-48.73C163.56,-49.8 172.22,-50.9 180.79,-51.99"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="180.43,-55.47 190.79,-53.26 181.31,-48.53 180.43,-55.47"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a45d1df14b0d5989deb22f75a094937ee" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a45d1df14b0d5989deb22f75a094937ee" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="346,-30 191,-30 191,0 346,0 346,-30"/>
 <text text-anchor="start" x="199" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Navigation3</text>
 <text text-anchor="middle" x="268.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">D::switch_vertex</text>
@@ -45,15 +48,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M155.1,-29.27C163.56,-28.2 172.22,-27.1 180.79,-26.01"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="181.31,-29.47 190.79,-24.74 180.43,-22.53 181.31,-29.47"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a61605ebebbca1d2811da94bf3e50a423" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a61605ebebbca1d2811da94bf3e50a423" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="563,-78 382,-78 382,-48 563,-48 563,-78"/>
 <text text-anchor="start" x="390" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::MeshProcessing3</text>
 <text text-anchor="middle" x="472.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">D::set_intersection_own</text>
@@ -61,10 +67,13 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M346.16,-63C354.5,-63 363.08,-63 371.64,-63"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="371.68,-66.5 381.68,-63 371.68,-59.5 371.68,-66.5"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

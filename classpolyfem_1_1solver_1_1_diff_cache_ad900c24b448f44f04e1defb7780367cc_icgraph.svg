@@ -6,12 +6,22 @@
 <!-- Title: polyfem::solver::DiffCache::cache_adjoints Pages: 1 -->
 <svg width="311pt" height="38pt"
  viewBox="0.00 0.00 311.00 38.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 34)">
 <title>polyfem::solver::DiffCache::cache_adjoints</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="303,-30 157,-30 157,0 303,0 303,-30"/>
 <text text-anchor="start" x="165" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::DiffCache</text>
 <text text-anchor="middle" x="230" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::cache_adjoints</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1_state.html#a9e1bea7d5764cb3cdf57a11e0e1444c1" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1_state.html#a9e1bea7d5764cb3cdf57a11e0e1444c1" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="121,-30 0,-30 0,0 121,0 121,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 <text text-anchor="middle" x="60.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_adjoint_cached</text>
@@ -29,10 +39,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M146.84,-15C138.16,-15 129.46,-15 121.11,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="146.99,-18.5 156.99,-15 146.99,-11.5 146.99,-18.5"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

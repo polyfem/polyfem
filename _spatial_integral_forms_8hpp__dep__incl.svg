@@ -6,12 +6,22 @@
 <!-- Title: src/polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp Pages: 1 -->
 <svg width="311pt" height="203pt"
  viewBox="0.00 0.00 310.50 203.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 199)">
 <title>src/polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="166,-195 24,-195 24,-154 166,-154 166,-195"/>
 <text text-anchor="start" x="32" y="-183" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
 <text text-anchor="start" x="32" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
@@ -20,9 +30,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="_optimizations_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="_optimizations_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="108,-35.5 0,-35.5 0,-5.5 108,-5.5 108,-35.5"/>
 <text text-anchor="start" x="8" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
 <text text-anchor="middle" x="54" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">/Optimizations.cpp</text>
@@ -30,15 +40,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M43.31,-148.48C31.96,-140.41 21.43,-130.29 15,-118 0.25,-89.82 24.22,-54.78 40.63,-35.63"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="41.39,-151.41 51.66,-154 45.24,-145.56 41.39,-151.41"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="_spatial_integral_forms_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="_spatial_integral_forms_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="165.5,-118 24.5,-118 24.5,-77 165.5,-77 165.5,-118"/>
 <text text-anchor="start" x="32.5" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
 <text text-anchor="start" x="32.5" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
@@ -47,15 +60,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M95,-143.69C95,-135.08 95,-125.9 95,-118.07"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="91.5,-143.79 95,-153.79 98.5,-143.79 91.5,-143.79"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="_target_forms_8hpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="_target_forms_8hpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="302.5,-118 183.5,-118 183.5,-77 302.5,-77 302.5,-118"/>
 <text text-anchor="start" x="191.5" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
 <text text-anchor="start" x="191.5" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
@@ -64,21 +80,27 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M142.46,-149.45C162.48,-139.3 185.49,-127.64 204.44,-118.04"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="140.84,-146.35 133.5,-153.99 144,-152.59 140.84,-146.35"/>
+</a>
+</g>
 </g>
 <!-- Node4&#45;&gt;Node2 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000004_Node000002" class="edge">
 <title>Node4&#45;&gt;Node2</title>
+<g id="a_edge4_Node000004_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M184.41,-73.25C153.33,-60.92 116.18,-46.17 89.49,-35.58"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="183.25,-76.56 193.84,-76.99 185.83,-70.05 183.25,-76.56"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="_target_forms_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="_target_forms_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="302.5,-41 183.5,-41 183.5,0 302.5,0 302.5,-41"/>
 <text text-anchor="start" x="191.5" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
 <text text-anchor="start" x="191.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
@@ -87,10 +109,28 @@
 </g>
 </g>
 <!-- Node4&#45;&gt;Node5 -->
-<g id="edge5" class="edge">
+<g id="edge5_Node000004_Node000005" class="edge">
 <title>Node4&#45;&gt;Node5</title>
+<g id="a_edge5_Node000004_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M243,-66.69C243,-58.08 243,-48.9 243,-41.07"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="239.5,-66.79 243,-76.79 246.5,-66.79 239.5,-66.79"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

@@ -6,12 +6,22 @@
 <!-- Title: polyfem::solver::CompositeParametrization::inverse_eval Pages: 1 -->
 <svg width="375pt" height="98pt"
  viewBox="0.00 0.00 375.00 97.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 93.5)">
 <title>polyfem::solver::CompositeParametrization::inverse_eval</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="367,-62.5 205,-62.5 205,-32.5 367,-32.5 367,-62.5"/>
 <text text-anchor="start" x="213" y="-50.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Composite</text>
 <text text-anchor="middle" x="286" y="-39.5" font-family="Helvetica,sans-Serif" font-size="10.00">Parametrization::inverse_eval</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html#aa0a2463369855dcf311bd4f4957f7c7e" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html#aa0a2463369855dcf311bd4f4957f7c7e" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="169,-89.5 0,-89.5 0,-59.5 169,-59.5 169,-89.5"/>
 <text text-anchor="start" x="8" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::ShapeVariable</text>
 <text text-anchor="middle" x="84.5" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">ToSimulation::inverse_eval</text>
@@ -29,15 +39,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M194.78,-59.71C186.26,-60.86 177.65,-62.03 169.2,-63.17"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="195.28,-63.17 204.72,-58.37 194.34,-56.24 195.28,-63.17"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#ae5ea9ac1e730b966126b5946b82535ab" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#ae5ea9ac1e730b966126b5946b82535ab" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="150,-41 19,-41 19,0 150,0 150,-41"/>
 <text text-anchor="start" x="27" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Elastic</text>
 <text text-anchor="start" x="27" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">VariableToSimulation::</text>
@@ -46,10 +59,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M194.41,-35.24C179.43,-33.21 164.17,-31.15 150,-29.23"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="194.34,-38.76 204.72,-36.63 195.28,-31.83 194.34,-38.76"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

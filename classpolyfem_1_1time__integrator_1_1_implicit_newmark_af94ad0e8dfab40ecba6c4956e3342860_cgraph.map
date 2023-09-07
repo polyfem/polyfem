@@ -1,14 +1,32 @@
 <map id="polyfem::time_integrator::ImplicitNewmark::update_quantities" name="polyfem::time_integrator::ImplicitNewmark::update_quantities">
-<area shape="rect" id="node1" title="Update the time integration quantities (i.e., , , and )." alt="" coords="5,163,200,217"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="248,84,455,139"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="248,163,455,217"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a399a0bf25a479de6771d9d3d6ed1d744" title="Convenience functions for setting the most recent previous acceleration." alt="" coords="259,5,444,60"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a5a5cf8c74c6b8877831f0c357dfcab68" title="Convenience functions for setting the most recent previous velocity." alt="" coords="259,241,444,296"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#adffdea1615eb26fb703f7e5743ac7d04" title="Convenience functions for setting the most recent previous solution." alt="" coords="259,339,444,393"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab2bc11437f8f2f8077ddf4f6e9814d3e" title="Get the most recent previous acceleration value." alt="" coords="510,5,695,60"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932" title="Access the time step size." alt="" coords="504,85,701,125"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab002513111de64bdfa2a223e0445375e" title="parameter for blending accelerations in the velocity update." alt="" coords="503,149,703,189"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a1c90c8ab75ceea7bfd197921a9b5ad81" title="Get the most recent previous velocity value." alt="" coords="510,213,695,268"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a06343b9fb8c270eaaca03b546dd80494" title="parameter for blending accelerations in the solution update." alt="" coords="510,293,695,333"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2fe34aebb01d011703495a63a0dc5eb0" title="Get the most recent previous solution value." alt="" coords="510,357,695,412"/>
+<area shape="rect" id="Node000001" title="Update the time integration quantities (i.e., , , and )." alt="" coords="5,163,200,217"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="248,84,455,139"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="189,160,250,140,252,146,191,165"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="248,163,455,217"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="200,187,234,187,234,193,200,193"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a399a0bf25a479de6771d9d3d6ed1d744" title="Convenience functions for setting the most recent previous acceleration." alt="" coords="259,5,444,60"/>
+<area shape="poly" id="edge13_Node000001_Node000010" title=" " alt="" coords="130,160,182,115,247,69,256,64,259,68,249,74,185,119,133,164"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a5a5cf8c74c6b8877831f0c357dfcab68" title="Convenience functions for setting the most recent previous velocity." alt="" coords="259,241,444,296"/>
+<area shape="poly" id="edge15_Node000001_Node000011" title=" " alt="" coords="191,215,252,234,250,240,189,220"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#adffdea1615eb26fb703f7e5743ac7d04" title="Convenience functions for setting the most recent previous solution." alt="" coords="259,339,444,393"/>
+<area shape="poly" id="edge17_Node000001_Node000012" title=" " alt="" coords="137,216,188,259,250,305,288,330,285,334,246,310,185,263,133,220"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab2bc11437f8f2f8077ddf4f6e9814d3e" title="Get the most recent previous acceleration value." alt="" coords="510,5,695,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="438,81,501,62,503,67,440,86"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932" title="Access the time step size." alt="" coords="504,85,701,125"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="455,106,490,105,490,110,455,111"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab002513111de64bdfa2a223e0445375e" title="parameter for blending accelerations in the velocity update." alt="" coords="503,149,703,189"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="455,132,502,143,501,148,454,137"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a1c90c8ab75ceea7bfd197921a9b5ad81" title="Get the most recent previous velocity value." alt="" coords="510,213,695,268"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="436,136,456,148,471,161,481,174,490,186,504,199,514,205,511,209,501,203,486,190,477,177,468,165,453,152,434,141"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="435,160,453,148,469,129,476,110,484,91,501,71,507,66,511,70,505,75,489,93,481,112,473,132,456,152,438,165"/>
+<area shape="poly" id="edge9_Node000007_Node000004" title=" " alt="" coords="428,160,502,134,525,126,526,132,504,139,429,165"/>
+<area shape="poly" id="edge10_Node000007_Node000005" title=" " alt="" coords="455,179,488,176,489,181,455,184"/>
+<area shape="poly" id="edge11_Node000007_Node000006" title=" " alt="" coords="455,208,497,217,496,222,454,213"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a06343b9fb8c270eaaca03b546dd80494" title="parameter for blending accelerations in the solution update." alt="" coords="510,293,695,333"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="436,215,456,226,471,240,481,253,490,265,504,277,517,285,515,289,501,282,486,269,476,256,467,243,453,231,434,220"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2fe34aebb01d011703495a63a0dc5eb0" title="Get the most recent previous solution value." alt="" coords="510,357,695,412"/>
+<area shape="poly" id="edge12_Node000007_Node000009" title=" " alt="" coords="442,216,457,227,469,242,476,257,481,286,487,315,493,329,505,343,509,347,505,351,501,346,489,331,482,316,476,287,471,258,464,245,453,231,439,220"/>
+<area shape="poly" id="edge14_Node000010_Node000003" title=" " alt="" coords="444,30,496,30,496,35,444,35"/>
+<area shape="poly" id="edge16_Node000011_Node000006" title=" " alt="" coords="444,256,496,250,497,255,444,261"/>
+<area shape="poly" id="edge18_Node000012_Node000009" title=" " alt="" coords="444,370,496,374,496,379,444,376"/>
 </map>

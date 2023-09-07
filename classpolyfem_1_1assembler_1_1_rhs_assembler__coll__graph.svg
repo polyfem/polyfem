@@ -6,12 +6,22 @@
 <!-- Title: polyfem::assembler::RhsAssembler Pages: 1 -->
 <svg width="382pt" height="209pt"
  viewBox="0.00 0.00 382.00 209.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 205)">
 <title>polyfem::assembler::RhsAssembler</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="374,-121 260,-121 260,-91 374,-91 374,-121"/>
 <text text-anchor="start" x="268" y="-109" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="317" y="-98" font-family="Helvetica,sans-Serif" font-size="10.00">::RhsAssembler</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1assembler_1_1_assembler.html" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1assembler_1_1_assembler.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="126.5,-201 12.5,-201 12.5,-171 126.5,-171 126.5,-201"/>
 <text text-anchor="start" x="20.5" y="-189" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="69.5" y="-178" font-family="Helvetica,sans-Serif" font-size="10.00">::Assembler</text>
@@ -29,48 +39,57 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node1 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node2&#45;&gt;Node1</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M136.41,-176.15C168.87,-170.11 208.21,-161 242,-148 260.2,-141 279.31,-130.05 293.54,-121.09"/>
 <polygon fill="#9a32cd" stroke="#9a32cd" points="135.78,-172.7 126.57,-177.92 137.03,-179.59 135.78,-172.7"/>
-<text text-anchor="middle" x="199.5" y="-174" font-family="Helvetica,sans-Serif" font-size="10.00"> assembler_</text>
+</a>
+</g>
+<text text-anchor="middle" x="199.5" y="-174" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> assembler_</text>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html" target="_top" xlink:title="Abstract mesh class to capture 2d/3d conforming and non&#45;conforming meshes.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html" target="_top" xlink:title="Abstract mesh class to capture 2d/3d conforming and non&#45;conforming meshes.">
 <polygon fill="white" stroke="#666666" points="130.5,-152.5 8.5,-152.5 8.5,-133.5 130.5,-133.5 130.5,-152.5"/>
 <text text-anchor="middle" x="69.5" y="-140.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh</text>
 </a>
 </g>
 </g>
 <!-- Node3&#45;&gt;Node1 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node3&#45;&gt;Node1</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M140.88,-135.14C171.95,-131.37 208.87,-126.47 242,-121 247.82,-120.04 253.88,-118.95 259.92,-117.81"/>
 <polygon fill="#9a32cd" stroke="#9a32cd" points="140.09,-131.71 130.58,-136.37 140.92,-138.66 140.09,-131.71"/>
-<text text-anchor="middle" x="199.5" y="-136" font-family="Helvetica,sans-Serif" font-size="10.00"> mesh_</text>
+</a>
+</g>
+<text text-anchor="middle" x="199.5" y="-136" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> mesh_</text>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1mesh_1_1_obstacle.html" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1mesh_1_1_obstacle.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="139,-115.5 0,-115.5 0,-96.5 139,-96.5 139,-115.5"/>
 <text text-anchor="middle" x="69.5" y="-103.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Obstacle</text>
 </a>
 </g>
 </g>
 <!-- Node4&#45;&gt;Node1 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node4&#45;&gt;Node1</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M149.65,-106C185.52,-106 227.1,-106 259.72,-106"/>
 <polygon fill="#9a32cd" stroke="#9a32cd" points="149.21,-102.5 139.21,-106 149.21,-109.5 149.21,-102.5"/>
-<text text-anchor="middle" x="199.5" y="-109" font-family="Helvetica,sans-Serif" font-size="10.00"> obstacle_</text>
+</a>
+</g>
+<text text-anchor="middle" x="199.5" y="-109" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> obstacle_</text>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="130,-78 9,-78 9,-48 130,-48 130,-78"/>
 <text text-anchor="start" x="17" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="69.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::AssemblyValsCache</text>
@@ -78,16 +97,19 @@
 </g>
 </g>
 <!-- Node5&#45;&gt;Node1 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000001_Node000005" class="edge">
 <title>Node5&#45;&gt;Node1</title>
+<g id="a_edge4_Node000001_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M140.04,-73.74C171.26,-78.71 208.53,-84.88 242,-91 247.8,-92.06 253.85,-93.21 259.88,-94.39"/>
 <polygon fill="#9a32cd" stroke="#9a32cd" points="140.55,-70.27 130.12,-72.16 139.45,-77.19 140.55,-70.27"/>
-<text text-anchor="middle" x="199.5" y="-94" font-family="Helvetica,sans-Serif" font-size="10.00"> ass_vals_cache_</text>
+</a>
+</g>
+<text text-anchor="middle" x="199.5" y="-94" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> ass_vals_cache_</text>
 </g>
 <!-- Node6 -->
-<g id="node6" class="node">
+<g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:href="classpolyfem_1_1assembler_1_1_problem.html" target="_top" xlink:title=" ">
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1assembler_1_1_problem.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="126.5,-30 12.5,-30 12.5,0 126.5,0 126.5,-30"/>
 <text text-anchor="start" x="20.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="69.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::Problem</text>
@@ -95,11 +117,29 @@
 </g>
 </g>
 <!-- Node6&#45;&gt;Node1 -->
-<g id="edge5" class="edge">
+<g id="edge5_Node000001_Node000006" class="edge">
 <title>Node6&#45;&gt;Node1</title>
+<g id="a_edge5_Node000001_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M136.53,-28.08C169.03,-35.67 208.35,-46.61 242,-61 260.8,-69.04 280.51,-81.24 294.86,-90.91"/>
 <polygon fill="#9a32cd" stroke="#9a32cd" points="137.21,-24.64 126.68,-25.83 135.65,-31.47 137.21,-24.64"/>
-<text text-anchor="middle" x="199.5" y="-64" font-family="Helvetica,sans-Serif" font-size="10.00"> problem_</text>
+</a>
+</g>
+<text text-anchor="middle" x="199.5" y="-64" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> problem_</text>
 </g>
 </g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

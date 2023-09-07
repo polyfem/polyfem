@@ -6,21 +6,31 @@
 <!-- Title: polyfem::mesh::to_geogram_mesh Pages: 1 -->
 <svg width="381pt" height="230pt"
  viewBox="0.00 0.00 381.00 230.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 226)">
 <title>polyfem::mesh::to_geogram_mesh</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Converts a triangle mesh to a Geogram mesh.">
+<g id="a_Node000001"><a xlink:title="Converts a triangle mesh to a Geogram mesh.">
 <polygon fill="#999999" stroke="#666666" points="373,-120.5 186,-120.5 186,-101.5 373,-101.5 373,-120.5"/>
 <text text-anchor="middle" x="279.5" y="-108.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::to_geogram_mesh</text>
 </a>
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ae0b6f2f9c4c0135c616107504a22e9cf" target="_top" xlink:title="build a mesh from matrices">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ae0b6f2f9c4c0135c616107504a22e9cf" target="_top" xlink:title="build a mesh from matrices">
 <polygon fill="white" stroke="#666666" points="146.5,-222 3.5,-222 3.5,-192 146.5,-192 146.5,-222"/>
 <text text-anchor="start" x="11.5" y="-210" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::CMesh2D</text>
 <text text-anchor="middle" x="75" y="-199" font-family="Helvetica,sans-Serif" font-size="10.00">::build_from_matrices</text>
@@ -28,15 +38,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M255.06,-126C229.84,-141.68 188.19,-166.3 150,-183 142.7,-186.19 134.83,-189.19 127.05,-191.91"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="256.96,-128.93 263.57,-120.65 253.24,-123 256.96,-128.93"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#ac7b8983d229e887ea539afb8ea597dcd" target="_top" xlink:title="build a mesh from matrices">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#ac7b8983d229e887ea539afb8ea597dcd" target="_top" xlink:title="build a mesh from matrices">
 <polygon fill="white" stroke="#666666" points="150,-174 0,-174 0,-144 150,-144 150,-174"/>
 <text text-anchor="start" x="8" y="-162" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::NCMesh2D</text>
 <text text-anchor="middle" x="75" y="-151" font-family="Helvetica,sans-Serif" font-size="10.00">::build_from_matrices</text>
@@ -44,15 +57,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M228.08,-122.95C201.29,-129.3 168.09,-137.17 139.55,-143.94"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="229.08,-126.31 238.01,-120.6 227.47,-119.5 229.08,-126.31"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="namespacepolyfem_1_1mesh.html#a103b61095d51f0f6fb355c436dfc6d5d" target="_top" xlink:title="Samples points on a surface.">
+<g id="a_Node000004"><a xlink:href="namespacepolyfem_1_1mesh.html#a103b61095d51f0f6fb355c436dfc6d5d" target="_top" xlink:title="Samples points on a surface.">
 <polygon fill="white" stroke="#666666" points="141,-126 9,-126 9,-96 141,-96 141,-126"/>
 <text text-anchor="start" x="17" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::sample</text>
 <text text-anchor="middle" x="75" y="-103" font-family="Helvetica,sans-Serif" font-size="10.00">_surface</text>
@@ -60,15 +76,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M175.56,-111C163.84,-111 152.15,-111 141.13,-111"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="175.84,-114.5 185.84,-111 175.84,-107.5 175.84,-114.5"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a2576b69505c88c88e91e13407a0715f5" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a2576b69505c88c88e91e13407a0715f5" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="146.5,-78 3.5,-78 3.5,-48 146.5,-48 146.5,-78"/>
 <text text-anchor="start" x="11.5" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::CMesh3D</text>
 <text text-anchor="middle" x="75" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::save</text>
@@ -76,15 +95,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000001_Node000005" class="edge">
 <title>Node1&#45;&gt;Node5</title>
+<g id="a_edge4_Node000001_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M228.08,-99.05C201.29,-92.7 168.09,-84.83 139.55,-78.06"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="227.47,-102.5 238.01,-101.4 229.08,-95.69 227.47,-102.5"/>
+</a>
+</g>
 </g>
 <!-- Node6 -->
-<g id="node6" class="node">
+<g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:href="namespacepolyfem_1_1mesh.html#a816bc73f845b5cd77603ab5804e15356" target="_top" xlink:title="Computes the signed squared distance from a list of points to a triangle mesh.">
+<g id="a_Node000006"><a xlink:href="namespacepolyfem_1_1mesh.html#a816bc73f845b5cd77603ab5804e15356" target="_top" xlink:title="Computes the signed squared distance from a list of points to a triangle mesh.">
 <polygon fill="white" stroke="#666666" points="139,-30 11,-30 11,0 139,0 139,-30"/>
 <text text-anchor="start" x="19" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::signed</text>
 <text text-anchor="middle" x="75" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_squared_distances</text>
@@ -92,10 +114,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node6 -->
-<g id="edge5" class="edge">
+<g id="edge5_Node000001_Node000006" class="edge">
 <title>Node1&#45;&gt;Node6</title>
+<g id="a_edge5_Node000001_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M255.06,-96C229.84,-80.32 188.19,-55.7 150,-39 142.7,-35.81 134.83,-32.81 127.05,-30.09"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="253.24,-99 263.57,-101.35 256.96,-93.07 253.24,-99"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

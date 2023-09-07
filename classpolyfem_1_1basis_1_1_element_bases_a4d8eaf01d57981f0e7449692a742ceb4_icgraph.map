@@ -1,13 +1,26 @@
 <map id="polyfem::basis::ElementBases::set_local_node_from_primitive_func" name="polyfem::basis::ElementBases::set_local_node_from_primitive_func">
-<area shape="rect" id="node1" title=" " alt="" coords="1313,63,1580,103"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1basis_1_1_spline_basis2d.html#af9647481c1a62ac9b81c9394ff36a2ea" title=" " alt="" coords="524,5,741,45"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1basis_1_1_spline_basis3d.html#a714401935be3ae9842e606a9b56718f7" title=" " alt="" coords="1048,63,1265,103"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1basis_1_1_barycentric_basis2d.html#a2703ee0b52b532c9921bec4624d846da" title=" " alt="" coords="1057,127,1257,167"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b" title="builds the bases step 2 of solve" alt="" coords="317,63,476,103"/>
-<area shape="rect" id="node4" href="$main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" title=" " alt="" coords="115,45,263,70"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="108,94,269,119"/>
-<area shape="rect" id="node5" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,45,60,70"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html#a96c68c7820d06a39ee2948b548c4a64d" title=" " alt="" coords="789,120,1000,160"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html#a5fe45bd8fb2b0b8d16e20d7eab13296a" title=" " alt="" coords="789,184,1000,224"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1_state.html#a202f2494b8f46d4bf22edfc0a36ddb32" title="builds bases for polygons, called inside build_basis" alt="" coords="553,120,712,160"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="1313,63,1580,103"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1basis_1_1_spline_basis2d.html#af9647481c1a62ac9b81c9394ff36a2ea" title=" " alt="" coords="524,5,741,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1333,63,1265,53,1124,41,982,33,742,28,742,23,982,28,1124,36,1266,48,1333,58"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1basis_1_1_spline_basis3d.html#a714401935be3ae9842e606a9b56718f7" title=" " alt="" coords="1048,63,1265,103"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1300,85,1266,85,1266,80,1300,80"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1basis_1_1_barycentric_basis2d.html#a2703ee0b52b532c9921bec4624d846da" title=" " alt="" coords="1057,127,1257,167"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="1343,108,1248,129,1247,124,1342,103"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b" title="builds the bases step 2 of solve" alt="" coords="317,63,476,103"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="537,51,477,66,475,61,536,46"/>
+<area shape="rect" id="Node000004" href="$main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" title=" " alt="" coords="115,45,263,70"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="303,74,263,69,263,64,304,69"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="108,94,269,119"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="304,96,270,100,269,95,303,91"/>
+<area shape="rect" id="Node000005" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,45,60,70"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="101,60,60,60,60,55,101,55"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="1034,85,476,85,476,80,1034,80"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html#a96c68c7820d06a39ee2948b548c4a64d" title=" " alt="" coords="789,120,1000,160"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="1043,146,1000,145,1000,140,1043,141"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html#a5fe45bd8fb2b0b8d16e20d7eab13296a" title=" " alt="" coords="789,184,1000,224"/>
+<area shape="poly" id="edge12_Node000008_Node000011" title=" " alt="" coords="1052,172,987,187,986,181,1051,167"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1_state.html#a202f2494b8f46d4bf22edfc0a36ddb32" title="builds bases for polygons, called inside build_basis" alt="" coords="553,120,712,160"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="775,143,712,143,712,137,775,137"/>
+<area shape="poly" id="edge11_Node000010_Node000003" title=" " alt="" coords="539,120,476,104,477,99,541,115"/>
+<area shape="poly" id="edge13_Node000011_Node000010" title=" " alt="" coords="798,183,712,162,713,157,799,178"/>
 </map>

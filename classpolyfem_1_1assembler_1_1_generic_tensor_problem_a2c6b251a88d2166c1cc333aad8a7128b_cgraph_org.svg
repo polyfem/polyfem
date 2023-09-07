@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 45)">
 <title>polyfem::assembler::GenericTensorProblem::update_pressure_boundary</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="155,-41 0,-41 0,0 155,0 155,-41"/>
 <text text-anchor="start" x="8" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">::GenericTensorProblem</text>
@@ -20,9 +20,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1utils_1_1_interpolation.html#ac3f47aa0ca04ffc5f640c731e6894de5" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1utils_1_1_interpolation.html#ac3f47aa0ca04ffc5f640c731e6894de5" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="343,-35.5 191,-35.5 191,-5.5 343,-5.5 343,-35.5"/>
 <text text-anchor="start" x="199" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::Interpolation</text>
 <text text-anchor="middle" x="267" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">::build</text>
@@ -30,15 +30,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M155.03,-20.5C163.55,-20.5 172.26,-20.5 180.87,-20.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="180.92,-24 190.92,-20.5 180.92,-17 180.92,-24"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="513,-35.5 379,-35.5 379,-5.5 513,-5.5 513,-35.5"/>
 <text text-anchor="start" x="387" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::log_and_throw</text>
 <text text-anchor="middle" x="446" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">_error</text>
@@ -46,25 +49,31 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M343.06,-20.5C351.5,-20.5 360.11,-20.5 368.57,-20.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="368.79,-24 378.79,-20.5 368.79,-17 368.79,-24"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
+<g id="a_Node000004"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
 <polygon fill="white" stroke="#666666" points="643,-30 549,-30 549,-11 643,-11 643,-30"/>
 <text text-anchor="middle" x="596" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::logger</text>
 </a>
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M513.21,-20.5C521.74,-20.5 530.42,-20.5 538.77,-20.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="538.77,-24 548.77,-20.5 538.77,-17 538.77,-24"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

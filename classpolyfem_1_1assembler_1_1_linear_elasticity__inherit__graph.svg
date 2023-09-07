@@ -6,12 +6,22 @@
 <!-- Title: polyfem::assembler::LinearElasticity Pages: 1 -->
 <svg width="427pt" height="134pt"
  viewBox="0.00 0.00 427.00 134.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 130)">
 <title>polyfem::assembler::LinearElasticity</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="419,-78 305,-78 305,-48 419,-48 419,-78"/>
 <text text-anchor="start" x="313" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="362" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::LinearElasticity</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_assembler.html" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_assembler.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="266.5,-126 152.5,-126 152.5,-96 266.5,-96 266.5,-126"/>
 <text text-anchor="start" x="160.5" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="209.5" y="-103" font-family="Helvetica,sans-Serif" font-size="10.00">::LinearAssembler</text>
@@ -29,15 +39,18 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node1 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node2&#45;&gt;Node1</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M267.58,-92.79C282.89,-87.91 299.27,-82.69 313.96,-78"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="266.17,-89.57 257.71,-95.94 268.3,-96.24 266.17,-89.57"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1assembler_1_1_assembler.html" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1assembler_1_1_assembler.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="114,-78 0,-78 0,-48 114,-48 114,-78"/>
 <text text-anchor="start" x="8" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="57" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::Assembler</text>
@@ -45,15 +58,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node2 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node3&#45;&gt;Node2</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M115.08,-81.21C130.39,-86.09 146.77,-91.31 161.46,-96"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="115.8,-77.76 105.21,-78.06 113.67,-84.43 115.8,-77.76"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1assembler_1_1_n_l_assembler.html" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1assembler_1_1_n_l_assembler.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="266.5,-78 152.5,-78 152.5,-48 266.5,-48 266.5,-78"/>
 <text text-anchor="start" x="160.5" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="209.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::NLAssembler</text>
@@ -61,15 +77,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000004_Node000003" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge4_Node000004_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M124.16,-63C133.59,-63 143.21,-63 152.41,-63"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="124.04,-59.5 114.04,-63 124.04,-66.5 124.04,-59.5"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="269,-30 150,-30 150,0 269,0 269,-30"/>
 <text text-anchor="start" x="158" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="209.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::ElasticityAssembler</text>
@@ -77,22 +96,46 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node5 -->
-<g id="edge6" class="edge">
+<g id="edge6_Node000005_Node000003" class="edge">
 <title>Node3&#45;&gt;Node5</title>
+<g id="a_edge6_Node000005_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M115.08,-44.79C130.39,-39.91 146.77,-34.69 161.46,-30"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="113.67,-41.57 105.21,-47.94 115.8,-48.24 113.67,-41.57"/>
+</a>
+</g>
 </g>
 <!-- Node4&#45;&gt;Node1 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node4&#45;&gt;Node1</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#8b1a1a" d="M276.66,-63C286.09,-63 295.71,-63 304.91,-63"/>
 <polygon fill="#8b1a1a" stroke="#8b1a1a" points="276.54,-59.5 266.54,-63 276.54,-66.5 276.54,-59.5"/>
+</a>
+</g>
 </g>
 <!-- Node5&#45;&gt;Node1 -->
-<g id="edge5" class="edge">
+<g id="edge5_Node000001_Node000005" class="edge">
 <title>Node5&#45;&gt;Node1</title>
+<g id="a_edge5_Node000001_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#8b1a1a" d="M267.58,-33.21C282.89,-38.09 299.27,-43.31 313.96,-48"/>
 <polygon fill="#8b1a1a" stroke="#8b1a1a" points="268.3,-29.76 257.71,-30.06 266.17,-36.43 268.3,-29.76"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

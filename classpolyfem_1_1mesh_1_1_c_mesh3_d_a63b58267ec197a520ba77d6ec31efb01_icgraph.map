@@ -1,12 +1,30 @@
 <map id="polyfem::mesh::CMesh3D::n_vertices" name="polyfem::mesh::CMesh3D::n_vertices">
-<area shape="rect" id="node1" title="number of vertices" alt="" coords="721,221,912,261"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a0da98e55cc5ffa1d7418ae1a727ade58" title="cell barycenter" alt="" coords="483,93,673,133"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a6036b856b4cce84d28dad105fbdb5f8b" title="face barycenter" alt="" coords="483,157,673,197"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a74d6d178ff12b1a81530b6f8e45ebb12" title="area of a quad face of an hex mesh" alt="" coords="483,221,673,261"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a400bfde4af573c7ecf9c89aad4cfb9c0" title="refine the mesh" alt="" coords="483,285,673,325"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a64cfaa0c7c2c6369783f1ae865f3bd78" title="generate a triangular representation of every face" alt="" coords="483,349,673,389"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a2f01a08cddb886224bfd1a01f45112c0" title="computes boundary selections based on a function" alt="" coords="244,5,435,45"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#ace011af8dec17d947d29c497f10d4a3e" title="loads a mesh from the path" alt="" coords="244,93,435,133"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#af1123ef6f116bae8eba79ff266cef933" title="build a mesh from matrices" alt="" coords="5,93,196,133"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a626ac6f8128ec4c7cf2f504690d92fa0" title="computes boundary selections based on a function" alt="" coords="244,157,435,197"/>
+<area shape="rect" id="Node000001" title="number of vertices" alt="" coords="721,317,912,357"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a0da98e55cc5ffa1d7418ae1a727ade58" title="cell barycenter" alt="" coords="483,93,673,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="782,310,599,135,602,131,786,306"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a6036b856b4cce84d28dad105fbdb5f8b" title="face barycenter" alt="" coords="483,253,673,293"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="728,316,652,296,654,291,729,311"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a74d6d178ff12b1a81530b6f8e45ebb12" title="area of a quad face of an hex mesh" alt="" coords="483,317,673,357"/>
+<area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="707,340,673,340,673,335,707,335"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a400bfde4af573c7ecf9c89aad4cfb9c0" title="refine the mesh" alt="" coords="483,381,673,421"/>
+<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="729,364,654,384,652,379,728,358"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a64cfaa0c7c2c6369783f1ae865f3bd78" title="generate a triangular representation of every face" alt="" coords="483,445,673,485"/>
+<area shape="poly" id="edge14_Node000001_Node000014" title=" " alt="" coords="781,368,732,402,675,436,647,448,644,443,672,431,729,398,778,364"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a2f01a08cddb886224bfd1a01f45112c0" title="computes boundary selections based on a function" alt="" coords="244,5,435,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="514,91,434,60,400,48,402,43,436,55,516,86"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#ace011af8dec17d947d29c497f10d4a3e" title="loads a mesh from the path" alt="" coords="244,93,435,133"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="469,116,435,116,435,111,469,111"/>
+<area shape="poly" id="edge5_Node000004_Node000004" title=" " alt="" coords="380,82,366,75,339,72,316,74,303,79,298,85,300,92,295,94,292,84,300,74,315,69,339,67,367,70,382,77"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#af1123ef6f116bae8eba79ff266cef933" title="build a mesh from matrices" alt="" coords="5,93,196,133"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="230,116,196,116,196,111,230,111"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#adbac62d52d0803e374400d53fa2a3836" title="computes the selection based on the bbx of the mesh." alt="" coords="244,157,435,197"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="521,250,434,212,402,200,404,195,436,207,524,245"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a626ac6f8128ec4c7cf2f504690d92fa0" title="computes boundary selections based on a function" alt="" coords="244,221,435,261"/>
+<area shape="poly" id="edge8_Node000006_Node000008" title=" " alt="" coords="469,261,434,257,435,251,469,256"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a4fbd95de6515c541ec5772e705b99306" title="computes boundary selections based on a function" alt="" coords="244,285,435,325"/>
+<area shape="poly" id="edge9_Node000006_Node000009" title=" " alt="" coords="469,291,435,295,434,290,469,285"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a9aec0f93c9198a676982a968fe25a75a" title="computes boundary selections based on a function" alt="" coords="244,349,435,389"/>
+<area shape="poly" id="edge10_Node000006_Node000010" title=" " alt="" coords="499,301,484,308,460,324,436,340,408,352,406,347,433,335,457,319,481,303,497,296"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a5cbcebd5f099b06f64077417e38c71d1" title="computes boundary selections based on a function" alt="" coords="244,413,435,453"/>
+<area shape="poly" id="edge11_Node000006_Node000011" title=" " alt="" coords="490,303,485,307,467,330,461,354,455,379,437,403,419,415,416,411,433,399,450,376,456,353,463,328,481,303,487,299"/>
 </map>

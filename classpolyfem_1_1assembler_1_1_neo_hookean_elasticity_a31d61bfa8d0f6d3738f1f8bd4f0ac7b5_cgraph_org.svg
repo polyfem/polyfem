@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 71.5)">
 <title>polyfem::assembler::NeoHookeanElasticity::compute_stress_grad_multiply_stress</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="130,-56.5 0,-56.5 0,-4.5 130,-4.5 130,-56.5"/>
 <text text-anchor="start" x="8" y="-44.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="8" y="-33.5" font-family="Helvetica,sans-Serif" font-size="10.00">::NeoHookeanElasticity</text>
@@ -21,9 +21,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1assembler_1_1_lame_parameters.html#ab0fae1aa60ff63c1489b810353f0964c" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1assembler_1_1_lame_parameters.html#ab0fae1aa60ff63c1489b810353f0964c" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="335,-45.5 166,-45.5 166,-15.5 335,-15.5 335,-45.5"/>
 <text text-anchor="start" x="174" y="-33.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="250.5" y="-22.5" font-family="Helvetica,sans-Serif" font-size="10.00">::LameParameters::lambda_mu</text>
@@ -31,15 +31,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M130.18,-30.5C138.42,-30.5 147,-30.5 155.6,-30.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="155.68,-34 165.68,-30.5 155.68,-27 155.68,-34"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="namespacepolyfem.html#ad7d5a2d4407b8790621fdba815de479e" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="namespacepolyfem.html#ad7d5a2d4407b8790621fdba815de479e" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="496.5,-67.5 381.5,-67.5 381.5,-37.5 496.5,-37.5 496.5,-67.5"/>
 <text text-anchor="start" x="389.5" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::convert_to</text>
 <text text-anchor="middle" x="439" y="-44.5" font-family="Helvetica,sans-Serif" font-size="10.00">_lambda</text>
@@ -47,25 +50,31 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M335.2,-40.37C347.26,-41.8 359.53,-43.24 371.21,-44.62"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="370.94,-48.11 381.29,-45.81 371.76,-41.16 370.94,-48.11"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="namespacepolyfem.html#a869023aefa896d263b89a68a7f24c4c1" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="namespacepolyfem.html#a869023aefa896d263b89a68a7f24c4c1" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="507,-19 371,-19 371,0 507,0 507,-19"/>
 <text text-anchor="middle" x="439" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::convert_to_mu</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000002_Node000004" class="edge">
 <title>Node2&#45;&gt;Node4</title>
+<g id="a_edge3_Node000002_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M335.2,-21.07C343.67,-20.12 352.24,-19.16 360.64,-18.21"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="361.23,-21.67 370.78,-17.07 360.45,-14.71 361.23,-21.67"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

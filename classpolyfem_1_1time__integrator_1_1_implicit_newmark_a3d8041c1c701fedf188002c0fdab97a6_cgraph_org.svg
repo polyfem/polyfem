@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 134)">
 <title>polyfem::time_integrator::ImplicitNewmark::da_dx</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="142,-73 0,-73 0,-43 142,-43 142,-73"/>
 <text text-anchor="start" x="8" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="middle" x="71" y="-50" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::da_dx</text>
@@ -19,15 +19,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node1 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000001" class="edge">
 <title>Node1&#45;&gt;Node1</title>
+<g id="a_edge1_Node000001_Node000001"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M39.71,-73.28C32.76,-82.41 43.19,-91 71,-91 87.51,-91 97.9,-87.97 102.16,-83.6"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="105.66,-83.32 102.29,-73.28 98.66,-83.23 105.66,-83.32"/>
+</a>
+</g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932" target="_top" xlink:title="Access the time step size.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a71f55b2644a8023c1310c756a1f42932" target="_top" xlink:title="Access the time step size.">
 <polygon fill="white" stroke="#666666" points="505,-130 357,-130 357,-100 505,-100 505,-130"/>
 <text text-anchor="start" x="365" y="-118" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="middle" x="431" y="-107" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator::dt</text>
@@ -35,15 +38,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge2_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M102.71,-73.19C123.44,-82.68 151.72,-94.17 178,-100 233.44,-112.3 297.32,-115.99 346.89,-116.64"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="346.89,-120.14 356.92,-116.73 346.95,-113.14 346.89,-120.14"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#aefd945855d7a20b6433fe8d38a155e4d" target="_top" xlink:title="Compute the derivative of the velocity with respect to the solution.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#aefd945855d7a20b6433fe8d38a155e4d" target="_top" xlink:title="Compute the derivative of the velocity with respect to the solution.">
 <polygon fill="white" stroke="#666666" points="320,-73 178,-73 178,-43 320,-43 320,-73"/>
 <text text-anchor="start" x="186" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="middle" x="249" y="-50" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::dv_dx</text>
@@ -51,15 +57,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge3_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M142.07,-51.38C150.54,-51.26 159.25,-51.22 167.85,-51.27"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="167.85,-54.77 177.89,-51.38 167.92,-47.77 167.85,-54.77"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab002513111de64bdfa2a223e0445375e" target="_top" xlink:title="parameter for blending accelerations in the velocity update.">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab002513111de64bdfa2a223e0445375e" target="_top" xlink:title="parameter for blending accelerations in the velocity update.">
 <polygon fill="white" stroke="#666666" points="506,-30 356,-30 356,0 506,0 506,-30"/>
 <text text-anchor="start" x="364" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="middle" x="431" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::gamma</text>
@@ -67,33 +76,45 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node5 -->
-<g id="edge9" class="edge">
+<g id="edge9_Node000001_Node000005" class="edge">
 <title>Node1&#45;&gt;Node5</title>
+<g id="a_edge9_Node000001_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M131.13,-42.99C146.32,-39.58 162.7,-36.3 178,-34 233.49,-25.67 296.44,-20.92 345.54,-18.26"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="346,-21.74 355.8,-17.72 345.63,-14.75 346,-21.74"/>
+</a>
+</g>
 </g>
 <!-- Node3&#45;&gt;Node1 -->
-<g id="edge5" class="edge">
+<g id="edge5_Node000003_Node000001" class="edge">
 <title>Node3&#45;&gt;Node1</title>
+<g id="a_edge5_Node000003_Node000001"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M177.89,-64.62C169.41,-64.74 160.71,-64.78 152.1,-64.73"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="152.1,-61.23 142.07,-64.62 152.03,-68.23 152.1,-61.23"/>
+</a>
+</g>
 </g>
 <!-- Node3&#45;&gt;Node2 -->
-<g id="edge6" class="edge">
+<g id="edge6_Node000003_Node000002" class="edge">
 <title>Node3&#45;&gt;Node2</title>
+<g id="a_edge6_Node000003_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M297.76,-73.13C320.74,-80.4 348.47,-89.18 372.58,-96.82"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="371.74,-100.22 382.33,-99.9 373.85,-93.55 371.74,-100.22"/>
+</a>
+</g>
 </g>
 <!-- Node3&#45;&gt;Node3 -->
-<g id="edge7" class="edge">
+<g id="edge7_Node000003_Node000003" class="edge">
 <title>Node3&#45;&gt;Node3</title>
+<g id="a_edge7_Node000003_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M217.71,-73.28C210.76,-82.41 221.19,-91 249,-91 265.51,-91 275.9,-87.97 280.16,-83.6"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="283.66,-83.32 280.29,-73.28 276.66,-83.23 283.66,-83.32"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a06343b9fb8c270eaaca03b546dd80494" target="_top" xlink:title="parameter for blending accelerations in the solution update.">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a06343b9fb8c270eaaca03b546dd80494" target="_top" xlink:title="parameter for blending accelerations in the solution update.">
 <polygon fill="white" stroke="#666666" points="500.5,-78 361.5,-78 361.5,-48 500.5,-48 500.5,-78"/>
 <text text-anchor="start" x="369.5" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="middle" x="431" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitNewmark::beta</text>
@@ -101,16 +122,22 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge4_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M320.11,-59.95C330.25,-60.23 340.75,-60.52 351.05,-60.81"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="351.17,-64.31 361.27,-61.09 351.37,-57.31 351.17,-64.31"/>
+</a>
+</g>
 </g>
 <!-- Node3&#45;&gt;Node5 -->
-<g id="edge8" class="edge">
+<g id="edge8_Node000003_Node000005" class="edge">
 <title>Node3&#45;&gt;Node5</title>
+<g id="a_edge8_Node000003_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M312.96,-42.96C327.21,-39.56 342.45,-35.91 357.08,-32.42"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="358.17,-35.76 367.08,-30.03 356.54,-28.95 358.17,-35.76"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

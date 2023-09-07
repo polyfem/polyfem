@@ -6,12 +6,22 @@
 <!-- Title: src/polyfem/basis/barycentric/WSPolygonalBasis2d.hpp Pages: 1 -->
 <svg width="310pt" height="104pt"
  viewBox="0.00 0.00 310.00 104.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 100)">
 <title>src/polyfem/basis/barycentric/WSPolygonalBasis2d.hpp</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="222,-96 61,-96 61,-66 222,-66 222,-96"/>
 <text text-anchor="start" x="69" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/barycentric</text>
 <text text-anchor="middle" x="141.5" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">/WSPolygonalBasis2d.hpp</text>
@@ -19,24 +29,27 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="_state_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="_state_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="123,-24.5 0,-24.5 0,-5.5 123,-5.5 123,-24.5"/>
 <text text-anchor="middle" x="61.5" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/State.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M115.57,-59.26C101.02,-47.61 83.61,-33.69 72.56,-24.84"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="113.75,-62.28 123.75,-65.8 118.12,-56.82 113.75,-62.28"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="_w_s_polygonal_basis2d_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="_w_s_polygonal_basis2d_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="302,-30 141,-30 141,0 302,0 302,-30"/>
 <text text-anchor="start" x="149" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/basis/barycentric</text>
 <text text-anchor="middle" x="221.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/WSPolygonalBasis2d.cpp</text>
@@ -44,10 +57,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M167.15,-59.48C179.11,-49.91 193.03,-38.77 203.8,-30.16"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="164.88,-56.82 159.25,-65.8 169.25,-62.28 164.88,-56.82"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

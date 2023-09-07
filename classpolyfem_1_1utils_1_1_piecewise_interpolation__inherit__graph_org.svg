@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 130)">
 <title>polyfem::utils::PiecewiseInterpolation</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="327,-78 188,-78 188,-48 327,-48 327,-78"/>
 <text text-anchor="start" x="196" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::Piecewise</text>
 <text text-anchor="middle" x="257.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">Interpolation</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1utils_1_1_piecewise_constant_interpolation.html" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1utils_1_1_piecewise_constant_interpolation.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="502,-126 363,-126 363,-96 502,-96 502,-126"/>
 <text text-anchor="start" x="371" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::Piecewise</text>
 <text text-anchor="middle" x="432.5" y="-103" font-family="Helvetica,sans-Serif" font-size="10.00">ConstantInterpolation</text>
@@ -29,15 +29,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M322.61,-80.79C340.64,-85.79 360.05,-91.18 377.43,-96"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="323.34,-77.36 312.76,-78.06 321.46,-84.1 323.34,-77.36"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation.html" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="502,-78 363,-78 363,-48 502,-48 502,-78"/>
 <text text-anchor="start" x="371" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::Piecewise</text>
 <text text-anchor="middle" x="432.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">CubicInterpolation</text>
@@ -45,15 +48,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M337.59,-63C346.03,-63 354.56,-63 362.87,-63"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="337.37,-59.5 327.37,-63 337.37,-66.5 337.37,-59.5"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1utils_1_1_piecewise_linear_interpolation.html" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1utils_1_1_piecewise_linear_interpolation.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="502,-30 363,-30 363,0 502,0 502,-30"/>
 <text text-anchor="start" x="371" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::Piecewise</text>
 <text text-anchor="middle" x="432.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">LinearInterpolation</text>
@@ -61,25 +67,31 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000001_Node000005" class="edge">
 <title>Node1&#45;&gt;Node5</title>
+<g id="a_edge4_Node000001_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M322.61,-45.21C340.64,-40.21 360.05,-34.82 377.43,-30"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="321.46,-41.9 312.76,-47.94 323.34,-48.64 321.46,-41.9"/>
+</a>
+</g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1utils_1_1_interpolation.html" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1utils_1_1_interpolation.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="152,-72.5 0,-72.5 0,-53.5 152,-53.5 152,-72.5"/>
 <text text-anchor="middle" x="76" y="-60.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::Interpolation</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node1 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node2&#45;&gt;Node1</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M162.12,-63C170.7,-63 179.35,-63 187.73,-63"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="162.08,-59.5 152.08,-63 162.08,-66.5 162.08,-59.5"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

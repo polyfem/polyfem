@@ -6,32 +6,60 @@
 <!-- Title: polyfem::mesh::MeshNodes Pages: 1 -->
 <svg width="161pt" height="93pt"
  viewBox="0.00 0.00 161.00 93.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 89)">
 <title>polyfem::mesh::MeshNodes</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="153,-19 0,-19 0,0 153,0 153,-19"/>
 <text text-anchor="middle" x="76.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::MeshNodes</text>
 </a>
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html" target="_top" xlink:title="Abstract mesh class to capture 2d/3d conforming and non&#45;conforming meshes.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html" target="_top" xlink:title="Abstract mesh class to capture 2d/3d conforming and non&#45;conforming meshes.">
 <polygon fill="white" stroke="#666666" points="137.5,-85 15.5,-85 15.5,-66 137.5,-66 137.5,-85"/>
 <text text-anchor="middle" x="76.5" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node1 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node2&#45;&gt;Node1</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M76.5,-55.58C76.5,-43.63 76.5,-28.72 76.5,-19.41"/>
 <polygon fill="#9a32cd" stroke="#9a32cd" points="73,-55.87 76.5,-65.87 80,-55.87 73,-55.87"/>
-<text text-anchor="middle" x="94.5" y="-40" font-family="Helvetica,sans-Serif" font-size="10.00"> mesh_</text>
+</a>
+</g>
+<text text-anchor="middle" x="94.5" y="-40" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> mesh_</text>
 </g>
 </g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

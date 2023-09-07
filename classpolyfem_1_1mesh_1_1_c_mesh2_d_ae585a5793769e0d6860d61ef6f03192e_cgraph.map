@@ -1,28 +1,65 @@
 <map id="polyfem::mesh::CMesh2D::refine" name="polyfem::mesh::CMesh2D::refine">
-<area shape="rect" id="node1" title="refine the mesh" alt="" coords="5,261,196,301"/>
-<area shape="rect" id="node2" href="$namespacepolyfem_1_1mesh_1_1_polygons.html#a7e9c499beb732835ffabd7da78996803" title=" " alt="" coords="250,5,437,45"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a228062891c977999512c9ce3244c7c5e" title="compute element types, see ElementType" alt="" coords="248,133,439,173"/>
-<area shape="rect" id="node9" href="$namespacepolyfem_1_1mesh.html#ababf65206634e831070307de601d3a57" title="assing edges to M" alt="" coords="250,197,437,237"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1mesh_1_1_mesh.html#a62e57386728f26b8feafea1043b65c21" title="checks if element is simples compatible" alt="" coords="262,261,425,301"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1mesh_1_1_mesh.html#a0140181b551c7bf0c162d6898155f294" title="utitlity to return the number of elements, cells or faces in 3d and 2d" alt="" coords="262,325,425,365"/>
-<area shape="rect" id="node15" href="$namespacepolyfem_1_1mesh_1_1_polygons.html#ac31ff909dfd5103385f00a7c4ad2fcd4" title="Helper function." alt="" coords="250,69,437,109"/>
-<area shape="rect" id="node17" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#a72b4f275520c3c228210d1e9a781e8fc" title=" " alt="" coords="244,389,443,429"/>
-<area shape="rect" id="node18" href="$namespacepolyfem_1_1mesh.html#acc2511254531ec745f412fc383ba050d" title="Refine a polygonal mesh." alt="" coords="261,523,426,563"/>
-<area shape="rect" id="node26" href="$namespacepolyfem_1_1mesh.html#a1ba258a79feeaaadcd741cd4fa889ca9" title="Refine a triangle mesh." alt="" coords="261,720,426,760"/>
-<area shape="rect" id="node3" href="$namespacepolyfem_1_1mesh_1_1_polygons.html#a25750e2e0917bfbd86951438fffe0370" title="Split a polygon using polar refinement." alt="" coords="497,5,683,45"/>
-<area shape="rect" id="node4" href="$namespacepolyfem_1_1mesh.html#ae1e56322029f56281de64523a44a2b18" title="Determine whether a polygon is star&#45;shaped or not." alt="" coords="751,37,922,77"/>
-<area shape="rect" id="node5" href="$namespacepolyfem_1_1mesh.html#aaa907e396724bca7b40434c67f80f2c9" title="Determine the kernel of the given polygon." alt="" coords="984,37,1169,77"/>
-<area shape="rect" id="node6" href="$namespacepolyfem_1_1mesh.html#a0d4be3bab49d477dc6c218108b278acc" title="Clip a polygon by a half&#45;plane." alt="" coords="1217,37,1396,77"/>
-<area shape="rect" id="node8" href="$namespacepolyfem_1_1mesh.html#afe2f4a1a50f2841a6eb95650ff7b1f0e" title="Compute the type of each facet in a surface mesh." alt="" coords="497,133,683,173"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="509,197,671,237"/>
-<area shape="rect" id="node13" href="$classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697" title="number of cells" alt="" coords="509,261,671,301"/>
-<area shape="rect" id="node14" href="$classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2" title="number of faces" alt="" coords="509,325,671,365"/>
-<area shape="rect" id="node16" href="$namespacepolyfem_1_1mesh_1_1_polygons.html#a189a52f2c610b304fb40efeb1abc5306" title="Split a polygon using polar refinement." alt="" coords="497,69,683,109"/>
-<area shape="rect" id="node19" href="$namespacepolyfem_1_1mesh.html#a9f801017db21aa959f16cfc91c986a04" title=" " alt="" coords="509,440,671,480"/>
-<area shape="rect" id="node20" href="$namespacepolyfem_1_1mesh.html#a73cc0f7013b784e8a488a1840e62d034" title="Retrieve a 3D vector with the position of a given vertex." alt="" coords="755,440,919,480"/>
-<area shape="rect" id="node21" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#a1b9d2ef721df947c3827b416016918fd" title=" " alt="" coords="491,720,689,760"/>
-<area shape="rect" id="node22" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#a5989f6fbf9ec292c06a5626412f1e8ba" title=" " alt="" coords="737,720,936,760"/>
-<area shape="rect" id="node23" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#abf91546c2ca67de0513b99b390ed1e51" title=" " alt="" coords="737,784,936,824"/>
-<area shape="rect" id="node24" href="$namespacepolyfem_1_1mesh.html#a7463d5f1886f0b3b79d678e7a6535801" title=" " alt="" coords="508,605,672,645"/>
-<area shape="rect" id="node25" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#a7d6b7789d9155623da6a8ec00c3086ec" title=" " alt="" coords="491,784,689,824"/>
+<area shape="rect" id="Node000001" title="refine the mesh" alt="" coords="5,261,196,301"/>
+<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1mesh_1_1_polygons.html#a7e9c499beb732835ffabd7da78996803" title=" " alt="" coords="250,5,437,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="107,260,125,218,153,163,193,105,216,79,242,55,250,50,253,54,246,59,220,82,197,108,158,165,130,220,112,262"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a228062891c977999512c9ce3244c7c5e" title="compute element types, see ElementType" alt="" coords="248,133,439,173"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="126,259,178,221,243,183,259,176,261,181,245,188,181,225,129,263"/>
+<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1mesh.html#ababf65206634e831070307de601d3a57" title="assing edges to M" alt="" coords="250,197,437,237"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="177,259,253,238,255,243,178,264"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1mesh_1_1_mesh.html#a62e57386728f26b8feafea1043b65c21" title="checks if element is simples compatible" alt="" coords="262,261,425,301"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="196,279,248,279,248,284,196,284"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1mesh_1_1_mesh.html#a0140181b551c7bf0c162d6898155f294" title="utitlity to return the number of elements, cells or faces in 3d and 2d" alt="" coords="262,325,425,365"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="178,299,255,319,253,324,177,304"/>
+<area shape="rect" id="Node000015" href="$namespacepolyfem_1_1mesh_1_1_polygons.html#ac31ff909dfd5103385f00a7c4ad2fcd4" title="Helper function." alt="" coords="250,69,437,109"/>
+<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="113,259,164,191,201,153,242,119,253,113,255,118,246,124,204,156,168,195,117,263"/>
+<area shape="rect" id="Node000017" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#a72b4f275520c3c228210d1e9a781e8fc" title=" " alt="" coords="244,389,443,429"/>
+<area shape="poly" id="edge17_Node000001_Node000017" title=" " alt="" coords="129,300,181,337,245,375,261,382,259,387,243,380,178,342,126,304"/>
+<area shape="rect" id="Node000018" href="$namespacepolyfem_1_1mesh.html#acc2511254531ec745f412fc383ba050d" title="Refine a polygonal mesh." alt="" coords="261,523,426,563"/>
+<area shape="poly" id="edge18_Node000001_Node000018" title=" " alt="" coords="122,300,246,440,314,511,310,514,242,443,118,304"/>
+<area shape="rect" id="Node000026" href="$namespacepolyfem_1_1mesh.html#a1ba258a79feeaaadcd741cd4fa889ca9" title="Refine a triangle mesh." alt="" coords="261,720,426,760"/>
+<area shape="poly" id="edge31_Node000001_Node000026" title=" " alt="" coords="113,300,168,417,246,573,324,707,320,710,242,576,163,420,109,303"/>
+<area shape="rect" id="Node000003" href="$namespacepolyfem_1_1mesh_1_1_polygons.html#a25750e2e0917bfbd86951438fffe0370" title="Split a polygon using polar refinement." alt="" coords="497,5,683,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="437,23,483,23,483,28,437,28"/>
+<area shape="rect" id="Node000004" href="$namespacepolyfem_1_1mesh.html#ae1e56322029f56281de64523a44a2b18" title="Determine whether a polygon is star&#45;shaped or not." alt="" coords="751,37,922,77"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="684,35,738,42,737,47,683,40"/>
+<area shape="rect" id="Node000005" href="$namespacepolyfem_1_1mesh.html#aaa907e396724bca7b40434c67f80f2c9" title="Determine the kernel of the given polygon." alt="" coords="984,37,1169,77"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="922,55,970,55,970,60,922,60"/>
+<area shape="rect" id="Node000006" href="$namespacepolyfem_1_1mesh.html#a0d4be3bab49d477dc6c218108b278acc" title="Clip a polygon by a half&#45;plane." alt="" coords="1217,37,1396,77"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="1170,55,1204,55,1204,60,1170,60"/>
+<area shape="rect" id="Node000008" href="$namespacepolyfem_1_1mesh.html#afe2f4a1a50f2841a6eb95650ff7b1f0e" title="Compute the type of each facet in a surface mesh." alt="" coords="497,133,683,173"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="439,151,484,151,484,156,439,156"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="509,197,671,237"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="420,323,441,311,456,296,464,280,473,264,489,247,498,241,501,246,492,251,477,267,469,283,460,299,444,315,423,328"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697" title="number of cells" alt="" coords="509,261,671,301"/>
+<area shape="poly" id="edge12_Node000011_Node000013" title=" " alt="" coords="421,323,499,302,500,307,422,328"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2" title="number of faces" alt="" coords="509,325,671,365"/>
+<area shape="poly" id="edge13_Node000011_Node000014" title=" " alt="" coords="425,343,495,343,495,348,425,348"/>
+<area shape="rect" id="Node000016" href="$namespacepolyfem_1_1mesh_1_1_polygons.html#a189a52f2c610b304fb40efeb1abc5306" title="Split a polygon using polar refinement." alt="" coords="497,69,683,109"/>
+<area shape="poly" id="edge15_Node000015_Node000016" title=" " alt="" coords="437,87,483,87,483,92,437,92"/>
+<area shape="poly" id="edge16_Node000016_Node000004" title=" " alt="" coords="683,75,737,68,738,73,684,80"/>
+<area shape="rect" id="Node000019" href="$namespacepolyfem_1_1mesh.html#a9f801017db21aa959f16cfc91c986a04" title=" " alt="" coords="509,440,671,480"/>
+<area shape="poly" id="edge19_Node000018_Node000019" title=" " alt="" coords="403,520,516,482,517,487,405,525"/>
+<area shape="rect" id="Node000020" href="$namespacepolyfem_1_1mesh.html#a73cc0f7013b784e8a488a1840e62d034" title="Retrieve a 3D vector with the position of a given vertex." alt="" coords="755,440,919,480"/>
+<area shape="poly" id="edge25_Node000018_Node000020" title=" " alt="" coords="360,521,414,470,450,444,490,425,525,416,561,411,634,410,704,420,764,434,762,439,703,425,634,416,561,416,526,421,492,431,453,449,417,474,364,524"/>
+<area shape="rect" id="Node000021" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#a1b9d2ef721df947c3827b416016918fd" title=" " alt="" coords="491,720,689,760"/>
+<area shape="poly" id="edge21_Node000018_Node000021" title=" " alt="" coords="371,561,555,709,552,713,368,565"/>
+<area shape="rect" id="Node000022" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#a5989f6fbf9ec292c06a5626412f1e8ba" title=" " alt="" coords="737,720,936,760"/>
+<area shape="poly" id="edge29_Node000018_Node000022" title=" " alt="" coords="426,523,486,516,554,515,624,524,658,533,691,547,715,562,737,580,775,622,804,667,824,706,819,709,799,670,770,626,733,584,712,566,688,552,657,538,623,529,554,520,487,521,426,528"/>
+<area shape="rect" id="Node000023" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#abf91546c2ca67de0513b99b390ed1e51" title=" " alt="" coords="737,784,936,824"/>
+<area shape="poly" id="edge30_Node000018_Node000023" title=" " alt="" coords="427,547,587,566,654,578,691,591,709,613,717,635,719,658,718,681,717,726,724,748,739,770,743,774,739,778,735,774,719,751,712,727,712,681,714,658,712,636,704,616,688,596,653,583,586,571,426,553"/>
+<area shape="rect" id="Node000024" href="$namespacepolyfem_1_1mesh.html#a7463d5f1886f0b3b79d678e7a6535801" title=" " alt="" coords="508,605,672,645"/>
+<area shape="poly" id="edge24_Node000018_Node000024" title=" " alt="" coords="405,560,517,598,516,603,403,565"/>
+<area shape="rect" id="Node000025" href="$namespacepolyfem_1_1mesh_1_1_navigation.html#a7d6b7789d9155623da6a8ec00c3086ec" title=" " alt="" coords="491,784,689,824"/>
+<area shape="poly" id="edge26_Node000018_Node000025" title=" " alt="" coords="359,562,430,680,468,739,493,770,500,775,497,779,489,774,464,742,426,683,354,564"/>
+<area shape="poly" id="edge20_Node000019_Node000020" title=" " alt="" coords="671,457,741,457,741,463,671,463"/>
+<area shape="poly" id="edge22_Node000021_Node000022" title=" " alt="" coords="690,737,723,737,723,743,690,743"/>
+<area shape="poly" id="edge23_Node000021_Node000023" title=" " alt="" coords="669,757,747,778,745,783,667,763"/>
+<area shape="poly" id="edge27_Node000025_Node000022" title=" " alt="" coords="667,781,745,761,747,766,669,787"/>
+<area shape="poly" id="edge28_Node000025_Node000023" title=" " alt="" coords="690,801,723,801,723,807,690,807"/>
+<area shape="poly" id="edge34_Node000026_Node000020" title=" " alt="" coords="426,719,590,682,688,655,731,618,768,574,797,530,818,491,823,494,802,532,772,577,735,622,691,660,591,687,427,724"/>
+<area shape="poly" id="edge32_Node000026_Node000021" title=" " alt="" coords="426,737,477,737,477,743,426,743"/>
+<area shape="poly" id="edge36_Node000026_Node000022" title=" " alt="" coords="368,758,421,799,455,819,492,833,547,850,592,858,636,854,688,834,704,821,712,805,720,787,736,770,745,764,748,769,739,774,724,790,717,807,708,824,691,838,637,859,592,863,546,855,490,839,453,824,419,804,365,762"/>
+<area shape="poly" id="edge37_Node000026_Node000023" title=" " alt="" coords="362,758,415,814,451,842,492,863,545,878,588,881,633,874,689,863,739,848,786,828,788,833,741,853,690,868,634,880,589,886,544,883,490,868,448,846,411,818,358,762"/>
+<area shape="poly" id="edge33_Node000026_Node000024" title=" " alt="" coords="380,718,490,662,521,648,523,653,492,666,382,722"/>
+<area shape="poly" id="edge35_Node000026_Node000025" title=" " alt="" coords="422,757,500,778,499,783,421,763"/>
 </map>

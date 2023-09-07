@@ -6,36 +6,49 @@
 <!-- Title: src/polyfem/io/MshWriter.hpp Pages: 1 -->
 <svg width="343pt" height="93pt"
  viewBox="0.00 0.00 342.50 93.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 89)">
 <title>src/polyfem/io/MshWriter.hpp</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="247.5,-85 87.5,-85 87.5,-66 247.5,-66 247.5,-85"/>
 <text text-anchor="middle" x="167.5" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/io/MshWriter.hpp</text>
 </a>
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="_msh_writer_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="_msh_writer_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="159,-24.5 0,-24.5 0,-5.5 159,-5.5 159,-24.5"/>
 <text text-anchor="middle" x="79.5" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/io/MshWriter.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M145.93,-60.16C129.21,-49.05 106.6,-34.01 92.54,-24.67"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="144.25,-63.25 154.52,-65.87 148.13,-57.42 144.25,-63.25"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="_state_solve_nonlinear_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="_state_solve_nonlinear_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="334.5,-30 176.5,-30 176.5,0 334.5,0 334.5,-30"/>
 <text text-anchor="start" x="184.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/state/StateSolve</text>
 <text text-anchor="middle" x="255.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Nonlinear.cpp</text>
@@ -43,10 +56,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M188.87,-60.29C202.66,-51.13 220.51,-39.26 234.27,-30.11"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="186.87,-57.42 180.48,-65.87 190.75,-63.25 186.87,-57.42"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

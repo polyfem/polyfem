@@ -1,13 +1,31 @@
 <map id="polyfem::State::set_materials" name="polyfem::State::set_materials">
-<area shape="rect" id="node1" title="set the material and the problem dimension" alt="" coords="1040,88,1187,128"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1_state.html#ae0de6ea3bdc69e3e21ddfbcdb144180b" title="initialize the nonlinear solver" alt="" coords="803,5,983,45"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1_state.html#a2d7e06f66912cc77b1d942340211ddb9" title="loads the mesh from a geogram mesh" alt="" coords="795,70,992,95"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1_state.html#a76dfcaee0e24beeab2fda9449f404fe5" title="solves a navier stokes" alt="" coords="565,109,726,149"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1_state.html#ac42074a324e693f8eef5d7a96a56dc38" title="solves transient navier stokes with FEM" alt="" coords="553,173,737,213"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="335,77,496,117"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="544,45,747,85"/>
-<area shape="rect" id="node4" href="$main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" title=" " alt="" coords="123,35,271,61"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="117,85,278,110"/>
-<area shape="rect" id="node7" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,135,287,175"/>
-<area shape="rect" id="node5" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,35,60,61"/>
+<area shape="rect" id="Node000001" title="set the material and the problem dimension" alt="" coords="1040,126,1187,166"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1_state.html#ae0de6ea3bdc69e3e21ddfbcdb144180b" title="initialize the nonlinear solver" alt="" coords="803,183,983,223"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1027,171,971,186,970,181,1026,166"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1_state.html#a37cc0825d6cd66410b5c1a0c46778a9f" title="loads the mesh from the json arguments" alt="" coords="795,25,992,51"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="1067,121,991,79,929,53,931,48,993,74,1070,116"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1_state.html#a2d7e06f66912cc77b1d942340211ddb9" title="loads the mesh from a geogram mesh" alt="" coords="795,133,992,159"/>
+<area shape="poly" id="edge12_Node000001_Node000011" title=" " alt="" coords="1026,149,992,149,992,143,1026,143"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1_state.html#a76dfcaee0e24beeab2fda9449f404fe5" title="solves a navier stokes" alt="" coords="565,75,726,115"/>
+<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="1026,130,992,124,851,110,726,101,726,96,852,104,992,119,1027,125"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1_state.html#ac42074a324e693f8eef5d7a96a56dc38" title="solves transient navier stokes with FEM" alt="" coords="553,254,737,294"/>
+<area shape="poly" id="edge15_Node000001_Node000013" title=" " alt="" coords="1083,178,1043,210,993,238,928,258,861,270,796,277,738,279,737,274,796,272,860,265,927,253,991,233,1040,206,1080,174"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="335,133,496,173"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="789,187,746,180,614,167,496,159,496,154,615,162,747,175,790,181"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="544,190,747,230"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="790,209,747,210,747,204,790,203"/>
+<area shape="rect" id="Node000004" href="$main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" title=" " alt="" coords="123,13,271,39"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="367,128,219,41,222,37,370,123"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="117,168,278,193"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="321,167,279,173,278,168,321,162"/>
+<area shape="rect" id="Node000007" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,103,287,143"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="320,142,287,138,287,133,321,137"/>
+<area shape="rect" id="Node000005" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,13,60,39"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="109,29,60,29,60,23,109,23"/>
+<area shape="poly" id="edge8_Node000008_Node000003" title=" " alt="" coords="551,189,495,175,497,170,552,184"/>
+<area shape="poly" id="edge10_Node000009_Node000004" title=" " alt="" coords="819,25,746,15,616,9,485,10,272,22,271,16,485,4,616,3,747,10,820,20"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1_state.html#a4ce16a4580b29c071e8fd84fbada3497" title="loads the mesh from V and F," alt="" coords="547,25,744,51"/>
+<area shape="poly" id="edge11_Node000009_Node000010" title=" " alt="" coords="781,41,744,41,744,35,781,35"/>
+<area shape="poly" id="edge14_Node000012_Node000003" title=" " alt="" coords="552,121,497,135,495,130,551,116"/>
+<area shape="poly" id="edge16_Node000013_Node000003" title=" " alt="" coords="558,251,543,244,486,210,439,175,442,171,489,205,545,239,561,246"/>
 </map>

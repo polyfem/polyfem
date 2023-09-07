@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 82)">
 <title>polyfem::problem::ElasticCantileverExact::exact</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="142,-54 0,-54 0,-24 142,-24 142,-54"/>
 <text text-anchor="start" x="8" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::problem::Elastic</text>
 <text text-anchor="middle" x="71" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">CantileverExact::exact</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a79f0bc3aca21bace075b2f39e12a76c9" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a79f0bc3aca21bace075b2f39e12a76c9" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="320,-78 178,-78 178,-48 320,-48 320,-78"/>
 <text text-anchor="start" x="186" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::problem::Elastic</text>
 <text text-anchor="middle" x="249" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">CantileverExact::eval_fun</text>
@@ -29,15 +29,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M142.07,-48.55C150.54,-49.71 159.25,-50.9 167.85,-52.07"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="167.51,-55.56 177.89,-53.44 168.45,-48.62 167.51,-55.56"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a51eb6c3fe6a6c4cb55a94dcf9787f0e3" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a51eb6c3fe6a6c4cb55a94dcf9787f0e3" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="320,-30 178,-30 178,0 320,0 320,-30"/>
 <text text-anchor="start" x="186" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::problem::Elastic</text>
 <text text-anchor="middle" x="249" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">CantileverExact::size_for</text>
@@ -45,15 +48,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M142.07,-29.45C150.54,-28.29 159.25,-27.1 167.85,-25.93"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="168.45,-29.38 177.89,-24.56 167.51,-22.44 168.45,-29.38"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a52f0b06b74f836bdeb52857d2143ca71" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a52f0b06b74f836bdeb52857d2143ca71" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="499,-30 356,-30 356,0 499,0 499,-30"/>
 <text text-anchor="start" x="364" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::problem::Elastic</text>
 <text text-anchor="middle" x="427.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">CantileverExact::is_scalar</text>
@@ -61,10 +67,13 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M320.01,-15C328.52,-15 337.26,-15 345.91,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="346,-18.5 356,-15 346,-11.5 346,-18.5"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

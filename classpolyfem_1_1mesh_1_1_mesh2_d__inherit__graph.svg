@@ -6,61 +6,95 @@
 <!-- Title: polyfem::mesh::Mesh2D Pages: 1 -->
 <svg width="320pt" height="137pt"
  viewBox="0.00 0.00 319.50 137.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 133)">
 <title>polyfem::mesh::Mesh2D</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="221.5,-74 85.5,-74 85.5,-55 221.5,-55 221.5,-74"/>
 <text text-anchor="middle" x="153.5" y="-62" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh2D</text>
 </a>
 </g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="143,-19 0,-19 0,0 143,0 143,-19"/>
 <text text-anchor="middle" x="71.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::CMesh2D</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M131.72,-49.42C116.84,-39.81 97.59,-27.37 84.91,-19.17"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="130.03,-52.5 140.33,-54.98 133.83,-46.62 130.03,-52.5"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="311.5,-19 161.5,-19 161.5,0 311.5,0 311.5,-19"/>
 <text text-anchor="middle" x="236.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::NCMesh2D</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M175.54,-49.42C190.61,-39.81 210.09,-27.37 222.92,-19.17"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="173.38,-46.65 166.84,-54.98 177.15,-52.55 173.38,-46.65"/>
+</a>
+</g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html" target="_top" xlink:title="Abstract mesh class to capture 2d/3d conforming and non&#45;conforming meshes.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1mesh_1_1_mesh.html" target="_top" xlink:title="Abstract mesh class to capture 2d/3d conforming and non&#45;conforming meshes.">
 <polygon fill="white" stroke="#666666" points="214.5,-129 92.5,-129 92.5,-110 214.5,-110 214.5,-129"/>
 <text text-anchor="middle" x="153.5" y="-117" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node1 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node2&#45;&gt;Node1</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M153.5,-99.66C153.5,-90.93 153.5,-80.99 153.5,-74.09"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="150,-99.75 153.5,-109.75 157,-99.75 150,-99.75"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

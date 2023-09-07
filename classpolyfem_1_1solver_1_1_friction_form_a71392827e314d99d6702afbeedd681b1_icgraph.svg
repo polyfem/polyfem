@@ -6,12 +6,22 @@
 <!-- Title: polyfem::solver::FrictionForm::compute_surface_velocities Pages: 1 -->
 <svg width="365pt" height="157pt"
  viewBox="0.00 0.00 365.00 156.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 152.5)">
 <title>polyfem::solver::FrictionForm::compute_surface_velocities</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Compute the surface velocities.">
+<g id="a_Node000001"><a xlink:title="Compute the surface velocities.">
 <polygon fill="#999999" stroke="#666666" points="357,-84 173,-84 173,-54 357,-54 357,-84"/>
 <text text-anchor="start" x="181" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Friction</text>
 <text text-anchor="middle" x="265" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">Form::compute_surface_velocities</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_friction_form.html#aba546a5686d184c3f8b9779b4f6f0620" target="_top" xlink:title="Compute the first derivative of the value wrt x.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_friction_form.html#aba546a5686d184c3f8b9779b4f6f0620" target="_top" xlink:title="Compute the first derivative of the value wrt x.">
 <polygon fill="white" stroke="#666666" points="136,-148.5 1,-148.5 1,-107.5 136,-107.5 136,-148.5"/>
 <text text-anchor="start" x="9" y="-136.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Friction</text>
 <text text-anchor="start" x="9" y="-125.5" font-family="Helvetica,sans-Serif" font-size="10.00">Form::first_derivative</text>
@@ -30,15 +40,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M204.71,-86.99C183.08,-93.55 158.48,-101.01 136.24,-107.75"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="205.86,-90.29 214.42,-84.04 203.83,-83.59 205.86,-90.29"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_friction_form.html#a36b081d01bbfca96dfb1ca2e7b37b7ac" target="_top" xlink:title="Compute the second derivative of the value wrt x.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_friction_form.html#a36b081d01bbfca96dfb1ca2e7b37b7ac" target="_top" xlink:title="Compute the second derivative of the value wrt x.">
 <polygon fill="white" stroke="#666666" points="137,-89.5 0,-89.5 0,-48.5 137,-48.5 137,-89.5"/>
 <text text-anchor="start" x="8" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Friction</text>
 <text text-anchor="start" x="8" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">Form::second_derivative</text>
@@ -47,15 +60,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M162.64,-69C154.05,-69 145.5,-69 137.26,-69"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="162.73,-72.5 172.73,-69 162.73,-65.5 162.73,-72.5"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1solver_1_1_friction_form.html#a88a9d777ccece8a0e7ed7cac196b10fd" target="_top" xlink:title="Compute the value of the form.">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1solver_1_1_friction_form.html#a88a9d777ccece8a0e7ed7cac196b10fd" target="_top" xlink:title="Compute the value of the form.">
 <polygon fill="white" stroke="#666666" points="137,-30 0,-30 0,0 137,0 137,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Friction</text>
 <text text-anchor="middle" x="68.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Form::value_unweighted</text>
@@ -63,10 +79,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M200.17,-51.28C175.45,-44.41 147.45,-36.64 123.73,-30.05"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="199.25,-54.66 209.82,-53.96 201.12,-47.91 199.25,-54.66"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

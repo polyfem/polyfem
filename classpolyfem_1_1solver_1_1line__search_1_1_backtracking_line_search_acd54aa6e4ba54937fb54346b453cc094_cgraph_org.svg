@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 213.5)">
 <title>polyfem::solver::line_search::BacktrackingLineSearch::line_search</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="177,-114 0,-114 0,-73 177,-73 177,-114"/>
 <text text-anchor="start" x="8" y="-102" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::line</text>
 <text text-anchor="start" x="8" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">_search::BacktrackingLineSearch</text>
@@ -20,9 +20,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a07bc05931512b5257fd28bffe4fb7efc" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a07bc05931512b5257fd28bffe4fb7efc" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="366.5,-209.5 236.5,-209.5 236.5,-157.5 366.5,-157.5 366.5,-209.5"/>
 <text text-anchor="start" x="244.5" y="-197.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::line</text>
 <text text-anchor="start" x="244.5" y="-186.5" font-family="Helvetica,sans-Serif" font-size="10.00">_search::LineSearch::</text>
@@ -32,15 +32,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M134.48,-114.03C157.82,-124.56 186.84,-137.45 213,-148.5 217.47,-150.39 222.09,-152.31 226.75,-154.23"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="225.77,-157.62 236.35,-158.17 228.42,-151.14 225.77,-157.62"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html#a7b003ae59a66e3cf44c2836b6b5d6292" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html#a7b003ae59a66e3cf44c2836b6b5d6292" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="390,-139 213,-139 213,-98 390,-98 390,-139"/>
 <text text-anchor="start" x="221" y="-127" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::line</text>
 <text text-anchor="start" x="221" y="-116" font-family="Helvetica,sans-Serif" font-size="10.00">_search::BacktrackingLineSearch</text>
@@ -49,30 +52,36 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M177.15,-103.89C185.61,-104.89 194.24,-105.91 202.79,-106.92"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="202.44,-110.41 212.78,-108.11 203.26,-103.45 202.44,-110.41"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
+<g id="a_Node000004"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
 <polygon fill="white" stroke="#666666" points="520,-103 426,-103 426,-84 520,-84 520,-103"/>
 <text text-anchor="middle" x="473" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::logger</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge5" class="edge">
+<g id="edge5_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge5_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M177.2,-90.31C189.23,-89.97 201.42,-89.69 213,-89.5 291.66,-88.23 311.36,-87.58 390,-89.5 398.21,-89.7 406.87,-90.01 415.37,-90.38"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="415.46,-93.88 425.61,-90.84 415.78,-86.89 415.46,-93.88"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#af35a5d0f24305a5400176e5bc8669d59" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#af35a5d0f24305a5400176e5bc8669d59" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="380.5,-41 222.5,-41 222.5,0 380.5,0 380.5,-41"/>
 <text text-anchor="start" x="230.5" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::line</text>
 <text text-anchor="start" x="230.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">_search::LineSearch::</text>
@@ -81,16 +90,22 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000001_Node000005" class="edge">
 <title>Node1&#45;&gt;Node5</title>
+<g id="a_edge4_Node000001_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M148.84,-72.97C174.57,-64.07 204.86,-53.59 231.58,-44.35"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="232.94,-47.58 241.24,-41 230.65,-40.96 232.94,-47.58"/>
+</a>
+</g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M390.23,-105.56C398.86,-104.29 407.45,-103.02 415.65,-101.81"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="416.4,-105.24 425.78,-100.32 415.38,-98.31 416.4,-105.24"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

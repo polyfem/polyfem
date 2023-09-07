@@ -6,12 +6,22 @@
 <!-- Title: polyfem::autogen::q_grad_basis_value_3d Pages: 1 -->
 <svg width="313pt" height="320pt"
  viewBox="0.00 0.00 313.00 320.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 316)">
 <title>polyfem::autogen::q_grad_basis_value_3d</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="124,-162 0,-162 0,-132 124,-132 124,-162"/>
 <text text-anchor="start" x="8" y="-150" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::autogen::q</text>
 <text text-anchor="middle" x="62" y="-139" font-family="Helvetica,sans-Serif" font-size="10.00">_grad_basis_value_3d</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="namespacepolyfem_1_1autogen.html#ad91acbfdd669c238b08e82d90202f9f0" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="namespacepolyfem_1_1autogen.html#ad91acbfdd669c238b08e82d90202f9f0" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="300,-294 165,-294 165,-264 300,-264 300,-294"/>
 <text text-anchor="start" x="173" y="-282" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::autogen::q</text>
 <text text-anchor="middle" x="232.5" y="-271" font-family="Helvetica,sans-Serif" font-size="10.00">_0_basis_grad_value_3d</text>
@@ -29,15 +39,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M72.76,-162.16C88.45,-185.37 121.46,-229.67 160,-255 162.41,-256.58 164.94,-258.07 167.54,-259.47"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="166.1,-262.67 176.63,-263.89 169.16,-256.37 166.1,-262.67"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="namespacepolyfem_1_1autogen.html#a4b5c7f37e6cf234a7da1e3bc02fc31db" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="namespacepolyfem_1_1autogen.html#a4b5c7f37e6cf234a7da1e3bc02fc31db" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="300,-228 165,-228 165,-198 300,-198 300,-228"/>
 <text text-anchor="start" x="173" y="-216" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::autogen::q</text>
 <text text-anchor="middle" x="232.5" y="-205" font-family="Helvetica,sans-Serif" font-size="10.00">_1_basis_grad_value_3d</text>
@@ -45,15 +58,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge3_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M95.93,-162.09C114.58,-170.42 138.41,-180.72 160,-189 164.84,-190.86 169.9,-192.71 174.99,-194.53"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="174.16,-197.95 184.76,-197.95 176.47,-191.34 174.16,-197.95"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="namespacepolyfem_1_1autogen.html#a19a7b192530d65a08f8e1930ac3c5538" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="namespacepolyfem_1_1autogen.html#a19a7b192530d65a08f8e1930ac3c5538" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="300,-162 165,-162 165,-132 300,-132 300,-162"/>
 <text text-anchor="start" x="173" y="-150" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::autogen::q</text>
 <text text-anchor="middle" x="232.5" y="-139" font-family="Helvetica,sans-Serif" font-size="10.00">_2_basis_grad_value_3d</text>
@@ -61,15 +77,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge5" class="edge">
+<g id="edge5_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge5_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M124.31,-147C134.19,-147 144.53,-147 154.71,-147"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="154.83,-150.5 164.83,-147 154.83,-143.5 154.83,-150.5"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="namespacepolyfem_1_1autogen.html#a746642bbbfbfc633e145ffc646a38cd2" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="namespacepolyfem_1_1autogen.html#a746642bbbfbfc633e145ffc646a38cd2" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="300,-96 165,-96 165,-66 300,-66 300,-96"/>
 <text text-anchor="start" x="173" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::autogen::q</text>
 <text text-anchor="middle" x="232.5" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">_3_basis_grad_value_3d</text>
@@ -77,15 +96,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node5 -->
-<g id="edge7" class="edge">
+<g id="edge7_Node000001_Node000005" class="edge">
 <title>Node1&#45;&gt;Node5</title>
+<g id="a_edge7_Node000001_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M101.66,-131.86C125.95,-122.34 157.49,-109.99 183.4,-99.84"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="184.99,-102.98 193.02,-96.07 182.43,-96.46 184.99,-102.98"/>
+</a>
+</g>
 </g>
 <!-- Node6 -->
-<g id="node6" class="node">
+<g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:href="namespacepolyfem_1_1autogen.html#a8fc2945341299a723c2e6e16ab5ea4fd" target="_top" xlink:title=" ">
+<g id="a_Node000006"><a xlink:href="namespacepolyfem_1_1autogen.html#a8fc2945341299a723c2e6e16ab5ea4fd" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="305,-30 160,-30 160,0 305,0 305,-30"/>
 <text text-anchor="start" x="168" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::autogen::q</text>
 <text text-anchor="middle" x="232.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_m2_basis_grad_value_3d</text>
@@ -93,40 +115,73 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node6 -->
-<g id="edge9" class="edge">
+<g id="edge9_Node000001_Node000006" class="edge">
 <title>Node1&#45;&gt;Node6</title>
+<g id="a_edge9_Node000001_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M77.24,-131.91C95.41,-113.1 128.3,-80.58 160,-57 170.57,-49.14 182.73,-41.53 193.98,-34.99"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="195.8,-37.99 202.76,-30 192.34,-31.9 195.8,-37.99"/>
+</a>
+</g>
 </g>
 <!-- Node2&#45;&gt;Node2 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000002" class="edge">
 <title>Node2&#45;&gt;Node2</title>
+<g id="a_edge2_Node000002_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M202.62,-294.28C195.98,-303.41 205.94,-312 232.5,-312 248.27,-312 258.19,-308.97 262.26,-304.6"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="265.76,-304.32 262.38,-294.28 258.76,-304.23 265.76,-304.32"/>
+</a>
+</g>
 </g>
 <!-- Node3&#45;&gt;Node3 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000003_Node000003" class="edge">
 <title>Node3&#45;&gt;Node3</title>
+<g id="a_edge4_Node000003_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M202.62,-228.28C195.98,-237.41 205.94,-246 232.5,-246 248.27,-246 258.19,-242.97 262.26,-238.6"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="265.76,-238.32 262.38,-228.28 258.76,-238.23 265.76,-238.32"/>
+</a>
+</g>
 </g>
 <!-- Node4&#45;&gt;Node4 -->
-<g id="edge6" class="edge">
+<g id="edge6_Node000004_Node000004" class="edge">
 <title>Node4&#45;&gt;Node4</title>
+<g id="a_edge6_Node000004_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M202.62,-162.28C195.98,-171.41 205.94,-180 232.5,-180 248.27,-180 258.19,-176.97 262.26,-172.6"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="265.76,-172.32 262.38,-162.28 258.76,-172.23 265.76,-172.32"/>
+</a>
+</g>
 </g>
 <!-- Node5&#45;&gt;Node5 -->
-<g id="edge8" class="edge">
+<g id="edge8_Node000005_Node000005" class="edge">
 <title>Node5&#45;&gt;Node5</title>
+<g id="a_edge8_Node000005_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M202.62,-96.28C195.98,-105.41 205.94,-114 232.5,-114 248.27,-114 258.19,-110.97 262.26,-106.6"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="265.76,-106.32 262.38,-96.28 258.76,-106.23 265.76,-106.32"/>
+</a>
+</g>
 </g>
 <!-- Node6&#45;&gt;Node6 -->
-<g id="edge10" class="edge">
+<g id="edge10_Node000006_Node000006" class="edge">
 <title>Node6&#45;&gt;Node6</title>
+<g id="a_edge10_Node000006_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M202.62,-30.28C195.98,-39.41 205.94,-48 232.5,-48 248.27,-48 258.19,-44.97 262.26,-40.6"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="265.76,-40.32 262.38,-30.28 258.76,-40.23 265.76,-40.32"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

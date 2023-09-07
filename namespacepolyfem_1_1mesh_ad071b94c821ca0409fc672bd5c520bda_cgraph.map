@@ -1,17 +1,32 @@
 <map id="polyfem::mesh::to_geogram_mesh" name="polyfem::mesh::to_geogram_mesh">
-<area shape="rect" id="node1" title="Converts a hex mesh to a Geogram mesh." alt="" coords="5,271,255,297"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399" title="id of the face vertex" alt="" coords="312,5,475,45"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#a786f4a920dd29f5584136be44de9e1ef" title=" " alt="" coords="303,70,484,125"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1mesh_1_1_mesh.html#a4ac6c05b7775df67b96087dc9721ee0a" title="checks if element is cube compatible" alt="" coords="547,143,710,183"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4" title="is face boundary" alt="" coords="312,200,475,240"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697" title="number of cells" alt="" coords="312,264,475,304"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39" title="number of vertices of a face" alt="" coords="312,328,475,368"/>
-<area shape="rect" id="node13" href="$classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2" title="number of faces" alt="" coords="312,392,475,432"/>
-<area shape="rect" id="node14" href="$classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e" title="number of vertices" alt="" coords="312,456,475,496"/>
-<area shape="rect" id="node15" href="$classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366" title="point coordinates" alt="" coords="312,520,475,560"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#a04627e0048f0e5d66c44bbb137661277" title=" " alt="" coords="532,15,725,55"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#a01f069b58a0d4a64604589402dbc33d1" title=" " alt="" coords="538,79,719,119"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#ab2a59e977bce042ef0e75782536f49c4" title=" " alt="" coords="773,15,955,55"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#aec1e0ed9175c9fa82237cdf19a8f01e6" title=" " alt="" coords="773,79,955,119"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#afd5e8a487b0eecbfaa2ca5438f29ef2f" title=" " alt="" coords="773,143,955,183"/>
+<area shape="rect" id="Node000001" title="Converts a hex mesh to a Geogram mesh." alt="" coords="5,271,255,297"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399" title="id of the face vertex" alt="" coords="312,5,475,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="135,270,157,229,194,172,242,110,270,81,301,55,309,50,312,54,304,59,274,85,246,113,198,175,162,232,140,272"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#a786f4a920dd29f5584136be44de9e1ef" title=" " alt="" coords="303,70,484,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="143,269,209,211,301,142,322,129,325,134,304,146,213,215,147,273"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_mesh.html#a4ac6c05b7775df67b96087dc9721ee0a" title="checks if element is cube compatible" alt="" coords="547,143,710,183"/>
+<area shape="poly" id="edge10_Node000001_Node000005" title=" " alt="" coords="147,269,212,226,256,203,302,185,361,171,421,163,533,157,534,162,422,168,362,177,303,191,258,208,215,231,150,273"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4" title="is face boundary" alt="" coords="312,200,475,240"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="183,269,298,240,299,246,184,274"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697" title="number of cells" alt="" coords="312,264,475,304"/>
+<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="255,281,298,281,298,287,255,287"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39" title="number of vertices of a face" alt="" coords="312,328,475,368"/>
+<area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="184,294,299,322,298,328,183,299"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2" title="number of faces" alt="" coords="312,392,475,432"/>
+<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="153,295,219,334,304,378,320,384,318,389,302,382,217,339,150,299"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e" title="number of vertices" alt="" coords="312,456,475,496"/>
+<area shape="poly" id="edge14_Node000001_Node000014" title=" " alt="" coords="144,295,207,364,253,405,304,442,315,448,312,452,301,446,250,409,204,368,140,299"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366" title="point coordinates" alt="" coords="312,520,475,560"/>
+<area shape="poly" id="edge15_Node000001_Node000015" title=" " alt="" coords="140,295,162,336,198,392,246,453,274,481,304,506,313,511,310,516,301,510,271,485,242,456,194,395,158,338,135,298"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#a04627e0048f0e5d66c44bbb137661277" title=" " alt="" coords="532,15,725,55"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="484,71,539,56,541,61,485,76"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="485,120,544,136,542,142,484,125"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#a01f069b58a0d4a64604589402dbc33d1" title=" " alt="" coords="538,79,719,119"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="485,95,524,95,524,101,485,101"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#ab2a59e977bce042ef0e75782536f49c4" title=" " alt="" coords="773,15,955,55"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="702,76,776,56,778,61,704,81"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#aec1e0ed9175c9fa82237cdf19a8f01e6" title=" " alt="" coords="773,79,955,119"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="720,96,759,96,759,101,720,101"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1mesh_1_1_mesh3_d.html#afd5e8a487b0eecbfaa2ca5438f29ef2f" title=" " alt="" coords="773,143,955,183"/>
+<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="704,116,778,137,776,142,702,121"/>
 </map>

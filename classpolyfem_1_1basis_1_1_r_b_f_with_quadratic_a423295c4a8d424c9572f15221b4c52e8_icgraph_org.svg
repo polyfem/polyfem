@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 34)">
 <title>polyfem::basis::RBFWithQuadratic::bases_values</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Batch evaluates the RBF + polynomials on a set of sample points.">
+<g id="a_Node000001"><a xlink:title="Batch evaluates the RBF + polynomials on a set of sample points.">
 <polygon fill="#999999" stroke="#666666" points="844,-30 660,-30 660,0 844,0 844,-30"/>
 <text text-anchor="start" x="668" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::RBFWithQuadratic</text>
 <text text-anchor="middle" x="752" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::bases_values</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a1707dc6e1745ab4fceb760c690bd8c00" target="_top" xlink:title="Evaluates one RBF function over a list of coordinates.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a1707dc6e1745ab4fceb760c690bd8c00" target="_top" xlink:title="Evaluates one RBF function over a list of coordinates.">
 <polygon fill="white" stroke="#666666" points="624,-30 440,-30 440,0 624,0 624,-30"/>
 <text text-anchor="start" x="448" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::RBFWithQuadratic</text>
 <text text-anchor="middle" x="532" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::basis</text>
@@ -29,15 +29,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M649.53,-15C641.07,-15 632.55,-15 624.17,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="649.81,-18.5 659.81,-15 649.81,-11.5 649.81,-18.5"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a56b0caddd406bcb915deef758b1b1109" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#a56b0caddd406bcb915deef758b1b1109" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="404,-30 220,-30 220,0 404,0 404,-30"/>
 <text text-anchor="start" x="228" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::RBFWithQuadratic</text>
 <text text-anchor="middle" x="312" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_weights</text>
@@ -45,15 +48,18 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M429.53,-15C421.07,-15 412.55,-15 404.17,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="429.81,-18.5 439.81,-15 429.81,-11.5 429.81,-18.5"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#ab74c358d285bd90b5e92600d671634d0" target="_top" xlink:title="Initialize RBF functions over a polytope element.">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1basis_1_1_r_b_f_with_quadratic.html#ab74c358d285bd90b5e92600d671634d0" target="_top" xlink:title="Initialize RBF functions over a polytope element.">
 <polygon fill="white" stroke="#666666" points="184,-30 0,-30 0,0 184,0 184,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::RBFWithQuadratic</text>
 <text text-anchor="middle" x="92" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::RBFWithQuadratic</text>
@@ -61,10 +67,13 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M209.53,-15C201.07,-15 192.55,-15 184.17,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="209.81,-18.5 219.81,-15 209.81,-11.5 209.81,-18.5"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

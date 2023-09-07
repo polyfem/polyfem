@@ -6,53 +6,87 @@
 <!-- Title: polyfem::solver::FrictionForm Pages: 1 -->
 <svg width="262pt" height="149pt"
  viewBox="0.00 0.00 261.50 149.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 145)">
 <title>polyfem::solver::FrictionForm</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Form of the lagged friction disapative potential and forces.">
+<g id="a_Node000001"><a xlink:title="Form of the lagged friction disapative potential and forces.">
 <polygon fill="#999999" stroke="#666666" points="160,-19 0,-19 0,0 160,0 160,-19"/>
 <text text-anchor="middle" x="80" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::FrictionForm</text>
 </a>
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_form.html" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_form.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="138,-141 14,-141 14,-122 138,-122 138,-141"/>
 <text text-anchor="middle" x="76" y="-129" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Form</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node1 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node2&#45;&gt;Node1</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M76.63,-111.65C77.51,-85.22 79.07,-38.26 79.71,-19.05"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="73.12,-111.76 76.29,-121.87 80.12,-111.99 73.12,-111.76"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_contact_form.html" target="_top" xlink:title="Form representing the contact potential and forces.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_contact_form.html" target="_top" xlink:title="Form representing the contact potential and forces.">
 <polygon fill="white" stroke="#666666" points="253.5,-85 92.5,-85 92.5,-66 253.5,-66 253.5,-85"/>
 <text text-anchor="middle" x="173" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::ContactForm</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000003_Node000002" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge3_Node000003_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M100.34,-116.95C118.24,-106.98 142.05,-93.73 157.45,-85.15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="98.62,-113.9 91.58,-121.82 102.02,-120.02 98.62,-113.9"/>
+</a>
+</g>
 </g>
 <!-- Node3&#45;&gt;Node1 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node3&#45;&gt;Node1</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M152.19,-60.18C133.92,-47.61 107.94,-29.73 92.64,-19.2"/>
 <polygon fill="#9a32cd" stroke="#9a32cd" points="150.24,-63.08 160.46,-65.87 154.2,-57.32 150.24,-63.08"/>
-<text text-anchor="middle" x="168.5" y="-40" font-family="Helvetica,sans-Serif" font-size="10.00"> contact_form_</text>
+</a>
+</g>
+<text text-anchor="middle" x="168.5" y="-40" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey"> contact_form_</text>
 </g>
 </g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

@@ -6,12 +6,22 @@
 <!-- Title: polyfem::solver::AMIPSForm::is_step_valid Pages: 1 -->
 <svg width="354pt" height="113pt"
  viewBox="0.00 0.00 354.00 112.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 108.5)">
 <title>polyfem::solver::AMIPSForm::is_step_valid</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Determine if a step from solution x0 to solution x1 is allowed.">
+<g id="a_Node000001"><a xlink:title="Determine if a step from solution x0 to solution x1 is allowed.">
 <polygon fill="#999999" stroke="#666666" points="155,-61.5 0,-61.5 0,-31.5 155,-31.5 155,-61.5"/>
 <text text-anchor="start" x="8" y="-49.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::AMIPSForm</text>
 <text text-anchor="middle" x="77.5" y="-38.5" font-family="Helvetica,sans-Serif" font-size="10.00">::is_step_valid</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a4a09fc78f3e8f84c2d958f495a43a9da" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a4a09fc78f3e8f84c2d958f495a43a9da" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="346,-104.5 191,-104.5 191,-74.5 346,-74.5 346,-104.5"/>
 <text text-anchor="start" x="199" y="-92.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::AMIPSForm</text>
 <text text-anchor="middle" x="268.5" y="-81.5" font-family="Helvetica,sans-Serif" font-size="10.00">::get_updated_mesh_nodes</text>
@@ -29,40 +39,64 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M144.6,-61.54C159.71,-64.98 175.88,-68.66 191.37,-72.18"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="190.91,-75.66 201.43,-74.47 192.46,-68.84 190.91,-75.66"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
+<g id="a_Node000003"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
 <polygon fill="white" stroke="#666666" points="315.5,-56 221.5,-56 221.5,-37 315.5,-37 315.5,-56"/>
 <text text-anchor="middle" x="268.5" y="-44" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::logger</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M155.1,-46.5C173.92,-46.5 193.72,-46.5 211.37,-46.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="211.49,-50 221.49,-46.5 211.49,-43 211.49,-50"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" target="_top" xlink:title="Unflatten rowwises, so every dim elements in x become a row.">
+<g id="a_Node000004"><a xlink:href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" target="_top" xlink:title="Unflatten rowwises, so every dim elements in x become a row.">
 <polygon fill="white" stroke="#666666" points="335.5,-19 201.5,-19 201.5,0 335.5,0 335.5,-19"/>
 <text text-anchor="middle" x="268.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::unflatten</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M155.1,-31.5C172.9,-28.02 191.57,-24.36 208.47,-21.06"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="209.6,-24.4 218.74,-19.04 208.26,-17.53 209.6,-24.4"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

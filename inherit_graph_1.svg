@@ -9,18 +9,18 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 82)">
 <title>Graphical Class Hierarchy</title>
 <!-- Node0 -->
-<g id="node1" class="node">
+<g id="Node000000" class="node">
 <title>Node0</title>
-<g id="a_node1"><a xlink:href="struct_diff_scalar_base.html" target="_top" xlink:title="Base class of all automatic differentiation types.">
+<g id="a_Node000000"><a xlink:href="struct_diff_scalar_base.html" target="_top" xlink:title="Base class of all automatic differentiation types.">
 <polygon fill="white" stroke="#666666" points="88,-48.5 0,-48.5 0,-29.5 88,-29.5 88,-48.5"/>
 <text text-anchor="middle" x="44" y="-36.5" font-family="Helvetica,sans-Serif" font-size="10.00">DiffScalarBase</text>
 </a>
 </g>
 </g>
 <!-- Node1 -->
-<g id="node2" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node2"><a xlink:href="struct_d_scalar1.html" target="_top" xlink:title="Automatic differentiation scalar with first&#45;order derivatives.">
+<g id="a_Node000001"><a xlink:href="struct_d_scalar1.html" target="_top" xlink:title="Automatic differentiation scalar with first&#45;order derivatives.">
 <polygon fill="white" stroke="#666666" points="243,-78 133,-78 133,-48 243,-48 243,-78"/>
 <text text-anchor="start" x="141" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">DScalar1&lt; _Scalar,</text>
 <text text-anchor="middle" x="188" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00"> _Gradient &gt;</text>
@@ -28,15 +28,18 @@
 </g>
 </g>
 <!-- Node0&#45;&gt;Node1 -->
-<g id="edge1" class="edge">
+<g id="edge4_Node000000_Node000001" class="edge">
 <title>Node0&#45;&gt;Node1</title>
+<g id="a_edge4_Node000000_Node000001"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M98.49,-48.04C109.72,-49.94 121.59,-51.94 132.85,-53.85"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="98.82,-44.55 88.38,-46.33 97.65,-51.45 98.82,-44.55"/>
+</a>
+</g>
 </g>
 <!-- Node2 -->
-<g id="node3" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node3"><a xlink:href="struct_d_scalar2.html" target="_top" xlink:title="Automatic differentiation scalar with first&#45; and second&#45;order derivatives.">
+<g id="a_Node000002"><a xlink:href="struct_d_scalar2.html" target="_top" xlink:title="Automatic differentiation scalar with first&#45; and second&#45;order derivatives.">
 <polygon fill="white" stroke="#666666" points="252,-30 124,-30 124,0 252,0 252,-30"/>
 <text text-anchor="start" x="132" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">DScalar2&lt; _Scalar,</text>
 <text text-anchor="middle" x="188" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00"> _Gradient, _Hessian &gt;</text>
@@ -44,10 +47,13 @@
 </g>
 </g>
 <!-- Node0&#45;&gt;Node2 -->
-<g id="edge2" class="edge">
+<g id="edge5_Node000000_Node000002" class="edge">
 <title>Node0&#45;&gt;Node2</title>
+<g id="a_edge5_Node000000_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M98.3,-29.99C106.61,-28.59 115.26,-27.12 123.76,-25.69"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="97.65,-26.55 88.38,-31.67 98.82,-33.45 97.65,-26.55"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 130)">
 <title>polyfem::problem::ElasticCantileverExact::exact_grad</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="154,-78 0,-78 0,-48 154,-48 154,-78"/>
 <text text-anchor="start" x="8" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::problem::Elastic</text>
 <text text-anchor="middle" x="77" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">CantileverExact::exact_grad</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a79f0bc3aca21bace075b2f39e12a76c9" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a79f0bc3aca21bace075b2f39e12a76c9" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="335.5,-126 193.5,-126 193.5,-96 335.5,-96 335.5,-126"/>
 <text text-anchor="start" x="201.5" y="-114" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::problem::Elastic</text>
 <text text-anchor="middle" x="264.5" y="-103" font-family="Helvetica,sans-Serif" font-size="10.00">CantileverExact::eval_fun</text>
@@ -29,15 +29,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M136.18,-78.06C155.09,-82.95 176.23,-88.42 195.77,-93.48"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="194.96,-96.88 205.52,-96 196.72,-90.1 194.96,-96.88"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="struct_diff_scalar_base.html#a9ec9c3461abcd98164a36ba6f4e7dfb7" target="_top" xlink:title="Set the independent variable count used by the automatic differentiation layer.">
+<g id="a_Node000003"><a xlink:href="struct_diff_scalar_base.html#a9ec9c3461abcd98164a36ba6f4e7dfb7" target="_top" xlink:title="Set the independent variable count used by the automatic differentiation layer.">
 <polygon fill="white" stroke="#666666" points="339,-78 190,-78 190,-48 339,-48 339,-78"/>
 <text text-anchor="start" x="198" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">DiffScalarBase::setVariable</text>
 <text text-anchor="middle" x="264.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">Count</text>
@@ -45,15 +48,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M154.25,-63C162.64,-63 171.2,-63 179.67,-63"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="179.93,-66.5 189.93,-63 179.93,-59.5 179.93,-66.5"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a51eb6c3fe6a6c4cb55a94dcf9787f0e3" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a51eb6c3fe6a6c4cb55a94dcf9787f0e3" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="335.5,-30 193.5,-30 193.5,0 335.5,0 335.5,-30"/>
 <text text-anchor="start" x="201.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::problem::Elastic</text>
 <text text-anchor="middle" x="264.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">CantileverExact::size_for</text>
@@ -61,15 +67,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M136.18,-47.94C155.09,-43.05 176.23,-37.58 195.77,-32.52"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="196.72,-35.9 205.52,-30 194.96,-29.12 196.72,-35.9"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a52f0b06b74f836bdeb52857d2143ca71" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1problem_1_1_elastic_cantilever_exact.html#a52f0b06b74f836bdeb52857d2143ca71" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="518,-30 375,-30 375,0 518,0 518,-30"/>
 <text text-anchor="start" x="383" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::problem::Elastic</text>
 <text text-anchor="middle" x="446.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">CantileverExact::is_scalar</text>
@@ -77,10 +86,13 @@
 </g>
 </g>
 <!-- Node4&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000004_Node000005" class="edge">
 <title>Node4&#45;&gt;Node5</title>
+<g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M335.61,-15C345.21,-15 355.12,-15 364.89,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="364.99,-18.5 374.99,-15 364.99,-11.5 364.99,-18.5"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

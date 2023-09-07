@@ -6,76 +6,113 @@
 <!-- Title: polyfem::State::save_json Pages: 1 -->
 <svg width="407pt" height="101pt"
  viewBox="0.00 0.00 407.00 101.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 97)">
 <title>polyfem::State::save_json</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="saves the output statistic to a stream">
+<g id="a_Node000001"><a xlink:title="saves the output statistic to a stream">
 <polygon fill="#999999" stroke="#666666" points="399,-56 256,-56 256,-37 399,-37 399,-56"/>
 <text text-anchor="middle" x="327.5" y="-44" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::save_json</text>
 </a>
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="204,-93 93,-93 93,-74 204,-74 204,-93"/>
 <text text-anchor="middle" x="148.5" y="-81" font-family="Helvetica,sans-Serif" font-size="10.00">forward_simulation</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M271.08,-58.08C246.7,-63.18 218.39,-69.1 195.23,-73.94"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="271.85,-61.5 280.92,-56.03 270.41,-54.65 271.85,-61.5"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1_state.html#a3ded3e26faeb339787050e8fb2bb4534" target="_top" xlink:title="gets the output log as json this is not what gets printed but more informative information,...">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1_state.html#a3ded3e26faeb339787050e8fb2bb4534" target="_top" xlink:title="gets the output log as json this is not what gets printed but more informative information,...">
 <polygon fill="white" stroke="#666666" points="214,-56 83,-56 83,-37 214,-37 214,-56"/>
 <text text-anchor="middle" x="148.5" y="-44" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::get_log</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M245.69,-46.5C235.1,-46.5 224.36,-46.5 214.08,-46.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="245.78,-50 255.78,-46.5 245.78,-43 245.78,-50"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1_state.html#a8e4831838628c59b209c7fa60f70f657" target="_top" xlink:title="saves the output statistic to disc according to params">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1_state.html#a8e4831838628c59b209c7fa60f70f657" target="_top" xlink:title="saves the output statistic to disc according to params">
 <polygon fill="white" stroke="#666666" points="220,-19 77,-19 77,0 220,0 220,-19"/>
 <text text-anchor="middle" x="148.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::save_json</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000001_Node000005" class="edge">
 <title>Node1&#45;&gt;Node5</title>
+<g id="a_edge4_Node000001_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M271.08,-34.92C246.7,-29.82 218.39,-23.9 195.23,-19.06"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="270.41,-38.35 280.92,-36.97 271.85,-31.5 270.41,-38.35"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="41,-93 0,-93 0,-74 41,-74 41,-93"/>
 <text text-anchor="middle" x="20.5" y="-81" font-family="Helvetica,sans-Serif" font-size="10.00">main</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M82.94,-83.5C67.66,-83.5 52.49,-83.5 41.05,-83.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="82.97,-87 92.97,-83.5 82.97,-80 82.97,-87"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

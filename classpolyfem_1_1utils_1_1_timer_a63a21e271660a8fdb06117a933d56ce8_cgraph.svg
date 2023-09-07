@@ -6,12 +6,22 @@
 <!-- Title: polyfem::utils::Timer::stop Pages: 1 -->
 <svg width="446pt" height="81pt"
  viewBox="0.00 0.00 446.00 81.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 77)">
 <title>polyfem::utils::Timer::stop</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="119,-51 0,-51 0,-21 119,-21 119,-51"/>
 <text text-anchor="start" x="8" y="-39" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::Timer</text>
 <text text-anchor="middle" x="59.5" y="-28" font-family="Helvetica,sans-Serif" font-size="10.00">::stop</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1utils_1_1_timer.html#aec21b389df0af88d3a382b957d693f82" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1utils_1_1_timer.html#aec21b389df0af88d3a382b957d693f82" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="438,-73 310,-73 310,-43 438,-43 438,-73"/>
 <text text-anchor="start" x="318" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::Timer</text>
 <text text-anchor="middle" x="374" y="-50" font-family="Helvetica,sans-Serif" font-size="10.00">::getElapsedTimeInSec</text>
@@ -29,15 +39,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M119.28,-40.14C170.46,-43.74 244.87,-48.98 299.89,-52.85"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="299.7,-56.35 309.92,-53.56 300.19,-49.37 299.7,-56.35"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1utils_1_1_timer.html#aca96b23c274fcdc240e6770ce4462492" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1utils_1_1_timer.html#aca96b23c274fcdc240e6770ce4462492" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="274,-30 155,-30 155,0 274,0 274,-30"/>
 <text text-anchor="start" x="163" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::Timer</text>
 <text text-anchor="middle" x="214.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::log_msg</text>
@@ -45,31 +58,55 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M119.22,-27.94C127.64,-26.79 136.36,-25.59 144.95,-24.41"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="145.51,-27.86 154.94,-23.04 144.56,-20.93 145.51,-27.86"/>
+</a>
+</g>
 </g>
 <!-- Node3&#45;&gt;Node2 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000003_Node000002" class="edge">
 <title>Node3&#45;&gt;Node2</title>
+<g id="a_edge3_Node000003_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M270.59,-30.04C282.7,-33.35 295.63,-36.88 308.08,-40.28"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="307.38,-43.71 317.95,-42.97 309.22,-36.96 307.38,-43.71"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
+<g id="a_Node000004"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
 <polygon fill="white" stroke="#666666" points="421,-24.5 327,-24.5 327,-5.5 421,-5.5 421,-24.5"/>
 <text text-anchor="middle" x="374" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::logger</text>
 </a>
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge4_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M274.15,-15C287.95,-15 302.63,-15 316.34,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="316.6,-18.5 326.6,-15 316.6,-11.5 316.6,-18.5"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

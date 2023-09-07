@@ -1,23 +1,49 @@
 <map id="polyfem::solver::Form::weight" name="polyfem::solver::Form::weight">
-<area shape="rect" id="node1" title="Get the form&#39;s multiplicative constant weight." alt="" coords="811,257,976,297"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1solver_1_1_adjoint_form.html#aa5848914ae87f71ccebd5c84fbef661e" title=" " alt="" coords="564,5,763,45"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1solver_1_1_adjoint_form.html#abebce2dce813977787698b3476d9a748" title=" " alt="" coords="574,70,753,125"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1solver_1_1_form.html#a96dfee30f817cfe008e3aefb04c3544b" title="Compute the first derivative of the value wrt x multiplied with the weigth." alt="" coords="581,149,746,189"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1solver_1_1_adjoint_form.html#a49dc3a90b9176f980eb81981fe934e05" title="Compute the first derivative of the value wrt x." alt="" coords="574,214,753,269"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6" title="Compute the second derivative of the value wrt x multiplied with the weigth." alt="" coords="581,293,746,333"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a495516385c26912463ca2dd510014295" title="Update lagged fields." alt="" coords="285,293,507,333"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1solver_1_1_form.html#a6d82bbde92a18b72b0630dd40ff59136" title="Set the form&#39;s multiplicative constant weight." alt="" coords="581,408,746,448"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1solver_1_1_form.html#a5cf0de6bac08f31cdd37503d5d2218fd" title="Compute the value of the form multiplied with the weigth." alt="" coords="581,479,746,519"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1solver_1_1_elastic_form.html#af2f0f857ec53a4bc3e282fce304446a0" title="Determine if a step from solution x0 to solution x1 is allowed." alt="" coords="309,149,483,189"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a6809f0a008ca0f00423ef3133d3e3369" title="Initialize lagged fields." alt="" coords="17,293,216,333"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1solver_1_1_inertia_form.html#ae4a6e56fdad0440265869c7ea7a94d93" title=" " alt="" coords="289,357,503,397"/>
-<area shape="rect" id="node13" href="$classpolyfem_1_1solver_1_1_body_form.html#a5dd3812e581ac1ca48508abd65fe6c07" title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj..." alt="" coords="297,421,495,461"/>
-<area shape="rect" id="node14" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a05f4cc1007e09d23c8866bac2c70f66f" title="Initialize the masked lumped mass matrix." alt="" coords="276,485,516,525"/>
-<area shape="rect" id="node16" href="$classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a2a4d8527ae1ab6981a29f16f540bcd57" title="Initialize the masked lumped mass matrix." alt="" coords="276,549,516,589"/>
-<area shape="rect" id="node18" href="$classpolyfem_1_1solver_1_1_adjoint_form.html#a83da86e0efba5cfcba61af6b05796801" title="Compute the value of the form multiplied with the weigth." alt="" coords="307,684,485,724"/>
-<area shape="rect" id="node15" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a0b0be50c9e6d6de1b641fccb18554e4c" title="Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary." alt="" coords="5,485,228,525"/>
-<area shape="rect" id="node17" href="$classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a7f6855ef9b1244ee946f218478fac440" title="Construct a new BCPenaltyForm object with a time dependent Dirichlet boundary." alt="" coords="17,549,216,589"/>
-<area shape="rect" id="node19" href="$classpolyfem_1_1solver_1_1_barycenter_target_form.html#a3a149e6b557410f863703169916d0537" title=" " alt="" coords="11,638,223,693"/>
-<area shape="rect" id="node20" href="$classpolyfem_1_1solver_1_1_barycenter_target_form.html#a7d425b07831f20429c34a769dc02b034" title=" " alt="" coords="12,717,221,771"/>
-<area shape="rect" id="node21" href="$classpolyfem_1_1solver_1_1_transient_form.html#a21567315041e870c6169a9e175ff4b10" title="Compute the value of the form." alt="" coords="21,796,212,836"/>
+<area shape="rect" id="Node000001" title="Get the form&#39;s multiplicative constant weight." alt="" coords="811,257,976,297"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_adjoint_form.html#aa5848914ae87f71ccebd5c84fbef661e" title=" " alt="" coords="564,5,763,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="879,245,862,203,836,153,803,103,761,59,742,48,745,43,764,55,807,99,841,150,866,201,884,243"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_adjoint_form.html#abebce2dce813977787698b3476d9a748" title=" " alt="" coords="574,70,753,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="868,248,822,193,793,165,761,140,740,127,743,122,764,135,796,161,826,190,872,244"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_form.html#a96dfee30f817cfe008e3aefb04c3544b" title="Compute the first derivative of the value wrt x multiplied with the weigth." alt="" coords="581,149,746,189"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="849,252,808,227,762,204,732,192,734,187,764,199,810,223,852,248"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_adjoint_form.html#a49dc3a90b9176f980eb81981fe934e05" title="Compute the first derivative of the value wrt x." alt="" coords="574,214,753,269"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="797,265,752,258,753,253,798,260"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6" title="Compute the second derivative of the value wrt x multiplied with the weigth." alt="" coords="581,293,746,333"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="798,295,747,303,746,298,797,290"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a495516385c26912463ca2dd510014295" title="Update lagged fields." alt="" coords="285,293,507,333"/>
+<area shape="poly" id="edge10_Node000001_Node000008" title=" " alt="" coords="853,307,811,330,763,348,685,359,606,358,532,349,469,336,470,331,533,343,607,352,685,354,762,343,809,325,851,303"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_form.html#a6d82bbde92a18b72b0630dd40ff59136" title="Set the form&#39;s multiplicative constant weight." alt="" coords="581,408,746,448"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="865,309,820,351,764,392,726,410,724,405,761,387,816,347,861,305"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_form.html#a5cf0de6bac08f31cdd37503d5d2218fd" title="Compute the value of the form multiplied with the weigth." alt="" coords="581,479,746,519"/>
+<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="879,311,834,386,802,427,764,462,733,481,730,476,761,458,798,423,829,383,874,308"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_elastic_form.html#af2f0f857ec53a4bc3e282fce304446a0" title="Determine if a step from solution x0 to solution x1 is allowed." alt="" coords="309,149,483,189"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="567,172,484,172,484,167,567,167"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="567,316,507,316,507,311,567,311"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a6809f0a008ca0f00423ef3133d3e3369" title="Initialize lagged fields." alt="" coords="17,293,216,333"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="271,316,216,316,216,311,271,311"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_inertia_form.html#ae4a6e56fdad0440265869c7ea7a94d93" title=" " alt="" coords="289,357,503,397"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="585,475,562,462,547,449,538,436,529,423,515,412,490,400,492,395,517,407,533,420,543,433,551,445,566,458,588,471"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1solver_1_1_body_form.html#a5dd3812e581ac1ca48508abd65fe6c07" title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj..." alt="" coords="297,421,495,461"/>
+<area shape="poly" id="edge13_Node000011_Node000013" title=" " alt="" coords="567,481,489,464,490,459,568,475"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a05f4cc1007e09d23c8866bac2c70f66f" title="Initialize the masked lumped mass matrix." alt="" coords="276,485,516,525"/>
+<area shape="poly" id="edge14_Node000011_Node000014" title=" " alt="" coords="567,504,516,505,516,500,567,498"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a2a4d8527ae1ab6981a29f16f540bcd57" title="Initialize the masked lumped mass matrix." alt="" coords="276,549,516,589"/>
+<area shape="poly" id="edge17_Node000011_Node000017" title=" " alt="" coords="574,525,473,552,472,547,573,520"/>
+<area shape="rect" id="Node000020" href="$classpolyfem_1_1solver_1_1_adjoint_form.html#a83da86e0efba5cfcba61af6b05796801" title="Compute the value of the form multiplied with the weigth." alt="" coords="307,748,485,788"/>
+<area shape="poly" id="edge20_Node000011_Node000020" title=" " alt="" coords="635,530,419,750,415,746,631,527"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a0b0be50c9e6d6de1b641fccb18554e4c" title="Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary." alt="" coords="5,421,228,461"/>
+<area shape="poly" id="edge15_Node000014_Node000015" title=" " alt="" coords="294,485,204,464,205,459,295,480"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a857cc289415d8921d708f0957a1e6228" title="Construct a new BCLagrangianForm object with a fixed Dirichlet boundary." alt="" coords="5,485,228,525"/>
+<area shape="poly" id="edge16_Node000014_Node000016" title=" " alt="" coords="262,508,228,508,228,503,262,503"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a7f6855ef9b1244ee946f218478fac440" title="Construct a new BCPenaltyForm object with a time dependent Dirichlet boundary." alt="" coords="17,549,216,589"/>
+<area shape="poly" id="edge18_Node000017_Node000018" title=" " alt="" coords="262,572,216,572,216,567,262,567"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a1b09015395028ed024f123f4c46da944" title="Construct a new BCPenaltyForm object with a fixed Dirichlet boundary." alt="" coords="17,613,216,653"/>
+<area shape="poly" id="edge19_Node000017_Node000019" title=" " alt="" coords="295,595,205,616,204,611,294,590"/>
+<area shape="rect" id="Node000021" href="$classpolyfem_1_1solver_1_1_barycenter_target_form.html#a3a149e6b557410f863703169916d0537" title=" " alt="" coords="11,702,223,757"/>
+<area shape="poly" id="edge21_Node000020_Node000021" title=" " alt="" coords="293,756,222,747,223,741,293,751"/>
+<area shape="rect" id="Node000022" href="$classpolyfem_1_1solver_1_1_barycenter_target_form.html#a7d425b07831f20429c34a769dc02b034" title=" " alt="" coords="12,781,221,835"/>
+<area shape="poly" id="edge23_Node000020_Node000022" title=" " alt="" coords="293,785,222,796,221,790,292,780"/>
+<area shape="rect" id="Node000023" href="$classpolyfem_1_1solver_1_1_transient_form.html#a21567315041e870c6169a9e175ff4b10" title="Compute the value of the form." alt="" coords="21,860,212,900"/>
+<area shape="poly" id="edge24_Node000020_Node000023" title=" " alt="" coords="346,797,291,824,229,850,194,862,192,857,227,846,288,819,344,792"/>
+<area shape="poly" id="edge22_Node000021_Node000021" title=" " alt="" coords="163,691,146,684,117,681,92,683,76,687,68,694,68,702,63,702,63,692,73,683,91,677,117,675,148,678,165,686"/>
 </map>

@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 85.23)">
 <title>polyfem::solver::LaggedRegForm::init_lagging</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Initialize lagged fields.">
+<g id="a_Node000001"><a xlink:title="Initialize lagged fields.">
 <polygon fill="#999999" stroke="#666666" points="153,-73 0,-73 0,-43 153,-43 153,-73"/>
 <text text-anchor="start" x="8" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::LaggedReg</text>
 <text text-anchor="middle" x="76.5" y="-50" font-family="Helvetica,sans-Serif" font-size="10.00">Form::init_lagging</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a3718fea62f7f6be229e2daeeebf83596" target="_top" xlink:title="Update lagged fields.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a3718fea62f7f6be229e2daeeebf83596" target="_top" xlink:title="Update lagged fields.">
 <polygon fill="white" stroke="#666666" points="342,-73 189,-73 189,-43 342,-43 342,-73"/>
 <text text-anchor="start" x="197" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::LaggedReg</text>
 <text text-anchor="middle" x="265.5" y="-50" font-family="Helvetica,sans-Serif" font-size="10.00">Form::update_lagging</text>
@@ -29,15 +29,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M153.02,-58C161.47,-58 170.13,-58 178.7,-58"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="178.7,-61.5 188.7,-58 178.7,-54.5 178.7,-61.5"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#a64fbc22c4145f44507090160f0974e49" target="_top" xlink:title="Determine if the form is enabled.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#a64fbc22c4145f44507090160f0974e49" target="_top" xlink:title="Determine if the form is enabled.">
 <polygon fill="white" stroke="#666666" points="662,-70 538,-70 538,-40 662,-40 662,-70"/>
 <text text-anchor="start" x="546" y="-58" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Form</text>
 <text text-anchor="middle" x="600" y="-47" font-family="Helvetica,sans-Serif" font-size="10.00">::enabled</text>
@@ -45,30 +48,36 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M342.15,-72.66C354.1,-74.46 366.36,-76.02 378,-77 432.91,-81.65 447.23,-83.13 502,-77 511.91,-75.89 522.29,-74.16 532.41,-72.15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="533.36,-75.53 542.43,-70.06 531.92,-68.68 533.36,-75.53"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
+<g id="a_Node000004"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
 <polygon fill="white" stroke="#666666" points="487,-67.5 393,-67.5 393,-48.5 487,-48.5 487,-67.5"/>
 <text text-anchor="middle" x="440" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::logger</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000002_Node000004" class="edge">
 <title>Node2&#45;&gt;Node4</title>
+<g id="a_edge3_Node000002_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M342.16,-58C355.73,-58 369.66,-58 382.57,-58"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="382.68,-61.5 392.68,-58 382.68,-54.5 382.68,-61.5"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#ad66cd4658b7532e2f73380de56cf276f" target="_top" xlink:title="Set if the form is enabled.">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#ad66cd4658b7532e2f73380de56cf276f" target="_top" xlink:title="Set if the form is enabled.">
 <polygon fill="white" stroke="#666666" points="502,-30 378,-30 378,0 502,0 502,-30"/>
 <text text-anchor="start" x="386" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Form</text>
 <text text-anchor="middle" x="440" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::set_enabled</text>
@@ -76,16 +85,22 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000002_Node000005" class="edge">
 <title>Node2&#45;&gt;Node5</title>
+<g id="a_edge4_Node000002_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M326.83,-42.96C340.36,-39.59 354.82,-35.98 368.71,-32.52"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="369.85,-35.85 378.7,-30.03 368.15,-29.05 369.85,-35.85"/>
+</a>
+</g>
 </g>
 <!-- Node5&#45;&gt;Node3 -->
-<g id="edge5" class="edge">
+<g id="edge5_Node000005_Node000003" class="edge">
 <title>Node5&#45;&gt;Node3</title>
+<g id="a_edge5_Node000005_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M500.28,-30.01C509.94,-32.45 520.01,-35 529.88,-37.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="529.09,-40.91 539.65,-39.97 530.81,-34.13 529.09,-40.91"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

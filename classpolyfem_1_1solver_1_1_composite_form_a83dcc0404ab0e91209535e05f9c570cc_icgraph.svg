@@ -6,12 +6,22 @@
 <!-- Title: polyfem::solver::CompositeForm::get_inputs Pages: 1 -->
 <svg width="369pt" height="157pt"
  viewBox="0.00 0.00 369.00 156.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 152.5)">
 <title>polyfem::solver::CompositeForm::get_inputs</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="361,-84 209,-84 209,-54 361,-54 361,-84"/>
 <text text-anchor="start" x="217" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Composite</text>
 <text text-anchor="middle" x="285" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">Form::get_inputs</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_composite_form.html#acffe1f8a8c02db764d82bc7dbeefe989" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_composite_form.html#acffe1f8a8c02db764d82bc7dbeefe989" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="173,-148.5 0,-148.5 0,-107.5 173,-107.5 173,-148.5"/>
 <text text-anchor="start" x="8" y="-136.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Composite</text>
 <text text-anchor="start" x="8" y="-125.5" font-family="Helvetica,sans-Serif" font-size="10.00">Form::compute_partial_gradient</text>
@@ -30,15 +40,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M224.24,-86.94C202.71,-93.41 178.26,-100.75 156.04,-107.42"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="225.34,-90.27 233.91,-84.04 223.32,-83.56 225.34,-90.27"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_composite_form.html#acc076c412866ea5fb7e1cbbe5da3fd9c" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_composite_form.html#acc076c412866ea5fb7e1cbbe5da3fd9c" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="173,-89.5 0,-89.5 0,-48.5 173,-48.5 173,-89.5"/>
 <text text-anchor="start" x="8" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Composite</text>
 <text text-anchor="start" x="8" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">Form::compute_reduced_adjoint</text>
@@ -47,15 +60,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M198.62,-69C190.16,-69 181.56,-69 173.09,-69"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="198.87,-72.5 208.87,-69 198.87,-65.5 198.87,-72.5"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1solver_1_1_composite_form.html#a608b787a1f4e15a13769e27b06d9e60f" target="_top" xlink:title="Compute the value of the form.">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1solver_1_1_composite_form.html#a608b787a1f4e15a13769e27b06d9e60f" target="_top" xlink:title="Compute the value of the form.">
 <polygon fill="white" stroke="#666666" points="162.5,-30 10.5,-30 10.5,0 162.5,0 162.5,-30"/>
 <text text-anchor="start" x="18.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Composite</text>
 <text text-anchor="middle" x="86.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Form::value_unweighted</text>
@@ -63,10 +79,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M219.51,-51.28C194.54,-44.41 166.25,-36.64 142.28,-30.05"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="218.69,-54.68 229.26,-53.96 220.55,-47.93 218.69,-54.68"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

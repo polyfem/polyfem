@@ -6,21 +6,31 @@
 <!-- Title: polyfem::solver::PositionForm Pages: 1 -->
 <svg width="171pt" height="258pt"
  viewBox="0.00 0.00 171.00 258.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 254)">
 <title>polyfem::solver::PositionForm</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="163,-19 0,-19 0,0 163,0 163,-19"/>
 <text text-anchor="middle" x="81.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::PositionForm</text>
 </a>
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_spatial_integral_form.html" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_spatial_integral_form.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="148,-85 15,-85 15,-55 148,-55 148,-85"/>
 <text text-anchor="start" x="23" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Spatial</text>
 <text text-anchor="middle" x="81.5" y="-62" font-family="Helvetica,sans-Serif" font-size="10.00">IntegralForm</text>
@@ -28,55 +38,82 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node1 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node2&#45;&gt;Node1</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M81.5,-44.75C81.5,-35.72 81.5,-26.03 81.5,-19.27"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="78,-44.84 81.5,-54.84 85,-44.84 78,-44.84"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_static_form.html" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_static_form.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="157.5,-140 5.5,-140 5.5,-121 157.5,-121 157.5,-140"/>
 <text text-anchor="middle" x="81.5" y="-128" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::StaticForm</text>
 </a>
 </g>
 </g>
 <!-- Node3&#45;&gt;Node2 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node3&#45;&gt;Node2</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M81.5,-110.65C81.5,-102.36 81.5,-92.78 81.5,-85.11"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="78,-110.87 81.5,-120.87 85,-110.87 78,-110.87"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1solver_1_1_adjoint_form.html" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1solver_1_1_adjoint_form.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="160.5,-195 2.5,-195 2.5,-176 160.5,-176 160.5,-195"/>
 <text text-anchor="middle" x="81.5" y="-183" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::AdjointForm</text>
 </a>
 </g>
 </g>
 <!-- Node4&#45;&gt;Node3 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000003_Node000004" class="edge">
 <title>Node4&#45;&gt;Node3</title>
+<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M81.5,-165.66C81.5,-156.93 81.5,-146.99 81.5,-140.09"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="78,-165.75 81.5,-175.75 85,-165.75 78,-165.75"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1solver_1_1_form.html" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1solver_1_1_form.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="143.5,-250 19.5,-250 19.5,-231 143.5,-231 143.5,-250"/>
 <text text-anchor="middle" x="81.5" y="-238" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Form</text>
 </a>
 </g>
 </g>
 <!-- Node5&#45;&gt;Node4 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000004_Node000005" class="edge">
 <title>Node5&#45;&gt;Node4</title>
+<g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M81.5,-220.66C81.5,-211.93 81.5,-201.99 81.5,-195.09"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="78,-220.75 81.5,-230.75 85,-220.75 78,-220.75"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

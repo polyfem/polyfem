@@ -6,12 +6,22 @@
 <!-- Title: polyfem::mesh::Mesh3D::get_ordered_vertices_from_hex Pages: 1 -->
 <svg width="367pt" height="76pt"
  viewBox="0.00 0.00 367.00 75.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 71.5)">
 <title>polyfem::mesh::Mesh3D::get_ordered_vertices_from_hex</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="359,-51 223,-51 223,-10 359,-10 359,-51"/>
 <text text-anchor="start" x="231" y="-39" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Mesh3D</text>
 <text text-anchor="start" x="231" y="-28" font-family="Helvetica,sans-Serif" font-size="10.00">::get_ordered_vertices</text>
@@ -20,9 +30,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#ae01cdb9e824b58e403f4286cbda61f84" target="_top" xlink:title="evaluates the function fun at the vertices on the mesh">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#ae01cdb9e824b58e403f4286cbda61f84" target="_top" xlink:title="evaluates the function fun at the vertices on the mesh">
 <polygon fill="white" stroke="#666666" points="163.5,-67.5 23.5,-67.5 23.5,-37.5 163.5,-37.5 163.5,-67.5"/>
 <text text-anchor="start" x="31.5" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
 <text text-anchor="middle" x="93.5" y="-44.5" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_vertex_values</text>
@@ -30,25 +40,46 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M213,-39.17C196.74,-40.99 179.69,-42.91 163.75,-44.71"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="213.45,-42.64 222.99,-38.04 212.66,-35.68 213.45,-42.64"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="namespacepolyfem_1_1mesh.html#ad071b94c821ca0409fc672bd5c520bda" target="_top" xlink:title="Converts a hex mesh to a Geogram mesh.">
+<g id="a_Node000003"><a xlink:href="namespacepolyfem_1_1mesh.html#ad071b94c821ca0409fc672bd5c520bda" target="_top" xlink:title="Converts a hex mesh to a Geogram mesh.">
 <polygon fill="white" stroke="#666666" points="187,-19 0,-19 0,0 187,0 187,-19"/>
 <text text-anchor="middle" x="93.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::to_geogram_mesh</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M212.94,-22.22C203.17,-21.17 193.11,-20.09 183.18,-19.03"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="212.68,-25.71 222.99,-23.3 213.42,-18.75 212.68,-25.71"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

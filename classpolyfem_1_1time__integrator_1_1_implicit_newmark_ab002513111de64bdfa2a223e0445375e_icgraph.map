@@ -1,8 +1,18 @@
 <map id="polyfem::time_integrator::ImplicitNewmark::gamma" name="polyfem::time_integrator::ImplicitNewmark::gamma">
-<area shape="rect" id="node1" title="parameter for blending accelerations in the velocity update." alt="" coords="503,139,703,179"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="248,5,455,60"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="248,84,455,139"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a3d8041c1c701fedf188002c0fdab97a6" title=" " alt="" coords="257,187,446,227"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#aefd945855d7a20b6433fe8d38a155e4d" title="Compute the derivative of the velocity with respect to the solution." alt="" coords="8,187,197,227"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#af94ad0e8dfab40ecba6c4956e3342860" title="Update the time integration quantities (i.e., , , and )." alt="" coords="5,45,200,100"/>
+<area shape="rect" id="Node000001" title="parameter for blending accelerations in the velocity update." alt="" coords="503,139,703,179"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="248,5,455,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="559,134,509,104,453,74,429,63,431,58,456,69,512,99,561,130"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="248,84,455,139"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="489,140,454,134,455,128,490,135"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a3d8041c1c701fedf188002c0fdab97a6" title=" " alt="" coords="257,187,446,227"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="490,184,447,192,446,187,489,178"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#aefd945855d7a20b6433fe8d38a155e4d" title="Compute the derivative of the velocity with respect to the solution." alt="" coords="8,187,197,227"/>
+<area shape="poly" id="edge10_Node000001_Node000006" title=" " alt="" coords="564,189,514,219,455,242,381,253,305,252,234,243,173,230,175,225,235,237,306,246,381,247,454,237,512,214,562,185"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#af94ad0e8dfab40ecba6c4956e3342860" title="Update the time integration quantities (i.e., , , and )." alt="" coords="5,45,200,100"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="235,54,201,60,200,54,234,49"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="234,96,200,90,201,85,235,91"/>
+<area shape="poly" id="edge6_Node000005_Node000005" title=" " alt="" coords="394,176,379,169,351,166,327,168,313,173,308,179,310,186,305,188,302,178,310,168,326,163,351,161,380,164,396,171"/>
+<area shape="poly" id="edge7_Node000005_Node000006" title=" " alt="" coords="243,219,198,219,198,213,243,214"/>
+<area shape="poly" id="edge8_Node000006_Node000005" title=" " alt="" coords="211,196,257,196,257,201,211,201"/>
+<area shape="poly" id="edge9_Node000006_Node000006" title=" " alt="" coords="145,176,130,169,103,166,79,168,64,173,59,179,62,186,57,188,54,178,61,168,78,163,103,161,131,164,147,171"/>
 </map>

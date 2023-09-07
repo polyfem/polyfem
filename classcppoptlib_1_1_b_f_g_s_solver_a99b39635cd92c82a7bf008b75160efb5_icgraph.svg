@@ -6,12 +6,22 @@
 <!-- Title: cppoptlib::BFGSSolver::reset_history Pages: 1 -->
 <svg width="321pt" height="104pt"
  viewBox="0.00 0.00 321.00 104.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 100)">
 <title>cppoptlib::BFGSSolver::reset_history</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="313,-54 188,-54 188,-24 313,-24 313,-54"/>
 <text text-anchor="start" x="196" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">cppoptlib::BFGSSolver</text>
 <text text-anchor="middle" x="250.5" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">::reset_history</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classcppoptlib_1_1_b_f_g_s_solver.html#a55403b195334255b2038da9af3b383b8" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classcppoptlib_1_1_b_f_g_s_solver.html#a55403b195334255b2038da9af3b383b8" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="152,-78 0,-78 0,-48 152,-48 152,-78"/>
 <text text-anchor="start" x="8" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">cppoptlib::BFGSSolver</text>
 <text text-anchor="middle" x="76" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_update_direction</text>
@@ -29,15 +39,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M177.6,-49C169.21,-50.17 160.64,-51.36 152.22,-52.54"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="178.29,-52.44 187.71,-47.6 177.32,-45.51 178.29,-52.44"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classcppoptlib_1_1_b_f_g_s_solver.html#a2ae66a40aa3350a6b0e8404f74782e39" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classcppoptlib_1_1_b_f_g_s_solver.html#a2ae66a40aa3350a6b0e8404f74782e39" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="138.5,-30 13.5,-30 13.5,0 138.5,0 138.5,-30"/>
 <text text-anchor="start" x="21.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">cppoptlib::BFGSSolver</text>
 <text text-anchor="middle" x="76" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::reset</text>
@@ -45,16 +58,37 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge3_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M177.48,-28.98C164.57,-27.18 151.23,-25.33 138.65,-23.58"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="177.32,-32.49 187.71,-30.4 178.29,-25.56 177.32,-32.49"/>
+</a>
+</g>
 </g>
 <!-- Node2&#45;&gt;Node2 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000002" class="edge">
 <title>Node2&#45;&gt;Node2</title>
+<g id="a_edge2_Node000002_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M106.46,-88.6C102.29,-92.97 92.14,-96 76,-96 48.81,-96 38.62,-87.41 45.41,-78.28"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="109.96,-88.32 106.59,-78.28 102.96,-88.23 109.96,-88.32"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

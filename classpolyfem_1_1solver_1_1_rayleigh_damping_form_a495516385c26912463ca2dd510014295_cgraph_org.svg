@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 82)">
 <title>polyfem::solver::RayleighDampingForm::update_lagging</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Update lagged fields.">
+<g id="a_Node000001"><a xlink:title="Update lagged fields.">
 <polygon fill="#999999" stroke="#666666" points="167,-51 0,-51 0,-21 167,-21 167,-51"/>
 <text text-anchor="start" x="8" y="-39" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Rayleigh</text>
 <text text-anchor="middle" x="83.5" y="-28" font-family="Helvetica,sans-Serif" font-size="10.00">DampingForm::update_lagging</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6" target="_top" xlink:title="Compute the second derivative of the value wrt x multiplied with the weigth.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6" target="_top" xlink:title="Compute the second derivative of the value wrt x multiplied with the weigth.">
 <polygon fill="white" stroke="#666666" points="327,-73 203,-73 203,-43 327,-43 327,-73"/>
 <text text-anchor="start" x="211" y="-61" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Form</text>
 <text text-anchor="middle" x="265" y="-50" font-family="Helvetica,sans-Serif" font-size="10.00">::second_derivative</text>
@@ -29,15 +29,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M167.16,-46.13C175.73,-47.18 184.38,-48.24 192.81,-49.27"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="192.6,-52.78 202.96,-50.52 193.46,-45.83 192.6,-52.78"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#a9cffeca817d2f65884dbdb0b05dbf8ae" target="_top" xlink:title="Get the form&#39;s multiplicative constant weight.">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#a9cffeca817d2f65884dbdb0b05dbf8ae" target="_top" xlink:title="Get the form&#39;s multiplicative constant weight.">
 <polygon fill="white" stroke="#666666" points="512,-30 388,-30 388,0 512,0 512,-30"/>
 <text text-anchor="start" x="396" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Form</text>
 <text text-anchor="middle" x="450" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::weight</text>
@@ -45,15 +48,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge4_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M167.21,-31.23C230.65,-27.58 317.3,-22.59 377.7,-19.11"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="378.13,-22.59 387.91,-18.52 377.73,-15.6 378.13,-22.59"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#a4313c8af547f3c51a1c8cafd5071b44b" target="_top" xlink:title="Compute the second derivative of the value wrt x.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_form.html#a4313c8af547f3c51a1c8cafd5071b44b" target="_top" xlink:title="Compute the second derivative of the value wrt x.">
 <polygon fill="white" stroke="#666666" points="537,-78 363,-78 363,-48 537,-48 537,-78"/>
 <text text-anchor="start" x="371" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Form</text>
 <text text-anchor="middle" x="450" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::second_derivative_unweighted</text>
@@ -61,16 +67,22 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M327.19,-59.67C335.41,-59.9 343.99,-60.13 352.63,-60.37"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="352.69,-63.87 362.78,-60.64 352.88,-56.87 352.69,-63.87"/>
+</a>
+</g>
 </g>
 <!-- Node2&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000002_Node000004" class="edge">
 <title>Node2&#45;&gt;Node4</title>
+<g id="a_edge3_Node000002_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M327.19,-43.62C343.52,-39.78 361.3,-35.61 378.1,-31.66"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="378.93,-35.06 387.87,-29.36 377.33,-28.24 378.93,-35.06"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

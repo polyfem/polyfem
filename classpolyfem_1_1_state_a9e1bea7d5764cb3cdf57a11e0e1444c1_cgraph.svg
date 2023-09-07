@@ -5,59 +5,59 @@
  -->
 <!-- Title: polyfem::State::solve_adjoint_cached Pages: 1 -->
 <!--zoomable 479 -->
+
 <svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
 <style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
 .edge:hover path { stroke: red; }
 .edge:hover polygon { stroke: red; fill: red; }
 ]]></style>
-<script type="text/javascript"><![CDATA[
-var edges = document.getElementsByTagName('g');
-if (edges && edges.length) {
-  for (var i=0;i<edges.length;i++) {
-    if (edges[i].id.substr(0,4)=='edge') {
-      edges[i].setAttribute('class','edge');
-    }
-  }
-}
-]]></script>
-        <defs>
-                <circle id="rim" cx="0" cy="0" r="7"/>
-                <circle id="rim2" cx="0" cy="0" r="3.5"/>
-                <g id="zoomPlus">
-                        <use xlink:href="#rim" fill="#404040">
-                                <set attributeName="fill" to="#808080" begin="zoomplus.mouseover" end="zoomplus.mouseout"/>
-                        </use>
-                        <path d="M-4,0h8M0,-4v8" fill="none" stroke="white" stroke-width="1.5" pointer-events="none"/>
-                </g>
-                <g id="zoomMin">
-                        <use xlink:href="#rim" fill="#404040">
-                                <set attributeName="fill" to="#808080" begin="zoomminus.mouseover" end="zoomminus.mouseout"/>
-                        </use>
-                        <path d="M-4,0h8" fill="none" stroke="white" stroke-width="1.5" pointer-events="none"/>
-                </g>
-                <g id="dirArrow">
-                        <path fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
-                </g>
-               <g id="resetDef">
-                       <use xlink:href="#rim2" fill="#404040">
-                               <set attributeName="fill" to="#808080" begin="reset.mouseover" end="reset.mouseout"/>
-                       </use>
-               </g>
-        </defs>
 
-<script type="text/javascript">
+<defs>
+  <circle id="rim" cx="0" cy="0" r="7"/>
+  <circle id="rim2" cx="0" cy="0" r="3.5"/>
+  <g id="zoomPlus">
+    <use xlink:href="#rim" fill="#404040"><set attributeName="fill" to="#808080" begin="zoomplus.mouseover" end="zoomplus.mouseout"/></use>
+    <path d="M-4,0h8M0,-4v8" fill="none" stroke="white" stroke-width="1.5" pointer-events="none"/>
+  </g>
+  <g id="zoomMin">
+    <use xlink:href="#rim" fill="#404040"><set attributeName="fill" to="#808080" begin="zoomminus.mouseover" end="zoomminus.mouseout"/></use>
+    <path d="M-4,0h8" fill="none" stroke="white" stroke-width="1.5" pointer-events="none"/>
+  </g>
+  <g id="arrowUp" transform="translate(30 24)">
+    <use xlink:href="#rim"/>
+    <path pointer-events="none" fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
+  </g>
+  <g id="arrowRight" transform="rotate(90) translate(36 -43)">
+    <use xlink:href="#rim"/>
+    <path pointer-events="none" fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
+  </g>
+  <g id="arrowDown" transform="rotate(180) translate(-30 -48)">
+    <use xlink:href="#rim"/>
+    <path pointer-events="none" fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
+  </g>
+  <g id="arrowLeft" transform="rotate(270) translate(-36 17)">
+    <use xlink:href="#rim"/>
+    <path pointer-events="none" fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
+  </g>
+  <g id="resetDef">
+    <use xlink:href="#rim2" fill="#404040"><set attributeName="fill" to="#808080" begin="reset.mouseover" end="reset.mouseout"/></use>
+  </g>
+</defs>
+<script type="application/ecmascript">
 var viewWidth = 1051;
 var viewHeight = 479;
 var sectionId = 'dynsection-106';
 </script>
-<script xlink:href="svgpan.js"/>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
 <svg id="graph" class="graph">
 <g id="viewport">
 <title>polyfem::State::solve_adjoint_cached</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="121,-447 0,-447 0,-417 121,-417 121,-447"/>
 <text text-anchor="start" x="8" y="-435" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 <text text-anchor="middle" x="60.5" y="-424" font-family="Helvetica,sans-Serif" font-size="10.00">_adjoint_cached</text>
@@ -65,9 +65,9 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_diff_cache.html#ad900c24b448f44f04e1defb7780367cc" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_diff_cache.html#ad900c24b448f44f04e1defb7780367cc" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="303,-471 157,-471 157,-441 303,-441 303,-471"/>
 <text text-anchor="start" x="165" y="-459" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::DiffCache</text>
 <text text-anchor="middle" x="230" y="-448" font-family="Helvetica,sans-Serif" font-size="10.00">::cache_adjoints</text>
@@ -75,15 +75,18 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M121.03,-440.53C129.34,-441.72 138,-442.96 146.64,-444.2"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="146.36,-447.69 156.76,-445.65 147.35,-440.77 146.36,-447.69"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1_state.html#aa4d093ebcaa85e1d4fd39107019eb5a1" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1_state.html#aa4d093ebcaa85e1d4fd39107019eb5a1" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="290.5,-423 169.5,-423 169.5,-393 290.5,-393 290.5,-423"/>
 <text text-anchor="start" x="177.5" y="-411" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 <text text-anchor="middle" x="230" y="-400" font-family="Helvetica,sans-Serif" font-size="10.00">_adjoint</text>
@@ -91,15 +94,18 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M121.03,-423.47C133.42,-421.7 146.58,-419.81 159.3,-417.99"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="159.98,-421.43 169.38,-416.54 158.99,-414.5 159.98,-421.43"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_diff_cache.html#acea780b31d8917cc0c69ea39a1f0e753" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_diff_cache.html#acea780b31d8917cc0c69ea39a1f0e753" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="485,-471 339,-471 339,-441 485,-441 485,-471"/>
 <text text-anchor="start" x="347" y="-459" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::DiffCache</text>
 <text text-anchor="middle" x="412" y="-448" font-family="Helvetica,sans-Serif" font-size="10.00">::adjoint_mat</text>
@@ -107,15 +113,18 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M303.18,-456C311.52,-456 320.08,-456 328.54,-456"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="328.81,-459.5 338.81,-456 328.81,-452.5 328.81,-459.5"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1_state.html#a65330e092b0242be2b72786d4f24c13e" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1_state.html#a65330e092b0242be2b72786d4f24c13e" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="472.5,-423 351.5,-423 351.5,-393 472.5,-393 472.5,-423"/>
 <text text-anchor="start" x="359.5" y="-411" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 <text text-anchor="middle" x="412" y="-400" font-family="Helvetica,sans-Serif" font-size="10.00">_static_adjoint</text>
@@ -123,15 +132,18 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node4&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000004_Node000005" class="edge">
 <title>Node4&#45;&gt;Node5</title>
+<g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M290.94,-408C307.03,-408 324.57,-408 341.15,-408"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="341.32,-411.5 351.32,-408 341.32,-404.5 341.32,-411.5"/>
+</a>
+</g>
 </g>
 <!-- Node9 -->
-<g id="node9" class="node">
+<g id="Node000009" class="node">
 <title>Node9</title>
-<g id="a_node9"><a xlink:href="classpolyfem_1_1_state.html#ae4cd1190f91e6422d08b3c7ff57945ce" target="_top" xlink:title=" ">
+<g id="a_Node000009"><a xlink:href="classpolyfem_1_1_state.html#ae4cd1190f91e6422d08b3c7ff57945ce" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="472.5,-311 351.5,-311 351.5,-281 472.5,-281 472.5,-311"/>
 <text text-anchor="start" x="359.5" y="-299" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 <text text-anchor="middle" x="412" y="-288" font-family="Helvetica,sans-Serif" font-size="10.00">_transient_adjoint</text>
@@ -139,15 +151,18 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node4&#45;&gt;Node9 -->
-<g id="edge8" class="edge">
+<g id="edge8_Node000004_Node000009" class="edge">
 <title>Node4&#45;&gt;Node9</title>
+<g id="a_edge8_Node000004_Node000009"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M255.28,-392.9C287.03,-373.13 342.8,-338.43 378.27,-316.37"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="380.18,-319.3 386.82,-311.04 376.48,-313.36 380.18,-319.3"/>
+</a>
+</g>
 </g>
 <!-- Node6 -->
-<g id="node6" class="node">
+<g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:href="classpolyfem_1_1solver_1_1_diff_cache.html#ac0087244ad1630b8bf7b0e5cfdab551d" target="_top" xlink:title=" ">
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1solver_1_1_diff_cache.html#ac0087244ad1630b8bf7b0e5cfdab551d" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="667,-423 521,-423 521,-393 667,-393 667,-423"/>
 <text text-anchor="start" x="529" y="-411" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::DiffCache</text>
 <text text-anchor="middle" x="594" y="-400" font-family="Helvetica,sans-Serif" font-size="10.00">::gradu_h</text>
@@ -155,30 +170,36 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node5&#45;&gt;Node6 -->
-<g id="edge5" class="edge">
+<g id="edge5_Node000005_Node000006" class="edge">
 <title>Node5&#45;&gt;Node6</title>
+<g id="a_edge5_Node000005_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M472.94,-408C485.04,-408 497.97,-408 510.68,-408"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="510.82,-411.5 520.82,-408 510.82,-404.5 510.82,-411.5"/>
+</a>
+</g>
 </g>
 <!-- Node8 -->
-<g id="node8" class="node">
+<g id="Node000008" class="node">
 <title>Node8</title>
-<g id="a_node8"><a xlink:href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5" target="_top" xlink:title=" ">
+<g id="a_Node000008"><a xlink:href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="840,-335.5 724,-335.5 724,-316.5 840,-316.5 840,-335.5"/>
 <text text-anchor="middle" x="782" y="-323.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::ndof</text>
 </a>
 </g>
 </g>
 <!-- Node5&#45;&gt;Node8 -->
-<g id="edge7" class="edge">
+<g id="edge7_Node000005_Node000008" class="edge">
 <title>Node5&#45;&gt;Node8</title>
+<g id="a_edge7_Node000005_Node000008"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M469.78,-423.06C486.19,-426.74 504.2,-430.16 521,-432 585.5,-439.08 613.05,-468.06 667,-432 701.79,-408.75 671.23,-372.24 703,-345 706.49,-342.01 710.37,-339.48 714.49,-337.33"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="716.07,-340.45 723.81,-333.22 713.25,-334.05 716.07,-340.45"/>
+</a>
+</g>
 </g>
 <!-- Node7 -->
-<g id="node7" class="node">
+<g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_node7"><a xlink:href="classpolyfem_1_1solver_1_1_diff_cache.html#aa58b56179289dbd2980ff06dfd8b2c0d" target="_top" xlink:title=" ">
+<g id="a_Node000007"><a xlink:href="classpolyfem_1_1solver_1_1_diff_cache.html#aa58b56179289dbd2980ff06dfd8b2c0d" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="1043,-274 897,-274 897,-244 1043,-244 1043,-274"/>
 <text text-anchor="start" x="905" y="-262" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::DiffCache</text>
 <text text-anchor="middle" x="970" y="-251" font-family="Helvetica,sans-Serif" font-size="10.00">::size</text>
@@ -186,27 +207,36 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node6&#45;&gt;Node7 -->
-<g id="edge6" class="edge">
+<g id="edge6_Node000006_Node000007" class="edge">
 <title>Node6&#45;&gt;Node7</title>
+<g id="a_edge6_Node000006_Node000007"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M667.03,-414.86C722.95,-417.01 800.82,-412.86 861,-382 904.35,-359.77 938.08,-312.15 955.63,-283.12"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="958.7,-284.79 960.75,-274.4 952.66,-281.25 958.7,-284.79"/>
+</a>
+</g>
 </g>
 <!-- Node9&#45;&gt;Node6 -->
-<g id="edge25" class="edge">
+<g id="edge25_Node000009_Node000006" class="edge">
 <title>Node9&#45;&gt;Node6</title>
+<g id="a_edge25_Node000009_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M427.79,-311.06C447.48,-330.36 484.12,-363.72 521,-384 524.1,-385.7 527.33,-387.31 530.65,-388.83"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="529.57,-392.17 540.14,-392.86 532.3,-385.73 529.57,-392.17"/>
+</a>
+</g>
 </g>
 <!-- Node9&#45;&gt;Node8 -->
-<g id="edge28" class="edge">
+<g id="edge28_Node000009_Node000008" class="edge">
 <title>Node9&#45;&gt;Node8</title>
+<g id="a_edge28_Node000009_Node000008"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M472.53,-300.85C538.51,-306.23 644.69,-314.89 713.66,-320.51"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="713.72,-324.03 723.97,-321.35 714.29,-317.05 713.72,-324.03"/>
+</a>
+</g>
 </g>
 <!-- Node10 -->
-<g id="node10" class="node">
+<g id="Node000010" class="node">
 <title>Node10</title>
-<g id="a_node10"><a xlink:href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#a7c8caaa5a781eebfc98153597974ff42" target="_top" xlink:title="Retrieve the alphas used for BDF with i steps.">
+<g id="a_Node000010"><a xlink:href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#a7c8caaa5a781eebfc98153597974ff42" target="_top" xlink:title="Retrieve the alphas used for BDF with i steps.">
 <polygon fill="white" stroke="#666666" points="663.5,-289 524.5,-289 524.5,-259 663.5,-259 663.5,-289"/>
 <text text-anchor="start" x="532.5" y="-277" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="middle" x="594" y="-266" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::alphas</text>
@@ -214,15 +244,18 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node9&#45;&gt;Node10 -->
-<g id="edge9" class="edge">
+<g id="edge9_Node000009_Node000010" class="edge">
 <title>Node9&#45;&gt;Node10</title>
+<g id="a_edge9_Node000009_Node000010"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M472.94,-288.67C486.19,-287.05 500.42,-285.32 514.29,-283.62"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="514.8,-287.08 524.3,-282.4 513.95,-280.14 514.8,-287.08"/>
+</a>
+</g>
 </g>
 <!-- Node11 -->
-<g id="node11" class="node">
+<g id="Node000011" class="node">
 <title>Node11</title>
-<g id="a_node11"><a xlink:href="classpolyfem_1_1solver_1_1_diff_cache.html#a33bcb18d70767f0fe1bcb767f6ccd70a" target="_top" xlink:title=" ">
+<g id="a_Node000011"><a xlink:href="classpolyfem_1_1solver_1_1_diff_cache.html#a33bcb18d70767f0fe1bcb767f6ccd70a" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="855,-298 709,-298 709,-268 855,-268 855,-298"/>
 <text text-anchor="start" x="717" y="-286" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::DiffCache</text>
 <text text-anchor="middle" x="782" y="-275" font-family="Helvetica,sans-Serif" font-size="10.00">::bdf_order</text>
@@ -230,15 +263,18 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node9&#45;&gt;Node11 -->
-<g id="edge10" class="edge">
+<g id="edge10_Node000009_Node000011" class="edge">
 <title>Node9&#45;&gt;Node11</title>
+<g id="a_edge10_Node000009_Node000011"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M439.98,-280.89C461.24,-269.88 492.05,-255.91 521,-250 584.58,-237.02 602.75,-240.89 667,-250 672.94,-250.84 697.1,-257.76 721.65,-265.04"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="720.83,-268.44 731.41,-267.95 722.82,-261.74 720.83,-268.44"/>
+</a>
+</g>
 </g>
 <!-- Node12 -->
-<g id="node12" class="node">
+<g id="Node000012" class="node">
 <title>Node12</title>
-<g id="a_node12"><a xlink:href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#a36931fc9cd7efc6ec431d49ddf7330a6" target="_top" xlink:title="Retrieve the value of beta used for BDF with i steps.">
+<g id="a_Node000012"><a xlink:href="classpolyfem_1_1time__integrator_1_1_b_d_f.html#a36931fc9cd7efc6ec431d49ddf7330a6" target="_top" xlink:title="Retrieve the value of beta used for BDF with i steps.">
 <polygon fill="white" stroke="#666666" points="851.5,-30 712.5,-30 712.5,0 851.5,0 851.5,-30"/>
 <text text-anchor="start" x="720.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="middle" x="782" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::BDF::betas</text>
@@ -246,15 +282,18 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node9&#45;&gt;Node12 -->
-<g id="edge12" class="edge">
+<g id="edge12_Node000009_Node000012" class="edge">
 <title>Node9&#45;&gt;Node12</title>
+<g id="a_edge12_Node000009_Node000012"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M423.14,-280.98C440.99,-255.2 480.02,-201.68 521,-164 593.24,-97.58 614.65,-81.7 703,-39 706.98,-37.08 711.15,-35.26 715.41,-33.56"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="716.69,-36.82 724.81,-30.03 714.22,-30.27 716.69,-36.82"/>
+</a>
+</g>
 </g>
 <!-- Node13 -->
-<g id="node13" class="node">
+<g id="Node000013" class="node">
 <title>Node13</title>
-<g id="a_node13"><a xlink:href="classpolyfem_1_1_state.html#ae968eba6b5e70405f66eb040943658a2" target="_top" xlink:title=" ">
+<g id="a_Node000013"><a xlink:href="classpolyfem_1_1_state.html#ae968eba6b5e70405f66eb040943658a2" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="662.5,-203 525.5,-203 525.5,-173 662.5,-173 662.5,-203"/>
 <text text-anchor="start" x="533.5" y="-191" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::compute</text>
 <text text-anchor="middle" x="594" y="-180" font-family="Helvetica,sans-Serif" font-size="10.00">_force_jacobian_prev</text>
@@ -262,15 +301,18 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node9&#45;&gt;Node13 -->
-<g id="edge13" class="edge">
+<g id="edge13_Node000009_Node000013" class="edge">
 <title>Node9&#45;&gt;Node13</title>
+<g id="a_edge13_Node000009_Node000013"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M430.79,-280.83C451.46,-263.72 487.09,-235.84 521,-217 527.4,-213.44 534.32,-210.09 541.26,-207.02"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="542.86,-210.14 550.68,-203 540.11,-203.7 542.86,-210.14"/>
+</a>
+</g>
 </g>
 <!-- Node20 -->
-<g id="node20" class="node">
+<g id="Node000020" class="node">
 <title>Node20</title>
-<g id="a_node20"><a xlink:href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" target="_top" xlink:title=" ">
+<g id="a_Node000020"><a xlink:href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="661,-375 527,-375 527,-345 661,-345 661,-375"/>
 <text text-anchor="start" x="535" y="-363" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::log_and_throw</text>
 <text text-anchor="middle" x="594" y="-352" font-family="Helvetica,sans-Serif" font-size="10.00">_error</text>
@@ -278,39 +320,54 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node9&#45;&gt;Node20 -->
-<g id="edge26" class="edge">
+<g id="edge26_Node000009_Node000020" class="edge">
 <title>Node9&#45;&gt;Node20</title>
+<g id="a_edge26_Node000009_Node000020"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M455.2,-311.01C480.84,-320.12 513.76,-331.83 541,-341.51"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="540.16,-344.93 550.75,-344.98 542.5,-338.33 540.16,-344.93"/>
+</a>
+</g>
 </g>
 <!-- Node11&#45;&gt;Node7 -->
-<g id="edge11" class="edge">
+<g id="edge11_Node000011_Node000007" class="edge">
 <title>Node11&#45;&gt;Node7</title>
+<g id="a_edge11_Node000011_Node000007"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M855.18,-273.69C865.55,-272.35 876.28,-270.96 886.83,-269.6"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="887.39,-273.06 896.86,-268.31 886.5,-266.12 887.39,-273.06"/>
+</a>
+</g>
 </g>
 <!-- Node13&#45;&gt;Node8 -->
-<g id="edge21" class="edge">
+<g id="edge21_Node000013_Node000008" class="edge">
 <title>Node13&#45;&gt;Node8</title>
+<g id="a_edge21_Node000013_Node000008"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M615.7,-203.13C630.93,-214.88 651.6,-232.14 667,-250 686.57,-272.69 678.67,-289.51 703,-307 706.5,-309.52 710.3,-311.7 714.26,-313.6"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="713.19,-316.94 723.77,-317.53 715.86,-310.47 713.19,-316.94"/>
+</a>
+</g>
 </g>
 <!-- Node13&#45;&gt;Node11 -->
-<g id="edge14" class="edge">
+<g id="edge14_Node000013_Node000011" class="edge">
 <title>Node13&#45;&gt;Node11</title>
+<g id="a_edge14_Node000013_Node000011"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M642.04,-203.14C650.73,-206.97 659.45,-211.58 667,-217 686.97,-231.34 682.44,-245.52 703,-259 705.44,-260.6 708,-262.1 710.63,-263.51"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="709.32,-266.75 719.85,-267.92 712.34,-260.44 709.32,-266.75"/>
+</a>
+</g>
 </g>
 <!-- Node13&#45;&gt;Node12 -->
-<g id="edge15" class="edge">
+<g id="edge15_Node000013_Node000012" class="edge">
 <title>Node13&#45;&gt;Node12</title>
+<g id="a_edge15_Node000013_Node000012"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M608.1,-172.85C623.02,-155.33 647.82,-125.36 667,-98 684.63,-72.84 678.75,-57.85 703,-39 704.77,-37.62 706.62,-36.32 708.54,-35.1"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="710.28,-38.14 717.28,-30.19 706.85,-32.03 710.28,-38.14"/>
+</a>
+</g>
 </g>
 <!-- Node14 -->
-<g id="node14" class="node">
+<g id="Node000014" class="node">
 <title>Node14</title>
-<g id="a_node14"><a xlink:href="classpolyfem_1_1solver_1_1_diff_cache.html#a2e5cdb7e97bce64c207b4e8200809350" target="_top" xlink:title=" ">
+<g id="a_Node000014"><a xlink:href="classpolyfem_1_1solver_1_1_diff_cache.html#a2e5cdb7e97bce64c207b4e8200809350" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="855,-250 709,-250 709,-220 855,-220 855,-250"/>
 <text text-anchor="start" x="717" y="-238" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::DiffCache</text>
 <text text-anchor="middle" x="782" y="-227" font-family="Helvetica,sans-Serif" font-size="10.00">::friction_constraint_set</text>
@@ -318,15 +375,18 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node13&#45;&gt;Node14 -->
-<g id="edge16" class="edge">
+<g id="edge16_Node000013_Node000014" class="edge">
 <title>Node13&#45;&gt;Node14</title>
+<g id="a_edge16_Node000013_Node000014"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M654.36,-203C672.65,-207.62 692.94,-212.75 711.83,-217.52"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="711.01,-220.92 721.56,-219.98 712.73,-214.14 711.01,-220.92"/>
+</a>
+</g>
 </g>
 <!-- Node15 -->
-<g id="node15" class="node">
+<g id="Node000015" class="node">
 <title>Node15</title>
-<g id="a_node15"><a xlink:href="classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" target="_top" xlink:title="Get a constant reference to the geometry mapping bases.">
+<g id="a_Node000015"><a xlink:href="classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" target="_top" xlink:title="Get a constant reference to the geometry mapping bases.">
 <polygon fill="white" stroke="#666666" points="843,-164 721,-164 721,-134 843,-134 843,-164"/>
 <text text-anchor="start" x="729" y="-152" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::geom</text>
 <text text-anchor="middle" x="782" y="-141" font-family="Helvetica,sans-Serif" font-size="10.00">_bases</text>
@@ -334,15 +394,18 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node13&#45;&gt;Node15 -->
-<g id="edge18" class="edge">
+<g id="edge18_Node000013_Node000015" class="edge">
 <title>Node13&#45;&gt;Node15</title>
+<g id="a_edge18_Node000013_Node000015"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M662.68,-173.81C678.27,-170.54 694.89,-167.06 710.6,-163.76"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="711.7,-167.11 720.76,-161.63 710.26,-160.26 711.7,-167.11"/>
+</a>
+</g>
 </g>
 <!-- Node17 -->
-<g id="node17" class="node">
+<g id="Node000017" class="node">
 <title>Node17</title>
-<g id="a_node17"><a xlink:href="classpolyfem_1_1_state.html#ae48e7478cf500860b285dfc3f4a80fee" target="_top" xlink:title="does the simulation has contact">
+<g id="a_Node000017"><a xlink:href="classpolyfem_1_1_state.html#ae48e7478cf500860b285dfc3f4a80fee" target="_top" xlink:title="does the simulation has contact">
 <polygon fill="white" stroke="#666666" points="833.5,-116 730.5,-116 730.5,-86 833.5,-86 833.5,-116"/>
 <text text-anchor="start" x="738.5" y="-104" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::is</text>
 <text text-anchor="middle" x="782" y="-93" font-family="Helvetica,sans-Serif" font-size="10.00">_contact_enabled</text>
@@ -350,51 +413,63 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node13&#45;&gt;Node17 -->
-<g id="edge20" class="edge">
+<g id="edge20_Node000013_Node000017" class="edge">
 <title>Node13&#45;&gt;Node17</title>
+<g id="a_edge20_Node000013_Node000017"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M617.37,-172.9C638.67,-159.02 671.99,-138.6 703,-125 708.71,-122.5 714.75,-120.15 720.85,-117.97"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="722.11,-121.24 730.45,-114.69 719.85,-114.61 722.11,-121.24"/>
+</a>
+</g>
 </g>
 <!-- Node18 -->
-<g id="node18" class="node">
+<g id="Node000018" class="node">
 <title>Node18</title>
-<g id="a_node18"><a xlink:href="classpolyfem_1_1solver_1_1_diff_cache.html#a59e300819d392668781b1055f8943f58" target="_top" xlink:title=" ">
+<g id="a_Node000018"><a xlink:href="classpolyfem_1_1solver_1_1_diff_cache.html#a59e300819d392668781b1055f8943f58" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="861,-201.5 703,-201.5 703,-182.5 861,-182.5 861,-201.5"/>
 <text text-anchor="middle" x="782" y="-189.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::DiffCache::u</text>
 </a>
 </g>
 </g>
 <!-- Node13&#45;&gt;Node18 -->
-<g id="edge22" class="edge">
+<g id="edge22_Node000013_Node000018" class="edge">
 <title>Node13&#45;&gt;Node18</title>
+<g id="a_edge22_Node000013_Node000018"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M662.68,-189.46C672.49,-189.67 682.72,-189.89 692.86,-190.1"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="692.89,-193.61 702.96,-190.32 693.04,-186.61 692.89,-193.61"/>
+</a>
+</g>
 </g>
 <!-- Node19 -->
-<g id="node19" class="node">
+<g id="Node000019" class="node">
 <title>Node19</title>
-<g id="a_node19"><a xlink:href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" target="_top" xlink:title="Unflatten rowwises, so every dim elements in x become a row.">
+<g id="a_Node000019"><a xlink:href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" target="_top" xlink:title="Unflatten rowwises, so every dim elements in x become a row.">
 <polygon fill="white" stroke="#666666" points="849,-67.5 715,-67.5 715,-48.5 849,-48.5 849,-67.5"/>
 <text text-anchor="middle" x="782" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::unflatten</text>
 </a>
 </g>
 </g>
 <!-- Node13&#45;&gt;Node19 -->
-<g id="edge24" class="edge">
+<g id="edge24_Node000013_Node000019" class="edge">
 <title>Node13&#45;&gt;Node19</title>
+<g id="a_edge24_Node000013_Node000019"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M605.35,-172.82C622.64,-148.65 659.81,-101.67 703,-77 706.92,-74.76 711.09,-72.79 715.4,-71.04"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="716.76,-74.27 724.97,-67.58 714.38,-67.69 716.76,-74.27"/>
+</a>
+</g>
 </g>
 <!-- Node14&#45;&gt;Node7 -->
-<g id="edge17" class="edge">
+<g id="edge17_Node000014_Node000007" class="edge">
 <title>Node14&#45;&gt;Node7</title>
+<g id="a_edge17_Node000014_Node000007"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M855.18,-244.31C865.55,-245.65 876.28,-247.04 886.83,-248.4"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="886.5,-251.88 896.86,-249.69 887.39,-244.94 886.5,-251.88"/>
+</a>
+</g>
 </g>
 <!-- Node16 -->
-<g id="node16" class="node">
+<g id="Node000016" class="node">
 <title>Node16</title>
-<g id="a_node16"><a xlink:href="classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" target="_top" xlink:title="check if using iso parametric bases">
+<g id="a_Node000016"><a xlink:href="classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" target="_top" xlink:title="check if using iso parametric bases">
 <polygon fill="white" stroke="#666666" points="1024.5,-164 915.5,-164 915.5,-134 1024.5,-134 1024.5,-164"/>
 <text text-anchor="start" x="923.5" y="-152" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::iso</text>
 <text text-anchor="middle" x="970" y="-141" font-family="Helvetica,sans-Serif" font-size="10.00">_parametric</text>
@@ -402,73 +477,76 @@ var sectionId = 'dynsection-106';
 </g>
 </g>
 <!-- Node15&#45;&gt;Node16 -->
-<g id="edge19" class="edge">
+<g id="edge19_Node000015_Node000016" class="edge">
 <title>Node15&#45;&gt;Node16</title>
+<g id="a_edge19_Node000015_Node000016"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M843.13,-149C863.02,-149 885.2,-149 905.34,-149"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="905.35,-152.5 915.35,-149 905.35,-145.5 905.35,-152.5"/>
+</a>
+</g>
 </g>
 <!-- Node18&#45;&gt;Node7 -->
-<g id="edge23" class="edge">
+<g id="edge23_Node000018_Node000007" class="edge">
 <title>Node18&#45;&gt;Node7</title>
+<g id="a_edge23_Node000018_Node000007"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M828.35,-201.59C839.16,-204.28 850.58,-207.45 861,-211 884.3,-218.95 909.49,-229.99 929.67,-239.48"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="928.33,-242.71 938.86,-243.85 931.34,-236.39 928.33,-242.71"/>
+</a>
+</g>
 </g>
 <!-- Node21 -->
-<g id="node21" class="node">
+<g id="Node000021" class="node">
 <title>Node21</title>
-<g id="a_node21"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
+<g id="a_Node000021"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
 <polygon fill="white" stroke="#666666" points="829,-372.5 735,-372.5 735,-353.5 829,-353.5 829,-372.5"/>
 <text text-anchor="middle" x="782" y="-360.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::logger</text>
 </a>
 </g>
 </g>
 <!-- Node20&#45;&gt;Node21 -->
-<g id="edge27" class="edge">
+<g id="edge27_Node000020_Node000021" class="edge">
 <title>Node20&#45;&gt;Node21</title>
+<g id="a_edge27_Node000020_Node000021"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M661.1,-361.07C681.91,-361.4 704.68,-361.77 724.74,-362.09"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="724.9,-365.6 734.95,-362.26 725.01,-358.6 724.9,-365.6"/>
+</a>
+</g>
 </g>
 </g>
 </svg>
-        <g id="navigator" transform="translate(0 0)" fill="#404254">
-                <rect fill="#f2f5e9" fill-opacity="0.5" stroke="#606060" stroke-width=".5" x="0" y="0" width="60" height="60"/>
-                <use id="zoomplus" xlink:href="#zoomPlus" x="17" y="9" onmousedown="handleZoom(evt,'in')"/>
-                <use id="zoomminus" xlink:href="#zoomMin" x="42" y="9" onmousedown="handleZoom(evt,'out')"/>
-                <use id="reset" xlink:href="#resetDef" x="30" y="36" onmousedown="handleReset()"/>
-                <g id="arrowUp" xlink:href="#dirArrow" transform="translate(30 24)" onmousedown="handlePan(0,-1)">
-                  <use xlink:href="#rim" fill="#404040">
-                        <set attributeName="fill" to="#808080" begin="arrowUp.mouseover" end="arrowUp.mouseout"/>
-                  </use>
-                  <path fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
-                </g>
-                <g id="arrowRight" xlink:href="#dirArrow" transform="rotate(90) translate(36 -43)" onmousedown="handlePan(1,0)">
-                  <use xlink:href="#rim" fill="#404040">
-                        <set attributeName="fill" to="#808080" begin="arrowRight.mouseover" end="arrowRight.mouseout"/>
-                  </use>
-                  <path fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
-                </g>
-                <g id="arrowDown" xlink:href="#dirArrow" transform="rotate(180) translate(-30 -48)" onmousedown="handlePan(0,1)">
-                  <use xlink:href="#rim" fill="#404040">
-                        <set attributeName="fill" to="#808080" begin="arrowDown.mouseover" end="arrowDown.mouseout"/>
-                  </use>
-                  <path fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
-                </g>
-                <g id="arrowLeft" xlink:href="#dirArrow" transform="rotate(270) translate(-36 17)" onmousedown="handlePan(-1,0)">
-                  <use xlink:href="#rim" fill="#404040">
-                        <set attributeName="fill" to="#808080" begin="arrowLeft.mouseover" end="arrowLeft.mouseout"/>
-                  </use>
-                  <path fill="none" stroke="white" stroke-width="1.5" d="M0,-3.0v7 M-2.5,-0.5L0,-3.0L2.5,-0.5"/>
-                </g>
-        </g>
-        <svg viewBox="0 0 15 15" width="100%" height="30px" preserveAspectRatio="xMaxYMin meet">
-         <g id="arrow_out" transform="scale(0.3 0.3)">
-          <a xlink:href="classpolyfem_1_1_state_a9e1bea7d5764cb3cdf57a11e0e1444c1_cgraph_org.svg" target="_base">
-           <rect id="button" ry="5" rx="5" y="6" x="6" height="38" width="38"
-                fill="#f2f5e9" fill-opacity="0.5" stroke="#606060" stroke-width="1.0"/>
-           <path id="arrow"
-             d="M 11.500037,31.436501 C 11.940474,20.09759 22.043105,11.32322 32.158766,21.979434 L 37.068811,17.246167 C 37.068811,17.246167 37.088388,32 37.088388,32 L 22.160133,31.978069 C 22.160133,31.978069 26.997745,27.140456 26.997745,27.140456 C 18.528582,18.264221 13.291696,25.230495 11.500037,31.436501 z"
-             style="fill:#404040;"/>
-          </a>
-         </g>
-        </svg>
+
+<g id="navigator" transform="translate(0 0)" fill="#404254">
+  <rect fill="#f2f5e9" fill-opacity="0.5" stroke="#606060" stroke-width=".5" x="0" y="0" width="60" height="60"/>
+  <use id="zoomplus" xlink:href="#zoomPlus" x="17" y="9" onmousedown="handleZoom(evt,'in')"/>
+  <use id="zoomminus" xlink:href="#zoomMin" x="42" y="9" onmousedown="handleZoom(evt,'out')"/>
+  <use id="reset" xlink:href="#resetDef" x="30" y="36" onmousedown="handleReset()"/>
+   <use id="arrowup" xlink:href="#arrowUp" x="0" y="0" onmousedown="handlePan(0,-1)"/>
+  <use id="arrowright" xlink:href="#arrowRight" x="0" y="0" onmousedown="handlePan(1,0)"/>
+  <use id="arrowdown" xlink:href="#arrowDown" x="0" y="0" onmousedown="handlePan(0,1)"/>
+  <use id="arrowleft" xlink:href="#arrowLeft" x="0" y="0" onmousedown="handlePan(-1,0)"/>
+</g>
+<svg viewBox="0 0 15 15" width="100%" height="30px" preserveAspectRatio="xMaxYMin meet">
+ <g id="arrow_out" transform="scale(0.3 0.3)">
+  <a xlink:href="classpolyfem_1_1_state_a9e1bea7d5764cb3cdf57a11e0e1444c1_cgraph_org.svg" target="_base">
+   <rect id="button" ry="5" rx="5" y="6" x="6" height="38" width="38"
+        fill="#f2f5e9" fill-opacity="0.5" stroke="#606060" stroke-width="1.0"/>
+   <path id="arrow"
+     d="M 11.500037,31.436501 C 11.940474,20.09759 22.043105,11.32322 32.158766,21.979434 L 37.068811,17.246167 C 37.068811,17.246167 37.088388,32 37.088388,32 L 22.160133,31.978069 C 22.160133,31.978069 26.997745,27.140456 26.997745,27.140456 C 18.528582,18.264221 13.291696,25.230495 11.500037,31.436501 z"
+     style="fill:#404040;"/>
+  </a>
+ </g>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

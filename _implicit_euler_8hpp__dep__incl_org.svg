@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 100)">
 <title>src/polyfem/time_integrator/ImplicitEuler.hpp</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="339.5,-96 186.5,-96 186.5,-66 339.5,-66 339.5,-96"/>
 <text text-anchor="start" x="194.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/time_integrator</text>
 <text text-anchor="middle" x="263" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">/ImplicitEuler.hpp</text>
@@ -19,24 +19,27 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="_state_diff_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="_state_diff_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="168,-24.5 0,-24.5 0,-5.5 168,-5.5 168,-24.5"/>
 <text text-anchor="middle" x="84" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/state/StateDiff.cpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M214.27,-62.58C179.72,-50.23 134.87,-34.19 107.82,-24.52"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="213.12,-65.88 223.72,-65.95 215.48,-59.29 213.12,-65.88"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="_implicit_euler_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="_implicit_euler_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="339.5,-30 186.5,-30 186.5,0 339.5,0 339.5,-30"/>
 <text text-anchor="start" x="194.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/time_integrator</text>
 <text text-anchor="middle" x="263" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/ImplicitEuler.cpp</text>
@@ -44,15 +47,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M263,-55.54C263,-46.96 263,-37.61 263,-30.16"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="259.5,-55.8 263,-65.8 266.5,-55.8 259.5,-55.8"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="_implicit_time_integrator_8cpp.html" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="_implicit_time_integrator_8cpp.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="510.5,-30 357.5,-30 357.5,0 510.5,0 510.5,-30"/>
 <text text-anchor="start" x="365.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/time_integrator</text>
 <text text-anchor="middle" x="434" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/ImplicitTimeIntegrator.cpp</text>
@@ -60,10 +66,13 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M310.23,-62.32C337.45,-52.14 371.19,-39.51 396.56,-30.01"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="308.67,-59.17 300.53,-65.95 311.12,-65.73 308.67,-59.17"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

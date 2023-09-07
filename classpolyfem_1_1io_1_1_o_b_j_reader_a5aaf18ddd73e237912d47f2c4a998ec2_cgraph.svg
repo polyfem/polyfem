@@ -6,12 +6,22 @@
 <!-- Title: polyfem::io::OBJReader::read Pages: 1 -->
 <svg width="268pt" height="56pt"
  viewBox="0.00 0.00 268.00 56.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 52)">
 <title>polyfem::io::OBJReader::read</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Read a mesh from an ascii obj file.">
+<g id="a_Node000001"><a xlink:title="Read a mesh from an ascii obj file.">
 <polygon fill="#999999" stroke="#666666" points="130,-30 0,-30 0,0 130,0 130,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OBJReader</text>
 <text text-anchor="middle" x="65" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::read</text>
@@ -19,25 +29,46 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node1 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000001" class="edge">
 <title>Node1&#45;&gt;Node1</title>
+<g id="a_edge2_Node000001_Node000001"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M38.98,-30.28C33.2,-39.41 41.88,-48 65,-48 78.73,-48 87.37,-44.97 90.91,-40.6"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="94.41,-40.31 91.02,-30.28 87.41,-40.24 94.41,-40.31"/>
+</a>
+</g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
+<g id="a_Node000002"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
 <polygon fill="white" stroke="#666666" points="260,-24.5 166,-24.5 166,-5.5 260,-5.5 260,-24.5"/>
 <text text-anchor="middle" x="213" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::logger</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M130.04,-15C138.64,-15 147.42,-15 155.87,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="156,-18.5 166,-15 156,-11.5 156,-18.5"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

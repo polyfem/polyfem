@@ -1,52 +1,107 @@
 <map id="polyfem::utils::unflatten" name="polyfem::utils::unflatten">
-<area shape="rect" id="node1" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="1341,1611,1520,1636"/>
-<area shape="rect" id="node2" href="$classpolyfem_1_1solver_1_1_mesh_affine.html#a23f760ab970e0285e2325b045333d91e" title=" " alt="" coords="1067,411,1273,451"/>
-<area shape="rect" id="node3" href="$classpolyfem_1_1solver_1_1_contact_form.html#a41111805fab863090ce87259bb024995" title="Compute the displaced positions of the surface nodes." alt="" coords="1075,476,1265,531"/>
-<area shape="rect" id="node17" href="$classpolyfem_1_1_state.html#ae968eba6b5e70405f66eb040943658a2" title=" " alt="" coords="1079,883,1261,923"/>
-<area shape="rect" id="node19" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#aae682f9f4eee4132e0ee61699b357e83" title=" " alt="" coords="1063,948,1277,1003"/>
-<area shape="rect" id="node20" href="$classpolyfem_1_1solver_1_1_friction_form.html#a71392827e314d99d6702afbeedd681b1" title="Compute the surface velocities." alt="" coords="1047,1027,1293,1067"/>
-<area shape="rect" id="node24" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#a5ac63404b8f363b91018bbb64975f76e" title=" " alt="" coords="1073,1092,1267,1147"/>
-<area shape="rect" id="node26" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#addcc05e296f84fac4d2feef6b6efe330" title=" " alt="" coords="1081,1171,1259,1225"/>
-<area shape="rect" id="node28" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#abeb523ee2bef0856b888bb49c5cdca8f" title=" " alt="" coords="1077,1249,1263,1304"/>
-<area shape="rect" id="node29" href="$classpolyfem_1_1solver_1_1_mesh_tiling.html#aeb2823d7a6342723b282d736d53d8139" title=" " alt="" coords="1069,1329,1271,1369"/>
-<area shape="rect" id="node30" href="$classpolyfem_1_1solver_1_1_mesh_affine.html#ac849281207604601dee175098be60bcb" title=" " alt="" coords="1067,1417,1273,1457"/>
-<area shape="rect" id="node31" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a9826defd7d8f3c4c12df2ba9c4c45320" title="exports everytihng, txt, vtu, etc" alt="" coords="257,1763,449,1803"/>
-<area shape="rect" id="node33" href="$classpolyfem_1_1solver_1_1_friction_form.html#a4822b4bc5967ffb830d7aee9effb8fe7" title=" " alt="" coords="1063,1531,1277,1571"/>
-<area shape="rect" id="node34" href="$classpolyfem_1_1solver_1_1_elastic_energy_form.html#a7551c8d1d37186625404a63bdf9b6b19" title=" " alt="" coords="1077,1596,1263,1651"/>
-<area shape="rect" id="node35" href="$classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation.html#a7372bf5c01c30ef97f8cac9735a4f729" title=" " alt="" coords="1077,1675,1263,1715"/>
-<area shape="rect" id="node36" href="$classpolyfem_1_1_state.html#ae0de6ea3bdc69e3e21ddfbcdb144180b" title="initialize the nonlinear solver" alt="" coords="1080,1739,1260,1779"/>
-<area shape="rect" id="node39" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a0829584cf4782cc4229063b49d1a8b3b" title=" " alt="" coords="1071,1803,1269,1843"/>
-<area shape="rect" id="node40" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#a58f3e2b43ae371db96dfae1a093f550c" title="Checks if the step is collision free." alt="" coords="1047,1867,1293,1907"/>
-<area shape="rect" id="node41" href="$classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a359ec0ff883060c1f2c97868bfbfb174" title="Determine if a step from solution x0 to solution x1 is allowed." alt="" coords="1067,1931,1273,1971"/>
-<area shape="rect" id="node42" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#a7a3b924fb69ec5e9dc0a354778796279" title="Determine the maximum step size allowable between the current and next solution." alt="" coords="1068,1995,1272,2035"/>
-<area shape="rect" id="node43" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aadfe90373911bcfb493691abdfb88777" title="saves the surface vtu file for for constact quantites, eg contact or friction forces" alt="" coords="767,2046,969,2086"/>
-<area shape="rect" id="node45" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a79dfcef5587ebfc0a492f4beff251d01" title="saves the volume vtu file" alt="" coords="772,2110,964,2150"/>
-<area shape="rect" id="node46" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a0e65c20c88b0fea48c12149e1ec7b61c" title=" " alt="" coords="1055,2161,1285,2201"/>
-<area shape="rect" id="node47" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#ac08d931672b693852651b5b813f614a7" title="Update cached fields upon a change in the solution." alt="" coords="1059,2225,1281,2265"/>
-<area shape="rect" id="node48" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#ae366a90bf45d3e8a3326c194698b83ce" title="Compute the value of the form." alt="" coords="1057,2289,1283,2329"/>
-<area shape="rect" id="node49" href="$namespacepolyfem_1_1utils.html#a75043e8afe913f3bc6279fd5349a4fd4" title=" " alt="" coords="1064,2353,1276,2379"/>
-<area shape="rect" id="node4" href="$classpolyfem_1_1solver_1_1_friction_form.html#a813fc2f87b22de23caf3d1cb850fdfac" title="Compute the displaced positions of the surface nodes." alt="" coords="773,5,963,60"/>
-<area shape="rect" id="node5" href="$classpolyfem_1_1solver_1_1_contact_form.html#ac654311b96207d936de3f8e115d4cd52" title="Compute the first derivative of the value wrt x." alt="" coords="777,84,959,139"/>
-<area shape="rect" id="node6" href="$classpolyfem_1_1solver_1_1_contact_form.html#ababfb5b7cb31b8059a61ac6f3d419797" title=" " alt="" coords="761,163,975,203"/>
-<area shape="rect" id="node7" href="$classpolyfem_1_1solver_1_1_contact_form.html#a2a11c35e1a44e6f8ad2ca4602ab158bb" title="Initialize the form." alt="" coords="777,227,959,267"/>
-<area shape="rect" id="node8" href="$classpolyfem_1_1solver_1_1_contact_form.html#aee65aa9ea94cac5dea17f77b65ef2006" title="Checks if the step is collision free." alt="" coords="767,291,969,331"/>
-<area shape="rect" id="node9" href="$classpolyfem_1_1solver_1_1_contact_form.html#ab011ec40a36b9125803eb58bbfae853c" title="Initialize variables used during the line search." alt="" coords="777,355,959,395"/>
-<area shape="rect" id="node10" href="$classpolyfem_1_1solver_1_1_contact_form.html#a510cabb33d8e00c2fa8dac68f36a2820" title="Determine the maximum step size allowable between the current and next solution." alt="" coords="777,419,959,459"/>
-<area shape="rect" id="node11" href="$classpolyfem_1_1solver_1_1_contact_form.html#af1f9e0e3d713c85183191e884b7df2d7" title="Update fields after a step in the optimization." alt="" coords="777,483,959,523"/>
-<area shape="rect" id="node12" href="$classpolyfem_1_1solver_1_1_contact_form.html#a50b36d64836f5ff8a233c785b7c31b47" title="Compute the second derivative of the value wrt x." alt="" coords="777,548,959,603"/>
-<area shape="rect" id="node13" href="$classpolyfem_1_1solver_1_1_contact_form.html#a70e5349c72c5d268ba2d98753865ab4e" title="Update cached fields upon a change in the solution." alt="" coords="777,627,959,667"/>
-<area shape="rect" id="node14" href="$classpolyfem_1_1solver_1_1_contact_form.html#ab7f5b55a31f0829c3ae3002b1b1959a7" title="Update the barrier stiffness based on the current elasticity energy." alt="" coords="758,691,978,731"/>
-<area shape="rect" id="node15" href="$classpolyfem_1_1solver_1_1_contact_form.html#ae4b7ce02d0f40d3bfef34c5106e22f4e" title="Update time&#45;dependent fields." alt="" coords="777,755,959,795"/>
-<area shape="rect" id="node16" href="$classpolyfem_1_1solver_1_1_contact_form.html#a91225a3a50c429d7668cb696f93939c5" title="Compute the contact barrier potential value." alt="" coords="777,819,959,859"/>
-<area shape="rect" id="node18" href="$classpolyfem_1_1_state.html#ae4cd1190f91e6422d08b3c7ff57945ce" title=" " alt="" coords="787,883,949,923"/>
-<area shape="rect" id="node21" href="$classpolyfem_1_1solver_1_1_friction_form.html#aba546a5686d184c3f8b9779b4f6f0620" title="Compute the first derivative of the value wrt x." alt="" coords="778,948,958,1003"/>
-<area shape="rect" id="node22" href="$classpolyfem_1_1solver_1_1_friction_form.html#a36b081d01bbfca96dfb1ca2e7b37b7ac" title="Compute the second derivative of the value wrt x." alt="" coords="777,1027,959,1081"/>
-<area shape="rect" id="node23" href="$classpolyfem_1_1solver_1_1_friction_form.html#a88a9d777ccece8a0e7ed7cac196b10fd" title="Compute the value of the form." alt="" coords="777,1106,959,1146"/>
-<area shape="rect" id="node25" href="$classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#a3f07e6f8d3dccd177ae47eb6eb07a55b" title=" " alt="" coords="759,1171,977,1225"/>
-<area shape="rect" id="node27" href="$classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html#a9f5762367356019c956b2d04f86e4794" title=" " alt="" coords="737,1254,999,1294"/>
-<area shape="rect" id="node32" href="$classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e" title="saves all data on the disk according to the input params" alt="" coords="5,1771,209,1796"/>
-<area shape="rect" id="node37" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="513,1739,674,1779"/>
-<area shape="rect" id="node38" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="767,1769,969,1809"/>
-<area shape="rect" id="node44" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aa3fbccda3a6e6f7fd5a7b3bcbd146793" title="saves the vtu file for time t" alt="" coords="497,2046,689,2086"/>
-<area shape="rect" id="node50" href="$classpolyfem_1_1solver_1_1_compliance_form.html#af7eba4310771b49215ceb4bd1c863876" title=" " alt="" coords="753,2339,983,2393"/>
+<area shape="rect" id="Node000001" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="1341,1611,1520,1636"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_mesh_affine.html#a23f760ab970e0285e2325b045333d91e" title=" " alt="" coords="1067,411,1273,451"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1425,1597,1412,1363,1384,1002,1365,818,1343,655,1318,531,1305,490,1291,465,1271,449,1275,445,1295,462,1310,488,1324,530,1348,654,1370,817,1389,1002,1417,1363,1431,1597"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_contact_form.html#a41111805fab863090ce87259bb024995" title="Compute the displaced positions of the surface nodes." alt="" coords="1075,476,1265,531"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1423,1597,1379,1303,1340,1090,1291,872,1263,773,1231,676,1180,532,1185,530,1237,675,1268,771,1296,871,1345,1089,1384,1302,1429,1596"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1_state.html#ae968eba6b5e70405f66eb040943658a2" title=" " alt="" coords="1079,883,1261,923"/>
+<area shape="poly" id="edge16_Node000001_Node000019" title=" " alt="" coords="1425,1597,1414,1459,1390,1260,1372,1158,1350,1065,1323,988,1308,959,1291,937,1277,926,1261,917,1263,912,1280,921,1295,933,1312,956,1328,986,1355,1063,1377,1157,1395,1260,1419,1459,1430,1596"/>
+<area shape="rect" id="Node000023" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#aae682f9f4eee4132e0ee61699b357e83" title=" " alt="" coords="1063,948,1277,1003"/>
+<area shape="poly" id="edge18_Node000001_Node000023" title=" " alt="" coords="1424,1597,1410,1474,1384,1300,1366,1211,1344,1129,1319,1062,1306,1037,1291,1017,1275,1004,1279,999,1295,1014,1310,1034,1324,1060,1349,1128,1371,1210,1389,1299,1416,1474,1430,1597"/>
+<area shape="rect" id="Node000024" href="$classpolyfem_1_1solver_1_1_friction_form.html#a71392827e314d99d6702afbeedd681b1" title="Compute the surface velocities." alt="" coords="1047,1027,1293,1067"/>
+<area shape="poly" id="edge19_Node000001_Node000024" title=" " alt="" coords="1424,1597,1408,1486,1381,1330,1363,1251,1342,1179,1318,1121,1291,1081,1277,1070,1280,1065,1295,1078,1322,1118,1347,1177,1368,1250,1386,1329,1414,1485,1429,1597"/>
+<area shape="rect" id="Node000028" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#a5ac63404b8f363b91018bbb64975f76e" title=" " alt="" coords="1073,1092,1267,1147"/>
+<area shape="poly" id="edge23_Node000001_Node000028" title=" " alt="" coords="1427,1597,1423,1513,1416,1458,1405,1396,1388,1333,1365,1270,1333,1212,1291,1160,1265,1141,1268,1137,1295,1156,1337,1209,1369,1268,1393,1331,1411,1395,1422,1457,1428,1513,1432,1597"/>
+<area shape="rect" id="Node000030" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#addcc05e296f84fac4d2feef6b6efe330" title=" " alt="" coords="1081,1171,1259,1225"/>
+<area shape="poly" id="edge25_Node000001_Node000030" title=" " alt="" coords="1425,1597,1417,1526,1396,1430,1378,1378,1356,1328,1327,1280,1292,1239,1258,1217,1261,1213,1295,1235,1331,1277,1360,1325,1383,1376,1401,1428,1422,1525,1431,1597"/>
+<area shape="rect" id="Node000032" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#abeb523ee2bef0856b888bb49c5cdca8f" title=" " alt="" coords="1077,1249,1263,1304"/>
+<area shape="poly" id="edge27_Node000001_Node000032" title=" " alt="" coords="1422,1597,1409,1540,1385,1465,1368,1425,1346,1386,1321,1350,1292,1319,1262,1300,1265,1295,1295,1315,1325,1347,1351,1384,1372,1423,1390,1463,1414,1538,1428,1596"/>
+<area shape="rect" id="Node000033" href="$classpolyfem_1_1solver_1_1_mesh_tiling.html#aeb2823d7a6342723b282d736d53d8139" title=" " alt="" coords="1069,1329,1271,1369"/>
+<area shape="poly" id="edge29_Node000001_Node000033" title=" " alt="" coords="1420,1598,1404,1552,1378,1493,1340,1433,1318,1406,1292,1383,1270,1370,1273,1365,1295,1379,1321,1403,1345,1430,1382,1491,1409,1550,1425,1597"/>
+<area shape="rect" id="Node000034" href="$classpolyfem_1_1solver_1_1_mesh_affine.html#ac849281207604601dee175098be60bcb" title=" " alt="" coords="1067,1417,1273,1457"/>
+<area shape="poly" id="edge30_Node000001_Node000034" title=" " alt="" coords="1411,1601,1362,1539,1329,1506,1292,1478,1254,1459,1256,1454,1295,1473,1333,1502,1366,1536,1416,1598"/>
+<area shape="rect" id="Node000035" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a9826defd7d8f3c4c12df2ba9c4c45320" title="exports everytihng, txt, vtu, etc" alt="" coords="257,1763,449,1803"/>
+<area shape="poly" id="edge32_Node000001_Node000035" title=" " alt="" coords="1407,1603,1358,1559,1327,1538,1292,1522,1226,1504,1172,1501,1117,1509,1047,1522,948,1544,849,1573,752,1606,660,1642,502,1712,393,1766,391,1761,499,1707,658,1637,750,1601,847,1568,947,1539,1046,1517,1116,1503,1171,1496,1227,1499,1294,1517,1329,1533,1361,1554,1411,1599"/>
+<area shape="rect" id="Node000039" href="$classpolyfem_1_1solver_1_1_friction_form.html#a4822b4bc5967ffb830d7aee9effb8fe7" title=" " alt="" coords="1063,1531,1277,1571"/>
+<area shape="poly" id="edge34_Node000001_Node000039" title=" " alt="" coords="1374,1609,1293,1586,1249,1574,1250,1569,1294,1581,1375,1604"/>
+<area shape="rect" id="Node000040" href="$classpolyfem_1_1solver_1_1_elastic_energy_form.html#a7551c8d1d37186625404a63bdf9b6b19" title=" " alt="" coords="1077,1596,1263,1651"/>
+<area shape="poly" id="edge35_Node000001_Node000040" title=" " alt="" coords="1328,1626,1263,1626,1263,1621,1328,1621"/>
+<area shape="rect" id="Node000041" href="$classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation.html#a7372bf5c01c30ef97f8cac9735a4f729" title=" " alt="" coords="1077,1675,1263,1715"/>
+<area shape="poly" id="edge36_Node000001_Node000041" title=" " alt="" coords="1372,1642,1294,1665,1246,1678,1245,1673,1293,1659,1371,1637"/>
+<area shape="rect" id="Node000042" href="$classpolyfem_1_1_state.html#ae0de6ea3bdc69e3e21ddfbcdb144180b" title="initialize the nonlinear solver" alt="" coords="1080,1739,1260,1779"/>
+<area shape="poly" id="edge37_Node000001_Node000042" title=" " alt="" coords="1408,1648,1358,1689,1327,1711,1294,1730,1261,1743,1259,1738,1292,1725,1325,1707,1355,1685,1405,1643"/>
+<area shape="rect" id="Node000047" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a0829584cf4782cc4229063b49d1a8b3b" title=" " alt="" coords="1071,1803,1269,1843"/>
+<area shape="poly" id="edge41_Node000001_Node000047" title=" " alt="" coords="1418,1650,1370,1721,1336,1761,1295,1794,1270,1806,1268,1801,1292,1789,1332,1757,1366,1718,1414,1647"/>
+<area shape="rect" id="Node000048" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#a58f3e2b43ae371db96dfae1a093f550c" title="Checks if the step is collision free." alt="" coords="1047,1867,1293,1907"/>
+<area shape="poly" id="edge42_Node000001_Node000048" title=" " alt="" coords="1424,1650,1407,1695,1381,1751,1343,1809,1321,1835,1295,1857,1275,1870,1272,1865,1292,1853,1317,1831,1339,1805,1376,1749,1402,1693,1419,1648"/>
+<area shape="rect" id="Node000049" href="$classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a359ec0ff883060c1f2c97868bfbfb174" title="Determine if a step from solution x0 to solution x1 is allowed." alt="" coords="1067,1931,1273,1971"/>
+<area shape="poly" id="edge43_Node000001_Node000049" title=" " alt="" coords="1428,1650,1415,1707,1390,1780,1372,1819,1351,1856,1325,1891,1295,1921,1275,1935,1272,1930,1292,1917,1321,1888,1347,1853,1368,1816,1385,1778,1409,1705,1422,1649"/>
+<area shape="rect" id="Node000050" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#a7a3b924fb69ec5e9dc0a354778796279" title="Determine the maximum step size allowable between the current and next solution." alt="" coords="1068,1995,1272,2035"/>
+<area shape="poly" id="edge44_Node000001_Node000050" title=" " alt="" coords="1430,1650,1421,1717,1399,1808,1381,1856,1359,1903,1330,1947,1295,1985,1274,2000,1271,1995,1292,1981,1326,1944,1354,1901,1376,1854,1394,1806,1415,1716,1425,1649"/>
+<area shape="rect" id="Node000051" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aadfe90373911bcfb493691abdfb88777" title="saves the surface vtu file for for constact quantites, eg contact or friction forces" alt="" coords="767,2046,969,2086"/>
+<area shape="poly" id="edge45_Node000001_Node000051" title=" " alt="" coords="1433,1650,1430,1731,1424,1784,1413,1841,1396,1899,1372,1956,1338,2007,1295,2049,1254,2074,1210,2091,1163,2101,1115,2106,1022,2102,943,2089,944,2083,1023,2097,1115,2100,1162,2096,1208,2086,1252,2070,1292,2045,1334,2003,1367,1953,1391,1898,1408,1840,1419,1783,1425,1730,1428,1650"/>
+<area shape="rect" id="Node000060" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a79dfcef5587ebfc0a492f4beff251d01" title="saves the volume vtu file" alt="" coords="772,2110,964,2150"/>
+<area shape="poly" id="edge48_Node000001_Node000060" title=" " alt="" coords="1429,1650,1413,1751,1385,1890,1367,1960,1346,2023,1322,2073,1295,2107,1271,2120,1237,2130,1152,2140,1055,2142,964,2139,964,2134,1055,2137,1151,2135,1236,2124,1269,2115,1292,2103,1317,2071,1341,2021,1362,1958,1380,1889,1408,1750,1423,1649"/>
+<area shape="rect" id="Node000061" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a0e65c20c88b0fea48c12149e1ec7b61c" title=" " alt="" coords="1055,2161,1285,2201"/>
+<area shape="poly" id="edge50_Node000001_Node000061" title=" " alt="" coords="1428,1651,1412,1758,1383,1905,1365,1980,1344,2049,1321,2105,1295,2144,1270,2163,1267,2158,1291,2140,1316,2102,1339,2047,1360,1979,1378,1904,1407,1757,1423,1650"/>
+<area shape="rect" id="Node000062" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#ac08d931672b693852651b5b813f614a7" title="Update cached fields upon a change in the solution." alt="" coords="1059,2225,1281,2265"/>
+<area shape="poly" id="edge52_Node000001_Node000062" title=" " alt="" coords="1429,1650,1416,1770,1389,1939,1371,2026,1349,2105,1324,2170,1310,2195,1295,2215,1280,2227,1277,2222,1291,2211,1306,2192,1319,2168,1344,2103,1366,2025,1384,1939,1410,1769,1424,1650"/>
+<area shape="rect" id="Node000063" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#ae366a90bf45d3e8a3326c194698b83ce" title="Compute the value of the form." alt="" coords="1057,2289,1283,2329"/>
+<area shape="poly" id="edge53_Node000001_Node000063" title=" " alt="" coords="1430,1650,1418,1782,1393,1970,1375,2067,1353,2156,1327,2229,1312,2257,1295,2279,1280,2291,1277,2287,1291,2275,1307,2254,1322,2226,1348,2154,1370,2066,1388,1969,1413,1781,1425,1650"/>
+<area shape="rect" id="Node000064" href="$namespacepolyfem_1_1utils.html#a75043e8afe913f3bc6279fd5349a4fd4" title=" " alt="" coords="1064,2353,1276,2379"/>
+<area shape="poly" id="edge54_Node000001_Node000064" title=" " alt="" coords="1431,1650,1421,1793,1398,2002,1381,2109,1358,2207,1330,2288,1313,2319,1295,2343,1278,2356,1275,2351,1291,2339,1309,2316,1325,2286,1353,2206,1375,2108,1393,2001,1416,1793,1425,1650"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_friction_form.html#a813fc2f87b22de23caf3d1cb850fdfac" title="Compute the displaced positions of the surface nodes." alt="" coords="773,5,963,60"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="1061,480,1045,465,1027,439,1015,414,1008,389,1005,364,1010,315,1021,266,1032,218,1036,170,1033,146,1026,122,1014,98,997,73,981,59,962,49,964,44,984,55,1001,70,1019,95,1031,120,1038,145,1041,170,1037,219,1026,267,1015,315,1011,364,1013,388,1020,412,1031,437,1049,462,1065,476"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_contact_form.html#ac654311b96207d936de3f8e115d4cd52" title="Compute the first derivative of the value wrt x." alt="" coords="777,84,959,139"/>
+<area shape="poly" id="edge4_Node000003_Node000007" title=" " alt="" coords="1062,480,1045,465,1030,445,1020,424,1011,385,1013,345,1020,307,1028,268,1029,230,1021,192,1011,173,997,153,979,138,959,127,961,123,982,134,1001,150,1016,170,1026,190,1035,230,1033,269,1026,308,1018,346,1016,384,1025,423,1034,442,1049,462,1065,476"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_contact_form.html#ababfb5b7cb31b8059a61ac6f3d419797" title=" " alt="" coords="761,163,975,203"/>
+<area shape="poly" id="edge5_Node000003_Node000008" title=" " alt="" coords="1062,480,1045,465,1024,433,1016,401,1017,369,1021,338,1026,307,1026,277,1017,247,997,217,974,200,977,196,1001,213,1022,245,1031,276,1031,308,1026,339,1022,370,1021,400,1029,431,1049,462,1065,476"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_contact_form.html#a2a11c35e1a44e6f8ad2ca4602ab158bb" title="Initialize the form." alt="" coords="777,227,959,267"/>
+<area shape="poly" id="edge6_Node000003_Node000009" title=" " alt="" coords="1061,479,1045,465,1028,441,1021,417,1021,370,1022,347,1021,325,1013,303,997,281,979,268,958,259,960,254,982,263,1001,277,1018,301,1026,324,1028,347,1026,371,1026,417,1033,439,1049,462,1065,475"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_contact_form.html#aee65aa9ea94cac5dea17f77b65ef2006" title="Checks if the step is collision free." alt="" coords="767,291,969,331"/>
+<area shape="poly" id="edge7_Node000003_Node000010" title=" " alt="" coords="1062,478,1045,465,1032,450,1025,434,1021,403,1016,373,1009,359,997,345,968,328,971,323,1000,341,1014,356,1021,372,1026,402,1030,433,1037,447,1049,461,1065,474"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_contact_form.html#ab011ec40a36b9125803eb58bbfae853c" title="Initialize variables used during the line search." alt="" coords="777,355,959,395"/>
+<area shape="poly" id="edge8_Node000003_Node000011" title=" " alt="" coords="1061,475,1045,465,1030,451,1021,436,1012,423,997,410,958,392,961,388,1000,405,1016,419,1025,434,1034,448,1048,461,1064,470"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_contact_form.html#a510cabb33d8e00c2fa8dac68f36a2820" title="Determine the maximum step size allowable between the current and next solution." alt="" coords="777,419,959,459"/>
+<area shape="poly" id="edge9_Node000003_Node000012" title=" " alt="" coords="1061,483,959,461,960,456,1063,478"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1solver_1_1_contact_form.html#af1f9e0e3d713c85183191e884b7df2d7" title="Update fields after a step in the optimization." alt="" coords="777,483,959,523"/>
+<area shape="poly" id="edge10_Node000003_Node000013" title=" " alt="" coords="1062,506,960,506,960,501,1062,501"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_contact_form.html#a50b36d64836f5ff8a233c785b7c31b47" title="Compute the second derivative of the value wrt x." alt="" coords="777,548,959,603"/>
+<area shape="poly" id="edge11_Node000003_Node000014" title=" " alt="" coords="1063,532,960,556,959,551,1061,526"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_contact_form.html#a70e5349c72c5d268ba2d98753865ab4e" title="Update cached fields upon a change in the solution." alt="" coords="777,627,959,667"/>
+<area shape="poly" id="edge12_Node000003_Node000015" title=" " alt="" coords="1125,541,1067,580,1000,616,961,631,959,626,998,612,1064,576,1122,537"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1solver_1_1_contact_form.html#ab7f5b55a31f0829c3ae3002b1b1959a7" title="Update the barrier stiffness based on the current elasticity energy." alt="" coords="758,691,978,731"/>
+<area shape="poly" id="edge13_Node000003_Node000016" title=" " alt="" coords="1144,544,1083,615,1044,651,1000,682,974,694,972,689,997,677,1041,647,1080,611,1140,540"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1solver_1_1_contact_form.html#ae4b7ce02d0f40d3bfef34c5106e22f4e" title="Update time&#45;dependent fields." alt="" coords="777,755,959,795"/>
+<area shape="poly" id="edge14_Node000003_Node000017" title=" " alt="" coords="1154,545,1130,591,1096,646,1052,700,1027,724,1000,746,961,764,958,759,997,741,1024,720,1048,696,1091,643,1125,589,1149,542"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1solver_1_1_contact_form.html#a91225a3a50c429d7668cb696f93939c5" title="Compute the contact barrier potential value." alt="" coords="777,819,959,859"/>
+<area shape="poly" id="edge15_Node000003_Node000018" title=" " alt="" coords="1160,545,1139,604,1106,676,1060,748,1032,781,1000,810,961,830,958,825,997,805,1028,777,1056,745,1102,674,1134,602,1155,543"/>
+<area shape="rect" id="Node000020" href="$classpolyfem_1_1_state.html#ae4cd1190f91e6422d08b3c7ff57945ce" title=" " alt="" coords="787,883,949,923"/>
+<area shape="poly" id="edge17_Node000019_Node000020" title=" " alt="" coords="1065,906,949,906,949,901,1065,901"/>
+<area shape="rect" id="Node000025" href="$classpolyfem_1_1solver_1_1_friction_form.html#aba546a5686d184c3f8b9779b4f6f0620" title="Compute the first derivative of the value wrt x." alt="" coords="778,948,958,1003"/>
+<area shape="poly" id="edge20_Node000024_Node000025" title=" " alt="" coords="1071,1027,957,999,959,994,1073,1021"/>
+<area shape="rect" id="Node000026" href="$classpolyfem_1_1solver_1_1_friction_form.html#a36b081d01bbfca96dfb1ca2e7b37b7ac" title="Compute the second derivative of the value wrt x." alt="" coords="777,1027,959,1081"/>
+<area shape="poly" id="edge21_Node000024_Node000026" title=" " alt="" coords="1034,1053,960,1055,960,1049,1033,1048"/>
+<area shape="rect" id="Node000027" href="$classpolyfem_1_1solver_1_1_friction_form.html#a88a9d777ccece8a0e7ed7cac196b10fd" title="Compute the value of the form." alt="" coords="777,1106,959,1146"/>
+<area shape="poly" id="edge22_Node000024_Node000027" title=" " alt="" coords="1079,1073,1047,1082,999,1095,949,1109,947,1103,998,1090,1046,1077,1078,1068"/>
+<area shape="rect" id="Node000029" href="$classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#a3f07e6f8d3dccd177ae47eb6eb07a55b" title=" " alt="" coords="759,1171,977,1225"/>
+<area shape="poly" id="edge24_Node000028_Node000029" title=" " alt="" coords="1061,1150,974,1173,973,1168,1059,1145"/>
+<area shape="rect" id="Node000031" href="$classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html#a9f5762367356019c956b2d04f86e4794" title=" " alt="" coords="737,1254,999,1294"/>
+<area shape="poly" id="edge26_Node000030_Node000031" title=" " alt="" coords="1068,1226,949,1257,948,1251,1067,1221"/>
+<area shape="poly" id="edge28_Node000032_Node000031" title=" " alt="" coords="1063,1278,999,1278,999,1272,1063,1273"/>
+<area shape="poly" id="edge31_Node000034_Node000034" title=" " alt="" coords="1214,1405,1199,1398,1170,1395,1145,1397,1130,1402,1124,1408,1127,1415,1122,1417,1119,1407,1127,1398,1144,1392,1170,1390,1200,1393,1216,1400"/>
+<area shape="rect" id="Node000036" href="$classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e" title="saves all data on the disk according to the input params" alt="" coords="5,1771,209,1796"/>
+<area shape="poly" id="edge33_Node000035_Node000036" title=" " alt="" coords="244,1786,210,1786,210,1781,244,1781"/>
+<area shape="rect" id="Node000043" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="513,1739,674,1779"/>
+<area shape="poly" id="edge38_Node000042_Node000043" title=" " alt="" coords="1066,1760,999,1759,737,1759,674,1760,674,1755,737,1754,999,1754,1066,1755"/>
+<area shape="rect" id="Node000046" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="767,1769,969,1809"/>
+<area shape="poly" id="edge39_Node000042_Node000046" title=" " alt="" coords="1066,1772,970,1782,969,1776,1066,1767"/>
+<area shape="poly" id="edge40_Node000046_Node000043" title=" " alt="" coords="753,1779,674,1771,674,1765,753,1774"/>
+<area shape="rect" id="Node000052" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#aa3fbccda3a6e6f7fd5a7b3bcbd146793" title="saves the vtu file for time t" alt="" coords="497,2046,689,2086"/>
+<area shape="poly" id="edge46_Node000051_Node000052" title=" " alt="" coords="753,2069,690,2069,690,2063,753,2063"/>
+<area shape="poly" id="edge47_Node000052_Node000035" title=" " alt="" coords="564,2037,370,1805,374,1802,568,2034"/>
+<area shape="poly" id="edge49_Node000060_Node000052" title=" " alt="" coords="768,2109,679,2089,680,2083,769,2104"/>
+<area shape="poly" id="edge51_Node000061_Node000060" title=" " alt="" coords="1041,2162,964,2149,964,2143,1042,2156"/>
+<area shape="rect" id="Node000065" href="$classpolyfem_1_1solver_1_1_compliance_form.html#af7eba4310771b49215ceb4bd1c863876" title=" " alt="" coords="753,2339,983,2393"/>
+<area shape="poly" id="edge55_Node000064_Node000065" title=" " alt="" coords="1050,2369,984,2369,984,2363,1050,2363"/>
 </map>

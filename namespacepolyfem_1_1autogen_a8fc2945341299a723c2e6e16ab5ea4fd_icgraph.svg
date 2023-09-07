@@ -6,12 +6,22 @@
 <!-- Title: polyfem::autogen::q_m2_basis_grad_value_3d Pages: 1 -->
 <svg width="313pt" height="56pt"
  viewBox="0.00 0.00 313.00 56.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 52)">
 <title>polyfem::autogen::q_m2_basis_grad_value_3d</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="305,-30 160,-30 160,0 305,0 305,-30"/>
 <text text-anchor="start" x="168" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::autogen::q</text>
 <text text-anchor="middle" x="232.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_m2_basis_grad_value_3d</text>
@@ -19,15 +29,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node1 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000001" class="edge">
 <title>Node1&#45;&gt;Node1</title>
+<g id="a_edge2_Node000001_Node000001"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M262.26,-40.6C258.19,-44.97 248.27,-48 232.5,-48 205.94,-48 195.98,-39.41 202.62,-30.28"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="265.76,-40.32 262.38,-30.28 258.76,-40.23 265.76,-40.32"/>
+</a>
+</g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="namespacepolyfem_1_1autogen.html#a267b3426fd266f23e433bd1b63eff38c" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="namespacepolyfem_1_1autogen.html#a267b3426fd266f23e433bd1b63eff38c" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="124,-30 0,-30 0,0 124,0 124,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::autogen::q</text>
 <text text-anchor="middle" x="62" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_grad_basis_value_3d</text>
@@ -35,10 +48,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M149.53,-15C140.97,-15 132.37,-15 124.1,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="149.55,-18.5 159.55,-15 149.55,-11.5 149.55,-18.5"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

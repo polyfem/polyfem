@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 82)">
 <title>polyfem::solver::ParametrizationForm::max_step_size</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Determine the maximum step size allowable between the current and next solution.">
+<g id="a_Node000001"><a xlink:title="Determine the maximum step size allowable between the current and next solution.">
 <polygon fill="#999999" stroke="#666666" points="176,-54 0,-54 0,-24 176,-24 176,-54"/>
 <text text-anchor="start" x="8" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Parametrization</text>
 <text text-anchor="middle" x="88" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">Form::max_step_size</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_parametrization_form.html#ad3bb3c346b4846bd71a67681fb6b0112" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_parametrization_form.html#ad3bb3c346b4846bd71a67681fb6b0112" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="391.5,-78 215.5,-78 215.5,-48 391.5,-48 391.5,-78"/>
 <text text-anchor="start" x="223.5" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Parametrization</text>
 <text text-anchor="middle" x="303.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">Form::apply_parametrizations</text>
@@ -29,15 +29,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M176.15,-48.8C185.73,-49.87 195.53,-50.98 205.23,-52.07"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="204.96,-55.56 215.29,-53.2 205.74,-48.6 204.96,-55.56"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1solver_1_1_parametrization_form.html#a9436f79ce3146f3538c1882ee1a1c8d6" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1solver_1_1_parametrization_form.html#a9436f79ce3146f3538c1882ee1a1c8d6" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="395,-30 212,-30 212,0 395,0 395,-30"/>
 <text text-anchor="start" x="220" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Parametrization</text>
 <text text-anchor="middle" x="303.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">Form::max_step_size_with_param</text>
@@ -45,15 +48,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M176.15,-29.2C184.6,-28.25 193.22,-27.28 201.79,-26.32"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="202.27,-29.79 211.82,-25.19 201.49,-22.83 202.27,-29.79"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1solver_1_1_composite_parametrization.html#af42e8ffafbdbf4e0f1f253595a5ed543" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_composite_parametrization.html#af42e8ffafbdbf4e0f1f253595a5ed543" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="583,-78 431,-78 431,-48 583,-48 583,-78"/>
 <text text-anchor="start" x="439" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Composite</text>
 <text text-anchor="middle" x="507" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">Parametrization::eval</text>
@@ -61,10 +67,13 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M391.71,-63C401.42,-63 411.3,-63 420.98,-63"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="420.98,-66.5 430.98,-63 420.98,-59.5 420.98,-66.5"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

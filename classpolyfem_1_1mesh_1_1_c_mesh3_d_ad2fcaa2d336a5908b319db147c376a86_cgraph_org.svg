@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 73)">
 <title>polyfem::mesh::CMesh3D::get_index_from_element</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="145,-51 0,-51 0,-21 145,-21 145,-51"/>
 <text text-anchor="start" x="8" y="-39" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::CMesh3D</text>
 <text text-anchor="middle" x="72.5" y="-28" font-family="Helvetica,sans-Serif" font-size="10.00">::get_index_from_element</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a51ba1bb8ce325cc20213ffe364f87ab8" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="namespacepolyfem_1_1mesh_1_1_navigation3_d.html#a51ba1bb8ce325cc20213ffe364f87ab8" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="360,-51 181,-51 181,-21 360,-21 360,-51"/>
 <text text-anchor="start" x="189" y="-39" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::Navigation3</text>
 <text text-anchor="middle" x="270.5" y="-28" font-family="Helvetica,sans-Serif" font-size="10.00">D::get_index_from_element_face</text>
@@ -29,36 +29,45 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M145.09,-36C153.42,-36 162.03,-36 170.65,-36"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="170.75,-39.5 180.75,-36 170.75,-32.5 170.75,-39.5"/>
+</a>
+</g>
 </g>
 <!-- Node2&#45;&gt;Node2 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000002_Node000002" class="edge">
 <title>Node2&#45;&gt;Node2</title>
+<g id="a_edge3_Node000002_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M235.7,-51.28C227.96,-60.41 239.56,-69 270.5,-69 288.87,-69 300.42,-65.97 305.16,-61.6"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="308.66,-61.32 305.3,-51.28 301.66,-61.22 308.66,-61.32"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="namespacepolyfem_1_1mesh.html#a2c9e86a0cbb90821ce9b4c1f37b8df6c" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="namespacepolyfem_1_1mesh.html#a2c9e86a0cbb90821ce9b4c1f37b8df6c" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="543.5,-67.5 429.5,-67.5 429.5,-48.5 543.5,-48.5 543.5,-67.5"/>
 <text text-anchor="middle" x="486.5" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::find</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M360.09,-45.11C379.88,-47.14 400.54,-49.27 419.24,-51.19"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="419.11,-54.69 429.42,-52.23 419.83,-47.73 419.11,-54.69"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a61605ebebbca1d2811da94bf3e50a423" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a61605ebebbca1d2811da94bf3e50a423" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="577,-30 396,-30 396,0 577,0 577,-30"/>
 <text text-anchor="start" x="404" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::MeshProcessing3</text>
 <text text-anchor="middle" x="486.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">D::set_intersection_own</text>
@@ -66,10 +75,13 @@
 </g>
 </g>
 <!-- Node2&#45;&gt;Node4 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000002_Node000004" class="edge">
 <title>Node2&#45;&gt;Node4</title>
+<g id="a_edge4_Node000002_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M360.09,-27.31C368.6,-26.47 377.27,-25.62 385.88,-24.78"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="386.33,-28.25 395.94,-23.79 385.65,-21.28 386.33,-28.25"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

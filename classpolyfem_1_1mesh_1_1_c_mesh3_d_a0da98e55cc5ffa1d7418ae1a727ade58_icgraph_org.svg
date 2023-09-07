@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 100)">
 <title>polyfem::mesh::CMesh3D::cell_barycenter</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="cell barycenter">
+<g id="a_Node000001"><a xlink:title="cell barycenter">
 <polygon fill="#999999" stroke="#666666" points="501,-63 358,-63 358,-33 501,-33 501,-63"/>
 <text text-anchor="start" x="366" y="-51" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::CMesh3D</text>
 <text text-anchor="middle" x="429.5" y="-40" font-family="Helvetica,sans-Serif" font-size="10.00">::cell_barycenter</text>
@@ -19,9 +19,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a2f01a08cddb886224bfd1a01f45112c0" target="_top" xlink:title="computes boundary selections based on a function">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a2f01a08cddb886224bfd1a01f45112c0" target="_top" xlink:title="computes boundary selections based on a function">
 <polygon fill="white" stroke="#666666" points="322,-96 179,-96 179,-66 322,-66 322,-96"/>
 <text text-anchor="start" x="187" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::CMesh3D</text>
 <text text-anchor="middle" x="250.5" y="-73" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_body_ids</text>
@@ -29,15 +29,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M347.79,-63.05C339.22,-64.65 330.55,-66.26 322.11,-67.84"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="348.59,-66.46 357.78,-61.18 347.31,-59.58 348.59,-66.46"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1mesh_1_1_c_mesh3_d.html#ace011af8dec17d947d29c497f10d4a3e" target="_top" xlink:title="loads a mesh from the path">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1mesh_1_1_c_mesh3_d.html#ace011af8dec17d947d29c497f10d4a3e" target="_top" xlink:title="loads a mesh from the path">
 <polygon fill="white" stroke="#666666" points="322,-30 179,-30 179,0 322,0 322,-30"/>
 <text text-anchor="start" x="187" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::CMesh3D</text>
 <text text-anchor="middle" x="250.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::load</text>
@@ -45,21 +48,27 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M347.79,-32.95C339.22,-31.35 330.55,-29.74 322.11,-28.16"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="347.31,-36.42 357.78,-34.82 348.59,-29.54 347.31,-36.42"/>
+</a>
+</g>
 </g>
 <!-- Node3&#45;&gt;Node3 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000003_Node000003" class="edge">
 <title>Node3&#45;&gt;Node3</title>
+<g id="a_edge4_Node000003_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M281.66,-40.6C277.4,-44.97 267.01,-48 250.5,-48 222.69,-48 212.26,-39.41 219.21,-30.28"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="285.16,-40.32 281.79,-30.28 278.16,-40.23 285.16,-40.32"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1mesh_1_1_c_mesh3_d.html#af1123ef6f116bae8eba79ff266cef933" target="_top" xlink:title="build a mesh from matrices">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1mesh_1_1_c_mesh3_d.html#af1123ef6f116bae8eba79ff266cef933" target="_top" xlink:title="build a mesh from matrices">
 <polygon fill="white" stroke="#666666" points="143,-30 0,-30 0,0 143,0 143,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::CMesh3D</text>
 <text text-anchor="middle" x="71.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::build_from_matrices</text>
@@ -67,10 +76,13 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M168.51,-15C160.03,-15 151.46,-15 143.11,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="168.78,-18.5 178.78,-15 168.78,-11.5 168.78,-18.5"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

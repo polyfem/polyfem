@@ -6,37 +6,59 @@
 <!-- Title: polyfem::mesh::construct_affine_transformation Pages: 1 -->
 <svg width="485pt" height="120pt"
  viewBox="0.00 0.00 485.00 119.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 115.5)">
 <title>polyfem::mesh::construct_affine_transformation</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Construct an affine transformation .">
+<g id="a_Node000001"><a xlink:title="Construct an affine transformation .">
 <polygon fill="#999999" stroke="#666666" points="141,-78 0,-78 0,-48 141,-48 141,-78"/>
 <text text-anchor="start" x="8" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::construct</text>
 <text text-anchor="middle" x="70.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">_affine_transformation</text>
 </a>
 </g>
 </g>
+<!-- Node1&#45;&gt;Node1 -->
+<g id="edge1_Node000001_Node000001" class="edge">
+<title>Node1&#45;&gt;Node1</title>
+<g id="a_edge1_Node000001_Node000001"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M40.27,-78.28C33.55,-87.41 43.62,-96 70.5,-96 86.46,-96 96.49,-92.97 100.61,-88.6"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="104.11,-88.32 100.73,-78.28 97.11,-88.23 104.11,-88.32"/>
+</a>
+</g>
+</g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="477,-93.5 347,-93.5 347,-74.5 477,-74.5 477,-93.5"/>
 <text text-anchor="middle" x="412" y="-81.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::deg2rad</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge2_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge2_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M126.95,-78.06C142.97,-81.74 160.57,-85.16 177,-87 230.21,-92.98 290.64,-92 336.77,-89.65"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="337.18,-93.14 346.98,-89.1 336.8,-86.15 337.18,-93.14"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="311,-30 177,-30 177,0 311,0 311,-30"/>
 <text text-anchor="start" x="185" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::log_and_throw</text>
 <text text-anchor="middle" x="244" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_error</text>
@@ -44,15 +66,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge3" class="edge">
+<g id="edge4_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge4_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M125.29,-47.94C142.53,-43.12 161.78,-37.73 179.64,-32.73"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="180.71,-36.07 189.4,-30 178.82,-29.33 180.71,-36.07"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="namespacepolyfem_1_1utils.html#a839770ed1facd0a5f30ef708ddf03b15" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="namespacepolyfem_1_1utils.html#a839770ed1facd0a5f30ef708ddf03b15" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="294,-78 194,-78 194,-48 294,-48 294,-78"/>
 <text text-anchor="start" x="202" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::to</text>
 <text text-anchor="middle" x="244" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">_rotation_matrix</text>
@@ -60,37 +85,64 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node5 -->
-<g id="edge5" class="edge">
+<g id="edge6_Node000001_Node000005" class="edge">
 <title>Node1&#45;&gt;Node5</title>
+<g id="a_edge6_Node000001_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M141.26,-63C155.3,-63 169.93,-63 183.58,-63"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="183.8,-66.5 193.8,-63 183.8,-59.5 183.8,-66.5"/>
+</a>
+</g>
 </g>
 <!-- Node2&#45;&gt;Node2 -->
-<g id="edge2" class="edge">
+<g id="edge3_Node000002_Node000002" class="edge">
 <title>Node2&#45;&gt;Node2</title>
+<g id="a_edge3_Node000002_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M386.11,-93.58C373.51,-102.23 382.14,-111.5 412,-111.5 432.06,-111.5 442.54,-107.32 443.44,-101.95"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="446.34,-99.99 437.89,-93.58 440.5,-103.85 446.34,-99.99"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
+<g id="a_Node000004"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
 <polygon fill="white" stroke="#666666" points="459,-24.5 365,-24.5 365,-5.5 459,-5.5 459,-24.5"/>
 <text text-anchor="middle" x="412" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::logger</text>
 </a>
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge4" class="edge">
+<g id="edge5_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge5_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M311.08,-15C325.42,-15 340.46,-15 354.4,-15"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="354.81,-18.5 364.81,-15 354.81,-11.5 354.81,-18.5"/>
+</a>
+</g>
 </g>
 <!-- Node5&#45;&gt;Node2 -->
-<g id="edge6" class="edge">
+<g id="edge7_Node000005_Node000002" class="edge">
 <title>Node5&#45;&gt;Node2</title>
+<g id="a_edge7_Node000005_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M294.36,-69.24C307.58,-70.92 322.18,-72.76 336.45,-74.57"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="336.39,-78.09 346.75,-75.87 337.27,-71.14 336.39,-78.09"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 212)">
 <title>polyfem::time_integrator::ImplicitTimeIntegrator::save_raw</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Save the values of , , and .">
+<g id="a_Node000001"><a xlink:title="Save the values of , , and .">
 <polygon fill="#999999" stroke="#666666" points="139,-122 0,-122 0,-81 139,-81 139,-122"/>
 <text text-anchor="start" x="8" y="-110" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="start" x="8" y="-99" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator</text>
@@ -20,9 +20,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab2bc11437f8f2f8077ddf4f6e9814d3e" target="_top" xlink:title="Get the most recent previous acceleration value.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ab2bc11437f8f2f8077ddf4f6e9814d3e" target="_top" xlink:title="Get the most recent previous acceleration value.">
 <polygon fill="white" stroke="#666666" points="314,-208 175,-208 175,-167 314,-167 314,-208"/>
 <text text-anchor="start" x="183" y="-196" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="start" x="183" y="-185" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator</text>
@@ -31,15 +31,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M106.31,-122.18C126.28,-133.41 151.74,-147.27 175,-158.5 177.91,-159.9 180.9,-161.31 183.93,-162.71"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="182.56,-165.92 193.11,-166.84 185.43,-159.54 182.56,-165.92"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a1c90c8ab75ceea7bfd197921a9b5ad81" target="_top" xlink:title="Get the most recent previous velocity value.">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a1c90c8ab75ceea7bfd197921a9b5ad81" target="_top" xlink:title="Get the most recent previous velocity value.">
 <polygon fill="white" stroke="#666666" points="314,-149 175,-149 175,-108 314,-108 314,-149"/>
 <text text-anchor="start" x="183" y="-137" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="start" x="183" y="-126" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator</text>
@@ -48,15 +51,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M139.37,-112.25C147.77,-113.56 156.4,-114.91 164.92,-116.24"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="164.45,-119.7 174.87,-117.79 165.53,-112.79 164.45,-119.7"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="namespacepolyfem_1_1io.html#afe649b7ee254544f8cac2e7d11d32338" target="_top" xlink:title="Writes a matrix to a file. Determines the file format based on the path&#39;s extension.">
+<g id="a_Node000004"><a xlink:href="namespacepolyfem_1_1io.html#afe649b7ee254544f8cac2e7d11d32338" target="_top" xlink:title="Writes a matrix to a file. Determines the file format based on the path&#39;s extension.">
 <polygon fill="white" stroke="#666666" points="296,-89.5 193,-89.5 193,-59.5 296,-59.5 296,-89.5"/>
 <text text-anchor="start" x="201" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::write</text>
 <text text-anchor="middle" x="244.5" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">_matrix</text>
@@ -64,15 +70,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M139.37,-90.75C153.78,-88.5 168.87,-86.15 182.94,-83.95"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="183.65,-87.38 192.99,-82.38 182.57,-80.47 183.65,-87.38"/>
+</a>
+</g>
 </g>
 <!-- Node8 -->
-<g id="node8" class="node">
+<g id="Node000008" class="node">
 <title>Node8</title>
-<g id="a_node8"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2fe34aebb01d011703495a63a0dc5eb0" target="_top" xlink:title="Get the most recent previous solution value.">
+<g id="a_Node000008"><a xlink:href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a2fe34aebb01d011703495a63a0dc5eb0" target="_top" xlink:title="Get the most recent previous solution value.">
 <polygon fill="white" stroke="#666666" points="314,-41 175,-41 175,0 314,0 314,-41"/>
 <text text-anchor="start" x="183" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::time_integrator</text>
 <text text-anchor="start" x="183" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">::ImplicitTimeIntegrator</text>
@@ -81,30 +90,36 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node8 -->
-<g id="edge9" class="edge">
+<g id="edge9_Node000001_Node000008" class="edge">
 <title>Node1&#45;&gt;Node8</title>
+<g id="a_edge9_Node000001_Node000008"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M111.76,-80.88C130.91,-71.43 154.02,-60.21 175,-50.5 178.78,-48.75 182.68,-46.97 186.63,-45.19"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="188.15,-48.35 195.85,-41.07 185.29,-41.96 188.15,-48.35"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
+<g id="a_Node000005"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
 <polygon fill="white" stroke="#666666" points="583,-84 489,-84 489,-65 583,-65 583,-84"/>
 <text text-anchor="middle" x="536" y="-72" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::logger</text>
 </a>
 </g>
 </g>
 <!-- Node4&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000004_Node000005" class="edge">
 <title>Node4&#45;&gt;Node5</title>
+<g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M296.13,-88.55C313.11,-92.61 332.24,-96.49 350,-98.5 395.49,-103.66 407.69,-105 453,-98.5 468.48,-96.28 485.11,-91.82 499.33,-87.34"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="500.79,-90.55 509.2,-84.11 498.61,-83.89 500.79,-90.55"/>
+</a>
+</g>
 </g>
 <!-- Node6 -->
-<g id="node6" class="node">
+<g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:href="namespacepolyfem_1_1io.html#aa67c767411090aba6d364bd6876d69d1" target="_top" xlink:title=" ">
+<g id="a_Node000006"><a xlink:href="namespacepolyfem_1_1io.html#aa67c767411090aba6d364bd6876d69d1" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="453,-89.5 350,-89.5 350,-59.5 453,-59.5 453,-89.5"/>
 <text text-anchor="start" x="358" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::write</text>
 <text text-anchor="middle" x="401.5" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">_matrix_ascii</text>
@@ -112,15 +127,18 @@
 </g>
 </g>
 <!-- Node4&#45;&gt;Node6 -->
-<g id="edge5" class="edge">
+<g id="edge5_Node000004_Node000006" class="edge">
 <title>Node4&#45;&gt;Node6</title>
+<g id="a_edge5_Node000004_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M296.25,-74.5C310.11,-74.5 325.26,-74.5 339.62,-74.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="339.9,-78 349.9,-74.5 339.9,-71 339.9,-78"/>
+</a>
+</g>
 </g>
 <!-- Node7 -->
-<g id="node7" class="node">
+<g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_node7"><a xlink:href="namespacepolyfem_1_1io.html#a8706982531e053bfab3967e7078d2f9d" target="_top" xlink:title=" ">
+<g id="a_Node000007"><a xlink:href="namespacepolyfem_1_1io.html#a8706982531e053bfab3967e7078d2f9d" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="453,-41.5 350,-41.5 350,-11.5 453,-11.5 453,-41.5"/>
 <text text-anchor="start" x="358" y="-29.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::write</text>
 <text text-anchor="middle" x="401.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">_matrix_binary</text>
@@ -128,22 +146,31 @@
 </g>
 </g>
 <!-- Node4&#45;&gt;Node7 -->
-<g id="edge7" class="edge">
+<g id="edge7_Node000004_Node000007" class="edge">
 <title>Node4&#45;&gt;Node7</title>
+<g id="a_edge7_Node000004_Node000007"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M294.12,-59.44C309.41,-54.71 326.45,-49.43 342.34,-44.51"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="343.54,-47.8 352.05,-41.5 341.47,-41.12 343.54,-47.8"/>
+</a>
+</g>
 </g>
 <!-- Node6&#45;&gt;Node5 -->
-<g id="edge6" class="edge">
+<g id="edge6_Node000006_Node000005" class="edge">
 <title>Node6&#45;&gt;Node5</title>
+<g id="a_edge6_Node000006_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M453.35,-74.5C461.65,-74.5 470.29,-74.5 478.72,-74.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="478.84,-78 488.84,-74.5 478.84,-71 478.84,-78"/>
+</a>
+</g>
 </g>
 <!-- Node7&#45;&gt;Node5 -->
-<g id="edge8" class="edge">
+<g id="edge8_Node000007_Node000005" class="edge">
 <title>Node7&#45;&gt;Node5</title>
+<g id="a_edge8_Node000007_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M444.06,-41.56C461.7,-47.95 482.06,-55.32 499.04,-61.47"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="498,-64.82 508.6,-64.94 500.39,-58.24 498,-64.82"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

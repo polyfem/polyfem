@@ -6,12 +6,22 @@
 <!-- Title: polyfem::problem::TaylorGreenVortexProblem::exact Pages: 1 -->
 <svg width="375pt" height="98pt"
  viewBox="0.00 0.00 375.00 97.50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 93.5)">
 <title>polyfem::problem::TaylorGreenVortexProblem::exact</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="367,-62.5 216,-62.5 216,-32.5 367,-32.5 367,-62.5"/>
 <text text-anchor="start" x="224" y="-50.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::problem::Taylor</text>
 <text text-anchor="middle" x="291.5" y="-39.5" font-family="Helvetica,sans-Serif" font-size="10.00">GreenVortexProblem::exact</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a8f1a4ab79e6305dfdf2fd0224ec44f91" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a8f1a4ab79e6305dfdf2fd0224ec44f91" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="180,-89.5 0,-89.5 0,-59.5 180,-59.5 180,-89.5"/>
 <text text-anchor="start" x="8" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::problem::Taylor</text>
 <text text-anchor="middle" x="90" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">GreenVortexProblem::dirichlet_bc</text>
@@ -29,15 +39,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M205.75,-58.97C197.33,-60.11 188.76,-61.27 180.29,-62.42"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="206.49,-62.4 215.93,-57.59 205.55,-55.47 206.49,-62.4"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#abb72db62f188f3d2bc481fa46edd8a18" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#abb72db62f188f3d2bc481fa46edd8a18" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="166,-41 14,-41 14,0 166,0 166,-41"/>
 <text text-anchor="start" x="22" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::problem::Taylor</text>
 <text text-anchor="start" x="22" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">GreenVortexProblem::initial</text>
@@ -46,10 +59,28 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M205.91,-36.05C192.7,-34.26 179.13,-32.43 166.14,-30.67"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="205.55,-39.53 215.93,-37.41 206.49,-32.6 205.55,-39.53"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

@@ -6,12 +6,22 @@
 <!-- Title: polyfem::mesh::facet_barycenter Pages: 1 -->
 <svg width="497pt" height="110pt"
  viewBox="0.00 0.00 497.00 110.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg id="main" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" onload="init(evt)">
+<style type="text/css"><![CDATA[
+.node, .edge {opacity: 0.7;}
+.node.selected, .edge.selected {opacity: 1;}
+.edge:hover path { stroke: red; }
+.edge:hover polygon { stroke: red; fill: red; }
+]]></style>
+<script type="application/ecmascript" xlink:href="svg.min.js"/>
+<svg id="graph" class="graph">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 106)">
 <title>polyfem::mesh::facet_barycenter</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="489,-78 368,-78 368,-48 489,-48 489,-78"/>
 <text text-anchor="start" x="376" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::facet</text>
 <text text-anchor="middle" x="428.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">_barycenter</text>
@@ -19,9 +29,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="namespacepolyfem_1_1mesh.html#a6c2f88605218d9c84cb80764dd0887db" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="namespacepolyfem_1_1mesh.html#a6c2f88605218d9c84cb80764dd0887db" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="332,-102 179,-102 179,-72 332,-72 332,-102"/>
 <text text-anchor="start" x="187" y="-90" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::create</text>
 <text text-anchor="middle" x="255.5" y="-79" font-family="Helvetica,sans-Serif" font-size="10.00">_patch_around_singularities</text>
@@ -29,15 +39,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M357.61,-72.81C349.23,-73.98 340.66,-75.19 332.21,-76.37"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="358.28,-76.25 367.69,-71.39 357.3,-69.32 358.28,-76.25"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="namespacepolyfem_1_1mesh.html#acc2511254531ec745f412fc383ba050d" target="_top" xlink:title="Refine a polygonal mesh.">
+<g id="a_Node000003"><a xlink:href="namespacepolyfem_1_1mesh.html#acc2511254531ec745f412fc383ba050d" target="_top" xlink:title="Refine a polygonal mesh.">
 <polygon fill="white" stroke="#666666" points="317.5,-54 193.5,-54 193.5,-24 317.5,-24 317.5,-54"/>
 <text text-anchor="start" x="201.5" y="-42" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::refine</text>
 <text text-anchor="middle" x="255.5" y="-31" font-family="Helvetica,sans-Serif" font-size="10.00">_polygonal_mesh</text>
@@ -45,15 +58,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M357.69,-53.2C344.44,-51.34 330.68,-49.41 317.72,-47.59"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="357.3,-56.68 367.69,-54.61 358.28,-49.75 357.3,-56.68"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ae585a5793769e0d6860d61ef6f03192e" target="_top" xlink:title="refine the mesh">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ae585a5793769e0d6860d61ef6f03192e" target="_top" xlink:title="refine the mesh">
 <polygon fill="white" stroke="#666666" points="143,-78 0,-78 0,-48 143,-48 143,-78"/>
 <text text-anchor="start" x="8" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::CMesh2D</text>
 <text text-anchor="middle" x="71.5" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">::refine</text>
@@ -61,15 +77,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M183.42,-48.37C170.2,-50.12 156.4,-51.94 143.2,-53.68"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="183.93,-51.84 193.39,-47.06 183.02,-44.9 183.93,-51.84"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="namespacepolyfem_1_1mesh.html#a9edb1ab6286b5c93e9f2a564ea072559" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="namespacepolyfem_1_1mesh.html#a9edb1ab6286b5c93e9f2a564ea072559" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="133.5,-30 9.5,-30 9.5,0 133.5,0 133.5,-30"/>
 <text text-anchor="start" x="17.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::mesh::refine</text>
 <text text-anchor="middle" x="71.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_polygonal_mesh</text>
@@ -77,10 +96,28 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000003_Node000005" class="edge">
 <title>Node3&#45;&gt;Node5</title>
+<g id="a_edge4_Node000003_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M183.33,-29.61C166.95,-27.46 149.67,-25.18 133.76,-23.08"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="183.02,-33.1 193.39,-30.94 183.93,-26.16 183.02,-33.1"/>
+</a>
 </g>
 </g>
+</g>
+</svg>
+</svg>
+
+<style type='text/css'>
+<![CDATA[
+[data-mouse-over-selected='false'] { opacity: 0.7; }
+[data-mouse-over-selected='true']  { opacity: 1.0; }
+]]>
+</style>
+<script type="application/ecmascript"><![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+  highlightEdges();
+  highlightAdjacentNodes();
+});
+]]></script>
 </svg>

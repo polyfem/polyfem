@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 45)">
 <title>polyfem::solver::FrictionForm::first_derivative_unweighted</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title="Compute the first derivative of the value wrt x.">
+<g id="a_Node000001"><a xlink:title="Compute the first derivative of the value wrt x.">
 <polygon fill="#999999" stroke="#666666" points="135,-41 0,-41 0,0 135,0 135,-41"/>
 <text text-anchor="start" x="8" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Friction</text>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">Form::first_derivative</text>
@@ -20,9 +20,9 @@
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_friction_form.html#a71392827e314d99d6702afbeedd681b1" target="_top" xlink:title="Compute the surface velocities.">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_friction_form.html#a71392827e314d99d6702afbeedd681b1" target="_top" xlink:title="Compute the surface velocities.">
 <polygon fill="white" stroke="#666666" points="355,-35.5 171,-35.5 171,-5.5 355,-5.5 355,-35.5"/>
 <text text-anchor="start" x="179" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Friction</text>
 <text text-anchor="middle" x="263" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">Form::compute_surface_velocities</text>
@@ -30,25 +30,31 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M135.09,-20.5C143.34,-20.5 151.92,-20.5 160.54,-20.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="160.68,-24 170.68,-20.5 160.68,-17 160.68,-24"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" target="_top" xlink:title="Unflatten rowwises, so every dim elements in x become a row.">
+<g id="a_Node000003"><a xlink:href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" target="_top" xlink:title="Unflatten rowwises, so every dim elements in x become a row.">
 <polygon fill="white" stroke="#666666" points="525,-30 391,-30 391,-11 525,-11 525,-30"/>
 <text text-anchor="middle" x="458" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::unflatten</text>
 </a>
 </g>
 </g>
 <!-- Node2&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
+<g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M355.13,-20.5C363.67,-20.5 372.26,-20.5 380.64,-20.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="380.73,-24 390.73,-20.5 380.73,-17 380.73,-24"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

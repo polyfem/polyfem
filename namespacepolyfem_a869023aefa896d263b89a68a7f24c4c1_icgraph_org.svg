@@ -9,18 +9,18 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1330.5)">
 <title>polyfem::convert_to_mu</title>
 <!-- Node1 -->
-<g id="node1" class="node">
+<g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_node1"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title=" ">
 <polygon fill="#999999" stroke="#666666" points="725,-707.5 589,-707.5 589,-688.5 725,-688.5 725,-707.5"/>
 <text text-anchor="middle" x="657" y="-695.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::convert_to_mu</text>
 </a>
 </g>
 </g>
 <!-- Node2 -->
-<g id="node2" class="node">
+<g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html#a4c4444c765fa9bbbf666a8716fd6af42" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html#a4c4444c765fa9bbbf666a8716fd6af42" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="550.5,-737 386.5,-737 386.5,-707 550.5,-707 550.5,-737"/>
 <text text-anchor="start" x="394.5" y="-725" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::ENu2Lambda</text>
 <text text-anchor="middle" x="468.5" y="-714" font-family="Helvetica,sans-Serif" font-size="10.00">Mu::eval</text>
@@ -28,15 +28,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node2 -->
-<g id="edge1" class="edge">
+<g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
+<g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M578.91,-707.92C569.57,-709.12 560.01,-710.35 550.61,-711.56"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="579.46,-711.38 588.93,-706.63 578.57,-704.44 579.46,-711.38"/>
+</a>
+</g>
 </g>
 <!-- Node3 -->
-<g id="node3" class="node">
+<g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="classpolyfem_1_1assembler_1_1_lame_parameters.html#ab0fae1aa60ff63c1489b810353f0964c" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1assembler_1_1_lame_parameters.html#ab0fae1aa60ff63c1489b810353f0964c" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="553,-689 384,-689 384,-659 553,-659 553,-689"/>
 <text text-anchor="start" x="392" y="-677" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="468.5" y="-666" font-family="Helvetica,sans-Serif" font-size="10.00">::LameParameters::lambda_mu</text>
@@ -44,15 +47,18 @@
 </g>
 </g>
 <!-- Node1&#45;&gt;Node3 -->
-<g id="edge2" class="edge">
+<g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
+<g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M578.75,-688.06C570.32,-686.97 561.7,-685.87 553.2,-684.77"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="578.57,-691.56 588.93,-689.37 579.46,-684.62 578.57,-691.56"/>
+</a>
+</g>
 </g>
 <!-- Node4 -->
-<g id="node4" class="node">
+<g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a205b09a110078f65b7681ef3ed16f39e" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a205b09a110078f65b7681ef3ed16f39e" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="335.5,-1326.5 163.5,-1326.5 163.5,-1285.5 335.5,-1285.5 335.5,-1326.5"/>
 <text text-anchor="start" x="171.5" y="-1314.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="171.5" y="-1303.5" font-family="Helvetica,sans-Serif" font-size="10.00">::IncompressibleLinearElasticity</text>
@@ -61,15 +67,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node4 -->
-<g id="edge3" class="edge">
+<g id="edge3_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
+<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M385.86,-695.83C385.22,-696.53 384.6,-697.25 384,-698 303.29,-798.52 428.25,-1176.11 348,-1277 344.48,-1281.42 340.32,-1285.19 335.73,-1288.4"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="388.28,-698.36 393.43,-689.1 383.63,-693.13 388.28,-698.36"/>
+</a>
+</g>
 </g>
 <!-- Node5 -->
-<g id="node5" class="node">
+<g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure.html#a80647ce1f23129e893da571f2ac81bda" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure.html#a80647ce1f23129e893da571f2ac81bda" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="335.5,-1267.5 163.5,-1267.5 163.5,-1226.5 335.5,-1226.5 335.5,-1267.5"/>
 <text text-anchor="start" x="171.5" y="-1255.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="171.5" y="-1244.5" font-family="Helvetica,sans-Serif" font-size="10.00">::IncompressibleLinearElasticity</text>
@@ -78,15 +87,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
+<g id="edge4_Node000003_Node000005" class="edge">
 <title>Node3&#45;&gt;Node5</title>
+<g id="a_edge4_Node000003_Node000005"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M385.87,-695.83C385.22,-696.53 384.6,-697.26 384,-698 311.16,-788.07 420.42,-1127.6 348,-1218 344.47,-1222.41 340.29,-1226.17 335.7,-1229.38"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="388.29,-698.37 393.46,-689.12 383.65,-693.12 388.29,-698.37"/>
+</a>
+</g>
 </g>
 <!-- Node6 -->
-<g id="node6" class="node">
+<g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#aa1a862bfc2bad0bfb530e5575a040d78" target="_top" xlink:title="computes local stiffness matrix is R^{dim²} for bases i,j">
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#aa1a862bfc2bad0bfb530e5575a040d78" target="_top" xlink:title="computes local stiffness matrix is R^{dim²} for bases i,j">
 <polygon fill="white" stroke="#666666" points="306.5,-1208.5 192.5,-1208.5 192.5,-1167.5 306.5,-1167.5 306.5,-1208.5"/>
 <text text-anchor="start" x="200.5" y="-1196.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="200.5" y="-1185.5" font-family="Helvetica,sans-Serif" font-size="10.00">::LinearElasticity::</text>
@@ -95,15 +107,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node6 -->
-<g id="edge5" class="edge">
+<g id="edge5_Node000003_Node000006" class="edge">
 <title>Node3&#45;&gt;Node6</title>
+<g id="a_edge5_Node000003_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M385.88,-695.84C385.23,-696.54 384.6,-697.26 384,-698 319.03,-777.61 412.6,-1079.09 348,-1159 337.79,-1171.64 322.32,-1178.93 306.7,-1183.1"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="388.29,-698.38 393.5,-689.15 383.67,-693.12 388.29,-698.38"/>
+</a>
+</g>
 </g>
 <!-- Node7 -->
-<g id="node7" class="node">
+<g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_node7"><a xlink:href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a8115a0e7cb21ed2057ca974157fdf8db" target="_top" xlink:title=" ">
+<g id="a_Node000007"><a xlink:href="classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a8115a0e7cb21ed2057ca974157fdf8db" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="344,-1149.5 155,-1149.5 155,-1108.5 344,-1108.5 344,-1149.5"/>
 <text text-anchor="start" x="163" y="-1137.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="163" y="-1126.5" font-family="Helvetica,sans-Serif" font-size="10.00">::IncompressibleLinearElasticity</text>
@@ -112,15 +127,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node7 -->
-<g id="edge6" class="edge">
+<g id="edge6_Node000003_Node000007" class="edge">
 <title>Node3&#45;&gt;Node7</title>
+<g id="a_edge6_Node000003_Node000007"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M385.89,-695.85C385.24,-696.55 384.61,-697.26 384,-698 326.9,-767.17 404.78,-1030.57 348,-1100 345.43,-1103.14 342.53,-1105.96 339.39,-1108.47"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="388.3,-698.4 393.54,-689.19 383.7,-693.12 388.3,-698.4"/>
+</a>
+</g>
 </g>
 <!-- Node8 -->
-<g id="node8" class="node">
+<g id="Node000008" class="node">
 <title>Node8</title>
-<g id="a_node8"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#a03969218bbb85cb7a7aca2f8a626ed0a" target="_top" xlink:title=" ">
+<g id="a_Node000008"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#a03969218bbb85cb7a7aca2f8a626ed0a" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="309,-1090.5 190,-1090.5 190,-1049.5 309,-1049.5 309,-1090.5"/>
 <text text-anchor="start" x="198" y="-1078.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="198" y="-1067.5" font-family="Helvetica,sans-Serif" font-size="10.00">::LinearElasticity::</text>
@@ -129,15 +147,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node8 -->
-<g id="edge7" class="edge">
+<g id="edge7_Node000003_Node000008" class="edge">
 <title>Node3&#45;&gt;Node8</title>
+<g id="a_edge7_Node000003_Node000008"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M385.91,-695.86C385.25,-696.56 384.61,-697.27 384,-698 285.52,-815.46 445.94,-923.09 348,-1041 338.18,-1052.82 323.78,-1059.95 309.04,-1064.22"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="388.31,-698.42 393.6,-689.24 383.74,-693.11 388.31,-698.42"/>
+</a>
+</g>
 </g>
 <!-- Node10 -->
-<g id="node10" class="node">
+<g id="Node000010" class="node">
 <title>Node10</title>
-<g id="a_node10"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#aa47039bf1de90e80ae91612907595305" target="_top" xlink:title=" ">
+<g id="a_Node000010"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#aa47039bf1de90e80ae91612907595305" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="314.5,-1031.5 184.5,-1031.5 184.5,-990.5 314.5,-990.5 314.5,-1031.5"/>
 <text text-anchor="start" x="192.5" y="-1019.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="192.5" y="-1008.5" font-family="Helvetica,sans-Serif" font-size="10.00">::NeoHookeanElasticity</text>
@@ -146,15 +167,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node10 -->
-<g id="edge9" class="edge">
+<g id="edge9_Node000003_Node000010" class="edge">
 <title>Node3&#45;&gt;Node10</title>
+<g id="a_edge9_Node000003_Node000010"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M386.29,-695.51C385.5,-696.31 384.74,-697.14 384,-698 301.21,-794.61 430.34,-885.01 348,-982 339.37,-992.16 327.35,-998.86 314.69,-1003.24"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="388.6,-698.14 394.06,-689.05 384.13,-692.76 388.6,-698.14"/>
+</a>
+</g>
 </g>
 <!-- Node11 -->
-<g id="node11" class="node">
+<g id="Node000011" class="node">
 <title>Node11</title>
-<g id="a_node11"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#ac863fcf85d6aa12fb9cfeb94283a7e1a" target="_top" xlink:title=" ">
+<g id="a_Node000011"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#ac863fcf85d6aa12fb9cfeb94283a7e1a" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="310.5,-972.5 188.5,-972.5 188.5,-931.5 310.5,-931.5 310.5,-972.5"/>
 <text text-anchor="start" x="196.5" y="-960.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="196.5" y="-949.5" font-family="Helvetica,sans-Serif" font-size="10.00">::LinearElasticity::</text>
@@ -163,15 +187,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node11 -->
-<g id="edge11" class="edge">
+<g id="edge11_Node000003_Node000011" class="edge">
 <title>Node3&#45;&gt;Node11</title>
+<g id="a_edge11_Node000003_Node000011"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M386.33,-695.55C385.53,-696.34 384.75,-697.15 384,-698 316.86,-773.82 414.79,-846.87 348,-923 338.33,-934.02 324.69,-940.94 310.65,-945.26"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="388.63,-698.19 394.19,-689.17 384.22,-692.75 388.63,-698.19"/>
+</a>
+</g>
 </g>
 <!-- Node12 -->
-<g id="node12" class="node">
+<g id="Node000012" class="node">
 <title>Node12</title>
-<g id="a_node12"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#aeb0c2ddb7b44be6823eb65192d6ccb36" target="_top" xlink:title=" ">
+<g id="a_Node000012"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#aeb0c2ddb7b44be6823eb65192d6ccb36" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="314.5,-913.5 184.5,-913.5 184.5,-872.5 314.5,-872.5 314.5,-913.5"/>
 <text text-anchor="start" x="192.5" y="-901.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="192.5" y="-890.5" font-family="Helvetica,sans-Serif" font-size="10.00">::NeoHookeanElasticity</text>
@@ -180,15 +207,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node12 -->
-<g id="edge12" class="edge">
+<g id="edge12_Node000003_Node000012" class="edge">
 <title>Node3&#45;&gt;Node12</title>
+<g id="a_edge12_Node000003_Node000012"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M386.8,-695.23C385.83,-696.12 384.9,-697.04 384,-698 332.42,-753.12 399.33,-808.64 348,-864 339.05,-873.65 327.06,-880.14 314.54,-884.49"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="388.97,-697.98 394.78,-689.12 384.71,-692.42 388.97,-697.98"/>
+</a>
+</g>
 </g>
 <!-- Node13 -->
-<g id="node13" class="node">
+<g id="Node000013" class="node">
 <title>Node13</title>
-<g id="a_node13"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a3181de6231691b0b0330fceedcf045b1" target="_top" xlink:title=" ">
+<g id="a_Node000013"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a3181de6231691b0b0330fceedcf045b1" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="348,-854.5 151,-854.5 151,-813.5 348,-813.5 348,-854.5"/>
 <text text-anchor="start" x="159" y="-842.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="159" y="-831.5" font-family="Helvetica,sans-Serif" font-size="10.00">::NeoHookeanElasticity</text>
@@ -197,15 +227,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node13 -->
-<g id="edge13" class="edge">
+<g id="edge13_Node000003_Node000013" class="edge">
 <title>Node3&#45;&gt;Node13</title>
+<g id="a_edge13_Node000003_Node000013"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M387.51,-694.92C386.3,-695.9 385.13,-696.93 384,-698 347.99,-732.34 383.69,-769.33 348,-804 344.44,-807.46 340.5,-810.51 336.29,-813.22"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="389.74,-697.63 396.01,-689.09 385.78,-691.86 389.74,-697.63"/>
+</a>
+</g>
 </g>
 <!-- Node14 -->
-<g id="node14" class="node">
+<g id="Node000014" class="node">
 <title>Node14</title>
-<g id="a_node14"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a5306ffa2e688fa3e3380cb7cf43c9dc9" target="_top" xlink:title=" ">
+<g id="a_Node000014"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a5306ffa2e688fa3e3380cb7cf43c9dc9" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="323,-795 176,-795 176,-743 323,-743 323,-795"/>
 <text text-anchor="start" x="184" y="-783" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="184" y="-772" font-family="Helvetica,sans-Serif" font-size="10.00">::NeoHookeanElasticity</text>
@@ -215,15 +248,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node14 -->
-<g id="edge14" class="edge">
+<g id="edge14_Node000003_Node000014" class="edge">
 <title>Node3&#45;&gt;Node14</title>
+<g id="a_edge14_Node000003_Node000014"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M393.41,-693.04C390.17,-694.57 387.01,-696.22 384,-698 364.51,-709.49 367.11,-721.88 348,-734 340.25,-738.91 331.72,-743.25 323.03,-747.06"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="394.95,-696.18 402.75,-689.01 392.18,-689.76 394.95,-696.18"/>
+</a>
+</g>
 </g>
 <!-- Node15 -->
-<g id="node15" class="node">
+<g id="Node000015" class="node">
 <title>Node15</title>
-<g id="a_node15"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#a3f08a700df58eee0156fd76058eb824d" target="_top" xlink:title=" ">
+<g id="a_Node000015"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#a3f08a700df58eee0156fd76058eb824d" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="306.5,-724.5 192.5,-724.5 192.5,-683.5 306.5,-683.5 306.5,-724.5"/>
 <text text-anchor="start" x="200.5" y="-712.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="200.5" y="-701.5" font-family="Helvetica,sans-Serif" font-size="10.00">::LinearElasticity::</text>
@@ -232,15 +268,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node15 -->
-<g id="edge15" class="edge">
+<g id="edge15_Node000003_Node000015" class="edge">
 <title>Node3&#45;&gt;Node15</title>
+<g id="a_edge15_Node000003_Node000015"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M373.81,-686.95C350.88,-690.12 327.05,-693.42 306.53,-696.25"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="374.49,-690.39 383.91,-685.56 373.53,-683.46 374.49,-690.39"/>
+</a>
+</g>
 </g>
 <!-- Node16 -->
-<g id="node16" class="node">
+<g id="Node000016" class="node">
 <title>Node16</title>
-<g id="a_node16"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a3d184d98f852cd3b2bda2286a5b218a3" target="_top" xlink:title=" ">
+<g id="a_Node000016"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a3d184d98f852cd3b2bda2286a5b218a3" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="314.5,-665.5 184.5,-665.5 184.5,-624.5 314.5,-624.5 314.5,-665.5"/>
 <text text-anchor="start" x="192.5" y="-653.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="192.5" y="-642.5" font-family="Helvetica,sans-Serif" font-size="10.00">::NeoHookeanElasticity</text>
@@ -249,15 +288,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node16 -->
-<g id="edge16" class="edge">
+<g id="edge16_Node000003_Node000016" class="edge">
 <title>Node3&#45;&gt;Node16</title>
+<g id="a_edge16_Node000003_Node000016"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M373.89,-661.49C353.97,-658.83 333.37,-656.07 314.84,-653.6"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="373.54,-664.97 383.91,-662.83 374.46,-658.04 373.54,-664.97"/>
+</a>
+</g>
 </g>
 <!-- Node17 -->
-<g id="node17" class="node">
+<g id="Node000017" class="node">
 <title>Node17</title>
-<g id="a_node17"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#acecf1400991e0af272824943709ebdb3" target="_top" xlink:title=" ">
+<g id="a_Node000017"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#acecf1400991e0af272824943709ebdb3" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="318.5,-606.5 180.5,-606.5 180.5,-565.5 318.5,-565.5 318.5,-606.5"/>
 <text text-anchor="start" x="188.5" y="-594.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="188.5" y="-583.5" font-family="Helvetica,sans-Serif" font-size="10.00">::LinearElasticity::</text>
@@ -266,15 +308,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node17 -->
-<g id="edge17" class="edge">
+<g id="edge17_Node000003_Node000017" class="edge">
 <title>Node3&#45;&gt;Node17</title>
+<g id="a_edge17_Node000003_Node000017"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M430.4,-654.17C407.13,-642.19 376.29,-627.14 348,-616 338.61,-612.3 328.56,-608.76 318.62,-605.49"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="429.07,-657.42 439.56,-658.92 432.3,-651.21 429.07,-657.42"/>
+</a>
+</g>
 </g>
 <!-- Node18 -->
-<g id="node18" class="node">
+<g id="Node000018" class="node">
 <title>Node18</title>
-<g id="a_node18"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#ac6c2fa6f12bcd2d5a76c36534052b005" target="_top" xlink:title=" ">
+<g id="a_Node000018"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#ac6c2fa6f12bcd2d5a76c36534052b005" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="321.5,-547.5 177.5,-547.5 177.5,-506.5 321.5,-506.5 321.5,-547.5"/>
 <text text-anchor="start" x="185.5" y="-535.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="185.5" y="-524.5" font-family="Helvetica,sans-Serif" font-size="10.00">::NeoHookeanElasticity</text>
@@ -283,15 +328,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node18 -->
-<g id="edge18" class="edge">
+<g id="edge18_Node000003_Node000018" class="edge">
 <title>Node3&#45;&gt;Node18</title>
+<g id="a_edge18_Node000003_Node000018"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M449.64,-650.79C428.21,-624.45 389.88,-581.91 348,-557 339.86,-552.16 330.86,-548.03 321.72,-544.52"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="447.01,-653.11 455.99,-658.73 452.48,-648.74 447.01,-653.11"/>
+</a>
+</g>
 </g>
 <!-- Node19 -->
-<g id="node19" class="node">
+<g id="Node000019" class="node">
 <title>Node19</title>
-<g id="a_node19"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#ab2e9d53dc9a927b11e495c9b78b9df2a" target="_top" xlink:title=" ">
+<g id="a_Node000019"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#ab2e9d53dc9a927b11e495c9b78b9df2a" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="345,-488.5 154,-488.5 154,-447.5 345,-447.5 345,-488.5"/>
 <text text-anchor="start" x="162" y="-476.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="162" y="-465.5" font-family="Helvetica,sans-Serif" font-size="10.00">::LinearElasticity::</text>
@@ -300,15 +348,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node19 -->
-<g id="edge19" class="edge">
+<g id="edge19_Node000003_Node000019" class="edge">
 <title>Node3&#45;&gt;Node19</title>
+<g id="a_edge19_Node000003_Node000019"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M457.44,-649.68C440.5,-611.68 402.67,-538.4 348,-498 343.3,-494.53 338.19,-491.45 332.86,-488.73"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="454.29,-651.2 461.48,-658.98 460.71,-648.41 454.29,-651.2"/>
+</a>
+</g>
 </g>
 <!-- Node20 -->
-<g id="node20" class="node">
+<g id="Node000020" class="node">
 <title>Node20</title>
-<g id="a_node20"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a347298b3a26b691c4b932376b5d3fe5c" target="_top" xlink:title=" ">
+<g id="a_Node000020"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a347298b3a26b691c4b932376b5d3fe5c" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="314.5,-429 184.5,-429 184.5,-377 314.5,-377 314.5,-429"/>
 <text text-anchor="start" x="192.5" y="-417" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="192.5" y="-406" font-family="Helvetica,sans-Serif" font-size="10.00">::NeoHookeanElasticity</text>
@@ -318,15 +369,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node20 -->
-<g id="edge20" class="edge">
+<g id="edge20_Node000003_Node000020" class="edge">
 <title>Node3&#45;&gt;Node20</title>
+<g id="a_edge20_Node000003_Node000020"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M461.42,-649.25C448.54,-601.87 414.13,-497.83 348,-439 338.43,-430.48 326.67,-423.92 314.66,-418.89"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="458.05,-650.2 463.97,-658.99 464.82,-648.43 458.05,-650.2"/>
+</a>
+</g>
 </g>
 <!-- Node21 -->
-<g id="node21" class="node">
+<g id="Node000021" class="node">
 <title>Node21</title>
-<g id="a_node21"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#ad1a1e921353958af27c1195cfc8c3c6a" target="_top" xlink:title=" ">
+<g id="a_Node000021"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#ad1a1e921353958af27c1195cfc8c3c6a" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="333,-359 166,-359 166,-307 333,-307 333,-359"/>
 <text text-anchor="start" x="174" y="-347" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="174" y="-336" font-family="Helvetica,sans-Serif" font-size="10.00">::LinearElasticity::</text>
@@ -336,15 +390,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node21 -->
-<g id="edge21" class="edge">
+<g id="edge21_Node000003_Node000021" class="edge">
 <title>Node3&#45;&gt;Node21</title>
+<g id="a_edge21_Node000003_Node000021"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M464.71,-648.8C456.99,-591.05 430.19,-447.95 348,-368 343.62,-363.74 338.68,-359.99 333.41,-356.69"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="461.25,-649.38 465.97,-658.87 468.2,-648.51 461.25,-649.38"/>
+</a>
+</g>
 </g>
 <!-- Node22 -->
-<g id="node22" class="node">
+<g id="Node000022" class="node">
 <title>Node22</title>
-<g id="a_node22"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a31d61bfa8d0f6d3738f1f8bd4f0ac7b5" target="_top" xlink:title=" ">
+<g id="a_Node000022"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a31d61bfa8d0f6d3738f1f8bd4f0ac7b5" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="314.5,-289 184.5,-289 184.5,-237 314.5,-237 314.5,-289"/>
 <text text-anchor="start" x="192.5" y="-277" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="192.5" y="-266" font-family="Helvetica,sans-Serif" font-size="10.00">::NeoHookeanElasticity</text>
@@ -354,15 +411,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node22 -->
-<g id="edge22" class="edge">
+<g id="edge22_Node000003_Node000022" class="edge">
 <title>Node3&#45;&gt;Node22</title>
+<g id="a_edge22_Node000003_Node000022"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M466.83,-648.69C463.71,-582.04 446.15,-399.85 348,-298 338.83,-288.48 326.88,-281.54 314.52,-276.49"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="463.34,-648.86 467.23,-658.71 470.33,-648.58 463.34,-648.86"/>
+</a>
+</g>
 </g>
 <!-- Node23 -->
-<g id="node23" class="node">
+<g id="Node000023" class="node">
 <title>Node23</title>
-<g id="a_node23"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#abd41507aa0595e96811e87c58ef164c0" target="_top" xlink:title=" ">
+<g id="a_Node000023"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#abd41507aa0595e96811e87c58ef164c0" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="314.5,-219 184.5,-219 184.5,-167 314.5,-167 314.5,-219"/>
 <text text-anchor="start" x="192.5" y="-207" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="192.5" y="-196" font-family="Helvetica,sans-Serif" font-size="10.00">::NeoHookeanElasticity</text>
@@ -372,15 +432,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node23 -->
-<g id="edge23" class="edge">
+<g id="edge23_Node000003_Node000023" class="edge">
 <title>Node3&#45;&gt;Node23</title>
+<g id="a_edge23_Node000003_Node000023"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M468.35,-648.2C469.4,-573.07 462.12,-351.99 348,-228 338.99,-218.21 327.04,-211.15 314.6,-206.07"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="464.84,-648.51 468.14,-658.58 471.84,-648.65 464.84,-648.51"/>
+</a>
+</g>
 </g>
 <!-- Node24 -->
-<g id="node24" class="node">
+<g id="Node000024" class="node">
 <title>Node24</title>
-<g id="a_node24"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_autodiff.html#ac0661f04a65632e1b57143a3357dfc3f" target="_top" xlink:title=" ">
+<g id="a_Node000024"><a xlink:href="classpolyfem_1_1assembler_1_1_neo_hookean_autodiff.html#ac0661f04a65632e1b57143a3357dfc3f" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="311,-148.5 188,-148.5 188,-107.5 311,-107.5 311,-148.5"/>
 <text text-anchor="start" x="196" y="-136.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="196" y="-125.5" font-family="Helvetica,sans-Serif" font-size="10.00">::NeoHookeanAutodiff</text>
@@ -389,15 +452,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node24 -->
-<g id="edge24" class="edge">
+<g id="edge24_Node000003_Node000024" class="edge">
 <title>Node3&#45;&gt;Node24</title>
+<g id="a_edge24_Node000003_Node000024"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M464.98,-648.88C455.15,-555.72 416.5,-231.54 348,-158 338.22,-147.5 324.87,-140.65 311.19,-136.17"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="461.5,-649.25 466.01,-658.83 468.46,-648.52 461.5,-649.25"/>
+</a>
+</g>
 </g>
 <!-- Node25 -->
-<g id="node25" class="node">
+<g id="Node000025" class="node">
 <title>Node25</title>
-<g id="a_node25"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#a0b32d483c69a97a437bbe8124116aef1" target="_top" xlink:title=" ">
+<g id="a_Node000025"><a xlink:href="classpolyfem_1_1assembler_1_1_linear_elasticity.html#a0b32d483c69a97a437bbe8124116aef1" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="306.5,-89.5 192.5,-89.5 192.5,-48.5 306.5,-48.5 306.5,-89.5"/>
 <text text-anchor="start" x="200.5" y="-77.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="200.5" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">::LinearElasticity::</text>
@@ -406,15 +472,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node25 -->
-<g id="edge25" class="edge">
+<g id="edge25_Node000003_Node000025" class="edge">
 <title>Node3&#45;&gt;Node25</title>
+<g id="a_edge25_Node000003_Node000025"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M465.61,-648.67C457.64,-548.59 423.68,-182.11 348,-99 337.21,-87.15 321.86,-79.93 306.53,-75.54"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="462.13,-649.07 466.4,-658.77 469.11,-648.53 462.13,-649.07"/>
+</a>
+</g>
 </g>
 <!-- Node26 -->
-<g id="node26" class="node">
+<g id="Node000026" class="node">
 <title>Node26</title>
-<g id="a_node26"><a xlink:href="classpolyfem_1_1assembler_1_1_lame_parameters.html#a6e8cf83bc2cf6c5702d356c4c30e10ff" target="_top" xlink:title=" ">
+<g id="a_Node000026"><a xlink:href="classpolyfem_1_1assembler_1_1_lame_parameters.html#a6e8cf83bc2cf6c5702d356c4c30e10ff" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="334,-30 165,-30 165,0 334,0 334,-30"/>
 <text text-anchor="start" x="173" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="middle" x="249.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::LameParameters::lambda_mu</text>
@@ -422,15 +491,18 @@
 </g>
 </g>
 <!-- Node3&#45;&gt;Node26 -->
-<g id="edge26" class="edge">
+<g id="edge26_Node000003_Node000026" class="edge">
 <title>Node3&#45;&gt;Node26</title>
+<g id="a_edge26_Node000003_Node000026"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M466.27,-648.77C460.54,-542.28 433.17,-130.87 348,-40 343.94,-35.67 339.23,-32.04 334.13,-29.01"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="462.78,-649.1 466.79,-658.9 469.77,-648.73 462.78,-649.1"/>
+</a>
+</g>
 </g>
 <!-- Node9 -->
-<g id="node9" class="node">
+<g id="Node000009" class="node">
 <title>Node9</title>
-<g id="a_node9"><a xlink:href="classpolyfem_1_1assembler_1_1_multi_model.html#abbdd872cca26e6795efdea59c087d894" target="_top" xlink:title=" ">
+<g id="a_Node000009"><a xlink:href="classpolyfem_1_1assembler_1_1_multi_model.html#abbdd872cca26e6795efdea59c087d894" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="115,-1060.5 0,-1060.5 0,-1019.5 115,-1019.5 115,-1060.5"/>
 <text text-anchor="start" x="8" y="-1048.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="8" y="-1037.5" font-family="Helvetica,sans-Serif" font-size="10.00">::MultiModel::assign</text>
@@ -439,16 +511,22 @@
 </g>
 </g>
 <!-- Node8&#45;&gt;Node9 -->
-<g id="edge8" class="edge">
+<g id="edge8_Node000008_Node000009" class="edge">
 <title>Node8&#45;&gt;Node9</title>
+<g id="a_edge8_Node000008_Node000009"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M180.01,-1059.19C158.76,-1055.83 135.59,-1052.17 115.23,-1048.96"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="179.52,-1062.65 189.94,-1060.75 180.61,-1055.74 179.52,-1062.65"/>
+</a>
+</g>
 </g>
 <!-- Node10&#45;&gt;Node9 -->
-<g id="edge10" class="edge">
+<g id="edge10_Node000010_Node000009" class="edge">
 <title>Node10&#45;&gt;Node9</title>
+<g id="a_edge10_Node000010_Node000009"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M174.31,-1022.32C154.68,-1025.32 133.81,-1028.5 115.27,-1031.33"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="175.08,-1025.75 184.44,-1020.78 174.03,-1018.83 175.08,-1025.75"/>
+</a>
+</g>
 </g>
 </g>
 </svg>

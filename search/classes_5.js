@@ -6,7 +6,7 @@ var searchData=
   ['flow_3',['Flow',['../classpolyfem_1_1problem_1_1_flow.html',1,'polyfem::problem']]],
   ['flowwithobstacle_4',['FlowWithObstacle',['../classpolyfem_1_1problem_1_1_flow_with_obstacle.html',1,'polyfem::problem']]],
   ['follower_5fedge_5',['follower_edge',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html',1,'polyfem::mesh::NCMesh2D::follower_edge'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__edge.html',1,'polyfem::mesh::NCMesh3D::follower_edge']]],
-  ['follower_5fface_6',['follower_face',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__face.html',1,'polyfem::mesh::NCMesh2D::follower_face'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__face.html',1,'polyfem::mesh::NCMesh3D::follower_face']]],
+  ['follower_5fface_6',['follower_face',['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__face.html',1,'polyfem::mesh::NCMesh3D::follower_face'],['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__face.html',1,'polyfem::mesh::NCMesh2D::follower_face']]],
   ['form_7',['Form',['../classpolyfem_1_1solver_1_1_form.html',1,'polyfem::solver']]],
   ['fragmentattributes_8',['FragmentAttributes',['../classpolyfem_1_1renderer_1_1_fragment_attributes.html',1,'polyfem::renderer']]],
   ['framebufferattributes_9',['FrameBufferAttributes',['../classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html',1,'polyfem::renderer']]],
