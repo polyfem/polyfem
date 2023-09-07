@@ -25,10 +25,9 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/getRSS.h>
 
 #include <ipc/ipc.hpp>
-
-extern "C" size_t getPeakRSS();
 
 namespace polyfem
 {

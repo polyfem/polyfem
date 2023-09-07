@@ -27,6 +27,7 @@
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/getRSS.h>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -44,8 +45,6 @@
 #include <ipc/ipc.hpp>
 
 #include <filesystem>
-
-extern "C" size_t getPeakRSS();
 
 namespace polyfem::io
 {
