@@ -19,6 +19,7 @@
 #include <polyfem/solver/SolveData.hpp>
 #include <polyfem/io/MshWriter.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+#include <polyfem/io/OutData.hpp>
 #ifdef POLYFEM_WITH_REMESHING
 #include <polyfem/mesh/remesh/Remesh.hpp>
 #endif
@@ -72,63 +73,23 @@ namespace polyfem
 		save_timestep(t0, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
 		// Write the total energy to a CSV file
-		std::ofstream energy_file(resolve_output_path("energy.csv"));
-		energy_file << "i,elastic_energy,body_energy,inertia,contact_form,AL_lagr_energy,AL_pen_energy,total_energy" << std::endl;
-		const auto save_energy = [&](int i) {
-			energy_file << fmt::format(
-				"{},{},{},{},{},{},{},{}\n", i,
-				solve_data.elastic_form->value(sol),
-				solve_data.body_form->value(sol),
-				solve_data.inertia_form ? solve_data.inertia_form->value(sol) : 0,
-				solve_data.contact_form ? solve_data.contact_form->value(sol) : 0,
-				solve_data.al_lagr_form->value(sol),
-				solve_data.al_pen_form->value(sol),
-				solve_data.nl_problem->value(sol));
-			energy_file.flush();
-		};
-
-		std::ofstream stats_file(resolve_output_path("stats.csv"));
-		stats_file << "step,time,forward,remeshing,global_relaxation,peak_mem,#V,#T" << std::endl;
-		double total_forward_solve_time = 0, total_remeshing_time = 0, total_global_relaxation_time = 0;
-		const auto save_stats = [&](const int t, const double forward, const double remeshing, const double global_relaxation) {
-			total_forward_solve_time += forward;
-			total_remeshing_time += remeshing;
-			total_global_relaxation_time += global_relaxation;
-
-			logger().debug(
-				"Forward (cur, avg, total): {} s, {} s, {} s",
-				forward, total_forward_solve_time / t, total_forward_solve_time);
-			logger().debug(
-				"Remeshing (cur, avg, total): {} s, {} s, {} s",
-				remeshing, total_remeshing_time / t, total_remeshing_time);
-			logger().debug(
-				"Global relaxation (cur, avg, total): {} s, {} s, {} s",
-				global_relaxation, total_global_relaxation_time / t, total_global_relaxation_time);
-
-			const double peak_mem = getPeakRSS() / double(1 << 30);
-			logger().debug("Peak mem: {} GiB", peak_mem);
-
-			stats_file << fmt::format(
-				"{},{},{},{},{},{},{},{}\n",
-				t, t0 + dt * t, forward, remeshing, global_relaxation, peak_mem,
-				n_bases, mesh->n_elements());
-			stats_file.flush();
-		};
+		EnergyCSVWriter energy_csv(resolve_output_path("energy.csv"), solve_data);
+		RuntimeStatsCSVWriter stats_csv(resolve_output_path("stats.csv"), *this, t0, dt);
 
 		if (optimization_enabled)
 			cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
-			double cur_forward_solve_time = 0, cur_remeshing_time = 0, cur_global_relaxation_time = 0;
+			double forward_solve_time = 0, remeshing_time = 0, global_relaxation_time = 0;
 
 			igl::Timer timer;
 			timer.start();
 			solve_tensor_nonlinear(sol, t);
 			timer.stop();
-			cur_forward_solve_time = timer.getElapsedTimeInSec();
+			forward_solve_time = timer.getElapsedTimeInSec();
 
-			save_energy(save_i);
+			energy_csv.write(save_i, sol);
 			save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
 #ifdef POLYFEM_WITH_REMESHING
@@ -137,10 +98,10 @@ namespace polyfem
 				timer.start();
 				const bool remesh_success = mesh::remesh(*this, sol, t0 + dt * t, dt);
 				timer.stop();
-				cur_remeshing_time = timer.getElapsedTimeInSec();
+				remeshing_time = timer.getElapsedTimeInSec();
 
 				// Save the solution after remeshing
-				save_energy(save_i);
+				energy_csv.write(save_i, sol);
 				save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
 				// Only do global relaxation if remeshing was successful
@@ -149,10 +110,10 @@ namespace polyfem
 					timer.start();
 					solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
 					timer.stop();
-					cur_global_relaxation_time = timer.getElapsedTimeInSec();
+					global_relaxation_time = timer.getElapsedTimeInSec();
 				}
 				// Always save the solution for consistency
-				save_energy(save_i);
+				energy_csv.write(save_i, sol);
 				save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 			}
 #endif
@@ -171,10 +132,12 @@ namespace polyfem
 				solve_data.update_barrier_stiffness(sol);
 			}
 
+			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
+
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 
 			const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
-			if (remesh_enabled && !rest_mesh_path.empty())
+			if (!rest_mesh_path.empty())
 			{
 				Eigen::MatrixXd V;
 				Eigen::MatrixXi F;
@@ -191,7 +154,7 @@ namespace polyfem
 
 			// save restart file
 			save_restart_json(t0, dt, t);
-			save_stats(t, cur_forward_solve_time, cur_remeshing_time, cur_global_relaxation_time);
+			stats_csv.write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
 		}
 	}
 

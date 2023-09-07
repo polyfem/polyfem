@@ -8,6 +8,8 @@
 
 #include <polyfem/mesh/Mesh.hpp>
 
+#include <polyfem/solver/SolveData.hpp>
+
 #include <paraviewo/ParaviewWriter.hpp>
 #include <paraviewo/VTUWriter.hpp>
 #include <paraviewo/HDF5VTUWriter.hpp>
@@ -501,5 +503,36 @@ namespace polyfem::io
 					   const bool isoparametric,
 					   const int sol_at_node_id,
 					   nlohmann::json &j);
+	};
+
+	class EnergyCSVWriter
+	{
+	public:
+		EnergyCSVWriter(const std::string &path, const solver::SolveData &solve_data);
+		~EnergyCSVWriter();
+
+		void write(const int i, const Eigen::MatrixXd &sol);
+
+	protected:
+		const solver::SolveData &solve_data;
+		std::ofstream file;
+	};
+
+	class RuntimeStatsCSVWriter
+	{
+	public:
+		RuntimeStatsCSVWriter(const std::string &path, const State &state, const double t0, const double dt);
+		~RuntimeStatsCSVWriter();
+
+		void write(const int t, const double forward, const double remeshing, const double global_relaxation, const Eigen::MatrixXd &sol);
+
+	protected:
+		const State &state;
+		const double t0;
+		const double dt;
+		std::ofstream file;
+		double total_forward_solve_time = 0;
+		double total_remeshing_time = 0;
+		double total_global_relaxation_time = 0;
 	};
 } // namespace polyfem::io

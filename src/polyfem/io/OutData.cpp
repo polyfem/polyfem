@@ -20,6 +20,16 @@
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/forms/BodyForm.hpp>
+#include <polyfem/solver/forms/BodyForm.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/ElasticForm.hpp>
+#include <polyfem/solver/forms/FrictionForm.hpp>
+#include <polyfem/solver/forms/InertiaForm.hpp>
+#include <polyfem/solver/forms/LaggedRegForm.hpp>
+#include <polyfem/solver/forms/RayleighDampingForm.hpp>
+#include <polyfem/solver/forms/BCLagrangianForm.hpp>
+#include <polyfem/solver/forms/BCPenaltyForm.hpp>
 
 #include <polyfem/utils/EdgeSampler.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -2840,6 +2850,68 @@ namespace polyfem::io
 		j["formulation"] = formulation;
 
 		logger().info("done");
+	}
+
+	EnergyCSVWriter::EnergyCSVWriter(const std::string &path, const solver::SolveData &solve_data)
+		: file(path), solve_data(solve_data)
+	{
+		file << "i,elastic_energy,body_energy,inertia,contact_form,AL_lagr_energy,AL_pen_energy,total_energy" << std::endl;
+	}
+
+	EnergyCSVWriter::~EnergyCSVWriter()
+	{
+		file.close();
+	}
+
+	void EnergyCSVWriter::write(const int i, const Eigen::MatrixXd &sol)
+	{
+		file << fmt::format(
+			"{},{},{},{},{},{},{},{}\n", i,
+			solve_data.elastic_form->value(sol),
+			solve_data.body_form->value(sol),
+			solve_data.inertia_form ? solve_data.inertia_form->value(sol) : 0,
+			solve_data.contact_form ? solve_data.contact_form->value(sol) : 0,
+			solve_data.al_lagr_form->value(sol),
+			solve_data.al_pen_form->value(sol),
+			solve_data.nl_problem->value(sol));
+		file.flush();
+	}
+
+	RuntimeStatsCSVWriter::RuntimeStatsCSVWriter(const std::string &path, const State &state, const double t0, const double dt)
+		: file(path), state(state), t0(t0), dt(dt)
+	{
+		file << "step,time,forward,remeshing,global_relaxation,peak_mem,#V,#T" << std::endl;
+	}
+
+	RuntimeStatsCSVWriter::~RuntimeStatsCSVWriter()
+	{
+		file.close();
+	}
+
+	void RuntimeStatsCSVWriter::write(const int t, const double forward, const double remeshing, const double global_relaxation, const Eigen::MatrixXd &sol)
+	{
+		total_forward_solve_time += forward;
+		total_remeshing_time += remeshing;
+		total_global_relaxation_time += global_relaxation;
+
+		logger().debug(
+			"Forward (cur, avg, total): {} s, {} s, {} s",
+			forward, total_forward_solve_time / t, total_forward_solve_time);
+		logger().debug(
+			"Remeshing (cur, avg, total): {} s, {} s, {} s",
+			remeshing, total_remeshing_time / t, total_remeshing_time);
+		logger().debug(
+			"Global relaxation (cur, avg, total): {} s, {} s, {} s",
+			global_relaxation, total_global_relaxation_time / t, total_global_relaxation_time);
+
+		const double peak_mem = getPeakRSS() / double(1 << 30);
+		logger().debug("Peak mem: {} GiB", peak_mem);
+
+		file << fmt::format(
+			"{},{},{},{},{},{},{},{}\n",
+			t, t0 + dt * t, forward, remeshing, global_relaxation, peak_mem,
+			state.n_bases, state.mesh->n_elements());
+		file.flush();
 	}
 
 } // namespace polyfem::io
