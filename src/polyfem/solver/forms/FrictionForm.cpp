@@ -106,6 +106,7 @@ namespace polyfem::solver
 	{
 		return friction_constraint_set_.compute_potential(collision_mesh_, compute_surface_velocities(x), epsv_) / dv_dx();
 	}
+
 	void FrictionForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		const Eigen::VectorXd grad_friction = friction_constraint_set_.compute_potential_gradient(

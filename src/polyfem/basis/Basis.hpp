@@ -76,6 +76,19 @@ namespace polyfem
 			}
 
 			///
+			/// @brief Evaluate the basis function over a set of uv parameters.
+			///
+			/// @param[in] uv #uv x dim matrix of parameters to evaluate
+			/// @return #uv x 1 vector of computed values
+			///
+			Eigen::MatrixXd operator()(const Eigen::MatrixXd &uv) const
+			{
+				Eigen::MatrixXd val;
+				eval_basis(uv, val);
+				return val;
+			}
+
+			///
 			/// @brief      Evaluate the gradient of the basis function.
 			///
 			/// @param[in]  uv     #uv x dim matrix of parameters to evaluate
@@ -87,18 +100,18 @@ namespace polyfem
 				grad_(uv, val);
 			}
 
-			//list of local to global mappings
+			// list of local to global mappings
 			inline const std::vector<Local2Global> &global() const { return global_; }
 			inline std::vector<Local2Global> &global() { return global_; }
 
-			//setting the basis lambda and its gradint
+			// setting the basis lambda and its gradient
 			inline void set_basis(const Fun &fun) { basis_ = fun; }
 			inline void set_grad(const Fun &fun) { grad_ = fun; }
 
 			inline bool is_defined() const { return (basis_ ? true : false); }
 			inline int order() const { return order_; }
 
-			//output
+			// output
 			friend std::ostream &operator<<(std::ostream &os, const Basis &obj)
 			{
 				os << obj.local_index_ << ":\n";

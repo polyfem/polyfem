@@ -66,6 +66,7 @@ option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
 option(POLYFEM_WITH_REMESHING "Uses WMTK for remeshing"                    OFF)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"              OFF)
+option(POLYFEM_WITH_TRIANGLE  "Build target igl_restricted::triangle"      OFF)
 option(POLYFEM_BUILD_DOCS     "Build documentation using Doxygen"          OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
@@ -195,8 +196,8 @@ endif()
 include(libigl)
 target_link_libraries(polyfem PUBLIC igl::core)
 
-if(LIBIGL_WITH_TRIANGLE)
-    target_link_libraries(polyfem PUBLIC igl::triangle)
+if(POLYFEM_WITH_TRIANGLE)
+    target_link_libraries(polyfem PUBLIC igl_restricted::triangle)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TRIANGLE)
 endif()
 
@@ -244,9 +245,13 @@ target_link_libraries(polyfem PUBLIC natsort::natsort)
 include(glob)
 target_link_libraries(polyfem PUBLIC Glob::Glob)
 
-# polysolve
+# units
 include(units)
 target_link_libraries(polyfem PUBLIC units::units)
+
+# FCPW
+# include(fcpw)
+# target_link_libraries(polyfem PUBLIC fcpw::fcpw)
 
 ################################################################################
 # Optional libraries

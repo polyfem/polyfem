@@ -144,7 +144,7 @@ namespace cppoptlib
 				log_level(), "Unable to factorize Hessian: \"{}\"; reverting to {}",
 				err.what(), this->descent_strategy_name());
 
-			// polyfem::write_sparse_matrix_csv("problematic_hessian.csv", hessian);
+			// Eigen::saveMarket(hessian, "problematic_hessian.mtx");
 			return false;
 		}
 

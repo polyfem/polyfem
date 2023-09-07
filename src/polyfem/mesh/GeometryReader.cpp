@@ -632,8 +632,7 @@ namespace polyfem::mesh
 				scale.setOnes();
 		}
 
-		A = scale.asDiagonal();
-		A *= unit_scale;
+		A = (unit_scale * scale).asDiagonal();
 
 		// ------
 		// Rotate

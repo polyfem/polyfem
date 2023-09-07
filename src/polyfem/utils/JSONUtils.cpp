@@ -54,6 +54,8 @@ namespace polyfem
 			if (!patch.empty())
 				common_params = common_params.patch(patch);
 			args = common_params;
+
+			args.erase("common"); // Remove common params from the final json
 		}
 
 		Eigen::Matrix3d to_rotation_matrix(const json &jr, std::string mode)

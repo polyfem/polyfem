@@ -52,6 +52,8 @@ namespace polyfem::solver
 					const double ccd_tolerance,
 					const int ccd_max_iterations);
 
+		std::string name() const override { return "contact"; }
+
 		/// @brief Initialize the form
 		/// @param x Current solution
 		void init(const Eigen::VectorXd &x) override;
