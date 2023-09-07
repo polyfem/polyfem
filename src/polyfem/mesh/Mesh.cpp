@@ -610,6 +610,21 @@ namespace polyfem::mesh
 		}
 	}
 
+	namespace
+	{
+		template <typename T>
+		void transform_high_order_nodes(std::vector<T> &nodes, const MatrixNd &A, const VectorNd &b)
+		{
+			for (T &n : nodes)
+			{
+				if (n.nodes.size())
+				{
+					n.nodes = (n.nodes * A.transpose()).rowwise() + b.transpose();
+				}
+			}
+		}
+	} // namespace
+
 	void Mesh::apply_affine_transformation(const MatrixNd &A, const VectorNd &b)
 	{
 		for (int i = 0; i < n_vertices(); ++i)
@@ -618,5 +633,9 @@ namespace polyfem::mesh
 			p = A * p + b;
 			set_point(i, p.transpose());
 		}
+
+		transform_high_order_nodes(edge_nodes_, A, b);
+		transform_high_order_nodes(face_nodes_, A, b);
+		transform_high_order_nodes(cell_nodes_, A, b);
 	}
 } // namespace polyfem::mesh

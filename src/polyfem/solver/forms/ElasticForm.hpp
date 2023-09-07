@@ -24,6 +24,8 @@ namespace polyfem::solver
 					const double dt,
 					const bool is_volume);
 
+		std::string name() const override { return "elastic"; }
+
 	protected:
 		/// @brief Compute the elastic potential value
 		/// @param x Current solution

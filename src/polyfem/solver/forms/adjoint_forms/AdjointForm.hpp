@@ -11,6 +11,8 @@ namespace polyfem::solver
 		AdjointForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations) : variable_to_simulations_(variable_to_simulations) {}
 		virtual ~AdjointForm() {}
 
+		virtual std::string name() const override { return "adjoint"; }
+
 		double value(const Eigen::VectorXd &x) const override;
 
 		void enable_energy_print(const std::string &print_energy_keyword)
@@ -55,6 +57,8 @@ namespace polyfem::solver
 		using AdjointForm::AdjointForm;
 		virtual ~StaticForm() = default;
 
+		virtual std::string name() const override { return "static"; }
+
 		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const final override;
 		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
 		double value_unweighted(const Eigen::VectorXd &x) const final override;
@@ -78,6 +82,8 @@ namespace polyfem::solver
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 		}
+
+		std::string name() const override { return "max-stress"; }
 
 		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
