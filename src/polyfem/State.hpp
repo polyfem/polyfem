@@ -476,11 +476,21 @@ namespace polyfem
 		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
 
-		/// extracts the boundary mesh for collision, called in build_basis
-		void build_collision_mesh(
-			ipc::CollisionMesh &collision_mesh_,
-			const int n_bases_,
-			const std::vector<basis::ElementBases> &bases_) const;
+		/// @brief extracts the boundary mesh for collision, called in build_basis
+		static void build_collision_mesh(
+			const mesh::Mesh &mesh,
+			const int n_bases,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &geom_bases,
+			const std::vector<mesh::LocalBoundary> &total_local_boundary,
+			const mesh::Obstacle &obstacle,
+			const json &args,
+			const std::function<std::string(const std::string &)> &resolve_input_path,
+			const Eigen::VectorXi &in_node_to_node,
+			ipc::CollisionMesh &collision_mesh);
+
+		/// @brief extracts the boundary mesh for collision, called in build_basis
+		void build_collision_mesh();
 
 		/// checks if vertex is obstacle
 		/// @param[in] vi vertex index

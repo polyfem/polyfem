@@ -31,6 +31,8 @@ namespace polyfem::solver
 				 const bool is_formulation_mixed,
 				 const bool is_time_dependent);
 
+		std::string name() const override { return "body"; }
+
 	protected:
 		/// @brief Compute the value of the body force form
 		/// @param x Current solution

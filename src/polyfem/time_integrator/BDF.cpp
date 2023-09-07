@@ -4,6 +4,13 @@
 
 namespace polyfem::time_integrator
 {
+	BDF::BDF(const int order)
+	{
+		if (order < 1 || order > 6)
+			log_and_throw_error("BDF order must be 1 ≤ n ≤ 6");
+		max_steps_ = order;
+	}
+
 	void BDF::set_parameters(const json &params)
 	{
 		max_steps_ = params.at("steps");

@@ -21,6 +21,9 @@ message(STATUS "Third-party: creating target 'igl::core'")
 
 set(LIBIGL_PREDICATES ON CACHE BOOL "Use exact predicates" FORCE)
 
+include(CMakeDependentOption)
+cmake_dependent_option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::triangle" ON "POLYFEM_WITH_TRIANGLE" ON)
+
 include(eigen)
 
 include(CPM)

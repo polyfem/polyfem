@@ -8,6 +8,7 @@ set(test_sources
   test_diff.cpp
   test_opt.cpp
   test_cmesh.cpp
+  test_collision_proxy.cpp
   test_form_derivatives.cpp
   test_geometry_utils.cpp
   test_hdf5.cpp

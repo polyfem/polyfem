@@ -12,7 +12,11 @@ namespace polyfem::solver
 	public:
 		CollisionBarrierForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state, const double dhat) : AdjointForm(variable_to_simulation), state_(state), dhat_(dhat)
 		{
-			state_.build_collision_mesh(collision_mesh_, state.n_geom_bases, state_.geom_bases());
+			State::build_collision_mesh(
+				*state_.mesh, state_.n_geom_bases, state_.geom_bases(), state_.geom_bases(),
+				state_.total_local_boundary, state_.obstacle, state_.args,
+				[this](const std::string &p) { return this->state_.resolve_input_path(p); },
+				state_.in_node_to_node, collision_mesh_);
 
 			Eigen::MatrixXd V;
 			state_.get_vertices(V);

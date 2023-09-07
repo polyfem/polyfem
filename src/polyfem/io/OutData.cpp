@@ -150,7 +150,7 @@ namespace polyfem::io
 				{
 					const int eid = lb.global_primitive_id(j);
 					const int lid = lb[j];
-					const auto nodes = b.local_nodes_for_primitive(eid, mesh3d);
+					const Eigen::VectorXi nodes = b.local_nodes_for_primitive(eid, mesh3d);
 
 					if (mesh.is_cube(lb.element_id()))
 					{
@@ -229,8 +229,8 @@ namespace polyfem::io
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
-						auto &bs = b.bases[nodes(n)];
-						const auto &glob = bs.global();
+						const basis::Basis &bs = b.bases[nodes(n)];
+						const std::vector<basis::Local2Global> &glob = bs.global();
 						if (glob.size() != 1)
 							continue;
 
@@ -283,7 +283,6 @@ namespace polyfem::io
 					}
 					else
 					{
-
 						print_warning << loc_nodes.size() << " ";
 						// assert(false);
 					}
@@ -323,28 +322,27 @@ namespace polyfem::io
 
 			std::vector<std::pair<int, int>> edges;
 
-			for (auto it = total_local_boundary.begin(); it != total_local_boundary.end(); ++it)
+			for (const LocalBoundary &lb : total_local_boundary)
 			{
-				const auto &lb = *it;
 				const basis::ElementBases &b = bases[lb.element_id()];
 
 				for (int j = 0; j < lb.size(); ++j)
 				{
 					const int eid = lb.global_primitive_id(j);
 					const int lid = lb[j];
-					const auto nodes = b.local_nodes_for_primitive(eid, mesh2d);
+					const Eigen::VectorXi nodes = b.local_nodes_for_primitive(eid, mesh2d);
 
 					int prev_node = -1;
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
-						auto &bs = b.bases[nodes(n)];
-						const auto &glob = bs.global();
+						const basis::Basis &bs = b.bases[nodes(n)];
+						const std::vector<basis::Local2Global> &glob = bs.global();
 						if (glob.size() != 1)
 							continue;
 
 						int gindex = glob.front().index;
-						node_positions.row(gindex) << glob.front().node(0), glob.front().node(1);
+						node_positions.row(gindex) = glob.front().node.head<2>();
 
 						if (prev_node >= 0)
 							edges.emplace_back(prev_node, gindex);
@@ -1063,6 +1061,7 @@ namespace polyfem::io
 		sol_on_grid = args["output"]["advanced"]["sol_on_grid"] > 0;
 		velocity = args["output"]["paraview"]["options"]["velocity"];
 		acceleration = args["output"]["paraview"]["options"]["acceleration"];
+		forces = args["output"]["paraview"]["options"]["forces"] && !is_problem_scalar;
 
 		use_spline = args["space"]["basis_type"] == "Spline";
 
@@ -1322,6 +1321,29 @@ namespace polyfem::io
 				const Eigen::VectorXd acceleration =
 					is_time_integrator_valid ? (time_integrator->a_prev()) : Eigen::VectorXd::Zero(sol.size());
 				save_volume_vector_field(state, points, opts, "acceleration", acceleration, writer);
+			}
+		}
+
+		if (opts.forces)
+		{
+			for (const auto &[name, form] : state.solve_data.named_forms())
+			{
+				// NOTE: Assumes this form will be null for the entire sim
+				if (form == nullptr)
+					continue;
+
+				Eigen::VectorXd force;
+				if (form->enabled())
+				{
+					form->first_derivative(sol, force);
+					force *= -1.0;
+				}
+				else
+				{
+					force.setZero(sol.size());
+				}
+
+				save_volume_vector_field(state, points, opts, name + "_forces", force, writer);
 			}
 		}
 

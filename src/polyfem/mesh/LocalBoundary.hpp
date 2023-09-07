@@ -11,8 +11,8 @@ namespace polyfem
 	{
 		enum class BoundaryType
 		{
-			TRI_LINE,
-			QUAD_LINE,
+			TRI_LINE,  ///< Boundary of a triangle in 2D
+			QUAD_LINE, ///< Boundary of a quad in 2D
 			TRI,
 			QUAD,
 			POLYGON,
@@ -20,80 +20,78 @@ namespace polyfem
 			INVALID
 		};
 
+		/// @brief Boundary primitive IDs for a single element.
 		class LocalBoundary
 		{
 		public:
-			LocalBoundary(const int global_id, BoundaryType type)
-				: global_element_id_(global_id), type_(type)
-			{
-			}
+			/// @brief Construct a new Local Boundary object for a given element.
+			/// @param global_element_id Element ID
+			/// @param type Type of boundary for the element
+			LocalBoundary(const int global_element_id, BoundaryType type);
 
-			LocalBoundary(const LocalBoundary &other)
-				: global_primitive_id_(other.global_primitive_id_), local_primitive_id_(other.local_primitive_id_),
-				  global_element_id_(other.global_element_id_), type_(other.type_)
-			{
-			}
+			/// @brief Copy constructor
+			/// @param other LocalBoundary to copy
+			LocalBoundary(const LocalBoundary &other);
 
-			void add_boundary_primitive(const int global_index, const int local_index)
-			{
-				global_primitive_id_.emplace_back(global_index);
-				local_primitive_id_.emplace_back(local_index);
-			}
+			/// @brief Mark a boundary primitive as a part of the global boundary.
+			/// @param global_index Global index of the boundary primitive
+			/// @param local_index Local index of the boundary primitive
+			void add_boundary_primitive(const int global_index, const int local_index);
 
+			/// @brief Number of boundary primitives for the element.
+			/// @return Number of boundary primitives for the element.
 			int size() const { return local_primitive_id_.size(); }
+
+			/// @brief Check if the element has any boundary primitives.
+			/// @return True if the element has no boundary primitives.
 			bool empty() const { return size() <= 0; }
 
+			/// @brief Get the element's ID.
+			/// @return Element ID.
 			int element_id() const { return global_element_id_; }
 
+			/// @brief Get the type of boundary for the element.
+			/// @return Type of boundary for the element.
 			BoundaryType type() const { return type_; }
 
-			inline int operator[](const int index) const
-			{
-				assert(index < size());
-				return local_primitive_id_[index];
-			}
+			/// @brief Get the i-th boundary primitive's local ID.
+			/// @param index Index of the boundary primitive.
+			/// @return Local ID of the boundary primitive.
+			int local_primitive_id(const int index) const { return local_primitive_id_[index]; }
 
-			inline int global_primitive_id(const int index) const { return global_primitive_id_[index]; }
+			/// @brief Get the i-th boundary primitive's global ID.
+			/// @param index Index of the boundary primitive.
+			/// @return Global ID of the boundary primitive.
+			int global_primitive_id(const int index) const { return global_primitive_id_[index]; }
 
-			void remove_from(const LocalBoundary &other)
-			{
-				std::vector<int> to_remove;
+			/// @brief Get the i-th boundary primitive's local ID.
+			/// @param index Index of the boundary primitive.
+			/// @return Local ID of the boundary primitive.
+			int operator[](const int index) const { return local_primitive_id(index); }
 
-				for (int j = 0; j < size(); ++j)
-				{
-					const int loc_id = (*this)[j];
-					for (int i = 0; i < other.size(); ++i)
-					{
-						if (other[i] == loc_id)
-						{
-							to_remove.push_back(j);
-							break;
-						}
-					}
-				}
+			/// @brief Remove all boundary primitives that are also in another LocalBoundary.
+			/// @param other Other LocalBoundary to remove from this one.
+			void remove_from(const LocalBoundary &other);
 
-				for (int j : to_remove)
-					remove_tag_for_index(j);
-			}
+			/// @brief Remove a boundary primitive from the element.
+			/// @param index Index of the boundary primitive to remove.
+			void remove_tag_for_index(const int index);
 
-			void remove_tag_for_index(const int index)
-			{
-				global_primitive_id_.erase(global_primitive_id_.begin() + index);
-				local_primitive_id_.erase(local_primitive_id_.begin() + index);
-			}
-
-			friend std::ostream &operator<<(std::ostream &os, const LocalBoundary &lb)
-			{
-				for (int i = 0; i < lb.size(); ++i)
-					os << lb[i] << " -> " << lb.global_primitive_id(i) << ", ";
-				return os;
-			}
+			/// @brief Print the LocalBoundary to an output stream.
+			/// @param os Output stream
+			/// @param lb LocalBoundary to print
+			/// @return Output stream
+			friend std::ostream &operator<<(std::ostream &os, const LocalBoundary &lb);
 
 		private:
+			/// @brief Global IDs of the boundary primitives.
 			std::vector<int> global_primitive_id_;
+			/// @brief Local IDs of the boundary primitives.
 			std::vector<int> local_primitive_id_;
 
+			/// @brief Element ID.
 			const int global_element_id_;
+			/// @brief Type of boundary primitives for the element.
 			const BoundaryType type_;
 		};
 	} // namespace mesh
