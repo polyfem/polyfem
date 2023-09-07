@@ -25,6 +25,8 @@ namespace polyfem::solver
 			const std::unordered_map<std::string, std::shared_ptr<Form>> &forms,
 			const time_integrator::ImplicitTimeIntegrator &time_integrator);
 
+		std::string name() const override { return "rayleigh-damping"; }
+
 	protected:
 		/// @brief Compute the value of the form
 		/// @param x Current solution

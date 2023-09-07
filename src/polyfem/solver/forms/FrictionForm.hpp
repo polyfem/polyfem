@@ -36,6 +36,8 @@ namespace polyfem::solver
 			const ContactForm &contact_form,
 			const int n_lagging_iters);
 
+		std::string name() const override { return "friction"; }
+
 		void force_shape_derivative(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint, const ipc::FrictionConstraints &friction_constraints_set, Eigen::VectorXd &term);
 
 	protected:
