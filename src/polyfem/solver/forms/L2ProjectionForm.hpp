@@ -16,6 +16,8 @@ namespace polyfem::solver
 			const StiffnessMatrix &A,
 			const Eigen::VectorXd &y);
 
+		std::string name() const override { return "L2_projection"; }
+
 	protected:
 		/// @brief Compute the value of the form
 		/// @param x Current solution

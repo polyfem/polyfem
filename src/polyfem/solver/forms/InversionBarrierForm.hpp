@@ -13,6 +13,8 @@ namespace polyfem::solver
 		InversionBarrierForm(
 			const Eigen::MatrixXd &rest_positions, const Eigen::MatrixXi &elements, const int dim, const double vhat);
 
+		std::string name() const override { return "inversion_barrier"; }
+
 	protected:
 		/// @brief Compute the value of the form
 		/// @param x Current solution
