@@ -9,6 +9,10 @@
 # OF ANY KIND, either express or implied. See the License for the specific language
 # governing permissions and limitations under the License.
 #
+
+# Tracy (https://github.com/wolfpld/tracy)
+# License: BSD-3-Clause
+
 if(TARGET Tracy::TracyClient)
     return()
 endif()
@@ -17,14 +21,8 @@ message(STATUS "Third-party: creating target 'Tracy::TracyClient'")
 
 option(TRACY_ENABLE "Enable profiling with Tracy" OFF)
 
-include(FetchContent)
-FetchContent_Declare(
-    tracy
-    GIT_REPOSITORY https://github.com/wolfpld/tracy.git
-    GIT_TAG  v0.7.8
-    GIT_SHALLOW TRUE
-)
-FetchContent_MakeAvailable(tracy)
+include(CPM)
+CPMAddPackage("gh:wolfpld/tracy@0.7.8")
 
 ################################################################################
 # Tracy lib

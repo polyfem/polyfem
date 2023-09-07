@@ -1054,7 +1054,6 @@ namespace polyfem::io
 		points = args["output"]["paraview"]["points"];
 		contact_forces = args["output"]["paraview"]["options"]["contact_forces"] && !is_problem_scalar;
 		friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !is_problem_scalar;
-		tensor_values = args["output"]["paraview"]["options"]["tensor_values"];
 
 		use_sampler = !(is_mesh_linear && solve_export_to_file && args["output"]["paraview"]["high_order_mesh"]);
 		boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];

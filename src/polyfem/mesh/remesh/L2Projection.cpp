@@ -11,11 +11,7 @@
 
 #include <ipc/ipc.hpp>
 
-#ifdef POLYSOLVE_WITH_MKL
-#include <Eigen/PardisoSupport>
-#else
-#include <Eigen/CholmodSupport>
-#endif
+#include <polysolve/LinearSolver.hpp>
 
 namespace polyfem::mesh
 {
@@ -25,16 +21,22 @@ namespace polyfem::mesh
 		const Eigen::Ref<const Eigen::MatrixXd> &y)
 	{
 		// Construct a linear solver for M
+		std::unique_ptr<polysolve::LinearSolver> solver;
 #ifdef POLYSOLVE_WITH_MKL
-		Eigen::PardisoLDLT<Eigen::SparseMatrix<double>> solver;
+		solver = polysolve::LinearSolver::create("Eigen::PardisoLDLT", "");
+#elif defined(POLYSOLVE_WITH_CHOLMOD)
+		solver = polysolve::LinearSolver::create("Eigen::CholmodSimplicialLDLT", "");
 #else
-		Eigen::CholmodSimplicialLDLT<Eigen::SparseMatrix<double>> solver;
+		solver = polysolve::LinearSolver::create("Eigen::SimplicialLDLT", "");
 #endif
-		solver.analyzePattern(M);
-		solver.factorize(M);
+
+		solver->analyzePattern(M, 0);
+		solver->factorize(M);
 
 		const Eigen::MatrixXd rhs = A * y;
-		const Eigen::MatrixXd x = solver.solve(rhs);
+		Eigen::MatrixXd x(rhs.rows(), rhs.cols());
+		for (int i = 0; i < x.cols(); ++i)
+			solver->solve(rhs.col(i), x.col(i));
 
 		double residual_error = (M * x - rhs).norm();
 		logger().debug("residual error in L2 projection: {}", residual_error);
@@ -111,7 +113,8 @@ namespace polyfem::mesh
 			forms.push_back(std::make_shared<ContactForm>(
 				collision_mesh, dhat, /*avg_mass=*/1.0, use_convergent_formulation,
 				/*use_adaptive_barrier_stiffness=*/false, /*is_time_dependent=*/true,
-				broad_phase_method, ccd_tolerance, ccd_max_iterations));
+				/*enable_shape_derivatives=*/false, broad_phase_method, ccd_tolerance,
+				ccd_max_iterations));
 			forms.back()->set_weight(barrier_stiffness);
 			assert(!ipc::has_intersections(collision_mesh, collision_mesh.displace_vertices(utils::unflatten(x0, dim))));
 		}

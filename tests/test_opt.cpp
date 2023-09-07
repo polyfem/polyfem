@@ -160,7 +160,7 @@ TEST_CASE("material-opt", tagsopt)
 		auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], 1);
 		CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
-		nl_solver->get_info(params);
+		params = nl_solver->get_info();
 		std::cout << "final energy " << params["energy"].get<double>() << "\n";
 	}
 	// auto energies = read_energy(name);
@@ -325,8 +325,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], 1);
 	nl_solver->minimize(*nl_problem, x);
 
-	json params;
-	nl_solver->get_info(params);
+	const json &params = nl_solver->get_info();
 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
 	REQUIRE(params["energy"].get<double>() == Catch::Approx(1.00006).epsilon(1e-4));
@@ -405,8 +404,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], 1);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
-	json params;
-	nl_solver->get_info(params);
+	const json &params = nl_solver->get_info();
 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
 	// REQUIRE(energies[0] == Catch::Approx(0.105955475999).epsilon(1e-4));

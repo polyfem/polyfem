@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 
 #include <polyfem/utils/ClipperUtils.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
@@ -31,7 +31,7 @@ TEST_CASE("Tetrahedra clipping", "[clipping]")
 	CHECK(r[0].colwise().minCoeff().isApprox(expected_tet.colwise().minCoeff()));
 	CHECK(r[0].colwise().maxCoeff().isApprox(expected_tet.colwise().maxCoeff()));
 	CHECK(r[0].colwise().sum().isApprox(expected_tet.colwise().sum()));
-	CHECK(tetrahedron_volume(r[0]) == Approx(tetrahedron_volume(expected_tet)));
+	CHECK(tetrahedron_volume(r[0]) == Catch::Approx(tetrahedron_volume(expected_tet)));
 	// Node order might be different
 	for (int i = 0; i < 4; i++)
 	{

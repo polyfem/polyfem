@@ -86,13 +86,6 @@ int main(int argc, char **argv)
 	bool fallback_solver = false;
 	command_line.add_flag("--enable_overwrite_solver", fallback_solver, "If solver in json is not present, falls back to default");
 
-	std::string solver = "";
-	command_line.add_option("--solver", solver, "Linear solver to use");
-
-	// const std::vector<std::string> solvers = polysolve::LinearSolver::availableSolvers();
-	// std::string solver;
-	// command_line.add_option("--solver", solver, "Used to print the list of linear solvers available")->check(CLI::IsMember(solvers));
-
 	const std::vector<std::pair<std::string, spdlog::level::level_enum>>
 		SPDLOG_LEVEL_NAMES_TO_LEVELS = {
 			{"trace", spdlog::level::trace},
@@ -178,8 +171,6 @@ int forward_simulation(const CLI::App &command_line,
 		tmp["/output/directory"_json_pointer] = std::filesystem::absolute(output_dir);
 	if (has_arg(command_line, "enable_overwrite_solver"))
 		tmp["/solver/linear/enable_overwrite_solver"_json_pointer] = fallback_solver;
-	if (has_arg(command_line, "solver"))
-		tmp["/solver/linear/solver"_json_pointer] = solver;
 	assert(tmp.is_object());
 	in_args.merge_patch(tmp);
 

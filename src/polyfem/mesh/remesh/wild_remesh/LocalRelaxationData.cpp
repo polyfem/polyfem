@@ -107,7 +107,7 @@ namespace polyfem::mesh
 
 		std::vector<int> pressure_boundary_nodes;
 		state.problem->setup_bc(
-			*mesh, n_bases(), bases, /*pressure_bases=*/std::vector<basis::ElementBases>(),
+			*mesh, n_bases(), bases, /*geom_bases=*/bases, /*pressure_bases=*/std::vector<basis::ElementBases>(),
 			local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes,
 			dirichlet_nodes, neumann_nodes);
 
@@ -152,11 +152,11 @@ namespace polyfem::mesh
 		assembler = assembler::AssemblerUtils::make_assembler(state.formulation());
 		assert(assembler->name() == state.formulation());
 		assembler->set_size(dim());
-		assembler->set_materials(local_mesh.body_ids(), state.args["materials"]);
+		assembler->set_materials(local_mesh.body_ids(), state.args["materials"], state.units);
 
 		mass_matrix_assembler = std::make_shared<assembler::Mass>();
 		mass_matrix_assembler->set_size(dim());
-		mass_matrix_assembler->set_materials(local_mesh.body_ids(), state.args["materials"]);
+		mass_matrix_assembler->set_materials(local_mesh.body_ids(), state.args["materials"], state.units);
 	}
 
 	template <typename M>
@@ -253,7 +253,7 @@ namespace polyfem::mesh
 			POLYFEM_REMESHER_SCOPED_TIMER("LocalRelaxationData::init_solve_data -> init forms");
 			forms = solve_data.init_forms(
 				// General
-				dim(), current_time,
+				state.units, dim(), current_time,
 				// Elastic form
 				n_bases(), bases, /*geom_bases=*/bases, *assembler,
 				assembly_vals_cache, assembly_vals_cache,
@@ -275,6 +275,7 @@ namespace polyfem::mesh
 				state.args["solver"]["contact"]["CCD"]["broad_phase"],
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
 				state.args["solver"]["contact"]["CCD"]["max_iterations"],
+				/*enable_shape_derivatives=*/false,
 				// Friction form
 				state.args["contact"]["friction_coefficient"],
 				state.args["contact"]["epsv"],
