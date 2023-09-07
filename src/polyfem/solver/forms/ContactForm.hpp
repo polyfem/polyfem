@@ -47,29 +47,34 @@ namespace polyfem::solver
 					const bool use_convergent_formulation,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
+					const bool enable_shape_derivatives,
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
 					const int ccd_max_iterations);
+
+		std::string name() const override { return "contact"; }
 
 		/// @brief Initialize the form
 		/// @param x Current solution
 		void init(const Eigen::VectorXd &x) override;
 
+		virtual void force_shape_derivative(const ipc::CollisionConstraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
+
 	protected:
 		/// @brief Compute the contact barrier potential value
 		/// @param x Current solution
 		/// @return Value of the contact barrier potential
-		double value_unweighted(const Eigen::VectorXd &x) const override;
+		virtual double value_unweighted(const Eigen::VectorXd &x) const override;
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
-		void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param x Current solution
 		/// @param hessian Output Hessian of the value wrt x
-		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
+		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 	public:
 		/// @brief Update time-dependent fields
@@ -106,7 +111,7 @@ namespace polyfem::solver
 
 		/// @brief Update the barrier stiffness based on the current elasticity energy
 		/// @param x Current solution
-		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
+		virtual void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
 
 		/// @brief Compute the displaced positions of the surface nodes
 		Eigen::MatrixXd compute_displaced_surface(const Eigen::VectorXd &x) const;
@@ -120,12 +125,17 @@ namespace polyfem::solver
 		/// @brief Get use_convergent_formulation
 		bool use_convergent_formulation() const { return constraint_set_.use_convergent_formulation(); }
 
+		bool enable_shape_derivatives() const { return enable_shape_derivatives_; }
+
 		double weight() const override { return weight_ * barrier_stiffness_; }
 
 		/// @brief If true, output debug files
 		bool save_ccd_debug_meshes = false;
 
-	private:
+		double dhat() const { return dhat_; }
+		ipc::CollisionConstraints get_constraint_set() const { return constraint_set_; }
+
+	protected:
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution
 		void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
@@ -151,6 +161,9 @@ namespace polyfem::solver
 
 		/// @brief Is the simulation time dependent?
 		const bool is_time_dependent_;
+
+		/// @brief Enable shape derivatives computation
+		const bool enable_shape_derivatives_;
 
 		/// @brief Broad phase method to use for distance and CCD evaluations
 		const ipc::BroadPhaseMethod broad_phase_method_;

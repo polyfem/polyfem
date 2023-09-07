@@ -7,18 +7,13 @@ endif()
 
 message(STATUS "Third-party: creating target 'LBGFSpp::LBGFSpp'")
 
-include(FetchContent)
-FetchContent_Declare(
-    lbfgspp
-    GIT_REPOSITORY https://github.com/yixuan/LBFGSpp.git
-    GIT_TAG v0.1.0
-    GIT_SHALLOW TRUE
+include(CPM)
+CPMAddPackage(
+    NAME lbfgspp
+    GITHUB_REPOSITORY yixuan/LBFGSpp
+    GIT_TAG v0.2.0
+    DOWNLOAD_ONLY TRUE
 )
-
-FetchContent_GetProperties(lbfgspp)
-if(NOT lbfgspp_POPULATED)
-    FetchContent_Populate(lbfgspp)
-endif()
 
 add_library(LBFGSpp INTERFACE)
 target_include_directories(LBFGSpp INTERFACE "${lbfgspp_SOURCE_DIR}/include")

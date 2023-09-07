@@ -2,6 +2,8 @@
 
 #include <polyfem/Common.hpp>
 
+#include <polyfem/Units.hpp>
+
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
 
@@ -18,6 +20,7 @@
 #include <polyfem/mesh/LocalBoundary.hpp>
 
 #include <polyfem/solver/SolveData.hpp>
+#include <polyfem/solver/DiffCache.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
@@ -52,6 +55,8 @@ namespace cppoptlib
 namespace polyfem::assembler
 {
 	class Mass;
+	class ViscousDamping;
+	class ViscousDampingPrev;
 } // namespace polyfem::assembler
 
 namespace polyfem
@@ -105,12 +110,7 @@ namespace polyfem
 
 		/// change log level
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
-		void set_log_level(const spdlog::level::level_enum log_level)
-		{
-			spdlog::set_level(log_level);
-			logger().set_level(log_level);
-			ipc::logger().set_level(log_level);
-		}
+		void set_log_level(const spdlog::level::level_enum log_level);
 
 		/// gets the output log as json
 		/// this is *not* what gets printed but more informative
@@ -131,12 +131,17 @@ namespace polyfem
 		//-----------------assembly--------------------------
 		//---------------------------------------------------
 
+		Units units;
+
 		/// assemblers
 		std::shared_ptr<assembler::Assembler> assembler = nullptr;
 		std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
+
+		std::shared_ptr<assembler::ViscousDamping> damping_assembler = nullptr;
+		std::shared_ptr<assembler::ViscousDampingPrev> damping_prev_assembler = nullptr;
 
 		/// current problem, it contains rhs and bc
 		std::shared_ptr<assembler::Problem> problem;
@@ -152,6 +157,8 @@ namespace polyfem
 		int n_bases;
 		/// number of pressure bases
 		int n_pressure_bases;
+		/// number of geometric bases
+		int n_geom_bases;
 
 		/// polygons, used since poly have no geom mapping
 		std::map<int, Eigen::MatrixXd> polys;
@@ -162,7 +169,7 @@ namespace polyfem
 		Eigen::VectorXi disc_orders;
 
 		/// Mapping from input nodes to FE nodes
-		std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes;
+		std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes, geom_mesh_nodes, pressure_mesh_nodes;
 
 		/// used to store assembly values for small problems
 		assembler::AssemblyValsCache ass_vals_cache;
@@ -313,6 +320,18 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[in] t (optional) initial time
 		void init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t = 1.0, const bool init_time_integrator = true);
+		/// initialize the linear solve
+		/// @param[in] t (optional) initial time
+		void init_linear_solve(Eigen::MatrixXd &sol, const double t = 1.0);
+		/// @brief Load or compute the initial solution.
+		/// @param[out] solution Output solution variable.
+		void initial_solution(Eigen::MatrixXd &solution) const;
+		/// @brief Load or compute the initial velocity.
+		/// @param[out] solution Output velocity variable.
+		void initial_velocity(Eigen::MatrixXd &velocity) const;
+		/// @brief Load or compute the initial acceleration.
+		/// @param[out] solution Output acceleration variable.
+		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
 		/// solves a linear problem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
@@ -331,17 +350,6 @@ namespace polyfem
 		template <typename ProblemType>
 		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(
 			const std::string &linear_solver_type = "") const;
-
-	private:
-		/// @brief Load or compute the initial solution.
-		/// @param[out] solution Output solution variable.
-		void initial_solution(Eigen::MatrixXd &solution) const;
-		/// @brief Load or compute the initial velocity.
-		/// @param[out] solution Output velocity variable.
-		void initial_velocity(Eigen::MatrixXd &velocity) const;
-		/// @brief Load or compute the initial acceleration.
-		/// @param[out] solution Output acceleration variable.
-		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
 
 		/// @brief Solve the linear problem with the given solver and system.
 		/// @param solver Linear solver.
@@ -390,6 +398,9 @@ namespace polyfem
 		Eigen::VectorXi in_node_to_node;
 		/// maps in vertices/edges/faces/cells to polyfem vertices/edges/faces/cells
 		Eigen::VectorXi in_primitive_to_primitive;
+
+		std::vector<int> primitive_to_node() const;
+		std::vector<int> node_to_primitive() const;
 
 	private:
 		/// build the mapping from input nodes to polyfem nodes
@@ -465,7 +476,20 @@ namespace polyfem
 		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
 
-		/// extracts the boundary mesh for collision, called in build_basis
+		/// @brief extracts the boundary mesh for collision, called in build_basis
+		static void build_collision_mesh(
+			const mesh::Mesh &mesh,
+			const int n_bases,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &geom_bases,
+			const std::vector<mesh::LocalBoundary> &total_local_boundary,
+			const mesh::Obstacle &obstacle,
+			const json &args,
+			const std::function<std::string(const std::string &)> &resolve_input_path,
+			const Eigen::VectorXi &in_node_to_node,
+			ipc::CollisionMesh &collision_mesh);
+
+		/// @brief extracts the boundary mesh for collision, called in build_basis
 		void build_collision_mesh();
 
 		/// checks if vertex is obstacle
@@ -561,6 +585,64 @@ namespace polyfem
 		/// limits the number of used threads
 		std::shared_ptr<tbb::global_control> thread_limiter;
 #endif
+
+		//---------------------------------------------------
+		//-----------------differentiable--------------------
+		//---------------------------------------------------
+	public:
+		bool optimization_enabled = false;
+		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
+		solver::DiffCache diff_cached;
+
+		std::unique_ptr<polysolve::LinearSolver> lin_solver_cached; // matrix factorization of last linear solve
+
+		int ndof() const
+		{
+			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
+			if (mixed_assembler == nullptr)
+				return actual_dim * n_bases;
+			else
+				return actual_dim * n_bases + n_pressure_bases;
+		}
+
+		// Aux functions for setting up adjoint equations
+		void compute_force_jacobian(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian);
+		void compute_force_jacobian_prev(const int force_step, const int sol_step, StiffnessMatrix &hessian_prev) const;
+		// Solves the adjoint PDE for derivatives and caches
+		void solve_adjoint_cached(const Eigen::MatrixXd &rhs);
+		Eigen::MatrixXd solve_adjoint(const Eigen::MatrixXd &rhs) const;
+		// Returns cached adjoint solve
+		Eigen::MatrixXd get_adjoint_mat(int type) const
+		{
+			assert(diff_cached.adjoint_mat().size() > 0);
+			if (problem->is_time_dependent())
+			{
+				if (type == 0)
+					return diff_cached.adjoint_mat().leftCols(diff_cached.adjoint_mat().cols() / 2);
+				else if (type == 1)
+					return diff_cached.adjoint_mat().middleCols(diff_cached.adjoint_mat().cols() / 2, diff_cached.adjoint_mat().cols() / 2);
+				else
+					log_and_throw_error("Invalid adjoint type!");
+			}
+
+			return diff_cached.adjoint_mat();
+		}
+		Eigen::MatrixXd solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
+		Eigen::MatrixXd solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
+		// Change geometric node positions
+		void set_mesh_vertex(int v_id, const Eigen::VectorXd &vertex);
+		void get_vertices(Eigen::MatrixXd &vertices) const;
+		void get_elements(Eigen::MatrixXi &elements) const;
+
+		// Get geometric node indices for surface/volume
+		void compute_surface_node_ids(const int surface_selection, std::vector<int> &node_ids) const;
+		void compute_total_surface_node_ids(std::vector<int> &node_ids) const;
+		void compute_volume_node_ids(const int volume_selection, std::vector<int> &node_ids) const;
+
+		// to replace the initial condition in json during initial condition optimization
+		Eigen::MatrixXd initial_sol_update, initial_vel_update;
+		// mapping from positions of geometric nodes to positions of FE basis nodes
+		StiffnessMatrix gbasis_nodes_to_basis_nodes;
 	};
 
 } // namespace polyfem

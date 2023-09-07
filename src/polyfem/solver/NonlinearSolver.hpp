@@ -31,7 +31,9 @@ namespace cppoptlib
 		/// @brief Construct a new Nonlinear Solver object
 		/// @param solver_params JSON of solver parameters (see input spec.)
 		/// @param dt time step size (use 1 if not time-dependent)
-		NonlinearSolver(const polyfem::json &solver_params, const double dt);
+		NonlinearSolver(const polyfem::json &solver_params, const double dt, const double characteristic_length);
+
+		virtual double compute_grad_norm(const Eigen::VectorXd &x, const Eigen::VectorXd &grad) const;
 
 		virtual std::string name() const = 0;
 
@@ -92,7 +94,7 @@ namespace cppoptlib
 		//                            Solver info
 		// ====================================================================
 
-		virtual void update_solver_info();
+		virtual void update_solver_info(const double energy);
 		void reset_times();
 		void log_times();
 

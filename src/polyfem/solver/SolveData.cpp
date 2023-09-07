@@ -22,6 +22,7 @@ namespace polyfem::solver
 
 	std::vector<std::shared_ptr<Form>> SolveData::init_forms(
 		// General
+		const Units &units,
 		const int dim,
 		const double t,
 
@@ -70,6 +71,7 @@ namespace polyfem::solver
 		const ipc::BroadPhaseMethod broad_phase,
 		const double ccd_tolerance,
 		const long ccd_max_iterations,
+		const bool enable_shape_derivatives,
 
 		// Friction form
 		const double friction_coefficient,
@@ -159,7 +161,7 @@ namespace polyfem::solver
 
 			contact_form = std::make_shared<ContactForm>(
 				collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
-				use_adaptive_barrier_stiffness, is_time_dependent, broad_phase, ccd_tolerance,
+				use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
 				ccd_max_iterations);
 
 			if (use_adaptive_barrier_stiffness)
@@ -181,8 +183,9 @@ namespace polyfem::solver
 			if (friction_coefficient != 0)
 			{
 				friction_form = std::make_shared<FrictionForm>(
-					collision_mesh, time_integrator, epsv, friction_coefficient, dhat, broad_phase,
-					*contact_form, friction_iterations);
+					collision_mesh, time_integrator, epsv, friction_coefficient, dhat,
+					broad_phase, *contact_form, friction_iterations);
+				friction_form->init_lagging(sol);
 				forms.push_back(friction_form);
 			}
 		}

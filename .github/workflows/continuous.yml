@@ -89,7 +89,7 @@ jobs:
       matrix:
         os: [macos-latest]
         arc: [x86]
-        config: [DebugNoSymbols]
+        config: [DebugNoSymbols, Release]
         threading: [TBB]
         include:
           - os: macos-latest
@@ -227,5 +227,3 @@ jobs:
         run: |
           cd build
           ctest --verbose --output-on-failure
-
-

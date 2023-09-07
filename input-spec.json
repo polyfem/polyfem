@@ -7,6 +7,7 @@
             "materials"
         ],
         "optional": [
+            "units",
             "preset_problem",
             "common",
             "root_path",
@@ -36,6 +37,42 @@
         "default": "",
         "type": "string",
         "doc": "Path for all relative paths, set automatically to the folder containing this JSON."
+    },
+    {
+        "pointer": "/units",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "length",
+            "mass",
+            "time",
+            "characteristic_length"
+        ],
+        "doc": "Basic units used in the code."
+    },
+    {
+        "pointer": "/units/length",
+        "default": "m",
+        "type": "string",
+        "doc": "Length unit."
+    },
+    {
+        "pointer": "/units/mass",
+        "default": "kg",
+        "type": "string",
+        "doc": "Mass unit."
+    },
+    {
+        "pointer": "/units/time",
+        "default": "s",
+        "type": "string",
+        "doc": "Time unit."
+    },
+    {
+        "pointer": "/units/characteristic_length",
+        "default": 1,
+        "type": "float",
+        "doc": "Characteristic length, used for tolerances."
     },
     {
         "pointer": "/tests",
@@ -126,6 +163,7 @@
         "optional": [
             "type",
             "extract",
+            "unit",
             "transformation",
             "volume_selection",
             "surface_selection",
@@ -220,6 +258,12 @@
         ],
         "default": "volume",
         "doc": "Used to extract stuff from the mesh. Eg extract surface extracts the surface from a tet mesh."
+    },
+    {
+        "pointer": "/geometry/*/unit",
+        "type": "string",
+        "default": "",
+        "doc": "Units of the geometric model."
     },
     {
         "pointer": "/geometry/*/transformation",
@@ -1309,7 +1353,12 @@
         "default": "ImplicitEuler",
         "options": [
             "ImplicitEuler",
-            "BDF",
+            "BDF1",
+            "BDF2",
+            "BDF3",
+            "BDF4",
+            "BDF5",
+            "BDF6",
             "ImplicitNewmark"
         ],
         "doc": "Time integrator"
@@ -1392,7 +1441,8 @@
             "dhat_percentage",
             "epsv",
             "friction_coefficient",
-            "use_convergent_formulation"
+            "use_convergent_formulation",
+            "collision_mesh"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1435,6 +1485,59 @@
         "doc": "Whether to use the convergent (area weighted) formulation of IPC."
     },
     {
+        "pointer": "/contact/collision_mesh",
+        "type": "object",
+        "required": [
+            "mesh",
+            "linear_map"
+        ],
+        "optional": [
+            "enabled"
+        ],
+        "default": "skip",
+        "doc": "Load a preconstructed collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh",
+        "type": "object",
+        "required": [
+            "max_edge_length"
+        ],
+        "optional": [
+            "tessellation_type",
+            "enabled"
+        ],
+        "doc": "Construct a collision mesh with a maximum edge length."
+    },
+    {
+        "pointer": "/contact/collision_mesh/mesh",
+        "type": "string",
+        "doc": "Path to preconstructed collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/linear_map",
+        "type": "string",
+        "doc": "HDF file storing the linear mapping of displacements."
+    },
+    {
+        "pointer": "/contact/collision_mesh/max_edge_length",
+        "type": "float",
+        "doc": "Maximum edge length to use for building the collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/tessellation_type",
+        "type": "string",
+        "options": ["regular", "irregular"],
+        "default": "regular",
+        "doc": "Type of tessellation to use for building the collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/enabled",
+        "type": "bool",
+        "default": true,
+        "doc": ""
+    },
+    {
         "pointer": "/solver",
         "default": null,
         "type": "object",
@@ -1464,6 +1567,7 @@
         "optional": [
             "enable_overwrite_solver",
             "solver",
+            "adjoint_solver",
             "precond",
             "Eigen::LeastSquaresConjugateGradient",
             "Eigen::DGMRES",
@@ -1495,6 +1599,32 @@
             "Eigen::UmfPackLU",
             "Eigen::SuperLU",
             "Eigen::PardisoLDLT",
+            "Eigen::PardisoLLT",
+            "Eigen::PardisoLU",
+            "Pardiso",
+            "Hypre",
+            "AMGCL",
+            "Eigen::LeastSquaresConjugateGradient",
+            "Eigen::DGMRES",
+            "Eigen::ConjugateGradient",
+            "Eigen::BiCGSTAB",
+            "Eigen::GMRES",
+            "Eigen::MINRES"
+        ]
+    },
+    {
+        "pointer": "/solver/linear/adjoint_solver",
+        "default": "",
+        "type": "string",
+        "doc": "Adjoint linear solver type.",
+        "options": [
+            "Eigen::SimplicialLDLT",
+            "Eigen::SparseLU",
+            "Eigen::CholmodSupernodalLLT",
+            "Eigen::UmfPackLU",
+            "Eigen::SuperLU",
+            "Eigen::PardisoLDLT",
+            "Eigen::PardisoLLT",
             "Eigen::PardisoLU",
             "Pardiso",
             "Hypre",
@@ -1902,6 +2032,7 @@
         "type": "string",
         "options": [
             "newton",
+            "gradient_descent",
             "lbfgs"
         ],
         "doc": "Nonlinear solver type"
@@ -2507,6 +2638,18 @@
         "doc": "Material Parameters including ID, density ($\\rho$)"
     },
     {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "AMIPS",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "id"
+        ],
+        "doc": "Material Parameters including ID"
+    },
+    {
         "pointer": "/materials/*/id",
         "type": "int",
         "default": 0,
@@ -2538,6 +2681,30 @@
         "doc": "Young's modulus"
     },
     {
+        "pointer": "/materials/*/E",
+        "type": "object",
+        "required": [
+            "value",
+            "unit"
+        ],
+        "doc": "Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/E/unit",
+        "type": "string",
+        "doc": "The unit of the Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/E/value",
+        "type": "float",
+        "doc": "The value of the Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/E/value",
+        "type": "file",
+        "doc": "The value of the Young's modulus"
+    },
+    {
         "pointer": "/materials/*/nu",
         "type": "float",
         "doc": "Poisson's ratio"
@@ -2550,7 +2717,6 @@
     {
         "pointer": "/materials/*/elasticity_tensor",
         "type": "list",
-        "default": [],
         "doc": "Symmetric elasticity tensor"
     },
     {
@@ -2599,7 +2765,8 @@
             "IncompressibleLinearElasticity",
             "Laplacian",
             "Helmholtz",
-            "Bilaplacian"
+            "Bilaplacian",
+            "AMIPS"
         ],
         "doc": "Type of material"
     },
@@ -3730,7 +3897,7 @@
         "pointer": "/output/paraview/high_order_mesh",
         "default": true,
         "type": "bool",
-        "doc": "Enables/disables high-order output for paraview. Supported only for isoparametric or linear meshes with high-odrer solutions."
+        "doc": "Enables/disables high-order output for paraview. Supported only for isoparametric or linear meshes with high-order solutions."
     },
     {
         "pointer": "/output/paraview/volume",
@@ -3766,8 +3933,10 @@
             "body_ids",
             "contact_forces",
             "friction_forces",
+            "tensor_values",
             "velocity",
-            "acceleration"
+            "acceleration",
+            "forces"
         ],
         "doc": "Optional fields in the output"
     },
@@ -3802,6 +3971,12 @@
         "doc": "If true, write out friction forces for surface"
     },
     {
+        "pointer": "/output/paraview/options/tensor_values",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, write out stress values for volume"
+    },
+    {
         "pointer": "/output/paraview/options/velocity",
         "default": false,
         "type": "bool",
@@ -3812,6 +3987,12 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out accelerations"
+    },
+    {
+        "pointer": "/output/paraview/options/forces",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out all variational forces on the FE mesh "
     },
     {
         "pointer": "/output/data",

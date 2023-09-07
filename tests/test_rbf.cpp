@@ -2,9 +2,10 @@
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/RBFInterpolation.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+
 #include <iostream>
-#include <fstream>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -26,10 +27,7 @@ TEST_CASE("interpolation", "[rbf_test]")
 	{
 		for (int j = 0; j < pts.cols(); ++j)
 		{
-			REQUIRE(disp(i, j) == Approx(vals(i, j)).margin(1e-9));
+			REQUIRE(disp(i, j) == Catch::Approx(vals(i, j)).margin(1e-9));
 		}
 	}
-
-	// std::ofstream file("xxx.txt");
-	// file << vals;
 }

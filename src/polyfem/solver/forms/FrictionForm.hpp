@@ -36,6 +36,10 @@ namespace polyfem::solver
 			const ContactForm &contact_form,
 			const int n_lagging_iters);
 
+		std::string name() const override { return "friction"; }
+
+		void force_shape_derivative(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint, const ipc::FrictionConstraints &friction_constraints_set, Eigen::VectorXd &term);
+
 	protected:
 		/// @brief Compute the value of the form
 		/// @param x Current solution
@@ -78,6 +82,10 @@ namespace polyfem::solver
 		Eigen::MatrixXd compute_surface_velocities(const Eigen::VectorXd &x) const;
 		/// @brief Compute the derivative of the velocities wrt x
 		double dv_dx() const;
+
+		double mu() const { return mu_; }
+		double epsv() const { return epsv_; }
+		ipc::FrictionConstraints get_friction_constraint_set() const { return friction_constraint_set_; }
 
 	private:
 		/// Reference to the collision mesh

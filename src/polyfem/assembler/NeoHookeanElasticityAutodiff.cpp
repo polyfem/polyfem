@@ -6,8 +6,8 @@ namespace polyfem::assembler
 	{
 	}
 
-	void NeoHookeanAutodiff::add_multimaterial(const int index, const json &params)
+	void NeoHookeanAutodiff::add_multimaterial(const int index, const json &params, const Units &units)
 	{
-		params_.add_multimaterial(index, params, size() == 3);
+		params_.add_multimaterial(index, params, size() == 3, units.stress());
 	}
 } // namespace polyfem::assembler

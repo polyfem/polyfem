@@ -76,10 +76,12 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading obstacles...");
 		obstacle = mesh::read_obstacle_geometry(
+			units,
 			args["geometry"],
 			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
 			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
 			args["root_path"], mesh->dimension());
+
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
@@ -104,6 +106,7 @@ namespace polyfem
 		{
 			assert(is_param_valid(args, "geometry"));
 			mesh = mesh::read_fem_geometry(
+				units,
 				args["geometry"], args["root_path"],
 				names, vertices, cells, non_conforming);
 		}
@@ -143,6 +146,7 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading obstacles...");
 		obstacle = mesh::read_obstacle_geometry(
+			units,
 			args["geometry"],
 			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
 			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
@@ -163,13 +167,13 @@ namespace polyfem
 		for (int i = 0; i < bases.size(); i++)
 		{
 			const basis::ElementBases &element = bases[i];
-			assert(element.bases.size() == F.cols());
 			for (int j = 0; j < element.bases.size(); j++)
 			{
 				const basis::Basis &basis = element.bases[j];
 				assert(basis.global().size() == 1);
 				V.row(basis.global()[0].index) = basis.global()[0].node;
-				F(i, j) = basis.global()[0].index;
+				if (j < F.cols()) // Only grab the corners of the triangles/tetrahedra
+					F(i, j) = basis.global()[0].index;
 			}
 		}
 	}
