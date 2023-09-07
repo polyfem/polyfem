@@ -14,10 +14,12 @@ var searchData=
   ['minsurfproblem_11',['MinSurfProblem',['../classpolyfem_1_1problem_1_1_min_surf_problem.html',1,'polyfem::problem']]],
   ['mixedassembler_12',['MixedAssembler',['../classpolyfem_1_1assembler_1_1_mixed_assembler.html',1,'polyfem::assembler']]],
   ['mixedassemblerdata_13',['MixedAssemblerData',['../classpolyfem_1_1assembler_1_1_mixed_assembler_data.html',1,'polyfem::assembler']]],
-  ['mooneyrivlinelasticity_14',['MooneyRivlinElasticity',['../classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html',1,'polyfem::assembler']]],
-  ['morethuentelinesearch_15',['MoreThuenteLineSearch',['../classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search.html',1,'polyfem::solver::line_search']]],
-  ['mshreader_16',['MshReader',['../classpolyfem_1_1io_1_1_msh_reader.html',1,'polyfem::io']]],
-  ['mshwriter_17',['MshWriter',['../classpolyfem_1_1io_1_1_msh_writer.html',1,'polyfem::io']]],
-  ['multimodel_18',['MultiModel',['../classpolyfem_1_1assembler_1_1_multi_model.html',1,'polyfem::assembler']]],
-  ['mvpolygonalbasis2d_19',['MVPolygonalBasis2d',['../classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html',1,'polyfem::basis']]]
+  ['mmasolver_14',['MMASolver',['../classcppoptlib_1_1_m_m_a_solver.html',1,'cppoptlib']]],
+  ['mmasolveraux_15',['MMASolverAux',['../class_m_m_a_solver_aux.html',1,'']]],
+  ['mooneyrivlinelasticity_16',['MooneyRivlinElasticity',['../classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html',1,'polyfem::assembler']]],
+  ['morethuentelinesearch_17',['MoreThuenteLineSearch',['../classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search.html',1,'polyfem::solver::line_search']]],
+  ['mshreader_18',['MshReader',['../classpolyfem_1_1io_1_1_msh_reader.html',1,'polyfem::io']]],
+  ['mshwriter_19',['MshWriter',['../classpolyfem_1_1io_1_1_msh_writer.html',1,'polyfem::io']]],
+  ['multimodel_20',['MultiModel',['../classpolyfem_1_1assembler_1_1_multi_model.html',1,'polyfem::assembler']]],
+  ['mvpolygonalbasis2d_21',['MVPolygonalBasis2d',['../classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html',1,'polyfem::basis']]]
 ];

@@ -10,13 +10,14 @@ var searchData=
   ['unit_5ftype_5fset_5f_7',['unit_type_set_',['../classpolyfem_1_1utils_1_1_expression_value.html#ad637bbe96569934cf5e87d60920c24cb',1,'polyfem::utils::ExpressionValue']]],
   ['units_8',['units',['../classpolyfem_1_1_state.html#a584dbcabc47bd61bf6ba831f3645cec6',1,'polyfem::State']]],
   ['update_5fbarrier_5fstiffness_9',['update_barrier_stiffness',['../classpolyfem_1_1solver_1_1_a_l_solver.html#a3b79ffec357e60ede7cc6582492504b2',1,'polyfem::solver::ALSolver']]],
-  ['use_5fadaptive_5fbarrier_5fstiffness_5f_10',['use_adaptive_barrier_stiffness_',['../classpolyfem_1_1solver_1_1_contact_form.html#a1ae6235620f6a541213a870d20eeed82',1,'polyfem::solver::ContactForm']]],
-  ['use_5favg_5fpressure_11',['use_avg_pressure',['../classpolyfem_1_1_state.html#a2c6c57f7ebcb9808be8e53671afafe48',1,'polyfem::State']]],
-  ['use_5fcached_5fcandidates_5f_12',['use_cached_candidates_',['../classpolyfem_1_1solver_1_1_contact_form.html#a301ecabb5109cf149b5da266acdd517a',1,'polyfem::solver::ContactForm']]],
-  ['use_5fgrad_5fnorm_5ftol_13',['use_grad_norm_tol',['../classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a0e63e913fd1df2799151f88d8233096d',1,'polyfem::solver::line_search::LineSearch::use_grad_norm_tol'],['../classcppoptlib_1_1_nonlinear_solver.html#a8322ad0593df168fa29fc7275cc8853b',1,'cppoptlib::NonlinearSolver::use_grad_norm_tol']]],
-  ['use_5fhdf5_14',['use_hdf5',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a836e498642f74e5e6b4b6ee2c632b07b',1,'polyfem::io::OutGeometryData::ExportOptions']]],
-  ['use_5fsampler_15',['use_sampler',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a16b1c6d540f8e91ffb603f7b79b1aa45',1,'polyfem::io::OutGeometryData::ExportOptions']]],
-  ['use_5fsecond_5fcache_5f_16',['use_second_cache_',['../classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#add003af981eb85b6db7e058a63209a55',1,'polyfem::utils::SparseMatrixCache']]],
-  ['use_5fspline_17',['use_spline',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#ab43f215f17671955cc2687c9961f480f',1,'polyfem::io::OutGeometryData::ExportOptions']]],
-  ['use_5fstiffness_5fas_5fratio_5f_18',['use_stiffness_as_ratio_',['../classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a827b1608c7bfef42dd6511622efbf765',1,'polyfem::solver::RayleighDampingForm']]]
+  ['upp_10',['upp',['../class_m_m_a_solver_aux.html#a6a8dee6f5680bccf7d8953ee43af65bc',1,'MMASolverAux']]],
+  ['use_5fadaptive_5fbarrier_5fstiffness_5f_11',['use_adaptive_barrier_stiffness_',['../classpolyfem_1_1solver_1_1_contact_form.html#a1ae6235620f6a541213a870d20eeed82',1,'polyfem::solver::ContactForm']]],
+  ['use_5favg_5fpressure_12',['use_avg_pressure',['../classpolyfem_1_1_state.html#a2c6c57f7ebcb9808be8e53671afafe48',1,'polyfem::State']]],
+  ['use_5fcached_5fcandidates_5f_13',['use_cached_candidates_',['../classpolyfem_1_1solver_1_1_contact_form.html#a301ecabb5109cf149b5da266acdd517a',1,'polyfem::solver::ContactForm']]],
+  ['use_5fgrad_5fnorm_5ftol_14',['use_grad_norm_tol',['../classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a0e63e913fd1df2799151f88d8233096d',1,'polyfem::solver::line_search::LineSearch::use_grad_norm_tol'],['../classcppoptlib_1_1_nonlinear_solver.html#a8322ad0593df168fa29fc7275cc8853b',1,'cppoptlib::NonlinearSolver::use_grad_norm_tol']]],
+  ['use_5fhdf5_15',['use_hdf5',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a836e498642f74e5e6b4b6ee2c632b07b',1,'polyfem::io::OutGeometryData::ExportOptions']]],
+  ['use_5fsampler_16',['use_sampler',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a16b1c6d540f8e91ffb603f7b79b1aa45',1,'polyfem::io::OutGeometryData::ExportOptions']]],
+  ['use_5fsecond_5fcache_5f_17',['use_second_cache_',['../classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#add003af981eb85b6db7e058a63209a55',1,'polyfem::utils::SparseMatrixCache']]],
+  ['use_5fspline_18',['use_spline',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#ab43f215f17671955cc2687c9961f480f',1,'polyfem::io::OutGeometryData::ExportOptions']]],
+  ['use_5fstiffness_5fas_5fratio_5f_19',['use_stiffness_as_ratio_',['../classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a827b1608c7bfef42dd6511622efbf765',1,'polyfem::solver::RayleighDampingForm']]]
 ];

@@ -184,7 +184,8 @@ var hierarchy =
         [ "cppoptlib::GradientDescentSolver< ProblemType >", "classcppoptlib_1_1_gradient_descent_solver.html", null ],
         [ "cppoptlib::LBFGSSolver< ProblemType >", "classcppoptlib_1_1_l_b_f_g_s_solver.html", null ],
         [ "cppoptlib::SolverWithBoxConstraints< ProblemType >", "classcppoptlib_1_1_solver_with_box_constraints.html", [
-          [ "cppoptlib::LBFGSBSolver< ProblemType >", "classcppoptlib_1_1_l_b_f_g_s_b_solver.html", null ]
+          [ "cppoptlib::LBFGSBSolver< ProblemType >", "classcppoptlib_1_1_l_b_f_g_s_b_solver.html", null ],
+          [ "cppoptlib::MMASolver< ProblemType >", "classcppoptlib_1_1_m_m_a_solver.html", null ]
         ] ],
         [ "cppoptlib::SparseNewtonDescentSolver< ProblemType >", "classcppoptlib_1_1_sparse_newton_descent_solver.html", null ]
       ] ]
@@ -224,6 +225,7 @@ var hierarchy =
       [ "polyfem::assembler::StokesMixed", "classpolyfem_1_1assembler_1_1_stokes_mixed.html", null ]
     ] ],
     [ "polyfem::assembler::MixedAssemblerData", "classpolyfem_1_1assembler_1_1_mixed_assembler_data.html", null ],
+    [ "MMASolverAux", "class_m_m_a_solver_aux.html", null ],
     [ "polyfem::io::MshReader", "classpolyfem_1_1io_1_1_msh_reader.html", null ],
     [ "polyfem::io::MshWriter", "classpolyfem_1_1io_1_1_msh_writer.html", null ],
     [ "polyfem::basis::MVPolygonalBasis2d", "classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html", null ],

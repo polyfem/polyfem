@@ -5,5 +5,8 @@ var searchData=
   ['x_5flagged_5f_2',['x_lagged_',['../classpolyfem_1_1solver_1_1_lagged_reg_form.html#adf7f2bb4a42e018c041b0b506e7cc8bf',1,'polyfem::solver::LaggedRegForm']]],
   ['x_5fprev_3',['x_prev',['../classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html#a00fcdec947892b31ac0e0857b4346b90',1,'polyfem::assembler::NonLinearAssemblerData']]],
   ['x_5fprev_5f_4',['x_prev_',['../classpolyfem_1_1solver_1_1_elastic_form.html#a1742e5433f6b37f4da578c7c8376f0eb',1,'polyfem::solver::ElasticForm']]],
-  ['x_5fprevs_5f_5',['x_prevs_',['../classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a1efda7db317ac657ed81edc84b253b34',1,'polyfem::time_integrator::ImplicitTimeIntegrator']]]
+  ['x_5fprevs_5f_5',['x_prevs_',['../classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a1efda7db317ac657ed81edc84b253b34',1,'polyfem::time_integrator::ImplicitTimeIntegrator']]],
+  ['xmamieps_6',['xmamieps',['../class_m_m_a_solver_aux.html#a89bac75b402ce28e7eed9dcf8c604eae',1,'MMASolverAux']]],
+  ['xold1_7',['xold1',['../class_m_m_a_solver_aux.html#af465ff4d49641d1baf1d8a6d87577ece',1,'MMASolverAux']]],
+  ['xold2_8',['xold2',['../class_m_m_a_solver_aux.html#a7b059474929e89a832310f43a04cc377',1,'MMASolverAux']]]
 ];
