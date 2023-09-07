@@ -250,8 +250,8 @@ include(units)
 target_link_libraries(polyfem PUBLIC units::units)
 
 # FCPW
-include(fcpw)
-target_link_libraries(polyfem PUBLIC fcpw::fcpw)
+# include(fcpw)
+# target_link_libraries(polyfem PUBLIC fcpw::fcpw)
 
 ################################################################################
 # Optional libraries

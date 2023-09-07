@@ -10,7 +10,7 @@
 #include <igl/edges.h>
 #include <igl/barycentric_coordinates.h>
 #include <h5pp/h5pp.h>
-#include <fcpw/fcpw.h>
+// #include <fcpw/fcpw.h>
 
 namespace polyfem::mesh
 {
@@ -207,41 +207,41 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 		// build wide BVH to find closest point on the surface
 
-		assert(dim == 3);
-		fcpw::Scene<3> scene;
-		{
-			std::vector<Eigen::Vector3d> vertices;
-			vertices.reserve(geom_bases.size() * 4);
-			std::vector<std::array<int, 3>> faces;
-			faces.reserve(geom_bases.size() * 4);
-			for (const basis::ElementBases &elm : geom_bases)
-			{
-				const int offset = vertices.size();
-				for (int i = 0; i < 4; i++)
-					vertices.push_back(elm.bases[i].global()[0].node);
-				faces.push_back({{offset + 0, offset + 1, offset + 2}});
-				faces.push_back({{offset + 0, offset + 1, offset + 3}});
-				faces.push_back({{offset + 0, offset + 2, offset + 3}});
-				faces.push_back({{offset + 1, offset + 2, offset + 3}});
-			}
+		// assert(dim == 3);
+		// fcpw::Scene<3> scene;
+		// {
+		// 	std::vector<Eigen::Vector3d> vertices;
+		// 	vertices.reserve(geom_bases.size() * 4);
+		// 	std::vector<std::array<int, 3>> faces;
+		// 	faces.reserve(geom_bases.size() * 4);
+		// 	for (const basis::ElementBases &elm : geom_bases)
+		// 	{
+		// 		const int offset = vertices.size();
+		// 		for (int i = 0; i < 4; i++)
+		// 			vertices.push_back(elm.bases[i].global()[0].node);
+		// 		faces.push_back({{offset + 0, offset + 1, offset + 2}});
+		// 		faces.push_back({{offset + 0, offset + 1, offset + 3}});
+		// 		faces.push_back({{offset + 0, offset + 2, offset + 3}});
+		// 		faces.push_back({{offset + 1, offset + 2, offset + 3}});
+		// 	}
 
-			scene.setObjectTypes({{fcpw::PrimitiveType::Triangle}});
-			scene.setObjectVertexCount(vertices.size(), /*object_id=*/0);
-			scene.setObjectTriangleCount(faces.size(), /*object_id=*/0);
+		// 	scene.setObjectTypes({{fcpw::PrimitiveType::Triangle}});
+		// 	scene.setObjectVertexCount(vertices.size(), /*object_id=*/0);
+		// 	scene.setObjectTriangleCount(faces.size(), /*object_id=*/0);
 
-			for (int i = 0; i < vertices.size(); i++)
-			{
-				scene.setObjectVertex(vertices[i].cast<float>(), i, /*object_id=*/0);
-			}
+		// 	for (int i = 0; i < vertices.size(); i++)
+		// 	{
+		// 		scene.setObjectVertex(vertices[i].cast<float>(), i, /*object_id=*/0);
+		// 	}
 
-			// specify the triangle indices
-			for (int i = 0; i < faces.size(); i++)
-			{
-				scene.setObjectTriangle(faces[i].data(), i, 0);
-			}
+		// 	// specify the triangle indices
+		// 	for (int i = 0; i < faces.size(); i++)
+		// 	{
+		// 		scene.setObjectTriangle(faces[i].data(), i, 0);
+		// 	}
 
-			scene.build(fcpw::AggregateType::Bvh_SurfaceArea, true); // the second boolean argument enables vectorization
-		}
+		// 	scene.build(fcpw::AggregateType::Bvh_SurfaceArea, true); // the second boolean argument enables vectorization
+		// }
 
 		// --------------------------------------------------------------------
 
@@ -285,18 +285,19 @@ namespace polyfem::mesh
 			if (closest_element_id < 0)
 			{
 				// perform a closest point query
-				fcpw::Interaction<3> cpq_interaction;
-				scene.findClosestPoint(v.cast<float>(), cpq_interaction);
+				log_and_throw_error("build_collision_proxy_displacement_maps(): closest point query not implemented!");
+				// fcpw::Interaction<3> cpq_interaction;
+				// scene.findClosestPoint(v.cast<float>(), cpq_interaction);
 
-				closest_element_id = cpq_interaction.primitiveIndex / 4;
+				// closest_element_id = cpq_interaction.primitiveIndex / 4;
 
-				const Eigen::MatrixXd nodes = geom_bases[closest_element_id].nodes();
+				// const Eigen::MatrixXd nodes = geom_bases[closest_element_id].nodes();
 
-				assert(dim == 3 && nodes.rows() == 4);
-				Eigen::RowVector4d bc;
-				igl::barycentric_coordinates(
-					proxy_vertices.row(i), nodes.row(0), nodes.row(1), nodes.row(2), nodes.row(3), bc);
-				vhat = bc.head<3>();
+				// assert(dim == 3 && nodes.rows() == 4);
+				// Eigen::RowVector4d bc;
+				// igl::barycentric_coordinates(
+				// 	proxy_vertices.row(i), nodes.row(0), nodes.row(1), nodes.row(2), nodes.row(3), bc);
+				// vhat = bc.head<3>();
 			}
 
 			// compute the displacement map entries

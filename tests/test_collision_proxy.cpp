@@ -145,11 +145,11 @@ TEST_CASE("build collision proxy displacement map", "[build_collision_proxy]")
 		fe_mesh_path = path + "/contact/meshes/3D/simple/cube.msh";
 		proxy_mesh_path = path + "/contact/meshes/3D/simple/sphere/sphere5K.msh";
 	}
-	SECTION("cube-to-sphere")
-	{
-		fe_mesh_path = path + "/contact/meshes/3D/simple/sphere/sphere5K.msh";
-		proxy_mesh_path = path + "/contact/meshes/3D/simple/cube.msh";
-	}
+	// SECTION("cube-to-sphere")
+	// {
+	// 	fe_mesh_path = path + "/contact/meshes/3D/simple/sphere/sphere5K.msh";
+	// 	proxy_mesh_path = path + "/contact/meshes/3D/simple/cube.msh";
+	// }
 
 	const auto state = get_state(fe_mesh_path, discr_order);
 
