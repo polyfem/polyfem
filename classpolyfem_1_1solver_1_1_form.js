@@ -15,6 +15,7 @@ var classpolyfem_1_1solver_1_1_form =
     [ "line_search_end", "classpolyfem_1_1solver_1_1_form.html#ab7cf0e74998f574f9b51502cb3eae209", null ],
     [ "max_lagging_iterations", "classpolyfem_1_1solver_1_1_form.html#aec784f581cc71ef11d739c66cf8c822a", null ],
     [ "max_step_size", "classpolyfem_1_1solver_1_1_form.html#ab9da0c5d97cbb385ffc9b6685d29d06c", null ],
+    [ "name", "classpolyfem_1_1solver_1_1_form.html#a811b9bc4f875497c659bcce24c15f935", null ],
     [ "post_step", "classpolyfem_1_1solver_1_1_form.html#a1db6efac98eb859c4a6f47df7f5a367c", null ],
     [ "resolve_output_path", "classpolyfem_1_1solver_1_1_form.html#abb6d6737f8ad238f0446866402fc9c5b", null ],
     [ "second_derivative", "classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6", null ],

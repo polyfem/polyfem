@@ -11,6 +11,7 @@ var classpolyfem_1_1solver_1_1_friction_form =
     [ "init_lagging", "classpolyfem_1_1solver_1_1_friction_form.html#a13496c772de23a6a34114dc4a6a725df", null ],
     [ "max_lagging_iterations", "classpolyfem_1_1solver_1_1_friction_form.html#aa9f29a64cef734a1c61bc8bd36d324d0", null ],
     [ "mu", "classpolyfem_1_1solver_1_1_friction_form.html#adc69570a73e119a21efb8c0fd9182e80", null ],
+    [ "name", "classpolyfem_1_1solver_1_1_friction_form.html#a5d91d8f93a087c76b6f314afa89c4814", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_friction_form.html#a36b081d01bbfca96dfb1ca2e7b37b7ac", null ],
     [ "update_lagging", "classpolyfem_1_1solver_1_1_friction_form.html#a8eb720667dbcbec459d71e5cc2c85bd0", null ],
     [ "update_lagging", "classpolyfem_1_1solver_1_1_friction_form.html#a2d39d4abbf850fbe702a89befd07da70", null ],

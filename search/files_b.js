@@ -17,7 +17,8 @@ var searchData=
   ['linequadrature_2ehpp_14',['LineQuadrature.hpp',['../_line_quadrature_8hpp.html',1,'']]],
   ['linesearch_2ehpp_15',['LineSearch.hpp',['../_line_search_8hpp.html',1,'']]],
   ['linesearch_2etpp_16',['LineSearch.tpp',['../_line_search_8tpp.html',1,'']]],
-  ['localboundary_2ehpp_17',['LocalBoundary.hpp',['../_local_boundary_8hpp.html',1,'']]],
-  ['logger_2ecpp_18',['Logger.cpp',['../_logger_8cpp.html',1,'']]],
-  ['logger_2ehpp_19',['Logger.hpp',['../_logger_8hpp.html',1,'']]]
+  ['localboundary_2ecpp_17',['LocalBoundary.cpp',['../_local_boundary_8cpp.html',1,'']]],
+  ['localboundary_2ehpp_18',['LocalBoundary.hpp',['../_local_boundary_8hpp.html',1,'']]],
+  ['logger_2ecpp_19',['Logger.cpp',['../_logger_8cpp.html',1,'']]],
+  ['logger_2ehpp_20',['Logger.hpp',['../_logger_8hpp.html',1,'']]]
 ];

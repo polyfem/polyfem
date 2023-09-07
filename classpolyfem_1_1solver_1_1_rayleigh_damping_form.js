@@ -4,6 +4,7 @@ var classpolyfem_1_1solver_1_1_rayleigh_damping_form =
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a188aa906affa9b99b01a4875f84a5167", null ],
     [ "init_lagging", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a6809f0a008ca0f00423ef3133d3e3369", null ],
     [ "max_lagging_iterations", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a94001769e05f2fa6272c47dafdee9924", null ],
+    [ "name", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#aa25a7f59f76664f17d1cbb096716431f", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a1948ae0fed6e24a8e06b63693b2eedcc", null ],
     [ "stiffness", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#aeb1a14e9ef7a9a1f27332d6f80956472", null ],
     [ "update_lagging", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a495516385c26912463ca2dd510014295", null ],

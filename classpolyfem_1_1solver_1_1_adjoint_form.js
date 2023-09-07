@@ -10,6 +10,7 @@ var classpolyfem_1_1solver_1_1_adjoint_form =
     [ "enable_energy_print", "classpolyfem_1_1solver_1_1_adjoint_form.html#aaa331f021f999464b69fbc9b42023162", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_adjoint_form.html#a49dc3a90b9176f980eb81981fe934e05", null ],
     [ "get_variable_to_simulations", "classpolyfem_1_1solver_1_1_adjoint_form.html#ad6dd17bb9dc412eca196fba164513cc8", null ],
+    [ "name", "classpolyfem_1_1solver_1_1_adjoint_form.html#af5a89c0da39c8c2a00ad29b71ab04e06", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_adjoint_form.html#a67707227b0771154a9a0ef372ac1f25e", null ],
     [ "solution_changed", "classpolyfem_1_1solver_1_1_adjoint_form.html#a3f00fafcf3de6cbf9d381d89d093db83", null ],
     [ "value", "classpolyfem_1_1solver_1_1_adjoint_form.html#a83da86e0efba5cfcba61af6b05796801", null ],

@@ -56,6 +56,7 @@ var namespacepolyfem_1_1utils =
     [ "inverse", "namespacepolyfem_1_1utils.html#a81d53daf4d77bf87d802589c5ec3c1c4", null ],
     [ "is_param_valid", "namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a", null ],
     [ "json_as_array", "namespacepolyfem_1_1utils.html#a96bdecaf2191cf4146f7bb0d850c47f3", null ],
+    [ "json_value", "namespacepolyfem_1_1utils.html#af1c193892eb3ee9786a63bb8a2998541", null ],
     [ "lump_matrix", "namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226", null ],
     [ "map_index_matrix", "namespacepolyfem_1_1utils.html#aea6bd161d2a5a24993e13435a0a2ea52", null ],
     [ "maybe_parallel_for", "namespacepolyfem_1_1utils.html#a6271a11288e93e85b3d285403b962020", null ],

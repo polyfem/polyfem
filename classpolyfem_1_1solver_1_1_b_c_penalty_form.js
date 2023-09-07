@@ -5,6 +5,7 @@ var classpolyfem_1_1solver_1_1_b_c_penalty_form =
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a8f34d6d4023d6161057773a6ec2a6194", null ],
     [ "init_masked_lumped_mass", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a2a4d8527ae1ab6981a29f16f540bcd57", null ],
     [ "mask", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a332cfe8272a9f236d80607a02ce832e2", null ],
+    [ "name", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#aedfdf4169128b691d9f423d761bb1052", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a9e24cf370907d5f9f41ab7a96f5f13ec", null ],
     [ "target", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a9dc709bc18d1ac4deced5febfae6cca5", null ],
     [ "update_quantities", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a4abff93789ea47f89f61c7efcd579a35", null ],

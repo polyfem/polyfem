@@ -9,6 +9,7 @@ var classpolyfem_1_1basis_1_1_basis =
     [ "init", "classpolyfem_1_1basis_1_1_basis.html#abb4c4cb17788261d7dcc02b5e7a445d1", null ],
     [ "is_complete", "classpolyfem_1_1basis_1_1_basis.html#a148dcc769638cbc1331703378776efe8", null ],
     [ "is_defined", "classpolyfem_1_1basis_1_1_basis.html#a20fe4fc9bc89d9617fc10cf8d50eca2c", null ],
+    [ "operator()", "classpolyfem_1_1basis_1_1_basis.html#ad5a4752ad6ee252f5f6ed60d949c1f50", null ],
     [ "order", "classpolyfem_1_1basis_1_1_basis.html#a0c0b0cce4c9db9e4fca0b35bab342014", null ],
     [ "set_basis", "classpolyfem_1_1basis_1_1_basis.html#a7add13c457cb02a2038942a4ae189b85", null ],
     [ "set_grad", "classpolyfem_1_1basis_1_1_basis.html#a5c1bdb82261b50e3ee93f434e9c1ba8f", null ],

@@ -184,96 +184,98 @@ $(document).ready(function(){initNavTree('_j_s_o_n_utils_8cpp_source.html',''); 
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keywordflow">if</span> (!patch.empty())</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                common_params = common_params.patch(patch);</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            args = common_params;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            args.erase(<span class="stringliteral">&quot;common&quot;</span>); <span class="comment">// Remove common params from the final json</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        }</div>
 </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="foldopen" id="foldopen00059" data-start="{" data-end="}">
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#a839770ed1facd0a5f30ef708ddf03b15">   59</a></span>        Eigen::Matrix3d <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a839770ed1facd0a5f30ef708ddf03b15">to_rotation_matrix</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;jr, std::string mode)</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        {</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            std::transform(mode.begin(), mode.end(), mode.begin(), ::tolower);</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="keywordflow">if</span> (jr.is_array() &amp;&amp; jr.empty())</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            {</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                <span class="keywordflow">return</span> Eigen::Matrix3d::Identity(3, 3);</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            }</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            Eigen::VectorXd r;</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <span class="keywordflow">if</span> (jr.is_number())</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            {</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                r.setZero(3);</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                assert(mode.size() == 1); <span class="comment">// must be either &quot;x&quot;, &quot;y&quot;, or &quot;z&quot;</span></div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                <span class="keywordtype">int</span> i = mode[0] - <span class="charliteral">&#39;x&#39;</span>;</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                assert(i &gt;= 0 &amp;&amp; i &lt; 3);</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                r[i] = jr.get&lt;<span class="keywordtype">double</span>&gt;();</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            }</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            {</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                assert(jr.is_array());</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                r = jr;</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            }</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordflow">if</span> (mode == <span class="stringliteral">&quot;axis_angle&quot;</span>)</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            {</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                assert(r.size() == 4);</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                <span class="keywordtype">double</span> angle = <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19">deg2rad</a>(r[0]); <span class="comment">// NOTE: assumes input angle is in degrees</span></div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                Eigen::Vector3d axis = r.tail&lt;3&gt;().normalized();</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                <span class="keywordflow">return</span> Eigen::AngleAxisd(angle, axis).toRotationMatrix();</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            }</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            <span class="keywordflow">if</span> (mode == <span class="stringliteral">&quot;quaternion&quot;</span>)</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            {</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                assert(r.size() == 4);</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                Eigen::Vector4d q = r.normalized();</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                <span class="keywordflow">return</span> Eigen::Quaterniond(q).toRotationMatrix();</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            }</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <span class="comment">// The following expect the input is given in degrees</span></div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            r = <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19">deg2rad</a>(r);</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            <span class="keywordflow">if</span> (mode == <span class="stringliteral">&quot;rotation_vector&quot;</span>)</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            {</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                assert(r.size() == 3);</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                <span class="keywordtype">double</span> angle = r.norm();</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                <span class="keywordflow">if</span> (angle != 0)</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                {</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                    <span class="keywordflow">return</span> Eigen::AngleAxisd(angle, r / angle).toRotationMatrix();</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                }</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                {</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                    <span class="keywordflow">return</span> Eigen::Matrix3d::Identity();</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                }</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            }</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            Eigen::Matrix3d R = Eigen::Matrix3d::Identity();</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="}">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#a839770ed1facd0a5f30ef708ddf03b15">   61</a></span>        Eigen::Matrix3d <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a839770ed1facd0a5f30ef708ddf03b15">to_rotation_matrix</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;jr, std::string mode)</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            std::transform(mode.begin(), mode.end(), mode.begin(), ::tolower);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="keywordflow">if</span> (jr.is_array() &amp;&amp; jr.empty())</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                <span class="keywordflow">return</span> Eigen::Matrix3d::Identity(3, 3);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            Eigen::VectorXd r;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <span class="keywordflow">if</span> (jr.is_number())</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                r.setZero(3);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                assert(mode.size() == 1); <span class="comment">// must be either &quot;x&quot;, &quot;y&quot;, or &quot;z&quot;</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                <span class="keywordtype">int</span> i = mode[0] - <span class="charliteral">&#39;x&#39;</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                assert(i &gt;= 0 &amp;&amp; i &lt; 3);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                r[i] = jr.get&lt;<span class="keywordtype">double</span>&gt;();</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                assert(jr.is_array());</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                r = jr;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keywordflow">if</span> (mode == <span class="stringliteral">&quot;axis_angle&quot;</span>)</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                assert(r.size() == 4);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                <span class="keywordtype">double</span> angle = <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19">deg2rad</a>(r[0]); <span class="comment">// NOTE: assumes input angle is in degrees</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                Eigen::Vector3d axis = r.tail&lt;3&gt;().normalized();</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                <span class="keywordflow">return</span> Eigen::AngleAxisd(angle, axis).toRotationMatrix();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keywordflow">if</span> (mode == <span class="stringliteral">&quot;quaternion&quot;</span>)</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                assert(r.size() == 4);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                Eigen::Vector4d q = r.normalized();</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                <span class="keywordflow">return</span> Eigen::Quaterniond(q).toRotationMatrix();</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="comment">// The following expect the input is given in degrees</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            r = <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19">deg2rad</a>(r);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            <span class="keywordflow">if</span> (mode == <span class="stringliteral">&quot;rotation_vector&quot;</span>)</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                assert(r.size() == 3);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                <span class="keywordtype">double</span> angle = r.norm();</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                <span class="keywordflow">if</span> (angle != 0)</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                    <span class="keywordflow">return</span> Eigen::AngleAxisd(angle, r / angle).toRotationMatrix();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                    <span class="keywordflow">return</span> Eigen::Matrix3d::Identity();</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            }</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; mode.size(); i++)</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            {</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                <span class="keywordtype">int</span> j = mode[i] - <span class="charliteral">&#39;x&#39;</span>;</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                assert(j &gt;= 0 &amp;&amp; j &lt; 3);</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                Eigen::Vector3d axis = Eigen::Vector3d::Zero();</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                axis[j] = 1;</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                R = Eigen::AngleAxisd(r[j], axis).toRotationMatrix() * R;</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            }</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>            <span class="keywordflow">return</span> R;</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        }</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            Eigen::Matrix3d R = Eigen::Matrix3d::Identity();</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; mode.size(); i++)</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            {</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                <span class="keywordtype">int</span> j = mode[i] - <span class="charliteral">&#39;x&#39;</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                assert(j &gt;= 0 &amp;&amp; j &lt; 3);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                Eigen::Vector3d axis = Eigen::Vector3d::Zero();</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                axis[j] = 1;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                R = Eigen::AngleAxisd(r[j], axis).toRotationMatrix() * R;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>            }</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            <span class="keywordflow">return</span> R;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        }</div>
 </div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
-<div class="foldopen" id="foldopen00129" data-start="{" data-end="}">
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a">  129</a></span>        <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a">is_param_valid</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, <span class="keyword">const</span> std::string &amp;key)</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        {</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>            <span class="keywordflow">return</span> params.contains(key) &amp;&amp; !params[key].is_null();</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        }</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="foldopen" id="foldopen00131" data-start="{" data-end="}">
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a">  131</a></span>        <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a">is_param_valid</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, <span class="keyword">const</span> std::string &amp;key)</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            <span class="keywordflow">return</span> params.contains(key) &amp;&amp; !params[key].is_null();</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        }</div>
 </div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    } <span class="comment">// namespace utils</span></div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>} <span class="comment">// namespace polyfem</span></div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    } <span class="comment">// namespace utils</span></div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>} <span class="comment">// namespace polyfem</span></div>
 <div class="ttc" id="a_j_s_o_n_utils_8hpp_html"><div class="ttname"><a href="_j_s_o_n_utils_8hpp.html">JSONUtils.hpp</a></div></div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
 <div class="ttc" id="a_string_utils_8hpp_html"><div class="ttname"><a href="_string_utils_8hpp.html">StringUtils.hpp</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html_a4dc2e59d21d66809d2273ae115be0b73"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a4dc2e59d21d66809d2273ae115be0b73">polyfem::utils::resolve_path</a></div><div class="ttdeci">std::string resolve_path(const std::string &amp;path, const std::string &amp;input_file_path, const bool only_if_exists=false)</div><div class="ttdef"><b>Definition</b> <a href="_string_utils_8cpp_source.html#l00103">StringUtils.cpp:103</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1utils_html_a839770ed1facd0a5f30ef708ddf03b15"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a839770ed1facd0a5f30ef708ddf03b15">polyfem::utils::to_rotation_matrix</a></div><div class="ttdeci">Eigen::Matrix3d to_rotation_matrix(const json &amp;jr, std::string mode)</div><div class="ttdef"><b>Definition</b> <a href="_j_s_o_n_utils_8cpp_source.html#l00059">JSONUtils.cpp:59</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_a839770ed1facd0a5f30ef708ddf03b15"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a839770ed1facd0a5f30ef708ddf03b15">polyfem::utils::to_rotation_matrix</a></div><div class="ttdeci">Eigen::Matrix3d to_rotation_matrix(const json &amp;jr, std::string mode)</div><div class="ttdef"><b>Definition</b> <a href="_j_s_o_n_utils_8cpp_source.html#l00061">JSONUtils.cpp:61</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html_a9f16cddaaf4c88645ca864f4e99beb19"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19">polyfem::utils::deg2rad</a></div><div class="ttdeci">T deg2rad(T deg)</div><div class="ttdef"><b>Definition</b> <a href="_j_s_o_n_utils_8hpp_source.html#l00017">JSONUtils.hpp:17</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1utils_html_aa57e548cd0726262758fcc6b16fe0b0a"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a">polyfem::utils::is_param_valid</a></div><div class="ttdeci">bool is_param_valid(const json &amp;params, const std::string &amp;key)</div><div class="ttdef"><b>Definition</b> <a href="_j_s_o_n_utils_8cpp_source.html#l00129">JSONUtils.cpp:129</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_aa57e548cd0726262758fcc6b16fe0b0a"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a">polyfem::utils::is_param_valid</a></div><div class="ttdeci">bool is_param_valid(const json &amp;params, const std::string &amp;key)</div><div class="ttdoc">Determine if a key exists and is non-null in a json object.</div><div class="ttdef"><b>Definition</b> <a href="_j_s_o_n_utils_8cpp_source.html#l00131">JSONUtils.cpp:131</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html_aa79eb723c652651a8079603fba4ebef9"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#aa79eb723c652651a8079603fba4ebef9">polyfem::utils::apply_common_params</a></div><div class="ttdeci">void apply_common_params(json &amp;args)</div><div class="ttdef"><b>Definition</b> <a href="_j_s_o_n_utils_8cpp_source.html#l00014">JSONUtils.cpp:14</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition</b> <a href="_a_m_i_p_s_energy_8cpp_source.html#l00005">AMIPSEnergy.cpp:6</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a77fa8fe96825827f2af726fcf6405d15"><div class="ttname"><a href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">polyfem::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="_common_8hpp_source.html#l00009">Common.hpp:9</a></div></div>

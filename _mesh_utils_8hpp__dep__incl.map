@@ -1,35 +1,39 @@
 <map id="src/polyfem/mesh/MeshUtils.hpp" name="src/polyfem/mesh/MeshUtils.hpp">
-<area shape="rect" id="Node000001" title=" " alt="" coords="1742,5,1978,31"/>
-<area shape="rect" id="Node000002" href="$_polygonal_basis3d_8cpp.html" title=" " alt="" coords="5,79,211,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1728,21,1454,23,1080,30,654,49,436,63,223,81,211,83,211,77,222,76,436,58,654,43,1080,25,1454,17,1728,16"/>
-<area shape="rect" id="Node000003" href="$_out_data_8cpp.html" title=" " alt="" coords="235,86,435,111"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1728,22,1489,25,1170,34,810,52,447,81,395,89,394,83,446,76,810,46,1170,29,1489,20,1728,17"/>
-<area shape="rect" id="Node000004" href="$_geometry_reader_8cpp.html" title=" " alt="" coords="459,79,667,119"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1729,24,1264,39,972,56,679,81,667,83,667,77,678,76,972,51,1264,34,1728,19"/>
-<area shape="rect" id="Node000005" href="$_mesh_8cpp.html" title=" " alt="" coords="691,86,896,111"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="1728,26,1359,44,1134,60,908,81,857,89,856,83,908,76,1133,54,1358,39,1728,21"/>
-<area shape="rect" id="Node000006" href="$_mesh_utils_8cpp.html" title=" " alt="" coords="920,86,1155,111"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="1728,31,1468,52,1167,81,1111,89,1110,83,1166,76,1468,46,1728,26"/>
-<area shape="rect" id="Node000007" href="$_obstacle_8cpp.html" title=" " alt="" coords="1179,86,1405,111"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1759,35,1418,81,1368,89,1367,83,1417,76,1758,30"/>
-<area shape="rect" id="Node000008" href="$_c_mesh2_d_8cpp.html" title=" " alt="" coords="1429,79,1627,119"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="1799,36,1608,81,1607,76,1798,31"/>
-<area shape="rect" id="Node000009" href="$_mesh2_d_8cpp.html" title=" " alt="" coords="1651,79,1848,119"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="1834,41,1778,81,1774,76,1831,36"/>
-<area shape="rect" id="Node000010" href="$_n_c_mesh2_d_8cpp.html" title=" " alt="" coords="1872,79,2069,119"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="1889,36,1946,76,1942,81,1886,41"/>
-<area shape="rect" id="Node000011" href="$_refinement_8cpp.html" title=" " alt="" coords="2093,79,2291,119"/>
-<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="1922,31,2113,76,2112,81,1921,36"/>
-<area shape="rect" id="Node000012" href="$_singularities_8cpp.html" title=" " alt="" coords="2315,79,2512,119"/>
-<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="1966,30,2303,76,2315,78,2314,83,2302,81,1965,35"/>
-<area shape="rect" id="Node000013" href="$_c_mesh3_d_8cpp.html" title=" " alt="" coords="2536,79,2733,119"/>
-<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="1992,25,2240,45,2524,76,2536,78,2535,83,2524,81,2239,51,1992,31"/>
-<area shape="rect" id="Node000014" href="$_mesh3_d_8cpp.html" title=" " alt="" coords="2757,79,2955,119"/>
-<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="1992,21,2334,40,2540,55,2746,76,2757,78,2757,83,2745,81,2539,61,2334,45,1992,27"/>
-<area shape="rect" id="Node000015" href="$_n_c_mesh3_d_8cpp.html" title=" " alt="" coords="2979,79,3176,119"/>
-<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="1992,19,2426,35,2696,51,2967,76,2979,77,2978,83,2966,81,2695,57,2425,40,1992,24"/>
-<area shape="rect" id="Node000016" href="$_polyhedron_quadrature_8cpp.html" title=" " alt="" coords="3201,79,3399,119"/>
-<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="1992,17,2218,21,2516,30,2851,48,3188,76,3201,77,3200,83,3188,81,2850,53,2516,36,2218,26,1992,23"/>
-<area shape="rect" id="Node000017" href="$_ref_element_sampler_8cpp.html" title=" " alt="" coords="3423,79,3633,119"/>
-<area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="1992,16,2253,19,2606,27,3007,45,3212,59,3412,76,3423,77,3422,82,3412,81,3211,64,3007,50,2606,32,2253,24,1992,22"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="1931,5,2167,31"/>
+<area shape="rect" id="Node000002" href="$_state_8cpp.html" title=" " alt="" coords="5,86,169,111"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1917,23,1538,29,1038,40,543,57,338,68,182,81,138,89,137,83,182,76,338,63,543,51,1038,34,1538,24,1917,18"/>
+<area shape="rect" id="Node000003" href="$_polygonal_basis3d_8cpp.html" title=" " alt="" coords="194,79,399,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1917,21,1642,23,1269,30,843,49,625,63,412,81,400,83,399,77,411,76,625,58,843,43,1269,25,1642,17,1917,16"/>
+<area shape="rect" id="Node000004" href="$_out_data_8cpp.html" title=" " alt="" coords="423,86,623,111"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1917,22,1677,25,1359,34,999,52,636,81,583,89,583,83,635,76,998,46,1358,29,1677,20,1917,17"/>
+<area shape="rect" id="Node000005" href="$_geometry_reader_8cpp.html" title=" " alt="" coords="647,79,855,119"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="1917,24,1453,39,1161,56,868,81,856,83,855,77,867,76,1161,51,1453,34,1917,19"/>
+<area shape="rect" id="Node000006" href="$_mesh_8cpp.html" title=" " alt="" coords="879,86,1085,111"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="1917,26,1547,44,1322,60,1097,81,1045,89,1045,83,1096,76,1322,54,1547,39,1917,21"/>
+<area shape="rect" id="Node000007" href="$_mesh_utils_8cpp.html" title=" " alt="" coords="1109,86,1343,111"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1917,31,1657,52,1356,81,1300,89,1299,83,1355,76,1656,46,1916,26"/>
+<area shape="rect" id="Node000008" href="$_obstacle_8cpp.html" title=" " alt="" coords="1367,86,1594,111"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="1948,35,1606,81,1557,89,1556,83,1606,76,1947,30"/>
+<area shape="rect" id="Node000009" href="$_collision_proxy_8cpp.html" title=" " alt="" coords="1618,79,1815,119"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="1988,36,1797,81,1796,76,1987,31"/>
+<area shape="rect" id="Node000010" href="$_c_mesh2_d_8cpp.html" title=" " alt="" coords="1839,79,2037,119"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="2023,41,1966,81,1963,76,2020,36"/>
+<area shape="rect" id="Node000011" href="$_mesh2_d_8cpp.html" title=" " alt="" coords="2061,79,2258,119"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="2078,36,2134,76,2131,81,2075,41"/>
+<area shape="rect" id="Node000012" href="$_n_c_mesh2_d_8cpp.html" title=" " alt="" coords="2282,79,2479,119"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="2111,31,2301,76,2300,81,2109,36"/>
+<area shape="rect" id="Node000013" href="$_refinement_8cpp.html" title=" " alt="" coords="2503,79,2701,119"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="2154,30,2492,76,2503,78,2503,83,2491,81,2153,35"/>
+<area shape="rect" id="Node000014" href="$_singularities_8cpp.html" title=" " alt="" coords="2725,79,2922,119"/>
+<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="2181,25,2428,45,2713,76,2725,78,2724,83,2712,81,2428,51,2180,31"/>
+<area shape="rect" id="Node000015" href="$_c_mesh3_d_8cpp.html" title=" " alt="" coords="2946,79,3143,119"/>
+<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="2181,21,2523,40,2728,55,2934,76,2946,78,2945,83,2934,81,2728,61,2522,45,2180,27"/>
+<area shape="rect" id="Node000016" href="$_mesh3_d_8cpp.html" title=" " alt="" coords="3167,79,3365,119"/>
+<area shape="poly" id="edge15_Node000001_Node000016" title=" " alt="" coords="2180,19,2614,35,2884,51,3156,76,3167,77,3167,83,3155,81,2884,57,2614,40,2180,24"/>
+<area shape="rect" id="Node000017" href="$_n_c_mesh3_d_8cpp.html" title=" " alt="" coords="3389,79,3586,119"/>
+<area shape="poly" id="edge16_Node000001_Node000017" title=" " alt="" coords="2180,17,2407,21,2705,30,3039,48,3377,76,3389,77,3388,83,3376,81,3039,53,2704,35,2407,26,2180,23"/>
+<area shape="rect" id="Node000018" href="$_polyhedron_quadrature_8cpp.html" title=" " alt="" coords="3611,79,3809,119"/>
+<area shape="poly" id="edge17_Node000001_Node000018" title=" " alt="" coords="2181,16,2442,18,2794,26,3194,44,3398,58,3598,76,3611,77,3610,83,3598,81,3398,63,3194,49,2794,31,2442,23,2181,21"/>
+<area shape="rect" id="Node000019" href="$_ref_element_sampler_8cpp.html" title=" " alt="" coords="3833,79,4043,119"/>
+<area shape="poly" id="edge18_Node000001_Node000019" title=" " alt="" coords="2180,19,3015,38,3481,55,3675,65,3822,76,3833,77,3832,82,3822,81,3674,70,3481,60,3014,44,2180,24"/>
 </map>

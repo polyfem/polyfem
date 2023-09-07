@@ -5,7 +5,7 @@ var classpolyfem_1_1_state =
     [ "assemble_mass_mat", "classpolyfem_1_1_state.html#a1ccc0343cb326880d9d241517170efb0", null ],
     [ "assemble_rhs", "classpolyfem_1_1_state.html#a92ca4b0169412ddc297a77744bd0e724", null ],
     [ "build_basis", "classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b", null ],
-    [ "build_collision_mesh", "classpolyfem_1_1_state.html#a21a66eb08bf1c02cd237d9dfbecb8024", null ],
+    [ "build_collision_mesh", "classpolyfem_1_1_state.html#ae73637bc6b2260ba3b25d50cc9b212cc", null ],
     [ "build_mesh_matrices", "classpolyfem_1_1_state.html#af7ea31cd189fb4a3aae03471e00db305", null ],
     [ "build_node_mapping", "classpolyfem_1_1_state.html#a5b47ee508fd45069d3f0b84cb41f3179", null ],
     [ "build_polygonal_basis", "classpolyfem_1_1_state.html#a202f2494b8f46d4bf22edfc0a36ddb32", null ],

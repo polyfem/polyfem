@@ -148,6 +148,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7f6855ef9b1244ee946f218478fac440" id="r_a7f6855ef9b1244ee946f218478fac440"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a7f6855ef9b1244ee946f218478fac440">BCPenaltyForm</a> (const int ndof, const std::vector&lt; int &gt; &amp;boundary_nodes, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_neumann_boundary, const int n_boundary_samples, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mass, const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> &amp;rhs_assembler, const <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">mesh::Obstacle</a> &amp;obstacle, const bool is_time_dependent, const double t)</td></tr>
 <tr class="memdesc:a7f6855ef9b1244ee946f218478fac440"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new <a class="el" href="classpolyfem_1_1solver_1_1_b_c_penalty_form.html" title="Form of the penalty in augmented lagrangian.">BCPenaltyForm</a> object with a time dependent Dirichlet boundary.  <br /></td></tr>
 <tr class="separator:a7f6855ef9b1244ee946f218478fac440"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedfdf4169128b691d9f423d761bb1052" id="r_aedfdf4169128b691d9f423d761bb1052"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_b_c_penalty_form.html#aedfdf4169128b691d9f423d761bb1052">name</a> () const override</td></tr>
+<tr class="separator:aedfdf4169128b691d9f423d761bb1052"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b09015395028ed024f123f4c46da944" id="r_a1b09015395028ed024f123f4c46da944"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a1b09015395028ed024f123f4c46da944">BCPenaltyForm</a> (const int ndof, const std::vector&lt; int &gt; &amp;boundary_nodes, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mass, const <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">mesh::Obstacle</a> &amp;obstacle, const Eigen::MatrixXd &amp;target_x)</td></tr>
 <tr class="memdesc:a1b09015395028ed024f123f4c46da944"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new <a class="el" href="classpolyfem_1_1solver_1_1_b_c_penalty_form.html" title="Form of the penalty in augmented lagrangian.">BCPenaltyForm</a> object with a fixed Dirichlet boundary.  <br /></td></tr>
 <tr class="separator:a1b09015395028ed024f123f4c46da944"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -519,7 +521,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00088">88</a> of file <a class="el" href="_b_c_penalty_form_8cpp_source.html">BCPenaltyForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00085">masked_lumped_mass_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00087">target_x_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00087">masked_lumped_mass_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00089">target_x_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 </div>
 </div>
@@ -575,7 +577,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00044">44</a> of file <a class="el" href="_b_c_penalty_form_8cpp_source.html">BCPenaltyForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00077">boundary_nodes_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00394">polyfem::utils::lump_matrix()</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00086">mask_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00085">masked_lumped_mass_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00036">polyfem::mesh::Obstacle::n_vertices()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00040">polyfem::mesh::Obstacle::ndof()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00078">polyfem::utils::sparse_identity()</a>, and <a class="el" href="_form_8hpp_source.html#l00021">polyfem::solver::Form::value()</a>.</p>
+<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00079">boundary_nodes_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00394">polyfem::utils::lump_matrix()</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00088">mask_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00087">masked_lumped_mass_</a>, <a class="el" href="_obstacle_8hpp_source.html#l00036">polyfem::mesh::Obstacle::n_vertices()</a>, <a class="el" href="_obstacle_8hpp_source.html#l00040">polyfem::mesh::Obstacle::ndof()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00078">polyfem::utils::sparse_identity()</a>, and <a class="el" href="_form_8hpp_source.html#l00023">polyfem::solver::Form::value()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00007">BCPenaltyForm()</a>, and <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00028">BCPenaltyForm()</a>.</p>
 <div class="dynheader">
@@ -614,9 +616,38 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00073">73</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00075">75</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00086">mask_</a>.</p>
+<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00088">mask_</a>.</p>
+
+</div>
+</div>
+<a id="aedfdf4169128b691d9f423d761bb1052" name="aedfdf4169128b691d9f423d761bb1052"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedfdf4169128b691d9f423d761bb1052">&#9670;&#160;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::solver::BCPenaltyForm::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a811b9bc4f875497c659bcce24c15f935">polyfem::solver::Form</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00040">40</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -667,7 +698,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00093">93</a> of file <a class="el" href="_b_c_penalty_form_8cpp_source.html">BCPenaltyForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00085">masked_lumped_mass_</a>.</p>
+<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00087">masked_lumped_mass_</a>.</p>
 
 </div>
 </div>
@@ -694,9 +725,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00074">74</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00076">76</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00087">target_x_</a>.</p>
+<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00089">target_x_</a>.</p>
 
 </div>
 </div>
@@ -747,7 +778,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00098">98</a> of file <a class="el" href="_b_c_penalty_form_8cpp_source.html">BCPenaltyForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00083">is_time_dependent_</a>, and <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00104">update_target()</a>.</p>
+<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00085">is_time_dependent_</a>, and <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00104">update_target()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -790,7 +821,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00104">104</a> of file <a class="el" href="_b_c_penalty_form_8cpp_source.html">BCPenaltyForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00077">boundary_nodes_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00078">local_boundary_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00079">local_neumann_boundary_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00085">masked_lumped_mass_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00080">n_boundary_samples_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00082">rhs_assembler_</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0101cc7349acaf03df4743439d055f28">polyfem::assembler::RhsAssembler::set_bc()</a>, and <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00087">target_x_</a>.</p>
+<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00079">boundary_nodes_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00080">local_boundary_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00081">local_neumann_boundary_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00087">masked_lumped_mass_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00082">n_boundary_samples_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00084">rhs_assembler_</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0101cc7349acaf03df4743439d055f28">polyfem::assembler::RhsAssembler::set_bc()</a>, and <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00089">target_x_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00007">BCPenaltyForm()</a>, and <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00098">update_quantities()</a>.</p>
 <div class="dynheader">
@@ -843,7 +874,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00081">81</a> of file <a class="el" href="_b_c_penalty_form_8cpp_source.html">BCPenaltyForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00085">masked_lumped_mass_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00087">target_x_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00087">masked_lumped_mass_</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00089">target_x_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 </div>
 </div>
@@ -868,7 +899,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00077">77</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00079">79</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00044">init_masked_lumped_mass()</a>, and <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00104">update_target()</a>.</p>
 
@@ -894,7 +925,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00083">83</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00085">85</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00098">update_quantities()</a>.</p>
 
@@ -920,7 +951,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00078">78</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00080">80</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00104">update_target()</a>.</p>
 
@@ -946,7 +977,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00079">79</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00081">81</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00104">update_target()</a>.</p>
 
@@ -974,9 +1005,9 @@ Here is the caller graph for this function:</div>
 
 <p>identity matrix masked by the AL dofs </p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00086">86</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00088">88</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00044">init_masked_lumped_mass()</a>, and <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00073">mask()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00044">init_masked_lumped_mass()</a>, and <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00075">mask()</a>.</p>
 
 </div>
 </div>
@@ -1002,7 +1033,7 @@ Here is the caller graph for this function:</div>
 
 <p>mass matrix masked by the AL dofs </p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00085">85</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00087">87</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00088">first_derivative_unweighted()</a>, <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00044">init_masked_lumped_mass()</a>, <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00093">second_derivative_unweighted()</a>, <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00104">update_target()</a>, and <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00081">value_unweighted()</a>.</p>
 
@@ -1028,7 +1059,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00080">80</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00082">82</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00104">update_target()</a>.</p>
 
@@ -1056,7 +1087,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reference to the RHS assembler. </p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00082">82</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00084">84</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00104">update_target()</a>.</p>
 
@@ -1084,9 +1115,9 @@ Here is the caller graph for this function:</div>
 
 <p>actually a vector with the same size as x with target nodal positions </p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00087">87</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00089">89</a> of file <a class="el" href="_b_c_penalty_form_8hpp_source.html">BCPenaltyForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00088">first_derivative_unweighted()</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00074">target()</a>, <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00104">update_target()</a>, and <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00081">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00088">first_derivative_unweighted()</a>, <a class="el" href="_b_c_penalty_form_8hpp_source.html#l00076">target()</a>, <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00104">update_target()</a>, and <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00081">value_unweighted()</a>.</p>
 
 </div>
 </div>

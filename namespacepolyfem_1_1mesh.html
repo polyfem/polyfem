@@ -153,6 +153,7 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1mesh_1_1_face.html">Face</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">LocalBoundary</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boundary primitive IDs for a single element.  <a href="classpolyfem_1_1mesh_1_1_local_boundary.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract mesh class to capture 2d/3d conforming and non-conforming meshes.  <a href="classpolyfem_1_1mesh_1_1_mesh.html#details">More...</a><br /></td></tr>
@@ -185,6 +186,10 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
+<tr class="memitem:abfa6495ef3f63356d2bf5153d37989ec" id="r_abfa6495ef3f63356d2bf5153d37989ec"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989ec">CollisionProxyTessellation</a> { <a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca820ead78f0fa32544c7ba38fe7ff53d9">REGULAR</a>
+, <a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca575415ac246c79db92133fba5023b6df">IRREGULAR</a>
+ }</td></tr>
+<tr class="separator:abfa6495ef3f63356d2bf5153d37989ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac25a28c10b676e06e484d9e1f496f826" id="r_ac25a28c10b676e06e484d9e1f496f826"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826">BoundaryType</a> { <br />
 &#160;&#160;<a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826ad1ad1999414f3d1964884f9d0f81f976">TRI_LINE</a>
 , <a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826ac4de65de70929441c563707dc06dbe58">QUAD_LINE</a>
@@ -229,6 +234,55 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a290ded340a51fb051467b479ff7dfccc" id="r_a290ded340a51fb051467b479ff7dfccc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a290ded340a51fb051467b479ff7dfccc">build_collision_proxy</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;geom_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">LocalBoundary</a> &gt; &amp;total_local_boundary, const int n_bases, const int dim, const double <a class="el" href="namespacepolyfem_1_1mesh.html#a8d6dfcfa36d78e00ba3eb5d9e98ccc92">max_edge_length</a>, Eigen::MatrixXd &amp;proxy_vertices, Eigen::MatrixXi &amp;proxy_faces, std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;displacement_map_entries, const <a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989ec">CollisionProxyTessellation</a> tessellation)</td></tr>
+<tr class="separator:a290ded340a51fb051467b479ff7dfccc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21fb2a8e1b99bdd8ba7f8b8d20ecac85" id="r_a21fb2a8e1b99bdd8ba7f8b8d20ecac85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a21fb2a8e1b99bdd8ba7f8b8d20ecac85">build_collision_proxy_displacement_maps</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;geom_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;total_local_boundary, const int n_bases, const int dim, const Eigen::MatrixXd &amp;proxy_vertices, std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;displacement_map)</td></tr>
+<tr class="memdesc:a21fb2a8e1b99bdd8ba7f8b8d20ecac85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a collision proxy displacement map for a given mesh and proxy mesh.  <br /></td></tr>
+<tr class="separator:a21fb2a8e1b99bdd8ba7f8b8d20ecac85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15b9f6e84b61e94823dad7a365835542" id="r_a15b9f6e84b61e94823dad7a365835542"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a15b9f6e84b61e94823dad7a365835542">load_collision_proxy</a> (const std::string &amp;mesh_filename, const std::string &amp;weights_filename, const Eigen::VectorXi &amp;in_node_to_node, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;transformation, Eigen::MatrixXd &amp;vertices, Eigen::VectorXi &amp;codim_vertices, Eigen::MatrixXi &amp;edges, Eigen::MatrixXi &amp;faces, std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;displacement_map_entries)</td></tr>
+<tr class="memdesc:a15b9f6e84b61e94823dad7a365835542"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load a collision proxy mesh and displacement map from files.  <br /></td></tr>
+<tr class="separator:a15b9f6e84b61e94823dad7a365835542"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b354410bd3ee20974de06b0131f8036" id="r_a8b354410bd3ee20974de06b0131f8036"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a8b354410bd3ee20974de06b0131f8036">load_collision_proxy_mesh</a> (const std::string &amp;mesh_filename, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;transformation, Eigen::MatrixXd &amp;vertices, Eigen::VectorXi &amp;codim_vertices, Eigen::MatrixXi &amp;edges, Eigen::MatrixXi &amp;faces)</td></tr>
+<tr class="memdesc:a8b354410bd3ee20974de06b0131f8036"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load a collision proxy mesh from a file.  <br /></td></tr>
+<tr class="separator:a8b354410bd3ee20974de06b0131f8036"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac69cc240a806f402d61f1eaf7eb2d819" id="r_ac69cc240a806f402d61f1eaf7eb2d819"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ac69cc240a806f402d61f1eaf7eb2d819">load_collision_proxy_displacement_map</a> (const std::string &amp;weights_filename, const Eigen::VectorXi &amp;in_node_to_node, const size_t num_proxy_vertices, std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;displacement_map_entries)</td></tr>
+<tr class="memdesc:ac69cc240a806f402d61f1eaf7eb2d819"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load a collision proxy displacement map from files.  <br /></td></tr>
+<tr class="separator:ac69cc240a806f402d61f1eaf7eb2d819"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4840c076c8975d60f888fd87763daebb" id="r_a4840c076c8975d60f888fd87763daebb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a4840c076c8975d60f888fd87763daebb">NLOHMANN_JSON_SERIALIZE_ENUM</a> (<a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989ec">CollisionProxyTessellation</a>, {{<a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca820ead78f0fa32544c7ba38fe7ff53d9">CollisionProxyTessellation::REGULAR</a>, &quot;regular&quot;}, {<a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca575415ac246c79db92133fba5023b6df">CollisionProxyTessellation::IRREGULAR</a>, &quot;irregular&quot;}})</td></tr>
+<tr class="separator:a4840c076c8975d60f888fd87763daebb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0aff2ad64ded82a861fd4aa657544a4" id="r_aa0aff2ad64ded82a861fd4aa657544a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aa0aff2ad64ded82a861fd4aa657544a4">build_collision_proxy</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;geom_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;total_local_boundary, const int n_bases, const int dim, const double <a class="el" href="namespacepolyfem_1_1mesh.html#a8d6dfcfa36d78e00ba3eb5d9e98ccc92">max_edge_length</a>, Eigen::MatrixXd &amp;proxy_vertices, Eigen::MatrixXi &amp;proxy_faces, std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;displacement_map, const <a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989ec">CollisionProxyTessellation</a> tessellation=<a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca820ead78f0fa32544c7ba38fe7ff53d9">CollisionProxyTessellation::REGULAR</a>)</td></tr>
+<tr class="memdesc:aa0aff2ad64ded82a861fd4aa657544a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a collision proxy mesh by upsampling a given mesh.  <br /></td></tr>
+<tr class="separator:aa0aff2ad64ded82a861fd4aa657544a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad36edbb969d1772884b1a67bb4037510" id="r_ad36edbb969d1772884b1a67bb4037510"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ad36edbb969d1772884b1a67bb4037510">stitch_mesh</a> (const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, Eigen::MatrixXd &amp;V_out, Eigen::MatrixXi &amp;F_out, const double epsilon=1e-5)</td></tr>
+<tr class="memdesc:ad36edbb969d1772884b1a67bb4037510"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stitch a triangle mesh (V, F) together by removing duplicate vertices.  <br /></td></tr>
+<tr class="separator:ad36edbb969d1772884b1a67bb4037510"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a656d6973425b6f2809fc3523be8a08c2" id="r_a656d6973425b6f2809fc3523be8a08c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a656d6973425b6f2809fc3523be8a08c2">stitch_mesh</a> (const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, const std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;W, Eigen::MatrixXd &amp;V_out, Eigen::MatrixXi &amp;F_out, std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;W_out, const double epsilon=1e-5)</td></tr>
+<tr class="memdesc:a656d6973425b6f2809fc3523be8a08c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stitch a triangle mesh (V, F) together by removing duplicate vertices.  <br /></td></tr>
+<tr class="separator:a656d6973425b6f2809fc3523be8a08c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d6dfcfa36d78e00ba3eb5d9e98ccc92" id="r_a8d6dfcfa36d78e00ba3eb5d9e98ccc92"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a8d6dfcfa36d78e00ba3eb5d9e98ccc92">max_edge_length</a> (const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>)</td></tr>
+<tr class="memdesc:a8d6dfcfa36d78e00ba3eb5d9e98ccc92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the maximum edge length of a triangle mesh (V, F)  <br /></td></tr>
+<tr class="separator:a8d6dfcfa36d78e00ba3eb5d9e98ccc92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d79697c151a12917ccb7a8b871fe7b7" id="r_a9d79697c151a12917ccb7a8b871fe7b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a9d79697c151a12917ccb7a8b871fe7b7">regular_grid_triangle_barycentric_coordinates</a> (const int n, Eigen::MatrixXd &amp;V, Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>)</td></tr>
+<tr class="memdesc:a9d79697c151a12917ccb7a8b871fe7b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the barycentric coordinates of a regular grid of triangles.  <br /></td></tr>
+<tr class="separator:a9d79697c151a12917ccb7a8b871fe7b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb91ccfdf02a3bf57424c46c4834402a" id="r_acb91ccfdf02a3bf57424c46c4834402a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#acb91ccfdf02a3bf57424c46c4834402a">regular_grid_tessellation</a> (const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, const double <a class="el" href="namespacepolyfem_1_1mesh.html#a8d6dfcfa36d78e00ba3eb5d9e98ccc92">max_edge_length</a>, Eigen::MatrixXd &amp;V_out, Eigen::MatrixXi &amp;F_out)</td></tr>
+<tr class="memdesc:acb91ccfdf02a3bf57424c46c4834402a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tessilate a triangle mesh (V, F) with regular grids of triangles of maximum edge length.  <br /></td></tr>
+<tr class="separator:acb91ccfdf02a3bf57424c46c4834402a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cf65a44948a6042699876449b0eddab" id="r_a4cf65a44948a6042699876449b0eddab"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a4cf65a44948a6042699876449b0eddab">refine_edge</a> (const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;a, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;b, const double <a class="el" href="namespacepolyfem_1_1mesh.html#a8d6dfcfa36d78e00ba3eb5d9e98ccc92">max_edge_length</a>)</td></tr>
+<tr class="memdesc:a4cf65a44948a6042699876449b0eddab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine an edge (a, b) so each refined edge has length at most max_edge_length.  <br /></td></tr>
+<tr class="separator:a4cf65a44948a6042699876449b0eddab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf01f1cc1cd8d1c23d270e5c1471c091" id="r_acf01f1cc1cd8d1c23d270e5c1471c091"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#acf01f1cc1cd8d1c23d270e5c1471c091">refine_triangle_edges</a> (const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;a, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;b, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;c, const double max_edge_len, Eigen::MatrixXd &amp;V, Eigen::MatrixXi &amp;E)</td></tr>
+<tr class="memdesc:acf01f1cc1cd8d1c23d270e5c1471c091"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine the edges of a triangle (a, b, c) so each refined edge has length at most max_edge_length.  <br /></td></tr>
+<tr class="separator:acf01f1cc1cd8d1c23d270e5c1471c091"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a521aec8d19df9ccbe3493d7d6d97c451" id="r_a521aec8d19df9ccbe3493d7d6d97c451"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a521aec8d19df9ccbe3493d7d6d97c451">irregular_triangle</a> (const Eigen::Vector3d &amp;a, const Eigen::Vector3d &amp;b, const Eigen::Vector3d &amp;c, const double <a class="el" href="namespacepolyfem_1_1mesh.html#a8d6dfcfa36d78e00ba3eb5d9e98ccc92">max_edge_length</a>, Eigen::MatrixXd &amp;V, Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>)</td></tr>
+<tr class="memdesc:a521aec8d19df9ccbe3493d7d6d97c451"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine a triangle (a, b, c) into a well shaped triangle mesh.  <br /></td></tr>
+<tr class="separator:a521aec8d19df9ccbe3493d7d6d97c451"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe799e00606dbda12858d3dbd0d6491e" id="r_abe799e00606dbda12858d3dbd0d6491e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#abe799e00606dbda12858d3dbd0d6491e">irregular_triangle_barycentric_coordinates</a> (const Eigen::Vector3d &amp;a, const Eigen::Vector3d &amp;b, const Eigen::Vector3d &amp;c, const double <a class="el" href="namespacepolyfem_1_1mesh.html#a8d6dfcfa36d78e00ba3eb5d9e98ccc92">max_edge_length</a>, Eigen::MatrixXd &amp;UV, Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>)</td></tr>
+<tr class="memdesc:abe799e00606dbda12858d3dbd0d6491e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine a triangle (a, b, c) into a well shaped triangle mesh.  <br /></td></tr>
+<tr class="separator:abe799e00606dbda12858d3dbd0d6491e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a679b727e7e467d38ebf4af60e8b600c3" id="r_a679b727e7e467d38ebf4af60e8b600c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a679b727e7e467d38ebf4af60e8b600c3">irregular_tessellation</a> (const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, const double <a class="el" href="namespacepolyfem_1_1mesh.html#a8d6dfcfa36d78e00ba3eb5d9e98ccc92">max_edge_length</a>, Eigen::MatrixXd &amp;V_out, Eigen::MatrixXi &amp;F_out)</td></tr>
+<tr class="memdesc:a679b727e7e467d38ebf4af60e8b600c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tessilate a triangle mesh (V, F) with well shaped triangles.  <br /></td></tr>
+<tr class="separator:a679b727e7e467d38ebf4af60e8b600c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a778e805ac1a3193ae27fca02a121c77b" id="r_a778e805ac1a3193ae27fca02a121c77b"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a778e805ac1a3193ae27fca02a121c77b">read_fem_mesh</a> (const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;j_mesh, const std::string &amp;root_path, const bool non_conforming=false)</td></tr>
 <tr class="memdesc:a778e805ac1a3193ae27fca02a121c77b"><td class="mdescLeft">&#160;</td><td class="mdescRight">read a FEM mesh from a geometry JSON  <br /></td></tr>
 <tr class="separator:a778e805ac1a3193ae27fca02a121c77b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -244,6 +298,8 @@ Functions</h2></td></tr>
 <tr class="memitem:a255f46e00ca412d64d2551b10bd43437" id="r_a255f46e00ca412d64d2551b10bd43437"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a255f46e00ca412d64d2551b10bd43437">construct_affine_transformation</a> (const double unit_scale, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;transform, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;mesh_dimensions, <a class="el" href="namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2">MatrixNd</a> &amp;A, <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;b)</td></tr>
 <tr class="memdesc:a255f46e00ca412d64d2551b10bd43437"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an affine transformation \(Ax+b\).  <br /></td></tr>
 <tr class="separator:a255f46e00ca412d64d2551b10bd43437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cabdf1ac4e1ac087b4832016583b815" id="r_a3cabdf1ac4e1ac087b4832016583b815"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a3cabdf1ac4e1ac087b4832016583b815">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">LocalBoundary</a> &amp;lb)</td></tr>
+<tr class="separator:a3cabdf1ac4e1ac087b4832016583b815"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c9e86a0cbb90821ce9b4c1f37b8df6c" id="r_a2c9e86a0cbb90821ce9b4c1f37b8df6c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a2c9e86a0cbb90821ce9b4c1f37b8df6c">find</a> (const Eigen::VectorXi &amp;<a class="el" href="_assembler_8cpp.html#a0ceb8b1b1b63245b857fa3d925c17858">vec</a>, int <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
 <tr class="separator:a2c9e86a0cbb90821ce9b4c1f37b8df6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add37eb917dcfad1ce25e9f2aca7ca9db" id="r_add37eb917dcfad1ce25e9f2aca7ca9db"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#add37eb917dcfad1ce25e9f2aca7ca9db">line_weight</a> (Eigen::Matrix&lt; double, 2, 2 &gt; &amp;e, Eigen::VectorXd &amp;v)</td></tr>
@@ -404,8 +460,10 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ac25a28c10b676e06e484d9e1f496f826ad1ad1999414f3d1964884f9d0f81f976" name="ac25a28c10b676e06e484d9e1f496f826ad1ad1999414f3d1964884f9d0f81f976"></a>TRI_LINE&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ac25a28c10b676e06e484d9e1f496f826ac4de65de70929441c563707dc06dbe58" name="ac25a28c10b676e06e484d9e1f496f826ac4de65de70929441c563707dc06dbe58"></a>QUAD_LINE&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ac25a28c10b676e06e484d9e1f496f826ad1ad1999414f3d1964884f9d0f81f976" name="ac25a28c10b676e06e484d9e1f496f826ad1ad1999414f3d1964884f9d0f81f976"></a>TRI_LINE&#160;</td><td class="fielddoc"><p>Boundary of a triangle in 2D. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ac25a28c10b676e06e484d9e1f496f826ac4de65de70929441c563707dc06dbe58" name="ac25a28c10b676e06e484d9e1f496f826ac4de65de70929441c563707dc06dbe58"></a>QUAD_LINE&#160;</td><td class="fielddoc"><p>Boundary of a quad in 2D. </p>
+</td></tr>
 <tr><td class="fieldname"><a id="ac25a28c10b676e06e484d9e1f496f826a38b464161bf5019798797584babd0433" name="ac25a28c10b676e06e484d9e1f496f826a38b464161bf5019798797584babd0433"></a>TRI&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ac25a28c10b676e06e484d9e1f496f826ac88da92039291f825814816096db2ea2" name="ac25a28c10b676e06e484d9e1f496f826ac88da92039291f825814816096db2ea2"></a>QUAD&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ac25a28c10b676e06e484d9e1f496f826aecdc92bf56d960b73b02ee40125758bc" name="ac25a28c10b676e06e484d9e1f496f826aecdc92bf56d960b73b02ee40125758bc"></a>POLYGON&#160;</td><td class="fielddoc"></td></tr>
@@ -414,6 +472,36 @@ Functions</h2></td></tr>
 </table>
 
 <p class="definition">Definition at line <a class="el" href="_local_boundary_8hpp_source.html#l00012">12</a> of file <a class="el" href="_local_boundary_8hpp_source.html">LocalBoundary.hpp</a>.</p>
+
+</div>
+</div>
+<a id="abfa6495ef3f63356d2bf5153d37989ec" name="abfa6495ef3f63356d2bf5153d37989ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfa6495ef3f63356d2bf5153d37989ec">&#9670;&#160;</a></span>CollisionProxyTessellation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989ec">polyfem::mesh::CollisionProxyTessellation</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="abfa6495ef3f63356d2bf5153d37989eca820ead78f0fa32544c7ba38fe7ff53d9" name="abfa6495ef3f63356d2bf5153d37989eca820ead78f0fa32544c7ba38fe7ff53d9"></a>REGULAR&#160;</td><td class="fielddoc"><p>Regular tessellation of the mesh. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="abfa6495ef3f63356d2bf5153d37989eca575415ac246c79db92133fba5023b6df" name="abfa6495ef3f63356d2bf5153d37989eca575415ac246c79db92133fba5023b6df"></a>IRREGULAR&#160;</td><td class="fielddoc"><p>Irregular tessellation of the mesh (requires POLYFEM_WITH_TRIANGLE) </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="_collision_proxy_8hpp_source.html#l00012">12</a> of file <a class="el" href="_collision_proxy_8hpp_source.html">CollisionProxy.hpp</a>.</p>
 
 </div>
 </div>
@@ -500,6 +588,272 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a290ded340a51fb051467b479ff7dfccc" name="a290ded340a51fb051467b479ff7dfccc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a290ded340a51fb051467b479ff7dfccc">&#9670;&#160;</a></span>build_collision_proxy() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::build_collision_proxy </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>geom_bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">LocalBoundary</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>total_local_boundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>max_edge_length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>proxy_vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>proxy_faces</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>displacement_map_entries</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989ec">CollisionProxyTessellation</a>&#160;</td>
+          <td class="paramname"><em>tessellation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_collision_proxy_8cpp_source.html#l00073">73</a> of file <a class="el" href="_collision_proxy_8cpp_source.html">CollisionProxy.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00024">polyfem::basis::ElementBases::bases</a>, <a class="el" href="_element_bases_8cpp_source.html#l00019">polyfem::basis::ElementBases::eval_geom_mapping()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca575415ac246c79db92133fba5023b6df">IRREGULAR</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00266">irregular_triangle_barycentric_coordinates()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00087">max_edge_length()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca820ead78f0fa32544c7ba38fe7ff53d9">REGULAR</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00104">regular_grid_triangle_barycentric_coordinates()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00035">stitch_mesh()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a38b464161bf5019798797584babd0433">TRI</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01203">polyfem::State::build_collision_mesh()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a290ded340a51fb051467b479ff7dfccc_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a290ded340a51fb051467b479ff7dfccc_icgraph.svg" width="378" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="aa0aff2ad64ded82a861fd4aa657544a4" name="aa0aff2ad64ded82a861fd4aa657544a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0aff2ad64ded82a861fd4aa657544a4">&#9670;&#160;</a></span>build_collision_proxy() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::build_collision_proxy </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>geom_bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>total_local_boundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>max_edge_length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>proxy_vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>proxy_faces</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>displacement_map</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989ec">CollisionProxyTessellation</a>&#160;</td>
+          <td class="paramname"><em>tessellation</em> = <code><a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca820ead78f0fa32544c7ba38fe7ff53d9">CollisionProxyTessellation::REGULAR</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a collision proxy mesh by upsampling a given mesh. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">bases</td><td>Bases for elements </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geom_bases</td><td>Geometry bases for elements </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">total_local_boundary</td><td>Local boundaries for elements </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n_bases</td><td>Number of bases (nodes) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dim</td><td>Dimension of the mesh </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">max_edge_length</td><td>Maximum edge length of the proxy mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">proxy_vertices</td><td>Output vertices of the proxy mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">proxy_faces</td><td>Output faces of the proxy mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">displacement_map</td><td>Output displacement map from proxy mesh to original mesh </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">tessellation</td><td>Type of tessellation to use </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a21fb2a8e1b99bdd8ba7f8b8d20ecac85" name="a21fb2a8e1b99bdd8ba7f8b8d20ecac85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21fb2a8e1b99bdd8ba7f8b8d20ecac85">&#9670;&#160;</a></span>build_collision_proxy_displacement_maps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::build_collision_proxy_displacement_maps </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>geom_bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>total_local_boundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n_bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>proxy_vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>displacement_map</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a collision proxy displacement map for a given mesh and proxy mesh. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">bases</td><td>Bases for elements </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geom_bases</td><td>Geometry bases for elements </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">total_local_boundary</td><td>Local boundaries for elements </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n_bases</td><td>Number of bases (nodes) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dim</td><td>Dimension of the mesh </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">proxy_vertices</td><td>Vertices of the proxy mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">displacement_map</td><td>Output displacement map from proxy mesh to original mesh </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_collision_proxy_8cpp_source.html#l00168">168</a> of file <a class="el" href="_collision_proxy_8cpp_source.html">CollisionProxy.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a21fb2a8e1b99bdd8ba7f8b8d20ecac85_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
 <a id="a0d4be3bab49d477dc6c218108b278acc" name="a0d4be3bab49d477dc6c218108b278acc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0d4be3bab49d477dc6c218108b278acc">&#9670;&#160;</a></span>clip_polygon_by_half_plane()</h2>
 
@@ -717,9 +1071,9 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00593">593</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_geometry_reader_8cpp_source.html#l00593">construct_affine_transformation()</a>, <a class="el" href="_j_s_o_n_utils_8hpp_source.html#l00017">polyfem::utils::deg2rad()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, and <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00059">polyfem::utils::to_rotation_matrix()</a>.</p>
+<p class="reference">References <a class="el" href="_geometry_reader_8cpp_source.html#l00593">construct_affine_transformation()</a>, <a class="el" href="_j_s_o_n_utils_8hpp_source.html#l00017">polyfem::utils::deg2rad()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, and <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00061">polyfem::utils::to_rotation_matrix()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00593">construct_affine_transformation()</a>, <a class="el" href="_optimizations_8cpp_source.html#l00215">polyfem::solver::AdjointOptUtils::create_parametrization()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00025">read_fem_mesh()</a>, and <a class="el" href="_geometry_reader_8cpp_source.html#l00294">read_obstacle_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00593">construct_affine_transformation()</a>, <a class="el" href="_optimizations_8cpp_source.html#l00215">polyfem::solver::AdjointOptUtils::create_parametrization()</a>, <a class="el" href="_collision_proxy_8cpp_source.html#l00330">load_collision_proxy_mesh()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00025">read_fem_mesh()</a>, and <a class="el" href="_geometry_reader_8cpp_source.html#l00294">read_obstacle_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -728,7 +1082,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a255f46e00ca412d64d2551b10bd43437_icgraph.svg" width="100%" height="596"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a255f46e00ca412d64d2551b10bd43437_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1056,7 +1410,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a614178cdb624f2eff9500fabb9a4f432_icgraph.svg" width="100%" height="382"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a614178cdb624f2eff9500fabb9a4f432_icgraph.svg" width="100%" height="442"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1320,6 +1674,238 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="a679b727e7e467d38ebf4af60e8b600c3" name="a679b727e7e467d38ebf4af60e8b600c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a679b727e7e467d38ebf4af60e8b600c3">&#9670;&#160;</a></span>irregular_tessellation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::irregular_tessellation </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>V</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>F</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>max_edge_length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>V_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>F_out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tessilate a triangle mesh (V, F) with well shaped triangles. </p>
+<dl class="section note"><dt>Note</dt><dd>Uses Triangle to perform the refinement (requires POLYFEM_WITH_TRIANGLE). </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">V</td><td>vertices </td></tr>
+    <tr><td class="paramname">F</td><td>triangular faces </td></tr>
+    <tr><td class="paramname">max_edge_length</td><td>maximum edge length </td></tr>
+    <tr><td class="paramname">V_out</td><td>tessilated vertices </td></tr>
+    <tr><td class="paramname">F_out</td><td>tessilated faces </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_upsample_mesh_8cpp_source.html#l00288">288</a> of file <a class="el" href="_upsample_mesh_8cpp_source.html">UpsampleMesh.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00217">irregular_triangle()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00087">max_edge_length()</a>, and <a class="el" href="_upsample_mesh_8cpp_source.html#l00035">stitch_mesh()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a679b727e7e467d38ebf4af60e8b600c3_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="a521aec8d19df9ccbe3493d7d6d97c451" name="a521aec8d19df9ccbe3493d7d6d97c451"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a521aec8d19df9ccbe3493d7d6d97c451">&#9670;&#160;</a></span>irregular_triangle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::irregular_triangle </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>max_edge_length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>V</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>F</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Refine a triangle (a, b, c) into a well shaped triangle mesh. </p>
+<dl class="section note"><dt>Note</dt><dd>Uses Triangle to perform the refinement (requires POLYFEM_WITH_TRIANGLE). </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>first vertex of the triangle </td></tr>
+    <tr><td class="paramname">b</td><td>second vertex of the triangle </td></tr>
+    <tr><td class="paramname">c</td><td>third vertex of the triangle </td></tr>
+    <tr><td class="paramname">max_edge_len</td><td>maximum edge length of the refined triangle mesh </td></tr>
+    <tr><td class="paramname">V</td><td>vertices of the refined triangle </td></tr>
+    <tr><td class="paramname">F</td><td>faces of the refined triangle </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_upsample_mesh_8cpp_source.html#l00217">217</a> of file <a class="el" href="_upsample_mesh_8cpp_source.html">UpsampleMesh.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00342">polyfem::assembler::cross()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00087">max_edge_length()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00194">refine_triangle_edges()</a>, <a class="el" href="_geometry_utils_8cpp_source.html#l00030">polyfem::utils::triangle_area()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_upsample_mesh_8cpp_source.html#l00288">irregular_tessellation()</a>, and <a class="el" href="_upsample_mesh_8cpp_source.html#l00266">irregular_triangle_barycentric_coordinates()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a521aec8d19df9ccbe3493d7d6d97c451_cgraph.svg" width="100%" height="561"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a521aec8d19df9ccbe3493d7d6d97c451_icgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="abe799e00606dbda12858d3dbd0d6491e" name="abe799e00606dbda12858d3dbd0d6491e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe799e00606dbda12858d3dbd0d6491e">&#9670;&#160;</a></span>irregular_triangle_barycentric_coordinates()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::irregular_triangle_barycentric_coordinates </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::Vector3d &amp;&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>max_edge_length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>UV</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>F</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Refine a triangle (a, b, c) into a well shaped triangle mesh. </p>
+<dl class="section note"><dt>Note</dt><dd>Uses Triangle to perform the refinement (requires POLYFEM_WITH_TRIANGLE). </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>first vertex of the triangle </td></tr>
+    <tr><td class="paramname">b</td><td>second vertex of the triangle </td></tr>
+    <tr><td class="paramname">c</td><td>third vertex of the triangle </td></tr>
+    <tr><td class="paramname">max_edge_len</td><td>maximum edge length of the refined triangle mesh </td></tr>
+    <tr><td class="paramname">UV</td><td>barycentric coordinates of the refined triangle </td></tr>
+    <tr><td class="paramname">F</td><td>faces of the refined triangle </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_upsample_mesh_8cpp_source.html#l00266">266</a> of file <a class="el" href="_upsample_mesh_8cpp_source.html">UpsampleMesh.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00217">irregular_triangle()</a>, and <a class="el" href="_upsample_mesh_8cpp_source.html#l00087">max_edge_length()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_collision_proxy_8cpp_source.html#l00073">build_collision_proxy()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_abe799e00606dbda12858d3dbd0d6491e_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_abe799e00606dbda12858d3dbd0d6491e_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
 <a id="aee0e69679f580e427e1db3922b2a5311" name="aee0e69679f580e427e1db3922b2a5311"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aee0e69679f580e427e1db3922b2a5311">&#9670;&#160;</a></span>is_inside()</h2>
 
@@ -1401,7 +1987,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a0eb020dda8244f82ea9450b2d655cadd_icgraph.svg" width="100%" height="399"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a0eb020dda8244f82ea9450b2d655cadd_icgraph.svg" width="100%" height="442"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1497,6 +2083,308 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="a15b9f6e84b61e94823dad7a365835542" name="a15b9f6e84b61e94823dad7a365835542"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15b9f6e84b61e94823dad7a365835542">&#9670;&#160;</a></span>load_collision_proxy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::load_collision_proxy </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mesh_filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>weights_filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
+          <td class="paramname"><em>in_node_to_node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>transformation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXi &amp;&#160;</td>
+          <td class="paramname"><em>codim_vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>edges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>faces</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>displacement_map_entries</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Load a collision proxy mesh and displacement map from files. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">mesh_filename</td><td><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html" title="Abstract mesh class to capture 2d/3d conforming and non-conforming meshes.">Mesh</a> filename </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">weights_filename</td><td>Weights filename </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">in_node_to_node</td><td>Map from input node IDs to node IDs </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">transformation</td><td>Transformation to apply to the mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">vertices</td><td>Output vertices of the proxy mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">codim_vertices</td><td>Output codimension vertices of the proxy mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">edges</td><td>Output edges of the proxy mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">faces</td><td>Output faces of the proxy mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">displacement_map_entries</td><td>Output displacement map entries </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_collision_proxy_8cpp_source.html#l00315">315</a> of file <a class="el" href="_collision_proxy_8cpp_source.html">CollisionProxy.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_collision_proxy_8cpp_source.html#l00315">load_collision_proxy()</a>, <a class="el" href="_collision_proxy_8cpp_source.html#l00361">load_collision_proxy_displacement_map()</a>, and <a class="el" href="_collision_proxy_8cpp_source.html#l00330">load_collision_proxy_mesh()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01203">polyfem::State::build_collision_mesh()</a>, and <a class="el" href="_collision_proxy_8cpp_source.html#l00315">load_collision_proxy()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a15b9f6e84b61e94823dad7a365835542_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a15b9f6e84b61e94823dad7a365835542_icgraph.svg" width="374" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="ac69cc240a806f402d61f1eaf7eb2d819" name="ac69cc240a806f402d61f1eaf7eb2d819"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac69cc240a806f402d61f1eaf7eb2d819">&#9670;&#160;</a></span>load_collision_proxy_displacement_map()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::load_collision_proxy_displacement_map </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>weights_filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
+          <td class="paramname"><em>in_node_to_node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>num_proxy_vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>displacement_map_entries</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Load a collision proxy displacement map from files. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">weights_filename</td><td>Weights filename </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">in_node_to_node</td><td>Map from input node IDs to node IDs </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">displacement_map_entries</td><td>Output displacement map entries </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_collision_proxy_8cpp_source.html#l00361">361</a> of file <a class="el" href="_collision_proxy_8cpp_source.html">CollisionProxy.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_collision_proxy_8cpp_source.html#l00361">load_collision_proxy_displacement_map()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_collision_proxy_8cpp_source.html#l00315">load_collision_proxy()</a>, and <a class="el" href="_collision_proxy_8cpp_source.html#l00361">load_collision_proxy_displacement_map()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_ac69cc240a806f402d61f1eaf7eb2d819_cgraph.svg" width="270" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_ac69cc240a806f402d61f1eaf7eb2d819_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="a8b354410bd3ee20974de06b0131f8036" name="a8b354410bd3ee20974de06b0131f8036"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b354410bd3ee20974de06b0131f8036">&#9670;&#160;</a></span>load_collision_proxy_mesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::load_collision_proxy_mesh </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mesh_filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>transformation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXi &amp;&#160;</td>
+          <td class="paramname"><em>codim_vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>edges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>faces</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Load a collision proxy mesh from a file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">mesh_filename</td><td><a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html" title="Abstract mesh class to capture 2d/3d conforming and non-conforming meshes.">Mesh</a> filename </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">transformation</td><td>Transformation to apply to the mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">vertices</td><td>Output vertices of the proxy mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">codim_vertices</td><td>Output codimension vertices of the proxy mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">edges</td><td>Output edges of the proxy mesh </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">faces</td><td>Output faces of the proxy mesh </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_collision_proxy_8cpp_source.html#l00330">330</a> of file <a class="el" href="_collision_proxy_8cpp_source.html">CollisionProxy.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_geometry_reader_8cpp_source.html#l00593">construct_affine_transformation()</a>, <a class="el" href="_collision_proxy_8cpp_source.html#l00330">load_collision_proxy_mesh()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l01091">read_surface_mesh()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_collision_proxy_8cpp_source.html#l00315">load_collision_proxy()</a>, and <a class="el" href="_collision_proxy_8cpp_source.html#l00330">load_collision_proxy_mesh()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a8b354410bd3ee20974de06b0131f8036_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a8b354410bd3ee20974de06b0131f8036_icgraph.svg" width="592" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a8d6dfcfa36d78e00ba3eb5d9e98ccc92" name="a8d6dfcfa36d78e00ba3eb5d9e98ccc92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d6dfcfa36d78e00ba3eb5d9e98ccc92">&#9670;&#160;</a></span>max_edge_length()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::mesh::max_edge_length </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>V</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>F</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the maximum edge length of a triangle mesh (V, F) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">V</td><td>vertices </td></tr>
+    <tr><td class="paramname">F</td><td>triangular faces </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_upsample_mesh_8cpp_source.html#l00087">87</a> of file <a class="el" href="_upsample_mesh_8cpp_source.html">UpsampleMesh.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, and <a class="el" href="_upsample_mesh_8cpp_source.html#l00087">max_edge_length()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_collision_proxy_8cpp_source.html#l00073">build_collision_proxy()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00288">irregular_tessellation()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00217">irregular_triangle()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00266">irregular_triangle_barycentric_coordinates()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00087">max_edge_length()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00183">refine_edge()</a>, and <a class="el" href="_upsample_mesh_8cpp_source.html#l00148">regular_grid_tessellation()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a8d6dfcfa36d78e00ba3eb5d9e98ccc92_cgraph.svg" width="168" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a8d6dfcfa36d78e00ba3eb5d9e98ccc92_icgraph.svg" width="100%" height="517"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
 <a id="a7463d5f1886f0b3b79d678e7a6535801" name="a7463d5f1886f0b3b79d678e7a6535801"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7463d5f1886f0b3b79d678e7a6535801">&#9670;&#160;</a></span>mesh_create_vertex()</h2>
 
@@ -1582,6 +2470,36 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="a4840c076c8975d60f888fd87763daebb" name="a4840c076c8975d60f888fd87763daebb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4840c076c8975d60f888fd87763daebb">&#9670;&#160;</a></span>NLOHMANN_JSON_SERIALIZE_ENUM()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::mesh::NLOHMANN_JSON_SERIALIZE_ENUM </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989ec">CollisionProxyTessellation</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">{{<a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca820ead78f0fa32544c7ba38fe7ff53d9">CollisionProxyTessellation::REGULAR</a>, &quot;regular&quot;}, {<a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca575415ac246c79db92133fba5023b6df">CollisionProxyTessellation::IRREGULAR</a>, &quot;irregular&quot;}}&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="reference">References <a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca575415ac246c79db92133fba5023b6df">IRREGULAR</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca820ead78f0fa32544c7ba38fe7ff53d9">REGULAR</a>.</p>
+
+</div>
+</div>
 <a id="a8ffb307ad1f47d970021d26cff0653d7" name="a8ffb307ad1f47d970021d26cff0653d7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8ffb307ad1f47d970021d26cff0653d7">&#9670;&#160;</a></span>offset_polygon()</h2>
 
@@ -1625,6 +2543,44 @@ Here is the caller graph for this function:</div>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="_polygon_utils_8cpp_source.html#l00178">178</a> of file <a class="el" href="_polygon_utils_8cpp_source.html">PolygonUtils.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a3cabdf1ac4e1ac087b4832016583b815" name="a3cabdf1ac4e1ac087b4832016583b815"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cabdf1ac4e1ac087b4832016583b815">&#9670;&#160;</a></span>operator&lt;&lt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream &amp; polyfem::mesh::operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">LocalBoundary</a> &amp;&#160;</td>
+          <td class="paramname"><em>lb</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">os</td><td>Output stream </td></tr>
+    <tr><td class="paramname">lb</td><td><a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html" title="Boundary primitive IDs for a single element.">LocalBoundary</a> to print </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Output stream </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_local_boundary_8cpp_source.html#l00049">49</a> of file <a class="el" href="_local_boundary_8cpp_source.html">LocalBoundary.cpp</a>.</p>
 
 </div>
 </div>
@@ -1858,7 +2814,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00025">25</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_selection_8cpp_source.html#l00045">polyfem::utils::Selection::build_selections()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00593">construct_affine_transformation()</a>, <a class="el" href="_units_8cpp_source.html#l00031">polyfem::Units::convert()</a>, <a class="el" href="_mesh_8cpp_source.html#l00173">polyfem::mesh::Mesh::create()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00129">polyfem::utils::is_param_valid()</a>, <a class="el" href="_units_8hpp_source.html#l00019">polyfem::Units::length()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
+<p class="reference">References <a class="el" href="_selection_8cpp_source.html#l00045">polyfem::utils::Selection::build_selections()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00593">construct_affine_transformation()</a>, <a class="el" href="_units_8cpp_source.html#l00031">polyfem::Units::convert()</a>, <a class="el" href="_mesh_8cpp_source.html#l00173">polyfem::mesh::Mesh::create()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00131">polyfem::utils::is_param_valid()</a>, <a class="el" href="_units_8hpp_source.html#l00019">polyfem::Units::length()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00230">read_fem_geometry()</a>, and <a class="el" href="_s_d_f_variable_to_simulation_8cpp_source.html#l00011">polyfem::solver::SDFShapeVariableToSimulation::update()</a>.</p>
 <div class="dynheader">
@@ -1962,7 +2918,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00387">387</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_obstacle_8cpp_source.html#l00096">polyfem::mesh::Obstacle::append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00124">polyfem::mesh::Obstacle::append_mesh_sequence()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00163">polyfem::mesh::Obstacle::append_plane()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00129">polyfem::utils::is_param_valid()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00387">read_obstacle_geometry()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00294">read_obstacle_mesh()</a>, <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>, and <a class="el" href="_obstacle_8cpp_source.html#l00245">polyfem::mesh::Obstacle::set_units()</a>.</p>
+<p class="reference">References <a class="el" href="_obstacle_8cpp_source.html#l00096">polyfem::mesh::Obstacle::append_mesh()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00124">polyfem::mesh::Obstacle::append_mesh_sequence()</a>, <a class="el" href="_obstacle_8cpp_source.html#l00163">polyfem::mesh::Obstacle::append_plane()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00131">polyfem::utils::is_param_valid()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00387">read_obstacle_geometry()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00294">read_obstacle_mesh()</a>, <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>, and <a class="el" href="_obstacle_8cpp_source.html#l00245">polyfem::mesh::Obstacle::set_units()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_load_8cpp_source.html#l00091">polyfem::State::load_mesh()</a>, <a class="el" href="_state_load_8cpp_source.html#l00041">polyfem::State::load_mesh()</a>, and <a class="el" href="_geometry_reader_8cpp_source.html#l00387">read_obstacle_geometry()</a>.</p>
 <div class="dynheader">
@@ -2055,7 +3011,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00294">294</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_geometry_reader_8cpp_source.html#l00593">construct_affine_transformation()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00129">polyfem::utils::is_param_valid()</a>, <a class="el" href="_units_8hpp_source.html#l00019">polyfem::Units::length()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00294">read_obstacle_mesh()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01091">read_surface_mesh()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
+<p class="reference">References <a class="el" href="_geometry_reader_8cpp_source.html#l00593">construct_affine_transformation()</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00131">polyfem::utils::is_param_valid()</a>, <a class="el" href="_units_8hpp_source.html#l00019">polyfem::Units::length()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::log_and_throw_error()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00294">read_obstacle_mesh()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01091">read_surface_mesh()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00387">read_obstacle_geometry()</a>, and <a class="el" href="_geometry_reader_8cpp_source.html#l00294">read_obstacle_mesh()</a>.</p>
 <div class="dynheader">
@@ -2131,7 +3087,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_string_utils_8cpp_source.html#l00048">polyfem::utils::StringUtils::endswith()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01052">extract_triangle_surface_from_tets()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00986">find_codim_vertices()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00031">is_planar()</a>, <a class="el" href="_msh_reader_8cpp_source.html#l00029">polyfem::io::MshReader::load()</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, and <a class="el" href="_o_b_j_reader_8cpp_source.html#l00032">polyfem::io::OBJReader::read()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00294">read_obstacle_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_collision_proxy_8cpp_source.html#l00330">load_collision_proxy_mesh()</a>, and <a class="el" href="_geometry_reader_8cpp_source.html#l00294">read_obstacle_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2140,7 +3096,68 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_ad5cb1c08fb1f96a1f0c2bd635457e25f_icgraph.svg" width="100%" height="382"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_ad5cb1c08fb1f96a1f0c2bd635457e25f_icgraph.svg" width="100%" height="442"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="a4cf65a44948a6042699876449b0eddab" name="a4cf65a44948a6042699876449b0eddab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cf65a44948a6042699876449b0eddab">&#9670;&#160;</a></span>refine_edge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::mesh::refine_edge </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>max_edge_length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Refine an edge (a, b) so each refined edge has length at most max_edge_length. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>first vertex of the edge </td></tr>
+    <tr><td class="paramname">b</td><td>second vertex of the edge </td></tr>
+    <tr><td class="paramname">max_edge_length</td><td>maximum edge length </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>vertices of the refined edge (in order) </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_upsample_mesh_8cpp_source.html#l00183">183</a> of file <a class="el" href="_upsample_mesh_8cpp_source.html">UpsampleMesh.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_upsample_mesh_8cpp_source.html#l00087">max_edge_length()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_upsample_mesh_8cpp_source.html#l00194">refine_triangle_edges()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a4cf65a44948a6042699876449b0eddab_cgraph.svg" width="420" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a4cf65a44948a6042699876449b0eddab_icgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -2312,6 +3329,87 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
+<a id="acf01f1cc1cd8d1c23d270e5c1471c091" name="acf01f1cc1cd8d1c23d270e5c1471c091"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf01f1cc1cd8d1c23d270e5c1471c091">&#9670;&#160;</a></span>refine_triangle_edges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::refine_triangle_edges </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>max_edge_len</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>V</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>E</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Refine the edges of a triangle (a, b, c) so each refined edge has length at most max_edge_length. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>first vertex of the triangle </td></tr>
+    <tr><td class="paramname">b</td><td>second vertex of the triangle </td></tr>
+    <tr><td class="paramname">c</td><td>third vertex of the triangle </td></tr>
+    <tr><td class="paramname">max_edge_len</td><td>maximum edge length </td></tr>
+    <tr><td class="paramname">V</td><td>vertices of the refined edges </td></tr>
+    <tr><td class="paramname">E</td><td>refined edges </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_upsample_mesh_8cpp_source.html#l00194">194</a> of file <a class="el" href="_upsample_mesh_8cpp_source.html">UpsampleMesh.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_upsample_mesh_8cpp_source.html#l00183">refine_edge()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_upsample_mesh_8cpp_source.html#l00217">irregular_triangle()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_acf01f1cc1cd8d1c23d270e5c1471c091_cgraph.svg" width="634" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_acf01f1cc1cd8d1c23d270e5c1471c091_icgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
 <a id="a1ba258a79feeaaadcd741cd4fa889ca9" name="a1ba258a79feeaaadcd741cd4fa889ca9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1ba258a79feeaaadcd741cd4fa889ca9">&#9670;&#160;</a></span>refine_triangle_mesh()</h2>
 
@@ -2362,6 +3460,128 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a1ba258a79feeaaadcd741cd4fa889ca9_icgraph.svg" width="415" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="acb91ccfdf02a3bf57424c46c4834402a" name="acb91ccfdf02a3bf57424c46c4834402a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb91ccfdf02a3bf57424c46c4834402a">&#9670;&#160;</a></span>regular_grid_tessellation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::regular_grid_tessellation </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>V</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>F</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>max_edge_length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>V_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>F_out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tessilate a triangle mesh (V, F) with regular grids of triangles of maximum edge length. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">V</td><td>vertices </td></tr>
+    <tr><td class="paramname">F</td><td>triangular faces </td></tr>
+    <tr><td class="paramname">max_edge_length</td><td>maximum edge length </td></tr>
+    <tr><td class="paramname">V_out</td><td>tessilated vertices </td></tr>
+    <tr><td class="paramname">F_out</td><td>tessilated faces </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_upsample_mesh_8cpp_source.html#l00148">148</a> of file <a class="el" href="_upsample_mesh_8cpp_source.html">UpsampleMesh.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00087">max_edge_length()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00104">regular_grid_triangle_barycentric_coordinates()</a>, and <a class="el" href="_upsample_mesh_8cpp_source.html#l00035">stitch_mesh()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_acb91ccfdf02a3bf57424c46c4834402a_cgraph.svg" width="440" height="228"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a9d79697c151a12917ccb7a8b871fe7b7" name="a9d79697c151a12917ccb7a8b871fe7b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d79697c151a12917ccb7a8b871fe7b7">&#9670;&#160;</a></span>regular_grid_triangle_barycentric_coordinates()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::regular_grid_triangle_barycentric_coordinates </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>V</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>F</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the barycentric coordinates of a regular grid of triangles. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>Number of triangles along each edge </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">V</td><td>Vertices of the regular grid </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">F</td><td>Faces of the regular grid </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_upsample_mesh_8cpp_source.html#l00104">104</a> of file <a class="el" href="_upsample_mesh_8cpp_source.html">UpsampleMesh.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_collision_proxy_8cpp_source.html#l00073">build_collision_proxy()</a>, and <a class="el" href="_upsample_mesh_8cpp_source.html#l00148">regular_grid_tessellation()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a9d79697c151a12917ccb7a8b871fe7b7_icgraph.svg" width="631" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -2808,6 +4028,163 @@ Here is the caller graph for this function:</div>
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a78a20bc192a325efd376142bae8605c0_cgraph.svg" width="436" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a656d6973425b6f2809fc3523be8a08c2" name="a656d6973425b6f2809fc3523be8a08c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a656d6973425b6f2809fc3523be8a08c2">&#9670;&#160;</a></span>stitch_mesh() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::stitch_mesh </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>V</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>F</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>W</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>V_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>F_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>W_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>epsilon</em> = <code>1e-5</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stitch a triangle mesh (V, F) together by removing duplicate vertices. </p>
+<p>Also removes weights in W that correspond to duplicate vertices.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>Input vertices </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>Input faces </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">W</td><td>Input weights </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">V_out</td><td>Output vertices (duplicate vertices removed) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">F_out</td><td>Output faces (updated to use V_out) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">W_out</td><td>Output weights (updated to use V_out) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">epsilon</td><td>Tolerance for duplicate vertices </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>indices: #V_out by 1 list of indices so V_out = V(indices,:) inverse: #V by 1 list of indices so V = V_out(inverse,:)</p>
+
+<p class="definition">Definition at line <a class="el" href="_upsample_mesh_8cpp_source.html#l00046">46</a> of file <a class="el" href="_upsample_mesh_8cpp_source.html">UpsampleMesh.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, and <a class="el" href="_matrix_utils_8hpp_source.html#l00033">polyfem::utils::inverse()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a656d6973425b6f2809fc3523be8a08c2_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="ad36edbb969d1772884b1a67bb4037510" name="ad36edbb969d1772884b1a67bb4037510"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad36edbb969d1772884b1a67bb4037510">&#9670;&#160;</a></span>stitch_mesh() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::mesh::stitch_mesh </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>V</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>F</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>V_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>F_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>epsilon</em> = <code>1e-5</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stitch a triangle mesh (V, F) together by removing duplicate vertices. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>Input vertices </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>Input faces </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">V_out</td><td>Output vertices (duplicate vertices removed) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">F_out</td><td>Output faces (updated to use V_out) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">epsilon</td><td>Tolerance for duplicate vertices </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_upsample_mesh_8cpp_source.html#l00035">35</a> of file <a class="el" href="_upsample_mesh_8cpp_source.html">UpsampleMesh.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, and <a class="el" href="_upsample_mesh_8cpp_source.html#l00035">stitch_mesh()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_collision_proxy_8cpp_source.html#l00073">build_collision_proxy()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00288">irregular_tessellation()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00148">regular_grid_tessellation()</a>, and <a class="el" href="_upsample_mesh_8cpp_source.html#l00035">stitch_mesh()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_ad36edbb969d1772884b1a67bb4037510_cgraph.svg" width="218" height="60"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_ad36edbb969d1772884b1a67bb4037510_icgraph.svg" width="655" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

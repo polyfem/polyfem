@@ -149,6 +149,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a38360e97715fcdfaa111544d94056114" id="r_a38360e97715fcdfaa111544d94056114"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html#a38360e97715fcdfaa111544d94056114">ElasticForm</a> (const int n_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;geom_bases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">assembler::Assembler</a> &amp;assembler, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">assembler::AssemblyValsCache</a> &amp;ass_vals_cache, const double dt, const bool is_volume)</td></tr>
 <tr class="memdesc:a38360e97715fcdfaa111544d94056114"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new Elastic <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> object.  <br /></td></tr>
 <tr class="separator:a38360e97715fcdfaa111544d94056114"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af31e9468dfabab01f1009790c57b2e90" id="r_af31e9468dfabab01f1009790c57b2e90"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html#af31e9468dfabab01f1009790c57b2e90">name</a> () const override</td></tr>
+<tr class="separator:af31e9468dfabab01f1009790c57b2e90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2f0f857ec53a4bc3e282fce304446a0" id="r_af2f0f857ec53a4bc3e282fce304446a0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html#af2f0f857ec53a4bc3e282fce304446a0">is_step_valid</a> (const Eigen::VectorXd &amp;x0, const Eigen::VectorXd &amp;x1) const override</td></tr>
 <tr class="memdesc:af2f0f857ec53a4bc3e282fce304446a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if a step from solution x0 to solution x1 is allowed.  <br /></td></tr>
 <tr class="separator:af2f0f857ec53a4bc3e282fce304446a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -369,7 +371,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_form_8cpp_source.html#l00034">34</a> of file <a class="el" href="_elastic_form_8cpp_source.html">ElasticForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elastic_form_8hpp_source.html#l00073">assembler_</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00104">compute_cached_stiffness()</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad816288354f5093a053de6fdd0a102d1">polyfem::assembler::Assembler::is_linear()</a>.</p>
+<p class="reference">References <a class="el" href="_elastic_form_8hpp_source.html#l00075">assembler_</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00104">compute_cached_stiffness()</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad816288354f5093a053de6fdd0a102d1">polyfem::assembler::Assembler::is_linear()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -406,7 +408,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_form_8cpp_source.html#l00104">104</a> of file <a class="el" href="_elastic_form_8cpp_source.html">ElasticForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elastic_form_8hpp_source.html#l00074">ass_vals_cache_</a>, <a class="el" href="_assembler_8hpp_source.html#l00066">polyfem::assembler::Assembler::assemble()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00073">assembler_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00070">bases_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00078">cached_stiffness_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00071">geom_bases_</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad816288354f5093a053de6fdd0a102d1">polyfem::assembler::Assembler::is_linear()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00076">is_volume_</a>, and <a class="el" href="_elastic_form_8hpp_source.html#l00069">n_bases_</a>.</p>
+<p class="reference">References <a class="el" href="_elastic_form_8hpp_source.html#l00076">ass_vals_cache_</a>, <a class="el" href="_assembler_8hpp_source.html#l00066">polyfem::assembler::Assembler::assemble()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00075">assembler_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00072">bases_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00080">cached_stiffness_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00073">geom_bases_</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad816288354f5093a053de6fdd0a102d1">polyfem::assembler::Assembler::is_linear()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00078">is_volume_</a>, and <a class="el" href="_elastic_form_8hpp_source.html#l00071">n_bases_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_elastic_form_8cpp_source.html#l00034">ElasticForm()</a>.</p>
 <div class="dynheader">
@@ -469,7 +471,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_form_8cpp_source.html#l00059">59</a> of file <a class="el" href="_elastic_form_8cpp_source.html">ElasticForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elastic_form_8hpp_source.html#l00074">ass_vals_cache_</a>, <a class="el" href="_assembler_8hpp_source.html#l00086">polyfem::assembler::Assembler::assemble_gradient()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00073">assembler_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00070">bases_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00075">dt_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00071">geom_bases_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00076">is_volume_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00069">n_bases_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_elastic_form_8hpp_source.html#l00084">x_prev_</a>.</p>
+<p class="reference">References <a class="el" href="_elastic_form_8hpp_source.html#l00076">ass_vals_cache_</a>, <a class="el" href="_assembler_8hpp_source.html#l00086">polyfem::assembler::Assembler::assemble_gradient()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00075">assembler_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00072">bases_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00077">dt_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00073">geom_bases_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00078">is_volume_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00071">n_bases_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_elastic_form_8hpp_source.html#l00086">x_prev_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -528,7 +530,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_form_8cpp_source.html#l00113">113</a> of file <a class="el" href="_elastic_form_8cpp_source.html">ElasticForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elastic_form_8hpp_source.html#l00074">ass_vals_cache_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00073">assembler_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00070">bases_</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00032">polyfem::assembler::AssemblyValsCache::compute()</a>, <a class="el" href="_assembler_8hpp_source.html#l00136">polyfem::assembler::Assembler::compute_dstress_dmu_dlambda()</a>, <a class="el" href="_viscous_damping_8cpp_source.html#l00433">polyfem::assembler::ViscousDamping::compute_dstress_dpsi_dphi()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00028">polyfem::assembler::ElementAssemblyValues::det</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00075">dt_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00071">geom_bases_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00979">polyfem::io::Evaluator::interpolate_at_local_vals()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00076">is_volume_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69">polyfem::assembler::Assembler::name()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00021">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00386">polyfem::utils::vector2matrix()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_elastic_form_8hpp_source.html#l00076">ass_vals_cache_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00075">assembler_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00072">bases_</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00032">polyfem::assembler::AssemblyValsCache::compute()</a>, <a class="el" href="_assembler_8hpp_source.html#l00136">polyfem::assembler::Assembler::compute_dstress_dmu_dlambda()</a>, <a class="el" href="_viscous_damping_8cpp_source.html#l00433">polyfem::assembler::ViscousDamping::compute_dstress_dpsi_dphi()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00028">polyfem::assembler::ElementAssemblyValues::det</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00077">dt_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00073">geom_bases_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00979">polyfem::io::Evaluator::interpolate_at_local_vals()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00078">is_volume_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69">polyfem::assembler::Assembler::name()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00021">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00386">polyfem::utils::vector2matrix()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -594,7 +596,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_form_8cpp_source.html#l00203">203</a> of file <a class="el" href="_elastic_form_8cpp_source.html">ElasticForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elastic_form_8hpp_source.html#l00074">ass_vals_cache_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00073">assembler_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00070">bases_</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00195">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00032">polyfem::assembler::AssemblyValsCache::compute()</a>, <a class="el" href="_assembler_8hpp_source.html#l00175">polyfem::assembler::Assembler::compute_stress_grad()</a>, <a class="el" href="_assembler_8hpp_source.html#l00144">polyfem::assembler::Assembler::compute_stress_grad_multiply_mat()</a>, <a class="el" href="_assembler_8hpp_source.html#l00184">polyfem::assembler::Assembler::compute_stress_prev_grad()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00028">polyfem::assembler::ElementAssemblyValues::det</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00075">dt_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00071">geom_bases_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="_body_form_8cpp_source.html#l00025">gvals</a>, <a class="el" href="_evaluator_8cpp_source.html#l00979">polyfem::io::Evaluator::interpolate_at_local_vals()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00076">is_volume_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69">polyfem::assembler::Assembler::name()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00021">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00386">polyfem::utils::vector2matrix()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_elastic_form_8hpp_source.html#l00076">ass_vals_cache_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00075">assembler_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00072">bases_</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00195">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00032">polyfem::assembler::AssemblyValsCache::compute()</a>, <a class="el" href="_assembler_8hpp_source.html#l00175">polyfem::assembler::Assembler::compute_stress_grad()</a>, <a class="el" href="_assembler_8hpp_source.html#l00144">polyfem::assembler::Assembler::compute_stress_grad_multiply_mat()</a>, <a class="el" href="_assembler_8hpp_source.html#l00184">polyfem::assembler::Assembler::compute_stress_prev_grad()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00028">polyfem::assembler::ElementAssemblyValues::det</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00077">dt_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00073">geom_bases_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="_body_form_8cpp_source.html#l00025">gvals</a>, <a class="el" href="_evaluator_8cpp_source.html#l00979">polyfem::io::Evaluator::interpolate_at_local_vals()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00078">is_volume_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69">polyfem::assembler::Assembler::name()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00021">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00386">polyfem::utils::vector2matrix()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -651,12 +653,41 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_form_8cpp_source.html#l00087">87</a> of file <a class="el" href="_elastic_form_8cpp_source.html">ElasticForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00029">polyfem::solver::Form::first_derivative()</a>.</p>
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00031">polyfem::solver::Form::first_derivative()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_elastic_form_af2f0f857ec53a4bc3e282fce304446a0_cgraph.svg" width="658" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
+
+</div>
+</div>
+<a id="af31e9468dfabab01f1009790c57b2e90" name="af31e9468dfabab01f1009790c57b2e90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af31e9468dfabab01f1009790c57b2e90">&#9670;&#160;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::solver::ElasticForm::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a811b9bc4f875497c659bcce24c15f935">polyfem::solver::Form</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00027">27</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -707,7 +738,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_form_8cpp_source.html#l00067">67</a> of file <a class="el" href="_elastic_form_8cpp_source.html">ElasticForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elastic_form_8hpp_source.html#l00074">ass_vals_cache_</a>, <a class="el" href="_assembler_8hpp_source.html#l00098">polyfem::assembler::Assembler::assemble_hessian()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00073">assembler_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00070">bases_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00078">cached_stiffness_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00075">dt_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00071">geom_bases_</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad816288354f5093a053de6fdd0a102d1">polyfem::assembler::Assembler::is_linear()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00076">is_volume_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00079">mat_cache_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00069">n_bases_</a>, <a class="el" href="_timer_8hpp_source.html#l00010">POLYFEM_SCOPED_TIMER</a>, <a class="el" href="_form_8hpp_source.html#l00134">polyfem::solver::Form::project_to_psd_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_elastic_form_8hpp_source.html#l00084">x_prev_</a>.</p>
+<p class="reference">References <a class="el" href="_elastic_form_8hpp_source.html#l00076">ass_vals_cache_</a>, <a class="el" href="_assembler_8hpp_source.html#l00098">polyfem::assembler::Assembler::assemble_hessian()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00075">assembler_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00072">bases_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00080">cached_stiffness_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00077">dt_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00073">geom_bases_</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ad816288354f5093a053de6fdd0a102d1">polyfem::assembler::Assembler::is_linear()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00078">is_volume_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00081">mat_cache_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00071">n_bases_</a>, <a class="el" href="_timer_8hpp_source.html#l00010">POLYFEM_SCOPED_TIMER</a>, <a class="el" href="_form_8hpp_source.html#l00136">polyfem::solver::Form::project_to_psd_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_elastic_form_8hpp_source.html#l00086">x_prev_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -761,9 +792,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a36e58606b6cdc7b4bf16aa1bd7fd351c">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00053">53</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00055">55</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_elastic_form_8hpp_source.html#l00084">x_prev_</a>.</p>
+<p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_elastic_form_8hpp_source.html#l00086">x_prev_</a>.</p>
 
 </div>
 </div>
@@ -804,7 +835,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_form_8cpp_source.html#l00053">53</a> of file <a class="el" href="_elastic_form_8cpp_source.html">ElasticForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elastic_form_8hpp_source.html#l00074">ass_vals_cache_</a>, <a class="el" href="_assembler_8hpp_source.html#l00076">polyfem::assembler::Assembler::assemble_energy()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00073">assembler_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00070">bases_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00075">dt_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00071">geom_bases_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00076">is_volume_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_elastic_form_8hpp_source.html#l00084">x_prev_</a>.</p>
+<p class="reference">References <a class="el" href="_elastic_form_8hpp_source.html#l00076">ass_vals_cache_</a>, <a class="el" href="_assembler_8hpp_source.html#l00076">polyfem::assembler::Assembler::assemble_energy()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00075">assembler_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00072">bases_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00077">dt_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00073">geom_bases_</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00078">is_volume_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_elastic_form_8hpp_source.html#l00086">x_prev_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -834,7 +865,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00074">74</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00076">76</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_elastic_form_8cpp_source.html#l00104">compute_cached_stiffness()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00059">first_derivative_unweighted()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00113">force_material_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00203">force_shape_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00067">second_derivative_unweighted()</a>, and <a class="el" href="_elastic_form_8cpp_source.html#l00053">value_unweighted()</a>.</p>
 
@@ -862,7 +893,7 @@ Here is the call graph for this function:</div>
 
 <p>Reference to the assembler. </p>
 
-<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00073">73</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00075">75</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_elastic_form_8cpp_source.html#l00104">compute_cached_stiffness()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00034">ElasticForm()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00059">first_derivative_unweighted()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00113">force_material_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00203">force_shape_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00067">second_derivative_unweighted()</a>, and <a class="el" href="_elastic_form_8cpp_source.html#l00053">value_unweighted()</a>.</p>
 
@@ -888,7 +919,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00070">70</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00072">72</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_elastic_form_8cpp_source.html#l00104">compute_cached_stiffness()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00059">first_derivative_unweighted()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00113">force_material_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00203">force_shape_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00067">second_derivative_unweighted()</a>, and <a class="el" href="_elastic_form_8cpp_source.html#l00053">value_unweighted()</a>.</p>
 
@@ -916,7 +947,7 @@ Here is the call graph for this function:</div>
 
 <p>Cached stiffness matrix for linear elasticity. </p>
 
-<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00078">78</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00080">80</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_elastic_form_8cpp_source.html#l00104">compute_cached_stiffness()</a>, and <a class="el" href="_elastic_form_8cpp_source.html#l00067">second_derivative_unweighted()</a>.</p>
 
@@ -942,7 +973,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00075">75</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00077">77</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_elastic_form_8cpp_source.html#l00059">first_derivative_unweighted()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00113">force_material_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00203">force_shape_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00067">second_derivative_unweighted()</a>, and <a class="el" href="_elastic_form_8cpp_source.html#l00053">value_unweighted()</a>.</p>
 
@@ -968,7 +999,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00071">71</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00073">73</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_elastic_form_8cpp_source.html#l00104">compute_cached_stiffness()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00059">first_derivative_unweighted()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00113">force_material_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00203">force_shape_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00067">second_derivative_unweighted()</a>, and <a class="el" href="_elastic_form_8cpp_source.html#l00053">value_unweighted()</a>.</p>
 
@@ -994,7 +1025,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00076">76</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00078">78</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_elastic_form_8cpp_source.html#l00104">compute_cached_stiffness()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00059">first_derivative_unweighted()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00113">force_material_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00203">force_shape_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00067">second_derivative_unweighted()</a>, and <a class="el" href="_elastic_form_8cpp_source.html#l00053">value_unweighted()</a>.</p>
 
@@ -1022,7 +1053,7 @@ Here is the call graph for this function:</div>
 
 <p>Matrix cache (mutable because it is modified in second_derivative_unweighted) </p>
 
-<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00079">79</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00081">81</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_elastic_form_8cpp_source.html#l00067">second_derivative_unweighted()</a>.</p>
 
@@ -1048,7 +1079,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00069">69</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00071">71</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_elastic_form_8cpp_source.html#l00104">compute_cached_stiffness()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00059">first_derivative_unweighted()</a>, and <a class="el" href="_elastic_form_8cpp_source.html#l00067">second_derivative_unweighted()</a>.</p>
 
@@ -1074,9 +1105,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00084">84</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_elastic_form_8hpp_source.html#l00086">86</a> of file <a class="el" href="_elastic_form_8hpp_source.html">ElasticForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_elastic_form_8cpp_source.html#l00059">first_derivative_unweighted()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00067">second_derivative_unweighted()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00053">update_quantities()</a>, and <a class="el" href="_elastic_form_8cpp_source.html#l00053">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_elastic_form_8cpp_source.html#l00059">first_derivative_unweighted()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00067">second_derivative_unweighted()</a>, <a class="el" href="_elastic_form_8hpp_source.html#l00055">update_quantities()</a>, and <a class="el" href="_elastic_form_8cpp_source.html#l00053">value_unweighted()</a>.</p>
 
 </div>
 </div>

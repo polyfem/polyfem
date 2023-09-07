@@ -149,6 +149,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a649b6b14431218d34be498a9cb107093" id="r_a649b6b14431218d34be498a9cb107093"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a649b6b14431218d34be498a9cb107093">RayleighDampingForm</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> &amp;form_to_damp, const <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html">time_integrator::ImplicitTimeIntegrator</a> &amp;time_integrator, const bool use_stiffness_as_ratio, const double <a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#aeb1a14e9ef7a9a1f27332d6f80956472">stiffness</a>, const int n_lagging_iters)</td></tr>
 <tr class="memdesc:a649b6b14431218d34be498a9cb107093"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new Lagged Regularization <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> object.  <br /></td></tr>
 <tr class="separator:a649b6b14431218d34be498a9cb107093"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa25a7f59f76664f17d1cbb096716431f" id="r_aa25a7f59f76664f17d1cbb096716431f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#aa25a7f59f76664f17d1cbb096716431f">name</a> () const override</td></tr>
+<tr class="separator:aa25a7f59f76664f17d1cbb096716431f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6809f0a008ca0f00423ef3133d3e3369" id="r_a6809f0a008ca0f00423ef3133d3e3369"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a6809f0a008ca0f00423ef3133d3e3369">init_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
 <tr class="memdesc:a6809f0a008ca0f00423ef3133d3e3369"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize lagged fields.  <br /></td></tr>
 <tr class="separator:a6809f0a008ca0f00423ef3133d3e3369"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -342,7 +344,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00007">7</a> of file <a class="el" href="_rayleigh_damping_form_8cpp_source.html">RayleighDampingForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00069">n_lagging_iters_</a>, and <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00074">stiffness()</a>.</p>
+<p class="reference">References <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00071">n_lagging_iters_</a>, and <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00074">stiffness()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -457,7 +459,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00050">50</a> of file <a class="el" href="_rayleigh_damping_form_8cpp_source.html">RayleighDampingForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a989602df205d37bdd86de6d8fc70e88b">polyfem::time_integrator::ImplicitTimeIntegrator::compute_velocity()</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00071">lagged_stiffness_matrix_</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00074">stiffness()</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00066">time_integrator_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a989602df205d37bdd86de6d8fc70e88b">polyfem::time_integrator::ImplicitTimeIntegrator::compute_velocity()</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00073">lagged_stiffness_matrix_</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00074">stiffness()</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00068">time_integrator_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -538,9 +540,38 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#aec784f581cc71ef11d739c66cf8c822a">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00055">55</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00057">57</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00069">n_lagging_iters_</a>.</p>
+<p class="reference">References <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00071">n_lagging_iters_</a>.</p>
+
+</div>
+</div>
+<a id="aa25a7f59f76664f17d1cbb096716431f" name="aa25a7f59f76664f17d1cbb096716431f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa25a7f59f76664f17d1cbb096716431f">&#9670;&#160;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::solver::RayleighDampingForm::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a811b9bc4f875497c659bcce24c15f935">polyfem::solver::Form</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00028">28</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -591,7 +622,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00056">56</a> of file <a class="el" href="_rayleigh_damping_form_8cpp_source.html">RayleighDampingForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ae2ea9843952763bbfc733ad20e1f4e55">polyfem::time_integrator::ImplicitTimeIntegrator::dv_dx()</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00071">lagged_stiffness_matrix_</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00074">stiffness()</a>, and <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00066">time_integrator_</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ae2ea9843952763bbfc733ad20e1f4e55">polyfem::time_integrator::ImplicitTimeIntegrator::dv_dx()</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00073">lagged_stiffness_matrix_</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00074">stiffness()</a>, and <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00068">time_integrator_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -619,7 +650,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00074">74</a> of file <a class="el" href="_rayleigh_damping_form_8cpp_source.html">RayleighDampingForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00069">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00068">stiffness_</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00066">time_integrator_</a>, and <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00067">use_stiffness_as_ratio_</a>.</p>
+<p class="reference">References <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00069">polyfem::time_integrator::ImplicitTimeIntegrator::dt()</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00070">stiffness_</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00068">time_integrator_</a>, and <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00069">use_stiffness_as_ratio_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00023">create()</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00050">first_derivative_unweighted()</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00007">RayleighDampingForm()</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00056">second_derivative_unweighted()</a>, and <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00044">value_unweighted()</a>.</p>
 <div class="dynheader">
@@ -682,7 +713,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00067">67</a> of file <a class="el" href="_rayleigh_damping_form_8cpp_source.html">RayleighDampingForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00065">form_to_damp_</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00071">lagged_stiffness_matrix_</a>, <a class="el" href="_form_8hpp_source.html#l00039">polyfem::solver::Form::second_derivative()</a>, <a class="el" href="_form_8hpp_source.html#l00114">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00067">form_to_damp_</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00073">lagged_stiffness_matrix_</a>, <a class="el" href="_form_8hpp_source.html#l00041">polyfem::solver::Form::second_derivative()</a>, <a class="el" href="_form_8hpp_source.html#l00116">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00062">init_lagging()</a>.</p>
 <div class="dynheader">
@@ -726,7 +757,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a358f316a9aaea1785fd4a5b2bdefb4f7">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00059">59</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00061">61</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -767,7 +798,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00044">44</a> of file <a class="el" href="_rayleigh_damping_form_8cpp_source.html">RayleighDampingForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a989602df205d37bdd86de6d8fc70e88b">polyfem::time_integrator::ImplicitTimeIntegrator::compute_velocity()</a>, <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ae2ea9843952763bbfc733ad20e1f4e55">polyfem::time_integrator::ImplicitTimeIntegrator::dv_dx()</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00071">lagged_stiffness_matrix_</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00074">stiffness()</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00066">time_integrator_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a989602df205d37bdd86de6d8fc70e88b">polyfem::time_integrator::ImplicitTimeIntegrator::compute_velocity()</a>, <a class="el" href="classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#ae2ea9843952763bbfc733ad20e1f4e55">polyfem::time_integrator::ImplicitTimeIntegrator::dv_dx()</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00073">lagged_stiffness_matrix_</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00074">stiffness()</a>, <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00068">time_integrator_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -799,7 +830,7 @@ Here is the call graph for this function:</div>
 
 <p>Reference to the form we are damping. </p>
 
-<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00065">65</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00067">67</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00067">update_lagging()</a>.</p>
 
@@ -827,7 +858,7 @@ Here is the call graph for this function:</div>
 
 <p>The lagged stiffness matrix. </p>
 
-<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00071">71</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00073">73</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00050">first_derivative_unweighted()</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00056">second_derivative_unweighted()</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00067">update_lagging()</a>, and <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00044">value_unweighted()</a>.</p>
 
@@ -855,9 +886,9 @@ Here is the call graph for this function:</div>
 
 <p>Number of iterations to lag for. </p>
 
-<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00069">69</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00071">71</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00055">max_lagging_iterations()</a>, and <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00007">RayleighDampingForm()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00057">max_lagging_iterations()</a>, and <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00007">RayleighDampingForm()</a>.</p>
 
 </div>
 </div>
@@ -883,7 +914,7 @@ Here is the call graph for this function:</div>
 
 <p>Damping stiffness coefficient. </p>
 
-<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00068">68</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00070">70</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00074">stiffness()</a>.</p>
 
@@ -911,7 +942,7 @@ Here is the call graph for this function:</div>
 
 <p>Reference to the time integrator. </p>
 
-<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00066">66</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00068">68</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00050">first_derivative_unweighted()</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00056">second_derivative_unweighted()</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00074">stiffness()</a>, and <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00044">value_unweighted()</a>.</p>
 
@@ -939,7 +970,7 @@ Here is the call graph for this function:</div>
 
 <p>Whether to use the stiffness ratio or the stiffness value. </p>
 
-<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00067">67</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_rayleigh_damping_form_8hpp_source.html#l00069">69</a> of file <a class="el" href="_rayleigh_damping_form_8hpp_source.html">RayleighDampingForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00074">stiffness()</a>.</p>
 

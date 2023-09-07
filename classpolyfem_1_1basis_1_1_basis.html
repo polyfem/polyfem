@@ -152,6 +152,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a426fd294702d85350db2bdaab6536bef" id="r_a426fd294702d85350db2bdaab6536bef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#a426fd294702d85350db2bdaab6536bef">eval_basis</a> (const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
 <tr class="memdesc:a426fd294702d85350db2bdaab6536bef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates the basis function over a set of uv parameters.  <br /></td></tr>
 <tr class="separator:a426fd294702d85350db2bdaab6536bef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5a4752ad6ee252f5f6ed60d949c1f50" id="r_ad5a4752ad6ee252f5f6ed60d949c1f50"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ad5a4752ad6ee252f5f6ed60d949c1f50">operator()</a> (const Eigen::MatrixXd &amp;uv) const</td></tr>
+<tr class="memdesc:ad5a4752ad6ee252f5f6ed60d949c1f50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate the basis function over a set of uv parameters.  <br /></td></tr>
+<tr class="separator:ad5a4752ad6ee252f5f6ed60d949c1f50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac88c5ebf3f816a5b7a14709027ef63a5" id="r_ac88c5ebf3f816a5b7a14709027ef63a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1basis_1_1_basis.html#ac88c5ebf3f816a5b7a14709027ef63a5">eval_grad</a> (const Eigen::MatrixXd &amp;uv, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
 <tr class="memdesc:ac88c5ebf3f816a5b7a14709027ef63a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate the gradient of the basis function.  <br /></td></tr>
 <tr class="separator:ac88c5ebf3f816a5b7a14709027ef63a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -276,7 +279,14 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00072">72</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00116">basis_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00129">basis_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_basis_8hpp_source.html#l00084">operator()()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_basis_a426fd294702d85350db2bdaab6536bef_icgraph.svg" width="382" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
@@ -323,9 +333,9 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00084">84</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00097">97</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00117">grad_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00130">grad_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
 
 </div>
 </div>
@@ -352,9 +362,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00092">92</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00105">105</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00112">global_</a>.</p>
+<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00125">global_</a>.</p>
 
 </div>
 </div>
@@ -381,11 +391,11 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00091">91</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00104">104</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00112">global_</a>.</p>
+<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00125">global_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l00557">polyfem::io::Evaluator::average_grad_based_function()</a>, <a class="el" href="_state_load_8cpp_source.html#l00158">polyfem::State::build_mesh_matrices()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00201">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00301">polyfem::compute_diplacement_grad()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00687">polyfem::io::Evaluator::compute_vertex_values()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00019">polyfem::basis::ElementBases::eval_geom_mapping()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00082">polyfem::basis::ElementBases::eval_geom_mapping_grads()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00157">polyfem::assembler::ElementAssemblyValues::finalize2d()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00090">polyfem::assembler::ElementAssemblyValues::finalize3d()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00247">polyfem::io::Evaluator::interpolate_boundary_function_at_vertices()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00889">polyfem::io::Evaluator::interpolate_function()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00349">polyfem::assembler::ElementAssemblyValues::is_geom_mapping_positive()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00229">polyfem::assembler::RhsAssembler::lsq_bc()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l00557">polyfem::io::Evaluator::average_grad_based_function()</a>, <a class="el" href="_state_load_8cpp_source.html#l00158">polyfem::State::build_mesh_matrices()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00201">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00301">polyfem::compute_diplacement_grad()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00687">polyfem::io::Evaluator::compute_vertex_values()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00019">polyfem::basis::ElementBases::eval_geom_mapping()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00082">polyfem::basis::ElementBases::eval_geom_mapping_grads()</a>, <a class="el" href="_out_data_8cpp_source.html#l00117">polyfem::io::OutGeometryData::extract_boundary_mesh()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00157">polyfem::assembler::ElementAssemblyValues::finalize2d()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00090">polyfem::assembler::ElementAssemblyValues::finalize3d()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00247">polyfem::io::Evaluator::interpolate_boundary_function_at_vertices()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00889">polyfem::io::Evaluator::interpolate_function()</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00349">polyfem::assembler::ElementAssemblyValues::is_geom_mapping_positive()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00229">polyfem::assembler::RhsAssembler::lsq_bc()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -444,7 +454,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_basis_8cpp_source.html#l00014">14</a> of file <a class="el" href="_basis_8cpp_source.html">Basis.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00112">global_</a>, <a class="el" href="_basis_8hpp_source.html#l00113">local_index_</a>, <a class="el" href="_basis_8hpp_source.html#l00099">order()</a>, and <a class="el" href="_basis_8hpp_source.html#l00114">order_</a>.</p>
+<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00125">global_</a>, <a class="el" href="_basis_8hpp_source.html#l00126">local_index_</a>, <a class="el" href="_basis_8hpp_source.html#l00112">order()</a>, and <a class="el" href="_basis_8hpp_source.html#l00127">order_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -480,7 +490,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00063">63</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00112">global_</a>.</p>
+<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00125">global_</a>.</p>
 
 </div>
 </div>
@@ -507,9 +517,53 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00098">98</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00111">111</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00116">basis_</a>.</p>
+<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00129">basis_</a>.</p>
+
+</div>
+</div>
+<a id="ad5a4752ad6ee252f5f6ed60d949c1f50" name="ad5a4752ad6ee252f5f6ed60d949c1f50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5a4752ad6ee252f5f6ed60d949c1f50">&#9670;&#160;</a></span>operator()()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::basis::Basis::operator() </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>uv</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Evaluate the basis function over a set of uv parameters. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">uv</td><td>#uv x dim matrix of parameters to evaluate </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>#uv x 1 vector of computed values </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00084">84</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00072">eval_basis()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00070">val</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1basis_1_1_basis_ad5a4752ad6ee252f5f6ed60d949c1f50_cgraph.svg" width="382" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
@@ -536,9 +590,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00099">99</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00112">112</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00114">order_</a>.</p>
+<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00127">order_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="p__bases_8py_source.html#l00129">p_bases.Lagrange::compute_basis()</a>, <a class="el" href="q__bases_8py_source.html#l00071">q_bases.Lagrange::compute_basis()</a>, and <a class="el" href="_basis_8cpp_source.html#l00014">init()</a>.</p>
 <div class="dynheader">
@@ -573,9 +627,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00095">95</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00108">108</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00116">basis_</a>.</p>
+<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00129">basis_</a>.</p>
 
 </div>
 </div>
@@ -603,9 +657,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00096">96</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00109">109</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00117">grad_</a>.</p>
+<p class="reference">References <a class="el" href="_basis_8hpp_source.html#l00130">grad_</a>.</p>
 
 </div>
 </div>
@@ -644,7 +698,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00102">102</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00115">115</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
 
 </div>
 </div>
@@ -671,9 +725,9 @@ Here is the caller graph for this function:</div>
 
 <p>basis and gadient </p>
 
-<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00116">116</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00129">129</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_basis_8hpp_source.html#l00072">eval_basis()</a>, <a class="el" href="_basis_8hpp_source.html#l00098">is_defined()</a>, and <a class="el" href="_basis_8hpp_source.html#l00095">set_basis()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_basis_8hpp_source.html#l00072">eval_basis()</a>, <a class="el" href="_basis_8hpp_source.html#l00111">is_defined()</a>, and <a class="el" href="_basis_8hpp_source.html#l00108">set_basis()</a>.</p>
 
 </div>
 </div>
@@ -699,9 +753,9 @@ Here is the caller graph for this function:</div>
 
 <p>list of real nodes influencing the basis </p>
 
-<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00112">112</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00125">125</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_basis_8hpp_source.html#l00092">global()</a>, <a class="el" href="_basis_8hpp_source.html#l00091">global()</a>, <a class="el" href="_basis_8cpp_source.html#l00014">init()</a>, and <a class="el" href="_basis_8hpp_source.html#l00063">is_complete()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_basis_8hpp_source.html#l00105">global()</a>, <a class="el" href="_basis_8hpp_source.html#l00104">global()</a>, <a class="el" href="_basis_8cpp_source.html#l00014">init()</a>, and <a class="el" href="_basis_8hpp_source.html#l00063">is_complete()</a>.</p>
 
 </div>
 </div>
@@ -725,9 +779,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00117">117</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00130">130</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_basis_8hpp_source.html#l00084">eval_grad()</a>, and <a class="el" href="_basis_8hpp_source.html#l00096">set_grad()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_basis_8hpp_source.html#l00097">eval_grad()</a>, and <a class="el" href="_basis_8hpp_source.html#l00109">set_grad()</a>.</p>
 
 </div>
 </div>
@@ -753,7 +807,7 @@ Here is the caller graph for this function:</div>
 
 <p>local index inside the element (for debugging purposes) </p>
 
-<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00113">113</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00126">126</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_basis_8cpp_source.html#l00014">init()</a>.</p>
 
@@ -779,9 +833,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00114">114</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_basis_8hpp_source.html#l00127">127</a> of file <a class="el" href="_basis_8hpp_source.html">Basis.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_basis_8cpp_source.html#l00014">init()</a>, and <a class="el" href="_basis_8hpp_source.html#l00099">order()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_basis_8cpp_source.html#l00014">init()</a>, and <a class="el" href="_basis_8hpp_source.html#l00112">order()</a>.</p>
 
 </div>
 </div>

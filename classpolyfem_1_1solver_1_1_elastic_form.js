@@ -6,6 +6,7 @@ var classpolyfem_1_1solver_1_1_elastic_form =
     [ "force_material_derivative", "classpolyfem_1_1solver_1_1_elastic_form.html#a4cd17b1d3a5510cccdc6b59084e165cd", null ],
     [ "force_shape_derivative", "classpolyfem_1_1solver_1_1_elastic_form.html#a3f5a989495a7a288ab2bd7ba54535822", null ],
     [ "is_step_valid", "classpolyfem_1_1solver_1_1_elastic_form.html#af2f0f857ec53a4bc3e282fce304446a0", null ],
+    [ "name", "classpolyfem_1_1solver_1_1_elastic_form.html#af31e9468dfabab01f1009790c57b2e90", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_elastic_form.html#a2a1eb1f32b30101e73734d70ab4baead", null ],
     [ "update_quantities", "classpolyfem_1_1solver_1_1_elastic_form.html#afc6ed3a44070466e848d7a61fa9f8d8a", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_elastic_form.html#a7a7bc40ed9da1e4c15d4e0abb81180c7", null ],

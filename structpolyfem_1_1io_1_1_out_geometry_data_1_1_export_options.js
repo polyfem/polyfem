@@ -6,6 +6,7 @@ var structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options =
     [ "body_ids", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#add57d640c99ac56ced4242571b19e96d", null ],
     [ "boundary_only", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#aeae46aac32e4c278f55665f48b2a102c", null ],
     [ "contact_forces", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a4e5d3eb11e3c75f933e3331dfbcc05aa", null ],
+    [ "forces", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a5a8b7def860f9f02538210a85c0052c0", null ],
     [ "friction_forces", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a273b9ec341d7dffb3ac1d798ce4ef638", null ],
     [ "material_params", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#add8f502631b9410d4ef580ba0e8fe646", null ],
     [ "points", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a77f1e5c80d3b066fe69e496e6fa1041f", null ],
