@@ -2253,7 +2253,8 @@
             "max_iterations",
             "relative_gradient",
             "line_search",
-            "force_psd_projection"
+            "force_psd_projection",
+            "allow_out_of_iterations"
         ],
         "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
     },
@@ -2341,6 +2342,12 @@
         "default": false,
         "type": "bool",
         "doc": "Force the Hessian to be PSD when using second order solvers (i.e., Newton's method)."
+    },
+    {
+        "pointer": "/solver/nonlinear/allow_out_of_iterations",
+        "default": false,
+        "type": "bool",
+        "doc": "If false (default), an exception will be thrown when the nonlinear solver reaches the maximum number of iterations."
     },
     {
         "pointer": "/solver/augmented_lagrangian",

@@ -26,7 +26,6 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
-#include <polyfem/utils/getRSS.h>
 
 #include <ipc/ipc.hpp>
 
@@ -89,12 +88,12 @@ namespace polyfem
 			timer.stop();
 			forward_solve_time = timer.getElapsedTimeInSec();
 
-			energy_csv.write(save_i, sol);
-			save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
-
 #ifdef POLYFEM_WITH_REMESHING
 			if (remesh_enabled)
 			{
+				energy_csv.write(save_i, sol);
+				save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+
 				timer.start();
 				const bool remesh_success = mesh::remesh(*this, sol, t0 + dt * t, dt);
 				timer.stop();
@@ -112,11 +111,11 @@ namespace polyfem
 					timer.stop();
 					global_relaxation_time = timer.getElapsedTimeInSec();
 				}
-				// Always save the solution for consistency
-				energy_csv.write(save_i, sol);
-				save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 			}
 #endif
+			// Always save the solution for consistency
+			energy_csv.write(save_i, sol);
+			save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 
 			if (optimization_enabled)
 				cache_transient_adjoint_quantities(t, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
@@ -131,8 +130,6 @@ namespace polyfem
 				solve_data.update_dt();
 				solve_data.update_barrier_stiffness(sol);
 			}
-
-			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 

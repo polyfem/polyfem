@@ -245,8 +245,8 @@ namespace cppoptlib
 		// Log results
 		// -----------
 
-		// if (this->m_status == Status::IterationLimit)
-		// 	log_and_throw_error("[{}] Reached iteration limit (limit={})", name(), this->m_stop.iterations);
+		if (!allow_out_of_iterations && this->m_status == Status::IterationLimit)
+			log_and_throw_error("[{}] Reached iteration limit (limit={})", name(), this->m_stop.iterations);
 		if (this->m_current.iterations == 0)
 			log_and_throw_error("[{}] Unable to take a step", name());
 		if (this->m_status == Status::UserDefined && m_error_code != ErrorCode::SUCCESS)
@@ -280,7 +280,7 @@ namespace cppoptlib
 		}
 		else if (std::isnan(rate))
 		{
-			assert(descent_strategy == 2);        // failed on gradient descent
+			assert(descent_strategy == 2); // failed on gradient descent
 			polyfem::logger().error("[{}] Line search failed on gradient descent; stopping", name());
 			this->m_status = Status::UserDefined; // Line search failed on gradient descent, so quit!
 			throw std::runtime_error("Line search failed on gradient descent");
