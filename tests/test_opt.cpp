@@ -273,8 +273,7 @@ TEST_CASE("topology-opt", "[optimization]")
 	// CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 	nl_solver->minimize(*nl_problem, x);
 
-	json params;
-	nl_solver->get_info(params);
+	const json &params = nl_solver->get_info();
 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
 	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.726565).epsilon(1e-4));
