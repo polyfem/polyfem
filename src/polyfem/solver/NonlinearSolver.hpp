@@ -59,7 +59,7 @@ namespace cppoptlib
 
 		size_t max_iterations() const { return this->m_stop.iterations; }
 		size_t &max_iterations() { return this->m_stop.iterations; }
-		bool allow_out_of_iterations;
+		bool allow_out_of_iterations = false;
 
 	protected:
 		// ====================================================================
