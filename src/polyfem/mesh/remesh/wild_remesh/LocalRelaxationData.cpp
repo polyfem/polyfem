@@ -262,7 +262,8 @@ namespace polyfem::mesh
 				local_neumann_boundary, state.n_boundary_samples(), rhs,
 				target_x, mass_matrix_assembler->density(),
 				// Inertia form
-				state.args["time"]["quasistatic"], mass, /*damping_assembler=*/nullptr,
+				state.args.value("/time/quasistatic"_json_pointer, true), mass,
+				/*damping_assembler=*/nullptr,
 				// Lagged regularization form
 				state.args["solver"]["advanced"]["lagged_regularization_weight"],
 				state.args["solver"]["advanced"]["lagged_regularization_iterations"],

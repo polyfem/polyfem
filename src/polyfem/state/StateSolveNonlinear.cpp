@@ -240,7 +240,8 @@ namespace polyfem
 			n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
 			n_boundary_samples(), rhs, sol, mass_matrix_assembler->density(),
 			// Inertia form
-			args["time"]["quasistatic"], mass, damping_assembler->is_valid() ? damping_assembler : nullptr,
+			args.value("/time/quasistatic"_json_pointer, true), mass,
+			damping_assembler->is_valid() ? damping_assembler : nullptr,
 			// Lagged regularization form
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
