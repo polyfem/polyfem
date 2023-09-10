@@ -206,10 +206,6 @@ namespace polyfem
 
 			// auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, mass.rows()));
 
-			// TODO: Why are we shadowing this variable?
-			// const int n_from_bases = int(from_bases.size());
-			// const int n_to_bases = int(to_bases.size());
-
 			Quadrature quadrature;
 			if (is_volume)
 				TetQuadrature().get_quadrature(2, quadrature);
