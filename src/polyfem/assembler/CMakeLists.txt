@@ -31,6 +31,8 @@ set(SOURCES
 	MatParams.hpp
 	MooneyRivlinElasticity.cpp
 	MooneyRivlinElasticity.hpp
+	MooneyRivlin3ParamElasticity.cpp
+	MooneyRivlin3ParamElasticity.hpp
 	MultiModel.cpp
 	MultiModel.hpp
 	NavierStokes.cpp
