@@ -3,8 +3,6 @@ set(SOURCES
 	L2Projection.hpp
 	MMGRemesh.cpp
 	MMGRemesh.hpp
-	Remesh.hpp
-	Remesh.cpp
 	Remesher.cpp
 	Remesher.hpp
 	SizingFieldRemesher.cpp

@@ -1,4 +1,6 @@
-#include "Remesh.hpp"
+#ifdef POLYFEM_WITH_REMESHING
+
+#include <polyfem/State.hpp>
 
 #include <polyfem/mesh/remesh/PhysicsRemesher.hpp>
 #include <polyfem/mesh/remesh/SizingFieldRemesher.hpp>
@@ -13,8 +15,10 @@
 #include <igl/boundary_facets.h>
 #include <igl/edges.h>
 
-namespace polyfem::mesh
+namespace polyfem
 {
+	using namespace mesh;
+
 	namespace
 	{
 		Remesher::BoundaryMap<int> build_boundary_to_id(
@@ -155,42 +159,42 @@ namespace polyfem::mesh
 		}
 	} // namespace
 
-	bool remesh(State &state, Eigen::MatrixXd &sol, const double time, const double dt)
+	bool State::remesh(const double time, const double dt, Eigen::MatrixXd &sol)
 	{
-		const int dim = state.mesh->dimension();
+		const int dim = mesh->dimension();
 		int ndof = sol.size();
 		assert(sol.cols() == 1);
-		int ndof_mesh = state.mesh->n_vertices() * dim;
-		int ndof_obstacle = state.obstacle.n_vertices() * dim;
+		int ndof_mesh = mesh->n_vertices() * dim;
+		int ndof_obstacle = obstacle.n_vertices() * dim;
 		assert(ndof == ndof_mesh + ndof_obstacle);
 
 		Eigen::MatrixXd rest_positions;
 		Eigen::MatrixXi elements;
-		state.build_mesh_matrices(rest_positions, elements);
+		build_mesh_matrices(rest_positions, elements);
 		assert(rest_positions.size() == ndof_mesh);
 
 		// --------------------------------------------------------------------
 
 		Remesher::EdgeMap<double> elastic_energy, contact_energy;
 		build_edge_energy_maps(
-			state, rest_positions, elements, sol, elastic_energy, contact_energy);
+			*this, rest_positions, elements, sol, elastic_energy, contact_energy);
 
 		// --------------------------------------------------------------------
 
-		Remesher::BoundaryMap<int> boundary_to_id = build_boundary_to_id(state.mesh, state.in_node_to_node);
+		Remesher::BoundaryMap<int> boundary_to_id = build_boundary_to_id(mesh, in_node_to_node);
 
-		const std::vector<int> body_ids = state.mesh->has_body_ids() ? state.mesh->get_body_ids() : std::vector<int>(elements.rows(), 0);
+		const std::vector<int> body_ids = mesh->has_body_ids() ? mesh->get_body_ids() : std::vector<int>(elements.rows(), 0);
 		assert(body_ids.size() == elements.rows());
 
 		// Only remesh the FE mesh
-		assert(sol.size() - rest_positions.size() == state.obstacle.n_vertices() * dim);
+		assert(sol.size() - rest_positions.size() == obstacle.n_vertices() * dim);
 		const Eigen::MatrixXd mesh_sol = sol.topRows(ndof_mesh);
 		const Eigen::MatrixXd obstacle_sol = sol.bottomRows(ndof_obstacle);
 		const Eigen::MatrixXd positions = rest_positions + utils::unflatten(mesh_sol, dim);
 
 		// not including current displacement as this will be handled as positions
 		Eigen::MatrixXd projection_quantities = Remesher::combine_time_integrator_quantities(
-			state.solve_data.time_integrator);
+			solve_data.time_integrator);
 		assert(projection_quantities.rows() == ndof);
 
 		const Eigen::MatrixXd obstacle_projection_quantities = projection_quantities.bottomRows(ndof_obstacle);
@@ -200,7 +204,7 @@ namespace polyfem::mesh
 		// remesh
 
 		std::shared_ptr<Remesher> remeshing = create_wild_remeshing(
-			state, obstacle_sol, obstacle_projection_quantities, time, state.solve_data.nl_problem->value(sol));
+			*this, obstacle_sol, obstacle_projection_quantities, time, solve_data.nl_problem->value(sol));
 		remeshing->init(
 			rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids,
 			elastic_energy, contact_energy);
@@ -208,7 +212,7 @@ namespace polyfem::mesh
 		const bool made_change = remeshing->execute();
 
 		// remeshing->write_mesh(
-		// 	state.resolve_output_path(fmt::format("post_vis_{:03d}.vtu", int(time / dt))));
+		// 	resolve_output_path(fmt::format("post_vis_{:03d}.vtu", int(time / dt))));
 
 		if (!made_change)
 			return false;
@@ -216,46 +220,46 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 		// create new mesh
 
-		state.mesh = mesh::Mesh::create(remeshing->rest_positions(), remeshing->elements(), /*non_conforming=*/false);
+		mesh = mesh::Mesh::create(remeshing->rest_positions(), remeshing->elements(), /*non_conforming=*/false);
 
 		// set body ids
-		state.mesh->set_body_ids(remeshing->body_ids());
+		mesh->set_body_ids(remeshing->body_ids());
 
 		// set boundary ids
 		std::vector<int> boundary_ids;
 		if (dim == 2)
 		{
 			const auto remesh_boundary_ids = std::get<Remesher::EdgeMap<int>>(remeshing->boundary_ids());
-			boundary_ids = std::vector<int>(state.mesh->n_edges(), -1);
-			for (int i = 0; i < state.mesh->n_edges(); i++)
+			boundary_ids = std::vector<int>(mesh->n_edges(), -1);
+			for (int i = 0; i < mesh->n_edges(); i++)
 			{
-				const size_t e0 = state.mesh->edge_vertex(i, 0);
-				const size_t e1 = state.mesh->edge_vertex(i, 1);
+				const size_t e0 = mesh->edge_vertex(i, 0);
+				const size_t e1 = mesh->edge_vertex(i, 1);
 				boundary_ids[i] = remesh_boundary_ids.at({{e0, e1}});
 			}
 		}
 		else
 		{
 			const auto remesh_boundary_ids = std::get<Remesher::FaceMap<int>>(remeshing->boundary_ids());
-			boundary_ids = std::vector<int>(state.mesh->n_faces(), -1);
-			for (int i = 0; i < state.mesh->n_faces(); i++)
+			boundary_ids = std::vector<int>(mesh->n_faces(), -1);
+			for (int i = 0; i < mesh->n_faces(); i++)
 			{
-				std::array<size_t, 3> f = {{(size_t)state.mesh->face_vertex(i, 0),
-											(size_t)state.mesh->face_vertex(i, 1),
-											(size_t)state.mesh->face_vertex(i, 2)}};
+				std::array<size_t, 3> f = {{(size_t)mesh->face_vertex(i, 0),
+											(size_t)mesh->face_vertex(i, 1),
+											(size_t)mesh->face_vertex(i, 2)}};
 				boundary_ids[i] = remesh_boundary_ids.at(f);
 			}
 		}
-		state.mesh->set_boundary_ids(boundary_ids);
+		mesh->set_boundary_ids(boundary_ids);
 
 		// load mesh (and set materials) (will also reload obstacles from disk)
-		state.load_mesh();
+		load_mesh();
 
 		// --------------------------------------------------------------------
 
-		state.build_basis();
-		state.assemble_rhs();
-		state.assemble_mass_mat();
+		build_basis();
+		assemble_rhs();
+		assemble_mass_mat();
 
 		// --------------------------------------------------------------------
 
@@ -263,44 +267,46 @@ namespace polyfem::mesh
 		const int old_ndof_mesh = ndof_mesh;
 		const int old_ndof_obstacle = ndof_obstacle;
 
-		ndof_mesh = state.mesh->n_vertices() * dim;
-		ndof_obstacle = state.obstacle.n_vertices() * dim;
+		ndof_mesh = mesh->n_vertices() * dim;
+		ndof_obstacle = obstacle.n_vertices() * dim;
 		assert(ndof_obstacle == old_ndof_obstacle);
-		ndof = state.n_bases * dim;
+		ndof = n_bases * dim;
 		assert(ndof == ndof_mesh + ndof_obstacle);
 
 		sol.resize(ndof, 1);
 		sol.topRows(ndof_mesh) = utils::flatten(utils::reorder_matrix(
-			remeshing->displacements(), state.in_node_to_node));
+			remeshing->displacements(), in_node_to_node));
 		if (ndof_obstacle > 0)
 			sol.bottomRows(ndof_obstacle) = obstacle_sol;
 
-		state.solve_data.rhs_assembler = state.build_rhs_assembler();
-		if (state.problem->is_time_dependent())
+		solve_data.rhs_assembler = build_rhs_assembler();
+		if (problem->is_time_dependent())
 		{
-			assert(state.solve_data.time_integrator != nullptr);
+			assert(solve_data.time_integrator != nullptr);
 
 			Eigen::MatrixXd projected_quantities = remeshing->projection_quantities();
 			assert(projected_quantities.rows() == ndof_mesh);
 			assert(projected_quantities.cols() == projection_quantities.cols());
 			projected_quantities = utils::reorder_matrix(
-				projected_quantities, state.in_node_to_node, /*out_blocks=*/-1, dim);
+				projected_quantities, in_node_to_node, /*out_blocks=*/-1, dim);
 			projected_quantities.conservativeResize(ndof, Eigen::NoChange);
 			projected_quantities.bottomRows(ndof_obstacle) = obstacle_projection_quantities;
 
 			std::vector<Eigen::VectorXd> x_prevs, v_prevs, a_prevs;
 			Remesher::split_time_integrator_quantities(
 				projected_quantities, dim, x_prevs, v_prevs, a_prevs);
-			state.solve_data.time_integrator->init(x_prevs, v_prevs, a_prevs, dt);
+			solve_data.time_integrator->init(x_prevs, v_prevs, a_prevs, dt);
 		}
-		state.init_nonlinear_tensor_solve(sol, time, /*init_time_integrator=*/false);
+		init_nonlinear_tensor_solve(sol, time, /*init_time_integrator=*/false);
 
 		// initialize the problem so contact force show up correctly in the output
-		state.solve_data.nl_problem->update_quantities(time, state.solve_data.time_integrator->x_prev());
-		state.solve_data.nl_problem->init(sol);
-		state.solve_data.nl_problem->init_lagging(state.solve_data.time_integrator->x_prev());
-		state.solve_data.nl_problem->update_lagging(sol, /*iter_num=*/0);
+		solve_data.nl_problem->update_quantities(time, solve_data.time_integrator->x_prev());
+		solve_data.nl_problem->init(sol);
+		solve_data.nl_problem->init_lagging(solve_data.time_integrator->x_prev());
+		solve_data.nl_problem->update_lagging(sol, /*iter_num=*/0);
 
 		return true;
 	}
-} // namespace polyfem::mesh
+} // namespace polyfem
+
+#endif

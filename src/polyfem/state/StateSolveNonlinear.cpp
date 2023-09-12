@@ -20,9 +20,6 @@
 #include <polyfem/io/MshWriter.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/OutData.hpp>
-#ifdef POLYFEM_WITH_REMESHING
-#include <polyfem/mesh/remesh/Remesh.hpp>
-#endif
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
@@ -65,15 +62,14 @@ namespace polyfem
 	{
 		init_nonlinear_tensor_solve(sol, t0 + dt);
 
-		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
-		const double save_dt = remesh_enabled ? (dt / 3) : dt;
-		int save_i = 0;
-
-		save_timestep(t0, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+		save_timestep(t0, 0, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 
 		// Write the total energy to a CSV file
+		int save_i = 0;
 		EnergyCSVWriter energy_csv(resolve_output_path("energy.csv"), solve_data);
 		RuntimeStatsCSVWriter stats_csv(resolve_output_path("stats.csv"), *this, t0, dt);
+		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
+		// const double save_dt = remesh_enabled ? (dt / 3) : dt;
 
 		if (optimization_enabled)
 			cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
@@ -82,43 +78,45 @@ namespace polyfem
 		{
 			double forward_solve_time = 0, remeshing_time = 0, global_relaxation_time = 0;
 
-			igl::Timer timer;
-			timer.start();
-			solve_tensor_nonlinear(sol, t);
-			timer.stop();
-			forward_solve_time = timer.getElapsedTimeInSec();
+			{
+				POLYFEM_SCOPED_TIMER(forward_solve_time);
+				solve_tensor_nonlinear(sol, t);
+			}
 
 #ifdef POLYFEM_WITH_REMESHING
 			if (remesh_enabled)
 			{
 				energy_csv.write(save_i, sol);
-				save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+				// save_timestep(t0 + dt * t, save_i, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+				save_i++;
 
-				timer.start();
-				const bool remesh_success = mesh::remesh(*this, sol, t0 + dt * t, dt);
-				timer.stop();
-				remeshing_time = timer.getElapsedTimeInSec();
+				bool remesh_success;
+				{
+					POLYFEM_SCOPED_TIMER(remeshing_time);
+					remesh_success = this->remesh(t0 + dt * t, dt, sol);
+				}
 
 				// Save the solution after remeshing
 				energy_csv.write(save_i, sol);
-				save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+				// save_timestep(t0 + dt * t, save_i, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+				save_i++;
 
 				// Only do global relaxation if remeshing was successful
 				if (remesh_success)
 				{
-					timer.start();
+					POLYFEM_SCOPED_TIMER(global_relaxation_time);
 					solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
-					timer.stop();
-					global_relaxation_time = timer.getElapsedTimeInSec();
 				}
 			}
 #endif
 			// Always save the solution for consistency
 			energy_csv.write(save_i, sol);
-			save_timestep(t0 + dt * t, save_i++, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 
 			if (optimization_enabled)
+			{
 				cache_transient_adjoint_quantities(t, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
+			}
 
 			{
 				POLYFEM_SCOPED_TIMER("Update quantities");
