@@ -191,7 +191,7 @@ var searchData=
   ['solution_5fchanged_5fwith_5fparam_188',['solution_changed_with_param',['../classpolyfem_1_1solver_1_1_parametrization_form.html#a0cc3868c3c74bd0fef7389e36604da9f',1,'polyfem::solver::ParametrizationForm']]],
   ['solution_5fframes_189',['solution_frames',['../classpolyfem_1_1_state.html#a8847be019d2b3aa502be1e404db71f0d',1,'polyfem::State']]],
   ['solutionframe_190',['SolutionFrame',['../classpolyfem_1_1io_1_1_solution_frame.html',1,'polyfem::io']]],
-  ['solve_191',['solve',['../classpolyfem_1_1solver_1_1_a_l_solver.html#a7c0a22e768625967a23702241a0a6595',1,'polyfem::solver::ALSolver::solve()'],['../classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4',1,'polyfem::State::solve()'],['../class_m_m_a_solver_aux.html#a48a298b30f52c65ee02e40e4458ada5a',1,'MMASolverAux::Solve()']]],
+  ['solve_191',['solve',['../class_m_m_a_solver_aux.html#a48a298b30f52c65ee02e40e4458ada5a',1,'MMASolverAux::Solve()'],['../classpolyfem_1_1solver_1_1_a_l_solver.html#a7c0a22e768625967a23702241a0a6595',1,'polyfem::solver::ALSolver::solve()'],['../classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4',1,'polyfem::State::solve(Eigen::MatrixXd &amp;sol, Eigen::MatrixXd &amp;pressure)']]],
   ['solve_5fadjoint_192',['solve_adjoint',['../classpolyfem_1_1_state.html#aa4d093ebcaa85e1d4fd39107019eb5a1',1,'polyfem::State']]],
   ['solve_5fadjoint_5fcached_193',['solve_adjoint_cached',['../classpolyfem_1_1_state.html#a9e1bea7d5764cb3cdf57a11e0e1444c1',1,'polyfem::State']]],
   ['solve_5fdata_194',['solve_data',['../classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d',1,'polyfem::State']]],

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['m_0',['m',['../class_m_m_a_solver_aux.html#ab132ee47ebcff0fa0e68e42b1694b6b3',1,'MMASolverAux::m'],['../namespaceeigs.html#a1cb62336f71a067a062cca9e82f830f2',1,'eigs.M'],['../classpolyfem_1_1renderer_1_1_uniform_attributes.html#a36c697eaa40c9a42d50d92ef713099aa',1,'polyfem::renderer::UniformAttributes::M']]],
+  ['m_0',['m',['../classpolyfem_1_1renderer_1_1_uniform_attributes.html#a36c697eaa40c9a42d50d92ef713099aa',1,'polyfem::renderer::UniformAttributes::M'],['../namespaceeigs.html#a1cb62336f71a067a062cca9e82f830f2',1,'eigs.M'],['../class_m_m_a_solver_aux.html#ab132ee47ebcff0fa0e68e42b1694b6b3',1,'MMASolverAux::m']]],
   ['m_5fbfgs_1',['m_bfgs',['../classcppoptlib_1_1_l_b_f_g_s_b_solver.html#adeaab8d24c113dba3dd7b86ada4a3206',1,'cppoptlib::LBFGSBSolver::m_bfgs'],['../classcppoptlib_1_1_l_b_f_g_s_solver.html#addb84c8025e0aacd6f587448e280718d',1,'cppoptlib::LBFGSSolver::m_bfgs']]],
   ['m_5fcam_2',['M_cam',['../classpolyfem_1_1renderer_1_1_uniform_attributes.html#adfa481ee238a758bbf41fdde647c3659',1,'polyfem::renderer::UniformAttributes']]],
   ['m_5ferror_5fcode_3',['m_error_code',['../classcppoptlib_1_1_nonlinear_solver.html#a7579c108dbaaef164468133f727c5156',1,'cppoptlib::NonlinearSolver']]],
@@ -58,14 +58,15 @@ var searchData=
   ['min_5fstep_5fsize_55',['min_step_size',['../classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a75548d7d1b779d37c20b68d508094137',1,'polyfem::solver::line_search::LineSearch']]],
   ['mixed_5fassembler_56',['mixed_assembler',['../classpolyfem_1_1_state.html#afb2787cd632703450c654a4feb140890',1,'polyfem::State']]],
   ['mma_57',['mma',['../classcppoptlib_1_1_m_m_a_solver.html#a043abf78a8a497259401394278e4a3c9',1,'cppoptlib::MMASolver']]],
-  ['mooney_5frivlin_5felasticity_5f_58',['mooney_rivlin_elasticity_',['../classpolyfem_1_1assembler_1_1_multi_model.html#a31be8d320080d8988cbc4daee7f79748',1,'polyfem::assembler::MultiModel']]],
-  ['move_59',['move',['../class_m_m_a_solver_aux.html#a21c7cf16609cb4fd7972fe656710ebbd',1,'MMASolverAux']]],
-  ['mu_60',['mu',['../class_m_m_a_solver_aux.html#a8d6c49f0ef7fb82cb7b13944648a8306',1,'MMASolverAux']]],
-  ['mu_5f_61',['mu_',['../classpolyfem_1_1solver_1_1_friction_form.html#af9e1b68da993b73f590b6f321472c598',1,'polyfem::solver::FrictionForm']]],
-  ['mu_5fmat_5f_62',['mu_mat_',['../classpolyfem_1_1assembler_1_1_lame_parameters.html#aaf21428e08643adcbcfa84e7866aa018',1,'polyfem::assembler::LameParameters']]],
-  ['mu_5for_5fnu_5f_63',['mu_or_nu_',['../classpolyfem_1_1assembler_1_1_lame_parameters.html#a048dcf13d1fd2334b4f19caaaab92570',1,'polyfem::assembler::LameParameters']]],
-  ['multi_5fmaterial_5fmodels_5f_64',['multi_material_models_',['../classpolyfem_1_1assembler_1_1_multi_model.html#a14e733a0c85aa56b8ffca681f3271748',1,'polyfem::assembler::MultiModel']]],
-  ['multi_5fsingular_5fboundary_5fcount_65',['multi_singular_boundary_count',['../classpolyfem_1_1io_1_1_out_stats_data.html#ad0a320e9bb339ded3abb6fd5780149bb',1,'polyfem::io::OutStatsData']]],
-  ['multi_5fsingular_5fcount_66',['multi_singular_count',['../classpolyfem_1_1io_1_1_out_stats_data.html#af22819d4b31a66276c71304a1442e3f6',1,'polyfem::io::OutStatsData']]],
-  ['mus_5f_67',['mus_',['../classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#a8d6bd84dc83b5797383e2d4deaf62cc9',1,'polyfem::assembler::UnconstrainedOgdenElasticity']]]
+  ['mooney_5frivlin_5f3_5fparam_5felasticity_5f_58',['mooney_rivlin_3_param_elasticity_',['../classpolyfem_1_1assembler_1_1_multi_model.html#a9003712b1e254b26ffa5e3986b29c992',1,'polyfem::assembler::MultiModel']]],
+  ['mooney_5frivlin_5felasticity_5f_59',['mooney_rivlin_elasticity_',['../classpolyfem_1_1assembler_1_1_multi_model.html#a31be8d320080d8988cbc4daee7f79748',1,'polyfem::assembler::MultiModel']]],
+  ['move_60',['move',['../class_m_m_a_solver_aux.html#a21c7cf16609cb4fd7972fe656710ebbd',1,'MMASolverAux']]],
+  ['mu_61',['mu',['../class_m_m_a_solver_aux.html#a8d6c49f0ef7fb82cb7b13944648a8306',1,'MMASolverAux']]],
+  ['mu_5f_62',['mu_',['../classpolyfem_1_1solver_1_1_friction_form.html#af9e1b68da993b73f590b6f321472c598',1,'polyfem::solver::FrictionForm']]],
+  ['mu_5fmat_5f_63',['mu_mat_',['../classpolyfem_1_1assembler_1_1_lame_parameters.html#aaf21428e08643adcbcfa84e7866aa018',1,'polyfem::assembler::LameParameters']]],
+  ['mu_5for_5fnu_5f_64',['mu_or_nu_',['../classpolyfem_1_1assembler_1_1_lame_parameters.html#a048dcf13d1fd2334b4f19caaaab92570',1,'polyfem::assembler::LameParameters']]],
+  ['multi_5fmaterial_5fmodels_5f_65',['multi_material_models_',['../classpolyfem_1_1assembler_1_1_multi_model.html#a14e733a0c85aa56b8ffca681f3271748',1,'polyfem::assembler::MultiModel']]],
+  ['multi_5fsingular_5fboundary_5fcount_66',['multi_singular_boundary_count',['../classpolyfem_1_1io_1_1_out_stats_data.html#ad0a320e9bb339ded3abb6fd5780149bb',1,'polyfem::io::OutStatsData']]],
+  ['multi_5fsingular_5fcount_67',['multi_singular_count',['../classpolyfem_1_1io_1_1_out_stats_data.html#af22819d4b31a66276c71304a1442e3f6',1,'polyfem::io::OutStatsData']]],
+  ['mus_5f_68',['mus_',['../classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#a8d6bd84dc83b5797383e2d4deaf62cc9',1,'polyfem::assembler::UnconstrainedOgdenElasticity']]]
 ];

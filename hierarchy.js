@@ -18,6 +18,9 @@ var hierarchy =
         [ "polyfem::assembler::GenericElastic< IncompressibleOgdenElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
           [ "polyfem::assembler::IncompressibleOgdenElasticity", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html", null ]
         ] ],
+        [ "polyfem::assembler::GenericElastic< MooneyRivlin3ParamElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
+          [ "polyfem::assembler::MooneyRivlin3ParamElasticity", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_elasticity.html", null ]
+        ] ],
         [ "polyfem::assembler::GenericElastic< MooneyRivlinElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
           [ "polyfem::assembler::MooneyRivlinElasticity", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html", null ]
         ] ],
@@ -53,6 +56,7 @@ var hierarchy =
       [ "polyfem::assembler::NLAssembler", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", [
         [ "polyfem::assembler::GenericElastic< AMIPSEnergy >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::GenericElastic< IncompressibleOgdenElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
+        [ "polyfem::assembler::GenericElastic< MooneyRivlin3ParamElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::GenericElastic< MooneyRivlinElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::GenericElastic< NeoHookeanAutodiff >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::GenericElastic< UnconstrainedOgdenElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],

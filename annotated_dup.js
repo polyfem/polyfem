@@ -53,6 +53,7 @@ var annotated_dup =
         [ "Mass", "classpolyfem_1_1assembler_1_1_mass.html", "classpolyfem_1_1assembler_1_1_mass" ],
         [ "MixedAssembler", "classpolyfem_1_1assembler_1_1_mixed_assembler.html", "classpolyfem_1_1assembler_1_1_mixed_assembler" ],
         [ "MixedAssemblerData", "classpolyfem_1_1assembler_1_1_mixed_assembler_data.html", "classpolyfem_1_1assembler_1_1_mixed_assembler_data" ],
+        [ "MooneyRivlin3ParamElasticity", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_elasticity.html", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_elasticity" ],
         [ "MooneyRivlinElasticity", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity" ],
         [ "MultiModel", "classpolyfem_1_1assembler_1_1_multi_model.html", "classpolyfem_1_1assembler_1_1_multi_model" ],
         [ "NavierStokesVelocity", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity" ],
