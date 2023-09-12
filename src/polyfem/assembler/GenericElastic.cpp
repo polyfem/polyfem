@@ -1,6 +1,7 @@
 #include "GenericElastic.hpp"
 
 #include <polyfem/assembler/MooneyRivlinElasticity.hpp>
+#include <polyfem/assembler/MooneyRivlin3ParamElasticity.hpp>
 #include <polyfem/assembler/OgdenElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
 #include <polyfem/assembler/AMIPSEnergy.hpp>
@@ -239,6 +240,7 @@ namespace polyfem::assembler
 				result.row(i) = hess.row(i).reshaped(size(), size()) * vect;
 	}
 	template class GenericElastic<MooneyRivlinElasticity>;
+	template class GenericElastic<MooneyRivlin3ParamElasticity>;
 	template class GenericElastic<AMIPSEnergy>;
 	template class GenericElastic<UnconstrainedOgdenElasticity>;
 	template class GenericElastic<IncompressibleOgdenElasticity>;
