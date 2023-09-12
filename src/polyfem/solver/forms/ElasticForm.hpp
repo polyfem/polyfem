@@ -78,7 +78,7 @@ namespace polyfem::solver
 		const bool is_volume_;
 
 		StiffnessMatrix cached_stiffness_;                      ///< Cached stiffness matrix for linear elasticity
-		mutable std::shared_ptr<utils::MatrixCache> mat_cache_; ///< Matrix cache (mutable because it is modified in second_derivative_unweighted)
+		mutable std::unique_ptr<utils::MatrixCache> mat_cache_; ///< Matrix cache (mutable because it is modified in second_derivative_unweighted)
 
 		/// @brief Compute the stiffness matrix (cached)
 		void compute_cached_stiffness();

@@ -51,11 +51,8 @@ namespace polyfem::assembler
 			void init(const int buffer_size, const int rows, const int cols)
 			{
 				// assert(rows == cols);
-				// TODO: Expose this choice
-				if (rows <= 1000 || cols <= 1000)
-					cache = std::make_unique<DenseMatrixCache>();
-				else
-					cache = std::make_unique<SparseMatrixCache>();
+				// cache = std::make_unique<DenseMatrixCache>();
+				cache = std::make_unique<SparseMatrixCache>();
 				cache->reserve(buffer_size);
 				cache->init(rows, cols);
 			}

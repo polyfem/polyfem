@@ -12,8 +12,6 @@ using namespace polyfem::utils;
 
 namespace polyfem::solver
 {
-	static constexpr size_t MAX_DENSE_CACHE_SIZE = 300;
-
 	namespace
 	{
 		class LocalThreadVecStorage
@@ -33,7 +31,7 @@ namespace polyfem::solver
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 	} // namespace
 
-  ElasticForm::ElasticForm(const int n_bases,
+	ElasticForm::ElasticForm(const int n_bases,
 							 const std::vector<basis::ElementBases> &bases,
 							 const std::vector<basis::ElementBases> &geom_bases,
 							 const assembler::Assembler &assembler,
@@ -50,10 +48,8 @@ namespace polyfem::solver
 	{
 		if (assembler_.is_linear())
 			compute_cached_stiffness();
-		if (n_bases * (is_volume ? 3 : 2) <= MAX_DENSE_CACHE_SIZE) // TODO: Expose this choice
-			mat_cache_ = std::make_shared<utils::DenseMatrixCache>();
-		else
-			mat_cache_ = std::make_shared<utils::SparseMatrixCache>();
+		// mat_cache_ = std::make_unique<utils::DenseMatrixCache>();
+		mat_cache_ = std::make_unique<utils::SparseMatrixCache>();
 	}
 
 	double ElasticForm::value_unweighted(const Eigen::VectorXd &x) const
