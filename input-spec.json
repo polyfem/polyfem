@@ -1759,7 +1759,10 @@
     {
         "pointer": "/contact/collision_mesh/tessellation_type",
         "type": "string",
-        "options": ["regular", "irregular"],
+        "options": [
+            "regular",
+            "irregular"
+        ],
         "default": "regular",
         "doc": "Type of tessellation to use for building the collision mesh."
     },
@@ -2634,6 +2637,23 @@
     {
         "pointer": "/materials/*",
         "type": "object",
+        "type_name": "MooneyRivlin3Param",
+        "required": [
+            "type",
+            "c1",
+            "c2",
+            "c3",
+            "d1"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
         "type_name": "UnconstrainedOgden",
         "required": [
             "type",
@@ -2989,6 +3009,7 @@
             "SaintVenant",
             "NeoHookean",
             "MooneyRivlin",
+            "MooneyRivlin3Param",
             "UnconstrainedOgden",
             "IncompressibleOgden",
             "Stokes",
@@ -3021,6 +3042,16 @@
         "pointer": "/materials/*/c2",
         "type": "float",
         "doc": "Second Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/c3",
+        "type": "float",
+        "doc": "Third Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/d1",
+        "type": "float",
+        "doc": ""
     },
     {
         "pointer": "/materials/*/alphas",

@@ -30,7 +30,7 @@ namespace polyfem::solver
 
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 	} // namespace
-	
+
 	ElasticForm::ElasticForm(const int n_bases,
 							 const std::vector<basis::ElementBases> &bases,
 							 const std::vector<basis::ElementBases> &geom_bases,
@@ -48,6 +48,8 @@ namespace polyfem::solver
 	{
 		if (assembler_.is_linear())
 			compute_cached_stiffness();
+		// mat_cache_ = std::make_unique<utils::DenseMatrixCache>();
+		mat_cache_ = std::make_unique<utils::SparseMatrixCache>();
 	}
 
 	double ElasticForm::value_unweighted(const Eigen::VectorXd &x) const
@@ -88,7 +90,7 @@ namespace polyfem::solver
 			// NOTE: mat_cache_ is marked as mutable so we can modify it here
 			assembler_.assemble_hessian(
 				is_volume_, n_bases_, project_to_psd_, bases_,
-				geom_bases_, ass_vals_cache_, dt_, x, x_prev_, mat_cache_, hessian);
+				geom_bases_, ass_vals_cache_, dt_, x, x_prev_, *mat_cache_, hessian);
 		}
 	}
 

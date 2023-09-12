@@ -5,7 +5,7 @@
 #include <polyfem/assembler/AssemblerData.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
-#include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/MatrixCache.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -114,7 +114,7 @@ namespace polyfem::assembler
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
-			utils::SparseMatrixCache &mat_cache,
+			utils::MatrixCache &mat_cache,
 			StiffnessMatrix &grad) const { log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
 
 		// plotting (eg von mises), assembler is the name of the formulation
@@ -292,7 +292,7 @@ namespace polyfem::assembler
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
-			utils::SparseMatrixCache &mat_cache,
+			utils::MatrixCache &mat_cache,
 			StiffnessMatrix &grad) const override;
 
 		virtual bool is_linear() const override { return false; }
