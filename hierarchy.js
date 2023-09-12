@@ -210,6 +210,10 @@ var hierarchy =
     [ "polyfem::basis::Local2Global", "classpolyfem_1_1basis_1_1_local2_global.html", null ],
     [ "polyfem::mesh::LocalBoundary", "classpolyfem_1_1mesh_1_1_local_boundary.html", null ],
     [ "polyfem::renderer::Material", "structpolyfem_1_1renderer_1_1_material.html", null ],
+    [ "polyfem::utils::MatrixCache", "classpolyfem_1_1utils_1_1_matrix_cache.html", [
+      [ "polyfem::utils::DenseMatrixCache", "classpolyfem_1_1utils_1_1_dense_matrix_cache.html", null ],
+      [ "polyfem::utils::SparseMatrixCache", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html", null ]
+    ] ],
     [ "polyfem::mesh::Mesh", "classpolyfem_1_1mesh_1_1_mesh.html", [
       [ "polyfem::mesh::Mesh2D", "classpolyfem_1_1mesh_1_1_mesh2_d.html", [
         [ "polyfem::mesh::CMesh2D", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html", null ],
@@ -359,7 +363,6 @@ var hierarchy =
     ] ],
     [ "polyfem::io::SolutionFrame", "classpolyfem_1_1io_1_1_solution_frame.html", null ],
     [ "polyfem::solver::SolveData", "classpolyfem_1_1solver_1_1_solve_data.html", null ],
-    [ "polyfem::utils::SparseMatrixCache", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html", null ],
     [ "polyfem::basis::SplineBasis2d", "classpolyfem_1_1basis_1_1_spline_basis2d.html", null ],
     [ "polyfem::basis::SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ],
     [ "polyfem::State", "classpolyfem_1_1_state.html", null ],

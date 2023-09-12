@@ -128,11 +128,16 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1utils_1_1_sparse_matri
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for polyfem::utils::SparseMatrixCache:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache__inherit__graph.svg" width="218" height="124"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for polyfem::utils::SparseMatrixCache:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache__coll__graph.svg" width="331" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache__coll__graph.svg" width="331" height="126"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -143,43 +148,66 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac9d3d45537e88f3bed63aa741fcc9062"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1113a13ce876ac5b12816ad85b7c04e6" id="r_a1113a13ce876ac5b12816ad85b7c04e6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a1113a13ce876ac5b12816ad85b7c04e6">SparseMatrixCache</a> (const size_t rows, const size_t cols)</td></tr>
 <tr class="separator:a1113a13ce876ac5b12816ad85b7c04e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29cdb3bdf3fa0c3f71db85626492d2ae" id="r_a29cdb3bdf3fa0c3f71db85626492d2ae"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a29cdb3bdf3fa0c3f71db85626492d2ae">SparseMatrixCache</a> (const <a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">SparseMatrixCache</a> &amp;other)</td></tr>
-<tr class="separator:a29cdb3bdf3fa0c3f71db85626492d2ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63871246f74f9bf497e29075211fd78b" id="r_a63871246f74f9bf497e29075211fd78b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a63871246f74f9bf497e29075211fd78b">init</a> (const size_t size)</td></tr>
-<tr class="separator:a63871246f74f9bf497e29075211fd78b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a1bad09c7edfdd856a58e818ca2d438" id="r_a8a1bad09c7edfdd856a58e818ca2d438"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a8a1bad09c7edfdd856a58e818ca2d438">init</a> (const size_t rows, const size_t cols)</td></tr>
-<tr class="separator:a8a1bad09c7edfdd856a58e818ca2d438"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a254f282368f4aa82f8b9d0a092ae1422" id="r_a254f282368f4aa82f8b9d0a092ae1422"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a254f282368f4aa82f8b9d0a092ae1422">init</a> (const <a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">SparseMatrixCache</a> &amp;other)</td></tr>
-<tr class="separator:a254f282368f4aa82f8b9d0a092ae1422"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a05da062aecaba930459667ab973e7bae" id="r_a05da062aecaba930459667ab973e7bae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a05da062aecaba930459667ab973e7bae">set_zero</a> ()</td></tr>
-<tr class="separator:a05da062aecaba930459667ab973e7bae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1a3de15484c0d1b3869b24daca6cf55" id="r_ae1a3de15484c0d1b3869b24daca6cf55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ae1a3de15484c0d1b3869b24daca6cf55">reserve</a> (const size_t size)</td></tr>
-<tr class="separator:ae1a3de15484c0d1b3869b24daca6cf55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2b561babb510b09d31dd7cd3a20bbde" id="r_ab2b561babb510b09d31dd7cd3a20bbde"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ab2b561babb510b09d31dd7cd3a20bbde">entries_size</a> () const</td></tr>
-<tr class="separator:ab2b561babb510b09d31dd7cd3a20bbde"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6882e05dcc40c4af5b5ac12720eb1e86" id="r_a6882e05dcc40c4af5b5ac12720eb1e86"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a6882e05dcc40c4af5b5ac12720eb1e86">capacity</a> () const</td></tr>
-<tr class="separator:a6882e05dcc40c4af5b5ac12720eb1e86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1620ff2b05c375a4156750e92fdf889c" id="r_a1620ff2b05c375a4156750e92fdf889c"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a1620ff2b05c375a4156750e92fdf889c">non_zeros</a> () const</td></tr>
-<tr class="separator:a1620ff2b05c375a4156750e92fdf889c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf443ca25c9a8f42eb8ebaac65db771c" id="r_acf443ca25c9a8f42eb8ebaac65db771c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#acf443ca25c9a8f42eb8ebaac65db771c">SparseMatrixCache</a> (const <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">MatrixCache</a> &amp;other)</td></tr>
+<tr class="separator:acf443ca25c9a8f42eb8ebaac65db771c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a506debff160c1162e5cc28f553bb314b" id="r_a506debff160c1162e5cc28f553bb314b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a506debff160c1162e5cc28f553bb314b">SparseMatrixCache</a> (const <a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">SparseMatrixCache</a> &amp;other, const bool copy_main_cache_ptr=false)</td></tr>
+<tr class="separator:a506debff160c1162e5cc28f553bb314b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a411d93f5caf20e8d5353380c29c43989" id="r_a411d93f5caf20e8d5353380c29c43989"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">MatrixCache</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a411d93f5caf20e8d5353380c29c43989">clone</a> () const override</td></tr>
+<tr class="separator:a411d93f5caf20e8d5353380c29c43989"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad71dff54cf34a355afa6fdeb0f6325f8" id="r_ad71dff54cf34a355afa6fdeb0f6325f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ad71dff54cf34a355afa6fdeb0f6325f8">init</a> (const size_t size) override</td></tr>
+<tr class="separator:ad71dff54cf34a355afa6fdeb0f6325f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accc92cb48d9e9440e652c8a6b4480e6e" id="r_accc92cb48d9e9440e652c8a6b4480e6e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#accc92cb48d9e9440e652c8a6b4480e6e">init</a> (const size_t rows, const size_t cols) override</td></tr>
+<tr class="separator:accc92cb48d9e9440e652c8a6b4480e6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5f9a8feeb86e0f59c39138743475e6e" id="r_ab5f9a8feeb86e0f59c39138743475e6e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ab5f9a8feeb86e0f59c39138743475e6e">init</a> (const <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">MatrixCache</a> &amp;other) override</td></tr>
+<tr class="separator:ab5f9a8feeb86e0f59c39138743475e6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab475894adb2ba66b850855d9ff99476b" id="r_ab475894adb2ba66b850855d9ff99476b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ab475894adb2ba66b850855d9ff99476b">init</a> (const <a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">SparseMatrixCache</a> &amp;other, const bool copy_main_cache_ptr=false)</td></tr>
+<tr class="separator:ab475894adb2ba66b850855d9ff99476b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25859076521d9aa287cb3594b8ae058f" id="r_a25859076521d9aa287cb3594b8ae058f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a25859076521d9aa287cb3594b8ae058f">set_zero</a> () override</td></tr>
+<tr class="separator:a25859076521d9aa287cb3594b8ae058f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad503d05fec8454d34dc42c29fdb1868e" id="r_ad503d05fec8454d34dc42c29fdb1868e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ad503d05fec8454d34dc42c29fdb1868e">reserve</a> (const size_t size) override</td></tr>
+<tr class="separator:ad503d05fec8454d34dc42c29fdb1868e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89781c2d4e2a97773b893382299efeda" id="r_a89781c2d4e2a97773b893382299efeda"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a89781c2d4e2a97773b893382299efeda">entries_size</a> () const override</td></tr>
+<tr class="separator:a89781c2d4e2a97773b893382299efeda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e85b367b1f622ecacefdf3e76dcf24f" id="r_a5e85b367b1f622ecacefdf3e76dcf24f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a5e85b367b1f622ecacefdf3e76dcf24f">capacity</a> () const override</td></tr>
+<tr class="separator:a5e85b367b1f622ecacefdf3e76dcf24f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a366f029d4cf2d461b7c0845a926f2178" id="r_a366f029d4cf2d461b7c0845a926f2178"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a366f029d4cf2d461b7c0845a926f2178">non_zeros</a> () const override</td></tr>
+<tr class="separator:a366f029d4cf2d461b7c0845a926f2178"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b953c23c8abd1d5f6487aaa671e1c4a" id="r_a3b953c23c8abd1d5f6487aaa671e1c4a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a3b953c23c8abd1d5f6487aaa671e1c4a">triplet_count</a> () const override</td></tr>
+<tr class="separator:a3b953c23c8abd1d5f6487aaa671e1c4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93c3f213a2d270904a85bc7f09ec3c8e" id="r_a93c3f213a2d270904a85bc7f09ec3c8e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a93c3f213a2d270904a85bc7f09ec3c8e">is_sparse</a> () const override</td></tr>
+<tr class="separator:a93c3f213a2d270904a85bc7f09ec3c8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8dda2dd2b80dc6b1c30447f152f12ccf" id="r_a8dda2dd2b80dc6b1c30447f152f12ccf"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a8dda2dd2b80dc6b1c30447f152f12ccf">mapping_size</a> () const</td></tr>
 <tr class="separator:a8dda2dd2b80dc6b1c30447f152f12ccf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad86e745b0c15b862b5ab8d9da80fa746" id="r_ad86e745b0c15b862b5ab8d9da80fa746"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ad86e745b0c15b862b5ab8d9da80fa746">add_value</a> (const int e, const int i, const int j, const double value)</td></tr>
-<tr class="separator:ad86e745b0c15b862b5ab8d9da80fa746"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2db0237cd2bc0310712e00e2adfd39ed" id="r_a2db0237cd2bc0310712e00e2adfd39ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a2db0237cd2bc0310712e00e2adfd39ed">get_matrix</a> (const bool compute_mapping=true)</td></tr>
-<tr class="separator:a2db0237cd2bc0310712e00e2adfd39ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f147c8947d9d84241d12834c573f0bb" id="r_a0f147c8947d9d84241d12834c573f0bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a0f147c8947d9d84241d12834c573f0bb">prune</a> ()</td></tr>
-<tr class="separator:a0f147c8947d9d84241d12834c573f0bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c307988a8f4f48f0e0b139468eac0e3" id="r_a5c307988a8f4f48f0e0b139468eac0e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">SparseMatrixCache</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a5c307988a8f4f48f0e0b139468eac0e3">operator+</a> (const <a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">SparseMatrixCache</a> &amp;a) const</td></tr>
-<tr class="separator:a5c307988a8f4f48f0e0b139468eac0e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23bb0c92d0709f13c317c7da13498c08" id="r_a23bb0c92d0709f13c317c7da13498c08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a23bb0c92d0709f13c317c7da13498c08">add_value</a> (const int e, const int i, const int j, const double value) override</td></tr>
+<tr class="separator:a23bb0c92d0709f13c317c7da13498c08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab08b3096f768a889b2ccd7c7b7c8ee4a" id="r_ab08b3096f768a889b2ccd7c7b7c8ee4a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ab08b3096f768a889b2ccd7c7b7c8ee4a">get_matrix</a> (const bool compute_mapping=true) override</td></tr>
+<tr class="separator:ab08b3096f768a889b2ccd7c7b7c8ee4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5281c05b1dd5b2fa16f504246403d296" id="r_a5281c05b1dd5b2fa16f504246403d296"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a5281c05b1dd5b2fa16f504246403d296">prune</a> () override</td></tr>
+<tr class="separator:a5281c05b1dd5b2fa16f504246403d296"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fd2c0782e3a19e5a7d918471097b426" id="r_a6fd2c0782e3a19e5a7d918471097b426"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">MatrixCache</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a6fd2c0782e3a19e5a7d918471097b426">operator+</a> (const <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">MatrixCache</a> &amp;a) const override</td></tr>
+<tr class="separator:a6fd2c0782e3a19e5a7d918471097b426"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac687cd749a149ad2681a3264f149563f" id="r_ac687cd749a149ad2681a3264f149563f"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">MatrixCache</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ac687cd749a149ad2681a3264f149563f">operator+</a> (const <a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">SparseMatrixCache</a> &amp;a) const</td></tr>
+<tr class="separator:ac687cd749a149ad2681a3264f149563f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04bb345287ba736aa4d8cad21f2fe97c" id="r_a04bb345287ba736aa4d8cad21f2fe97c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a04bb345287ba736aa4d8cad21f2fe97c">operator+=</a> (const <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">MatrixCache</a> &amp;o) override</td></tr>
+<tr class="separator:a04bb345287ba736aa4d8cad21f2fe97c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac7143218315642e2c7103e6f69b1774" id="r_aac7143218315642e2c7103e6f69b1774"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#aac7143218315642e2c7103e6f69b1774">operator+=</a> (const <a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">SparseMatrixCache</a> &amp;o)</td></tr>
 <tr class="separator:aac7143218315642e2c7103e6f69b1774"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a976879b62c3049da20158a0b004ab57c" id="r_a976879b62c3049da20158a0b004ab57c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a976879b62c3049da20158a0b004ab57c">mat</a> () const</td></tr>
 <tr class="separator:a976879b62c3049da20158a0b004ab57c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad648e9993048c63266f5d93dd1eabcb6" id="r_ad648e9993048c63266f5d93dd1eabcb6"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ad648e9993048c63266f5d93dd1eabcb6">entries</a> () const</td></tr>
 <tr class="separator:ad648e9993048c63266f5d93dd1eabcb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classpolyfem_1_1utils_1_1_matrix_cache"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1utils_1_1_matrix_cache')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">polyfem::utils::MatrixCache</a></td></tr>
+<tr class="memitem:a63356dbbc31282f8983ab9e5bfe95b7b inherit pub_methods_classpolyfem_1_1utils_1_1_matrix_cache" id="r_a63356dbbc31282f8983ab9e5bfe95b7b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a63356dbbc31282f8983ab9e5bfe95b7b">MatrixCache</a> ()</td></tr>
+<tr class="separator:a63356dbbc31282f8983ab9e5bfe95b7b inherit pub_methods_classpolyfem_1_1utils_1_1_matrix_cache"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07fadeb5d9aac2bdb25ec0565680df73 inherit pub_methods_classpolyfem_1_1utils_1_1_matrix_cache" id="r_a07fadeb5d9aac2bdb25ec0565680df73"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a07fadeb5d9aac2bdb25ec0565680df73">~MatrixCache</a> ()=default</td></tr>
+<tr class="separator:a07fadeb5d9aac2bdb25ec0565680df73 inherit pub_methods_classpolyfem_1_1utils_1_1_matrix_cache"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21c7b9e0da9112c62bbea787d02d3094 inherit pub_methods_classpolyfem_1_1utils_1_1_matrix_cache" id="r_a21c7b9e0da9112c62bbea787d02d3094"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a21c7b9e0da9112c62bbea787d02d3094">is_dense</a> () const</td></tr>
+<tr class="separator:a21c7b9e0da9112c62bbea787d02d3094 inherit pub_methods_classpolyfem_1_1utils_1_1_matrix_cache"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
+<tr class="memitem:a8b8e06a1645e6f6e7bc944439ac468ba" id="r_a8b8e06a1645e6f6e7bc944439ac468ba"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">SparseMatrixCache</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a8b8e06a1645e6f6e7bc944439ac468ba">main_cache</a> () const</td></tr>
+<tr class="separator:a8b8e06a1645e6f6e7bc944439ac468ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a850a842f75bd0ec74490e315b4cc1ad4" id="r_a850a842f75bd0ec74490e315b4cc1ad4"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::vector&lt; std::pair&lt; int, size_t &gt; &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a850a842f75bd0ec74490e315b4cc1ad4">mapping</a> () const</td></tr>
 <tr class="separator:a850a842f75bd0ec74490e315b4cc1ad4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f0e5ccd48cbbcdb758f7893eceb3d60" id="r_a9f0e5ccd48cbbcdb758f7893eceb3d60"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::vector&lt; int &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a9f0e5ccd48cbbcdb758f7893eceb3d60">second_cache</a> () const</td></tr>
@@ -218,10 +246,10 @@ Private Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00085">85</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00042">42</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ad5282b44d29a0897bda1ee57477a3406" name="ad5282b44d29a0897bda1ee57477a3406"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad5282b44d29a0897bda1ee57477a3406">&#9670;&#160;</a></span>SparseMatrixCache() <span class="overload">[1/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5282b44d29a0897bda1ee57477a3406">&#9670;&#160;</a></span>SparseMatrixCache() <span class="overload">[1/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -243,12 +271,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00088">88</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00045">45</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
 </div>
 </div>
 <a id="ac9d3d45537e88f3bed63aa741fcc9062" name="ac9d3d45537e88f3bed63aa741fcc9062"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac9d3d45537e88f3bed63aa741fcc9062">&#9670;&#160;</a></span>SparseMatrixCache() <span class="overload">[2/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9d3d45537e88f3bed63aa741fcc9062">&#9670;&#160;</a></span>SparseMatrixCache() <span class="overload">[2/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -263,14 +291,19 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00032">32</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00008">8</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00117">mat_</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00116">size_</a>, and <a class="el" href="_matrix_utils_8hpp_source.html#l00117">tmp_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_ac9d3d45537e88f3bed63aa741fcc9062_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
 
 </div>
 </div>
 <a id="a1113a13ce876ac5b12816ad85b7c04e6" name="a1113a13ce876ac5b12816ad85b7c04e6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1113a13ce876ac5b12816ad85b7c04e6">&#9670;&#160;</a></span>SparseMatrixCache() <span class="overload">[3/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a1113a13ce876ac5b12816ad85b7c04e6">&#9670;&#160;</a></span>SparseMatrixCache() <span class="overload">[3/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -295,14 +328,46 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00040">40</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00013">13</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00117">mat_</a>, and <a class="el" href="_matrix_utils_8hpp_source.html#l00117">tmp_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a1113a13ce876ac5b12816ad85b7c04e6_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
 
 </div>
 </div>
-<a id="a29cdb3bdf3fa0c3f71db85626492d2ae" name="a29cdb3bdf3fa0c3f71db85626492d2ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a29cdb3bdf3fa0c3f71db85626492d2ae">&#9670;&#160;</a></span>SparseMatrixCache() <span class="overload">[4/4]</span></h2>
+<a id="acf443ca25c9a8f42eb8ebaac65db771c" name="acf443ca25c9a8f42eb8ebaac65db771c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf443ca25c9a8f42eb8ebaac65db771c">&#9670;&#160;</a></span>SparseMatrixCache() <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">polyfem::utils::SparseMatrixCache::SparseMatrixCache </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">MatrixCache</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00018">18</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_acf443ca25c9a8f42eb8ebaac65db771c_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="a506debff160c1162e5cc28f553bb314b" name="a506debff160c1162e5cc28f553bb314b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a506debff160c1162e5cc28f553bb314b">&#9670;&#160;</a></span>SparseMatrixCache() <span class="overload">[5/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -311,22 +376,42 @@ Private Attributes</h2></td></tr>
           <td class="memname">polyfem::utils::SparseMatrixCache::SparseMatrixCache </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">SparseMatrixCache</a> &amp;&#160;</td>
-          <td class="paramname"><em>other</em></td><td>)</td>
+          <td class="paramname"><em>other</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>copy_main_cache_ptr</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00048">48</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00023">23</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a506debff160c1162e5cc28f553bb314b_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ad86e745b0c15b862b5ab8d9da80fa746" name="ad86e745b0c15b862b5ab8d9da80fa746"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad86e745b0c15b862b5ab8d9da80fa746">&#9670;&#160;</a></span>add_value()</h2>
+<a id="a23bb0c92d0709f13c317c7da13498c08" name="a23bb0c92d0709f13c317c7da13498c08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23bb0c92d0709f13c317c7da13498c08">&#9670;&#160;</a></span>add_value()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::utils::SparseMatrixCache::add_value </td>
@@ -358,14 +443,28 @@ Private Attributes</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00100">100</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a04e70368c86530cc8de1aa9f8a76b369">polyfem::utils::MatrixCache</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00088">88</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00096">current_e_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00097">current_e_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00087">entries_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00104">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00109">second_cache()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00094">second_cache_entries_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00095">use_second_cache_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00090">values_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a23bb0c92d0709f13c317c7da13498c08_cgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
 
 </div>
 </div>
-<a id="a6882e05dcc40c4af5b5ac12720eb1e86" name="a6882e05dcc40c4af5b5ac12720eb1e86"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6882e05dcc40c4af5b5ac12720eb1e86">&#9670;&#160;</a></span>capacity()</h2>
+<a id="a5e85b367b1f622ecacefdf3e76dcf24f" name="a5e85b367b1f622ecacefdf3e76dcf24f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e85b367b1f622ecacefdf3e76dcf24f">&#9670;&#160;</a></span>capacity()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -382,14 +481,45 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00101">101</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#aadd4d8ed10ecdb1fbda4fcda8c2d19d9">polyfem::utils::MatrixCache</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00118">entries_</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00066">66</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00087">entries_</a>.</p>
+
+</div>
+</div>
+<a id="a411d93f5caf20e8d5353380c29c43989" name="a411d93f5caf20e8d5353380c29c43989"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a411d93f5caf20e8d5353380c29c43989">&#9670;&#160;</a></span>clone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">MatrixCache</a> &gt; polyfem::utils::SparseMatrixCache::clone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#acac86bd683c9559068a285c7a22ed48b">polyfem::utils::MatrixCache</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00051">51</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
 </div>
 </div>
@@ -416,14 +546,14 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00113">113</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00082">82</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00118">entries_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00087">entries_</a>.</p>
 
 </div>
 </div>
-<a id="ab2b561babb510b09d31dd7cd3a20bbde" name="ab2b561babb510b09d31dd7cd3a20bbde"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab2b561babb510b09d31dd7cd3a20bbde">&#9670;&#160;</a></span>entries_size()</h2>
+<a id="a89781c2d4e2a97773b893382299efeda" name="a89781c2d4e2a97773b893382299efeda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89781c2d4e2a97773b893382299efeda">&#9670;&#160;</a></span>entries_size()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -440,22 +570,27 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00100">100</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a248a6a263309014d59e5afbe60736d8b">polyfem::utils::MatrixCache</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00118">entries_</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00065">65</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00087">entries_</a>.</p>
 
 </div>
 </div>
-<a id="a2db0237cd2bc0310712e00e2adfd39ed" name="a2db0237cd2bc0310712e00e2adfd39ed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2db0237cd2bc0310712e00e2adfd39ed">&#9670;&#160;</a></span>get_matrix()</h2>
+<a id="ab08b3096f768a889b2ccd7c7b7c8ee4a" name="ab08b3096f768a889b2ccd7c7b7c8ee4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab08b3096f768a889b2ccd7c7b7c8ee4a">&#9670;&#160;</a></span>get_matrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a> polyfem::utils::SparseMatrixCache::get_matrix </td>
@@ -465,24 +600,71 @@ Private Attributes</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00160">160</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a5e50a47fc4b8b2589dac15a4c5507412">polyfem::utils::MatrixCache</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00148">148</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00096">current_e_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00097">current_e_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00089">inner_index_</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00099">main_cache()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00091">main_cache_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00104">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00088">mapping_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00086">mat_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00089">outer_index_</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00130">prune()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00093">second_cache_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00094">second_cache_entries_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00085">size_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00095">use_second_cache_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00090">values_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a2db0237cd2bc0310712e00e2adfd39ed_cgraph.svg" width="391" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_ab08b3096f768a889b2ccd7c7b7c8ee4a_cgraph.svg" width="100%" height="452"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a8a1bad09c7edfdd856a58e818ca2d438" name="a8a1bad09c7edfdd856a58e818ca2d438"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8a1bad09c7edfdd856a58e818ca2d438">&#9670;&#160;</a></span>init() <span class="overload">[1/3]</span></h2>
+<a id="ab5f9a8feeb86e0f59c39138743475e6e" name="ab5f9a8feeb86e0f59c39138743475e6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5f9a8feeb86e0f59c39138743475e6e">&#9670;&#160;</a></span>init() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::SparseMatrixCache::init </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">MatrixCache</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a232dc628927c72ab3f3e38af902c8711">polyfem::utils::MatrixCache</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00049">49</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_ab5f9a8feeb86e0f59c39138743475e6e_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="accc92cb48d9e9440e652c8a6b4480e6e" name="accc92cb48d9e9440e652c8a6b4480e6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accc92cb48d9e9440e652c8a6b4480e6e">&#9670;&#160;</a></span>init() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::utils::SparseMatrixCache::init </td>
@@ -502,17 +684,34 @@ Here is the call graph for this function:</div>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00063">63</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a84ca46b3720b37aae6a5b734f4758f1c">polyfem::utils::MatrixCache</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00039">39</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00104">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00086">mat_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00085">size_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00086">tmp_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_accc92cb48d9e9440e652c8a6b4480e6e_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
 
 </div>
 </div>
-<a id="a63871246f74f9bf497e29075211fd78b" name="a63871246f74f9bf497e29075211fd78b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a63871246f74f9bf497e29075211fd78b">&#9670;&#160;</a></span>init() <span class="overload">[2/3]</span></h2>
+<a id="ad71dff54cf34a355afa6fdeb0f6325f8" name="ad71dff54cf34a355afa6fdeb0f6325f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad71dff54cf34a355afa6fdeb0f6325f8">&#9670;&#160;</a></span>init() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::utils::SparseMatrixCache::init </td>
@@ -522,14 +721,35 @@ Here is the call graph for this function:</div>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00053">53</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#abc98dcf108be9cb0137b54bf066dd853">polyfem::utils::MatrixCache</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00029">29</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00104">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00086">mat_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00085">size_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00086">tmp_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00049">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00018">SparseMatrixCache()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00013">SparseMatrixCache()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00008">SparseMatrixCache()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00023">SparseMatrixCache()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_ad71dff54cf34a355afa6fdeb0f6325f8_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_ad71dff54cf34a355afa6fdeb0f6325f8_icgraph.svg" width="472" height="307"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
-<a id="a254f282368f4aa82f8b9d0a092ae1422" name="a254f282368f4aa82f8b9d0a092ae1422"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a254f282368f4aa82f8b9d0a092ae1422">&#9670;&#160;</a></span>init() <span class="overload">[3/3]</span></h2>
+<a id="ab475894adb2ba66b850855d9ff99476b" name="ab475894adb2ba66b850855d9ff99476b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab475894adb2ba66b850855d9ff99476b">&#9670;&#160;</a></span>init() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -538,15 +758,95 @@ Here is the call graph for this function:</div>
           <td class="memname">void polyfem::utils::SparseMatrixCache::init </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">SparseMatrixCache</a> &amp;&#160;</td>
-          <td class="paramname"><em>other</em></td><td>)</td>
+          <td class="paramname"><em>other</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>copy_main_cache_ptr</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00073">73</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00056">56</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00122">main_cache_</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00117">mat_</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00116">size_</a>, and <a class="el" href="_matrix_utils_8hpp_source.html#l00121">values_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00099">main_cache()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00091">main_cache_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00086">mat_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00085">size_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00086">tmp_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00090">values_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_ab475894adb2ba66b850855d9ff99476b_cgraph.svg" width="472" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a93c3f213a2d270904a85bc7f09ec3c8e" name="a93c3f213a2d270904a85bc7f09ec3c8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93c3f213a2d270904a85bc7f09ec3c8e">&#9670;&#160;</a></span>is_sparse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::utils::SparseMatrixCache::is_sparse </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a87f006d724d2d0fd77c81e2edd0c2f22">polyfem::utils::MatrixCache</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00069">69</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a8b8e06a1645e6f6e7bc944439ac468ba" name="a8b8e06a1645e6f6e7bc944439ac468ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b8e06a1645e6f6e7bc944439ac468ba">&#9670;&#160;</a></span>main_cache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">SparseMatrixCache</a> * polyfem::utils::SparseMatrixCache::main_cache </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00099">99</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00091">main_cache_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00148">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00056">init()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00104">mapping()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">operator+()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00304">operator+=()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00109">second_cache()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a8b8e06a1645e6f6e7bc944439ac468ba_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
 
 </div>
 </div>
@@ -573,15 +873,20 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00130">130</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00104">104</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00122">main_cache_</a>, and <a class="el" href="_matrix_utils_8hpp_source.html#l00119">mapping_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00099">main_cache()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00088">mapping_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_utils_8cpp_source.html#l00254">operator+()</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00304">operator+=()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00088">add_value()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00148">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00039">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">operator+()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00304">operator+=()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00130">prune()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a850a842f75bd0ec74490e315b4cc1ad4_cgraph.svg" width="472" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a850a842f75bd0ec74490e315b4cc1ad4_icgraph.svg" width="472" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a850a842f75bd0ec74490e315b4cc1ad4_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -609,9 +914,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00103">103</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00070">70</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00119">mapping_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00088">mapping_</a>.</p>
 
 </div>
 </div>
@@ -638,14 +943,14 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00112">112</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00081">81</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00117">mat_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00086">mat_</a>.</p>
 
 </div>
 </div>
-<a id="a1620ff2b05c375a4156750e92fdf889c" name="a1620ff2b05c375a4156750e92fdf889c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1620ff2b05c375a4156750e92fdf889c">&#9670;&#160;</a></span>non_zeros()</h2>
+<a id="a366f029d4cf2d461b7c0845a926f2178" name="a366f029d4cf2d461b7c0845a926f2178"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a366f029d4cf2d461b7c0845a926f2178">&#9670;&#160;</a></span>non_zeros()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -662,25 +967,57 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00102">102</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#ab105789bcaf7a47ea2e2c86b956f4d1f">polyfem::utils::MatrixCache</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00119">mapping_</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00117">mat_</a>, and <a class="el" href="_matrix_utils_8hpp_source.html#l00121">values_</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00067">67</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00088">mapping_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00086">mat_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00090">values_</a>.</p>
 
 </div>
 </div>
-<a id="a5c307988a8f4f48f0e0b139468eac0e3" name="a5c307988a8f4f48f0e0b139468eac0e3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5c307988a8f4f48f0e0b139468eac0e3">&#9670;&#160;</a></span>operator+()</h2>
+<a id="a6fd2c0782e3a19e5a7d918471097b426" name="a6fd2c0782e3a19e5a7d918471097b426"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fd2c0782e3a19e5a7d918471097b426">&#9670;&#160;</a></span>operator+() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">MatrixCache</a> &gt; polyfem::utils::SparseMatrixCache::operator+ </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">MatrixCache</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a9e463c7b874a8d4e5e08944a7321f4a4">polyfem::utils::MatrixCache</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00242">242</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ac687cd749a149ad2681a3264f149563f" name="ac687cd749a149ad2681a3264f149563f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac687cd749a149ad2681a3264f149563f">&#9670;&#160;</a></span>operator+() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">polyfem::utils::SparseMatrixCache</a> polyfem::utils::SparseMatrixCache::operator+ </td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">MatrixCache</a> &gt; polyfem::utils::SparseMatrixCache::operator+ </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">SparseMatrixCache</a> &amp;&#160;</td>
           <td class="paramname"><em>a</em></td><td>)</td>
@@ -689,19 +1026,49 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00254">254</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00248">248</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00120">inner_index_</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00122">main_cache_</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00130">mapping()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00117">mat_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00120">outer_index_</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00125">second_cache_entries_</a>, and <a class="el" href="_matrix_utils_8hpp_source.html#l00121">values_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00089">inner_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00099">main_cache()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00104">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00086">mat_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00089">outer_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00094">second_cache_entries_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00095">use_second_cache_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00090">values_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a5c307988a8f4f48f0e0b139468eac0e3_cgraph.svg" width="472" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_ac687cd749a149ad2681a3264f149563f_cgraph.svg" width="100%" height="407"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
+
+</div>
+</div>
+<a id="a04bb345287ba736aa4d8cad21f2fe97c" name="a04bb345287ba736aa4d8cad21f2fe97c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04bb345287ba736aa4d8cad21f2fe97c">&#9670;&#160;</a></span>operator+=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::utils::SparseMatrixCache::operator+= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">MatrixCache</a> &amp;&#160;</td>
+          <td class="paramname"><em>o</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a3e0b5275ad08d9e70b99421b863fec20">polyfem::utils::MatrixCache</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00298">298</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
 </div>
 </div>
 <a id="aac7143218315642e2c7103e6f69b1774" name="aac7143218315642e2c7103e6f69b1774"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aac7143218315642e2c7103e6f69b1774">&#9670;&#160;</a></span>operator+=()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aac7143218315642e2c7103e6f69b1774">&#9670;&#160;</a></span>operator+=() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -716,22 +1083,25 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00304">304</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00304">304</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00120">inner_index_</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00122">main_cache_</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00130">mapping()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00117">mat_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00120">outer_index_</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00125">second_cache_entries_</a>, and <a class="el" href="_matrix_utils_8hpp_source.html#l00121">values_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00089">inner_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00099">main_cache()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00104">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00086">mat_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00089">outer_index_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00094">second_cache_entries_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00095">use_second_cache_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00090">values_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_aac7143218315642e2c7103e6f69b1774_cgraph.svg" width="472" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_aac7143218315642e2c7103e6f69b1774_cgraph.svg" width="100%" height="407"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a0f147c8947d9d84241d12834c573f0bb" name="a0f147c8947d9d84241d12834c573f0bb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0f147c8947d9d84241d12834c573f0bb">&#9670;&#160;</a></span>prune()</h2>
+<a id="a5281c05b1dd5b2fa16f504246403d296" name="a5281c05b1dd5b2fa16f504246403d296"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5281c05b1dd5b2fa16f504246403d296">&#9670;&#160;</a></span>prune()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::utils::SparseMatrixCache::prune </td>
@@ -740,14 +1110,35 @@ Here is the call graph for this function:</div>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00142">142</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#abe75eb5d0a9c0a020700073937662cd0">polyfem::utils::MatrixCache</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00130">130</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00087">entries_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00104">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00086">mat_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00086">tmp_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00148">get_matrix()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a5281c05b1dd5b2fa16f504246403d296_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a5281c05b1dd5b2fa16f504246403d296_icgraph.svg" width="472" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
-<a id="ae1a3de15484c0d1b3869b24daca6cf55" name="ae1a3de15484c0d1b3869b24daca6cf55"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae1a3de15484c0d1b3869b24daca6cf55">&#9670;&#160;</a></span>reserve()</h2>
+<a id="ad503d05fec8454d34dc42c29fdb1868e" name="ad503d05fec8454d34dc42c29fdb1868e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad503d05fec8454d34dc42c29fdb1868e">&#9670;&#160;</a></span>reserve()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -765,14 +1156,16 @@ Here is the call graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00099">99</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a46d8bac6134066592cbb1b39b6917500">polyfem::utils::MatrixCache</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00118">entries_</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00064">64</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00087">entries_</a>.</p>
 
 </div>
 </div>
@@ -799,17 +1192,32 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00135">135</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00109">109</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00122">main_cache_</a>, and <a class="el" href="_matrix_utils_8hpp_source.html#l00124">second_cache_</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00099">main_cache()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00093">second_cache_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00088">add_value()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a9f0e5ccd48cbbcdb758f7893eceb3d60_cgraph.svg" width="472" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_sparse_matrix_cache_a9f0e5ccd48cbbcdb758f7893eceb3d60_icgraph.svg" width="472" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
-<a id="a05da062aecaba930459667ab973e7bae" name="a05da062aecaba930459667ab973e7bae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a05da062aecaba930459667ab973e7bae">&#9670;&#160;</a></span>set_zero()</h2>
+<a id="a25859076521d9aa287cb3594b8ae058f" name="a25859076521d9aa287cb3594b8ae058f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25859076521d9aa287cb3594b8ae058f">&#9670;&#160;</a></span>set_zero()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::utils::SparseMatrixCache::set_zero </td>
@@ -818,9 +1226,49 @@ Here is the call graph for this function:</div>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00092">92</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a5ce8cbccca5d025593149ac5f6d5c0e9">polyfem::utils::MatrixCache</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8cpp_source.html#l00080">80</a> of file <a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00086">mat_</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00086">tmp_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00090">values_</a>.</p>
+
+</div>
+</div>
+<a id="a3b953c23c8abd1d5f6487aaa671e1c4a" name="a3b953c23c8abd1d5f6487aaa671e1c4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b953c23c8abd1d5f6487aaa671e1c4a">&#9670;&#160;</a></span>triplet_count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t polyfem::utils::SparseMatrixCache::triplet_count </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html#a062fad6351e70b904bd925f2026349fe">polyfem::utils::MatrixCache</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00068">68</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_matrix_cache_8hpp_source.html#l00087">entries_</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00086">mat_</a>.</p>
 
 </div>
 </div>
@@ -845,7 +1293,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00127">127</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00096">96</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00088">add_value()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00148">get_matrix()</a>.</p>
 
 </div>
 </div>
@@ -869,7 +1319,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00128">128</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00097">97</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00088">add_value()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00148">get_matrix()</a>.</p>
 
 </div>
 </div>
@@ -893,9 +1345,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00118">118</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00087">87</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_utils_8hpp_source.html#l00101">capacity()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00113">entries()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00100">entries_size()</a>, and <a class="el" href="_matrix_utils_8hpp_source.html#l00099">reserve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00088">add_value()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00066">capacity()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00082">entries()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00065">entries_size()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00130">prune()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00064">reserve()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00068">triplet_count()</a>.</p>
 
 </div>
 </div>
@@ -919,9 +1371,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00120">120</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00089">89</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_utils_8cpp_source.html#l00254">operator+()</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00304">operator+=()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00148">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">operator+()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00304">operator+=()</a>.</p>
 
 </div>
 </div>
@@ -945,9 +1397,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00122">122</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00091">91</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_utils_8cpp_source.html#l00073">init()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00130">mapping()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00254">operator+()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00304">operator+=()</a>, and <a class="el" href="_matrix_utils_8hpp_source.html#l00135">second_cache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00148">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00056">init()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00099">main_cache()</a>.</p>
 
 </div>
 </div>
@@ -971,9 +1423,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00119">119</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00088">88</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_utils_8hpp_source.html#l00130">mapping()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00103">mapping_size()</a>, and <a class="el" href="_matrix_utils_8hpp_source.html#l00102">non_zeros()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00148">get_matrix()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00104">mapping()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00070">mapping_size()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00067">non_zeros()</a>.</p>
 
 </div>
 </div>
@@ -997,9 +1449,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00117">117</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00086">86</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_utils_8cpp_source.html#l00073">init()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00112">mat()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00102">non_zeros()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00254">operator+()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00304">operator+=()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00040">SparseMatrixCache()</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00032">SparseMatrixCache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00148">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00039">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00056">init()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00081">mat()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00067">non_zeros()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">operator+()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00304">operator+=()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00130">prune()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00080">set_zero()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00068">triplet_count()</a>.</p>
 
 </div>
 </div>
@@ -1023,9 +1475,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00120">120</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00089">89</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_utils_8cpp_source.html#l00254">operator+()</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00304">operator+=()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00148">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">operator+()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00304">operator+=()</a>.</p>
 
 </div>
 </div>
@@ -1049,9 +1501,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00124">124</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00093">93</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_utils_8hpp_source.html#l00135">second_cache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00148">get_matrix()</a>, and <a class="el" href="_matrix_cache_8hpp_source.html#l00109">second_cache()</a>.</p>
 
 </div>
 </div>
@@ -1075,9 +1527,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00125">125</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00094">94</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_utils_8cpp_source.html#l00254">operator+()</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00304">operator+=()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00088">add_value()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00148">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">operator+()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00304">operator+=()</a>.</p>
 
 </div>
 </div>
@@ -1101,9 +1553,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00116">116</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00085">85</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_utils_8cpp_source.html#l00073">init()</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00032">SparseMatrixCache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00148">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00039">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00056">init()</a>.</p>
 
 </div>
 </div>
@@ -1127,9 +1579,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00117">117</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00086">86</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_utils_8cpp_source.html#l00040">SparseMatrixCache()</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00032">SparseMatrixCache()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00039">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00029">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00056">init()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00130">prune()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00080">set_zero()</a>.</p>
 
 </div>
 </div>
@@ -1153,7 +1605,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00126">126</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00095">95</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00088">add_value()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00148">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">operator+()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00304">operator+=()</a>.</p>
 
 </div>
 </div>
@@ -1177,15 +1631,15 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00121">121</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_cache_8hpp_source.html#l00090">90</a> of file <a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_matrix_utils_8cpp_source.html#l00073">init()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00102">non_zeros()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00254">operator+()</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00304">operator+=()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_matrix_cache_8cpp_source.html#l00088">add_value()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00148">get_matrix()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00056">init()</a>, <a class="el" href="_matrix_cache_8hpp_source.html#l00067">non_zeros()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">operator+()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00304">operator+=()</a>, and <a class="el" href="_matrix_cache_8cpp_source.html#l00080">set_zero()</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/polyfem/utils/<a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a></li>
-<li>src/polyfem/utils/<a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a></li>
+<li>src/polyfem/utils/<a class="el" href="_matrix_cache_8hpp_source.html">MatrixCache.hpp</a></li>
+<li>src/polyfem/utils/<a class="el" href="_matrix_cache_8cpp_source.html">MatrixCache.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

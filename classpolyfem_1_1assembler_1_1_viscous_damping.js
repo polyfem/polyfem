@@ -6,7 +6,7 @@ var classpolyfem_1_1assembler_1_1_viscous_damping =
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a8d6bf601b1232c4000ba7506c5dd448b", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a15ecbd96a1a15e9b7ff57413e7d9753b", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_viscous_damping.html#ad2e994c678b777f3eb669cbfc78c35f2", null ],
-    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a8c790fa41ea799eb67aedb0e068d7b1f", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_viscous_damping.html#aedbddfb0b0c940f78b86e7b5c1afd899", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_viscous_damping.html#aa34833b443433b3dcb25cb41e160f655", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_viscous_damping.html#aa1e5295c0a989f1a74ef29bcf2bef15b", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a4741ac33c11937ef36c638c28242db46", null ],

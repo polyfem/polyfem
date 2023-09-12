@@ -144,6 +144,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_cylinder_selection.html">CylinderSelection</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_dense_matrix_cache.html">DenseMatrixCache</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_edge_sampler.html">EdgeSampler</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1utils_1_1_equal_unordered_array.html">EqualUnorderedArray</a></td></tr>
@@ -168,6 +170,8 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_linear_interpolation.html">LinearInterpolation</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_linear_ramp.html">LinearRamp</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_matrix_cache.html">MatrixCache</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_no_interpolation.html">NoInterpolation</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -361,7 +365,7 @@ template&lt;typename DstMat , typename SrcMat &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00200">200</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00143">143</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00490">polyfem::mesh::Mesh::append()</a>, and <a class="el" href="_state_8cpp_source.html#l01203">polyfem::State::build_collision_mesh()</a>.</p>
 <div class="dynheader">
@@ -400,7 +404,7 @@ template&lt;typename DstMat &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00212">212</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00155">155</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l01158">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 <div class="dynheader">
@@ -654,7 +658,7 @@ template&lt;typename LocalStorage &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00468">polyfem::assembler::NLAssembler::assemble_energy()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00101">polyfem::solver::TransientForm::compute_adjoint_rhs_unweighted()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00732">polyfem::assembler::RhsAssembler::compute_energy()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00568">polyfem::solver::AdjointTools::compute_macro_strain_derivative_functional_term()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00127">polyfem::solver::TransientForm::compute_partial_gradient_unweighted()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00333">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00834">polyfem::solver::AdjointTools::dJ_damping_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00910">polyfem::solver::AdjointTools::dJ_du_step()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00782">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00158">polyfem::solver::AdjointTools::dJ_macro_strain_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00747">polyfem::solver::AdjointTools::dJ_material_transient_adjoint_term()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00113">polyfem::solver::ElasticForm::force_material_derivative()</a>, <a class="el" href="_inertia_form_8cpp_source.html#l00059">polyfem::solver::InertiaForm::force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00203">polyfem::solver::ElasticForm::force_shape_derivative()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00200">polyfem::solver::AdjointTools::integrate_objective()</a>, and <a class="el" href="_transient_form_8cpp_source.html#l00078">polyfem::solver::TransientForm::value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00490">polyfem::assembler::NLAssembler::assemble_energy()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00101">polyfem::solver::TransientForm::compute_adjoint_rhs_unweighted()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00732">polyfem::assembler::RhsAssembler::compute_energy()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00568">polyfem::solver::AdjointTools::compute_macro_strain_derivative_functional_term()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00127">polyfem::solver::TransientForm::compute_partial_gradient_unweighted()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00333">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00834">polyfem::solver::AdjointTools::dJ_damping_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00910">polyfem::solver::AdjointTools::dJ_du_step()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00782">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00158">polyfem::solver::AdjointTools::dJ_macro_strain_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00747">polyfem::solver::AdjointTools::dJ_material_transient_adjoint_term()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00115">polyfem::solver::ElasticForm::force_material_derivative()</a>, <a class="el" href="_inertia_form_8cpp_source.html#l00059">polyfem::solver::InertiaForm::force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00205">polyfem::solver::ElasticForm::force_shape_derivative()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00200">polyfem::solver::AdjointTools::integrate_objective()</a>, and <a class="el" href="_transient_form_8cpp_source.html#l00078">polyfem::solver::TransientForm::value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -725,11 +729,11 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00017">17</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00016">16</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_transient_form_8cpp_source.html#l00024">mat</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00292">polyfem::assembler::NeoHookeanElasticity::compute_energy_aux()</a>, <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html#l00030">polyfem::assembler::AMIPSEnergy::elastic_energy()</a>, <a class="el" href="_mooney_rivlin3_param_elasticity_8hpp_source.html#l00026">polyfem::assembler::MooneyRivlin3ParamElasticity::elastic_energy()</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00025">polyfem::assembler::MooneyRivlinElasticity::elastic_energy()</a>, <a class="el" href="_neo_hookean_elasticity_autodiff_8hpp_source.html#l00022">polyfem::assembler::NeoHookeanAutodiff::elastic_energy()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00033">inverse()</a>, and <a class="el" href="_elasticity_utils_8hpp_source.html#l00152">polyfem::third_invariant()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00292">polyfem::assembler::NeoHookeanElasticity::compute_energy_aux()</a>, <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html#l00030">polyfem::assembler::AMIPSEnergy::elastic_energy()</a>, <a class="el" href="_mooney_rivlin3_param_elasticity_8hpp_source.html#l00026">polyfem::assembler::MooneyRivlin3ParamElasticity::elastic_energy()</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00025">polyfem::assembler::MooneyRivlinElasticity::elastic_energy()</a>, <a class="el" href="_neo_hookean_elasticity_autodiff_8hpp_source.html#l00022">polyfem::assembler::NeoHookeanAutodiff::elastic_energy()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00032">inverse()</a>, and <a class="el" href="_elasticity_utils_8hpp_source.html#l00152">polyfem::third_invariant()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -756,7 +760,7 @@ Here is the caller graph for this function:</div>
 
 <p>Flatten rowwises. </p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00351">351</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00034">34</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
@@ -825,7 +829,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00413">413</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00096">96</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_timer_8hpp_source.html#l00010">POLYFEM_SCOPED_TIMER</a>.</p>
 
@@ -874,7 +878,7 @@ template&lt;typename Storages &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00468">polyfem::assembler::NLAssembler::assemble_energy()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00101">polyfem::solver::TransientForm::compute_adjoint_rhs_unweighted()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00732">polyfem::assembler::RhsAssembler::compute_energy()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00568">polyfem::solver::AdjointTools::compute_macro_strain_derivative_functional_term()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00127">polyfem::solver::TransientForm::compute_partial_gradient_unweighted()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00333">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00834">polyfem::solver::AdjointTools::dJ_damping_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00910">polyfem::solver::AdjointTools::dJ_du_step()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00782">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00747">polyfem::solver::AdjointTools::dJ_material_transient_adjoint_term()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00113">polyfem::solver::ElasticForm::force_material_derivative()</a>, <a class="el" href="_inertia_form_8cpp_source.html#l00059">polyfem::solver::InertiaForm::force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00203">polyfem::solver::ElasticForm::force_shape_derivative()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00200">polyfem::solver::AdjointTools::integrate_objective()</a>, and <a class="el" href="_transient_form_8cpp_source.html#l00078">polyfem::solver::TransientForm::value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00490">polyfem::assembler::NLAssembler::assemble_energy()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00101">polyfem::solver::TransientForm::compute_adjoint_rhs_unweighted()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00732">polyfem::assembler::RhsAssembler::compute_energy()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00568">polyfem::solver::AdjointTools::compute_macro_strain_derivative_functional_term()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00127">polyfem::solver::TransientForm::compute_partial_gradient_unweighted()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00333">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00834">polyfem::solver::AdjointTools::dJ_damping_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00910">polyfem::solver::AdjointTools::dJ_du_step()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00782">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00747">polyfem::solver::AdjointTools::dJ_material_transient_adjoint_term()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00115">polyfem::solver::ElasticForm::force_material_derivative()</a>, <a class="el" href="_inertia_form_8cpp_source.html#l00059">polyfem::solver::InertiaForm::force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00205">polyfem::solver::ElasticForm::force_shape_derivative()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00200">polyfem::solver::AdjointTools::integrate_objective()</a>, and <a class="el" href="_transient_form_8cpp_source.html#l00078">polyfem::solver::TransientForm::value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -942,9 +946,9 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00033">33</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00032">32</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00017">determinant()</a>, and <a class="el" href="_transient_form_8cpp_source.html#l00024">mat</a>.</p>
+<p class="reference">References <a class="el" href="_matrix_utils_8hpp_source.html#l00016">determinant()</a>, and <a class="el" href="_transient_form_8cpp_source.html#l00024">mat</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_upsample_mesh_8cpp_source.html#l00046">polyfem::mesh::stitch_mesh()</a>.</p>
 <div class="dynheader">
@@ -1118,7 +1122,7 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Lumped matrix. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00394">394</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00077">77</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01326">polyfem::State::assemble_mass_mat()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00044">polyfem::solver::BCLagrangianForm::init_masked_lumped_mass()</a>, and <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00044">polyfem::solver::BCPenaltyForm::init_masked_lumped_mass()</a>.</p>
 <div class="dynheader">
@@ -1165,7 +1169,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Mapped index matrix. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00533">533</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00216">216</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1239,7 +1243,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00468">polyfem::assembler::NLAssembler::assemble_energy()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00101">polyfem::solver::TransientForm::compute_adjoint_rhs_unweighted()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00732">polyfem::assembler::RhsAssembler::compute_energy()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00568">polyfem::solver::AdjointTools::compute_macro_strain_derivative_functional_term()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00127">polyfem::solver::TransientForm::compute_partial_gradient_unweighted()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00333">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00834">polyfem::solver::AdjointTools::dJ_damping_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00910">polyfem::solver::AdjointTools::dJ_du_step()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00782">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00158">polyfem::solver::AdjointTools::dJ_macro_strain_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00747">polyfem::solver::AdjointTools::dJ_material_transient_adjoint_term()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00113">polyfem::solver::ElasticForm::force_material_derivative()</a>, <a class="el" href="_inertia_form_8cpp_source.html#l00059">polyfem::solver::InertiaForm::force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00203">polyfem::solver::ElasticForm::force_shape_derivative()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00011">polyfem::assembler::AssemblyValsCache::init()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00200">polyfem::solver::AdjointTools::integrate_objective()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00254">polyfem::utils::SparseMatrixCache::operator+()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00304">polyfem::utils::SparseMatrixCache::operator+=()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00221">polyfem::solver::AdjointNLProblem::solve_pde()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00078">polyfem::solver::TransientForm::value_unweighted()</a>, and <a class="el" href="_adjoint_form_8cpp_source.html#l00102">polyfem::solver::MaxStressForm::value_unweighted_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00490">polyfem::assembler::NLAssembler::assemble_energy()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00101">polyfem::solver::TransientForm::compute_adjoint_rhs_unweighted()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00732">polyfem::assembler::RhsAssembler::compute_energy()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00568">polyfem::solver::AdjointTools::compute_macro_strain_derivative_functional_term()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00127">polyfem::solver::TransientForm::compute_partial_gradient_unweighted()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00333">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00834">polyfem::solver::AdjointTools::dJ_damping_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00910">polyfem::solver::AdjointTools::dJ_du_step()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00782">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00158">polyfem::solver::AdjointTools::dJ_macro_strain_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00747">polyfem::solver::AdjointTools::dJ_material_transient_adjoint_term()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00115">polyfem::solver::ElasticForm::force_material_derivative()</a>, <a class="el" href="_inertia_form_8cpp_source.html#l00059">polyfem::solver::InertiaForm::force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00205">polyfem::solver::ElasticForm::force_shape_derivative()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00011">polyfem::assembler::AssemblyValsCache::init()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00200">polyfem::solver::AdjointTools::integrate_objective()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00248">polyfem::utils::SparseMatrixCache::operator+()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00304">polyfem::utils::SparseMatrixCache::operator+=()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00221">polyfem::solver::AdjointNLProblem::solve_pde()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00078">polyfem::solver::TransientForm::value_unweighted()</a>, and <a class="el" href="_adjoint_form_8cpp_source.html#l00102">polyfem::solver::MaxStressForm::value_unweighted_step()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1496,7 +1500,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Reordered matrix. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00472">472</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00155">155</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_solve_8cpp_source.html#l00087">polyfem::State::initial_acceleration()</a>, <a class="el" href="_state_solve_8cpp_source.html#l00037">polyfem::State::initial_solution()</a>, and <a class="el" href="_state_solve_8cpp_source.html#l00066">polyfem::State::initial_velocity()</a>.</p>
 <div class="dynheader">
@@ -1566,7 +1570,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00015">15</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00008">8</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>.</p>
 
@@ -1618,7 +1622,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00078">78</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8hpp_source.html#l00077">77</a> of file <a class="el" href="_matrix_utils_8hpp_source.html">MatrixUtils.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00044">polyfem::solver::BCLagrangianForm::init_masked_lumped_mass()</a>, and <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00044">polyfem::solver::BCPenaltyForm::init_masked_lumped_mass()</a>.</p>
 <div class="dynheader">
@@ -2523,11 +2527,11 @@ Here is the call graph for this function:</div>
 
 <p>Unflatten rowwises, so every dim elements in x become a row. </p>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00370">370</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00053">53</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_s_d_f_parametrizations_8cpp_source.html#l00270">polyfem::solver::MeshAffine::apply_jacobian()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00068">polyfem::solver::ContactForm::compute_displaced_surface()</a>, <a class="el" href="_state_diff_8cpp_source.html#l00178">polyfem::State::compute_force_jacobian_prev()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00035">polyfem::solver::CollisionBarrierForm::compute_partial_gradient_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00093">polyfem::solver::FrictionForm::compute_surface_velocities()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00782">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00628">polyfem::solver::AdjointTools::dJ_shape_static_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00659">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>, <a class="el" href="_s_d_f_parametrizations_8cpp_source.html#l00080">polyfem::solver::MeshTiling::eval()</a>, <a class="el" href="_s_d_f_parametrizations_8cpp_source.html#l00244">polyfem::solver::MeshAffine::eval()</a>, <a class="el" href="_out_data_8cpp_source.html#l00906">polyfem::io::OutGeometryData::export_data()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00031">polyfem::solver::FrictionForm::force_shape_derivative()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00081">polyfem::solver::ElasticEnergyForm::get_integral_functional()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00156">polyfem::utils::PiecewiseCubicInterpolation::init()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00112">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_s_d_f_parametrizations_8cpp_source.html#l00379">polyfem::solver::PeriodicMeshToMesh::inverse_eval()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00066">polyfem::solver::CollisionBarrierForm::is_step_collision_free()</a>, <a class="el" href="_a_m_i_p_s_form_8hpp_source.html#l00233">polyfem::solver::AMIPSForm::is_step_valid()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00085">polyfem::solver::CollisionBarrierForm::max_step_size()</a>, <a class="el" href="_out_data_8cpp_source.html#l01913">polyfem::io::OutGeometryData::save_contact_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l01158">polyfem::io::OutGeometryData::save_volume()</a>, <a class="el" href="_out_data_8cpp_source.html#l01685">polyfem::io::OutGeometryData::save_volume_vector_field()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00053">polyfem::solver::CollisionBarrierForm::solution_changed()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00028">polyfem::solver::CollisionBarrierForm::value_unweighted()</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00386">vector2matrix()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_s_d_f_parametrizations_8cpp_source.html#l00270">polyfem::solver::MeshAffine::apply_jacobian()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00068">polyfem::solver::ContactForm::compute_displaced_surface()</a>, <a class="el" href="_state_diff_8cpp_source.html#l00178">polyfem::State::compute_force_jacobian_prev()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00035">polyfem::solver::CollisionBarrierForm::compute_partial_gradient_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00093">polyfem::solver::FrictionForm::compute_surface_velocities()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00782">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00628">polyfem::solver::AdjointTools::dJ_shape_static_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00659">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>, <a class="el" href="_s_d_f_parametrizations_8cpp_source.html#l00080">polyfem::solver::MeshTiling::eval()</a>, <a class="el" href="_s_d_f_parametrizations_8cpp_source.html#l00244">polyfem::solver::MeshAffine::eval()</a>, <a class="el" href="_out_data_8cpp_source.html#l00906">polyfem::io::OutGeometryData::export_data()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00031">polyfem::solver::FrictionForm::force_shape_derivative()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00081">polyfem::solver::ElasticEnergyForm::get_integral_functional()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00156">polyfem::utils::PiecewiseCubicInterpolation::init()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00112">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_s_d_f_parametrizations_8cpp_source.html#l00379">polyfem::solver::PeriodicMeshToMesh::inverse_eval()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00066">polyfem::solver::CollisionBarrierForm::is_step_collision_free()</a>, <a class="el" href="_a_m_i_p_s_form_8hpp_source.html#l00233">polyfem::solver::AMIPSForm::is_step_valid()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00085">polyfem::solver::CollisionBarrierForm::max_step_size()</a>, <a class="el" href="_out_data_8cpp_source.html#l01913">polyfem::io::OutGeometryData::save_contact_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l01158">polyfem::io::OutGeometryData::save_volume()</a>, <a class="el" href="_out_data_8cpp_source.html#l01685">polyfem::io::OutGeometryData::save_volume_vector_field()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00053">polyfem::solver::CollisionBarrierForm::solution_changed()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00028">polyfem::solver::CollisionBarrierForm::value_unweighted()</a>, and <a class="el" href="_matrix_utils_8cpp_source.html#l00069">vector2matrix()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2586,7 +2590,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Unreordered matrix. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00503">503</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00186">186</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
 </div>
 </div>
@@ -2616,11 +2620,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00386">386</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_matrix_utils_8cpp_source.html#l00069">69</a> of file <a class="el" href="_matrix_utils_8cpp_source.html">MatrixUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_transient_form_8cpp_source.html#l00024">mat</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00370">unflatten()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00056">vec</a>.</p>
+<p class="reference">References <a class="el" href="_transient_form_8cpp_source.html#l00024">mat</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">unflatten()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00072">vec</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00269">polyfem::solver::ComplianceForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00333">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00113">polyfem::solver::ElasticForm::force_material_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00203">polyfem::solver::ElasticForm::force_shape_derivative()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00151">polyfem::solver::StressNormForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00229">polyfem::solver::ComplianceForm::get_integral_functional()</a>, and <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00421">polyfem::solver::StressForm::get_integral_functional()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00269">polyfem::solver::ComplianceForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00333">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00115">polyfem::solver::ElasticForm::force_material_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00205">polyfem::solver::ElasticForm::force_shape_derivative()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00151">polyfem::solver::StressNormForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00229">polyfem::solver::ComplianceForm::get_integral_functional()</a>, and <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00421">polyfem::solver::StressForm::get_integral_functional()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

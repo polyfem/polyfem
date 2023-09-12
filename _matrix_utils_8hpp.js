@@ -1,6 +1,5 @@
 var _matrix_utils_8hpp =
 [
-    [ "polyfem::utils::SparseMatrixCache", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html", "classpolyfem_1_1utils_1_1_sparse_matrix_cache" ],
     [ "append_rows", "_matrix_utils_8hpp.html#abfd143acb03ac1513784509e3185b980", null ],
     [ "append_rows_of_zeros", "_matrix_utils_8hpp.html#ab6d6b194b77675457ea6803cfc9decd4", null ],
     [ "determinant", "_matrix_utils_8hpp.html#abe6b8c4990a1c67602ca66d6d522d557", null ],

@@ -33,7 +33,7 @@ var searchData=
   ['transientstokeproblemexact_30',['TransientStokeProblemExact',['../classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html#a8439f22b86024329e0dda80d7dbd50b1',1,'polyfem::problem::TransientStokeProblemExact']]],
   ['traverse_5fedge_31',['traverse_edge',['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a31865ca221067341550e51d50069daf7',1,'polyfem::mesh::NCMesh3D::traverse_edge()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a0ac595eaf33c30457af5511fae019652',1,'polyfem::mesh::NCMesh2D::traverse_edge()']]],
   ['traverse_5fface_32',['traverse_face',['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a6936ac7b4324e11ddc9df9d6e9c05dfd',1,'polyfem::mesh::NCMesh3D']]],
-  ['tri_5farea_33',['tri_area',['../classpolyfem_1_1mesh_1_1_mesh.html#a2a5bdc005a8069814c63f87bd00b8bdd',1,'polyfem::mesh::Mesh::tri_area()'],['../classpolyfem_1_1mesh_1_1_mesh3_d.html#a1b5b3fbdccaa5a9311452defaa3c95e0',1,'polyfem::mesh::Mesh3D::tri_area()']]],
+  ['tri_5farea_33',['tri_area',['../classpolyfem_1_1mesh_1_1_mesh3_d.html#a1b5b3fbdccaa5a9311452defaa3c95e0',1,'polyfem::mesh::Mesh3D::tri_area()'],['../classpolyfem_1_1mesh_1_1_mesh.html#a2a5bdc005a8069814c63f87bd00b8bdd',1,'polyfem::mesh::Mesh::tri_area()']]],
   ['tri_5fedge_5flocal_5fnodes_34',['tri_edge_local_nodes',['../classpolyfem_1_1basis_1_1_lagrange_basis2d.html#a74f7dd1d6fe0074601790d984024c5a5',1,'polyfem::basis::LagrangeBasis2d']]],
   ['triangle_5farea_35',['triangle_area',['../namespacepolyfem_1_1utils.html#ad4fc877ac33fe3a967cbd280d7a0b6e2',1,'polyfem::utils']]],
   ['triangle_5farea_5f2d_36',['triangle_area_2D',['../namespacepolyfem_1_1utils.html#ad647a82910f18529f06f18eed887e262',1,'polyfem::utils']]],
@@ -45,8 +45,9 @@ var searchData=
   ['triangle_5fto_5fclockwise_5forder_42',['triangle_to_clockwise_order',['../namespacepolyfem_1_1utils.html#aa0e8392d10fa2db5792e3c4fe260a211',1,'polyfem::utils']]],
   ['triangulate_5ffaces_43',['triangulate_faces',['../classpolyfem_1_1mesh_1_1_mesh.html#a61552f3bfd14586834855334677a11b5',1,'polyfem::mesh::Mesh::triangulate_faces()'],['../classpolyfem_1_1mesh_1_1_c_mesh2_d.html#aabcf6a321819c2b1a3a8c65f4b1d95f1',1,'polyfem::mesh::CMesh2D::triangulate_faces()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#ad5e3d5ecafb3d383186796bb92ff1e9f',1,'polyfem::mesh::NCMesh2D::triangulate_faces()'],['../classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a64cfaa0c7c2c6369783f1ae865f3bd78',1,'polyfem::mesh::CMesh3D::triangulate_faces()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a672d9b8453c5bcd4205c795c068c4945',1,'polyfem::mesh::NCMesh3D::triangulate_faces()']]],
   ['trim_44',['trim',['../namespacepolyfem_1_1utils_1_1_string_utils.html#a5ea2c1e360cb00a431694ced69344bea',1,'polyfem::utils::StringUtils']]],
-  ['triquadrature_45',['TriQuadrature',['../classpolyfem_1_1quadrature_1_1_tri_quadrature.html#aef999e5e58cc9777d30f66ed4d381f93',1,'polyfem::quadrature::TriQuadrature']]],
-  ['trunc_5facos_46',['trunc_acos',['../namespaceeigs.html#a726960d466d43e03294e66fb7b491c13',1,'eigs']]],
-  ['twospheres_47',['TwoSpheres',['../classpolyfem_1_1problem_1_1_two_spheres.html#a4c03650c80c9e6c05fce0b0e56d1e3a0',1,'polyfem::problem::TwoSpheres']]],
-  ['type_48',['type',['../classpolyfem_1_1mesh_1_1_local_boundary.html#aa8a84d69ace838297dcca7bd12e6d34b',1,'polyfem::mesh::LocalBoundary']]]
+  ['triplet_5fcount_45',['triplet_count',['../classpolyfem_1_1utils_1_1_matrix_cache.html#a062fad6351e70b904bd925f2026349fe',1,'polyfem::utils::MatrixCache::triplet_count()'],['../classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a3b953c23c8abd1d5f6487aaa671e1c4a',1,'polyfem::utils::SparseMatrixCache::triplet_count()'],['../classpolyfem_1_1utils_1_1_dense_matrix_cache.html#ac0ff05a0b5877bbe04ba5d8121a1f1c7',1,'polyfem::utils::DenseMatrixCache::triplet_count()']]],
+  ['triquadrature_46',['TriQuadrature',['../classpolyfem_1_1quadrature_1_1_tri_quadrature.html#aef999e5e58cc9777d30f66ed4d381f93',1,'polyfem::quadrature::TriQuadrature']]],
+  ['trunc_5facos_47',['trunc_acos',['../namespaceeigs.html#a726960d466d43e03294e66fb7b491c13',1,'eigs']]],
+  ['twospheres_48',['TwoSpheres',['../classpolyfem_1_1problem_1_1_two_spheres.html#a4c03650c80c9e6c05fce0b0e56d1e3a0',1,'polyfem::problem::TwoSpheres']]],
+  ['type_49',['type',['../classpolyfem_1_1mesh_1_1_local_boundary.html#aa8a84d69ace838297dcca7bd12e6d34b',1,'polyfem::mesh::LocalBoundary']]]
 ];

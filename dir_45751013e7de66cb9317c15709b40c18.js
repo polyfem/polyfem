@@ -28,6 +28,8 @@ var dir_45751013e7de66cb9317c15709b40c18 =
     [ "JSONUtils.hpp", "_j_s_o_n_utils_8hpp.html", "_j_s_o_n_utils_8hpp" ],
     [ "Logger.cpp", "_logger_8cpp.html", "_logger_8cpp" ],
     [ "Logger.hpp", "_logger_8hpp.html", "_logger_8hpp" ],
+    [ "MatrixCache.cpp", "_matrix_cache_8cpp.html", null ],
+    [ "MatrixCache.hpp", "_matrix_cache_8hpp.html", "_matrix_cache_8hpp" ],
     [ "MatrixUtils.cpp", "_matrix_utils_8cpp.html", null ],
     [ "MatrixUtils.hpp", "_matrix_utils_8hpp.html", "_matrix_utils_8hpp" ],
     [ "MaybeParallelFor.hpp", "_maybe_parallel_for_8hpp.html", "_maybe_parallel_for_8hpp" ],

@@ -5,7 +5,7 @@ var classpolyfem_1_1assembler_1_1_multi_model =
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_multi_model.html#a8d6bf601b1232c4000ba7506c5dd448b", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_multi_model.html#a6a5547e3ddfa78abdb9fb12af42b5a36", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_multi_model.html#ad2e994c678b777f3eb669cbfc78c35f2", null ],
-    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_multi_model.html#a8c790fa41ea799eb67aedb0e068d7b1f", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_multi_model.html#aedbddfb0b0c940f78b86e7b5c1afd899", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_multi_model.html#a535cf3a88a39fa73b0e844597ddfdc35", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_multi_model.html#aa1e5295c0a989f1a74ef29bcf2bef15b", null ],
     [ "assign_stress_tensor", "classpolyfem_1_1assembler_1_1_multi_model.html#abbdd872cca26e6795efdea59c087d894", null ],

@@ -6,7 +6,7 @@ var searchData=
   ['c2e_5f_3',['c2e_',['../classpolyfem_1_1mesh_1_1_c_mesh2_d.html#aaa5aeb6bc8552142b311e4dc105a1210',1,'polyfem::mesh::CMesh2D']]],
   ['c3_5f_4',['c3_',['../classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_elasticity.html#a914a6854747eb79b24d3e646a2ba4c3e',1,'polyfem::assembler::MooneyRivlin3ParamElasticity']]],
   ['c99_5',['c99',['../namespaceeigs.html#ad7a7fdda178aaa615875b279612db3d0',1,'eigs.c99'],['../namespaceelasticity__rhs.html#a416b4552268173e68a682d8c7ad68124',1,'elasticity_rhs.c99']]],
-  ['cache_6',['cache',['../_assembler_8cpp.html#aa9f8769d176bc34ee17a5e52e84aa9cb',1,'cache:&#160;Assembler.cpp'],['../classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a927a13315d2c48728a01bdcf0e0302d0',1,'polyfem::assembler::AssemblyValsCache::cache']]],
+  ['cache_6',['cache',['../_assembler_8cpp.html#ac67a22d4c9279979f58f5ebca27a2c79',1,'cache:&#160;Assembler.cpp'],['../classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a927a13315d2c48728a01bdcf0e0302d0',1,'polyfem::assembler::AssemblyValsCache::cache']]],
   ['cached_5fstiffness_5f_7',['cached_stiffness_',['../classpolyfem_1_1solver_1_1_elastic_form.html#a98255bf84889e814bff94426e230c547',1,'polyfem::solver::ElasticForm']]],
   ['candidates_5f_8',['candidates_',['../classpolyfem_1_1solver_1_1_contact_form.html#ab69af438592375b855eb3d9800a28a89',1,'polyfem::solver::ContactForm']]],
   ['canonical_5ftransformation_5f_9',['canonical_transformation_',['../classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#a776a0db2e2cd1e4daeb8ab1b3d0af54f',1,'polyfem::assembler::AMIPSEnergy']]],
