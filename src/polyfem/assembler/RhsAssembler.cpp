@@ -729,7 +729,7 @@ namespace polyfem
 			}
 		}
 
-		double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const std::vector<LocalBoundary> &local_neumann_boundary, const Density &density, const int resolution, const double t) const
+		double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const Eigen::MatrixXd &displacement_prev, const std::vector<LocalBoundary> &local_neumann_boundary, const Density &density, const int resolution, const double t) const
 		{
 
 			double res = 0;
@@ -817,7 +817,7 @@ namespace polyfem
 				{
 					trafo = vals.jac_it[n].inverse();
 
-					if (displacement.size() > 0)
+					if (displacement_prev.size() > 0)
 					{
 						assert(size_ == 2 || size_ == 3);
 						deform_mat.resize(size_, size_);
@@ -828,7 +828,7 @@ namespace polyfem
 							{
 								for (int d = 0; d < size_; ++d)
 								{
-									deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
+									deform_mat.row(d) += displacement_prev(g.index * size_ + d) * b.grad.row(n);
 								}
 							}
 						}
