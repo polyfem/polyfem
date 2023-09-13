@@ -87,6 +87,8 @@ namespace polyfem::solver
 		const int ndof_; ///< Number of degrees of freedom
 		const int n_pressure_bases_;
 
+		Eigen::MatrixXd x_prev_; ///< Cached previous solution
+
 		const std::vector<int> &boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> &local_boundary_;
 		const std::vector<mesh::LocalBoundary> &local_neumann_boundary_;

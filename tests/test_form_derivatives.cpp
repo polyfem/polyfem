@@ -110,7 +110,21 @@ namespace
 				"transformation": {
 					"scale": [0.1, 1, 1]
 				},
-				"surface_selection": 7
+				"surface_selection": [
+					{
+						"id": 1,
+						"axis": "z",
+						"position": 0.8,
+						"relative": true
+					},
+					{
+						"id": 2,
+						"axis": "-z",
+						"position": 0.2,
+						"relative": true
+					}
+				],
+				"n_refs": 1
 			}],
 
 			"time": {
@@ -120,8 +134,12 @@ namespace
 
 			"boundary_conditions": {
 				"neumann_boundary": [{
-					"id": 7,
+					"id": 1,
 					"value": [1000, 1000, 1000]
+				}],
+				"pressure_boundary": [{
+					"id": 2,
+					"value": -2000
 				}],
 				"rhs": [0, 0, 0]
 			},
