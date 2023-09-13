@@ -149,8 +149,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ace9f88097549d2f3f8f841fcff8f00e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0101cc7349acaf03df4743439d055f28" id="r_a0101cc7349acaf03df4743439d055f28"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0101cc7349acaf03df4743439d055f28">set_bc</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;bounday_nodes, const int resolution, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_neumann_boundary, Eigen::MatrixXd &amp;rhs, const Eigen::MatrixXd &amp;displacement=Eigen::MatrixXd(), const double t=1) const</td></tr>
 <tr class="separator:a0101cc7349acaf03df4743439d055f28"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78a4eec50d291e10302e5b9274169aad" id="r_a78a4eec50d291e10302e5b9274169aad"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a78a4eec50d291e10302e5b9274169aad">compute_energy</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_neumann_boundary, const <a class="el" href="classpolyfem_1_1assembler_1_1_density.html">Density</a> &amp;density, const int resolution, const double t) const</td></tr>
-<tr class="separator:a78a4eec50d291e10302e5b9274169aad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81522814c9437df6805a0844b1f5414d" id="r_a81522814c9437df6805a0844b1f5414d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a81522814c9437df6805a0844b1f5414d">compute_energy</a> (const Eigen::MatrixXd &amp;displacement, const Eigen::MatrixXd &amp;displacement_prev, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_neumann_boundary, const <a class="el" href="classpolyfem_1_1assembler_1_1_density.html">Density</a> &amp;density, const int resolution, const double t) const</td></tr>
+<tr class="separator:a81522814c9437df6805a0844b1f5414d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a717039c1647c3261c8acc5ab68caac54" id="r_a717039c1647c3261c8acc5ab68caac54"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a717039c1647c3261c8acc5ab68caac54">compute_energy_grad</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;bounday_nodes, const <a class="el" href="classpolyfem_1_1assembler_1_1_density.html">Density</a> &amp;density, const int resolution, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_neumann_boundary, const Eigen::MatrixXd &amp;final_rhs, const double t, Eigen::MatrixXd &amp;rhs) const</td></tr>
 <tr class="separator:a717039c1647c3261c8acc5ab68caac54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91fda8cbdede56c6e57a3a67fcbe3a79" id="r_a91fda8cbdede56c6e57a3a67fcbe3a79"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a91fda8cbdede56c6e57a3a67fcbe3a79">compute_energy_hess</a> (const std::vector&lt; int &gt; &amp;bounday_nodes, const int resolution, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_neumann_boundary, const Eigen::MatrixXd &amp;displacement, const double t, const bool project_to_psd, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hess) const</td></tr>
@@ -377,7 +377,7 @@ Here is the call graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00095">ass_vals_cache_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00115">polyfem::solver::BodyForm::force_shape_derivative()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -463,7 +463,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00088">assembler_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00115">polyfem::solver::BodyForm::force_shape_derivative()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -499,7 +499,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00093">bases_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00115">polyfem::solver::BodyForm::force_shape_derivative()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -508,8 +508,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a78a4eec50d291e10302e5b9274169aad" name="a78a4eec50d291e10302e5b9274169aad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a78a4eec50d291e10302e5b9274169aad">&#9670;&#160;</a></span>compute_energy()</h2>
+<a id="a81522814c9437df6805a0844b1f5414d" name="a81522814c9437df6805a0844b1f5414d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81522814c9437df6805a0844b1f5414d">&#9670;&#160;</a></span>compute_energy()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -519,6 +519,12 @@ Here is the caller graph for this function:</div>
           <td>(</td>
           <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
           <td class="paramname"><em>displacement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>displacement_prev</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -560,12 +566,12 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_rhs_assembler_a78a4eec50d291e10302e5b9274169aad_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_rhs_assembler_a81522814c9437df6805a0844b1f5414d_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_rhs_assembler_a78a4eec50d291e10302e5b9274169aad_icgraph.svg" width="446" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_rhs_assembler_a81522814c9437df6805a0844b1f5414d_icgraph.svg" width="446" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -636,7 +642,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_rhs_assembler_8cpp_source.html#l00063">assemble()</a>, <a class="el" href="_problem_8hpp_source.html#l00049">polyfem::assembler::Problem::is_constant_in_time()</a>, and <a class="el" href="_rhs_assembler_8hpp_source.html#l00096">problem_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00086">polyfem::solver::BodyForm::update_current_rhs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00087">polyfem::solver::BodyForm::update_current_rhs()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -710,7 +716,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00093">bases_</a>, <a class="el" href="_boundary_sampler_8cpp_source.html#l00462">polyfem::utils::BoundarySampler::boundary_quadrature()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00094">gbases_</a>, <a class="el" href="_mesh_8hpp_source.html#l00466">polyfem::mesh::Mesh::get_boundary_id()</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00017">polyfem::assembler::AssemblyValues::global</a>, <a class="el" href="_problem_8hpp_source.html#l00033">polyfem::assembler::Problem::is_boundary_pressure()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00032">polyfem::basis::ElementBases::local_nodes_for_primitive()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00089">mesh_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00091">n_basis_</a>, <a class="el" href="_problem_8hpp_source.html#l00031">polyfem::assembler::Problem::neumann_bc()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00096">problem_</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00092">size_</a>, <a class="el" href="_assembly_values_8hpp_source.html#l00020">polyfem::assembler::AssemblyValues::val</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, and <a class="el" href="_assembler_8cpp_source.html#l00072">vec</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00340">polyfem::solver::BodyForm::hessian_wrt_u_prev()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00341">polyfem::solver::BodyForm::hessian_wrt_u_prev()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -751,7 +757,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00094">gbases_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00115">polyfem::solver::BodyForm::force_shape_derivative()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -994,7 +1000,7 @@ Here is the call graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00089">mesh_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00124">initial_acceleration()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00108">initial_solution()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00116">initial_velocity()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00115">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00124">initial_acceleration()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00108">initial_solution()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00116">initial_velocity()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1030,7 +1036,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00096">problem_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">polyfem::solver::BodyForm::force_shape_derivative()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00115">polyfem::solver::BodyForm::force_shape_derivative()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1230,7 +1236,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00160">polyfem::solver::NLProblem::boundary_values()</a>, <a class="el" href="_body_form_8cpp_source.html#l00086">polyfem::solver::BodyForm::update_current_rhs()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00115">polyfem::solver::BCLagrangianForm::update_target()</a>, and <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00104">polyfem::solver::BCPenaltyForm::update_target()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00160">polyfem::solver::NLProblem::boundary_values()</a>, <a class="el" href="_body_form_8cpp_source.html#l00087">polyfem::solver::BodyForm::update_current_rhs()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00115">polyfem::solver::BCLagrangianForm::update_target()</a>, and <a class="el" href="_b_c_penalty_form_8cpp_source.html#l00104">polyfem::solver::BCPenaltyForm::update_target()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

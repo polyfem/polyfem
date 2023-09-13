@@ -23,5 +23,6 @@ var classpolyfem_1_1solver_1_1_body_form =
     [ "ndof_", "classpolyfem_1_1solver_1_1_body_form.html#a67899b2ba62bba2f0131d96517dc42fa", null ],
     [ "rhs_", "classpolyfem_1_1solver_1_1_body_form.html#acc5c8b2edd158433721b03bc17be901f", null ],
     [ "rhs_assembler_", "classpolyfem_1_1solver_1_1_body_form.html#a0f22a36c134ec75dbe58436071f47524", null ],
-    [ "t_", "classpolyfem_1_1solver_1_1_body_form.html#a3f8ec58ca1b095b0b4381f48b843ffc6", null ]
+    [ "t_", "classpolyfem_1_1solver_1_1_body_form.html#a3f8ec58ca1b095b0b4381f48b843ffc6", null ],
+    [ "x_prev_", "classpolyfem_1_1solver_1_1_body_form.html#acfc444957ae14fc894cc401e6f6acd28", null ]
 ];

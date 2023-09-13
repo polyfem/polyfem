@@ -134,7 +134,7 @@ var searchData=
   ['expressionvalue_131',['expressionvalue',['../classpolyfem_1_1utils_1_1_expression_value.html#a76dc675f0165ead06fae6a1b4cd3510f',1,'polyfem::utils::ExpressionValue::ExpressionValue()'],['../classpolyfem_1_1utils_1_1_expression_value.html',1,'polyfem::utils::ExpressionValue']]],
   ['expressionvalue_2ecpp_132',['ExpressionValue.cpp',['../_expression_value_8cpp.html',1,'']]],
   ['expressionvalue_2ehpp_133',['ExpressionValue.hpp',['../_expression_value_8hpp.html',1,'']]],
-  ['extend_134',['extend',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6d',1,'polyfem::utils::PiecewiseInterpolation::Extend'],['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#a594261dc63b365d258c363d365fa1d2d',1,'polyfem::utils::PiecewiseInterpolation::extend(const double t) const']]],
+  ['extend_134',['extend',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#a594261dc63b365d258c363d365fa1d2d',1,'polyfem::utils::PiecewiseInterpolation::extend(const double t) const'],['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6d',1,'polyfem::utils::PiecewiseInterpolation::Extend']]],
   ['extend_5f_135',['extend_',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#aecb68e2239c1ee24a5221fa931f6247b',1,'polyfem::utils::PiecewiseInterpolation']]],
   ['external_5fforce_136',['external_force',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a4daebcfc8dc5dfd88491687bdf20a7d9',1,'polyfem::solver::OperatorSplittingSolver']]],
   ['extract_5fboundary_5fmesh_137',['extract_boundary_mesh',['../classpolyfem_1_1io_1_1_out_geometry_data.html#a7b3e2f650cb68b596b8b67ef6702f3b1',1,'polyfem::io::OutGeometryData']]],

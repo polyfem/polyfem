@@ -270,6 +270,9 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a67899b2ba62bba2f0131d96517dc42fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1b7fe42c6d0fce4f934e6ef05b6174e" id="r_ac1b7fe42c6d0fce4f934e6ef05b6174e"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#ac1b7fe42c6d0fce4f934e6ef05b6174e">n_pressure_bases_</a></td></tr>
 <tr class="separator:ac1b7fe42c6d0fce4f934e6ef05b6174e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfc444957ae14fc894cc401e6f6acd28" id="r_acfc444957ae14fc894cc401e6f6acd28"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#acfc444957ae14fc894cc401e6f6acd28">x_prev_</a></td></tr>
+<tr class="memdesc:acfc444957ae14fc894cc401e6f6acd28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cached previous solution.  <br /></td></tr>
+<tr class="separator:acfc444957ae14fc894cc401e6f6acd28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f48eab3d14c4e2f999915cd4bf23028" id="r_a2f48eab3d14c4e2f999915cd4bf23028"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#a2f48eab3d14c4e2f999915cd4bf23028">boundary_nodes_</a></td></tr>
 <tr class="separator:a2f48eab3d14c4e2f999915cd4bf23028"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab65645ca441d8e4ee9a8a565407a948" id="r_aab65645ca441d8e4ee9a8a565407a948"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#aab65645ca441d8e4ee9a8a565407a948">local_boundary_</a></td></tr>
@@ -414,7 +417,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_body_form_8cpp_source.html#l00035">35</a> of file <a class="el" href="_body_form_8cpp_source.html">BodyForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00086">t_</a>, and <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>.</p>
+<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00086">t_</a>, and <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -471,7 +474,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_body_form_8cpp_source.html#l00069">69</a> of file <a class="el" href="_body_form_8cpp_source.html">BodyForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00102">current_rhs_</a>.</p>
+<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00104">current_rhs_</a>.</p>
 
 </div>
 </div>
@@ -530,9 +533,9 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_body_form_8cpp_source.html#l00114">114</a> of file <a class="el" href="_body_form_8cpp_source.html">BodyForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_body_form_8cpp_source.html#l00115">115</a> of file <a class="el" href="_body_form_8cpp_source.html">BodyForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00058">polyfem::assembler::RhsAssembler::ass_vals_cache()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00059">polyfem::assembler::RhsAssembler::assembler()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00056">polyfem::assembler::RhsAssembler::bases()</a>, <a class="el" href="_body_form_8hpp_source.html#l00090">boundary_nodes_</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00032">polyfem::assembler::AssemblyValsCache::compute()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_body_form_8hpp_source.html#l00097">density_</a>, <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00057">polyfem::assembler::RhsAssembler::gbases()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="_body_form_8cpp_source.html#l00025">gvals</a>, <a class="el" href="_evaluator_8cpp_source.html#l00979">polyfem::io::Evaluator::interpolate_at_local_vals()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_body_form_8hpp_source.html#l00092">local_neumann_boundary_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00055">polyfem::assembler::RhsAssembler::mesh()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00054">polyfem::assembler::RhsAssembler::problem()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9e01aba9cf417181f5671d52d126ab2b">polyfem::assembler::Problem::rhs()</a>, <a class="el" href="_body_form_8hpp_source.html#l00096">rhs_assembler_</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, <a class="el" href="_form_8hpp_source.html#l00023">polyfem::solver::Form::value()</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>.</p>
+<p class="reference">References <a class="el" href="_rhs_assembler_8hpp_source.html#l00058">polyfem::assembler::RhsAssembler::ass_vals_cache()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00059">polyfem::assembler::RhsAssembler::assembler()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00056">polyfem::assembler::RhsAssembler::bases()</a>, <a class="el" href="_body_form_8hpp_source.html#l00092">boundary_nodes_</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00032">polyfem::assembler::AssemblyValsCache::compute()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="_body_form_8hpp_source.html#l00099">density_</a>, <a class="el" href="_mesh_8hpp_source.html#l00144">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00057">polyfem::assembler::RhsAssembler::gbases()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="_body_form_8cpp_source.html#l00025">gvals</a>, <a class="el" href="_evaluator_8cpp_source.html#l00979">polyfem::io::Evaluator::interpolate_at_local_vals()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_body_form_8hpp_source.html#l00094">local_neumann_boundary_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00055">polyfem::assembler::RhsAssembler::mesh()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_rhs_assembler_8hpp_source.html#l00054">polyfem::assembler::RhsAssembler::problem()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9e01aba9cf417181f5671d52d126ab2b">polyfem::assembler::Problem::rhs()</a>, <a class="el" href="_body_form_8hpp_source.html#l00098">rhs_assembler_</a>, <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>, <a class="el" href="_form_8hpp_source.html#l00023">polyfem::solver::Form::value()</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -566,7 +569,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00058">58</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00099">apply_DBC_</a>.</p>
+<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00101">apply_DBC_</a>.</p>
 
 </div>
 </div>
@@ -602,9 +605,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_body_form_8cpp_source.html#l00340">340</a> of file <a class="el" href="_body_form_8cpp_source.html">BodyForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_body_form_8cpp_source.html#l00341">341</a> of file <a class="el" href="_body_form_8cpp_source.html">BodyForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00090">boundary_nodes_</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00873">polyfem::assembler::RhsAssembler::compute_energy_hess()</a>, <a class="el" href="_body_form_8hpp_source.html#l00092">local_neumann_boundary_</a>, <a class="el" href="_body_form_8hpp_source.html#l00093">n_boundary_samples_</a>, and <a class="el" href="_body_form_8hpp_source.html#l00096">rhs_assembler_</a>.</p>
+<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00092">boundary_nodes_</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00873">polyfem::assembler::RhsAssembler::compute_energy_hess()</a>, <a class="el" href="_body_form_8hpp_source.html#l00094">local_neumann_boundary_</a>, <a class="el" href="_body_form_8hpp_source.html#l00095">n_boundary_samples_</a>, and <a class="el" href="_body_form_8hpp_source.html#l00098">rhs_assembler_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -740,7 +743,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00059">59</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00099">apply_DBC_</a>, <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00101">apply_DBC_</a>, <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -775,9 +778,9 @@ Here is the call graph for this function:</div>
 
 <p>Update current_rhs. </p>
 
-<p class="definition">Definition at line <a class="el" href="_body_form_8cpp_source.html#l00086">86</a> of file <a class="el" href="_body_form_8cpp_source.html">BodyForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_body_form_8cpp_source.html#l00087">87</a> of file <a class="el" href="_body_form_8cpp_source.html">BodyForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00099">apply_DBC_</a>, <a class="el" href="_body_form_8hpp_source.html#l00090">boundary_nodes_</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00708">polyfem::assembler::RhsAssembler::compute_energy_grad()</a>, <a class="el" href="_body_form_8hpp_source.html#l00102">current_rhs_</a>, <a class="el" href="_body_form_8hpp_source.html#l00097">density_</a>, <a class="el" href="_body_form_8hpp_source.html#l00100">is_formulation_mixed_</a>, <a class="el" href="_body_form_8hpp_source.html#l00091">local_boundary_</a>, <a class="el" href="_body_form_8hpp_source.html#l00092">local_neumann_boundary_</a>, <a class="el" href="_body_form_8hpp_source.html#l00093">n_boundary_samples_</a>, <a class="el" href="_body_form_8hpp_source.html#l00088">n_pressure_bases_</a>, <a class="el" href="_body_form_8hpp_source.html#l00087">ndof_</a>, <a class="el" href="_body_form_8hpp_source.html#l00095">rhs_</a>, <a class="el" href="_body_form_8hpp_source.html#l00096">rhs_assembler_</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0101cc7349acaf03df4743439d055f28">polyfem::assembler::RhsAssembler::set_bc()</a>, <a class="el" href="_body_form_8hpp_source.html#l00086">t_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00101">apply_DBC_</a>, <a class="el" href="_body_form_8hpp_source.html#l00092">boundary_nodes_</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00708">polyfem::assembler::RhsAssembler::compute_energy_grad()</a>, <a class="el" href="_body_form_8hpp_source.html#l00104">current_rhs_</a>, <a class="el" href="_body_form_8hpp_source.html#l00099">density_</a>, <a class="el" href="_body_form_8hpp_source.html#l00102">is_formulation_mixed_</a>, <a class="el" href="_body_form_8hpp_source.html#l00093">local_boundary_</a>, <a class="el" href="_body_form_8hpp_source.html#l00094">local_neumann_boundary_</a>, <a class="el" href="_body_form_8hpp_source.html#l00095">n_boundary_samples_</a>, <a class="el" href="_body_form_8hpp_source.html#l00088">n_pressure_bases_</a>, <a class="el" href="_body_form_8hpp_source.html#l00087">ndof_</a>, <a class="el" href="_body_form_8hpp_source.html#l00097">rhs_</a>, <a class="el" href="_body_form_8hpp_source.html#l00098">rhs_assembler_</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0101cc7349acaf03df4743439d055f28">polyfem::assembler::RhsAssembler::set_bc()</a>, <a class="el" href="_body_form_8hpp_source.html#l00086">t_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00035">BodyForm()</a>, <a class="el" href="_body_form_8hpp_source.html#l00059">set_apply_DBC()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00080">update_quantities()</a>.</p>
 <div class="dynheader">
@@ -840,7 +843,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_body_form_8cpp_source.html#l00080">80</a> of file <a class="el" href="_body_form_8cpp_source.html">BodyForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00086">t_</a>, <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_body_form_8hpp_source.html#l00086">t_</a>, <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_body_form_8hpp_source.html#l00090">x_prev_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -886,7 +889,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_body_form_8cpp_source.html#l00064">64</a> of file <a class="el" href="_body_form_8cpp_source.html">BodyForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_rhs_assembler_8cpp_source.html#l00732">polyfem::assembler::RhsAssembler::compute_energy()</a>, <a class="el" href="_body_form_8hpp_source.html#l00097">density_</a>, <a class="el" href="_body_form_8hpp_source.html#l00092">local_neumann_boundary_</a>, <a class="el" href="_body_form_8hpp_source.html#l00093">n_boundary_samples_</a>, <a class="el" href="_body_form_8hpp_source.html#l00096">rhs_assembler_</a>, <a class="el" href="_body_form_8hpp_source.html#l00086">t_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_rhs_assembler_8cpp_source.html#l00732">polyfem::assembler::RhsAssembler::compute_energy()</a>, <a class="el" href="_body_form_8hpp_source.html#l00099">density_</a>, <a class="el" href="_body_form_8hpp_source.html#l00094">local_neumann_boundary_</a>, <a class="el" href="_body_form_8hpp_source.html#l00095">n_boundary_samples_</a>, <a class="el" href="_body_form_8hpp_source.html#l00098">rhs_assembler_</a>, <a class="el" href="_body_form_8hpp_source.html#l00086">t_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_body_form_8hpp_source.html#l00090">x_prev_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -918,9 +921,9 @@ Here is the call graph for this function:</div>
 
 <p>If true, set the Dirichlet boundary conditions in the RHS. </p>
 
-<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00099">99</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00101">101</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8hpp_source.html#l00058">get_apply_DBC()</a>, <a class="el" href="_body_form_8hpp_source.html#l00059">set_apply_DBC()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8hpp_source.html#l00058">get_apply_DBC()</a>, <a class="el" href="_body_form_8hpp_source.html#l00059">set_apply_DBC()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>.</p>
 
 </div>
 </div>
@@ -944,9 +947,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00090">90</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00092">92</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00340">hessian_wrt_u_prev()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00115">force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00341">hessian_wrt_u_prev()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>.</p>
 
 </div>
 </div>
@@ -972,9 +975,9 @@ Here is the call graph for this function:</div>
 
 <p>Cached RHS for the current time. </p>
 
-<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00102">102</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00104">104</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00069">first_derivative_unweighted()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00069">first_derivative_unweighted()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>.</p>
 
 </div>
 </div>
@@ -998,9 +1001,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00097">97</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00099">99</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00064">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00115">force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00064">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1026,9 +1029,9 @@ Here is the call graph for this function:</div>
 
 <p>True if the formulation is mixed. </p>
 
-<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00100">100</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00102">102</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>.</p>
 
 </div>
 </div>
@@ -1052,9 +1055,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00091">91</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00093">93</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>.</p>
 
 </div>
 </div>
@@ -1078,9 +1081,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00092">92</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00094">94</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00340">hessian_wrt_u_prev()</a>, <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00064">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00115">force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00341">hessian_wrt_u_prev()</a>, <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00064">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1104,9 +1107,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00093">93</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00095">95</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00340">hessian_wrt_u_prev()</a>, <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00064">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00341">hessian_wrt_u_prev()</a>, <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00064">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1132,7 +1135,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00088">88</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>.</p>
 
 </div>
 </div>
@@ -1160,7 +1163,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00087">87</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>.</p>
 
 </div>
 </div>
@@ -1186,9 +1189,9 @@ Here is the call graph for this function:</div>
 
 <p>static RHS for the current time </p>
 
-<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00095">95</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00097">97</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>.</p>
 
 </div>
 </div>
@@ -1214,9 +1217,9 @@ Here is the call graph for this function:</div>
 
 <p>Reference to the RHS assembler. </p>
 
-<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00096">96</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00098">98</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00114">force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00340">hessian_wrt_u_prev()</a>, <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00064">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00115">force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00341">hessian_wrt_u_prev()</a>, <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00064">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1244,7 +1247,35 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00086">86</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00035">BodyForm()</a>, <a class="el" href="_body_form_8cpp_source.html#l00086">update_current_rhs()</a>, <a class="el" href="_body_form_8cpp_source.html#l00080">update_quantities()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00064">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00035">BodyForm()</a>, <a class="el" href="_body_form_8cpp_source.html#l00087">update_current_rhs()</a>, <a class="el" href="_body_form_8cpp_source.html#l00080">update_quantities()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00064">value_unweighted()</a>.</p>
+
+</div>
+</div>
+<a id="acfc444957ae14fc894cc401e6f6acd28" name="acfc444957ae14fc894cc401e6f6acd28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfc444957ae14fc894cc401e6f6acd28">&#9670;&#160;</a></span>x_prev_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::solver::BodyForm::x_prev_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cached previous solution. </p>
+
+<p class="definition">Definition at line <a class="el" href="_body_form_8hpp_source.html#l00090">90</a> of file <a class="el" href="_body_form_8hpp_source.html">BodyForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_body_form_8cpp_source.html#l00080">update_quantities()</a>, and <a class="el" href="_body_form_8cpp_source.html#l00064">value_unweighted()</a>.</p>
 
 </div>
 </div>

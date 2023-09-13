@@ -5,7 +5,7 @@ var classpolyfem_1_1assembler_1_1_rhs_assembler =
     [ "assemble", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#ada9462079ff85433ec41e09fa55d96a5", null ],
     [ "assembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a97719fe113df5d24a8993e19dad8cea5", null ],
     [ "bases", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#af97de8857e80cd0acb28b87ebaf55466", null ],
-    [ "compute_energy", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a78a4eec50d291e10302e5b9274169aad", null ],
+    [ "compute_energy", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a81522814c9437df6805a0844b1f5414d", null ],
     [ "compute_energy_grad", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a717039c1647c3261c8acc5ab68caac54", null ],
     [ "compute_energy_hess", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a91fda8cbdede56c6e57a3a67fcbe3a79", null ],
     [ "gbases", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#ac63e2e7c87427ae1774d5ed344295e85", null ],
