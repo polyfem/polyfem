@@ -43,7 +43,7 @@ namespace cppoptlib
 
 		double line_search(const TVector &x, const TVector &delta_x, ProblemType &objFunc);
 
-		void get_info(polyfem::json &params) { params = solver_info; }
+		const polyfem::json &get_info() const { return solver_info; }
 
 		ErrorCode error_code() const { return m_error_code; }
 
@@ -59,6 +59,7 @@ namespace cppoptlib
 
 		size_t max_iterations() const { return this->m_stop.iterations; }
 		size_t &max_iterations() { return this->m_stop.iterations; }
+		bool allow_out_of_iterations = false;
 
 	protected:
 		// ====================================================================

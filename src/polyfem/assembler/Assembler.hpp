@@ -82,6 +82,15 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev) const { log_and_throw_error("Assemble energy not implemented by {}!", name()); }
 
+		virtual Eigen::VectorXd assemble_energy_per_element(
+			const bool is_volume,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double dt,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev) const { log_and_throw_error("Assemble energy not implemented by {}!", name()); }
+
 		// assemble gradient of energy (rhs)
 		virtual void assemble_gradient(
 			const bool is_volume,
@@ -242,6 +251,16 @@ namespace polyfem::assembler
 
 		// assemble energy
 		double assemble_energy(
+			const bool is_volume,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double dt,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev) const override;
+
+		// assemble the energy per element
+		Eigen::VectorXd assemble_energy_per_element(
 			const bool is_volume,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,

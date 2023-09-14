@@ -170,7 +170,7 @@ namespace polyfem::assembler
 		// #ifdef POLYFEM_WITH_TBB
 		// 		buffer_size /= tbb::task_scheduler_init::default_num_threads();
 		// #endif
-		logger().trace("buffer_size {}", buffer_size);
+		// logger().trace("buffer_size {}", buffer_size);
 		try
 		{
 			stiffness.resize(n_basis * size(), n_basis * size());
@@ -395,7 +395,7 @@ namespace polyfem::assembler
 
 		const int max_triplets_size = int(1e7);
 		const int buffer_size = std::min(long(max_triplets_size), long(std::max(n_psi_basis, n_phi_basis)) * std::max(rows(), cols()));
-		logger().debug("buffer_size {}", buffer_size);
+		// logger().debug("buffer_size {}", buffer_size);
 
 		stiffness.resize(n_phi_basis * rows(), n_psi_basis * cols());
 		stiffness.setZero();
@@ -522,6 +522,46 @@ namespace polyfem::assembler
 		for (const LocalThreadScalarStorage &local_storage : storage)
 			res += local_storage.val;
 		return res;
+	}
+
+	Eigen::VectorXd NLAssembler::assemble_energy_per_element(
+		const bool is_volume,
+		const std::vector<ElementBases> &bases,
+		const std::vector<ElementBases> &gbases,
+		const AssemblyValsCache &cache,
+		const double dt,
+		const Eigen::MatrixXd &displacement,
+		const Eigen::MatrixXd &displacement_prev) const
+	{
+		auto storage = create_thread_storage(LocalThreadScalarStorage());
+		const int n_bases = int(bases.size());
+		Eigen::VectorXd out(bases.size());
+
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
+			ElementAssemblyValues &vals = local_storage.vals;
+
+			for (int e = start; e < end; ++e)
+			{
+				cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+				const Quadrature &quadrature = vals.quadrature;
+
+				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+				local_storage.da = vals.det.array() * quadrature.weights.array();
+
+				const double val = compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				out[e] = val;
+			}
+		});
+
+#ifndef NDEBUG
+		const double assemble_val = assemble_energy(
+			is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+		assert(std::abs(assemble_val - out.sum()) < std::max(1e-10 * assemble_val, 1e-10));
+#endif
+
+		return out;
 	}
 
 	void NLAssembler::assemble_gradient(

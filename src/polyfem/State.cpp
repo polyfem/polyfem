@@ -970,10 +970,18 @@ namespace polyfem
 		const auto &curret_bases = geom_bases();
 		const int n_samples = 10;
 		stats.compute_mesh_size(*mesh, curret_bases, n_samples, args["output"]["advanced"]["curved_mesh_size"]);
+		if (starting_min_edge_length < 0)
+		{
+			starting_min_edge_length = stats.min_edge_length;
+		}
+		if (starting_max_edge_length < 0)
+		{
+			starting_max_edge_length = stats.mesh_size;
+		}
 
 		if (is_contact_enabled())
 		{
-			double min_boundary_edge_length = std::numeric_limits<double>::max();
+			min_boundary_edge_length = std::numeric_limits<double>::max();
 			for (const auto &edge : collision_mesh.edges().rowwise())
 			{
 				const VectorNd v0 = collision_mesh.rest_positions().row(edge(0));
@@ -1428,7 +1436,10 @@ namespace polyfem
 			dirichlet_nodes, neumann_nodes,
 			dirichlet_nodes_position, neumann_nodes_position,
 			n_bases_, size, bases_, geom_bases(), ass_vals_cache_, *problem,
-			args["space"]["advanced"]["bc_method"], args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
+			args["space"]["advanced"]["bc_method"],
+			args["solver"]["linear"]["solver"],
+			args["solver"]["linear"]["precond"],
+			rhs_solver_params);
 	}
 
 	void State::assemble_rhs()

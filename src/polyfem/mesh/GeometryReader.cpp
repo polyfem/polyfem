@@ -29,7 +29,7 @@ namespace polyfem::mesh
 		const bool non_conforming)
 	{
 		if (!is_param_valid(j_mesh, "mesh"))
-			log_and_throw_error(fmt::format("Mesh {} is mising a \"mesh\" field!", j_mesh));
+			log_and_throw_error("Mesh {} is mising a \"mesh\" field!", j_mesh);
 
 		if (j_mesh["extract"].get<std::string>() != "volume")
 			log_and_throw_error("Only volumetric elements are implemented for FEM meshes!");
@@ -84,7 +84,7 @@ namespace polyfem::mesh
 			const int uniform_value = mesh->get_body_id(0);
 			for (int i = 1; i < mesh->n_elements(); ++i)
 				if (mesh->get_body_id(i) != uniform_value)
-					log_and_throw_error(fmt::format("Unable to apply stored nonuniform volume_selection because n_refs={} > 0!", n_refs));
+					log_and_throw_error("Unable to apply stored nonuniform volume_selection because n_refs={} > 0!", n_refs);
 
 			logger().info("Performing global h-refinement with {} refinements", n_refs);
 			mesh->refine(n_refs, refinement_location);
@@ -275,8 +275,7 @@ namespace polyfem::mesh
 				continue;
 
 			if (geometry["type"] != "mesh")
-				log_and_throw_error(
-					fmt::format("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]));
+				log_and_throw_error("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]);
 
 			if (mesh == nullptr)
 				mesh = read_fem_mesh(units, geometry, root_path, non_conforming);
@@ -302,7 +301,7 @@ namespace polyfem::mesh
 		Eigen::MatrixXi &faces)
 	{
 		if (!is_param_valid(j_mesh, "mesh"))
-			log_and_throw_error(fmt::format("Mesh obstacle {} is mising a \"mesh\" field!", j_mesh));
+			log_and_throw_error("Mesh obstacle {} is mising a \"mesh\" field!", j_mesh);
 
 		const std::string mesh_path = resolve_path(j_mesh["mesh"], root_path);
 
@@ -579,8 +578,7 @@ namespace polyfem::mesh
 			}
 			else
 			{
-				log_and_throw_error(
-					fmt::format("Invalid geometry type \"{}\" for obstacle!", geometry["type"]));
+				log_and_throw_error("Invalid geometry type \"{}\" for obstacle!", geometry["type"]);
 			}
 		}
 

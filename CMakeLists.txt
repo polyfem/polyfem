@@ -275,6 +275,9 @@ if(POLYFEM_WITH_CLIPPER)
     include(clipper)
     target_link_libraries(polyfem PUBLIC clipper::clipper)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
+else()
+    include(polyclipper)
+    target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
 endif()
 
 # Extra warnings (link this here so it has top priority)
@@ -289,7 +292,7 @@ target_link_libraries(polyfem PRIVATE polyfem::warnings)
 if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
 
-    target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+    target_compile_features(${PROJECT_NAME}_bin PUBLIC cxx_std_14)
 
 
     target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem::polyfem polyfem::warnings)

@@ -797,7 +797,7 @@ namespace polyfem
 					{
 						const std::string path = resolve_path(j_boundary[i - offset], params["root_path"]);
 						if (!std::filesystem::is_regular_file(path))
-							log_and_throw_error(fmt::format("unable to open {} file", path));
+							log_and_throw_error("unable to open {} file", path);
 
 						Eigen::MatrixXd tmp;
 						io::read_matrix(path, tmp);

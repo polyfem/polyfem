@@ -19,6 +19,7 @@
 #include <polyfem/solver/SolveData.hpp>
 #include <polyfem/io/MshWriter.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+#include <polyfem/io/OutData.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
@@ -63,15 +64,59 @@ namespace polyfem
 
 		save_timestep(t0, 0, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 
+		// Write the total energy to a CSV file
+		int save_i = 0;
+		EnergyCSVWriter energy_csv(resolve_output_path("energy.csv"), solve_data);
+		RuntimeStatsCSVWriter stats_csv(resolve_output_path("stats.csv"), *this, t0, dt);
+		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
+		// const double save_dt = remesh_enabled ? (dt / 3) : dt;
+
 		if (optimization_enabled)
 			cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
-			solve_tensor_nonlinear(sol, t);
+			double forward_solve_time = 0, remeshing_time = 0, global_relaxation_time = 0;
+
+			{
+				POLYFEM_SCOPED_TIMER(forward_solve_time);
+				solve_tensor_nonlinear(sol, t);
+			}
+
+#ifdef POLYFEM_WITH_REMESHING
+			if (remesh_enabled)
+			{
+				energy_csv.write(save_i, sol);
+				// save_timestep(t0 + dt * t, save_i, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+				save_i++;
+
+				bool remesh_success;
+				{
+					POLYFEM_SCOPED_TIMER(remeshing_time);
+					remesh_success = this->remesh(t0 + dt * t, dt, sol);
+				}
+
+				// Save the solution after remeshing
+				energy_csv.write(save_i, sol);
+				// save_timestep(t0 + dt * t, save_i, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
+				save_i++;
+
+				// Only do global relaxation if remeshing was successful
+				if (remesh_success)
+				{
+					POLYFEM_SCOPED_TIMER(global_relaxation_time);
+					solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
+				}
+			}
+#endif
+			// Always save the solution for consistency
+			energy_csv.write(save_i, sol);
+			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 
 			if (optimization_enabled)
+			{
 				cache_transient_adjoint_quantities(t, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
+			}
 
 			{
 				POLYFEM_SCOPED_TIMER("Update quantities");
@@ -83,8 +128,6 @@ namespace polyfem
 				solve_data.update_dt();
 				solve_data.update_barrier_stiffness(sol);
 			}
-
-			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 
@@ -106,6 +149,7 @@ namespace polyfem
 
 			// save restart file
 			save_restart_json(t0, dt, t);
+			stats_csv.write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
 		}
 	}
 
@@ -194,12 +238,13 @@ namespace polyfem
 			n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
 			n_boundary_samples(), rhs, sol, mass_matrix_assembler->density(),
 			// Inertia form
-			args["solver"]["ignore_inertia"], mass, damping_assembler->is_valid() ? damping_assembler : nullptr,
+			args.value("/time/quasistatic"_json_pointer, true), mass,
+			damping_assembler->is_valid() ? damping_assembler : nullptr,
 			// Lagged regularization form
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
 			// Augmented lagrangian form
-			obstacle,
+			obstacle.ndof(),
 			// Contact form
 			args["contact"]["enabled"], collision_mesh, args["contact"]["dhat"],
 			avg_mass, args["contact"]["use_convergent_formulation"],
@@ -273,12 +318,10 @@ namespace polyfem
 			});
 
 		al_solver.post_subsolve = [&](const double al_weight) {
-			json info;
-			nl_solver->get_info(info);
 			stats.solver_info.push_back(
 				{{"type", al_weight > 0 ? "al" : "rc"},
 				 {"t", t}, // TODO: null if static?
-				 {"info", info}});
+				 {"info", nl_solver->get_info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
 			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
@@ -345,13 +388,11 @@ namespace polyfem
 				sol = nl_problem.reduced_to_full(tmp_sol);
 
 				// Save the subsolve sequence for debugging and info
-				json info;
-				nl_solver->get_info(info);
 				stats.solver_info.push_back(
 					{{"type", "rc"},
 					 {"t", t}, // TODO: null if static?
 					 {"lag_i", lag_i},
-					 {"info", info}});
+					 {"info", nl_solver->get_info()}});
 				save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 			}
 		}

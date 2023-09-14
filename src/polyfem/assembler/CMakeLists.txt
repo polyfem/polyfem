@@ -27,6 +27,8 @@ set(SOURCES
 	LinearElasticity.hpp
 	Mass.cpp
 	Mass.hpp
+	MassMatrixAssembler.cpp
+	MassMatrixAssembler.hpp
 	MatParams.cpp
 	MatParams.hpp
 	MooneyRivlinElasticity.cpp

@@ -12,6 +12,10 @@ set(SOURCES
 	InertiaForm.cpp
 	InertiaForm.hpp
 	InertiaForm.cpp
+	InversionBarrierForm.cpp
+	InversionBarrierForm.hpp
+	L2ProjectionForm.cpp
+	L2ProjectionForm.hpp
 	LaggedRegForm.cpp
 	LaggedRegForm.hpp
 	FrictionForm.cpp

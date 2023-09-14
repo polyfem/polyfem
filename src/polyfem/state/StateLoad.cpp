@@ -177,4 +177,24 @@ namespace polyfem
 			}
 		}
 	}
+
+	std::unordered_map<int, std::array<bool, 3>>
+	State::boundary_conditions_ids(const std::string &bc_type) const
+	{
+		assert(args["boundary_conditions"].contains(bc_type));
+		const std::vector<json> json_bcs = json_as_array(args["boundary_conditions"][bc_type]);
+		std::unordered_map<int, std::array<bool, 3>> bcs;
+		for (const json &bc : json_bcs)
+		{
+			assert(bc["dimension"].size() >= mesh->dimension());
+			std::array<bool, 3> dimension{{true, true, true}};
+			for (int d = 0; d < bc["dimension"].size(); ++d)
+				dimension[d] = bc["dimension"][d];
+
+			assert(bc.contains("id") && bc["id"].is_number_integer());
+			bcs[bc["id"].get<int>()] = dimension;
+		}
+
+		return bcs;
+	}
 } // namespace polyfem
