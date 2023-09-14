@@ -20,6 +20,8 @@ set(SOURCES
 	ContactForm.hpp
 	RayleighDampingForm.cpp
 	RayleighDampingForm.hpp
+	PressureForm.cpp
+	PressureForm.hpp
 )
 
 prepend_current_path(SOURCES)

@@ -19,18 +19,21 @@ namespace polyfem
 							   const std::vector<ElementBases> &pressure_bases,
 							   std::vector<LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes,
 							   std::vector<LocalBoundary> &local_neumann_boundary,
+							   std::vector<LocalBoundary> &local_pressure_boundary,
 							   std::vector<int> &pressure_boundary_nodes,
 							   std::vector<int> &dirichlet_nodes, std::vector<int> &neumann_nodes)
 		{
 			std::vector<LocalBoundary> new_local_boundary;
 			std::vector<LocalBoundary> new_local_pressure_dirichlet_boundary;
 			local_neumann_boundary.clear();
-			
+			local_pressure_boundary.clear();
+
 			for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
 			{
 				const auto &lb = *it;
 				LocalBoundary new_lb(lb.element_id(), lb.type());
 				LocalBoundary new_neumann_lb(lb.element_id(), lb.type());
+				LocalBoundary new_pressure_lb(lb.element_id(), lb.type());
 				LocalBoundary new_pressure_dirichlet_lb(lb.element_id(), lb.type());
 				for (int i = 0; i < lb.size(); ++i)
 				{
@@ -45,7 +48,7 @@ namespace polyfem
 					if (std::find(neumann_boundary_ids_.begin(), neumann_boundary_ids_.end(), tag) != neumann_boundary_ids_.end())
 						new_neumann_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
 					if (std::find(pressure_boundary_ids_.begin(), pressure_boundary_ids_.end(), tag) != pressure_boundary_ids_.end())
-						new_neumann_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
+						new_pressure_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
 					if (std::find(splitting_pressure_boundary_ids_.begin(), splitting_pressure_boundary_ids_.end(), tag) != splitting_pressure_boundary_ids_.end())
 						new_pressure_dirichlet_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
 				}
@@ -54,6 +57,8 @@ namespace polyfem
 					new_local_boundary.emplace_back(new_lb);
 				if (!new_neumann_lb.empty())
 					local_neumann_boundary.emplace_back(new_neumann_lb);
+				if (!new_pressure_lb.empty())
+					local_pressure_boundary.emplace_back(new_pressure_lb);
 				if (!new_pressure_dirichlet_lb.empty())
 					new_local_pressure_dirichlet_boundary.emplace_back(new_pressure_dirichlet_lb);
 			}

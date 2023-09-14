@@ -2,6 +2,7 @@
 #include <polyfem/Common.hpp>
 
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/io/Evaluator.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
@@ -537,7 +538,7 @@ namespace polyfem
 
 		if (args["space"]["use_p_ref"])
 			return false;
-		
+
 		if (args["optimization"]["enabled"])
 			return false;
 
@@ -582,6 +583,7 @@ namespace polyfem
 		local_boundary.clear();
 		total_local_boundary.clear();
 		local_neumann_boundary.clear();
+		local_pressure_boundary.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
 		rhs.resize(0, 0);
@@ -617,6 +619,7 @@ namespace polyfem
 
 		local_boundary.clear();
 		local_neumann_boundary.clear();
+		local_pressure_boundary.clear();
 		std::map<int, basis::InterfaceData> poly_edge_to_data_geom; // temp dummy variable
 
 		const auto &tmp_json = args["space"]["discr_order"];
@@ -800,7 +803,6 @@ namespace polyfem
 
 		auto &gbases = geom_bases();
 
-
 		// if (is_contact_enabled())
 		if (args["optimization"]["enabled"])
 		{
@@ -819,7 +821,7 @@ namespace polyfem
 					else
 						autogen::q_nodes_3d(order, local_pts);
 				}
-				else 
+				else
 				{
 					if (mesh->is_simplex(e))
 						autogen::p_nodes_2d(order, local_pts);
@@ -849,7 +851,7 @@ namespace polyfem
 			for (const auto &iter : pairs)
 				for (int d = 0; d < dim; d++)
 					coeffs.emplace_back(iter.first[0] * dim + d, iter.first[1] * dim + d, iter.second);
-			
+
 			down_sampling_mat.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
 			down_sampling_mat.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
@@ -859,7 +861,7 @@ namespace polyfem
 
 		const int dim = mesh->dimension();
 		const int problem_dim = problem->is_scalar() ? 1 : dim;
-		
+
 		if (args["space"]["advanced"]["count_flipped_els"])
 			stats.count_flipped_elements(*mesh, geom_bases());
 
@@ -884,7 +886,7 @@ namespace polyfem
 		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, n_bases,
 						  bases, geom_bases(), pressure_bases,
-						  local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes,
+						  local_boundary, boundary_nodes, local_neumann_boundary, local_pressure_boundary, pressure_boundary_nodes,
 						  dirichlet_nodes, neumann_nodes);
 
 		// setp nodal values
@@ -1243,15 +1245,15 @@ namespace polyfem
 		}
 
 		collision_mesh_ = ipc::CollisionMesh(is_on_surface,
-											node_positions,
-											boundary_edges,
-											boundary_triangles,
-											displacement_map);
+											 node_positions,
+											 boundary_edges,
+											 boundary_triangles,
+											 displacement_map);
 
 		collision_mesh_.can_collide = [&](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles
 			return !this->is_obstacle_vertex(collision_mesh_.to_full_vertex_id(vi))
-					|| !this->is_obstacle_vertex(collision_mesh_.to_full_vertex_id(vj));
+				   || !this->is_obstacle_vertex(collision_mesh_.to_full_vertex_id(vj));
 		};
 
 		collision_mesh_.init_area_jacobians();
@@ -1363,6 +1365,19 @@ namespace polyfem
 			dirichlet_nodes_position, neumann_nodes_position,
 			n_bases_, size, bases_, geom_bases(), ass_vals_cache_, *problem,
 			args["space"]["advanced"]["bc_method"], args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
+	}
+
+	std::shared_ptr<PressureAssembler> State::build_pressure_assembler(
+		const int n_bases_,
+		const std::vector<basis::ElementBases> &bases_) const
+	{
+		const int size = problem->is_scalar() ? 1 : mesh->dimension();
+
+		return std::make_shared<PressureAssembler>(
+			*assembler, *mesh, obstacle,
+			local_pressure_boundary,
+			primitive_to_node(), node_to_primitive(),
+			n_bases_, size, bases_, geom_bases(), *problem);
 	}
 
 	void State::assemble_rhs()

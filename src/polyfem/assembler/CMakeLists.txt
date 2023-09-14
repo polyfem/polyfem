@@ -56,8 +56,10 @@ set(SOURCES
 	Stokes.hpp
 	ViscousDamping.cpp
 	ViscousDamping.hpp
-	AMIPSEnergy.hpp
 	AMIPSEnergy.cpp
+	AMIPSEnergy.hpp
+	PressureAssembler.cpp
+	PressureAssembler.hpp
 )
 
 prepend_current_path(SOURCES)

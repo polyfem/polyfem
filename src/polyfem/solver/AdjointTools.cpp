@@ -13,6 +13,7 @@
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
+#include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
@@ -44,7 +45,7 @@ namespace
 			return -1;
 		}
 	}
-}
+} // namespace
 
 namespace polyfem::solver
 {
@@ -203,7 +204,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &solution,
 		const std::set<int> &interested_ids, // either body id or surface id
 		const SpatialIntegralType spatial_integral_type,
-		const int cur_step)                  // current time step
+		const int cur_step) // current time step
 	{
 		const auto &bases = state.bases;
 		const auto &gbases = state.geom_bases();
@@ -631,7 +632,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
 	{
-		Eigen::VectorXd elasticity_term, rhs_term, contact_term;
+		Eigen::VectorXd elasticity_term, rhs_term, pressure_term, contact_term;
 
 		one_form.setZero(state.n_geom_bases * state.mesh->dimension());
 
@@ -643,6 +644,11 @@ namespace polyfem::solver
 			else
 				rhs_term.setZero(one_form.size());
 
+			if (state.solve_data.pressure_form)
+				state.solve_data.pressure_form->force_shape_derivative(state.n_geom_bases, 0, sol, adjoint, pressure_term);
+			else
+				pressure_term.setZero(one_form.size());
+
 			if (state.is_contact_enabled())
 			{
 				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.contact_set(0), sol, adjoint, contact_term);
@@ -650,7 +656,7 @@ namespace polyfem::solver
 			}
 			else
 				contact_term.setZero(elasticity_term.size());
-			one_form -= elasticity_term + rhs_term + contact_term;
+			one_form -= elasticity_term + rhs_term + pressure_term + contact_term;
 		}
 
 		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
@@ -667,7 +673,7 @@ namespace polyfem::solver
 		const int time_steps = state.args["time"]["time_steps"];
 		const int bdf_order = get_bdf_order(state);
 
-		Eigen::VectorXd elasticity_term, rhs_term, damping_term, mass_term, contact_term, friction_term;
+		Eigen::VectorXd elasticity_term, rhs_term, pressure_term, damping_term, mass_term, contact_term, friction_term;
 		one_form.setZero(state.n_geom_bases * state.mesh->dimension());
 
 		Eigen::VectorXd cur_p, cur_nu;
@@ -688,6 +694,7 @@ namespace polyfem::solver
 				state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), *(state.mass_matrix_assembler), state.mass_ass_vals_cache, velocity, cur_nu, mass_term);
 				state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i), cur_p, elasticity_term);
 				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i - 1), cur_p, rhs_term);
+				state.solve_data.pressure_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i), cur_p, pressure_term);
 
 				if (state.solve_data.damping_form)
 					state.solve_data.damping_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i - 1), cur_p, damping_term);
@@ -713,7 +720,7 @@ namespace polyfem::solver
 					friction_term.setZero(mass_term.size());
 			}
 
-			one_form += beta_dt * (elasticity_term + rhs_term + damping_term + contact_term + friction_term + mass_term);
+			one_form += beta_dt * (elasticity_term + rhs_term + pressure_term + damping_term + contact_term + friction_term + mass_term);
 		}
 
 		// time step 0

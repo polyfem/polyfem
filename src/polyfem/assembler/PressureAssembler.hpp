@@ -42,6 +42,16 @@ namespace polyfem
 				const std::vector<int> dirichlet_nodes,
 				const int resolution,
 				const double t,
+				const bool project_to_psd,
+				StiffnessMatrix &hess) const;
+
+			void compute_force_jacobian(
+				const Eigen::MatrixXd &displacement,
+				const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+				const std::vector<int> dirichlet_nodes,
+				const int resolution,
+				const double t,
+				const int n_vertices,
 				StiffnessMatrix &hess) const;
 
 			inline const Problem &problem() const { return problem_; }

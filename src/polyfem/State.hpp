@@ -8,6 +8,7 @@
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
+#include <polyfem/assembler/PressureAssembler.hpp>
 #include <polyfem/assembler/Problem.hpp>
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
@@ -136,6 +137,8 @@ namespace polyfem
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
 
+		std::shared_ptr<assembler::PressureAssembler> elasticity_pressure_assembler = nullptr;
+
 		std::shared_ptr<assembler::ViscousDamping> damping_assembler = nullptr;
 		std::shared_ptr<assembler::ViscousDampingPrev> damping_prev_assembler = nullptr;
 
@@ -224,6 +227,14 @@ namespace polyfem
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler() const
 		{
 			return build_rhs_assembler(n_bases, bases, mass_ass_vals_cache);
+		}
+
+		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler(
+			const int n_bases_,
+			const std::vector<basis::ElementBases> &bases_) const;
+		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler() const
+		{
+			return build_pressure_assembler(n_bases, bases);
 		}
 
 		/// quadrature used for projecting boundary conditions
@@ -389,6 +400,8 @@ namespace polyfem
 		std::vector<mesh::LocalBoundary> local_boundary;
 		/// mapping from elements to nodes for neumann boundary conditions
 		std::vector<mesh::LocalBoundary> local_neumann_boundary;
+		/// mapping from elements to nodes for pressure boundary conditions
+		std::vector<mesh::LocalBoundary> local_pressure_boundary;
 		/// nodes on the boundary of polygonal elements, used for harmonic bases
 		std::map<int, basis::InterfaceData> poly_edge_to_data;
 		/// Matrices containing the input per node dirichelt

@@ -152,14 +152,33 @@ namespace polyfem
 					}
 				}
 
+				// for (size_t b = 0; b < pressure_boundary_ids_.size(); ++b)
+				// {
+				// 	if (id == pressure_boundary_ids_[b])
+				// 	{
+				// 		for (int d = 0; d < val.cols(); ++d)
+				// 		{
+				// 			val(i, d) = pressures_[b].eval(pts.row(i), t) * normals(i, d);
+				// 		}
+				// 		break;
+				// 	}
+				// }
+			}
+		}
+
+		void GenericTensorProblem::pressure_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
+		{
+			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
+
+			for (long i = 0; i < pts.rows(); ++i)
+			{
+				const int id = mesh.get_boundary_id(global_ids(i));
+
 				for (size_t b = 0; b < pressure_boundary_ids_.size(); ++b)
 				{
 					if (id == pressure_boundary_ids_[b])
 					{
-						for (int d = 0; d < val.cols(); ++d)
-						{
-							val(i, d) = pressures_[b].eval(pts.row(i), t) * normals(i, d);
-						}
+						val(i) = pressures_[b].eval(pts.row(i), t);
 						break;
 					}
 				}

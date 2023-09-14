@@ -25,6 +25,7 @@ namespace polyfem::time_integrator
 namespace polyfem::assembler
 {
 	class ViscousDamping;
+	class PressureAssembler;
 } // namespace polyfem::assembler
 
 namespace polyfem::solver
@@ -38,6 +39,7 @@ namespace polyfem::solver
 	class BCPenaltyForm;
 	class InertiaForm;
 	class ElasticForm;
+	class PressureForm;
 
 	/// class to store time stepping data
 	class SolveData
@@ -67,6 +69,10 @@ namespace polyfem::solver
 			const Eigen::MatrixXd &rhs,
 			const Eigen::MatrixXd &sol,
 			const assembler::Density &density,
+
+			// Pressure form
+			const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+			const std::shared_ptr<assembler::PressureAssembler> pressure_assembler,
 
 			// Inertia form
 			const bool ignore_inertia,
@@ -116,6 +122,7 @@ namespace polyfem::solver
 
 	public:
 		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
+		std::shared_ptr<assembler::PressureAssembler> pressure_assembler;
 		std::shared_ptr<solver::NLProblem> nl_problem;
 
 		std::shared_ptr<solver::BCLagrangianForm> al_lagr_form;
@@ -126,6 +133,7 @@ namespace polyfem::solver
 		std::shared_ptr<solver::ElasticForm> elastic_form;
 		std::shared_ptr<solver::FrictionForm> friction_form;
 		std::shared_ptr<solver::InertiaForm> inertia_form;
+		std::shared_ptr<solver::PressureForm> pressure_form;
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	};
