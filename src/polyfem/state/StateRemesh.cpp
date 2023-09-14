@@ -137,7 +137,7 @@ namespace polyfem
 			const int dim = state.mesh->dimension();
 
 			const std::string type = state.args["space"]["remesh"]["type"];
-			std::shared_ptr<Remesher> remeshing;
+			std::shared_ptr<Remesher> remeshing = nullptr;
 			if (type == "physics")
 			{
 				if (dim == 2)
@@ -187,7 +187,7 @@ namespace polyfem
 
 		// --------------------------------------------------------------------
 
-		Remesher::BoundaryMap<int> boundary_to_id = build_boundary_to_id(mesh, in_node_to_node);
+		const Remesher::BoundaryMap<int> boundary_to_id = build_boundary_to_id(mesh, in_node_to_node);
 
 		const std::vector<int> body_ids = mesh->has_body_ids() ? mesh->get_body_ids() : std::vector<int>(elements.rows(), 0);
 		assert(body_ids.size() == elements.rows());
@@ -216,9 +216,6 @@ namespace polyfem
 			elastic_energy, contact_energy);
 
 		const bool made_change = remeshing->execute();
-
-		// remeshing->write_mesh(
-		// 	resolve_output_path(fmt::format("post_vis_{:03d}.vtu", int(time / dt))));
 
 		if (!made_change)
 			return false;
@@ -250,9 +247,9 @@ namespace polyfem
 			boundary_ids = std::vector<int>(mesh->n_faces(), -1);
 			for (int i = 0; i < mesh->n_faces(); i++)
 			{
-				std::array<size_t, 3> f = {{(size_t)mesh->face_vertex(i, 0),
-											(size_t)mesh->face_vertex(i, 1),
-											(size_t)mesh->face_vertex(i, 2)}};
+				const std::array<size_t, 3> f = {{(size_t)mesh->face_vertex(i, 0),
+												  (size_t)mesh->face_vertex(i, 1),
+												  (size_t)mesh->face_vertex(i, 2)}};
 				boundary_ids[i] = remesh_boundary_ids.at(f);
 			}
 		}
@@ -280,8 +277,7 @@ namespace polyfem
 		assert(ndof == ndof_mesh + ndof_obstacle);
 
 		sol.resize(ndof, 1);
-		sol.topRows(ndof_mesh) = utils::flatten(utils::reorder_matrix(
-			remeshing->displacements(), in_node_to_node));
+		sol.topRows(ndof_mesh) = utils::flatten(utils::reorder_matrix(remeshing->displacements(), in_node_to_node));
 		if (ndof_obstacle > 0)
 			sol.bottomRows(ndof_obstacle) = obstacle_sol;
 

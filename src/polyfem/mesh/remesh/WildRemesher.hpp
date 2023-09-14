@@ -78,7 +78,7 @@ namespace polyfem::mesh
 			const double current_time,
 			const double starting_energy);
 
-		virtual ~WildRemesher(){};
+		virtual ~WildRemesher() = default;
 
 		/// @brief Initialize the mesh
 		/// @param rest_positions Rest positions of the mesh (|V| × 2)
