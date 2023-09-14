@@ -14,8 +14,9 @@ var searchData=
   ['bilaplacianmixed_11',['BilaplacianMixed',['../classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html',1,'polyfem::assembler']]],
   ['bilaplacianproblemwithsolution_12',['BilaplacianProblemWithSolution',['../classpolyfem_1_1problem_1_1_bilaplacian_problem_with_solution.html',1,'polyfem::problem']]],
   ['bodyform_13',['BodyForm',['../classpolyfem_1_1solver_1_1_body_form.html',1,'polyfem::solver']]],
-  ['boundarysampler_14',['BoundarySampler',['../classpolyfem_1_1utils_1_1_boundary_sampler.html',1,'polyfem::utils']]],
-  ['boundarysmoothingform_15',['BoundarySmoothingForm',['../classpolyfem_1_1solver_1_1_boundary_smoothing_form.html',1,'polyfem::solver']]],
-  ['boxselection_16',['BoxSelection',['../classpolyfem_1_1utils_1_1_box_selection.html',1,'polyfem::utils']]],
-  ['boxsideselection_17',['BoxSideSelection',['../classpolyfem_1_1utils_1_1_box_side_selection.html',1,'polyfem::utils']]]
+  ['boundaryattributes_14',['BoundaryAttributes',['../structpolyfem_1_1mesh_1_1_wild_remesher_1_1_boundary_attributes.html',1,'polyfem::mesh::WildRemesher']]],
+  ['boundarysampler_15',['BoundarySampler',['../classpolyfem_1_1utils_1_1_boundary_sampler.html',1,'polyfem::utils']]],
+  ['boundarysmoothingform_16',['BoundarySmoothingForm',['../classpolyfem_1_1solver_1_1_boundary_smoothing_form.html',1,'polyfem::solver']]],
+  ['boxselection_17',['BoxSelection',['../classpolyfem_1_1utils_1_1_box_selection.html',1,'polyfem::utils']]],
+  ['boxsideselection_18',['BoxSideSelection',['../classpolyfem_1_1utils_1_1_box_side_selection.html',1,'polyfem::utils']]]
 ];

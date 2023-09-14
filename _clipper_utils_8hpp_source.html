@@ -129,43 +129,86 @@ $(document).ready(function(){initNavTree('_clipper_utils_8hpp_source.html',''); 
 <div class="contents">
 <a href="_clipper_utils_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#ifdef POLYFEM_WITH_CLIPPER</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;Eigen/Core&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;clipper.hpp&gt;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacepolyfem_1_1utils.html">polyfem::utils</a></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>{</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> int64_t DOUBLE_TO_INT_SCALE_FACTOR = 1l &lt;&lt; 51;</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keyword">class </span>PolygonClipping</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    {</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        PolygonClipping() = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keyword">static</span> std::vector&lt;Eigen::MatrixXd&gt; clip(</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>            <span class="keyword">const</span> Eigen::MatrixXd &amp;subject_polygon,</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            <span class="keyword">const</span> Eigen::MatrixXd &amp;clipping_polygon);</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keyword">static</span> ClipperLib::IntPoint toClipperPoint(<span class="keyword">const</span> Eigen::RowVector2d &amp;p);</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keyword">static</span> Eigen::RowVector2d fromClipperPoint(<span class="keyword">const</span> ClipperLib::IntPoint &amp;p);</div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;Eigen/Core&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#ifdef POLYFEM_WITH_CLIPPER</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;clipper.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;polyclipper_vector2d.hh&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;polyclipper_vector3d.hh&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacepolyfem_1_1utils.html">polyfem::utils</a></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>{</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> int64_t DOUBLE_TO_INT_SCALE_FACTOR = 1l &lt;&lt; 51;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_polygon_clipping.html">   15</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classpolyfem_1_1utils_1_1_polygon_clipping.html">PolygonClipping</a></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_polygon_clipping.html#aefbee1e74d04ee6d7db41604c01d1084">   18</a></span>        <a class="code hl_function" href="classpolyfem_1_1utils_1_1_polygon_clipping.html#aefbee1e74d04ee6d7db41604c01d1084">PolygonClipping</a>() = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keyword">static</span> std::vector&lt;Eigen::MatrixXd&gt; <a class="code hl_function" href="classpolyfem_1_1utils_1_1_polygon_clipping.html#ab6f39a9cfed378809714309da6270212">clip</a>(</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            <span class="keyword">const</span> Eigen::MatrixXd &amp;subject_polygon,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            <span class="keyword">const</span> Eigen::MatrixXd &amp;clipping_polygon);</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keyword">static</span> ClipperLib::Path toClipperPolygon(<span class="keyword">const</span> Eigen::MatrixXd &amp;V);</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keyword">static</span> Eigen::MatrixXd fromClipperPolygon(<span class="keyword">const</span> ClipperLib::Path &amp;path);</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    };</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#ifdef POLYFEM_WITH_CLIPPER</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keyword">static</span> ClipperLib::IntPoint toClipperPoint(<span class="keyword">const</span> Eigen::RowVector2d &amp;p);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keyword">static</span> Eigen::RowVector2d fromClipperPoint(<span class="keyword">const</span> ClipperLib::IntPoint &amp;p);</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">class </span>TriangleClipping</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        TriangleClipping() = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keyword">static</span> std::vector&lt;Eigen::MatrixXd&gt; clip(</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keyword">const</span> Eigen::MatrixXd &amp;subject_triangle,</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <span class="keyword">const</span> Eigen::MatrixXd &amp;clipping_triangle);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    };</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>} <span class="comment">// namespace polyfem::utils</span></div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keyword">static</span> ClipperLib::Path toClipperPolygon(<span class="keyword">const</span> Eigen::MatrixXd &amp;V);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">static</span> Eigen::MatrixXd fromClipperPolygon(<span class="keyword">const</span> ClipperLib::Path &amp;path);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keyword">static</span> PolyClipper::Vector2d <a class="code hl_function" href="classpolyfem_1_1utils_1_1_polygon_clipping.html#a9de239868084d24f48a3309f97ffa58e">toPolyClipperVector</a>(<span class="keyword">const</span> Eigen::Vector2d &amp;v);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">static</span> Eigen::Vector2d <a class="code hl_function" href="classpolyfem_1_1utils_1_1_polygon_clipping.html#aded9e0642bd7eadfbb0af09f88a0bbe1">fromPolyClipperVector</a>(<span class="keyword">const</span> PolyClipper::Vector2d &amp;v);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    };</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="};">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_triangle_clipping.html">   40</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classpolyfem_1_1utils_1_1_triangle_clipping.html">TriangleClipping</a></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_triangle_clipping.html#a9394d0a3f63022cafc12b864e5188bd4">   43</a></span>        <a class="code hl_function" href="classpolyfem_1_1utils_1_1_triangle_clipping.html#a9394d0a3f63022cafc12b864e5188bd4">TriangleClipping</a>() = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keyword">static</span> std::vector&lt;Eigen::MatrixXd&gt; <a class="code hl_function" href="classpolyfem_1_1utils_1_1_triangle_clipping.html#acf102d9cd802f7f929927b657b5b83de">clip</a>(</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keyword">const</span> Eigen::MatrixXd &amp;subject_triangle,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keyword">const</span> Eigen::MatrixXd &amp;clipping_triangle);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    };</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="foldopen" id="foldopen00055" data-start="{" data-end="};">
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html">   55</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html">TetrahedronClipping</a></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a4eb336d58275ed836d48efc20f86b26b">   58</a></span>        <a class="code hl_function" href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a4eb336d58275ed836d48efc20f86b26b">TetrahedronClipping</a>() = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a3b0ec6267967fa80b9e668898cc9ebc0">   60</a></span>        <span class="keyword">typedef</span> std::vector&lt;int&gt; <a class="code hl_typedef" href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a3b0ec6267967fa80b9e668898cc9ebc0">Polygon</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#ad9e6d2341465275487608c13ec73d2b1">   61</a></span>        <span class="keyword">typedef</span> std::vector&lt;Polygon&gt; <a class="code hl_typedef" href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#ad9e6d2341465275487608c13ec73d2b1">Polygons</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keyword">static</span> std::vector&lt;Eigen::MatrixXd&gt; <a class="code hl_function" href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a958cdc8b9491451ca9621bd910650ec3">clip</a>(</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            <span class="keyword">const</span> Eigen::MatrixXd &amp;subject_tet,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <span class="keyword">const</span> Eigen::MatrixXd &amp;clipping_tet);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keyword">static</span> PolyClipper::Vector3d <a class="code hl_function" href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a9b3e63c6e8fe11d489f9e28bf5158ee0">toPolyClipperVector</a>(<span class="keyword">const</span> Eigen::Vector3d &amp;v);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keyword">static</span> Eigen::Vector3d <a class="code hl_function" href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a8923adbbe8fdbd039c1fe634d506bd3e">fromPolyClipperVector</a>(<span class="keyword">const</span> PolyClipper::Vector3d &amp;v);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    };</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>} <span class="comment">// namespace polyfem::utils</span></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_polygon_clipping_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_polygon_clipping.html">polyfem::utils::PolygonClipping</a></div><div class="ttdef"><b>Definition</b> <a href="_clipper_utils_8hpp_source.html#l00015">ClipperUtils.hpp:16</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_polygon_clipping_html_a9de239868084d24f48a3309f97ffa58e"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_polygon_clipping.html#a9de239868084d24f48a3309f97ffa58e">polyfem::utils::PolygonClipping::toPolyClipperVector</a></div><div class="ttdeci">static PolyClipper::Vector2d toPolyClipperVector(const Eigen::Vector2d &amp;v)</div><div class="ttdef"><b>Definition</b> <a href="_clipper_utils_8cpp_source.html#l00218">ClipperUtils.cpp:218</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_polygon_clipping_html_ab6f39a9cfed378809714309da6270212"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_polygon_clipping.html#ab6f39a9cfed378809714309da6270212">polyfem::utils::PolygonClipping::clip</a></div><div class="ttdeci">static std::vector&lt; Eigen::MatrixXd &gt; clip(const Eigen::MatrixXd &amp;subject_polygon, const Eigen::MatrixXd &amp;clipping_polygon)</div><div class="ttdoc">Clip a polygon using convex polygon.</div><div class="ttdef"><b>Definition</b> <a href="_clipper_utils_8cpp_source.html#l00012">ClipperUtils.cpp:12</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_polygon_clipping_html_aded9e0642bd7eadfbb0af09f88a0bbe1"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_polygon_clipping.html#aded9e0642bd7eadfbb0af09f88a0bbe1">polyfem::utils::PolygonClipping::fromPolyClipperVector</a></div><div class="ttdeci">static Eigen::Vector2d fromPolyClipperVector(const PolyClipper::Vector2d &amp;v)</div><div class="ttdef"><b>Definition</b> <a href="_clipper_utils_8cpp_source.html#l00223">ClipperUtils.cpp:223</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_polygon_clipping_html_aefbee1e74d04ee6d7db41604c01d1084"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_polygon_clipping.html#aefbee1e74d04ee6d7db41604c01d1084">polyfem::utils::PolygonClipping::PolygonClipping</a></div><div class="ttdeci">PolygonClipping()=delete</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_tetrahedron_clipping_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html">polyfem::utils::TetrahedronClipping</a></div><div class="ttdef"><b>Definition</b> <a href="_clipper_utils_8hpp_source.html#l00055">ClipperUtils.hpp:56</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_tetrahedron_clipping_html_a3b0ec6267967fa80b9e668898cc9ebc0"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a3b0ec6267967fa80b9e668898cc9ebc0">polyfem::utils::TetrahedronClipping::Polygon</a></div><div class="ttdeci">std::vector&lt; int &gt; Polygon</div><div class="ttdef"><b>Definition</b> <a href="_clipper_utils_8hpp_source.html#l00060">ClipperUtils.hpp:60</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_tetrahedron_clipping_html_a4eb336d58275ed836d48efc20f86b26b"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a4eb336d58275ed836d48efc20f86b26b">polyfem::utils::TetrahedronClipping::TetrahedronClipping</a></div><div class="ttdeci">TetrahedronClipping()=delete</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_tetrahedron_clipping_html_a8923adbbe8fdbd039c1fe634d506bd3e"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a8923adbbe8fdbd039c1fe634d506bd3e">polyfem::utils::TetrahedronClipping::fromPolyClipperVector</a></div><div class="ttdeci">static Eigen::Vector3d fromPolyClipperVector(const PolyClipper::Vector3d &amp;v)</div><div class="ttdef"><b>Definition</b> <a href="_clipper_utils_8cpp_source.html#l00233">ClipperUtils.cpp:233</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_tetrahedron_clipping_html_a958cdc8b9491451ca9621bd910650ec3"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a958cdc8b9491451ca9621bd910650ec3">polyfem::utils::TetrahedronClipping::clip</a></div><div class="ttdeci">static std::vector&lt; Eigen::MatrixXd &gt; clip(const Eigen::MatrixXd &amp;subject_tet, const Eigen::MatrixXd &amp;clipping_tet)</div><div class="ttdoc">Clip a tetrahedron using tetrahedron.</div><div class="ttdef"><b>Definition</b> <a href="_clipper_utils_8cpp_source.html#l00121">ClipperUtils.cpp:121</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_tetrahedron_clipping_html_a9b3e63c6e8fe11d489f9e28bf5158ee0"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a9b3e63c6e8fe11d489f9e28bf5158ee0">polyfem::utils::TetrahedronClipping::toPolyClipperVector</a></div><div class="ttdeci">static PolyClipper::Vector3d toPolyClipperVector(const Eigen::Vector3d &amp;v)</div><div class="ttdef"><b>Definition</b> <a href="_clipper_utils_8cpp_source.html#l00228">ClipperUtils.cpp:228</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_tetrahedron_clipping_html_ad9e6d2341465275487608c13ec73d2b1"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#ad9e6d2341465275487608c13ec73d2b1">polyfem::utils::TetrahedronClipping::Polygons</a></div><div class="ttdeci">std::vector&lt; Polygon &gt; Polygons</div><div class="ttdef"><b>Definition</b> <a href="_clipper_utils_8hpp_source.html#l00061">ClipperUtils.hpp:61</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_triangle_clipping_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_triangle_clipping.html">polyfem::utils::TriangleClipping</a></div><div class="ttdef"><b>Definition</b> <a href="_clipper_utils_8hpp_source.html#l00040">ClipperUtils.hpp:41</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_triangle_clipping_html_a9394d0a3f63022cafc12b864e5188bd4"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_triangle_clipping.html#a9394d0a3f63022cafc12b864e5188bd4">polyfem::utils::TriangleClipping::TriangleClipping</a></div><div class="ttdeci">TriangleClipping()=delete</div></div>
+<div class="ttc" id="aclasspolyfem_1_1utils_1_1_triangle_clipping_html_acf102d9cd802f7f929927b657b5b83de"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_triangle_clipping.html#acf102d9cd802f7f929927b657b5b83de">polyfem::utils::TriangleClipping::clip</a></div><div class="ttdeci">static std::vector&lt; Eigen::MatrixXd &gt; clip(const Eigen::MatrixXd &amp;subject_triangle, const Eigen::MatrixXd &amp;clipping_triangle)</div><div class="ttdoc">Clip a triangle using triangle.</div><div class="ttdef"><b>Definition</b> <a href="_clipper_utils_8cpp_source.html#l00105">ClipperUtils.cpp:105</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html"><div class="ttname"><a href="namespacepolyfem_1_1utils.html">polyfem::utils</a></div><div class="ttdef"><b>Definition</b> <a href="_bessel_8hpp_source.html#l00005">Bessel.hpp:6</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

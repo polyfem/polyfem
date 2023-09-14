@@ -125,16 +125,17 @@ $(document).ready(function(){initNavTree('_geometry_utils_8hpp.html',''); initRe
   <div class="headertitle"><div class="title">GeometryUtils.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;Eigen/Core&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="_types_8hpp_source.html">polyfem/utils/Types.hpp</a>&gt;</code><br />
+<code>#include &lt;Eigen/Core&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for GeometryUtils.hpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="_geometry_utils_8hpp__incl.svg" width="211" height="124"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="_geometry_utils_8hpp__incl.svg" width="331" height="198"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="_geometry_utils_8hpp__dep__incl.svg" width="434" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_geometry_utils_8hpp__dep__incl.svg" width="100%" height="404"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="_geometry_utils_8hpp_source.html">Go to the source code of this file.</a></p>
@@ -190,12 +191,15 @@ Functions</h2></td></tr>
 <tr class="memitem:a0e076b0bb2f5dba6104e2977df78e127" id="r_a0e076b0bb2f5dba6104e2977df78e127"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a0e076b0bb2f5dba6104e2977df78e127">polyfem::utils::tetrahedron_intersects_ball</a> (const Eigen::Vector3d &amp;t0, const Eigen::Vector3d &amp;t1, const Eigen::Vector3d &amp;t2, const Eigen::Vector3d &amp;t3, const Eigen::Vector3d &amp;center, const double radius)</td></tr>
 <tr class="memdesc:a0e076b0bb2f5dba6104e2977df78e127"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if a 3D tetrahedron intersects a 3D ball.  <br /></td></tr>
 <tr class="separator:a0e076b0bb2f5dba6104e2977df78e127"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8c38f388e888043894cf1bb1b89a53e" id="r_ad8c38f388e888043894cf1bb1b89a53e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#ad8c38f388e888043894cf1bb1b89a53e">polyfem::utils::are_edges_collinear</a> (const Eigen::VectorXd &amp;ea0, const Eigen::VectorXd &amp;ea1, const Eigen::VectorXd &amp;eb0, const Eigen::VectorXd &amp;eb1, const double tol=1e-10)</td></tr>
-<tr class="memdesc:ad8c38f388e888043894cf1bb1b89a53e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if two edges are collinear.  <br /></td></tr>
-<tr class="separator:ad8c38f388e888043894cf1bb1b89a53e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a79c23ef96d817db692158bbcfde49a" id="r_a9a79c23ef96d817db692158bbcfde49a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a9a79c23ef96d817db692158bbcfde49a">polyfem::utils::are_edges_collinear</a> (const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;ea0, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;ea1, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;eb0, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;eb1, const double tol=1e-10)</td></tr>
+<tr class="memdesc:a9a79c23ef96d817db692158bbcfde49a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if two edges are collinear.  <br /></td></tr>
+<tr class="separator:a9a79c23ef96d817db692158bbcfde49a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7792e275b464e2ea5fad474fa7d9c0b" id="r_ab7792e275b464e2ea5fad474fa7d9c0b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#ab7792e275b464e2ea5fad474fa7d9c0b">polyfem::utils::are_triangles_coplanar</a> (const Eigen::Vector3d &amp;t00, const Eigen::Vector3d &amp;t01, const Eigen::Vector3d &amp;t02, const Eigen::Vector3d &amp;t10, const Eigen::Vector3d &amp;t11, const Eigen::Vector3d &amp;t12, const double tol=1e-10)</td></tr>
 <tr class="memdesc:ab7792e275b464e2ea5fad474fa7d9c0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if two triangles are coplanar.  <br /></td></tr>
 <tr class="separator:ab7792e275b464e2ea5fad474fa7d9c0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44a42702b9249a5bd1e3966c43b424e9" id="r_a44a42702b9249a5bd1e3966c43b424e9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a44a42702b9249a5bd1e3966c43b424e9">polyfem::utils::are_aabbs_intersecting</a> (const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;aabb0_min, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;aabb0_max, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;aabb1_min, const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;aabb1_max)</td></tr>
+<tr class="memdesc:a44a42702b9249a5bd1e3966c43b424e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if two axis-aligned bounding boxes intersect.  <br /></td></tr>
+<tr class="separator:a44a42702b9249a5bd1e3966c43b424e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

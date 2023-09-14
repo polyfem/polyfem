@@ -120,8 +120,7 @@ $(document).ready(function(){initNavTree('_out_data_8cpp.html',''); initResizabl
 
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">OutData.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -140,12 +139,20 @@ $(document).ready(function(){initNavTree('_out_data_8cpp.html',''); initResizabl
 <code>#include &lt;<a class="el" href="_contact_form_8hpp_source.html">polyfem/solver/forms/ContactForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_friction_form_8hpp_source.html">polyfem/solver/forms/FrictionForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_n_l_problem_8hpp_source.html">polyfem/solver/NLProblem.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_body_form_8hpp_source.html">polyfem/solver/forms/BodyForm.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_elastic_form_8hpp_source.html">polyfem/solver/forms/ElasticForm.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_inertia_form_8hpp_source.html">polyfem/solver/forms/InertiaForm.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_lagged_reg_form_8hpp_source.html">polyfem/solver/forms/LaggedRegForm.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_rayleigh_damping_form_8hpp_source.html">polyfem/solver/forms/RayleighDampingForm.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_b_c_lagrangian_form_8hpp_source.html">polyfem/solver/forms/BCLagrangianForm.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_b_c_penalty_form_8hpp_source.html">polyfem/solver/forms/BCPenaltyForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_edge_sampler_8hpp_source.html">polyfem/utils/EdgeSampler.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="par__for_8hpp_source.html">polyfem/utils/par_for.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_boundary_sampler_8hpp_source.html">polyfem/utils/BoundarySampler.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_timer_8hpp_source.html">polyfem/utils/Timer.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_maybe_parallel_for_8hpp_source.html">polyfem/utils/MaybeParallelFor.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="get_r_s_s_8h_source.html">polyfem/utils/getRSS.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="auto__p__bases_8hpp_source.html">polyfem/autogen/auto_p_bases.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="auto__q__bases_8hpp_source.html">polyfem/autogen/auto_q_bases.hpp</a>&gt;</code><br />
 <code>#include &lt;paraviewo/VTMWriter.hpp&gt;</code><br />
@@ -171,42 +178,7 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepolyfem_1_1io" id="r_namespacepolyfem_1_1io"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1io.html">polyfem::io</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a4915f71ef0e010b76fb7fa6086233ec1" id="r_a4915f71ef0e010b76fb7fa6086233ec1"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_out_data_8cpp.html#a4915f71ef0e010b76fb7fa6086233ec1">getPeakRSS</a> ()</td></tr>
-<tr class="memdesc:a4915f71ef0e010b76fb7fa6086233ec1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the peak (maximum so far) resident set size (physical memory use) measured in bytes, or zero if the value cannot be determined on this OS.  <br /></td></tr>
-<tr class="separator:a4915f71ef0e010b76fb7fa6086233ec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="a4915f71ef0e010b76fb7fa6086233ec1" name="a4915f71ef0e010b76fb7fa6086233ec1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4915f71ef0e010b76fb7fa6086233ec1">&#9670;&#160;</a></span>getPeakRSS()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t getPeakRSS </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns the peak (maximum so far) resident set size (physical memory use) measured in bytes, or zero if the value cannot be determined on this OS. </p>
-
-<p class="definition">Definition at line <a class="el" href="get_r_s_s_8c_source.html#l00037">37</a> of file <a class="el" href="get_r_s_s_8c_source.html">getRSS.c</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l02723">polyfem::io::OutStatsData::save_json()</a>.</p>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_out_data_8cpp_a4915f71ef0e010b76fb7fa6086233ec1_icgraph.svg" width="100%" height="401"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

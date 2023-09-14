@@ -30,6 +30,8 @@ var classpolyfem_1_1solver_1_1_form =
     [ "update_quantities", "classpolyfem_1_1solver_1_1_form.html#a36e58606b6cdc7b4bf16aa1bd7fd351c", null ],
     [ "uses_lagging", "classpolyfem_1_1solver_1_1_form.html#a358f316a9aaea1785fd4a5b2bdefb4f7", null ],
     [ "value", "classpolyfem_1_1solver_1_1_form.html#a5cf0de6bac08f31cdd37503d5d2218fd", null ],
+    [ "value_per_element", "classpolyfem_1_1solver_1_1_form.html#a94b6accf27a754f736a0e022251842b8", null ],
+    [ "value_per_element_unweighted", "classpolyfem_1_1solver_1_1_form.html#ad416da938150c3c0920be0c16d21bbbd", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92", null ],
     [ "weight", "classpolyfem_1_1solver_1_1_form.html#a9cffeca817d2f65884dbdb0b05dbf8ae", null ],
     [ "enabled_", "classpolyfem_1_1solver_1_1_form.html#ad3b23922e91c88f9432eb6a0228569ae", null ],

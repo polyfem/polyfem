@@ -1,5 +1,6 @@
 var namespacepolyfem_1_1io =
 [
+    [ "EnergyCSVWriter", "classpolyfem_1_1io_1_1_energy_c_s_v_writer.html", "classpolyfem_1_1io_1_1_energy_c_s_v_writer" ],
     [ "Evaluator", "classpolyfem_1_1io_1_1_evaluator.html", "classpolyfem_1_1io_1_1_evaluator" ],
     [ "MshReader", "classpolyfem_1_1io_1_1_msh_reader.html", null ],
     [ "MshWriter", "classpolyfem_1_1io_1_1_msh_writer.html", "classpolyfem_1_1io_1_1_msh_writer" ],
@@ -8,6 +9,7 @@ var namespacepolyfem_1_1io =
     [ "OutGeometryData", "classpolyfem_1_1io_1_1_out_geometry_data.html", "classpolyfem_1_1io_1_1_out_geometry_data" ],
     [ "OutRuntimeData", "classpolyfem_1_1io_1_1_out_runtime_data.html", "classpolyfem_1_1io_1_1_out_runtime_data" ],
     [ "OutStatsData", "classpolyfem_1_1io_1_1_out_stats_data.html", "classpolyfem_1_1io_1_1_out_stats_data" ],
+    [ "RuntimeStatsCSVWriter", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer" ],
     [ "SolutionFrame", "classpolyfem_1_1io_1_1_solution_frame.html", "classpolyfem_1_1io_1_1_solution_frame" ],
     [ "import_matrix", "namespacepolyfem_1_1io.html#a6df7335d979eed828279c7cf0ba02ef2", null ],
     [ "import_matrix< double >", "namespacepolyfem_1_1io.html#a0d2b22a1d08a1dd67a02c3d333725d0e", null ],

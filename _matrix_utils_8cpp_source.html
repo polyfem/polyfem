@@ -267,8 +267,8 @@ $(document).ready(function(){initNavTree('_matrix_utils_8cpp_source.html',''); i
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    }</div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    assert(index == reduced_size);</div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    std::vector&lt;Eigen::Triplet&lt;double&gt;&gt; entries;</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    entries.reserve(full.nonZeros()); <span class="comment">// Conservative estimate</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    std::vector&lt;Eigen::Triplet&lt;double&gt;&gt; <a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>.reserve(full.nonZeros()); <span class="comment">// Conservative estimate</span></div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; full.outerSize(); ++k)</div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    {</div>
 <div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keywordflow">if</span> (indices(k) &lt; 0)</div>
@@ -283,12 +283,12 @@ $(document).ready(function(){initNavTree('_matrix_utils_8cpp_source.html',''); i
 <div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>            assert(indices(it.row()) &gt;= 0);</div>
 <div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            assert(indices(it.col()) &gt;= 0);</div>
 <div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            entries.emplace_back(indices(it.row()), indices(it.col()), it.value());</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            <a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>.emplace_back(indices(it.row()), indices(it.col()), it.value());</div>
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        }</div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    }</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
 <div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    reduced.resize(reduced_size, reduced_size);</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    reduced.setFromTriplets(entries.begin(), entries.end());</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    reduced.setFromTriplets(<a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>.begin(), <a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>.end());</div>
 <div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    reduced.makeCompressed();</div>
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>}</div>
 </div>
@@ -376,6 +376,7 @@ $(document).ready(function(){initNavTree('_matrix_utils_8cpp_source.html',''); i
 </div>
 <div class="ttc" id="a_assembler_8cpp_html_a0ceb8b1b1b63245b857fa3d925c17858"><div class="ttname"><a href="_assembler_8cpp.html#a0ceb8b1b1b63245b857fa3d925c17858">vec</a></div><div class="ttdeci">Eigen::MatrixXd vec</div><div class="ttdef"><b>Definition</b> <a href="_assembler_8cpp_source.html#l00072">Assembler.cpp:72</a></div></div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
+<div class="ttc" id="a_mass_matrix_assembler_8cpp_html_ab74b878e460e8e6616a56665c01d7ab2"><div class="ttname"><a href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a></div><div class="ttdeci">std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; entries</div><div class="ttdef"><b>Definition</b> <a href="_mass_matrix_assembler_8cpp_source.html#l00025">MassMatrixAssembler.cpp:25</a></div></div>
 <div class="ttc" id="a_matrix_utils_8hpp_html"><div class="ttname"><a href="_matrix_utils_8hpp.html">MatrixUtils.hpp</a></div></div>
 <div class="ttc" id="a_spline_basis3d_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="_spline_basis3d_8cpp_source.html#l00055">SplineBasis3d.cpp:55</a></div></div>
 <div class="ttc" id="a_spline_basis3d_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="_spline_basis3d_8cpp_source.html#l00055">SplineBasis3d.cpp:55</a></div></div>

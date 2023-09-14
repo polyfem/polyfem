@@ -1,9 +1,9 @@
 var classpolyfem_1_1solver_1_1_b_c_penalty_form =
 [
-    [ "BCPenaltyForm", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a7f6855ef9b1244ee946f218478fac440", null ],
-    [ "BCPenaltyForm", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a1b09015395028ed024f123f4c46da944", null ],
+    [ "BCPenaltyForm", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a23c4f87152168809ab53516805cffdb0", null ],
+    [ "BCPenaltyForm", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#ae342e2f547417e3300dd1c40bb68c725", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a8f34d6d4023d6161057773a6ec2a6194", null ],
-    [ "init_masked_lumped_mass", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a2a4d8527ae1ab6981a29f16f540bcd57", null ],
+    [ "init_masked_lumped_mass", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a97db90bc0ad81f65ef0aa2f9c106e84d", null ],
     [ "mask", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a332cfe8272a9f236d80607a02ce832e2", null ],
     [ "name", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#aedfdf4169128b691d9f423d761bb1052", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a9e24cf370907d5f9f41ab7a96f5f13ec", null ],

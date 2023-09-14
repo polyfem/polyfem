@@ -16,6 +16,8 @@ var searchData=
   ['refelementsampler_2ehpp_13',['RefElementSampler.hpp',['../_ref_element_sampler_8hpp.html',1,'']]],
   ['refinement_2ecpp_14',['Refinement.cpp',['../_refinement_8cpp.html',1,'']]],
   ['refinement_2ehpp_15',['Refinement.hpp',['../_refinement_8hpp.html',1,'']]],
-  ['rhsassembler_2ecpp_16',['RhsAssembler.cpp',['../_rhs_assembler_8cpp.html',1,'']]],
-  ['rhsassembler_2ehpp_17',['RhsAssembler.hpp',['../_rhs_assembler_8hpp.html',1,'']]]
+  ['remesher_2ecpp_16',['Remesher.cpp',['../_remesher_8cpp.html',1,'']]],
+  ['remesher_2ehpp_17',['Remesher.hpp',['../_remesher_8hpp.html',1,'']]],
+  ['rhsassembler_2ecpp_18',['RhsAssembler.cpp',['../_rhs_assembler_8cpp.html',1,'']]],
+  ['rhsassembler_2ehpp_19',['RhsAssembler.hpp',['../_rhs_assembler_8hpp.html',1,'']]]
 ];

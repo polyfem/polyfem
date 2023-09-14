@@ -89,12 +89,17 @@ var hierarchy =
       [ "DScalar2< _Scalar, _Gradient, _Hessian >", "struct_d_scalar2.html", null ]
     ] ],
     [ "polyfem::mesh::Edge", "structpolyfem_1_1mesh_1_1_edge.html", null ],
+    [ "polyfem::mesh::WildRemesher< WMTKMesh >::EdgeAttributes", "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_edge_attributes.html", [
+      [ "polyfem::mesh::WildRemesher< WMTKMesh >::BoundaryAttributes", "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_boundary_attributes.html", null ]
+    ] ],
     [ "polyfem::mesh::Mesh::EdgeNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_edge_nodes.html", null ],
     [ "polyfem::utils::EdgeSampler", "classpolyfem_1_1utils_1_1_edge_sampler.html", null ],
     [ "polyfem::assembler::ElasticityTensor", "classpolyfem_1_1assembler_1_1_elasticity_tensor.html", null ],
     [ "polyfem::mesh::Element", "structpolyfem_1_1mesh_1_1_element.html", null ],
     [ "polyfem::assembler::ElementAssemblyValues", "classpolyfem_1_1assembler_1_1_element_assembly_values.html", null ],
+    [ "polyfem::mesh::WildRemesher< WMTKMesh >::ElementAttributes", "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_element_attributes.html", null ],
     [ "polyfem::basis::ElementBases", "classpolyfem_1_1basis_1_1_element_bases.html", null ],
+    [ "polyfem::io::EnergyCSVWriter", "classpolyfem_1_1io_1_1_energy_c_s_v_writer.html", null ],
     [ "polyfem::utils::EqualUnorderedArray< T, N >", "structpolyfem_1_1utils_1_1_equal_unordered_array.html", null ],
     [ "polyfem::io::Evaluator", "classpolyfem_1_1io_1_1_evaluator.html", null ],
     [ "polyfem::io::OutGeometryData::ExportOptions", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html", null ],
@@ -106,6 +111,7 @@ var hierarchy =
     [ "polyfem::mesh::NCMesh2D::follower_face", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__face.html", null ],
     [ "polyfem::mesh::NCMesh3D::follower_face", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__face.html", null ],
     [ "polyfem::solver::Form", "classpolyfem_1_1solver_1_1_form.html", [
+      [ "polyfem::solver::AMIPSForm", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html", null ],
       [ "polyfem::solver::AdjointForm", "classpolyfem_1_1solver_1_1_adjoint_form.html", [
         [ "polyfem::solver::AMIPSForm", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html", null ],
         [ "polyfem::solver::BoundarySmoothingForm", "classpolyfem_1_1solver_1_1_boundary_smoothing_form.html", null ],
@@ -149,6 +155,8 @@ var hierarchy =
       [ "polyfem::solver::ElasticForm", "classpolyfem_1_1solver_1_1_elastic_form.html", null ],
       [ "polyfem::solver::FrictionForm", "classpolyfem_1_1solver_1_1_friction_form.html", null ],
       [ "polyfem::solver::InertiaForm", "classpolyfem_1_1solver_1_1_inertia_form.html", null ],
+      [ "polyfem::solver::InversionBarrierForm", "classpolyfem_1_1solver_1_1_inversion_barrier_form.html", null ],
+      [ "polyfem::solver::L2ProjectionForm", "classpolyfem_1_1solver_1_1_l2_projection_form.html", null ],
       [ "polyfem::solver::LaggedRegForm", "classpolyfem_1_1solver_1_1_lagged_reg_form.html", null ],
       [ "polyfem::solver::RayleighDampingForm", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html", null ]
     ] ],
@@ -156,6 +164,7 @@ var hierarchy =
     [ "polyfem::renderer::FrameBufferAttributes", "classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html", null ],
     [ "polyfem::assembler::GenericMatParam", "classpolyfem_1_1assembler_1_1_generic_mat_param.html", null ],
     [ "polyfem::assembler::GenericMatParams", "classpolyfem_1_1assembler_1_1_generic_mat_params.html", null ],
+    [ "polyfem::mesh::Remesher::GlobalProjectionCache", "structpolyfem_1_1mesh_1_1_remesher_1_1_global_projection_cache.html", null ],
     [ "polyfem::utils::HashMatrix", "structpolyfem_1_1utils_1_1_hash_matrix.html", null ],
     [ "polyfem::utils::HashPair", "structpolyfem_1_1utils_1_1_hash_pair.html", null ],
     [ "polyfem::utils::HashUnorderedArray< T, N >", "structpolyfem_1_1utils_1_1_hash_unordered_array.html", null ],
@@ -209,6 +218,9 @@ var hierarchy =
     ] ],
     [ "polyfem::basis::Local2Global", "classpolyfem_1_1basis_1_1_local2_global.html", null ],
     [ "polyfem::mesh::LocalBoundary", "classpolyfem_1_1mesh_1_1_local_boundary.html", null ],
+    [ "polyfem::mesh::LocalMesh< M >", "classpolyfem_1_1mesh_1_1_local_mesh.html", null ],
+    [ "polyfem::mesh::LocalRelaxationData< M >", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html", null ],
+    [ "polyfem::assembler::MassMatrixAssembler", "classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html", null ],
     [ "polyfem::renderer::Material", "structpolyfem_1_1renderer_1_1_material.html", null ],
     [ "polyfem::utils::MatrixCache", "classpolyfem_1_1utils_1_1_matrix_cache.html", [
       [ "polyfem::utils::DenseMatrixCache", "classpolyfem_1_1utils_1_1_dense_matrix_cache.html", null ],
@@ -274,12 +286,15 @@ var hierarchy =
     [ "polyfem::mesh::Obstacle::Plane", "classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html", null ],
     [ "polyfem::basis::PolygonalBasis2d", "classpolyfem_1_1basis_1_1_polygonal_basis2d.html", null ],
     [ "polyfem::basis::PolygonalBasis3d", "classpolyfem_1_1basis_1_1_polygonal_basis3d.html", null ],
+    [ "polyfem::utils::PolygonClipping", "classpolyfem_1_1utils_1_1_polygon_clipping.html", null ],
     [ "polyfem::quadrature::PolygonQuadrature", "classpolyfem_1_1quadrature_1_1_polygon_quadrature.html", null ],
     [ "polyfem::quadrature::PolyhedronQuadrature", "classpolyfem_1_1quadrature_1_1_polyhedron_quadrature.html", null ],
     [ "cppoptlib::Problem", null, [
       [ "polyfem::solver::FullNLProblem", "classpolyfem_1_1solver_1_1_full_n_l_problem.html", [
         [ "polyfem::solver::AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html", null ],
-        [ "polyfem::solver::NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html", null ]
+        [ "polyfem::solver::NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html", [
+          [ "polyfem::solver::StaticBoundaryNLProblem", "classpolyfem_1_1solver_1_1_static_boundary_n_l_problem.html", null ]
+        ] ]
       ] ]
     ] ],
     [ "polyfem::assembler::Problem", "classpolyfem_1_1assembler_1_1_problem.html", [
@@ -347,7 +362,22 @@ var hierarchy =
     [ "polyfem::utils::RefElementSampler", "classpolyfem_1_1utils_1_1_ref_element_sampler.html", null ],
     [ "p_bases.ReferenceSimplex", "classp__bases_1_1_reference_simplex.html", null ],
     [ "q_bases.ReferenceSimplex", "classq__bases_1_1_reference_simplex.html", null ],
+    [ "polyfem::mesh::Remesher", "classpolyfem_1_1mesh_1_1_remesher.html", [
+      [ "polyfem::mesh::WildRemesher< wmtk::TetMesh >", "classpolyfem_1_1mesh_1_1_wild_remesher.html", null ],
+      [ "polyfem::mesh::WildRemesher< wmtk::TriMesh >", "classpolyfem_1_1mesh_1_1_wild_remesher.html", null ],
+      [ "polyfem::mesh::WildRemesher< WMTKMesh >", "classpolyfem_1_1mesh_1_1_wild_remesher.html", [
+        [ "polyfem::mesh::PhysicsRemesher< wmtk::TetMesh >", "classpolyfem_1_1mesh_1_1_physics_remesher.html", [
+          [ "polyfem::mesh::PhysicsTetRemesher", "classpolyfem_1_1mesh_1_1_physics_tet_remesher.html", null ]
+        ] ],
+        [ "polyfem::mesh::PhysicsRemesher< wmtk::TriMesh >", "classpolyfem_1_1mesh_1_1_physics_remesher.html", [
+          [ "polyfem::mesh::PhysicsTriRemesher", "classpolyfem_1_1mesh_1_1_physics_tri_remesher.html", null ]
+        ] ],
+        [ "polyfem::mesh::PhysicsRemesher< WMTKMesh >", "classpolyfem_1_1mesh_1_1_physics_remesher.html", null ],
+        [ "polyfem::mesh::SizingFieldRemesher< WMTKMesh >", "classpolyfem_1_1mesh_1_1_sizing_field_remesher.html", null ]
+      ] ]
+    ] ],
     [ "polyfem::assembler::RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html", null ],
+    [ "polyfem::io::RuntimeStatsCSVWriter", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html", null ],
     [ "polyfem::assembler::ScalarBCValue", "structpolyfem_1_1assembler_1_1_scalar_b_c_value.html", null ],
     [ "polyfem::utils::Selection", "classpolyfem_1_1utils_1_1_selection.html", [
       [ "polyfem::utils::AxisPlaneSelection", "classpolyfem_1_1utils_1_1_axis_plane_selection.html", null ],
@@ -367,9 +397,20 @@ var hierarchy =
     [ "polyfem::basis::SplineBasis3d", "classpolyfem_1_1basis_1_1_spline_basis3d.html", null ],
     [ "polyfem::State", "classpolyfem_1_1_state.html", null ],
     [ "polyfem::assembler::TensorBCValue", "structpolyfem_1_1assembler_1_1_tensor_b_c_value.html", null ],
+    [ "wmtk::TetMesh", null, [
+      [ "polyfem::mesh::WildRemesher< wmtk::TetMesh >", "classpolyfem_1_1mesh_1_1_wild_remesher.html", null ]
+    ] ],
+    [ "polyfem::mesh::TetOperationCache", "classpolyfem_1_1mesh_1_1_tet_operation_cache.html", null ],
     [ "polyfem::quadrature::TetQuadrature", "classpolyfem_1_1quadrature_1_1_tet_quadrature.html", null ],
+    [ "polyfem::utils::TetrahedronClipping", "classpolyfem_1_1utils_1_1_tetrahedron_clipping.html", null ],
     [ "polyfem::utils::Timer", "classpolyfem_1_1utils_1_1_timer.html", null ],
+    [ "polyfem::utils::Timing", "structpolyfem_1_1utils_1_1_timing.html", null ],
     [ "polyfem::solver::TransientNavierStokesSolver", "classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html", null ],
+    [ "polyfem::utils::TriangleClipping", "classpolyfem_1_1utils_1_1_triangle_clipping.html", null ],
+    [ "wmtk::TriMesh", null, [
+      [ "polyfem::mesh::WildRemesher< wmtk::TriMesh >", "classpolyfem_1_1mesh_1_1_wild_remesher.html", null ]
+    ] ],
+    [ "polyfem::mesh::TriOperationCache", "classpolyfem_1_1mesh_1_1_tri_operation_cache.html", null ],
     [ "polyfem::quadrature::TriQuadrature", "classpolyfem_1_1quadrature_1_1_tri_quadrature.html", null ],
     [ "polyfem::renderer::UniformAttributes", "classpolyfem_1_1renderer_1_1_uniform_attributes.html", null ],
     [ "polyfem::Units", "classpolyfem_1_1_units.html", null ],
@@ -389,6 +430,10 @@ var hierarchy =
       ] ]
     ] ],
     [ "polyfem::mesh::Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", null ],
+    [ "polyfem::mesh::WildRemesher< WMTKMesh >::VertexAttributes", "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html", null ],
     [ "polyfem::renderer::VertexAttributes", "classpolyfem_1_1renderer_1_1_vertex_attributes.html", null ],
+    [ "WMTKMesh", null, [
+      [ "polyfem::mesh::WildRemesher< WMTKMesh >", "classpolyfem_1_1mesh_1_1_wild_remesher.html", null ]
+    ] ],
     [ "polyfem::basis::WSPolygonalBasis2d", "classpolyfem_1_1basis_1_1_w_s_polygonal_basis2d.html", null ]
 ];

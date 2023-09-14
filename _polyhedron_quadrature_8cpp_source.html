@@ -142,7 +142,7 @@ $(document).ready(function(){initNavTree('_polyhedron_quadrature_8cpp_source.htm
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>{</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">namespace </span>quadrature</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">namespace </span><a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#a6e6c474c9eedb0961390091003af5685">quadrature</a></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    {</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keyword">namespace</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        {</div>
@@ -241,9 +241,9 @@ $(document).ready(function(){initNavTree('_polyhedron_quadrature_8cpp_source.htm
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="preprocessor">#ifdef POLYFEM_WITH_MMG</span></div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            <span class="keywordflow">if</span> (tet_quadr_pts.<a class="code hl_variable" href="classpolyfem_1_1quadrature_1_1_quadrature.html#aa4c4c3ae343c37060d42ebe0611f6034">weights</a>.size() * tets.rows() &gt; max_num_quadrature_points)</div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            {</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                Eigen::MatrixXd V0;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                Eigen::MatrixXd <a class="code hl_enumvalue" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626a16514e6f648a594f5399a6b3a58e9c93">V0</a>;</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                Eigen::MatrixXi F0, T0;</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                <span class="keywordtype">bool</span> res = mmg_remesh_volume(TV, TF, tets, V0, F0, T0);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                <span class="keywordtype">bool</span> res = mmg_remesh_volume(TV, TF, tets, <a class="code hl_enumvalue" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626a16514e6f648a594f5399a6b3a58e9c93">V0</a>, F0, T0);</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                <span class="comment">// std::cout &lt;&lt; &quot;points per tet: &quot;&lt;&lt; tet_quadr_pts.weights.size()&lt;&lt; std::endl;</span></div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                <span class="comment">// std::cout &lt;&lt; &quot;#T before: &quot; &lt;&lt; tets.rows() &lt;&lt; std::endl;</span></div>
@@ -252,7 +252,7 @@ $(document).ready(function(){initNavTree('_polyhedron_quadrature_8cpp_source.htm
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                <span class="keywordflow">if</span> (res &amp;&amp; T0.rows() &lt; tets.rows())</div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                {</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                    TV = V0;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                    TV = <a class="code hl_enumvalue" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626a16514e6f648a594f5399a6b3a58e9c93">V0</a>;</div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                    TF = F0;</div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                    tets = T0;</div>
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                }</div>
@@ -319,6 +319,7 @@ $(document).ready(function(){initNavTree('_polyhedron_quadrature_8cpp_source.htm
 </div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    } <span class="comment">// namespace quadrature</span></div>
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>} <span class="comment">// namespace polyfem</span></div>
+<div class="ttc" id="a_mass_matrix_assembler_8cpp_html_a6e6c474c9eedb0961390091003af5685"><div class="ttname"><a href="_mass_matrix_assembler_8cpp.html#a6e6c474c9eedb0961390091003af5685">quadrature</a></div><div class="ttdeci">Quadrature quadrature</div><div class="ttdef"><b>Definition</b> <a href="_mass_matrix_assembler_8cpp_source.html#l00030">MassMatrixAssembler.cpp:30</a></div></div>
 <div class="ttc" id="a_mesh_utils_8hpp_html"><div class="ttname"><a href="_mesh_utils_8hpp.html">MeshUtils.hpp</a></div></div>
 <div class="ttc" id="a_polyhedron_quadrature_8hpp_html"><div class="ttname"><a href="_polyhedron_quadrature_8hpp.html">PolyhedronQuadrature.hpp</a></div></div>
 <div class="ttc" id="a_tet_quadrature_8hpp_html"><div class="ttname"><a href="_tet_quadrature_8hpp.html">TetQuadrature.hpp</a></div></div>
@@ -331,6 +332,7 @@ $(document).ready(function(){initNavTree('_polyhedron_quadrature_8cpp_source.htm
 <div class="ttc" id="anamespaceeigs_html_a1cb62336f71a067a062cca9e82f830f2"><div class="ttname"><a href="namespaceeigs.html#a1cb62336f71a067a062cca9e82f830f2">eigs.M</a></div><div class="ttdeci">M</div><div class="ttdef"><b>Definition</b> <a href="eigs_8py_source.html#l00094">eigs.py:94</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html_aa56d3e4087c89d5eec16b4af3f128879"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#aa56d3e4087c89d5eec16b4af3f128879">polyfem::mesh::from_geogram_mesh</a></div><div class="ttdeci">void from_geogram_mesh(const GEO::Mesh &amp;M, Eigen::MatrixXd &amp;V, Eigen::MatrixXi &amp;F, Eigen::MatrixXi &amp;T)</div><div class="ttdoc">Extract simplices from a Geogram mesh.</div><div class="ttdef"><b>Definition</b> <a href="_mesh_utils_8cpp_source.html#l00639">MeshUtils.cpp:639</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html_aae095321d3a795a54c96f6c93ed66583"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#aae095321d3a795a54c96f6c93ed66583">polyfem::mesh::tertrahedralize_star_shaped_surface</a></div><div class="ttdeci">void tertrahedralize_star_shaped_surface(const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;F, const Eigen::RowVector3d &amp;kernel, Eigen::MatrixXd &amp;OV, Eigen::MatrixXi &amp;OF, Eigen::MatrixXi &amp;OT)</div><div class="ttdoc">Tetrahedralize a star-shaped mesh, with a given point in its kernel.</div><div class="ttdef"><b>Definition</b> <a href="_mesh_utils_8cpp_source.html#l00869">MeshUtils.cpp:869</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1mesh_html_afcdb91386e85983bbabc057711ef1626a16514e6f648a594f5399a6b3a58e9c93"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626a16514e6f648a594f5399a6b3a58e9c93">polyfem::mesh::CollapseEdgeTo::V0</a></div><div class="ttdeci">@ V0</div></div>
 <div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition</b> <a href="_a_m_i_p_s_energy_8cpp_source.html#l00005">AMIPSEnergy.cpp:6</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012"><div class="ttname"><a href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::ElasticityTensorType::F</a></div><div class="ttdeci">@ F</div></div>
 </div><!-- fragment --></div><!-- contents -->

@@ -23,6 +23,7 @@ var classpolyfem_1_1solver_1_1_contact_form =
     [ "update_quantities", "classpolyfem_1_1solver_1_1_contact_form.html#ae4b7ce02d0f40d3bfef34c5106e22f4e", null ],
     [ "use_adaptive_barrier_stiffness", "classpolyfem_1_1solver_1_1_contact_form.html#ab20e81433681bc3eb20e5a075a447d3e", null ],
     [ "use_convergent_formulation", "classpolyfem_1_1solver_1_1_contact_form.html#afb889e2d85c746787b9d42eddb1e0cda", null ],
+    [ "value_per_element_unweighted", "classpolyfem_1_1solver_1_1_contact_form.html#a8edd8128512f3f5c54bd6fa79de8f979", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_contact_form.html#a91225a3a50c429d7668cb696f93939c5", null ],
     [ "weight", "classpolyfem_1_1solver_1_1_contact_form.html#a7f40dd156564bf40a2841b3a8d545534", null ],
     [ "avg_mass_", "classpolyfem_1_1solver_1_1_contact_form.html#a13bd7941951269f00eb817e59b54072a", null ],

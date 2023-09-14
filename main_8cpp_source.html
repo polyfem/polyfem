@@ -220,247 +220,242 @@ $(document).ready(function(){initNavTree('main_8cpp_source.html',''); initResiza
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">bool</span> fallback_solver = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    command_line.add_flag(<span class="stringliteral">&quot;--enable_overwrite_solver&quot;</span>, fallback_solver, <span class="stringliteral">&quot;If solver in json is not present, falls back to default&quot;</span>);</div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="comment">// const std::vector&lt;std::string&gt; solvers = polysolve::LinearSolver::availableSolvers();</span></div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="comment">// std::string solver;</span></div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="comment">// command_line.add_option(&quot;--solver&quot;, solver, &quot;Used to print the list of linear solvers available&quot;)-&gt;check(CLI::IsMember(solvers));</span></div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keyword">const</span> std::vector&lt;std::pair&lt;std::string, spdlog::level::level_enum&gt;&gt;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        SPDLOG_LEVEL_NAMES_TO_LEVELS = {</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            {<span class="stringliteral">&quot;trace&quot;</span>, spdlog::level::trace},</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            {<span class="stringliteral">&quot;debug&quot;</span>, spdlog::level::debug},</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            {<span class="stringliteral">&quot;info&quot;</span>, spdlog::level::info},</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            {<span class="stringliteral">&quot;warning&quot;</span>, spdlog::level::warn},</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            {<span class="stringliteral">&quot;error&quot;</span>, spdlog::level::err},</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            {<span class="stringliteral">&quot;critical&quot;</span>, spdlog::level::critical},</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            {<span class="stringliteral">&quot;off&quot;</span>, spdlog::level::off}};</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    spdlog::level::level_enum log_level = spdlog::level::debug;</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    command_line.add_option(<span class="stringliteral">&quot;--log_level&quot;</span>, log_level, <span class="stringliteral">&quot;Log level&quot;</span>)</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        -&gt;transform(CLI::CheckedTransformer(SPDLOG_LEVEL_NAMES_TO_LEVELS, CLI::ignore_case));</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">const</span> std::vector&lt;std::pair&lt;std::string, spdlog::level::level_enum&gt;&gt;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        SPDLOG_LEVEL_NAMES_TO_LEVELS = {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            {<span class="stringliteral">&quot;trace&quot;</span>, spdlog::level::trace},</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            {<span class="stringliteral">&quot;debug&quot;</span>, spdlog::level::debug},</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            {<span class="stringliteral">&quot;info&quot;</span>, spdlog::level::info},</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            {<span class="stringliteral">&quot;warning&quot;</span>, spdlog::level::warn},</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            {<span class="stringliteral">&quot;error&quot;</span>, spdlog::level::err},</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            {<span class="stringliteral">&quot;critical&quot;</span>, spdlog::level::critical},</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            {<span class="stringliteral">&quot;off&quot;</span>, spdlog::level::off}};</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    spdlog::level::level_enum log_level = spdlog::level::debug;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    command_line.add_option(<span class="stringliteral">&quot;--log_level&quot;</span>, log_level, <span class="stringliteral">&quot;Log level&quot;</span>)</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        -&gt;transform(CLI::CheckedTransformer(SPDLOG_LEVEL_NAMES_TO_LEVELS, CLI::ignore_case));</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    CLI11_PARSE(command_line, argc, argv);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> in_args = <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a>({});</div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    CLI11_PARSE(command_line, argc, argv);</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> in_args = <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a>({});</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordflow">if</span> (!json_file.empty())</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> ok = <a class="code hl_function" href="main_8cpp.html#a2af6e3fbd4aaa80375a7399896703035">load_json</a>(json_file, in_args);</div>
 <div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">if</span> (!json_file.empty())</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    {</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> ok = <a class="code hl_function" href="main_8cpp.html#a2af6e3fbd4aaa80375a7399896703035">load_json</a>(json_file, in_args);</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        std::ifstream file(json_file);</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">if</span> (!ok)</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(fmt::format(<span class="stringliteral">&quot;unable to open {} file&quot;</span>, json_file));</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keywordflow">if</span> (in_args.contains(<span class="stringliteral">&quot;states&quot;</span>))</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="main_8cpp.html#a96a4708feb2ee82789b510a85aad3741">optimization_simulation</a>(command_line, max_threads, is_strict, log_level, in_args);</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0">forward_simulation</a>(command_line, <span class="stringliteral">&quot;&quot;</span>, output_dir, max_threads,</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                                      is_strict, fallback_solver, log_level, in_args);</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    }</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0">forward_simulation</a>(command_line, hdf5_file, output_dir, max_threads,</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                                  is_strict, fallback_solver, log_level, in_args);</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>}</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordflow">if</span> (!ok)</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(fmt::format(<span class="stringliteral">&quot;unable to open {} file&quot;</span>, json_file));</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordflow">if</span> (in_args.contains(<span class="stringliteral">&quot;states&quot;</span>))</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="main_8cpp.html#a96a4708feb2ee82789b510a85aad3741">optimization_simulation</a>(command_line, max_threads, is_strict, log_level, in_args);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0">forward_simulation</a>(command_line, <span class="stringliteral">&quot;&quot;</span>, output_dir, max_threads,</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                                      is_strict, fallback_solver, log_level, in_args);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    }</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0">forward_simulation</a>(command_line, hdf5_file, output_dir, max_threads,</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                                  is_strict, fallback_solver, log_level, in_args);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>}</div>
 </div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
-<div class="foldopen" id="foldopen00129" data-start="{" data-end="}">
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0">  129</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0">forward_simulation</a>(<span class="keyword">const</span> CLI::App &amp;command_line,</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                       <span class="keyword">const</span> std::string &amp;hdf5_file,</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                       <span class="keyword">const</span> std::string output_dir,</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                       <span class="keyword">const</span> <span class="keywordtype">size_t</span> max_threads,</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                       <span class="keyword">const</span> <span class="keywordtype">bool</span> is_strict,</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                       <span class="keyword">const</span> <span class="keywordtype">bool</span> fallback_solver,</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                       <span class="keyword">const</span> spdlog::level::level_enum &amp;log_level,</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                       <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;in_args)</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>{</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    std::vector&lt;std::string&gt; names;</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    std::vector&lt;Eigen::MatrixXi&gt; cells;</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    std::vector&lt;Eigen::MatrixXd&gt; vertices;</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordflow">if</span> (in_args.empty() &amp;&amp; hdf5_file.empty())</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    {</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().error(<span class="stringliteral">&quot;No input file specified!&quot;</span>);</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="keywordflow">return</span> command_line.exit(CLI::RequiredError(<span class="stringliteral">&quot;--json or --hdf5&quot;</span>));</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    }</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordflow">if</span> (in_args.empty() &amp;&amp; !hdf5_file.empty())</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    {</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <span class="keyword">using </span>MatrixXl = Eigen::Matrix&lt;int64_t, Eigen::Dynamic, Eigen::Dynamic&gt;;</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        h5pp::File file(hdf5_file, h5pp::FileAccess::READONLY);</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        std::string json_string = file.readDataset&lt;std::string&gt;(<span class="stringliteral">&quot;json&quot;</span>);</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        in_args = json::parse(json_string);</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        in_args[<span class="stringliteral">&quot;root_path&quot;</span>] = hdf5_file;</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        names = file.findGroups(<span class="stringliteral">&quot;&quot;</span>, <span class="stringliteral">&quot;/meshes&quot;</span>);</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        cells.resize(names.size());</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        vertices.resize(names.size());</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; names.size(); ++i)</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        {</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>            <span class="keyword">const</span> std::string &amp;name = names[i];</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>            cells[i] = file.readDataset&lt;MatrixXl&gt;(<span class="stringliteral">&quot;/meshes/&quot;</span> + name + <span class="stringliteral">&quot;/c&quot;</span>).cast&lt;int&gt;();</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            vertices[i] = file.readDataset&lt;Eigen::MatrixXd&gt;(<span class="stringliteral">&quot;/meshes/&quot;</span> + name + <span class="stringliteral">&quot;/v&quot;</span>);</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        }</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    }</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> tmp = json::object();</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="main_8cpp.html#acbb63e1d425765e52625e23aabf97aa5">has_arg</a>(command_line, <span class="stringliteral">&quot;log_level&quot;</span>))</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        tmp[<span class="stringliteral">&quot;/output/log/level&quot;</span>_json_pointer] = int(log_level);</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="main_8cpp.html#acbb63e1d425765e52625e23aabf97aa5">has_arg</a>(command_line, <span class="stringliteral">&quot;max_threads&quot;</span>))</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        tmp[<span class="stringliteral">&quot;/solver/max_threads&quot;</span>_json_pointer] = max_threads;</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="main_8cpp.html#acbb63e1d425765e52625e23aabf97aa5">has_arg</a>(command_line, <span class="stringliteral">&quot;output_dir&quot;</span>))</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        tmp[<span class="stringliteral">&quot;/output/directory&quot;</span>_json_pointer] = std::filesystem::absolute(output_dir);</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="main_8cpp.html#acbb63e1d425765e52625e23aabf97aa5">has_arg</a>(command_line, <span class="stringliteral">&quot;enable_overwrite_solver&quot;</span>))</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        tmp[<span class="stringliteral">&quot;/solver/linear/enable_overwrite_solver&quot;</span>_json_pointer] = fallback_solver;</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    assert(tmp.is_object());</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    in_args.merge_patch(tmp);</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <a class="code hl_class" href="classpolyfem_1_1_state.html">State</a> state;</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a184100545465d3feab07312e3f9c32a4">init</a>(in_args, is_strict);</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a37cc0825d6cd66410b5c1a0c46778a9f">load_mesh</a>(<span class="comment">/*non_conforming=*/</span><span class="keyword">false</span>, names, cells, vertices);</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="comment">// Mesh was not loaded successfully; load_mesh() logged the error.</span></div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keywordflow">if</span> (state.<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a> == <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    {</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="comment">// Cannot proceed without a mesh.</span></div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    }</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    state.<a class="code hl_variable" href="classpolyfem_1_1_state.html#a8ed2ea7be90ae8d0385ac4a22042e4c4">stats</a>.<a class="code hl_function" href="classpolyfem_1_1io_1_1_out_stats_data.html#ad2a27e4251aa12bf821c2c68242a1ed5">compute_mesh_stats</a>(*state.<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="foldopen" id="foldopen00124" data-start="{" data-end="}">
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0">  124</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0">forward_simulation</a>(<span class="keyword">const</span> CLI::App &amp;command_line,</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                       <span class="keyword">const</span> std::string &amp;hdf5_file,</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                       <span class="keyword">const</span> std::string output_dir,</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                       <span class="keyword">const</span> <span class="keywordtype">size_t</span> max_threads,</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                       <span class="keyword">const</span> <span class="keywordtype">bool</span> is_strict,</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                       <span class="keyword">const</span> <span class="keywordtype">bool</span> fallback_solver,</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                       <span class="keyword">const</span> spdlog::level::level_enum &amp;log_level,</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                       <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;in_args)</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>{</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    std::vector&lt;std::string&gt; names;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    std::vector&lt;Eigen::MatrixXi&gt; cells;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    std::vector&lt;Eigen::MatrixXd&gt; vertices;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordflow">if</span> (in_args.empty() &amp;&amp; hdf5_file.empty())</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    {</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().error(<span class="stringliteral">&quot;No input file specified!&quot;</span>);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keywordflow">return</span> command_line.exit(CLI::RequiredError(<span class="stringliteral">&quot;--json or --hdf5&quot;</span>));</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    }</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordflow">if</span> (in_args.empty() &amp;&amp; !hdf5_file.empty())</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    {</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="keyword">using </span>MatrixXl = Eigen::Matrix&lt;int64_t, Eigen::Dynamic, Eigen::Dynamic&gt;;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        h5pp::File file(hdf5_file, h5pp::FileAccess::READONLY);</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        std::string json_string = file.readDataset&lt;std::string&gt;(<span class="stringliteral">&quot;json&quot;</span>);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        in_args = json::parse(json_string);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        in_args[<span class="stringliteral">&quot;root_path&quot;</span>] = hdf5_file;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        names = file.findGroups(<span class="stringliteral">&quot;&quot;</span>, <span class="stringliteral">&quot;/meshes&quot;</span>);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        cells.resize(names.size());</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        vertices.resize(names.size());</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; names.size(); ++i)</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        {</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>            <span class="keyword">const</span> std::string &amp;name = names[i];</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            cells[i] = file.readDataset&lt;MatrixXl&gt;(<span class="stringliteral">&quot;/meshes/&quot;</span> + name + <span class="stringliteral">&quot;/c&quot;</span>).cast&lt;int&gt;();</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>            vertices[i] = file.readDataset&lt;Eigen::MatrixXd&gt;(<span class="stringliteral">&quot;/meshes/&quot;</span> + name + <span class="stringliteral">&quot;/v&quot;</span>);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        }</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    }</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> tmp = json::object();</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="main_8cpp.html#acbb63e1d425765e52625e23aabf97aa5">has_arg</a>(command_line, <span class="stringliteral">&quot;log_level&quot;</span>))</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        tmp[<span class="stringliteral">&quot;/output/log/level&quot;</span>_json_pointer] = int(log_level);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="main_8cpp.html#acbb63e1d425765e52625e23aabf97aa5">has_arg</a>(command_line, <span class="stringliteral">&quot;max_threads&quot;</span>))</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        tmp[<span class="stringliteral">&quot;/solver/max_threads&quot;</span>_json_pointer] = max_threads;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="main_8cpp.html#acbb63e1d425765e52625e23aabf97aa5">has_arg</a>(command_line, <span class="stringliteral">&quot;output_dir&quot;</span>))</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        tmp[<span class="stringliteral">&quot;/output/directory&quot;</span>_json_pointer] = std::filesystem::absolute(output_dir);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="main_8cpp.html#acbb63e1d425765e52625e23aabf97aa5">has_arg</a>(command_line, <span class="stringliteral">&quot;enable_overwrite_solver&quot;</span>))</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        tmp[<span class="stringliteral">&quot;/solver/linear/enable_overwrite_solver&quot;</span>_json_pointer] = fallback_solver;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    assert(tmp.is_object());</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    in_args.merge_patch(tmp);</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <a class="code hl_class" href="classpolyfem_1_1_state.html">State</a> state;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a184100545465d3feab07312e3f9c32a4">init</a>(in_args, is_strict);</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a37cc0825d6cd66410b5c1a0c46778a9f">load_mesh</a>(<span class="comment">/*non_conforming=*/</span><span class="keyword">false</span>, names, cells, vertices);</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="comment">// Mesh was not loaded successfully; load_mesh() logged the error.</span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordflow">if</span> (state.<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a> == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    {</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="comment">// Cannot proceed without a mesh.</span></div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    }</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    state.<a class="code hl_variable" href="classpolyfem_1_1_state.html#a8ed2ea7be90ae8d0385ac4a22042e4c4">stats</a>.<a class="code hl_function" href="classpolyfem_1_1io_1_1_out_stats_data.html#ad2a27e4251aa12bf821c2c68242a1ed5">compute_mesh_stats</a>(*state.<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b">build_basis</a>();</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a92ca4b0169412ddc297a77744bd0e724">assemble_rhs</a>();</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a1ccc0343cb326880d9d241517170efb0">assemble_mass_mat</a>();</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b">build_basis</a>();</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a92ca4b0169412ddc297a77744bd0e724">assemble_rhs</a>();</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a1ccc0343cb326880d9d241517170efb0">assemble_mass_mat</a>();</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    Eigen::MatrixXd sol;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    Eigen::MatrixXd pressure;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d">solve_problem</a>(sol, pressure);</div>
 <div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    Eigen::MatrixXd sol;</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    Eigen::MatrixXd pressure;</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d">solve_problem</a>(sol, pressure);</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a2351c47a48235103aca219b6363b6353">compute_errors</a>(sol);</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a2351c47a48235103aca219b6363b6353">compute_errors</a>(sol);</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().info(<span class="stringliteral">&quot;total time: {}s&quot;</span>, state.<a class="code hl_variable" href="classpolyfem_1_1_state.html#a0181690b83435d59481076329edec8bc">timings</a>.<a class="code hl_function" href="classpolyfem_1_1io_1_1_out_runtime_data.html#a43bff3598fb9149a2288df4529c9b4e5">total_time</a>());</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a462069032b8e7c6663c8d777dc60965f">save_json</a>(sol);</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e">export_data</a>(sol, pressure);</div>
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().info(<span class="stringliteral">&quot;total time: {}s&quot;</span>, state.<a class="code hl_variable" href="classpolyfem_1_1_state.html#a0181690b83435d59481076329edec8bc">timings</a>.<a class="code hl_function" href="classpolyfem_1_1io_1_1_out_runtime_data.html#a43bff3598fb9149a2288df4529c9b4e5">total_time</a>());</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#a462069032b8e7c6663c8d777dc60965f">save_json</a>(sol);</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    state.<a class="code hl_function" href="classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e">export_data</a>(sol, pressure);</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keywordflow">return</span> EXIT_SUCCESS;</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>}</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keywordflow">return</span> EXIT_SUCCESS;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>}</div>
 </div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
-<div class="foldopen" id="foldopen00215" data-start="{" data-end="}">
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno"><a class="line" href="main_8cpp.html#a96a4708feb2ee82789b510a85aad3741">  215</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="main_8cpp.html#a96a4708feb2ee82789b510a85aad3741">optimization_simulation</a>(<span class="keyword">const</span> CLI::App &amp;command_line,</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>                            <span class="keyword">const</span> <span class="keywordtype">size_t</span> max_threads,</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>                            <span class="keyword">const</span> <span class="keywordtype">bool</span> is_strict,</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>                            <span class="keyword">const</span> spdlog::level::level_enum &amp;log_level,</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>                            <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;opt_args)</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>{</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="comment">// TODO fix gobal stuff threads log level etc</span></div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    opt_args = <a class="code hl_function" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#ab38613c0efb3df98a160a828cca64963">AdjointOptUtils::apply_opt_json_spec</a>(opt_args, is_strict);</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="comment">/* states */</span></div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> state_args = opt_args[<span class="stringliteral">&quot;states&quot;</span>];</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    std::vector&lt;std::shared_ptr&lt;State&gt;&gt; states(state_args.size());</div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    {</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        <span class="keywordtype">int</span> i = 0;</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args : state_args)</div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        {</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>            <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> cur_args;</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>            <span class="keywordflow">if</span> (!<a class="code hl_function" href="main_8cpp.html#a2af6e3fbd4aaa80375a7399896703035">load_json</a>(args[<span class="stringliteral">&quot;path&quot;</span>], cur_args))</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>                <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(<span class="stringliteral">&quot;Can&#39;t find json for State {}&quot;</span>, i);</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>            {</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>                <span class="keyword">auto</span> tmp = R<span class="stringliteral">&quot;({</span></div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span><span class="stringliteral">                        &quot;output&quot;: {</span></div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span><span class="stringliteral">                            &quot;log&quot;: {</span></div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span><span class="stringliteral">                                &quot;level&quot;: -1</span></div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span><span class="stringliteral">                            }</span></div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span><span class="stringliteral">                        }</span></div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span><span class="stringliteral">                    })&quot;_json;</span></div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span><span class="stringliteral"></span> </div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span><span class="stringliteral">                tmp[</span><span class="stringliteral">&quot;output&quot;</span>][<span class="stringliteral">&quot;log&quot;</span>][<span class="stringliteral">&quot;level&quot;</span>] = int(log_level);</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>                cur_args.merge_patch(tmp);</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>            }</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>            states[i++] = <a class="code hl_function" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#adb653333228fa2d1efd2b7d07f1c64f6">AdjointOptUtils::create_state</a>(cur_args, max_threads);</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        }</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    }</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    <span class="comment">/* DOF */</span></div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    <span class="keywordtype">int</span> ndof = 0;</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    std::vector&lt;int&gt; variable_sizes;</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;arg : opt_args[<span class="stringliteral">&quot;parameters&quot;</span>])</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    {</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        <span class="keywordtype">int</span> size = <a class="code hl_function" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#ad82bbac53921639b992a821cc1b53520">AdjointOptUtils::compute_variable_size</a>(arg, states);</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        ndof += size;</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        variable_sizes.push_back(size);</div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    }</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    <span class="comment">/* variable to simulations */</span></div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    std::vector&lt;std::shared_ptr&lt;VariableToSimulation&gt;&gt; variable_to_simulations;</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;arg : opt_args[<span class="stringliteral">&quot;variable_to_simulation&quot;</span>])</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        variable_to_simulations.push_back(</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>            <a class="code hl_function" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acde7d7162b22bde1a3605e9e363ab46c">AdjointOptUtils::create_variable_to_simulation</a>(arg, states,</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>                                                           variable_sizes));</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="foldopen" id="foldopen00210" data-start="{" data-end="}">
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno"><a class="line" href="main_8cpp.html#a96a4708feb2ee82789b510a85aad3741">  210</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="main_8cpp.html#a96a4708feb2ee82789b510a85aad3741">optimization_simulation</a>(<span class="keyword">const</span> CLI::App &amp;command_line,</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>                            <span class="keyword">const</span> <span class="keywordtype">size_t</span> max_threads,</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>                            <span class="keyword">const</span> <span class="keywordtype">bool</span> is_strict,</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>                            <span class="keyword">const</span> spdlog::level::level_enum &amp;log_level,</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>                            <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;opt_args)</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>{</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="comment">// TODO fix gobal stuff threads log level etc</span></div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    opt_args = <a class="code hl_function" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#ab38613c0efb3df98a160a828cca64963">AdjointOptUtils::apply_opt_json_spec</a>(opt_args, is_strict);</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <span class="comment">/* states */</span></div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> state_args = opt_args[<span class="stringliteral">&quot;states&quot;</span>];</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    std::vector&lt;std::shared_ptr&lt;State&gt;&gt; states(state_args.size());</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    {</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keywordtype">int</span> i = 0;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args : state_args)</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        {</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>            <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> cur_args;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>            <span class="keywordflow">if</span> (!<a class="code hl_function" href="main_8cpp.html#a2af6e3fbd4aaa80375a7399896703035">load_json</a>(args[<span class="stringliteral">&quot;path&quot;</span>], cur_args))</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>                <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(<span class="stringliteral">&quot;Can&#39;t find json for State {}&quot;</span>, i);</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>            {</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>                <span class="keyword">auto</span> tmp = R<span class="stringliteral">&quot;({</span></div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span><span class="stringliteral">                        &quot;output&quot;: {</span></div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span><span class="stringliteral">                            &quot;log&quot;: {</span></div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span><span class="stringliteral">                                &quot;level&quot;: -1</span></div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span><span class="stringliteral">                            }</span></div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span><span class="stringliteral">                        }</span></div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span><span class="stringliteral">                    })&quot;_json;</span></div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span><span class="stringliteral">                tmp[</span><span class="stringliteral">&quot;output&quot;</span>][<span class="stringliteral">&quot;log&quot;</span>][<span class="stringliteral">&quot;level&quot;</span>] = int(log_level);</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span> </div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>                cur_args.merge_patch(tmp);</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            }</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>            states[i++] = <a class="code hl_function" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#adb653333228fa2d1efd2b7d07f1c64f6">AdjointOptUtils::create_state</a>(cur_args, max_threads);</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        }</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    }</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <span class="comment">/* DOF */</span></div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keywordtype">int</span> ndof = 0;</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    std::vector&lt;int&gt; variable_sizes;</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;arg : opt_args[<span class="stringliteral">&quot;parameters&quot;</span>])</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    {</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        <span class="keywordtype">int</span> size = <a class="code hl_function" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#ad82bbac53921639b992a821cc1b53520">AdjointOptUtils::compute_variable_size</a>(arg, states);</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        ndof += size;</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        variable_sizes.push_back(size);</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    }</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span> </div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    <span class="comment">/* variable to simulations */</span></div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    std::vector&lt;std::shared_ptr&lt;VariableToSimulation&gt;&gt; variable_to_simulations;</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;arg : opt_args[<span class="stringliteral">&quot;variable_to_simulation&quot;</span>])</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        variable_to_simulations.push_back(</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>            <a class="code hl_function" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acde7d7162b22bde1a3605e9e363ab46c">AdjointOptUtils::create_variable_to_simulation</a>(arg, states,</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>                                                           variable_sizes));</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    <span class="comment">/* forms */</span></div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    std::shared_ptr&lt;SumCompositeForm&gt; obj =</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        std::dynamic_pointer_cast&lt;SumCompositeForm&gt;(<a class="code hl_function" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a942feaefaec441b75ea37d155b5c7582">AdjointOptUtils::create_form</a>(</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>            opt_args[<span class="stringliteral">&quot;functionals&quot;</span>], variable_to_simulations, states));</div>
 <div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    <span class="comment">/* forms */</span></div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    std::shared_ptr&lt;SumCompositeForm&gt; obj =</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        std::dynamic_pointer_cast&lt;SumCompositeForm&gt;(<a class="code hl_function" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a942feaefaec441b75ea37d155b5c7582">AdjointOptUtils::create_form</a>(</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>            opt_args[<span class="stringliteral">&quot;functionals&quot;</span>], variable_to_simulations, states));</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <span class="comment">/* stopping conditions */</span></div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    std::vector&lt;std::shared_ptr&lt;AdjointForm&gt;&gt; stopping_conditions;</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;arg : opt_args[<span class="stringliteral">&quot;stopping_conditions&quot;</span>])</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>        stopping_conditions.push_back(</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>            <a class="code hl_function" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a942feaefaec441b75ea37d155b5c7582">AdjointOptUtils::create_form</a>(arg, variable_to_simulations, states));</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span> </div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    Eigen::VectorXd <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>.setZero(ndof);</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    <span class="keywordtype">int</span> accumulative = 0;</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    <span class="keywordtype">int</span> var = 0;</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;arg : opt_args[<span class="stringliteral">&quot;parameters&quot;</span>])</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>    {</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>        Eigen::VectorXd tmp(variable_sizes[var]);</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>        <span class="keywordflow">if</span> (arg[<span class="stringliteral">&quot;initial&quot;</span>].is_array() &amp;&amp; arg[<span class="stringliteral">&quot;initial&quot;</span>].size() &gt; 0)</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    <span class="comment">/* stopping conditions */</span></div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    std::vector&lt;std::shared_ptr&lt;AdjointForm&gt;&gt; stopping_conditions;</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;arg : opt_args[<span class="stringliteral">&quot;stopping_conditions&quot;</span>])</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        stopping_conditions.push_back(</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>            <a class="code hl_function" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a942feaefaec441b75ea37d155b5c7582">AdjointOptUtils::create_form</a>(arg, variable_to_simulations, states));</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span> </div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    Eigen::VectorXd <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>;</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>.setZero(ndof);</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <span class="keywordtype">int</span> accumulative = 0;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    <span class="keywordtype">int</span> var = 0;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;arg : opt_args[<span class="stringliteral">&quot;parameters&quot;</span>])</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    {</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        Eigen::VectorXd tmp(variable_sizes[var]);</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>        <span class="keywordflow">if</span> (arg[<span class="stringliteral">&quot;initial&quot;</span>].is_array() &amp;&amp; arg[<span class="stringliteral">&quot;initial&quot;</span>].size() &gt; 0)</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        {</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>            nlohmann::adl_serializer&lt;Eigen::VectorXd&gt;::from_json(arg[<span class="stringliteral">&quot;initial&quot;</span>], tmp);</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>            <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>.segment(accumulative, tmp.size()) = tmp;</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>        }</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (arg[<span class="stringliteral">&quot;initial&quot;</span>].is_number())</div>
 <div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>        {</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>            nlohmann::adl_serializer&lt;Eigen::VectorXd&gt;::from_json(arg[<span class="stringliteral">&quot;initial&quot;</span>], tmp);</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>            tmp.setConstant(arg[<span class="stringliteral">&quot;initial&quot;</span>].get&lt;double&gt;());</div>
 <div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>            <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>.segment(accumulative, tmp.size()) = tmp;</div>
 <div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        }</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (arg[<span class="stringliteral">&quot;initial&quot;</span>].is_number())</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>        {</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            tmp.setConstant(arg[<span class="stringliteral">&quot;initial&quot;</span>].get&lt;double&gt;());</div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>            <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>.segment(accumulative, tmp.size()) = tmp;</div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>        }</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>            <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> += variable_to_simulations[var]-&gt;inverse_eval();</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> </div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>        accumulative += tmp.size();</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>        var++;</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    }</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span> </div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;v2s : variable_to_simulations)</div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>        v2s-&gt;update(<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>);</div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span> </div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    <span class="keyword">auto</span> nl_problem = std::make_shared&lt;AdjointNLProblem&gt;(</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        obj, stopping_conditions, variable_to_simulations, states, opt_args);</div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span> </div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    <span class="comment">// TODO this should be a json arg</span></div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    <span class="comment">//  if (only_compute_energy)</span></div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>    <span class="comment">//  {</span></div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    <span class="comment">//      nl_problem-&gt;solution_changed(x);</span></div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>    <span class="comment">//      logger().info(&quot;Energy is {}&quot;, nl_problem-&gt;value(x));</span></div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    <span class="comment">//      return EXIT_SUCCESS;</span></div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    <span class="comment">//  }</span></div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span> </div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    std::shared_ptr&lt;cppoptlib::NonlinearSolver&lt;AdjointNLProblem&gt;&gt; nl_solver =</div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>        <a class="code hl_function" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#ae40dac71273d4786accbb1491db4ec93">AdjointOptUtils::make_nl_solver</a>(opt_args[<span class="stringliteral">&quot;solver&quot;</span>][<span class="stringliteral">&quot;nonlinear&quot;</span>], states.front()-&gt;units.characteristic_length());</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    nl_solver-&gt;minimize(*nl_problem, <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>);</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span> </div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    <span class="keywordflow">return</span> EXIT_SUCCESS;</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>}</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>            <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a> += variable_to_simulations[var]-&gt;inverse_eval();</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        accumulative += tmp.size();</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>        var++;</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    }</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span> </div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;v2s : variable_to_simulations)</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>        v2s-&gt;update(<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>);</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span> </div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    <span class="keyword">auto</span> nl_problem = std::make_shared&lt;AdjointNLProblem&gt;(</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>        obj, stopping_conditions, variable_to_simulations, states, opt_args);</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span> </div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    <span class="comment">// TODO this should be a json arg</span></div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    <span class="comment">//  if (only_compute_energy)</span></div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    <span class="comment">//  {</span></div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    <span class="comment">//      nl_problem-&gt;solution_changed(x);</span></div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    <span class="comment">//      logger().info(&quot;Energy is {}&quot;, nl_problem-&gt;value(x));</span></div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    <span class="comment">//      return EXIT_SUCCESS;</span></div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    <span class="comment">//  }</span></div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span> </div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    std::shared_ptr&lt;cppoptlib::NonlinearSolver&lt;AdjointNLProblem&gt;&gt; nl_solver =</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>        <a class="code hl_function" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#ae40dac71273d4786accbb1491db4ec93">AdjointOptUtils::make_nl_solver</a>(opt_args[<span class="stringliteral">&quot;solver&quot;</span>][<span class="stringliteral">&quot;nonlinear&quot;</span>], states.front()-&gt;units.characteristic_length());</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    nl_solver-&gt;minimize(*nl_problem, <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>);</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span> </div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    <span class="keywordflow">return</span> EXIT_SUCCESS;</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>}</div>
 </div>
 <div class="ttc" id="a_adjoint_n_l_problem_8hpp_html"><div class="ttname"><a href="_adjoint_n_l_problem_8hpp.html">AdjointNLProblem.hpp</a></div></div>
 <div class="ttc" id="a_j_s_o_n_utils_8hpp_html"><div class="ttname"><a href="_j_s_o_n_utils_8hpp.html">JSONUtils.hpp</a></div></div>
@@ -471,24 +466,24 @@ $(document).ready(function(){initNavTree('main_8cpp_source.html',''); initResiza
 <div class="ttc" id="a_state_8hpp_html"><div class="ttname"><a href="_state_8hpp.html">State.hpp</a></div></div>
 <div class="ttc" id="a_sum_composite_form_8hpp_html"><div class="ttname"><a href="_sum_composite_form_8hpp.html">SumCompositeForm.hpp</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1_state_html"><div class="ttname"><a href="classpolyfem_1_1_state.html">polyfem::State</a></div><div class="ttdoc">main class that contains the polyfem solver and all its state</div><div class="ttdef"><b>Definition</b> <a href="_state_8hpp_source.html#l00071">State.hpp:72</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1_state_html_a0181690b83435d59481076329edec8bc"><div class="ttname"><a href="classpolyfem_1_1_state.html#a0181690b83435d59481076329edec8bc">polyfem::State::timings</a></div><div class="ttdeci">io::OutRuntimeData timings</div><div class="ttdoc">runtime statistics</div><div class="ttdef"><b>Definition</b> <a href="_state_8hpp_source.html#l00527">State.hpp:527</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1_state_html_a184100545465d3feab07312e3f9c32a4"><div class="ttname"><a href="classpolyfem_1_1_state.html#a184100545465d3feab07312e3f9c32a4">polyfem::State::init</a></div><div class="ttdeci">void init(const json &amp;args, const bool strict_validation)</div><div class="ttdoc">initialize the polyfem solver with a json settings</div><div class="ttdef"><b>Definition</b> <a href="_state_init_8cpp_source.html#l00169">StateInit.cpp:169</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1_state_html_a1ccc0343cb326880d9d241517170efb0"><div class="ttname"><a href="classpolyfem_1_1_state.html#a1ccc0343cb326880d9d241517170efb0">polyfem::State::assemble_mass_mat</a></div><div class="ttdeci">void assemble_mass_mat()</div><div class="ttdoc">assemble mass, step 4 of solve</div><div class="ttdef"><b>Definition</b> <a href="_state_8cpp_source.html#l01326">State.cpp:1326</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1_state_html_a0181690b83435d59481076329edec8bc"><div class="ttname"><a href="classpolyfem_1_1_state.html#a0181690b83435d59481076329edec8bc">polyfem::State::timings</a></div><div class="ttdeci">io::OutRuntimeData timings</div><div class="ttdoc">runtime statistics</div><div class="ttdef"><b>Definition</b> <a href="_state_8hpp_source.html#l00540">State.hpp:540</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1_state_html_a184100545465d3feab07312e3f9c32a4"><div class="ttname"><a href="classpolyfem_1_1_state.html#a184100545465d3feab07312e3f9c32a4">polyfem::State::init</a></div><div class="ttdeci">void init(const json &amp;args, const bool strict_validation)</div><div class="ttdoc">initialize the polyfem solver with a json settings</div><div class="ttdef"><b>Definition</b> <a href="_state_init_8cpp_source.html#l00177">StateInit.cpp:177</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1_state_html_a1ccc0343cb326880d9d241517170efb0"><div class="ttname"><a href="classpolyfem_1_1_state.html#a1ccc0343cb326880d9d241517170efb0">polyfem::State::assemble_mass_mat</a></div><div class="ttdeci">void assemble_mass_mat()</div><div class="ttdoc">assemble mass, step 4 of solve</div><div class="ttdef"><b>Definition</b> <a href="_state_8cpp_source.html#l01334">State.cpp:1334</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1_state_html_a2351c47a48235103aca219b6363b6353"><div class="ttname"><a href="classpolyfem_1_1_state.html#a2351c47a48235103aca219b6363b6353">polyfem::State::compute_errors</a></div><div class="ttdeci">void compute_errors(const Eigen::MatrixXd &amp;sol)</div><div class="ttdoc">computes all errors</div><div class="ttdef"><b>Definition</b> <a href="_state_output_8cpp_source.html#l00010">StateOutput.cpp:10</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1_state_html_a37cc0825d6cd66410b5c1a0c46778a9f"><div class="ttname"><a href="classpolyfem_1_1_state.html#a37cc0825d6cd66410b5c1a0c46778a9f">polyfem::State::load_mesh</a></div><div class="ttdeci">void load_mesh(bool non_conforming=false, const std::vector&lt; std::string &gt; &amp;names=std::vector&lt; std::string &gt;(), const std::vector&lt; Eigen::MatrixXi &gt; &amp;cells=std::vector&lt; Eigen::MatrixXi &gt;(), const std::vector&lt; Eigen::MatrixXd &gt; &amp;vertices=std::vector&lt; Eigen::MatrixXd &gt;())</div><div class="ttdoc">loads the mesh from the json arguments</div><div class="ttdef"><b>Definition</b> <a href="_state_load_8cpp_source.html#l00091">StateLoad.cpp:91</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1_state_html_a462069032b8e7c6663c8d777dc60965f"><div class="ttname"><a href="classpolyfem_1_1_state.html#a462069032b8e7c6663c8d777dc60965f">polyfem::State::save_json</a></div><div class="ttdeci">void save_json(const Eigen::MatrixXd &amp;sol, std::ostream &amp;out)</div><div class="ttdoc">saves the output statistic to a stream</div><div class="ttdef"><b>Definition</b> <a href="_state_output_8cpp_source.html#l00086">StateOutput.cpp:86</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1_state_html_a6d2275d335a2330738caba1cb37f7bb9"><div class="ttname"><a href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">polyfem::State::mesh</a></div><div class="ttdeci">std::unique_ptr&lt; mesh::Mesh &gt; mesh</div><div class="ttdoc">current mesh, it can be a Mesh2D or Mesh3D</div><div class="ttdef"><b>Definition</b> <a href="_state_8hpp_source.html#l00414">State.hpp:414</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1_state_html_a7450ef7c42dd9c523e1be73a5819117d"><div class="ttname"><a href="classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d">polyfem::State::solve_problem</a></div><div class="ttdeci">void solve_problem(Eigen::MatrixXd &amp;sol, Eigen::MatrixXd &amp;pressure)</div><div class="ttdoc">solves the problems</div><div class="ttdef"><b>Definition</b> <a href="_state_8cpp_source.html#l01509">State.cpp:1509</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1_state_html_a6d2275d335a2330738caba1cb37f7bb9"><div class="ttname"><a href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">polyfem::State::mesh</a></div><div class="ttdeci">std::unique_ptr&lt; mesh::Mesh &gt; mesh</div><div class="ttdoc">current mesh, it can be a Mesh2D or Mesh3D</div><div class="ttdef"><b>Definition</b> <a href="_state_8hpp_source.html#l00418">State.hpp:418</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1_state_html_a7450ef7c42dd9c523e1be73a5819117d"><div class="ttname"><a href="classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d">polyfem::State::solve_problem</a></div><div class="ttdeci">void solve_problem(Eigen::MatrixXd &amp;sol, Eigen::MatrixXd &amp;pressure)</div><div class="ttdoc">solves the problems</div><div class="ttdef"><b>Definition</b> <a href="_state_8cpp_source.html#l01520">State.cpp:1520</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1_state_html_a75cfcf28f3bc27e8e30b41c7347c799b"><div class="ttname"><a href="classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b">polyfem::State::build_basis</a></div><div class="ttdeci">void build_basis()</div><div class="ttdoc">builds the bases step 2 of solve</div><div class="ttdef"><b>Definition</b> <a href="_state_8cpp_source.html#l00572">State.cpp:572</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1_state_html_a8ed2ea7be90ae8d0385ac4a22042e4c4"><div class="ttname"><a href="classpolyfem_1_1_state.html#a8ed2ea7be90ae8d0385ac4a22042e4c4">polyfem::State::stats</a></div><div class="ttdeci">io::OutStatsData stats</div><div class="ttdoc">Other statistics.</div><div class="ttdef"><b>Definition</b> <a href="_state_8hpp_source.html#l00529">State.hpp:529</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1_state_html_a92ca4b0169412ddc297a77744bd0e724"><div class="ttname"><a href="classpolyfem_1_1_state.html#a92ca4b0169412ddc297a77744bd0e724">polyfem::State::assemble_rhs</a></div><div class="ttdeci">void assemble_rhs()</div><div class="ttdoc">compute rhs, step 3 of solve</div><div class="ttdef"><b>Definition</b> <a href="_state_8cpp_source.html#l01434">State.cpp:1434</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1_state_html_a8ed2ea7be90ae8d0385ac4a22042e4c4"><div class="ttname"><a href="classpolyfem_1_1_state.html#a8ed2ea7be90ae8d0385ac4a22042e4c4">polyfem::State::stats</a></div><div class="ttdeci">io::OutStatsData stats</div><div class="ttdoc">Other statistics.</div><div class="ttdef"><b>Definition</b> <a href="_state_8hpp_source.html#l00542">State.hpp:542</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1_state_html_a92ca4b0169412ddc297a77744bd0e724"><div class="ttname"><a href="classpolyfem_1_1_state.html#a92ca4b0169412ddc297a77744bd0e724">polyfem::State::assemble_rhs</a></div><div class="ttdeci">void assemble_rhs()</div><div class="ttdoc">compute rhs, step 3 of solve</div><div class="ttdef"><b>Definition</b> <a href="_state_8cpp_source.html#l01445">State.cpp:1445</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1_state_html_acc61dcd623eec2308480c5c082da3d9e"><div class="ttname"><a href="classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e">polyfem::State::export_data</a></div><div class="ttdeci">void export_data(const Eigen::MatrixXd &amp;sol, const Eigen::MatrixXd &amp;pressure)</div><div class="ttdoc">saves all data on the disk according to the input params</div><div class="ttdef"><b>Definition</b> <a href="_state_output_8cpp_source.html#l00129">StateOutput.cpp:129</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1io_1_1_out_runtime_data_html_a43bff3598fb9149a2288df4529c9b4e5"><div class="ttname"><a href="classpolyfem_1_1io_1_1_out_runtime_data.html#a43bff3598fb9149a2288df4529c9b4e5">polyfem::io::OutRuntimeData::total_time</a></div><div class="ttdeci">double total_time()</div><div class="ttdoc">computes total time</div><div class="ttdef"><b>Definition</b> <a href="_out_data_8hpp_source.html#l00378">OutData.hpp:378</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1io_1_1_out_stats_data_html_ad2a27e4251aa12bf821c2c68242a1ed5"><div class="ttname"><a href="classpolyfem_1_1io_1_1_out_stats_data.html#ad2a27e4251aa12bf821c2c68242a1ed5">polyfem::io::OutStatsData::compute_mesh_stats</a></div><div class="ttdeci">void compute_mesh_stats(const polyfem::mesh::Mesh &amp;mesh)</div><div class="ttdoc">compute stats (counts els type, mesh lenght, etc), step 1 of solve</div><div class="ttdef"><b>Definition</b> <a href="_out_data_8cpp_source.html#l02651">OutData.cpp:2651</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1io_1_1_out_runtime_data_html_a43bff3598fb9149a2288df4529c9b4e5"><div class="ttname"><a href="classpolyfem_1_1io_1_1_out_runtime_data.html#a43bff3598fb9149a2288df4529c9b4e5">polyfem::io::OutRuntimeData::total_time</a></div><div class="ttdeci">double total_time()</div><div class="ttdoc">computes total time</div><div class="ttdef"><b>Definition</b> <a href="_out_data_8hpp_source.html#l00383">OutData.hpp:383</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1io_1_1_out_stats_data_html_ad2a27e4251aa12bf821c2c68242a1ed5"><div class="ttname"><a href="classpolyfem_1_1io_1_1_out_stats_data.html#ad2a27e4251aa12bf821c2c68242a1ed5">polyfem::io::OutStatsData::compute_mesh_stats</a></div><div class="ttdeci">void compute_mesh_stats(const polyfem::mesh::Mesh &amp;mesh)</div><div class="ttdoc">compute stats (counts els type, mesh lenght, etc), step 1 of solve</div><div class="ttdef"><b>Definition</b> <a href="_out_data_8cpp_source.html#l02671">OutData.cpp:2671</a></div></div>
 <div class="ttc" id="amain_8cpp_html_a2af6e3fbd4aaa80375a7399896703035"><div class="ttname"><a href="main_8cpp.html#a2af6e3fbd4aaa80375a7399896703035">load_json</a></div><div class="ttdeci">bool load_json(const std::string &amp;json_file, json &amp;out)</div><div class="ttdef"><b>Definition</b> <a href="main_8cpp_source.html#l00031">main.cpp:31</a></div></div>
 <div class="ttc" id="amain_8cpp_html_a3c04138a5bfe5d72780bb7e82a18e627"><div class="ttname"><a href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627">main</a></div><div class="ttdeci">int main(int argc, char **argv)</div><div class="ttdef"><b>Definition</b> <a href="main_8cpp_source.html#l00061">main.cpp:61</a></div></div>
-<div class="ttc" id="amain_8cpp_html_a48e4775e12bdf81ebb0eaa27df888aa0"><div class="ttname"><a href="main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0">forward_simulation</a></div><div class="ttdeci">int forward_simulation(const CLI::App &amp;command_line, const std::string &amp;hdf5_file, const std::string output_dir, const size_t max_threads, const bool is_strict, const bool fallback_solver, const spdlog::level::level_enum &amp;log_level, json &amp;in_args)</div><div class="ttdef"><b>Definition</b> <a href="main_8cpp_source.html#l00129">main.cpp:129</a></div></div>
-<div class="ttc" id="amain_8cpp_html_a96a4708feb2ee82789b510a85aad3741"><div class="ttname"><a href="main_8cpp.html#a96a4708feb2ee82789b510a85aad3741">optimization_simulation</a></div><div class="ttdeci">int optimization_simulation(const CLI::App &amp;command_line, const size_t max_threads, const bool is_strict, const spdlog::level::level_enum &amp;log_level, json &amp;opt_args)</div><div class="ttdef"><b>Definition</b> <a href="main_8cpp_source.html#l00215">main.cpp:215</a></div></div>
+<div class="ttc" id="amain_8cpp_html_a48e4775e12bdf81ebb0eaa27df888aa0"><div class="ttname"><a href="main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0">forward_simulation</a></div><div class="ttdeci">int forward_simulation(const CLI::App &amp;command_line, const std::string &amp;hdf5_file, const std::string output_dir, const size_t max_threads, const bool is_strict, const bool fallback_solver, const spdlog::level::level_enum &amp;log_level, json &amp;in_args)</div><div class="ttdef"><b>Definition</b> <a href="main_8cpp_source.html#l00124">main.cpp:124</a></div></div>
+<div class="ttc" id="amain_8cpp_html_a96a4708feb2ee82789b510a85aad3741"><div class="ttname"><a href="main_8cpp.html#a96a4708feb2ee82789b510a85aad3741">optimization_simulation</a></div><div class="ttdeci">int optimization_simulation(const CLI::App &amp;command_line, const size_t max_threads, const bool is_strict, const spdlog::level::level_enum &amp;log_level, json &amp;opt_args)</div><div class="ttdef"><b>Definition</b> <a href="main_8cpp_source.html#l00210">main.cpp:210</a></div></div>
 <div class="ttc" id="amain_8cpp_html_acbb63e1d425765e52625e23aabf97aa5"><div class="ttname"><a href="main_8cpp.html#acbb63e1d425765e52625e23aabf97aa5">has_arg</a></div><div class="ttdeci">bool has_arg(const CLI::App &amp;command_line, const std::string &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="main_8cpp_source.html#l00022">main.cpp:22</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition</b> <a href="_a_m_i_p_s_energy_8cpp_source.html#l00005">AMIPSEnergy.cpp:6</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a03f3d75072d2fd19f70cd886a51d10dd"><div class="ttname"><a href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">polyfem::logger</a></div><div class="ttdeci">spdlog::logger &amp; logger()</div><div class="ttdoc">Retrieves the current logger.</div><div class="ttdef"><b>Definition</b> <a href="_logger_8cpp_source.html#l00021">Logger.cpp:21</a></div></div>

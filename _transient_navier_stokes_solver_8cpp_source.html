@@ -389,19 +389,18 @@ $(document).ready(function(){initNavTree('_transient_navier_stokes_solver_8cpp_s
 <div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span> </div>
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>            <span class="keywordflow">if</span> (it &gt;= <a class="code hl_variable" href="classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#a888e606d39e4f48cc39e5be8ca4c7f3d">iterations</a>)</div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>            {</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().error(<span class="stringliteral">&quot;Reaching the max number of iterations!&quot;</span>);</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>                exit(0);</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>            }</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>            <span class="comment">// solver_info[&quot;internal_solver&quot;] = internal_solver;</span></div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>            <span class="comment">// solver_info[&quot;internal_solver_first&quot;] = internal_solver.front();</span></div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            <span class="comment">// solver_info[&quot;status&quot;] = this-&gt;status();</span></div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            <span class="keywordflow">return</span> it;</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        }</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>                <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(<span class="stringliteral">&quot;Reaching the max number of iterations!&quot;</span>);</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>            }</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>            <span class="comment">// solver_info[&quot;internal_solver&quot;] = internal_solver;</span></div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>            <span class="comment">// solver_info[&quot;internal_solver_first&quot;] = internal_solver.front();</span></div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>            <span class="comment">// solver_info[&quot;status&quot;] = this-&gt;status();</span></div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            <span class="keywordflow">return</span> it;</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        }</div>
 </div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    } <span class="comment">// namespace solver</span></div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>} <span class="comment">// namespace polyfem</span></div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    } <span class="comment">// namespace solver</span></div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>} <span class="comment">// namespace polyfem</span></div>
 <div class="ttc" id="a_assembler_utils_8hpp_html"><div class="ttname"><a href="_assembler_utils_8hpp.html">AssemblerUtils.hpp</a></div></div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
 <div class="ttc" id="a_matrix_utils_8hpp_html"><div class="ttname"><a href="_matrix_utils_8hpp.html">MatrixUtils.hpp</a></div></div>
@@ -430,6 +429,7 @@ $(document).ready(function(){initNavTree('_transient_navier_stokes_solver_8cpp_s
 <div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition</b> <a href="_a_m_i_p_s_energy_8cpp_source.html#l00005">AMIPSEnergy.cpp:6</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a03f3d75072d2fd19f70cd886a51d10dd"><div class="ttname"><a href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">polyfem::logger</a></div><div class="ttdeci">spdlog::logger &amp; logger()</div><div class="ttdoc">Retrieves the current logger.</div><div class="ttdef"><b>Definition</b> <a href="_logger_8cpp_source.html#l00021">Logger.cpp:21</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a77fa8fe96825827f2af726fcf6405d15"><div class="ttname"><a href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">polyfem::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="_common_8hpp_source.html#l00009">Common.hpp:9</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html_adc7e749e0c40939b7323961c6a41e391"><div class="ttname"><a href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">polyfem::log_and_throw_error</a></div><div class="ttdeci">void log_and_throw_error(const std::string &amp;msg)</div><div class="ttdef"><b>Definition</b> <a href="_logger_8cpp_source.html#l00044">Logger.cpp:44</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_af952b2322cc7cfb3abcca5212e2f16d4"><div class="ttname"><a href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double, Eigen::ColMajor &gt; StiffnessMatrix</div><div class="ttdef"><b>Definition</b> <a href="_types_8hpp_source.html#l00019">Types.hpp:19</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

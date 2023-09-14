@@ -177,6 +177,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a57af020e5b4adb1f79380daade52a514 inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a57af020e5b4adb1f79380daade52a514"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a57af020e5b4adb1f79380daade52a514">init</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
 <tr class="memdesc:a57af020e5b4adb1f79380daade52a514 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the form.  <br /></td></tr>
 <tr class="separator:a57af020e5b4adb1f79380daade52a514 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94b6accf27a754f736a0e022251842b8 inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a94b6accf27a754f736a0e022251842b8"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a94b6accf27a754f736a0e022251842b8">value_per_element</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const</td></tr>
+<tr class="memdesc:a94b6accf27a754f736a0e022251842b8 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the value of the form multiplied with the weigth.  <br /></td></tr>
+<tr class="separator:a94b6accf27a754f736a0e022251842b8 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96dfee30f817cfe008e3aefb04c3544b inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a96dfee30f817cfe008e3aefb04c3544b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a96dfee30f817cfe008e3aefb04c3544b">first_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const</td></tr>
 <tr class="memdesc:a96dfee30f817cfe008e3aefb04c3544b inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the first derivative of the value wrt x multiplied with the weigth.  <br /></td></tr>
 <tr class="separator:a96dfee30f817cfe008e3aefb04c3544b inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -257,6 +260,9 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a464a37a939d522c672aed03d281a5a92 inherit pro_methods_classpolyfem_1_1solver_1_1_form" id="r_a464a37a939d522c672aed03d281a5a92"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92">value_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const =0</td></tr>
 <tr class="memdesc:a464a37a939d522c672aed03d281a5a92 inherit pro_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the value of the form.  <br /></td></tr>
 <tr class="separator:a464a37a939d522c672aed03d281a5a92 inherit pro_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad416da938150c3c0920be0c16d21bbbd inherit pro_methods_classpolyfem_1_1solver_1_1_form" id="r_ad416da938150c3c0920be0c16d21bbbd"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#ad416da938150c3c0920be0c16d21bbbd">value_per_element_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const</td></tr>
+<tr class="memdesc:ad416da938150c3c0920be0c16d21bbbd inherit pro_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the value of the form multiplied per element.  <br /></td></tr>
+<tr class="separator:ad416da938150c3c0920be0c16d21bbbd inherit pro_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -375,7 +381,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_form_8hpp_source.html#l00028">28</a> of file <a class="el" href="_adjoint_form_8hpp_source.html">AdjointForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_adjoint_form_8cpp_source.html#l00033">compute_reduced_adjoint_rhs_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00116">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_adjoint_form_8cpp_source.html#l00033">compute_reduced_adjoint_rhs_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00124">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -422,7 +428,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_form_8cpp_source.html#l00073">73</a> of file <a class="el" href="_adjoint_form_8cpp_source.html">AdjointForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00595">polyfem::State::diff_cached</a>, <a class="el" href="_state_8hpp_source.html#l00599">polyfem::State::ndof()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00075">polyfem::solver::DiffCache::size()</a>.</p>
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00611">polyfem::State::diff_cached</a>, <a class="el" href="_state_8hpp_source.html#l00615">polyfem::State::ndof()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00075">polyfem::solver::DiffCache::size()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_adjoint_form_8cpp_source.html#l00033">compute_reduced_adjoint_rhs_unweighted()</a>.</p>
 <div class="dynheader">
@@ -474,7 +480,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_form_8hpp_source.html#l00033">33</a> of file <a class="el" href="_adjoint_form_8hpp_source.html">AdjointForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_adjoint_form_8cpp_source.html#l00068">compute_partial_gradient_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00116">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_adjoint_form_8cpp_source.html#l00068">compute_partial_gradient_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00124">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -570,7 +576,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_form_8cpp_source.html#l00033">33</a> of file <a class="el" href="_adjoint_form_8cpp_source.html">AdjointForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_adjoint_form_8cpp_source.html#l00073">compute_adjoint_rhs_unweighted()</a>, <a class="el" href="_state_8hpp_source.html#l00597">polyfem::State::lin_solver_cached</a>, <a class="el" href="_solve_data_8hpp_source.html#l00120">polyfem::solver::SolveData::nl_problem</a>, <a class="el" href="_state_8hpp_source.html#l00147">polyfem::State::problem</a>, <a class="el" href="_state_8hpp_source.html#l00288">polyfem::State::solve_data</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_adjoint_form_8cpp_source.html#l00073">compute_adjoint_rhs_unweighted()</a>, <a class="el" href="_state_8hpp_source.html#l00613">polyfem::State::lin_solver_cached</a>, <a class="el" href="_solve_data_8hpp_source.html#l00120">polyfem::solver::SolveData::nl_problem</a>, <a class="el" href="_state_8hpp_source.html#l00147">polyfem::State::problem</a>, <a class="el" href="_state_8hpp_source.html#l00288">polyfem::State::solve_data</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_adjoint_form_8hpp_source.html#l00028">compute_adjoint_rhs()</a>.</p>
 <div class="dynheader">
@@ -661,11 +667,11 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a">polyfem::solver::Form</a>.</p>
 
-<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_parametrization_form.html#a5f270ce437e32738a0985cb67ad41b09">polyfem::solver::ParametrizationForm</a>.</p>
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#aee0ad0b79283d4034d749f97e40c6a74">polyfem::solver::AMIPSForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_parametrization_form.html#a5f270ce437e32738a0985cb67ad41b09">polyfem::solver::ParametrizationForm</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_form_8cpp_source.html#l00052">52</a> of file <a class="el" href="_adjoint_form_8cpp_source.html">AdjointForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_adjoint_form_8cpp_source.html#l00068">compute_partial_gradient_unweighted()</a>, <a class="el" href="_adjoint_form_8hpp_source.html#l00048">variable_to_simulations_</a>, <a class="el" href="_form_8hpp_source.html#l00116">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_adjoint_form_8cpp_source.html#l00068">compute_partial_gradient_unweighted()</a>, <a class="el" href="_adjoint_form_8hpp_source.html#l00048">variable_to_simulations_</a>, <a class="el" href="_form_8hpp_source.html#l00124">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -778,6 +784,8 @@ Here is the call graph for this function:</div>
 </dl>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a4313c8af547f3c51a1c8cafd5071b44b">polyfem::solver::Form</a>.</p>
+
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#aba07f9573db206750e9fa14f637f6807">polyfem::solver::AMIPSForm</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_form_8cpp_source.html#l00028">28</a> of file <a class="el" href="_adjoint_form_8cpp_source.html">AdjointForm.cpp</a>.</p>
 
@@ -967,7 +975,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_form_8hpp_source.html#l00048">48</a> of file <a class="el" href="_adjoint_form_8hpp_source.html">AdjointForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_m_i_p_s_form_8hpp_source.html#l00206">polyfem::solver::AMIPSForm::compute_partial_gradient_unweighted()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00035">polyfem::solver::CollisionBarrierForm::compute_partial_gradient_unweighted()</a>, <a class="el" href="_smoothing_forms_8cpp_source.html#l00117">polyfem::solver::BoundarySmoothingForm::compute_partial_gradient_unweighted()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00045">polyfem::solver::SpatialIntegralForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00128">polyfem::solver::ElasticEnergyForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00206">polyfem::solver::StressNormForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00269">polyfem::solver::ComplianceForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00398">polyfem::solver::StressForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00499">polyfem::solver::DispGradForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00274">polyfem::solver::NodeTargetForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_adjoint_form_8cpp_source.html#l00052">first_derivative_unweighted()</a>, <a class="el" href="_a_m_i_p_s_form_8hpp_source.html#l00246">polyfem::solver::AMIPSForm::get_updated_mesh_nodes()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00111">polyfem::solver::CollisionBarrierForm::get_updated_mesh_nodes()</a>, and <a class="el" href="_adjoint_form_8hpp_source.html#l00026">get_variable_to_simulations()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="solver_2forms_2adjoint__forms_2_a_m_i_p_s_form_8hpp_source.html#l00206">polyfem::solver::AMIPSForm::compute_partial_gradient_unweighted()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00035">polyfem::solver::CollisionBarrierForm::compute_partial_gradient_unweighted()</a>, <a class="el" href="_smoothing_forms_8cpp_source.html#l00117">polyfem::solver::BoundarySmoothingForm::compute_partial_gradient_unweighted()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00045">polyfem::solver::SpatialIntegralForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00128">polyfem::solver::ElasticEnergyForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00206">polyfem::solver::StressNormForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00269">polyfem::solver::ComplianceForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00398">polyfem::solver::StressForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00499">polyfem::solver::DispGradForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00274">polyfem::solver::NodeTargetForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_adjoint_form_8cpp_source.html#l00052">first_derivative_unweighted()</a>, <a class="el" href="solver_2forms_2adjoint__forms_2_a_m_i_p_s_form_8hpp_source.html#l00246">polyfem::solver::AMIPSForm::get_updated_mesh_nodes()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00111">polyfem::solver::CollisionBarrierForm::get_updated_mesh_nodes()</a>, and <a class="el" href="_adjoint_form_8hpp_source.html#l00026">get_variable_to_simulations()</a>.</p>
 
 </div>
 </div>

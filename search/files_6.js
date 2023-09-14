@@ -9,5 +9,6 @@ var searchData=
   ['geometryutils_2ecpp_6',['GeometryUtils.cpp',['../_geometry_utils_8cpp.html',1,'']]],
   ['geometryutils_2ehpp_7',['GeometryUtils.hpp',['../_geometry_utils_8hpp.html',1,'']]],
   ['getrss_2ec_8',['getRSS.c',['../get_r_s_s_8c.html',1,'']]],
-  ['gradientdescentsolver_2ehpp_9',['GradientDescentSolver.hpp',['../_gradient_descent_solver_8hpp.html',1,'']]]
+  ['getrss_2eh_9',['getRSS.h',['../get_r_s_s_8h.html',1,'']]],
+  ['gradientdescentsolver_2ehpp_10',['GradientDescentSolver.hpp',['../_gradient_descent_solver_8hpp.html',1,'']]]
 ];

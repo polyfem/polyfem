@@ -1,6 +1,7 @@
 var _geometry_utils_8hpp =
 [
-    [ "are_edges_collinear", "_geometry_utils_8hpp.html#ad8c38f388e888043894cf1bb1b89a53e", null ],
+    [ "are_aabbs_intersecting", "_geometry_utils_8hpp.html#a44a42702b9249a5bd1e3966c43b424e9", null ],
+    [ "are_edges_collinear", "_geometry_utils_8hpp.html#a9a79c23ef96d817db692158bbcfde49a", null ],
     [ "are_triangles_coplanar", "_geometry_utils_8hpp.html#ab7792e275b464e2ea5fad474fa7d9c0b", null ],
     [ "barycentric_coordinates", "_geometry_utils_8hpp.html#ac7587aa934754541bace662011fd3064", null ],
     [ "tetrahedron_intersects_ball", "_geometry_utils_8hpp.html#a0e076b0bb2f5dba6104e2977df78e127", null ],

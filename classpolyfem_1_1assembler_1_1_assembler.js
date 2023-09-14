@@ -6,6 +6,7 @@ var classpolyfem_1_1assembler_1_1_assembler =
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_assembler.html#ae5e3a9574045efc89230afa8044d05af", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_assembler.html#ab48bd60e1023f09136d318f0d91f0b71", null ],
     [ "assemble_energy", "classpolyfem_1_1assembler_1_1_assembler.html#a1c049eeffcf6e33adab761c3c7f3d051", null ],
+    [ "assemble_energy_per_element", "classpolyfem_1_1assembler_1_1_assembler.html#a51a67351276556ec83ae49dd0d5c444b", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_assembler.html#ad876d5f518e470fc58496efd18bd397f", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_assembler.html#a5423094863967130827527cfe70b69e8", null ],
     [ "compute_dstress_dmu_dlambda", "classpolyfem_1_1assembler_1_1_assembler.html#affec51f3374101a49aadc3052e130d9a", null ],

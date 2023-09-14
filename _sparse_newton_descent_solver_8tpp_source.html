@@ -171,10 +171,10 @@ $(document).ready(function(){initNavTree('_sparse_newton_descent_solver_8tpp_sou
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    template &lt;typename ProblemType&gt;</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    void SparseNewtonDescentSolver&lt;ProblemType&gt;::increase_descent_strategy()</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        if (this-&gt;descent_strategy == 0 || reg_weight &gt; reg_weight_max)</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            this-&gt;descent_strategy++;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        if (this-&gt;descent_strategy == 1 &amp;&amp; reg_weight &lt; reg_weight_max)</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            reg_weight = std::clamp(reg_weight_inc * reg_weight, reg_weight_min, reg_weight_max);</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        else</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            reg_weight = std::max(reg_weight_inc * reg_weight, reg_weight_min);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            this-&gt;descent_strategy++;</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        assert(this-&gt;descent_strategy &lt;= 2);</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    }</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
@@ -307,12 +307,12 @@ $(document).ready(function(){initNavTree('_sparse_newton_descent_solver_8tpp_sou
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        }</div>
 <div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        // do this check here because we need to repeat the solve without resetting reg_weight</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        if (grad.dot(direction) &gt;= 0)</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        if (grad.norm() != 0 &amp;&amp; grad.dot(direction) &gt;= 0)</div>
 <div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        {</div>
 <div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            increase_descent_strategy();</div>
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            polyfem::logger().log(</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>                log_level(), &quot;[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}&quot;,</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>                name(), direction.dot(grad), descent_strategy_name());</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>                log_level(), &quot;[{}] direction is not a descent direction (‖g‖={:g}; ‖Δx‖={:g}; Δx⋅g={:g}≥0); reverting to {}&quot;,</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>                name(), grad.norm(), direction.norm(), direction.dot(grad), descent_strategy_name());</div>
 <div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>            return false;</div>
 <div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        }</div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>

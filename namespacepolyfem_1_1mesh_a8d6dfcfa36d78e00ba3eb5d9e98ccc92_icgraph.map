@@ -1,24 +1,26 @@
 <map id="polyfem::mesh::max_edge_length" name="polyfem::mesh::max_edge_length">
-<area shape="rect" id="Node000001" title="Compute the maximum edge length of a triangle mesh (V, F)" alt="" coords="1407,107,1564,147"/>
-<area shape="poly" id="edge9_Node000001_Node000001" title=" " alt="" coords="1524,96,1510,89,1485,86,1464,88,1450,93,1446,99,1448,106,1443,108,1440,98,1447,89,1462,83,1485,81,1512,84,1526,91"/>
-<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1mesh.html#a290ded340a51fb051467b479ff7dfccc" title=" " alt="" coords="212,126,372,166"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1400,153,1321,172,1228,190,1127,203,1025,209,801,209,609,207,526,199,420,183,357,169,358,164,420,178,526,194,610,201,801,203,1025,203,1126,198,1227,185,1320,167,1399,148"/>
-<area shape="rect" id="Node000004" href="$namespacepolyfem_1_1mesh.html#a679b727e7e467d38ebf4af60e8b600c3" title="Tessilate a triangle mesh (V, F) with well shaped triangles." alt="" coords="450,129,633,169"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1393,132,633,149,633,144,1393,127"/>
-<area shape="rect" id="Node000005" href="$namespacepolyfem_1_1mesh.html#a521aec8d19df9ccbe3493d7d6d97c451" title="Refine a triangle (a, b, c) into a well shaped triangle mesh." alt="" coords="711,71,893,111"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="1432,104,1396,89,1358,78,1243,58,1151,52,1059,58,942,69,894,75,893,70,941,63,1059,52,1151,47,1243,52,1359,73,1398,84,1434,99"/>
-<area shape="rect" id="Node000006" href="$namespacepolyfem_1_1mesh.html#abe799e00606dbda12858d3dbd0d6491e" title="Refine a triangle (a, b, c) into a well shaped triangle mesh." alt="" coords="420,65,663,105"/>
-<area shape="poly" id="edge8_Node000001_Node000006" title=" " alt="" coords="1450,100,1408,71,1358,47,1257,23,1152,11,1046,8,944,13,846,24,757,38,617,67,616,62,756,32,845,18,943,8,1046,3,1152,6,1258,18,1360,42,1410,66,1453,96"/>
-<area shape="rect" id="Node000007" href="$namespacepolyfem_1_1mesh.html#a4cf65a44948a6042699876449b0eddab" title="Refine an edge (a, b) so each refined edge has length at most max_edge_length." alt="" coords="1155,88,1359,113"/>
-<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="1392,119,1358,115,1359,110,1393,114"/>
-<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1mesh.html#acb91ccfdf02a3bf57424c46c4834402a" title="Tessilate a triangle mesh (V, F) with regular grids of triangles of maximum edge length." alt="" coords="1169,243,1344,283"/>
-<area shape="poly" id="edge13_Node000001_Node000009" title=" " alt="" coords="1454,159,1411,193,1360,227,1320,246,1318,241,1357,222,1407,189,1450,155"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1_state.html#a0dfe8b477867a13f17afb35bd4309508" title="extracts the boundary mesh for collision, called in build_basis" alt="" coords="5,126,164,166"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="198,149,164,149,164,143,198,143"/>
-<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="698,117,633,131,632,126,697,112"/>
-<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="697,91,663,91,663,85,697,86"/>
-<area shape="poly" id="edge7_Node000006_Node000002" title=" " alt="" coords="447,111,373,129,372,124,446,105"/>
-<area shape="rect" id="Node000008" href="$namespacepolyfem_1_1mesh.html#acf01f1cc1cd8d1c23d270e5c1471c091" title="Refine the edges of a triangle (a, b, c) so each refined edge has length at most max_edge_length." alt="" coords="941,78,1107,118"/>
-<area shape="poly" id="edge11_Node000007_Node000008" title=" " alt="" coords="1141,102,1107,102,1107,96,1141,97"/>
-<area shape="poly" id="edge12_Node000008_Node000005" title=" " alt="" coords="927,98,893,97,894,91,927,93"/>
+<area shape="rect" id="Node000001" title="Compute the maximum edge length of a triangle mesh (V, F)" alt="" coords="1425,174,1583,214"/>
+<area shape="poly" id="edge10_Node000001_Node000001" title=" " alt="" coords="1544,163,1530,156,1504,153,1481,155,1467,160,1462,166,1465,173,1460,175,1457,165,1464,155,1480,150,1504,148,1532,150,1547,158"/>
+<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1mesh.html#a290ded340a51fb051467b479ff7dfccc" title=" " alt="" coords="212,222,372,262"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1445,222,1378,245,1281,272,1204,291,1126,301,1025,305,801,305,609,303,526,295,420,280,357,265,358,260,420,274,526,290,610,298,801,300,1025,300,1126,296,1203,285,1279,267,1377,240,1443,217"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_wild_remesher.html#afc60dd47618c862c91fe57caf5505651" title=" " alt="" coords="1155,64,1377,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1459,169,1376,125,1330,106,1332,101,1378,120,1461,165"/>
+<area shape="rect" id="Node000005" href="$namespacepolyfem_1_1mesh.html#a679b727e7e467d38ebf4af60e8b600c3" title="Tessilate a triangle mesh (V, F) with well shaped triangles." alt="" coords="450,225,633,265"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="1412,217,1378,222,1169,240,962,249,776,251,633,250,633,245,776,246,962,243,1169,235,1377,217,1411,212"/>
+<area shape="rect" id="Node000006" href="$namespacepolyfem_1_1mesh.html#a521aec8d19df9ccbe3493d7d6d97c451" title="Refine a triangle (a, b, c) into a well shaped triangle mesh." alt="" coords="711,168,893,208"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="1411,177,1377,172,1255,159,1159,154,1064,156,942,165,894,171,893,166,941,160,1064,150,1160,148,1255,154,1378,166,1412,171"/>
+<area shape="rect" id="Node000007" href="$namespacepolyfem_1_1mesh.html#abe799e00606dbda12858d3dbd0d6491e" title="Refine a triangle (a, b, c) into a well shaped triangle mesh." alt="" coords="420,161,663,201"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="1483,163,1465,135,1440,104,1411,76,1376,54,1322,33,1266,19,1208,11,1150,8,1091,10,1032,16,918,37,812,67,717,102,639,135,582,163,579,158,637,131,715,97,810,62,917,32,1032,10,1090,5,1150,3,1209,6,1267,14,1324,28,1379,49,1414,71,1444,100,1469,132,1488,160"/>
+<area shape="rect" id="Node000008" href="$namespacepolyfem_1_1mesh.html#a4cf65a44948a6042699876449b0eddab" title="Refine an edge (a, b) so each refined edge has length at most max_edge_length." alt="" coords="1164,182,1368,207"/>
+<area shape="poly" id="edge11_Node000001_Node000008" title=" " alt="" coords="1412,197,1368,197,1368,192,1412,192"/>
+<area shape="rect" id="Node000010" href="$namespacepolyfem_1_1mesh.html#acb91ccfdf02a3bf57424c46c4834402a" title="Tessilate a triangle mesh (V, F) with regular grids of triangles of maximum edge length." alt="" coords="1179,340,1353,380"/>
+<area shape="poly" id="edge14_Node000001_Node000010" title=" " alt="" coords="1481,227,1437,276,1409,301,1379,323,1341,342,1338,337,1376,319,1406,297,1433,272,1477,223"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1_state.html#a0dfe8b477867a13f17afb35bd4309508" title="extracts the boundary mesh for collision, called in build_basis" alt="" coords="5,222,164,262"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="198,245,164,245,164,240,198,240"/>
+<area shape="poly" id="edge6_Node000006_Node000005" title=" " alt="" coords="698,213,633,228,632,222,697,208"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="697,188,663,187,663,181,697,182"/>
+<area shape="poly" id="edge8_Node000007_Node000002" title=" " alt="" coords="447,207,373,225,372,220,446,202"/>
+<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1mesh.html#acf01f1cc1cd8d1c23d270e5c1471c091" title="Refine the edges of a triangle (a, b, c) so each refined edge has length at most max_edge_length." alt="" coords="941,174,1107,214"/>
+<area shape="poly" id="edge12_Node000008_Node000009" title=" " alt="" coords="1150,197,1107,197,1107,192,1150,192"/>
+<area shape="poly" id="edge13_Node000009_Node000006" title=" " alt="" coords="927,194,893,193,894,188,927,189"/>
 </map>

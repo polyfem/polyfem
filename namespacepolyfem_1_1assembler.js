@@ -29,6 +29,7 @@ var namespacepolyfem_1_1assembler =
     [ "LinearAssemblerData", "classpolyfem_1_1assembler_1_1_linear_assembler_data.html", "classpolyfem_1_1assembler_1_1_linear_assembler_data" ],
     [ "LinearElasticity", "classpolyfem_1_1assembler_1_1_linear_elasticity.html", "classpolyfem_1_1assembler_1_1_linear_elasticity" ],
     [ "Mass", "classpolyfem_1_1assembler_1_1_mass.html", "classpolyfem_1_1assembler_1_1_mass" ],
+    [ "MassMatrixAssembler", "classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html", "classpolyfem_1_1assembler_1_1_mass_matrix_assembler" ],
     [ "MixedAssembler", "classpolyfem_1_1assembler_1_1_mixed_assembler.html", "classpolyfem_1_1assembler_1_1_mixed_assembler" ],
     [ "MixedAssemblerData", "classpolyfem_1_1assembler_1_1_mixed_assembler_data.html", "classpolyfem_1_1assembler_1_1_mixed_assembler_data" ],
     [ "MooneyRivlin3ParamElasticity", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_elasticity.html", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_elasticity" ],

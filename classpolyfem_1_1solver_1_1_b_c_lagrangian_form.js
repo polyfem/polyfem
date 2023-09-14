@@ -1,9 +1,9 @@
 var classpolyfem_1_1solver_1_1_b_c_lagrangian_form =
 [
-    [ "BCLagrangianForm", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a0b0be50c9e6d6de1b641fccb18554e4c", null ],
-    [ "BCLagrangianForm", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a857cc289415d8921d708f0957a1e6228", null ],
+    [ "BCLagrangianForm", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a87d4f1fecb6ab044377c40c02e1a5e51", null ],
+    [ "BCLagrangianForm", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#aeac1d30b26004b2fc555f02c14cdbe9c", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a0ce4ccc848cbbba5d749e0b643c14fc1", null ],
-    [ "init_masked_lumped_mass", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a05f4cc1007e09d23c8866bac2c70f66f", null ],
+    [ "init_masked_lumped_mass", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#aca4ea558328b659e2c51120d0d63873b", null ],
     [ "name", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a15dd180adfd295b3fd17236da15bf948", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a67a57181e3bc976a759e3db975208f79", null ],
     [ "update_lagrangian", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#aca263dd081a840295803435ca34578fa", null ],
