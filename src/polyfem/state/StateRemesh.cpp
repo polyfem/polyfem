@@ -9,10 +9,7 @@
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
-#include <polyfem/io/OBJWriter.hpp>
 
-#include <igl/PI.h>
-#include <igl/boundary_facets.h>
 #include <igl/edges.h>
 
 namespace polyfem
@@ -21,6 +18,10 @@ namespace polyfem
 
 	namespace
 	{
+		/// @brief Build a map from boundary facets to boundary ids.
+		/// @param mesh The mesh.
+		/// @param in_node_to_node The map from the input node indices to current node indices.
+		/// @return The map from boundary facets to boundary ids.
 		Remesher::BoundaryMap<int> build_boundary_to_id(
 			const std::unique_ptr<mesh::Mesh> &mesh,
 			const Eigen::VectorXi &in_node_to_node)
@@ -59,6 +60,13 @@ namespace polyfem
 			}
 		}
 
+		/// @brief Build a map from edges to the elastic and contact energies.
+		/// @param[in] state The state.
+		/// @param[in] vertices Vertices of the mesh.
+		/// @param[in] elements Elements of the mesh (P1 triangles or tetrahedra).
+		/// @param[in] sol The current solution.
+		/// @param[out] elastic_energy The map from edges to elastic energy.
+		/// @param[out] contact_energy The map from edges to contact energy.
 		void build_edge_energy_maps(
 			const State &state,
 			const Eigen::MatrixXd &vertices,
@@ -67,8 +75,6 @@ namespace polyfem
 			Remesher::EdgeMap<double> &elastic_energy,
 			Remesher::EdgeMap<double> &contact_energy)
 		{
-			const size_t n_out_vertices = elements.size();
-
 			Eigen::MatrixXi edges;
 			igl::edges(elements, edges);
 			Remesher::EdgeMap<std::vector<std::array<double, 2>>> elastic_multienergy;
