@@ -63,6 +63,7 @@ namespace polyfem
 			// compute body energy
 			double compute_energy(
 				const Eigen::MatrixXd &displacement,
+				const Eigen::MatrixXd &displacement_prev,
 				const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
 				const Density &density,
 				const int resolution,

@@ -49,12 +49,6 @@ namespace
 				"psi": 1
 			},
 
-			"geometry": [{
-				"mesh": "",
-				"enabled": true,
-				"surface_selection": 7
-			}],
-
 			"time": {
 				"dt": 0.001,
 				"tend": 1.0
@@ -69,7 +63,11 @@ namespace
 		})"_json;
 		if (dim == 2)
 		{
-			in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
+			in_args["geometry"] = R"([{
+				"mesh": "/contact/meshes/2D/simple/circle/circle36.obj",
+				"enabled": true,
+				"surface_selection": 7
+			}])"_json;
 			in_args["boundary_conditions"] = R"({
 				"dirichlet_boundary": [{
 					"id": "all",
@@ -80,12 +78,35 @@ namespace
 		}
 		else
 		{
-			in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/bar/bar-6.msh";
-			in_args["geometry"][0]["transformation"] = R"({"scale": [0.1, 1, 1]})"_json;
+			in_args["geometry"] = R"([{
+				"mesh": "/contact/meshes/3D/simple/bar/bar-6.msh",
+				"transformation": {
+					"scale": [0.1, 1, 1]
+				},
+				"surface_selection": [
+					{
+						"id": 1,
+						"axis": "z",
+						"position": 0.8,
+						"relative": true
+					},
+					{
+						"id": 2,
+						"axis": "-z",
+						"position": 0.2,
+						"relative": true
+					}
+				],
+				"n_refs": 1
+			}])"_json;
 			in_args["boundary_conditions"] = R"({
 				"neumann_boundary": [{
-					"id": 7,
+					"id": 1,
 					"value": [1000, 1000, 1000]
+				}],
+				"pressure_boundary": [{
+					"id": 2,
+					"value": -2000
 				}],
 				"rhs": [0, 0, 0]
 			})"_json;
