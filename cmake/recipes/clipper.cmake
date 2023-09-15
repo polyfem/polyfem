@@ -16,5 +16,5 @@ CPMAddPackage(
 )
 
 add_library(clipper_clipper ${clipper_clipper_SOURCE_DIR}/cpp/clipper.cpp)
-target_include_directories(clipper_clipper PUBLIC ${clipper_clipper_SOURCE_DIR}/cpp)
+target_include_directories(clipper_clipper SYSTEM PUBLIC ${clipper_clipper_SOURCE_DIR}/cpp)
 add_library(clipper::clipper ALIAS clipper_clipper)
