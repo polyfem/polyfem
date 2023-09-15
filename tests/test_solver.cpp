@@ -3,7 +3,7 @@
 #include <polyfem/quadrature/TriQuadrature.hpp>
 #include <polyfem/basis/LagrangeBasis2d.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <iostream>
 #include <cppoptlib/meta.h>
 #include <cppoptlib/problem.h>
@@ -19,13 +19,13 @@ using namespace polyfem::mesh;
 class Rosenbrock : public cppoptlib::Problem<double>
 {
 public:
-	double value(const Eigen::VectorXd &x)
+	double value(const Eigen::VectorXd &x) override
 	{
 		const double t1 = (1 - x[0]);
 		const double t2 = (x[1] - x[0] * x[0]);
 		return t1 * t1 + 100 * t2 * t2;
 	}
-	void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad)
+	void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &grad) override
 	{
 		grad[0] = -2 * (1 - x[0]) + 200 * (x[1] - x[0] * x[0]) * (-2 * x[0]);
 		grad[1] = 200 * (x[1] - x[0] * x[0]);

@@ -10,28 +10,24 @@
 # governing permissions and limitations under the License.
 #
 
-# MIT
+# spdlog (https://github.com/gabime/spdlog)
+# License: MIT
 
 if(TARGET spdlog::spdlog)
     return()
 endif()
 
-message(STATUS "Third-party (external): creating target 'spdlog::spdlog'")
-
-include(FetchContent)
-FetchContent_Declare(
-    spdlog
-    URL https://github.com/gabime/spdlog/archive/refs/tags/v1.9.2.zip
-    URL_HASH MD5=a3d2fb9e5c811ba100380aa82d48f989
-)
+message(STATUS "Third-party: creating target 'spdlog::spdlog'")
 
 option(SPDLOG_INSTALL "Generate the install target" ON)
 set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "spdlog")
-FetchContent_MakeAvailable(spdlog)
+
+include(CPM)
+CPMAddPackage("gh:gabime/spdlog@1.9.2")
 
 set_target_properties(spdlog PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-set_target_properties(spdlog PROPERTIES FOLDER third_party)
+set_target_properties(spdlog PROPERTIES FOLDER external)
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang" OR
    "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")

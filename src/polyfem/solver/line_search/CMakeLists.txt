@@ -7,6 +7,5 @@ set(SOURCES
 	MoreThuenteLineSearch.hpp
 )
 
-prepend_current_path(SOURCES)
-polyfem_set_source_group(${SOURCES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})

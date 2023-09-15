@@ -47,6 +47,7 @@ namespace polyfem::solver
 		/// @note Requires rhs_assembler (and time_integrator) to be initialized.
 		std::vector<std::shared_ptr<Form>> init_forms(
 			// General
+			const Units &units,
 			const int dim,
 			const double t,
 
@@ -83,7 +84,7 @@ namespace polyfem::solver
 			// const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
 			// const int n_boundary_samples,
 			// const StiffnessMatrix &mass,
-			const polyfem::mesh::Obstacle &obstacle,
+			const size_t obstacle_ndof,
 
 			// Contact form
 			const bool contact_enabled,
@@ -95,6 +96,7 @@ namespace polyfem::solver
 			const ipc::BroadPhaseMethod broad_phase,
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
+			const bool enable_shape_derivatives,
 
 			// Friction form
 			const double friction_coefficient,

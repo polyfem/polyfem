@@ -215,6 +215,11 @@ namespace polyfem
 				return (is_volume() ? cell_vertex(el_id, lv_id) : face_vertex(el_id, lv_id));
 			}
 
+			int boundary_element_vertex(const int primitive_id, const int lv_id) const
+			{
+				return (is_volume() ? face_vertex(primitive_id, lv_id) : edge_vertex(primitive_id, lv_id));
+			}
+
 			/// @brief is vertex boundary
 			///
 			/// @param[in] vertex_global_id *global* vertex id
@@ -235,6 +240,8 @@ namespace polyfem
 			/// @param[in] element_global_id *global* cell id
 			/// @return is cell boundary
 			virtual bool is_boundary_element(const int element_global_id) const = 0;
+
+			virtual bool save(const std::string &path) const = 0;
 
 		private:
 			/// @brief build a mesh from matrices
@@ -434,11 +441,19 @@ namespace polyfem
 			/// @brief Set the boundary selection from a vector
 			///
 			/// @param[in] boundary_ids vector one value per element
-			virtual void set_boundary_ids(const std::vector<int> &boundary_ids) { boundary_ids_ = boundary_ids; }
+			virtual void set_boundary_ids(const std::vector<int> &boundary_ids)
+			{
+				assert(boundary_ids.size() == n_boundary_elements());
+				boundary_ids_ = boundary_ids;
+			}
 			/// @brief Set the volume sections
 			///
 			/// @param[in] body_ids vector of labels, one per element
-			virtual void set_body_ids(const std::vector<int> &body_ids) { body_ids_ = body_ids; }
+			virtual void set_body_ids(const std::vector<int> &body_ids)
+			{
+				assert(body_ids.size() == n_elements());
+				body_ids_ = body_ids;
+			}
 
 			/// @brief Get the default boundary selection of an element (face in 3d, edge in 2d)
 			///

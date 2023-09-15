@@ -25,7 +25,7 @@ namespace polyfem::assembler
 	{
 	}
 
-	void GenericMatParam::add_multimaterial(const int index, const json &params)
+	void GenericMatParam::add_multimaterial(const int index, const json &params, const std::string &unit_type)
 	{
 		for (int i = param_.size(); i <= index; ++i)
 		{
@@ -33,7 +33,10 @@ namespace polyfem::assembler
 		}
 
 		if (params.count(param_name_))
+		{
 			param_[index].init(params[param_name_]);
+			param_[index].set_unit_type(unit_type);
+		}
 	}
 
 	double GenericMatParam::operator()(const RowVectorNd &p, double t, int index) const
@@ -59,7 +62,7 @@ namespace polyfem::assembler
 	{
 	}
 
-	void GenericMatParams::add_multimaterial(const int index, const json &params)
+	void GenericMatParams::add_multimaterial(const int index, const json &params, const std::string &unit_type)
 	{
 		if (!params.contains(param_name_))
 			return;
@@ -79,6 +82,7 @@ namespace polyfem::assembler
 			}
 
 			params_.at(i).param_[index].init(params_array[i]);
+			params_.at(i).param_[index].set_unit_type(unit_type);
 		}
 	}
 
@@ -116,7 +120,7 @@ namespace polyfem::assembler
 		return stifness_tensor_(i, j);
 	}
 
-	void ElasticityTensor::set_from_entries(const std::vector<double> &entries)
+	void ElasticityTensor::set_from_entries(const std::vector<double> &entries, const std::string &stress_units)
 	{
 		if (size_ == 2)
 		{
@@ -126,7 +130,7 @@ namespace polyfem::assembler
 					entries[0],
 					entries[1],
 					entries[2],
-					entries[3]);
+					entries[3], stress_units);
 
 				return;
 			}
@@ -155,7 +159,7 @@ namespace polyfem::assembler
 					entries[5],
 					entries[6],
 					entries[7],
-					entries[8]);
+					entries[8], stress_units);
 
 				return;
 			}
@@ -190,7 +194,7 @@ namespace polyfem::assembler
 		}
 	}
 
-	void ElasticityTensor::set_from_lambda_mu(const double lambda, const double mu)
+	void ElasticityTensor::set_from_lambda_mu(const double lambda, const double mu, const std::string &stress_units)
 	{
 		if (size_ == 2)
 		{
@@ -234,7 +238,7 @@ namespace polyfem::assembler
 		}
 	}
 
-	void ElasticityTensor::set_from_young_poisson(const double young, const double nu)
+	void ElasticityTensor::set_from_young_poisson(const double young, const double nu, const std::string &stress_units)
 	{
 		if (size_ == 2)
 		{
@@ -260,7 +264,7 @@ namespace polyfem::assembler
 	void ElasticityTensor::set_orthotropic(
 		double Ex, double Ey, double Ez,
 		double nuYX, double nuZX, double nuZY,
-		double muYZ, double muZX, double muXY)
+		double muYZ, double muZX, double muXY, const std::string &stress_units)
 	{
 		// copied from Julian
 		assert(size_ == 3);
@@ -275,7 +279,7 @@ namespace polyfem::assembler
 			0.0, 0.0, 0.0, 0.0, 0.0, 1.0 / muXY;
 	}
 
-	void ElasticityTensor::set_orthotropic(double Ex, double Ey, double nuYX, double muXY)
+	void ElasticityTensor::set_orthotropic(double Ex, double Ey, double nuYX, double muXY, const std::string &stress_units)
 	{
 		// copied from Julian
 		assert(size_ == 2);
@@ -331,13 +335,19 @@ namespace polyfem::assembler
 			mu = mmu;
 		}
 
+		if (lambda_mat_.size() > el_id && mu_mat_.size() > el_id)
+		{
+			lambda = lambda_mat_(el_id);
+			mu = mu_mat_(el_id);
+		}
+		
 		assert(!std::isnan(lambda));
 		assert(!std::isnan(mu));
 		assert(!std::isinf(lambda));
 		assert(!std::isinf(mu));
 	}
 
-	void LameParameters::add_multimaterial(const int index, const json &params, const bool is_volume)
+	void LameParameters::add_multimaterial(const int index, const json &params, const bool is_volume, const std::string &stress_unit)
 	{
 		const int size = is_volume ? 3 : 2;
 		assert(size_ == -1 || size == size_);
@@ -351,26 +361,33 @@ namespace polyfem::assembler
 
 		if (params.count("young"))
 		{
-			set_e_nu(index, params["young"], params["nu"]);
+			set_e_nu(index, params["young"], params["nu"], stress_unit);
 		}
 		else if (params.count("E"))
 		{
-			set_e_nu(index, params["E"], params["nu"]);
+			set_e_nu(index, params["E"], params["nu"], stress_unit);
 		}
 		else if (params.count("lambda"))
 		{
 			lambda_or_E_[index].init(params["lambda"]);
 			mu_or_nu_[index].init(params["mu"]);
+
+			lambda_or_E_[index].set_unit_type(stress_unit);
+			mu_or_nu_[index].set_unit_type(stress_unit);
 			is_lambda_mu_ = true;
 		}
 	}
 
-	void LameParameters::set_e_nu(const int index, const json &E, const json &nu)
+	void LameParameters::set_e_nu(const int index, const json &E, const json &nu, const std::string &stress_unit)
 	{
 		// TODO: conversion is always called
 		is_lambda_mu_ = false;
 		lambda_or_E_[index].init(E);
 		mu_or_nu_[index].init(nu);
+
+		lambda_or_E_[index].set_unit_type(stress_unit);
+		// nu has no unit
+		mu_or_nu_[index].set_unit_type("");
 	}
 
 	Density::Density()
@@ -390,7 +407,7 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void Density::add_multimaterial(const int index, const json &params)
+	void Density::add_multimaterial(const int index, const json &params, const std::string &density_unit)
 	{
 		for (int i = rho_.size(); i <= index; ++i)
 		{
@@ -405,6 +422,8 @@ namespace polyfem::assembler
 		{
 			rho_[index].init(params["density"]);
 		}
+
+		rho_[index].set_unit_type(density_unit);
 	}
 
 	// template instantiation

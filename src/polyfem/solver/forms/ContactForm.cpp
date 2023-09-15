@@ -23,14 +23,16 @@ namespace polyfem::solver
 							 const bool use_convergent_formulation,
 							 const bool use_adaptive_barrier_stiffness,
 							 const bool is_time_dependent,
+							 const bool enable_shape_derivatives,
 							 const ipc::BroadPhaseMethod broad_phase_method,
 							 const double ccd_tolerance,
 							 const int ccd_max_iterations)
 		: collision_mesh_(collision_mesh),
 		  dhat_(dhat),
-		  avg_mass_(avg_mass),
 		  use_adaptive_barrier_stiffness_(use_adaptive_barrier_stiffness),
+		  avg_mass_(avg_mass),
 		  is_time_dependent_(is_time_dependent),
+		  enable_shape_derivatives_(enable_shape_derivatives),
 		  broad_phase_method_(broad_phase_method),
 		  ccd_tolerance_(ccd_tolerance),
 		  ccd_max_iterations_(ccd_max_iterations)
@@ -40,11 +42,22 @@ namespace polyfem::solver
 
 		prev_distance_ = -1;
 		constraint_set_.set_use_convergent_formulation(use_convergent_formulation);
+		constraint_set_.set_are_shape_derivatives_enabled(enable_shape_derivatives);
 	}
 
 	void ContactForm::init(const Eigen::VectorXd &x)
 	{
 		update_constraint_set(compute_displaced_surface(x));
+	}
+
+	void ContactForm::force_shape_derivative(const ipc::CollisionConstraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
+	{
+		// Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
+		// Eigen::MatrixXd X = collision_mesh_.vertices(boundary_nodes_pos_);
+		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(solution);
+
+		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(contact_set.compute_shape_derivative(collision_mesh_, displaced_surface, dhat_));
+		term = barrier_stiffness() * dq_h.transpose() * adjoint_sol;
 	}
 
 	void ContactForm::update_quantities(const double t, const Eigen::VectorXd &x)
@@ -129,6 +142,56 @@ namespace polyfem::solver
 		return constraint_set_.compute_potential(collision_mesh_, compute_displaced_surface(x), dhat_);
 	}
 
+	Eigen::VectorXd ContactForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
+	{
+		const Eigen::MatrixXd V = compute_displaced_surface(x);
+		assert(V.rows() == collision_mesh_.num_vertices());
+
+		const size_t num_vertices = collision_mesh_.num_vertices();
+
+		if (constraint_set_.empty())
+		{
+			return Eigen::VectorXd::Zero(collision_mesh_.full_num_vertices());
+		}
+
+		const Eigen::MatrixXi &E = collision_mesh_.edges();
+		const Eigen::MatrixXi &F = collision_mesh_.faces();
+
+		auto storage = utils::create_thread_storage<Eigen::VectorXd>(Eigen::VectorXd::Zero(num_vertices));
+
+		utils::maybe_parallel_for(constraint_set_.size(), [&](int start, int end, int thread_id) {
+			Eigen::VectorXd &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+			for (size_t i = start; i < end; i++)
+			{
+				// Quadrature weight is premultiplied by compute_potential
+				const double potential = constraint_set_[i].compute_potential(V, E, F, dhat_);
+
+				const int n_v = constraint_set_[i].num_vertices();
+				const std::array<long, 4> vis = constraint_set_[i].vertex_ids(E, F);
+				for (int j = 0; j < n_v; j++)
+				{
+					assert(0 <= vis[j] && vis[j] < num_vertices);
+					local_storage[vis[j]] += potential / n_v;
+				}
+			}
+		});
+
+		Eigen::VectorXd out = Eigen::VectorXd::Zero(num_vertices);
+		for (const auto &local_potential : storage)
+		{
+			out += local_potential;
+		}
+
+		Eigen::VectorXd out_full = Eigen::VectorXd::Zero(collision_mesh_.full_num_vertices());
+		for (int i = 0; i < out.size(); i++)
+			out_full[collision_mesh_.to_full_vertex_id(i)] = out[i];
+
+		assert(std::abs(value_unweighted(x) - out_full.sum()) < std::max(1e-10 * out_full.sum(), 1e-10));
+
+		return out_full;
+	}
+
 	void ContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv = constraint_set_.compute_potential_gradient(collision_mesh_, compute_displaced_surface(x), dhat_);
@@ -180,7 +243,7 @@ namespace polyfem::solver
 
 			const double Linf = (V_toi - V0).lpNorm<Eigen::Infinity>();
 			if (max_step <= 0 || Linf == 0)
-				log_and_throw_error(fmt::format("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf));
+				log_and_throw_error("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf);
 
 			V_toi = (V1 - V0) * max_step + V0;
 		}

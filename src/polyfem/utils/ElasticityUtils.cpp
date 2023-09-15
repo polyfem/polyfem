@@ -9,6 +9,75 @@ namespace polyfem
 	using namespace basis;
 	using namespace utils;
 
+	double convert_to_lambda(const bool is_volume, const double E, const double nu)
+	{
+		if (is_volume)
+			return (E * nu) / ((1.0 + nu) * (1.0 - 2.0 * nu));
+
+		return (nu * E) / (1.0 - nu * nu);
+	}
+
+	double convert_to_mu(const double E, const double nu)
+	{
+		return E / (2.0 * (1.0 + nu));
+	}
+
+	Eigen::Matrix2d d_lambda_mu_d_E_nu(const bool is_volume, const double E, const double nu)
+	{
+		Eigen::Matrix2d A;
+		if (is_volume)
+		{
+			A(0, 0) = nu / ((1.0 + nu) * (1.0 - 2.0 * nu));
+			A(0, 1) = (E*(0.5*nu*nu + 0.25))/(pow(nu + 1., 2)*pow(0.5 - nu, 2));
+		}
+		else
+		{
+			A(0, 0) = nu / (1.0 - nu * nu);
+			A(0, 1) = (E*(1. + nu*nu))/pow(-1. + nu*nu, 2);
+		}
+		A(1, 0) = 1 / (2 * (1 + nu));
+		A(1, 1) = -E / 2 * pow(1 + nu, -2);
+
+		return A;
+	}
+
+	Eigen::Matrix2d d_E_nu_d_lambda_mu(const bool is_volume, const double lambda, const double mu)
+	{
+		Eigen::Matrix2d A;
+		if (is_volume)
+		{
+			A(0, 0) = pow(mu / (lambda + mu), 2);
+			A(0, 1) = (3 * lambda * lambda + 4 * lambda * mu + 2 * mu * mu) / pow(lambda + mu, 2);
+			A(1, 0) = mu / 2 / pow(lambda + mu, 2);
+			A(1, 1) = -lambda / 2 / pow(lambda + mu, 2);
+		}
+		else
+		{
+			A(0, 0) = pow(2 * mu / (lambda + 2 * mu), 2);
+			A(0, 1) = (4 * lambda * lambda + 8 * lambda * mu + 8 * mu * mu) / pow(lambda + 2 * mu, 2);
+			A(1, 0) = mu * 2 / pow(lambda + 2 * mu, 2);
+			A(1, 1) = -lambda * 2 / pow(lambda + 2 * mu, 2);
+		}
+
+		return A;
+	}
+
+	double convert_to_E(const bool is_volume, const double lambda, const double mu)
+	{
+		if (is_volume)
+			return mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
+		
+		return 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
+	}
+
+	double convert_to_nu(const bool is_volume, const double lambda, const double mu)
+	{
+		if (is_volume)
+			return lambda / (2.0 * (lambda + mu));
+		
+		return lambda / (lambda + 2.0 * mu);
+	}
+
 	Eigen::VectorXd gradient_from_energy(const int size, const int n_bases, const assembler::NonLinearAssemblerData &data,
 										 const std::function<DScalar1<double, Eigen::Matrix<double, 6, 1>>(const assembler::NonLinearAssemblerData &)> &fun6,
 										 const std::function<DScalar1<double, Eigen::Matrix<double, 8, 1>>(const assembler::NonLinearAssemblerData &)> &fun8,
@@ -74,6 +143,8 @@ namespace polyfem
 			grad = auto_diff_energy.getGradient();
 			break;
 		}
+		default: // default handled after with grad size
+			break;
 		}
 
 		if (grad.size() <= 0)
@@ -170,6 +241,8 @@ namespace polyfem
 			hessian = auto_diff_energy.getHessian();
 			break;
 		}
+		default: // default handled after with hessian size
+			break;
 		}
 
 		if (hessian.size() <= 0)
@@ -198,6 +271,31 @@ namespace polyfem
 		// std::cout << "-- hessian: " << time.getElapsedTime() << std::endl;
 
 		return hessian;
+	}
+
+	void compute_diplacement_grad(const int size, const ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad)
+	{
+		assert(displacement.cols() == 1);
+
+		displacement_grad.setZero();
+
+		for (std::size_t j = 0; j < vals.basis_values.size(); ++j)
+		{
+			const auto &loc_val = vals.basis_values[j];
+
+			assert(loc_val.grad.rows() == local_pts.rows());
+			assert(loc_val.grad.cols() == size);
+
+			for (int d = 0; d < size; ++d)
+			{
+				for (std::size_t ii = 0; ii < loc_val.global.size(); ++ii)
+				{
+					displacement_grad.row(d) += loc_val.global[ii].val * loc_val.grad.row(p) * displacement(loc_val.global[ii].index * size + d);
+				}
+			}
+		}
+
+		displacement_grad = (displacement_grad * vals.jac_it[p]).eval();
 	}
 
 	void compute_diplacement_grad(const int size, const ElementBases &bs, const ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad)

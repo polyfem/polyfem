@@ -1,31 +1,37 @@
-################################################################################
+# ###############################################################################
 # Tests
-################################################################################
+# ###############################################################################
 
 set(test_sources
-	main.cpp
-	test_assembler.cpp
-	test_bases.cpp
-	test_matrix.cpp
+  test_assembler.cpp
+  test_bases.cpp
+  test_clipping.cpp
+  test_diff.cpp
+  test_opt.cpp
   test_cmesh.cpp
-  test_geometry_utils.cpp
-  test_ncmesh.cpp
-	test_normal.cpp
-	test_problem.cpp
-	test_quadrature.cpp
-	test_rbf.cpp
-	test_solver.cpp
-	test_tbb.cpp
-	test_utils.cpp
+  test_collision_proxy.cpp
   test_form_derivatives.cpp
+  test_geometry_utils.cpp
+  test_hdf5.cpp
   test_interpolation.cpp
-  test_time_integrators.cpp
-  verify_run.cpp
+  test_matrix.cpp
+  test_ncmesh.cpp
+  test_normal.cpp
   test_output.cpp
+  test_parametrizations.cpp
+  test_problem.cpp
+  test_quadrature.cpp
+  test_rbf.cpp
   test_restart.cpp
+  test_solver.cpp
+  test_tbb.cpp
+  test_time_integrators.cpp
+  test_utils.cpp
+  verify_run.cpp
 )
 
 add_executable(unit_tests ${test_sources})
+# set_property(TARGET unit_tests PROPERTY COMPILE_WARNING_AS_ERROR ON)
 
 ################################################################################
 # Required Libraries
@@ -33,13 +39,14 @@ add_executable(unit_tests ${test_sources})
 
 target_link_libraries(unit_tests PUBLIC polyfem::polyfem)
 
+include(polyfem_warnings)
 target_link_libraries(unit_tests PUBLIC polyfem::warnings)
 
 include(catch2)
-polyfem_target_link_system_libraries(unit_tests PUBLIC Catch2::Catch2)
+target_link_libraries(unit_tests PUBLIC Catch2::Catch2WithMain)
 
 include(finite_diff)
-polyfem_target_link_system_libraries(unit_tests PUBLIC finitediff::finitediff)
+target_link_libraries(unit_tests PUBLIC finitediff::finitediff)
 
 include(polyfem_data)
 target_link_libraries(unit_tests PUBLIC polyfem::data)
@@ -56,16 +63,12 @@ target_compile_definitions(unit_tests PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)
 # Register tests
 ################################################################################
 
-foreach(source IN ITEMS ${test_sources})
-    source_group("tests" FILES "${source}")
-endforeach()
-
-set(PARSE_CATCH_TESTS_ADD_TO_CONFIGURE_DEPENDS ON)
-
-# Include Catch2 and provide function `catch_discover_tests` to register tests.
 FetchContent_GetProperties(catch2)
-include("${catch2_SOURCE_DIR}/contrib/Catch.cmake")
+list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+include(Catch)
 
+# Register tests
+set(PARSE_CATCH_TESTS_ADD_TO_CONFIGURE_DEPENDS ON)
 catch_discover_tests(unit_tests)
 
 ################################################################################

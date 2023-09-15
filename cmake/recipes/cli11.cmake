@@ -10,19 +10,13 @@
 # governing permissions and limitations under the License.
 #
 
+# CLI11 (https://github.com/CLIUtils/CLI11)
 # BSD license
-
 if(TARGET CLI11::CLI11)
     return()
 endif()
 
 message(STATUS "Third-party: creating target 'CLI11::CLI11'")
 
-include(FetchContent)
-FetchContent_Declare(
-    cli11
-    GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
-    GIT_TAG v2.1.2
-    GIT_SHALLOW TRUE
-)
-FetchContent_MakeAvailable(cli11)
+include(CPM)
+CPMAddPackage("gh:CLIUtils/CLI11@2.3.2")

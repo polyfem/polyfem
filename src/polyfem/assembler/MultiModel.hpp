@@ -5,6 +5,7 @@
 #include <polyfem/assembler/SaintVenantElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
 #include <polyfem/assembler/MooneyRivlinElasticity.hpp>
+#include <polyfem/assembler/MooneyRivlin3ParamElasticity.hpp>
 #include <polyfem/assembler/OgdenElasticity.hpp>
 #include <polyfem/basis/Basis.hpp>
 
@@ -31,7 +32,8 @@ namespace polyfem::assembler
 		void set_size(const int size) override;
 
 		// inialize material parameter
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
+
 		// initialized multi models
 		inline void init_multimodels(const std::vector<std::string> &mats) { multi_material_models_ = mats; }
 
@@ -49,6 +51,7 @@ namespace polyfem::assembler
 		LinearElasticity linear_elasticity_;
 		HookeLinearElasticity hooke_;
 		MooneyRivlinElasticity mooney_rivlin_elasticity_;
+		MooneyRivlin3ParamElasticity mooney_rivlin_3_param_elasticity_;
 		UnconstrainedOgdenElasticity unconstrained_ogden_elasticity_;
 		IncompressibleOgdenElasticity incompressible_ogden_elasticity_;
 	};

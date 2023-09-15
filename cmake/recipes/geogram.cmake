@@ -1,5 +1,5 @@
-# Geogram
-# License: (BSD)
+# Geogram (https://github.com/polyfem/geogram)
+# License: BSD
 
 if(TARGET geogram)
     return()
@@ -37,18 +37,12 @@ endif()
 
 ################################################################################
 
-include(FetchContent)
-FetchContent_Declare(
-    polyfem_geogram
-	GIT_REPOSITORY https://github.com/polyfem/geogram.git
-	GIT_TAG        516c151c244d9019a9076a1a468d52a0f6dd195d
-    GIT_SHALLOW FALSE
-)
-FetchContent_MakeAvailable(polyfem_geogram)
+include(CPM)
+CPMAddPackage("gh:polyfem/geogram#c790c30daf05839fb4d64b83f2e1fababdf17622")
 
 find_path(GEOGRAM_SOURCE_INCLUDE_DIR
 		geogram/basic/common.h
-		PATHS ${polyfem_geogram_SOURCE_DIR}
+		PATHS ${geogram_SOURCE_DIR}
 		PATH_SUFFIXES src/lib
 		NO_DEFAULT_PATH
 )

@@ -1043,6 +1043,39 @@ namespace polyfem::io
 		}
 	}
 
+	void Evaluator::interpolate_at_local_vals(const int el_index, const int dim, const int actual_dim, const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, Eigen::MatrixXd &result_grad)
+	{
+		if (fun.size() <= 0)
+		{
+			logger().error("Solve the problem first!");
+			return;
+		}
+
+		assert(fun.cols() == 1);
+
+		result.resize(vals.val.rows(), actual_dim);
+		result.setZero();
+
+		result_grad.resize(vals.val.rows(), dim * actual_dim);
+		result_grad.setZero();
+
+		const int n_loc_bases = int(vals.basis_values.size());
+
+		for (int i = 0; i < n_loc_bases; ++i)
+		{
+			const auto &val = vals.basis_values[i];
+
+			for (size_t ii = 0; ii < val.global.size(); ++ii)
+			{
+				for (int d = 0; d < actual_dim; ++d)
+				{
+					result.col(d) += val.global[ii].val * fun(val.global[ii].index * actual_dim + d) * val.val;
+					result_grad.block(0, d * val.grad_t_m.cols(), result_grad.rows(), val.grad_t_m.cols()) += val.global[ii].val * fun(val.global[ii].index * actual_dim + d) * val.grad_t_m;
+				}
+			}
+		}
+	}
+
 	bool Evaluator::check_scalar_value(
 		const mesh::Mesh &mesh,
 		const bool is_problem_scalar,
@@ -1317,5 +1350,26 @@ namespace polyfem::io
 			}
 			index += local_pts.rows();
 		}
+	}
+
+	Eigen::MatrixXd Evaluator::get_bases_position(
+		const int n_bases,
+		const std::shared_ptr<mesh::MeshNodes> mesh_nodes)
+	{
+		Eigen::MatrixXd func;
+		func.setZero(n_bases, mesh_nodes->node_position(0).size());
+
+		for (int i = 0; i < n_bases; i++)
+			func.row(i) = mesh_nodes->node_position(i);
+
+		return func;
+	}
+
+	Eigen::MatrixXd Evaluator::generate_linear_field(
+		const int n_bases,
+		const std::shared_ptr<mesh::MeshNodes> mesh_nodes,
+		const Eigen::MatrixXd &grad)
+	{
+		return utils::flatten(get_bases_position(n_bases, mesh_nodes) * grad.transpose());
 	}
 } // namespace polyfem::io

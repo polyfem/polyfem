@@ -31,6 +31,8 @@ namespace polyfem::solver
 				 const bool is_formulation_mixed,
 				 const bool is_time_dependent);
 
+		std::string name() const override { return "body"; }
+
 	protected:
 		/// @brief Compute the value of the body force form
 		/// @param x Current solution
@@ -63,10 +65,29 @@ namespace polyfem::solver
 			}
 		}
 
+		/// @brief Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adjoint_sol.
+		/// @param[in] n_verts Number of vertices
+		/// @param[in] x Current solution
+		/// @param[in] adjoint Current adjoint solution
+		/// @param[out] term Derivative of force multiplied by the adjoint
+		void force_shape_derivative(
+			const int n_verts,
+			const double t,
+			const Eigen::MatrixXd &x,
+			const Eigen::MatrixXd &adjoint,
+			Eigen::VectorXd &term);
+
+		void hessian_wrt_u_prev(
+			const Eigen::VectorXd &u_prev,
+			const double t,
+			StiffnessMatrix &hessian) const;
+
 	private:
 		double t_;       ///< Current time
 		const int ndof_; ///< Number of degrees of freedom
 		const int n_pressure_bases_;
+
+		Eigen::MatrixXd x_prev_; ///< Cached previous solution
 
 		const std::vector<int> &boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> &local_boundary_;

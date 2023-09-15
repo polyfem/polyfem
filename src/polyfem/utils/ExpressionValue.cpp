@@ -3,10 +3,14 @@
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/utils/Logger.hpp>
 
+#include <units/units.hpp>
+
 #include <igl/PI.h>
 
 #include <tinyexpr.h>
 #include <filesystem>
+
+#include <iostream>
 
 namespace polyfem
 {
@@ -125,6 +129,12 @@ namespace polyfem
 					mat_(i) = vals[i];
 				}
 			}
+			else if (vals.is_object())
+			{
+
+				unit_ = units::unit_from_string(vals["unit"].get<std::string>());
+				init(vals["value"]);
+			}
 			else
 			{
 				init(vals.get<std::string>());
@@ -168,41 +178,53 @@ namespace polyfem
 
 		double ExpressionValue::operator()(double x, double y, double z, double t, int index) const
 		{
+			assert(unit_type_set_);
+
+			double result;
 			if (expr_.empty())
 			{
 				if (mat_.size() > 0)
-					return mat_(index);
+					result = mat_(index);
+				else if (sfunc_)
+					result = sfunc_(x, y, z, t, index);
+				else if (tfunc_)
+					result = tfunc_(x, y, z, t)(tfunc_coo_);
+				else
+					result = value_;
+			}
+			else
+			{
 
-				if (sfunc_)
-					return sfunc_(x, y, z, t, index);
+				std::vector<te_variable> vars = {
+					{"x", &x, TE_VARIABLE},
+					{"y", &y, TE_VARIABLE},
+					{"z", &z, TE_VARIABLE},
+					{"t", &t, TE_VARIABLE},
+					{"min", (const void *)min, TE_FUNCTION2},
+					{"max", (const void *)max, TE_FUNCTION2},
+					{"deg2rad", (const void *)deg2rad, TE_FUNCTION1},
+					{"rotate_2D_x", (const void *)rotate_2D_x, TE_FUNCTION3},
+					{"rotate_2D_y", (const void *)rotate_2D_y, TE_FUNCTION3},
+					{"if", (const void *)iflargerthanzerothenelse, TE_FUNCTION3},
+					{"smooth_abs", (const void *)smooth_abs, TE_FUNCTION2},
+				};
 
-				if (tfunc_)
-					return tfunc_(x, y, z, t)(tfunc_coo_);
-
-				return value_;
+				int err;
+				te_expr *tmp = te_compile(expr_.c_str(), vars.data(), vars.size(), &err);
+				assert(tmp != nullptr);
+				result = te_eval(tmp);
+				te_free(tmp);
 			}
 
-			std::vector<te_variable> vars = {
-				{"x", &x, TE_VARIABLE},
-				{"y", &y, TE_VARIABLE},
-				{"z", &z, TE_VARIABLE},
-				{"t", &t, TE_VARIABLE},
-				{"min", (const void *)min, TE_FUNCTION2},
-				{"max", (const void *)max, TE_FUNCTION2},
-				{"deg2rad", (const void *)deg2rad, TE_FUNCTION1},
-				{"rotate_2D_x", (const void *)rotate_2D_x, TE_FUNCTION3},
-				{"rotate_2D_y", (const void *)rotate_2D_y, TE_FUNCTION3},
-				{"if", (const void *)iflargerthanzerothenelse, TE_FUNCTION3},
-				{"smooth_abs", (const void *)smooth_abs, TE_FUNCTION2},
-			};
+			if (!unit_.base_units().empty())
+			{
+				if (!unit_.is_convertible(unit_type_))
+					log_and_throw_error(fmt::format("Cannot convert {} to {}", units::to_string(unit_), units::to_string(unit_type_)));
 
-			int err;
-			te_expr *tmp = te_compile(expr_.c_str(), vars.data(), vars.size(), &err);
-			assert(tmp != nullptr);
-			const auto res = te_eval(tmp);
-			te_free(tmp);
+				result = units::convert(result, unit_, unit_type_);
+			}
 
-			return res;
+			return result;
 		}
 	} // namespace utils
 } // namespace polyfem

@@ -2,22 +2,16 @@
 
 #include <Eigen/Dense>
 
+#include "auto_q_bases_2d_val.hpp"
+#include "auto_q_bases_2d_nodes.hpp"
+#include "auto_q_bases_2d_grad.hpp"
+#include "auto_q_bases_3d_val.hpp"
+#include "auto_q_bases_3d_nodes.hpp"
+#include "auto_q_bases_3d_grad.hpp"
+
+
 namespace polyfem {
 namespace autogen {
-void q_nodes_2d(const int q, Eigen::MatrixXd &val);
-
-void q_basis_value_2d(const int q, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
-
-void q_grad_basis_value_2d(const int q, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
-
-
-void q_nodes_3d(const int q, Eigen::MatrixXd &val);
-
-void q_basis_value_3d(const int q, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
-
-void q_grad_basis_value_3d(const int q, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
-
-
 
 static const int MAX_Q_BASES = 3;
 

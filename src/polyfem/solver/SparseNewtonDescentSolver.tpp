@@ -1,17 +1,19 @@
 #pragma once
 
 #include "SparseNewtonDescentSolver.hpp"
+#include <unsupported/Eigen/SparseExtra>
 
 namespace cppoptlib
 {
 	template <typename ProblemType>
 	SparseNewtonDescentSolver<ProblemType>::SparseNewtonDescentSolver(
-		const json &solver_params, const json &linear_solver_params, const double dt)
-		: Superclass(solver_params, dt)
+		const json &solver_params, const json &linear_solver_params, const double dt, const double characteristic_length)
+		: Superclass(solver_params, dt, characteristic_length), characteristic_length(characteristic_length)
 	{
 		linear_solver = polysolve::LinearSolver::create(
 			linear_solver_params["solver"], linear_solver_params["precond"]);
 		linear_solver->setParameters(linear_solver_params);
+
 		force_psd_projection = solver_params["force_psd_projection"];
 	}
 
@@ -40,10 +42,10 @@ namespace cppoptlib
 	template <typename ProblemType>
 	void SparseNewtonDescentSolver<ProblemType>::increase_descent_strategy()
 	{
-		if (this->descent_strategy == 0 || reg_weight > reg_weight_max)
-			this->descent_strategy++;
+		if (this->descent_strategy == 1 && reg_weight < reg_weight_max)
+			reg_weight = std::clamp(reg_weight_inc * reg_weight, reg_weight_min, reg_weight_max);
 		else
-			reg_weight = std::max(reg_weight_inc * reg_weight, reg_weight_min);
+			this->descent_strategy++;
 		assert(this->descent_strategy <= 2);
 	}
 
@@ -142,7 +144,7 @@ namespace cppoptlib
 				log_level(), "Unable to factorize Hessian: \"{}\"; reverting to {}",
 				err.what(), this->descent_strategy_name());
 
-			// polyfem::write_sparse_matrix_csv("problematic_hessian.csv", hessian);
+			// Eigen::saveMarket(hessian, "problematic_hessian.mtx");
 			return false;
 		}
 
@@ -159,7 +161,7 @@ namespace cppoptlib
 	{
 		// gradient descent, check descent direction
 		const double residual = (hessian * direction + grad).norm(); // H Δx + g = 0
-		if (std::isnan(residual) || residual > std::max(1e-8 * grad.norm(), 1e-5))
+		if (std::isnan(residual) || residual > std::max(1e-8 * grad.norm(), 1e-5) * characteristic_length)
 		{
 			increase_descent_strategy();
 
@@ -176,12 +178,12 @@ namespace cppoptlib
 		}
 
 		// do this check here because we need to repeat the solve without resetting reg_weight
-		if (grad.dot(direction) >= 0)
+		if (grad.norm() != 0 && grad.dot(direction) >= 0)
 		{
 			increase_descent_strategy();
 			polyfem::logger().log(
-				log_level(), "[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
-				name(), direction.dot(grad), descent_strategy_name());
+				log_level(), "[{}] direction is not a descent direction (‖g‖={:g}; ‖Δx‖={:g}; Δx⋅g={:g}≥0); reverting to {}",
+				name(), grad.norm(), direction.norm(), direction.dot(grad), descent_strategy_name());
 			return false;
 		}
 
@@ -191,9 +193,9 @@ namespace cppoptlib
 	// =======================================================================
 
 	template <typename ProblemType>
-	void SparseNewtonDescentSolver<ProblemType>::update_solver_info()
+	void SparseNewtonDescentSolver<ProblemType>::update_solver_info(const double energy)
 	{
-		Superclass::update_solver_info();
+		Superclass::update_solver_info(energy);
 		this->solver_info["internal_solver"] = internal_solver_info;
 	}
 

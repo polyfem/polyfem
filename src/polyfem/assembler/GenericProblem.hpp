@@ -14,24 +14,14 @@ namespace polyfem
 			std::vector<std::shared_ptr<utils::Interpolation>> interpolation;
 			Eigen::Matrix<bool, 1, 3> dirichlet_dimension;
 
-			double eval(const RowVectorNd &pts, const int dim, const double t, const int el_id = -1) const
+			void set_unit_type(const std::string &unit_type)
 			{
-				double x = pts(0), y = pts(1), z = pts.size() == 2 ? 0 : pts(2);
-				double val = value[dim](x, y, z, t, el_id);
-
-				if (interpolation.empty())
-				{
-				}
-				else if (interpolation.size() == 1)
-					val *= interpolation[0]->eval(t);
-				else
-				{
-					assert(dim < interpolation.size());
-					val *= interpolation[dim]->eval(t);
-				}
-
-				return val;
+				for (auto &v : value)
+					v.set_unit_type(unit_type);
 			}
+
+			double eval(const RowVectorNd &pts, const int dim, const double t, const int el_id = -1) const;
+
 		};
 
 		struct ScalarBCValue
@@ -39,18 +29,19 @@ namespace polyfem
 			utils::ExpressionValue value;
 			std::shared_ptr<utils::Interpolation> interpolation;
 
-			double eval(const RowVectorNd &pts, const double t) const
+			void set_unit_type(const std::string &unit_type)
 			{
-				assert(pts.size() == 2 || pts.size() == 3);
-				double x = pts(0), y = pts(1), z = pts.size() == 3 ? pts(2) : 0.0;
-				return value(x, y, z, t) * interpolation->eval(t);
+				value.set_unit_type(unit_type);
 			}
+      
+			double eval(const RowVectorNd &pts, const double t) const;
 		};
 
 		class GenericTensorProblem : public Problem
 		{
 		public:
 			GenericTensorProblem(const std::string &name);
+			void set_units(const assembler::Assembler &assembler, const Units &units) override;
 
 			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override
@@ -152,6 +143,7 @@ namespace polyfem
 		{
 		public:
 			GenericScalarProblem(const std::string &name);
+			void set_units(const assembler::Assembler &assembler, const Units &units) override;
 
 			void rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override { return rhs_.is_zero(); }

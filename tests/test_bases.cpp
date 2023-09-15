@@ -13,7 +13,9 @@
 #include <polyfem/basis/barycentric/MVPolygonalBasis2d.hpp>
 #include <polyfem/basis/barycentric/WSPolygonalBasis2d.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+
 #include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -639,13 +641,13 @@ TEST_CASE("P1_2d", "[bases]")
 		polyfem::autogen::p_basis_value_2d(1, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 
 		linear_tri_basis_grad(i, quad.points, expected);
 		polyfem::autogen::p_grad_basis_value_2d(1, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 	}
 
 	// Check nodes
@@ -653,7 +655,7 @@ TEST_CASE("P1_2d", "[bases]")
 	for (int i = 0; i < 3; ++i)
 	{
 		for (int d = 0; d < 2; ++d)
-			REQUIRE(linear_tri_local_node[i][d] == Approx(val(i, d)).margin(1e-10));
+			REQUIRE(linear_tri_local_node[i][d] == Catch::Approx(val(i, d)).margin(1e-10));
 	}
 }
 
@@ -670,13 +672,13 @@ TEST_CASE("P2_2d", "[bases]")
 		polyfem::autogen::p_basis_value_2d(2, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 
 		quadr_tri_basis_grad(i, quad.points, expected);
 		polyfem::autogen::p_grad_basis_value_2d(2, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 	}
 
 	// Check nodes
@@ -684,7 +686,7 @@ TEST_CASE("P2_2d", "[bases]")
 	for (int i = 0; i < 6; ++i)
 	{
 		for (int d = 0; d < 2; ++d)
-			REQUIRE(quadr_tri_local_node[i][d] / 2. == Approx(val(i, d)).margin(1e-10));
+			REQUIRE(quadr_tri_local_node[i][d] / 2. == Catch::Approx(val(i, d)).margin(1e-10));
 	}
 }
 
@@ -706,9 +708,9 @@ TEST_CASE("Pk_2d", "[bases]")
 			for (int j = 0; j < val.size(); ++j)
 			{
 				if (i == j)
-					REQUIRE(val(j) == Approx(1).margin(1e-10));
+					REQUIRE(val(j) == Catch::Approx(1).margin(1e-10));
 				else
-					REQUIRE(val(j) == Approx(0).margin(1e-10));
+					REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
 			}
 		}
 	}
@@ -727,13 +729,13 @@ TEST_CASE("P1_3d", "[bases]")
 		polyfem::autogen::p_basis_value_3d(1, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 
 		linear_tet_basis_grad(i, quad.points, expected);
 		polyfem::autogen::p_grad_basis_value_3d(1, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 	}
 
 	// Check nodes
@@ -741,7 +743,7 @@ TEST_CASE("P1_3d", "[bases]")
 	for (int i = 0; i < 4; ++i)
 	{
 		for (int d = 0; d < 3; ++d)
-			REQUIRE(linear_tet_local_node[i][d] == Approx(val(i, d)).margin(1e-10));
+			REQUIRE(linear_tet_local_node[i][d] == Catch::Approx(val(i, d)).margin(1e-10));
 	}
 }
 
@@ -758,13 +760,13 @@ TEST_CASE("P2_3d", "[bases]")
 		polyfem::autogen::p_basis_value_3d(2, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 
 		quadr_tet_basis_grad(i, quad.points, expected);
 		polyfem::autogen::p_grad_basis_value_3d(2, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 	}
 
 	// Check nodes
@@ -772,7 +774,7 @@ TEST_CASE("P2_3d", "[bases]")
 	for (int i = 0; i < 10; ++i)
 	{
 		for (int d = 0; d < 3; ++d)
-			REQUIRE(quadr_tet_local_node[i][d] / 2. == Approx(val(i, d)).margin(1e-10));
+			REQUIRE(quadr_tet_local_node[i][d] / 2. == Catch::Approx(val(i, d)).margin(1e-10));
 	}
 }
 
@@ -801,9 +803,9 @@ TEST_CASE("P3_2d", "[bases]")
 		for (int j = 0; j < val.size(); ++j)
 		{
 			if (i == j)
-				REQUIRE(val(j) == Approx(1).margin(1e-10));
+				REQUIRE(val(j) == Catch::Approx(1).margin(1e-10));
 			else
-				REQUIRE(val(j) == Approx(0).margin(1e-10));
+				REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
 		}
 	}
 }
@@ -825,9 +827,9 @@ TEST_CASE("Pk_3d", "[bases]")
 			for (int j = 0; j < val.size(); ++j)
 			{
 				if (i == j)
-					REQUIRE(val(j) == Approx(1).margin(1e-10));
+					REQUIRE(val(j) == Catch::Approx(1).margin(1e-10));
 				else
-					REQUIRE(val(j) == Approx(0).margin(1e-10));
+					REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
 			}
 		}
 	}
@@ -846,13 +848,13 @@ TEST_CASE("Q1_2d", "[bases]")
 		polyfem::autogen::q_basis_value_2d(1, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 
 		linear_quad_basis_grad(i, quad.points, expected);
 		polyfem::autogen::q_grad_basis_value_2d(1, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 	}
 
 	// Check nodes
@@ -860,7 +862,7 @@ TEST_CASE("Q1_2d", "[bases]")
 	for (int i = 0; i < 4; ++i)
 	{
 		for (int d = 0; d < 2; ++d)
-			REQUIRE(linear_quad_local_node[i][d] == Approx(val(i, d)).margin(1e-10));
+			REQUIRE(linear_quad_local_node[i][d] == Catch::Approx(val(i, d)).margin(1e-10));
 	}
 }
 
@@ -877,13 +879,13 @@ TEST_CASE("Q2_2d", "[bases]")
 		polyfem::autogen::q_basis_value_2d(2, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 
 		quadr_quad_basis_grad(i, quad.points, expected);
 		polyfem::autogen::q_grad_basis_value_2d(2, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 	}
 
 	// Check nodes
@@ -891,7 +893,7 @@ TEST_CASE("Q2_2d", "[bases]")
 	for (int i = 0; i < 9; ++i)
 	{
 		for (int d = 0; d < 2; ++d)
-			REQUIRE(quadr_quad_local_node[i][d] / 2. == Approx(val(i, d)).margin(1e-10));
+			REQUIRE(quadr_quad_local_node[i][d] / 2. == Catch::Approx(val(i, d)).margin(1e-10));
 	}
 }
 
@@ -913,9 +915,9 @@ TEST_CASE("Qk_2d", "[bases]")
 			for (int j = 0; j < val.size(); ++j)
 			{
 				if (i == j)
-					REQUIRE(val(j) == Approx(1).margin(1e-10));
+					REQUIRE(val(j) == Catch::Approx(1).margin(1e-10));
 				else
-					REQUIRE(val(j) == Approx(0).margin(1e-10));
+					REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
 			}
 		}
 	}
@@ -931,9 +933,9 @@ TEST_CASE("Qk_2d", "[bases]")
 		for (int j = 0; j < val.size(); ++j)
 		{
 			if (i == j)
-				REQUIRE(val(j) == Approx(1).margin(1e-10));
+				REQUIRE(val(j) == Catch::Approx(1).margin(1e-10));
 			else
-				REQUIRE(val(j) == Approx(0).margin(1e-10));
+				REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
 		}
 	}
 }
@@ -951,13 +953,13 @@ TEST_CASE("Q1_3d", "[bases]")
 		polyfem::autogen::q_basis_value_3d(1, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 
 		linear_hex_basis_grad(i, quad.points, expected);
 		polyfem::autogen::q_grad_basis_value_3d(1, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 	}
 
 	// Check nodes
@@ -965,7 +967,7 @@ TEST_CASE("Q1_3d", "[bases]")
 	for (int i = 0; i < 8; ++i)
 	{
 		for (int d = 0; d < 3; ++d)
-			REQUIRE(linear_hex_local_node[i][d] == Approx(val(i, d)).margin(1e-10));
+			REQUIRE(linear_hex_local_node[i][d] == Catch::Approx(val(i, d)).margin(1e-10));
 	}
 }
 
@@ -982,13 +984,13 @@ TEST_CASE("Q2_3d", "[bases]")
 		polyfem::autogen::q_basis_value_3d(2, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 
 		quadr_hex_basis_grad(i, quad.points, expected);
 		polyfem::autogen::q_grad_basis_value_3d(2, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
-			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 	}
 
 	// Check nodes
@@ -996,7 +998,7 @@ TEST_CASE("Q2_3d", "[bases]")
 	for (int i = 0; i < 27; ++i)
 	{
 		for (int d = 0; d < 3; ++d)
-			REQUIRE(quadr_hex_local_node[i][d] / 2. == Approx(val(i, d)).margin(1e-10));
+			REQUIRE(quadr_hex_local_node[i][d] / 2. == Catch::Approx(val(i, d)).margin(1e-10));
 	}
 }
 
@@ -1018,9 +1020,9 @@ TEST_CASE("Qk_3d", "[bases]")
 			for (int j = 0; j < val.size(); ++j)
 			{
 				if (i == j)
-					REQUIRE(val(j) == Approx(1).margin(1e-10));
+					REQUIRE(val(j) == Catch::Approx(1).margin(1e-10));
 				else
-					REQUIRE(val(j) == Approx(0).margin(1e-10));
+					REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
 			}
 		}
 	}
@@ -1038,9 +1040,9 @@ TEST_CASE("Qk_3d", "[bases]")
 		for (int j = 0; j < val.size(); ++j)
 		{
 			if (i == j)
-				REQUIRE(val(j) == Approx(1).margin(1e-10));
+				REQUIRE(val(j) == Catch::Approx(1).margin(1e-10));
 			else
-				REQUIRE(val(j) == Approx(0).margin(1e-10));
+				REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
 		}
 	}
 }
@@ -1065,9 +1067,9 @@ TEST_CASE("MV_2d", "[bases]")
 		for (int j = 0; j < b.size(); ++j)
 		{
 			if (i == j)
-				REQUIRE(b(j) == Approx(1).margin(1e-10));
+				REQUIRE(b(j) == Catch::Approx(1).margin(1e-10));
 			else
-				REQUIRE(b(j) == Approx(0).margin(1e-10));
+				REQUIRE(b(j) == Catch::Approx(0).margin(1e-10));
 		}
 	}
 
@@ -1105,8 +1107,8 @@ TEST_CASE("MV_2d", "[bases]")
 
 			// std::cout<<j<<": "<<dx<<" "<<dy<<" -> "<<b_prime(j, 0) <<" "<<b_prime(j, 1) <<std::endl;
 
-			REQUIRE(b_prime(j, 0) == Approx(dx).margin(delta * 10));
-			REQUIRE(b_prime(j, 1) == Approx(dy).margin(delta * 10));
+			REQUIRE(b_prime(j, 0) == Catch::Approx(dx).margin(delta * 10));
+			REQUIRE(b_prime(j, 1) == Catch::Approx(dy).margin(delta * 10));
 		}
 	}
 }
@@ -1131,9 +1133,9 @@ TEST_CASE("WS_2d", "[bases]")
 		for (int j = 0; j < b.size(); ++j)
 		{
 			if (i == j)
-				REQUIRE(b(j) == Approx(1).margin(1e-10));
+				REQUIRE(b(j) == Catch::Approx(1).margin(1e-10));
 			else
-				REQUIRE(b(j) == Approx(0).margin(1e-10));
+				REQUIRE(b(j) == Catch::Approx(0).margin(1e-10));
 		}
 	}
 
@@ -1171,8 +1173,8 @@ TEST_CASE("WS_2d", "[bases]")
 
 			// std::cout<<j<<": "<<dx<<" "<<dy<<" -> "<<b_prime(j, 0) <<" "<<b_prime(j, 1) <<std::endl;
 
-			REQUIRE(b_prime(j, 0) == Approx(dx).margin(delta * 10));
-			REQUIRE(b_prime(j, 1) == Approx(dy).margin(delta * 10));
+			REQUIRE(b_prime(j, 0) == Catch::Approx(dx).margin(delta * 10));
+			REQUIRE(b_prime(j, 1) == Catch::Approx(dy).margin(delta * 10));
 		}
 	}
 }
