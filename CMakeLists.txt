@@ -275,10 +275,10 @@ if(POLYFEM_WITH_CLIPPER)
     include(clipper)
     target_link_libraries(polyfem PUBLIC clipper::clipper)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
-else()
-    include(polyclipper)
-    target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
 endif()
+
+include(polyclipper)
+target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
 
 # Extra warnings (link this here so it has top priority)
 include(polyfem_warnings)

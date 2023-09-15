@@ -1,8 +1,6 @@
 #include "ClipperUtils.hpp"
 
-#ifndef POLYFEM_WITH_CLIPPER
 #include <polyclipper2d.hh>
-#endif
 #include <polyclipper3d.hh>
 
 #include <polyfem/utils/GeometryUtils.hpp>
@@ -13,26 +11,26 @@ namespace polyfem::utils
 		const Eigen::MatrixXd &subject_polygon,
 		const Eigen::MatrixXd &clipping_polygon)
 	{
-#ifdef POLYFEM_WITH_CLIPPER
-		using namespace ClipperLib;
+		// #ifdef POLYFEM_WITH_CLIPPER
+		// using namespace ClipperLib;
 
-		Clipper clipper;
+		// Clipper clipper;
 
-		clipper.AddPath(toClipperPolygon(subject_polygon), ptSubject, /*closed=*/true);
-		clipper.AddPath(toClipperPolygon(clipping_polygon), ptClip, /*closed=*/true);
+		// clipper.AddPath(toClipperPolygon(subject_polygon), ptSubject, /*closed=*/true);
+		// clipper.AddPath(toClipperPolygon(clipping_polygon), ptClip, /*closed=*/true);
 
-		Paths solution;
-		clipper.Execute(ctIntersection, solution, pftNonZero, pftNonZero);
+		// Paths solution;
+		// clipper.Execute(ctIntersection, solution, pftNonZero, pftNonZero);
 
-		std::vector<Eigen::MatrixXd> result;
-		result.reserve(solution.size());
-		for (const auto &path : solution)
-		{
-			result.push_back(fromClipperPolygon(path));
-		}
+		// std::vector<Eigen::MatrixXd> result;
+		// result.reserve(solution.size());
+		// for (const auto &path : solution)
+		// {
+		// 	result.push_back(fromClipperPolygon(path));
+		// }
 
-		return result;
-#else
+		// return result;
+		// #else
 		using namespace PolyClipper;
 
 		// Convert the subject polygon to PolyClipper format.
@@ -99,7 +97,7 @@ namespace polyfem::utils
 		}
 
 		return result;
-#endif
+		// #endif
 	}
 
 	std::vector<Eigen::MatrixXd> TriangleClipping::clip(
