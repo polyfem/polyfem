@@ -69,12 +69,13 @@ namespace polyfem::time_integrator
 		const double &dt() const { return dt_; }
 
 		/// @brief Save the values of \f$x\f$, \f$v\f$, and \f$a\f$.
+		/// @param state_path path for the output file containing \f$x, v, a\f$ as hdf5
 		/// @param x_path path for the output file containing \f$x\f$, if the extension is `.txt`
 		///               then it will write an ASCII file else if the extension is `.bin` it will
 		///               write a binary file.
 		/// @param v_path same as `x_path`, but for saving \f$v\f$
 		/// @param a_path same as `x_path`, but for saving \f$a\f$
-		virtual void save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const;
+		virtual void save_raw(const std::string &state_path, const std::string &x_path, const std::string &v_path, const std::string &a_path) const;
 
 		/// @brief Factory method for constructing implicit time integrators from the name of the integrator.
 		/// @param name name of the type of ImplicitTimeIntegrator to construct

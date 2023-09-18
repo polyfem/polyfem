@@ -4,6 +4,9 @@
 
 #include <igl/list_to_matrix.h>
 
+#include <iostream>
+#include <h5pp/h5pp.h>
+
 #include <fstream>
 #include <iomanip> // setprecision
 #include <vector>
@@ -55,6 +58,23 @@ namespace polyfem::io
 			logger().warn("Uknown output matrix format (\"{}\"). Using ASCII format.");
 			return write_matrix_ascii(path, mat);
 		}
+	}
+
+	template <typename Mat>
+	bool write_matrix(const std::string &path, const std::string &key, const Mat &mat, const bool replace)
+	{
+		h5pp::File hdf5_file(path, replace ? h5pp::FileAccess::REPLACE : h5pp::FileAccess::RENAME);
+		hdf5_file.writeDataset(mat, key);
+
+		return true;
+	}
+
+	template <typename T>
+	bool read_matrix(const std::string &path, const std::string &key, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
+	{
+		h5pp::File hdf5_file(path, h5pp::FileAccess::READONLY);
+		mat = hdf5_file.readDataset<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>>(key);
+		return true;
 	}
 
 	template <typename T>
@@ -225,10 +245,18 @@ namespace polyfem::io
 	template bool read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
 	template bool read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
 
+	template bool read_matrix<int>(const std::string &, const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
+	template bool read_matrix<double>(const std::string &, const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+
 	template bool write_matrix<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
 	template bool write_matrix<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
 	template bool write_matrix<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
 	template bool write_matrix<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);
+
+	template bool write_matrix<Eigen::MatrixXd>(const std::string &, const std::string &, const Eigen::MatrixXd &, const bool);
+	template bool write_matrix<Eigen::MatrixXf>(const std::string &, const std::string &, const Eigen::MatrixXf &, const bool);
+	template bool write_matrix<Eigen::VectorXd>(const std::string &, const std::string &, const Eigen::VectorXd &, const bool);
+	template bool write_matrix<Eigen::VectorXf>(const std::string &, const std::string &, const Eigen::VectorXf &, const bool);
 
 	template bool read_matrix_ascii<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
 	template bool read_matrix_ascii<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);

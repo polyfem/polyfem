@@ -311,6 +311,7 @@ namespace polyfem
 		}
 
 		time_integrator->save_raw(
+			resolve_output_path(args["output"]["data"]["state"]),
 			resolve_output_path(args["output"]["data"]["u_path"]),
 			resolve_output_path(args["output"]["data"]["v_path"]),
 			resolve_output_path(args["output"]["data"]["a_path"]));

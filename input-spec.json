@@ -1,4 +1,5 @@
-[{
+[
+    {
         "pointer": "/",
         "type": "object",
         "required": [
@@ -1399,7 +1400,10 @@
         "pointer": "/space/remesh/type",
         "default": "physics",
         "type": "string",
-        "options": ["physics", "sizing_field"],
+        "options": [
+            "physics",
+            "sizing_field"
+        ],
         "doc": "Type of adaptive remeshing to use."
     },
     {
@@ -4287,6 +4291,7 @@
             "full_mat",
             "stiffness_mat",
             "stress_mat",
+            "state",
             "u_path",
             "v_path",
             "a_path",
@@ -4320,6 +4325,12 @@
         "default": "",
         "type": "string",
         "doc": "Exports stress"
+    },
+    {
+        "pointer": "/output/data/state",
+        "default": "",
+        "type": "string",
+        "doc": "Writes the complete state in PolyFEM hdf5 format, used to restart the sim"
     },
     {
         "pointer": "/output/data/u_path",
@@ -4505,12 +4516,19 @@
         "default": null,
         "type": "object",
         "optional": [
+            "state",
             "u_path",
             "v_path",
             "a_path",
             "reorder"
         ],
         "doc": "input to restart time dependent sim"
+    },
+    {
+        "pointer": "/input/data/state",
+        "default": "",
+        "type": "file",
+        "doc": "input state as hdf5"
     },
     {
         "pointer": "/input/data/u_path",
