@@ -11,6 +11,7 @@
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
+#include <polyfem/autogen/prism_bases.hpp>
 
 #include <polyfem/utils/MaybeParallelFor.hpp>
 
@@ -130,7 +131,6 @@ f5  = (0.5, 0.5,   1)
 
 namespace
 {
-
 	template <class InputIterator, class T>
 	int find_index(InputIterator first, InputIterator last, const T &val)
 	{
@@ -1077,10 +1077,10 @@ Eigen::VectorXi LagrangeBasis3d::tet_face_local_nodes(const int p, const Mesh3D 
 	const int n_face_nodes = nn * (nn + 1) / 2;
 
 	const int c = index.element;
-	assert(mesh.is_simplex(c));
+	assert(mesh.is_simplex(c) || mesh.is_prism(c));
 
 	// Local to global mapping of node indices
-	const auto l2g = tet_vertices_local_to_global(mesh, c);
+	const auto l2g = mesh.is_simplex(c) ? tet_vertices_local_to_global(mesh, c) : prism_vertices_local_to_global(mesh, c);
 
 	// Extract requested interface
 	Eigen::VectorXi result(3 + (p - 1) * 3 + n_face_nodes);
@@ -1563,6 +1563,492 @@ Eigen::VectorXi LagrangeBasis3d::hex_face_local_nodes(const bool serendipity, co
 	return result;
 }
 
+Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q, const Mesh3D &mesh, Navigation3D::Index index)
+{
+	const int c = index.element;
+	assert(mesh.is_prism(c));
+
+	// Local to global mapping of node indices
+	const auto l2g = prism_vertices_local_to_global(mesh, c);
+
+	if (mesh.n_face_vertices(index.face) == 3)
+	{
+		const int nn = p > 2 ? (p - 2) : 0;
+		const int n_edge_nodes = (p - 1) * 6;
+		const int n_face_nodes = nn * (nn + 1) / 2;
+
+		// Extract requested interface
+		Eigen::VectorXi result(3 + (p - 1) * 3 + n_face_nodes);
+		result[0] = find_index(l2g.begin(), l2g.end(), index.vertex);
+		result[1] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(index).vertex);
+		result[2] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(mesh.next_around_face(index)).vertex);
+
+		Eigen::Matrix<Navigation3D::Index, 6, 1> e;
+		Eigen::Matrix<int, 6, 2> ev;
+		ev.row(0) << l2g[0], l2g[1];
+		ev.row(1) << l2g[1], l2g[2];
+		ev.row(2) << l2g[2], l2g[0];
+
+		ev.row(3) << l2g[3], l2g[4];
+		ev.row(4) << l2g[4], l2g[5];
+		ev.row(5) << l2g[5], l2g[3];
+
+		Navigation3D::Index tmp = index;
+
+		for (int le = 0; le < e.rows(); ++le)
+		{
+			// const auto index =  find_edge(mesh, c, ev(le, 0), ev(le, 1));
+			const auto l_index = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1));
+			e[le] = l_index;
+		}
+
+		int ii = 3;
+		for (int k = 0; k < 3; ++k)
+		{
+			bool reverse = false;
+			int le = 0;
+			for (; le < ev.rows(); ++le)
+			{
+				// const auto l_index =  find_edge(mesh, c, ev(le, 0), ev(le, 1));
+				// const auto l_index = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1));
+				const auto l_index = e[le];
+				if (l_index.edge == tmp.edge)
+				{
+					if (l_index.vertex == tmp.vertex)
+						reverse = false;
+					else
+					{
+						reverse = true;
+						if (mesh.switch_vertex(tmp).vertex != l_index.vertex)
+							assert(false);
+					}
+
+					break;
+				}
+			}
+			assert(le < 6);
+
+			if (!reverse)
+			{
+
+				for (int i = 0; i < p - 1; ++i)
+				{
+					result[ii++] = 6 + le * (p - 1) + i;
+				}
+			}
+			else
+			{
+				for (int i = 0; i < p - 1; ++i)
+				{
+					result[ii++] = 6 + (le + 1) * (p - 1) - i - 1;
+				}
+			}
+
+			tmp = mesh.next_around_face(tmp);
+		}
+
+		// faces
+
+		Eigen::Matrix<int, 2, 3> fv;
+		fv.row(0) << l2g[0], l2g[1], l2g[2];
+		fv.row(1) << l2g[3], l2g[4], l2g[5];
+
+		long lf = 0;
+		for (; lf < fv.rows(); ++lf)
+		{
+			const auto l_index = mesh.get_index_from_element_face(c, fv(lf, 0), fv(lf, 1), fv(lf, 2));
+			if (l_index.face == index.face)
+				break;
+		}
+
+		assert(lf < fv.rows());
+
+		if (n_face_nodes == 0)
+		{
+		}
+		else if (n_face_nodes == 1)
+			result[ii++] = 4 + n_edge_nodes + lf;
+		else // if (n_face_nodes == 3)
+		{
+
+			const auto get_order = [&p, &nn, &n_face_nodes](const std::array<int, 3> &corners) {
+				int index;
+				int start;
+				int offset;
+
+				std::vector<int> order1(n_face_nodes); // A-> B
+				for (int k = 0; k < n_face_nodes; ++k)
+					order1[k] = k;
+
+				std::vector<int> order2(n_face_nodes); // B-> A
+				index = 0;
+				start = nn - 1;
+				for (int k = 0; k < nn; ++k)
+				{
+					for (int l = 0; l < nn - k; ++l)
+					{
+						order2[index] = start - l;
+						index++;
+					}
+					start += (nn - 1) - k;
+				}
+
+				std::vector<int> order3(n_face_nodes); // A->C
+				index = 0;
+				for (int k = 0; k < nn; ++k)
+				{
+					offset = k;
+					for (int l = 0; l < nn - k; ++l)
+					{
+						order3[index] = offset;
+						offset += nn - l;
+
+						index++;
+					}
+				}
+
+				std::vector<int> order4(n_face_nodes); // C-> A
+				index = 0;
+				start = n_face_nodes - 1;
+				for (int k = 0; k < nn; ++k)
+				{
+					offset = 0;
+					for (int l = 0; l < nn - k; ++l)
+					{
+						order4[index] = start - offset;
+						offset += k + 2 + l;
+						index++;
+					}
+
+					start += -k - 1;
+				}
+
+				std::vector<int> order5(n_face_nodes); // B-> C
+				index = 0;
+				start = nn - 1;
+				for (int k = 0; k < nn; ++k)
+				{
+					offset = 0;
+					for (int l = 0; l < nn - k; ++l)
+					{
+						order5[index] = start + offset;
+						offset += nn - 1 - l;
+						index++;
+					}
+
+					start--;
+				}
+
+				std::vector<int> order6(n_face_nodes); // C-> B
+				index = 0;
+				start = n_face_nodes;
+				for (int k = 0; k < nn; ++k)
+				{
+					offset = 0;
+					start = start - k - 1;
+					for (int l = 0; l < nn - k; ++l)
+					{
+						order6[index] = start - offset;
+						offset += l + 1 + k;
+						index++;
+					}
+				}
+
+				if (corners[0] == order1[0] && corners[1] == order1[nn - 1])
+				{
+					assert(corners[2] == order1[n_face_nodes - 1]);
+					return order1;
+				}
+
+				if (corners[0] == order2[0] && corners[1] == order2[nn - 1])
+				{
+					assert(corners[2] == order2[n_face_nodes - 1]);
+					return order2;
+				}
+
+				if (corners[0] == order3[0] && corners[1] == order3[nn - 1])
+				{
+					assert(corners[2] == order3[n_face_nodes - 1]);
+					return order3;
+				}
+
+				if (corners[0] == order4[0] && corners[1] == order4[nn - 1])
+				{
+					assert(corners[2] == order4[n_face_nodes - 1]);
+					return order4;
+				}
+
+				if (corners[0] == order5[0] && corners[1] == order5[nn - 1])
+				{
+					assert(corners[2] == order5[n_face_nodes - 1]);
+					return order5;
+				}
+
+				if (corners[0] == order6[0] && corners[1] == order6[nn - 1])
+				{
+					assert(corners[2] == order6[n_face_nodes - 1]);
+					return order6;
+				}
+
+				assert(false);
+				return order1;
+			};
+
+			Eigen::MatrixXd nodes;
+			autogen::p_nodes_3d(p, nodes);
+			// auto pos = LagrangeBasis3d::linear_tet_face_local_nodes_coordinates(mesh, index);
+			// Local to global mapping of node indices
+
+			// Extract requested interface
+			std::array<int, 3> idx;
+			for (int lv = 0; lv < 3; ++lv)
+			{
+				idx[lv] = find_index(l2g.begin(), l2g.end(), index.vertex);
+				index = mesh.next_around_face(index);
+			}
+			Eigen::Matrix3d pos(3, 3);
+			int cnt = 0;
+			for (int i : idx)
+			{
+				pos.row(cnt++) = nodes.row(i);
+			}
+
+			const Eigen::RowVector3d bary = pos.colwise().mean();
+
+			const int offset = 4 + n_edge_nodes;
+			bool found = false;
+			for (int lff = 0; lff < 4; ++lff)
+			{
+				Eigen::MatrixXd loc_nodes = nodes.block(offset + lff * n_face_nodes, 0, n_face_nodes, 3);
+				Eigen::RowVector3d node_bary = loc_nodes.colwise().mean();
+
+				if ((node_bary - bary).norm() < 1e-10)
+				{
+					std::array<int, 3> corners;
+					int sum = 0;
+					for (int m = 0; m < 3; ++m)
+					{
+						auto t = pos.row(m);
+						int min_n = -1;
+						double min_dis = 10000;
+
+						for (int n = 0; n < n_face_nodes; ++n)
+						{
+							double dis = (loc_nodes.row(n) - t).squaredNorm();
+							if (dis < min_dis)
+							{
+								min_dis = dis;
+								min_n = n;
+							}
+						}
+
+						assert(min_n >= 0);
+						assert(min_n < n_face_nodes);
+						corners[m] = min_n;
+					}
+
+					const auto indices = get_order(corners);
+					for (int min_n : indices)
+					{
+						sum += min_n;
+						result[ii++] = 4 + n_edge_nodes + min_n + lf * n_face_nodes;
+					}
+
+					assert(sum == (n_face_nodes - 1) * n_face_nodes / 2);
+
+					found = true;
+					assert(lff == lf);
+
+					break;
+				}
+			}
+
+			assert(found);
+		}
+		// else
+		// {
+		// 	assert(n_face_nodes == 0);
+		// }
+
+		assert(ii == result.size());
+		return result;
+	}
+	else
+	{
+		const int nn = q - 1;
+		const int n_edge_nodes = nn * 12;
+		const int n_face_nodes = nn * nn;
+
+		// Extract requested interface
+		Eigen::VectorXi result(4 + nn * 4 + n_face_nodes);
+		result[0] = find_index(l2g.begin(), l2g.end(), index.vertex);
+		result[1] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(index).vertex);
+		result[2] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(mesh.next_around_face(index)).vertex);
+		result[3] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(mesh.next_around_face(mesh.next_around_face(index))).vertex);
+
+		Eigen::Matrix<Navigation3D::Index, 9, 1> e;
+		Eigen::Matrix<int, 9, 2> ev;
+		ev.row(0) << l2g[0], l2g[1];
+		ev.row(1) << l2g[1], l2g[2];
+		ev.row(2) << l2g[2], l2g[0];
+
+		ev.row(3) << l2g[3], l2g[4];
+		ev.row(4) << l2g[4], l2g[5];
+		ev.row(5) << l2g[5], l2g[3];
+
+		ev.row(6) << l2g[0], l2g[3];
+		ev.row(7) << l2g[1], l2g[4];
+		ev.row(8) << l2g[2], l2g[5];
+
+		Navigation3D::Index tmp = index;
+
+		for (int le = 0; le < e.rows(); ++le)
+		{
+			const auto l_index = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1));
+			e[le] = l_index;
+		}
+
+		int ii = 4;
+		for (int k = 0; k < 4; ++k)
+		{
+			bool reverse = false;
+			int le = 0;
+			for (; le < ev.rows(); ++le)
+			{
+				// const auto l_index =  find_edge(mesh, c, ev(le, 0), ev(le, 1));
+				// const auto l_index = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1));
+				const auto l_index = e[le];
+				if (l_index.edge == tmp.edge)
+				{
+					if (l_index.vertex == tmp.vertex)
+						reverse = false;
+					else
+					{
+						reverse = true;
+						assert(mesh.switch_vertex(tmp).vertex == l_index.vertex);
+					}
+
+					break;
+				}
+			}
+			assert(le < 9);
+
+			if (!reverse)
+			{
+
+				for (int i = 0; i < q - 1; ++i)
+				{
+					result[ii++] = 8 + le * (q - 1) + i;
+				}
+			}
+			else
+			{
+				for (int i = 0; i < q - 1; ++i)
+				{
+					result[ii++] = 8 + (le + 1) * (q - 1) - i - 1;
+				}
+			}
+
+			tmp = mesh.next_around_face(tmp);
+		}
+
+		// faces
+
+		Eigen::Matrix<int, 6, 4> fv;
+		fv.row(0) << l2g[0], l2g[3], l2g[4], l2g[7];
+		fv.row(1) << l2g[1], l2g[2], l2g[5], l2g[6];
+		fv.row(2) << l2g[0], l2g[1], l2g[5], l2g[4];
+		fv.row(3) << l2g[3], l2g[2], l2g[6], l2g[7];
+		fv.row(4) << l2g[0], l2g[1], l2g[2], l2g[3];
+		fv.row(5) << l2g[4], l2g[5], l2g[6], l2g[7];
+
+		long lf = 0;
+		for (; lf < fv.rows(); ++lf)
+		{
+			const auto l_index = find_quad_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3));
+			if (l_index.face == index.face)
+				break;
+		}
+
+		assert(lf < fv.rows());
+
+		if (n_face_nodes == 1)
+			result[ii++] = 8 + n_edge_nodes + lf;
+		else if (n_face_nodes != 0)
+		{
+			Eigen::MatrixXd nodes;
+			autogen::q_nodes_3d(q, nodes);
+			// auto pos = LagrangeBasis3d::linear_tet_face_local_nodes_coordinates(mesh, index);
+			// Local to global mapping of node indices
+
+			// Extract requested interface
+			std::array<int, 4> idx;
+			for (int lv = 0; lv < 4; ++lv)
+			{
+				idx[lv] = find_index(l2g.begin(), l2g.end(), index.vertex);
+				index = mesh.next_around_face(index);
+			}
+			Eigen::Matrix<double, 4, 3> pos(4, 3);
+			int cnt = 0;
+			for (int i : idx)
+			{
+				pos.row(cnt++) = nodes.row(i);
+			}
+
+			const Eigen::RowVector3d bary = pos.colwise().mean();
+
+			const int offset = 8 + n_edge_nodes;
+			bool found = false;
+			for (int lff = 0; lff < 6; ++lff)
+			{
+				Eigen::Matrix<double, 4, 3> loc_nodes = nodes.block<4, 3>(offset + lff * n_face_nodes, 0);
+				Eigen::RowVector3d node_bary = loc_nodes.colwise().mean();
+
+				if ((node_bary - bary).norm() < 1e-10)
+				{
+					int sum = 0;
+					for (int m = 0; m < 4; ++m)
+					{
+						auto t = pos.row(m);
+						int min_n = -1;
+						double min_dis = 10000;
+
+						for (int n = 0; n < 4; ++n)
+						{
+							double dis = (loc_nodes.row(n) - t).squaredNorm();
+							if (dis < min_dis)
+							{
+								min_dis = dis;
+								min_n = n;
+							}
+						}
+
+						assert(min_n >= 0);
+						assert(min_n < 4);
+
+						sum += min_n;
+
+						result[ii++] = 8 + n_edge_nodes + min_n + lf * n_face_nodes;
+					}
+
+					assert(sum == 6); // 0 + 1 + 2 + 3
+
+					found = true;
+					assert(lff == lf);
+				}
+
+				if (found)
+					break;
+			}
+
+			assert(found);
+		}
+
+		assert(ii == result.size());
+		return result;
+	}
+}
+
 int LagrangeBasis3d::build_bases(
 	const Mesh3D &mesh,
 	const std::string &assembler,
@@ -1775,19 +2261,16 @@ int LagrangeBasis3d::build_bases(
 				return mesh3d.n_face_vertices(primitive_id) == 3 ? tet_face_local_nodes(discr_order, mesh3d, index) : hex_face_local_nodes(false, discr_order, mesh3d, index);
 			});
 
-			exit(0);
-			// implement me
-
 			for (int j = 0; j < n_el_bases; ++j)
-			{ // implement me
+			{
 				const int global_index = element_nodes_id[e][j];
 				if (!skip_interface_element)
 				{
 					b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 				}
 
-				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_basis_value_3d(discr_order, j, uv, val); });
-				b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_grad_basis_value_3d(discr_order, j, uv, val); });
+				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::prism_basis_value_3d(discr_order, discr_order, j, uv, val); });
+				b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::prism_grad_basis_value_3d(discr_order, discr_order, j, uv, val); });
 			}
 		}
 		else
