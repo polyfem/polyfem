@@ -11,6 +11,8 @@ namespace polyfem::solver
 	public:
 		virtual ~Form() {}
 
+		virtual std::string name() const = 0;
+
 		/// @brief Initialize the form
 		/// @param x Current solution
 		virtual void init(const Eigen::VectorXd &x) {}

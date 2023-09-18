@@ -1353,7 +1353,12 @@
         "default": "ImplicitEuler",
         "options": [
             "ImplicitEuler",
-            "BDF",
+            "BDF1",
+            "BDF2",
+            "BDF3",
+            "BDF4",
+            "BDF5",
+            "BDF6",
             "ImplicitNewmark"
         ],
         "doc": "Time integrator"
@@ -1436,7 +1441,8 @@
             "dhat_percentage",
             "epsv",
             "friction_coefficient",
-            "use_convergent_formulation"
+            "use_convergent_formulation",
+            "collision_mesh"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1477,6 +1483,59 @@
         "default": false,
         "type": "bool",
         "doc": "Whether to use the convergent (area weighted) formulation of IPC."
+    },
+    {
+        "pointer": "/contact/collision_mesh",
+        "type": "object",
+        "required": [
+            "mesh",
+            "linear_map"
+        ],
+        "optional": [
+            "enabled"
+        ],
+        "default": "skip",
+        "doc": "Load a preconstructed collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh",
+        "type": "object",
+        "required": [
+            "max_edge_length"
+        ],
+        "optional": [
+            "tessellation_type",
+            "enabled"
+        ],
+        "doc": "Construct a collision mesh with a maximum edge length."
+    },
+    {
+        "pointer": "/contact/collision_mesh/mesh",
+        "type": "string",
+        "doc": "Path to preconstructed collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/linear_map",
+        "type": "string",
+        "doc": "HDF file storing the linear mapping of displacements."
+    },
+    {
+        "pointer": "/contact/collision_mesh/max_edge_length",
+        "type": "float",
+        "doc": "Maximum edge length to use for building the collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/tessellation_type",
+        "type": "string",
+        "options": ["regular", "irregular"],
+        "default": "regular",
+        "doc": "Type of tessellation to use for building the collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/enabled",
+        "type": "bool",
+        "default": true,
+        "doc": ""
     },
     {
         "pointer": "/solver",
@@ -3838,7 +3897,7 @@
         "pointer": "/output/paraview/high_order_mesh",
         "default": true,
         "type": "bool",
-        "doc": "Enables/disables high-order output for paraview. Supported only for isoparametric or linear meshes with high-odrer solutions."
+        "doc": "Enables/disables high-order output for paraview. Supported only for isoparametric or linear meshes with high-order solutions."
     },
     {
         "pointer": "/output/paraview/volume",
@@ -3876,7 +3935,8 @@
             "friction_forces",
             "tensor_values",
             "velocity",
-            "acceleration"
+            "acceleration",
+            "forces"
         ],
         "doc": "Optional fields in the output"
     },
@@ -3927,6 +3987,12 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out accelerations"
+    },
+    {
+        "pointer": "/output/paraview/options/forces",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out all variational forces on the FE mesh "
     },
     {
         "pointer": "/output/data",
