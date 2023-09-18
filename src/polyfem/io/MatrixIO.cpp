@@ -63,7 +63,7 @@ namespace polyfem::io
 	template <typename Mat>
 	bool write_matrix(const std::string &path, const std::string &key, const Mat &mat, const bool replace)
 	{
-		h5pp::File hdf5_file(path, replace ? h5pp::FileAccess::REPLACE : h5pp::FileAccess::RENAME);
+		h5pp::File hdf5_file(path, replace ? h5pp::FileAccess::REPLACE : h5pp::FileAccess::READWRITE);
 		hdf5_file.writeDataset(mat, key);
 
 		return true;
@@ -73,7 +73,7 @@ namespace polyfem::io
 	bool read_matrix(const std::string &path, const std::string &key, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
 	{
 		h5pp::File hdf5_file(path, h5pp::FileAccess::READONLY);
-		mat = hdf5_file.readDataset<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>>(key);
+		mat = hdf5_file.readDataset<Eigen::Matrix<T, Eigen::Dynamic, 1>>(key);
 		return true;
 	}
 
