@@ -64,7 +64,6 @@ set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vector
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
-option(POLYFEM_WITH_REMESHING "Uses WMTK for remeshing"                    OFF)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"              OFF)
 option(POLYFEM_WITH_TRIANGLE  "Build target igl_restricted::triangle"      OFF)
 option(POLYFEM_BUILD_DOCS     "Build documentation using Doxygen"          OFF)
@@ -168,13 +167,17 @@ endif()
 # Required libraries
 ################################################################################
 
+# polysolve
+include(polysolve)
+target_link_libraries(polyfem PUBLIC polysolve)
+
 # Eigen
 include(eigen)
 target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
-# polysolve
-include(polysolve)
-target_link_libraries(polyfem PUBLIC polysolve)
+# libigl
+include(libigl)
+target_link_libraries(polyfem PUBLIC igl::core)
 
 # IPC Toolkit
 include(ipc_toolkit)
@@ -191,10 +194,6 @@ elseif(POLYFEM_THREADING STREQUAL "TBB")
     target_link_libraries(polyfem PUBLIC TBB::tbb)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TBB)
 endif()
-
-# libigl
-include(libigl)
-target_link_libraries(polyfem PUBLIC igl::core)
 
 if(POLYFEM_WITH_TRIANGLE)
     target_link_libraries(polyfem PUBLIC igl_restricted::triangle)
@@ -249,6 +248,10 @@ target_link_libraries(polyfem PUBLIC Glob::Glob)
 include(units)
 target_link_libraries(polyfem PUBLIC units::units)
 
+# wmtk library
+include(wmtk)
+target_link_libraries(polyfem PUBLIC wmtk::toolkit)
+
 # FCPW
 # include(fcpw)
 # target_link_libraries(polyfem PUBLIC fcpw::fcpw)
@@ -264,12 +267,6 @@ if(POLYFEM_WITH_MMG)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
 endif()
 
-if(POLYFEM_WITH_REMESHING)
-    # wmtk library
-    include(wmtk)
-    target_link_libraries(polyfem PUBLIC wmtk::toolkit)
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_REMESHING)
-endif()
 
 if(POLYFEM_WITH_CLIPPER)
     include(clipper)

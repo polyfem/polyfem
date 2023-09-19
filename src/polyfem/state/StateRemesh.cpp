@@ -1,5 +1,3 @@
-#ifdef POLYFEM_WITH_REMESHING
-
 #include <polyfem/State.hpp>
 
 #include <polyfem/mesh/remesh/PhysicsRemesher.hpp>
@@ -310,5 +308,3 @@ namespace polyfem
 		return true;
 	}
 } // namespace polyfem
-
-#endif
