@@ -67,7 +67,7 @@ namespace polyfem::mesh
 		auto nl_solver = state.template make_nl_solver<solver::NLProblem>("Eigen::LLT");
 		nl_solver->max_iterations() = args["local_relaxation"]["max_nl_iterations"];
 		if (this->is_boundary_op())
-			nl_solver->max_iterations() = std::max(nl_solver->max_iterations(), 5ul);
+			nl_solver->max_iterations() = std::max(nl_solver->max_iterations(), size_t(5));
 		nl_solver->allow_out_of_iterations = true;
 
 		Eigen::VectorXd reduced_sol = solve_data.nl_problem->full_to_reduced(data.sol());
