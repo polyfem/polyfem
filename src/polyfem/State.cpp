@@ -1501,7 +1501,7 @@ namespace polyfem
 				solve_transient_navier_stokes(time_steps, t0, dt, sol, pressure);
 			else if (assembler->name() == "OperatorSplitting")
 				solve_transient_navier_stokes_split(time_steps, dt, sol, pressure);
-			else if (assembler->is_linear() && !is_contact_enabled()) // Collisions add nonlinearity to the problem
+			else if (assembler->is_linear() && !is_contact_enabled() && !is_pressure_enabled()) // Collisions add nonlinearity to the problem
 				solve_transient_linear(time_steps, t0, dt, sol, pressure);
 			else if (!assembler->is_linear() && problem->is_scalar())
 				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
@@ -1512,7 +1512,7 @@ namespace polyfem
 		{
 			if (assembler->name() == "NavierStokes")
 				solve_navier_stokes(sol, pressure);
-			else if (assembler->is_linear() && !is_contact_enabled())
+			else if (assembler->is_linear() && !is_contact_enabled() && !is_pressure_enabled())
 			{
 				init_linear_solve(sol);
 				solve_linear(sol, pressure);

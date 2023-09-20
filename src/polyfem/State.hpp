@@ -515,6 +515,11 @@ namespace polyfem
 		/// @return true/false
 		bool is_contact_enabled() const { return args["contact"]["enabled"]; }
 
+		/// @brief does the simulation has pressure
+		///
+		/// @return true/false
+		bool is_pressure_enabled() const { return args["boundary_conditions"]["pressure_boundary"].size() > 0; }
+
 		/// stores if input json contains dhat
 		bool has_dhat = false;
 
