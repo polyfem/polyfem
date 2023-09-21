@@ -1,33 +1,17 @@
 <map id="polyfem::time_integrator::ImplicitTimeIntegrator::a_prev" name="polyfem::time_integrator::ImplicitTimeIntegrator::a_prev">
-<area shape="rect" id="Node000001" title="Get the most recent previous acceleration value." alt="" coords="1041,199,1227,253"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="787,5,993,60"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1104,189,1055,130,1025,100,992,74,973,62,976,58,995,69,1029,96,1059,126,1108,186"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="787,84,993,139"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1073,194,992,152,966,141,968,136,994,148,1075,189"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#aa19b9d1885d166f24557a23e1612b2af" title="Initialize the time integrator with the previous values for , , and ." alt="" coords="787,242,993,282"/>
-<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="1028,244,993,249,993,244,1027,239"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a5d2edb575418d564867ea6cfb8879d85" title="Save the values of , , and ." alt="" coords="797,307,983,361"/>
-<area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="1068,262,994,296,965,309,962,304,992,292,1065,257"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a399a0bf25a479de6771d9d3d6ed1d744" title="Convenience functions for setting the most recent previous acceleration." alt="" coords="797,163,983,217"/>
-<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="1027,213,982,206,983,201,1028,208"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a97d855c75a16cbf65ad5d6ae70f5b2c7" title="Compute the predicted solution to be used in the inertia term ." alt="" coords="793,386,987,426"/>
-<area shape="poly" id="edge16_Node000001_Node000015" title=" " alt="" coords="1108,266,1059,323,1028,351,995,376,971,388,969,384,992,372,1025,347,1055,319,1104,263"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#af94ad0e8dfab40ecba6c4956e3342860" title="Update the time integration quantities (i.e., , , and )." alt="" coords="544,84,739,139"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="791,67,729,86,728,81,789,62"/>
-<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="773,114,739,114,739,109,773,109"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1_state.html#ac42074a324e693f8eef5d7a96a56dc38" title="solves transient navier stokes with FEM" alt="" coords="549,242,733,282"/>
-<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="774,265,734,265,734,259,774,259"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="335,242,496,282"/>
-<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="536,265,496,265,496,259,536,259"/>
-<area shape="rect" id="Node000008" href="$main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" title=" " alt="" coords="123,200,271,225"/>
-<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="321,243,254,228,255,223,322,238"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="117,249,278,275"/>
-<area shape="poly" id="edge10_Node000007_Node000010" title=" " alt="" coords="321,265,278,265,278,259,321,259"/>
-<area shape="rect" id="Node000011" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,299,287,339"/>
-<area shape="poly" id="edge11_Node000007_Node000011" title=" " alt="" coords="326,288,275,302,273,297,325,283"/>
-<area shape="rect" id="Node000009" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,200,60,225"/>
-<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="109,215,60,215,60,210,109,210"/>
-<area shape="poly" id="edge15_Node000013_Node000003" title=" " alt="" coords="789,161,728,141,729,136,791,156"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a3f43612a9fe0e445cccde6d6af035c5b" title="Update the time integration quantities (i.e., , , and )." alt="" coords="549,163,734,217"/>
-<area shape="poly" id="edge14_Node000013_Node000014" title=" " alt="" coords="783,193,734,193,734,187,783,187"/>
+<area shape="rect" id="Node000001" title="Get the most recent previous acceleration value." alt="" coords="503,124,688,179"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ac87bd5ebd8b67344363864afffba1d6c" title="Compute the current acceleration given the current velocity and using the stored previous velocity(s)..." alt="" coords="248,5,455,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="538,119,453,74,428,63,430,58,456,69,540,115"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#ab6911b1bb8c36954c05c857d8f797e55" title="Compute the current velocity given the current solution and using the stored previous solution(s)." alt="" coords="248,84,455,139"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="489,137,454,131,455,126,490,131"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a399a0bf25a479de6771d9d3d6ed1d744" title="Convenience functions for setting the most recent previous acceleration." alt="" coords="259,163,444,217"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="489,171,445,178,444,173,488,166"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a97d855c75a16cbf65ad5d6ae70f5b2c7" title="Compute the predicted solution to be used in the inertia term ." alt="" coords="254,242,449,282"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="540,188,456,232,425,244,423,239,454,228,538,183"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#af94ad0e8dfab40ecba6c4956e3342860" title="Update the time integration quantities (i.e., , , and )." alt="" coords="5,84,200,139"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="252,67,191,86,189,81,250,62"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="234,114,200,114,200,109,234,109"/>
+<area shape="poly" id="edge7_Node000005_Node000003" title=" " alt="" coords="250,161,189,141,191,136,252,156"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1time__integrator_1_1_implicit_euler.html#a3f43612a9fe0e445cccde6d6af035c5b" title="Update the time integration quantities (i.e., , , and )." alt="" coords="10,163,195,217"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="245,193,196,193,196,187,245,187"/>
 </map>

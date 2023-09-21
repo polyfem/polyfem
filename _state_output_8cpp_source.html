@@ -404,17 +404,15 @@ $(document).ready(function(){initNavTree('_state_output_8cpp_source.html',''); i
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        restart_json[<span class="stringliteral">&quot;input&quot;</span>] = {{</div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>            <span class="stringliteral">&quot;data&quot;</span>,</div>
 <div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>            {</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>                {<span class="stringliteral">&quot;u_path&quot;</span>, <a class="code hl_function" href="classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a">resolve_output_path</a>(fmt::format(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">args</a>[<span class="stringliteral">&quot;output&quot;</span>][<span class="stringliteral">&quot;data&quot;</span>][<span class="stringliteral">&quot;u_path&quot;</span>], t))},</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>                {<span class="stringliteral">&quot;v_path&quot;</span>, <a class="code hl_function" href="classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a">resolve_output_path</a>(fmt::format(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">args</a>[<span class="stringliteral">&quot;output&quot;</span>][<span class="stringliteral">&quot;data&quot;</span>][<span class="stringliteral">&quot;v_path&quot;</span>], t))},</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>                {<span class="stringliteral">&quot;a_path&quot;</span>, <a class="code hl_function" href="classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a">resolve_output_path</a>(fmt::format(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">args</a>[<span class="stringliteral">&quot;output&quot;</span>][<span class="stringliteral">&quot;data&quot;</span>][<span class="stringliteral">&quot;a_path&quot;</span>], t))},</div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>            },</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        }};</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        std::ofstream file(<a class="code hl_function" href="classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a">resolve_output_path</a>(fmt::format(restart_json_path, t)));</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        file &lt;&lt; restart_json;</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    }</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>                {<span class="stringliteral">&quot;state&quot;</span>, <a class="code hl_function" href="classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a">resolve_output_path</a>(fmt::format(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">args</a>[<span class="stringliteral">&quot;output&quot;</span>][<span class="stringliteral">&quot;data&quot;</span>][<span class="stringliteral">&quot;state&quot;</span>], t))},</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>            },</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        }};</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span> </div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        std::ofstream file(<a class="code hl_function" href="classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a">resolve_output_path</a>(fmt::format(restart_json_path, t)));</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        file &lt;&lt; restart_json;</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    }</div>
 </div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>} <span class="comment">// namespace polyfem</span></div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>} <span class="comment">// namespace polyfem</span></div>
 <div class="ttc" id="a_j_s_o_n_utils_8hpp_html"><div class="ttname"><a href="_j_s_o_n_utils_8hpp.html">JSONUtils.hpp</a></div></div>
 <div class="ttc" id="a_state_8hpp_html"><div class="ttname"><a href="_state_8hpp.html">State.hpp</a></div></div>
 <div class="ttc" id="a_timer_8hpp_html"><div class="ttname"><a href="_timer_8hpp.html">Timer.hpp</a></div></div>
