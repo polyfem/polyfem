@@ -162,8 +162,8 @@ namespace polyfem
 
 #ifdef POLYFEM_WITH_REMESHING
 		wmtk::set_logger(std::make_shared<spdlog::logger>("wmtk", sinks.begin(), sinks.end()));
-		wmtk::logger().set_level(log_level);
 #endif
+
 		set_log_level(log_level);
 	}
 
