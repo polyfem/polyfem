@@ -18,6 +18,8 @@ namespace polyfem
 		solve_data.rhs_assembler = build_rhs_assembler();
 
 		initial_solution(sol);
+		if (sol.cols() > 1) // ignore previous solutions
+			sol.conservativeResize(Eigen::NoChange, 1);
 
 		if (mixed_assembler != nullptr)
 		{
@@ -50,7 +52,6 @@ namespace polyfem
 			if (!read_matrix(state_path, x_name, x))
 				log_and_throw_error("Unable to read initial {} from file ({})!", x_name, state_path);
 
-			assert(solution.cols() == 1);
 			if (reorder)
 			{
 				const int ndof = in_node_to_node.size() * dim;

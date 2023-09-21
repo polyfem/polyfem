@@ -15,41 +15,26 @@ namespace polyfem
 	using namespace io;
 	namespace time_integrator
 	{
-		void ImplicitTimeIntegrator::init(const Eigen::VectorXd &x_prev, const Eigen::VectorXd &v_prev, const Eigen::VectorXd &a_prev, double dt)
-		{
-			x_prevs_.clear();
-			x_prevs_.push_front(x_prev);
-
-			v_prevs_.clear();
-			v_prevs_.push_front(v_prev);
-
-			a_prevs_.clear();
-			a_prevs_.push_front(a_prev);
-
-			assert(dt > 0);
-			dt_ = dt;
-		}
-
 		void ImplicitTimeIntegrator::init(
-			const std::vector<Eigen::VectorXd> &x_prevs,
-			const std::vector<Eigen::VectorXd> &v_prevs,
-			const std::vector<Eigen::VectorXd> &a_prevs,
+			const Eigen::MatrixXd &x_prevs,
+			const Eigen::MatrixXd &v_prevs,
+			const Eigen::MatrixXd &a_prevs,
 			double dt)
 		{
-			assert(x_prevs.size() > 0 && x_prevs.size() <= max_steps());
-			assert(x_prevs.size() == v_prevs.size());
-			assert(x_prevs.size() == a_prevs.size());
+			assert(x_prevs.cols() > 0 && x_prevs.cols() <= max_steps());
+			assert(x_prevs.cols() == v_prevs.cols());
+			assert(x_prevs.cols() == a_prevs.cols());
 
 			x_prevs_.clear();
 			v_prevs_.clear();
 			a_prevs_.clear();
 
-			const int n = std::min(int(x_prevs.size()), max_steps());
+			const int n = std::min(int(x_prevs.cols()), max_steps());
 			for (int i = 0; i < n; i++)
 			{
-				x_prevs_.push_back(x_prevs[i]);
-				v_prevs_.push_back(v_prevs[i]);
-				a_prevs_.push_back(a_prevs[i]);
+				x_prevs_.push_back(x_prevs.col(i));
+				v_prevs_.push_back(v_prevs.col(i));
+				a_prevs_.push_back(a_prevs.col(i));
 			}
 
 			assert(dt > 0);
@@ -58,10 +43,22 @@ namespace polyfem
 
 		void ImplicitTimeIntegrator::save_state(const std::string &state_path) const
 		{
-			// TODO: save all previous values
-			write_matrix(state_path, "u", x_prev(), /*replace=*/true);
-			write_matrix(state_path, "v", v_prev(), /*replace=*/false);
-			write_matrix(state_path, "a", a_prev(), /*replace=*/false);
+			const int ndof = x_prev().size();
+			const int prev_steps = x_prevs().size();
+
+			Eigen::MatrixXd tmp(ndof, prev_steps);
+
+			for (int i = 0; i < prev_steps; ++i)
+				tmp.col(i) = x_prevs()[i];
+			write_matrix(state_path, "u", tmp, /*replace=*/true);
+
+			for (int i = 0; i < prev_steps; ++i)
+				tmp.col(i) = v_prevs()[i];
+			write_matrix(state_path, "v", tmp, /*replace=*/false);
+
+			for (int i = 0; i < prev_steps; ++i)
+				tmp.col(i) = a_prevs()[i];
+			write_matrix(state_path, "a", tmp, /*replace=*/false);
 		}
 
 		std::shared_ptr<ImplicitTimeIntegrator> ImplicitTimeIntegrator::construct_time_integrator(const json &params)

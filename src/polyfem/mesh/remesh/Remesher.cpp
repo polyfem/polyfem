@@ -376,31 +376,19 @@ namespace polyfem::mesh
 	void Remesher::split_time_integrator_quantities(
 		const Eigen::MatrixXd &quantities,
 		const int dim,
-		std::vector<Eigen::VectorXd> &x_prevs,
-		std::vector<Eigen::VectorXd> &v_prevs,
-		std::vector<Eigen::VectorXd> &a_prevs)
+		Eigen::MatrixXd &x_prevs,
+		Eigen::MatrixXd &v_prevs,
+		Eigen::MatrixXd &a_prevs)
 	{
 		if (quantities.size() == 0)
 			return;
 
-		const int ndof = quantities.rows();
-		const int n_vertices = ndof / dim;
-		assert(ndof % dim == 0);
-
-		const std::array<std::vector<Eigen::VectorXd> *, 3> all_prevs{{&x_prevs, &v_prevs, &a_prevs}};
-		const int n_steps = quantities.cols() / 3;
 		assert(quantities.cols() % 3 == 0);
+		const int n_steps = quantities.cols() / 3;
 
-		int offset = 0;
-		for (std::vector<Eigen::VectorXd> *prevs : all_prevs)
-		{
-			prevs->clear();
-			for (int i = 0; i < n_steps; ++i)
-				prevs->push_back(quantities.col(offset + i));
-			offset += n_steps;
-		}
-
-		assert(offset == quantities.cols());
+		x_prevs = quantities.leftCols(n_steps);
+		v_prevs = quantities.middleCols(n_steps, n_steps);
+		a_prevs = quantities.rightCols(n_steps);
 	}
 
 	void Remesher::log_timings()

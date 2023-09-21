@@ -22,22 +22,12 @@ namespace polyfem::time_integrator
 		virtual void set_parameters(const json &params) {}
 
 		/// @brief Initialize the time integrator with the previous values for \f$x\f$, \f$v\f$, and \f$a\f$.
-		/// @param x_prev previous value for the solution
-		/// @param v_prev previous value for the velocity
-		/// @param a_prev previous value for the acceleration
+		/// @param x_prev previous value(s) for the solution
+		/// @param v_prev previous value(s) for the velocity
+		/// @param a_prev previous value(s) for the acceleration
 		/// @param dt time step size
-		virtual void init(const Eigen::VectorXd &x_prev, const Eigen::VectorXd &v_prev, const Eigen::VectorXd &a_prev, double dt);
-
-		/// @brief Initialize the time integrator with the previous values for \f$x\f$, \f$v\f$, and \f$a\f$.
-		/// @param x_prevs vector of previous solutions
-		/// @param v_prevs vector of previous velocities
-		/// @param a_prevs vector of previous accelerations
-		/// @param dt time step
-		void init(
-			const std::vector<Eigen::VectorXd> &x_prevs,
-			const std::vector<Eigen::VectorXd> &v_prevs,
-			const std::vector<Eigen::VectorXd> &a_prevs,
-			double dt);
+		/// @note Multiple previous values for x, v, and a can be provided as columns of the input matrices.
+		virtual void init(const Eigen::MatrixXd &x_prevs, const Eigen::MatrixXd &v_prevs, const Eigen::MatrixXd &a_prevs, double dt);
 
 		/// @brief Update the time integration quantities (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
 		/// @param x new solution vector
