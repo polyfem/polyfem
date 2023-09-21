@@ -1589,9 +1589,10 @@ namespace polyfem
 				solve_tensor_nonlinear(sol);
 				if (optimization_enabled)
 					cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
-				const std::string u_path = resolve_output_path(args["output"]["data"]["u_path"]);
-				if (!u_path.empty())
-					write_matrix(u_path, sol);
+
+				const std::string state_path = resolve_output_path(args["output"]["data"]["state"]);
+				if (!state_path.empty())
+					write_matrix(state_path, "u", sol);
 			}
 		}
 

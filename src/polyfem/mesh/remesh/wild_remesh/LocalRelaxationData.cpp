@@ -216,9 +216,7 @@ namespace polyfem::mesh
 			solve_data.time_integrator =
 				time_integrator::ImplicitTimeIntegrator::construct_time_integrator(
 					state.args["time"]["integrator"]);
-			std::vector<Eigen::VectorXd> x_prevs;
-			std::vector<Eigen::VectorXd> v_prevs;
-			std::vector<Eigen::VectorXd> a_prevs;
+			Eigen::MatrixXd x_prevs, v_prevs, a_prevs;
 			Remesher::split_time_integrator_quantities(
 				local_mesh.projection_quantities(), dim(), x_prevs, v_prevs, a_prevs);
 			solve_data.time_integrator->init(
