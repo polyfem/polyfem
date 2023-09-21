@@ -69,11 +69,11 @@ namespace polyfem::io
 		return true;
 	}
 
-	template <typename T>
-	bool read_matrix(const std::string &path, const std::string &key, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
+	template <typename Mat>
+	bool read_matrix(const std::string &path, const std::string &key, Mat &mat)
 	{
 		h5pp::File hdf5_file(path, h5pp::FileAccess::READONLY);
-		mat = hdf5_file.readDataset<Eigen::Matrix<T, Eigen::Dynamic, 1>>(key);
+		mat = hdf5_file.readDataset<Mat>(key);
 		return true;
 	}
 
@@ -245,8 +245,8 @@ namespace polyfem::io
 	template bool read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
 	template bool read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
 
-	template bool read_matrix<int>(const std::string &, const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
-	template bool read_matrix<double>(const std::string &, const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+	template bool read_matrix<Eigen::MatrixXi>(const std::string &, const std::string &, Eigen::MatrixXi &);
+	template bool read_matrix<Eigen::MatrixXd>(const std::string &, const std::string &, Eigen::MatrixXd &);
 
 	template bool write_matrix<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
 	template bool write_matrix<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);

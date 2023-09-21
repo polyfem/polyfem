@@ -178,6 +178,7 @@ namespace polyfem
 
 			Eigen::MatrixXd solution, velocity, acceleration;
 			initial_solution(solution); // Reload this because we need all previous solutions
+			solution.col(0) = sol;      // Make sure the current solution is the same as `sol`
 			assert(solution.rows() == sol.size());
 			initial_velocity(velocity);
 			assert(velocity.rows() == sol.size());
@@ -219,6 +220,7 @@ namespace polyfem
 		{
 			Eigen::MatrixXd solution, velocity, acceleration;
 			initial_solution(solution); // Reload this because we need all previous solutions
+			solution.col(0) = sol;      // Make sure the current solution is the same as `sol`
 			assert(solution.rows() == sol.size());
 			initial_velocity(velocity);
 			assert(velocity.rows() == sol.size());

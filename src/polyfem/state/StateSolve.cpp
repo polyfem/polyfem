@@ -69,7 +69,7 @@ namespace polyfem
 
 		const bool was_solution_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "u",
-			args["input"]["data"]["reorder"].get<bool>(), in_node_to_node,
+			args["input"]["data"]["reorder"], in_node_to_node,
 			mesh->dimension(), solution);
 
 		if (!was_solution_loaded)
@@ -90,7 +90,7 @@ namespace polyfem
 
 		const bool was_velocity_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "v",
-			args["input"]["data"]["reorder"].get<bool>(), in_node_to_node,
+			args["input"]["data"]["reorder"], in_node_to_node,
 			mesh->dimension(), velocity);
 
 		if (!was_velocity_loaded)
@@ -103,7 +103,7 @@ namespace polyfem
 
 		const bool was_acceleration_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "a",
-			args["input"]["data"]["reorder"].get<bool>(), in_node_to_node,
+			args["input"]["data"]["reorder"], in_node_to_node,
 			mesh->dimension(), acceleration);
 
 		if (!was_acceleration_loaded)
