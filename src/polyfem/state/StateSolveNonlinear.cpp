@@ -142,11 +142,8 @@ namespace polyfem
 					V, F, mesh->get_body_ids(), mesh->is_volume(), /*binary=*/true);
 			}
 
-			solve_data.time_integrator->save_raw(
-				resolve_output_path(fmt::format(args["output"]["data"]["state"], t)),
-				resolve_output_path(fmt::format(args["output"]["data"]["u_path"], t)),
-				resolve_output_path(fmt::format(args["output"]["data"]["v_path"], t)),
-				resolve_output_path(fmt::format(args["output"]["data"]["a_path"], t)));
+			solve_data.time_integrator->save_state(
+				resolve_output_path(fmt::format(args["output"]["data"]["state"], t)));
 
 			// save restart file
 			save_restart_json(t0, dt, t);

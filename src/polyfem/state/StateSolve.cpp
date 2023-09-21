@@ -39,26 +39,16 @@ namespace polyfem
 		bool read_initial_x_from_file(
 			const std::string &state_path,
 			const std::string &x_name,
-			const std::string &x_path,
 			const bool reorder,
 			const Eigen::VectorXi &in_node_to_node,
 			const int dim,
 			Eigen::MatrixXd &x)
 		{
-			if (!state_path.empty())
-			{
-				if (!read_matrix(state_path, x_name, x))
-					log_and_throw_error("Unable to read initial {} from file ({})!", x_name, state_path);
-			}
-			else if (!x_path.empty())
-			{
-				if (!read_matrix(x_path, x))
-					log_and_throw_error("Unable to read initial {} from file ({})!", x_name, x_path);
-			}
-			else
-			{
+			if (state_path.empty())
 				return false;
-			}
+
+			if (!read_matrix(state_path, x_name, x))
+				log_and_throw_error("Unable to read initial {} from file ({})!", x_name, state_path);
 
 			assert(solution.cols() == 1);
 			if (reorder)
@@ -78,7 +68,6 @@ namespace polyfem
 
 		const bool was_solution_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "u",
-			resolve_input_path(args["input"]["data"]["u_path"]),
 			args["input"]["data"]["reorder"].get<bool>(), in_node_to_node,
 			mesh->dimension(), solution);
 
@@ -100,7 +89,6 @@ namespace polyfem
 
 		const bool was_velocity_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "v",
-			resolve_input_path(args["input"]["data"]["v_path"]),
 			args["input"]["data"]["reorder"].get<bool>(), in_node_to_node,
 			mesh->dimension(), velocity);
 
@@ -114,7 +102,6 @@ namespace polyfem
 
 		const bool was_acceleration_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "a",
-			resolve_input_path(args["input"]["data"]["a_path"]),
 			args["input"]["data"]["reorder"].get<bool>(), in_node_to_node,
 			mesh->dimension(), acceleration);
 

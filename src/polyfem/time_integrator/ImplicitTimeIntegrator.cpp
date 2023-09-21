@@ -56,25 +56,12 @@ namespace polyfem
 			dt_ = dt;
 		}
 
-		void ImplicitTimeIntegrator::save_raw(const std::string &state_path, const std::string &x_path, const std::string &v_path, const std::string &a_path) const
+		void ImplicitTimeIntegrator::save_state(const std::string &state_path) const
 		{
-			if (!state_path.empty())
-			{
-				write_matrix(state_path, "u", x_prev());
-				write_matrix(state_path, "v", v_prev(), false);
-				write_matrix(state_path, "a", a_prev(), false);
-			}
-			else
-			{
-				if (!x_path.empty())
-					write_matrix(x_path, x_prev());
-
-				if (!v_path.empty())
-					write_matrix(v_path, v_prev());
-
-				if (!a_path.empty())
-					write_matrix(a_path, a_prev());
-			}
+			// TODO: save all previous values
+			write_matrix(state_path, "u", x_prev(), /*replace=*/true);
+			write_matrix(state_path, "v", v_prev(), /*replace=*/false);
+			write_matrix(state_path, "a", a_prev(), /*replace=*/false);
 		}
 
 		std::shared_ptr<ImplicitTimeIntegrator> ImplicitTimeIntegrator::construct_time_integrator(const json &params)

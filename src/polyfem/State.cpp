@@ -1591,12 +1591,8 @@ namespace polyfem
 					cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 
 				const std::string state_path = resolve_output_path(args["output"]["data"]["state"]);
-				const std::string u_path = resolve_output_path(args["output"]["data"]["u_path"]);
-
 				if (!state_path.empty())
 					write_matrix(state_path, "u", sol);
-				else if (!u_path.empty())
-					write_matrix(u_path, sol);
 			}
 		}
 

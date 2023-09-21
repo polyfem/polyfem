@@ -310,10 +310,6 @@ namespace polyfem
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}
 
-		time_integrator->save_raw(
-			resolve_output_path(args["output"]["data"]["state"]),
-			resolve_output_path(args["output"]["data"]["u_path"]),
-			resolve_output_path(args["output"]["data"]["v_path"]),
-			resolve_output_path(args["output"]["data"]["a_path"]));
+		time_integrator->save_state(resolve_output_path(args["output"]["data"]["state"]));
 	}
 } // namespace polyfem

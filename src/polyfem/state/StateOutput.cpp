@@ -257,9 +257,6 @@ namespace polyfem
 			"data",
 			{
 				{"state", resolve_output_path(fmt::format(args["output"]["data"]["state"], t))},
-				// {"u_path", resolve_output_path(fmt::format(args["output"]["data"]["u_path"], t))},
-				// {"v_path", resolve_output_path(fmt::format(args["output"]["data"]["v_path"], t))},
-				// {"a_path", resolve_output_path(fmt::format(args["output"]["data"]["a_path"], t))},
 			},
 		}};
 
