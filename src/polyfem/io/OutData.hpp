@@ -8,6 +8,8 @@
 
 #include <polyfem/mesh/Mesh.hpp>
 
+#include <polyfem/solver/SolveData.hpp>
+
 #include <paraviewo/ParaviewWriter.hpp>
 #include <paraviewo/VTUWriter.hpp>
 #include <paraviewo/HDF5VTUWriter.hpp>
@@ -51,6 +53,7 @@ namespace polyfem::io
 			bool points;
 			bool contact_forces;
 			bool friction_forces;
+			bool forces;
 
 			bool use_sampler;
 			bool boundary_only;
@@ -59,6 +62,10 @@ namespace polyfem::io
 			bool sol_on_grid;
 			bool velocity;
 			bool acceleration;
+			bool tensor_values;
+			bool scalar_values;
+			bool discretization_order;
+			bool nodes;
 
 			bool use_spline;
 			bool reorder_output;
@@ -168,6 +175,7 @@ namespace polyfem::io
 		/// @param[in] sol solution
 		/// @param[in] pressure pressure
 		/// @param[in] t time
+		/// @param[in] dt delta t
 		/// @param[in] opts export options
 		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_volume(const std::string &path,
@@ -175,6 +183,7 @@ namespace polyfem::io
 						 const Eigen::MatrixXd &sol,
 						 const Eigen::MatrixXd &pressure,
 						 const double t,
+						 const double dt,
 						 const ExportOptions &opts,
 						 std::vector<SolutionFrame> &solution_frames) const;
 
@@ -272,23 +281,29 @@ namespace polyfem::io
 		/// @param[in] bases bases
 		/// @param[in] gbases geometric bases
 		/// @param[in] total_local_boundary boundaries
+		/// @param[in] solution solution
+		/// @param[in] problem_dim dimension of the problem
 		/// @param[out] boundary_vis_vertices boundary visualization mesh vertices
 		/// @param[out] boundary_vis_local_vertices boundary visualization mesh vertices pre image in ref element
 		/// @param[out] boundary_vis_elements boundary visualization mesh connectivity
 		/// @param[out] boundary_vis_elements_ids boundary visualization mesh elements ids
 		/// @param[out] boundary_vis_primitive_ids boundary visualization mesh edge/face id
 		/// @param[out] boundary_vis_normals boundary visualization mesh normals
+		/// @param[out] displaced_boundary_vis_normals boundary visualization mesh normals after displacement is applied
 		void build_vis_boundary_mesh(
 			const mesh::Mesh &mesh,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const std::vector<mesh::LocalBoundary> &total_local_boundary,
+			const Eigen::MatrixXd &solution,
+			const int problem_dim,
 			Eigen::MatrixXd &boundary_vis_vertices,
 			Eigen::MatrixXd &boundary_vis_local_vertices,
 			Eigen::MatrixXi &boundary_vis_elements,
 			Eigen::MatrixXi &boundary_vis_elements_ids,
 			Eigen::MatrixXi &boundary_vis_primitive_ids,
-			Eigen::MatrixXd &boundary_vis_normals) const;
+			Eigen::MatrixXd &boundary_vis_normals,
+			Eigen::MatrixXd &displaced_boundary_vis_normals) const;
 
 		/// builds visualzation mesh, upsampled mesh used for visualization
 		/// the visualization mesh is a dense mesh per element all disconnected
@@ -489,5 +504,36 @@ namespace polyfem::io
 					   const bool isoparametric,
 					   const int sol_at_node_id,
 					   nlohmann::json &j);
+	};
+
+	class EnergyCSVWriter
+	{
+	public:
+		EnergyCSVWriter(const std::string &path, const solver::SolveData &solve_data);
+		~EnergyCSVWriter();
+
+		void write(const int i, const Eigen::MatrixXd &sol);
+
+	protected:
+		const solver::SolveData &solve_data;
+		std::ofstream file;
+	};
+
+	class RuntimeStatsCSVWriter
+	{
+	public:
+		RuntimeStatsCSVWriter(const std::string &path, const State &state, const double t0, const double dt);
+		~RuntimeStatsCSVWriter();
+
+		void write(const int t, const double forward, const double remeshing, const double global_relaxation, const Eigen::MatrixXd &sol);
+
+	protected:
+		const State &state;
+		const double t0;
+		const double dt;
+		std::ofstream file;
+		double total_forward_solve_time = 0;
+		double total_remeshing_time = 0;
+		double total_global_relaxation_time = 0;
 	};
 } // namespace polyfem::io

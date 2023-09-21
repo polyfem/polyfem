@@ -23,12 +23,13 @@ namespace polyfem::mesh
 	using namespace polyfem::utils;
 
 	std::unique_ptr<Mesh> read_fem_mesh(
+		const Units &units,
 		const json &j_mesh,
 		const std::string &root_path,
 		const bool non_conforming)
 	{
 		if (!is_param_valid(j_mesh, "mesh"))
-			log_and_throw_error(fmt::format("Mesh {} is mising a \"mesh\" field!", j_mesh));
+			log_and_throw_error("Mesh {} is mising a \"mesh\" field!", j_mesh);
 
 		if (j_mesh["extract"].get<std::string>() != "volume")
 			log_and_throw_error("Only volumetric elements are implemented for FEM meshes!");
@@ -46,10 +47,16 @@ namespace polyfem::mesh
 		Selection::BBox bbox;
 		mesh->bounding_box(bbox[0], bbox[1]);
 
+		const std::string unit = j_mesh["unit"];
+		double unit_scale = 1;
+		if (!unit.empty())
+			unit_scale = Units::convert(1, unit, units.length());
+
 		{
 			MatrixNd A;
 			VectorNd b;
 			construct_affine_transformation(
+				unit_scale,
 				j_mesh["transformation"],
 				(bbox[1] - bbox[0]).cwiseAbs().transpose(),
 				A, b);
@@ -77,7 +84,7 @@ namespace polyfem::mesh
 			const int uniform_value = mesh->get_body_id(0);
 			for (int i = 1; i < mesh->n_elements(); ++i)
 				if (mesh->get_body_id(i) != uniform_value)
-					log_and_throw_error(fmt::format("Unable to apply stored nonuniform volume_selection because n_refs={} > 0!", n_refs));
+					log_and_throw_error("Unable to apply stored nonuniform volume_selection because n_refs={} > 0!", n_refs);
 
 			logger().info("Performing global h-refinement with {} refinements", n_refs);
 			mesh->refine(n_refs, refinement_location);
@@ -221,6 +228,7 @@ namespace polyfem::mesh
 	// ========================================================================
 
 	std::unique_ptr<Mesh> read_fem_geometry(
+		const Units &units,
 		const json &geometry,
 		const std::string &root_path,
 		const std::vector<std::string> &_names,
@@ -267,13 +275,12 @@ namespace polyfem::mesh
 				continue;
 
 			if (geometry["type"] != "mesh")
-				log_and_throw_error(
-					fmt::format("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]));
+				log_and_throw_error("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]);
 
 			if (mesh == nullptr)
-				mesh = read_fem_mesh(geometry, root_path, non_conforming);
+				mesh = read_fem_mesh(units, geometry, root_path, non_conforming);
 			else
-				mesh->append(read_fem_mesh(geometry, root_path, non_conforming));
+				mesh->append(read_fem_mesh(units, geometry, root_path, non_conforming));
 		}
 
 		// --------------------------------------------------------------------
@@ -284,6 +291,7 @@ namespace polyfem::mesh
 	// ========================================================================
 
 	void read_obstacle_mesh(
+		const Units &units,
 		const json &j_mesh,
 		const std::string &root_path,
 		const int dim,
@@ -293,7 +301,7 @@ namespace polyfem::mesh
 		Eigen::MatrixXi &faces)
 	{
 		if (!is_param_valid(j_mesh, "mesh"))
-			log_and_throw_error(fmt::format("Mesh obstacle {} is mising a \"mesh\" field!", j_mesh));
+			log_and_throw_error("Mesh obstacle {} is mising a \"mesh\" field!", j_mesh);
 
 		const std::string mesh_path = resolve_path(j_mesh["mesh"], root_path);
 
@@ -312,10 +320,15 @@ namespace polyfem::mesh
 		// --------------------------------------------------------------------
 
 		{
+			const std::string unit = j_mesh["unit"];
+			double unit_scale = 1;
+			if (!unit.empty())
+				unit_scale = Units::convert(1, unit, units.length());
+
 			const VectorNd mesh_dimensions = (vertices.colwise().maxCoeff() - vertices.colwise().minCoeff()).cwiseAbs();
 			MatrixNd A;
 			VectorNd b;
-			construct_affine_transformation(j_mesh["transformation"], mesh_dimensions, A, b);
+			construct_affine_transformation(unit_scale, j_mesh["transformation"], mesh_dimensions, A, b);
 			vertices = vertices * A.transpose();
 			vertices.rowwise() += b.transpose();
 		}
@@ -362,15 +375,34 @@ namespace polyfem::mesh
 
 		if (j_mesh["n_refs"].get<int>() != 0)
 		{
-			log_and_throw_error("Option \"n_refs\" in obstacles not implement yet!");
-			if (j_mesh["advanced"]["refinement_location"].get<double>() != 0.5)
-				log_and_throw_error("Option \"refinement_location\" in obstacles not implement yet!");
+			if (faces.size() != 0)
+				log_and_throw_error("Option \"n_refs\" for triangle obstacles not implement yet!");
+
+			const int n_refs = j_mesh["n_refs"];
+			const double refinement_location = j_mesh["advanced"]["refinement_location"];
+			for (int i = 0; i < n_refs; i++)
+			{
+				const size_t n_vertices = vertices.rows();
+				const size_t n_edges = codim_edges.rows();
+				vertices.conservativeResize(n_vertices + n_edges, vertices.cols());
+				codim_edges.conservativeResize(2 * n_edges, codim_edges.cols());
+				for (size_t ei = 0; ei < n_edges; ei++)
+				{
+					const int v0i = codim_edges(ei, 0);
+					const int v1i = codim_edges(ei, 1);
+					const int v2i = n_vertices + ei;
+					vertices.row(v2i) = (vertices.row(v1i) - vertices.row(v0i)) * refinement_location + vertices.row(v0i);
+					codim_edges.row(ei) << v0i, v2i;
+					codim_edges.row(n_edges + ei) << v2i, v1i;
+				}
+			}
 		}
 	}
 
 	// ========================================================================
 
 	Obstacle read_obstacle_geometry(
+		const Units &units,
 		const json &geometry,
 		const std::vector<json> &displacements,
 		const std::vector<json> &dirichlets,
@@ -425,9 +457,9 @@ namespace polyfem::mesh
 				Eigen::VectorXi codim_vertices;
 				Eigen::MatrixXi codim_edges;
 				Eigen::MatrixXi faces;
-				read_obstacle_mesh(
-					geometry, root_path, dim, vertices, codim_vertices,
-					codim_edges, faces);
+				read_obstacle_mesh(units,
+								   geometry, root_path, dim, vertices, codim_vertices,
+								   codim_edges, faces);
 
 				json displacement = "{\"value\":[0, 0, 0]}"_json;
 				if (is_param_valid(geometry, "surface_selection"))
@@ -542,9 +574,9 @@ namespace polyfem::mesh
 					Eigen::VectorXi tmp_codim_vertices;
 					Eigen::MatrixXi tmp_codim_edges;
 					Eigen::MatrixXi tmp_faces;
-					read_obstacle_mesh(
-						jmesh, root_path, dim, vertices[i],
-						tmp_codim_vertices, tmp_codim_edges, tmp_faces);
+					read_obstacle_mesh(units,
+									   jmesh, root_path, dim, vertices[i],
+									   tmp_codim_vertices, tmp_codim_edges, tmp_faces);
 					if (i == 0)
 					{
 						codim_vertices = tmp_codim_vertices;
@@ -564,17 +596,18 @@ namespace polyfem::mesh
 			}
 			else
 			{
-				log_and_throw_error(
-					fmt::format("Invalid geometry type \"{}\" for obstacle!", geometry["type"]));
+				log_and_throw_error("Invalid geometry type \"{}\" for obstacle!", geometry["type"]);
 			}
 		}
 
+		obstacle.set_units(units);
 		return obstacle;
 	}
 
 	// ========================================================================
 
 	void construct_affine_transformation(
+		const double unit_scale,
 		const json &transform,
 		const VectorNd &mesh_dimensions,
 		MatrixNd &A,
@@ -617,7 +650,7 @@ namespace polyfem::mesh
 				scale.setOnes();
 		}
 
-		A = scale.asDiagonal();
+		A = (unit_scale * scale).asDiagonal();
 
 		// ------
 		// Rotate

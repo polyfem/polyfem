@@ -1,5 +1,6 @@
 standard/helmholtz.json
 standard/hooke.json
+standard/hooke_anisotropic.json
 standard/incompressible_ogden.json
 standard/laplace.json
 standard/laplace_mv.json
@@ -9,6 +10,7 @@ standard/mooney_rivlin.json
 #standard/mooney_rivlin_p2.json
 standard/navier_stokes_static.json
 standard/navier_stokes_transient.json
+standard/navier_stokes_split.json
 standard/neohookean.json
 standard/plate_hole.json
 standard/point_selection.json
@@ -82,4 +84,6 @@ contact/examples/3D/stress-tests/rod-twist.json
 #contact/examples/3D/stress-tests/squeeze-out.json
 contact/examples/3D/stress-tests/dolphin-funnel.json
 contact/examples/3D/stress-tests/mat-twist.json
+#contact/examples/3D/higher-order/ball-bounce/P4-dt=0.01.json
+contact/examples/3D/rigid/proxy/screw.json
 time-bc/walking-elephant.json

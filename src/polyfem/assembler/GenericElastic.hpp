@@ -1,12 +1,15 @@
 #pragma once
 
 #include <polyfem/assembler/Assembler.hpp>
-#include <polyfem/assembler/ElasticEnergyMacros.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 
 // non linear NeoHookean material model
 namespace polyfem::assembler
 {
+	template <typename T>
+	using DefGradMatrix = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>;
+
+	template <typename Derived>
 	class GenericElastic : public NLAssembler, public ElasticityAssembler
 	{
 	public:
@@ -22,15 +25,18 @@ namespace polyfem::assembler
 		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
 		Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const override;
 
-		// sets material params
-		virtual void add_multimaterial(const int index, const json &params) override = 0;
-
-		// This macro declares the virtual functions that compute the energy:
-		// template <typename T>
-		// virtual T elastic_energy(const RowVectorNd &p, const int el_id, const DefGradMatrix<T> &def_grad) const = 0;
-		POLYFEM_DECLARE_VIRTUAL_ELASTIC_ENERGY
-
 		void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
+
+		void compute_stress_grad_multiply_mat(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const override;
+		void compute_stress_grad_multiply_stress(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const override;
+		void compute_stress_grad_multiply_vect(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &vect, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const override;
+		/// @brief Returns this as a reference to derived class
+		Derived &derived() { return static_cast<Derived &>(*this); }
+		/// @brief Returns this as a const reference to derived class
+		const Derived &derived() const { return static_cast<const Derived &>(*this); }
+
+		// sets material params
+		virtual void add_multimaterial(const int index, const json &params, const Units &units) override = 0;
 
 	private:
 		// utility function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
@@ -56,7 +62,7 @@ namespace polyfem::assembler
 				for (int d = 0; d < size(); ++d)
 					def_grad(d, d) += T(1);
 
-				const T val = elastic_energy(data.vals.val.row(p), data.vals.element_id, def_grad);
+				const T val = derived().elastic_energy(data.vals.val.row(p), data.vals.element_id, def_grad);
 
 				energy += val * data.da(p);
 			}

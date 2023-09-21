@@ -11,6 +11,8 @@ namespace polyfem::solver
 	public:
 		virtual ~Form() {}
 
+		virtual std::string name() const = 0;
+
 		/// @brief Initialize the form
 		/// @param x Current solution
 		virtual void init(const Eigen::VectorXd &x) {}
@@ -18,18 +20,26 @@ namespace polyfem::solver
 		/// @brief Compute the value of the form multiplied with the weigth
 		/// @param x Current solution
 		/// @return Computed value
-		inline double value(const Eigen::VectorXd &x) const
+		inline virtual double value(const Eigen::VectorXd &x) const
 		{
-			return weight_ * value_unweighted(x);
+			return weight() * value_unweighted(x);
+		}
+
+		/// @brief Compute the value of the form multiplied with the weigth
+		/// @param x Current solution
+		/// @return Computed value
+		inline Eigen::VectorXd value_per_element(const Eigen::VectorXd &x) const
+		{
+			return weight_ * value_per_element_unweighted(x);
 		}
 
 		/// @brief Compute the first derivative of the value wrt x multiplied with the weigth
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
-		inline void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+		inline virtual void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 		{
 			first_derivative_unweighted(x, gradv);
-			gradv *= weight_;
+			gradv *= weight();
 		}
 
 		/// @brief Compute the second derivative of the value wrt x multiplied with the weigth
@@ -39,7 +49,7 @@ namespace polyfem::solver
 		inline void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 		{
 			second_derivative_unweighted(x, hessian);
-			hessian *= weight_;
+			hessian *= weight();
 		}
 
 		/// @brief Determine if a step from solution x0 to solution x1 is allowed
@@ -111,7 +121,7 @@ namespace polyfem::solver
 		bool enabled() const { return enabled_; }
 
 		/// @brief Get the form's multiplicative constant weight
-		double weight() const { return weight_; }
+		virtual double weight() const { return weight_; }
 
 		/// @brief Set the form's multiplicative constant weight
 		/// @param weight New weight to use
@@ -133,7 +143,7 @@ namespace polyfem::solver
 	protected:
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite
 
-		double weight_ = 1; ///< weight of the form, eg barrier stiffness, AL, d^2
+		double weight_ = 1; ///< weight of the form (e.g., AL penalty weight or Δt²)
 
 		bool enabled_ = true; ///< If true, the form is enabled
 
@@ -150,6 +160,14 @@ namespace polyfem::solver
 		/// @param x Current solution
 		/// @return Computed value
 		virtual double value_unweighted(const Eigen::VectorXd &x) const = 0;
+
+		/// @brief Compute the value of the form multiplied per element
+		/// @param x Current solution
+		/// @return Computed value per element
+		virtual Eigen::VectorXd value_per_element_unweighted(const Eigen::VectorXd &x) const
+		{
+			throw std::runtime_error("Not implemented");
+		}
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution

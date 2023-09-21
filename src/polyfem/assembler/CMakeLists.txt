@@ -9,7 +9,6 @@ set(SOURCES
 	AssemblyValues.hpp
 	Bilaplacian.cpp
 	Bilaplacian.hpp
-	ElasticEnergyMacros.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp
 	GenericElastic.cpp
@@ -28,10 +27,14 @@ set(SOURCES
 	LinearElasticity.hpp
 	Mass.cpp
 	Mass.hpp
+	MassMatrixAssembler.cpp
+	MassMatrixAssembler.hpp
 	MatParams.cpp
 	MatParams.hpp
 	MooneyRivlinElasticity.cpp
 	MooneyRivlinElasticity.hpp
+	MooneyRivlin3ParamElasticity.cpp
+	MooneyRivlin3ParamElasticity.hpp
 	MultiModel.cpp
 	MultiModel.hpp
 	NavierStokes.cpp
@@ -42,6 +45,7 @@ set(SOURCES
 	NeoHookeanElasticityAutodiff.hpp
 	OgdenElasticity.cpp
 	OgdenElasticity.hpp
+	OgdenElasticity.tpp
 	Problem.cpp
 	Problem.hpp
 	RhsAssembler.cpp
@@ -52,8 +56,9 @@ set(SOURCES
 	Stokes.hpp
 	ViscousDamping.cpp
 	ViscousDamping.hpp
+	AMIPSEnergy.hpp
+	AMIPSEnergy.cpp
 )
 
-prepend_current_path(SOURCES)
-polyfem_set_source_group(${SOURCES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})

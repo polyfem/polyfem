@@ -83,8 +83,9 @@ namespace polyfem
 		const int dim = mesh->dimension();
 		const int n_el = int(bases.size());       // number of elements
 		const int shape = gbases[0].bases.size(); // number of geometry vertices in an element
-		// TODO: fix me @Huangzizhou
-		const double viscosity_ = -1; // build_json_params()["viscosity"];
+		
+		double viscosity_ = std::dynamic_pointer_cast<assembler::OperatorSplitting>(assembler)->viscosity();
+		assert(viscosity_ >= 0);
 
 		logger().info("Matrices assembly...");
 		StiffnessMatrix stiffness_viscosity, mixed_stiffness, velocity_mass, stiffness;
@@ -92,8 +93,10 @@ namespace polyfem
 		build_stiffness_mat(stiffness);
 		// coefficient matrix of viscosity
 		assembler::Laplacian lapl_assembler;
+		lapl_assembler.set_size(1);
 		lapl_assembler.assemble(mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, stiffness_viscosity);
-		mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, mass, true);
+		mass_matrix_assembler->set_size(1);
+		mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, gbases, mass_ass_vals_cache, mass, true);
 
 		// coefficient matrix of pressure projection
 		lapl_assembler.assemble(mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache, stiffness);
@@ -101,14 +104,15 @@ namespace polyfem
 		// matrix used to calculate divergence of velocity
 		mixed_assembler->assemble(mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases,
 								  pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
-		mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, velocity_mass, true);
+		mass_matrix_assembler->set_size(mesh->dimension());
+		mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, gbases, mass_ass_vals_cache, velocity_mass, true);
 		mixed_stiffness = mixed_stiffness.transpose();
 		logger().info("Matrices assembly ends!");
 
 		solver::OperatorSplittingSolver ss(
 			*mesh, shape, n_el, local_boundary, boundary_nodes, pressure_boundary_nodes, bnd_nodes, mass,
 			stiffness_viscosity, stiffness, velocity_mass, dt, viscosity_, args["solver"]["linear"]["solver"],
-			args["solver"]["linear"]["precond"], args["solver"]["linear"], args["output"]["data"]["stiffness_mat"]);
+			args["solver"]["linear"]["precond"], args["solver"]["linear"]);
 
 		/* initialize solution */
 		pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
@@ -121,7 +125,7 @@ namespace polyfem
 
 			/* advection */
 			logger().info("Advection...");
-			if (args["space"]["advanced"]["particle"])
+			if (args["space"]["advanced"]["use_particle_advection"])
 				ss.advection_FLIP(*mesh, gbases, bases, sol, dt, local_pts);
 			else
 				ss.advection(*mesh, gbases, bases, sol, dt, local_pts);
@@ -174,7 +178,7 @@ namespace polyfem
 		Eigen::VectorXd prev_sol;
 
 		BDF time_integrator;
-		if (args["time"]["integrator"].is_object())
+		if (args["time"]["integrator"].is_object() && args["time"]["integrator"]["type"] == "BDF")
 			time_integrator.set_parameters(args["time"]["integrator"]);
 		time_integrator.init(sol, Eigen::VectorXd::Zero(sol.size()), Eigen::VectorXd::Zero(sol.size()), dt);
 

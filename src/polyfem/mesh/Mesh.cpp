@@ -523,7 +523,7 @@ namespace polyfem::mesh
 		{
 			boundary_ids_.resize(n_boundary_elements());
 			for (int i = 0; i < boundary_ids_.size(); ++i)
-				boundary_ids_[i] = get_boundary_id(i); // results in default if boundary_ids_ is empty
+				boundary_ids_[i] = get_default_boundary_id(i);
 		}
 
 		if (mesh.has_boundary_ids())
@@ -534,7 +534,7 @@ namespace polyfem::mesh
 		{
 			boundary_ids_.resize(n_boundary_elements() + mesh.n_boundary_elements());
 			for (int i = 0; i < mesh.n_boundary_elements(); ++i)
-				boundary_ids_[n_boundary_elements() + i] = mesh.get_boundary_id(i); // results in default if boundary_ids_ is empty
+				boundary_ids_[n_boundary_elements() + i] = mesh.get_boundary_id(i); // results in default if mesh.boundary_ids_ is empty
 		}
 
 		// --------------------------------------------------------------------
@@ -610,6 +610,21 @@ namespace polyfem::mesh
 		}
 	}
 
+	namespace
+	{
+		template <typename T>
+		void transform_high_order_nodes(std::vector<T> &nodes, const MatrixNd &A, const VectorNd &b)
+		{
+			for (T &n : nodes)
+			{
+				if (n.nodes.size())
+				{
+					n.nodes = (n.nodes * A.transpose()).rowwise() + b.transpose();
+				}
+			}
+		}
+	} // namespace
+
 	void Mesh::apply_affine_transformation(const MatrixNd &A, const VectorNd &b)
 	{
 		for (int i = 0; i < n_vertices(); ++i)
@@ -618,5 +633,9 @@ namespace polyfem::mesh
 			p = A * p + b;
 			set_point(i, p.transpose());
 		}
+
+		transform_high_order_nodes(edge_nodes_, A, b);
+		transform_high_order_nodes(face_nodes_, A, b);
+		transform_high_order_nodes(cell_nodes_, A, b);
 	}
 } // namespace polyfem::mesh

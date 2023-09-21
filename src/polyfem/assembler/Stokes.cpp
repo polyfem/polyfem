@@ -2,8 +2,9 @@
 
 namespace polyfem::assembler
 {
-	void StokesVelocity::add_multimaterial(const int index, const json &params)
+	void StokesVelocity::add_multimaterial(const int index, const json &params, const Units &units)
 	{
+		// TODO add units to viscosity
 		assert(size() == 2 || size() == 3);
 
 		if (params.count("viscosity"))

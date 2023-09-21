@@ -48,9 +48,84 @@ namespace polyfem
 			}
 		} // namespace
 
+		double TensorBCValue::eval(const RowVectorNd &pts, const int dim, const double t, const int el_id) const
+		{
+			double x = pts(0);
+			double y = pts(1);
+			double z = pts.size() == 2 ? 0 : pts(2);
+
+			double val = value[dim](x, y, z, t, el_id);
+
+			if (interpolation.empty())
+			{
+			}
+			else if (interpolation.size() == 1)
+				val *= interpolation[0]->eval(t);
+			else
+			{
+				assert(dim < interpolation.size());
+				val *= interpolation[dim]->eval(t);
+			}
+
+			return val;
+		}
+
+		double ScalarBCValue::eval(const RowVectorNd &pts, const double t) const
+		{
+			assert(pts.size() == 2 || pts.size() == 3);
+			double x = pts(0), y = pts(1), z = pts.size() == 3 ? pts(2) : 0.0;
+			return value(x, y, z, t) * interpolation->eval(t);
+		}
+
 		GenericTensorProblem::GenericTensorProblem(const std::string &name)
 			: Problem(name), is_all_(false)
 		{
+		}
+
+		void GenericTensorProblem::set_units(const assembler::Assembler &assembler, const Units &units)
+		{
+			if (assembler.is_fluid())
+			{
+				// TODO
+				assert(false);
+			}
+			else
+			{
+				for (int i = 0; i < 3; ++i)
+				{
+					rhs_[i].set_unit_type(units.acceleration());
+					exact_[i].set_unit_type(units.length());
+				}
+				for (int i = 0; i < 3; ++i)
+					exact_grad_[i].set_unit_type("");
+
+				for (auto &v : displacements_)
+					v.set_unit_type(units.length());
+
+				for (auto &v : forces_)
+					v.set_unit_type(units.force());
+
+				for (auto &v : pressures_)
+					v.set_unit_type(units.pressure());
+
+				for (auto &v : initial_position_)
+					for (int i = 0; i < 3; ++i)
+						v.second[i].set_unit_type(units.length());
+
+				for (auto &v : initial_velocity_)
+					for (int i = 0; i < 3; ++i)
+						v.second[i].set_unit_type(units.velocity());
+
+				for (auto &v : initial_acceleration_)
+					for (int i = 0; i < 3; ++i)
+						v.second[i].set_unit_type(units.acceleration());
+
+				for (auto &v : nodal_dirichlet_)
+					v.second.set_unit_type(units.length());
+
+				for (auto &v : nodal_neumann_)
+					v.second.set_unit_type(units.force());
+			}
 		}
 
 		void GenericTensorProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -722,7 +797,7 @@ namespace polyfem
 					{
 						const std::string path = resolve_path(j_boundary[i - offset], params["root_path"]);
 						if (!std::filesystem::is_regular_file(path))
-							log_and_throw_error(fmt::format("unable to open {} file", path));
+							log_and_throw_error("unable to open {} file", path);
 
 						Eigen::MatrixXd tmp;
 						io::read_matrix(path, tmp);
@@ -1026,6 +1101,26 @@ namespace polyfem
 		{
 		}
 
+		void GenericScalarProblem::set_units(const assembler::Assembler &assembler, const Units &units)
+		{
+			// TODO?
+
+			for (auto &v : neumann_)
+				v.set_unit_type("");
+
+			for (auto &v : dirichlet_)
+				v.set_unit_type("");
+
+			for (auto &v : initial_solution_)
+				v.second.set_unit_type("");
+
+			rhs_.set_unit_type("");
+			exact_.set_unit_type("");
+
+			for (int i = 0; i < 3; ++i)
+				exact_grad_[i].set_unit_type("");
+		}
+
 		void GenericScalarProblem::rhs(const assembler::Assembler &assembler, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), 1);
@@ -1149,6 +1244,91 @@ namespace polyfem
 				}
 			}
 		}
+		void GenericScalarProblem::dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val) const
+		{
+			val = Eigen::MatrixXd::Zero(1, 1);
+			const int tag = mesh.get_node_id(node_id);
+
+			if (is_all_)
+			{
+				assert(nodal_dirichlet_.size() == 1);
+				const auto &tmp = nodal_dirichlet_.begin()->second;
+
+				val(0) = tmp.eval(pt, t);
+				return;
+			}
+
+			const auto it = nodal_dirichlet_.find(tag);
+			if (it != nodal_dirichlet_.end())
+			{
+				val(0) = it->second.eval(pt, t);
+				return;
+			}
+
+			for (const auto &n_dirichlet : nodal_dirichlet_mat_)
+			{
+				for (int i = 0; i < n_dirichlet.rows(); ++i)
+				{
+					if (n_dirichlet(i, 0) == node_id)
+					{
+						val(0) = n_dirichlet(i, 1);
+						return;
+					}
+				}
+			}
+
+			assert(false);
+		}
+
+		void GenericScalarProblem::neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const
+		{
+			// TODO implement me;
+			log_and_throw_error("Nodal neumann not implemented");
+		}
+
+		bool GenericScalarProblem::is_nodal_dirichlet_boundary(const int n_id, const int tag)
+		{
+			if (nodal_dirichlet_.find(tag) != nodal_dirichlet_.end())
+				return true;
+
+			for (const auto &n_dirichlet : nodal_dirichlet_mat_)
+			{
+				for (int i = 0; i < n_dirichlet.rows(); ++i)
+				{
+					if (n_dirichlet(i, 0) == n_id)
+						return true;
+				}
+			}
+
+			return false;
+		}
+
+		bool GenericScalarProblem::is_nodal_neumann_boundary(const int n_id, const int tag)
+		{
+			return nodal_neumann_.find(tag) != nodal_neumann_.end();
+		}
+
+		bool GenericScalarProblem::has_nodal_dirichlet()
+		{
+			return nodal_dirichlet_mat_.size() > 0;
+		}
+
+		bool GenericScalarProblem::has_nodal_neumann()
+		{
+			return false; // nodal_neumann_.size() > 0;
+		}
+
+		void GenericScalarProblem::update_nodes(const Eigen::VectorXi &in_node_to_node)
+		{
+			for (auto &n_dirichlet : nodal_dirichlet_mat_)
+			{
+				for (int n = 0; n < n_dirichlet.rows(); ++n)
+				{
+					const int node_id = in_node_to_node[n_dirichlet(n, 0)];
+					n_dirichlet(n, 0) = node_id;
+				}
+			}
+		}
 
 		void GenericScalarProblem::set_parameters(const json &params)
 		{
@@ -1194,18 +1374,39 @@ namespace polyfem
 
 				for (size_t i = offset; i < boundary_ids_.size(); ++i)
 				{
+					if (j_boundary[i - offset].is_string())
+					{
+						const std::string path = resolve_path(j_boundary[i - offset], params["root_path"]);
+						if (!std::filesystem::is_regular_file(path))
+							log_and_throw_error(fmt::format("unable to open {} file", path));
+
+						Eigen::MatrixXd tmp;
+						io::read_matrix(path, tmp);
+						nodal_dirichlet_mat_.emplace_back(tmp);
+
+						continue;
+					}
+
+					int current_id = -1;
+
 					if (j_boundary[i - offset]["id"] == "all")
 					{
 						assert(boundary_ids_.size() == 1);
 
 						is_all_ = true;
 						boundary_ids_.clear();
+						nodal_dirichlet_[current_id] = ScalarBCValue();
 					}
 					else
+					{
 						boundary_ids_[i] = j_boundary[i - offset]["id"];
+						current_id = boundary_ids_[i];
+						nodal_dirichlet_[current_id] = ScalarBCValue();
+					}
 
 					auto ff = j_boundary[i - offset]["value"];
 					dirichlet_[i].value.init(ff);
+					nodal_dirichlet_[current_id].value.init(ff);
 
 					if (j_boundary[i - offset]["interpolation"].is_array())
 					{
@@ -1218,6 +1419,8 @@ namespace polyfem
 					}
 					else
 						dirichlet_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
+
+					nodal_dirichlet_[current_id].interpolation = dirichlet_[i].interpolation;
 				}
 			}
 
@@ -1448,6 +1651,10 @@ namespace polyfem
 		{
 			neumann_.clear();
 			dirichlet_.clear();
+
+			nodal_dirichlet_.clear();
+			nodal_neumann_.clear();
+			nodal_dirichlet_mat_.clear();
 
 			rhs_.clear();
 			exact_.clear();

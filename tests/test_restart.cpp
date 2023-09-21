@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
@@ -63,7 +63,7 @@ Eigen::MatrixXd run_sim(State &state, const json &args)
 {
 	state.init(args, true);
 	state.set_max_threads(1);
-	spdlog::set_level(spdlog::level::info);
+	logger().set_level(spdlog::level::info);
 	state.load_mesh();
 
 	if (state.mesh == nullptr)

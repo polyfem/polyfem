@@ -5,6 +5,7 @@
 #include <polyfem/time_integrator/BDF.hpp>
 
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <fstream>
@@ -80,9 +81,9 @@ namespace polyfem
 			{
 				integrator = std::make_shared<ImplicitNewmark>();
 			}
-			else if (type == "BDF")
+			else if (utils::StringUtils::startswith(type, "BDF"))
 			{
-				integrator = std::make_shared<BDF>();
+				integrator = std::make_shared<BDF>(type == "BDF" ? 1 : std::stoi(type.substr(3)));
 			}
 			else
 			{

@@ -1,8 +1,19 @@
 set(AUTOGEN_BASES
 	auto_p_bases.cpp
 	auto_p_bases.hpp
-	auto_q_bases.cpp
+	auto_q_bases_2d_val.cpp
+	auto_q_bases_2d_nodes.cpp
+	auto_q_bases_2d_grad.cpp
+	auto_q_bases_3d_val.cpp
+	auto_q_bases_3d_nodes.cpp
+	auto_q_bases_3d_grad.cpp
 	auto_q_bases.hpp
+
+	auto_q_bases_3d_grad_0.cpp
+	auto_q_bases_3d_grad_1.cpp
+	auto_q_bases_3d_grad_2.cpp
+	auto_q_bases_3d_grad_3.cpp
+	auto_q_bases_3d_grad_-2.cpp
 )
 
 set(AUTOGEN
@@ -26,9 +37,8 @@ target_include_directories(lib_n_bases PRIVATE ${PROJECT_BINARY_DIR}/include)
 
 target_link_libraries(lib_n_bases PRIVATE Eigen3::Eigen)
 
-prepend_current_path(SOURCES)
-prepend_current_path(AUTOGEN)
-polyfem_set_source_group(${SOURCES} ${AUTOGEN} ${AUTOGEN_BASES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${AUTOGEN})
 if(WIN32)
 	SET_SOURCE_FILES_PROPERTIES(${AUTOGEN_BASES} PROPERTIES COMPILE_FLAGS -Od)
 endif()

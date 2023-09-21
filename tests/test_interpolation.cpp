@@ -1,7 +1,8 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Interpolation.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
 
 using namespace polyfem;
 using namespace polyfem::utils;
@@ -61,7 +62,7 @@ TEST_CASE("piecewise cubic interpolation", "[interpolation]")
 
 	for (int i = 0; i < coeffs.rows(); ++i)
 		for (int j = 0; j < coeffs.cols(); ++j)
-			CHECK(coeffs(i, j) == Approx(expected_coeffs(i, j)));
+			CHECK(coeffs(i, j) == Catch::Approx(expected_coeffs(i, j)));
 
 	const std::vector<double> points = params["points"].get<std::vector<double>>();
 	const std::vector<double> values = params["values"].get<std::vector<double>>();
@@ -69,6 +70,6 @@ TEST_CASE("piecewise cubic interpolation", "[interpolation]")
 	for (int i = 0; i < points.size(); ++i)
 	{
 		CAPTURE(points[i]);
-		CHECK(interp->eval(points[i]) == Approx(values[i]));
+		CHECK(interp->eval(points[i]) == Catch::Approx(values[i]));
 	}
 }

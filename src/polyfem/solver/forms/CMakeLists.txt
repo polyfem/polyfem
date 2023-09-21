@@ -1,7 +1,9 @@
 set(SOURCES
 	Form.hpp
-	ALForm.hpp
-	ALForm.cpp
+	BCLagrangianForm.hpp
+	BCLagrangianForm.cpp
+	BCPenaltyForm.hpp
+	BCPenaltyForm.cpp
 	BodyForm.hpp
 	BodyForm.cpp
 	ElasticForm.hpp
@@ -10,6 +12,10 @@ set(SOURCES
 	InertiaForm.cpp
 	InertiaForm.hpp
 	InertiaForm.cpp
+	InversionBarrierForm.cpp
+	InversionBarrierForm.hpp
+	L2ProjectionForm.cpp
+	L2ProjectionForm.hpp
 	LaggedRegForm.cpp
 	LaggedRegForm.hpp
 	FrictionForm.cpp
@@ -20,7 +26,8 @@ set(SOURCES
 	RayleighDampingForm.hpp
 )
 
-prepend_current_path(SOURCES)
-polyfem_set_source_group(${SOURCES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})
 
+add_subdirectory(parametrization)
+add_subdirectory(adjoint_forms)

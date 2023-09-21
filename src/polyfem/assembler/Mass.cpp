@@ -27,11 +27,11 @@ namespace polyfem::assembler
 		return result;
 	}
 
-	void Mass::add_multimaterial(const int index, const json &params)
+	void Mass::add_multimaterial(const int index, const json &params, const Units &units)
 	{
 		assert(size_ == 1 || size_ == 2 || size_ == 3);
 
-		density_.add_multimaterial(index, params);
+		density_.add_multimaterial(index, params, units.density());
 	}
 
 	std::map<std::string, Assembler::ParamFunc> Mass::parameters() const

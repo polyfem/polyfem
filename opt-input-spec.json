@@ -1,0 +1,888 @@
+[
+    {
+        "pointer": "/",
+        "type": "object",
+        "required": [
+            "parameters",
+            "variable_to_simulation",
+            "states"
+        ],
+        "optional": [
+            "output",
+            "solver",
+            "stopping_conditions"
+        ],
+        "doc": "Root of the configuration file."
+    },
+    {
+        "pointer": "/stopping_conditions",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/states",
+        "type": "list",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/states/*",
+        "type": "object",
+        "required": [
+            "path"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/states/*/path",
+        "type": "file",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/output",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solve_log_level",
+            "save_frequency"
+        ],
+        "doc": "Optimization output options"
+    },
+    {
+        "pointer": "/output/save_frequency",
+        "default": 1,
+        "type": "int",
+        "doc": "Optimization output frequency"
+    },
+    {
+        "pointer": "/output/solve_log_level",
+        "default": 2,
+        "type": "int",
+        "doc": "Log level in forward solve"
+    },
+    {
+        "pointer": "/solver",
+        "type": "object",
+        "default": null,
+        "optional": [
+            "nonlinear",
+            "advanced"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/solver/nonlinear",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solver",
+            "bounds",
+            "f_delta",
+            "max_step_size",
+            "max_change",
+            "better_initial_guess",
+            "x_delta",
+            "grad_norm",
+            "max_iterations",
+            "use_grad_norm",
+            "relative_gradient",
+            "line_search",
+            "first_grad_norm_tol"
+        ],
+        "doc": "Settings for optimization nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
+    },
+    {
+        "pointer": "/solver/nonlinear/solver",
+        "default": "lbfgs",
+        "type": "string",
+        "options": [
+            "mma",
+            "lbfgs",
+            "bfgs",
+            "lbfgsb",
+            "gradient_descent"
+        ],
+        "doc": "Nonlinear solver type"
+    },
+    {
+        "pointer": "/solver/nonlinear/bounds",
+        "type": "file",
+        "extensions": [
+            ".txt"
+        ],
+        "doc": "Box constraints in the optimizations specified in a txt file"
+    },
+    {
+        "pointer": "/solver/nonlinear/bounds",
+        "type": "list",
+        "default": [
+            0,
+            0
+        ],
+        "doc": "Box constraints in the optimizations specified in an array of size 2"
+    },
+    {
+        "pointer": "/solver/nonlinear/bounds/*",
+        "type": "list",
+        "doc": "Lower and Upper bounds"
+    },
+    {
+        "pointer": "/solver/nonlinear/bounds/*/*",
+        "type": "float",
+        "doc": "Box constraint values"
+    },
+    {
+        "pointer": "/solver/nonlinear/bounds/*",
+        "type": "float",
+        "doc": "Box constraint values"
+    },
+    {
+        "pointer": "/solver/nonlinear/max_change",
+        "default": 1e10,
+        "type": "float",
+        "doc": "Max difference in design variables in single iteration"
+    },
+    {
+        "pointer": "/solver/nonlinear/max_change",
+        "type": "list",
+        "doc": "Max difference in design variables in single iteration"
+    },
+    {
+        "pointer": "/solver/nonlinear/max_change/*",
+        "type": "float",
+        "doc": "Max difference in design variables in single iteration"
+    },
+    {
+        "pointer": "/solver/nonlinear/max_step_size",
+        "default": 1,
+        "type": "float",
+        "doc": "Max step size in line search"
+    },
+    {
+        "pointer": "/solver/nonlinear/better_initial_guess",
+        "default": false,
+        "type": "bool",
+        "doc": "Use former solves as the initial guess in line search iterations"
+    },
+    {
+        "pointer": "/solver/nonlinear/f_delta",
+        "default": 1e-10,
+        "type": "float",
+        "doc": "Stopping criterion: minimal change of the energy f for the iterations to continue"
+    },
+    {
+        "pointer": "/solver/nonlinear/x_delta",
+        "default": 0,
+        "type": "float",
+        "doc": "Stopping criterion: minimal change of the variable x for the iterations to continue"
+    },
+    {
+        "pointer": "/solver/nonlinear/grad_norm",
+        "default": 1e-08,
+        "type": "float",
+        "doc": "Stopping criterion: Minimal gradient norm for the iterations to continue"
+    },
+    {
+        "pointer": "/solver/nonlinear/first_grad_norm_tol",
+        "default": 1e-8,
+        "type": "float",
+        "doc": "Minimal gradient norm for the iterations to not start, assume we already are at a minimum."
+    },
+    {
+        "pointer": "/solver/nonlinear/max_iterations",
+        "default": 200,
+        "type": "int",
+        "doc": "Maximum number of iterations for a non-linear solve."
+    },
+    {
+        "pointer": "/solver/nonlinear/use_grad_norm",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, enable gradient-norm stopping criterion, absolute (if relative_gradient is false), or relative to the initial gradient magnitude before the first iteration, otherwise."
+    },
+    {
+        "pointer": "/solver/nonlinear/relative_gradient",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, use relative gradient norm threshold, use absolute otherwise"
+    },
+    {
+        "pointer": "/solver/nonlinear/line_search",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "method",
+            "use_grad_norm_tol"
+        ],
+        "doc": "Settings for line-search in the nonlinear solver"
+    },
+    {
+        "pointer": "/solver/nonlinear/line_search/method",
+        "default": "backtracking",
+        "type": "string",
+        "options": [
+            "armijo",
+            "backtracking"
+        ],
+        "doc": "Line-search type"
+    },
+    {
+        "pointer": "/solver/nonlinear/line_search/use_grad_norm_tol",
+        "default": 0,
+        "type": "float",
+        "doc": "When the energy is smaller than use_grad_norm_tol, line-search uses norm of gradient instead of energy"
+    },
+    {
+        "pointer": "/variable_to_simulation",
+        "type": "list",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/type",
+        "type": "string",
+        "options": [
+            "shape",
+            "periodic-shape",
+            "elastic",
+            "friction",
+            "damping",
+            "macro-strain",
+            "initial",
+            "sdf-shape",
+            "periodic-shape-scale",
+            "sdf-periodic-shape",
+            "dirichlet"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "shape",
+        "type": "object",
+        "required": [
+            "state",
+            "type",
+            "composition"
+        ],
+        "optional": [
+            "composite_map_type",
+            "composite_map_indices"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "periodic-shape",
+        "type": "object",
+        "required": [
+            "state",
+            "type",
+            "composition"
+        ],
+        "optional": [
+            "composite_map_type",
+            "composite_map_indices"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "elastic",
+        "type": "object",
+        "required": [
+            "state",
+            "type",
+            "composition"
+        ],
+        "optional": [
+            "composite_map_type",
+            "composite_map_indices"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "friction",
+        "type": "object",
+        "required": [
+            "state",
+            "type",
+            "composition"
+        ],
+        "optional": [
+            "composite_map_type",
+            "composite_map_indices"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "initial",
+        "type": "object",
+        "required": [
+            "state",
+            "type",
+            "composition"
+        ],
+        "optional": [
+            "composite_map_type",
+            "composite_map_indices"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "sdf-shape",
+        "type": "object",
+        "required": [
+            "mesh",
+            "mesh_id",
+            "state",
+            "type",
+            "composition"
+        ],
+        "optional": [
+            "composite_map_type",
+            "composite_map_indices"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "sdf-periodic-shape",
+        "type": "object",
+        "required": [
+            "mesh",
+            "state",
+            "type",
+            "composition"
+        ],
+        "optional": [
+            "composite_map_type",
+            "composite_map_indices"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "periodic-shape-scale",
+        "type": "object",
+        "required": [
+            "state",
+            "type",
+            "composition"
+        ],
+        "optional": [
+            "composite_map_type",
+            "composite_map_indices"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*/mesh",
+        "type": "string"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/mesh_id",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/state",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/state",
+        "type": "list"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/state/*",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition",
+        "type": "list",
+        "doc": "list of parametrizations that maps raw optimization variables to parameters in simulations"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/type",
+        "type": "string",
+        "options": [
+            "per-body-to-per-elem",
+            "per-body-to-per-node",
+            "E-nu-to-lambda-mu",
+            "slice",
+            "exp",
+            "scale",
+            "power",
+            "append-values",
+            "append-const",
+            "linear-filter",
+            "custom-symmetric",
+            "periodic-mesh-tile",
+            "mesh-affine"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "append-const",
+        "type": "object",
+        "required": [
+            "value",
+            "size"
+        ],
+        "optional": [
+            "start"
+        ],
+        "doc": "Append repeated constant at the end of the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/size",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/value",
+        "type": "float"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "append-values",
+        "type": "object",
+        "required": [
+            "values"
+        ],
+        "doc": "Append a list of constants at the end of the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/start",
+        "type": "int",
+        "default": -1
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/values",
+        "type": "list"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/values/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "slice",
+        "type": "object",
+        "required": [
+            "from",
+            "to"
+        ],
+        "optional": [
+            "last"
+        ],
+        "doc": "Ouputs x[from:to], where x is the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "slice",
+        "type": "object",
+        "required": [
+            "parameter_index"
+        ],
+        "doc": "Ouputs x[from:to], where x is the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/from",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/to",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/last",
+        "type": "int",
+        "default": -1
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/parameter_index",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "power",
+        "type": "object",
+        "required": [
+            "power"
+        ],
+        "doc": "Ouputs x ^ power, where x is the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/power",
+        "type": "float"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "scale",
+        "type": "object",
+        "required": [
+            "value"
+        ],
+        "doc": "Ouputs x * value, where x is the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "mesh-affine",
+        "type": "object",
+        "required": [
+            "input_path",
+            "output_path",
+            "dimension"
+        ],
+        "optional": [
+            "transformation"
+        ],
+        "doc": "Append a list of constants at the end of the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/dimension",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/transformation",
+        "type": "object",
+        "default": null,
+        "optional": [
+            "translation",
+            "rotation",
+            "rotation_mode",
+            "scale",
+            "dimensions"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/rotation_mode",
+        "type": "string",
+        "default": "xyz",
+        "doc": "Type of rotation, supported are any permutation of [xyz]+, axis_angle, quaternion, or rotation_vector."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/translation",
+        "type": "list",
+        "default": [],
+        "doc": "Translate (two entries for 2D problems or three entries for 3D problems)."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/rotation",
+        "type": "list",
+        "default": [],
+        "doc": "Rotate, in 2D, one number, the rotation angle, in 3D, three or four Euler angles, axis+angle, or a unit quaternion. Depends on rotation mode."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/scale",
+        "type": "list",
+        "default": [],
+        "doc": "Scale by specified factors along axes (two entries for 2D problems or three entries for 3D problems)."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/dimensions",
+        "type": "float",
+        "default": 1,
+        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/dimensions",
+        "type": "list",
+        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/dimensions/*",
+        "type": "float",
+        "default": 0
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/translation/*",
+        "type": "float",
+        "default": 0
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/rotation/*",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/transformation/scale/*",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "periodic-mesh-tile",
+        "type": "object",
+        "required": [
+            "input_path",
+            "output_path",
+            "dimensions"
+        ],
+        "doc": "Append a list of constants at the end of the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/dimensions",
+        "type": "list"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/dimensions/*",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "per-body-to-per-elem",
+        "type": "object",
+        "required": [
+            "state"
+        ],
+        "doc": "From per volume selection to per element."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "per-body-to-per-node",
+        "type": "object",
+        "required": [
+            "state"
+        ],
+        "doc": "From per volume selection to per FE node."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "E-nu-to-lambda-mu",
+        "type": "object",
+        "required": [
+            "is_volume"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/is_volume",
+        "type": "bool"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "linear-filter",
+        "type": "object",
+        "required": [
+            "state",
+            "radius"
+        ],
+        "doc": "Apply linear smoothing filter on a field per element."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "custom-symmetric",
+        "type": "object",
+        "optional": [
+            "fixed_entries",
+            "equal_pairs",
+            "sum_equal_pairs"
+        ],
+        "doc": "To set equality constraint."
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/fixed_entries",
+        "type": "list",
+        "default": []
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/equal_pairs",
+        "type": "list",
+        "default": []
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/sum_equal_pairs",
+        "type": "list",
+        "default": []
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/state",
+        "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/radius",
+        "type": "float"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/use_volume_velocity",
+        "type": "bool",
+        "default": false
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/binary_path",
+        "type": "string"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/wire_path",
+        "type": "string"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/input_path",
+        "type": "string"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/output_path",
+        "type": "string"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/options",
+        "type": "object",
+        "optional": [
+            "maxArea",
+            "symmetry",
+            "dump_shape_velocity",
+            "marchingSquaresGridSize",
+            "forceMSGridSize"
+        ],
+        "default": null
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/options/maxArea",
+        "type": "float",
+        "default": 1e-3
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/options/dump_shape_velocity",
+        "type": "string",
+        "default": "velocity.msh"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/options/symmetry",
+        "type": "string",
+        "default": "doubly_periodic",
+        "options": [
+            "doubly_periodic",
+            "orthotropic",
+            "symmetric"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/options/marchingSquaresGridSize",
+        "type": "int",
+        "default": 256
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*/options/forceMSGridSize",
+        "type": "bool",
+        "default": false
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composite_map_type",
+        "type": "string",
+        "default": "none"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composite_map_indices",
+        "type": "file"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composite_map_indices",
+        "type": "list",
+        "default": []
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composite_map_indices/*",
+        "type": "int"
+    },
+    {
+        "pointer": "/parameters",
+        "type": "list",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*",
+        "type": "object",
+        "optional": [
+            "number",
+            "initial"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/number",
+        "type": "int"
+    },
+    {
+        "pointer": "/parameters/*/number",
+        "type": "object",
+        "required": [
+            "surface_selection",
+            "state"
+        ],
+        "default": null,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/number",
+        "type": "object",
+        "required": [
+            "volume_selection",
+            "state",
+            "exclude_boundary_nodes"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/parameters/*/initial",
+        "type": "list",
+        "default": []
+    },
+    {
+        "pointer": "/parameters/*/initial/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/parameters/*/initial",
+        "type": "float"
+    },
+    {
+        "pointer": "/parameters/*/state",
+        "type": "int"
+    },
+    {
+        "pointer": "/parameters/*/surface_selection",
+        "type": "list"
+    },
+    {
+        "pointer": "/parameters/*/surface_selection/*",
+        "type": "int"
+    },
+    {
+        "pointer": "/parameters/*/volume_selection",
+        "type": "list"
+    },
+    {
+        "pointer": "/parameters/*/volume_selection/*",
+        "type": "int"
+    },
+    {
+        "pointer": "/parameters/*/exclude_boundary_nodes",
+        "type": "bool"
+    },
+    {
+        "pointer": "/solver/advanced",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solve_in_parallel",
+            "solve_in_order",
+            "better_initial_guess"
+        ],
+        "doc": "Advanced settings for arranging forward simulations"
+    },
+    {
+        "pointer": "/solver/advanced/solve_in_parallel",
+        "default": false,
+        "type": "bool",
+        "doc": "Run forward simulations in parallel."
+    },
+    {
+        "pointer": "/solver/advanced/solve_in_order",
+        "default": [],
+        "type": "list",
+        "doc": "Run forward simulations in order."
+    },
+    {
+        "pointer": "/solver/advanced/solve_in_order/*",
+        "type": "int",
+        "doc": "Id of forward simulations."
+    },
+    {
+        "pointer": "/solver/advanced/better_initial_guess",
+        "default": false,
+        "type": "bool",
+        "doc": "Given simulation ordering, use the last simulation result as the initial guess for the next one."
+    }
+]

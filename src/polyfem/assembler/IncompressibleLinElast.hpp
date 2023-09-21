@@ -17,7 +17,7 @@ namespace polyfem::assembler
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;
 
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 		void set_params(const LameParameters &params) { params_ = params; }
 
 		std::string name() const override { return "IncompressibleLinearElasticity"; }
@@ -54,7 +54,7 @@ namespace polyfem::assembler
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;
 
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 		void set_params(const LameParameters &params) { params_ = params; }
 
 		std::string name() const override { return "IncompressibleLinearElasticityPressure"; }

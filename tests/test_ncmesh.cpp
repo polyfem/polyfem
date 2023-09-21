@@ -16,7 +16,7 @@
 
 #include <polyfem/utils/MaybeParallelFor.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include <math.h>
 ////////////////////////////////////////////////////////////////////////////////
