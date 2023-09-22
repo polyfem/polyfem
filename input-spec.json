@@ -1399,7 +1399,10 @@
         "pointer": "/space/remesh/type",
         "default": "physics",
         "type": "string",
-        "options": ["physics", "sizing_field"],
+        "options": [
+            "physics",
+            "sizing_field"
+        ],
         "doc": "Type of adaptive remeshing to use."
     },
     {
@@ -4287,9 +4290,7 @@
             "full_mat",
             "stiffness_mat",
             "stress_mat",
-            "u_path",
-            "v_path",
-            "a_path",
+            "state",
             "rest_mesh",
             "mises",
             "nodes",
@@ -4322,22 +4323,10 @@
         "doc": "Exports stress"
     },
     {
-        "pointer": "/output/data/u_path",
+        "pointer": "/output/data/state",
         "default": "",
         "type": "string",
-        "doc": "Writes the complete solution in PolyFEM format, used to restart the sim"
-    },
-    {
-        "pointer": "/output/data/v_path",
-        "default": "",
-        "type": "string",
-        "doc": "Writes the complete velocity in PolyFEM format, used to restart the sim"
-    },
-    {
-        "pointer": "/output/data/a_path",
-        "default": "",
-        "type": "string",
-        "doc": "Writes the complete acceleration in PolyFEM format, used to restart the sim"
+        "doc": "Writes the complete state in PolyFEM hdf5 format, used to restart the sim"
     },
     {
         "pointer": "/output/data/rest_mesh",
@@ -4505,30 +4494,16 @@
         "default": null,
         "type": "object",
         "optional": [
-            "u_path",
-            "v_path",
-            "a_path",
+            "state",
             "reorder"
         ],
         "doc": "input to restart time dependent sim"
     },
     {
-        "pointer": "/input/data/u_path",
+        "pointer": "/input/data/state",
         "default": "",
         "type": "file",
-        "doc": "input solution"
-    },
-    {
-        "pointer": "/input/data/v_path",
-        "default": "",
-        "type": "file",
-        "doc": "input velocity"
-    },
-    {
-        "pointer": "/input/data/a_path",
-        "default": "",
-        "type": "file",
-        "doc": "input acceleration"
+        "doc": "input state as hdf5"
     },
     {
         "pointer": "/input/data/reorder",

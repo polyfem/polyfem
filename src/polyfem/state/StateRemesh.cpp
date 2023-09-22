@@ -294,7 +294,7 @@ namespace polyfem
 			projected_quantities.conservativeResize(ndof, Eigen::NoChange);
 			projected_quantities.bottomRows(ndof_obstacle) = obstacle_projection_quantities;
 
-			std::vector<Eigen::VectorXd> x_prevs, v_prevs, a_prevs;
+			Eigen::MatrixXd x_prevs, v_prevs, a_prevs;
 			Remesher::split_time_integrator_quantities(
 				projected_quantities, dim, x_prevs, v_prevs, a_prevs);
 			solve_data.time_integrator->init(x_prevs, v_prevs, a_prevs, dt);

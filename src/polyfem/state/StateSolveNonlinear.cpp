@@ -142,10 +142,9 @@ namespace polyfem
 					V, F, mesh->get_body_ids(), mesh->is_volume(), /*binary=*/true);
 			}
 
-			solve_data.time_integrator->save_raw(
-				resolve_output_path(fmt::format(args["output"]["data"]["u_path"], t)),
-				resolve_output_path(fmt::format(args["output"]["data"]["v_path"], t)),
-				resolve_output_path(fmt::format(args["output"]["data"]["a_path"], t)));
+			const std::string &state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], t));
+			if (!state_path.empty())
+				solve_data.time_integrator->save_state(state_path);
 
 			// save restart file
 			save_restart_json(t0, dt, t);
@@ -155,6 +154,7 @@ namespace polyfem
 
 	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t, const bool init_time_integrator)
 	{
+		assert(sol.cols() == 1);
 		assert(!assembler->is_linear() || is_contact_enabled()); // non-linear
 		assert(!problem->is_scalar());                           // tensor
 		assert(mixed_assembler == nullptr);
@@ -194,11 +194,14 @@ namespace polyfem
 				POLYFEM_SCOPED_TIMER("Initialize time integrator");
 				solve_data.time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
 
-				Eigen::MatrixXd velocity, acceleration;
+				Eigen::MatrixXd solution, velocity, acceleration;
+				initial_solution(solution); // Reload this because we need all previous solutions
+				solution.col(0) = sol;      // Make sure the current solution is the same as `sol`
+				assert(solution.rows() == sol.size());
 				initial_velocity(velocity);
-				assert(velocity.size() == sol.size());
+				assert(velocity.rows() == sol.size());
 				initial_acceleration(acceleration);
-				assert(acceleration.size() == sol.size());
+				assert(acceleration.rows() == sol.size());
 
 				if (optimization_enabled)
 				{
@@ -209,7 +212,7 @@ namespace polyfem
 				}
 
 				const double dt = args["time"]["dt"];
-				solve_data.time_integrator->init(sol, velocity, acceleration, dt);
+				solve_data.time_integrator->init(solution, velocity, acceleration, dt);
 			}
 			assert(solve_data.time_integrator != nullptr);
 		}
