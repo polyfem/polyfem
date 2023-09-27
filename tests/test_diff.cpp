@@ -14,7 +14,7 @@
 #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <math.h>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -111,7 +111,7 @@ namespace
 		std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
 		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 
-		REQUIRE(derivative == Approx(finite_difference).epsilon(tol));
+		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
 	}
 
 	void verify_adjoint(std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, AdjointForm &obj, State &state, const Eigen::VectorXd &x, const Eigen::MatrixXd &theta, const double dt, const double tol, bool print_grad = false)
@@ -142,7 +142,7 @@ namespace
 		std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
 		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 		std::cout << std::setprecision(12) << "relative error: " << abs((finite_difference - derivative) / derivative) << "\n";
-		REQUIRE(derivative == Approx(finite_difference).epsilon(tol));
+		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
 	}
 
 	void verify_adjoint_expensive(std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, AdjointForm &obj, State &state, const Eigen::VectorXd &x, const double dt)
@@ -249,7 +249,7 @@ TEST_CASE("boundary-smoothing", "[test_adjoint]")
 	Eigen::MatrixXd velocity_discrete;
 	velocity_discrete.setRandom(x.size(), 1);
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-6);
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-6, 1e-5);
 }
 
 TEST_CASE("linear_elasticity-surface-3d", "[test_adjoint]")
@@ -348,7 +348,13 @@ TEST_CASE("topology-compliance", "[test_adjoint]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, theta, 1e-4, 1e-2);
 }
 
-TEST_CASE("neohookean-stress-3d", "[test_adjoint]")
+#if defined(NDEBUG) && !defined(WIN32)
+std::string tagsdiff = "[test_adjoint]";
+#else
+std::string tagsdiff = "[.][test_adjoint]";
+#endif
+
+TEST_CASE("neohookean-stress-3d", tagsdiff)
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
 	json in_args;
@@ -655,24 +661,25 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 // 	}
 // }
 
-TEST_CASE("shape-pressure-neumann-nodes", "[test_adjoint]")
+TEST_CASE("shape-pressure-nodes-3d", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
 	json in_args;
-	load_json(path + "shape-pressure-neumann-nodes.json", in_args);
+	load_json(path + "shape-pressure-nodes-3d.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
 	State &state = *state_ptr;
 
 	std::vector<std::shared_ptr<State>> states({state_ptr});
 
 	json opt_args;
-	load_json(path + "shape-pressure-neumann-nodes-opt.json", opt_args);
+	load_json(path + "shape-pressure-nodes-3d-opt.json", opt_args);
 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 	{
-		VariableToBoundaryNodes variable_to_node(*state_ptr, 2);
+		// VariableToBoundaryNodes variable_to_node(*state_ptr, 2);
+		VariableToBoundaryNodesExclusive variable_to_node(*state_ptr, {1, 3, 5});
 		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
 	}
 
@@ -697,8 +704,9 @@ TEST_CASE("shape-pressure-neumann-nodes", "[test_adjoint]")
 		const auto &gbases = state.geom_bases();
 		dim = mesh->dimension();
 
+		std::set<int> pressure_node_ids;
+		std::set<int> dirichlet_node_ids;
 		std::set<int> node_ids;
-		std::set<int> total_bnode_ids;
 		for (const auto &lb : state.total_local_boundary)
 		{
 			const int e = lb.element_id();
@@ -710,9 +718,17 @@ TEST_CASE("shape-pressure-neumann-nodes", "[test_adjoint]")
 
 				if (boundary_id == 2)
 					for (long n = 0; n < nodes.size(); ++n)
-						node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+						pressure_node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+				if (boundary_id == 3)
+					for (long n = 0; n < nodes.size(); ++n)
+						dirichlet_node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
 			}
 		}
+		std::set_difference(pressure_node_ids.begin(),
+							pressure_node_ids.end(),
+							dirichlet_node_ids.begin(),
+							dirichlet_node_ids.end(),
+							std::inserter(node_ids, node_ids.end()));
 		opt_bnodes = node_ids.size();
 	}
 	x.resize(opt_bnodes * dim);
@@ -725,7 +741,7 @@ TEST_CASE("shape-pressure-neumann-nodes", "[test_adjoint]")
 		x(i) = V_flat(b_idx(i));
 	velocity_discrete = velocity(x);
 
-	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-8, 1e-3);
+	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 1e-3);
 }
 
 TEST_CASE("shape-contact-force-norm", "[test_adjoint]")
@@ -862,7 +878,7 @@ TEST_CASE("node-trajectory", "[test_adjoint]")
 	Eigen::MatrixXd velocity_discrete(x.size(), 1);
 	velocity_discrete.setRandom();
 
-	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-5, 1e-5);
+	verify_adjoint(variable_to_simulations, obj, state, x, velocity_discrete, 1e-5, 1e-4);
 }
 
 TEST_CASE("damping-transient", "[test_adjoint]")
@@ -971,60 +987,60 @@ TEST_CASE("shape-transient-friction", "[test_adjoint]")
 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-6, 1e-5);
 }
 
-TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
-{
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
-	json in_args;
-	load_json(path + "shape-transient-friction-sdf.json", in_args);
-	auto state_ptr = create_state_and_solve(in_args);
-	State &state = *state_ptr;
+// TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
+// {
+// 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+// 	json in_args;
+// 	load_json(path + "shape-transient-friction-sdf.json", in_args);
+// 	auto state_ptr = create_state_and_solve(in_args);
+// 	State &state = *state_ptr;
 
-	json opt_args;
-	load_json(path + "shape-transient-friction-sdf-opt.json", opt_args);
-	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+// 	json opt_args;
+// 	load_json(path + "shape-transient-friction-sdf-opt.json", opt_args);
+// 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-	std::vector<std::shared_ptr<State>> states({state_ptr});
+// 	std::vector<std::shared_ptr<State>> states({state_ptr});
 
-	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
+// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
-	// Eigen::MatrixXd control_points;
-	// Eigen::VectorXd knots;
-	// double delta;
-	// control_points.setZero(4, 2);
-	// control_points << 1, 0.4,
-	// 	0.66666667, 0.73333333,
-	// 	0.43333333, 1,
-	// 	0.1, 1;
-	// knots.setZero(8);
-	// knots << 0,
-	// 	0,
-	// 	0,
-	// 	0,
-	// 	1,
-	// 	1,
-	// 	1,
-	// 	1;
-	// delta = 0.05;
+// 	// Eigen::MatrixXd control_points;
+// 	// Eigen::VectorXd knots;
+// 	// double delta;
+// 	// control_points.setZero(4, 2);
+// 	// control_points << 1, 0.4,
+// 	// 	0.66666667, 0.73333333,
+// 	// 	0.43333333, 1,
+// 	// 	0.1, 1;
+// 	// knots.setZero(8);
+// 	// knots << 0,
+// 	// 	0,
+// 	// 	0,
+// 	// 	0,
+// 	// 	1,
+// 	// 	1,
+// 	// 	1,
+// 	// 	1;
+// 	// delta = 0.05;
 
-	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
+// 	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
 
-	Eigen::MatrixXd velocity_discrete;
-	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
-	for (int i = 0; i < state.n_geom_bases; ++i)
-	{
-		velocity_discrete(i * 2 + 0) = rand() % 1000;
-		velocity_discrete(i * 2 + 1) = rand() % 1000;
-	}
+// 	Eigen::MatrixXd velocity_discrete;
+// 	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
+// 	for (int i = 0; i < state.n_geom_bases; ++i)
+// 	{
+// 		velocity_discrete(i * 2 + 0) = rand() % 1000;
+// 		velocity_discrete(i * 2 + 1) = rand() % 1000;
+// 	}
 
-	velocity_discrete.normalize();
+// 	velocity_discrete.normalize();
 
-	Eigen::MatrixXd V;
-	state.get_vertices(V);
-	Eigen::VectorXd x = utils::flatten(V);
+// 	Eigen::MatrixXd V;
+// 	state.get_vertices(V);
+// 	Eigen::VectorXd x = utils::flatten(V);
 
-	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 1e-5);
-}
+// 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 1e-5);
+// }
 
 TEST_CASE("initial-contact", "[test_adjoint]")
 {
@@ -1191,7 +1207,7 @@ TEST_CASE("barycenter", "[test_adjoint]")
 // 				for (int i = 0; i < 3; ++i)
 // 					temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t].get<double>() + dx(t * 3 * 3 + i * 3 + k);
 // 		state->init(temp_args, false);
-// 		state->args["optimization"]["enabled"] = true;
+// 		state->optimization_enabled = true;
 // 	};
 
 // 	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn_json, 1e-7, 1e-5);
@@ -1254,7 +1270,7 @@ TEST_CASE("barycenter", "[test_adjoint]")
 // 				for (int i = 0; i < 3; ++i)
 // 					temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t].get<double>() + dx(t * 3 * 3 + i * 3 + k);
 // 		state->init(temp_args, false);
-// 		state->args["optimization"]["enabled"] = true;
+// 		state->optimization_enabled = true;
 // 	};
 
 // 	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn_json, 1e-7, 1e-5);

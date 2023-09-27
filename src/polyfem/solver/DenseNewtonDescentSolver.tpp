@@ -186,9 +186,9 @@ namespace cppoptlib
 	// =======================================================================
 
 	template <typename ProblemType>
-	void DenseNewtonDescentSolver<ProblemType>::update_solver_info()
+	void DenseNewtonDescentSolver<ProblemType>::update_solver_info(const double energy)
 	{
-		Superclass::update_solver_info();
+		Superclass::update_solver_info(energy);
 		this->solver_info["internal_solver"] = internal_solver_info;
 	}
 

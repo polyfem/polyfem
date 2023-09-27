@@ -18,13 +18,13 @@ namespace cppoptlib
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		SparseNewtonDescentSolver(const json &solver_params, const json &linear_solver_params, const double dt);
+		SparseNewtonDescentSolver(const json &solver_params, const json &linear_solver_params, const double dt, const double characteristic_length);
 
 		std::string name() const override { return "Newton"; }
 
-		bool is_saddle_point(ProblemType &objFunc, const TVector &x) override;
-
 	protected:
+		const double characteristic_length;
+
 		bool compute_update_direction(ProblemType &objFunc, const TVector &x, const TVector &grad, TVector &direction) override;
 
 		void assemble_hessian(ProblemType &objFunc, const TVector &x, polyfem::StiffnessMatrix &hessian);
@@ -41,9 +41,6 @@ namespace cppoptlib
 		static constexpr double reg_weight_max = 1e8;
 		static constexpr double reg_weight_inc = 10;
 		static constexpr double reg_weight_dec = 2;
-
-		bool disable_project_psd;
-		bool verify_hessian;
 
 		// ====================================================================
 		//                           Solver state
@@ -70,7 +67,7 @@ namespace cppoptlib
 		//                            Solver info
 		// ====================================================================
 
-		void update_solver_info() override;
+		void update_solver_info(const double energy) override;
 
 		json internal_solver_info = json::array();
 

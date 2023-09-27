@@ -29,17 +29,6 @@ namespace polyfem
 					val = 0;
 				}
 			};
-
-			Eigen::MatrixXd kronecker_product(const Eigen::MatrixXd &a, const Eigen::MatrixXd &b)
-			{
-				Eigen::MatrixXd result(a.rows() * b.rows(), a.cols() * b.cols());
-				for (int i = 0; i < a.rows(); ++i)
-					for (int j = 0; j < a.cols(); ++j)
-						result.block(i * b.rows(), j * b.cols(), b.rows(), b.cols()) = a(i, j) * b;
-
-				return result;
-			}
-
 		} // namespace
 
 		RhsAssembler::RhsAssembler(const Assembler &assembler, const Mesh &mesh, const Obstacle &obstacle,
@@ -217,6 +206,7 @@ namespace polyfem
 				{
 					assembler::Mass mass_mat_assembler;
 					mass_mat_assembler.set_size(assembler_.size());
+					mass_mat_assembler.add_multimaterial(0, json({}), Units());
 					StiffnessMatrix mass;
 					const int n_fe_basis = n_basis_ - obstacle_.n_vertices();
 					mass_mat_assembler.assemble(size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, mass, true);
@@ -742,7 +732,7 @@ namespace polyfem
 			}
 		}
 
-		double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const std::vector<LocalBoundary> &local_neumann_boundary, const Density &density, const int resolution, const double t) const
+		double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const Eigen::MatrixXd &displacement_prev, const std::vector<LocalBoundary> &local_neumann_boundary, const Density &density, const int resolution, const double t) const
 		{
 
 			double res = 0;
@@ -838,7 +828,7 @@ namespace polyfem
 					{
 						trafo = vals.jac_it[n].inverse();
 
-						if (displacement.size() > 0)
+						if (displacement_prev.size() > 0)
 						{
 							assert(size_ == 2 || size_ == 3);
 							deform_mat.resize(size_, size_);
@@ -849,7 +839,7 @@ namespace polyfem
 								{
 									for (int d = 0; d < size_; ++d)
 									{
-										deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
+										deform_mat.row(d) += displacement_prev(g.index * size_ + d) * b.grad.row(n);
 									}
 								}
 							}

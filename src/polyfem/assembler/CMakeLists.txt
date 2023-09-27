@@ -27,6 +27,8 @@ set(SOURCES
 	LinearElasticity.hpp
 	Mass.cpp
 	Mass.hpp
+	MassMatrixAssembler.cpp
+	MassMatrixAssembler.hpp
 	MatParams.cpp
 	MatParams.hpp
 	MooneyRivlinElasticity.cpp
@@ -50,8 +52,6 @@ set(SOURCES
 	RhsAssembler.hpp
 	SaintVenantElasticity.cpp
 	SaintVenantElasticity.hpp
-	ViscousDamping.cpp
-	ViscousDamping.hpp
 	Stokes.cpp
 	Stokes.hpp
 	ViscousDamping.cpp
@@ -62,6 +62,5 @@ set(SOURCES
 	PressureAssembler.hpp
 )
 
-prepend_current_path(SOURCES)
-polyfem_set_source_group(${SOURCES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})

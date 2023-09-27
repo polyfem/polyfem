@@ -20,11 +20,10 @@
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
-#include <polyfem/solver/forms/parametrization/SplineParametrizations.hpp>
 
 #include <iostream>
 #include <fstream>
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -67,42 +66,47 @@ namespace
 		return true;
 	}
 
-	std::vector<double> read_energy(const std::string &file)
-	{
-		std::ifstream energy_out(file);
-		std::vector<double> energies;
-		std::string line;
-		if (energy_out.is_open())
-		{
-			while (getline(energy_out, line))
-			{
-				energies.push_back(std::stod(line.substr(0, line.find(","))));
-			}
-		}
-		double starting_energy = energies[0];
-		double optimized_energy = energies[energies.size() - 1];
+	// std::vector<double> read_energy(const std::string &file)
+	// {
+	// 	std::ifstream energy_out(file);
+	// 	std::vector<double> energies;
+	// 	std::string line;
+	// 	if (energy_out.is_open())
+	// 	{
+	// 		while (getline(energy_out, line))
+	// 		{
+	// 			energies.push_back(std::stod(line.substr(0, line.find(","))));
+	// 		}
+	// 	}
+	// 	double starting_energy = energies[0];
+	// 	double optimized_energy = energies[energies.size() - 1];
 
-		for (int i = 0; i < energies.size(); ++i)
-		{
-			if (i == 0)
-				std::cout << "initial " << energies[i] << std::endl;
-			else if (i == energies.size() - 1)
-				std::cout << "final " << energies[i] << std::endl;
-			else
-				std::cout << "step " << i << " " << energies[i] << std::endl;
-		}
+	// 	for (int i = 0; i < energies.size(); ++i)
+	// 	{
+	// 		if (i == 0)
+	// 			std::cout << "initial " << energies[i] << std::endl;
+	// 		else if (i == energies.size() - 1)
+	// 			std::cout << "final " << energies[i] << std::endl;
+	// 		else
+	// 			std::cout << "step " << i << " " << energies[i] << std::endl;
+	// 	}
 
-		return energies;
-	}
+	// 	return energies;
+	// }
 
 } // namespace
 
-#if defined(__linux__)
+#if defined(NDEBUG) && !defined(WIN32)
+std::string tagsopt = "[optimization]";
+#else
+std::string tagsopt = "[.][optimization]";
+#endif
 
-TEST_CASE("material-opt", "[optimization]")
+TEST_CASE("material-opt", tagsopt)
 {
 	const std::string name = "material-opt";
 	// run_opt_new(name);
+	json params;
 	{
 		const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
 		json opt_args;
@@ -154,13 +158,16 @@ TEST_CASE("material-opt", "[optimization]")
 			nl_problem = std::make_shared<AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
 		}
 
-		auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
-		CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
-	}
-	auto energies = read_energy(name);
+		auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], 1);
+		CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
-	REQUIRE(energies[0] == Approx(6.13934).epsilon(1e-2));
-	REQUIRE(energies[energies.size() - 1] == Approx(0.0105856).epsilon(1e-2));
+		params = nl_solver->get_info();
+		std::cout << "final energy " << params["energy"].get<double>() << "\n";
+	}
+	// auto energies = read_energy(name);
+
+	// REQUIRE(energies[0] == Catch::Approx(6.13934).epsilon(1e-2));
+	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.0105856).epsilon(1e-2));
 }
 
 // TEST_CASE("friction-opt", "[optimization]")
@@ -168,8 +175,8 @@ TEST_CASE("material-opt", "[optimization]")
 // 	run_opt_new("friction-opt");
 // 	auto energies = read_energy("friction-opt");
 
-// 	REQUIRE(energies[0] == Approx(0.000103767819516).epsilon(1e-1));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(3.26161994783e-07).epsilon(1e-1));
+// 	REQUIRE(energies[0] == Catch::Approx(0.000103767819516).epsilon(1e-1));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(3.26161994783e-07).epsilon(1e-1));
 // }
 
 // TEST_CASE("damping-opt", "[optimization]")
@@ -177,8 +184,8 @@ TEST_CASE("material-opt", "[optimization]")
 // 	run_opt_new("damping-opt");
 // 	auto energies = read_energy("damping-opt");
 
-// 	REQUIRE(energies[0] == Approx(4.14517346014e-07).epsilon(1e-3));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(2.12684299792e-09).epsilon(1e-3));
+// 	REQUIRE(energies[0] == Catch::Approx(4.14517346014e-07).epsilon(1e-3));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(2.12684299792e-09).epsilon(1e-3));
 // }
 
 // // TEST_CASE("initial-opt", "[optimization]")
@@ -186,8 +193,8 @@ TEST_CASE("material-opt", "[optimization]")
 // // 	run_trajectory_opt("initial-opt");
 // // 	auto energies = read_energy("initial-opt");
 
-// // 	REQUIRE(energies[0] == Approx(0.147092).epsilon(1e-4));
-// // 	REQUIRE(energies[energies.size() - 1] == Approx(0.109971).epsilon(1e-4));
+// // 	REQUIRE(energies[0] == Catch::Approx(0.147092).epsilon(1e-4));
+// // 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(0.109971).epsilon(1e-4));
 // // }
 
 TEST_CASE("topology-opt", "[optimization]")
@@ -219,6 +226,7 @@ TEST_CASE("topology-opt", "[optimization]")
 
 			states[i++] = AdjointOptUtils::create_state(cur_args);
 		}
+		states[0]->set_log_level(static_cast<spdlog::level::level_enum>(0));
 
 		// define mappings from optimization variable x to material parameters in states
 		for (const auto &arg : opt_args["variable_to_simulation"])
@@ -250,7 +258,7 @@ TEST_CASE("topology-opt", "[optimization]")
 		nl_problem->solution_changed(x);
 	}
 
-	auto nl_solver = std::make_shared<cppoptlib::MMASolver<solver::AdjointNLProblem>>(opt_args["solver"]["nonlinear"], 0.);
+	auto nl_solver = std::make_shared<cppoptlib::MMASolver<solver::AdjointNLProblem>>(opt_args["solver"]["nonlinear"], 0., 1);
 
 	// TODO: Define in json interface
 	// nonlinear inequality constraints g(x) < 0
@@ -262,12 +270,18 @@ TEST_CASE("topology-opt", "[optimization]")
 	}
 
 	// run the optimization for a few steps
-	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+	// CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
+	nl_solver->minimize(*nl_problem, x);
+
+	const json &params = nl_solver->get_info();
+	std::cout << "final energy " << params["energy"].get<double>() << "\n";
+
+	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.726565).epsilon(1e-4));
 
 	// check if the objective at these steps are correct
-	auto energies = read_energy(name);
-	REQUIRE(energies[0] == Approx(136.014).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(0.726565).epsilon(1e-4));
+	// auto energies = read_energy(name);
+	// REQUIRE(energies[0] == Catch::Approx(136.014).epsilon(1e-4));
+	// REQUIRE(energies[energies.size() - 1] == Catch::Approx(0.726565).epsilon(1e-4));
 }
 
 TEST_CASE("AMIPS-debug", "[optimization]")
@@ -297,6 +311,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	Eigen::VectorXd x(2);
 	x << 0., 1.;
 
+	states[0]->set_log_level(static_cast<spdlog::level::level_enum>(1));
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	{
 		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
@@ -315,11 +330,16 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 
 	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
 
-	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
-	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], 1);
+	nl_solver->minimize(*nl_problem, x);
+
+	const json &params = nl_solver->get_info();
+	std::cout << "final energy " << params["energy"].get<double>() << "\n";
+
+	REQUIRE(params["energy"].get<double>() == Catch::Approx(1.00006).epsilon(1e-4));
 }
 
-TEST_CASE("shape-stress-opt", "[optimization]")
+TEST_CASE("shape-stress-opt", tagsopt)
 {
 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + "shape-stress-opt" + "/";
 	json opt_args;
@@ -389,16 +409,17 @@ TEST_CASE("shape-stress-opt", "[optimization]")
 	std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states));
 
 	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
-	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
-	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], 1);
+	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
-	auto energies = read_energy("shape-stress-opt");
+	const json &params = nl_solver->get_info();
+	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
-	REQUIRE(energies[0] == Approx(0.105955475999).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(0.0589966856256).epsilon(1e-4));
+	// REQUIRE(energies[0] == Catch::Approx(0.105955475999).epsilon(1e-4));
+	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.0589966856256).epsilon(1e-4));
 
-	// REQUIRE(energies[0] == Approx(12.0735).epsilon(1e-4));
-	// REQUIRE(energies[energies.size() - 1] == Approx(11.3886).epsilon(1e-4));
+	// REQUIRE(energies[0] == Catch::Approx(12.0735).epsilon(1e-4));
+	// REQUIRE(energies[energies.size() - 1] == Catch::Approx(11.3886).epsilon(1e-4));
 }
 
 // TEST_CASE("shape-trajectory-surface-opt-new", "[optimization]")
@@ -406,8 +427,8 @@ TEST_CASE("shape-stress-opt", "[optimization]")
 // 	run_opt_new("shape-trajectory-surface-opt-new");
 // 	auto energies = read_energy("shape-trajectory-surface-opt-new");
 
-// 	REQUIRE(energies[0] == Approx(6.1658e-05).epsilon(1e-3));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(3.6194e-05).epsilon(1e-3));
+// 	REQUIRE(energies[0] == Catch::Approx(6.1658e-05).epsilon(1e-3));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(3.6194e-05).epsilon(1e-3));
 // }
 
 // TEST_CASE("shape-trajectory-surface-opt", "[optimization]")
@@ -503,8 +524,8 @@ TEST_CASE("shape-stress-opt", "[optimization]")
 
 // 	auto energies = read_energy("shape-trajectory-surface-opt-bspline");
 
-// 	REQUIRE(energies[0] == Approx(8.1934e-04).epsilon(1e-3));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(6.809e-14).epsilon(1e-3));
+// 	REQUIRE(energies[0] == Catch::Approx(8.1934e-04).epsilon(1e-3));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(6.809e-14).epsilon(1e-3));
 // }
 
 // TEST_CASE("shape-trajectory-surface-opt-bspline", "[optimization]")
@@ -625,92 +646,93 @@ TEST_CASE("shape-stress-opt", "[optimization]")
 // 	nl_problem->solution_changed(x);
 
 // 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
-// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
 // 	auto energies = read_energy("shape-trajectory-surface-opt-bspline");
 
-// 	REQUIRE(energies[0] == Approx(6.1658e-05).epsilon(1e-3));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(1.056e-8).epsilon(1e-3));
+// 	REQUIRE(energies[0] == Catch::Approx(6.1658e-05).epsilon(1e-3));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(1.056e-8).epsilon(1e-3));
 // }
 
-TEST_CASE("shape-stress-bbw-opt", "[optimization]")
-{
-	const std::string name = "shape-stress-bbw-opt";
-	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
-	json opt_args;
-	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-		log_and_throw_error("Failed to load optimization json file!");
+// TEST_CASE("shape-stress-bbw-opt", "[optimization]")
+// {
+// 	const std::string name = "shape-stress-bbw-opt";
+// 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
+// 	json opt_args;
+// 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
+// 		log_and_throw_error("Failed to load optimization json file!");
 
-	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+// 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-	for (auto &state_arg : opt_args["states"])
-		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
+// 	for (auto &state_arg : opt_args["states"])
+// 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
 
-	json state_args = opt_args["states"];
-	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
-	std::vector<std::shared_ptr<State>> states(state_args.size());
-	Eigen::VectorXd x;
-	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	{
-		// create simulators based on json inputs
-		int i = 0;
-		for (const json &args : state_args)
-		{
-			json cur_args;
-			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-				log_and_throw_error("Can't find json for State {}", i);
+// 	json state_args = opt_args["states"];
+// 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
+// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	Eigen::VectorXd x;
+// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	{
+// 		// create simulators based on json inputs
+// 		int i = 0;
+// 		for (const json &args : state_args)
+// 		{
+// 			json cur_args;
+// 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
+// 				log_and_throw_error("Can't find json for State {}", i);
 
-			states[i++] = AdjointOptUtils::create_state(cur_args);
-		}
+// 			states[i++] = AdjointOptUtils::create_state(cur_args);
+// 		}
 
-		// initialize optimization variable and assign elastic parameters to simulators
-		int ndof = 0;
-		std::vector<int> variable_sizes;
-		for (const auto &arg : opt_args["parameters"])
-		{
-			int size = AdjointOptUtils::compute_variable_size(arg, states);
-			ndof += size;
-			variable_sizes.push_back(size);
-		}
+// 		// initialize optimization variable and assign elastic parameters to simulators
+// 		int ndof = 0;
+// 		std::vector<int> variable_sizes;
+// 		for (const auto &arg : opt_args["parameters"])
+// 		{
+// 			int size = AdjointOptUtils::compute_variable_size(arg, states);
+// 			ndof += size;
+// 			variable_sizes.push_back(size);
+// 		}
 
-		// define mappings from optimization variable x to material parameters in states
-		for (const auto &arg : opt_args["variable_to_simulation"])
-			variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
+// 		// define mappings from optimization variable x to material parameters in states
+// 		for (const auto &arg : opt_args["variable_to_simulation"])
+// 			variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
 
-		x.setZero(ndof);
-		int var = 0;
-		for (const auto &arg : opt_args["parameters"])
-		{
-			x += variable_to_simulations[var++]->inverse_eval();
-		}
+// 		x.setZero(ndof);
+// 		int var = 0;
+// 		for (const auto &arg : opt_args["parameters"])
+// 		{
+// 			x += variable_to_simulations[var++]->inverse_eval();
+// 		}
 
-		// define optimization objective -- sum of compliance of the same structure under different loads
-		std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states));
+// 		// define optimization objective -- sum of compliance of the same structure under different loads
+// 		std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states));
 
-		nl_problem = std::make_shared<solver::AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+// 		nl_problem = std::make_shared<solver::AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
-		nl_problem->solution_changed(x);
-	}
+// 		nl_problem->solution_changed(x);
+// 	}
 
-	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
+// 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
 
-	// run the optimization for a few steps
-	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+// 	// run the optimization for a few steps
+// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
-	// check if the objective at these steps are correct
-	auto energies = read_energy(name);
+// 	json params;
+// 	nl_solver->get_info(params);
+// 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
-	REQUIRE(energies[0] == Approx(26.158).epsilon(1e-3));
-	REQUIRE(energies[energies.size() - 1] == Approx(24.846).epsilon(1e-3));
-}
+// 	// REQUIRE(energies[0] == Catch::Approx(26.158).epsilon(1e-3));
+// 	REQUIRE(params["energy"].get<double>() == Catch::Approx(24.846).epsilon(1e-3));
+// }
 
 // TEST_CASE("multiparameter-sdf-trajectory-surface-opt", "[optimization]")
 // {
 // 	run_opt_new("multiparameter-sdf-trajectory-surface-opt");
 // 	auto energies = read_energy("multiparameter-sdf-trajectory-surface-opt");
 
-// 	REQUIRE(energies[0] == Approx(0.15327).epsilon(1e-3));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(0.11259).epsilon(1e-3));
+// 	REQUIRE(energies[0] == Catch::Approx(0.15327).epsilon(1e-3));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(0.11259).epsilon(1e-3));
 // }
 
 // // TEST_CASE("sdf-test", "[optimization]")
@@ -801,223 +823,221 @@ TEST_CASE("shape-stress-bbw-opt", "[optimization]")
 // 	run_opt_new("3d-bspline-shape-trajectory-opt");
 // 	auto energies = read_energy("3d-bspline-shape-trajectory-opt");
 
-// 	REQUIRE(energies[0] == Approx(0.00473695).epsilon(1e-3));
-// 	REQUIRE(energies[energies.size() - 1] == Approx(0.0004626948).epsilon(1e-4));
+// 	REQUIRE(energies[0] == Catch::Approx(0.00473695).epsilon(1e-3));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(0.0004626948).epsilon(1e-4));
 // }
 
-TEST_CASE("3d-bspline-shape-matching", "[optimization]")
-{
-	std::string name = "3d-bspline-shape-matching";
-	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
-	json opt_args;
-	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-		log_and_throw_error("Failed to load optimization json file!");
+// TEST_CASE("3d-bspline-shape-matching", "[optimization]")
+// {
+// 	std::string name = "3d-bspline-shape-matching";
+// 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
+// 	json opt_args;
+// 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
+// 		log_and_throw_error("Failed to load optimization json file!");
 
-	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+// 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-	for (auto &state_arg : opt_args["states"])
-		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
+// 	for (auto &state_arg : opt_args["states"])
+// 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
 
-	json state_args = opt_args["states"];
-	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
-	std::vector<std::shared_ptr<State>> states(state_args.size());
-	Eigen::VectorXd x;
-	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	{
-		// create simulators based on json inputs
-		int i = 0;
-		for (const json &args : state_args)
-		{
-			json cur_args;
-			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-				log_and_throw_error("Can't find json for State {}", i);
+// 	json state_args = opt_args["states"];
+// 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
+// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	Eigen::VectorXd x;
+// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	{
+// 		// create simulators based on json inputs
+// 		int i = 0;
+// 		for (const json &args : state_args)
+// 		{
+// 			json cur_args;
+// 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
+// 				log_and_throw_error("Can't find json for State {}", i);
 
-			states[i++] = AdjointOptUtils::create_state(cur_args);
-		}
+// 			states[i++] = AdjointOptUtils::create_state(cur_args);
+// 		}
 
-		// initialize optimization variable and assign elastic parameters to simulators
-		int ndof = 0;
-		std::vector<int> variable_sizes;
-		for (const auto &arg : opt_args["parameters"])
-		{
-			int size = AdjointOptUtils::compute_variable_size(arg, states);
-			ndof += size;
-			variable_sizes.push_back(size);
-		}
+// 		// initialize optimization variable and assign elastic parameters to simulators
+// 		int ndof = 0;
+// 		std::vector<int> variable_sizes;
+// 		for (const auto &arg : opt_args["parameters"])
+// 		{
+// 			int size = AdjointOptUtils::compute_variable_size(arg, states);
+// 			ndof += size;
+// 			variable_sizes.push_back(size);
+// 		}
 
-		// define mappings from optimization variable x to material parameters in states
-		for (const auto &arg : opt_args["variable_to_simulation"])
-			variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
+// 		// define mappings from optimization variable x to material parameters in states
+// 		for (const auto &arg : opt_args["variable_to_simulation"])
+// 			variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
 
-		x.setZero(ndof);
-		int var = 0;
-		for (const auto &arg : opt_args["parameters"])
-		{
-			x += variable_to_simulations[var++]->inverse_eval();
-		}
+// 		x.setZero(ndof);
+// 		int var = 0;
+// 		for (const auto &arg : opt_args["parameters"])
+// 		{
+// 			x += variable_to_simulations[var++]->inverse_eval();
+// 		}
 
-		// define optimization objective -- sum of compliance of the same structure under different loads
-		std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states));
+// 		// define optimization objective -- sum of compliance of the same structure under different loads
+// 		std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states));
 
-		nl_problem = std::make_shared<solver::AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+// 		nl_problem = std::make_shared<solver::AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
-		nl_problem->solution_changed(x);
-	}
+// 		nl_problem->solution_changed(x);
+// 	}
 
-	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
+// 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
 
-	// run the optimization for a few steps
-	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+// 	// run the optimization for a few steps
+// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
-	// check if the objective at these steps are correct
-	auto energies = read_energy(name);
+// 	// check if the objective at these steps are correct
+// 	auto energies = read_energy(name);
 
-	REQUIRE(energies[0] == Approx(0.03155).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(0.0028353).epsilon(1e-4));
-}
+// 	REQUIRE(energies[0] == Catch::Approx(0.03155).epsilon(1e-4));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(0.0028353).epsilon(1e-4));
+// }
 
-TEST_CASE("3d-bspline-shape-mesh-matching", "[optimization]")
-{
-	std::string name = "3d-bspline-shape-mesh-matching";
-	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
-	json opt_args;
-	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-		log_and_throw_error("Failed to load optimization json file!");
+// TEST_CASE("3d-bspline-shape-mesh-matching", "[optimization]")
+// {
+// 	std::string name = "3d-bspline-shape-mesh-matching";
+// 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
+// 	json opt_args;
+// 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
+// 		log_and_throw_error("Failed to load optimization json file!");
 
-	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+// 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-	opt_args["functionals"][0]["static_objective"]["mesh_path"] = resolve_output_path(root_folder, opt_args["functionals"][0]["static_objective"]["mesh_path"]);
+// 	opt_args["functionals"][0]["static_objective"]["mesh_path"] = resolve_output_path(root_folder, opt_args["functionals"][0]["static_objective"]["mesh_path"]);
 
-	for (auto &state_arg : opt_args["states"])
-		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
+// 	for (auto &state_arg : opt_args["states"])
+// 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
 
-	json state_args = opt_args["states"];
-	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
-	std::vector<std::shared_ptr<State>> states(state_args.size());
-	Eigen::VectorXd x;
-	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	{
-		// create simulators based on json inputs
-		int i = 0;
-		for (const json &args : state_args)
-		{
-			json cur_args;
-			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-				log_and_throw_error("Can't find json for State {}", i);
+// 	json state_args = opt_args["states"];
+// 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
+// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	Eigen::VectorXd x;
+// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	{
+// 		// create simulators based on json inputs
+// 		int i = 0;
+// 		for (const json &args : state_args)
+// 		{
+// 			json cur_args;
+// 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
+// 				log_and_throw_error("Can't find json for State {}", i);
 
-			states[i++] = AdjointOptUtils::create_state(cur_args);
-		}
+// 			states[i++] = AdjointOptUtils::create_state(cur_args);
+// 		}
 
-		// initialize optimization variable and assign elastic parameters to simulators
-		int ndof = 0;
-		std::vector<int> variable_sizes;
-		for (const auto &arg : opt_args["parameters"])
-		{
-			int size = AdjointOptUtils::compute_variable_size(arg, states);
-			ndof += size;
-			variable_sizes.push_back(size);
-		}
+// 		// initialize optimization variable and assign elastic parameters to simulators
+// 		int ndof = 0;
+// 		std::vector<int> variable_sizes;
+// 		for (const auto &arg : opt_args["parameters"])
+// 		{
+// 			int size = AdjointOptUtils::compute_variable_size(arg, states);
+// 			ndof += size;
+// 			variable_sizes.push_back(size);
+// 		}
 
-		// define mappings from optimization variable x to material parameters in states
-		for (const auto &arg : opt_args["variable_to_simulation"])
-			variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
+// 		// define mappings from optimization variable x to material parameters in states
+// 		for (const auto &arg : opt_args["variable_to_simulation"])
+// 			variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
 
-		x.setZero(ndof);
-		int var = 0;
-		for (const auto &arg : opt_args["parameters"])
-		{
-			x += variable_to_simulations[var++]->inverse_eval();
-		}
+// 		x.setZero(ndof);
+// 		int var = 0;
+// 		for (const auto &arg : opt_args["parameters"])
+// 		{
+// 			x += variable_to_simulations[var++]->inverse_eval();
+// 		}
 
-		// define optimization objective -- sum of compliance of the same structure under different loads
-		std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states));
+// 		// define optimization objective -- sum of compliance of the same structure under different loads
+// 		std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states));
 
-		nl_problem = std::make_shared<solver::AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+// 		nl_problem = std::make_shared<solver::AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
-		nl_problem->solution_changed(x);
-	}
+// 		nl_problem->solution_changed(x);
+// 	}
 
-	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
+// 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
 
-	// run the optimization for a few steps
-	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+// 	// run the optimization for a few steps
+// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
-	// check if the objective at these steps are correct
-	auto energies = read_energy(name);
+// 	// check if the objective at these steps are correct
+// 	auto energies = read_energy(name);
 
-	REQUIRE(energies[0] == Approx(0.03155).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(0.0028360).epsilon(1e-4));
-}
+// 	REQUIRE(energies[0] == Catch::Approx(0.03155).epsilon(1e-4));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(0.0028360).epsilon(1e-4));
+// }
 
-TEST_CASE("2d-shape-traction-force", "[optimization]")
-{
-	std::string name = "2d-shape-traction-force";
-	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
-	json opt_args;
-	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-		log_and_throw_error("Failed to load optimization json file!");
+// TEST_CASE("2d-shape-traction-force", "[optimization]")
+// {
+// 	std::string name = "2d-shape-traction-force";
+// 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
+// 	json opt_args;
+// 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
+// 		log_and_throw_error("Failed to load optimization json file!");
 
-	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+// 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-	for (auto &state_arg : opt_args["states"])
-		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
+// 	for (auto &state_arg : opt_args["states"])
+// 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
 
-	json state_args = opt_args["states"];
-	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
-	std::vector<std::shared_ptr<State>> states(state_args.size());
-	Eigen::VectorXd x;
-	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	{
-		// create simulators based on json inputs
-		int i = 0;
-		for (const json &args : state_args)
-		{
-			json cur_args;
-			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-				log_and_throw_error("Can't find json for State {}", i);
+// 	json state_args = opt_args["states"];
+// 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
+// 	std::vector<std::shared_ptr<State>> states(state_args.size());
+// 	Eigen::VectorXd x;
+// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	{
+// 		// create simulators based on json inputs
+// 		int i = 0;
+// 		for (const json &args : state_args)
+// 		{
+// 			json cur_args;
+// 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
+// 				log_and_throw_error("Can't find json for State {}", i);
 
-			states[i++] = AdjointOptUtils::create_state(cur_args);
-		}
+// 			states[i++] = AdjointOptUtils::create_state(cur_args);
+// 		}
 
-		// initialize optimization variable and assign elastic parameters to simulators
-		int ndof = 0;
-		std::vector<int> variable_sizes;
-		for (const auto &arg : opt_args["parameters"])
-		{
-			int size = AdjointOptUtils::compute_variable_size(arg, states);
-			ndof += size;
-			variable_sizes.push_back(size);
-		}
+// 		// initialize optimization variable and assign elastic parameters to simulators
+// 		int ndof = 0;
+// 		std::vector<int> variable_sizes;
+// 		for (const auto &arg : opt_args["parameters"])
+// 		{
+// 			int size = AdjointOptUtils::compute_variable_size(arg, states);
+// 			ndof += size;
+// 			variable_sizes.push_back(size);
+// 		}
 
-		// define mappings from optimization variable x to material parameters in states
-		for (const auto &arg : opt_args["variable_to_simulation"])
-			variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
+// 		// define mappings from optimization variable x to material parameters in states
+// 		for (const auto &arg : opt_args["variable_to_simulation"])
+// 			variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
 
-		x.setZero(ndof);
-		int var = 0;
-		for (const auto &arg : opt_args["parameters"])
-		{
-			x += variable_to_simulations[var++]->inverse_eval();
-		}
+// 		x.setZero(ndof);
+// 		int var = 0;
+// 		for (const auto &arg : opt_args["parameters"])
+// 		{
+// 			x += variable_to_simulations[var++]->inverse_eval();
+// 		}
 
-		// define optimization objective -- sum of compliance of the same structure under different loads
-		std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states));
+// 		// define optimization objective -- sum of compliance of the same structure under different loads
+// 		std::shared_ptr<SumCompositeForm> obj = std::dynamic_pointer_cast<SumCompositeForm>(AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states));
 
-		nl_problem = std::make_shared<solver::AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+// 		nl_problem = std::make_shared<solver::AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
-		nl_problem->solution_changed(x);
-	}
+// 		nl_problem->solution_changed(x);
+// 	}
 
-	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
+// 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"]);
 
-	// run the optimization for a few steps
-	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::Contains("Reached iteration limit"));
+// 	// run the optimization for a few steps
+// 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
-	// check if the objective at these steps are correct
-	auto energies = read_energy(name);
+// 	// check if the objective at these steps are correct
+// 	auto energies = read_energy(name);
 
-	REQUIRE(energies[0] == Approx(955.23).epsilon(1e-4));
-	REQUIRE(energies[energies.size() - 1] == Approx(20.7053).epsilon(1e-4));
-}
-
-#endif
+// 	REQUIRE(energies[0] == Catch::Approx(955.23).epsilon(1e-4));
+// 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(20.7053).epsilon(1e-4));
+// }

@@ -14,8 +14,8 @@ namespace cppoptlib
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		MMASolver(const polyfem::json &solver_params, const double dt)
-			: Superclass(solver_params, dt)
+		MMASolver(const polyfem::json &solver_params, const double dt, const double characteristic_length)
+			: Superclass(solver_params, dt, characteristic_length)
 		{
 			this->m_line_search = NULL;
 		}

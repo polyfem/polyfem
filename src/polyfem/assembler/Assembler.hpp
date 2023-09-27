@@ -1,9 +1,11 @@
 #pragma once
 
+#include <polyfem/Units.hpp>
+
 #include <polyfem/assembler/AssemblerData.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
-#include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/MatrixCache.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -80,6 +82,15 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev) const { log_and_throw_error("Assemble energy not implemented by {}!", name()); }
 
+		virtual Eigen::VectorXd assemble_energy_per_element(
+			const bool is_volume,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double dt,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev) const { log_and_throw_error("Assemble energy not implemented by {}!", name()); }
+
 		// assemble gradient of energy (rhs)
 		virtual void assemble_gradient(
 			const bool is_volume,
@@ -103,7 +114,7 @@ namespace polyfem::assembler
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
-			utils::SparseMatrixCache &mat_cache,
+			utils::MatrixCache &mat_cache,
 			StiffnessMatrix &grad) const { log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
 
 		// plotting (eg von mises), assembler is the name of the formulation
@@ -193,8 +204,8 @@ namespace polyfem::assembler
 
 		virtual Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const { log_and_throw_error("Kernel not supported by {}!", name()); }
 
-		void set_materials(const std::vector<int> &body_ids, const json &body_params);
-		virtual void add_multimaterial(const int index, const json &params) {}
+		void set_materials(const std::vector<int> &body_ids, const json &body_params, const Units &units);
+		virtual void add_multimaterial(const int index, const json &params, const Units &units) {}
 
 		virtual void update_lame_params(const Eigen::MatrixXd &lambdas, const Eigen::MatrixXd &mus)
 		{
@@ -248,6 +259,16 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev) const override;
 
+		// assemble the energy per element
+		Eigen::VectorXd assemble_energy_per_element(
+			const bool is_volume,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double dt,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev) const override;
+
 		// assemble gradient of energy (rhs)
 		void assemble_gradient(
 			const bool is_volume,
@@ -271,7 +292,7 @@ namespace polyfem::assembler
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
-			utils::SparseMatrixCache &mat_cache,
+			utils::MatrixCache &mat_cache,
 			StiffnessMatrix &grad) const override;
 
 		virtual bool is_linear() const override { return false; }

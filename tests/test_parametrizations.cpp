@@ -7,12 +7,11 @@
 #include <polyfem/io/MshReader.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 
-#include <polyfem/solver/forms/parametrization/SplineParametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 
 #include <iostream>
 #include <fstream>
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -51,98 +50,6 @@ void verify_apply_jacobian(Parametrization &parametrization, const Eigen::Vector
 			std::cout << std::setprecision(16) << grad_x.norm() << std::endl;
 		REQUIRE((grad_x - (dydx * grad_y)).norm() < 1e-8);
 	}
-}
-
-TEST_CASE("SplineParametrization", "[test_parametrization]")
-{
-	Eigen::MatrixXd control_points(4, 2);
-	control_points << 0, -1,
-		0., -0.33333333,
-		0., 0.33333333,
-		0, 1;
-
-	Eigen::VectorXd knots(8);
-	knots << 0,
-		0,
-		0,
-		0,
-		1,
-		1,
-		1,
-		1;
-
-	Eigen::VectorXd V(20);
-	V << 0., -1.,
-		0., -0.77777778,
-		0., -0.55555556,
-		0., -0.33333333,
-		0., -0.11111111,
-		0., 0.11111111,
-		0., 0.33333333,
-		0., 0.55555556,
-		0., 0.77777778,
-		0., 1.;
-
-	BSplineParametrization1DTo2D parametrization(control_points, knots, 10, false);
-	verify_apply_jacobian(parametrization, V);
-}
-
-TEST_CASE("SplineParametrizationExcludeEnds", "[test_parametrization]")
-{
-	Eigen::MatrixXd control_points(4, 2);
-	control_points << 0, -1,
-		0., -0.33333333,
-		0., 0.33333333,
-		0, 1;
-
-	Eigen::VectorXd knots(8);
-	knots << 0,
-		0,
-		0,
-		0,
-		1,
-		1,
-		1,
-		1;
-
-	Eigen::VectorXd V(20);
-	V << 0., -1.,
-		0., -0.77777778,
-		0., -0.55555556,
-		0., -0.33333333,
-		0., -0.11111111,
-		0., 0.11111111,
-		0., 0.33333333,
-		0., 0.55555556,
-		0., 0.77777778,
-		0., 1.;
-
-	BSplineParametrization1DTo2D parametrization(control_points, knots, 10, true);
-	verify_apply_jacobian(parametrization, V);
-}
-
-TEST_CASE("BoundedBiharmonicWeights", "[test_parametrization]")
-{
-	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	std::vector<std::vector<int>> e;
-	std::vector<std::vector<double>> w;
-	std::vector<int> ids;
-	const std::string path = POLYFEM_DATA_DIR;
-	polyfem::io::MshReader::load(path + "/differentiable/cube_dense.msh", V, F, e, w, ids);
-	V.conservativeResize(V.rows(), 3);
-	V.col(2) = Eigen::VectorXd::Zero(V.rows());
-
-	BoundedBiharmonicWeights2Dto3D parametrization(4, V.rows(), V, F);
-	verify_apply_jacobian(parametrization, utils::flatten(V));
-
-	// Eigen::MatrixXd bbw_weights = parametrization.get_bbw_weights();
-	// for (int i = 0; i < bbw_weights.cols(); ++i)
-	// {
-	// 	auto V_ = V;
-	// 	V_.col(2) += bbw_weights.col(i);
-	// 	polyfem::io::OBJWriter::write(fmt::format("bbw_weights_{}.obj", i), V_, F);
-	// }
 }
 
 #endif

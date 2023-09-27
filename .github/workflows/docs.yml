@@ -18,11 +18,9 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          DOXYGEN_VERSION="1.9.5"
-          # wget --quiet "https://www.doxygen.nl/files/doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz"
-          wget "https://sourceforge.net/projects/doxygen/files/rel-${DOXYGEN_VERSION}/doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz"
-          tar -xzf "doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz"
-          cd "doxygen-${DOXYGEN_VERSION}"
+          wget "https://github.com/doxygen/doxygen/releases/download/Release_1_9_8/doxygen-1.9.8.linux.bin.tar.gz"
+          tar -xzf "doxygen-1.9.8.linux.bin.tar.gz"
+          cd "doxygen-1.9.8"
           sudo make install
           sudo apt-get install graphviz
 

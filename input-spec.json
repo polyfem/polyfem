@@ -7,6 +7,7 @@
             "materials"
         ],
         "optional": [
+            "units",
             "preset_problem",
             "common",
             "root_path",
@@ -18,8 +19,7 @@
             "initial_conditions",
             "output",
             "input",
-            "tests",
-            "optimization"
+            "tests"
         ],
         "doc": "Root of the configuration file."
     },
@@ -37,6 +37,42 @@
         "default": "",
         "type": "string",
         "doc": "Path for all relative paths, set automatically to the folder containing this JSON."
+    },
+    {
+        "pointer": "/units",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "length",
+            "mass",
+            "time",
+            "characteristic_length"
+        ],
+        "doc": "Basic units used in the code."
+    },
+    {
+        "pointer": "/units/length",
+        "default": "m",
+        "type": "string",
+        "doc": "Length unit."
+    },
+    {
+        "pointer": "/units/mass",
+        "default": "kg",
+        "type": "string",
+        "doc": "Mass unit."
+    },
+    {
+        "pointer": "/units/time",
+        "default": "s",
+        "type": "string",
+        "doc": "Time unit."
+    },
+    {
+        "pointer": "/units/characteristic_length",
+        "default": 1,
+        "type": "float",
+        "doc": "Characteristic length, used for tolerances."
     },
     {
         "pointer": "/tests",
@@ -127,6 +163,7 @@
         "optional": [
             "type",
             "extract",
+            "unit",
             "transformation",
             "volume_selection",
             "surface_selection",
@@ -221,6 +258,12 @@
         ],
         "default": "volume",
         "doc": "Used to extract stuff from the mesh. Eg extract surface extracts the surface from a tet mesh."
+    },
+    {
+        "pointer": "/geometry/*/unit",
+        "type": "string",
+        "default": "",
+        "doc": "Units of the geometric model."
     },
     {
         "pointer": "/geometry/*/transformation",
@@ -1049,6 +1092,7 @@
             "basis_type",
             "poly_basis_type",
             "use_p_ref",
+            "remesh",
             "advanced"
         ],
         "doc": "Options related to the FE space."
@@ -1137,6 +1181,232 @@
         "doc": "Perform a priori p-refinement based on element shape, as described in 'Decoupling..' paper."
     },
     {
+        "pointer": "/space/remesh",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "split",
+            "collapse",
+            "swap",
+            "smooth",
+            "local_relaxation",
+            "type"
+        ],
+        "doc": "Settings for adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to do adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/split",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "acceptance_tolerance",
+            "culling_threshold",
+            "max_depth",
+            "min_edge_length"
+        ],
+        "doc": "Settings for adaptive remeshing edge splitting operations"
+    },
+    {
+        "pointer": "/space/remesh/split/enabled",
+        "default": true,
+        "type": "bool",
+        "doc": "Whether to do edge splitting in adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/split/acceptance_tolerance",
+        "default": 1e-3,
+        "min": 0,
+        "type": "float",
+        "doc": "Accept split operation if energy decreased by at least x"
+    },
+    {
+        "pointer": "/space/remesh/split/culling_threshold",
+        "default": 0.95,
+        "type": "float",
+        "min": 0,
+        "max": 1,
+        "doc": "Split operation culling threshold on energy"
+    },
+    {
+        "pointer": "/space/remesh/split/max_depth",
+        "default": 3,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum depth split per time-step"
+    },
+    {
+        "pointer": "/space/remesh/split/min_edge_length",
+        "default": 1e-6,
+        "type": "float",
+        "min": 0,
+        "doc": "Minimum edge length to split"
+    },
+    {
+        "pointer": "/space/remesh/collapse",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "acceptance_tolerance",
+            "culling_threshold",
+            "max_depth",
+            "rel_max_edge_length",
+            "abs_max_edge_length"
+        ],
+        "doc": "Settings for adaptive remeshing edge collapse operations"
+    },
+    {
+        "pointer": "/space/remesh/collapse/enabled",
+        "default": true,
+        "type": "bool",
+        "doc": "Whether to do edge collapse in adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/collapse/acceptance_tolerance",
+        "default": -1e-8,
+        "max": 0,
+        "type": "float",
+        "doc": "Accept collapse operation if energy decreased by at least x"
+    },
+    {
+        "pointer": "/space/remesh/collapse/culling_threshold",
+        "default": 0.01,
+        "type": "float",
+        "min": 0,
+        "max": 1,
+        "doc": "Collapse operation culling threshold on energy"
+    },
+    {
+        "pointer": "/space/remesh/collapse/max_depth",
+        "default": 3,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum depth collapse per time-step"
+    },
+    {
+        "pointer": "/space/remesh/collapse/rel_max_edge_length",
+        "default": 1,
+        "type": "float",
+        "min": 0,
+        "doc": "Length of maximum edge length to collapse relative to initial minimum edge length"
+    },
+    {
+        "pointer": "/space/remesh/collapse/abs_max_edge_length",
+        "default": 1e100,
+        "type": "float",
+        "min": 0,
+        "doc": "Length of maximum edge length to collapse in absolute units of distance"
+    },
+    {
+        "pointer": "/space/remesh/swap",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "acceptance_tolerance",
+            "max_depth"
+        ],
+        "doc": "Settings for adaptive remeshing edge/face swap operations"
+    },
+    {
+        "pointer": "/space/remesh/swap/enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to do edge/face swap in adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/swap/acceptance_tolerance",
+        "default": -1e-8,
+        "max": 0,
+        "type": "float",
+        "doc": "Accept swap operation if energy decreased by at least x"
+    },
+    {
+        "pointer": "/space/remesh/swap/max_depth",
+        "default": 3,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum depth swap per time-step"
+    },
+    {
+        "pointer": "/space/remesh/smooth",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "acceptance_tolerance",
+            "max_iters"
+        ],
+        "doc": "Settings for adaptive remeshing vertex smoothing operations"
+    },
+    {
+        "pointer": "/space/remesh/smooth/enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to do vertex smoothing in adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/smooth/acceptance_tolerance",
+        "default": -1e-8,
+        "max": 0,
+        "type": "float",
+        "doc": "Accept smooth operation if energy decreased by at least x"
+    },
+    {
+        "pointer": "/space/remesh/smooth/max_iters",
+        "default": 1,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum number of smoothing iterations per time-step"
+    },
+    {
+        "pointer": "/space/remesh/local_relaxation",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "local_mesh_n_ring",
+            "local_mesh_rel_area",
+            "max_nl_iterations"
+        ],
+        "doc": "Settings for adaptive remeshing local relaxation"
+    },
+    {
+        "pointer": "/space/remesh/local_relaxation/local_mesh_n_ring",
+        "default": 2,
+        "type": "int",
+        "doc": "Size of n-ring for local relaxation"
+    },
+    {
+        "pointer": "/space/remesh/local_relaxation/local_mesh_rel_area",
+        "default": 0.01,
+        "type": "float",
+        "doc": "Minimum area for local relaxation"
+    },
+    {
+        "pointer": "/space/remesh/local_relaxation/max_nl_iterations",
+        "default": 1,
+        "type": "int",
+        "doc": "Maximum number of nonlinear solver iterations before acceptance check"
+    },
+    {
+        "pointer": "/space/remesh/type",
+        "default": "physics",
+        "type": "string",
+        "options": [
+            "physics",
+            "sizing_field"
+        ],
+        "doc": "Type of adaptive remeshing to use."
+    },
+    {
         "pointer": "/space/advanced",
         "default": null,
         "type": "object",
@@ -1152,7 +1422,8 @@
             "force_no_ref_for_harmonic",
             "B",
             "h1_formula",
-            "count_flipped_els"
+            "count_flipped_els",
+            "use_particle_advection"
         ],
         "doc": "Advanced settings for the FE space."
     },
@@ -1233,6 +1504,12 @@
         "doc": "Count the number of elements with Jacobian of the geometric map not positive at quadrature points."
     },
     {
+        "pointer": "/space/advanced/use_particle_advection",
+        "default": false,
+        "type": "bool",
+        "doc": "Use particle advection in splitting method for solving NS equation."
+    },
+    {
         "pointer": "/time",
         "default": "skip",
         "type": "object",
@@ -1242,7 +1519,8 @@
         ],
         "optional": [
             "t0",
-            "integrator"
+            "integrator",
+            "quasistatic"
         ],
         "doc": "The time parameters: start time `t0`, end time `tend`, time step `dt`."
     },
@@ -1255,7 +1533,8 @@
         ],
         "optional": [
             "t0",
-            "integrator"
+            "integrator",
+            "quasistatic"
         ],
         "doc": "The time parameters: start time `t0`, time step `dt`, number of time steps."
     },
@@ -1268,7 +1547,8 @@
         ],
         "optional": [
             "t0",
-            "integrator"
+            "integrator",
+            "quasistatic"
         ],
         "doc": "The time parameters: start time `t0`, end time `tend`, number of time steps."
     },
@@ -1299,10 +1579,23 @@
     },
     {
         "pointer": "/time/integrator",
+        "type": "string",
+        "default": "ImplicitEuler",
+        "options": [
+            "ImplicitEuler",
+            "BDF1",
+            "BDF2",
+            "BDF3",
+            "BDF4",
+            "BDF5",
+            "BDF6",
+            "ImplicitNewmark"
+        ],
+        "doc": "Time integrator"
+    },
+    {
+        "pointer": "/time/integrator",
         "type": "object",
-        "default": {
-            "type": "ImplicitEuler"
-        },
         "type_name": "ImplicitEuler",
         "required": [
             "type"
@@ -1369,6 +1662,12 @@
         "doc": "BDF order"
     },
     {
+        "pointer": "/time/quasistatic",
+        "type": "bool",
+        "default": false,
+        "doc": "Ignore inertia in time dependent. Used for doing incremental load."
+    },
+    {
         "pointer": "/contact",
         "default": null,
         "type": "object",
@@ -1378,7 +1677,8 @@
             "dhat_percentage",
             "epsv",
             "friction_coefficient",
-            "use_convergent_formulation"
+            "use_convergent_formulation",
+            "collision_mesh"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1421,6 +1721,62 @@
         "doc": "Whether to use the convergent (area weighted) formulation of IPC."
     },
     {
+        "pointer": "/contact/collision_mesh",
+        "type": "object",
+        "required": [
+            "mesh",
+            "linear_map"
+        ],
+        "optional": [
+            "enabled"
+        ],
+        "default": "skip",
+        "doc": "Load a preconstructed collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh",
+        "type": "object",
+        "required": [
+            "max_edge_length"
+        ],
+        "optional": [
+            "tessellation_type",
+            "enabled"
+        ],
+        "doc": "Construct a collision mesh with a maximum edge length."
+    },
+    {
+        "pointer": "/contact/collision_mesh/mesh",
+        "type": "string",
+        "doc": "Path to preconstructed collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/linear_map",
+        "type": "string",
+        "doc": "HDF file storing the linear mapping of displacements."
+    },
+    {
+        "pointer": "/contact/collision_mesh/max_edge_length",
+        "type": "float",
+        "doc": "Maximum edge length to use for building the collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/tessellation_type",
+        "type": "string",
+        "options": [
+            "regular",
+            "irregular"
+        ],
+        "default": "regular",
+        "doc": "Type of tessellation to use for building the collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/enabled",
+        "type": "bool",
+        "default": true,
+        "doc": ""
+    },
+    {
         "pointer": "/solver",
         "default": null,
         "type": "object",
@@ -1431,7 +1787,6 @@
             "augmented_lagrangian",
             "contact",
             "rayleigh_damping",
-            "ignore_inertia",
             "advanced"
         ],
         "doc": "The settings for the solver including linear solver, nonlinear solver, and some advanced options."
@@ -1900,78 +2255,15 @@
             "solver",
             "f_delta",
             "x_delta",
-            "debug_fd",
-            "debug_fd_eps",
-            "disable_project_psd",
-            "verify_hessian",
             "grad_norm",
             "first_grad_norm_tol",
             "max_iterations",
             "relative_gradient",
             "line_search",
-            "export_energy",
-            "export_energy_components",
-            "solver_info_log",
-            "max_step_size",
-            "min_step_size",
             "force_psd_projection",
-            "check_saddle_point"
+            "allow_out_of_iterations"
         ],
         "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
-    },
-    {
-        "pointer": "/solver/nonlinear/disable_project_psd",
-        "default": false,
-        "type": "bool",
-        "doc": "Disable projection to PSD in newton solve."
-    },
-    {
-        "pointer": "/solver/nonlinear/verify_hessian",
-        "default": false,
-        "type": "bool",
-        "doc": "Use finite difference to verify gradient in optimization"
-    },
-    {
-        "pointer": "/solver/nonlinear/debug_fd",
-        "default": false,
-        "type": "bool",
-        "doc": "Use finite difference to verify gradient in optimization"
-    },
-    {
-        "pointer": "/solver/nonlinear/debug_fd_eps",
-        "default": 1e-7,
-        "type": "float",
-        "doc": "Use finite difference to verify gradient in optimization"
-    },
-    {
-        "pointer": "/solver/nonlinear/max_step_size",
-        "default": 1,
-        "type": "float",
-        "doc": "The descent direction in the nonlinear solves is multiplied by this value, for problems with too small/large gradient."
-    },
-    {
-        "pointer": "/solver/nonlinear/solver_info_log",
-        "default": false,
-        "type": "bool",
-        "doc": "Print optimization nonlinear solver statistics to log in json format at every iter"
-    },
-    {
-        "pointer": "/solver/nonlinear/min_step_size",
-        "default": 0,
-        "type": "float",
-        "doc": "Minimum step size in line search"
-    },
-    {
-        "pointer": "/solver/nonlinear/export_energy",
-        "default": "",
-        "type": "string",
-        "doc": "Save energy and gradient in optimizations to file"
-    },
-    {
-        "pointer": "/solver/nonlinear/export_energy_components",
-        "default": false,
-        "type": "bool",
-        "doc": "Save energy and gradient components"
     },
     {
         "pointer": "/solver/nonlinear/solver",
@@ -1979,7 +2271,7 @@
         "type": "string",
         "options": [
             "newton",
-            "GradientDescent",
+            "gradient_descent",
             "lbfgs"
         ],
         "doc": "Nonlinear solver type"
@@ -2059,10 +2351,10 @@
         "doc": "Force the Hessian to be PSD when using second order solvers (i.e., Newton's method)."
     },
     {
-        "pointer": "/solver/nonlinear/check_saddle_point",
+        "pointer": "/solver/nonlinear/allow_out_of_iterations",
         "default": false,
         "type": "bool",
-        "doc": "Check if hessian is PSD when the nonlinear solve converges."
+        "doc": "If false (default), an exception will be thrown when the nonlinear solver reaches the maximum number of iterations."
     },
     {
         "pointer": "/solver/augmented_lagrangian",
@@ -2074,8 +2366,7 @@
             "max_weight",
             "eta",
             "max_solver_iters",
-            "force",
-            "error"
+            "force"
         ],
         "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes E + a/2*AL^2 - lambda AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a *= scaling` until `max_weight`. See IPC additional material"
     },
@@ -2085,13 +2376,6 @@
         "min": 0,
         "type": "float",
         "doc": "Initial weight for AL"
-    },
-    {
-        "pointer": "/solver/augmented_lagrangian/error",
-        "default": 1e-2,
-        "min": 0,
-        "type": "float",
-        "doc": "Don't stop AL unless the error is smaller than this number."
     },
     {
         "pointer": "/solver/augmented_lagrangian/scaling",
@@ -2125,14 +2409,6 @@
         "default": false,
         "type": "bool",
         "doc": "Always enable AL, even when BC can be imposed"
-    },
-    {
-        "pointer": "/solver/augmented_lagrangian/threshold",
-        "default": 0.05,
-        "min": 0,
-        "max": 1,
-        "type": "float",
-        "doc": "Stop AL when BC is close enough to the imposed one"
     },
     {
         "pointer": "/solver/contact",
@@ -2272,12 +2548,6 @@
         "doc": "Maximum number of update iterations for lagging."
     },
     {
-        "pointer": "/solver/ignore_inertia",
-        "default": false,
-        "type": "bool",
-        "doc": "Ignore inertia in time dependent. Used for doing incremental load."
-    },
-    {
         "pointer": "/solver/advanced",
         "default": null,
         "type": "object",
@@ -2285,8 +2555,7 @@
             "cache_size",
             "lump_mass_matrix",
             "lagged_regularization_weight",
-            "lagged_regularization_iterations",
-            "bistable"
+            "lagged_regularization_iterations"
         ],
         "doc": "Advanced settings for the solver"
     },
@@ -2315,56 +2584,9 @@
         "doc": "Number of regularize singular static problems."
     },
     {
-        "pointer": "/solver/advanced/bistable",
-        "default": false,
-        "type": "bool",
-        "doc": "To find the bistable state of a microstructure."
-    },
-    {
         "pointer": "/materials",
         "type": "list",
         "doc": "Material Parameters lists including ID pointing to volume selection, Young's modulus ($E$), Poisson's ratio ($\\nu$), Density ($\\rho$), or Lamé constants ($\\lambda$ and $\\mu$)."
-    },
-    {
-        "pointer": "/materials/*/microstructure",
-        "type": "object",
-        "doc": "microstructure model configuration"
-    },
-    {
-        "pointer": "/materials/*/load_reduced_basis",
-        "default": "",
-        "type": "string",
-        "doc": "path to load reduced basis"
-    },
-    {
-        "pointer": "/materials/*/save_reduced_basis",
-        "default": "",
-        "type": "string",
-        "doc": "path to save reduced basis"
-    },
-    {
-        "pointer": "/materials/*/det_samples",
-        "default": [],
-        "type": "list",
-        "doc": "array of determinant samples"
-    },
-    {
-        "pointer": "/materials/*/amp_samples",
-        "default": [],
-        "type": "list",
-        "doc": "array of amplitude samples"
-    },
-    {
-        "pointer": "/materials/*/n_dir_samples",
-        "type": "int",
-        "default": 5,
-        "doc": "number of directional samples"
-    },
-    {
-        "pointer": "/materials/*/n_reduced_basis",
-        "type": "int",
-        "default": 5,
-        "doc": "number of reduced basis"
     },
     {
         "pointer": "/materials/*",
@@ -2590,6 +2812,20 @@
     {
         "pointer": "/materials/*",
         "type": "object",
+        "type_name": "OperatorSplitting",
+        "required": [
+            "type",
+            "viscosity"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, viscosity, density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
         "type_name": "IncompressibleLinearElasticity",
         "required": [
             "type",
@@ -2701,6 +2937,30 @@
         "doc": "Young's modulus"
     },
     {
+        "pointer": "/materials/*/E",
+        "type": "object",
+        "required": [
+            "value",
+            "unit"
+        ],
+        "doc": "Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/E/unit",
+        "type": "string",
+        "doc": "The unit of the Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/E/value",
+        "type": "float",
+        "doc": "The value of the Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/E/value",
+        "type": "file",
+        "doc": "The value of the Young's modulus"
+    },
+    {
         "pointer": "/materials/*/nu",
         "type": "float",
         "doc": "Poisson's ratio"
@@ -2713,7 +2973,6 @@
     {
         "pointer": "/materials/*/elasticity_tensor",
         "type": "list",
-        "default": [],
         "doc": "Symmetric elasticity tensor"
     },
     {
@@ -2759,6 +3018,7 @@
             "IncompressibleOgden",
             "Stokes",
             "NavierStokes",
+            "OperatorSplitting",
             "IncompressibleLinearElasticity",
             "Laplacian",
             "Helmholtz",
@@ -2881,38 +3141,9 @@
             "dirichlet_boundary",
             "neumann_boundary",
             "pressure_boundary",
-            "obstacle_displacements",
-            "linear_displacement_offset",
-            "fixed_macro_strain"
+            "obstacle_displacements"
         ],
         "doc": "The settings for boundary conditions."
-    },
-    {
-        "pointer": "/boundary_conditions/fixed_macro_strain",
-        "type": "list",
-        "default": [],
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/fixed_macro_strain/*",
-        "type": "int",
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/linear_displacement_offset",
-        "type": "list",
-        "default": [],
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/linear_displacement_offset/*",
-        "type": "list",
-        "doc": ""
-    },
-    {
-        "pointer": "/boundary_conditions/linear_displacement_offset/*/*",
-        "type": "float",
-        "doc": ""
     },
     {
         "pointer": "/boundary_conditions/rhs",
@@ -2945,7 +3176,7 @@
         "pointer": "/boundary_conditions/dirichlet_boundary",
         "default": [],
         "type": "list",
-        "doc": "The list of Dirichlet boundary conditions for the main variable. Elements of the list are assignment pairs (id, value) where id is assigned by surface selection."
+        "doc": "The list of Dirichlet boundary conditions for the main variable. Elements of the list are assignment pairs (ID, value) where ID is assigned by surface selection."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
@@ -2956,9 +3187,9 @@
             "value"
         ],
         "optional": [
-            "dimension",
             "time_reference",
-            "interpolation"
+            "interpolation",
+            "dimension"
         ],
         "doc": "Dirichlet boundary condition."
     },
@@ -2995,22 +3226,7 @@
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
         "type": "float",
-        "doc": "Values of Dirichlet boundary condition for each dimension"
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
-        "type": "list",
-        "doc": "List of Dirichlet boundary condition for each dimension over time"
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*/*",
-        "type": "float",
-        "doc": "Values of Dirichlet boundary condition for each dimension over time"
-    },
-    {
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*/*",
-        "type": "string",
-        "doc": "Values of Dirichlet boundary condition for each dimension over time"
+        "doc": "Values of Dirichlet boundary condition for each dimension."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension",
@@ -3850,21 +4066,6 @@
         "doc": "value as a function of $x,y,z,t$"
     },
     {
-        "pointer": "/optimization",
-        "default": null,
-        "type": "object",
-        "optional": [
-            "enabled"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/optimization/enabled",
-        "type": "bool",
-        "default": false,
-        "doc": "Cache transient solutions for differentiability of PDE solution."
-    },
-    {
         "pointer": "/output",
         "default": null,
         "type": "object",
@@ -3982,7 +4183,7 @@
         "pointer": "/output/paraview/high_order_mesh",
         "default": true,
         "type": "bool",
-        "doc": "Enables/disables high-order output for paraview. Supported only for isoparametric or linear meshes with high-odrer solutions."
+        "doc": "Enables/disables high-order output for paraview. Supported only for isoparametric or linear meshes with high-order solutions."
     },
     {
         "pointer": "/output/paraview/volume",
@@ -4015,13 +4216,16 @@
         "optional": [
             "use_hdf5",
             "material",
-            "topology",
             "body_ids",
             "contact_forces",
             "friction_forces",
-            "tensor_values",
             "velocity",
-            "acceleration"
+            "acceleration",
+            "scalar_values",
+            "tensor_values",
+            "discretization_order",
+            "nodes",
+            "forces"
         ],
         "doc": "Optional fields in the output"
     },
@@ -4036,12 +4240,6 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out material values sampled on the vertices of the mesh"
-    },
-    {
-        "pointer": "/output/paraview/options/topology",
-        "default": false,
-        "type": "bool",
-        "doc": "If true, write out topology values sampled on the vertices of the mesh"
     },
     {
         "pointer": "/output/paraview/options/body_ids",
@@ -4062,12 +4260,6 @@
         "doc": "If true, write out friction forces for surface"
     },
     {
-        "pointer": "/output/paraview/options/tensor_values",
-        "default": true,
-        "type": "bool",
-        "doc": "If true, write out stress values for volume"
-    },
-    {
         "pointer": "/output/paraview/options/velocity",
         "default": false,
         "type": "bool",
@@ -4080,6 +4272,36 @@
         "doc": "If true, write out accelerations"
     },
     {
+        "pointer": "/output/paraview/options/scalar_values",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, write out scalar values"
+    },
+    {
+        "pointer": "/output/paraview/options/tensor_values",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, write out tensor values"
+    },
+    {
+        "pointer": "/output/paraview/options/discretization_order",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, write out discretization order"
+    },
+    {
+        "pointer": "/output/paraview/options/nodes",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, write out node order"
+    },
+    {
+        "pointer": "/output/paraview/options/forces",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out all variational forces on the FE mesh "
+    },
+    {
         "pointer": "/output/data",
         "default": null,
         "type": "object",
@@ -4088,9 +4310,7 @@
             "full_mat",
             "stiffness_mat",
             "stress_mat",
-            "u_path",
-            "v_path",
-            "a_path",
+            "state",
             "rest_mesh",
             "mises",
             "nodes",
@@ -4123,22 +4343,10 @@
         "doc": "Exports stress"
     },
     {
-        "pointer": "/output/data/u_path",
+        "pointer": "/output/data/state",
         "default": "",
         "type": "string",
-        "doc": "Writes the complete solution in PolyFEM format, used to restart the sim"
-    },
-    {
-        "pointer": "/output/data/v_path",
-        "default": "",
-        "type": "string",
-        "doc": "Writes the complete velocity in PolyFEM format, used to restart the sim"
-    },
-    {
-        "pointer": "/output/data/a_path",
-        "default": "",
-        "type": "string",
-        "doc": "Writes the complete acceleration in PolyFEM format, used to restart the sim"
+        "doc": "Writes the complete state in PolyFEM hdf5 format, used to restart the sim"
     },
     {
         "pointer": "/output/data/rest_mesh",
@@ -4306,30 +4514,16 @@
         "default": null,
         "type": "object",
         "optional": [
-            "u_path",
-            "v_path",
-            "a_path",
+            "state",
             "reorder"
         ],
         "doc": "input to restart time dependent sim"
     },
     {
-        "pointer": "/input/data/u_path",
+        "pointer": "/input/data/state",
         "default": "",
         "type": "file",
-        "doc": "input solution"
-    },
-    {
-        "pointer": "/input/data/v_path",
-        "default": "",
-        "type": "file",
-        "doc": "input velocity"
-    },
-    {
-        "pointer": "/input/data/a_path",
-        "default": "",
-        "type": "file",
-        "doc": "input acceleration"
+        "doc": "input state as hdf5"
     },
     {
         "pointer": "/input/data/reorder",

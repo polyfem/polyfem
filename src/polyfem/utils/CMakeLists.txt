@@ -22,12 +22,12 @@ set(SOURCES
 	InterpolatedFunction.hpp
 	Interpolation.cpp
 	Interpolation.hpp
-	IsosurfaceInflator.cpp
-	IsosurfaceInflator.hpp
 	JSONUtils.cpp
 	JSONUtils.hpp
 	Logger.cpp
 	Logger.hpp
+	MatrixCache.cpp
+	MatrixCache.hpp
 	MatrixUtils.cpp
 	MatrixUtils.hpp
 	MaybeParallelFor.hpp
@@ -51,9 +51,7 @@ set(SOURCES
 	Types.hpp
 	LazyCubicInterpolator.cpp
 	LazyCubicInterpolator.hpp
-	PolarDecomposition.hpp
 )
 
-prepend_current_path(SOURCES)
-polyfem_set_source_group(${SOURCES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <vector>
+
 #include <Eigen/Core>
 
 namespace polyfem::solver

@@ -3,10 +3,7 @@
 #include "Form.hpp"
 
 #include <polyfem/assembler/RhsAssembler.hpp>
-
-#include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
-
 #include <polyfem/utils/Types.hpp>
 
 namespace polyfem::solver
@@ -23,7 +20,7 @@ namespace polyfem::solver
 		/// @param n_boundary_samples
 		/// @param mass Mass matrix
 		/// @param rhs_assembler Right hand side assembler
-		/// @param obstacle Obstacles
+		/// @param obstacle_ndof Obstacle's number of DOF
 		/// @param is_time_dependent Whether the problem is time dependent
 		/// @param t Current time
 		BCPenaltyForm(const int ndof,
@@ -33,20 +30,22 @@ namespace polyfem::solver
 					  const int n_boundary_samples,
 					  const StiffnessMatrix &mass,
 					  const assembler::RhsAssembler &rhs_assembler,
-					  const mesh::Obstacle &obstacle,
+					  const size_t obstacle_ndof,
 					  const bool is_time_dependent,
 					  const double t);
+
+		std::string name() const override { return "bc-penalty"; }
 
 		/// @brief Construct a new BCPenaltyForm object with a fixed Dirichlet boundary
 		/// @param ndof Number of degrees of freedom
 		/// @param boundary_nodes DoFs that are part of the Dirichlet boundary
 		/// @param mass Mass matrix
-		/// @param obstacle Obstacles
+		/// @param obstacle_ndof Obstacle's number of DOF
 		/// @param target_x Target values for the boundary DoFs
 		BCPenaltyForm(const int ndof,
 					  const std::vector<int> &boundary_nodes,
 					  const StiffnessMatrix &mass,
-					  const mesh::Obstacle &obstacle,
+					  const size_t obstacle_ndof,
 					  const Eigen::MatrixXd &target_x);
 
 		/// @brief Compute the value of the form
@@ -93,7 +92,7 @@ namespace polyfem::solver
 		void init_masked_lumped_mass(
 			const int ndof,
 			const StiffnessMatrix &mass,
-			const mesh::Obstacle &obstacle);
+			const size_t obstacle_ndof);
 
 		/// @brief Update target x to the Dirichlet boundary values at time t
 		/// @param t Current time

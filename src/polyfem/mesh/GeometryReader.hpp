@@ -18,6 +18,7 @@ namespace polyfem::mesh
 	/// @return created Mesh object
 	///
 	std::unique_ptr<Mesh> read_fem_mesh(
+		const Units &units,
 		const json &j_mesh,
 		const std::string &root_path,
 		const bool non_conforming = false);
@@ -31,6 +32,7 @@ namespace polyfem::mesh
 	/// @return created Mesh object
 	///
 	std::unique_ptr<Mesh> read_fem_geometry(
+		const Units &units,
 		const json &geometry,
 		const std::string &root_path,
 		const std::vector<std::string> &names = std::vector<std::string>(),
@@ -49,6 +51,7 @@ namespace polyfem::mesh
 	/// @param[out] faces           indicies in vertices for the surface faces
 	///
 	void read_obstacle_mesh(
+		const Units &units,
 		const json &j_mesh,
 		const std::string &root_path,
 		const int dim,
@@ -68,6 +71,7 @@ namespace polyfem::mesh
 	/// @return created Obstacle object
 	///
 	Obstacle read_obstacle_geometry(
+		const Units &units,
 		const json &geometry,
 		const std::vector<json> &displacements,
 		const std::vector<json> &dirichlets,
@@ -87,6 +91,7 @@ namespace polyfem::mesh
 	/// @param[out] b               Additive translation component of transformation
 	///
 	void construct_affine_transformation(
+		const double unit_scale,
 		const json &transform,
 		const VectorNd &mesh_dimensions,
 		MatrixNd &A,

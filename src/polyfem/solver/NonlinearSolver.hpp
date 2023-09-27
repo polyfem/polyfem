@@ -10,8 +10,6 @@
 
 #include <cppoptlib/solver/isolver.h>
 
-extern "C" size_t getPeakRSS();
-
 namespace cppoptlib
 {
 	enum class ErrorCode
@@ -33,7 +31,7 @@ namespace cppoptlib
 		/// @brief Construct a new Nonlinear Solver object
 		/// @param solver_params JSON of solver parameters (see input spec.)
 		/// @param dt time step size (use 1 if not time-dependent)
-		NonlinearSolver(const polyfem::json &solver_params, const double dt);
+		NonlinearSolver(const polyfem::json &solver_params, const double dt, const double characteristic_length);
 
 		virtual double compute_grad_norm(const Eigen::VectorXd &x, const Eigen::VectorXd &grad) const;
 
@@ -45,7 +43,7 @@ namespace cppoptlib
 
 		double line_search(const TVector &x, const TVector &delta_x, ProblemType &objFunc);
 
-		void get_info(polyfem::json &params) { params = solver_info; }
+		const polyfem::json &get_info() const { return solver_info; }
 
 		ErrorCode error_code() const { return m_error_code; }
 
@@ -59,10 +57,9 @@ namespace cppoptlib
 				   || this->m_status == Status::GradNormTolerance;
 		}
 
-		bool verify_gradient(ProblemType &objFunc, const TVector &x, const TVector &grad);
-		virtual bool is_saddle_point(ProblemType &objFunc, const TVector &x) { return false; }
 		size_t max_iterations() const { return this->m_stop.iterations; }
 		size_t &max_iterations() { return this->m_stop.iterations; }
+		bool allow_out_of_iterations = false;
 
 	protected:
 		// ====================================================================
@@ -70,11 +67,8 @@ namespace cppoptlib
 		// ====================================================================
 
 		bool normalize_gradient;
-		bool solver_info_log;
 		double use_grad_norm_tol;
 		double first_grad_norm_tol;
-		double min_step_size;
-		double max_step_size;
 		double dt;
 
 		// ====================================================================
@@ -101,7 +95,7 @@ namespace cppoptlib
 		//                            Solver info
 		// ====================================================================
 
-		virtual void update_solver_info();
+		virtual void update_solver_info(const double energy);
 		void reset_times();
 		void log_times();
 
@@ -115,15 +109,7 @@ namespace cppoptlib
 		double constraint_set_update_time;
 		double obj_fun_time;
 
-		std::string export_energy_path;
-		bool export_energy_components;
-
 		ErrorCode m_error_code;
-
-		bool debug_finite_diff;
-		double finite_diff_eps;
-
-		bool check_saddle_point;
 
 		// ====================================================================
 		//                                 END

@@ -4,6 +4,13 @@
 
 namespace polyfem::time_integrator
 {
+	BDF::BDF(const int order)
+	{
+		if (order < 1 || order > 6)
+			log_and_throw_error("BDF order must be 1 ≤ n ≤ 6");
+		max_steps_ = order;
+	}
+
 	void BDF::set_parameters(const json &params)
 	{
 		max_steps_ = params.at("steps");
@@ -87,22 +94,17 @@ namespace polyfem::time_integrator
 
 	Eigen::VectorXd BDF::x_tilde() const
 	{
-		const double beta = betas(steps() - 1);
-		return weighted_sum_x_prevs() + beta * dt() * weighted_sum_v_prevs();
+		return weighted_sum_x_prevs() + betas(steps() - 1) * dt() * weighted_sum_v_prevs();
 	}
 
 	Eigen::VectorXd BDF::compute_velocity(const Eigen::VectorXd &x) const
 	{
-		const Eigen::VectorXd sum_x_prev = weighted_sum_x_prevs();
-		const double beta = betas(steps() - 1);
-		return (x - sum_x_prev) / (beta * dt());
+		return (x - weighted_sum_x_prevs()) / beta_dt();
 	}
 
 	Eigen::VectorXd BDF::compute_acceleration(const Eigen::VectorXd &v) const
 	{
-		const Eigen::VectorXd sum_v_prev = weighted_sum_v_prevs();
-		const double beta = betas(steps() - 1);
-		return (v - sum_v_prev) / (beta * dt());
+		return (v - weighted_sum_v_prevs()) / beta_dt();
 	}
 
 	double BDF::acceleration_scaling() const
@@ -111,14 +113,17 @@ namespace polyfem::time_integrator
 		return beta * beta * dt() * dt();
 	}
 
-	double BDF::dv_dx() const
+	double BDF::dv_dx(const unsigned i) const
 	{
-		return 1 / beta_dt();
+		if (i == 0)
+			return 1 / beta_dt();
+		if (i >= steps())
+			return 0;
+		return -alphas(steps() - 1)[i] / beta_dt();
 	}
 
 	double BDF::beta_dt() const
 	{
-		const double beta = betas(steps() - 1);
-		return beta * dt();
+		return betas(steps() - 1) * dt();
 	}
 } // namespace polyfem::time_integrator

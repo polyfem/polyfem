@@ -325,7 +325,7 @@ namespace polyfem::io
 			const Eigen::MatrixXd &fun,
 			Eigen::MatrixXd &result);
 
-		/// computes traction foces for fun (tensor * surface normal) result, stress tensor, and von mises, per surface face. pts and faces are the boundary on the rest configuration.
+		/// computes traction forces for fun (tensor * surface normal) result, stress tensor, and von mises, per surface face. pts and faces are the boundary on the rest configuration.
 		/// disp is the displacement of the surface vertices
 		/// @param[in] mesh mesh
 		/// @param[in] is_problem_scalar if problem is scalar

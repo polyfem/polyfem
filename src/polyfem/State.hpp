@@ -2,6 +2,8 @@
 
 #include <polyfem/Common.hpp>
 
+#include <polyfem/Units.hpp>
+
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
 
@@ -130,6 +132,8 @@ namespace polyfem
 		//-----------------assembly--------------------------
 		//---------------------------------------------------
 
+		Units units;
+
 		/// assemblers
 		std::shared_ptr<assembler::Assembler> assembler = nullptr;
 		std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
@@ -184,9 +188,6 @@ namespace polyfem
 		/// System right-hand side.
 		Eigen::MatrixXd rhs;
 
-		/// In Elasticity PDE, solve for "min W(disp_grad + \grad u)" instead of "min W(\grad u)"
-		Eigen::MatrixXd disp_grad_;
-
 		/// use average pressure for stokes problem to fix the additional dofs, true by default
 		/// if false, it will fix one pressure node to zero
 		bool use_avg_pressure;
@@ -202,11 +203,6 @@ namespace polyfem
 		/// @brief Get a constant reference to the geometry mapping bases.
 		/// @return A constant reference to the geometry mapping bases.
 		const std::vector<basis::ElementBases> &geom_bases() const
-		{
-			return iso_parametric() ? bases : geom_bases_;
-		}
-
-		std::vector<basis::ElementBases> &geom_bases()
 		{
 			return iso_parametric() ? bases : geom_bases_;
 		}
@@ -390,6 +386,10 @@ namespace polyfem
 		//---------------------------------------------------
 
 	public:
+		/// Construct a vector of boundary conditions ids with their dimension flags.
+		std::unordered_map<int, std::array<bool, 3>>
+		boundary_conditions_ids(const std::string &bc_type) const;
+
 		/// list of boundary nodes
 		std::vector<int> boundary_nodes;
 		/// list of neumann boundary nodes
@@ -488,6 +488,15 @@ namespace polyfem
 		/// Build the mesh matrices (vertices and elements) from the mesh using the bases node ordering
 		void build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F);
 
+#ifdef POLYFEM_WITH_REMESHING
+		/// @brief Remesh the FE space and update solution(s).
+		/// @param time Current time.
+		/// @param dt Time step size.
+		/// @param sol Current solution.
+		/// @return True if remeshing performed any changes to the mesh/solution.
+		bool remesh(const double time, const double dt, Eigen::MatrixXd &sol);
+#endif
+
 		//---------------------------------------------------
 		//-----------------IPC-------------------------------
 		//---------------------------------------------------
@@ -495,11 +504,21 @@ namespace polyfem
 		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
 
-		/// extracts the boundary mesh for collision, called in build_basis
-		void build_collision_mesh(
-			ipc::CollisionMesh &collision_mesh_,
-			const int n_bases_,
-			const std::vector<basis::ElementBases> &bases_) const;
+		/// @brief extracts the boundary mesh for collision, called in build_basis
+		static void build_collision_mesh(
+			const mesh::Mesh &mesh,
+			const int n_bases,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &geom_bases,
+			const std::vector<mesh::LocalBoundary> &total_local_boundary,
+			const mesh::Obstacle &obstacle,
+			const json &args,
+			const std::function<std::string(const std::string &)> &resolve_input_path,
+			const Eigen::VectorXi &in_node_to_node,
+			ipc::CollisionMesh &collision_mesh);
+
+		/// @brief extracts the boundary mesh for collision, called in build_basis
+		void build_collision_mesh();
 
 		/// checks if vertex is obstacle
 		/// @param[in] vi vertex index
@@ -541,6 +560,9 @@ namespace polyfem
 		io::OutRuntimeData timings;
 		/// Other statistics
 		io::OutStatsData stats;
+		double starting_min_edge_length = -1;
+		double starting_max_edge_length = -1;
+		double min_boundary_edge_length = -1;
 
 		/// saves all data on the disk according to the input params
 		/// @param[in] sol solution
@@ -604,6 +626,7 @@ namespace polyfem
 		//-----------------differentiable--------------------
 		//---------------------------------------------------
 	public:
+		bool optimization_enabled = false;
 		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
 		solver::DiffCache diff_cached;
 
@@ -619,8 +642,8 @@ namespace polyfem
 		}
 
 		// Aux functions for setting up adjoint equations
-		void compute_force_hessian(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian);
-		void compute_force_hessian_prev(const int force_step, const int sol_step, StiffnessMatrix &hessian_prev) const;
+		void compute_force_jacobian(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian);
+		void compute_force_jacobian_prev(const int force_step, const int sol_step, StiffnessMatrix &hessian_prev) const;
 		// Solves the adjoint PDE for derivatives and caches
 		void solve_adjoint_cached(const Eigen::MatrixXd &rhs);
 		Eigen::MatrixXd solve_adjoint(const Eigen::MatrixXd &rhs) const;
@@ -655,7 +678,7 @@ namespace polyfem
 		// to replace the initial condition in json during initial condition optimization
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
 		// mapping from positions of geometric nodes to positions of FE basis nodes
-		StiffnessMatrix down_sampling_mat;
+		StiffnessMatrix gbasis_nodes_to_basis_nodes;
 	};
 
 } // namespace polyfem

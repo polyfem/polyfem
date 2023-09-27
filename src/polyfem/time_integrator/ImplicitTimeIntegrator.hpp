@@ -22,22 +22,12 @@ namespace polyfem::time_integrator
 		virtual void set_parameters(const json &params) {}
 
 		/// @brief Initialize the time integrator with the previous values for \f$x\f$, \f$v\f$, and \f$a\f$.
-		/// @param x_prev previous value for the solution
-		/// @param v_prev previous value for the velocity
-		/// @param a_prev previous value for the acceleration
+		/// @param x_prev previous value(s) for the solution
+		/// @param v_prev previous value(s) for the velocity
+		/// @param a_prev previous value(s) for the acceleration
 		/// @param dt time step size
-		virtual void init(const Eigen::VectorXd &x_prev, const Eigen::VectorXd &v_prev, const Eigen::VectorXd &a_prev, double dt);
-
-		/// @brief Initialize the time integrator with the previous values for \f$x\f$, \f$v\f$, and \f$a\f$.
-		/// @param x_prevs vector of previous solutions
-		/// @param v_prevs vector of previous velocities
-		/// @param a_prevs vector of previous accelerations
-		/// @param dt time step
-		void init(
-			const std::vector<Eigen::VectorXd> &x_prevs,
-			const std::vector<Eigen::VectorXd> &v_prevs,
-			const std::vector<Eigen::VectorXd> &a_prevs,
-			double dt);
+		/// @note Multiple previous values for x, v, and a can be provided as columns of the input matrices.
+		virtual void init(const Eigen::MatrixXd &x_prevs, const Eigen::MatrixXd &v_prevs, const Eigen::MatrixXd &a_prevs, double dt);
 
 		/// @brief Update the time integration quantities (i.e., \f$x\f$, \f$v\f$, and \f$a\f$).
 		/// @param x new solution vector
@@ -62,18 +52,15 @@ namespace polyfem::time_integrator
 		virtual double acceleration_scaling() const = 0;
 
 		/// @brief Compute the derivative of the velocity with respect to the solution.
-		virtual double dv_dx() const = 0;
+		/// @param prev_ti index of the previous solution to use (0 -> current; 1 -> previous; 2 -> second previous; etc.)
+		virtual double dv_dx(const unsigned prev_ti = 0) const = 0;
 
 		/// @brief Access the time step size.
 		const double &dt() const { return dt_; }
 
 		/// @brief Save the values of \f$x\f$, \f$v\f$, and \f$a\f$.
-		/// @param x_path path for the output file containing \f$x\f$, if the extension is `.txt`
-		///               then it will write an ASCII file else if the extension is `.bin` it will
-		///               write a binary file.
-		/// @param v_path same as `x_path`, but for saving \f$v\f$
-		/// @param a_path same as `x_path`, but for saving \f$a\f$
-		virtual void save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const;
+		/// @param state_path path for the output file containing \f$x, v, a\f$ as hdf5
+		virtual void save_state(const std::string &state_path) const;
 
 		/// @brief Factory method for constructing implicit time integrators from the name of the integrator.
 		/// @param name name of the type of ImplicitTimeIntegrator to construct

@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
@@ -106,15 +106,11 @@ TEST_CASE("restart", "[.][restart]")
 	State state;
 
 	args["/output/directory"_json_pointer] = full_outdir.string();
-	args["/output/data/u_path"_json_pointer] = "restart_sol_{:d}.bin";
-	args["/output/data/v_path"_json_pointer] = "restart_vel_{:d}.bin";
-	args["/output/data/a_path"_json_pointer] = "restart_acc_{:d}.bin";
+	args["/output/data/state"_json_pointer] = "restart_{:d}.hdf5";
 	const auto full_sol = run_sim(state, args);
 
 	args["/output/directory"_json_pointer] = restart_outdir.string();
-	args["/input/data/u_path"_json_pointer] = (full_outdir / fmt::format("restart_sol_{:d}.bin", restart_time_steps)).string();
-	args["/input/data/v_path"_json_pointer] = (full_outdir / fmt::format("restart_vel_{:d}.bin", restart_time_steps)).string();
-	args["/input/data/a_path"_json_pointer] = (full_outdir / fmt::format("restart_acc_{:d}.bin", restart_time_steps)).string();
+	args["/input/data/state"_json_pointer] = (full_outdir / fmt::format("restart_{:d}.hdf5", restart_time_steps)).string();
 	args["/time/t0"_json_pointer] = args["/time/dt"_json_pointer].get<double>() * restart_time_steps;
 	args["time"]["time_steps"] = restart_time_steps;
 	const auto restart_sol = run_sim(state, args);

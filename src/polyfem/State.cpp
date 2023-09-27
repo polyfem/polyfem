@@ -13,6 +13,8 @@
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
+#include <polyfem/mesh/MeshUtils.hpp>
+#include <polyfem/mesh/collision_proxy/CollisionProxy.hpp>
 
 #include <polyfem/basis/LagrangeBasis2d.hpp>
 #include <polyfem/basis/LagrangeBasis3d.hpp>
@@ -41,6 +43,11 @@
 
 #include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
+
+#include <polyfem/io/OBJWriter.hpp>
+
+#include <igl/edges.h>
+#include <igl/Timer.h>
 
 #include <iostream>
 #include <algorithm>
@@ -341,23 +348,25 @@ namespace polyfem
 
 		logger().trace("Combining mappings...");
 		timer.start();
-		in_node_to_node.resize(num_nodes);
+		in_node_to_node.setConstant(num_nodes, -1);
 		for (int i = 0; i < num_nodes; i++)
 		{
-			// input node id -> input primitive -> primitive -> node
+			// input node id -> input primitive -> primitive -> node(s)
 			const std::vector<int> &possible_nodes =
 				primitive_to_nodes[in_primitive_to_primitive[in_node_to_in_primitive[i]]];
-			assert(possible_nodes.size() > 0);
-			if (possible_nodes.size() > 1)
+
+			if (possible_nodes.size() == 1)
+				in_node_to_node[i] = possible_nodes[0];
+			else
 			{
-				// #ifndef NDEBUG
-				// 				// assert(mesh_nodes->is_edge_node(i)); // TODO: Handle P4+
-				// 				for (int possible_node : possible_nodes)
-				// 					assert(mesh_nodes->is_edge_node(possible_node)); // TODO: Handle P4+
-				// #endif
+				assert(possible_nodes.size() > 1);
+
+				// TODO: The following code assumes multiple nodes must come from an edge.
+				//       This only true for P3. P4+ has multiple face nodes and P5+ have multiple cell nodes.
 
 				int e_id = in_primitive_to_primitive[in_node_to_in_primitive[i]] - mesh->n_vertices();
 				assert(e_id < mesh->n_edges());
+				assert(in_node_to_node[mesh->edge_vertex(e_id, 0)] >= 0); // Vertex nodes should be computed first
 				RowVectorNd v0 = mesh_nodes->node_position(in_node_to_node[mesh->edge_vertex(e_id, 0)]);
 				RowVectorNd a = mesh_nodes->node_position(possible_nodes[0]);
 				RowVectorNd b = mesh_nodes->node_position(possible_nodes[1]);
@@ -371,8 +380,6 @@ namespace polyfem
 								 : (possible_nodes.size() - in_node_offset[i] - 1);
 				in_node_to_node[i] = possible_nodes[offset];
 			}
-			else
-				in_node_to_node[i] = possible_nodes[0];
 		}
 		timer.stop();
 		logger().trace("Done (took {}s)", timer.getElapsedTime());
@@ -539,7 +546,7 @@ namespace polyfem
 		if (args["space"]["use_p_ref"])
 			return false;
 
-		if (args["optimization"]["enabled"])
+		if (optimization_enabled)
 			return false;
 
 		if (mesh->orders().size() <= 0)
@@ -717,7 +724,7 @@ namespace polyfem
 		}
 
 		// shape optimization needs continuous geometric basis
-		const bool use_continuous_gbasis = args["optimization"]["enabled"];
+		const bool use_continuous_gbasis = optimization_enabled;
 
 		if (mesh->is_volume())
 		{
@@ -803,8 +810,7 @@ namespace polyfem
 
 		auto &gbases = geom_bases();
 
-		// if (is_contact_enabled())
-		if (args["optimization"]["enabled"])
+		if (optimization_enabled)
 		{
 			std::map<std::array<int, 2>, double> pairs;
 			for (int e = 0; e < gbases.size(); e++)
@@ -852,8 +858,8 @@ namespace polyfem
 				for (int d = 0; d < dim; d++)
 					coeffs.emplace_back(iter.first[0] * dim + d, iter.first[1] * dim + d, iter.second);
 
-			down_sampling_mat.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
-			down_sampling_mat.setFromTriplets(coeffs.begin(), coeffs.end());
+			gbasis_nodes_to_basis_nodes.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
+			gbasis_nodes_to_basis_nodes.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
 
 		for (const auto &lb : local_boundary)
@@ -868,10 +874,6 @@ namespace polyfem
 		const int prev_bases = n_bases;
 		n_bases += obstacle.n_vertices();
 
-		logger().info("Building collision mesh...");
-		build_collision_mesh(collision_mesh, n_bases, bases);
-		logger().info("Done!");
-
 		{
 			igl::Timer timer2;
 			logger().debug("Building node mapping...");
@@ -882,6 +884,10 @@ namespace polyfem
 			timer2.stop();
 			logger().debug("Done (took {}s)", timer2.getElapsedTime());
 		}
+
+		logger().info("Building collision mesh...");
+		build_collision_mesh();
+		logger().info("Done!");
 
 		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, n_bases,
@@ -968,10 +974,18 @@ namespace polyfem
 		const auto &curret_bases = geom_bases();
 		const int n_samples = 10;
 		stats.compute_mesh_size(*mesh, curret_bases, n_samples, args["output"]["advanced"]["curved_mesh_size"]);
+		if (starting_min_edge_length < 0)
+		{
+			starting_min_edge_length = stats.min_edge_length;
+		}
+		if (starting_max_edge_length < 0)
+		{
+			starting_max_edge_length = stats.mesh_size;
+		}
 
 		if (is_contact_enabled())
 		{
-			double min_boundary_edge_length = std::numeric_limits<double>::max();
+			min_boundary_edge_length = std::numeric_limits<double>::max();
 			for (const auto &edge : collision_mesh.edges().rowwise())
 			{
 				const VectorNd v0 = collision_mesh.rest_positions().row(edge(0));
@@ -979,15 +993,19 @@ namespace polyfem
 				min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
 			}
 
-			if (!has_dhat && args["contact"]["dhat"] > min_boundary_edge_length)
+			double dhat = Units::convert(args["contact"]["dhat"], units.length());
+			args["contact"]["epsv"] = Units::convert(args["contact"]["epsv"], units.velocity());
+			args["contact"]["dhat"] = dhat;
+
+			if (!has_dhat && dhat > min_boundary_edge_length)
 			{
 				args["contact"]["dhat"] = double(args["contact"]["dhat_percentage"]) * min_boundary_edge_length;
 				logger().info("dhat set to {}", double(args["contact"]["dhat"]));
 			}
 			else
 			{
-				if (args["contact"]["dhat"] > min_boundary_edge_length)
-					logger().warn("dhat larger than min boundary edge, {} > {}", double(args["contact"]["dhat"]), min_boundary_edge_length);
+				if (dhat > min_boundary_edge_length)
+					logger().warn("dhat larger than min boundary edge, {} > {}", dhat, min_boundary_edge_length);
 			}
 		}
 
@@ -1186,77 +1204,135 @@ namespace polyfem
 		n_bases += new_bases;
 	}
 
+	void State::build_collision_mesh()
+	{
+		build_collision_mesh(
+			*mesh, n_bases, bases, geom_bases(), total_local_boundary, obstacle,
+			args, [this](const std::string &p) { return resolve_input_path(p); },
+			in_node_to_node, collision_mesh);
+	}
+
 	void State::build_collision_mesh(
-		ipc::CollisionMesh &collision_mesh_,
-		const int n_bases_,
-		const std::vector<basis::ElementBases> &bases_) const
+		const mesh::Mesh &mesh,
+		const int n_bases,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &geom_bases,
+		const std::vector<mesh::LocalBoundary> &total_local_boundary,
+		const mesh::Obstacle &obstacle,
+		const json &args,
+		const std::function<std::string(const std::string &)> &resolve_input_path,
+		const Eigen::VectorXi &in_node_to_node,
+		ipc::CollisionMesh &collision_mesh)
 	{
 		Eigen::MatrixXd node_positions;
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
 		std::vector<Eigen::Triplet<double>> displacement_map_entries;
-		io::OutGeometryData::extract_boundary_mesh(*mesh, n_bases_, bases_, total_local_boundary,
-												   node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
+		io::OutGeometryData::extract_boundary_mesh(
+			mesh, n_bases, bases, total_local_boundary, node_positions,
+			boundary_edges, boundary_triangles, displacement_map_entries);
 
-		Eigen::VectorXi codimensional_nodes;
+		// n_bases already contains the obstacle vertices
+		const int num_fe_nodes = node_positions.rows() - obstacle.n_vertices();
+
+		Eigen::MatrixXd collision_vertices;
+		Eigen::VectorXi collision_codim_vids;
+		Eigen::MatrixXi collision_edges, collision_triangles;
+
+		if (args.contains("/contact/collision_mesh"_json_pointer)
+			&& args.at("/contact/collision_mesh/enabled"_json_pointer).get<bool>())
+		{
+			const json collision_mesh_args = args.at("/contact/collision_mesh"_json_pointer);
+			if (collision_mesh_args.contains("linear_map"))
+			{
+				assert(displacement_map_entries.empty());
+				assert(collision_mesh_args.contains("mesh"));
+				const std::string root_path = utils::json_value<std::string>(args, "root_path", "");
+				// TODO: handle transformation per geometry
+				const json transformation = json_as_array(args["geometry"])[0]["transformation"];
+				mesh::load_collision_proxy(
+					utils::resolve_path(collision_mesh_args["mesh"], root_path),
+					utils::resolve_path(collision_mesh_args["linear_map"], root_path),
+					in_node_to_node, transformation, collision_vertices, collision_codim_vids,
+					collision_edges, collision_triangles, displacement_map_entries);
+			}
+			else
+			{
+				assert(collision_mesh_args.contains("max_edge_length"));
+				logger().debug(
+					"Building collision proxy with max edge length={} ...",
+					collision_mesh_args["max_edge_length"].get<double>());
+				igl::Timer timer;
+				timer.start();
+				build_collision_proxy(
+					bases, geom_bases, total_local_boundary, n_bases, mesh.dimension(),
+					collision_mesh_args["max_edge_length"], collision_vertices,
+					collision_triangles, displacement_map_entries,
+					collision_mesh_args["tessellation_type"]);
+				if (collision_triangles.size())
+					igl::edges(collision_triangles, collision_edges);
+				timer.stop();
+				logger().debug(fmt::format(
+					std::locale("en_US.UTF-8"),
+					"Done (took {:g}s, {:L} vertices, {:L} triangles)",
+					timer.getElapsedTime(),
+					collision_vertices.rows(), collision_triangles.rows()));
+			}
+		}
+		else
+		{
+			collision_vertices = node_positions.topRows(num_fe_nodes);
+			collision_edges = boundary_edges;
+			collision_triangles = boundary_triangles;
+		}
+
+		const int n_v = collision_vertices.rows();
+
+		// Append the obstacles to the collision mesh
 		if (obstacle.n_vertices() > 0)
 		{
-			// n_bases already contains the obstacle vertices
-			const int n_v = n_bases_ - obstacle.n_vertices();
-
-			if (obstacle.v().size())
-				node_positions.block(n_v, 0, obstacle.v().rows(), obstacle.v().cols()) = obstacle.v();
+			append_rows(collision_vertices, obstacle.v());
+			append_rows(collision_codim_vids, obstacle.codim_v().array() + n_v);
+			append_rows(collision_edges, obstacle.e().array() + n_v);
+			append_rows(collision_triangles, obstacle.f().array() + n_v);
 
 			if (!displacement_map_entries.empty())
 			{
-				for (int k = n_v; k < n_bases_; ++k)
-					displacement_map_entries.emplace_back(k, k, 1);
-			}
-
-			if (obstacle.codim_v().size())
-			{
-				codimensional_nodes.conservativeResize(codimensional_nodes.size() + obstacle.codim_v().size());
-				codimensional_nodes.tail(obstacle.codim_v().size()) = obstacle.codim_v().array() + n_v;
-			}
-
-			if (obstacle.e().size())
-			{
-				boundary_edges.conservativeResize(boundary_edges.rows() + obstacle.e().rows(), 2);
-				boundary_edges.bottomRows(obstacle.e().rows()) = obstacle.e().array() + n_v;
-			}
-
-			if (obstacle.f().size())
-			{
-				boundary_triangles.conservativeResize(boundary_triangles.rows() + obstacle.f().rows(), 3);
-				boundary_triangles.bottomRows(obstacle.f().rows()) = obstacle.f().array() + n_v;
+				displacement_map_entries.reserve(displacement_map_entries.size() + obstacle.n_vertices());
+				for (int i = 0; i < obstacle.n_vertices(); i++)
+				{
+					displacement_map_entries.emplace_back(n_v + i, num_fe_nodes + i, 1.0);
+				}
 			}
 		}
 
-		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(node_positions.rows(), boundary_edges);
-		for (int i = 0; i < codimensional_nodes.size(); i++)
+		// io::OBJWriter::write("fem_input.obj", node_positions, boundary_edges, boundary_triangles);
+		// io::OBJWriter::write("collision_mesh.obj", collision_vertices, collision_edges, collision_triangles);
+
+		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(
+			collision_vertices.rows(), collision_edges);
+		for (const int vid : collision_codim_vids)
 		{
-			is_on_surface[codimensional_nodes[i]] = true;
+			is_on_surface[vid] = true;
 		}
 
 		Eigen::SparseMatrix<double> displacement_map;
 		if (!displacement_map_entries.empty())
 		{
-			displacement_map.resize(node_positions.rows(), n_bases_);
+			displacement_map.resize(collision_vertices.rows(), n_bases);
 			displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
 		}
 
-		collision_mesh_ = ipc::CollisionMesh(is_on_surface,
-											 node_positions,
-											 boundary_edges,
-											 boundary_triangles,
-											 displacement_map);
+		collision_mesh = ipc::CollisionMesh(
+			is_on_surface, collision_vertices, collision_edges, collision_triangles,
+			displacement_map);
 
-		collision_mesh_.can_collide = [&](size_t vi, size_t vj) {
+		collision_mesh.can_collide = [&collision_mesh, n_v](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles
-			return !this->is_obstacle_vertex(collision_mesh_.to_full_vertex_id(vi))
-				   || !this->is_obstacle_vertex(collision_mesh_.to_full_vertex_id(vj));
+			return collision_mesh.to_full_vertex_id(vi) < n_v
+				   || collision_mesh.to_full_vertex_id(vj) < n_v;
 		};
 
-		collision_mesh_.init_area_jacobians();
+		collision_mesh.init_area_jacobians();
 	}
 
 	void State::assemble_mass_mat()
@@ -1364,7 +1440,10 @@ namespace polyfem
 			dirichlet_nodes, neumann_nodes,
 			dirichlet_nodes_position, neumann_nodes_position,
 			n_bases_, size, bases_, geom_bases(), ass_vals_cache_, *problem,
-			args["space"]["advanced"]["bc_method"], args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
+			args["space"]["advanced"]["bc_method"],
+			args["solver"]["linear"]["solver"],
+			args["solver"]["linear"]["precond"],
+			rhs_solver_params);
 	}
 
 	std::shared_ptr<PressureAssembler> State::build_pressure_assembler(
@@ -1516,7 +1595,7 @@ namespace polyfem
 			{
 				init_linear_solve(sol);
 				solve_linear(sol, pressure);
-				if (args["optimization"]["enabled"])
+				if (optimization_enabled)
 					cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 			}
 			else if (!assembler->is_linear() && problem->is_scalar())
@@ -1525,11 +1604,12 @@ namespace polyfem
 			{
 				init_nonlinear_tensor_solve(sol);
 				solve_tensor_nonlinear(sol);
-				if (args["optimization"]["enabled"])
+				if (optimization_enabled)
 					cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
-				const std::string u_path = resolve_output_path(args["output"]["data"]["u_path"]);
-				if (!u_path.empty())
-					write_matrix(u_path, sol);
+
+				const std::string state_path = resolve_output_path(args["output"]["data"]["state"]);
+				if (!state_path.empty())
+					write_matrix(state_path, "u", sol);
 			}
 		}
 

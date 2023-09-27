@@ -52,6 +52,8 @@ namespace polyfem::solver
 					const double ccd_tolerance,
 					const int ccd_max_iterations);
 
+		std::string name() const override { return "contact"; }
+
 		/// @brief Initialize the form
 		/// @param x Current solution
 		void init(const Eigen::VectorXd &x) override;
@@ -63,6 +65,11 @@ namespace polyfem::solver
 		/// @param x Current solution
 		/// @return Value of the contact barrier potential
 		virtual double value_unweighted(const Eigen::VectorXd &x) const override;
+
+		/// @brief Compute the value of the form multiplied per element
+		/// @param x Current solution
+		/// @return Computed value
+		Eigen::VectorXd value_per_element_unweighted(const Eigen::VectorXd &x) const override;
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution

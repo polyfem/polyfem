@@ -24,7 +24,6 @@
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
-#include <polyfem/solver/forms/parametrization/SplineParametrizations.hpp>
 
 #include <polyfem/solver/forms/adjoint_forms/ParametrizedProductForm.hpp>
 
@@ -51,33 +50,33 @@ namespace polyfem::solver
 		}
 	} // namespace
 
-	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> AdjointOptUtils::make_nl_solver(const json &solver_params)
+	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> AdjointOptUtils::make_nl_solver(const json &solver_params, const double characteristic_length)
 	{
 		const std::string name = solver_params["solver"].template get<std::string>();
-		if (name == "GradientDescent" || name == "gradientdescent" || name == "gradient")
+		if (name == "GradientDescent" || name == "gradient_descent" || name == "gradient")
 		{
 			return std::make_shared<cppoptlib::GradientDescentSolver<AdjointNLProblem>>(
-				solver_params, 0.);
+				solver_params, 0., characteristic_length);
 		}
 		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
 		{
 			return std::make_shared<cppoptlib::LBFGSSolver<AdjointNLProblem>>(
-				solver_params, 0.);
+				solver_params, 0., characteristic_length);
 		}
 		else if (name == "bfgs" || name == "BFGS" || name == "BFGS")
 		{
 			return std::make_shared<cppoptlib::BFGSSolver<AdjointNLProblem>>(
-				solver_params, 0.);
+				solver_params, 0., characteristic_length);
 		}
 		else if (name == "lbfgsb" || name == "LBFGSB" || name == "L-BFGS-B")
 		{
 			return std::make_shared<cppoptlib::LBFGSBSolver<AdjointNLProblem>>(
-				solver_params, 0.);
+				solver_params, 0., characteristic_length);
 		}
 		else if (name == "mma" || name == "MMA")
 		{
 			return std::make_shared<cppoptlib::MMASolver<AdjointNLProblem>>(
-				solver_params, 0.);
+				solver_params, 0., characteristic_length);
 		}
 		else
 		{
@@ -357,10 +356,6 @@ namespace polyfem::solver
 		{
 			map = std::make_shared<CustomSymmetric>(args);
 		}
-		else if (type == "sdf-to-mesh")
-		{
-			map = std::make_shared<SDF2Mesh>(args["binary_path"], args["wire_path"], args["output_path"], args["use_volume_velocity"], args["options"]);
-		}
 		else if (type == "periodic-mesh-tile")
 		{
 			Eigen::VectorXi dims;
@@ -369,17 +364,19 @@ namespace polyfem::solver
 		}
 		else if (type == "mesh-affine")
 		{
+			const std::string unit = args["unit"];
+			double unit_scale = 1;
+			if (!unit.empty())
+				unit_scale = Units::convert(1, unit, states[args["state"]]->units.length());
+
 			MatrixNd A;
 			VectorNd b;
 			mesh::construct_affine_transformation(
+				unit_scale,
 				args["transformation"],
 				VectorNd::Ones(args["dimension"]),
 				A, b);
 			map = std::make_shared<MeshAffine>(A, b, args["input_path"], args["output_path"]);
-		}
-		else if (type == "bounded-biharmonic-weights")
-		{
-			map = std::make_shared<BoundedBiharmonicWeights2Dto3D>(args["num_control_vertices"], args["num_vertices"], *states[args["state"]], args["allow_rotations"]);
 		}
 		else
 			log_and_throw_error("Unkown parametrization!");
@@ -479,7 +476,7 @@ namespace polyfem::solver
 		return var2sim;
 	}
 
-	std::shared_ptr<State> AdjointOptUtils::create_state(const json &args, const int max_threads)
+	std::shared_ptr<State> AdjointOptUtils::create_state(const json &args, const size_t max_threads)
 	{
 		std::shared_ptr<State> state = std::make_shared<State>();
 		state->set_max_threads(max_threads);
@@ -501,7 +498,7 @@ namespace polyfem::solver
 			in_args.merge_patch(tmp);
 		}
 
-		in_args["optimization"]["enabled"] = true;
+		state->optimization_enabled = true;
 		state->init(in_args, false);
 		state->load_mesh();
 		Eigen::MatrixXd sol, pressure;

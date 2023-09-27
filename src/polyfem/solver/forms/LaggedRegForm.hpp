@@ -13,6 +13,8 @@ namespace polyfem::solver
 		/// @brief Construct a new Lagged Regularization Form object
 		LaggedRegForm(const int n_lagging_iters);
 
+		std::string name() const override { return "lagged-regularization"; }
+
 	protected:
 		/// @brief Compute the value of the form
 		/// @param x Current solution

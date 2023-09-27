@@ -16,13 +16,12 @@ jobs:
 
   Linux:
     name: ${{ matrix.name }} (${{ matrix.config }}, ${{ matrix.threading }})
-    runs-on: [self-hosted,Linux]
-    timeout-minutes: 360
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        config: [Debug, Release]
+        config: [DebugNoSymbols, Release]
         threading: [TBB]
         include:
           - os: ubuntu-latest
@@ -35,6 +34,12 @@ jobs:
 
       - name: Dependencies
         run: |
+          sudo apt-get update
+          sudo apt-get -o Acquire::Retries=3 install \
+          libblas-dev \
+          libglu1-mesa-dev \
+          xorg-dev \
+          ccache
           echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
 
       - name: Cache Build
@@ -58,6 +63,7 @@ jobs:
           cmake .. \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
@@ -65,7 +71,6 @@ jobs:
         run: cd build; make -j2; ccache --show-stats
 
       - name: Tests
-        timeout-minutes: 360
         run: cd build; OMP_NUM_THREADS=1 ctest --verbose --output-on-failure
 
       # - name: Setup tmate session
@@ -78,13 +83,13 @@ jobs:
 
   MacOS:
     name: ${{ matrix.name }}-${{ matrix.arc }} (${{ matrix.config }}, ${{ matrix.threading }})
-    runs-on: [self-hosted,macOS]
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [macos-latest]
         arc: [x86]
-        config: [Debug]
+        config: [DebugNoSymbols, Release]
         threading: [TBB]
         include:
           - os: macos-latest
@@ -122,6 +127,7 @@ jobs:
           cmake .. \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
@@ -133,6 +139,7 @@ jobs:
           cmake .. \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DCMAKE_OSX_ARCHITECTURES=arm64 \
             -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
@@ -149,63 +156,57 @@ jobs:
   ####################
 
   Windows:
-    runs-on: [self-hosted,Windows]
+    runs-on: windows-2022
     env:
       SCCACHE_IDLE_TIMEOUT: "12000"
     strategy:
       fail-fast: false
       matrix:
-        config: [Debug]
+        config: [DebugNoSymbols]
         threading: [TBB]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3.5.3
         with:
           fetch-depth: 10
 
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@master
 
-      # - name: Stetup Conda
-      #   uses: s-weigand/setup-conda@v1
-      #   with:
-      #     update-conda: true
-      #     conda-channels: anaconda, conda-forge
+      - name: Stetup Conda
+        uses: s-weigand/setup-conda@v1.2.1
+        with:
+          update-conda: true
+          conda-channels: anaconda, conda-forge
 
-      # - name: Install Dependencies
-      #   run: |
-      #     conda install libblas libcblas suitesparse -y
-
-      - name: Set env
+      - name: Dependencies
         run: |
-          echo "appdata=$env:LOCALAPPDATA" >> ${env:GITHUB_ENV}
+          conda install libblas libcblas -y
           conda init powershell
-
+          choco install ccache
+          "CACHE_PATH=${env:LOCALAPPDATA}\ccache" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Cache build
         id: cache-build
         uses: actions/cache@v3
         with:
-          path: D:\sccache
+          path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
           restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
 
-      # - name: Prepare sccache
-      #   run: |
-      #     iwr -useb 'https://raw.githubusercontent.com/scoopinstaller/install/master/install.ps1' -outfile 'install.ps1'
-      #     .\install.ps1 -RunAsAdmin
-      #     scoop install sccache --global
-      #     # Scoop modifies the PATH so we make it available for the next steps of the job
-      #     echo "${env:PATH}" >> ${env:GITHUB_PATH}
+      - name: Prepare ccache
+        run: |
+          ccache --max-size=1.0G
+          ccache -V && ccache --show-stats && ccache --zero-stats
 
-      - name: Configure and Build
+      - name: Configure
         shell: cmd
         run: |
-          call "D:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat" -arch=x64
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
           cmake -G Ninja ^
-            -DCMAKE_CXX_FLAGS="/Z7 /DEBUG:FASTLINK /DWIN32" ^
-            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
+            -DCMAKE_CONFIGURATION_TYPES="Release;Debug;RelWithDebInfo;MinSizeRel;DebugNoSymbols" ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="/Od" -DCMAKE_EXE_LINKER_FLAGS_DEBUGNOSYMBOLS="" ^
             -DPOLYFEM_WITH_CLIPPER=OFF ^
             -DPOLYFEM_THREADING=${{ matrix.threading }} ^
             -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
@@ -213,9 +214,12 @@ jobs:
             -DPOLYSOLVE_WITH_MKL=OFF ^
             -B build ^
             -S .
-          cmake --build build -j1
+
+      - name: Build
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          cmake --build build -j1 && ccache --show-stats
 
       - name: Tests
-        run: |
-          cd build
-          ctest --verbose --output-on-failure
+        run: cd build; ctest --verbose --output-on-failure

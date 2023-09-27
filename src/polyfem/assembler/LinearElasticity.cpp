@@ -10,21 +10,21 @@ namespace polyfem
 {
 	using namespace basis;
 
+	namespace
+	{
+		bool delta(int i, int j)
+		{
+			return (i == j) ? true : false;
+		}
+	} // namespace
+
 	namespace assembler
 	{
-		namespace
-		{
-			bool delta(int i, int j)
-			{
-				return (i == j) ? true : false;
-			}
-		} // namespace
-
-		void LinearElasticity::add_multimaterial(const int index, const json &params)
+		void LinearElasticity::add_multimaterial(const int index, const json &params, const Units &units)
 		{
 			assert(size() == 2 || size() == 3);
 
-			params_.add_multimaterial(index, params, size() == 3);
+			params_.add_multimaterial(index, params, size() == 3, units.stress());
 		}
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>

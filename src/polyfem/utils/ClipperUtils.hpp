@@ -1,9 +1,12 @@
 #pragma once
 
-#ifdef POLYFEM_WITH_CLIPPER
-
 #include <Eigen/Core>
+#ifdef POLYFEM_WITH_CLIPPER
 #include <clipper.hpp>
+#endif
+#include <polyclipper_vector2d.hh>
+#include <polyclipper_vector3d.hh>
+
 namespace polyfem::utils
 {
 	/// @brief Multiplicative scale factor when converting from double to integer coordinates.
@@ -22,11 +25,16 @@ namespace polyfem::utils
 			const Eigen::MatrixXd &subject_polygon,
 			const Eigen::MatrixXd &clipping_polygon);
 
+#ifdef POLYFEM_WITH_CLIPPER
 		static ClipperLib::IntPoint toClipperPoint(const Eigen::RowVector2d &p);
 		static Eigen::RowVector2d fromClipperPoint(const ClipperLib::IntPoint &p);
 
 		static ClipperLib::Path toClipperPolygon(const Eigen::MatrixXd &V);
 		static Eigen::MatrixXd fromClipperPolygon(const ClipperLib::Path &path);
+#endif
+
+		static PolyClipper::Vector2d toPolyClipperVector(const Eigen::Vector2d &v);
+		static Eigen::Vector2d fromPolyClipperVector(const PolyClipper::Vector2d &v);
 	};
 
 	class TriangleClipping
@@ -44,6 +52,24 @@ namespace polyfem::utils
 			const Eigen::MatrixXd &clipping_triangle);
 	};
 
-} // namespace polyfem::utils
+	class TetrahedronClipping
+	{
+	public:
+		TetrahedronClipping() = delete;
 
-#endif
+		typedef std::vector<int> Polygon;
+		typedef std::vector<Polygon> Polygons;
+
+		/// @brief Clip a tetrahedron using tetrahedron.
+		/// @param[in] subject_tet Tetrahedron to clip.
+		/// @param[in] clipping_tet Tetrahedron to clip.
+		/// @return Tetrahedralization of the clipped (convex) polyhedron. Each entry is a matrix of size 4×3 containing the four vertices of each tetrahedron.
+		static std::vector<Eigen::MatrixXd> clip(
+			const Eigen::MatrixXd &subject_tet,
+			const Eigen::MatrixXd &clipping_tet);
+
+		static PolyClipper::Vector3d toPolyClipperVector(const Eigen::Vector3d &v);
+		static Eigen::Vector3d fromPolyClipperVector(const PolyClipper::Vector3d &v);
+	};
+
+} // namespace polyfem::utils

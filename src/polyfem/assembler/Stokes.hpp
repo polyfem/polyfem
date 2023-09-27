@@ -16,11 +16,11 @@ namespace polyfem::assembler
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;
 
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
 		double viscosity() const { return viscosity_; }
 
-		std::string name() const override { return "Stokes"; }
+		virtual std::string name() const override { return "Stokes"; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 		bool is_fluid() const override { return true; }
@@ -62,5 +62,14 @@ namespace polyfem::assembler
 		bool is_fluid() const override { return true; }
 
 		void set_size(const int) override { size_ = 1; }
+	};
+
+	class OperatorSplitting : public StokesVelocity
+	{
+	public:
+		OperatorSplitting() = default;
+		~OperatorSplitting() = default;
+		
+		std::string name() const override { return "OperatorSplitting"; }
 	};
 } // namespace polyfem::assembler

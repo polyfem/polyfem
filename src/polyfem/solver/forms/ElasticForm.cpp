@@ -30,7 +30,7 @@ namespace polyfem::solver
 
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 	} // namespace
-	
+
 	ElasticForm::ElasticForm(const int n_bases,
 							 const std::vector<basis::ElementBases> &bases,
 							 const std::vector<basis::ElementBases> &geom_bases,
@@ -48,12 +48,22 @@ namespace polyfem::solver
 	{
 		if (assembler_.is_linear())
 			compute_cached_stiffness();
+		// mat_cache_ = std::make_unique<utils::DenseMatrixCache>();
+		mat_cache_ = std::make_unique<utils::SparseMatrixCache>();
 	}
 
 	double ElasticForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return assembler_.assemble_energy(is_volume_, bases_, geom_bases_,
-										  ass_vals_cache_, dt_, x, x_prev_);
+		return assembler_.assemble_energy(
+			is_volume_, bases_, geom_bases_, ass_vals_cache_, dt_, x, x_prev_);
+	}
+
+	Eigen::VectorXd ElasticForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
+	{
+		const Eigen::VectorXd out = assembler_.assemble_energy_per_element(
+			is_volume_, bases_, geom_bases_, ass_vals_cache_, dt_, x, x_prev_);
+		assert(abs(out.sum() - value_unweighted(x)) < std::max(1e-10 * out.sum(), 1e-10));
+		return out;
 	}
 
 	void ElasticForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
@@ -80,7 +90,7 @@ namespace polyfem::solver
 			// NOTE: mat_cache_ is marked as mutable so we can modify it here
 			assembler_.assemble_hessian(
 				is_volume_, n_bases_, project_to_psd_, bases_,
-				geom_bases_, ass_vals_cache_, dt_, x, x_prev_, mat_cache_, hessian);
+				geom_bases_, ass_vals_cache_, dt_, x, x_prev_, *mat_cache_, hessian);
 		}
 	}
 
@@ -110,7 +120,7 @@ namespace polyfem::solver
 		}
 	}
 
-	void ElasticForm::foce_material_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
+	void ElasticForm::force_material_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
 	{
 		const int dim = is_volume_ ? 3 : 2;
 

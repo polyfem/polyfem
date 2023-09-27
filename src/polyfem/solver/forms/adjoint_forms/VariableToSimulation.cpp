@@ -8,21 +8,21 @@
 
 namespace polyfem::solver
 {
-    Eigen::VectorXi VariableToSimulation::get_output_indexing(const Eigen::VectorXd &x) const
-    {
-        const int out_size = parametrization_.size(x.size());
-        if (output_indexing_.size() == out_size)
-            return output_indexing_;
-        else if (output_indexing_.size() == 0)
-        {
-            Eigen::VectorXi ind;
-            ind.setLinSpaced(out_size, 0, out_size - 1);
-            return ind;
-        }
-        else
-            log_and_throw_error(fmt::format("Indexing size and output size of the Parametrization do not match! {} vs {}", output_indexing_.size(), out_size));
-        return Eigen::VectorXi();
-    }
+	Eigen::VectorXi VariableToSimulation::get_output_indexing(const Eigen::VectorXd &x) const
+	{
+		const int out_size = parametrization_.size(x.size());
+		if (output_indexing_.size() == out_size)
+			return output_indexing_;
+		else if (output_indexing_.size() == 0)
+		{
+			Eigen::VectorXi ind;
+			ind.setLinSpaced(out_size, 0, out_size - 1);
+			return ind;
+		}
+		else
+			log_and_throw_error(fmt::format("Indexing size and output size of the Parametrization do not match! {} vs {}", output_indexing_.size(), out_size));
+		return Eigen::VectorXi();
+	}
 
 	Eigen::VectorXd VariableToSimulation::apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const
 	{
@@ -35,9 +35,9 @@ namespace polyfem::solver
 		return Eigen::VectorXd();
 	}
 
-	void VariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) 
-	{ 
-		log_and_throw_error("Not implemented!"); 
+	void VariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
+	{
+		log_and_throw_error("Not implemented!");
 	}
 
 	void ShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
@@ -134,15 +134,16 @@ namespace polyfem::solver
 	Eigen::VectorXd ElasticVariableToSimulation::inverse_eval()
 	{
 		auto &state = *(states_[0]);
+		auto params_map = state.assembler->parameters();
 
-		auto search_lambda = state.assembler->parameters().find("lambda");
-		auto search_mu = state.assembler->parameters().find("mu");
-		if (search_lambda == state.assembler->parameters().end() || search_mu == state.assembler->parameters().end())
+		auto search_lambda = params_map.find("lambda");
+		auto search_mu = params_map.find("mu");
+		if (search_lambda == params_map.end() || search_mu == params_map.end())
 		{
 			log_and_throw_error("Failed to find Lame parameters!");
 			return Eigen::VectorXd();
 		}
-			
+
 		Eigen::VectorXd lambdas(state.mesh->n_elements());
 		Eigen::VectorXd mus(state.mesh->n_elements());
 		for (int e = 0; e < state.mesh->n_elements(); e++)
@@ -229,7 +230,7 @@ namespace polyfem::solver
 			}
 
 			if (state->damping_assembler)
-				state->damping_assembler->add_multimaterial(0, damping_param);
+				state->damping_assembler->add_multimaterial(0, damping_param, state->units);
 		}
 		logger().info("Current damping params: {}, {}", state_variable(0), state_variable(1));
 	}

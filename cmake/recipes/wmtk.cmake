@@ -1,4 +1,4 @@
-# WMTK
+# WMTK (https://github.com/wildmeshing/wildmeshing-toolkit)
 # License: MIT
 
 if(TARGET wmtk::toolkit)
@@ -7,12 +7,5 @@ endif()
 
 message(STATUS "Third-party: creating target 'wmtk::toolkit'")
 
-
-include(FetchContent)
-FetchContent_Declare(
-    wildmeshing_toolkit
-    GIT_REPOSITORY https://github.com/wildmeshing/wildmeshing-toolkit.git
-    GIT_TAG 3c2364a84613861d3314ae089abd40a54ef08929
-    GIT_SHALLOW FALSE
-)
-FetchContent_MakeAvailable(wildmeshing_toolkit)
+include(CPM)
+CPMAddPackage("gh:zfergus/wildmeshing-toolkit#7605bc6482eb06d2387a383f27dc662dffd3e5e0")

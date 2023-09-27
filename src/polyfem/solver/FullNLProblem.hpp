@@ -16,15 +16,15 @@ namespace polyfem::solver
 		using typename cppoptlib::Problem<double>::TVector;
 		typedef StiffnessMatrix THessian;
 
+		// disable warning for dense hessian
+		using cppoptlib::Problem<double>::hessian;
+
 		FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms);
 		virtual void init(const TVector &x0);
 
 		virtual double value(const TVector &x) override;
 		virtual void gradient(const TVector &x, TVector &gradv) override;
 		virtual void hessian(const TVector &x, THessian &hessian);
-
-		virtual TVector component_values(const TVector &x);
-		virtual Eigen::MatrixXd component_gradients(const TVector &x);
 
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) const;
 		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1) const;

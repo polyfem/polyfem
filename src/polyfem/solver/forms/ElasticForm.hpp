@@ -24,11 +24,18 @@ namespace polyfem::solver
 					const double dt,
 					const bool is_volume);
 
+		std::string name() const override { return "elastic"; }
+
 	protected:
 		/// @brief Compute the elastic potential value
 		/// @param x Current solution
 		/// @return Value of the elastic potential
 		virtual double value_unweighted(const Eigen::VectorXd &x) const override;
+
+		/// @brief Compute the value of the form multiplied with the weigth
+		/// @param x Current solution
+		/// @return Computed value
+		Eigen::VectorXd value_per_element_unweighted(const Eigen::VectorXd &x) const override;
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution
@@ -56,7 +63,7 @@ namespace polyfem::solver
 		/// @param[in] x Current solution
 		/// @param[in] adjoint Current adjoint solution
 		/// @param[out] term Derivative of force multiplied by the adjoint
-		void foce_material_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term);
+		void force_material_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term);
 
 		/// @brief Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adjoint_sol.
 		/// @param[in] n_verts Number of vertices
@@ -75,8 +82,8 @@ namespace polyfem::solver
 		const double dt_;
 		const bool is_volume_;
 
-		StiffnessMatrix cached_stiffness_;           ///< Cached stiffness matrix for linear elasticity
-		mutable utils::SparseMatrixCache mat_cache_; ///< Matrix cache (mutable because it is modified in second_derivative_unweighted)
+		StiffnessMatrix cached_stiffness_;                      ///< Cached stiffness matrix for linear elasticity
+		mutable std::unique_ptr<utils::MatrixCache> mat_cache_; ///< Matrix cache (mutable because it is modified in second_derivative_unweighted)
 
 		/// @brief Compute the stiffness matrix (cached)
 		void compute_cached_stiffness();

@@ -6,32 +6,29 @@
 namespace cppoptlib
 {
 	template <typename ProblemType>
-	NonlinearSolver<ProblemType>::NonlinearSolver(const polyfem::json &solver_params, const double dt)
+	NonlinearSolver<ProblemType>::NonlinearSolver(const polyfem::json &solver_params, const double dt, const double characteristic_length)
 		: dt(dt)
 	{
 		TCriteria criteria = TCriteria::defaults();
 		criteria.xDelta = solver_params["x_delta"];
 		criteria.fDelta = solver_params["f_delta"];
 		criteria.gradNorm = solver_params["grad_norm"];
+
+		criteria.xDelta *= characteristic_length;
+		criteria.fDelta *= characteristic_length;
+		criteria.gradNorm *= characteristic_length;
+
 		criteria.iterations = solver_params["max_iterations"];
 		// criteria.condition = solver_params["condition"];
 		this->setStopCriteria(criteria);
 
 		normalize_gradient = solver_params["relative_gradient"];
-		min_step_size = solver_params["min_step_size"];
-		max_step_size = solver_params["max_step_size"];
 		use_grad_norm_tol = solver_params["line_search"]["use_grad_norm_tol"];
-		solver_info_log = solver_params["solver_info_log"];
-
-		export_energy_path = solver_params["export_energy"];
-		export_energy_components = solver_params["export_energy_components"];
 
 		first_grad_norm_tol = solver_params["first_grad_norm_tol"];
 
-		debug_finite_diff = solver_params["debug_fd"];
-		finite_diff_eps = solver_params["debug_fd_eps"];
-
-		check_saddle_point = solver_params["check_saddle_point"];
+		use_grad_norm_tol *= characteristic_length;
+		first_grad_norm_tol *= characteristic_length;
 
 		set_line_search(solver_params["line_search"]["method"]);
 	}
@@ -47,43 +44,14 @@ namespace cppoptlib
 	{
 		m_line_search = polyfem::solver::line_search::LineSearch<ProblemType>::construct_line_search(line_search_name);
 		solver_info["line_search"] = line_search_name;
-
-		m_line_search->set_min_step_size(min_step_size);
-	}
-
-	template <typename ProblemType>
-	bool NonlinearSolver<ProblemType>::verify_gradient(ProblemType &objFunc, const TVector &x, const TVector &grad)
-	{
-		if (!debug_finite_diff)
-			return true;
-		
-		Eigen::VectorXd direc = grad.normalized();
-		Eigen::VectorXd x2 = x + direc * finite_diff_eps;
-		Eigen::VectorXd x1 = x - direc * finite_diff_eps;
-
-		objFunc.solution_changed(x2);
-		double J2 = objFunc.value(x2);
-
-		objFunc.solution_changed(x1);
-		double J1 = objFunc.value(x1);
-
-		double fd = (J2 - J1) / 2 / finite_diff_eps;
-		double analytic = direc.dot(grad);
-
-		bool match = abs(fd - analytic) < 1e-8 || abs(fd - analytic) < 1e-1 * abs(analytic);
-
-		// Log error in either case to make it more visible in the logs.
-		polyfem::logger().log(match ? spdlog::level::info : spdlog::level::err, "step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
-
-		objFunc.solution_changed(x);
-
-		return match;
 	}
 
 	template <typename ProblemType>
 	void NonlinearSolver<ProblemType>::minimize(ProblemType &objFunc, TVector &x)
 	{
 		using namespace polyfem;
+
+		constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
 
 		// ---------------------------
 		// Initialize the minimization
@@ -97,7 +65,7 @@ namespace cppoptlib
 		// double factor = 1e-5;
 
 		// Set these to nan to indicate they have not been computed yet
-		double old_energy = std::nan("");
+		double old_energy = NaN;
 
 		{
 			POLYFEM_SCOPED_TIMER("constraint set update", constraint_set_update_time);
@@ -116,7 +84,7 @@ namespace cppoptlib
 			log_and_throw_error("[{}] Initial gradient is nan; stopping", name());
 			return;
 		}
-		this->m_current.xDelta = std::nan(""); // we don't know the initial step size
+		this->m_current.xDelta = NaN; // we don't know the initial step size
 		this->m_current.fDelta = old_energy;
 		this->m_current.gradNorm = first_grad_norm / (normalize_gradient ? first_grad_norm : 1);
 
@@ -130,7 +98,7 @@ namespace cppoptlib
 			logger().info(
 				"[{}] Not even starting, {} (f={:g} ‖∇f‖={:g} g={:g} tol={:g})",
 				name(), this->m_status, this->m_current.fDelta, first_grad_norm, this->m_current.gradNorm, this->m_stop.gradNorm);
-			update_solver_info();
+			update_solver_info(this->m_current.fDelta);
 			return;
 		}
 		this->m_stop.gradNorm = current_g_norm;
@@ -141,10 +109,6 @@ namespace cppoptlib
 		if (m_line_search)
 			m_line_search->use_grad_norm_tol = use_grad_norm_tol;
 
-		std::ofstream outfile;
-		if (export_energy_path != "")
-			outfile.open(export_energy_path);
-
 		objFunc.save_to_file(x);
 
 		logger().debug(
@@ -153,9 +117,7 @@ namespace cppoptlib
 			name(), objFunc.value(x), this->m_current.gradNorm, this->m_stop.iterations,
 			this->m_stop.fDelta, this->m_stop.gradNorm, this->m_stop.xDelta);
 
-		update_solver_info();
-		if (solver_info_log)
-			std::cout << solver_info << std::endl;
+		update_solver_info(objFunc.value(x));
 
 		do
 		{
@@ -182,16 +144,6 @@ namespace cppoptlib
 				objFunc.gradient(x, grad);
 			}
 
-			Eigen::VectorXd values;
-			Eigen::MatrixXd grads;
-			{
-				POLYFEM_SCOPED_TIMER("verify gradient", grad_time);
-				verify_gradient(objFunc, x, grad);
-				// not implemented yet
-				// values = objFunc.component_values(x);
-				// grads = objFunc.component_gradients(x);
-			}
-
 			const double grad_norm = compute_grad_norm(x, grad);
 			if (std::isnan(grad_norm))
 			{
@@ -199,24 +151,6 @@ namespace cppoptlib
 				m_error_code = ErrorCode::NAN_ENCOUNTERED;
 				log_and_throw_error("[{}] Gradient is nan; stopping", name());
 				break;
-			}
-
-			if (outfile.is_open())
-			{
-				assert(values.size() == grads.cols());
-				outfile << std::setprecision(12) << energy << ", " << grad_norm;
-				if (export_energy_components)
-				{
-					outfile << ", ";
-					for (int i = 0; i < values.size(); i++)
-					{
-						outfile << std::setprecision(12) << values(i) << ", " << grads.col(i).norm();
-						if (i < values.size() - 1)
-							outfile << ", ";
-					}
-				}
-				outfile << "\n";
-				outfile.flush();
 			}
 
 			// ------------------------
@@ -229,14 +163,13 @@ namespace cppoptlib
 				this->m_status = Status::Continue;
 				continue;
 			}
-			delta_x *= max_step_size;
 
-			if (grad_norm != 0 && delta_x.dot(grad) >= 0 && name() != "MMA")
+			if (name() != "MMA" && grad_norm != 0 && delta_x.dot(grad) >= 0)
 			{
 				increase_descent_strategy();
 				logger().debug(
-					"[{}] direction is not a descent direction (Δx⋅g={:g}≥0); reverting to {}",
-					name(), delta_x.dot(grad), descent_strategy_name());
+					"[{}] direction is not a descent direction (‖Δx‖={:g}; ‖g‖={:g}; Δx⋅g={:g}≥0); reverting to {}",
+					name(), delta_x.norm(), grad.norm(), delta_x.dot(grad), descent_strategy_name());
 				this->m_status = Status::Continue;
 				continue;
 			}
@@ -254,7 +187,7 @@ namespace cppoptlib
 			// Use the maximum absolute displacement value divided by the timestep,
 			// so the units are in velocity units.
 			// TODO: Also divide by the world scale to make this criteria scale invariant.
-			this->m_current.xDelta = delta_x_norm / dt;
+			this->m_current.xDelta = descent_strategy == 2 ? NaN : (delta_x_norm / dt);
 			this->m_current.fDelta = std::abs(old_energy - energy); // / std::abs(old_energy);
 			// if normalize_gradient, use relative to first norm
 			this->m_current.gradNorm = grad_norm / (normalize_gradient ? first_grad_norm : 1);
@@ -262,27 +195,6 @@ namespace cppoptlib
 			this->m_status = checkConvergence(this->m_stop, this->m_current);
 
 			old_energy = energy;
-
-			// ---------------
-			// Plot energy along descent direction
-			// ---------------
-
-			// if (this->m_current.iterations > 8) {
-			// 	const double value_ = objFunc.value(x);
-			// 	const double rate_ = delta_x.dot(grad);
-			// 	std::cout << "descent rate " << rate_ << "\n";
-			// 	std::cout << std::setprecision(20) << 0 << " " << value_ << " " << grad.dot(delta_x) << "\n";
-			// 	double dt_ = 1e-4;
-			// 	while (dt_ < 1e2)
-			// 	{
-			// 		objFunc.solution_changed(x + delta_x * dt_);
-			// 		Eigen::VectorXd grad_;
-			// 		objFunc.gradient(x, grad_);
-			// 		std::cout << std::setprecision(20) << dt_ << " " << objFunc.value(x + delta_x * dt_) << " " << grad.dot(delta_x) << "\n";
-			// 		dt_ *= 1.2;
-			// 	}
-			// 	exit(0);
-			// }
 
 			// ---------------
 			// Variable update
@@ -309,12 +221,12 @@ namespace cppoptlib
 
 			const double step = (rate * delta_x).norm();
 
-			 if (objFunc.stop(x))
-			 {
-			 	this->m_status = Status::UserDefined;
-			 	m_error_code = ErrorCode::SUCCESS;
-			 	logger().debug("[{}] Objective decided to stop", name());
-			 }
+			if (objFunc.stop(x))
+			{
+				this->m_status = Status::UserDefined;
+				m_error_code = ErrorCode::SUCCESS;
+				logger().debug("[{}] Objective decided to stop", name());
+			}
 
 			objFunc.post_step(this->m_current.iterations, x);
 
@@ -326,9 +238,7 @@ namespace cppoptlib
 			if (++this->m_current.iterations >= this->m_stop.iterations)
 				this->m_status = Status::IterationLimit;
 
-			update_solver_info();
-			if (solver_info_log)
-				std::cout << solver_info << std::endl;
+			update_solver_info(energy);
 
 			objFunc.save_to_file(x);
 
@@ -337,17 +247,10 @@ namespace cppoptlib
 		timer.stop();
 
 		// -----------
-		// Check if the solution is a saddle point
-		// -----------
-
-		if (check_saddle_point && is_saddle_point(objFunc, x))
-			log_and_throw_error("[{}] Solution is a saddle point", name());
-
-		// -----------
 		// Log results
 		// -----------
 
-		if (this->m_status == Status::IterationLimit)
+		if (!allow_out_of_iterations && this->m_status == Status::IterationLimit)
 			log_and_throw_error("[{}] Reached iteration limit (limit={})", name(), this->m_stop.iterations);
 		if (this->m_current.iterations == 0)
 			log_and_throw_error("[{}] Unable to take a step", name());
@@ -360,7 +263,7 @@ namespace cppoptlib
 			old_energy, this->m_current.fDelta, this->m_current.gradNorm, this->m_current.xDelta, this->m_current.fDelta, this->m_stop.fDelta);
 
 		log_times();
-		update_solver_info();
+		update_solver_info(objFunc.value(x));
 	}
 
 	template <typename ProblemType>
@@ -423,11 +326,11 @@ namespace cppoptlib
 	}
 
 	template <typename ProblemType>
-	void NonlinearSolver<ProblemType>::update_solver_info()
+	void NonlinearSolver<ProblemType>::update_solver_info(const double energy)
 	{
 		solver_info["status"] = this->status();
 		solver_info["error_code"] = m_error_code;
-
+		solver_info["energy"] = energy;
 		const auto &crit = this->criteria();
 		solver_info["iterations"] = crit.iterations;
 		solver_info["xDelta"] = crit.xDelta;
@@ -435,7 +338,6 @@ namespace cppoptlib
 		solver_info["gradNorm"] = crit.gradNorm;
 		solver_info["condition"] = crit.condition;
 		solver_info["relative_gradient"] = normalize_gradient;
-		solver_info["peak_memory"] = getPeakRSS() / (double)(1024 * 1024);
 
 		double per_iteration = crit.iterations ? crit.iterations : 1;
 

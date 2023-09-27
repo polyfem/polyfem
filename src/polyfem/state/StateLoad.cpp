@@ -8,8 +8,6 @@
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 
-#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
-
 #include <polyfem/utils/Selection.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
@@ -78,10 +76,12 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading obstacles...");
 		obstacle = mesh::read_obstacle_geometry(
+			units,
 			args["geometry"],
 			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
 			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
 			args["root_path"], mesh->dimension());
+
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
@@ -106,6 +106,7 @@ namespace polyfem
 		{
 			assert(is_param_valid(args, "geometry"));
 			mesh = mesh::read_fem_geometry(
+				units,
 				args["geometry"], args["root_path"],
 				names, vertices, cells, non_conforming);
 		}
@@ -145,30 +146,13 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading obstacles...");
 		obstacle = mesh::read_obstacle_geometry(
+			units,
 			args["geometry"],
 			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
 			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
 			args["root_path"], mesh->dimension(), names, vertices, cells);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
-
-		// build disp_grad
-		if (args["boundary_conditions"]["linear_displacement_offset"].size() > 0)
-		{
-			disp_grad_.setZero(mesh->dimension(), mesh->dimension());
-			int i = 0;
-			for (const auto &row : args["boundary_conditions"]["linear_displacement_offset"])
-			{
-				int j = 0;
-				for (const auto &x : row)
-					disp_grad_(i, j++) = x;
-				i++;
-			}
-
-			logger().info("Underlying linear displacement field: {}", utils::flatten(disp_grad_).transpose());
-		}
-		else
-			disp_grad_.resize(0, 0);
 	}
 
 	void State::build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F)
@@ -183,14 +167,34 @@ namespace polyfem
 		for (int i = 0; i < bases.size(); i++)
 		{
 			const basis::ElementBases &element = bases[i];
-			assert(element.bases.size() == F.cols());
 			for (int j = 0; j < element.bases.size(); j++)
 			{
 				const basis::Basis &basis = element.bases[j];
 				assert(basis.global().size() == 1);
 				V.row(basis.global()[0].index) = basis.global()[0].node;
-				F(i, j) = basis.global()[0].index;
+				if (j < F.cols()) // Only grab the corners of the triangles/tetrahedra
+					F(i, j) = basis.global()[0].index;
 			}
 		}
+	}
+
+	std::unordered_map<int, std::array<bool, 3>>
+	State::boundary_conditions_ids(const std::string &bc_type) const
+	{
+		assert(args["boundary_conditions"].contains(bc_type));
+		const std::vector<json> json_bcs = json_as_array(args["boundary_conditions"][bc_type]);
+		std::unordered_map<int, std::array<bool, 3>> bcs;
+		for (const json &bc : json_bcs)
+		{
+			assert(bc["dimension"].size() >= mesh->dimension());
+			std::array<bool, 3> dimension{{true, true, true}};
+			for (int d = 0; d < bc["dimension"].size(); ++d)
+				dimension[d] = bc["dimension"][d];
+
+			assert(bc.contains("id") && bc["id"].is_number_integer());
+			bcs[bc["id"].get<int>()] = dimension;
+		}
+
+		return bcs;
 	}
 } // namespace polyfem
