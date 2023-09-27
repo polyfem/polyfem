@@ -256,6 +256,8 @@ namespace polyfem
 			  primitive_to_nodes_(primitive_to_nodes),
 			  node_to_primitives_(node_to_primitives)
 		{
+			if (size_ != 3 && (local_pressure_boundary.size() > 0))
+				log_and_throw_error("Pressure is only supported for 3d!");
 		}
 
 		double PressureAssembler::compute_energy(
@@ -708,9 +710,6 @@ namespace polyfem
 			StiffnessMatrix &hess) const
 		{
 			hess.resize(n_basis_ * size_, n_vertices * size_);
-
-			if (size_ != 3)
-				logger().error("This form is only supported for 3d!");
 
 			std::vector<Eigen::Triplet<double>> entries;
 
