@@ -137,6 +137,7 @@ namespace polyfem
 
 	void State::init_linear_solve(Eigen::MatrixXd &sol, const double t)
 	{
+		assert(sol.cols() == 1);
 		assert(assembler->is_linear() && !is_contact_enabled()); // linear
 
 		if (mixed_assembler != nullptr)
@@ -175,20 +176,24 @@ namespace polyfem
 		{
 			POLYFEM_SCOPED_TIMER("Initialize time integrator");
 
-			Eigen::MatrixXd velocity, acceleration;
+			Eigen::MatrixXd solution, velocity, acceleration;
+			initial_solution(solution); // Reload this because we need all previous solutions
+			solution.col(0) = sol;      // Make sure the current solution is the same as `sol`
+			assert(solution.rows() == sol.size());
 			initial_velocity(velocity);
-			assert(velocity.size() == sol.size());
-			initial_velocity(acceleration);
-			assert(acceleration.size() == sol.size());
+			assert(velocity.rows() == sol.size());
+			initial_acceleration(acceleration);
+			assert(acceleration.rows() == sol.size());
 
 			const double dt = args["time"]["dt"];
-			solve_data.time_integrator->init(sol, velocity, acceleration, dt);
+			solve_data.time_integrator->init(solution, velocity, acceleration, dt);
 		}
 		solve_data.update_dt();
 	}
 
 	void State::solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
+		assert(sol.cols() == 1);
 		assert(problem->is_time_dependent());
 		assert(assembler->is_linear() && !is_contact_enabled());
 		assert(solve_data.rhs_assembler != nullptr);
@@ -213,12 +218,17 @@ namespace polyfem
 		}
 		else
 		{
-			Eigen::MatrixXd velocity, acceleration;
+			Eigen::MatrixXd solution, velocity, acceleration;
+			initial_solution(solution); // Reload this because we need all previous solutions
+			solution.col(0) = sol;      // Make sure the current solution is the same as `sol`
+			assert(solution.rows() == sol.size());
 			initial_velocity(velocity);
+			assert(velocity.rows() == sol.size());
 			initial_acceleration(acceleration);
+			assert(acceleration.rows() == sol.size());
 
 			time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
-			time_integrator->init(sol, velocity, acceleration, dt);
+			time_integrator->init(solution, velocity, acceleration, dt);
 		}
 
 		// --------------------------------------------------------------------
@@ -310,9 +320,6 @@ namespace polyfem
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}
 
-		time_integrator->save_raw(
-			resolve_output_path(args["output"]["data"]["u_path"]),
-			resolve_output_path(args["output"]["data"]["v_path"]),
-			resolve_output_path(args["output"]["data"]["a_path"]));
+		time_integrator->save_state(resolve_output_path(args["output"]["data"]["state"]));
 	}
 } // namespace polyfem

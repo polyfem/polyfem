@@ -16,6 +16,14 @@ namespace polyfem::io
 	template <typename Mat>
 	bool write_matrix(const std::string &path, const Mat &mat);
 
+	/// Writes a matrix to a hdf5 file using key as name.
+	template <typename Mat>
+	bool write_matrix(const std::string &path, const std::string &key, const Mat &mat, const bool replace = true);
+
+	/// Reads a matrix to a hdf5 file using key as name.
+	template <typename Mat>
+	bool read_matrix(const std::string &path, const std::string &key, Mat &mat);
+
 	template <typename T>
 	bool read_matrix_ascii(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
 
