@@ -709,166 +709,168 @@ namespace polyfem
 			const int n_vertices,
 			StiffnessMatrix &hess) const
 		{
-			hess.resize(n_basis_ * size_, n_vertices * size_);
+			compute_energy_hess(displacement, local_pressure_boundary, dirichlet_nodes, resolution, t, false, hess);
 
-			std::vector<Eigen::Triplet<double>> entries;
+			// hess.resize(n_basis_ * size_, n_vertices * size_);
 
-			Eigen::MatrixXd pressure_vals, g_1, g_2, g_3;
-			ElementAssemblyValues vals, gvals;
-			Eigen::MatrixXd points, uv, normals, deform_mat, trafo;
-			Eigen::VectorXd weights;
-			Eigen::VectorXi global_primitive_ids;
-			for (const auto &lb : local_pressure_boundary)
-			{
-				const int e = lb.element_id();
-				const basis::ElementBases &gbs = gbases_[e];
-				const basis::ElementBases &bs = bases_[e];
+			// std::vector<Eigen::Triplet<double>> entries;
 
-				for (int i = 0; i < lb.size(); ++i)
-				{
-					const int primitive_global_id = lb.global_primitive_id(i);
-					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
-					const auto gnodes = gbs.local_nodes_for_primitive(primitive_global_id, mesh_);
+			// Eigen::MatrixXd pressure_vals, g_1, g_2, g_3;
+			// ElementAssemblyValues vals, gvals;
+			// Eigen::MatrixXd points, uv, normals, deform_mat, trafo;
+			// Eigen::VectorXd weights;
+			// Eigen::VectorXi global_primitive_ids;
+			// for (const auto &lb : local_pressure_boundary)
+			// {
+			// 	const int e = lb.element_id();
+			// 	const basis::ElementBases &gbs = gbases_[e];
+			// 	const basis::ElementBases &bs = bases_[e];
 
-					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, i, false, uv, points, normals, weights);
-					std::vector<Eigen::VectorXd> param_chain_rule;
-					if (mesh_.is_volume())
-					{
-						weights /= 2 * mesh_.tri_area(primitive_global_id);
-						g_1.setZero(normals.rows(), normals.cols());
-						g_2.setZero(normals.rows(), normals.cols());
-						g_3.setZero(normals.rows(), normals.cols());
+			// 	for (int i = 0; i < lb.size(); ++i)
+			// 	{
+			// 		const int primitive_global_id = lb.global_primitive_id(i);
+			// 		const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
+			// 		const auto gnodes = gbs.local_nodes_for_primitive(primitive_global_id, mesh_);
 
-						auto endpoints = utils::BoundarySampler::tet_local_node_coordinates_from_face(lb[i]);
-						param_chain_rule = {(endpoints.row(0) - endpoints.row(1)).transpose(), (endpoints.row(0) - endpoints.row(2)).transpose()};
-						if (lb[i] == 0)
-							param_chain_rule[0] *= -1;
-					}
-					else
-					{
-						assert(false);
-						// 	weights /= mesh_.edge_length(primitive_global_id);
-						// 	g_1.setZero(normals.rows(), normals.cols());
-						// 	g_2.setZero(0, 0);
-						// 	g_3.setZero(normals.rows(), normals.cols());
+			// 		bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, i, false, uv, points, normals, weights);
+			// 		std::vector<Eigen::VectorXd> param_chain_rule;
+			// 		if (mesh_.is_volume())
+			// 		{
+			// 			weights /= 2 * mesh_.tri_area(primitive_global_id);
+			// 			g_1.setZero(normals.rows(), normals.cols());
+			// 			g_2.setZero(normals.rows(), normals.cols());
+			// 			g_3.setZero(normals.rows(), normals.cols());
 
-						// 	auto endpoints = utils::BoundarySampler::tri_local_node_coordinates_from_edge(lb[i]);
-						// 	param_chain_rule = {(-endpoints.row(0) - endpoints.row(1)).transpose()};
-					}
+			// 			auto endpoints = utils::BoundarySampler::tet_local_node_coordinates_from_face(lb[i]);
+			// 			param_chain_rule = {(endpoints.row(0) - endpoints.row(1)).transpose(), (endpoints.row(0) - endpoints.row(2)).transpose()};
+			// 			if (lb[i] == 0)
+			// 				param_chain_rule[0] *= -1;
+			// 		}
+			// 		else
+			// 		{
+			// 			assert(false);
+			// 			// 	weights /= mesh_.edge_length(primitive_global_id);
+			// 			// 	g_1.setZero(normals.rows(), normals.cols());
+			// 			// 	g_2.setZero(0, 0);
+			// 			// 	g_3.setZero(normals.rows(), normals.cols());
 
-					if (!has_samples)
-						continue;
+			// 			// 	auto endpoints = utils::BoundarySampler::tri_local_node_coordinates_from_edge(lb[i]);
+			// 			// 	param_chain_rule = {(-endpoints.row(0) - endpoints.row(1)).transpose()};
+			// 		}
 
-					global_primitive_ids.setConstant(weights.size(), primitive_global_id);
+			// 		if (!has_samples)
+			// 			continue;
 
-					vals.compute(e, mesh_.is_volume(), points, bs, gbs);
-					gvals.compute(e, mesh_.is_volume(), points, gbs, gbs);
-					for (int n = 0; n < vals.jac_it.size(); ++n)
-					{
-						trafo = vals.jac_it[n].inverse();
+			// 		global_primitive_ids.setConstant(weights.size(), primitive_global_id);
 
-						if (displacement.size() > 0)
-						{
-							assert(size_ == 2 || size_ == 3);
-							deform_mat.resize(size_, size_);
-							deform_mat.setZero();
-							for (const auto &b : vals.basis_values)
-							{
-								for (const auto &g : b.global)
-								{
-									for (int d = 0; d < size_; ++d)
-									{
-										deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
-									}
-								}
-							}
+			// 		vals.compute(e, mesh_.is_volume(), points, bs, gbs);
+			// 		gvals.compute(e, mesh_.is_volume(), points, gbs, gbs);
+			// 		for (int n = 0; n < vals.jac_it.size(); ++n)
+			// 		{
+			// 			trafo = vals.jac_it[n].inverse();
 
-							trafo += deform_mat;
-						}
+			// 			if (displacement.size() > 0)
+			// 			{
+			// 				assert(size_ == 2 || size_ == 3);
+			// 				deform_mat.resize(size_, size_);
+			// 				deform_mat.setZero();
+			// 				for (const auto &b : vals.basis_values)
+			// 				{
+			// 					for (const auto &g : b.global)
+			// 					{
+			// 						for (int d = 0; d < size_; ++d)
+			// 						{
+			// 							deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
+			// 						}
+			// 					}
+			// 				}
 
-						normals.row(n) = normals.row(n) * trafo.inverse();
-						normals.row(n).normalize();
+			// 				trafo += deform_mat;
+			// 			}
 
-						if (mesh_.is_volume())
-						{
-							Eigen::Vector3d g1, g2, g3;
-							auto endpoints = utils::BoundarySampler::tet_local_node_coordinates_from_face(lb[i]);
-							g1 = trafo * (endpoints.row(0) - endpoints.row(1)).transpose();
-							g2 = trafo * (endpoints.row(0) - endpoints.row(2)).transpose();
-							if (lb[i] == 0)
-								g1 *= -1;
-							g3 = g1.cross(g2);
+			// 			normals.row(n) = normals.row(n) * trafo.inverse();
+			// 			normals.row(n).normalize();
 
-							g_1.row(n) = g1.transpose();
-							g_2.row(n) = g2.transpose();
-							g_3.row(n) = g3.transpose();
-						}
-						else
-						{
-							assert(false);
-							// Eigen::Vector2d g1, g3;
-							// auto endpoints = utils::BoundarySampler::tri_local_node_coordinates_from_edge(lb[i]);
-							// g1 = trafo * (endpoints.row(0) - endpoints.row(1)).transpose();
-							// g3(0) = -g1(0);
-							// g3(1) = g1(1);
+			// 			if (mesh_.is_volume())
+			// 			{
+			// 				Eigen::Vector3d g1, g2, g3;
+			// 				auto endpoints = utils::BoundarySampler::tet_local_node_coordinates_from_face(lb[i]);
+			// 				g1 = trafo * (endpoints.row(0) - endpoints.row(1)).transpose();
+			// 				g2 = trafo * (endpoints.row(0) - endpoints.row(2)).transpose();
+			// 				if (lb[i] == 0)
+			// 					g1 *= -1;
+			// 				g3 = g1.cross(g2);
 
-							// g_1.row(n) = g1.transpose();
-							// g_3.row(n) = g3.transpose();
-						}
-					}
-					problem_.pressure_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, pressure_vals);
+			// 				g_1.row(n) = g1.transpose();
+			// 				g_2.row(n) = g2.transpose();
+			// 				g_3.row(n) = g3.transpose();
+			// 			}
+			// 			else
+			// 			{
+			// 				assert(false);
+			// 				// Eigen::Vector2d g1, g3;
+			// 				// auto endpoints = utils::BoundarySampler::tri_local_node_coordinates_from_edge(lb[i]);
+			// 				// g1 = trafo * (endpoints.row(0) - endpoints.row(1)).transpose();
+			// 				// g3(0) = -g1(0);
+			// 				// g3(1) = g1(1);
 
-					for (long p = 0; p < weights.size(); ++p)
-					{
-						Eigen::Vector3d g_up_1, g_up_2;
-						g_dual(g_1.row(p).transpose(), g_2.row(p).transpose(), g_up_1, g_up_2);
-						std::vector<Eigen::MatrixXd> g_3_wedge_g_up = {wedge_product(g_3.row(p), g_up_1), wedge_product(g_3.row(p), g_up_2)};
+			// 				// g_1.row(n) = g1.transpose();
+			// 				// g_3.row(n) = g3.transpose();
+			// 			}
+			// 		}
+			// 		problem_.pressure_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, pressure_vals);
 
-						for (long ni = 0; ni < nodes.size(); ++ni)
-						{
-							const AssemblyValues &vi = vals.basis_values[nodes(ni)];
-							for (int di = 0; di < size_; ++di)
-							{
-								const int gi_index = vi.global[0].index * size_ + di;
-								const bool is_dof_i_dirichlet = std::find(dirichlet_nodes.begin(), dirichlet_nodes.end(), gi_index) != dirichlet_nodes.end();
-								if (is_dof_i_dirichlet)
-									continue;
+			// 		for (long p = 0; p < weights.size(); ++p)
+			// 		{
+			// 			Eigen::Vector3d g_up_1, g_up_2;
+			// 			g_dual(g_1.row(p).transpose(), g_2.row(p).transpose(), g_up_1, g_up_2);
+			// 			std::vector<Eigen::MatrixXd> g_3_wedge_g_up = {wedge_product(g_3.row(p), g_up_1), wedge_product(g_3.row(p), g_up_2)};
 
-								Eigen::MatrixXd grad_phi_i;
-								grad_phi_i.setZero(3, 3);
-								grad_phi_i.row(di) = vi.grad.row(p);
+			// 			for (long ni = 0; ni < nodes.size(); ++ni)
+			// 			{
+			// 				const AssemblyValues &vi = vals.basis_values[nodes(ni)];
+			// 				for (int di = 0; di < size_; ++di)
+			// 				{
+			// 					const int gi_index = vi.global[0].index * size_ + di;
+			// 					const bool is_dof_i_dirichlet = std::find(dirichlet_nodes.begin(), dirichlet_nodes.end(), gi_index) != dirichlet_nodes.end();
+			// 					if (is_dof_i_dirichlet)
+			// 						continue;
 
-								for (long nj = 0; nj < gnodes.size(); ++nj)
-								{
-									const AssemblyValues &vj = gvals.basis_values[gnodes(nj)];
-									for (int dj = 0; dj < size_; ++dj)
-									{
-										const int gj_index = vj.global[0].index * size_ + dj;
-										const bool is_dof_j_dirichlet = std::find(dirichlet_nodes.begin(), dirichlet_nodes.end(), gj_index) != dirichlet_nodes.end();
-										if (is_dof_j_dirichlet)
-											continue;
+			// 					Eigen::MatrixXd grad_phi_i;
+			// 					grad_phi_i.setZero(3, 3);
+			// 					grad_phi_i.row(di) = vi.grad.row(p);
 
-										Eigen::MatrixXd grad_phi_j;
-										grad_phi_j.setZero(3, 3);
-										grad_phi_j.row(dj) = vj.grad.row(p);
+			// 					for (long nj = 0; nj < gnodes.size(); ++nj)
+			// 					{
+			// 						const AssemblyValues &vj = gvals.basis_values[gnodes(nj)];
+			// 						for (int dj = 0; dj < size_; ++dj)
+			// 						{
+			// 							const int gj_index = vj.global[0].index * size_ + dj;
+			// 							const bool is_dof_j_dirichlet = std::find(dirichlet_nodes.begin(), dirichlet_nodes.end(), gj_index) != dirichlet_nodes.end();
+			// 							if (is_dof_j_dirichlet)
+			// 								continue;
 
-										double value = 0;
-										for (int alpha = 0; alpha < size_ - 1; ++alpha)
-										{
-											auto a = vj.val(p) * g_3_wedge_g_up[alpha].row(di) * (grad_phi_i * param_chain_rule[alpha]);
-											auto b = (g_3_wedge_g_up[alpha] * (grad_phi_j * param_chain_rule[alpha])).row(di) * vi.val(p);
-											value += pressure_vals(p) * (a(0) + b(0)) * weights(p);
-										}
-										entries.push_back(Eigen::Triplet<double>(gi_index, gj_index, value));
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+			// 							Eigen::MatrixXd grad_phi_j;
+			// 							grad_phi_j.setZero(3, 3);
+			// 							grad_phi_j.row(dj) = vj.grad.row(p);
 
-			hess.setFromTriplets(entries.begin(), entries.end());
+			// 							double value = 0;
+			// 							for (int alpha = 0; alpha < size_ - 1; ++alpha)
+			// 							{
+			// 								auto a = vj.val(p) * g_3_wedge_g_up[alpha].row(di) * (grad_phi_i * param_chain_rule[alpha]);
+			// 								auto b = (g_3_wedge_g_up[alpha] * (grad_phi_j * param_chain_rule[alpha])).row(di) * vi.val(p);
+			// 								value += pressure_vals(p) * (a(0) + b(0)) * weights(p);
+			// 							}
+			// 							entries.push_back(Eigen::Triplet<double>(gi_index, gj_index, value));
+			// 						}
+			// 					}
+			// 				}
+			// 			}
+			// 		}
+			// 	}
+			// }
+
+			// hess.setFromTriplets(entries.begin(), entries.end());
 		}
 
 	} // namespace assembler

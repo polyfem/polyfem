@@ -645,7 +645,10 @@ namespace polyfem::solver
 				rhs_term.setZero(one_form.size());
 
 			if (state.solve_data.pressure_form)
+			{
 				state.solve_data.pressure_form->force_shape_derivative(state.n_geom_bases, 0, sol, adjoint, pressure_term);
+				pressure_term = state.gbasis_nodes_to_basis_nodes * pressure_term;
+			}
 			else
 				pressure_term.setZero(one_form.size());
 
@@ -695,6 +698,7 @@ namespace polyfem::solver
 				state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i), cur_p, elasticity_term);
 				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i - 1), cur_p, rhs_term);
 				state.solve_data.pressure_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i), cur_p, pressure_term);
+				pressure_term = state.gbasis_nodes_to_basis_nodes * pressure_term;
 
 				if (state.solve_data.damping_form)
 					state.solve_data.damping_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i - 1), cur_p, damping_term);
