@@ -102,8 +102,13 @@ namespace polyfem
 		/// initializing the logger
 		/// @param[in] log_file is to write it to a file (use log_file="") to output to stdout
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
+		/// @param[in] file_log_level 0 all message, 6 no message. 2 is info, 1 is debug
 		/// @param[in] is_quit quiets the log
-		void init_logger(const std::string &log_file, const spdlog::level::level_enum log_level, const bool is_quiet);
+		void init_logger(
+			const std::string &log_file,
+			const spdlog::level::level_enum log_level,
+			const spdlog::level::level_enum file_log_level,
+			const bool is_quiet);
 
 		/// initializing the logger writes to an output stream
 		/// @param[in] os output stream
@@ -130,6 +135,7 @@ namespace polyfem
 
 		/// logger sink to stdout
 		spdlog::sink_ptr console_sink_ = nullptr;
+		spdlog::sink_ptr file_sink_ = nullptr;
 
 	public:
 		//---------------------------------------------------

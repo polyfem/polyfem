@@ -4073,6 +4073,7 @@
         "type": "object",
         "optional": [
             "level",
+            "file_level",
             "path",
             "quiet"
         ],
@@ -4088,6 +4089,28 @@
     {
         "pointer": "/output/log/level",
         "default": "debug",
+        "type": "string",
+        "options": [
+            "trace",
+            "debug",
+            "info",
+            "warning",
+            "error",
+            "critical",
+            "off"
+        ],
+        "doc": "Level of logging."
+    },
+    {
+        "pointer": "/output/log/file_level",
+        "type": "int",
+        "min": 0,
+        "max": 6,
+        "doc": "Level of logging to a file, 0 trace, 1 debug, 2 info, 3 warning, 4 error, 5 critical, and 6 off."
+    },
+    {
+        "pointer": "/output/log/file_level",
+        "default": "trace",
         "type": "string",
         "options": [
             "trace",

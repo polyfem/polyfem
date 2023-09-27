@@ -125,7 +125,11 @@ namespace polyfem
 		problem = ProblemFactory::factory().get_problem("Linear");
 	}
 
-	void State::init_logger(const std::string &log_file, const spdlog::level::level_enum log_level, const bool is_quiet)
+	void State::init_logger(
+		const std::string &log_file,
+		const spdlog::level::level_enum log_level,
+		const spdlog::level::level_enum file_log_level,
+		const bool is_quiet)
 	{
 		std::vector<spdlog::sink_ptr> sinks;
 
@@ -137,9 +141,9 @@ namespace polyfem
 
 		if (!log_file.empty())
 		{
-			spdlog::sink_ptr file_sink_ = std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_file, /*truncate=*/true);
-			// Set the file sink to trace level, so that all messages are saved
-			file_sink_->set_level(spdlog::level::trace);
+			file_sink_ = std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_file, /*truncate=*/true);
+			// Set the file sink separately from the console so it can save all messages
+			file_sink_->set_level(file_log_level);
 			sinks.push_back(file_sink_);
 		}
 
@@ -310,8 +314,11 @@ namespace polyfem
 			out_path_log = resolve_output_path(out_path_log);
 		}
 
-		spdlog::level::level_enum log_level = this->args["output"]["log"]["level"];
-		init_logger(out_path_log, log_level, this->args["output"]["log"]["quiet"]);
+		init_logger(
+			out_path_log,
+			this->args["output"]["log"]["level"],
+			this->args["output"]["log"]["file_level"],
+			this->args["output"]["log"]["quiet"]);
 
 		logger().info("Saving output to {}", output_dir);
 
