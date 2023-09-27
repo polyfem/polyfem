@@ -128,7 +128,8 @@ namespace polyfem
 		/// initializing the logger meant for internal usage
 		void init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level);
 
-		spdlog::sink_ptr file_sink_ = nullptr;
+		/// logger sink to stdout
+		spdlog::sink_ptr console_sink_ = nullptr;
 
 	public:
 		//---------------------------------------------------

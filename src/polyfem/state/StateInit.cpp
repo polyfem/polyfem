@@ -130,11 +130,16 @@ namespace polyfem
 		std::vector<spdlog::sink_ptr> sinks;
 
 		if (!is_quiet)
-			sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+		{
+			console_sink_ = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+			sinks.emplace_back(console_sink_);
+		}
 
 		if (!log_file.empty())
 		{
-			file_sink_ = std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_file, /*truncate=*/true);
+			spdlog::sink_ptr file_sink_ = std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_file, /*truncate=*/true);
+			// Set the file sink to trace level, so that all messages are saved
+			file_sink_->set_level(spdlog::level::trace);
 			sinks.push_back(file_sink_);
 		}
 
@@ -164,19 +169,22 @@ namespace polyfem
 		wmtk::set_logger(std::make_shared<spdlog::logger>("wmtk", sinks.begin(), sinks.end()));
 #endif
 
+		// Set the logger at the lowest level, so all messages are passed to the sinks
+		logger().set_level(spdlog::level::trace);
+		ipc::logger().set_level(spdlog::level::trace);
+#ifdef POLYFEM_WITH_REMESHING
+		wmtk::logger().set_level(spdlog::level::trace);
+#endif
+
 		set_log_level(log_level);
 	}
 
 	void State::set_log_level(const spdlog::level::level_enum log_level)
 	{
+		// Set only the level of the console
 		spdlog::set_level(log_level);
-		logger().set_level(log_level);
-		ipc::logger().set_level(log_level);
-#ifdef POLYFEM_WITH_REMESHING
-		wmtk::logger().set_level(log_level);
-#endif
-		if (file_sink_)
-			file_sink_->set_level(spdlog::level::trace);
+		if (console_sink_)
+			console_sink_->set_level(log_level); // Shared by all loggers
 	}
 
 	void State::init(const json &p_args_in, const bool strict_validation)
