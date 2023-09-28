@@ -410,8 +410,20 @@
             "linear-filter",
             "custom-symmetric",
             "periodic-mesh-tile",
-            "mesh-affine"
+            "mesh-affine",
+            "bounded-biharmonic-weights"
         ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "bounded-biharmonic-weights",
+        "type": "object",
+        "required": [
+            "num_control_vertices",
+            "num_vertices",
+            "allow_rotations"
+        ],
+        "doc": "TODO"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*",
