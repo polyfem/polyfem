@@ -91,6 +91,7 @@ namespace polyfem
 			// return the local faces nodes for a tet or a hex of order p, index points to a face
 			static Eigen::VectorXi tet_face_local_nodes(const int p, const mesh::Mesh3D &mesh, mesh::Navigation3D::Index index);
 			static Eigen::VectorXi hex_face_local_nodes(const bool serendipity, const int q, const mesh::Mesh3D &mesh, mesh::Navigation3D::Index index);
+			static Eigen::VectorXi prism_face_local_nodes(const int p, const int q, const mesh::Mesh3D &mesh, mesh::Navigation3D::Index index);
 
 		private:
 			static Eigen::MatrixXd linear_hex_face_local_nodes_coordinates(const mesh::Mesh3D &mesh, mesh::Navigation3D::Index index);

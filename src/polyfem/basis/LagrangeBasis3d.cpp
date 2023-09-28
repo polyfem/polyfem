@@ -1080,7 +1080,8 @@ Eigen::VectorXi LagrangeBasis3d::tet_face_local_nodes(const int p, const Mesh3D 
 	assert(mesh.is_simplex(c) || mesh.is_prism(c));
 
 	// Local to global mapping of node indices
-	const auto l2g = mesh.is_simplex(c) ? tet_vertices_local_to_global(mesh, c) : prism_vertices_local_to_global(mesh, c);
+	// const auto l2g = mesh.is_simplex(c) ? tet_vertices_local_to_global(mesh, c) : prism_vertices_local_to_global(mesh, c);
+	const auto l2g = tet_vertices_local_to_global(mesh, c);
 
 	// Extract requested interface
 	Eigen::VectorXi result(3 + (p - 1) * 3 + n_face_nodes);
