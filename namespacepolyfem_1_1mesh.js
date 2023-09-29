@@ -107,7 +107,7 @@ var namespacepolyfem_1_1mesh =
     [ "add_solver_timings", "namespacepolyfem_1_1mesh.html#a47b36fa8a7d89d878d53cd21e83bfb1b", null ],
     [ "build_collision_proxy", "namespacepolyfem_1_1mesh.html#a290ded340a51fb051467b479ff7dfccc", null ],
     [ "build_collision_proxy", "namespacepolyfem_1_1mesh.html#aa0aff2ad64ded82a861fd4aa657544a4", null ],
-    [ "build_collision_proxy_displacement_maps", "namespacepolyfem_1_1mesh.html#a21fb2a8e1b99bdd8ba7f8b8d20ecac85", null ],
+    [ "build_collision_proxy_displacement_map", "namespacepolyfem_1_1mesh.html#a7c9d0b37c424e46de1752b5f1c302f43", null ],
     [ "clip_polygon_by_half_plane", "namespacepolyfem_1_1mesh.html#a0d4be3bab49d477dc6c218108b278acc", null ],
     [ "compute_area_ratio_energy", "namespacepolyfem_1_1mesh.html#a3c8df3ec0e98ec4c453674f8f742dca0", null ],
     [ "compute_element_tags", "namespacepolyfem_1_1mesh.html#afe2f4a1a50f2841a6eb95650ff7b1f0e", null ],
