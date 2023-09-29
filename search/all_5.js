@@ -157,7 +157,7 @@ var searchData=
   ['expressionvalue_154',['expressionvalue',['../classpolyfem_1_1utils_1_1_expression_value.html',1,'polyfem::utils::ExpressionValue'],['../classpolyfem_1_1utils_1_1_expression_value.html#a76dc675f0165ead06fae6a1b4cd3510f',1,'polyfem::utils::ExpressionValue::ExpressionValue()']]],
   ['expressionvalue_2ecpp_155',['ExpressionValue.cpp',['../_expression_value_8cpp.html',1,'']]],
   ['expressionvalue_2ehpp_156',['ExpressionValue.hpp',['../_expression_value_8hpp.html',1,'']]],
-  ['extend_157',['extend',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6d',1,'polyfem::utils::PiecewiseInterpolation::Extend'],['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#a594261dc63b365d258c363d365fa1d2d',1,'polyfem::utils::PiecewiseInterpolation::extend(const double t) const']]],
+  ['extend_157',['extend',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#a594261dc63b365d258c363d365fa1d2d',1,'polyfem::utils::PiecewiseInterpolation::extend(const double t) const'],['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6d',1,'polyfem::utils::PiecewiseInterpolation::Extend']]],
   ['extend_5f_158',['extend_',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#aecb68e2239c1ee24a5221fa931f6247b',1,'polyfem::utils::PiecewiseInterpolation']]],
   ['extend_5flocal_5fpatch_159',['extend_local_patch',['../classpolyfem_1_1mesh_1_1_wild_remesher.html#acdd36beb9d790cf9e543a7f52722c362',1,'polyfem::mesh::WildRemesher']]],
   ['external_5fforce_160',['external_force',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a4daebcfc8dc5dfd88491687bdf20a7d9',1,'polyfem::solver::OperatorSplittingSolver']]],

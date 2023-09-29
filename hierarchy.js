@@ -263,6 +263,9 @@ var hierarchy =
     [ "polyfem::io::OBJWriter", "classpolyfem_1_1io_1_1_o_b_j_writer.html", null ],
     [ "polyfem::mesh::Obstacle", "classpolyfem_1_1mesh_1_1_obstacle.html", null ],
     [ "polyfem::solver::OperatorSplittingSolver", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html", null ],
+    [ "ostream_formatter", null, [
+      [ "fmt::formatter< cppoptlib::Status >", "structfmt_1_1formatter_3_01cppoptlib_1_1_status_01_4.html", null ]
+    ] ],
     [ "polyfem::io::OutGeometryData", "classpolyfem_1_1io_1_1_out_geometry_data.html", null ],
     [ "polyfem::io::OutRuntimeData", "classpolyfem_1_1io_1_1_out_runtime_data.html", null ],
     [ "polyfem::io::OutStatsData", "classpolyfem_1_1io_1_1_out_stats_data.html", null ],

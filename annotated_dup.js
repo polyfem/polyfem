@@ -11,6 +11,9 @@ var annotated_dup =
       [ "SolverWithBoxConstraints", "classcppoptlib_1_1_solver_with_box_constraints.html", "classcppoptlib_1_1_solver_with_box_constraints" ],
       [ "SparseNewtonDescentSolver", "classcppoptlib_1_1_sparse_newton_descent_solver.html", "classcppoptlib_1_1_sparse_newton_descent_solver" ]
     ] ],
+    [ "fmt", null, [
+      [ "formatter< cppoptlib::Status >", "structfmt_1_1formatter_3_01cppoptlib_1_1_status_01_4.html", null ]
+    ] ],
     [ "nlohmann", "namespacenlohmann.html", [
       [ "adl_serializer< RowVector< T, dim, max_dim > >", "structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html", null ],
       [ "adl_serializer< std::filesystem::path >", "structnlohmann_1_1adl__serializer_3_01std_1_1filesystem_1_1path_01_4.html", null ],
