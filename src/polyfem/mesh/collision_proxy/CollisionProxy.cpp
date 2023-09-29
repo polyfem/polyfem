@@ -165,7 +165,7 @@ namespace polyfem::mesh
 
 	// ========================================================================
 
-	void build_collision_proxy_displacement_maps(
+	void build_collision_proxy_displacement_map(
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &geom_bases,
 		const std::vector<mesh::LocalBoundary> &total_local_boundary,
@@ -186,7 +186,7 @@ namespace polyfem::mesh
 			for (const basis::Basis &basis : element_bases.bases)
 			{
 				if (basis.order() != 1)
-					log_and_throw_error("build_collision_proxy_displacement_maps() is only implemented for P1 geometry!");
+					log_and_throw_error("build_collision_proxy_displacement_map() is only implemented for P1 geometry!");
 			}
 		}
 
@@ -285,7 +285,7 @@ namespace polyfem::mesh
 			if (closest_element_id < 0)
 			{
 				// perform a closest point query
-				log_and_throw_error("build_collision_proxy_displacement_maps(): closest point query not implemented!");
+				log_and_throw_error("build_collision_proxy_displacement_map(): closest point query not implemented!");
 				// fcpw::Interaction<3> cpq_interaction;
 				// scene.findClosestPoint(v.cast<float>(), cpq_interaction);
 

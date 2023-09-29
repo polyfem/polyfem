@@ -51,7 +51,7 @@ namespace polyfem::mesh
 	/// @param[in] dim Dimension of the mesh
 	/// @param[in] proxy_vertices Vertices of the proxy mesh
 	/// @param[out] displacement_map Output displacement map from proxy mesh to original mesh
-	void build_collision_proxy_displacement_maps(
+	void build_collision_proxy_displacement_map(
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &geom_bases,
 		const std::vector<mesh::LocalBoundary> &total_local_boundary,
