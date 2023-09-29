@@ -90,7 +90,7 @@ namespace polyfem::mesh
 		//             set W(i, j) = ϕⱼ(g⁻¹(x)) where g is the geometry mapping of f
 		// caveats:
 		// • if x is provided in parametric coordinates, we can skip evaluating g⁻¹
-		//   - but Vᵢ = g(x) instead
+		//   - Vᵢ = g(x) instead
 		// • the tessellations of all faces need to be stitched together
 		//   - this means duplicate weights should be removed
 
