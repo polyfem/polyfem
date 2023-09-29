@@ -121,7 +121,8 @@ namespace cppoptlib
 
 		do
 		{
-			if (name() == "MMA") {
+			if (name() == "MMA")
+			{
 				POLYFEM_SCOPED_TIMER("constraint set update", constraint_set_update_time);
 				objFunc.solution_changed(x);
 			}
