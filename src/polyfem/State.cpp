@@ -1275,8 +1275,8 @@ namespace polyfem
 		// n_bases already contains the obstacle vertices
 		const int num_fe_nodes = n_bases - obstacle.n_vertices();
 		const int num_fe_collision_vertices = collision_vertices.rows();
-		assert(collision_edges.maxCoeff() < num_fe_collision_vertices);
-		assert(collision_triangles.maxCoeff() < num_fe_collision_vertices);
+		assert(collision_edges.size() == 0 || collision_edges.maxCoeff() < num_fe_collision_vertices);
+		assert(collision_triangles.size() == 0 || collision_triangles.maxCoeff() < num_fe_collision_vertices);
 
 		// Append the obstacles to the collision mesh
 		if (obstacle.n_vertices() > 0)
