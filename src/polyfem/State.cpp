@@ -886,7 +886,7 @@ namespace polyfem
 		logger().info("Done!");
 
 		const int prev_b_size = local_boundary.size();
-		problem->setup_bc(*mesh, n_bases,
+		problem->setup_bc(*mesh, n_bases - obstacle.n_vertices(),
 						  bases, geom_bases(), pressure_bases,
 						  local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes,
 						  dirichlet_nodes, neumann_nodes);
