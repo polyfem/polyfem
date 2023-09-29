@@ -74,7 +74,7 @@ namespace polyfem::solver
 		}
 		else if (name == "mma" || name == "MMA")
 		{
-			return std::make_shared<cppoptlib::MMASolver<AdjointNLProblem>>(
+			return std::make_shared<cppoptlib::MMASolver<AdjointNLProblem, AdjointForm>>(
 				solver_params, 0., characteristic_length);
 		}
 		else

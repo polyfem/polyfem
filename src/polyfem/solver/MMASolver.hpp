@@ -2,11 +2,10 @@
 
 #include "MMASolverAux.hpp"
 #include "SolverWithBoxConstraints.hpp"
-#include <polyfem/solver/forms/adjoint_forms/AdjointForm.hpp>
 
 namespace cppoptlib
 {
-	template <typename ProblemType>
+	template <typename ProblemType, typename ConstraintType>
 	class MMASolver : public SolverWithBoxConstraints<ProblemType>
     {
 	public:
@@ -20,7 +19,7 @@ namespace cppoptlib
 			this->m_line_search = NULL;
 		}
 
-		void set_constraints(const std::vector<std::shared_ptr<polyfem::solver::AdjointForm>> &constraints) { constraints_ = constraints; }
+		void set_constraints(const std::vector<std::shared_ptr<ConstraintType>> &constraints) { constraints_ = constraints; }
 
 		std::string name() const override { return "MMA"; }
 
@@ -48,7 +47,7 @@ namespace cppoptlib
 	protected:
 		std::shared_ptr<MMASolverAux> mma;
 
-		std::vector<std::shared_ptr<polyfem::solver::AdjointForm>> constraints_;
+		std::vector<std::shared_ptr<ConstraintType>> constraints_;
 
 		void reset(const int ndof) override;
 

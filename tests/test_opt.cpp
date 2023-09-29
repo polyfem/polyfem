@@ -258,7 +258,7 @@ TEST_CASE("topology-opt", "[optimization]")
 		nl_problem->solution_changed(x);
 	}
 
-	auto nl_solver = std::make_shared<cppoptlib::MMASolver<solver::AdjointNLProblem>>(opt_args["solver"]["nonlinear"], 0., 1);
+	auto nl_solver = std::make_shared<cppoptlib::MMASolver<solver::AdjointNLProblem, solver::AdjointForm>>(opt_args["solver"]["nonlinear"], 0., 1);
 
 	// TODO: Define in json interface
 	// nonlinear inequality constraints g(x) < 0

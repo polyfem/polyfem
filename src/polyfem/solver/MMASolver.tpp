@@ -4,15 +4,15 @@
 
 namespace cppoptlib
 {
-    template <typename ProblemType>
-    void MMASolver<ProblemType>::reset(const int ndof)
+    template <typename ProblemType, typename ConstraintType>
+    void MMASolver<ProblemType, ConstraintType>::reset(const int ndof)
     {
         Superclass::reset(ndof);
         mma.reset();
     }
 
-    template <typename ProblemType>
-    bool MMASolver<ProblemType>::compute_update_direction(
+    template <typename ProblemType, typename ConstraintType>
+    bool MMASolver<ProblemType, ConstraintType>::compute_update_direction(
         ProblemType &objFunc,
         const TVector &x,
         const TVector &grad,
