@@ -64,10 +64,13 @@ jobs:
       - name: Build
         run: cd build; make -j2; ccache --show-stats
 
+      - name: Tests
+        run: cd build; OMP_NUM_THREADS=1 ctest --verbose --output-on-failure
+
       - name: Run Coverage
         uses: codecov/codecov-action@v3
         with:
             flags: polyfem # optional
             name: polyfem # optional
-            fail_ci_if_error: falsw # optional (default = false)
+            fail_ci_if_error: false # optional (default = false)
             verbose: true # optional (default = false)
