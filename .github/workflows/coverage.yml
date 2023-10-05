@@ -34,6 +34,7 @@ jobs:
           libblas-dev \
           libglu1-mesa-dev \
           xorg-dev \
+          lcov \
           ccache
           echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
 
@@ -65,13 +66,18 @@ jobs:
       - name: Build
         run: cd build; make -j2; ccache --show-stats
 
-      - name: Tests
-        run: cd build; OMP_NUM_THREADS=1 ctest --verbose --output-on-failure
-
       - name: Run Coverage
+        run: |
+          cd build
+          ctest --verbose --output-on-failure
+          lcov --directory . --capture --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' --output-file coverage.info
+
+      - name: Upload Coverage
         uses: codecov/codecov-action@v3
         with:
             flags: polyfem # optional
+            files: coverage.info
             name: polyfem # optional
             fail_ci_if_error: false # optional (default = false)
             verbose: true # optional (default = false)
