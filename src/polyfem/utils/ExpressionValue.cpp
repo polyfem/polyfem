@@ -37,6 +37,10 @@ namespace polyfem
 		{
 			return check >= 0 ? ttrue : ffalse;
 		}
+		static double sign(double x)
+		{
+			return (0 < x) - (x < 0);
+		}
 
 		ExpressionValue::ExpressionValue()
 		{
@@ -99,6 +103,7 @@ namespace polyfem
 				{"rotate_2D_y", (const void *)rotate_2D_y, TE_FUNCTION3},
 				{"if", (const void *)iflargerthanzerothenelse, TE_FUNCTION3},
 				{"smooth_abs", (const void *)smooth_abs, TE_FUNCTION2},
+				{"sign", (const void *)sign, TE_FUNCTION1},
 			};
 
 			int err;
@@ -207,6 +212,7 @@ namespace polyfem
 					{"rotate_2D_y", (const void *)rotate_2D_y, TE_FUNCTION3},
 					{"if", (const void *)iflargerthanzerothenelse, TE_FUNCTION3},
 					{"smooth_abs", (const void *)smooth_abs, TE_FUNCTION2},
+					{"sign", (const void *)sign, TE_FUNCTION1},
 				};
 
 				int err;

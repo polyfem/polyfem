@@ -10,6 +10,10 @@
 
 #include <cppoptlib/solver/isolver.h>
 
+// clang-format off
+template <> struct fmt::formatter<cppoptlib::Status> : ostream_formatter {};
+// clang-format on
+
 namespace cppoptlib
 {
 	enum class ErrorCode

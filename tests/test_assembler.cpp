@@ -33,7 +33,7 @@ TEST_CASE("hessian_lin", "[assembler]")
 	in_args["materials"]["nu"] = 0.3;
 
 	State state;
-	state.init_logger("", spdlog::level::err, false);
+	state.init_logger("", spdlog::level::err, spdlog::level::off, false);
 	state.init(in_args, true);
 	state.load_mesh();
 
@@ -88,7 +88,7 @@ TEST_CASE("hessian_hooke", "[assembler]")
 	in_args["materials"]["nu"] = 0.3;
 
 	State state;
-	state.init_logger("", spdlog::level::err, false);
+	state.init_logger("", spdlog::level::err, spdlog::level::off, false);
 	state.init(in_args, true);
 	state.load_mesh();
 
@@ -144,7 +144,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 	in_args["materials"]["nu"] = 0.3;
 
 	State state;
-	state.init_logger("", spdlog::level::err, false);
+	state.init_logger("", spdlog::level::err, spdlog::level::off, false);
 	state.init(in_args, true);
 	state.load_mesh();
 

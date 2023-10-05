@@ -159,7 +159,7 @@ TEST_CASE("build collision proxy displacement map", "[build_collision_proxy]")
 	polyfem::mesh::read_surface_mesh(proxy_mesh_path, vertices, _, __, faces);
 
 	std::vector<Eigen::Triplet<double>> displacement_map_entries;
-	polyfem::mesh::build_collision_proxy_displacement_maps(
+	polyfem::mesh::build_collision_proxy_displacement_map(
 		state->bases, state->geom_bases(), state->total_local_boundary,
 		state->n_bases, state->mesh->dimension(), vertices,
 		displacement_map_entries);
