@@ -10,6 +10,7 @@
 #include <paraviewo/HDF5VTUWriter.hpp>
 
 #include <polyfem/utils/Rational.hpp>
+#include <polyfem/io/Evaluator.hpp>
 
 namespace polyfem
 {
@@ -293,5 +294,56 @@ namespace polyfem
 		paraviewo::HDF5MatrixWriter::write_matrix(rawname + ".hdf5", dim, bases.size(), n_loc_nodes, nodes);
 		paraviewo::HDF5MatrixWriter::write_matrix(rawname + "-rational.hdf5", dim, bases.size(), n_loc_nodes, nodes_rational);
 		logger().info("Save to {}.hdf5", rawname);
+
+		{
+			POLYFEM_SCOPED_TIMER("Check Inversion");
+
+			Eigen::MatrixXd disp, disp_grad;
+			std::vector<bool> inverted(bases.size(), false);
+			for (int e = 0; e < bases.size(); e++)
+			{
+				const auto& bs = bases[e];
+				
+				assembler::ElementAssemblyValues vals;
+				vals.compute(e, dim == 3, bases[e], geom_bases()[e]);
+				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, u, disp, disp_grad);
+
+				if (dim == 2)
+				{
+					Eigen::Matrix<double, 2, 2> def_grad;
+					for (int q = 0; q < disp_grad.rows(); ++q)
+					{
+						def_grad << disp_grad(q, 0) + 1, disp_grad(q, 1),
+									disp_grad(q, 2), disp_grad(q, 3) + 1;
+						if (def_grad(0, 0) * def_grad(1, 1) - def_grad(0, 1) * def_grad(1, 0) <= 0)
+						{
+							inverted[e] = true;
+							break;
+						}
+					}
+				}
+				else
+				{
+					Eigen::Matrix<double, 3, 3> def_grad;
+					for (int q = 0; q < disp_grad.rows(); ++q)
+					{
+						def_grad << disp_grad(q, 0) + 1, disp_grad(q, 1), disp_grad(q, 2), 
+									disp_grad(q, 3), disp_grad(q, 4) + 1, disp_grad(q, 5), 
+									disp_grad(q, 6), disp_grad(q, 7), disp_grad(q, 8) + 1;
+						double det = def_grad(0, 0) * def_grad(1, 1) * def_grad(2, 2) + \
+									def_grad(0, 1) * def_grad(1, 2) * def_grad(2, 0) + \
+									def_grad(0, 2) * def_grad(1, 0) * def_grad(2, 1) - \
+									def_grad(0, 0) * def_grad(1, 2) * def_grad(2, 1) - \
+									def_grad(0, 1) * def_grad(1, 0) * def_grad(2, 2) - \
+									def_grad(0, 2) * def_grad(1, 1) * def_grad(2, 0);
+						if (det <= 0)
+						{
+							inverted[e] = true;
+							break;
+						}
+					}
+				}
+			}
+		}
 	}
 } // namespace polyfem
