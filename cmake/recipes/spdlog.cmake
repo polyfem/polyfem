@@ -23,7 +23,7 @@ option(SPDLOG_INSTALL "Generate the install target" ON)
 set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "spdlog")
 
 include(CPM)
-CPMAddPackage("gh:gabime/spdlog@1.9.2")
+CPMAddPackage("gh:gabime/spdlog@1.12.0")
 
 set_target_properties(spdlog PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
