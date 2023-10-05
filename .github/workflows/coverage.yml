@@ -42,8 +42,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-Release-${{ matrix.threading }}-cache-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-Release-${{ matrix.threading }}-cache
+          key: ${{ runner.os }}-Debug-${{ matrix.threading }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-Debug-${{ matrix.threading }}-cache
 
       - name: Prepare ccache
         run: |
@@ -56,9 +56,10 @@ jobs:
           cd build
           cmake .. \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_WITH_CLIPPER=OFF \
+            -DPOLYFEM_CODE_COVERAGE=ON \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
