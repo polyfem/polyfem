@@ -721,5 +721,12 @@ namespace polyfem
 			boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
 			boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
 		}
+
+		std::unique_ptr<Mesh> CMesh2D::copy() const
+		{
+			std::unique_ptr<CMesh2D> copy_mesh = std::make_unique<CMesh2D>();
+			copy_mesh->load(this->mesh_);
+			return copy_mesh;
+		}
 	} // namespace mesh
 } // namespace polyfem

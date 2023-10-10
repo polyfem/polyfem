@@ -231,9 +231,9 @@ namespace polyfem
 			bool is_boundary_face(const int face_global_id) const override { return faces[valid_to_all_face(face_global_id)].isboundary; }
 			bool is_boundary_element(const int element_global_id) const override;
 
-			bool save(const std::string &path) const override 
-			{ 
-				// TODO 
+			bool save(const std::string &path) const override
+			{
+				// TODO
 				return false;
 			}
 
@@ -362,6 +362,8 @@ namespace polyfem
 			std::array<int, 4> get_ordered_vertices_from_tet(const int element_index) const override;
 
 			void append(const Mesh &mesh) override;
+
+			std::unique_ptr<Mesh> copy() const override;
 
 		private:
 			struct ArrayHasher2D

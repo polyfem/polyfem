@@ -173,7 +173,31 @@
             "enabled",
             "is_obstacle"
         ],
-        "#type_name": "mesh",
+        "type_name": "mesh",
+        "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions, materials, optimization parameters and other quantities that can be associated with a part of an object."
+    },
+    {
+        "pointer": "/geometry/*",
+        "type": "object",
+        "required": [
+            "mesh",
+            "array"
+        ],
+        "optional": [
+            "type",
+            "extract",
+            "unit",
+            "transformation",
+            "volume_selection",
+            "surface_selection",
+            "curve_selection",
+            "point_selection",
+            "n_refs",
+            "advanced",
+            "enabled",
+            "is_obstacle"
+        ],
+        "type_name": "mesh_array",
         "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions, materials, optimization parameters and other quantities that can be associated with a part of an object."
     },
     {
@@ -241,7 +265,8 @@
             "mesh",
             "plane",
             "ground",
-            "mesh_sequence"
+            "mesh_sequence",
+            "mesh_array"
         ],
         "default": "mesh",
         "doc": "Type of geometry, currently only one supported. In future we will add stuff like planes, spheres, etc."
@@ -1080,6 +1105,44 @@
         "pointer": "/geometry/*/fps",
         "type": "int",
         "doc": "Frames of the mesh sequence per second."
+    },
+    {
+        "pointer": "/geometry/*/array",
+        "type": "object",
+        "required": [
+            "relative_offset",
+            "size"
+        ],
+        "doc": "Array of meshes"
+    },
+    {
+        "pointer": "/geometry/*/array",
+        "type": "object",
+        "required": [
+            "offset",
+            "size"
+        ],
+        "doc": "Array of meshes"
+    },
+    {
+        "pointer": "/geometry/*/array/relative_offset",
+        "type": "float",
+        "doc": "Relative offset of the mesh in the array."
+    },
+    {
+        "pointer": "/geometry/*/array/offset",
+        "type": "float",
+        "doc": "Relative offset of the mesh in the array."
+    },
+    {
+        "pointer": "/geometry/*/array/size",
+        "type": "list",
+        "doc": "Size of the array (two entries for 2D problems or three entries for 3D problems)."
+    },
+    {
+        "pointer": "/geometry/*/array/size/*",
+        "type": "int",
+        "doc": "Size of the array (two entries for 2D problems or three entries for 3D problems)."
     },
     {
         "pointer": "/space",

@@ -15,7 +15,7 @@ namespace polyfem::utils
 		MatrixCache() {}
 		virtual ~MatrixCache() = default;
 
-		virtual std::unique_ptr<MatrixCache> clone() const = 0;
+		virtual std::unique_ptr<MatrixCache> copy() const = 0;
 
 		virtual void init(const size_t size) = 0;
 		virtual void init(const size_t rows, const size_t cols) = 0;
@@ -48,7 +48,7 @@ namespace polyfem::utils
 		SparseMatrixCache(const MatrixCache &other);
 		SparseMatrixCache(const SparseMatrixCache &other, const bool copy_main_cache_ptr = false);
 
-		inline std::unique_ptr<MatrixCache> clone() const override
+		inline std::unique_ptr<MatrixCache> copy() const override
 		{
 			// just copy main cache pointer
 			return std::make_unique<SparseMatrixCache>(*this, true);
@@ -121,7 +121,7 @@ namespace polyfem::utils
 		DenseMatrixCache(const MatrixCache &other);
 		DenseMatrixCache(const DenseMatrixCache &other);
 
-		inline std::unique_ptr<MatrixCache> clone() const override
+		inline std::unique_ptr<MatrixCache> copy() const override
 		{
 			return std::make_unique<DenseMatrixCache>(*this);
 		}
