@@ -207,7 +207,7 @@ jobs:
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
-          cmake --build build -j1 && ccache --show-stats
+          cmake --build build -j2 && ccache --show-stats
 
       - name: Tests
         run: cd build; ctest --verbose --output-on-failure
