@@ -12,6 +12,8 @@
 
 #include <polyfem/utils/AutodiffTypes.hpp>
 
+#include <unsupported/Eigen/SparseExtra>
+
 #include <unordered_map>
 
 namespace polyfem::solver
@@ -305,6 +307,10 @@ namespace polyfem::solver
 		igl::normalize_row_sums(complete_bbw_weights, complete_bbw_weights);
 		bbw_weights_ = complete_bbw_weights.block(0, 0, V.rows(), num_control_vertices_).matrix();
 		boundary_bbw_weights_ = complete_bbw_weights.block(0, num_control_vertices_, V.rows(), V_outer_loop.rows()).matrix();
+
+		igl::writeOBJ("surface_mesh.obj", V, F);
+		Eigen::saveMarket(bbw_weights_.sparseView(0, 1e-8).eval(), "bbw_control_weights.mat");
+		Eigen::saveMarket(boundary_bbw_weights_.sparseView(0, 1e-8).eval(), "bbw_boundary_weights.mat");
 
 		invoked_inverse_eval_ = true;
 

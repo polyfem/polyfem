@@ -29,6 +29,11 @@ namespace polyfem
 			else
 				return (3 * pow(a, 2)) - (2 * pow(a, 3));
 		}
+		static double half_smoothstep(double a)
+		{
+			double b = (a + 1.) / 2.;
+			return 2. * smoothstep(b) - 1.;
+		}
 		static double deg2rad(double d) { return d * igl::PI / 180.0; }
 		static double rotate_2D_x(double x, double y, double theta)
 		{
@@ -116,6 +121,7 @@ namespace polyfem
 				{"min", (const void *)min, TE_FUNCTION2},
 				{"max", (const void *)max, TE_FUNCTION2},
 				{"smoothstep", (const void *)smoothstep, TE_FUNCTION1},
+				{"half_smoothstep", (const void *)half_smoothstep, TE_FUNCTION1},
 				{"deg2rad", (const void *)deg2rad, TE_FUNCTION1},
 				{"rotate_2D_x", (const void *)rotate_2D_x, TE_FUNCTION3},
 				{"rotate_2D_y", (const void *)rotate_2D_y, TE_FUNCTION3},
@@ -274,6 +280,7 @@ namespace polyfem
 					{"min", (const void *)min, TE_FUNCTION2},
 					{"max", (const void *)max, TE_FUNCTION2},
 					{"smoothstep", (const void *)smoothstep, TE_FUNCTION1},
+					{"half_smoothstep", (const void *)half_smoothstep, TE_FUNCTION1},
 					{"deg2rad", (const void *)deg2rad, TE_FUNCTION1},
 					{"rotate_2D_x", (const void *)rotate_2D_x, TE_FUNCTION3},
 					{"rotate_2D_y", (const void *)rotate_2D_y, TE_FUNCTION3},
