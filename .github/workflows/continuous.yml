@@ -211,7 +211,7 @@ jobs:
             -DPOLYFEM_THREADING=${{ matrix.threading }} ^
             -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
             -DPOLYSOLVE_WITH_AMGCL=OFF ^
-            -DPOLYSOLVE_WITH_MKL=OFF ^
+            -DPOLYSOLVE_WITH_MKL=ON ^
             -B build ^
             -S .
 
