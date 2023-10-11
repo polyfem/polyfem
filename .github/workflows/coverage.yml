@@ -1,0 +1,83 @@
+name: Coverage
+
+on:
+    push:
+      branches: [main]
+    pull_request:
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: ON
+  CTEST_PARALLEL_LEVEL: 2
+
+jobs:
+  Linux:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        threading: [TBB]
+        include:
+          - os: ubuntu-latest
+            name: Linux
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 10
+
+      - name: Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get -o Acquire::Retries=3 install \
+          libblas-dev \
+          libglu1-mesa-dev \
+          xorg-dev \
+          lcov \
+          ccache
+          echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
+
+      - name: Cache Build
+        id: cache-build
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CACHE_PATH }}
+          key: ${{ runner.os }}-Release-${{ matrix.threading }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-Release-${{ matrix.threading }}-cache
+
+      - name: Prepare ccache
+        run: |
+          ccache --max-size=1.0G
+          ccache -V && ccache --show-stats && ccache --zero-stats
+
+      - name: Configure
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
+            -DPOLYFEM_WITH_CLIPPER=OFF \
+            -DPOLYFEM_CODE_COVERAGE=ON \
+            -DPOLYFEM_THREADING=${{ matrix.threading }}
+
+      - name: Build
+        run: cd build; make -j2; ccache --show-stats
+
+      - name: Run Coverage
+        run: |
+          cd build
+          ctest --verbose --output-on-failure
+          lcov --directory . --capture --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' '*tests/*.cpp' --output-file coverage.info
+
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
+        with:
+            flags: polyfem # optional
+            files: coverage.info
+            name: polyfem # optional
+            fail_ci_if_error: false # optional (default = false)
+            verbose: true # optional (default = false)
