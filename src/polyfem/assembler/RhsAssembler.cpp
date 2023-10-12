@@ -73,7 +73,9 @@ namespace polyfem
 				for (int e = 0; e < n_elements; ++e)
 				{
 					// vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
-					// compute transformation from reference element to real space
+					
+					// compute transformation from reference element to real space 
+					// evaluate and store basis functions/their gradients at quadrature points
 					ass_vals_cache_.compute(e, mesh_.is_volume(), bases_[e], gbases_[e], vals);
 
 					const Quadrature &quadrature = vals.quadrature;
