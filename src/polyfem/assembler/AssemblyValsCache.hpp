@@ -6,6 +6,7 @@ namespace polyfem
 {
 	namespace assembler
 	{
+		// Caches basis evaluation at each element
 		class AssemblyValsCache
 		{
 		public:
