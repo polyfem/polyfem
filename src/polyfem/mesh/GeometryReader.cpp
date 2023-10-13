@@ -306,7 +306,7 @@ namespace polyfem::mesh
 
 							RowVectorNd translation = offset * Eigen::RowVector3d(i, j, k).head(dim);
 							if (is_offset_relative)
-								translation = translation.cwiseProduct(dimensions);
+								translation.array() *= dimensions.array();
 
 							const std::unique_ptr<Mesh> copy_mesh = tmp_mesh->copy();
 							copy_mesh->apply_affine_transformation(MatrixNd::Identity(dim, dim), translation);
@@ -520,7 +520,7 @@ namespace polyfem::mesh
 							{
 								RowVectorNd translation = offset * Eigen::RowVector3d(i, j, k).head(vertices.cols());
 								if (is_offset_relative)
-									translation = translation.cwiseProduct(dimensions);
+									translation.array() *= dimensions.array();
 
 								const int n = i * size[1] * size[2] + j * size[2] + k;
 								if (n == 0)
