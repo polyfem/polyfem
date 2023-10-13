@@ -202,6 +202,7 @@ namespace polyfem
 		jse::JSE jse;
 		{
 			jse.strict = strict_validation;
+			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
 			const std::string polyfem_input_spec = POLYFEM_INPUT_SPEC;
 			std::ifstream file(polyfem_input_spec);
 
