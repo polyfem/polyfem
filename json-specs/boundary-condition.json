@@ -1,0 +1,49 @@
+[{
+        "pointer": "/",
+        "default": [],
+        "type": "list",
+        "doc": "The list of boundary conditions for the main variable. Elements of the list are assignment pairs (ID, value) where ID is assigned by surface selection."
+    },
+    {
+        "pointer": "/*/id",
+        "type": "int",
+        "min": 0,
+        "max": 2147483646,
+        "doc": "ID of boundary condition from surface selection."
+    },
+    {
+        "pointer": "/*/id",
+        "type": "string",
+        "options": [
+            "all"
+        ],
+        "doc": "select all ids."
+    },
+    {
+        "pointer": "/*/value",
+        "type": "list",
+        "doc": "Values of boundary condition, length 1 for scalar-valued pde, 2/3 for vector-valued PDEs depending on the dimension."
+    },
+    {
+        "pointer": "/*/value/*",
+        "type": "string",
+        "doc": "Values of boundary condition for each dimension as a function of $x,y,z,t$."
+    },
+    {
+        "pointer": "/*/value/*",
+        "type": "float",
+        "doc": "Values of boundary condition for each dimension."
+    },
+    {
+        "pointer": "/*/interpolation",
+        "type": "list",
+        "default": [],
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/*/interpolation/*",
+        "type": "include",
+        "spec_file": "interpolation.json",
+        "doc": "interpolation of boundary condition"
+    }
+]

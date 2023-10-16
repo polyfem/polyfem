@@ -202,7 +202,6 @@ namespace polyfem
 		jse::JSE jse;
 		{
 			jse.strict = strict_validation;
-			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
 			const std::string polyfem_input_spec = POLYFEM_INPUT_SPEC;
 			std::ifstream file(polyfem_input_spec);
 
@@ -212,6 +211,14 @@ namespace polyfem
 			{
 				logger().error("unable to open {} rules", polyfem_input_spec);
 				throw std::runtime_error("Invald spec file");
+			}
+
+			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
+			rules = jse.inject_include(rules);
+
+			{
+				std::ofstream file("complete-spec.json");
+				file << rules;
 			}
 		}
 
