@@ -7,7 +7,7 @@ TEST_CASE("Tetrahedra clipping", "[clipping]")
 {
 	using namespace polyfem::utils;
 
-	const double dz = GENERATE(take(100, random(-1.0, 1.0)));
+	const double dz = GENERATE(range(-0.99, 1.0, 0.01));
 
 	Eigen::MatrixXd subject_tet(4, 3);
 	subject_tet << 0, 0, 0,
@@ -28,7 +28,10 @@ TEST_CASE("Tetrahedra clipping", "[clipping]")
 	REQUIRE(r.size() == 1);
 	REQUIRE(r[0].rows() == 4);
 	REQUIRE(r[0].cols() == 3);
-	CHECK(r[0].colwise().minCoeff().isApprox(expected_tet.colwise().minCoeff()));
+	if (std::abs(dz) > 1e-15)
+		CHECK(r[0].colwise().minCoeff().isApprox(expected_tet.colwise().minCoeff()));
+	else
+		CHECK(r[0].colwise().minCoeff().isZero());
 	CHECK(r[0].colwise().maxCoeff().isApprox(expected_tet.colwise().maxCoeff()));
 	CHECK(r[0].colwise().sum().isApprox(expected_tet.colwise().sum()));
 	CHECK(tetrahedron_volume(r[0]) == Catch::Approx(tetrahedron_volume(expected_tet)));
