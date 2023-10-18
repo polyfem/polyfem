@@ -48,6 +48,7 @@ namespace polyfem::assembler
 		virtual Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> assemble(const MixedAssemblerData &data) const = 0;
 	};
 
+	// abstract class
 	class Assembler
 	{
 	public:

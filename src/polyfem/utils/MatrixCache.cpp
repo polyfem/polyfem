@@ -160,20 +160,23 @@ namespace polyfem::utils
 				outer_index_.resize(mat_.rows() + 1);
 				mapping_.resize(mat_.rows());
 
+				// note: mat_ is column major
 				const auto inn_ptr = mat_.innerIndexPtr();
 				const auto out_ptr = mat_.outerIndexPtr();
 				inner_index_.assign(inn_ptr, inn_ptr + inner_index_.size());
 				outer_index_.assign(out_ptr, out_ptr + outer_index_.size());
 
 				size_t index = 0;
+				// should this really be columns? doesn't matter since mat_ is square
 				for (size_t i = 0; i < mat_.rows(); ++i)
 				{
-
 					const auto start = outer_index_[i];
 					const auto end = outer_index_[i + 1];
 
+					// loop over the nonzero elements of the given column
 					for (size_t ii = start; ii < end; ++ii)
 					{
+						// pick out current row
 						const auto j = inner_index_[ii];
 						auto &map = mapping_[j];
 						map.emplace_back(i, index);

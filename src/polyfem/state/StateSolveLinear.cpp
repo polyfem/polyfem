@@ -96,6 +96,8 @@ namespace polyfem
 		solver->getInfo(stats.solver_info);
 
 		const auto error = (A * x - b).norm();
+
+		// how was this threshold decided?
 		if (error > 1e-4)
 			logger().error("Solver error: {}", error);
 		else
