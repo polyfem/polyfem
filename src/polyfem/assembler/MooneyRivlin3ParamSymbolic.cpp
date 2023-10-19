@@ -219,6 +219,7 @@ namespace polyfem::assembler
 		Eigen::MatrixXd F = grad_u_i;
 		for (int d = 0; d < size(); ++d)
 			F(d, d) += 1.;
+		Eigen::MatrixXd F_T = F.transpose();
 
 		const double t = 0;
 		const double c1 = c1_(global_pts, t, el_id);
@@ -228,7 +229,7 @@ namespace polyfem::assembler
 
 		// Grad is ∂W(F)/∂F_ij
 		Eigen::MatrixXd grad;
-		autogen::generate_gradient(c1, c2, c3, d1, F.transpose(), grad);
+		autogen::generate_gradient(c1, c2, c3, d1, F_T, grad);
 		// Hessian is ∂W(F)/(∂F_ij*∂F_kl)
 		Eigen::MatrixXd hess;
 		autogen::generate_hessian(c1, c2, c3, d1, F, hess);
@@ -250,6 +251,7 @@ namespace polyfem::assembler
 		Eigen::MatrixXd F = grad_u_i;
 		for (int d = 0; d < size(); ++d)
 			F(d, d) += 1.;
+		Eigen::MatrixXd F_T = F.transpose();
 
 		const double t = 0;
 		const double c1 = c1_(global_pts, t, el_id);
@@ -259,7 +261,7 @@ namespace polyfem::assembler
 
 		// Grad is ∂W(F)/∂F_ij
 		Eigen::MatrixXd grad;
-		autogen::generate_gradient(c1, c2, c3, d1, F.transpose(), grad);
+		autogen::generate_gradient(c1, c2, c3, d1, F_T, grad);
 		// Hessian is ∂W(F)/(∂F_ij*∂F_kl)
 		Eigen::MatrixXd hess;
 		autogen::generate_hessian(c1, c2, c3, d1, F, hess);
@@ -282,6 +284,7 @@ namespace polyfem::assembler
 		Eigen::MatrixXd F = grad_u_i;
 		for (int d = 0; d < size(); ++d)
 			F(d, d) += 1.;
+		Eigen::MatrixXd F_T = F.transpose();
 
 		const double t = 0;
 		const double c1 = c1_(global_pts, t, el_id);
@@ -291,7 +294,7 @@ namespace polyfem::assembler
 
 		// Grad is ∂W(F)/∂F_ij
 		Eigen::MatrixXd grad;
-		autogen::generate_gradient(c1, c2, c3, d1, F.transpose(), grad);
+		autogen::generate_gradient(c1, c2, c3, d1, F_T, grad);
 		// Hessian is ∂W(F)/(∂F_ij*∂F_kl)
 		Eigen::MatrixXd hess;
 		autogen::generate_hessian(c1, c2, c3, d1, F, hess);
@@ -404,14 +407,8 @@ namespace polyfem::assembler
 			const double c3 = c3_(data.vals.val.row(p), t, data.vals.element_id);
 			const double d1 = d1_(data.vals.val.row(p), t, data.vals.element_id);
 
-			// Eigen::Matrix<double, dim, dim> gradient_temp;
-			// if (dim == 2)
-			// 	autogen::generate_gradient_2d(c1, c2, c3, d1, def_grad_T, gradient_temp);
-			// else if (dim == 3)
-			// 	autogen::generate_gradient_3d(c1, c2, c3, d1, def_grad_T, gradient_temp);
-
-			Eigen::MatrixXd gradient_temp;
-			autogen::generate_gradient(c1, c2, c3, d1, def_grad_T, gradient_temp);
+			Eigen::Matrix<double, dim, dim> gradient_temp;
+			autogen::generate_gradient_<dim>(c1, c2, c3, d1, def_grad_T, gradient_temp);
 
 			Eigen::Matrix<double, n_basis, dim> delF_delU = grad * jac_it;
 			Eigen::Matrix<double, n_basis, dim> gradient = delF_delU * gradient_temp.transpose();
@@ -469,14 +466,8 @@ namespace polyfem::assembler
 			const double c3 = c3_(data.vals.val.row(p), t, data.vals.element_id);
 			const double d1 = d1_(data.vals.val.row(p), t, data.vals.element_id);
 
-			// Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp;
-			// if (dim == 2)
-			// 	autogen::generate_hessian_2d(c1, c2, c3, d1, def_grad_T, hessian_temp);
-			// if (dim == 3)
-			// 	autogen::generate_hessian_3d(c1, c2, c3, d1, def_grad_T, hessian_temp);
-
-			Eigen::MatrixXd hessian_temp;
-			autogen::generate_hessian(c1, c2, c3, d1, def_grad, hessian_temp);
+			Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp;
+			autogen::generate_hessian_<dim>(c1, c2, c3, d1, def_grad, hessian_temp);
 
 			// Check by FD
 			/*
