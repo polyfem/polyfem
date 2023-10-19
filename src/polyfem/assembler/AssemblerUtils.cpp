@@ -10,6 +10,7 @@
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MooneyRivlinElasticity.hpp>
 #include <polyfem/assembler/MooneyRivlin3ParamElasticity.hpp>
+#include <polyfem/assembler/MooneyRivlin3ParamSymbolic.hpp>
 #include <polyfem/assembler/AMIPSEnergy.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
 #include <polyfem/assembler/NavierStokes.hpp>
@@ -72,6 +73,8 @@ namespace polyfem
 				return std::make_shared<MooneyRivlinElasticity>();
 			else if (formulation == "MooneyRivlin3Param")
 				return std::make_shared<MooneyRivlin3ParamElasticity>();
+			else if (formulation == "MooneyRivlin3ParamSymbolic")
+				return std::make_shared<MooneyRivlin3ParamSymbolic>();
 			else if (formulation == "MultiModels")
 				return std::make_shared<MultiModel>();
 			else if (formulation == "UnconstrainedOgden")
