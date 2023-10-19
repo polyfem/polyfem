@@ -182,6 +182,7 @@ namespace polyfem::assembler
 			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
 			const Eigen::MatrixXd def_grad = I + displacement_grad;
+			const Eigen::MatrixXd def_grad_T = def_grad.transpose();
 			if (type == ElasticityTensorType::F)
 			{
 				all.row(p) = fun(def_grad);
@@ -195,7 +196,7 @@ namespace polyfem::assembler
 			const double d1 = d1_(local_pts.row(p), t, vals.element_id);
 
 			Eigen::MatrixXd stress_tensor;
-			autogen::generate_gradient(c1, c2, c3, d1, def_grad.transpose(), stress_tensor);
+			autogen::generate_gradient(c1, c2, c3, d1, def_grad_T, stress_tensor);
 
 			stress_tensor = 1.0 / def_grad.determinant() * stress_tensor * def_grad.transpose();
 			if (type == ElasticityTensorType::PK1)
