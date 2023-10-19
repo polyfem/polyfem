@@ -1716,7 +1716,7 @@
     },
     {
         "pointer": "/contact/use_convergent_formulation",
-        "default": false,
+        "default": true,
         "type": "bool",
         "doc": "Whether to use the convergent (area weighted) formulation of IPC."
     },
@@ -2340,7 +2340,7 @@
     },
     {
         "pointer": "/solver/nonlinear/line_search/use_grad_norm_tol",
-        "default": 0.0001,
+        "default": 1e-6,
         "type": "float",
         "doc": "When the energy is smaller than use_grad_norm_tol, line-search uses norm of gradient instead of energy"
     },
@@ -2642,6 +2642,23 @@
         "pointer": "/materials/*",
         "type": "object",
         "type_name": "MooneyRivlin3Param",
+        "required": [
+            "type",
+            "c1",
+            "c2",
+            "c3",
+            "d1"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "MooneyRivlin3ParamSymbolic",
         "required": [
             "type",
             "c1",
@@ -3014,6 +3031,7 @@
             "NeoHookean",
             "MooneyRivlin",
             "MooneyRivlin3Param",
+            "MooneyRivlin3ParamSymbolic",
             "UnconstrainedOgden",
             "IncompressibleOgden",
             "Stokes",
