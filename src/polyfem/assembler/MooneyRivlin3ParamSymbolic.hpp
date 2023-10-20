@@ -8,6 +8,11 @@
 // non linear NeoHookean material model
 namespace polyfem::assembler
 {
+	template <typename T>
+	using AutoDiffGradMat = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>;
+	template <typename T>
+	using AutoDiffVect = Eigen::Matrix<T, Eigen::Dynamic, 1>;
+
 	class MooneyRivlin3ParamSymbolic : public NLAssembler, public ElasticityAssembler
 	{
 	public:
@@ -52,5 +57,8 @@ namespace polyfem::assembler
 		void compute_energy_hessian_aux_fast(const NonLinearAssemblerData &data, Eigen::MatrixXd &H) const;
 		template <int n_basis, int dim>
 		void compute_energy_aux_gradient_fast(const NonLinearAssemblerData &data, Eigen::VectorXd &G_flattened) const;
+
+		template <typename T>
+		T elastic_energy(const RowVectorNd &p, const int el_id, const AutoDiffGradMat<T> &def_grad) const;
 	};
 } // namespace polyfem::assembler

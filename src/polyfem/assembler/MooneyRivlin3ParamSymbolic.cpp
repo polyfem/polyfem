@@ -312,6 +312,32 @@ namespace polyfem::assembler
 				result.row(i) = hess.row(i).reshaped(size(), size()) * vect;
 	}
 
+	template <typename T>
+	T MooneyRivlin3ParamSymbolic::elastic_energy(
+		const RowVectorNd &p,
+		const int el_id,
+		const AutoDiffGradMat<T> &def_grad) const
+	{
+		const double t = 0; // TODO
+
+		const double c1 = c1_(p, t, el_id);
+		const double c2 = c2_(p, t, el_id);
+		const double c3 = c3_(p, t, el_id);
+		const double d1 = d1_(p, t, el_id);
+
+		const T J = polyfem::utils::determinant(def_grad);
+		const T log_J = log(J);
+		const auto F_tilde = def_grad;
+		const auto right_cauchy_green = F_tilde * F_tilde.transpose();
+
+		const auto I1_tilde = pow(J, -2. / size()) * first_invariant(right_cauchy_green);
+		const auto I2_tilde = pow(J, -4. / size()) * second_invariant(right_cauchy_green);
+
+		const T val = c1 * (I1_tilde - size()) + c2 * (I2_tilde - size()) + c3 * (I1_tilde - size()) * (I2_tilde - size()) + d1 * log_J * log_J;
+
+		return val;
+	}
+
 	double MooneyRivlin3ParamSymbolic::compute_energy(const NonLinearAssemblerData &data) const
 	{
 		return compute_energy_aux<double>(data);
@@ -320,13 +346,10 @@ namespace polyfem::assembler
 	template <typename T>
 	T MooneyRivlin3ParamSymbolic::compute_energy_aux(const NonLinearAssemblerData &data) const
 	{
-		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
-		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
-
-		AutoDiffVect local_disp;
+		AutoDiffVect<T> local_disp;
 		get_local_disp(data, size(), local_disp);
 
-		AutoDiffGradMat def_grad(size(), size());
+		AutoDiffGradMat<T> def_grad(size(), size());
 
 		T energy = T(0.0);
 
@@ -339,21 +362,7 @@ namespace polyfem::assembler
 			for (int d = 0; d < size(); ++d)
 				def_grad(d, d) += T(1);
 
-			const double t = 0;
-			const double c1 = c1_(data.vals.val.row(p), t, data.vals.element_id);
-			const double c2 = c2_(data.vals.val.row(p), t, data.vals.element_id);
-			const double c3 = c3_(data.vals.val.row(p), t, data.vals.element_id);
-			const double d1 = d1_(data.vals.val.row(p), t, data.vals.element_id);
-
-			const T J = polyfem::utils::determinant(def_grad);
-			const T log_J = log(J);
-			const auto F_tilde = def_grad;
-			const auto right_cauchy_green = F_tilde * F_tilde.transpose();
-
-			const auto I1_tilde = pow(J, -2. / size()) * first_invariant(right_cauchy_green);
-			const auto I2_tilde = pow(J, -4. / size()) * second_invariant(right_cauchy_green);
-
-			const T val = c1 * (I1_tilde - size()) + c2 * (I2_tilde - size()) + c3 * (I1_tilde - size()) * (I2_tilde - size()) + d1 * log_J * log_J;
+			const T val = elastic_energy(data.vals.val.row(p), data.vals.element_id, def_grad);
 
 			energy += val * data.da(p);
 		}
