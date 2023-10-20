@@ -60,5 +60,8 @@ namespace polyfem::assembler
 
 		template <typename T>
 		T elastic_energy(const RowVectorNd &p, const int el_id, const AutoDiffGradMat<T> &def_grad) const;
+
+		void get_grad_hess_symbolic(const double c1, const double c2, const double c3, const double d1, const Eigen::MatrixXd &def_grad, Eigen::MatrixXd &grad, Eigen::MatrixXd &hess) const;
+		void get_grad_hess_autodiff(const double c1, const double c2, const double c3, const double d1, const Eigen::MatrixXd &global_pts, const int el_id, const Eigen::MatrixXd &F, Eigen::MatrixXd &grad, Eigen::MatrixXd &hess) const;
 	};
 } // namespace polyfem::assembler

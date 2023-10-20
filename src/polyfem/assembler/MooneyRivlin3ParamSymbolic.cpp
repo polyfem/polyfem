@@ -4,13 +4,6 @@
 
 namespace polyfem::assembler
 {
-	namespace
-	{
-		bool delta(int i, int j)
-		{
-			return (i == j) ? true : false;
-		}
-	} // namespace
 
 	MooneyRivlin3ParamSymbolic::MooneyRivlin3ParamSymbolic()
 		: c1_("c1"), c2_("c2"), c3_("c3"), d1_("d1")
@@ -228,12 +221,9 @@ namespace polyfem::assembler
 		const double c3 = c3_(global_pts, t, el_id);
 		const double d1 = d1_(global_pts, t, el_id);
 
-		// Grad is ∂W(F)/∂F_ij
-		Eigen::MatrixXd grad;
-		autogen::generate_gradient(c1, c2, c3, d1, F_T, grad);
-		// Hessian is ∂W(F)/(∂F_ij*∂F_kl)
-		Eigen::MatrixXd hess;
-		autogen::generate_hessian(c1, c2, c3, d1, F, hess);
+		Eigen::MatrixXd grad, hess;
+		// get_grad_hess_symbolic(c1, c2, c3, d1, F, grad, hess);
+		get_grad_hess_autodiff(c1, c2, c3, d1, global_pts, el_id, F, grad, hess);
 
 		// Stress is S_ij = ∂W(F)/∂F_ij
 		stress = grad;
@@ -252,7 +242,6 @@ namespace polyfem::assembler
 		Eigen::MatrixXd F = grad_u_i;
 		for (int d = 0; d < size(); ++d)
 			F(d, d) += 1.;
-		Eigen::MatrixXd F_T = F.transpose();
 
 		const double t = 0;
 		const double c1 = c1_(global_pts, t, el_id);
@@ -260,12 +249,9 @@ namespace polyfem::assembler
 		const double c3 = c3_(global_pts, t, el_id);
 		const double d1 = d1_(global_pts, t, el_id);
 
-		// Grad is ∂W(F)/∂F_ij
-		Eigen::MatrixXd grad;
-		autogen::generate_gradient(c1, c2, c3, d1, F_T, grad);
-		// Hessian is ∂W(F)/(∂F_ij*∂F_kl)
-		Eigen::MatrixXd hess;
-		autogen::generate_hessian(c1, c2, c3, d1, F, hess);
+		Eigen::MatrixXd grad, hess;
+		// get_grad_hess_symbolic(c1, c2, c3, d1, F, grad, hess);
+		get_grad_hess_autodiff(c1, c2, c3, d1, global_pts, el_id, F, grad, hess);
 
 		// Stress is S_ij = ∂W(F)/∂F_ij
 		stress = grad;
@@ -293,12 +279,9 @@ namespace polyfem::assembler
 		const double c3 = c3_(global_pts, t, el_id);
 		const double d1 = d1_(global_pts, t, el_id);
 
-		// Grad is ∂W(F)/∂F_ij
-		Eigen::MatrixXd grad;
-		autogen::generate_gradient(c1, c2, c3, d1, F_T, grad);
-		// Hessian is ∂W(F)/(∂F_ij*∂F_kl)
-		Eigen::MatrixXd hess;
-		autogen::generate_hessian(c1, c2, c3, d1, F, hess);
+		Eigen::MatrixXd grad, hess;
+		// get_grad_hess_symbolic(c1, c2, c3, d1, F, grad, hess);
+		get_grad_hess_autodiff(c1, c2, c3, d1, global_pts, el_id, F, grad, hess);
 
 		// Stress is S_ij = ∂W(F)/∂F_ij
 		stress = grad;
@@ -336,6 +319,36 @@ namespace polyfem::assembler
 		const T val = c1 * (I1_tilde - size()) + c2 * (I2_tilde - size()) + c3 * (I1_tilde - size()) * (I2_tilde - size()) + d1 * log_J * log_J;
 
 		return val;
+	}
+
+	void MooneyRivlin3ParamSymbolic::get_grad_hess_symbolic(const double c1, const double c2, const double c3, const double d1, const Eigen::MatrixXd &F, Eigen::MatrixXd &grad, Eigen::MatrixXd &hess) const
+	{
+		Eigen::MatrixXd F_T = F.transpose();
+
+		// Grad is ∂W(F)/∂F_ij
+		autogen::generate_gradient(c1, c2, c3, d1, F_T, grad);
+		// Hessian is ∂W(F)/(∂F_ij*∂F_kl)
+		autogen::generate_hessian(c1, c2, c3, d1, F, hess);
+	}
+
+	void MooneyRivlin3ParamSymbolic::get_grad_hess_autodiff(const double c1, const double c2, const double c3, const double d1, const Eigen::MatrixXd &global_pts, const int el_id, const Eigen::MatrixXd &F, Eigen::MatrixXd &grad, Eigen::MatrixXd &hess) const
+	{
+		typedef DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>> Diff;
+
+		DiffScalarBase::setVariableCount(size() * size());
+
+		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(size(), size());
+
+		for (int i = 0; i < size(); ++i)
+			for (int j = 0; j < size(); ++j)
+				def_grad(i, j) = Diff(i + j * size(), F(i, j));
+
+		const auto energy = elastic_energy(global_pts, el_id, def_grad);
+
+		// Grad is ∂W(F)/∂F_ij
+		grad = energy.getGradient().reshaped(size(), size());
+		// Hessian is ∂W(F)/(∂F_ij*∂F_kl)
+		hess = energy.getHessian();
 	}
 
 	double MooneyRivlin3ParamSymbolic::compute_energy(const NonLinearAssemblerData &data) const
