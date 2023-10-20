@@ -222,8 +222,8 @@ namespace polyfem::assembler
 		const double d1 = d1_(global_pts, t, el_id);
 
 		Eigen::MatrixXd grad, hess;
-		// get_grad_hess_symbolic(c1, c2, c3, d1, F, grad, hess);
-		get_grad_hess_autodiff(c1, c2, c3, d1, global_pts, el_id, F, grad, hess);
+		get_grad_hess_symbolic(c1, c2, c3, d1, F, grad, hess);
+		// get_grad_hess_autodiff(c1, c2, c3, d1, global_pts, el_id, F, grad, hess);
 
 		// Stress is S_ij = ∂W(F)/∂F_ij
 		stress = grad;
@@ -250,8 +250,8 @@ namespace polyfem::assembler
 		const double d1 = d1_(global_pts, t, el_id);
 
 		Eigen::MatrixXd grad, hess;
-		// get_grad_hess_symbolic(c1, c2, c3, d1, F, grad, hess);
-		get_grad_hess_autodiff(c1, c2, c3, d1, global_pts, el_id, F, grad, hess);
+		get_grad_hess_symbolic(c1, c2, c3, d1, F, grad, hess);
+		// get_grad_hess_autodiff(c1, c2, c3, d1, global_pts, el_id, F, grad, hess);
 
 		// Stress is S_ij = ∂W(F)/∂F_ij
 		stress = grad;
@@ -280,8 +280,8 @@ namespace polyfem::assembler
 		const double d1 = d1_(global_pts, t, el_id);
 
 		Eigen::MatrixXd grad, hess;
-		// get_grad_hess_symbolic(c1, c2, c3, d1, F, grad, hess);
-		get_grad_hess_autodiff(c1, c2, c3, d1, global_pts, el_id, F, grad, hess);
+		get_grad_hess_symbolic(c1, c2, c3, d1, F, grad, hess);
+		// get_grad_hess_autodiff(c1, c2, c3, d1, global_pts, el_id, F, grad, hess);
 
 		// Stress is S_ij = ∂W(F)/∂F_ij
 		stress = grad;
