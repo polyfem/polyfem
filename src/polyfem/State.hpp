@@ -635,6 +635,7 @@ namespace polyfem
 		StiffnessMatrix gbasis_nodes_to_basis_nodes;
 
 		void dump_basis_nodes(const std::string &path, const Eigen::MatrixXd &u) const;
+		void dump_basis_nodes_transient(const std::string &path) const;
 	};
 
 } // namespace polyfem

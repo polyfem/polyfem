@@ -186,6 +186,7 @@ int forward_simulation(const CLI::App &command_line,
 	State state;
 	state.init(in_args, is_strict);
 	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
+	state.optimization_enabled = true;
 
 	// Mesh was not loaded successfully; load_mesh() logged the error.
 	if (state.mesh == nullptr)
@@ -213,7 +214,11 @@ int forward_simulation(const CLI::App &command_line,
 	state.save_json(sol);
 	state.export_data(sol, pressure);
 
-	state.dump_basis_nodes(hdf5_out, sol);
+	if (hdf5_out != "")
+		if (state.problem->is_time_dependent())
+			state.dump_basis_nodes_transient(hdf5_out);
+		else
+			state.dump_basis_nodes(hdf5_out, sol);
 
 	return EXIT_SUCCESS;
 }
