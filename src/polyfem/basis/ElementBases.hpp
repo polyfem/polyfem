@@ -94,6 +94,7 @@ namespace polyfem
 			void set_local_node_from_primitive_func(LocalNodeFromPrimitiveFunc fun) { local_node_from_primitive_ = fun; }
 
 		private:
+			// default to simply calling the Basis evaluation functions
 			void evaluate_bases_default(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values) const;
 			void evaluate_grads_default(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values) const;
 

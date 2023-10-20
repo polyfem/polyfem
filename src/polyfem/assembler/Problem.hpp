@@ -7,6 +7,8 @@
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 
+#include <iostream>
+
 namespace polyfem
 {
 	namespace assembler
