@@ -208,7 +208,7 @@ namespace polyfem::assembler
 						// const Eigen::MatrixXd &gradi = values_i.grad_t_m;
 						const auto &global_i = vals.basis_values[i].global;
 
-						// loop over other bases up to the current one (taking advantage of symmetry?)
+						// loop over other bases up to the current one, taking advantage of symmetry
 						for (int j = 0; j <= i; ++j)
 						{
 							// const AssemblyValues &values_j = vals.basis_values[j];
