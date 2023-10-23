@@ -192,7 +192,7 @@ namespace polyfem::assembler
 					// igl::Timer timer; timer.start();
 					// vals.compute(e, is_volume, bases[e], gbases[e]);
 
-					// compute transformation from reference element to real space 
+					// compute geometric mapping
 					// evaluate and store basis functions/their gradients at quadrature points
 					cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
@@ -231,7 +231,7 @@ namespace polyfem::assembler
 										continue;
 									}
 
-									// loop over the global nodes corresponding to local element
+									// loop over the global nodes corresponding to local element (useful for non-conforming cases)
 									for (size_t ii = 0; ii < global_i.size(); ++ii)
 									{
 										const auto gi = global_i[ii].index * size() + m;
