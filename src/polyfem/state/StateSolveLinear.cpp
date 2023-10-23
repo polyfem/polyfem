@@ -97,7 +97,6 @@ namespace polyfem
 
 		const auto error = (A * x - b).norm();
 
-		// should this be converted to a user-specified value?
 		if (error > 1e-4)
 			logger().error("Solver error: {}", error);
 		else
