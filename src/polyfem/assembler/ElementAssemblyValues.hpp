@@ -9,7 +9,7 @@ namespace polyfem
 {
 	namespace assembler
 	{
-		// stores per element bases evaluation and transformation information
+		// stores per element bases evaluation and geometric mapping
 		class ElementAssemblyValues
 		{
 		public:

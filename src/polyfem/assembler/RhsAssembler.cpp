@@ -74,13 +74,13 @@ namespace polyfem
 				{
 					// vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
 					
-					// compute transformation from reference element to real space 
+					// compute geometric mapping
 					// evaluate and store basis functions/their gradients at quadrature points
 					ass_vals_cache_.compute(e, mesh_.is_volume(), bases_[e], gbases_[e], vals);
 
 					const Quadrature &quadrature = vals.quadrature;
 
-					// compute rhs values in transformed coordinates
+					// compute rhs values in physical space
 					problem_.rhs(assembler_, vals.val, t, rhs_fun);
 
 					for (int d = 0; d < size_; ++d)
@@ -105,7 +105,7 @@ namespace polyfem
 							// integrate rhs function times the given local basis
 							const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
 							for (std::size_t ii = 0; ii < v.global.size(); ++ii)
-								// add local contribution to the global rhs vector (with some weight)
+								// add local contribution to the global rhs vector (with some weight for non-conforming bases)
 								rhs(v.global[ii].index * size_ + d) += rhs_value * v.global[ii].val;
 						}
 					}

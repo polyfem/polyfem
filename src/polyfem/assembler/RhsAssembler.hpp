@@ -122,7 +122,7 @@ namespace polyfem
 			const int n_basis_;
 			const int size_; ///< dimension of problem
 			const std::vector<basis::ElementBases> &bases_; ///< basis functions associated with solution
-			const std::vector<basis::ElementBases> &gbases_; ///< basis functions associated with transformation between reference and real space
+			const std::vector<basis::ElementBases> &gbases_; ///< basis functions associated with geometric mapping
 			const AssemblyValsCache &ass_vals_cache_;
 			const Problem &problem_;
 			const std::string bc_method_;
