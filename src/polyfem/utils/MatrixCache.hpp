@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include <iostream>
-
 namespace polyfem::utils
 {
 	// abstract class used for caching 
@@ -74,7 +72,7 @@ namespace polyfem::utils
 
 		void add_value(const int e, const int i, const int j, const double value) override;
 		StiffnessMatrix get_matrix(const bool compute_mapping = true) override;
-		void prune() override; //< add saved entries to stored matrix
+		void prune() override; ///< add saved entries to stored matrix
 
 		std::shared_ptr<MatrixCache> operator+(const MatrixCache &a) const override;
 		std::shared_ptr<MatrixCache> operator+(const SparseMatrixCache &a) const;
@@ -87,14 +85,14 @@ namespace polyfem::utils
 	private:
 		size_t size_;
 		StiffnessMatrix tmp_, mat_;
-		std::vector<Eigen::Triplet<double>> entries_; //< contains global matrix indices and corresponding value
-		std::vector<std::vector<std::pair<int, size_t>>> mapping_; //< maps row indices to column index/local index pairs
+		std::vector<Eigen::Triplet<double>> entries_; ///< contains global matrix indices and corresponding value
+		std::vector<std::vector<std::pair<int, size_t>>> mapping_; ///< maps row indices to column index/local index pairs
 		std::vector<int> inner_index_, outer_index_;
-		std::vector<double> values_; //< maps local index to corresponding value
+		std::vector<double> values_; ///< maps local index to corresponding value
 		const SparseMatrixCache *main_cache_ = nullptr;
 
-		std::vector<std::vector<int>> second_cache_; //< maps element index to local index
-		std::vector<std::vector<std::pair<int, int>>> second_cache_entries_; //< maps element indices to global matrix indices
+		std::vector<std::vector<int>> second_cache_; ///< maps element index to local index
+		std::vector<std::vector<std::pair<int, int>>> second_cache_entries_; ///< maps element indices to global matrix indices
 		bool use_second_cache_ = true;
 		int current_e_ = -1;
 		int current_e_index_ = -1;
