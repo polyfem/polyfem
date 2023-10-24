@@ -7,6 +7,5 @@ endif()
 
 message(STATUS "Third-party: creating target 'wmtk::toolkit'")
 
-
 include(CPM)
-CPMAddPackage("gh:wildmeshing/wildmeshing-toolkit#3c2364a84613861d3314ae089abd40a54ef08929")
+CPMAddPackage("gh:zfergus/wildmeshing-toolkit#7605bc6482eb06d2387a383f27dc662dffd3e5e0")

@@ -279,6 +279,6 @@ namespace polyfem
 			framebuffer_to_uint8(frameBuffer, image);
 
 			return image;
-		};
+		}
 	} // namespace renderer
 } // namespace polyfem

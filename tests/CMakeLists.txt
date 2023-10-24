@@ -5,6 +5,7 @@
 set(test_sources
   test_assembler.cpp
   test_bases.cpp
+  test_clipping.cpp
   test_diff.cpp
   test_opt.cpp
   test_cmesh.cpp

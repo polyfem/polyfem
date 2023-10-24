@@ -51,6 +51,8 @@ namespace cppoptlib
 	{
 		using namespace polyfem;
 
+		constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
+
 		// ---------------------------
 		// Initialize the minimization
 		// ---------------------------
@@ -63,7 +65,7 @@ namespace cppoptlib
 		// double factor = 1e-5;
 
 		// Set these to nan to indicate they have not been computed yet
-		double old_energy = std::nan("");
+		double old_energy = NaN;
 
 		{
 			POLYFEM_SCOPED_TIMER("constraint set update", constraint_set_update_time);
@@ -82,7 +84,7 @@ namespace cppoptlib
 			log_and_throw_error("[{}] Initial gradient is nan; stopping", name());
 			return;
 		}
-		this->m_current.xDelta = std::nan(""); // we don't know the initial step size
+		this->m_current.xDelta = NaN; // we don't know the initial step size
 		this->m_current.fDelta = old_energy;
 		this->m_current.gradNorm = first_grad_norm / (normalize_gradient ? first_grad_norm : 1);
 
@@ -119,6 +121,12 @@ namespace cppoptlib
 
 		do
 		{
+			if (name() == "MMA")
+			{
+				POLYFEM_SCOPED_TIMER("constraint set update", constraint_set_update_time);
+				objFunc.solution_changed(x);
+			}
+
 			double energy;
 			{
 				POLYFEM_SCOPED_TIMER("compute objective function", obj_fun_time);
@@ -157,12 +165,12 @@ namespace cppoptlib
 				continue;
 			}
 
-			if (grad_norm != 0 && delta_x.dot(grad) >= 0)
+			if (name() != "MMA" && grad_norm != 0 && delta_x.dot(grad) >= 0)
 			{
 				increase_descent_strategy();
 				logger().debug(
-					"[{}] direction is not a descent direction (Δx⋅g={:g}≥0); reverting to {}",
-					name(), delta_x.dot(grad), descent_strategy_name());
+					"[{}] direction is not a descent direction (‖Δx‖={:g}; ‖g‖={:g}; Δx⋅g={:g}≥0); reverting to {}",
+					name(), delta_x.norm(), grad.norm(), delta_x.dot(grad), descent_strategy_name());
 				this->m_status = Status::Continue;
 				continue;
 			}
@@ -180,7 +188,7 @@ namespace cppoptlib
 			// Use the maximum absolute displacement value divided by the timestep,
 			// so the units are in velocity units.
 			// TODO: Also divide by the world scale to make this criteria scale invariant.
-			this->m_current.xDelta = delta_x_norm / dt;
+			this->m_current.xDelta = descent_strategy == 2 ? NaN : (delta_x_norm / dt);
 			this->m_current.fDelta = std::abs(old_energy - energy); // / std::abs(old_energy);
 			// if normalize_gradient, use relative to first norm
 			this->m_current.gradNorm = grad_norm / (normalize_gradient ? first_grad_norm : 1);
@@ -243,7 +251,7 @@ namespace cppoptlib
 		// Log results
 		// -----------
 
-		if (this->m_status == Status::IterationLimit)
+		if (!allow_out_of_iterations && this->m_status == Status::IterationLimit)
 			log_and_throw_error("[{}] Reached iteration limit (limit={})", name(), this->m_stop.iterations);
 		if (this->m_current.iterations == 0)
 			log_and_throw_error("[{}] Unable to take a step", name());
@@ -278,7 +286,7 @@ namespace cppoptlib
 		}
 		else if (std::isnan(rate))
 		{
-			assert(descent_strategy == 2);        // failed on gradient descent
+			assert(descent_strategy == 2); // failed on gradient descent
 			polyfem::logger().error("[{}] Line search failed on gradient descent; stopping", name());
 			this->m_status = Status::UserDefined; // Line search failed on gradient descent, so quit!
 			throw std::runtime_error("Line search failed on gradient descent");

@@ -86,10 +86,6 @@ int main(int argc, char **argv)
 	bool fallback_solver = false;
 	command_line.add_flag("--enable_overwrite_solver", fallback_solver, "If solver in json is not present, falls back to default");
 
-	// const std::vector<std::string> solvers = polysolve::LinearSolver::availableSolvers();
-	// std::string solver;
-	// command_line.add_option("--solver", solver, "Used to print the list of linear solvers available")->check(CLI::IsMember(solvers));
-
 	const std::vector<std::pair<std::string, spdlog::level::level_enum>>
 		SPDLOG_LEVEL_NAMES_TO_LEVELS = {
 			{"trace", spdlog::level::trace},
@@ -110,7 +106,6 @@ int main(int argc, char **argv)
 	if (!json_file.empty())
 	{
 		const bool ok = load_json(json_file, in_args);
-		std::ifstream file(json_file);
 
 		if (!ok)
 			log_and_throw_error(fmt::format("unable to open {} file", json_file));

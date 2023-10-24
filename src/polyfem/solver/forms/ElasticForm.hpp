@@ -32,6 +32,11 @@ namespace polyfem::solver
 		/// @return Value of the elastic potential
 		virtual double value_unweighted(const Eigen::VectorXd &x) const override;
 
+		/// @brief Compute the value of the form multiplied with the weigth
+		/// @param x Current solution
+		/// @return Computed value
+		Eigen::VectorXd value_per_element_unweighted(const Eigen::VectorXd &x) const override;
+
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
@@ -77,8 +82,8 @@ namespace polyfem::solver
 		const double dt_;
 		const bool is_volume_;
 
-		StiffnessMatrix cached_stiffness_;           ///< Cached stiffness matrix for linear elasticity
-		mutable utils::SparseMatrixCache mat_cache_; ///< Matrix cache (mutable because it is modified in second_derivative_unweighted)
+		StiffnessMatrix cached_stiffness_;                      ///< Cached stiffness matrix for linear elasticity
+		mutable std::unique_ptr<utils::MatrixCache> mat_cache_; ///< Matrix cache (mutable because it is modified in second_derivative_unweighted)
 
 		/// @brief Compute the stiffness matrix (cached)
 		void compute_cached_stiffness();

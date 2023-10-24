@@ -42,10 +42,10 @@ namespace cppoptlib
 	template <typename ProblemType>
 	void SparseNewtonDescentSolver<ProblemType>::increase_descent_strategy()
 	{
-		if (this->descent_strategy == 0 || reg_weight > reg_weight_max)
-			this->descent_strategy++;
+		if (this->descent_strategy == 1 && reg_weight < reg_weight_max)
+			reg_weight = std::clamp(reg_weight_inc * reg_weight, reg_weight_min, reg_weight_max);
 		else
-			reg_weight = std::max(reg_weight_inc * reg_weight, reg_weight_min);
+			this->descent_strategy++;
 		assert(this->descent_strategy <= 2);
 	}
 
@@ -178,12 +178,12 @@ namespace cppoptlib
 		}
 
 		// do this check here because we need to repeat the solve without resetting reg_weight
-		if (grad.dot(direction) >= 0)
+		if (grad.norm() != 0 && grad.dot(direction) >= 0)
 		{
 			increase_descent_strategy();
 			polyfem::logger().log(
-				log_level(), "[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
-				name(), direction.dot(grad), descent_strategy_name());
+				log_level(), "[{}] direction is not a descent direction (‖g‖={:g}; ‖Δx‖={:g}; Δx⋅g={:g}≥0); reverting to {}",
+				name(), grad.norm(), direction.norm(), direction.dot(grad), descent_strategy_name());
 			return false;
 		}
 

@@ -25,6 +25,14 @@ namespace polyfem::solver
 			return weight() * value_unweighted(x);
 		}
 
+		/// @brief Compute the value of the form multiplied with the weigth
+		/// @param x Current solution
+		/// @return Computed value
+		inline Eigen::VectorXd value_per_element(const Eigen::VectorXd &x) const
+		{
+			return weight_ * value_per_element_unweighted(x);
+		}
+
 		/// @brief Compute the first derivative of the value wrt x multiplied with the weigth
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
@@ -152,6 +160,14 @@ namespace polyfem::solver
 		/// @param x Current solution
 		/// @return Computed value
 		virtual double value_unweighted(const Eigen::VectorXd &x) const = 0;
+
+		/// @brief Compute the value of the form multiplied per element
+		/// @param x Current solution
+		/// @return Computed value per element
+		virtual Eigen::VectorXd value_per_element_unweighted(const Eigen::VectorXd &x) const
+		{
+			throw std::runtime_error("Not implemented");
+		}
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution

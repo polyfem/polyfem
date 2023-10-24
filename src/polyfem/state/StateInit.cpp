@@ -26,6 +26,9 @@
 #include <spdlog/sinks/ostream_sink.h>
 
 #include <ipc/utils/logger.hpp>
+#ifdef POLYFEM_WITH_REMESHING
+#include <wmtk/utils/Logger.hpp>
+#endif
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
@@ -122,15 +125,27 @@ namespace polyfem
 		problem = ProblemFactory::factory().get_problem("Linear");
 	}
 
-	void State::init_logger(const std::string &log_file, const spdlog::level::level_enum log_level, const bool is_quiet)
+	void State::init_logger(
+		const std::string &log_file,
+		const spdlog::level::level_enum log_level,
+		const spdlog::level::level_enum file_log_level,
+		const bool is_quiet)
 	{
 		std::vector<spdlog::sink_ptr> sinks;
 
 		if (!is_quiet)
-			sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+		{
+			console_sink_ = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+			sinks.emplace_back(console_sink_);
+		}
 
 		if (!log_file.empty())
-			sinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_file, /*truncate=*/true));
+		{
+			file_sink_ = std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_file, /*truncate=*/true);
+			// Set the file sink separately from the console so it can save all messages
+			file_sink_->set_level(file_log_level);
+			sinks.push_back(file_sink_);
+		}
 
 		init_logger(sinks, log_level);
 		spdlog::flush_every(std::chrono::seconds(3));
@@ -145,10 +160,7 @@ namespace polyfem
 
 	void State::init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level)
 	{
-		spdlog::set_level(log_level);
-
 		set_logger(std::make_shared<spdlog::logger>("polyfem", sinks.begin(), sinks.end()));
-		logger().set_level(log_level);
 
 		GEO::Logger *geo_logger = GEO::Logger::instance();
 		geo_logger->unregister_all_clients();
@@ -156,14 +168,27 @@ namespace polyfem
 		geo_logger->set_pretty(false);
 
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
-		ipc::logger().set_level(log_level);
+
+#ifdef POLYFEM_WITH_REMESHING
+		wmtk::set_logger(std::make_shared<spdlog::logger>("wmtk", sinks.begin(), sinks.end()));
+#endif
+
+		// Set the logger at the lowest level, so all messages are passed to the sinks
+		logger().set_level(spdlog::level::trace);
+		ipc::logger().set_level(spdlog::level::trace);
+#ifdef POLYFEM_WITH_REMESHING
+		wmtk::logger().set_level(spdlog::level::trace);
+#endif
+
+		set_log_level(log_level);
 	}
 
 	void State::set_log_level(const spdlog::level::level_enum log_level)
 	{
+		// Set only the level of the console
 		spdlog::set_level(log_level);
-		logger().set_level(log_level);
-		ipc::logger().set_level(log_level);
+		if (console_sink_)
+			console_sink_->set_level(log_level); // Shared by all loggers
 	}
 
 	void State::init(const json &p_args_in, const bool strict_validation)
@@ -289,8 +314,11 @@ namespace polyfem
 			out_path_log = resolve_output_path(out_path_log);
 		}
 
-		spdlog::level::level_enum log_level = this->args["output"]["log"]["level"];
-		init_logger(out_path_log, log_level, this->args["output"]["log"]["quiet"]);
+		init_logger(
+			out_path_log,
+			this->args["output"]["log"]["level"],
+			this->args["output"]["log"]["file_level"],
+			this->args["output"]["log"]["quiet"]);
 
 		logger().info("Saving output to {}", output_dir);
 

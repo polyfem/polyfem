@@ -66,6 +66,11 @@ namespace polyfem::solver
 		/// @return Value of the contact barrier potential
 		virtual double value_unweighted(const Eigen::VectorXd &x) const override;
 
+		/// @brief Compute the value of the form multiplied per element
+		/// @param x Current solution
+		/// @return Computed value
+		Eigen::VectorXd value_per_element_unweighted(const Eigen::VectorXd &x) const override;
+
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x

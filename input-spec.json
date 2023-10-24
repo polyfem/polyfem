@@ -1,5 +1,4 @@
-[
-    {
+[{
         "pointer": "/",
         "type": "object",
         "required": [
@@ -1092,6 +1091,7 @@
             "basis_type",
             "poly_basis_type",
             "use_p_ref",
+            "remesh",
             "advanced"
         ],
         "doc": "Options related to the FE space."
@@ -1178,6 +1178,232 @@
         "default": false,
         "type": "bool",
         "doc": "Perform a priori p-refinement based on element shape, as described in 'Decoupling..' paper."
+    },
+    {
+        "pointer": "/space/remesh",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "split",
+            "collapse",
+            "swap",
+            "smooth",
+            "local_relaxation",
+            "type"
+        ],
+        "doc": "Settings for adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to do adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/split",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "acceptance_tolerance",
+            "culling_threshold",
+            "max_depth",
+            "min_edge_length"
+        ],
+        "doc": "Settings for adaptive remeshing edge splitting operations"
+    },
+    {
+        "pointer": "/space/remesh/split/enabled",
+        "default": true,
+        "type": "bool",
+        "doc": "Whether to do edge splitting in adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/split/acceptance_tolerance",
+        "default": 1e-3,
+        "min": 0,
+        "type": "float",
+        "doc": "Accept split operation if energy decreased by at least x"
+    },
+    {
+        "pointer": "/space/remesh/split/culling_threshold",
+        "default": 0.95,
+        "type": "float",
+        "min": 0,
+        "max": 1,
+        "doc": "Split operation culling threshold on energy"
+    },
+    {
+        "pointer": "/space/remesh/split/max_depth",
+        "default": 3,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum depth split per time-step"
+    },
+    {
+        "pointer": "/space/remesh/split/min_edge_length",
+        "default": 1e-6,
+        "type": "float",
+        "min": 0,
+        "doc": "Minimum edge length to split"
+    },
+    {
+        "pointer": "/space/remesh/collapse",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "acceptance_tolerance",
+            "culling_threshold",
+            "max_depth",
+            "rel_max_edge_length",
+            "abs_max_edge_length"
+        ],
+        "doc": "Settings for adaptive remeshing edge collapse operations"
+    },
+    {
+        "pointer": "/space/remesh/collapse/enabled",
+        "default": true,
+        "type": "bool",
+        "doc": "Whether to do edge collapse in adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/collapse/acceptance_tolerance",
+        "default": -1e-8,
+        "max": 0,
+        "type": "float",
+        "doc": "Accept collapse operation if energy decreased by at least x"
+    },
+    {
+        "pointer": "/space/remesh/collapse/culling_threshold",
+        "default": 0.01,
+        "type": "float",
+        "min": 0,
+        "max": 1,
+        "doc": "Collapse operation culling threshold on energy"
+    },
+    {
+        "pointer": "/space/remesh/collapse/max_depth",
+        "default": 3,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum depth collapse per time-step"
+    },
+    {
+        "pointer": "/space/remesh/collapse/rel_max_edge_length",
+        "default": 1,
+        "type": "float",
+        "min": 0,
+        "doc": "Length of maximum edge length to collapse relative to initial minimum edge length"
+    },
+    {
+        "pointer": "/space/remesh/collapse/abs_max_edge_length",
+        "default": 1e100,
+        "type": "float",
+        "min": 0,
+        "doc": "Length of maximum edge length to collapse in absolute units of distance"
+    },
+    {
+        "pointer": "/space/remesh/swap",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "acceptance_tolerance",
+            "max_depth"
+        ],
+        "doc": "Settings for adaptive remeshing edge/face swap operations"
+    },
+    {
+        "pointer": "/space/remesh/swap/enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to do edge/face swap in adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/swap/acceptance_tolerance",
+        "default": -1e-8,
+        "max": 0,
+        "type": "float",
+        "doc": "Accept swap operation if energy decreased by at least x"
+    },
+    {
+        "pointer": "/space/remesh/swap/max_depth",
+        "default": 3,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum depth swap per time-step"
+    },
+    {
+        "pointer": "/space/remesh/smooth",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "acceptance_tolerance",
+            "max_iters"
+        ],
+        "doc": "Settings for adaptive remeshing vertex smoothing operations"
+    },
+    {
+        "pointer": "/space/remesh/smooth/enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to do vertex smoothing in adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/smooth/acceptance_tolerance",
+        "default": -1e-8,
+        "max": 0,
+        "type": "float",
+        "doc": "Accept smooth operation if energy decreased by at least x"
+    },
+    {
+        "pointer": "/space/remesh/smooth/max_iters",
+        "default": 1,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum number of smoothing iterations per time-step"
+    },
+    {
+        "pointer": "/space/remesh/local_relaxation",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "local_mesh_n_ring",
+            "local_mesh_rel_area",
+            "max_nl_iterations"
+        ],
+        "doc": "Settings for adaptive remeshing local relaxation"
+    },
+    {
+        "pointer": "/space/remesh/local_relaxation/local_mesh_n_ring",
+        "default": 2,
+        "type": "int",
+        "doc": "Size of n-ring for local relaxation"
+    },
+    {
+        "pointer": "/space/remesh/local_relaxation/local_mesh_rel_area",
+        "default": 0.01,
+        "type": "float",
+        "doc": "Minimum area for local relaxation"
+    },
+    {
+        "pointer": "/space/remesh/local_relaxation/max_nl_iterations",
+        "default": 1,
+        "type": "int",
+        "doc": "Maximum number of nonlinear solver iterations before acceptance check"
+    },
+    {
+        "pointer": "/space/remesh/type",
+        "default": "physics",
+        "type": "string",
+        "options": [
+            "physics",
+            "sizing_field"
+        ],
+        "doc": "Type of adaptive remeshing to use."
     },
     {
         "pointer": "/space/advanced",
@@ -1292,7 +1518,8 @@
         ],
         "optional": [
             "t0",
-            "integrator"
+            "integrator",
+            "quasistatic"
         ],
         "doc": "The time parameters: start time `t0`, end time `tend`, time step `dt`."
     },
@@ -1305,7 +1532,8 @@
         ],
         "optional": [
             "t0",
-            "integrator"
+            "integrator",
+            "quasistatic"
         ],
         "doc": "The time parameters: start time `t0`, time step `dt`, number of time steps."
     },
@@ -1318,7 +1546,8 @@
         ],
         "optional": [
             "t0",
-            "integrator"
+            "integrator",
+            "quasistatic"
         ],
         "doc": "The time parameters: start time `t0`, end time `tend`, number of time steps."
     },
@@ -1432,6 +1661,12 @@
         "doc": "BDF order"
     },
     {
+        "pointer": "/time/quasistatic",
+        "type": "bool",
+        "default": false,
+        "doc": "Ignore inertia in time dependent. Used for doing incremental load."
+    },
+    {
         "pointer": "/contact",
         "default": null,
         "type": "object",
@@ -1527,7 +1762,10 @@
     {
         "pointer": "/contact/collision_mesh/tessellation_type",
         "type": "string",
-        "options": ["regular", "irregular"],
+        "options": [
+            "regular",
+            "irregular"
+        ],
         "default": "regular",
         "doc": "Type of tessellation to use for building the collision mesh."
     },
@@ -1548,7 +1786,6 @@
             "augmented_lagrangian",
             "contact",
             "rayleigh_damping",
-            "ignore_inertia",
             "advanced"
         ],
         "doc": "The settings for the solver including linear solver, nonlinear solver, and some advanced options."
@@ -2022,7 +2259,8 @@
             "max_iterations",
             "relative_gradient",
             "line_search",
-            "force_psd_projection"
+            "force_psd_projection",
+            "allow_out_of_iterations"
         ],
         "doc": "Settings for nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section."
     },
@@ -2110,6 +2348,12 @@
         "default": false,
         "type": "bool",
         "doc": "Force the Hessian to be PSD when using second order solvers (i.e., Newton's method)."
+    },
+    {
+        "pointer": "/solver/nonlinear/allow_out_of_iterations",
+        "default": false,
+        "type": "bool",
+        "doc": "If false (default), an exception will be thrown when the nonlinear solver reaches the maximum number of iterations."
     },
     {
         "pointer": "/solver/augmented_lagrangian",
@@ -2303,12 +2547,6 @@
         "doc": "Maximum number of update iterations for lagging."
     },
     {
-        "pointer": "/solver/ignore_inertia",
-        "default": false,
-        "type": "bool",
-        "doc": "Ignore inertia in time dependent. Used for doing incremental load."
-    },
-    {
         "pointer": "/solver/advanced",
         "default": null,
         "type": "object",
@@ -2392,6 +2630,23 @@
             "c1",
             "c2",
             "k"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "MooneyRivlin3Param",
+        "required": [
+            "type",
+            "c1",
+            "c2",
+            "c3",
+            "d1"
         ],
         "optional": [
             "id",
@@ -2757,6 +3012,7 @@
             "SaintVenant",
             "NeoHookean",
             "MooneyRivlin",
+            "MooneyRivlin3Param",
             "UnconstrainedOgden",
             "IncompressibleOgden",
             "Stokes",
@@ -2789,6 +3045,16 @@
         "pointer": "/materials/*/c2",
         "type": "float",
         "doc": "Second Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/c3",
+        "type": "float",
+        "doc": "Third Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/d1",
+        "type": "float",
+        "doc": ""
     },
     {
         "pointer": "/materials/*/alphas",
@@ -3807,6 +4073,7 @@
         "type": "object",
         "optional": [
             "level",
+            "file_level",
             "path",
             "quiet"
         ],
@@ -3822,6 +4089,28 @@
     {
         "pointer": "/output/log/level",
         "default": "debug",
+        "type": "string",
+        "options": [
+            "trace",
+            "debug",
+            "info",
+            "warning",
+            "error",
+            "critical",
+            "off"
+        ],
+        "doc": "Level of logging."
+    },
+    {
+        "pointer": "/output/log/file_level",
+        "type": "int",
+        "min": 0,
+        "max": 6,
+        "doc": "Level of logging to a file, 0 trace, 1 debug, 2 info, 3 warning, 4 error, 5 critical, and 6 off."
+    },
+    {
+        "pointer": "/output/log/file_level",
+        "default": "trace",
         "type": "string",
         "options": [
             "trace",
@@ -3933,9 +4222,12 @@
             "body_ids",
             "contact_forces",
             "friction_forces",
-            "tensor_values",
             "velocity",
             "acceleration",
+            "scalar_values",
+            "tensor_values",
+            "discretization_order",
+            "nodes",
             "forces"
         ],
         "doc": "Optional fields in the output"
@@ -3971,12 +4263,6 @@
         "doc": "If true, write out friction forces for surface"
     },
     {
-        "pointer": "/output/paraview/options/tensor_values",
-        "default": true,
-        "type": "bool",
-        "doc": "If true, write out stress values for volume"
-    },
-    {
         "pointer": "/output/paraview/options/velocity",
         "default": false,
         "type": "bool",
@@ -3987,6 +4273,30 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out accelerations"
+    },
+    {
+        "pointer": "/output/paraview/options/scalar_values",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, write out scalar values"
+    },
+    {
+        "pointer": "/output/paraview/options/tensor_values",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, write out tensor values"
+    },
+    {
+        "pointer": "/output/paraview/options/discretization_order",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, write out discretization order"
+    },
+    {
+        "pointer": "/output/paraview/options/nodes",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, write out node order"
     },
     {
         "pointer": "/output/paraview/options/forces",
@@ -4003,9 +4313,7 @@
             "full_mat",
             "stiffness_mat",
             "stress_mat",
-            "u_path",
-            "v_path",
-            "a_path",
+            "state",
             "rest_mesh",
             "mises",
             "nodes",
@@ -4038,22 +4346,10 @@
         "doc": "Exports stress"
     },
     {
-        "pointer": "/output/data/u_path",
+        "pointer": "/output/data/state",
         "default": "",
         "type": "string",
-        "doc": "Writes the complete solution in PolyFEM format, used to restart the sim"
-    },
-    {
-        "pointer": "/output/data/v_path",
-        "default": "",
-        "type": "string",
-        "doc": "Writes the complete velocity in PolyFEM format, used to restart the sim"
-    },
-    {
-        "pointer": "/output/data/a_path",
-        "default": "",
-        "type": "string",
-        "doc": "Writes the complete acceleration in PolyFEM format, used to restart the sim"
+        "doc": "Writes the complete state in PolyFEM hdf5 format, used to restart the sim"
     },
     {
         "pointer": "/output/data/rest_mesh",
@@ -4221,30 +4517,16 @@
         "default": null,
         "type": "object",
         "optional": [
-            "u_path",
-            "v_path",
-            "a_path",
+            "state",
             "reorder"
         ],
         "doc": "input to restart time dependent sim"
     },
     {
-        "pointer": "/input/data/u_path",
+        "pointer": "/input/data/state",
         "default": "",
         "type": "file",
-        "doc": "input solution"
-    },
-    {
-        "pointer": "/input/data/v_path",
-        "default": "",
-        "type": "file",
-        "doc": "input velocity"
-    },
-    {
-        "pointer": "/input/data/a_path",
-        "default": "",
-        "type": "file",
-        "doc": "input acceleration"
+        "doc": "input state as hdf5"
     },
     {
         "pointer": "/input/data/reorder",

@@ -59,7 +59,7 @@ namespace polyfem::solver
 		// const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
 		// const int n_boundary_samples,
 		// const StiffnessMatrix &mass,
-		const polyfem::mesh::Obstacle &obstacle,
+		const size_t obstacle_ndof,
 
 		// Contact form
 		const bool contact_enabled,
@@ -144,12 +144,12 @@ namespace polyfem::solver
 
 			al_lagr_form = std::make_shared<BCLagrangianForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle, is_time_dependent, t);
+				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t);
 			forms.push_back(al_lagr_form);
 
 			al_pen_form = std::make_shared<BCPenaltyForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle, is_time_dependent, t);
+				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t);
 			forms.push_back(al_pen_form);
 		}
 

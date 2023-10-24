@@ -42,6 +42,8 @@
 #include <string>
 #include <unordered_map>
 
+#include <spdlog/sinks/basic_file_sink.h>
+
 #include <ipc/collision_mesh.hpp>
 #include <ipc/utils/logger.hpp>
 
@@ -100,8 +102,13 @@ namespace polyfem
 		/// initializing the logger
 		/// @param[in] log_file is to write it to a file (use log_file="") to output to stdout
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
+		/// @param[in] file_log_level 0 all message, 6 no message. 2 is info, 1 is debug
 		/// @param[in] is_quit quiets the log
-		void init_logger(const std::string &log_file, const spdlog::level::level_enum log_level, const bool is_quiet);
+		void init_logger(
+			const std::string &log_file,
+			const spdlog::level::level_enum log_level,
+			const spdlog::level::level_enum file_log_level,
+			const bool is_quiet);
 
 		/// initializing the logger writes to an output stream
 		/// @param[in] os output stream
@@ -125,6 +132,10 @@ namespace polyfem
 	private:
 		/// initializing the logger meant for internal usage
 		void init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level);
+
+		/// logger sink to stdout
+		spdlog::sink_ptr console_sink_ = nullptr;
+		spdlog::sink_ptr file_sink_ = nullptr;
 
 	public:
 		//---------------------------------------------------
@@ -375,6 +386,10 @@ namespace polyfem
 		//---------------------------------------------------
 
 	public:
+		/// Construct a vector of boundary conditions ids with their dimension flags.
+		std::unordered_map<int, std::array<bool, 3>>
+		boundary_conditions_ids(const std::string &bc_type) const;
+
 		/// list of boundary nodes
 		std::vector<int> boundary_nodes;
 		/// list of neumann boundary nodes
@@ -469,6 +484,15 @@ namespace polyfem
 		/// Build the mesh matrices (vertices and elements) from the mesh using the bases node ordering
 		void build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F);
 
+#ifdef POLYFEM_WITH_REMESHING
+		/// @brief Remesh the FE space and update solution(s).
+		/// @param time Current time.
+		/// @param dt Time step size.
+		/// @param sol Current solution.
+		/// @return True if remeshing performed any changes to the mesh/solution.
+		bool remesh(const double time, const double dt, Eigen::MatrixXd &sol);
+#endif
+
 		//---------------------------------------------------
 		//-----------------IPC-------------------------------
 		//---------------------------------------------------
@@ -527,6 +551,9 @@ namespace polyfem
 		io::OutRuntimeData timings;
 		/// Other statistics
 		io::OutStatsData stats;
+		double starting_min_edge_length = -1;
+		double starting_max_edge_length = -1;
+		double min_boundary_edge_length = -1;
 
 		/// saves all data on the disk according to the input params
 		/// @param[in] sol solution

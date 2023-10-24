@@ -1,4 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
+#include <polyfem/utils/MatrixCache.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/autogen/auto_eigs.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>

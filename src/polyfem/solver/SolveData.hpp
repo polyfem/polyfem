@@ -84,7 +84,7 @@ namespace polyfem::solver
 			// const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
 			// const int n_boundary_samples,
 			// const StiffnessMatrix &mass,
-			const polyfem::mesh::Obstacle &obstacle,
+			const size_t obstacle_ndof,
 
 			// Contact form
 			const bool contact_enabled,
