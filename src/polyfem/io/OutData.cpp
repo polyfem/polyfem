@@ -84,7 +84,8 @@ namespace polyfem::io
 			for (const auto &lb : state.total_local_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state.n_boundary_samples(), *state.mesh, false, uv, points, normals, weights, global_primitive_ids);
+				// todo prisms
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state.n_boundary_samples(), state.n_boundary_samples(), *state.mesh, false, uv, points, normals, weights, global_primitive_ids);
 
 				if (!has_samples)
 					continue;

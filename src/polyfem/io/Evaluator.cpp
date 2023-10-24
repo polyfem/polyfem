@@ -7,11 +7,13 @@
 #include <polyfem/quadrature/QuadQuadrature.hpp>
 #include <polyfem/quadrature/TetQuadrature.hpp>
 #include <polyfem/quadrature/TriQuadrature.hpp>
+#include <polyfem/quadrature/PrismQuadrature.hpp>
 
 #include <polyfem/utils/BoundarySampler.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
+#include <polyfem/autogen/prism_bases.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
@@ -198,6 +200,8 @@ namespace polyfem::io
 					utils::BoundarySampler::quadrature_for_tri_face(lf, 4, face_id, mesh3d, uv, points, weights);
 				else if (mesh3d.is_cube(e))
 					utils::BoundarySampler::quadrature_for_quad_face(lf, 4, face_id, mesh3d, uv, points, weights);
+				else if (mesh3d.is_prism(e))
+					utils::BoundarySampler::quadrature_for_prism_face(lf, 4, 4, face_id, mesh3d, uv, points, weights);
 				else
 					assert(false);
 
@@ -303,6 +307,8 @@ namespace polyfem::io
 					autogen::p_nodes_3d(1, points);
 				else if (mesh3d.is_cube(e))
 					autogen::q_nodes_3d(1, points);
+				else if (mesh3d.is_prism(e))
+					autogen::prism_nodes_3d(1, 1, points);
 				else
 					assert(false);
 
@@ -463,6 +469,8 @@ namespace polyfem::io
 						loc_v = utils::BoundarySampler::tet_local_node_coordinates_from_face(lfid);
 					else if (mesh.is_cube(e))
 						loc_v = utils::BoundarySampler::hex_local_node_coordinates_from_face(lfid);
+					else if (mesh.is_prism(e))
+						loc_v = utils::BoundarySampler::prism_local_node_coordinates_from_face(lfid);
 					else
 						assert(false);
 
@@ -502,6 +510,11 @@ namespace polyfem::io
 				{
 					utils::BoundarySampler::quadrature_for_quad_face(lfid, 4, face_id, mesh3d, uv, points, weights);
 					utils::BoundarySampler::normal_for_quad_face(lfid, tmp_n);
+				}
+				else if (mesh.is_prism(e))
+				{
+					utils::BoundarySampler::quadrature_for_prism_face(lfid, 4, 4, face_id, mesh3d, uv, points, weights);
+					utils::BoundarySampler::normal_for_prism_face(lfid, tmp_n);
 				}
 				else
 					assert(false);
@@ -617,6 +630,11 @@ namespace polyfem::io
 					autogen::q_nodes_3d(disc_orders(i), local_pts);
 				else
 					autogen::q_nodes_2d(disc_orders(i), local_pts);
+			}
+			else if (mesh.is_prism(i))
+			{
+				assert(mesh.dimension() == 3); // todo prism
+				autogen::prism_nodes_3d(disc_orders(i), disc_orders(i), local_pts);
 			}
 			else
 			{
@@ -736,6 +754,12 @@ namespace polyfem::io
 				auto vtx = mesh3d.get_ordered_vertices_from_hex(i);
 				vertices.assign(vtx.begin(), vtx.end());
 			}
+			else if (mesh.is_prism(i))
+			{
+				local_pts = sampler.prism_corners();
+				auto vtx = mesh3d.get_ordered_vertices_from_hex(i);
+				vertices.assign(vtx.begin(), vtx.end());
+			}
 			// TODO poly?
 			assert((int)vertices.size() == (int)local_pts.rows());
 
@@ -835,6 +859,14 @@ namespace polyfem::io
 					f.get_quadrature(disc_orders(e), quadr);
 				}
 			}
+			else if (mesh.is_prism(e))
+			{
+				assert(mesh.is_volume());
+
+				quadrature::PrismQuadrature f;
+				// todo prism
+				f.get_quadrature(disc_orders(e), disc_orders(e), quadr);
+			}
 			else
 			{
 				continue;
@@ -928,6 +960,8 @@ namespace polyfem::io
 					local_pts = sampler.simplex_points();
 				else if (mesh.is_cube(i))
 					local_pts = sampler.cube_points();
+				else if (mesh.is_prism(i))
+					local_pts = sampler.prism_points();
 				else
 				{
 					if (mesh.is_volume())
@@ -944,6 +978,8 @@ namespace polyfem::io
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
+					else if (mesh.is_prism(i)) // todo prism
+						autogen::prism_nodes_3d(disc_orders(i), disc_orders(i), local_pts);
 					else
 						continue;
 				}
@@ -1117,6 +1153,8 @@ namespace polyfem::io
 					local_pts = sampler.simplex_points();
 				else if (mesh.is_cube(i))
 					local_pts = sampler.cube_points();
+				else if (mesh.is_prism(i))
+					local_pts = sampler.prism_points();
 				else
 				{
 					if (mesh.is_volume())
@@ -1133,6 +1171,8 @@ namespace polyfem::io
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
+					else if (mesh.is_prism(i)) // todo prism
+						autogen::prism_nodes_3d(disc_orders(i), disc_orders(i), local_pts);
 					else
 						continue;
 				}
@@ -1203,6 +1243,8 @@ namespace polyfem::io
 					local_pts = sampler.simplex_points();
 				else if (mesh.is_cube(i))
 					local_pts = sampler.cube_points();
+				else if (mesh.is_prism(i))
+					local_pts = sampler.prism_points();
 				else
 				{
 					if (mesh.is_volume())
@@ -1219,6 +1261,8 @@ namespace polyfem::io
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
+					else if (mesh.is_prism(i))
+						autogen::prism_nodes_3d(disc_orders(i), disc_orders(i), local_pts);
 					else
 						continue;
 				}
@@ -1301,6 +1345,8 @@ namespace polyfem::io
 					local_pts = sampler.simplex_points();
 				else if (mesh.is_cube(i))
 					local_pts = sampler.cube_points();
+				else if (mesh.is_prism(i))
+					local_pts = sampler.prism_points();
 				else
 				{
 					if (mesh.is_volume())
@@ -1317,6 +1363,8 @@ namespace polyfem::io
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
+					else if (mesh.is_prism(i)) // todo prism
+						autogen::prism_nodes_3d(disc_orders(i), disc_orders(i), local_pts);
 					else
 						continue;
 				}

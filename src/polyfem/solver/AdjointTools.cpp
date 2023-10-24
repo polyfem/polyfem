@@ -277,8 +277,8 @@ namespace polyfem::solver
 						const int global_primitive_id = lb.global_primitive_id(i);
 						if (interested_ids.size() != 0 && interested_ids.find(state.mesh->get_boundary_id(global_primitive_id)) == interested_ids.end())
 							continue;
-
-						utils::BoundarySampler::boundary_quadrature(lb, state.n_boundary_samples(), *state.mesh, i, false, uv, points, normal, weights);
+						// todo prisms
+						utils::BoundarySampler::boundary_quadrature(lb, state.n_boundary_samples(), state.n_boundary_samples(), *state.mesh, i, false, uv, points, normal, weights);
 
 						assembler::ElementAssemblyValues &vals = local_storage.vals;
 						vals.compute(e, state.mesh->is_volume(), points, bases[e], gbases[e]);
@@ -449,8 +449,8 @@ namespace polyfem::solver
 						const int global_primitive_id = lb.global_primitive_id(i);
 						if (interested_ids.size() != 0 && interested_ids.find(state.mesh->get_boundary_id(global_primitive_id)) == interested_ids.end())
 							continue;
-
-						utils::BoundarySampler::boundary_quadrature(lb, state.n_boundary_samples(), *state.mesh, i, false, uv, points, normal, weights);
+						// todo prisms
+						utils::BoundarySampler::boundary_quadrature(lb, state.n_boundary_samples(), state.n_boundary_samples(), *state.mesh, i, false, uv, points, normal, weights);
 
 						assembler::ElementAssemblyValues &vals = local_storage.vals;
 						io::Evaluator::interpolate_at_local_vals(*state.mesh, state.problem->is_scalar(), bases, gbases, e, points, solution, u, grad_u);
@@ -1033,8 +1033,8 @@ namespace polyfem::solver
 						const int global_primitive_id = lb.global_primitive_id(i);
 						if (interested_ids.size() != 0 && interested_ids.find(state.mesh->get_boundary_id(global_primitive_id)) == interested_ids.end())
 							continue;
-
-						utils::BoundarySampler::boundary_quadrature(lb, state.n_boundary_samples(), *state.mesh, i, false, uv, points, normal, weights);
+						// todo prisms
+						utils::BoundarySampler::boundary_quadrature(lb, state.n_boundary_samples(), state.n_boundary_samples(), *state.mesh, i, false, uv, points, normal, weights);
 
 						assembler::ElementAssemblyValues &vals = local_storage.vals;
 						vals.compute(e, state.mesh->is_volume(), points, bases[e], gbases[e]);

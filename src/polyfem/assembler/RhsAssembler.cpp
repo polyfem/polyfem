@@ -516,7 +516,8 @@ namespace polyfem
 			for (const auto &lb : local_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, samples, normals, weights, global_primitive_ids);
+				// todo prisms
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, resolution, mesh_, false, uv, samples, normals, weights, global_primitive_ids);
 
 				if (!has_samples)
 					continue;
@@ -621,8 +622,8 @@ namespace polyfem
 				{
 					const int primitive_global_id = lb.global_primitive_id(i);
 					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
-
-					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, i, false, uv, points, normals, weights);
+					// todo prisms
+					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, resolution, mesh_, i, false, uv, points, normals, weights);
 
 					if (!has_samples)
 						continue;
@@ -803,7 +804,8 @@ namespace polyfem
 			for (const auto &lb : local_neumann_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, points, normals, weights, global_primitive_ids);
+				// todo prisms
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, resolution, mesh_, false, uv, points, normals, weights, global_primitive_ids);
 
 				if (!has_samples)
 					continue;
@@ -902,8 +904,8 @@ namespace polyfem
 				{
 					const int primitive_global_id = lb.global_primitive_id(i);
 					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
-
-					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, i, false, uv, points, normals, weights);
+					// todo prisms
+					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, resolution, mesh_, i, false, uv, points, normals, weights);
 
 					if (!has_samples)
 						continue;
