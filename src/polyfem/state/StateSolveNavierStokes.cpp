@@ -83,7 +83,7 @@ namespace polyfem
 		const int dim = mesh->dimension();
 		const int n_el = int(bases.size());       // number of elements
 		const int shape = gbases[0].bases.size(); // number of geometry vertices in an element
-		
+
 		double viscosity_ = std::dynamic_pointer_cast<assembler::OperatorSplitting>(assembler)->viscosity();
 		assert(viscosity_ >= 0);
 
@@ -117,7 +117,7 @@ namespace polyfem
 		/* initialize solution */
 		pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
 
-		const int n_b_samples = n_boundary_samples();
+		const QuadratureOrders &n_b_samples = n_boundary_samples();
 		for (int t = 1; t <= time_steps; t++)
 		{
 			double time = t * dt;
@@ -194,7 +194,7 @@ namespace polyfem
 		solver::TransientNavierStokesSolver ns_solver(args["solver"]);
 		const int n_larger = n_pressure_bases + (use_avg_pressure ? 1 : 0);
 
-		const int n_b_samples = n_boundary_samples();
+		const QuadratureOrders &n_b_samples = n_boundary_samples();
 
 		for (int t = 1; t <= time_steps; ++t)
 		{

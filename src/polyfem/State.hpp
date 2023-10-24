@@ -235,7 +235,7 @@ namespace polyfem
 
 		/// quadrature used for projecting boundary conditions
 		/// @return the quadrature used for projecting boundary conditions
-		int n_boundary_samples() const
+		QuadratureOrders n_boundary_samples() const
 		{
 			using assembler::AssemblerUtils;
 			const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
@@ -243,8 +243,8 @@ namespace polyfem
 			const int discr_order = std::max(disc_orders.maxCoeff(), gdiscr_order);
 
 			const int n_b_samples = std::max(n_b_samples_j, AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::POLY, mesh->dimension()));
-
-			return n_b_samples;
+			// todo prism
+			return {{n_b_samples, n_b_samples}};
 		}
 
 	private:
