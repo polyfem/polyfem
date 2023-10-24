@@ -780,7 +780,7 @@ namespace
 				fvt.row(0) << v[0], v[1], v[2];
 				fvt.row(1) << v[3], v[4], v[5];
 
-				LocalBoundary lbt(c, BoundaryType::TRI);
+				LocalBoundary lbt(c, BoundaryType::PRISM);
 				for (long i = 0; i < fvt.rows(); ++i)
 				{
 					const int f = mesh.get_index_from_element_face(c, fvt(i, 0), fvt(i, 1), fvt(i, 2)).face;
@@ -799,7 +799,7 @@ namespace
 				fvq.row(1) << v[1], v[2], v[5], v[4];
 				fvq.row(2) << v[2], v[0], v[3], v[5];
 
-				LocalBoundary lbq(c, BoundaryType::QUAD);
+				LocalBoundary lbq(c, BoundaryType::PRISM);
 				for (long i = 0; i < fvq.rows(); ++i)
 				{
 					const int f = find_quad_face(mesh, c, fvq(i, 0), fvq(i, 1), fvq(i, 2), fvq(i, 3)).face;
@@ -1077,10 +1077,9 @@ Eigen::VectorXi LagrangeBasis3d::tet_face_local_nodes(const int p, const Mesh3D 
 	const int n_face_nodes = nn * (nn + 1) / 2;
 
 	const int c = index.element;
-	assert(mesh.is_simplex(c) || mesh.is_prism(c));
+	assert(mesh.is_simplex(c));
 
 	// Local to global mapping of node indices
-	// const auto l2g = mesh.is_simplex(c) ? tet_vertices_local_to_global(mesh, c) : prism_vertices_local_to_global(mesh, c);
 	const auto l2g = tet_vertices_local_to_global(mesh, c);
 
 	// Extract requested interface
@@ -1955,13 +1954,10 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 
 		// faces
 
-		Eigen::Matrix<int, 6, 4> fv;
-		fv.row(0) << l2g[0], l2g[3], l2g[4], l2g[7];
-		fv.row(1) << l2g[1], l2g[2], l2g[5], l2g[6];
-		fv.row(2) << l2g[0], l2g[1], l2g[5], l2g[4];
-		fv.row(3) << l2g[3], l2g[2], l2g[6], l2g[7];
-		fv.row(4) << l2g[0], l2g[1], l2g[2], l2g[3];
-		fv.row(5) << l2g[4], l2g[5], l2g[6], l2g[7];
+		Eigen::Matrix<int, 3, 4> fv;
+		fv.row(0) << l2g[0], l2g[3], l2g[4], l2g[1];
+		fv.row(1) << l2g[1], l2g[4], l2g[5], l2g[2];
+		fv.row(2) << l2g[2], l2g[5], l2g[3], l2g[0];
 
 		long lf = 0;
 		for (; lf < fv.rows(); ++lf)
@@ -2259,7 +2255,8 @@ int LagrangeBasis3d::build_bases(
 						break;
 				}
 				assert(index.face == primitive_id);
-				return mesh3d.n_face_vertices(primitive_id) == 3 ? tet_face_local_nodes(discr_order, mesh3d, index) : hex_face_local_nodes(false, discr_order, mesh3d, index);
+				// todo discr orders
+				return prism_face_local_nodes(discr_order, discr_order, mesh3d, index);
 			});
 
 			for (int j = 0; j < n_el_bases; ++j)

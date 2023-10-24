@@ -41,6 +41,7 @@
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
+#include <polyfem/autogen/prism_bases.hpp>
 
 #include <paraviewo/VTMWriter.hpp>
 #include <paraviewo/PVDWriter.hpp>
@@ -425,6 +426,10 @@ namespace polyfem::io
 					utils::BoundarySampler::normal_for_tri_face(lb[k], tmp_n);
 					utils::BoundarySampler::sample_parametric_tri_face(lb[k], n_samples, uv, local_pts);
 					break;
+				case BoundaryType::PRISM:
+					utils::BoundarySampler::normal_for_prism_face(lb[k], tmp_n);
+					utils::BoundarySampler::sample_parametric_prism_face(lb[k], n_samples, uv, local_pts);
+					break;
 				case BoundaryType::POLYGON:
 					utils::BoundarySampler::normal_for_polygon_edge(lb.element_id(), lb.global_primitive_id(k), mesh, tmp_n);
 					utils::BoundarySampler::sample_polygon_edge(lb.element_id(), lb.global_primitive_id(k), n_samples, mesh, uv, local_pts);
@@ -462,6 +467,7 @@ namespace polyfem::io
 							}
 						}
 					}
+					// TODO prism
 					else if (lb.type() == BoundaryType::TRI)
 					{
 						int index = 0;
@@ -631,17 +637,6 @@ namespace polyfem::io
 		Eigen::MatrixXi &el_id,
 		Eigen::MatrixXd &discr) const
 	{
-		// if (!mesh)
-		// {
-		// 	logger().error("Load the mesh first!");
-		// 	return;
-		// }
-		// if (n_bases <= 0)
-		// {
-		// 	logger().error("Build the bases first!");
-		// 	return;
-		// }
-
 		const auto &sampler = ref_element_sampler;
 
 		const auto &current_bases = gbases;
@@ -667,6 +662,11 @@ namespace polyfem::io
 			{
 				tet_total_size += sampler.cube_volume().rows();
 				pts_total_size += sampler.cube_points().rows();
+			}
+			else if (mesh.is_prism(i))
+			{
+				tet_total_size += sampler.prism_volume().rows();
+				pts_total_size += sampler.prism_points().rows();
 			}
 			else
 			{
@@ -721,6 +721,18 @@ namespace polyfem::io
 
 				tets.block(tet_index, 0, sampler.cube_volume().rows(), tets.cols()) = sampler.cube_volume().array() + pts_index;
 				tet_index += sampler.cube_volume().rows();
+
+				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+				discr.block(pts_index, 0, mapped.rows(), 1).setConstant(disc_orders(i));
+				el_id.block(pts_index, 0, mapped.rows(), 1).setConstant(i);
+				pts_index += mapped.rows();
+			}
+			else if (mesh.is_prism(i))
+			{
+				bs.eval_geom_mapping(sampler.prism_points(), mapped);
+
+				tets.block(tet_index, 0, sampler.prism_volume().rows(), tets.cols()) = sampler.prism_volume().array() + pts_index;
+				tet_index += sampler.prism_volume().rows();
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
 				discr.block(pts_index, 0, mapped.rows(), 1).setConstant(disc_orders(i));
@@ -797,6 +809,8 @@ namespace polyfem::io
 					autogen::p_nodes_3d(disc_orders(i), ref_pts);
 				else if (mesh.is_cube(i))
 					autogen::q_nodes_3d(disc_orders(i), ref_pts);
+				else if (mesh.is_prism(i)) // TODO
+					autogen::prism_nodes_3d(disc_orders(i), disc_orders(i), ref_pts);
 				else
 					continue;
 			}
@@ -835,6 +849,8 @@ namespace polyfem::io
 					autogen::p_nodes_3d(disc_orders(i), ref_pts);
 				else if (mesh.is_cube(i))
 					autogen::q_nodes_3d(disc_orders(i), ref_pts);
+				else if (mesh.is_prism(i)) // TODO
+					autogen::prism_nodes_3d(disc_orders(i), disc_orders(i), ref_pts);
 				else
 					continue;
 			}
@@ -961,6 +977,8 @@ namespace polyfem::io
 
 		if (!solution_path.empty())
 		{
+			logger().info("Saving solution to {}", solution_path);
+
 			std::ofstream out(solution_path);
 			out.precision(100);
 			out << std::scientific;
@@ -1122,6 +1140,11 @@ namespace polyfem::io
 			return;
 		}
 
+		const bool save_contact = is_contact_enabled && (opts.contact_forces || opts.friction_forces);
+
+		logger().info("Saving vtu to {}; volume={}, surface={}, contact={}, points={}, wireframe={}",
+					  path, opts.volume, opts.surface, save_contact, opts.points, opts.wire);
+
 		const std::filesystem::path fs_path(path);
 		const std::string path_stem = fs_path.stem().string();
 		const std::string base_path = (fs_path.parent_path() / path_stem).string();
@@ -1137,7 +1160,7 @@ namespace polyfem::io
 						 is_contact_enabled, solution_frames);
 		}
 
-		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces))
+		if (save_contact)
 		{
 			save_contact_surface(base_path + "_surf" + opts.file_extension(), state, sol, pressure, t, dt, opts,
 								 is_contact_enabled, solution_frames);
@@ -1515,6 +1538,8 @@ namespace polyfem::io
 						local_pts = sampler.simplex_points();
 					else if (mesh.is_cube(e))
 						local_pts = sampler.cube_points();
+					else if (mesh.is_prism(e))
+						local_pts = sampler.prism_points();
 					else
 					{
 						if (mesh.is_volume())
@@ -1531,6 +1556,8 @@ namespace polyfem::io
 							autogen::p_nodes_3d(disc_orders(e), local_pts);
 						else if (mesh.is_cube(e))
 							autogen::q_nodes_3d(disc_orders(e), local_pts);
+						else if (mesh.is_prism(e)) // TODO
+							autogen::prism_nodes_3d(disc_orders(e), disc_orders(e), local_pts);
 						else
 							continue;
 					}
@@ -1841,6 +1868,7 @@ namespace polyfem::io
 						area = mesh.tri_area(boundary_vis_primitive_ids(i));
 					else if (mesh.is_cube(el_index))
 						area = mesh.quad_area(boundary_vis_primitive_ids(i));
+					// todo prism
 				}
 				else
 					area = mesh.edge_length(boundary_vis_primitive_ids(i));
@@ -2062,6 +2090,12 @@ namespace polyfem::io
 				seg_total_size += sampler.cube_edges().rows();
 				faces_total_size += sampler.cube_faces().rows();
 			}
+			else if (mesh.is_prism(i))
+			{
+				pts_total_size += sampler.prism_points().rows();
+				seg_total_size += sampler.prism_edges().rows();
+				faces_total_size += sampler.prism_faces().rows();
+			}
 			else
 			{
 				if (mesh.is_volume())
@@ -2106,6 +2140,18 @@ namespace polyfem::io
 
 				faces.block(face_index, 0, sampler.cube_faces().rows(), 3) = sampler.cube_faces().array() + pts_index;
 				face_index += sampler.cube_faces().rows();
+
+				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+				pts_index += mapped.rows();
+			}
+			else if (mesh.is_prism(i))
+			{
+				bs.eval_geom_mapping(sampler.prism_points(), mapped);
+				edges.block(seg_index, 0, sampler.prism_edges().rows(), edges.cols()) = sampler.prism_edges().array() + pts_index;
+				seg_index += sampler.prism_edges().rows();
+
+				faces.block(face_index, 0, sampler.prism_faces().rows(), 3) = sampler.prism_faces().array() + pts_index;
+				face_index += sampler.prism_faces().rows();
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
 				pts_index += mapped.rows();

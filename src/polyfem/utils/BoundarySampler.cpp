@@ -490,6 +490,10 @@ namespace polyfem
 					quadrature_for_tri_face(local_boundary[i], order, gid, mesh, tmp_uv, tmp_p, tmp_w);
 					normal_for_tri_face(local_boundary[i], tmp_n);
 					break;
+				case BoundaryType::PRISM:
+					quadrature_for_prism_face(local_boundary[i], order, gid, mesh, tmp_uv, tmp_p, tmp_w);
+					normal_for_prism_face(local_boundary[i], tmp_n);
+					break;
 				case BoundaryType::POLYGON:
 					quadrature_for_polygon_edge(local_boundary.element_id(), local_boundary.global_primitive_id(i), order, mesh, tmp_uv, tmp_p, tmp_w);
 					normal_for_polygon_edge(local_boundary.element_id(), local_boundary.global_primitive_id(i), mesh, tmp_n);
@@ -549,6 +553,9 @@ namespace polyfem
 				case BoundaryType::TRI:
 					sample_parametric_tri_face(local_boundary[i], n_samples, tmp_uv, tmp);
 					break;
+				case BoundaryType::PRISM:
+					sample_parametric_prism_face(local_boundary[i], n_samples, tmp_uv, tmp);
+					break;
 				case BoundaryType::POLYGON:
 					sample_polygon_edge(local_boundary.element_id(), local_boundary.global_primitive_id(i), n_samples, mesh, tmp_uv, tmp);
 					break;
@@ -577,8 +584,8 @@ namespace polyfem
 
 		bool utils::BoundarySampler::boundary_quadrature(const mesh::LocalBoundary &local_boundary, const int order, const mesh::Mesh &mesh, const int i, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::MatrixXd &normals, Eigen::VectorXd &weights)
 		{
-			assert (local_boundary.size() > i);
-				
+			assert(local_boundary.size() > i);
+
 			uv.resize(0, 0);
 			points.resize(0, 0);
 			weights.resize(0);
@@ -602,6 +609,10 @@ namespace polyfem
 			case BoundaryType::TRI:
 				quadrature_for_tri_face(local_boundary[i], order, gid, mesh, uv, points, weights);
 				normal_for_tri_face(local_boundary[i], normal);
+				break;
+			case BoundaryType::PRISM:
+				quadrature_for_prism_face(local_boundary[i], order, gid, mesh, uv, points, weights);
+				normal_for_prism_face(local_boundary[i], normal);
 				break;
 			case BoundaryType::POLYGON:
 				quadrature_for_polygon_edge(local_boundary.element_id(), gid, order, mesh, uv, points, weights);

@@ -45,6 +45,11 @@ namespace polyfem
 			const Eigen::MatrixXi &simplex_volume() const { return is_volume_ ? simplex_tets_ : simplex_faces_; }
 			const Eigen::MatrixXi &simplex_edges() const { return simplex_edges_; }
 
+			const Eigen::MatrixXd &prism_points() const { return prism_points_; }
+			const Eigen::MatrixXi &prism_faces() const { return prism_faces_; }
+			const Eigen::MatrixXi &prism_volume() const { return prism_tets_; }
+			const Eigen::MatrixXi &prism_edges() const { return prism_edges_; }
+
 			void sample_polygon(const Eigen::MatrixXd &poly, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXi &edges) const;
 			void sample_polyhedron(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &f, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXi &edges) const;
 
@@ -57,7 +62,12 @@ namespace polyfem
 			void build();
 
 			Eigen::MatrixXi cube_tets_;
+			Eigen::MatrixXi prism_tets_;
 			Eigen::MatrixXi simplex_tets_;
+
+			Eigen::MatrixXd prism_points_;
+			Eigen::MatrixXi prism_faces_;
+			Eigen::MatrixXi prism_edges_;
 
 			Eigen::MatrixXd cube_corners_;
 			Eigen::MatrixXd cube_points_;
