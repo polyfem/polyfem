@@ -780,38 +780,34 @@ namespace
 				fvt.row(0) << v[0], v[1], v[2];
 				fvt.row(1) << v[3], v[4], v[5];
 
-				LocalBoundary lbt(c, BoundaryType::PRISM);
+				LocalBoundary lb(c, BoundaryType::PRISM);
 				for (long i = 0; i < fvt.rows(); ++i)
 				{
 					const int f = mesh.get_index_from_element_face(c, fvt(i, 0), fvt(i, 1), fvt(i, 2)).face;
 
 					if (mesh.is_boundary_face(f))
 					{
-						lbt.add_boundary_primitive(f, i);
+						lb.add_boundary_primitive(f, i);
 					}
 				}
-
-				if (!lbt.empty())
-					local_boundary.emplace_back(lbt);
 
 				Eigen::Matrix<int, 3, 4> fvq;
 				fvq.row(0) << v[0], v[1], v[4], v[3];
 				fvq.row(1) << v[1], v[2], v[5], v[4];
 				fvq.row(2) << v[2], v[0], v[3], v[5];
 
-				LocalBoundary lbq(c, BoundaryType::PRISM);
 				for (long i = 0; i < fvq.rows(); ++i)
 				{
 					const int f = find_quad_face(mesh, c, fvq(i, 0), fvq(i, 1), fvq(i, 2), fvq(i, 3)).face;
 
 					if (mesh.is_boundary_face(f))
 					{
-						lbq.add_boundary_primitive(f, i);
+						lb.add_boundary_primitive(f, i + 2);
 					}
 				}
 
-				if (!lbq.empty())
-					local_boundary.emplace_back(lbq);
+				if (!lb.empty())
+					local_boundary.emplace_back(lb);
 			}
 		}
 

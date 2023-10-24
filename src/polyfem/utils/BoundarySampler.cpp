@@ -114,14 +114,14 @@ namespace polyfem
 			fv.row(0) << 0, 1, 2, -1;
 			fv.row(1) << 3, 4, 5, -1;
 
-			fv.row(2) << 0, 3, 4, 1;
-			fv.row(3) << 1, 4, 5, 2;
-			fv.row(4) << 2, 5, 3, 0;
+			fv.row(2) << 0, 1, 4, 3;
+			fv.row(3) << 1, 2, 5, 4;
+			fv.row(4) << 2, 0, 3, 5;
 
 			const int nv = lf < 2 ? 3 : 4;
 			Eigen::MatrixXd res(nv, 3);
 			for (int i = 0; i < nv; ++i)
-				res.row(i) = linear_hex_local_node_coordinates(fv(lf, i));
+				res.row(i) = linear_prism_local_node_coordinates(fv(lf, i));
 
 			return res;
 		}
@@ -400,6 +400,8 @@ namespace polyfem
 		void utils::BoundarySampler::sample_parametric_prism_face(int index, int n_samples, Eigen::MatrixXd &uv, Eigen::MatrixXd &samples)
 		{
 			auto endpoints = prism_local_node_coordinates_from_face(index);
+
+			std::cout << index << std::endl;
 
 			if (index < 2)
 			{
