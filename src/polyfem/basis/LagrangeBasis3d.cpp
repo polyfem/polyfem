@@ -615,7 +615,7 @@ namespace
 		{
 			const auto index = e[le];
 			auto neighs = mesh.edge_neighs(index.edge);
-			int min_q = discr_order.size() > 0 ? discr_order(c) : 0;
+			// int min_q = discr_order.size() > 0 ? discr_order(c) : 0;
 
 			// TODO prism: not conforming
 			// for (auto cid : neighs)
@@ -688,7 +688,8 @@ namespace
 	///
 	void compute_nodes(
 		const Mesh3D &mesh,
-		const Eigen::VectorXi &discr_orders,
+		const Eigen::VectorXi &discr_ordersp,
+		const Eigen::VectorXi &discr_ordersq,
 		const Eigen::VectorXi &edge_orders,
 		const Eigen::VectorXi &face_orders,
 		const bool serendipity,
@@ -715,11 +716,12 @@ namespace
 
 		for (int c = 0; c < mesh.n_cells(); ++c)
 		{
-			const int discr_order = discr_orders(c);
+			const int discr_order = discr_ordersp(c);
+			const int discr_orderq = discr_ordersq(c);
 
 			if (mesh.is_cube(c))
 			{
-				hex_local_to_global(serendipity, discr_order, mesh, c, discr_orders, element_nodes_id[c], nodes);
+				hex_local_to_global(serendipity, discr_order, mesh, c, discr_ordersp, element_nodes_id[c], nodes);
 
 				auto v = hex_vertices_local_to_global(mesh, c);
 				Eigen::Matrix<int, 6, 4> fv;
@@ -747,7 +749,7 @@ namespace
 			else if (mesh.is_simplex(c))
 			{
 				// element_nodes_id[c] = polyfem::LagrangeBasis3d::tet_local_to_global(discr_order, mesh, c, discr_orders, nodes);
-				tet_local_to_global(is_geom_bases, discr_order, mesh, c, discr_orders, edge_orders, face_orders, element_nodes_id[c], nodes, edge_virtual_nodes, face_virtual_nodes);
+				tet_local_to_global(is_geom_bases, discr_order, mesh, c, discr_ordersp, edge_orders, face_orders, element_nodes_id[c], nodes, edge_virtual_nodes, face_virtual_nodes);
 
 				auto v = tet_vertices_local_to_global(mesh, c);
 				Eigen::Matrix<int, 4, 3> fv;
@@ -772,8 +774,8 @@ namespace
 			}
 			else if (mesh.is_prism(c))
 			{
-				// TODO prism: discr orders separate
-				prism_local_to_global(discr_order, discr_order, mesh, c, discr_orders, element_nodes_id[c], nodes);
+				// todo non conforming prisms
+				prism_local_to_global(discr_order, discr_orderq, mesh, c, discr_ordersp, element_nodes_id[c], nodes);
 
 				auto v = prism_vertices_local_to_global(mesh, c);
 				Eigen::Matrix<int, 2, 3> fvt;
@@ -831,7 +833,8 @@ namespace
 				int c2 = index2.element;
 				assert(c2 >= 0);
 
-				const int discr_order = discr_orders(c2);
+				const int discr_order = discr_ordersp(c2);
+				const int discr_orderq = discr_ordersq(c2);
 				if (mesh.is_cube(c2))
 				{
 					indices = LagrangeBasis3d::hex_face_local_nodes(serendipity, discr_order, mesh, index2);
@@ -839,6 +842,10 @@ namespace
 				else if (mesh.is_simplex(c2))
 				{
 					indices = LagrangeBasis3d::tet_face_local_nodes(discr_order, mesh, index2);
+				}
+				else if (mesh.is_prism(c2))
+				{
+					indices = LagrangeBasis3d::prism_face_local_nodes(discr_order, discr_orderq, mesh, index2);
 				}
 				else
 					continue;
@@ -2047,7 +2054,8 @@ int LagrangeBasis3d::build_bases(
 	const std::string &assembler,
 	const int quadrature_order,
 	const int mass_quadrature_order,
-	const int discr_order,
+	const int discr_orderp,
+	const int discr_orderq,
 	const bool serendipity,
 	const bool has_polys,
 	const bool is_geom_bases,
@@ -2056,10 +2064,13 @@ int LagrangeBasis3d::build_bases(
 	std::map<int, InterfaceData> &poly_face_to_data,
 	std::shared_ptr<MeshNodes> &mesh_nodes)
 {
-	Eigen::VectorXi discr_orders(mesh.n_cells());
-	discr_orders.setConstant(discr_order);
+	Eigen::VectorXi discr_ordersp(mesh.n_cells());
+	discr_ordersp.setConstant(discr_orderp);
 
-	return build_bases(mesh, assembler, quadrature_order, mass_quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_face_to_data, mesh_nodes);
+	Eigen::VectorXi discr_ordersq(mesh.n_cells());
+	discr_ordersq.setConstant(discr_orderq);
+
+	return build_bases(mesh, assembler, quadrature_order, mass_quadrature_order, discr_ordersp, discr_ordersq, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_face_to_data, mesh_nodes);
 }
 
 int LagrangeBasis3d::build_bases(
@@ -2067,7 +2078,8 @@ int LagrangeBasis3d::build_bases(
 	const std::string &assembler,
 	const int quadrature_order,
 	const int mass_quadrature_order,
-	const Eigen::VectorXi &discr_orders,
+	const Eigen::VectorXi &discr_ordersp,
+	const Eigen::VectorXi &discr_ordersq,
 	const bool serendipity,
 	const bool has_polys,
 	const bool is_geom_bases,
@@ -2077,7 +2089,8 @@ int LagrangeBasis3d::build_bases(
 	std::shared_ptr<MeshNodes> &mesh_nodes)
 {
 	assert(mesh.is_volume());
-	assert(discr_orders.size() == mesh.n_cells());
+	assert(discr_ordersp.size() == mesh.n_cells());
+	assert(discr_ordersq.size() == mesh.n_cells());
 
 	// Navigation3D::get_index_from_element_face_time = 0;
 	// Navigation3D::switch_vertex_time = 0;
@@ -2085,10 +2098,12 @@ int LagrangeBasis3d::build_bases(
 	// Navigation3D::switch_face_time = 0;
 	// Navigation3D::switch_element_time = 0;
 
-	const int max_p = discr_orders.maxCoeff();
+	const int max_p = discr_ordersp.maxCoeff();
+	const int max_q = discr_ordersq.maxCoeff();
+	const int mmax = std::max(max_p, max_q);
 	// assert(max_p < 5); //P5 not supported
 
-	const int nn = max_p > 1 ? (max_p - 1) : 0;
+	const int nn = mmax > 1 ? (mmax - 1) : 0;
 	const int n_face_nodes = nn * nn;
 	const int n_cells_nodes = nn * nn * nn;
 
@@ -2096,13 +2111,13 @@ int LagrangeBasis3d::build_bases(
 	if (!mesh.is_conforming())
 	{
 		const auto &ncmesh = dynamic_cast<const NCMesh3D &>(mesh);
-		compute_edge_face_orders(ncmesh, discr_orders, edge_orders, face_orders);
+		compute_edge_face_orders(ncmesh, discr_ordersp, edge_orders, face_orders);
 	}
 
-	mesh_nodes = std::make_shared<MeshNodes>(mesh, has_polys, !is_geom_bases, nn, n_face_nodes * (is_geom_bases ? 2 : 1), max_p == 0 ? 1 : n_cells_nodes);
+	mesh_nodes = std::make_shared<MeshNodes>(mesh, has_polys, !is_geom_bases, nn, n_face_nodes * (is_geom_bases ? 2 : 1), mmax == 0 ? 1 : n_cells_nodes);
 	MeshNodes &nodes = *mesh_nodes;
 	std::vector<std::vector<int>> element_nodes_id, edge_virtual_nodes, face_virtual_nodes;
-	compute_nodes(mesh, discr_orders, edge_orders, face_orders, serendipity, has_polys, is_geom_bases, nodes, edge_virtual_nodes, face_virtual_nodes, element_nodes_id, local_boundary, poly_face_to_data);
+	compute_nodes(mesh, discr_ordersp, discr_ordersq, edge_orders, face_orders, serendipity, has_polys, is_geom_bases, nodes, edge_virtual_nodes, face_virtual_nodes, element_nodes_id, local_boundary, poly_face_to_data);
 	// boundary_nodes = nodes.boundary_nodes();
 
 	// std::cout<<"get_index_from_element_face_time " << Navigation3D::get_index_from_element_face_time <<std::endl;
@@ -2118,7 +2133,8 @@ int LagrangeBasis3d::build_bases(
 	for (int e = 0; e < mesh.n_cells(); ++e)
 	{
 		ElementBases &b = bases[e];
-		const int discr_order = discr_orders(e);
+		const int discr_order = discr_ordersp(e);
+		const int discr_orderq = discr_ordersq(e);
 		const int n_el_bases = (int)element_nodes_id[e].size();
 		b.bases.resize(n_el_bases);
 
@@ -2223,12 +2239,11 @@ int LagrangeBasis3d::build_bases(
 		}
 		else if (mesh.is_prism(e))
 		{
-			// TODO prism: discr roders
 			const int orderp = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
-			const int orderq = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 1);
+			const int orderq = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_orderq, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 1);
 
 			const int mass_orderp = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
-			const int mass_orderq = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 1);
+			const int mass_orderq = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_orderq, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 1);
 
 			b.set_quadrature([orderp, orderq](Quadrature &quad) {
 				PrismQuadrature tet_quadrature;
@@ -2239,8 +2254,7 @@ int LagrangeBasis3d::build_bases(
 				tet_quadrature.get_quadrature(mass_orderp, mass_orderq, quad);
 			});
 
-			// TODO prism: discr order
-			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh) {
+			b.set_local_node_from_primitive_func([discr_order, discr_orderq, e](const int primitive_id, const Mesh &mesh) {
 				const auto &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
 				Navigation3D::Index index;
 
@@ -2251,8 +2265,7 @@ int LagrangeBasis3d::build_bases(
 						break;
 				}
 				assert(index.face == primitive_id);
-				// todo discr orders
-				return prism_face_local_nodes(discr_order, discr_order, mesh3d, index);
+				return prism_face_local_nodes(discr_order, discr_orderq, mesh3d, index);
 			});
 
 			for (int j = 0; j < n_el_bases; ++j)
@@ -2263,8 +2276,8 @@ int LagrangeBasis3d::build_bases(
 					b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 				}
 
-				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::prism_basis_value_3d(discr_order, discr_order, j, uv, val); });
-				b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::prism_grad_basis_value_3d(discr_order, discr_order, j, uv, val); });
+				b.bases[j].set_basis([discr_order, discr_orderq, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::prism_basis_value_3d(discr_order, discr_orderq, j, uv, val); });
+				b.bases[j].set_grad([discr_order, discr_orderq, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::prism_grad_basis_value_3d(discr_order, discr_orderq, j, uv, val); });
 			}
 		}
 		else
@@ -2282,7 +2295,7 @@ int LagrangeBasis3d::build_bases(
 
 			std::vector<std::vector<int>> elementOrder;
 			{
-				const int max_order = discr_orders.maxCoeff(), min_order = discr_orders.minCoeff();
+				const int max_order = discr_ordersp.maxCoeff(), min_order = discr_ordersp.minCoeff();
 				int max_level = 0;
 				for (int e = 0; e < ncmesh.n_cells(); e++)
 					if (max_level < ncmesh.cell_ref_level(e))
@@ -2299,7 +2312,7 @@ int LagrangeBasis3d::build_bases(
 						int cur_bucket = (max_order - min_order + 1) * cur_level + (order - min_order);
 						for (int i = 0; i < ncmesh.n_cells(); i++)
 						{
-							if (ncmesh.cell_ref_level(i) != cur_level || discr_orders[i] != order)
+							if (ncmesh.cell_ref_level(i) != cur_level || discr_ordersp[i] != order)
 								continue;
 
 							N++;
@@ -2320,7 +2333,7 @@ int LagrangeBasis3d::build_bases(
 					{
 						const int e = bucket[e_aux];
 						ElementBases &b = bases[e];
-						const int discr_order = discr_orders(e);
+						const int discr_order = discr_ordersp(e);
 						const int n_edge_nodes = discr_order - 1;
 						const int n_face_nodes = (discr_order - 1) * (discr_order - 2) / 2;
 						const int n_el_bases = element_nodes_id[e].size();
@@ -2377,7 +2390,7 @@ int LagrangeBasis3d::build_bases(
 									int large_elem = -1;
 									if (ncmesh.leader_edge_of_vertex(v[j]) >= 0)
 									{
-										large_elem = lowest_order_elem_on_edge(ncmesh, discr_orders, ncmesh.leader_edge_of_vertex(v[j]));
+										large_elem = lowest_order_elem_on_edge(ncmesh, discr_ordersp, ncmesh.leader_edge_of_vertex(v[j]));
 									}
 									else if (ncmesh.leader_face_of_vertex(v[j]) >= 0)
 									{
@@ -2444,9 +2457,9 @@ int LagrangeBasis3d::build_bases(
 									// constrained order
 									else if (discr_order > edge_orders[edge_id])
 									{
-										int min_order_elem = lowest_order_elem_on_edge(ncmesh, discr_orders, edge_id);
+										int min_order_elem = lowest_order_elem_on_edge(ncmesh, discr_ordersp, edge_id);
 										// if haven't built min_order_elem? directly contribute to extra nodes
-										if (discr_orders[min_order_elem] < discr_order)
+										if (discr_ordersp[min_order_elem] < discr_order)
 											large_elem = min_order_elem;
 
 										// constrained order, master edge -- need extra fake nodes
@@ -2757,7 +2770,8 @@ int LagrangeBasis3d::build_bases(
 				for (int e : interface_elements)
 				{
 					ElementBases &b = bases[e];
-					const int discr_order = discr_orders(e);
+					// todo non conforming
+					const int discr_order = discr_ordersp(e);
 					const int n_el_bases = element_nodes_id[e].size();
 					assert(discr_order > 1);
 					if (discr_order != pp)
@@ -2831,9 +2845,9 @@ int LagrangeBasis3d::build_bases(
 
 									for (auto cid : neighs)
 									{
-										if (discr_orders[cid] < min_p)
+										if (discr_ordersp[cid] < min_p)
 										{
-											min_p = discr_orders[cid];
+											min_p = discr_ordersp[cid];
 											min_cell = cid;
 										}
 									}
@@ -2887,7 +2901,7 @@ int LagrangeBasis3d::build_bases(
 
 								const auto other_cell = index.element;
 								assert(other_cell >= 0);
-								assert(discr_order > discr_orders(other_cell));
+								assert(discr_order > discr_ordersp(other_cell));
 
 								auto indices = tet_face_local_nodes(discr_order, mesh, index);
 								Eigen::MatrixXd lnodes;

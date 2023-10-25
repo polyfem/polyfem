@@ -691,6 +691,10 @@ namespace polyfem
 				geom_disc_orders = mesh->orders();
 		}
 
+		// todo prism
+		Eigen::MatrixXi geom_disc_ordersq = geom_disc_orders;
+		Eigen::MatrixXi disc_ordersq = disc_orders;
+
 		igl::Timer timer;
 		timer.start();
 		if (args["space"]["use_p_ref"])
@@ -742,15 +746,19 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, !use_continuous_gbasis, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
+					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, geom_disc_ordersq, false, has_polys, !use_continuous_gbasis, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
 
-				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, disc_ordersq, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (mixed_assembler != nullptr)
 			{
-				n_pressure_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
+				const int order = args["space"]["pressure_discr_order"];
+				// todo prism
+				const int orderq = order;
+
+				n_pressure_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, order, orderq, false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
 			}
 		}
 		else
