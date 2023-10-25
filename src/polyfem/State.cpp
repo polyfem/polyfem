@@ -693,7 +693,7 @@ namespace polyfem
 
 		// todo prism
 		Eigen::MatrixXi geom_disc_ordersq = geom_disc_orders;
-		Eigen::MatrixXi disc_ordersq = disc_orders;
+		disc_ordersq = disc_orders;
 
 		igl::Timer timer;
 		timer.start();

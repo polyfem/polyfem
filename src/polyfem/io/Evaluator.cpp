@@ -574,6 +574,7 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const assembler::Assembler &assembler,
@@ -633,8 +634,8 @@ namespace polyfem::io
 			}
 			else if (mesh.is_prism(i))
 			{
-				assert(mesh.dimension() == 3); // todo prism
-				autogen::prism_nodes_3d(disc_orders(i), disc_orders(i), local_pts);
+				assert(mesh.dimension() == 3);
+				autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), local_pts);
 			}
 			else
 			{
@@ -696,7 +697,7 @@ namespace polyfem::io
 		for (int k = 0; k < tmp_s.size(); ++k)
 		{
 			result_scalar[k].first = tmp_s[k].first;
-			interpolate_function(mesh, 1, bases, disc_orders, polys, polys_3d, sampler, n_points,
+			interpolate_function(mesh, 1, bases, disc_orders, disc_ordersq, polys, polys_3d, sampler, n_points,
 								 avg_scalar[k], result_scalar[k].second, use_sampler, boundary_only);
 		}
 		// interpolate_function(n_points, actual_dim*actual_dim, bases, avg_tensor, result_tensor, boundary_only);
@@ -798,6 +799,7 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const assembler::Assembler &assembler,
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result,
@@ -864,8 +866,7 @@ namespace polyfem::io
 				assert(mesh.is_volume());
 
 				quadrature::PrismQuadrature f;
-				// todo prism
-				f.get_quadrature(disc_orders(e), disc_orders(e), quadr);
+				f.get_quadrature(disc_orders(e), disc_ordersq(e), quadr);
 			}
 			else
 			{
@@ -901,6 +902,7 @@ namespace polyfem::io
 		const bool is_problem_scalar,
 		const std::vector<basis::ElementBases> &bases,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const utils::RefElementSampler &sampler,
@@ -913,7 +915,7 @@ namespace polyfem::io
 		int actual_dim = 1;
 		if (!is_problem_scalar)
 			actual_dim = mesh.dimension();
-		interpolate_function(mesh, actual_dim, bases, disc_orders,
+		interpolate_function(mesh, actual_dim, bases, disc_orders, disc_ordersq,
 							 polys, polys_3d, sampler, n_points,
 							 fun, result, use_sampler, boundary_only);
 	}
@@ -923,6 +925,7 @@ namespace polyfem::io
 		const int actual_dim,
 		const std::vector<basis::ElementBases> &basis,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const utils::RefElementSampler &sampler,
@@ -978,8 +981,8 @@ namespace polyfem::io
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
-					else if (mesh.is_prism(i)) // todo prism
-						autogen::prism_nodes_3d(disc_orders(i), disc_orders(i), local_pts);
+					else if (mesh.is_prism(i))
+						autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), local_pts);
 					else
 						continue;
 				}
@@ -1118,6 +1121,7 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const assembler::Assembler &assembler,
@@ -1171,8 +1175,8 @@ namespace polyfem::io
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
-					else if (mesh.is_prism(i)) // todo prism
-						autogen::prism_nodes_3d(disc_orders(i), disc_orders(i), local_pts);
+					else if (mesh.is_prism(i))
+						autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), local_pts);
 					else
 						continue;
 				}
@@ -1203,6 +1207,7 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const assembler::Assembler &assembler,
@@ -1262,7 +1267,7 @@ namespace polyfem::io
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_prism(i))
-						autogen::prism_nodes_3d(disc_orders(i), disc_orders(i), local_pts);
+						autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), local_pts);
 					else
 						continue;
 				}
@@ -1304,6 +1309,7 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const assembler::Assembler &assembler,
@@ -1363,8 +1369,8 @@ namespace polyfem::io
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
-					else if (mesh.is_prism(i)) // todo prism
-						autogen::prism_nodes_3d(disc_orders(i), disc_orders(i), local_pts);
+					else if (mesh.is_prism(i))
+						autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), local_pts);
 					else
 						continue;
 				}

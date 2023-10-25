@@ -177,7 +177,7 @@ namespace polyfem
 		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> polys_3d;
 
 		/// vector of discretization orders, used when not all elements have the same degree, one per element
-		Eigen::VectorXi disc_orders;
+		Eigen::VectorXi disc_orders, disc_ordersq;
 
 		/// Mapping from input nodes to FE nodes
 		std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes, geom_mesh_nodes, pressure_mesh_nodes;

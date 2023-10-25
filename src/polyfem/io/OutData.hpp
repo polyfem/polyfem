@@ -336,6 +336,7 @@ namespace polyfem::io
 		/// works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized
 		/// @param[in] mesh mesh
 		/// @param[in] disc_orders discretization orders
+		/// @param[in] disc_ordersq discretization orders
 		/// @param[in] bases bases
 		/// @param[out] points mesh points
 		/// @param[out] elements mesh high-order cells
@@ -344,6 +345,7 @@ namespace polyfem::io
 		void build_high_order_vis_mesh(
 			const mesh::Mesh &mesh,
 			const Eigen::VectorXi &disc_orders,
+			const Eigen::VectorXi &disc_ordersq,
 			const std::vector<basis::ElementBases> &bases,
 			Eigen::MatrixXd &points,
 			std::vector<std::vector<int>> &elements,
@@ -489,6 +491,7 @@ namespace polyfem::io
 		/// @param[in] sol solution
 		/// @param[in] mesh mesh
 		/// @param[in] disc_orders discretization order
+		/// @param[in] disc_ordersq discretization order
 		/// @param[in] problem problem
 		/// @param[in] runtime rumtime
 		/// @param[in] formulation formulation
@@ -500,6 +503,7 @@ namespace polyfem::io
 					   const Eigen::MatrixXd &sol,
 					   const mesh::Mesh &mesh,
 					   const Eigen::VectorXi &disc_orders,
+					   const Eigen::VectorXi &disc_ordersq,
 					   const assembler::Problem &problem,
 					   const OutRuntimeData &runtime,
 					   const std::string &formulation,
