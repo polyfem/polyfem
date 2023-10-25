@@ -652,7 +652,7 @@ namespace
 			// }
 			// else
 			{
-				auto node_ids = nodes.node_ids_from_face(index, (lf < 2 ? p : q) - 1);
+				auto node_ids = nodes.node_ids_from_face(index, lf < 2 ? (p - 2) : (q - 1));
 				// assert(node_ids.size() == n_loc_f);
 				res.insert(res.end(), node_ids.begin(), node_ids.end());
 			}
@@ -1574,6 +1574,8 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 	// Local to global mapping of node indices
 	const auto l2g = prism_vertices_local_to_global(mesh, c);
 
+	const int global_n_edges_nodes = (p - 1) * 6 + (q - 1) * 3;
+
 	if (mesh.n_face_vertices(index.face) == 3)
 	{
 		const int nn = p > 2 ? (p - 2) : 0;
@@ -1670,7 +1672,7 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 		{
 		}
 		else if (n_face_nodes == 1)
-			result[ii++] = 4 + n_edge_nodes + lf;
+			result[ii++] = 6 + global_n_edges_nodes + lf;
 		else // if (n_face_nodes == 3)
 		{
 
@@ -1854,7 +1856,7 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 					for (int min_n : indices)
 					{
 						sum += min_n;
-						result[ii++] = 4 + n_edge_nodes + min_n + lf * n_face_nodes;
+						result[ii++] = 6 + global_n_edges_nodes + min_n + lf * n_face_nodes;
 					}
 
 					assert(sum == (n_face_nodes - 1) * n_face_nodes / 2);
@@ -1941,14 +1943,14 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 
 				for (int i = 0; i < q - 1; ++i)
 				{
-					result[ii++] = 8 + le * (q - 1) + i;
+					result[ii++] = 6 + le * (q - 1) + i;
 				}
 			}
 			else
 			{
 				for (int i = 0; i < q - 1; ++i)
 				{
-					result[ii++] = 8 + (le + 1) * (q - 1) - i - 1;
+					result[ii++] = 6 + (le + 1) * (q - 1) - i - 1;
 				}
 			}
 
@@ -1973,7 +1975,7 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 		assert(lf < fv.rows());
 
 		if (n_face_nodes == 1)
-			result[ii++] = 8 + n_edge_nodes + lf;
+			result[ii++] = 6 + global_n_edges_nodes + lf;
 		else if (n_face_nodes != 0)
 		{
 			Eigen::MatrixXd nodes;

@@ -99,7 +99,11 @@ namespace polyfem
 		RowVectorNd Mesh3D::face_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j) const
 		{
 			const int tmp = n_new_nodes == 2 ? 3 : n_new_nodes;
-			if (is_simplex(index.element))
+
+			const bool is_prism_tri = is_prism(index.element) && n_face_vertices(index.face) == 3;
+			const bool is_prism_quad = is_prism(index.element) && n_face_vertices(index.face) == 4;
+
+			if (is_simplex(index.element) || is_prism_tri)
 			{
 				if (orders_.size() <= 0 || orders_(index.element) == 1 || orders_(index.element) == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != tmp)
 				{
@@ -176,7 +180,7 @@ namespace polyfem
 
 				return n.nodes.row(lindex);
 			}
-			else if (is_cube(index.element))
+			else if (is_cube(index.element) || is_prism_quad)
 			{
 				// supports only blilinear quads
 				assert(orders_.size() <= 0 || orders_(index.element) == 1);
