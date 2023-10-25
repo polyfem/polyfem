@@ -1676,7 +1676,7 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 		else // if (n_face_nodes == 3)
 		{
 
-			const auto get_order = [&p, &nn, &n_face_nodes](const std::array<int, 3> &corners) {
+			const auto get_order = [&p, &q, &nn, &n_face_nodes](const std::array<int, 3> &corners) {
 				int index;
 				int start;
 				int offset;
@@ -1800,7 +1800,7 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 			};
 
 			Eigen::MatrixXd nodes;
-			autogen::p_nodes_3d(p, nodes);
+			autogen::prism_nodes_3d(p, q, nodes);
 			// auto pos = LagrangeBasis3d::linear_tet_face_local_nodes_coordinates(mesh, index);
 			// Local to global mapping of node indices
 
@@ -1820,9 +1820,9 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 
 			const Eigen::RowVector3d bary = pos.colwise().mean();
 
-			const int offset = 4 + n_edge_nodes;
+			const int offset = 6 + global_n_edges_nodes;
 			bool found = false;
-			for (int lff = 0; lff < 4; ++lff)
+			for (int lff = 0; lff < 2; ++lff)
 			{
 				Eigen::MatrixXd loc_nodes = nodes.block(offset + lff * n_face_nodes, 0, n_face_nodes, 3);
 				Eigen::RowVector3d node_bary = loc_nodes.colwise().mean();
