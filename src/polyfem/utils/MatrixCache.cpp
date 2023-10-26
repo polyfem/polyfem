@@ -147,8 +147,8 @@ namespace polyfem::utils
 				outer_index_.assign(out_ptr, out_ptr + outer_index_.size());
 
 				size_t index = 0;
-				// should this really be columns? doesn't matter since mat_ is square
-				for (size_t i = 0; i < mat_.rows(); ++i)
+				// loop over columns of the matrix
+				for (size_t i = 0; i < mat_.cols(); ++i)
 				{
 					const auto start = outer_index_[i];
 					const auto end = outer_index_[i + 1];
