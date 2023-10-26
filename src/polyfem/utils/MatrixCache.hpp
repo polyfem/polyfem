@@ -93,7 +93,6 @@ namespace polyfem::utils
 
 		std::vector<std::vector<int>> second_cache_; ///< maps element index to local index
 		std::vector<std::vector<std::pair<int, int>>> second_cache_entries_; ///< maps element indices to global matrix indices
-		bool use_second_cache_ = true; 
 		int current_e_ = -1;
 		int current_e_index_ = -1;
 

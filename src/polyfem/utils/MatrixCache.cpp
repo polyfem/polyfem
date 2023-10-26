@@ -96,34 +96,14 @@ namespace polyfem::utils
 		}
 		else
 		{
-			if (use_second_cache_)
+			if (e != current_e_)
 			{
-				if (e != current_e_)
-				{
-					current_e_ = e;
-					current_e_index_ = 0;
-				}
+				current_e_ = e;
+				current_e_index_ = 0;
+			}
 
-				values_[second_cache()[e][current_e_index_]] += value;
-				current_e_index_++;
-			}
-			else
-			{
-				// mapping()[i].find(j)
-				const auto &map = mapping()[i];
-				bool found = false;
-				for (const auto &p : map)
-				{
-					if (p.first == j)
-					{
-						assert(p.second < values_.size());
-						values_[p.second] += value;
-						found = true;
-						break;
-					}
-				}
-				assert(found);
-			}
+			values_[second_cache()[e][current_e_index_]] += value;
+			current_e_index_++;
 		}
 	}
 
@@ -186,38 +166,35 @@ namespace polyfem::utils
 
 				logger().trace("Cache computed");
 
-				if (use_second_cache_)
+				second_cache_.clear();
+				second_cache_.resize(second_cache_entries_.size());
+				for (int e = 0; e < second_cache_entries_.size(); ++e)
 				{
-					second_cache_.clear();
-					second_cache_.resize(second_cache_entries_.size());
-					for (int e = 0; e < second_cache_entries_.size(); ++e)
+					for (const auto &p : second_cache_entries_[e])
 					{
-						for (const auto &p : second_cache_entries_[e])
+						const int i = p.first;
+						const int j = p.second;
+
+						const auto &map = mapping()[i];
+						int index = -1;
+						for (const auto &p : map)
 						{
-							const int i = p.first;
-							const int j = p.second;
-
-							const auto &map = mapping()[i];
-							int index = -1;
-							for (const auto &p : map)
+							if (p.first == j)
 							{
-								if (p.first == j)
-								{
-									assert(p.second < values_.size());
-									index = p.second;
-									break;
-								}
+								assert(p.second < values_.size());
+								index = p.second;
+								break;
 							}
-							assert(index >= 0);
-
-							second_cache_[e].emplace_back(index);
 						}
+						assert(index >= 0);
+
+						second_cache_[e].emplace_back(index);
 					}
-
-					second_cache_entries_.resize(0);
-
-					logger().trace("Second cache computed");
 				}
+
+				second_cache_entries_.resize(0);
+
+				logger().trace("Second cache computed");
 			}
 		}
 		else
@@ -228,15 +205,9 @@ namespace polyfem::utils
 			mat_ = Eigen::Map<const StiffnessMatrix>(
 				size_, size_, values_.size(), &outer_index[0], &inner_index[0], &values_[0]);
 
-			if (use_second_cache_)
-			{
-				current_e_ = -1;
-				current_e_index_ = -1;
+			current_e_ = -1;
+			current_e_index_ = -1;
 
-				logger().trace("Using second cache");
-			}
-			else
-				logger().trace("Using cache");
 		}
 		std::fill(values_.begin(), values_.end(), 0);
 		return mat_;
@@ -254,27 +225,24 @@ namespace polyfem::utils
 
 		if (a.mapping().empty() || mapping().empty())
 		{
-			out->mat_ = a.mat_ + mat_;
-			if (use_second_cache_)
+		out->mat_ = a.mat_ + mat_;
+			const size_t this_e_size = second_cache_entries_.size();
+			const size_t a_e_size = a.second_cache_entries_.size();
+
+			out->second_cache_entries_.resize(std::max(this_e_size, a_e_size));
+			for (int e = 0; e < std::min(this_e_size, a_e_size); ++e)
 			{
-				const size_t this_e_size = second_cache_entries_.size();
-				const size_t a_e_size = a.second_cache_entries_.size();
+				assert(second_cache_entries_[e].size() == 0 || a.second_cache_entries_[e].size() == 0);
+				out->second_cache_entries_[e].insert(out->second_cache_entries_[e].end(), second_cache_entries_[e].begin(), second_cache_entries_[e].end());
+				out->second_cache_entries_[e].insert(out->second_cache_entries_[e].end(), a.second_cache_entries_[e].begin(), a.second_cache_entries_[e].end());
+			}
 
-				out->second_cache_entries_.resize(std::max(this_e_size, a_e_size));
-				for (int e = 0; e < std::min(this_e_size, a_e_size); ++e)
-				{
-					assert(second_cache_entries_[e].size() == 0 || a.second_cache_entries_[e].size() == 0);
+			for (int e = std::min(this_e_size, a_e_size); e < std::max(this_e_size, a_e_size); ++e)
+			{
+				if (second_cache_entries_.size() < e)
 					out->second_cache_entries_[e].insert(out->second_cache_entries_[e].end(), second_cache_entries_[e].begin(), second_cache_entries_[e].end());
+				else
 					out->second_cache_entries_[e].insert(out->second_cache_entries_[e].end(), a.second_cache_entries_[e].begin(), a.second_cache_entries_[e].end());
-				}
-
-				for (int e = std::min(this_e_size, a_e_size); e < std::max(this_e_size, a_e_size); ++e)
-				{
-					if (second_cache_entries_.size() < e)
-						out->second_cache_entries_[e].insert(out->second_cache_entries_[e].end(), second_cache_entries_[e].begin(), second_cache_entries_[e].end());
-					else
-						out->second_cache_entries_[e].insert(out->second_cache_entries_[e].end(), a.second_cache_entries_[e].begin(), a.second_cache_entries_[e].end());
-				}
 			}
 		}
 		else
@@ -310,17 +278,14 @@ namespace polyfem::utils
 		{
 			mat_ += o.mat_;
 
-			if (use_second_cache_)
-			{
-				const size_t this_e_size = second_cache_entries_.size();
-				const size_t o_e_size = o.second_cache_entries_.size();
+			const size_t this_e_size = second_cache_entries_.size();
+			const size_t o_e_size = o.second_cache_entries_.size();
 
-				second_cache_entries_.resize(std::max(this_e_size, o_e_size));
-				for (int e = 0; e < o_e_size; ++e)
-				{
-					assert(second_cache_entries_[e].size() == 0 || o.second_cache_entries_[e].size() == 0);
-					second_cache_entries_[e].insert(second_cache_entries_[e].end(), o.second_cache_entries_[e].begin(), o.second_cache_entries_[e].end());
-				}
+			second_cache_entries_.resize(std::max(this_e_size, o_e_size));
+			for (int e = 0; e < o_e_size; ++e)
+			{
+				assert(second_cache_entries_[e].size() == 0 || o.second_cache_entries_[e].size() == 0);
+				second_cache_entries_[e].insert(second_cache_entries_[e].end(), o.second_cache_entries_[e].begin(), o.second_cache_entries_[e].end());
 			}
 		}
 		else
