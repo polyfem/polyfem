@@ -88,12 +88,12 @@ namespace polyfem::utils
 		std::vector<Eigen::Triplet<double>> entries_; ///< contains global matrix indices and corresponding value
 		std::vector<std::vector<std::pair<int, size_t>>> mapping_; ///< maps row indices to column index/local index pairs
 		std::vector<int> inner_index_, outer_index_;
-		std::vector<double> values_;s
+		std::vector<double> values_;
 		const SparseMatrixCache *main_cache_ = nullptr;
 
 		std::vector<std::vector<int>> second_cache_; ///< maps element index to local index
 		std::vector<std::vector<std::pair<int, int>>> second_cache_entries_; ///< maps element indices to global matrix indices
-		bool use_second_cache_ = true;
+		bool use_second_cache_ = true; 
 		int current_e_ = -1;
 		int current_e_index_ = -1;
 
