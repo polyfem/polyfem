@@ -87,9 +87,13 @@ namespace polyfem::utils
 
 	void SparseMatrixCache::add_value(const int e, const int i, const int j, const double value)
 	{
+		// caches have yet to be constructed (likely because the matrix has yet to be fully assembled)
 		if (mapping().empty())
 		{
+			// save entry so it can be added to the matrix later
 			entries_.emplace_back(i, j, value);
+
+			// save the index information so the cache can be built later
 			if (second_cache_entries_.size() <= e)
 				second_cache_entries_.resize(e + 1);
 			second_cache_entries_[e].emplace_back(i, j);
@@ -102,6 +106,7 @@ namespace polyfem::utils
 				current_e_index_ = 0;
 			}
 
+			// save entry directly to value buffer at the proper index
 			values_[second_cache()[e][current_e_index_]] += value;
 			current_e_index_++;
 		}
@@ -109,6 +114,7 @@ namespace polyfem::utils
 
 	void SparseMatrixCache::prune()
 	{
+		// caches have yet to be constructed (likely because the matrix has yet to be fully assembled)
 		if (mapping().empty())
 		{
 			tmp_.setFromTriplets(entries_.begin(), entries_.end());
@@ -129,6 +135,7 @@ namespace polyfem::utils
 	{
 		prune();
 
+		// caches have yet to be constructed (likely because the matrix has yet to be fully assembled)
 		if (mapping().empty())
 		{
 			if (compute_mapping && size_ > 0)
@@ -168,17 +175,23 @@ namespace polyfem::utils
 
 				second_cache_.clear();
 				second_cache_.resize(second_cache_entries_.size());
+				// loop over each element
 				for (int e = 0; e < second_cache_entries_.size(); ++e)
 				{
+					// loop over each global index affected by the given element
 					for (const auto &p : second_cache_entries_[e])
 					{
 						const int i = p.first;
 						const int j = p.second;
 
+						// pick out column/sparse matrix index pairs for the given column
 						const auto &map = mapping()[i];
 						int index = -1;
+
+						// loop over column/sparse matrix index pairs
 						for (const auto &p : map)
 						{
+							// match columns
 							if (p.first == j)
 							{
 								assert(p.second < values_.size());
@@ -188,6 +201,7 @@ namespace polyfem::utils
 						}
 						assert(index >= 0);
 
+						// save the sparse matrix index used by this element
 						second_cache_[e].emplace_back(index);
 					}
 				}
@@ -202,6 +216,7 @@ namespace polyfem::utils
 			assert(size_ > 0);
 			const auto &outer_index = main_cache()->outer_index_;
 			const auto &inner_index = main_cache()->inner_index_;
+			// directly write the values to the matrix
 			mat_ = Eigen::Map<const StiffnessMatrix>(
 				size_, size_, values_.size(), &outer_index[0], &inner_index[0], &values_[0]);
 
