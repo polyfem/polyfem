@@ -55,6 +55,10 @@ namespace polyfem
 		{
 			return (0 < x) - (x < 0);
 		}
+		static double compare(double a, double b)
+		{
+			return a < b ? 1.0 : 0.0;
+		}
 
 		ExpressionValue::ExpressionValue()
 		{
@@ -126,6 +130,7 @@ namespace polyfem
 				{"rotate_2D_x", (const void *)rotate_2D_x, TE_FUNCTION3},
 				{"rotate_2D_y", (const void *)rotate_2D_y, TE_FUNCTION3},
 				{"if", (const void *)iflargerthanzerothenelse, TE_FUNCTION3},
+				{"compare", (const void *)compare, TE_FUNCTION2},
 				{"smooth_abs", (const void *)smooth_abs, TE_FUNCTION2},
 				{"sign", (const void *)sign, TE_FUNCTION1},
 			};
@@ -285,6 +290,7 @@ namespace polyfem
 					{"rotate_2D_x", (const void *)rotate_2D_x, TE_FUNCTION3},
 					{"rotate_2D_y", (const void *)rotate_2D_y, TE_FUNCTION3},
 					{"if", (const void *)iflargerthanzerothenelse, TE_FUNCTION3},
+					{"compare", (const void *)compare, TE_FUNCTION2},
 					{"smooth_abs", (const void *)smooth_abs, TE_FUNCTION2},
 					{"sign", (const void *)sign, TE_FUNCTION1},
 				};

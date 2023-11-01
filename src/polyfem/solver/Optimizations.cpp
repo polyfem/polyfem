@@ -140,6 +140,27 @@ namespace polyfem::solver
 				tmp->set_reference(states[args["target_state"]], std::set(reference_cached.begin(), reference_cached.end()));
 				obj = tmp;
 			}
+			else if (type == "displacement-target")
+			{
+				std::shared_ptr<TargetForm> tmp = std::make_shared<TargetForm>(var2sim, *(states[args["state"]]), args);
+				Eigen::VectorXd target_displacement;
+				target_displacement.setZero(states[args["state"]]->mesh->dimension());
+				if (target_displacement.size() != args["target_displacement"].size())
+					log_and_throw_error("Target displacement shape must match the dimension of the simulation");
+				for (int i = 0; i < target_displacement.size(); ++i)
+					target_displacement(i) = args["target_displacement"][i].get<double>();
+				if (args["active_dimension"].size() > 0)
+				{
+					if (target_displacement.size() != args["active_dimension"].size())
+						log_and_throw_error("Active dimension shape must match the dimension of the simulation");
+					std::vector<bool> active_dimension_mask(args["active_dimension"].size());
+					for (int i = 0; i < args["active_dimension"].size(); ++i)
+						active_dimension_mask[i] = args["active_dimension"][i].get<bool>();
+					tmp->set_active_dimension(active_dimension_mask);
+				}
+				tmp->set_reference(target_displacement);
+				obj = tmp;
+			}
 			else if (type == "center-target")
 			{
 				obj = std::make_shared<BarycenterTargetForm>(var2sim, args, states[args["state"]], states[args["target_state"]]);

@@ -12,6 +12,7 @@
             "mesh-target",
             "center-target",
             "function-target",
+            "displacement-target",
             "node-target",
             "position",
             "acceleration",
@@ -187,6 +188,23 @@
             "surface_selection",
             "reference_cached_body_ids",
             "target_state"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "displacement-target",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "weight",
+            "print_energy",
+            "target_displacement",
+            "active_dimension",
+            "surface_selection"
         ],
         "doc": "TODO"
     },
