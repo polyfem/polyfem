@@ -155,6 +155,8 @@ namespace polyfem::solver
 						   const double dmin) : CollisionBarrierForm(variable_to_simulations, state, dhat, dmin),
 												boundary_ids_(boundary_ids)
 		{
+			for (const auto &id : boundary_ids)
+				boundary_ids_to_dof_[id] = std::set<int>();
 		}
 
 	private:
@@ -199,6 +201,7 @@ namespace polyfem::solver
 					{
 						const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
 						is_on_surface[v.global[0].index] = true;
+						boundary_ids_to_dof_[boundary_id].insert(v.global[0].index);
 					}
 				}
 			}
@@ -216,9 +219,39 @@ namespace polyfem::solver
 												 boundary_triangles,
 												 displacement_map);
 
+			can_collide_cache_.resize(collision_mesh_.num_vertices(), collision_mesh_.num_vertices());
+			for (int i = 0; i < can_collide_cache_.rows(); ++i)
+				for (int j = 0; j < can_collide_cache_.cols(); ++j)
+				{
+					int dof_idx_i = state_.collision_mesh.to_full_vertex_id(i);
+					int dof_idx_j = state_.collision_mesh.to_full_vertex_id(j);
+					bool collision_allowed = true;
+					for (const auto &id : boundary_ids_)
+						if (boundary_ids_to_dof_[id].count(dof_idx_i) && boundary_ids_to_dof_[id].count(dof_idx_j))
+							collision_allowed = false;
+					can_collide_cache_(i, j) = collision_allowed;
+				}
+
+			collision_mesh_.can_collide = [&](size_t vi, size_t vj) {
+				return (bool)can_collide_cache_(vi, vj);
+			};
+
+			// collision_mesh_.can_collide = [&](size_t vi, size_t vj) {
+			// 	// obstacles do not collide with other obstacles
+			// 	int dof_idx_i = state_.collision_mesh.to_full_vertex_id(vi);
+			// 	int dof_idx_j = state_.collision_mesh.to_full_vertex_id(vj);
+			// 	for (const auto &id : boundary_ids_)
+			// 		if (boundary_ids_to_dof_[id].count(dof_idx_i) && boundary_ids_to_dof_[id].count(dof_idx_j))
+			// 			return false;
+			// 	return true;
+			// };
+
 			collision_mesh_.init_area_jacobians();
 		}
 
 		std::vector<int> boundary_ids_;
+		std::map<int, std::set<int>> boundary_ids_to_dof_;
+		Eigen::MatrixXi can_collide_cache_;
 	};
+
 } // namespace polyfem::solver
