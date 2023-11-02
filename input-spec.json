@@ -1714,6 +1714,44 @@
         "doc": "Coefficient of friction (global)"
     },
     {
+        "pointer": "/contact/friction_coefficient",
+        "type": "list",
+        "doc": "Coefficient of friction (pairwise)"
+    },
+    {
+        "pointer": "/contact/friction_coefficient/*",
+        "type": "object",
+        "required": [
+            "ids",
+            "value"
+        ],
+        "doc": "Coefficient of friction (pairwise)"
+    },
+    {
+        "pointer": "/contact/friction_coefficient/*/ids",
+        "type": "list",
+        "max": 2,
+        "doc": "Surface IDs for coeffient of friction"
+    },
+    {
+        "pointer": "/contact/friction_coefficient/*/value",
+        "type": "float",
+        "doc": "Coefficient of friction"
+    },
+    {
+        "pointer": "/contact/friction_coefficient/*/ids/*",
+        "type": "int",
+        "doc": "Surface ID for coeffient of friction"
+    },
+    {
+        "pointer": "/contact/friction_coefficient/*/ids/*",
+        "type": "string",
+        "options": [
+            "all"
+        ],
+        "doc": "Surface ID for coeffient of friction"
+    },
+    {
         "pointer": "/contact/use_convergent_formulation",
         "default": false,
         "type": "bool",
