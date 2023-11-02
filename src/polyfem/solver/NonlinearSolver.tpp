@@ -27,6 +27,11 @@ namespace cppoptlib
 
 		first_grad_norm_tol = solver_params["first_grad_norm_tol"];
 
+		export_energy_path = solver_params["export_energy"];
+
+		debug_finite_diff = solver_params["debug_fd"];
+		finite_diff_eps = solver_params["debug_fd_eps"];
+
 		use_grad_norm_tol *= characteristic_length;
 		first_grad_norm_tol *= characteristic_length;
 
@@ -44,6 +49,35 @@ namespace cppoptlib
 	{
 		m_line_search = polyfem::solver::line_search::LineSearch<ProblemType>::construct_line_search(line_search_name);
 		solver_info["line_search"] = line_search_name;
+	}
+
+	template <typename ProblemType>
+	bool NonlinearSolver<ProblemType>::verify_gradient(ProblemType &objFunc, const TVector &x, const TVector &grad)
+	{
+		if (!debug_finite_diff)
+			return true;
+
+		Eigen::VectorXd direc = grad.normalized();
+		Eigen::VectorXd x2 = x + direc * finite_diff_eps;
+		Eigen::VectorXd x1 = x - direc * finite_diff_eps;
+
+		objFunc.solution_changed(x2);
+		double J2 = objFunc.value(x2);
+
+		objFunc.solution_changed(x1);
+		double J1 = objFunc.value(x1);
+
+		double fd = (J2 - J1) / 2 / finite_diff_eps;
+		double analytic = direc.dot(grad);
+
+		bool match = abs(fd - analytic) < 1e-8 || abs(fd - analytic) < 1e-1 * abs(analytic);
+
+		// Log error in either case to make it more visible in the logs.
+		polyfem::logger().log(match ? spdlog::level::info : spdlog::level::err, "step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
+
+		objFunc.solution_changed(x);
+
+		return match;
 	}
 
 	template <typename ProblemType>
@@ -109,6 +143,10 @@ namespace cppoptlib
 		if (m_line_search)
 			m_line_search->use_grad_norm_tol = use_grad_norm_tol;
 
+		std::ofstream outfile;
+		if (export_energy_path != "")
+			outfile.open(export_energy_path);
+
 		objFunc.save_to_file(x);
 
 		logger().debug(
@@ -145,6 +183,11 @@ namespace cppoptlib
 				objFunc.gradient(x, grad);
 			}
 
+			{
+				POLYFEM_SCOPED_TIMER("verify gradient", grad_time);
+				verify_gradient(objFunc, x, grad);
+			}
+
 			const double grad_norm = compute_grad_norm(x, grad);
 			if (std::isnan(grad_norm))
 			{
@@ -152,6 +195,13 @@ namespace cppoptlib
 				m_error_code = ErrorCode::NAN_ENCOUNTERED;
 				log_and_throw_error("[{}] Gradient is nan; stopping", name());
 				break;
+			}
+
+			if (outfile.is_open())
+			{
+				outfile << std::setprecision(12) << energy << ", " << grad_norm;
+				outfile << "\n";
+				outfile.flush();
 			}
 
 			// ------------------------

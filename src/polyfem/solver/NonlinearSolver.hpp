@@ -65,6 +65,8 @@ namespace cppoptlib
 		size_t &max_iterations() { return this->m_stop.iterations; }
 		bool allow_out_of_iterations = false;
 
+		bool verify_gradient(ProblemType &objFunc, const TVector &x, const TVector &grad);
+
 	protected:
 		// ====================================================================
 		//                        Solver parameters
@@ -114,6 +116,11 @@ namespace cppoptlib
 		double obj_fun_time;
 
 		ErrorCode m_error_code;
+
+		std::string export_energy_path;
+
+		bool debug_finite_diff;
+		double finite_diff_eps;
 
 		// ====================================================================
 		//                                 END
