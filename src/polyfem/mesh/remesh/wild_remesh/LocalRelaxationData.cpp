@@ -107,8 +107,9 @@ namespace polyfem::mesh
 
 		std::vector<int> pressure_boundary_nodes;
 		state.problem->setup_bc(
-			*mesh, n_bases(), bases, /*geom_bases=*/bases, /*pressure_bases=*/std::vector<basis::ElementBases>(),
-			local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes,
+			*mesh, n_bases() - state.obstacle.n_vertices(), bases, /*geom_bases=*/bases,
+			/*pressure_bases=*/std::vector<basis::ElementBases>(), local_boundary,
+			boundary_nodes, local_neumann_boundary, pressure_boundary_nodes,
 			dirichlet_nodes, neumann_nodes);
 
 		auto find_node_position = [&](const int n_id) {

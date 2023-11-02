@@ -890,7 +890,7 @@ namespace polyfem
 		logger().info("Done!");
 
 		const int prev_b_size = local_boundary.size();
-		problem->setup_bc(*mesh, n_bases,
+		problem->setup_bc(*mesh, n_bases - obstacle.n_vertices(),
 						  bases, geom_bases(), pressure_bases,
 						  local_boundary, boundary_nodes, local_neumann_boundary, local_pressure_boundary, pressure_boundary_nodes,
 						  dirichlet_nodes, neumann_nodes);
@@ -1224,19 +1224,10 @@ namespace polyfem
 		const Eigen::VectorXi &in_node_to_node,
 		ipc::CollisionMesh &collision_mesh)
 	{
-		Eigen::MatrixXd node_positions;
-		Eigen::MatrixXi boundary_edges, boundary_triangles;
-		std::vector<Eigen::Triplet<double>> displacement_map_entries;
-		io::OutGeometryData::extract_boundary_mesh(
-			mesh, n_bases, bases, total_local_boundary, node_positions,
-			boundary_edges, boundary_triangles, displacement_map_entries);
-
-		// n_bases already contains the obstacle vertices
-		const int num_fe_nodes = node_positions.rows() - obstacle.n_vertices();
-
 		Eigen::MatrixXd collision_vertices;
 		Eigen::VectorXi collision_codim_vids;
 		Eigen::MatrixXi collision_edges, collision_triangles;
+		std::vector<Eigen::Triplet<double>> displacement_map_entries;
 
 		if (args.contains("/contact/collision_mesh"_json_pointer)
 			&& args.at("/contact/collision_mesh/enabled"_json_pointer).get<bool>())
@@ -1280,33 +1271,34 @@ namespace polyfem
 		}
 		else
 		{
-			collision_vertices = node_positions.topRows(num_fe_nodes);
-			collision_edges = boundary_edges;
-			collision_triangles = boundary_triangles;
+			io::OutGeometryData::extract_boundary_mesh(
+				mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
+				collision_vertices, collision_edges, collision_triangles, displacement_map_entries);
 		}
 
-		const int n_v = collision_vertices.rows();
+		// n_bases already contains the obstacle vertices
+		const int num_fe_nodes = n_bases - obstacle.n_vertices();
+		const int num_fe_collision_vertices = collision_vertices.rows();
+		assert(collision_edges.size() == 0 || collision_edges.maxCoeff() < num_fe_collision_vertices);
+		assert(collision_triangles.size() == 0 || collision_triangles.maxCoeff() < num_fe_collision_vertices);
 
 		// Append the obstacles to the collision mesh
 		if (obstacle.n_vertices() > 0)
 		{
 			append_rows(collision_vertices, obstacle.v());
-			append_rows(collision_codim_vids, obstacle.codim_v().array() + n_v);
-			append_rows(collision_edges, obstacle.e().array() + n_v);
-			append_rows(collision_triangles, obstacle.f().array() + n_v);
+			append_rows(collision_codim_vids, obstacle.codim_v().array() + num_fe_collision_vertices);
+			append_rows(collision_edges, obstacle.e().array() + num_fe_collision_vertices);
+			append_rows(collision_triangles, obstacle.f().array() + num_fe_collision_vertices);
 
 			if (!displacement_map_entries.empty())
 			{
 				displacement_map_entries.reserve(displacement_map_entries.size() + obstacle.n_vertices());
 				for (int i = 0; i < obstacle.n_vertices(); i++)
 				{
-					displacement_map_entries.emplace_back(n_v + i, num_fe_nodes + i, 1.0);
+					displacement_map_entries.emplace_back(num_fe_collision_vertices + i, num_fe_nodes + i, 1.0);
 				}
 			}
 		}
-
-		// io::OBJWriter::write("fem_input.obj", node_positions, boundary_edges, boundary_triangles);
-		// io::OBJWriter::write("collision_mesh.obj", collision_vertices, collision_edges, collision_triangles);
 
 		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(
 			collision_vertices.rows(), collision_edges);
@@ -1326,10 +1318,10 @@ namespace polyfem
 			is_on_surface, collision_vertices, collision_edges, collision_triangles,
 			displacement_map);
 
-		collision_mesh.can_collide = [&collision_mesh, n_v](size_t vi, size_t vj) {
+		collision_mesh.can_collide = [&collision_mesh, num_fe_collision_vertices](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles
-			return collision_mesh.to_full_vertex_id(vi) < n_v
-				   || collision_mesh.to_full_vertex_id(vj) < n_v;
+			return collision_mesh.to_full_vertex_id(vi) < num_fe_collision_vertices
+				   || collision_mesh.to_full_vertex_id(vj) < num_fe_collision_vertices;
 		};
 
 		collision_mesh.init_area_jacobians();
