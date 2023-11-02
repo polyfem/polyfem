@@ -33,7 +33,7 @@ namespace polyfem::assembler
 		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
 		std::string name() const override { return "MooneyRivlin3ParamSymbolic"; }
 		std::map<std::string, ParamFunc> parameters() const override;
