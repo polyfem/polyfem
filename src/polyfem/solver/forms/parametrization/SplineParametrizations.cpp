@@ -20,70 +20,70 @@ namespace polyfem::solver
 {
 	namespace
 	{
-		typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1>> Diff;
 
-		template <typename T>
-		Eigen::Matrix<T, 3, 3> rotation_matrix(const T x_angle, const T y_angle, const T z_angle)
+		Eigen::Matrix<double, 3, 1> affine_transformation(const Eigen::Matrix<double, 3, 1> &point, const Eigen::Matrix<double, 6, 1> &param)
 		{
-			Eigen::Matrix<T, 3, 3> x_rot;
-			for (int i = 0; i < 3; ++i)
-				for (int j = 0; j < 3; ++j)
-					x_rot(i, j) = T(0);
-			x_rot(0, 0) = 1.;
-			x_rot(1, 1) = cos(x_angle);
-			x_rot(1, 2) = -sin(x_angle);
-			x_rot(2, 1) = sin(x_angle);
-			x_rot(2, 2) = cos(x_angle);
-			Eigen::Matrix<T, 3, 3> y_rot;
-			for (int i = 0; i < 3; ++i)
-				for (int j = 0; j < 3; ++j)
-					y_rot(i, j) = T(0);
-			y_rot(1, 1) = 1.;
-			y_rot(0, 0) = cos(y_angle);
-			y_rot(0, 2) = sin(y_angle);
-			y_rot(2, 0) = -sin(y_angle);
-			y_rot(2, 2) = cos(y_angle);
-			Eigen::Matrix<T, 3, 3> z_rot;
-			for (int i = 0; i < 3; ++i)
-				for (int j = 0; j < 3; ++j)
-					z_rot(i, j) = T(0);
-			z_rot(2, 2) = 1.;
-			z_rot(0, 0) = cos(z_angle);
-			z_rot(0, 1) = -sin(z_angle);
-			z_rot(1, 0) = sin(z_angle);
-			z_rot(1, 1) = cos(z_angle);
+			Eigen::Matrix<double, 3, 1> transformed_point(3);
 
-			return z_rot * y_rot * x_rot;
-		}
-
-		template <typename T>
-		Eigen::Matrix<T, 3, 1> affine_transformation(const Eigen::VectorXd &point, const Eigen::Matrix<T, 6, 1> &param)
-		{
-			Eigen::Matrix<T, 3, 3> rot = rotation_matrix(param(0), param(1), param(2));
-			Eigen::Matrix<T, 3, 1> transformed_point(3);
-			for (int i = 0; i < 3; ++i)
-			{
-				T val(0);
-				for (int j = 0; j < 3; ++j)
-					val = val + rot(j, i) * point(j);
-				transformed_point(i) = val + param(3 + i);
-			}
+			const double helper_0 = cos(param(2));
+			const double helper_1 = cos(param(1));
+			const double helper_2 = helper_1 * point(0);
+			const double helper_3 = sin(param(0));
+			const double helper_4 = sin(param(2));
+			const double helper_5 = helper_3 * helper_4;
+			const double helper_6 = sin(param(1));
+			const double helper_7 = cos(param(0));
+			const double helper_8 = helper_0 * helper_7;
+			const double helper_9 = helper_4 * helper_7;
+			const double helper_10 = helper_0 * helper_3;
+			transformed_point(0) = helper_0 * helper_2 + point(1) * (helper_10 * helper_6 - helper_9) + point(2) * (helper_5 + helper_6 * helper_8) + param(3);
+			transformed_point(1) = helper_2 * helper_4 + point(1) * (helper_5 * helper_6 + helper_8) - point(2) * (helper_10 - helper_6 * helper_9) + param(4);
+			transformed_point(2) = helper_1 * helper_3 * point(1) + helper_1 * helper_7 * point(2) - helper_6 * point(0) + param(5);
 			return transformed_point;
 		}
 
 		Eigen::MatrixXd grad_affine_transformation(const Eigen::VectorXd &point, const Eigen::VectorXd &param)
 		{
-			DiffScalarBase::setVariableCount(6);
-			Eigen::Matrix<Diff, 6, 1> full_diff(6, 1);
-			for (int i = 0; i < 6; i++)
-				full_diff(i) = Diff(i, param(i));
-			auto reduced_diff = affine_transformation(point, full_diff);
+			Eigen::MatrixXd grad(6, 3);
 
-			Eigen::MatrixXd grad(3, 6);
-			for (int i = 0; i < 3; ++i)
-				grad.row(i) = reduced_diff[i].getGradient();
+			const double helper_0 = sin(param(0));
+			const double helper_1 = sin(param(2));
+			const double helper_2 = helper_0 * helper_1;
+			const double helper_3 = sin(param(1));
+			const double helper_4 = cos(param(0));
+			const double helper_5 = cos(param(2));
+			const double helper_6 = helper_4 * helper_5;
+			const double helper_7 = helper_2 + helper_3 * helper_6;
+			const double helper_8 = helper_1 * helper_4;
+			const double helper_9 = helper_0 * helper_5;
+			const double helper_10 = helper_3 * helper_9 - helper_8;
+			const double helper_11 = cos(param(1));
+			const double helper_12 = helper_0 * point(1);
+			const double helper_13 = helper_4 * point(2);
+			const double helper_14 = helper_11 * helper_12 + helper_11 * helper_13 - helper_3 * point(0);
+			const double helper_15 = helper_11 * point(0);
+			const double helper_16 = helper_2 * helper_3 + helper_6;
+			const double helper_17 = -helper_3 * helper_8 + helper_9;
+			grad(0) = -helper_10 * point(2) + helper_7 * point(1);
+			grad(1) = helper_14 * helper_5;
+			grad(2) = -helper_1 * helper_15 - helper_16 * point(1) + helper_17 * point(2);
+			grad(3) = 1;
+			grad(4) = 0;
+			grad(5) = 0;
+			grad(6) = -helper_16 * point(2) - helper_17 * point(1);
+			grad(7) = helper_1 * helper_14;
+			grad(8) = helper_10 * point(1) + helper_15 * helper_5 + helper_7 * point(2);
+			grad(9) = 0;
+			grad(10) = 1;
+			grad(11) = 0;
+			grad(12) = helper_11 * (-helper_0 * point(2) + helper_4 * point(1));
+			grad(13) = -helper_12 * helper_3 - helper_13 * helper_3 - helper_15;
+			grad(14) = 0;
+			grad(15) = 0;
+			grad(16) = 0;
+			grad(17) = 1;
 
-			return grad;
+			return grad.transpose();
 		}
 	} // namespace
 	Eigen::VectorXd BSplineParametrization1DTo2D::inverse_eval(const Eigen::VectorXd &y)
