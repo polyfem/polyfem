@@ -12,10 +12,22 @@ namespace polyfem::solver
 	class BoundarySmoothingForm : public AdjointForm
 	{
 	public:
+		BoundarySmoothingForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : AdjointForm(variable_to_simulations),
+																																						 state_(state)
+		{
+			interested_boundary_ids_ = args["surface_selection"].get<std::vector<int>>();
+			scale_invariant_ = args["scale_invariant"].get<bool>();
+			power_ = args["power"].get<int>();
+			init_form();
+		}
+
 		BoundarySmoothingForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const bool scale_invariant, const int power) : AdjointForm(variable_to_simulations),
-																																													state_(state),
-																																													scale_invariant_(scale_invariant),
-																																													power_(power) { init_form(); }
+																																													state_(state)
+		{
+			scale_invariant_ = scale_invariant;
+			power_ = power;
+			init_form();
+		}
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
 		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
@@ -25,8 +37,9 @@ namespace polyfem::solver
 		void init_form();
 
 		const State &state_;
-		const bool scale_invariant_;
-		const int power_; // only if scale_invariant_ is true
+		std::vector<int> interested_boundary_ids_;
+		bool scale_invariant_;
+		int power_; // only if scale_invariant_ is true
 		Eigen::SparseMatrix<bool, Eigen::RowMajor> adj;
 		Eigen::SparseMatrix<double, Eigen::RowMajor> L;
 	};

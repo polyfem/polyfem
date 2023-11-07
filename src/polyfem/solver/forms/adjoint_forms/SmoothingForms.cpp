@@ -16,8 +16,7 @@ namespace polyfem::solver
 		const int n_verts = mesh.n_vertices();
 		assert(mesh.is_simplicial());
 
-		std::vector<int> tmp = {}; // args_["surface_selection"];
-		std::set<int> surface_ids = std::set(tmp.begin(), tmp.end());
+		std::set<int> surface_ids = std::set(interested_boundary_ids_.begin(), interested_boundary_ids_.end());
 
 		// collect active nodes
 		std::vector<bool> active_mask;
@@ -29,7 +28,7 @@ namespace polyfem::solver
 			const int boundary_id = mesh.get_boundary_id(b);
 			if (!surface_ids.empty() && surface_ids.find(boundary_id) == surface_ids.end())
 				continue;
-			
+
 			for (int lv = 0; lv < dim; lv++)
 			{
 				active_mask[mesh.boundary_element_vertex(b, lv)] = true;
@@ -155,7 +154,7 @@ namespace polyfem::solver
 		{
 			Eigen::MatrixXd V;
 			state_.get_vertices(V);
-			
+
 			grad = utils::flatten(2 * (L.transpose() * (L * V)));
 		}
 
