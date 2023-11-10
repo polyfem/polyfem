@@ -44,6 +44,7 @@ namespace polyfem::solver
 		bool uses_lagging() const;
 
 		virtual void save_to_file(const TVector &x0) {}
+		virtual void save_to_file(const TVector &x0, const std::string &fname) {}
 		std::vector<std::shared_ptr<Form>> &forms() { return forms_; }
 
 		virtual bool stop(const TVector &x) { return false; }

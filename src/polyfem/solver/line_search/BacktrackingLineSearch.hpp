@@ -152,12 +152,16 @@ namespace polyfem
 
 						TVector new_x = x + step_size * delta_x;
 
-						try {
+						try
+						{
 							POLYFEM_SCOPED_TIMER("solution changed - constraint set update in LS", this->constraint_set_update_time);
 							objFunc.solution_changed(new_x);
 						}
-						catch (const std::runtime_error &e) {
+						catch (const std::runtime_error &e)
+						{
 							logger().warn("Failed to take step due to \"{}\", reduce step size...", e.what());
+
+							objFunc.save_to_file(new_x, fmt::format("forward_fail_{:d}", this->cur_iter));
 
 							step_size /= 2.0;
 							this->cur_iter++;

@@ -30,10 +30,10 @@ namespace polyfem::solver
 		{
 			for (int i : args["solver"]["advanced"]["solve_in_order"])
 				solve_in_order.push_back(i);
-			
+
 			if (solve_in_parallel)
 				logger().error("Cannot solve both in order and in parallel, ignoring the order!");
-			
+
 			assert(solve_in_order.size() == all_states.size());
 		}
 		else
@@ -191,6 +191,67 @@ namespace polyfem::solver
 		}
 	}
 
+	void AdjointNLProblem::save_to_file(const Eigen::VectorXd &x0, const std::string &fname)
+	{
+		logger().info("Saving to file {}", fname);
+		int id = 0;
+		for (const auto &state : all_states_)
+		{
+			bool save_vtu = true;
+			bool save_rest_mesh = true;
+			// for (const auto &p : parameters_)
+			// 	if (p->contains_state(*state))
+			// 	{
+			// 		save_vtu = true;
+			// 		if (p->name() == "shape")
+			// 			save_rest_mesh = true;
+			// 	}
+
+			std::string vis_mesh_path = state->resolve_output_path(fmt::format("{}_state_{:d}.vtu", fname, id));
+			std::string rest_mesh_path = state->resolve_output_path(fmt::format("{}_state_{:d}.obj", fname, id));
+			id++;
+
+			if (!save_vtu)
+				continue;
+			logger().debug("Save final vtu to file {} ...", vis_mesh_path);
+
+			double tend = state->args.value("tend", 1.0);
+			double dt = 1;
+			if (!state->args["time"].is_null())
+				dt = state->args["time"]["dt"];
+
+			Eigen::MatrixXd sol;
+			if (state->args["time"].is_null())
+				sol = state->diff_cached.u(0);
+			else
+				sol = state->diff_cached.u(state->diff_cached.size() - 1);
+
+			state->out_geom.save_vtu(
+				vis_mesh_path,
+				*state,
+				sol,
+				Eigen::MatrixXd::Zero(state->n_pressure_bases, 1),
+				tend, dt,
+				io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
+				state->is_contact_enabled(),
+				state->solution_frames);
+
+			if (!save_rest_mesh)
+				continue;
+			logger().debug("Save rest mesh to file {} ...", rest_mesh_path);
+
+			// If shape opt, save rest meshes as well
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			state->get_vertices(V);
+			state->get_elements(F);
+			if (state->mesh->dimension() == 3)
+				F = igl::boundary_facets<Eigen::MatrixXi, Eigen::MatrixXi>(F);
+
+			io::OBJWriter::write(rest_mesh_path, V, F);
+		}
+	}
+
 	void AdjointNLProblem::solution_changed(const Eigen::VectorXd &newX)
 	{
 		bool need_rebuild_basis = false;
@@ -222,7 +283,7 @@ namespace polyfem::solver
 	{
 		const auto cur_log_level = logger().level();
 		all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
-		
+
 		if (solve_in_parallel)
 		{
 			logger().info("Run simulations in parallel...");
@@ -266,7 +327,7 @@ namespace polyfem::solver
 	{
 		if (stopping_conditions_.size() == 0)
 			return false;
-		
+
 		for (auto &obj : stopping_conditions_)
 		{
 			obj->solution_changed(x);
