@@ -43,6 +43,7 @@ namespace polyfem::utils
 	class SparseMatrixCache : public MatrixCache
 	{
 	public:
+		// constructors (call init functions below)
 		SparseMatrixCache() {}
 		SparseMatrixCache(const size_t size);
 		SparseMatrixCache(const size_t rows, const size_t cols);
@@ -55,11 +56,17 @@ namespace polyfem::utils
 			return std::make_unique<SparseMatrixCache>(*this, true);
 		}
 
+		// set matrix to be size x size
 		void init(const size_t size) override;
+		// set matrix to be rows x cols
 		void init(const size_t rows, const size_t cols) override;
+		// set matrix to be a matrix of all zeros with same size as other
 		void init(const MatrixCache &other) override;
+		// set matrix to be a matrix of all zeros with same size as other (potentially with the same main cache)
 		void init(const SparseMatrixCache &other, const bool copy_main_cache_ptr = false);
 
+		// set matrix values to zero
+		// modifies tmp_, mat_, and values (setting all to zero)
 		void set_zero() override;
 
 		inline void reserve(const size_t size) override { entries_.reserve(size); }
@@ -70,8 +77,22 @@ namespace polyfem::utils
 		inline bool is_sparse() const override { return true; }
 		inline size_t mapping_size() const { return mapping_.size(); }
 
+		// e = element_index, i = global row_index, j = global column_index, value = value to add to matrix
+		// if the cache is yet to be constructed, save the row, column, and value to be added to the second cache
+		//     in this case, modifies_ entries_ and second_cache_entries_
+		// otherwise, save the value directly in the second cache
+		//     in this case, modfies values_
 		void add_value(const int e, const int i, const int j, const double value) override;
+		// if the cache is yet to be constructed, save the 
+		// cached (ordered) indices in inner_index_ and outer_index_
+		// then fill in map and second_cache_
+		//     in this case, modifies inner_index_, outer_index_, map, and second_cache_ to reflect the matrix structure
+		//     also empties second_cache_entries and sets values_ to zero
+		// otherwise, update mat_ directly using the cached indices and values_
+		//     in this case, modifies mat_ and sets values_ to zero
 		StiffnessMatrix get_matrix(const bool compute_mapping = true) override;
+		// if caches have yet to be constructed, add the saved triplets to mat_
+		// modifies tmp_ and mat_, also sets entries_ to be empty after writing its values to mat_
 		void prune() override; ///< add saved entries to stored matrix
 
 		std::shared_ptr<MatrixCache> operator+(const MatrixCache &a) const override;
@@ -87,8 +108,8 @@ namespace polyfem::utils
 		StiffnessMatrix tmp_, mat_;
 		std::vector<Eigen::Triplet<double>> entries_; ///< contains global matrix indices and corresponding value
 		std::vector<std::vector<std::pair<int, size_t>>> mapping_; ///< maps row indices to column index/local index pairs
-		std::vector<int> inner_index_, outer_index_;
-		std::vector<double> values_;
+		std::vector<int> inner_index_, outer_index_; ///< saves inner/outer indices for sparse matrix
+		std::vector<double> values_; ///< buffer for values (corresponds to inner/outer_index_ structure for sparse matrix)
 		const SparseMatrixCache *main_cache_ = nullptr;
 
 		std::vector<std::vector<int>> second_cache_; ///< maps element index to local index
