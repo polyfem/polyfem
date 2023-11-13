@@ -1144,7 +1144,6 @@ int LagrangeBasis2d::build_bases(
 			{
 				for (int e : interface_elements)
 				{
-					std::cout << "HIHIMAXMAX (REMOVE ME)" << std::endl;
 					ElementBases &b = bases[e];
 					const int discr_order = discr_orders(e);
 					const int n_el_bases = element_nodes_id[e].size();
