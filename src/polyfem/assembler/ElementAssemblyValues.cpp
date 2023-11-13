@@ -177,6 +177,7 @@ namespace polyfem
 
 					for (std::size_t ii = 0; ii < b.global().size(); ++ii)
 					{
+						// add given geometric basis function + node's contribution to the Jacobian
 						tmp.row(0) += gbasis_values[j].grad(k, 0) * b.global()[ii].node * b.global()[ii].val;
 						tmp.row(1) += gbasis_values[j].grad(k, 1) * b.global()[ii].node * b.global()[ii].val;
 					}
@@ -252,6 +253,7 @@ namespace polyfem
 			const int n_local_bases = int(basis.bases.size());
 			const int n_local_g_bases = int(gbasis.bases.size());
 
+			// evaluate on reference element
 			basis.evaluate_bases(pts, basis_values);
 			basis.evaluate_grads(pts, basis_values);
 
@@ -319,10 +321,13 @@ namespace polyfem
 			// else
 			// 	finalize(mval, dxmv, dymv);
 
+			// compute geometric mapping as linear combination of geometric basis functions
 			const auto &gbasis_values = (&basis == &gbasis) ? basis_values : g_basis_values_cache_;
 			assert(gbasis_values.size() == n_local_g_bases);
 			val.resize(pts.rows(), pts.cols());
 			val.setZero();
+
+			// loop over geometric basis functions
 			for (int j = 0; j < n_local_g_bases; ++j)
 			{
 				const Basis &b = gbasis.bases[j];
@@ -331,15 +336,18 @@ namespace polyfem
 				assert(gbasis.has_parameterization);
 				assert(tmp.size() == val.rows());
 
+				// loop over relevant global nodes
 				for (std::size_t ii = 0; ii < b.global().size(); ++ii)
 				{
 					for (long k = 0; k < val.rows(); ++k)
 					{
+						// add contribution from geometric basis function + node
 						val.row(k) += tmp(k) * b.global()[ii].node * b.global()[ii].val;
 					}
 				}
 			}
 
+			// compute Jacobian
 			if (is_volume)
 				finalize3d(gbasis, gbasis_values);
 			else

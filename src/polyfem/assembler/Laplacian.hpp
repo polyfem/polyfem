@@ -16,7 +16,7 @@ namespace polyfem
 			std::string name() const override { return "Laplacian"; }
 			std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
 
-			// computes local stiffness matrix (1x1) for bases i,j
+			// computes local stiffness matrix (1x1) for bases i,j (where i,j is passed in through data)
 			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> assemble(const LinearAssemblerData &data) const override;
 
 			// uses autodiff to compute the rhs for a fabricated solution

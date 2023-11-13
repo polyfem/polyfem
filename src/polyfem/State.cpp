@@ -616,6 +616,8 @@ namespace polyfem
 		stats.reset();
 
 		disc_orders.resize(mesh->n_elements());
+
+		// only has an effect for NodeProblems, which don't show up in any tests/online docs?
 		problem->init(*mesh);
 
 		logger().info("Building {} basis...", (iso_parametric() ? "isoparametric" : "not isoparametric"));

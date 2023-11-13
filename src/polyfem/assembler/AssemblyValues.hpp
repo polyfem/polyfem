@@ -12,6 +12,8 @@ namespace polyfem
 		class AssemblyValues
 		{
 		public:
+			// m = number of quadrature points
+
 			// Weighted sum to express the current ("virtual") node as a linear-combination
 			// of the real (unknown) nodes
 			std::vector<basis::Local2Global> global;

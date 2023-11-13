@@ -232,13 +232,18 @@ namespace polyfem::solver
 			max_step = ipc::compute_collision_free_stepsize(
 				collision_mesh_, V0, V1, broad_phase_method_, ccd_tolerance_, ccd_max_iterations_);
 
+		if (save_ccd_debug_meshes && ipc::has_intersections(collision_mesh_, (V1 - V0) * max_step + V0))
+		{
+			log_and_throw_error("Taking max_step results in intersections (max_step={})", max_step);
+		}
+
 #ifndef NDEBUG
 		// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
 		Eigen::MatrixXd V_toi = (V1 - V0) * max_step + V0;
 
 		while (ipc::has_intersections(collision_mesh_, V_toi))
 		{
-			logger().error("taking max_step results in intersections (max_step={:g})", max_step);
+			logger().error("Taking max_step results in intersections (max_step={:g})", max_step);
 			max_step /= 2.0;
 
 			const double Linf = (V_toi - V0).lpNorm<Eigen::Infinity>();
