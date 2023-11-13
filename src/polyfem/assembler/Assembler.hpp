@@ -234,7 +234,8 @@ namespace polyfem::assembler
 		// the bilinear form (local assembler) is encoded by 
 		// the overloaded assemble (see below) function that 
 		// the subclass (eg Laplacian) defines
-		// sets stiffness
+		// sets stiffness and modifies cache if it has not 
+		// already been computed
 		void assemble(
 			const bool is_volume,
 			const int n_basis,
