@@ -183,6 +183,9 @@ namespace polyfem::assembler
 			timer.start();
 			assert(cache.is_mass() == is_mass);
 
+			// (potentially parallel) loop over elements
+			// Note that n_bases is the number of elements since ach ElementBases object stores
+			// all local basis functions on a given element
 			maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 				LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
 

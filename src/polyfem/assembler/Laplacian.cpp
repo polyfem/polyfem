@@ -18,6 +18,7 @@ namespace polyfem::assembler
 		assert(gradi.rows() == data.da.size());
 		for (int k = 0; k < gradi.rows(); ++k)
 		{
+			// compute grad(phi_i) dot grad(phi_j) weighted by quadrature weights
 			res += gradi.row(k).dot(gradj.row(k)) * data.da(k);
 		}
 		return Eigen::Matrix<double, 1, 1>::Constant(res);

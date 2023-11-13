@@ -223,13 +223,18 @@ namespace polyfem::assembler
 	};
 
 	// assemble matrix based on the local assembler
-	// local assembler is eg Laplce, LinearElasticy etc
+	// local assembler is eg Laplace, LinearElasticity etc
 	class LinearAssembler : virtual public Assembler
 	{
 	public:
 		LinearAssembler();
 		virtual ~LinearAssembler() = default;
 
+		// assembles the stiffness matrix for the given basis
+		// the bilinear form (local assembler) is encoded by 
+		// the overloaded assemble (see below) function that 
+		// the subclass (eg Laplacian) defines
+		// sets stiffness
 		void assemble(
 			const bool is_volume,
 			const int n_basis,
@@ -241,6 +246,8 @@ namespace polyfem::assembler
 
 		virtual bool is_linear() const override { return true; }
 
+		// local assembly function that defines the bilinear form (LHS)
+		// computes and returns a single local stiffness value
 		virtual Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> assemble(const LinearAssemblerData &data) const = 0;
 	};
 

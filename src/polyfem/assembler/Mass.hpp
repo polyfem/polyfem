@@ -11,7 +11,9 @@ namespace polyfem::assembler
 	public:
 		using Assembler::assemble;
 
-		// computes local stiffness matrix (1x1) for bases i,j (where i,j is passed in through data)
+		// computes and returns local stiffness matrix (1x1) for 
+		// bases i,j (where i,j is passed in through data)
+		// ie integral of phi_i * phi_j on the given element
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;
 
