@@ -191,6 +191,9 @@ namespace polyfem::assembler
 					ElementAssemblyValues &vals = local_storage.vals;
 					// igl::Timer timer; timer.start();
 					// vals.compute(e, is_volume, bases[e], gbases[e]);
+
+					// compute geometric mapping
+					// evaluate and store basis functions/their gradients at quadrature points
 					cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
 					const Quadrature &quadrature = vals.quadrature;
@@ -205,16 +208,19 @@ namespace polyfem::assembler
 						// const Eigen::MatrixXd &gradi = values_i.grad_t_m;
 						const auto &global_i = vals.basis_values[i].global;
 
+						// loop over other bases up to the current one, taking advantage of symmetry
 						for (int j = 0; j <= i; ++j)
 						{
 							// const AssemblyValues &values_j = vals.basis_values[j];
 							// const Eigen::MatrixXd &gradj = values_j.grad_t_m;
 							const auto &global_j = vals.basis_values[j].global;
 
+							// compute local entry in stiffness matrix
 							const auto stiffness_val = assemble(LinearAssemblerData(vals, i, j, local_storage.da));
 							assert(stiffness_val.size() == size() * size());
 
 							// igl::Timer t1; t1.start();
+							// loop over dimensions of the problem 
 							for (int n = 0; n < size(); ++n)
 							{
 								for (int m = 0; m < size(); ++m)
@@ -225,6 +231,7 @@ namespace polyfem::assembler
 										continue;
 									}
 
+									// loop over the global nodes corresponding to local element (useful for non-conforming cases)
 									for (size_t ii = 0; ii < global_i.size(); ++ii)
 									{
 										const auto gi = global_i[ii].index * size() + m;
@@ -235,6 +242,7 @@ namespace polyfem::assembler
 											const auto gj = global_j[jj].index * size() + n;
 											const auto wj = global_j[jj].val;
 
+											// add local value to the global matrix (weighted by corresponding nodes)
 											local_storage.cache->add_value(e, gi, gj, local_value * wi * wj);
 											if (j < i)
 											{

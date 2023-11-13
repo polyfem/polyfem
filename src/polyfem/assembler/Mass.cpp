@@ -5,6 +5,8 @@ namespace polyfem::assembler
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> Mass::assemble(const LinearAssemblerData &data) const
 	{
 		double tmp = 0;
+		
+		// loop over quadrature points
 		for (int q = 0; q < data.da.size(); ++q)
 		{
 			const double rho = density_(data.vals.quadrature.points.row(q), data.vals.val.row(q), data.vals.element_id);
