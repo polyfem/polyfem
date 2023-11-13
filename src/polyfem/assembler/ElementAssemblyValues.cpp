@@ -183,10 +183,12 @@ namespace polyfem
 					}
 				}
 
+				// save Jacobian's determinant
 				det(k) = tmp.determinant();
 				// assert(det(k)>0);
 				// std::cout<<det(k)<<std::endl;
 
+				// save Jacobian's inverse transpose
 				jac_it[k] = tmp.inverse().transpose();
 				for (std::size_t j = 0; j < basis_values.size(); ++j)
 					basis_values[j].grad_t_m.row(k) = basis_values[j].grad.row(k) * jac_it[k];
@@ -209,6 +211,7 @@ namespace polyfem
 			if (&basis != &gbasis)
 				g_basis_values_cache_.resize(gbasis.bases.size());
 
+			// dead code: can it be removed?
 			// Eigen::MatrixXd mval = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 
 			// Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
@@ -271,6 +274,7 @@ namespace polyfem
 				assert(ass_val.grad.cols() == pts.cols());
 			}
 
+			// dead code: can it be removed?
 			// for(int j = 0; j < n_local_bases; ++j)
 			// {
 			// 	AssemblyValues &ass_val = basis_values[j];
@@ -296,6 +300,7 @@ namespace polyfem
 				return;
 			}
 
+			// dead code: can it be removed?
 			// for(int j = 0; j < n_local_g_bases; ++j)
 			// {
 			// 	const Basis &b=gbasis.bases[j];
