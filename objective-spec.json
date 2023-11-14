@@ -819,6 +819,10 @@
         "pointer": "/",
         "type": "object",
         "type_name": "layer_thickness",
+        "required": [
+            "type",
+            "state"
+        ],
         "optional": [
             "boundary_ids",
             "dmin",
