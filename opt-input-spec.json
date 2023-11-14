@@ -83,13 +83,34 @@
             "better_initial_guess",
             "x_delta",
             "grad_norm",
+            "debug_fd",
+            "debug_fd_eps",
             "max_iterations",
             "use_grad_norm",
             "relative_gradient",
             "line_search",
+            "export_energy",
             "first_grad_norm_tol"
         ],
         "doc": "Settings for optimization nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
+    },
+    {
+        "pointer": "/solver/nonlinear/debug_fd",
+        "default": false,
+        "type": "bool",
+        "doc": "Use finite difference to verify gradient in optimization"
+    },
+    {
+        "pointer": "/solver/nonlinear/debug_fd_eps",
+        "default": 1e-7,
+        "type": "float",
+        "doc": "Use finite difference to verify gradient in optimization"
+    },
+    {
+        "pointer": "/solver/nonlinear/export_energy",
+        "default": "",
+        "type": "string",
+        "doc": "Save energy and gradient in optimizations to file"
     },
     {
         "pointer": "/solver/nonlinear/solver",
@@ -870,7 +891,8 @@
         "optional": [
             "solve_in_parallel",
             "solve_in_order",
-            "better_initial_guess"
+            "better_initial_guess",
+            "slim_frequency"
         ],
         "doc": "Advanced settings for arranging forward simulations"
     },
@@ -896,5 +918,11 @@
         "default": false,
         "type": "bool",
         "doc": "Given simulation ordering, use the last simulation result as the initial guess for the next one."
+    },
+    {
+        "pointer": "/solver/advanced/slim_frequency",
+        "default": 0,
+        "type": "int",
+        "doc": "Apply slim smoothing to the optimization every number of iterations."
     }
 ]
