@@ -8,6 +8,7 @@
 #include <polyfem/State.hpp>
 #include <igl/boundary_facets.h>
 #include <igl/writeOBJ.h>
+#include <polyfem/mesh/SlimSmooth.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
 
@@ -20,6 +21,7 @@ namespace polyfem::solver
 		  all_states_(all_states),
 		  solve_log_level(args["output"]["solve_log_level"]),
 		  save_freq(args["output"]["save_frequency"]),
+		  slim_freq(args["solver"]["advanced"]["slim_frequency"]),
 		  solve_in_parallel(args["solver"]["advanced"]["solve_in_parallel"]),
 		  better_initial_guess(args["solver"]["advanced"]["better_initial_guess"])
 	{
@@ -262,6 +264,23 @@ namespace polyfem::solver
 			v->update(newX);
 			if (v->get_parameter_type() == ParameterType::Shape)
 				need_rebuild_basis = true;
+		}
+
+		// Apply slim to all states on a frequency
+		if (need_rebuild_basis && (slim_freq > 0) && (iter % slim_freq == 0))
+		{
+			for (auto state : all_states_)
+			{
+				Eigen::MatrixXd V, V_new;
+				Eigen::MatrixXi F;
+				state->get_vertices(V);
+				state->get_elements(F);
+
+				polyfem::mesh::apply_slim(V, F, V_new);
+
+				for (int i = 0; i < V_new.rows(); ++i)
+					state->set_mesh_vertex(i, V_new.row(i));
+			}
 		}
 
 		if (need_rebuild_basis)

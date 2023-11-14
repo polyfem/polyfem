@@ -2576,7 +2576,8 @@
             "cache_size",
             "lump_mass_matrix",
             "lagged_regularization_weight",
-            "lagged_regularization_iterations"
+            "lagged_regularization_iterations",
+            "slim_frequency"
         ],
         "doc": "Advanced settings for the solver"
     },
@@ -2603,6 +2604,12 @@
         "default": 1,
         "type": "int",
         "doc": "Number of regularize singular static problems."
+    },
+    {
+        "pointer": "/solver/advanced/slim_frequency",
+        "default": 0,
+        "type": "int",
+        "doc": "Apply slim smoothing to the optimization every number of iterations."
     },
     {
         "pointer": "/materials",

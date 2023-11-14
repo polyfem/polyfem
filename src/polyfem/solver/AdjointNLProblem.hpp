@@ -55,6 +55,7 @@ namespace polyfem::solver
 
 		const int solve_log_level;
 		const int save_freq;
+		const int slim_freq;
 
 		const bool solve_in_parallel;
 		std::vector<int> solve_in_order;
