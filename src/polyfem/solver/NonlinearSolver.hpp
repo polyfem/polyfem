@@ -117,9 +117,9 @@ namespace cppoptlib
 
 		ErrorCode m_error_code;
 
-		std::string export_energy_path;
+		std::string export_energy_path = "";
 
-		bool debug_finite_diff;
+		bool debug_finite_diff = false;
 		double finite_diff_eps;
 
 		// ====================================================================

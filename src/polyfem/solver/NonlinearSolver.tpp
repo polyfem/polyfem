@@ -27,10 +27,13 @@ namespace cppoptlib
 
 		first_grad_norm_tol = solver_params["first_grad_norm_tol"];
 
-		export_energy_path = solver_params["export_energy"];
+		if (solver_params.contains("export_energy"))
+			export_energy_path = solver_params["export_energy"];
 
-		debug_finite_diff = solver_params["debug_fd"];
-		finite_diff_eps = solver_params["debug_fd_eps"];
+		if (solver_params.contains("debug_fd"))
+			debug_finite_diff = solver_params["debug_fd"];
+		if (solver_params.contains("debug_fd_eps"))
+			finite_diff_eps = solver_params["debug_fd_eps"];
 
 		use_grad_norm_tol *= characteristic_length;
 		first_grad_norm_tol *= characteristic_length;
@@ -74,6 +77,7 @@ namespace cppoptlib
 
 		// Log error in either case to make it more visible in the logs.
 		polyfem::logger().log(match ? spdlog::level::info : spdlog::level::err, "step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic);
+		std::cout << fmt::format("step size: {}, finite difference: {}, derivative: {}", finite_diff_eps, fd, analytic) << std::endl;
 
 		objFunc.solution_changed(x);
 
