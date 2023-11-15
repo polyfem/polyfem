@@ -47,7 +47,7 @@ namespace polyfem::mesh
 
 	} // namespace
 
-	void apply_slim(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::MatrixXd &V_new)
+	void apply_slim(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const Eigen::MatrixXd &V_new, Eigen::MatrixXd &V_smooth)
 	{
 		const int dim = F.cols() - 1;
 		if (dim == 2)
@@ -79,7 +79,8 @@ namespace polyfem::mesh
 			V_extended.setZero(V.rows(), 3);
 			V_extended.block(0, 0, V.rows(), dim) = V;
 			Eigen::VectorXi boundary_indices_ = Eigen::VectorXi::Map(boundary_indices.data(), boundary_indices.size());
-			Eigen::MatrixXd boundary_constraints = V_extended(boundary_indices_, Eigen::all);
+			Eigen::MatrixXd boundary_constraints = V_new(boundary_indices_, Eigen::all);
+
 			igl::slim_precompute(
 				V_extended,
 				F,
@@ -90,7 +91,7 @@ namespace polyfem::mesh
 				boundary_constraints,
 				soft_const_p);
 
-			V_new.setZero(V.rows(), V.cols());
+			V_smooth.setZero(V.rows(), V.cols());
 
 			auto is_good_enough = [](const Eigen::MatrixXd &V, const Eigen::VectorXi &b, const Eigen::MatrixXd &C, double &error, double tol = 1e-6) {
 				error = 0.0;
@@ -109,12 +110,12 @@ namespace polyfem::mesh
 			{
 				igl::slim_solve(slim_data, min_iter);
 				good_enough = is_good_enough(slim_data.V_o, boundary_indices_, boundary_constraints, error, 1e-8);
-				V_new = slim_data.V_o.block(0, 0, V_new.rows(), dim);
+				V_smooth = slim_data.V_o.block(0, 0, V_smooth.rows(), dim);
 				it += min_iter;
 			} while (it < max_it && !good_enough);
 
 			for (unsigned i = 0; i < boundary_indices_.rows(); i++)
-				V_new.row(boundary_indices_(i)) = boundary_constraints.row(i);
+				V_smooth.row(boundary_indices_(i)) = boundary_constraints.row(i);
 
 			logger().debug("SLIM finished in {} iterations", it);
 

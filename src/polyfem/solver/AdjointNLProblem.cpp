@@ -258,6 +258,14 @@ namespace polyfem::solver
 	{
 		bool need_rebuild_basis = false;
 
+		std::vector<Eigen::MatrixXd> V_old_list;
+		for (auto state : all_states_)
+		{
+			Eigen::MatrixXd V;
+			state->get_vertices(V);
+			V_old_list.push_back(V);
+		}
+
 		// update to new parameter and check if the new parameter is valid to solve
 		for (const auto &v : variables_to_simulation_)
 		{
@@ -269,17 +277,18 @@ namespace polyfem::solver
 		// Apply slim to all states on a frequency
 		if (need_rebuild_basis && (slim_freq > 0) && (iter % slim_freq == 0))
 		{
+			int state_num = 0;
 			for (auto state : all_states_)
 			{
-				Eigen::MatrixXd V, V_new;
+				Eigen::MatrixXd V_new, V_smooth;
 				Eigen::MatrixXi F;
-				state->get_vertices(V);
+				state->get_vertices(V_new);
 				state->get_elements(F);
 
-				polyfem::mesh::apply_slim(V, F, V_new);
+				polyfem::mesh::apply_slim(V_old_list[state_num++], F, V_new, V_smooth);
 
-				for (int i = 0; i < V_new.rows(); ++i)
-					state->set_mesh_vertex(i, V_new.row(i));
+				for (int i = 0; i < V_smooth.rows(); ++i)
+					state->set_mesh_vertex(i, V_smooth.row(i));
 			}
 		}
 
