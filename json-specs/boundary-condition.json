@@ -1,4 +1,5 @@
-[{
+[
+    {
         "pointer": "/",
         "default": [],
         "type": "list",
@@ -26,13 +27,9 @@
     },
     {
         "pointer": "/*/value/*",
-        "type": "string",
+        "type": "include",
+        "spec_file": "value-no.json",
         "doc": "Values of boundary condition for each dimension as a function of $x,y,z,t$."
-    },
-    {
-        "pointer": "/*/value/*",
-        "type": "float",
-        "doc": "Values of boundary condition for each dimension."
     },
     {
         "pointer": "/*/interpolation",

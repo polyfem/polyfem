@@ -1,4 +1,5 @@
-[{
+[
+    {
         "pointer": "/",
         "type": "object",
         "required": [
@@ -1855,105 +1856,6 @@
         "doc": "Material Parameters including ID"
     },
     {
-        "pointer": "/materials/*/id",
-        "type": "int",
-        "default": 0,
-        "doc": "Volume selection ID"
-    },
-    {
-        "pointer": "/materials/*/id",
-        "type": "list",
-        "doc": "Volume selection IDs"
-    },
-    {
-        "pointer": "/materials/*/id/*",
-        "type": "int",
-        "doc": "Volume selection ID"
-    },
-    {
-        "pointer": "/materials/*/E",
-        "type": "float",
-        "doc": "Young's modulus"
-    },
-    {
-        "pointer": "/materials/*/nu",
-        "type": "file",
-        "doc": "Poisson's ratio"
-    },
-    {
-        "pointer": "/materials/*/E",
-        "type": "file",
-        "doc": "Young's modulus"
-    },
-    {
-        "pointer": "/materials/*/E",
-        "type": "object",
-        "required": [
-            "value",
-            "unit"
-        ],
-        "doc": "Young's modulus"
-    },
-    {
-        "pointer": "/materials/*/E/unit",
-        "type": "string",
-        "doc": "The unit of the Young's modulus"
-    },
-    {
-        "pointer": "/materials/*/E/value",
-        "type": "float",
-        "doc": "The value of the Young's modulus"
-    },
-    {
-        "pointer": "/materials/*/E/value",
-        "type": "file",
-        "doc": "The value of the Young's modulus"
-    },
-    {
-        "pointer": "/materials/*/nu",
-        "type": "float",
-        "doc": "Poisson's ratio"
-    },
-    {
-        "pointer": "/materials/*/viscosity",
-        "type": "float",
-        "doc": "Fuild's viscosity"
-    },
-    {
-        "pointer": "/materials/*/elasticity_tensor",
-        "type": "list",
-        "doc": "Symmetric elasticity tensor"
-    },
-    {
-        "pointer": "/materials/*/elasticity_tensor/*",
-        "type": "float",
-        "default": 0,
-        "doc": "Entries of elasticity tensor"
-    },
-    {
-        "pointer": "/materials/*/rho",
-        "type": "float",
-        "doc": "Density",
-        "default": 1
-    },
-    {
-        "pointer": "/materials/*/phi",
-        "type": "float",
-        "doc": "Damping parameter 1",
-        "default": 0
-    },
-    {
-        "pointer": "/materials/*/psi",
-        "type": "float",
-        "doc": "Damping parameter 2",
-        "default": 0
-    },
-    {
-        "pointer": "/materials/*/k",
-        "type": "float",
-        "doc": "Scaling for Helmholtz/Bulk modulus for Ogden"
-    },
-    {
         "pointer": "/materials/*/type",
         "type": "string",
         "options": [
@@ -1977,88 +1879,155 @@
         "doc": "Type of material"
     },
     {
+        "pointer": "/materials/*/id",
+        "type": "int",
+        "default": 0,
+        "doc": "Volume selection ID"
+    },
+    {
+        "pointer": "/materials/*/id",
+        "type": "list",
+        "doc": "Volume selection IDs"
+    },
+    {
+        "pointer": "/materials/*/id/*",
+        "type": "int",
+        "doc": "Volume selection ID"
+    },
+    {
+        "pointer": "/materials/*/E",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/nu",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Poisson's ratio"
+    },
+    {
+        "pointer": "/materials/*/viscosity",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Fuild's viscosity"
+    },
+    {
+        "pointer": "/materials/*/elasticity_tensor",
+        "type": "list",
+        "doc": "Symmetric elasticity tensor"
+    },
+    {
+        "pointer": "/materials/*/elasticity_tensor/*",
+        "default": 0,
+        "type": "include",
+        "spec_file": "value0.json",
+        "doc": "Entries of elasticity tensor"
+    },
+    {
+        "pointer": "/materials/*/rho",
+        "type": "include",
+        "spec_file": "value1.json",
+        "doc": "Density",
+        "default": 1
+    },
+    {
+        "pointer": "/materials/*/phi",
+        "type": "include",
+        "spec_file": "value0.json",
+        "doc": "Damping parameter 1",
+        "default": 0
+    },
+    {
+        "pointer": "/materials/*/psi",
+        "type": "include",
+        "spec_file": "value0.json",
+        "doc": "Damping parameter 2",
+        "default": 0
+    },
+    {
+        "pointer": "/materials/*/k",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Scaling for Helmholtz/Bulk modulus for Ogden"
+    },
+    {
         "pointer": "/materials/*/mu",
-        "type": "float",
+        "type": "include",
+        "spec_file": "value-no.json",
         "doc": "First Lamé parameters"
     },
     {
         "pointer": "/materials/*/lambda",
-        "type": "float",
+        "type": "include",
+        "spec_file": "value-no.json",
         "doc": "Second Lamé parameter"
     },
     {
         "pointer": "/materials/*/c1",
-        "type": "float",
+        "type": "include",
+        "spec_file": "value-no.json",
         "doc": "First Parameter for Mooney-Rivlin"
     },
     {
         "pointer": "/materials/*/c2",
-        "type": "float",
+        "type": "include",
+        "spec_file": "value-no.json",
         "doc": "Second Parameter for Mooney-Rivlin"
     },
     {
         "pointer": "/materials/*/c3",
-        "type": "float",
+        "type": "include",
+        "spec_file": "value-no.json",
         "doc": "Third Parameter for Mooney-Rivlin"
     },
     {
         "pointer": "/materials/*/d1",
-        "type": "float",
-        "doc": ""
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "MooneyRivlin third parameter"
     },
     {
         "pointer": "/materials/*/alphas",
-        "type": "float",
-        "doc": ""
-    },
-    {
-        "pointer": "/materials/*/mus",
-        "type": "float",
-        "doc": ""
-    },
-    {
-        "pointer": "/materials/*/Ds",
-        "type": "float",
-        "doc": ""
-    },
-    {
-        "pointer": "/materials/*/alphas",
-        "type": "list",
-        "doc": ""
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Ogden alpha"
     },
     {
         "pointer": "/materials/*/mus",
         "type": "list",
-        "doc": ""
+        "doc": "Ogden mu"
     },
     {
         "pointer": "/materials/*/Ds",
         "type": "list",
-        "doc": ""
+        "doc": "Ogden D"
     },
     {
         "pointer": "/materials/*/alphas/*",
-        "type": "float",
-        "doc": ""
+        "type": "include",
+        "spec_file": "value-no.json"
     },
     {
         "pointer": "/materials/*/mus/*",
-        "type": "float",
-        "doc": ""
+        "type": "include",
+        "spec_file": "value-no.json"
     },
     {
         "pointer": "/materials/*/Ds/*",
-        "type": "float",
-        "doc": ""
+        "type": "include",
+        "spec_file": "value-no.json"
     },
     {
         "pointer": "/materials/*/c",
-        "type": "float",
+        "type": "include",
+        "spec_file": "value-no.json",
         "doc": "Coefficient(s) of Incompressible Ogden"
     },
     {
         "pointer": "/materials/*/m",
-        "type": "float",
+        "type": "include",
+        "spec_file": "value-no.json",
         "doc": "Exponent(s) of Incompressible Ogden"
     },
     {
@@ -2073,12 +2042,14 @@
     },
     {
         "pointer": "/materials/*/c/*",
-        "type": "float",
+        "type": "include",
+        "spec_file": "value-no.json",
         "doc": "Coefficient of Incompressible Ogden"
     },
     {
         "pointer": "/materials/*/m/*",
-        "type": "float",
+        "type": "include",
+        "spec_file": "value-no.json",
         "doc": "Exponent(s) of Incompressible Ogden"
     },
     {
@@ -2096,13 +2067,9 @@
     },
     {
         "pointer": "/boundary_conditions/rhs",
-        "type": "float",
-        "doc": "Right-hand side of the system being solved for scalar-valued PDEs"
-    },
-    {
-        "pointer": "/boundary_conditions/rhs",
-        "type": "string",
-        "doc": "Right-hand side of the system being solved as a function of $x,y,z,t$."
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Right-hand side of the system being solved, value."
     },
     {
         "pointer": "/boundary_conditions/rhs",
@@ -2112,14 +2079,10 @@
     },
     {
         "pointer": "/boundary_conditions/rhs/*",
+        "type": "include",
+        "spec_file": "value0.json",
         "default": 0,
-        "type": "float",
         "doc": "Right-hand side of the system being solved, value."
-    },
-    {
-        "pointer": "/boundary_conditions/rhs/*",
-        "type": "string",
-        "doc": "Right-hand side of the system being solved as a function of $x,y,z,t$."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary",
@@ -2210,13 +2173,9 @@
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/value",
-        "type": "string",
+        "type": "include",
+        "spec_file": "value-no.json",
         "doc": "Values of pressure Neumann boundary condition as a function of $x,y,z,t$"
-    },
-    {
-        "pointer": "/boundary_conditions/pressure_boundary/*/value",
-        "type": "float",
-        "doc": "Values of pressure Neumann boundary condition"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/dimension",
@@ -2298,13 +2257,9 @@
     },
     {
         "pointer": "/initial_conditions/solution/*/value/*",
-        "type": "float",
+        "type": "include",
+        "spec_file": "value-no.json",
         "doc": "value"
-    },
-    {
-        "pointer": "/initial_conditions/solution/*/value/*",
-        "type": "string",
-        "doc": "as a function of $x,y,z,t$"
     },
     {
         "pointer": "/initial_conditions/velocity",
@@ -2336,13 +2291,9 @@
     },
     {
         "pointer": "/initial_conditions/velocity/*/value/*",
-        "type": "float",
+        "type": "include",
+        "spec_file": "value-no.json",
         "doc": "value"
-    },
-    {
-        "pointer": "/initial_conditions/velocity/*/value/*",
-        "type": "string",
-        "doc": "value as a function of $x,y,z,t$"
     },
     {
         "pointer": "/initial_conditions/acceleration",
@@ -2374,14 +2325,9 @@
     },
     {
         "pointer": "/initial_conditions/acceleration/*/value/*",
-        "type": "float",
-        "default": 0,
+        "type": "include",
+        "spec_file": "value-no.json",
         "doc": "value"
-    },
-    {
-        "pointer": "/initial_conditions/acceleration/*/value/*",
-        "type": "string",
-        "doc": "value as a function of $x,y,z,t$"
     },
     {
         "pointer": "/output",
