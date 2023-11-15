@@ -547,7 +547,7 @@ namespace
 		const int n_face_nodest = nnt * (nnt + 1) / 2;
 
 		const int nnq = q > 1 ? (q - 1) : 0;
-		const int n_face_nodesq = nnq * nnq;
+		const int n_face_nodesq = nnq * n_edge_nodest / 3;
 
 		const int n_edge_nodes = n_edge_nodest * 2 + nnq * 3;
 		const int n_face_nodes = n_face_nodest * 2 + n_face_nodesq * 3;
@@ -652,7 +652,8 @@ namespace
 			// }
 			// else
 			{
-				auto node_ids = nodes.node_ids_from_face(index, lf < 2 ? (p - 2) : (q - 1));
+				// todo prism, nodes are not necessarly a square
+				auto node_ids = nodes.node_ids_from_face(index, lf < 2 ? (p - 2) : ((q - 1) * (p - 1)));
 				// assert(node_ids.size() == n_loc_f);
 				res.insert(res.end(), node_ids.begin(), node_ids.end());
 			}
