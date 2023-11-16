@@ -165,8 +165,8 @@ namespace polyfem::assembler
 	{
 		assert(size() > 0);
 
-		const int max_triplets_size = int(1e7);
-		const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * size());
+		const long int max_triplets_size = long(1e7);
+		const long int buffer_size = std::min(long(max_triplets_size), long(n_basis) * size());
 		// #ifdef POLYFEM_WITH_TBB
 		// 		buffer_size /= tbb::task_scheduler_init::default_num_threads();
 		// #endif
@@ -178,7 +178,7 @@ namespace polyfem::assembler
 
 			auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, stiffness.rows(), stiffness.cols()));
 
-			const int n_bases = int(bases.size());
+			const long int n_bases = int(bases.size());
 			igl::Timer timer;
 			timer.start();
 			assert(cache.is_mass() == is_mass);
@@ -197,7 +197,7 @@ namespace polyfem::assembler
 
 					assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 					local_storage.da = vals.det.array() * quadrature.weights.array();
-					const int n_loc_bases = int(vals.basis_values.size());
+					const long int n_loc_bases = int(vals.basis_values.size());
 
 					for (int i = 0; i < n_loc_bases; ++i)
 					{
@@ -268,7 +268,7 @@ namespace polyfem::assembler
 
 			// Collect thread storages
 			std::vector<LocalThreadMatStorage *> storages(storage.size());
-			int index = 0;
+			long int index = 0;
 			for (auto &local_storage : storage)
 			{
 				storages[index++] = &local_storage;
@@ -282,10 +282,10 @@ namespace polyfem::assembler
 			logger().trace("done pruning triplets {}s...", timer.getElapsedTime());
 
 			// Prepares for parallel concatenation
-			std::vector<int> offsets(storage.size());
+			std::vector<long int> offsets(storage.size());
 
 			index = 0;
-			int triplet_count = 0;
+			long int triplet_count = 0;
 			for (auto &local_storage : storage)
 			{
 				offsets[index++] = triplet_count;
@@ -336,14 +336,14 @@ namespace polyfem::assembler
 				// Parallel copy into triplets
 				maybe_parallel_for(storages.size(), [&](int i) {
 					const SparseMatrixCache &cache = dynamic_cast<const SparseMatrixCache &>(*storages[i]->cache);
-					int offset = offsets[i];
+					long int offset = offsets[i];
 
 					std::copy(cache.entries().begin(), cache.entries().end(), triplets.begin() + offset);
 					offset += cache.entries().size();
 
 					if (cache.mat().nonZeros() > 0)
 					{
-						int count = 0;
+						long int count = 0;
 						for (int k = 0; k < cache.mat().outerSize(); ++k)
 						{
 							for (Eigen::SparseMatrix<double>::InnerIterator it(cache.mat(), k); it; ++it)
