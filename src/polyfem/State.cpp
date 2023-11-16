@@ -617,9 +617,7 @@ namespace polyfem
 
 		disc_orders.resize(mesh->n_elements());
 
-		// only has an effect for NodeProblems, which don't show up in any tests/online docs?
 		problem->init(*mesh);
-
 		logger().info("Building {} basis...", (iso_parametric() ? "isoparametric" : "not isoparametric"));
 		const bool has_polys = mesh->has_poly();
 
@@ -1450,11 +1448,7 @@ namespace polyfem
 		}
 
 		igl::Timer timer;
-		// std::string rhs_path = "";
-		// if (args["boundary_conditions"]["rhs"].is_string())
-		// 	rhs_path = resolve_input_path(args["boundary_conditions"]["rhs"]);
 
-		// only has effect for ElasticProblem 
 		json p_params = {};
 		p_params["formulation"] = assembler->name();
 		p_params["root_path"] = root_path();
