@@ -742,7 +742,7 @@ int LagrangeBasis2d::build_bases(
 
 		for (int j = 0; j < n_el_bases; ++j)
 		{
-			// is this for polygons?
+			// mark interface between elements of different order
 			const int global_index = element_nodes_id[e][j];
 			if (global_index < 0)
 			{
@@ -801,7 +801,6 @@ int LagrangeBasis2d::build_bases(
 		{
 			const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
 			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
-			// why are these different / how are they set?
 			b.set_quadrature([real_order](Quadrature &quad) {
 				TriQuadrature tri_quadrature;
 				tri_quadrature.get_quadrature(real_order, quad);
@@ -1140,8 +1139,10 @@ int LagrangeBasis2d::build_bases(
 		}
 		else
 		{
+			// loop over all potential element orders (since multiple loops may be needed to constrain interfaces between more than two elements)
 			for (int pp = 2; pp <= autogen::MAX_P_BASES; ++pp)
 			{
+				// loop again over interface elements to address mismatched polynomial orders by constraining the higher order nodes
 				for (int e : interface_elements)
 				{
 					ElementBases &b = bases[e];
@@ -1192,22 +1193,6 @@ int LagrangeBasis2d::build_bases(
 								else
 									assert(false);
 
-								// std::cout<<indices.transpose()<<std::endl;
-								// auto asd = quadr_tri_edge_local_nodes(mesh, index);
-								// std::cout<<asd[0]<<" "<<asd[1]<<" "<<asd[2]<<std::endl;
-
-								// std::cout<<"\n"<<lnodes<<"\nnewp\n"<<node_position<<"\n"<<std::endl;
-								// const auto param_p = quadr_tri_edge_local_nodes_coordinates(mesh, index);
-
-								// if( j < 3)
-								// 	node_position = param_p.row(0);
-								// else if( j < 3 + 3*(discr_order-1)){
-								// 	node_position = param_p.row( (j-3) % (discr_order-1) + 1);
-								// }
-								// else
-								// 	assert(false);
-								// std::cout<<node_position<<"\n\n----\n"<<std::endl;
-
 								const auto &other_bases = bases[other_face];
 								// Eigen::MatrixXd w;
 								std::vector<AssemblyValues> w;
@@ -1219,10 +1204,6 @@ int LagrangeBasis2d::build_bases(
 									if (std::abs(w[i].val(0)) < 1e-8)
 										continue;
 
-									// assert(other_bases.bases[i].global().size() == 1);
-									// const auto &other_global = other_bases.bases[i].global().front();
-									// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
-									// b.bases[j].global().emplace_back(other_global.index, other_global.node, w(i));
 									for (size_t ii = 0; ii < other_bases.bases[i].global().size(); ++ii)
 									{
 										const auto &other_global = other_bases.bases[i].global()[ii];
