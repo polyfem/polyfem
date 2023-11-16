@@ -71,6 +71,17 @@ option(POLYFEM_BUILD_DOCS     "Build documentation using Doxygen"          OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
+option(POLYFEM_CODE_COVERAGE "Enable coverage reporting" OFF)
+
+add_library(polyfem_coverage_config INTERFACE)
+if(POLYFEM_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  # Add required flags (GCC & LLVM/Clang)
+  target_compile_options(polyfem_coverage_config INTERFACE
+    -g         # generate debug info
+    --coverage # sets all required flags
+  )
+  target_link_options(polyfem_coverage_config INTERFACE --coverage)
+endif()
 
 # Set default minimum C++ standard
 if(POLYFEM_TOPLEVEL_PROJECT)
@@ -101,6 +112,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Add an empty library and fill in the list of sources in `src/CMakeLists.txt`.
 add_library(polyfem)
 add_library(polyfem::polyfem ALIAS polyfem)
+
+target_link_libraries(polyfem PUBLIC polyfem_coverage_config)
 
 # Must be call in the same "CMakeLists.txt" where add_library(polyfem ...) is called
 polyfem_autogen(polyfem eigs.py auto_eigs)

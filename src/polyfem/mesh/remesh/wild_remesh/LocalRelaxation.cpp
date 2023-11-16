@@ -155,15 +155,15 @@ namespace polyfem::mesh
 			// write_mesh(state.resolve_output_path(fmt::format("relaxation_{:04d}.vtu", save_i++)));
 		}
 
-		// static const std::string accept_str =
-		// 	fmt::format(fmt::fg(fmt::terminal_color::green), "accept");
-		// static const std::string reject_str =
-		// 	fmt::format(fmt::fg(fmt::terminal_color::yellow), "reject");
-		// logger().debug(
-		// 	"[{:s}] E0={:<10g} E1={:<10g} (E0-E1)={:<10g} tol={:g} local_ndof={:d} n_iters={:d}",
-		// 	accept ? accept_str : reject_str, local_energy_before(),
-		// 	local_energy_after, abs_diff, acceptance_tolerance,
-		// 	n_free_dof, nl_solver->criteria().iterations);
+		static const std::string accept_str =
+			fmt::format(fmt::fg(fmt::terminal_color::green), "accept");
+		static const std::string reject_str =
+			fmt::format(fmt::fg(fmt::terminal_color::yellow), "reject");
+		logger().debug(
+			"[{:s}] E0={:<10g} E1={:<10g} (E0-E1)={:<10g} tol={:g} local_ndof={:d} n_iters={:d}",
+			accept ? accept_str : reject_str, local_energy_before(),
+			local_energy_after, abs_diff, acceptance_tolerance,
+			n_free_dof, nl_solver->criteria().iterations);
 
 		return accept;
 	}
