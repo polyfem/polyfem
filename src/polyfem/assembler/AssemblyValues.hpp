@@ -4,11 +4,12 @@
 
 #include <Eigen/Dense>
 
-// stores per local bases evaluations
+
 namespace polyfem
 {
 	namespace assembler
 	{
+		/// stores per local bases evaluations
 		class AssemblyValues
 		{
 		public:

@@ -9,7 +9,7 @@
 
 namespace polyfem::utils
 {
-	// abstract class used for caching 
+	/// abstract class used for caching 
 	class MatrixCache
 	{
 	public:
@@ -56,17 +56,17 @@ namespace polyfem::utils
 			return std::make_unique<SparseMatrixCache>(*this, true);
 		}
 
-		// set matrix to be size x size
+		/// set matrix to be size x size
 		void init(const size_t size) override;
-		// set matrix to be rows x cols
+		/// set matrix to be rows x cols
 		void init(const size_t rows, const size_t cols) override;
-		// set matrix to be a matrix of all zeros with same size as other
+		/// set matrix to be a matrix of all zeros with same size as other
 		void init(const MatrixCache &other) override;
-		// set matrix to be a matrix of all zeros with same size as other (potentially with the same main cache)
+		/// set matrix to be a matrix of all zeros with same size as other (potentially with the same main cache)
 		void init(const SparseMatrixCache &other, const bool copy_main_cache_ptr = false);
 
-		// set matrix values to zero
-		// modifies tmp_, mat_, and values (setting all to zero)
+		/// set matrix values to zero
+		/// modifies tmp_, mat_, and values (setting all to zero)
 		void set_zero() override;
 
 		inline void reserve(const size_t size) override { entries_.reserve(size); }
@@ -77,22 +77,22 @@ namespace polyfem::utils
 		inline bool is_sparse() const override { return true; }
 		inline size_t mapping_size() const { return mapping_.size(); }
 
-		// e = element_index, i = global row_index, j = global column_index, value = value to add to matrix
-		// if the cache is yet to be constructed, save the row, column, and value to be added to the second cache
-		//     in this case, modifies_ entries_ and second_cache_entries_
-		// otherwise, save the value directly in the second cache
-		//     in this case, modfies values_
+		/// e = element_index, i = global row_index, j = global column_index, value = value to add to matrix
+		/// if the cache is yet to be constructed, save the row, column, and value to be added to the second cache
+		///     in this case, modifies_ entries_ and second_cache_entries_
+		/// otherwise, save the value directly in the second cache
+		///     in this case, modfies values_
 		void add_value(const int e, const int i, const int j, const double value) override;
-		// if the cache is yet to be constructed, save the 
-		// cached (ordered) indices in inner_index_ and outer_index_
-		// then fill in map and second_cache_
-		//     in this case, modifies inner_index_, outer_index_, map, and second_cache_ to reflect the matrix structure
-		//     also empties second_cache_entries and sets values_ to zero
-		// otherwise, update mat_ directly using the cached indices and values_
-		//     in this case, modifies mat_ and sets values_ to zero
+		/// if the cache is yet to be constructed, save the 
+		/// cached (ordered) indices in inner_index_ and outer_index_
+		/// then fill in map and second_cache_
+		///     in this case, modifies inner_index_, outer_index_, map, and second_cache_ to reflect the matrix structure
+		///     also empties second_cache_entries and sets values_ to zero
+		/// otherwise, update mat_ directly using the cached indices and values_
+		///     in this case, modifies mat_ and sets values_ to zero
 		StiffnessMatrix get_matrix(const bool compute_mapping = true) override;
-		// if caches have yet to be constructed, add the saved triplets to mat_
-		// modifies tmp_ and mat_, also sets entries_ to be empty after writing its values to mat_
+		/// if caches have yet to be constructed, add the saved triplets to mat_
+		/// modifies tmp_ and mat_, also sets entries_ to be empty after writing its values to mat_
 		void prune() override; ///< add saved entries to stored matrix
 
 		std::shared_ptr<MatrixCache> operator+(const MatrixCache &a) const override;

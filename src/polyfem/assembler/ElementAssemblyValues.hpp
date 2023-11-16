@@ -9,7 +9,7 @@ namespace polyfem
 {
 	namespace assembler
 	{
-		// stores per element basis values at given quadrature points and geometric mapping
+		/// stores per element basis values at given quadrature points and geometric mapping
 		class ElementAssemblyValues
 		{
 		public:
@@ -34,14 +34,14 @@ namespace polyfem
 			// only poly elements have no parameterization
 			bool has_parameterization = true;
 
-			// computes the per element values at the local (ref el) points (pts)
-			// sets basis_values, jac_it, val, and det members
+			/// computes the per element values at the local (ref el) points (pts)
+			/// sets basis_values, jac_it, val, and det members
 			void compute(const int el_index, const bool is_volume, const Eigen::MatrixXd &pts, const basis::ElementBases &basis, const basis::ElementBases &gbasis);
 
-			// computes quadrature points for given element then calls above (overloaded) compute function
+			/// computes quadrature points for given element then calls above (overloaded) compute function
 			void compute(const int el_index, const bool is_volume, const basis::ElementBases &basis, const basis::ElementBases &gbasis);
 			
-			// check if the element is flipped
+			/// check if the element is flipped
 			bool is_geom_mapping_positive(const bool is_volume, const basis::ElementBases &gbasis) const;
 
 		private:
@@ -49,10 +49,10 @@ namespace polyfem
 
 			void finalize_global_element(const Eigen::MatrixXd &v);
 
-			// void finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy);
-			// void finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz);
+			/// void finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy);
+			/// void finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz);
 			
-			// compute Jacobians
+			/// compute Jacobians
 			void finalize2d(const basis::ElementBases &gbasis, const std::vector<AssemblyValues> &gbasis_values);
 			void finalize3d(const basis::ElementBases &gbasis, const std::vector<AssemblyValues> &gbasis_values);
 

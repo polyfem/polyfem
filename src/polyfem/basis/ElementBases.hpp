@@ -21,16 +21,15 @@ namespace polyfem
 			// function type that evaluates bases at given points and saves them in basis_values
 			typedef std::function<void(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values)> EvalBasesFunc;
 			
-			// function that computes quadrature points and saves them in quadrature
+			// function type that computes quadrature points and saves them in quadrature
 			typedef std::function<void(quadrature::Quadrature &quadrature)> QuadratureFunction;
 
-			// one basis function per node in the element
-			std::vector<Basis> bases;
+			std::vector<Basis> bases; ///< one basis function per node in the element
 
-			// Assemble the global nodal positions of the bases.
+			/// Assemble the global nodal positions of the bases.
 			Eigen::MatrixXd nodes() const;
 
-			// quadrature points to evaluate the basis functions inside the element
+			/// quadrature points to evaluate the basis functions inside the element
 			void compute_quadrature(quadrature::Quadrature &quadrature) const { quadrature_builder_(quadrature); }
 			void compute_mass_quadrature(quadrature::Quadrature &quadrature) const { mass_quadrature_builder_(quadrature); }
 			Eigen::VectorXi local_nodes_for_primitive(const int local_index, const mesh::Mesh &mesh) const { return local_node_from_primitive_(local_index, mesh); }
@@ -67,8 +66,8 @@ namespace polyfem
 			void set_quadrature(const QuadratureFunction &fun) { quadrature_builder_ = fun; }
 			void set_mass_quadrature(const QuadratureFunction &fun) { mass_quadrature_builder_ = fun; }
 
-			// evaluate stored bases at given points on the reference element
-			// saves results to basis_values 
+			/// evaluate stored bases at given points on the reference element
+			/// saves results to basis_values 
 			void evaluate_bases(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values) const
 			{
 				if (eval_bases_func_)
@@ -80,8 +79,8 @@ namespace polyfem
 					evaluate_bases_default(uv, basis_values);
 				}
 			}
-			// evaluate gradient of stored bases at given points on the reference element
-			// saves results to basis_values 
+			/// evaluate gradient of stored bases at given points on the reference element
+			/// saves results to basis_values 
 			void evaluate_grads(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values) const
 			{
 				if (eval_grads_func_)
@@ -97,11 +96,11 @@ namespace polyfem
 			void set_bases_func(EvalBasesFunc fun) { eval_bases_func_ = fun; }
 			void set_grads_func(EvalBasesFunc fun) { eval_grads_func_ = fun; }
 
-			// sets mapping from local nodes to global nodes
+			/// sets mapping from local nodes to global nodes
 			void set_local_node_from_primitive_func(LocalNodeFromPrimitiveFunc fun) { local_node_from_primitive_ = fun; }
 
 		private:
-			// default to simply calling the Basis evaluation functions
+			/// default to simply calling the Basis evaluation functions
 			void evaluate_bases_default(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values) const;
 			void evaluate_grads_default(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values) const;
 
