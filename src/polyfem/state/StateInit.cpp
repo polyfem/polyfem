@@ -212,6 +212,8 @@ namespace polyfem
 			}
 
 			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
+			jse.include_directories.push_back(POLYSOLVE_JSON_SPEC_DIR);
+			std::cout << "sdfsdf " << POLYSOLVE_JSON_SPEC_DIR << std::endl;
 			rules = jse.inject_include(rules);
 
 			{

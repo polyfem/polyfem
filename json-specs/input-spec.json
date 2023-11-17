@@ -1255,56 +1255,9 @@
         "doc": "Maximum number of threads used; 0 is unlimited."
     },
     {
-        "pointer": "/solver/linear",
-        "default": null,
-        "type": "object",
-        "optional": [
-            "enable_overwrite_solver",
-            "solver",
-            "adjoint_solver",
-            "precond",
-            "Eigen::LeastSquaresConjugateGradient",
-            "Eigen::DGMRES",
-            "Eigen::ConjugateGradient",
-            "Eigen::BiCGSTAB",
-            "Eigen::GMRES",
-            "Eigen::MINRES",
-            "Pardiso",
-            "Hypre",
-            "AMGCL"
-        ],
-        "doc": "Settings for the linear solver."
-    },
-    {
-        "pointer": "/solver/linear/enable_overwrite_solver",
-        "default": false,
-        "type": "bool",
-        "doc": "If solver name is not present, falls back to default"
-    },
-    {
         "pointer": "/solver/linear/adjoint_solver",
-        "default": "",
-        "type": "string",
-        "doc": "Adjoint linear solver type.",
-        "options": [
-            "Eigen::SimplicialLDLT",
-            "Eigen::SparseLU",
-            "Eigen::CholmodSupernodalLLT",
-            "Eigen::UmfPackLU",
-            "Eigen::SuperLU",
-            "Eigen::PardisoLDLT",
-            "Eigen::PardisoLLT",
-            "Eigen::PardisoLU",
-            "Pardiso",
-            "Hypre",
-            "AMGCL",
-            "Eigen::LeastSquaresConjugateGradient",
-            "Eigen::DGMRES",
-            "Eigen::ConjugateGradient",
-            "Eigen::BiCGSTAB",
-            "Eigen::GMRES",
-            "Eigen::MINRES"
-        ]
+        "type": "include",
+        "spec_file": "linear-solver-spec.json"
     },
     {
         "pointer": "/solver/augmented_lagrangian",
