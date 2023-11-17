@@ -5,7 +5,7 @@
 #include <polyfem/time_integrator/ImplicitEuler.hpp>
 
 #include <polyfem/utils/BoundarySampler.hpp>
-#include <polysolve/FEMSolver.hpp>
+#include <polysolve/linear/FEMSolver.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/io/Evaluator.hpp>
@@ -331,10 +331,10 @@ namespace polyfem
 		}
 		else
 		{
-			auto solver = polysolve::LinearSolver::create(args["solver"]["linear"], adjoint_logger());
+			auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], adjoint_logger());
 
 			StiffnessMatrix A = diff_cached.gradu_h(0);
-			solver->analyzePattern(A, A.rows());
+			solver->analyze_pattern(A, A.rows());
 			solver->factorize(A);
 
 			if (true) // (disp_grad_.size() == 0)
@@ -438,7 +438,7 @@ namespace polyfem
 					Eigen::VectorXd b_ = rhs_;
 					b_(boundary_nodes).setZero();
 
-					auto solver = polysolve::LinearSolver::create(args["solver"]["linear"], adjoint_logger());
+					auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], adjoint_logger());
 
 					Eigen::VectorXd x;
 					dirichlet_solve(*solver, A, b_, boundary_nodes, x, A.rows(), "", false, false, false);

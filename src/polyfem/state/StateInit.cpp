@@ -11,8 +11,6 @@
 #include <polyfem/problem/KernelProblem.hpp>
 #include <polyfem/utils/par_for.hpp>
 
-#include <polysolve/LinearSolver.hpp>
-
 #include <polyfem/utils/JSONUtils.hpp>
 
 #include <jse/jse.h>
