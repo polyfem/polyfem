@@ -76,15 +76,46 @@ Smaller utilities are grouped in the `polyfem::utils` module, including mesh IO,
 
 ## Simple Example / Code Walkthrough
 
-In this section, a brief code walkthrough for a simple example problem is given. 
+In this section, a brief, high-level code walkthrough for a simple example problem is given. 
 
 ### JSON File 
 
-For this example, we solve the Laplacian on a Plate-Hole mesh. We choose XXX basis, XXX boundary conditions, 
+For this example, we solve the Laplacian on a (triangular) plate-hole mesh with Dirichlet boundary conditions and a constant RHS. We choose P1 elements implicitly (as this is the default). See the [JSON specificiation](https://polyfem.github.io/json_defaults_and_spec/) for more details. 
 
 ```json
-FILE CONTENTS
+{
+    "geometry": {
+        "advanced": {
+            "normalize_mesh": true
+        },
+        "mesh": "plate_hole.obj",
+        "surface_selection": {
+            "threshold": 1e-08
+        }
+    },
 
+    "materials": {
+        "type": "Laplacian"
+    },
+
+    "boundary_conditions": {
+        "dirichlet_boundary": [{
+            "id": 1,
+            "value": 0.0
+        }, {
+            "id": 4,
+            "value": 1.0
+        }],
+        "rhs": 10
+    },
+
+    "output": {
+        "json": "stats_test.json",
+        "paraview": {
+            "file_name": "result_test.vtu"
+        }
+    }
+}
 ```
 
 ### Basis Building
@@ -95,9 +126,11 @@ After creating a `polyfem::State` object and loading the input mesh, the first s
 
 The next step is assembling the linear system 
 
+Note that the stiffness matrix is built at a different point in time than the mass matrix and RHS.
+
 ### Solver
 
-After 
+After constructing the basis and necessary matrices/vectors, we are ready to solve the linear system. 
 
 ### Diagram
 
