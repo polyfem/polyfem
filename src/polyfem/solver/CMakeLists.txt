@@ -28,5 +28,4 @@ target_sources(polyfem PRIVATE ${SOURCES})
 # ###############################################################################
 # Subfolders
 # ###############################################################################
-add_subdirectory(line_search)
 add_subdirectory(forms)

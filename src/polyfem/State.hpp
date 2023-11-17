@@ -48,10 +48,9 @@
 #include <ipc/utils/logger.hpp>
 
 // Forward declaration
-namespace cppoptlib
+namespace polysolve::nonlinear
 {
-	template <typename ProblemType>
-	class NonlinearSolver;
+	class Solver;
 }
 
 namespace polyfem::assembler
@@ -358,9 +357,7 @@ namespace polyfem
 
 		/// factory to create the nl solver depending on input
 		/// @return nonlinear solver (eg newton or LBFGS)
-		template <typename ProblemType>
-		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(
-			const std::string &linear_solver_type = "") const;
+		std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver() const;
 
 		/// @brief Solve the linear problem with the given solver and system.
 		/// @param solver Linear solver.

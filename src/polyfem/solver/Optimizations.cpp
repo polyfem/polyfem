@@ -5,11 +5,6 @@
 #include <polyfem/State.hpp>
 
 #include "AdjointNLProblem.hpp"
-#include "LBFGSBSolver.hpp"
-#include "LBFGSSolver.hpp"
-#include "BFGSSolver.hpp"
-#include "MMASolver.hpp"
-#include "GradientDescentSolver.hpp"
 
 #include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
@@ -30,6 +25,8 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 
+#include <polysolve/nonlinear/Solver.hpp>
+
 namespace polyfem::solver
 {
 	namespace
@@ -49,38 +46,9 @@ namespace polyfem::solver
 		}
 	} // namespace
 
-	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> AdjointOptUtils::make_nl_solver(const json &solver_params, const double characteristic_length)
+	std::shared_ptr<polysolve::nonlinear::Solver> AdjointOptUtils::make_nl_solver(const json &solver_params, const json &linear_solver_params, const double characteristic_length)
 	{
-		const std::string name = solver_params["solver"].template get<std::string>();
-		if (name == "GradientDescent" || name == "gradient_descent" || name == "gradient")
-		{
-			return std::make_shared<cppoptlib::GradientDescentSolver<AdjointNLProblem>>(
-				solver_params, 0., characteristic_length);
-		}
-		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
-		{
-			return std::make_shared<cppoptlib::LBFGSSolver<AdjointNLProblem>>(
-				solver_params, 0., characteristic_length);
-		}
-		else if (name == "bfgs" || name == "BFGS" || name == "BFGS")
-		{
-			return std::make_shared<cppoptlib::BFGSSolver<AdjointNLProblem>>(
-				solver_params, 0., characteristic_length);
-		}
-		else if (name == "lbfgsb" || name == "LBFGSB" || name == "L-BFGS-B")
-		{
-			return std::make_shared<cppoptlib::LBFGSBSolver<AdjointNLProblem>>(
-				solver_params, 0., characteristic_length);
-		}
-		else if (name == "mma" || name == "MMA")
-		{
-			return std::make_shared<cppoptlib::MMASolver<AdjointNLProblem>>(
-				solver_params, 0., characteristic_length);
-		}
-		else
-		{
-			throw std::invalid_argument(fmt::format("invalid nonlinear solver type: {}", name));
-		}
+		return polysolve::nonlinear::Solver::create(solver_params, linear_solver_params, characteristic_length, adjoint_logger());
 	}
 
 	std::shared_ptr<AdjointForm> AdjointOptUtils::create_form(const json &args, const std::vector<std::shared_ptr<VariableToSimulation>> &var2sim, const std::vector<std::shared_ptr<State>> &states)

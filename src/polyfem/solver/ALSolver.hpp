@@ -1,7 +1,7 @@
 #pragma once
 
 #include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/NonlinearSolver.hpp>
+#include <polysolve/nonlinear/Solver.hpp>
 #include <polyfem/solver/forms/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/BCPenaltyForm.hpp>
 #include <polyfem/Common.hpp>
@@ -15,7 +15,7 @@ namespace polyfem::solver
 {
 	class ALSolver
 	{
-		using NLSolver = cppoptlib::NonlinearSolver<NLProblem>;
+		using NLSolver = polysolve::nonlinear::Solver;
 
 	public:
 		ALSolver(

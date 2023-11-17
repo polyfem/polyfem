@@ -21,7 +21,7 @@ namespace polyfem::mesh
 
 	Eigen::VectorXd constrained_L2_projection(
 		// Nonlinear solver
-		std::shared_ptr<cppoptlib::NonlinearSolver<polyfem::solver::NLProblem>> nl_solver,
+		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver,
 		// L2 projection form
 		const Eigen::SparseMatrix<double> &M,
 		const Eigen::SparseMatrix<double> &A,
