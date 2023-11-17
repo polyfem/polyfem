@@ -120,17 +120,34 @@ For this example, we solve the Laplacian on a (triangular) plate-hole mesh with 
 
 ### Basis Building
 
-After creating a `polyfem::State` object and loading the input mesh, the first step in the code is to build the basis. In PolyFEM, there are two separate notions of basis: the finite element (FE) basis and the geometric basis. The la
+After creating a `polyfem::State` object and loading the input mesh, the next step in the code is to build the basis. In PolyFEM, there are two separate notions of basis: the finite element (FE) basis and the geometric basis. The la
+
+`basis::LagrangeBasis2d`
+`basis::ElementBases`
+`basis::Basis`
 
 ### Matrix Assembly
 
-The next step is assembling the linear system 
+The next step is assembling the linear system, which requires the mass matrix, RHS, and stiffness matrix. All three 
 
-Note that the stiffness matrix is built at a different point in time than the mass matrix and RHS.
+`assembler::AssemblyValsCache`
+`assembler::ElementAssemblyValues`
+`assembler::AssemblyValues`
+
+`assembler::Assembler`
+`assembler::LinearAssembler`
+`assembler::RhsAssembler`
+`assembler::Mass`
+`assembler::Laplacian`
+`assembler::Problem`
+
+Note that the stiffness matrix is built at a different point in time than the mass matrix and RHS. The latter are built 
 
 ### Solver
 
-After constructing the basis and necessary matrices/vectors, we are ready to solve the linear system. 
+After constructing the basis and necessary matrices/vectors, the linear system can be solved. 
+`State::solve_linear`
+`State::init_linear_solve`
 
 ### Diagram
 
