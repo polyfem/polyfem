@@ -105,9 +105,13 @@ After
 
 #### Technical Note: Matrix Caching
 
-In order to boost performance, PolyFEM caches sparsity structure when assembling matrices. The details can be found in `MatrixCache.hpp`. A brief overview of `polyfem::utils::SparseMatrixCache` is included here for reference. 
+In order to boost performance, PolyFEM caches sparsity structure when assembling matrices. It does this by taking advantage of the fact that the structure of stiffness/mass matrices remains unchanged assuming the basis is unchanged. The details can be found in `MatrixCache.hpp`. A brief overview of `polyfem::utils::SparseMatrixCache` is included here for reference. 
 
+In PolyFEM, sparse matrices are stored in [Compressed Sparse Column (CSC)](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_column_(CSC_or_CCS)) form. Thus, the matrix is represented as three arrays: two for storing non-zero indices and one for storing values. 
 
+Consider the first time a `polyfem::utils::SparseMatrixCache` object is filled with values. Each time `SparseMatrixCache::add_value` is called, the values and their global indices are placed in a temporary buffer. It is assumed that a given `polyfem::utils::SparseMatrixCache` always receives each entry from a given element in the same order.
+
+The first time the matrix is retrieved using `SparseMatrixCache::get_matrix`, the buffered values are written to the actual matrix. Then, the stored index information is used to create a mapping from the ordering of values received from a given element to the corresponding CSC-style index. In future iterations, instead of recomputing the matrix structure, `polyfem::utils::SparseMatrixCache` uses this cached index to save the given value directly to the CSC-style values array at the correct position. 
 
 ## Building PolyFEM as a stand-alone executable
 
