@@ -15,8 +15,10 @@ namespace polyfem::assembler
 		const Eigen::MatrixXd &gradj = data.vals.basis_values[data.j].grad_t_m;
 		// return ((gradi.array() * gradj.array()).rowwise().sum().array() * da.array()).colwise().sum();
 		double res = 0;
+		assert(gradi.rows() == data.da.size());
 		for (int k = 0; k < gradi.rows(); ++k)
 		{
+			// compute grad(phi_i) dot grad(phi_j) weighted by quadrature weights
 			res += gradi.row(k).dot(gradj.row(k)) * data.da(k);
 		}
 		return Eigen::Matrix<double, 1, 1>::Constant(res);

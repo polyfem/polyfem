@@ -4,14 +4,17 @@
 
 #include <Eigen/Dense>
 
-// stores per local bases evaluations
+
 namespace polyfem
 {
 	namespace assembler
 	{
+		/// stores per local bases evaluations
 		class AssemblyValues
 		{
 		public:
+			// m = number of quadrature points
+
 			// Weighted sum to express the current ("virtual") node as a linear-combination
 			// of the real (unknown) nodes
 			std::vector<basis::Local2Global> global;
