@@ -153,8 +153,10 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a29f04a91c57fc85418c7274d5b9b60be" id="r_a29f04a91c57fc85418c7274d5b9b60be"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_assembler.html">MixedAssembler</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a29f04a91c57fc85418c7274d5b9b60be">make_mixed_assembler</a> (const std::string &amp;formulation)</td></tr>
 <tr class="separator:a29f04a91c57fc85418c7274d5b9b60be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf6064d65afd290473d37c71e256b1b5" id="r_aaf6064d65afd290473d37c71e256b1b5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#aaf6064d65afd290473d37c71e256b1b5">merge_mixed_matrices</a> (const int n_bases, const int n_pressure_bases, const int problem_dim, const bool add_average, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;pressure_stiffness, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness)</td></tr>
+<tr class="memdesc:aaf6064d65afd290473d37c71e256b1b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">utility to merge 3 blocks of mixed matrices, A=velocity_stiffness, B=mixed_stiffness, and C=pressure_stiffness A B B^T C  <br /></td></tr>
 <tr class="separator:aaf6064d65afd290473d37c71e256b1b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80818109ce6766a1fae1733a0b2e87dc" id="r_a80818109ce6766a1fae1733a0b2e87dc"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a80818109ce6766a1fae1733a0b2e87dc">quadrature_order</a> (const std::string &amp;assembler, const int basis_degree, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93c">BasisType</a> &amp;b_type, const int dim)</td></tr>
+<tr class="memdesc:a80818109ce6766a1fae1733a0b2e87dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">utility for retrieving the needed quadrature order to precisely integrate the given form on the given element basis  <br /></td></tr>
 <tr class="separator:a80818109ce6766a1fae1733a0b2e87dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -372,6 +374,8 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
+<p>utility to merge 3 blocks of mixed matrices, A=velocity_stiffness, B=mixed_stiffness, and C=pressure_stiffness A B B^T C </p>
+
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00109">109</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>.</p>
@@ -466,11 +470,13 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
+<p>utility for retrieving the needed quadrature order to precisely integrate the given form on the given element basis </p>
+
 <p class="definition">Definition at line <a class="el" href="_assembler_utils_8cpp_source.html#l00174">174</a> of file <a class="el" href="_assembler_utils_8cpp_source.html">AssemblerUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93caa2f055a3bf84437b39b826e3d3479e89">CUBE_LAGRANGE</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93caafefc7ae5fe3420e0323b2a46660b139">SIMPLEX_LAGRANGE</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00346">polyfem::basis::PolygonalBasis2d::build_bases()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00575">polyfem::basis::PolygonalBasis3d::build_bases()</a>, <a class="el" href="_spline_basis2d_8cpp_source.html#l00679">polyfem::basis::SplineBasis2d::build_bases()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l01026">polyfem::basis::SplineBasis3d::build_bases()</a>, <a class="el" href="_barycentric_basis2d_8cpp_source.html#l00116">polyfem::basis::BarycentricBasis2d::build_bases()</a>, and <a class="el" href="_state_8hpp_source.html#l00238">polyfem::State::n_boundary_samples()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_polygonal_basis2d_8cpp_source.html#l00346">polyfem::basis::PolygonalBasis2d::build_bases()</a>, <a class="el" href="_polygonal_basis3d_8cpp_source.html#l00575">polyfem::basis::PolygonalBasis3d::build_bases()</a>, <a class="el" href="_spline_basis2d_8cpp_source.html#l00679">polyfem::basis::SplineBasis2d::build_bases()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l01026">polyfem::basis::SplineBasis3d::build_bases()</a>, <a class="el" href="_barycentric_basis2d_8cpp_source.html#l00116">polyfem::basis::BarycentricBasis2d::build_bases()</a>, and <a class="el" href="_state_8hpp_source.html#l00248">polyfem::State::n_boundary_samples()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

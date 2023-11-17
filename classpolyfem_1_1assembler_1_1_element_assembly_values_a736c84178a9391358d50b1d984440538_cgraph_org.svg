@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title="computes the per element values at the local (ref el) points (pts) sets basis_values,...">
 <polygon fill="#999999" stroke="#666666" points="143,-173 0,-173 0,-132 143,-132 143,-173"/>
 <text text-anchor="start" x="8" y="-161" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="8" y="-150" font-family="Helvetica,sans-Serif" font-size="10.00">::ElementAssemblyValues</text>
@@ -22,7 +22,7 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6" target="_top" xlink:title="evaluate stored bases at given points on the reference element saves results to basis_values">
 <polygon fill="white" stroke="#666666" points="343,-294.5 179,-294.5 179,-264.5 343,-264.5 343,-294.5"/>
 <text text-anchor="start" x="187" y="-282.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::ElementBases</text>
 <text text-anchor="middle" x="261" y="-271.5" font-family="Helvetica,sans-Serif" font-size="10.00">::evaluate_bases</text>
@@ -41,7 +41,7 @@
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="classpolyfem_1_1basis_1_1_element_bases.html#a731d20029949bd0255c9af1f91dfa74c" target="_top" xlink:title=" ">
+<g id="a_Node000004"><a xlink:href="classpolyfem_1_1basis_1_1_element_bases.html#a731d20029949bd0255c9af1f91dfa74c" target="_top" xlink:title="evaluate gradient of stored bases at given points on the reference element saves results to basis_val...">
 <polygon fill="white" stroke="#666666" points="343,-246.5 179,-246.5 179,-216.5 343,-216.5 343,-246.5"/>
 <text text-anchor="start" x="187" y="-234.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::ElementBases</text>
 <text text-anchor="middle" x="261" y="-223.5" font-family="Helvetica,sans-Serif" font-size="10.00">::evaluate_grads</text>
@@ -60,7 +60,7 @@
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a7ce3e8b5fceffa5bdde29ca3ac79459b" target="_top" xlink:title=" ">
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a7ce3e8b5fceffa5bdde29ca3ac79459b" target="_top" xlink:title="void finalize(const Eigen::MatrixXd &amp;v, const Eigen::MatrixXd &amp;dx, const Eigen::MatrixXd &amp;dy); void f...">
 <polygon fill="white" stroke="#666666" points="332.5,-198 189.5,-198 189.5,-157 332.5,-157 332.5,-198"/>
 <text text-anchor="start" x="197.5" y="-186" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="197.5" y="-175" font-family="Helvetica,sans-Serif" font-size="10.00">::ElementAssemblyValues</text>
@@ -139,7 +139,7 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="classpolyfem_1_1basis_1_1_element_bases.html#a9d6e4fd2a6d6491fed600c2a26680d89" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1basis_1_1_element_bases.html#a9d6e4fd2a6d6491fed600c2a26680d89" target="_top" xlink:title="default to simply calling the Basis evaluation functions">
 <polygon fill="white" stroke="#666666" points="543,-294.5 379,-294.5 379,-264.5 543,-264.5 543,-294.5"/>
 <text text-anchor="start" x="387" y="-282.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::basis::ElementBases</text>
 <text text-anchor="middle" x="461" y="-271.5" font-family="Helvetica,sans-Serif" font-size="10.00">::evaluate_bases_default</text>

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['m_0',['m',['../class_m_m_a_solver_aux.html#ab132ee47ebcff0fa0e68e42b1694b6b3',1,'MMASolverAux::m'],['../classpolyfem_1_1renderer_1_1_uniform_attributes.html#a36c697eaa40c9a42d50d92ef713099aa',1,'polyfem::renderer::UniformAttributes::M'],['../namespaceeigs.html#a1cb62336f71a067a062cca9e82f830f2',1,'eigs.M']]],
+  ['m_0',['m',['../classpolyfem_1_1renderer_1_1_uniform_attributes.html#a36c697eaa40c9a42d50d92ef713099aa',1,'polyfem::renderer::UniformAttributes::M'],['../class_m_m_a_solver_aux.html#ab132ee47ebcff0fa0e68e42b1694b6b3',1,'MMASolverAux::m'],['../namespaceeigs.html#a1cb62336f71a067a062cca9e82f830f2',1,'eigs.M']]],
   ['m_5f_1',['M_',['../classpolyfem_1_1solver_1_1_l2_projection_form.html#af80bc7643241049be606ef486c665d10',1,'polyfem::solver::L2ProjectionForm']]],
   ['m_5fbfgs_2',['m_bfgs',['../classcppoptlib_1_1_l_b_f_g_s_b_solver.html#adeaab8d24c113dba3dd7b86ada4a3206',1,'cppoptlib::LBFGSBSolver::m_bfgs'],['../classcppoptlib_1_1_l_b_f_g_s_solver.html#addb84c8025e0aacd6f587448e280718d',1,'cppoptlib::LBFGSSolver::m_bfgs']]],
   ['m_5fbody_5fids_3',['m_body_ids',['../classpolyfem_1_1mesh_1_1_local_mesh.html#aa5a465a9ecb52d2a0cd67f28e5c8417a',1,'polyfem::mesh::LocalMesh']]],

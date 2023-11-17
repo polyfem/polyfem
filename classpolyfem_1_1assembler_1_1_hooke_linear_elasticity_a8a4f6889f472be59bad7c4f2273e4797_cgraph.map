@@ -1,18 +1,33 @@
 <map id="polyfem::assembler::HookeLinearElasticity::assign_stress_tensor" name="polyfem::assembler::HookeLinearElasticity::assign_stress_tensor">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,189,176,244"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#aeec183fa67cbe9ed2705c0356fbc6561" title=" " alt="" coords="261,29,452,84"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,187,160,139,190,114,223,93,248,81,250,86,225,98,194,119,164,143,117,191"/>
-<area shape="rect" id="Node000004" href="$namespacepolyfem.html#a9c92d8a4b1a73baab24a2ecef44f9440" title=" " alt="" coords="224,108,489,133"/>
-<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="133,187,176,163,223,142,250,134,252,139,225,147,178,168,136,191"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1assembler_1_1_elasticity_tensor.html#ab90d3a2e3a93327c97737da44aaee9a9" title=" " alt="" coords="281,157,433,212"/>
-<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="176,204,267,193,268,198,176,209"/>
-<area shape="rect" id="Node000006" href="$namespacepolyfem.html#aaf867383bfea72c587035f4e3346bb21" title=" " alt="" coords="257,236,456,261"/>
-<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="176,224,243,232,243,238,176,230"/>
-<area shape="rect" id="Node000007" href="$namespacepolyfem.html#a2e0e4c0eef41d449e66abee527fc8e13" title=" " alt="" coords="257,285,456,311"/>
-<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="150,242,225,270,263,280,261,285,223,275,149,247"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4" title=" " alt="" coords="281,335,433,375"/>
-<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="121,242,168,283,225,320,268,336,266,341,223,324,164,287,118,246"/>
-<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="305,29,306,19,315,10,332,5,357,3,386,6,403,14,401,18,385,11,357,8,333,10,318,15,311,21,311,29"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1basis_1_1_element_bases.html#a3fe910141a6dd62e404d5eededafb547" title=" " alt="" coords="537,37,756,77"/>
-<area shape="poly" id="edge3_Node000002_Node000003" title=" " alt="" coords="452,54,524,54,524,59,452,59"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,327,176,382"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a736c84178a9391358d50b1d984440538" title="computes the per element values at the local (ref el) points (pts) sets basis_values,..." alt="" coords="261,167,452,222"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,325,160,277,190,252,223,231,248,219,250,224,225,236,194,257,164,281,117,329"/>
+<area shape="rect" id="Node000011" href="$namespacepolyfem.html#a9c92d8a4b1a73baab24a2ecef44f9440" title=" " alt="" coords="224,246,489,271"/>
+<area shape="poly" id="edge12_Node000001_Node000011" title=" " alt="" coords="133,325,176,301,223,280,250,272,252,277,225,285,178,306,136,329"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1assembler_1_1_elasticity_tensor.html#ab90d3a2e3a93327c97737da44aaee9a9" title=" " alt="" coords="281,295,433,350"/>
+<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="176,342,267,331,268,336,176,347"/>
+<area shape="rect" id="Node000013" href="$namespacepolyfem.html#aaf867383bfea72c587035f4e3346bb21" title=" " alt="" coords="257,374,456,399"/>
+<area shape="poly" id="edge14_Node000001_Node000013" title=" " alt="" coords="176,362,243,370,243,376,176,368"/>
+<area shape="rect" id="Node000014" href="$namespacepolyfem.html#a2e0e4c0eef41d449e66abee527fc8e13" title=" " alt="" coords="257,423,456,449"/>
+<area shape="poly" id="edge15_Node000001_Node000014" title=" " alt="" coords="148,380,225,409,257,418,256,423,223,415,146,385"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4" title=" " alt="" coords="281,473,433,513"/>
+<area shape="poly" id="edge16_Node000001_Node000015" title=" " alt="" coords="121,380,167,421,225,459,268,475,266,480,223,464,164,426,117,384"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6" title="evaluate stored bases at given points on the reference element saves results to basis_values" alt="" coords="537,5,756,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="385,165,451,110,492,80,536,55,551,48,553,53,539,60,495,85,454,114,389,169"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1basis_1_1_element_bases.html#a731d20029949bd0255c9af1f91dfa74c" title="evaluate gradient of stored bases at given points on the reference element saves results to basis_val..." alt="" coords="537,69,756,109"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="420,165,536,119,560,111,561,116,538,124,421,170"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a7ce3e8b5fceffa5bdde29ca3ac79459b" title="void finalize(const Eigen::MatrixXd &amp;v, const Eigen::MatrixXd &amp;dx, const Eigen::MatrixXd &amp;dy); void f..." alt="" coords="551,134,742,189"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="452,181,537,171,538,176,452,186"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1basis_1_1_basis.html#a88b90af0c63d52f2c91fe97a63c540ce" title=" " alt="" coords="833,207,994,247"/>
+<area shape="poly" id="edge11_Node000002_Node000008" title=" " alt="" coords="453,197,819,219,819,224,452,203"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#af2830b447f50401acd4e69a57a4b235b" title=" " alt="" coords="551,265,742,319"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="453,219,490,231,564,257,562,262,488,236,451,224"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#abfc70df83b8de385510064a839273131" title=" " alt="" coords="551,343,742,398"/>
+<area shape="poly" id="edge10_Node000002_Node000010" title=" " alt="" coords="454,210,491,231,510,256,516,281,522,305,539,329,545,333,541,337,535,332,517,307,511,282,505,258,488,235,451,214"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1basis_1_1_element_bases.html#a9d6e4fd2a6d6491fed600c2a26680d89" title="default to simply calling the Basis evaluation functions" alt="" coords="804,5,1023,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="756,23,790,23,790,28,756,28"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1basis_1_1_element_bases.html#aae3b739e75920739799e866e4b0c448c" title=" " alt="" coords="804,69,1023,109"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="756,87,790,87,790,92,756,92"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="743,182,820,201,818,206,742,187"/>
+<area shape="poly" id="edge9_Node000009_Node000008" title=" " alt="" coords="742,266,818,247,820,252,743,271"/>
 </map>

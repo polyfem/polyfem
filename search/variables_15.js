@@ -17,7 +17,6 @@ var searchData=
   ['use_5fgrad_5fnorm_5ftol_14',['use_grad_norm_tol',['../classpolyfem_1_1solver_1_1line__search_1_1_line_search.html#a0e63e913fd1df2799151f88d8233096d',1,'polyfem::solver::line_search::LineSearch::use_grad_norm_tol'],['../classcppoptlib_1_1_nonlinear_solver.html#a8322ad0593df168fa29fc7275cc8853b',1,'cppoptlib::NonlinearSolver::use_grad_norm_tol']]],
   ['use_5fhdf5_15',['use_hdf5',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a836e498642f74e5e6b4b6ee2c632b07b',1,'polyfem::io::OutGeometryData::ExportOptions']]],
   ['use_5fsampler_16',['use_sampler',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a16b1c6d540f8e91ffb603f7b79b1aa45',1,'polyfem::io::OutGeometryData::ExportOptions']]],
-  ['use_5fsecond_5fcache_5f_17',['use_second_cache_',['../classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#add003af981eb85b6db7e058a63209a55',1,'polyfem::utils::SparseMatrixCache']]],
-  ['use_5fspline_18',['use_spline',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#ab43f215f17671955cc2687c9961f480f',1,'polyfem::io::OutGeometryData::ExportOptions']]],
-  ['use_5fstiffness_5fas_5fratio_5f_19',['use_stiffness_as_ratio_',['../classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a827b1608c7bfef42dd6511622efbf765',1,'polyfem::solver::RayleighDampingForm']]]
+  ['use_5fspline_17',['use_spline',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#ab43f215f17671955cc2687c9961f480f',1,'polyfem::io::OutGeometryData::ExportOptions']]],
+  ['use_5fstiffness_5fas_5fratio_5f_18',['use_stiffness_as_ratio_',['../classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a827b1608c7bfef42dd6511622efbf765',1,'polyfem::solver::RayleighDampingForm']]]
 ];

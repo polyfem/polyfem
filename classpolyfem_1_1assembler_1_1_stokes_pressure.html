@@ -145,14 +145,17 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af4bd753f0400067da0dcf52765a56924" id="r_af4bd753f0400067da0dcf52765a56924"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">ParamFunc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_pressure.html#af4bd753f0400067da0dcf52765a56924">parameters</a> () const override</td></tr>
 <tr class="separator:af4bd753f0400067da0dcf52765a56924"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32870fec12b468b1909013b07654f2a6" id="r_a32870fec12b468b1909013b07654f2a6"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 9, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_pressure.html#a32870fec12b468b1909013b07654f2a6">assemble</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler_data.html">LinearAssemblerData</a> &amp;data) const override</td></tr>
+<tr class="memdesc:a32870fec12b468b1909013b07654f2a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">local assembly function that defines the bilinear form (LHS) computes and returns a single local stiffness value  <br /></td></tr>
 <tr class="separator:a32870fec12b468b1909013b07654f2a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada40ae2a21fe134d1ed40014193930c5" id="r_ada40ae2a21fe134d1ed40014193930c5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_pressure.html#ada40ae2a21fe134d1ed40014193930c5">is_fluid</a> () const override</td></tr>
 <tr class="separator:ada40ae2a21fe134d1ed40014193930c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6809fb08daef8f82cb7acba4c969ec0c" id="r_a6809fb08daef8f82cb7acba4c969ec0c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_pressure.html#a6809fb08daef8f82cb7acba4c969ec0c">set_size</a> (const int) override</td></tr>
 <tr class="separator:a6809fb08daef8f82cb7acba4c969ec0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83e70fd7a778342c0d7750416661a575" id="r_a83e70fd7a778342c0d7750416661a575"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_pressure.html#a83e70fd7a778342c0d7750416661a575">assemble</a> (const bool is_volume, const int n_basis, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#ac67a22d4c9279979f58f5ebca27a2c79">cache</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness, const bool is_mass=false) const override</td></tr>
+<tr class="memdesc:a83e70fd7a778342c0d7750416661a575"><td class="mdescLeft">&#160;</td><td class="mdescRight">assembles the stiffness matrix for the given basis the bilinear form (local assembler) is encoded by the overloaded assemble (see below) function that the subclass (eg <a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html">Laplacian</a>) defines sets stiffness and modifies cache if it has not already been computed  <br /></td></tr>
 <tr class="separator:a83e70fd7a778342c0d7750416661a575"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc7b5a738074ba44208a49ea1027fd14" id="r_adc7b5a738074ba44208a49ea1027fd14"><td class="memItemLeft" align="right" valign="top">virtual Eigen::Matrix&lt; double, Eigen::Dynamic, 1, 0, 9, 1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_pressure.html#adc7b5a738074ba44208a49ea1027fd14">assemble</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler_data.html">LinearAssemblerData</a> &amp;data) const=0</td></tr>
+<tr class="memdesc:adc7b5a738074ba44208a49ea1027fd14"><td class="mdescLeft">&#160;</td><td class="mdescRight">local assembly function that defines the bilinear form (LHS) computes and returns a single local stiffness value  <br /></td></tr>
 <tr class="separator:adc7b5a738074ba44208a49ea1027fd14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html">polyfem::assembler::LinearAssembler</a></td></tr>
 <tr class="memitem:aae297eb7e54cfd71847f7a48ea9c5219 inherit pub_methods_classpolyfem_1_1assembler_1_1_linear_assembler" id="r_aae297eb7e54cfd71847f7a48ea9c5219"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#aae297eb7e54cfd71847f7a48ea9c5219">LinearAssembler</a> ()</td></tr>
@@ -286,6 +289,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>assembles the stiffness matrix for the given basis the bilinear form (local assembler) is encoded by the overloaded assemble (see below) function that the subclass (eg <a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html">Laplacian</a>) defines sets stiffness and modifies cache if it has not already been computed </p>
+
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a83e70fd7a778342c0d7750416661a575">polyfem::assembler::LinearAssembler</a>.</p>
 
 </div>
@@ -313,6 +318,8 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>local assembly function that defines the bilinear form (LHS) computes and returns a single local stiffness value </p>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a095458ab45db4b0cc5820427318ca23b">polyfem::assembler::LinearAssembler</a>.</p>
 
@@ -343,6 +350,8 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>local assembly function that defines the bilinear form (LHS) computes and returns a single local stiffness value </p>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_linear_assembler.html#a095458ab45db4b0cc5820427318ca23b">polyfem::assembler::LinearAssembler</a>.</p>
 
@@ -463,7 +472,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00064">64</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8hpp_source.html#l00221">polyfem::assembler::Assembler::size_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8hpp_source.html#l00222">polyfem::assembler::Assembler::size_</a>.</p>
 
 </div>
 </div>

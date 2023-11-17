@@ -42,6 +42,5 @@ var classpolyfem_1_1utils_1_1_sparse_matrix_cache =
     [ "second_cache_entries_", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a86cdb2893cef30c0cd64d4ea5373a9be", null ],
     [ "size_", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#afd001bbb3f99e34bb429708b12cbaf89", null ],
     [ "tmp_", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a7ee5d6448bb3eec2398dd1f2cb6e4edd", null ],
-    [ "use_second_cache_", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#add003af981eb85b6db7e058a63209a55", null ],
     [ "values_", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a96553245e9612dad64be9dd527bee2d8", null ]
 ];
