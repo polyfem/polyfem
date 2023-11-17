@@ -13,8 +13,6 @@ namespace polyfem
 	{
 		POLYFEM_SCOPED_TIMER("Setup RHS");
 
-		logger().info("Solve using {} linear solver", args["solver"]["linear"]["solver"].get<std::string>());
-
 		solve_data.rhs_assembler = build_rhs_assembler();
 
 		initial_solution(sol);

@@ -331,8 +331,7 @@ namespace polyfem
 		}
 		else
 		{
-			auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["adjoint_solver"], args["solver"]["linear"]["precond"]);
-			solver->setParameters(args["solver"]["linear"]);
+			auto solver = polysolve::LinearSolver::create(args["solver"]["linear"], adjoint_logger());
 
 			StiffnessMatrix A = diff_cached.gradu_h(0);
 			solver->analyzePattern(A, A.rows());
@@ -439,8 +438,7 @@ namespace polyfem
 					Eigen::VectorXd b_ = rhs_;
 					b_(boundary_nodes).setZero();
 
-					auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["adjoint_solver"], args["solver"]["linear"]["precond"]);
-					solver->setParameters(args["solver"]["linear"]);
+					auto solver = polysolve::LinearSolver::create(args["solver"]["linear"], adjoint_logger());
 
 					Eigen::VectorXd x;
 					dirichlet_solve(*solver, A, b_, boundary_nodes, x, A.rows(), "", false, false, false);

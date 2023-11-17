@@ -115,8 +115,7 @@ namespace polyfem
 			lin_solver_cached.reset();
 
 		lin_solver_cached =
-			polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
-		lin_solver_cached->setParameters(args["solver"]["linear"]);
+			polysolve::LinearSolver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", lin_solver_cached->name());
 
 		// --------------------------------------------------------------------
@@ -203,8 +202,7 @@ namespace polyfem
 		// --------------------------------------------------------------------
 
 		auto solver =
-			polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
-		solver->setParameters(args["solver"]["linear"]);
+			polysolve::LinearSolver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
 		// --------------------------------------------------------------------

@@ -29,7 +29,7 @@
 
 #include <polyfem/io/OutData.hpp>
 
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -370,7 +370,7 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		void solve_linear(
-			const std::unique_ptr<polysolve::LinearSolver> &solver,
+			const std::unique_ptr<polysolve::linear::Solver> &solver,
 			StiffnessMatrix &A,
 			Eigen::VectorXd &b,
 			const bool compute_spectrum,
@@ -621,7 +621,7 @@ namespace polyfem
 		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
 		solver::DiffCache diff_cached;
 
-		std::unique_ptr<polysolve::LinearSolver> lin_solver_cached; // matrix factorization of last linear solve
+		std::unique_ptr<polysolve::linear::Solver> lin_solver_cached; // matrix factorization of last linear solve
 
 		int ndof() const
 		{

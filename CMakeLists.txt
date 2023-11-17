@@ -236,14 +236,6 @@ target_link_libraries(polyfem PUBLIC paraviewo::paraviewo)
 include(spdlog)
 target_link_libraries(polyfem PUBLIC spdlog::spdlog)
 
-# CppNumericalSolvers
-include(cppoptlib)
-target_link_libraries(polyfem PUBLIC cppoptlib)
-
-# LBFGSpp
-include(LBFGSpp)
-target_link_libraries(polyfem PUBLIC LBFGSpp::LBFGSpp)
-
 # TinyExpr library
 include(tinyexpr)
 target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)

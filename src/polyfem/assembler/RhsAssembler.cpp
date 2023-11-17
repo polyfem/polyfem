@@ -5,7 +5,7 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <ipc/utils/eigen_ext.hpp>
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 namespace polyfem
 {
@@ -38,7 +38,7 @@ namespace polyfem
 								   const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 								   const Problem &problem,
 								   const std::string bc_method,
-								   const std::string &solver, const std::string &preconditioner, const json &solver_params)
+								   const json &solver_params)
 			: assembler_(assembler),
 			  mesh_(mesh),
 			  obstacle_(obstacle),
@@ -49,8 +49,6 @@ namespace polyfem
 			  ass_vals_cache_(ass_vals_cache),
 			  problem_(problem),
 			  bc_method_(bc_method),
-			  solver_(solver),
-			  preconditioner_(preconditioner),
 			  solver_params_(solver_params),
 			  dirichlet_nodes_(dirichlet_nodes),
 			  dirichlet_nodes_position_(dirichlet_nodes_position),
@@ -212,9 +210,9 @@ namespace polyfem
 					mass_mat_assembler.assemble(size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, mass, true);
 					assert(mass.rows() == n_basis_ * size_ - obstacle_.ndof() && mass.cols() == n_basis_ * size_ - obstacle_.ndof());
 
-					auto solver = LinearSolver::create(solver_, preconditioner_);
-					solver->setParameters(solver_params_);
-					solver->analyzePattern(mass, mass.rows());
+					auto solver = linear::Solver::create(solver_params_, logger());
+					logger().info("Solve RHS using {} linear solver", solver->name());
+					solver->analyze_pattern(mass, mass.rows());
 					solver->factorize(mass);
 
 					for (long i = 0; i < b.cols(); ++i)
@@ -394,9 +392,9 @@ namespace polyfem
 						Eigen::VectorXd b = mat_t * global_rhs;
 
 						Eigen::VectorXd coeffs(b.rows(), 1);
-						auto solver = LinearSolver::create(solver_, preconditioner_);
-						solver->setParameters(solver_params_);
-						solver->analyzePattern(A, A.rows());
+						auto solver = linear::Solver::create(solver_params_, logger());
+						logger().info("Solve RHS using {} linear solver", solver->name());
+						solver->analyze_pattern(A, A.rows());
 						solver->factorize(A);
 						coeffs.setZero();
 						solver->solve(b, coeffs);
