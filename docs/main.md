@@ -126,6 +126,9 @@ After creating a `polyfem::State` object and loading the input mesh, the next st
 `basis::ElementBases`
 `basis::Basis`
 
+`State::build_basis`
+
+
 ### Matrix Assembly
 
 The next step is assembling the linear system, which requires the mass matrix, RHS, and stiffness matrix. All three 
@@ -140,6 +143,10 @@ The next step is assembling the linear system, which requires the mass matrix, R
 `assembler::Mass`
 `assembler::Laplacian`
 `assembler::Problem`
+
+`State::assemble_rhs`
+`State::assemble_mass_mat`
+`State::build_stiffness_mat`
 
 Note that the stiffness matrix is built at a different point in time than the mass matrix and RHS. The latter are built 
 
