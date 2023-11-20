@@ -60,6 +60,7 @@ namespace polyfem
 
 		void RhsAssembler::assemble(const Density &density, Eigen::MatrixXd &rhs, const double t) const
 		{
+			// set size of rhs to the number of basis functions * the dimension of the problem
 			rhs = Eigen::MatrixXd::Zero(n_basis_ * size_, 1);
 			if (!problem_.is_rhs_zero())
 			{
@@ -70,10 +71,14 @@ namespace polyfem
 				for (int e = 0; e < n_elements; ++e)
 				{
 					// vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+					
+					// compute geometric mapping
+					// evaluate and store basis functions/their gradients at quadrature points
 					ass_vals_cache_.compute(e, mesh_.is_volume(), bases_[e], gbases_[e], vals);
 
 					const Quadrature &quadrature = vals.quadrature;
 
+					// compute rhs values in physical space
 					problem_.rhs(assembler_, vals.val, t, rhs_fun);
 
 					for (int d = 0; d < size_; ++d)
@@ -83,6 +88,7 @@ namespace polyfem
 						{
 							// const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id) : 1;
 							const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id);
+							// prepare for integration by weighing rhs by determinant and quadrature weights
 							rhs_fun(q, d) *= vals.det(q) * quadrature.weights(q) * rho;
 						}
 					}
@@ -94,8 +100,10 @@ namespace polyfem
 
 						for (int d = 0; d < size_; ++d)
 						{
+							// integrate rhs function times the given local basis
 							const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
 							for (std::size_t ii = 0; ii < v.global.size(); ++ii)
+								// add local contribution to the global rhs vector (with some weight for non-conforming bases)
 								rhs(v.global[ii].index * size_ + d) += rhs_value * v.global[ii].val;
 						}
 					}

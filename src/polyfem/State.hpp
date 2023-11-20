@@ -144,7 +144,10 @@ namespace polyfem
 		Units units;
 
 		/// assemblers
+
+		/// assembler corresponding to governing physical equations
 		std::shared_ptr<assembler::Assembler> assembler = nullptr;
+
 		std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
@@ -215,10 +218,17 @@ namespace polyfem
 		}
 
 		/// builds the bases step 2 of solve
+		/// modifies bases, pressure_bases, geom_bases_, boundary_nodes,
+		/// dirichlet_nodes, neumann_nodes, local_boundary, total_local_boundary
+		/// local_neumann_boundary, polys, poly_edge_to_data, rhs
 		void build_basis();
 		/// compute rhs, step 3 of solve
+		/// build rhs vector based on defined basis and given rhs of the problem
+		/// modifies rhs (and maybe more?)
 		void assemble_rhs();
 		/// assemble mass, step 4 of solve
+		/// build mass matrix based on defined basis
+		/// modifies mass (and maybe more?)
 		void assemble_mass_mat();
 
 		/// build a RhsAssembler for the problem
