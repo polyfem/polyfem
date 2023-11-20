@@ -33,8 +33,7 @@ namespace polyfem
 
 	std::shared_ptr<polysolve::nonlinear::Solver> State::make_nl_solver() const
 	{
-		// TODO @teseo dt
-		return polysolve::nonlinear::Solver::create(args["solver"]["nonlinear"], args["solver"]["linear"], 1, logger());
+		return polysolve::nonlinear::Solver::create(args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
 	}
 
 	void State::solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol)

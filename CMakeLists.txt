@@ -190,7 +190,6 @@ target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 # polysolve
 include(polysolve)
 target_link_libraries(polyfem PUBLIC polysolve::polysolve)
-target_compile_definitions(polyfem PUBLIC POLYSOLVE_JSON_SPEC_DIR="${polysolve_SOURCE_DIR}")
 
 # IPC Toolkit
 include(ipc_toolkit)

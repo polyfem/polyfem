@@ -213,14 +213,17 @@ namespace polyfem
 
 			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
 			jse.include_directories.push_back(POLYSOLVE_JSON_SPEC_DIR);
-			std::cout << "sdfsdf " << POLYSOLVE_JSON_SPEC_DIR << std::endl;
 			rules = jse.inject_include(rules);
+
+			polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
 
 			{
 				std::ofstream file("complete-spec.json");
 				file << rules;
 			}
 		}
+
+		polysolve::linear::Solver::select_valid_solver(args_in["solver"]["linear"], logger());
 
 		const bool valid_input = jse.verify_json(args_in, rules);
 
@@ -450,6 +453,8 @@ namespace polyfem
 		args["time"]["tend"] = tend;
 		args["time"]["dt"] = dt;
 		args["time"]["time_steps"] = time_steps;
+
+		units.characteristic_length() *= dt;
 
 		logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
 	}
