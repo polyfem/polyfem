@@ -94,6 +94,19 @@ namespace polyfem::solver
 			for (const auto &arg : args)
 				forms.push_back(create_form(arg, var2sim, states));
 
+			bool amips_form = false;
+			for (auto f : forms)
+				if (typeid(AMIPSForm) == typeid(*f.get()))
+					amips_form = true;
+
+			bool shape_parameter = false;
+			for (auto v : var2sim)
+				if (v->get_parameter_type() == ParameterType::Shape)
+					shape_parameter = true;
+
+			if (shape_parameter && !amips_form)
+				log_and_throw_error("If optimizing a shape paramter, AMIPS form must be part of the objectives to prevent inverted elements!");
+
 			obj = std::make_shared<SumCompositeForm>(var2sim, forms);
 		}
 		else
