@@ -195,10 +195,10 @@ $(document).ready(function(){initNavTree('_state_remesh_8cpp_source.html',''); i
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        {</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            Eigen::MatrixXi edges;</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            igl::edges(elements, edges);</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            Remesher::EdgeMap&lt;std::vector&lt;std::array&lt;double, 2&gt;&gt;&gt; elastic_multienergy;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            Remesher::EdgeMap&lt;std::vector&lt;double&gt;&gt; elastic_multienergy;</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;edge : edges.rowwise())</div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            {</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                elastic_multienergy[{{(size_t)edge(0), (size_t)edge(1)}}] = std::vector&lt;std::array&lt;double, 2&gt;&gt;();</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                elastic_multienergy[{{(size_t)edge(0), (size_t)edge(1)}}] = std::vector&lt;double&gt;();</div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            }</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            assert(state.solve_data.elastic_form != <span class="keyword">nullptr</span>);</div>
@@ -209,227 +209,220 @@ $(document).ready(function(){initNavTree('_state_remesh_8cpp_source.html',''); i
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                <span class="keyword">const</span> <span class="keyword">auto</span> &amp;element = elements.row(i);</div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                <span class="keyword">const</span> <span class="keywordtype">double</span> energy = elastic_energy_per_element[i];</div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_enumvalue" href="namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48fa210ab9e731c9c36c2c38db15c28a8d1c">volume</a> =</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                    elements.cols() == 3</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                        ? <a class="code hl_function" href="namespacepolyfem_1_1utils.html#ad4fc877ac33fe3a967cbd280d7a0b6e2">utils::triangle_area</a>(<a class="code hl_variable" href="namespacep__bases.html#a6e09a924d6202680eb9918f91c1e504b">vertices</a>(element, Eigen::all))</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                        : utils::<a class="code hl_function" href="namespacepolyfem_1_1utils.html#a8a72689f8c34fff6ce44d8568d3a5c1e">tetrahedron_volume</a>(<a class="code hl_variable" href="namespacep__bases.html#a6e09a924d6202680eb9918f91c1e504b">vertices</a>(element, Eigen::all));</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                elastic_multienergy[{{(size_t)element(0), (size_t)element(1)}}].push_back({{energy, <a class="code hl_enumvalue" href="namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48fa210ab9e731c9c36c2c38db15c28a8d1c">volume</a>}});</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                elastic_multienergy[{{(size_t)element(0), (size_t)element(2)}}].push_back({{energy, <a class="code hl_enumvalue" href="namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48fa210ab9e731c9c36c2c38db15c28a8d1c">volume</a>}});</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                elastic_multienergy[{{(size_t)element(1), (size_t)element(2)}}].push_back({{energy, <a class="code hl_enumvalue" href="namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48fa210ab9e731c9c36c2c38db15c28a8d1c">volume</a>}});</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                <span class="keywordflow">if</span> (elements.cols() == 4)</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                {</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                    elastic_multienergy[{{(size_t)element(0), (size_t)element(3)}}].push_back({{energy, <a class="code hl_enumvalue" href="namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48fa210ab9e731c9c36c2c38db15c28a8d1c">volume</a>}});</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                    elastic_multienergy[{{(size_t)element(1), (size_t)element(3)}}].push_back({{energy, <a class="code hl_enumvalue" href="namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48fa210ab9e731c9c36c2c38db15c28a8d1c">volume</a>}});</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                    elastic_multienergy[{{(size_t)element(2), (size_t)element(3)}}].push_back({{energy, <a class="code hl_enumvalue" href="namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48fa210ab9e731c9c36c2c38db15c28a8d1c">volume</a>}});</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                }</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            }</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            <span class="comment">// Average the element energies</span></div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[edge, energies] : elastic_multienergy)</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>            {</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                elastic_energy[edge] =</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                    std::accumulate(energies.begin(), energies.end(), 0.0, [](<span class="keywordtype">double</span> a, <span class="keyword">const</span> std::array&lt;double, 2&gt; &amp;b) { return a + b[0]; })</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                    <span class="comment">// / std::accumulate(energies.begin(), energies.end(), 0.0, [](double a, const std::array&lt;double, 2&gt; &amp;b) { return a + b[1]; });</span></div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                    / energies.size();</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            }</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="keywordflow">if</span> (state.solve_data.contact_form != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            {</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                <span class="keyword">const</span> Eigen::VectorXd contact_energy_per_vertex = state.solve_data.contact_form-&gt;value_per_element(sol);</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; edges.rows(); ++i)</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                {</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                    contact_energy[{{(size_t)edges(i, 0), (size_t)edges(i, 1)}}] =</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                        (contact_energy_per_vertex[edges(i, 0)] + contact_energy_per_vertex[edges(i, 1)]) / 2.0;</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                }</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            }</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        }</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        std::shared_ptr&lt;Remesher&gt; create_wild_remeshing(</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>            State &amp;state,</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            <span class="keyword">const</span> Eigen::VectorXd &amp;obstacle_sol,</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            <span class="keyword">const</span> Eigen::MatrixXd &amp;obstacle_projection_quantities,</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> time,</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> current_energy)</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        {</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> dim = state.mesh-&gt;dimension();</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>            <span class="keyword">const</span> std::string type = state.args[<span class="stringliteral">&quot;space&quot;</span>][<span class="stringliteral">&quot;remesh&quot;</span>][<span class="stringliteral">&quot;type&quot;</span>];</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>            std::shared_ptr&lt;Remesher&gt; remeshing = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>            <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;physics&quot;</span>)</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>            {</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                <span class="keywordflow">if</span> (dim == 2)</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>                    remeshing = std::make_shared&lt;PhysicsTriRemesher&gt;(</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>                        state, <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">utils::unflatten</a>(obstacle_sol, dim), obstacle_projection_quantities,</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>                        time, current_energy);</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                    remeshing = std::make_shared&lt;PhysicsTetRemesher&gt;(</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                elastic_multienergy[{{(size_t)element(0), (size_t)element(1)}}].push_back(energy);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                elastic_multienergy[{{(size_t)element(0), (size_t)element(2)}}].push_back(energy);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                elastic_multienergy[{{(size_t)element(1), (size_t)element(2)}}].push_back(energy);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                <span class="keywordflow">if</span> (elements.cols() == 4)</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                    elastic_multienergy[{{(size_t)element(0), (size_t)element(3)}}].push_back(energy);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                    elastic_multienergy[{{(size_t)element(1), (size_t)element(3)}}].push_back(energy);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                    elastic_multienergy[{{(size_t)element(2), (size_t)element(3)}}].push_back(energy);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="comment">// Average the element energies</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[edge, energies] : elastic_multienergy)</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                elastic_energy[edge] =</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                    std::reduce(energies.begin(), energies.end()) / energies.size();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>            <span class="keywordflow">if</span> (state.solve_data.contact_form != <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                <span class="keyword">const</span> Eigen::VectorXd contact_energy_per_vertex = state.solve_data.contact_form-&gt;value_per_element(sol);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; edges.rows(); ++i)</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                    contact_energy[{{(size_t)edges(i, 0), (size_t)edges(i, 1)}}] =</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                        (contact_energy_per_vertex[edges(i, 0)] + contact_energy_per_vertex[edges(i, 1)]) / 2.0;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                }</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        std::shared_ptr&lt;Remesher&gt; create_wild_remeshing(</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            State &amp;state,</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            <span class="keyword">const</span> Eigen::VectorXd &amp;obstacle_sol,</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>            <span class="keyword">const</span> Eigen::MatrixXd &amp;obstacle_projection_quantities,</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> time,</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> current_energy)</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        {</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> dim = state.mesh-&gt;dimension();</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            <span class="keyword">const</span> std::string type = state.args[<span class="stringliteral">&quot;space&quot;</span>][<span class="stringliteral">&quot;remesh&quot;</span>][<span class="stringliteral">&quot;type&quot;</span>];</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            std::shared_ptr&lt;Remesher&gt; remeshing = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;physics&quot;</span>)</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            {</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                <span class="keywordflow">if</span> (dim == 2)</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                    remeshing = std::make_shared&lt;PhysicsTriRemesher&gt;(</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                        state, <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">utils::unflatten</a>(obstacle_sol, dim), obstacle_projection_quantities,</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                        time, current_energy);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                    remeshing = std::make_shared&lt;PhysicsTetRemesher&gt;(</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                        state, <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">utils::unflatten</a>(obstacle_sol, dim), obstacle_projection_quantities,</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                        time, current_energy);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            }</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;sizing_field&quot;</span>)</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                <span class="keywordflow">if</span> (dim == 2)</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                    remeshing = std::make_shared&lt;SizingFieldTriRemesher&gt;(</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>                        state, <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">utils::unflatten</a>(obstacle_sol, dim), obstacle_projection_quantities,</div>
 <div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>                        time, current_energy);</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>            }</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;sizing_field&quot;</span>)</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>            {</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>                <span class="keywordflow">if</span> (dim == 2)</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>                    remeshing = std::make_shared&lt;SizingFieldTriRemesher&gt;(</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>                        state, <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">utils::unflatten</a>(obstacle_sol, dim), obstacle_projection_quantities,</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>                        time, current_energy);</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>                <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>                    remeshing = std::make_shared&lt;SizingFieldTetRemesher&gt;(</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>                        state, <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">utils::unflatten</a>(obstacle_sol, dim), obstacle_projection_quantities,</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                        time, current_energy);</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            }</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            assert(remeshing != <span class="keyword">nullptr</span>);</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>            <span class="keywordflow">return</span> remeshing;</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        }</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    } <span class="comment">// namespace</span></div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordtype">bool</span> State::remesh(<span class="keyword">const</span> <span class="keywordtype">double</span> time, <span class="keyword">const</span> <span class="keywordtype">double</span> dt, Eigen::MatrixXd &amp;sol)</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    {</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> dim = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;dimension();</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keywordtype">int</span> <a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a> = sol.size();</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        assert(sol.cols() == 1);</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="keywordtype">int</span> ndof_mesh = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;n_vertices() * dim;</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <span class="keywordtype">int</span> ndof_obstacle = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a22084ebd017a5b2775e1027bcbfd9759">obstacle</a>.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a>() * dim;</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        assert(<a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a> == ndof_mesh + ndof_obstacle);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>                <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>                    remeshing = std::make_shared&lt;SizingFieldTetRemesher&gt;(</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>                        state, <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">utils::unflatten</a>(obstacle_sol, dim), obstacle_projection_quantities,</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>                        time, current_energy);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            }</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>            assert(remeshing != <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>            <span class="keywordflow">return</span> remeshing;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        }</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    } <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordtype">bool</span> State::remesh(<span class="keyword">const</span> <span class="keywordtype">double</span> time, <span class="keyword">const</span> <span class="keywordtype">double</span> dt, Eigen::MatrixXd &amp;sol)</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    {</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> dim = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;dimension();</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keywordtype">int</span> <a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a> = sol.size();</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        assert(sol.cols() == 1);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="keywordtype">int</span> ndof_mesh = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;n_vertices() * dim;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <span class="keywordtype">int</span> ndof_obstacle = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a22084ebd017a5b2775e1027bcbfd9759">obstacle</a>.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a>() * dim;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        assert(<a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a> == ndof_mesh + ndof_obstacle);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        Eigen::MatrixXd rest_positions;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        Eigen::MatrixXi elements;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <a class="code hl_function" href="classpolyfem_1_1_state.html#af7ea31cd189fb4a3aae03471e00db305">build_mesh_matrices</a>(rest_positions, elements);</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        assert(rest_positions.size() == ndof_mesh);</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        Eigen::MatrixXd rest_positions;</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        Eigen::MatrixXi elements;</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <a class="code hl_function" href="classpolyfem_1_1_state.html#af7ea31cd189fb4a3aae03471e00db305">build_mesh_matrices</a>(rest_positions, elements);</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        assert(rest_positions.size() == ndof_mesh);</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        Remesher::EdgeMap&lt;double&gt; elastic_energy, contact_energy;</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        build_edge_energy_maps(</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            *<span class="keyword">this</span>, rest_positions, elements, sol, elastic_energy, contact_energy);</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        Remesher::EdgeMap&lt;double&gt; elastic_energy, contact_energy;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        build_edge_energy_maps(</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            *<span class="keyword">this</span>, rest_positions, elements, sol, elastic_energy, contact_energy);</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        <span class="keyword">const</span> Remesher::BoundaryMap&lt;int&gt; boundary_to_id = build_boundary_to_id(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>, <a class="code hl_variable" href="classpolyfem_1_1_state.html#a1d9140ab05aaac683832e2166fcfb8e3">in_node_to_node</a>);</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="keyword">const</span> std::vector&lt;int&gt; body_ids = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;has_body_ids() ? <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;get_body_ids() : std::vector&lt;int&gt;(elements.rows(), 0);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        assert(body_ids.size() == elements.rows());</div>
 <div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="keyword">const</span> Remesher::BoundaryMap&lt;int&gt; boundary_to_id = build_boundary_to_id(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>, <a class="code hl_variable" href="classpolyfem_1_1_state.html#a1d9140ab05aaac683832e2166fcfb8e3">in_node_to_node</a>);</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <span class="keyword">const</span> std::vector&lt;int&gt; body_ids = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;has_body_ids() ? <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;get_body_ids() : std::vector&lt;int&gt;(elements.rows(), 0);</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        assert(body_ids.size() == elements.rows());</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        <span class="comment">// Only remesh the FE mesh</span></div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        assert(sol.size() - rest_positions.size() == <a class="code hl_variable" href="classpolyfem_1_1_state.html#a22084ebd017a5b2775e1027bcbfd9759">obstacle</a>.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a>() * dim);</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keyword">const</span> Eigen::MatrixXd mesh_sol = sol.topRows(ndof_mesh);</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="keyword">const</span> Eigen::MatrixXd obstacle_sol = sol.bottomRows(ndof_obstacle);</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keyword">const</span> Eigen::MatrixXd positions = rest_positions + <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">utils::unflatten</a>(mesh_sol, dim);</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="comment">// not including current displacement as this will be handled as positions</span></div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        Eigen::MatrixXd projection_quantities = <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_remesher.html#a6fc0757b4b80c7a951b58b77680c3b72">Remesher::combine_time_integrator_quantities</a>(</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">time_integrator</a>);</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        assert(projection_quantities.rows() == <a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a>);</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keyword">const</span> Eigen::MatrixXd obstacle_projection_quantities = projection_quantities.bottomRows(ndof_obstacle);</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        projection_quantities.conservativeResize(ndof_mesh, Eigen::NoChange);</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        <span class="comment">// remesh</span></div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        std::shared_ptr&lt;Remesher&gt; remeshing = create_wild_remeshing(</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>            *<span class="keyword">this</span>, obstacle_sol, obstacle_projection_quantities, time, <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;value(sol));</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        remeshing-&gt;init(</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids,</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>            elastic_energy, contact_energy);</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> made_change = remeshing-&gt;execute();</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <span class="keywordflow">if</span> (!made_change)</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="comment">// create new mesh</span></div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a> = <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh.html#aac5fea90bccd67b90530342e6bed96b1">mesh::Mesh::create</a>(remeshing-&gt;rest_positions(), remeshing-&gt;elements(), <span class="comment">/*non_conforming=*/</span><span class="keyword">false</span>);</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        <span class="comment">// set body ids</span></div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;set_body_ids(remeshing-&gt;body_ids());</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        <span class="comment">// set boundary ids</span></div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        std::vector&lt;int&gt; boundary_ids;</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        <span class="keywordflow">if</span> (dim == 2)</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        {</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            <span class="keyword">const</span> <span class="keyword">auto</span> remesh_boundary_ids = std::get&lt;Remesher::EdgeMap&lt;int&gt;&gt;(remeshing-&gt;boundary_ids());</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>            boundary_ids = std::vector&lt;int&gt;(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;n_edges(), -1);</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;n_edges(); i++)</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>            {</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>                <span class="keyword">const</span> <span class="keywordtype">size_t</span> e0 = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;edge_vertex(i, 0);</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>                <span class="keyword">const</span> <span class="keywordtype">size_t</span> e1 = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;edge_vertex(i, 1);</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>                boundary_ids[i] = remesh_boundary_ids.at({{e0, e1}});</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            }</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        }</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        {</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>            <span class="keyword">const</span> <span class="keyword">auto</span> remesh_boundary_ids = std::get&lt;Remesher::FaceMap&lt;int&gt;&gt;(remeshing-&gt;boundary_ids());</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>            boundary_ids = std::vector&lt;int&gt;(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;n_faces(), -1);</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;n_faces(); i++)</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>            {</div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>                <span class="keyword">const</span> std::array&lt;size_t, 3&gt; <a class="code hl_variable" href="namespaceelasticity__rhs.html#a40cac4cd15d87571365bca9e062442d8">f</a> = {{(size_t)<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;face_vertex(i, 0),</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>                                                  (size_t)<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;face_vertex(i, 1),</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>                                                  (size_t)<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;face_vertex(i, 2)}};</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>                boundary_ids[i] = remesh_boundary_ids.at(f);</div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>            }</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        }</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;set_boundary_ids(boundary_ids);</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="comment">// load mesh (and set materials) (will also reload obstacles from disk)</span></div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        <a class="code hl_function" href="classpolyfem_1_1_state.html#a37cc0825d6cd66410b5c1a0c46778a9f">load_mesh</a>();</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span> </div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        <a class="code hl_function" href="classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b">build_basis</a>();</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        <a class="code hl_function" href="classpolyfem_1_1_state.html#a92ca4b0169412ddc297a77744bd0e724">assemble_rhs</a>();</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        <a class="code hl_function" href="classpolyfem_1_1_state.html#a1ccc0343cb326880d9d241517170efb0">assemble_mass_mat</a>();</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span> </div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span> </div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> old_ndof = <a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a>;</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> old_ndof_mesh = ndof_mesh;</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> old_ndof_obstacle = ndof_obstacle;</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span> </div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        ndof_mesh = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;n_vertices() * dim;</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        ndof_obstacle = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a22084ebd017a5b2775e1027bcbfd9759">obstacle</a>.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a>() * dim;</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        assert(ndof_obstacle == old_ndof_obstacle);</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>        <a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a> = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a096d1ecae0577a376befd99612f6fffd">n_bases</a> * dim;</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>        assert(<a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a> == ndof_mesh + ndof_obstacle);</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>        sol.resize(<a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a>, 1);</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>        sol.topRows(ndof_mesh) = <a class="code hl_function" href="namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4">utils::flatten</a>(<a class="code hl_function" href="namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1">utils::reorder_matrix</a>(remeshing-&gt;displacements(), <a class="code hl_variable" href="classpolyfem_1_1_state.html#a1d9140ab05aaac683832e2166fcfb8e3">in_node_to_node</a>));</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        <span class="keywordflow">if</span> (ndof_obstacle &gt; 0)</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>            sol.bottomRows(ndof_obstacle) = obstacle_sol;</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span> </div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#affb68992a44431272d3d8bfdcf2e9c51">rhs_assembler</a> = <a class="code hl_function" href="classpolyfem_1_1_state.html#abce55034e96d581019c98957d4841e7b">build_rhs_assembler</a>();</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classpolyfem_1_1_state.html#a799e2a119d49943bab7ca9b0de7c09f6">problem</a>-&gt;is_time_dependent())</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>        {</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>            assert(<a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">time_integrator</a> != <span class="keyword">nullptr</span>);</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span> </div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>            Eigen::MatrixXd projected_quantities = remeshing-&gt;projection_quantities();</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>            assert(projected_quantities.rows() == ndof_mesh);</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>            assert(projected_quantities.cols() == projection_quantities.cols());</div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>            projected_quantities = <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1">utils::reorder_matrix</a>(</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                projected_quantities, <a class="code hl_variable" href="classpolyfem_1_1_state.html#a1d9140ab05aaac683832e2166fcfb8e3">in_node_to_node</a>, <span class="comment">/*out_blocks=*/</span>-1, dim);</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>            projected_quantities.conservativeResize(<a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a>, Eigen::NoChange);</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>            projected_quantities.bottomRows(ndof_obstacle) = obstacle_projection_quantities;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="comment">// Only remesh the FE mesh</span></div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        assert(sol.size() - rest_positions.size() == <a class="code hl_variable" href="classpolyfem_1_1_state.html#a22084ebd017a5b2775e1027bcbfd9759">obstacle</a>.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a>() * dim);</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="keyword">const</span> Eigen::MatrixXd mesh_sol = sol.topRows(ndof_mesh);</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        <span class="keyword">const</span> Eigen::MatrixXd obstacle_sol = sol.bottomRows(ndof_obstacle);</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <span class="keyword">const</span> Eigen::MatrixXd positions = rest_positions + <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">utils::unflatten</a>(mesh_sol, dim);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="comment">// not including current displacement as this will be handled as positions</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        Eigen::MatrixXd projection_quantities = <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_remesher.html#a6fc0757b4b80c7a951b58b77680c3b72">Remesher::combine_time_integrator_quantities</a>(</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">time_integrator</a>);</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        assert(projection_quantities.rows() == <a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a>);</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keyword">const</span> Eigen::MatrixXd obstacle_projection_quantities = projection_quantities.bottomRows(ndof_obstacle);</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        projection_quantities.conservativeResize(ndof_mesh, Eigen::NoChange);</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="comment">// remesh</span></div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        std::shared_ptr&lt;Remesher&gt; remeshing = create_wild_remeshing(</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            *<span class="keyword">this</span>, obstacle_sol, obstacle_projection_quantities, time, <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;value(sol));</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        remeshing-&gt;init(</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            rest_positions, positions, elements, projection_quantities, boundary_to_id, body_ids,</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            elastic_energy, contact_energy);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> made_change = remeshing-&gt;execute();</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <span class="keywordflow">if</span> (!made_change)</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="comment">// create new mesh</span></div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span> </div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a> = <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh.html#aac5fea90bccd67b90530342e6bed96b1">mesh::Mesh::create</a>(remeshing-&gt;rest_positions(), remeshing-&gt;elements(), <span class="comment">/*non_conforming=*/</span><span class="keyword">false</span>);</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span> </div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        <span class="comment">// set body ids</span></div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;set_body_ids(remeshing-&gt;body_ids());</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span> </div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="comment">// set boundary ids</span></div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        std::vector&lt;int&gt; boundary_ids;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <span class="keywordflow">if</span> (dim == 2)</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        {</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>            <span class="keyword">const</span> <span class="keyword">auto</span> remesh_boundary_ids = std::get&lt;Remesher::EdgeMap&lt;int&gt;&gt;(remeshing-&gt;boundary_ids());</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>            boundary_ids = std::vector&lt;int&gt;(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;n_edges(), -1);</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;n_edges(); i++)</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>            {</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>                <span class="keyword">const</span> <span class="keywordtype">size_t</span> e0 = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;edge_vertex(i, 0);</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>                <span class="keyword">const</span> <span class="keywordtype">size_t</span> e1 = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;edge_vertex(i, 1);</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>                boundary_ids[i] = remesh_boundary_ids.at({{e0, e1}});</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            }</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        }</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        {</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>            <span class="keyword">const</span> <span class="keyword">auto</span> remesh_boundary_ids = std::get&lt;Remesher::FaceMap&lt;int&gt;&gt;(remeshing-&gt;boundary_ids());</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>            boundary_ids = std::vector&lt;int&gt;(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;n_faces(), -1);</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;n_faces(); i++)</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            {</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>                <span class="keyword">const</span> std::array&lt;size_t, 3&gt; <a class="code hl_variable" href="namespaceelasticity__rhs.html#a40cac4cd15d87571365bca9e062442d8">f</a> = {{(size_t)<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;face_vertex(i, 0),</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>                                                  (size_t)<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;face_vertex(i, 1),</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>                                                  (size_t)<a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;face_vertex(i, 2)}};</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>                boundary_ids[i] = remesh_boundary_ids.at(f);</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>            }</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        }</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;set_boundary_ids(boundary_ids);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        <span class="comment">// load mesh (and set materials) (will also reload obstacles from disk)</span></div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        <a class="code hl_function" href="classpolyfem_1_1_state.html#a37cc0825d6cd66410b5c1a0c46778a9f">load_mesh</a>();</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span> </div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        <a class="code hl_function" href="classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b">build_basis</a>();</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        <a class="code hl_function" href="classpolyfem_1_1_state.html#a92ca4b0169412ddc297a77744bd0e724">assemble_rhs</a>();</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <a class="code hl_function" href="classpolyfem_1_1_state.html#a1ccc0343cb326880d9d241517170efb0">assemble_mass_mat</a>();</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span> </div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> old_ndof = <a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a>;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> old_ndof_mesh = ndof_mesh;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> old_ndof_obstacle = ndof_obstacle;</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        ndof_mesh = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a6d2275d335a2330738caba1cb37f7bb9">mesh</a>-&gt;n_vertices() * dim;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        ndof_obstacle = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a22084ebd017a5b2775e1027bcbfd9759">obstacle</a>.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a0a030857d0f71ae2a88692d988fab8db">n_vertices</a>() * dim;</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        assert(ndof_obstacle == old_ndof_obstacle);</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        <a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a> = <a class="code hl_variable" href="classpolyfem_1_1_state.html#a096d1ecae0577a376befd99612f6fffd">n_bases</a> * dim;</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        assert(<a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a> == ndof_mesh + ndof_obstacle);</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span> </div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>        sol.resize(<a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a>, 1);</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        sol.topRows(ndof_mesh) = <a class="code hl_function" href="namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4">utils::flatten</a>(<a class="code hl_function" href="namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1">utils::reorder_matrix</a>(remeshing-&gt;displacements(), <a class="code hl_variable" href="classpolyfem_1_1_state.html#a1d9140ab05aaac683832e2166fcfb8e3">in_node_to_node</a>));</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        <span class="keywordflow">if</span> (ndof_obstacle &gt; 0)</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>            sol.bottomRows(ndof_obstacle) = obstacle_sol;</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span> </div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#affb68992a44431272d3d8bfdcf2e9c51">rhs_assembler</a> = <a class="code hl_function" href="classpolyfem_1_1_state.html#abce55034e96d581019c98957d4841e7b">build_rhs_assembler</a>();</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classpolyfem_1_1_state.html#a799e2a119d49943bab7ca9b0de7c09f6">problem</a>-&gt;is_time_dependent())</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>        {</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>            assert(<a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">time_integrator</a> != <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span> </div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>            Eigen::MatrixXd projected_quantities = remeshing-&gt;projection_quantities();</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>            assert(projected_quantities.rows() == ndof_mesh);</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            assert(projected_quantities.cols() == projection_quantities.cols());</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>            projected_quantities = <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1">utils::reorder_matrix</a>(</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>                projected_quantities, <a class="code hl_variable" href="classpolyfem_1_1_state.html#a1d9140ab05aaac683832e2166fcfb8e3">in_node_to_node</a>, <span class="comment">/*out_blocks=*/</span>-1, dim);</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>            projected_quantities.conservativeResize(<a class="code hl_function" href="classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5">ndof</a>, Eigen::NoChange);</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>            projected_quantities.bottomRows(ndof_obstacle) = obstacle_projection_quantities;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span> </div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>            Eigen::MatrixXd x_prevs, v_prevs, a_prevs;</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>            <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_remesher.html#acd0af1f1e49d1b38e3be46ece8cec282">Remesher::split_time_integrator_quantities</a>(</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                projected_quantities, dim, x_prevs, v_prevs, a_prevs);</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">time_integrator</a>-&gt;init(x_prevs, v_prevs, a_prevs, dt);</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        }</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>        <a class="code hl_function" href="classpolyfem_1_1_state.html#ae0de6ea3bdc69e3e21ddfbcdb144180b">init_nonlinear_tensor_solve</a>(sol, time, <span class="comment">/*init_time_integrator=*/</span><span class="keyword">false</span>);</div>
 <div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>            Eigen::MatrixXd x_prevs, v_prevs, a_prevs;</div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>            <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_remesher.html#acd0af1f1e49d1b38e3be46ece8cec282">Remesher::split_time_integrator_quantities</a>(</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>                projected_quantities, dim, x_prevs, v_prevs, a_prevs);</div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>            <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">time_integrator</a>-&gt;init(x_prevs, v_prevs, a_prevs, dt);</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>        }</div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>        <a class="code hl_function" href="classpolyfem_1_1_state.html#ae0de6ea3bdc69e3e21ddfbcdb144180b">init_nonlinear_tensor_solve</a>(sol, time, <span class="comment">/*init_time_integrator=*/</span><span class="keyword">false</span>);</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span> </div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>        <span class="comment">// initialize the problem so contact force show up correctly in the output</span></div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;update_quantities(time, <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">time_integrator</a>-&gt;x_prev());</div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;init(sol);</div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;init_lagging(<a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">time_integrator</a>-&gt;x_prev());</div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;update_lagging(sol, <span class="comment">/*iter_num=*/</span>0);</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span> </div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    }</div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>} <span class="comment">// namespace polyfem</span></div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span> </div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        <span class="comment">// initialize the problem so contact force show up correctly in the output</span></div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;update_quantities(time, <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">time_integrator</a>-&gt;x_prev());</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;init(sol);</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;init_lagging(<a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">time_integrator</a>-&gt;x_prev());</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>        <a class="code hl_variable" href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">solve_data</a>.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;update_lagging(sol, <span class="comment">/*iter_num=*/</span>0);</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span> </div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    }</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>} <span class="comment">// namespace polyfem</span></div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span> </div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_contact_form_8hpp_html"><div class="ttname"><a href="_contact_form_8hpp.html">ContactForm.hpp</a></div></div>
 <div class="ttc" id="a_elastic_form_8hpp_html"><div class="ttname"><a href="_elastic_form_8hpp.html">ElasticForm.hpp</a></div></div>
 <div class="ttc" id="a_geometry_utils_8hpp_html"><div class="ttname"><a href="_geometry_utils_8hpp.html">GeometryUtils.hpp</a></div></div>
@@ -460,12 +453,8 @@ $(document).ready(function(){initNavTree('_state_remesh_8cpp_source.html',''); i
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1_solve_data_html_acf11b23233cb27e88cb996b540418d0c"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">polyfem::solver::SolveData::time_integrator</a></div><div class="ttdeci">std::shared_ptr&lt; time_integrator::ImplicitTimeIntegrator &gt; time_integrator</div><div class="ttdef"><b>Definition</b> <a href="_solve_data_8hpp_source.html#l00131">SolveData.hpp:131</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1_solve_data_html_affb68992a44431272d3d8bfdcf2e9c51"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_solve_data.html#affb68992a44431272d3d8bfdcf2e9c51">polyfem::solver::SolveData::rhs_assembler</a></div><div class="ttdeci">std::shared_ptr&lt; assembler::RhsAssembler &gt; rhs_assembler</div><div class="ttdef"><b>Definition</b> <a href="_solve_data_8hpp_source.html#l00119">SolveData.hpp:119</a></div></div>
 <div class="ttc" id="anamespaceelasticity__rhs_html_a40cac4cd15d87571365bca9e062442d8"><div class="ttname"><a href="namespaceelasticity__rhs.html#a40cac4cd15d87571365bca9e062442d8">elasticity_rhs.f</a></div><div class="ttdeci">f</div><div class="ttdef"><b>Definition</b> <a href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs.py:173</a></div></div>
-<div class="ttc" id="anamespacep__bases_html_a6e09a924d6202680eb9918f91c1e504b"><div class="ttname"><a href="namespacep__bases.html#a6e09a924d6202680eb9918f91c1e504b">p_bases.vertices</a></div><div class="ttdeci">list vertices</div><div class="ttdef"><b>Definition</b> <a href="p__bases_8py_source.html#l00211">p_bases.py:211</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1solver_html_ad27032b2014cdcea2f5718580272f48fa210ab9e731c9c36c2c38db15c28a8d1c"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48fa210ab9e731c9c36c2c38db15c28a8d1c">polyfem::solver::SpatialIntegralType::volume</a></div><div class="ttdeci">@ volume</div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html_a4d994983e63be19cec7d739baba363a1"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1">polyfem::utils::reorder_matrix</a></div><div class="ttdeci">Eigen::MatrixXd reorder_matrix(const Eigen::MatrixXd &amp;in, const Eigen::VectorXi &amp;in_to_out, int out_blocks=-1, const int block_size=1)</div><div class="ttdoc">Reorder row blocks in a matrix.</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00155">MatrixUtils.cpp:155</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1utils_html_a8a72689f8c34fff6ce44d8568d3a5c1e"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a8a72689f8c34fff6ce44d8568d3a5c1e">polyfem::utils::tetrahedron_volume</a></div><div class="ttdeci">double tetrahedron_volume(const Eigen::Vector3d &amp;a, const Eigen::Vector3d &amp;b, const Eigen::Vector3d &amp;c, const Eigen::Vector3d &amp;d)</div><div class="ttdoc">Compute the signed volume of a tetrahedron defined by four points.</div><div class="ttdef"><b>Definition</b> <a href="_geometry_utils_8cpp_source.html#l00043">GeometryUtils.cpp:43</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html_aafdbbff4a81a4fcba11129097b1109e5"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">polyfem::utils::unflatten</a></div><div class="ttdeci">Eigen::MatrixXd unflatten(const Eigen::VectorXd &amp;x, int dim)</div><div class="ttdoc">Unflatten rowwises, so every dim elements in x become a row.</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00053">MatrixUtils.cpp:53</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1utils_html_ad4fc877ac33fe3a967cbd280d7a0b6e2"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#ad4fc877ac33fe3a967cbd280d7a0b6e2">polyfem::utils::triangle_area</a></div><div class="ttdeci">double triangle_area(const Eigen::MatrixXd V)</div><div class="ttdoc">Compute the signed area of a triangle defined by three points.</div><div class="ttdef"><b>Definition</b> <a href="_geometry_utils_8cpp_source.html#l00030">GeometryUtils.cpp:30</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html_adac090350174847f46edfd397abd4ab4"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4">polyfem::utils::flatten</a></div><div class="ttdeci">Eigen::VectorXd flatten(const Eigen::MatrixXd &amp;X)</div><div class="ttdoc">Flatten rowwises.</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00034">MatrixUtils.cpp:34</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition</b> <a href="_a_m_i_p_s_energy_8cpp_source.html#l00005">AMIPSEnergy.cpp:6</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
