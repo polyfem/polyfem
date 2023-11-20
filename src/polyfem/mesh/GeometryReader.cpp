@@ -159,7 +159,7 @@ namespace polyfem::mesh
 		}
 
 		if (!j_mesh["curve_selection"].is_null())
-			log_and_throw_error("Geometry point selections are not implemented nor used!");
+			log_and_throw_error("Geometry curve selections are not implemented!");
 
 		// --------------------------------------------------------------------
 

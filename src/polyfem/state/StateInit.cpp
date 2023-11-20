@@ -212,6 +212,14 @@ namespace polyfem
 				logger().error("unable to open {} rules", polyfem_input_spec);
 				throw std::runtime_error("Invald spec file");
 			}
+
+			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
+			rules = jse.inject_include(rules);
+
+			{
+				std::ofstream file("complete-spec.json");
+				file << rules;
+			}
 		}
 
 		// Set valid options for enabled linear solvers
