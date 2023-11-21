@@ -459,17 +459,29 @@ namespace polyfem::solver
 		jse::JSE jse;
 		{
 			jse.strict = strict_validation;
-			const std::string polyfem_input_spec = POLYFEM_OPT_INPUT_SPEC;
-			std::ifstream file(polyfem_input_spec);
+			std::ifstream file(POLYFEM_OPT_INPUT_SPEC);
 
 			if (file.is_open())
 				file >> rules;
 			else
 			{
-				logger().error("unable to open {} rules", polyfem_input_spec);
+				logger().error("unable to open {} rules", POLYFEM_OPT_INPUT_SPEC);
 				throw std::runtime_error("Invald spec file");
 			}
+
+			jse.include_directories.push_back(POLYFEM_OPT_INPUT_SPEC);
+			jse.include_directories.push_back(POLYSOLVE_JSON_SPEC_DIR);
+			rules = jse.inject_include(rules);
+
+			// polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
+
+			{
+				std::ofstream file("opt-complete-spec.json");
+				file << rules;
+			}
 		}
+
+		// polysolve::linear::Solver::select_valid_solver(args_in["solver"]["linear"], logger());
 
 		const bool valid_input = jse.verify_json(args_in, rules);
 
