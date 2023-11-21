@@ -10,6 +10,7 @@ namespace polyfem
 	{
 		void AssemblyValsCache::init(const bool is_volume, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const bool is_mass)
 		{
+			is_init_ = true;
 			is_mass_ = is_mass;
 			const int n_bases = bases.size();
 			cache.resize(n_bases);

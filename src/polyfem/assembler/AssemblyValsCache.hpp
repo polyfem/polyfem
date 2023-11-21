@@ -18,10 +18,12 @@ namespace polyfem
 			}
 
 			inline bool is_mass() const { return is_mass_; }
+			inline bool is_init() const { return is_init_; }
 
 		private:
 			std::vector<ElementAssemblyValues> cache;
 			bool is_mass_;
+			bool is_init_ = false;
 		};
 	} // namespace assembler
 } // namespace polyfem

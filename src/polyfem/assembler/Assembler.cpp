@@ -181,7 +181,7 @@ namespace polyfem::assembler
 			const int n_bases = int(bases.size());
 			igl::Timer timer;
 			timer.start();
-			assert(cache.is_mass() == is_mass);
+			assert(!cache.is_init() || cache.is_mass() == is_mass);
 
 			maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 				LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);

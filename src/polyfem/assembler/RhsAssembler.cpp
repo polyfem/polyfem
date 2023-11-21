@@ -57,7 +57,7 @@ namespace polyfem
 			  neumann_nodes_(neumann_nodes),
 			  neumann_nodes_position_(neumann_nodes_position)
 		{
-			assert(ass_vals_cache_.is_mass());
+			assert(!ass_vals_cache_.is_init() || ass_vals_cache_.is_mass());
 		}
 
 		void RhsAssembler::assemble(const Density &density, Eigen::MatrixXd &rhs, const double t) const
