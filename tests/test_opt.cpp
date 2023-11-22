@@ -167,7 +167,7 @@ TEST_CASE("material-opt", tagsopt)
 	// auto energies = read_energy(name);
 
 	// REQUIRE(energies[0] == Catch::Approx(6.13934).epsilon(1e-2));
-	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.0105856).epsilon(1e-2));
+	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.0023793444).epsilon(1e-2));
 }
 
 // TEST_CASE("friction-opt", "[optimization]")
