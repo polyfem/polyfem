@@ -212,7 +212,7 @@
             "enabled",
             "is_obstacle"
         ],
-        "type_name": "plane",
+        "#type_name": "plane",
         "doc": "Plane geometry object defined by its origin and normal."
     },
     {
@@ -226,7 +226,7 @@
             "enabled",
             "is_obstacle"
         ],
-        "type_name": "ground",
+        "#type_name": "ground",
         "doc": "Plane orthogonal to gravity defined by its height."
     },
     {
@@ -243,7 +243,7 @@
             "enabled",
             "is_obstacle"
         ],
-        "type_name": "mesh_sequence",
+        "#type_name": "mesh_sequence",
         "doc": "Mesh sequence."
     },
     {
@@ -571,6 +571,7 @@
     {
         "pointer": "/geometry/*/array/relative",
         "type": "bool",
+        "default": false,
         "doc": "Is the offset value relative to the mesh's dimensions."
     },
     {
