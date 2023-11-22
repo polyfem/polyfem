@@ -1,6 +1,5 @@
 var namespacepolyfem_1_1solver =
 [
-    [ "line_search", "namespacepolyfem_1_1solver_1_1line__search.html", "namespacepolyfem_1_1solver_1_1line__search" ],
     [ "AccelerationForm", "classpolyfem_1_1solver_1_1_acceleration_form.html", "classpolyfem_1_1solver_1_1_acceleration_form" ],
     [ "AdjointForm", "classpolyfem_1_1solver_1_1_adjoint_form.html", "classpolyfem_1_1solver_1_1_adjoint_form" ],
     [ "AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem" ],

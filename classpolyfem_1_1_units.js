@@ -1,6 +1,7 @@
 var classpolyfem_1_1_units =
 [
     [ "acceleration", "classpolyfem_1_1_units.html#ad6783109c4a7859d1f269bc2dcd23a19", null ],
+    [ "characteristic_length", "classpolyfem_1_1_units.html#a3751a4430a6eaceeb9222f35e3fec25a", null ],
     [ "characteristic_length", "classpolyfem_1_1_units.html#a40227e7c83a99215651686472ac72e54", null ],
     [ "density", "classpolyfem_1_1_units.html#adca013e174387678434febb870ec9813", null ],
     [ "energy", "classpolyfem_1_1_units.html#a591c09b04f9c7988f057e662c7270d6e", null ],

@@ -14,6 +14,5 @@ var searchData=
   ['compositeforms_2ecpp_11',['CompositeForms.cpp',['../_composite_forms_8cpp.html',1,'']]],
   ['compositeforms_2ehpp_12',['CompositeForms.hpp',['../_composite_forms_8hpp.html',1,'']]],
   ['contactform_2ecpp_13',['ContactForm.cpp',['../_contact_form_8cpp.html',1,'']]],
-  ['contactform_2ehpp_14',['ContactForm.hpp',['../_contact_form_8hpp.html',1,'']]],
-  ['cppoptarmijolinesearch_2ehpp_15',['CppOptArmijoLineSearch.hpp',['../_cpp_opt_armijo_line_search_8hpp.html',1,'']]]
+  ['contactform_2ehpp_14',['ContactForm.hpp',['../_contact_form_8hpp.html',1,'']]]
 ];

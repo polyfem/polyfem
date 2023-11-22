@@ -17,7 +17,7 @@ var searchData=
   ['hash_5ftable_5fcell_5fnum_14',['hash_table_cell_num',['../classpolyfem_1_1solver_1_1_operator_splitting_solver.html#abdbf0c7519bd753785c06726116059c5',1,'polyfem::solver::OperatorSplittingSolver']]],
   ['have_5ftarget_5ffunc_15',['have_target_func',['../classpolyfem_1_1solver_1_1_target_form.html#aedc695824900376821ef328989c4ffcd',1,'polyfem::solver::TargetForm']]],
   ['height_5f_16',['height_',['../classpolyfem_1_1utils_1_1_cylinder_selection.html#ac232a2d6fb83301c65208d1bd3b09ed4',1,'polyfem::utils::CylinderSelection']]],
-  ['hess_17',['hess',['../classcppoptlib_1_1_b_f_g_s_solver.html#ad91902e6081edd41d19c7f0ce093f1ed',1,'cppoptlib::BFGSSolver::hess'],['../class_m_m_a_solver_aux.html#a2e22f1000002266eace34d883ffff659',1,'MMASolverAux::hess'],['../struct_d_scalar2.html#a15737f75543ecbaba980e825dee51bdb',1,'DScalar2::hess']]],
+  ['hess_17',['hess',['../struct_d_scalar2.html#a15737f75543ecbaba980e825dee51bdb',1,'DScalar2']]],
   ['hex_18',['hex',['../structpolyfem_1_1mesh_1_1_element.html#aa2790260d3b42914666de332abcab16f',1,'polyfem::mesh::Element']]],
   ['hex_5fface_5ftable_19',['hex_face_table',['../namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a1de1a2dd8709669d68f19f19b3510749',1,'polyfem::mesh::MeshProcessing3D']]],
   ['hex_5ftetra_5ftable_20',['hex_tetra_table',['../namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html#a973fa48488e4b472eefcfb966abaed2b',1,'polyfem::mesh::MeshProcessing3D']]],

@@ -1,9 +1,9 @@
 var classpolyfem_1_1solver_1_1_a_l_solver =
 [
-    [ "NLSolver", "classpolyfem_1_1solver_1_1_a_l_solver.html#a9e3eaf4963618d40f8a68bf53bb209e2", null ],
+    [ "NLSolver", "classpolyfem_1_1solver_1_1_a_l_solver.html#a10bcc29e57d7cf93e747f1b7e7ee19c3", null ],
     [ "ALSolver", "classpolyfem_1_1solver_1_1_a_l_solver.html#a8f5df7d6a4a410882291ee0b8a749ebe", null ],
     [ "set_al_weight", "classpolyfem_1_1solver_1_1_a_l_solver.html#a37b1f3b8343a9f2a4858a29546e9b015", null ],
-    [ "solve", "classpolyfem_1_1solver_1_1_a_l_solver.html#a7c0a22e768625967a23702241a0a6595", null ],
+    [ "solve", "classpolyfem_1_1solver_1_1_a_l_solver.html#a19c1496d1b4df5c6c6288d137147d479", null ],
     [ "eta_tol", "classpolyfem_1_1solver_1_1_a_l_solver.html#a8a05857125ca09413c55d1c7b9b5ce77", null ],
     [ "initial_al_weight", "classpolyfem_1_1solver_1_1_a_l_solver.html#a7680a34c8bf0d8f14ea3bf956338ca99", null ],
     [ "lagr_form", "classpolyfem_1_1solver_1_1_a_l_solver.html#a746ccb97b8cbf6caa89d5489da6b5b9c", null ],

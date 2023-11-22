@@ -13,14 +13,13 @@ var searchData=
   ['amipsenergy_10',['AMIPSEnergy',['../classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html',1,'polyfem::assembler']]],
   ['amipsform_11',['AMIPSForm',['../classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html',1,'polyfem::solver']]],
   ['apriori_12',['APriori',['../classpolyfem_1_1refinement_1_1_a_priori.html',1,'polyfem::refinement']]],
-  ['armijolinesearch_13',['ArmijoLineSearch',['../classpolyfem_1_1solver_1_1line__search_1_1_armijo_line_search.html',1,'polyfem::solver::line_search']]],
-  ['arrayhasher2d_14',['arrayhasher2d',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1_array_hasher2_d.html',1,'polyfem::mesh::NCMesh2D::ArrayHasher2D'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher2_d.html',1,'polyfem::mesh::NCMesh3D::ArrayHasher2D']]],
-  ['arrayhasher3d_15',['ArrayHasher3D',['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher3_d.html',1,'polyfem::mesh::NCMesh3D']]],
-  ['assembler_16',['Assembler',['../classpolyfem_1_1assembler_1_1_assembler.html',1,'polyfem::assembler']]],
-  ['assemblerutils_17',['AssemblerUtils',['../classpolyfem_1_1assembler_1_1_assembler_utils.html',1,'polyfem::assembler']]],
-  ['assemblyvalscache_18',['AssemblyValsCache',['../classpolyfem_1_1assembler_1_1_assembly_vals_cache.html',1,'polyfem::assembler']]],
-  ['assemblyvalues_19',['AssemblyValues',['../classpolyfem_1_1assembler_1_1_assembly_values.html',1,'polyfem::assembler']]],
-  ['autodiffallocator_20',['AutoDiffAllocator',['../classpolyfem_1_1_auto_diff_allocator.html',1,'polyfem']]],
-  ['autodiffallocator_3c_20double_20_3e_21',['AutoDiffAllocator&lt; double &gt;',['../classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html',1,'polyfem']]],
-  ['axisplaneselection_22',['AxisPlaneSelection',['../classpolyfem_1_1utils_1_1_axis_plane_selection.html',1,'polyfem::utils']]]
+  ['arrayhasher2d_13',['arrayhasher2d',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1_array_hasher2_d.html',1,'polyfem::mesh::NCMesh2D::ArrayHasher2D'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher2_d.html',1,'polyfem::mesh::NCMesh3D::ArrayHasher2D']]],
+  ['arrayhasher3d_14',['ArrayHasher3D',['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher3_d.html',1,'polyfem::mesh::NCMesh3D']]],
+  ['assembler_15',['Assembler',['../classpolyfem_1_1assembler_1_1_assembler.html',1,'polyfem::assembler']]],
+  ['assemblerutils_16',['AssemblerUtils',['../classpolyfem_1_1assembler_1_1_assembler_utils.html',1,'polyfem::assembler']]],
+  ['assemblyvalscache_17',['AssemblyValsCache',['../classpolyfem_1_1assembler_1_1_assembly_vals_cache.html',1,'polyfem::assembler']]],
+  ['assemblyvalues_18',['AssemblyValues',['../classpolyfem_1_1assembler_1_1_assembly_values.html',1,'polyfem::assembler']]],
+  ['autodiffallocator_19',['AutoDiffAllocator',['../classpolyfem_1_1_auto_diff_allocator.html',1,'polyfem']]],
+  ['autodiffallocator_3c_20double_20_3e_20',['AutoDiffAllocator&lt; double &gt;',['../classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html',1,'polyfem']]],
+  ['axisplaneselection_21',['AxisPlaneSelection',['../classpolyfem_1_1utils_1_1_axis_plane_selection.html',1,'polyfem::utils']]]
 ];

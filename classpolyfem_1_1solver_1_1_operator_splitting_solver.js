@@ -2,7 +2,7 @@ var classpolyfem_1_1solver_1_1_operator_splitting_solver =
 [
     [ "OperatorSplittingSolver", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a0fe30b41aa6f077b4ca4dfd922dd434e", null ],
     [ "OperatorSplittingSolver", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aeb62512c98ba6bba04d0b169e51c7f30", null ],
-    [ "OperatorSplittingSolver", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a92f127dafc3c6dbf8f8130eb3cf217bd", null ],
+    [ "OperatorSplittingSolver", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a213b236cbbf6b8ac106d92a03a48e6b8", null ],
     [ "advect_density", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aa138ceb773286dcfb3134ea0397c29a4", null ],
     [ "advect_density_exact", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aeb96f4c6c88d09107eadec54275b4564", null ],
     [ "advection", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a64a74b23993d4d656930c2919f31abdd", null ],
@@ -46,10 +46,9 @@ var classpolyfem_1_1solver_1_1_operator_splitting_solver =
     [ "position_particle", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a78fa20d8ffbb27725715f5d1b4230264", null ],
     [ "resolution", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a6ab1c36f763af029158e70fb3ba0da15", null ],
     [ "shape", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#acded0a120ab782970ff47e7f91950e29", null ],
-    [ "solver_diffusion", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a4a1d135e1c9e9060855874c29ae9944c", null ],
-    [ "solver_mass", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a8837019f891efb0117e92dcc4731b485", null ],
-    [ "solver_projection", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a2f21291a6b2b725554ce956b62a2d595", null ],
-    [ "solver_type", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a60765d38a88c08b450f073a1e63eb491", null ],
+    [ "solver_diffusion", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a567e4729f60d3c426e8219807e45e13d", null ],
+    [ "solver_mass", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ad99b9222982df6b41adab5f42ec4168c", null ],
+    [ "solver_projection", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ac865d1d9a83e0444457d81ed28213e4e", null ],
     [ "T", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ab898f86e40d086ed9e13aba18281480a", null ],
     [ "V", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a590aa5859113a5ef17a9e7433753c6e4", null ],
     [ "velocity_particle", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html#ac985f423fa2e08e907db227d988a493f", null ]

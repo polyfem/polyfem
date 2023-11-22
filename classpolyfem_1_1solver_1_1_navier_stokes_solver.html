@@ -143,8 +143,8 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a857c5ada41c637408f008f0b4fd91bef" id="r_a857c5ada41c637408f008f0b4fd91bef"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a857c5ada41c637408f008f0b4fd91bef">minimize_aux</a> (const bool is_picard, const std::vector&lt; int &gt; &amp;skipping, const int n_bases, const int n_pressure_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, <a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html">assembler::NavierStokesVelocity</a> &amp;velocity_assembler, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">assembler::AssemblyValsCache</a> &amp;ass_vals_cache, const std::vector&lt; int &gt; &amp;boundary_nodes, const bool use_avg_pressure, const int problem_dim, const bool is_volume, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;pressure_stiffness, const Eigen::VectorXd &amp;rhs, const double grad_norm, std::unique_ptr&lt; polysolve::LinearSolver &gt; &amp;solver, double &amp;nlres_norm, Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
-<tr class="separator:a857c5ada41c637408f008f0b4fd91bef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e55552d4c241bfd29b6b585089dab44" id="r_a9e55552d4c241bfd29b6b585089dab44"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a9e55552d4c241bfd29b6b585089dab44">minimize_aux</a> (const bool is_picard, const std::vector&lt; int &gt; &amp;skipping, const int n_bases, const int n_pressure_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, <a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html">assembler::NavierStokesVelocity</a> &amp;velocity_assembler, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">assembler::AssemblyValsCache</a> &amp;ass_vals_cache, const std::vector&lt; int &gt; &amp;boundary_nodes, const bool use_avg_pressure, const int problem_dim, const bool is_volume, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;velocity_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mixed_stiffness, const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;pressure_stiffness, const Eigen::VectorXd &amp;rhs, const double grad_norm, std::unique_ptr&lt; polysolve::linear::Solver &gt; &amp;solver, double &amp;nlres_norm, Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
+<tr class="separator:a9e55552d4c241bfd29b6b585089dab44"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2f048ba2e31b7481aa8dac656e5785e" id="r_ac2f048ba2e31b7481aa8dac656e5785e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#ac2f048ba2e31b7481aa8dac656e5785e">has_nans</a> (const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a> &amp;hessian)</td></tr>
 <tr class="separator:ac2f048ba2e31b7481aa8dac656e5785e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -152,10 +152,6 @@ Private Member Functions</h2></td></tr>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a4cee2cef566eae693fcbe0d31c5a19e0" id="r_a4cee2cef566eae693fcbe0d31c5a19e0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a4cee2cef566eae693fcbe0d31c5a19e0">solver_param</a></td></tr>
 <tr class="separator:a4cee2cef566eae693fcbe0d31c5a19e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a512530cd22cceb23e841c546a446d02c" id="r_a512530cd22cceb23e841c546a446d02c"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a512530cd22cceb23e841c546a446d02c">solver_type</a></td></tr>
-<tr class="separator:a512530cd22cceb23e841c546a446d02c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a83bb56bea2377973ef9a300d545d8b96" id="r_a83bb56bea2377973ef9a300d545d8b96"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a83bb56bea2377973ef9a300d545d8b96">precond_type</a></td></tr>
-<tr class="separator:a83bb56bea2377973ef9a300d545d8b96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7edb18d72295feeb690808b2c7b9cd2f" id="r_a7edb18d72295feeb690808b2c7b9cd2f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a7edb18d72295feeb690808b2c7b9cd2f">gradNorm</a></td></tr>
 <tr class="separator:a7edb18d72295feeb690808b2c7b9cd2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a417a0005e1d694353faa1fc5de741b4a" id="r_a417a0005e1d694353faa1fc5de741b4a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_navier_stokes_solver.html#a417a0005e1d694353faa1fc5de741b4a">iterations</a></td></tr>
@@ -193,9 +189,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00025">25</a> of file <a class="el" href="_navier_stokes_solver_8cpp_source.html">NavierStokesSolver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00024">24</a> of file <a class="el" href="_navier_stokes_solver_8cpp_source.html">NavierStokesSolver.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00071">gradNorm</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00072">iterations</a>, and <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00067">solver_param</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00069">gradNorm</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00070">iterations</a>, and <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00067">solver_param</a>.</p>
 
 </div>
 </div>
@@ -253,7 +249,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00041">41</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00074">solver_info</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00072">solver_info</a>.</p>
 
 </div>
 </div>
@@ -281,7 +277,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00248">248</a> of file <a class="el" href="_navier_stokes_solver_8cpp_source.html">NavierStokesSolver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00244">244</a> of file <a class="el" href="_navier_stokes_solver_8cpp_source.html">NavierStokesSolver.cpp</a>.</p>
 
 </div>
 </div>
@@ -401,9 +397,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00034">34</a> of file <a class="el" href="_navier_stokes_solver_8cpp_source.html">NavierStokesSolver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00031">31</a> of file <a class="el" href="_navier_stokes_solver_8cpp_source.html">NavierStokesSolver.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::assemble()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_assembler.html#a33b300a3f7ed4d7ceb62b904ce26fca2">polyfem::assembler::MixedAssembler::assemble()</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00078">assembly_time</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00071">gradNorm</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00079">inverting_time</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00109">polyfem::assembler::AssemblerUtils::merge_mixed_matrices()</a>, <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00149">minimize_aux()</a>, <a class="el" href="_navier_stokes_8hpp_source.html#l00016">polyfem::assembler::NavierStokesVelocity::name()</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00069">precond_type</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00074">solver_info</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00067">solver_param</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00068">solver_type</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00080">stokes_matrix_time</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00081">stokes_solve_time</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8hpp_source.html#l00067">polyfem::assembler::Assembler::assemble()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_mixed_assembler.html#a33b300a3f7ed4d7ceb62b904ce26fca2">polyfem::assembler::MixedAssembler::assemble()</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00076">assembly_time</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00069">gradNorm</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00077">inverting_time</a>, <a class="el" href="_logger_8cpp_source.html#l00027">polyfem::logger()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00109">polyfem::assembler::AssemblerUtils::merge_mixed_matrices()</a>, <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00145">minimize_aux()</a>, <a class="el" href="_navier_stokes_8hpp_source.html#l00016">polyfem::assembler::NavierStokesVelocity::name()</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00072">solver_info</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00067">solver_param</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00078">stokes_matrix_time</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00079">stokes_solve_time</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_solve_navier_stokes_8cpp_source.html#l00020">polyfem::State::solve_navier_stokes()</a>.</p>
 <div class="dynheader">
@@ -419,8 +415,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a857c5ada41c637408f008f0b4fd91bef" name="a857c5ada41c637408f008f0b4fd91bef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a857c5ada41c637408f008f0b4fd91bef">&#9670;&#160;</a></span>minimize_aux()</h2>
+<a id="a9e55552d4c241bfd29b6b585089dab44" name="a9e55552d4c241bfd29b6b585089dab44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e55552d4c241bfd29b6b585089dab44">&#9670;&#160;</a></span>minimize_aux()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -533,7 +529,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::unique_ptr&lt; polysolve::LinearSolver &gt; &amp;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; polysolve::linear::Solver &gt; &amp;&#160;</td>
           <td class="paramname"><em>solver</em>, </td>
         </tr>
         <tr>
@@ -561,20 +557,20 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00149">149</a> of file <a class="el" href="_navier_stokes_solver_8cpp_source.html">NavierStokesSolver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00145">145</a> of file <a class="el" href="_navier_stokes_solver_8cpp_source.html">NavierStokesSolver.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_8cpp_source.html#l00043">polyfem::assembler::NavierStokesVelocity::assemble_hessian()</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00078">assembly_time</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00079">inverting_time</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00072">iterations</a>, <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::logger()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00109">polyfem::assembler::AssemblerUtils::merge_mixed_matrices()</a>, <a class="el" href="_navier_stokes_8hpp_source.html#l00044">polyfem::assembler::NavierStokesVelocity::set_picard()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_8cpp_source.html#l00043">polyfem::assembler::NavierStokesVelocity::assemble_hessian()</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00076">assembly_time</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00077">inverting_time</a>, <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00070">iterations</a>, <a class="el" href="_logger_8cpp_source.html#l00027">polyfem::logger()</a>, <a class="el" href="_assembler_utils_8cpp_source.html#l00109">polyfem::assembler::AssemblerUtils::merge_mixed_matrices()</a>, <a class="el" href="_navier_stokes_8hpp_source.html#l00044">polyfem::assembler::NavierStokesVelocity::set_picard()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00034">minimize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00031">minimize()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_solver_a857c5ada41c637408f008f0b4fd91bef_cgraph.svg" width="100%" height="533"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_solver_a9e55552d4c241bfd29b6b585089dab44_cgraph.svg" width="100%" height="533"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_solver_a857c5ada41c637408f008f0b4fd91bef_icgraph.svg" width="100%" height="413"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_navier_stokes_solver_a9e55552d4c241bfd29b6b585089dab44_icgraph.svg" width="100%" height="413"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -600,9 +596,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00078">78</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00076">76</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00034">minimize()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00149">minimize_aux()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00031">minimize()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00145">minimize_aux()</a>.</p>
 
 </div>
 </div>
@@ -626,9 +622,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00071">71</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00069">69</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00034">minimize()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00025">NavierStokesSolver()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00031">minimize()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00024">NavierStokesSolver()</a>.</p>
 
 </div>
 </div>
@@ -652,7 +648,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00076">76</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00074">74</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
 
 </div>
 </div>
@@ -676,9 +672,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00079">79</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00077">77</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00034">minimize()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00149">minimize_aux()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00031">minimize()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00145">minimize_aux()</a>.</p>
 
 </div>
 </div>
@@ -702,35 +698,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00072">72</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00070">70</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00149">minimize_aux()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00025">NavierStokesSolver()</a>.</p>
-
-</div>
-</div>
-<a id="a83bb56bea2377973ef9a300d545d8b96" name="a83bb56bea2377973ef9a300d545d8b96"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a83bb56bea2377973ef9a300d545d8b96">&#9670;&#160;</a></span>precond_type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const std::string polyfem::solver::NavierStokesSolver::precond_type</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00069">69</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00034">minimize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00145">minimize_aux()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00024">NavierStokesSolver()</a>.</p>
 
 </div>
 </div>
@@ -754,9 +724,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00074">74</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00072">72</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00041">get_info()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00034">minimize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00041">get_info()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00031">minimize()</a>.</p>
 
 </div>
 </div>
@@ -782,33 +752,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00067">67</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00034">minimize()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00025">NavierStokesSolver()</a>.</p>
-
-</div>
-</div>
-<a id="a512530cd22cceb23e841c546a446d02c" name="a512530cd22cceb23e841c546a446d02c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a512530cd22cceb23e841c546a446d02c">&#9670;&#160;</a></span>solver_type</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const std::string polyfem::solver::NavierStokesSolver::solver_type</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00068">68</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00034">minimize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00031">minimize()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00024">NavierStokesSolver()</a>.</p>
 
 </div>
 </div>
@@ -832,9 +776,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00080">80</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00078">78</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00034">minimize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00031">minimize()</a>.</p>
 
 </div>
 </div>
@@ -858,9 +802,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00081">81</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_solver_8hpp_source.html#l00079">79</a> of file <a class="el" href="_navier_stokes_solver_8hpp_source.html">NavierStokesSolver.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00034">minimize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00031">minimize()</a>.</p>
 
 </div>
 </div>

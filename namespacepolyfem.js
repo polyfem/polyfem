@@ -75,6 +75,7 @@ var namespacepolyfem =
       [ "PK2", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ab13248d68ac5516c015337b68346fc21", null ],
       [ "F", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012", null ]
     ] ],
+    [ "adjoint_logger", "namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399", null ],
     [ "compute_diplacement_grad", "namespacepolyfem.html#a9c92d8a4b1a73baab24a2ecef44f9440", null ],
     [ "compute_diplacement_grad", "namespacepolyfem.html#afe7d5ac326e47bbc47caa5539c4f8172", null ],
     [ "compute_disp_grad_at_quad", "namespacepolyfem.html#a4c7c05580a3be89a6cc9482963513a46", null ],

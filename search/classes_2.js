@@ -11,8 +11,7 @@ var searchData=
   ['constantvelocity_8',['ConstantVelocity',['../classpolyfem_1_1problem_1_1_constant_velocity.html',1,'polyfem::problem']]],
   ['contactform_9',['ContactForm',['../classpolyfem_1_1solver_1_1_contact_form.html',1,'polyfem::solver']]],
   ['cornerflow_10',['CornerFlow',['../classpolyfem_1_1problem_1_1_corner_flow.html',1,'polyfem::problem']]],
-  ['cppoptarmijolinesearch_11',['CppOptArmijoLineSearch',['../classpolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search.html',1,'polyfem::solver::line_search']]],
-  ['cubicproblem_12',['CubicProblem',['../classpolyfem_1_1problem_1_1_cubic_problem.html',1,'polyfem::problem']]],
-  ['customsymmetric_13',['CustomSymmetric',['../classpolyfem_1_1solver_1_1_custom_symmetric.html',1,'polyfem::solver']]],
-  ['cylinderselection_14',['CylinderSelection',['../classpolyfem_1_1utils_1_1_cylinder_selection.html',1,'polyfem::utils']]]
+  ['cubicproblem_11',['CubicProblem',['../classpolyfem_1_1problem_1_1_cubic_problem.html',1,'polyfem::problem']]],
+  ['customsymmetric_12',['CustomSymmetric',['../classpolyfem_1_1solver_1_1_custom_symmetric.html',1,'polyfem::solver']]],
+  ['cylinderselection_13',['CylinderSelection',['../classpolyfem_1_1utils_1_1_cylinder_selection.html',1,'polyfem::utils']]]
 ];

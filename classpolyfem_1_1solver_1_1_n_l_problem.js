@@ -1,6 +1,5 @@
 var classpolyfem_1_1solver_1_1_n_l_problem =
 [
-    [ "THessian", "classpolyfem_1_1solver_1_1_n_l_problem.html#a33d4332b874f76cd930e753129414cc2", null ],
     [ "CurrentSize", "classpolyfem_1_1solver_1_1_n_l_problem.html#a826a60dbefdaed8e34377c2c11086197", [
       [ "FULL_SIZE", "classpolyfem_1_1solver_1_1_n_l_problem.html#a826a60dbefdaed8e34377c2c11086197ab69ff8721a4c15de6f2736e3a9e21744", null ],
       [ "REDUCED_SIZE", "classpolyfem_1_1solver_1_1_n_l_problem.html#a826a60dbefdaed8e34377c2c11086197a6aa3a7df66536c0f61893e618e0fd6d2", null ]

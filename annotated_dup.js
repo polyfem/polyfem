@@ -1,19 +1,5 @@
 var annotated_dup =
 [
-    [ "cppoptlib", "namespacecppoptlib.html", [
-      [ "BFGSSolver", "classcppoptlib_1_1_b_f_g_s_solver.html", "classcppoptlib_1_1_b_f_g_s_solver" ],
-      [ "DenseNewtonDescentSolver", "classcppoptlib_1_1_dense_newton_descent_solver.html", "classcppoptlib_1_1_dense_newton_descent_solver" ],
-      [ "GradientDescentSolver", "classcppoptlib_1_1_gradient_descent_solver.html", "classcppoptlib_1_1_gradient_descent_solver" ],
-      [ "LBFGSBSolver", "classcppoptlib_1_1_l_b_f_g_s_b_solver.html", "classcppoptlib_1_1_l_b_f_g_s_b_solver" ],
-      [ "LBFGSSolver", "classcppoptlib_1_1_l_b_f_g_s_solver.html", "classcppoptlib_1_1_l_b_f_g_s_solver" ],
-      [ "MMASolver", "classcppoptlib_1_1_m_m_a_solver.html", "classcppoptlib_1_1_m_m_a_solver" ],
-      [ "NonlinearSolver", "classcppoptlib_1_1_nonlinear_solver.html", "classcppoptlib_1_1_nonlinear_solver" ],
-      [ "SolverWithBoxConstraints", "classcppoptlib_1_1_solver_with_box_constraints.html", "classcppoptlib_1_1_solver_with_box_constraints" ],
-      [ "SparseNewtonDescentSolver", "classcppoptlib_1_1_sparse_newton_descent_solver.html", "classcppoptlib_1_1_sparse_newton_descent_solver" ]
-    ] ],
-    [ "fmt", null, [
-      [ "formatter< cppoptlib::Status >", "structfmt_1_1formatter_3_01cppoptlib_1_1_status_01_4.html", null ]
-    ] ],
     [ "nlohmann", "namespacenlohmann.html", [
       [ "adl_serializer< RowVector< T, dim, max_dim > >", "structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html", null ],
       [ "adl_serializer< std::filesystem::path >", "structnlohmann_1_1adl__serializer_3_01std_1_1filesystem_1_1path_01_4.html", null ],
@@ -217,13 +203,6 @@ var annotated_dup =
         [ "VertexAttributes", "classpolyfem_1_1renderer_1_1_vertex_attributes.html", "classpolyfem_1_1renderer_1_1_vertex_attributes" ]
       ] ],
       [ "solver", "namespacepolyfem_1_1solver.html", [
-        [ "line_search", "namespacepolyfem_1_1solver_1_1line__search.html", [
-          [ "ArmijoLineSearch", "classpolyfem_1_1solver_1_1line__search_1_1_armijo_line_search.html", "classpolyfem_1_1solver_1_1line__search_1_1_armijo_line_search" ],
-          [ "BacktrackingLineSearch", "classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html", "classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search" ],
-          [ "CppOptArmijoLineSearch", "classpolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search.html", "classpolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search" ],
-          [ "LineSearch", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html", "classpolyfem_1_1solver_1_1line__search_1_1_line_search" ],
-          [ "MoreThuenteLineSearch", "classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search.html", "classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search" ]
-        ] ],
         [ "AccelerationForm", "classpolyfem_1_1solver_1_1_acceleration_form.html", "classpolyfem_1_1solver_1_1_acceleration_form" ],
         [ "AdjointForm", "classpolyfem_1_1solver_1_1_adjoint_form.html", "classpolyfem_1_1solver_1_1_adjoint_form" ],
         [ "AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem" ],
@@ -366,6 +345,5 @@ var annotated_dup =
     ] ],
     [ "DiffScalarBase", "struct_diff_scalar_base.html", null ],
     [ "DScalar1", "struct_d_scalar1.html", "struct_d_scalar1" ],
-    [ "DScalar2", "struct_d_scalar2.html", "struct_d_scalar2" ],
-    [ "MMASolverAux", "class_m_m_a_solver_aux.html", "class_m_m_a_solver_aux" ]
+    [ "DScalar2", "struct_d_scalar2.html", "struct_d_scalar2" ]
 ];

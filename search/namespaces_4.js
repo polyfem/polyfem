@@ -1,24 +1,4 @@
 var searchData=
 [
-  ['p_5fbases_0',['p_bases',['../namespacep__bases.html',1,'']]],
-  ['polyfem_1',['polyfem',['../namespacepolyfem.html',1,'']]],
-  ['polyfem_3a_3aassembler_2',['assembler',['../namespacepolyfem_1_1assembler.html',1,'polyfem']]],
-  ['polyfem_3a_3aautogen_3',['autogen',['../namespacepolyfem_1_1autogen.html',1,'polyfem']]],
-  ['polyfem_3a_3abasis_4',['basis',['../namespacepolyfem_1_1basis.html',1,'polyfem']]],
-  ['polyfem_3a_3aio_5',['io',['../namespacepolyfem_1_1io.html',1,'polyfem']]],
-  ['polyfem_3a_3amesh_6',['mesh',['../namespacepolyfem_1_1mesh.html',1,'polyfem']]],
-  ['polyfem_3a_3amesh_3a_3ameshprocessing3d_7',['MeshProcessing3D',['../namespacepolyfem_1_1mesh_1_1_mesh_processing3_d.html',1,'polyfem::mesh']]],
-  ['polyfem_3a_3amesh_3a_3anavigation_8',['Navigation',['../namespacepolyfem_1_1mesh_1_1_navigation.html',1,'polyfem::mesh']]],
-  ['polyfem_3a_3amesh_3a_3anavigation3d_9',['Navigation3D',['../namespacepolyfem_1_1mesh_1_1_navigation3_d.html',1,'polyfem::mesh']]],
-  ['polyfem_3a_3amesh_3a_3apolygons_10',['Polygons',['../namespacepolyfem_1_1mesh_1_1_polygons.html',1,'polyfem::mesh']]],
-  ['polyfem_3a_3aproblem_11',['problem',['../namespacepolyfem_1_1problem.html',1,'polyfem']]],
-  ['polyfem_3a_3aquadrature_12',['quadrature',['../namespacepolyfem_1_1quadrature.html',1,'polyfem']]],
-  ['polyfem_3a_3arefinement_13',['refinement',['../namespacepolyfem_1_1refinement.html',1,'polyfem']]],
-  ['polyfem_3a_3arenderer_14',['renderer',['../namespacepolyfem_1_1renderer.html',1,'polyfem']]],
-  ['polyfem_3a_3asolver_15',['solver',['../namespacepolyfem_1_1solver.html',1,'polyfem']]],
-  ['polyfem_3a_3asolver_3a_3aline_5fsearch_16',['line_search',['../namespacepolyfem_1_1solver_1_1line__search.html',1,'polyfem::solver']]],
-  ['polyfem_3a_3atime_5fintegrator_17',['time_integrator',['../namespacepolyfem_1_1time__integrator.html',1,'polyfem']]],
-  ['polyfem_3a_3autils_18',['utils',['../namespacepolyfem_1_1utils.html',1,'polyfem']]],
-  ['polyfem_3a_3autils_3a_3astringutils_19',['StringUtils',['../namespacepolyfem_1_1utils_1_1_string_utils.html',1,'polyfem::utils']]],
-  ['pretty_5fprint_20',['pretty_print',['../namespacepretty__print.html',1,'']]]
+  ['q_5fbases_0',['q_bases',['../namespaceq__bases.html',1,'']]]
 ];

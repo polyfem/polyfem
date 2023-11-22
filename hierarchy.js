@@ -190,19 +190,6 @@ var hierarchy =
         [ "polyfem::utils::PiecewiseLinearInterpolation", "classpolyfem_1_1utils_1_1_piecewise_linear_interpolation.html", null ]
       ] ]
     ] ],
-    [ "ISolver", null, [
-      [ "cppoptlib::NonlinearSolver< ProblemType >", "classcppoptlib_1_1_nonlinear_solver.html", [
-        [ "cppoptlib::BFGSSolver< ProblemType >", "classcppoptlib_1_1_b_f_g_s_solver.html", null ],
-        [ "cppoptlib::DenseNewtonDescentSolver< ProblemType >", "classcppoptlib_1_1_dense_newton_descent_solver.html", null ],
-        [ "cppoptlib::GradientDescentSolver< ProblemType >", "classcppoptlib_1_1_gradient_descent_solver.html", null ],
-        [ "cppoptlib::LBFGSSolver< ProblemType >", "classcppoptlib_1_1_l_b_f_g_s_solver.html", null ],
-        [ "cppoptlib::SolverWithBoxConstraints< ProblemType >", "classcppoptlib_1_1_solver_with_box_constraints.html", [
-          [ "cppoptlib::LBFGSBSolver< ProblemType >", "classcppoptlib_1_1_l_b_f_g_s_b_solver.html", null ],
-          [ "cppoptlib::MMASolver< ProblemType >", "classcppoptlib_1_1_m_m_a_solver.html", null ]
-        ] ],
-        [ "cppoptlib::SparseNewtonDescentSolver< ProblemType >", "classcppoptlib_1_1_sparse_newton_descent_solver.html", null ]
-      ] ]
-    ] ],
     [ "p_bases.Lagrange", "classp__bases_1_1_lagrange.html", null ],
     [ "q_bases.Lagrange", "classq__bases_1_1_lagrange.html", null ],
     [ "polyfem::basis::LagrangeBasis2d", "classpolyfem_1_1basis_1_1_lagrange_basis2d.html", null ],
@@ -210,12 +197,6 @@ var hierarchy =
     [ "polyfem::assembler::LameParameters", "classpolyfem_1_1assembler_1_1_lame_parameters.html", null ],
     [ "polyfem::assembler::LinearAssemblerData", "classpolyfem_1_1assembler_1_1_linear_assembler_data.html", null ],
     [ "polyfem::quadrature::LineQuadrature", "classpolyfem_1_1quadrature_1_1_line_quadrature.html", null ],
-    [ "polyfem::solver::line_search::LineSearch< ProblemType >", "classpolyfem_1_1solver_1_1line__search_1_1_line_search.html", [
-      [ "polyfem::solver::line_search::ArmijoLineSearch< ProblemType >", "classpolyfem_1_1solver_1_1line__search_1_1_armijo_line_search.html", null ],
-      [ "polyfem::solver::line_search::BacktrackingLineSearch< ProblemType >", "classpolyfem_1_1solver_1_1line__search_1_1_backtracking_line_search.html", null ],
-      [ "polyfem::solver::line_search::CppOptArmijoLineSearch< ProblemType >", "classpolyfem_1_1solver_1_1line__search_1_1_cpp_opt_armijo_line_search.html", null ],
-      [ "polyfem::solver::line_search::MoreThuenteLineSearch< ProblemType >", "classpolyfem_1_1solver_1_1line__search_1_1_more_thuente_line_search.html", null ]
-    ] ],
     [ "polyfem::basis::Local2Global", "classpolyfem_1_1basis_1_1_local2_global.html", null ],
     [ "polyfem::mesh::LocalBoundary", "classpolyfem_1_1mesh_1_1_local_boundary.html", null ],
     [ "polyfem::mesh::LocalMesh< M >", "classpolyfem_1_1mesh_1_1_local_mesh.html", null ],
@@ -245,7 +226,6 @@ var hierarchy =
       [ "polyfem::assembler::StokesMixed", "classpolyfem_1_1assembler_1_1_stokes_mixed.html", null ]
     ] ],
     [ "polyfem::assembler::MixedAssemblerData", "classpolyfem_1_1assembler_1_1_mixed_assembler_data.html", null ],
-    [ "MMASolverAux", "class_m_m_a_solver_aux.html", null ],
     [ "polyfem::io::MshReader", "classpolyfem_1_1io_1_1_msh_reader.html", null ],
     [ "polyfem::io::MshWriter", "classpolyfem_1_1io_1_1_msh_writer.html", null ],
     [ "polyfem::basis::MVPolygonalBasis2d", "classpolyfem_1_1basis_1_1_m_v_polygonal_basis2d.html", null ],
@@ -263,9 +243,6 @@ var hierarchy =
     [ "polyfem::io::OBJWriter", "classpolyfem_1_1io_1_1_o_b_j_writer.html", null ],
     [ "polyfem::mesh::Obstacle", "classpolyfem_1_1mesh_1_1_obstacle.html", null ],
     [ "polyfem::solver::OperatorSplittingSolver", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html", null ],
-    [ "ostream_formatter", null, [
-      [ "fmt::formatter< cppoptlib::Status >", "structfmt_1_1formatter_3_01cppoptlib_1_1_status_01_4.html", null ]
-    ] ],
     [ "polyfem::io::OutGeometryData", "classpolyfem_1_1io_1_1_out_geometry_data.html", null ],
     [ "polyfem::io::OutRuntimeData", "classpolyfem_1_1io_1_1_out_runtime_data.html", null ],
     [ "polyfem::io::OutStatsData", "classpolyfem_1_1io_1_1_out_stats_data.html", null ],
@@ -292,14 +269,6 @@ var hierarchy =
     [ "polyfem::utils::PolygonClipping", "classpolyfem_1_1utils_1_1_polygon_clipping.html", null ],
     [ "polyfem::quadrature::PolygonQuadrature", "classpolyfem_1_1quadrature_1_1_polygon_quadrature.html", null ],
     [ "polyfem::quadrature::PolyhedronQuadrature", "classpolyfem_1_1quadrature_1_1_polyhedron_quadrature.html", null ],
-    [ "cppoptlib::Problem", null, [
-      [ "polyfem::solver::FullNLProblem", "classpolyfem_1_1solver_1_1_full_n_l_problem.html", [
-        [ "polyfem::solver::AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html", null ],
-        [ "polyfem::solver::NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html", [
-          [ "polyfem::solver::StaticBoundaryNLProblem", "classpolyfem_1_1solver_1_1_static_boundary_n_l_problem.html", null ]
-        ] ]
-      ] ]
-    ] ],
     [ "polyfem::assembler::Problem", "classpolyfem_1_1assembler_1_1_problem.html", [
       [ "polyfem::assembler::GenericScalarProblem", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html", null ],
       [ "polyfem::assembler::GenericTensorProblem", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html", null ],
@@ -350,6 +319,14 @@ var hierarchy =
       [ "polyfem::problem::TorsionElasticProblem", "classpolyfem_1_1problem_1_1_torsion_elastic_problem.html", null ],
       [ "polyfem::problem::TransientStokeProblemExact", "classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html", null ],
       [ "polyfem::problem::WalkProblem", "classpolyfem_1_1problem_1_1_walk_problem.html", null ]
+    ] ],
+    [ "polysolve::nonlinear::Problem", null, [
+      [ "polyfem::solver::FullNLProblem", "classpolyfem_1_1solver_1_1_full_n_l_problem.html", [
+        [ "polyfem::solver::AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html", null ],
+        [ "polyfem::solver::NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html", [
+          [ "polyfem::solver::StaticBoundaryNLProblem", "classpolyfem_1_1solver_1_1_static_boundary_n_l_problem.html", null ]
+        ] ]
+      ] ]
     ] ],
     [ "polyfem::problem::ProblemFactory", "classpolyfem_1_1problem_1_1_problem_factory.html", null ],
     [ "polyfem::renderer::Program", "classpolyfem_1_1renderer_1_1_program.html", null ],

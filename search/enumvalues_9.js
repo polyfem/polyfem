@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['pk1_0',['PK1',['../namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e',1,'polyfem']]],
-  ['pk2_1',['PK2',['../namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ab13248d68ac5516c015337b68346fc21',1,'polyfem']]],
-  ['poly_2',['POLY',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93ca711f44effcbd8619148b829b6aa2ed4f',1,'polyfem::assembler::AssemblerUtils']]],
-  ['polygon_3',['POLYGON',['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826aecdc92bf56d960b73b02ee40125758bc',1,'polyfem::mesh']]],
-  ['polyhedron_4',['POLYHEDRON',['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a0fc6833ef0fef62f1b80d37303f6dd74',1,'polyfem::mesh']]]
+  ['qua_0',['QUA',['../namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa81128dad787fcaea5ad558e1276cd310',1,'polyfem::mesh']]],
+  ['quad_1',['QUAD',['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826ac88da92039291f825814816096db2ea2',1,'polyfem::mesh']]],
+  ['quad_5fline_2',['QUAD_LINE',['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826ac4de65de70929441c563707dc06dbe58',1,'polyfem::mesh']]]
 ];

@@ -120,7 +120,6 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_full_n_l_pr
 
 <div class="header">
   <div class="summary">
-<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classpolyfem_1_1solver_1_1_full_n_l_problem-members.html">List of all members</a>  </div>
@@ -140,39 +139,34 @@ Collaboration diagram for polyfem::solver::FullNLProblem:</div>
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem__coll__graph.svg" width="238" height="124"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:a33d4332b874f76cd930e753129414cc2" id="r_a33d4332b874f76cd930e753129414cc2"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a33d4332b874f76cd930e753129414cc2">THessian</a></td></tr>
-<tr class="separator:a33d4332b874f76cd930e753129414cc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a178d12af13034427c7663f534cb22504" id="r_a178d12af13034427c7663f534cb22504"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a178d12af13034427c7663f534cb22504">FullNLProblem</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> &gt; &gt; &amp;<a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a7612662ef357ab012b69ef33f16890fe">forms</a>)</td></tr>
 <tr class="separator:a178d12af13034427c7663f534cb22504"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a093eb80c38c650815f30545de870ae49" id="r_a093eb80c38c650815f30545de870ae49"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a093eb80c38c650815f30545de870ae49">init</a> (const TVector &amp;x0)</td></tr>
-<tr class="separator:a093eb80c38c650815f30545de870ae49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a929c7630e9b5945154a75a80fdaacfd2" id="r_a929c7630e9b5945154a75a80fdaacfd2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a929c7630e9b5945154a75a80fdaacfd2">init</a> (const TVector &amp;x0) override</td></tr>
+<tr class="separator:a929c7630e9b5945154a75a80fdaacfd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a900930999cb06a34f25216952acdcb62" id="r_a900930999cb06a34f25216952acdcb62"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a900930999cb06a34f25216952acdcb62">value</a> (const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
 <tr class="separator:a900930999cb06a34f25216952acdcb62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa05408a71fb2ce3ecc27591d73154b68" id="r_aa05408a71fb2ce3ecc27591d73154b68"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#aa05408a71fb2ce3ecc27591d73154b68">gradient</a> (const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, TVector &amp;gradv) override</td></tr>
 <tr class="separator:aa05408a71fb2ce3ecc27591d73154b68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c9df48eaa86babc1355b4f4226bba58" id="r_a1c9df48eaa86babc1355b4f4226bba58"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a1c9df48eaa86babc1355b4f4226bba58">hessian</a> (const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a33d4332b874f76cd930e753129414cc2">THessian</a> &amp;hessian)</td></tr>
-<tr class="separator:a1c9df48eaa86babc1355b4f4226bba58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2e5d9f462c9451d25850c570265c1cd" id="r_af2e5d9f462c9451d25850c570265c1cd"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#af2e5d9f462c9451d25850c570265c1cd">is_step_valid</a> (const TVector &amp;x0, const TVector &amp;x1) const</td></tr>
-<tr class="separator:af2e5d9f462c9451d25850c570265c1cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1adb9f2892b235bd537cff0a02b35e25" id="r_a1adb9f2892b235bd537cff0a02b35e25"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a1adb9f2892b235bd537cff0a02b35e25">hessian</a> (const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, THessian &amp;hessian) override</td></tr>
+<tr class="separator:a1adb9f2892b235bd537cff0a02b35e25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c4788b7a30f82e4e5d4176c500bdcde" id="r_a6c4788b7a30f82e4e5d4176c500bdcde"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a6c4788b7a30f82e4e5d4176c500bdcde">is_step_valid</a> (const TVector &amp;x0, const TVector &amp;x1) const override</td></tr>
+<tr class="separator:a6c4788b7a30f82e4e5d4176c500bdcde"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a693d8ab3743782661afa5e0ba8f48bcb" id="r_a693d8ab3743782661afa5e0ba8f48bcb"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a693d8ab3743782661afa5e0ba8f48bcb">is_step_collision_free</a> (const TVector &amp;x0, const TVector &amp;x1) const</td></tr>
 <tr class="separator:a693d8ab3743782661afa5e0ba8f48bcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ca9dd5115fe5dffcc4f2605f0fa5807" id="r_a0ca9dd5115fe5dffcc4f2605f0fa5807"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a0ca9dd5115fe5dffcc4f2605f0fa5807">max_step_size</a> (const TVector &amp;x0, const TVector &amp;x1) const</td></tr>
-<tr class="separator:a0ca9dd5115fe5dffcc4f2605f0fa5807"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada28cf75d22d201a22748d02f8eed22d" id="r_ada28cf75d22d201a22748d02f8eed22d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#ada28cf75d22d201a22748d02f8eed22d">line_search_begin</a> (const TVector &amp;x0, const TVector &amp;x1)</td></tr>
-<tr class="separator:ada28cf75d22d201a22748d02f8eed22d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aea6259898d7e3ae42b8321ffb61fb033" id="r_aea6259898d7e3ae42b8321ffb61fb033"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#aea6259898d7e3ae42b8321ffb61fb033">line_search_end</a> ()</td></tr>
-<tr class="separator:aea6259898d7e3ae42b8321ffb61fb033"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ef97b39b9de8fda1d0299c14412b98c" id="r_a7ef97b39b9de8fda1d0299c14412b98c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a7ef97b39b9de8fda1d0299c14412b98c">post_step</a> (const int iter_num, const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
-<tr class="separator:a7ef97b39b9de8fda1d0299c14412b98c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d7ec97f6db3826a5727bf87818700fb" id="r_a8d7ec97f6db3826a5727bf87818700fb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a8d7ec97f6db3826a5727bf87818700fb">set_project_to_psd</a> (bool <a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)</td></tr>
-<tr class="separator:a8d7ec97f6db3826a5727bf87818700fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2be766b0bb9e431937ad3bc65ada8fac" id="r_a2be766b0bb9e431937ad3bc65ada8fac"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a2be766b0bb9e431937ad3bc65ada8fac">solution_changed</a> (const TVector &amp;new_x)</td></tr>
-<tr class="separator:a2be766b0bb9e431937ad3bc65ada8fac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42aab3f240dfa0e035b004ce68106204" id="r_a42aab3f240dfa0e035b004ce68106204"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a42aab3f240dfa0e035b004ce68106204">max_step_size</a> (const TVector &amp;x0, const TVector &amp;x1) const override</td></tr>
+<tr class="separator:a42aab3f240dfa0e035b004ce68106204"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae63f768e702778c005f9071033343674" id="r_ae63f768e702778c005f9071033343674"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#ae63f768e702778c005f9071033343674">line_search_begin</a> (const TVector &amp;x0, const TVector &amp;x1) override</td></tr>
+<tr class="separator:ae63f768e702778c005f9071033343674"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b0b95f98b74d4b154801bb09c2ec376" id="r_a7b0b95f98b74d4b154801bb09c2ec376"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a7b0b95f98b74d4b154801bb09c2ec376">line_search_end</a> () override</td></tr>
+<tr class="separator:a7b0b95f98b74d4b154801bb09c2ec376"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ee4fbdc8d403b3a5e9c585c4eb6ddb0" id="r_a9ee4fbdc8d403b3a5e9c585c4eb6ddb0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a9ee4fbdc8d403b3a5e9c585c4eb6ddb0">post_step</a> (const int iter_num, const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
+<tr class="separator:a9ee4fbdc8d403b3a5e9c585c4eb6ddb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16adec18510ee42554b2b9a44ca1f0be" id="r_a16adec18510ee42554b2b9a44ca1f0be"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a16adec18510ee42554b2b9a44ca1f0be">set_project_to_psd</a> (bool <a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) override</td></tr>
+<tr class="separator:a16adec18510ee42554b2b9a44ca1f0be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98ee7d8df27b7bb57316050985b6220b" id="r_a98ee7d8df27b7bb57316050985b6220b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a98ee7d8df27b7bb57316050985b6220b">solution_changed</a> (const TVector &amp;new_x) override</td></tr>
+<tr class="separator:a98ee7d8df27b7bb57316050985b6220b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e3b514d6a956fd5121b7c67f2af6d75" id="r_a0e3b514d6a956fd5121b7c67f2af6d75"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a0e3b514d6a956fd5121b7c67f2af6d75">init_lagging</a> (const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
 <tr class="separator:a0e3b514d6a956fd5121b7c67f2af6d75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a716b36504c50e7abbbfee7fa621f3dc4" id="r_a716b36504c50e7abbbfee7fa621f3dc4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a716b36504c50e7abbbfee7fa621f3dc4">update_lagging</a> (const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const int iter_num)</td></tr>
@@ -185,8 +179,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8819e984cec7cf787817f05458cfcf9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7612662ef357ab012b69ef33f16890fe" id="r_a7612662ef357ab012b69ef33f16890fe"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a7612662ef357ab012b69ef33f16890fe">forms</a> ()</td></tr>
 <tr class="separator:a7612662ef357ab012b69ef33f16890fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af20c9053890f856786440c272b5d14f1" id="r_af20c9053890f856786440c272b5d14f1"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#af20c9053890f856786440c272b5d14f1">stop</a> (const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
-<tr class="separator:af20c9053890f856786440c272b5d14f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42f35625808b4fdf579adebf7bd54c9a" id="r_a42f35625808b4fdf579adebf7bd54c9a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a42f35625808b4fdf579adebf7bd54c9a">stop</a> (const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
+<tr class="separator:a42f35625808b4fdf579adebf7bd54c9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -195,25 +189,8 @@ Protected Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8hpp_source.html#l00012">12</a> of file <a class="el" href="_full_n_l_problem_8hpp_source.html">FullNLProblem.hpp</a>.</p>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a33d4332b874f76cd930e753129414cc2" name="a33d4332b874f76cd930e753129414cc2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a33d4332b874f76cd930e753129414cc2">&#9670;&#160;</a></span>THessian</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> <a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a33d4332b874f76cd930e753129414cc2">polyfem::solver::FullNLProblem::THessian</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8hpp_source.html#l00017">17</a> of file <a class="el" href="_full_n_l_problem_8hpp_source.html">FullNLProblem.hpp</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8hpp_source.html#l00011">11</a> of file <a class="el" href="_full_n_l_problem_8hpp_source.html">FullNLProblem.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a178d12af13034427c7663f534cb22504" name="a178d12af13034427c7663f534cb22504"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a178d12af13034427c7663f534cb22504">&#9670;&#160;</a></span>FullNLProblem()</h2>
 
@@ -258,9 +235,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8hpp_source.html#l00047">47</a> of file <a class="el" href="_full_n_l_problem_8hpp_source.html">FullNLProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8hpp_source.html#l00039">39</a> of file <a class="el" href="_full_n_l_problem_8hpp_source.html">FullNLProblem.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>.</p>
 
 </div>
 </div>
@@ -302,7 +279,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00096">96</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00103">polyfem::solver::NLProblem::gradient()</a>.</p>
 <div class="dynheader">
@@ -313,8 +290,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a1c9df48eaa86babc1355b4f4226bba58" name="a1c9df48eaa86babc1355b4f4226bba58"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c9df48eaa86babc1355b4f4226bba58">&#9670;&#160;</a></span>hessian()</h2>
+<a id="a1adb9f2892b235bd537cff0a02b35e25" name="a1adb9f2892b235bd537cff0a02b35e25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1adb9f2892b235bd537cff0a02b35e25">&#9670;&#160;</a></span>hessian()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -331,7 +308,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a33d4332b874f76cd930e753129414cc2">THessian</a> &amp;&#160;</td>
+          <td class="paramtype">THessian &amp;&#160;</td>
           <td class="paramname"><em>hessian</em>&#160;</td>
         </tr>
         <tr>
@@ -342,7 +319,7 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -351,24 +328,24 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00109">109</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00109">hessian()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00109">hessian()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_full_n_l_problem_8cpp_source.html#l00109">hessian()</a>, and <a class="el" href="_n_l_problem_8cpp_source.html#l00110">polyfem::solver::NLProblem::hessian()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a1c9df48eaa86babc1355b4f4226bba58_cgraph.svg" width="238" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a1adb9f2892b235bd537cff0a02b35e25_cgraph.svg" width="238" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a1c9df48eaa86babc1355b4f4226bba58_icgraph.svg" width="488" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a1adb9f2892b235bd537cff0a02b35e25_icgraph.svg" width="488" height="75"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a093eb80c38c650815f30545de870ae49" name="a093eb80c38c650815f30545de870ae49"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a093eb80c38c650815f30545de870ae49">&#9670;&#160;</a></span>init()</h2>
+<a id="a929c7630e9b5945154a75a80fdaacfd2" name="a929c7630e9b5945154a75a80fdaacfd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a929c7630e9b5945154a75a80fdaacfd2">&#9670;&#160;</a></span>init()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -386,20 +363,20 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00010">10</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_l_solver_8cpp_source.html#l00029">polyfem::solver::ALSolver::solve()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00289">polyfem::State::solve_tensor_nonlinear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_l_solver_8cpp_source.html#l00029">polyfem::solver::ALSolver::solve()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00267">polyfem::State::solve_tensor_nonlinear()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a093eb80c38c650815f30545de870ae49_icgraph.svg" width="100%" height="448"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a929c7630e9b5945154a75a80fdaacfd2_icgraph.svg" width="100%" height="448"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -432,7 +409,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00022">22</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00059">polyfem::solver::NLProblem::init_lagging()</a>.</p>
 <div class="dynheader">
@@ -481,7 +458,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00079">79</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00092">polyfem::solver::NLProblem::is_step_collision_free()</a>.</p>
 <div class="dynheader">
@@ -492,8 +469,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="af2e5d9f462c9451d25850c570265c1cd" name="af2e5d9f462c9451d25850c570265c1cd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af2e5d9f462c9451d25850c570265c1cd">&#9670;&#160;</a></span>is_step_valid()</h2>
+<a id="a6c4788b7a30f82e4e5d4176c500bdcde" name="a6c4788b7a30f82e4e5d4176c500bdcde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c4788b7a30f82e4e5d4176c500bdcde">&#9670;&#160;</a></span>is_step_valid()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -521,7 +498,7 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -530,19 +507,19 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00071">71</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00087">polyfem::solver::NLProblem::is_step_valid()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_af2e5d9f462c9451d25850c570265c1cd_icgraph.svg" width="100%" height="448"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a6c4788b7a30f82e4e5d4176c500bdcde_icgraph.svg" width="100%" height="448"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="ada28cf75d22d201a22748d02f8eed22d" name="ada28cf75d22d201a22748d02f8eed22d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ada28cf75d22d201a22748d02f8eed22d">&#9670;&#160;</a></span>line_search_begin()</h2>
+<a id="ae63f768e702778c005f9071033343674" name="ae63f768e702778c005f9071033343674"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae63f768e702778c005f9071033343674">&#9670;&#160;</a></span>line_search_begin()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -570,7 +547,7 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -579,19 +556,19 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00050">50</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00077">polyfem::solver::NLProblem::line_search_begin()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_ada28cf75d22d201a22748d02f8eed22d_icgraph.svg" width="100%" height="448"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_ae63f768e702778c005f9071033343674_icgraph.svg" width="100%" height="448"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="aea6259898d7e3ae42b8321ffb61fb033" name="aea6259898d7e3ae42b8321ffb61fb033"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aea6259898d7e3ae42b8321ffb61fb033">&#9670;&#160;</a></span>line_search_end()</h2>
+<a id="a7b0b95f98b74d4b154801bb09c2ec376" name="a7b0b95f98b74d4b154801bb09c2ec376"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b0b95f98b74d4b154801bb09c2ec376">&#9670;&#160;</a></span>line_search_end()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -608,7 +585,7 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -617,13 +594,13 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00056">56</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_a_l_solver_8cpp_source.html#l00029">polyfem::solver::ALSolver::solve()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_aea6259898d7e3ae42b8321ffb61fb033_icgraph.svg" width="100%" height="448"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a7b0b95f98b74d4b154801bb09c2ec376_icgraph.svg" width="100%" height="448"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -645,9 +622,9 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00034">34</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>, and <a class="el" href="_full_n_l_problem_8cpp_source.html#l00034">max_lagging_iterations()</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>, and <a class="el" href="_full_n_l_problem_8cpp_source.html#l00034">max_lagging_iterations()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_full_n_l_problem_8cpp_source.html#l00034">max_lagging_iterations()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00289">polyfem::State::solve_tensor_nonlinear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_full_n_l_problem_8cpp_source.html#l00034">max_lagging_iterations()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00267">polyfem::State::solve_tensor_nonlinear()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -661,8 +638,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a0ca9dd5115fe5dffcc4f2605f0fa5807" name="a0ca9dd5115fe5dffcc4f2605f0fa5807"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0ca9dd5115fe5dffcc4f2605f0fa5807">&#9670;&#160;</a></span>max_step_size()</h2>
+<a id="a42aab3f240dfa0e035b004ce68106204" name="a42aab3f240dfa0e035b004ce68106204"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42aab3f240dfa0e035b004ce68106204">&#9670;&#160;</a></span>max_step_size()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -690,7 +667,7 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -699,19 +676,19 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00062">62</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00082">polyfem::solver::NLProblem::max_step_size()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a0ca9dd5115fe5dffcc4f2605f0fa5807_icgraph.svg" width="488" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a42aab3f240dfa0e035b004ce68106204_icgraph.svg" width="488" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a7ef97b39b9de8fda1d0299c14412b98c" name="a7ef97b39b9de8fda1d0299c14412b98c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ef97b39b9de8fda1d0299c14412b98c">&#9670;&#160;</a></span>post_step()</h2>
+<a id="a9ee4fbdc8d403b3a5e9c585c4eb6ddb0" name="a9ee4fbdc8d403b3a5e9c585c4eb6ddb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ee4fbdc8d403b3a5e9c585c4eb6ddb0">&#9670;&#160;</a></span>post_step()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -739,7 +716,7 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -748,13 +725,13 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00128">128</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00124">polyfem::solver::NLProblem::post_step()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a7ef97b39b9de8fda1d0299c14412b98c_icgraph.svg" width="488" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a9ee4fbdc8d403b3a5e9c585c4eb6ddb0_icgraph.svg" width="488" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -783,12 +760,12 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8hpp_source.html#l00046">46</a> of file <a class="el" href="_full_n_l_problem_8hpp_source.html">FullNLProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8hpp_source.html#l00038">38</a> of file <a class="el" href="_full_n_l_problem_8hpp_source.html">FullNLProblem.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a8d7ec97f6db3826a5727bf87818700fb" name="a8d7ec97f6db3826a5727bf87818700fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8d7ec97f6db3826a5727bf87818700fb">&#9670;&#160;</a></span>set_project_to_psd()</h2>
+<a id="a16adec18510ee42554b2b9a44ca1f0be" name="a16adec18510ee42554b2b9a44ca1f0be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16adec18510ee42554b2b9a44ca1f0be">&#9670;&#160;</a></span>set_project_to_psd()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -806,19 +783,19 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00016">16</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>.</p>
 
 </div>
 </div>
-<a id="a2be766b0bb9e431937ad3bc65ada8fac" name="a2be766b0bb9e431937ad3bc65ada8fac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2be766b0bb9e431937ad3bc65ada8fac">&#9670;&#160;</a></span>solution_changed()</h2>
+<a id="a98ee7d8df27b7bb57316050985b6220b" name="a98ee7d8df27b7bb57316050985b6220b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98ee7d8df27b7bb57316050985b6220b">&#9670;&#160;</a></span>solution_changed()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -836,7 +813,7 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -845,19 +822,19 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00122">122</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00119">polyfem::solver::NLProblem::solution_changed()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a2be766b0bb9e431937ad3bc65ada8fac_icgraph.svg" width="488" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a98ee7d8df27b7bb57316050985b6220b_icgraph.svg" width="488" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="af20c9053890f856786440c272b5d14f1" name="af20c9053890f856786440c272b5d14f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af20c9053890f856786440c272b5d14f1">&#9670;&#160;</a></span>stop()</h2>
+<a id="a42f35625808b4fdf579adebf7bd54c9a" name="a42f35625808b4fdf579adebf7bd54c9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42f35625808b4fdf579adebf7bd54c9a">&#9670;&#160;</a></span>stop()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -875,14 +852,14 @@ Here is the caller graph for this function:</div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a4ef36edafb3d28048adb43c514b8d80e">polyfem::solver::AdjointNLProblem</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8hpp_source.html#l00049">49</a> of file <a class="el" href="_full_n_l_problem_8hpp_source.html">FullNLProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8hpp_source.html#l00041">41</a> of file <a class="el" href="_full_n_l_problem_8hpp_source.html">FullNLProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -924,7 +901,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00028">28</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00064">polyfem::solver::NLProblem::update_lagging()</a>.</p>
 <div class="dynheader">
@@ -952,9 +929,9 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00042">42</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00289">polyfem::State::solve_tensor_nonlinear()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00267">polyfem::State::solve_tensor_nonlinear()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -991,7 +968,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00087">87</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">forms_</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">forms_</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00097">polyfem::solver::NLProblem::value()</a>.</p>
 <div class="dynheader">
@@ -1023,9 +1000,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8hpp_source.html#l00052">52</a> of file <a class="el" href="_full_n_l_problem_8hpp_source.html">FullNLProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8hpp_source.html#l00044">44</a> of file <a class="el" href="_full_n_l_problem_8hpp_source.html">FullNLProblem.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_full_n_l_problem_8hpp_source.html#l00047">forms()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00096">gradient()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00109">hessian()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00010">init()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00022">init_lagging()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00079">is_step_collision_free()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00071">is_step_valid()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00050">line_search_begin()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00056">line_search_end()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00034">max_lagging_iterations()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00062">max_step_size()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00128">post_step()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00139">polyfem::solver::NLProblem::set_apply_DBC()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00016">set_project_to_psd()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00122">solution_changed()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00028">update_lagging()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00069">polyfem::solver::NLProblem::update_quantities()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00042">uses_lagging()</a>, and <a class="el" href="_full_n_l_problem_8cpp_source.html#l00087">value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_full_n_l_problem_8hpp_source.html#l00039">forms()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00096">gradient()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00109">hessian()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00010">init()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00022">init_lagging()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00079">is_step_collision_free()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00071">is_step_valid()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00050">line_search_begin()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00056">line_search_end()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00034">max_lagging_iterations()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00062">max_step_size()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00128">post_step()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00139">polyfem::solver::NLProblem::set_apply_DBC()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00016">set_project_to_psd()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00122">solution_changed()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00028">update_lagging()</a>, <a class="el" href="_n_l_problem_8cpp_source.html#l00069">polyfem::solver::NLProblem::update_quantities()</a>, <a class="el" href="_full_n_l_problem_8cpp_source.html#l00042">uses_lagging()</a>, and <a class="el" href="_full_n_l_problem_8cpp_source.html#l00087">value()</a>.</p>
 
 </div>
 </div>

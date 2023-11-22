@@ -1,6 +1,5 @@
 var namespaces_dup =
 [
-    [ "cppoptlib", "namespacecppoptlib.html", "namespacecppoptlib" ],
     [ "eigs", "namespaceeigs.html", [
       [ "eigs_2d", "namespaceeigs.html#acab94657af810ed942016bcf80ae7011", null ],
       [ "eigs_3d", "namespaceeigs.html#aee3326b91eb12e8aa41a50773b1dd246", null ],
@@ -50,6 +49,7 @@ var namespaces_dup =
     [ "nlohmann", "namespacenlohmann.html", "namespacenlohmann" ],
     [ "p_bases", "namespacep__bases.html", "namespacep__bases" ],
     [ "polyfem", "namespacepolyfem.html", "namespacepolyfem" ],
+    [ "polysolve", "namespacepolysolve.html", "namespacepolysolve" ],
     [ "pretty_print", "namespacepretty__print.html", [
       [ "C99_print", "namespacepretty__print.html#a73786f15be021f8233264d6227553414", null ]
     ] ],
