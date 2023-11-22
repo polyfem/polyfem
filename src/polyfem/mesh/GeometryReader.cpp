@@ -290,8 +290,8 @@ namespace polyfem::mesh
 				tmp_mesh->bounding_box(bbox[0], bbox[1]);
 
 				const long dim = tmp_mesh->dimension();
-				bool is_offset_relative = geometry["array"].contains("relative_offset");
-				const double offset = geometry["array"][is_offset_relative ? "relative_offset" : "offset"];
+				const bool is_offset_relative = geometry["array"]["relative"];
+				const double offset = geometry["array"]["offset"];
 				const VectorNd dimensions = (bbox[1] - bbox[0]);
 				const VectorNi size = geometry["array"]["size"];
 
@@ -499,8 +499,8 @@ namespace polyfem::mesh
 				{
 					const Selection::BBox bbox{{vertices.colwise().minCoeff(), vertices.colwise().maxCoeff()}};
 
-					bool is_offset_relative = geometry["array"].contains("relative_offset");
-					const double offset = geometry["array"][is_offset_relative ? "relative_offset" : "offset"];
+					const bool is_offset_relative = geometry["array"]["relative"];
+					const double offset = geometry["array"]["offset"];
 					const VectorNd dimensions = (bbox[1] - bbox[0]);
 					const VectorNi size = geometry["array"]["size"];
 
