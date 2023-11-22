@@ -197,7 +197,7 @@
             "enabled",
             "is_obstacle"
         ],
-        "#type_name": "mesh_array",
+        "type_name": "mesh_array",
         "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions, materials, optimization parameters and other quantities that can be associated with a part of an object."
     },
     {
@@ -212,7 +212,7 @@
             "enabled",
             "is_obstacle"
         ],
-        "#type_name": "plane",
+        "type_name": "plane",
         "doc": "Plane geometry object defined by its origin and normal."
     },
     {
@@ -226,7 +226,7 @@
             "enabled",
             "is_obstacle"
         ],
-        "#type_name": "ground",
+        "type_name": "ground",
         "doc": "Plane orthogonal to gravity defined by its height."
     },
     {
@@ -243,7 +243,7 @@
             "enabled",
             "is_obstacle"
         ],
-        "#type_name": "mesh_sequence",
+        "type_name": "mesh_sequence",
         "doc": "Mesh sequence."
     },
     {
