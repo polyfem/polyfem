@@ -26,7 +26,7 @@ namespace polyfem::solver
 	{
 	}
 
-	void ALSolver::solve(NLProblem &nl_problem, Eigen::MatrixXd &sol, bool force_al)
+	void ALSolver::solve(NLProblem &nl_problem, Eigen::MatrixXd &sol)
 	{
 		assert(sol.size() == nl_problem.full_size());
 
@@ -45,12 +45,10 @@ namespace polyfem::solver
 
 		nl_problem.line_search_begin(sol, tmp_sol);
 
-		while (force_al
-			   || !std::isfinite(nl_problem.value(tmp_sol))
+		while (!std::isfinite(nl_problem.value(tmp_sol))
 			   || !nl_problem.is_step_valid(sol, tmp_sol)
 			   || !nl_problem.is_step_collision_free(sol, tmp_sol))
 		{
-			force_al = false;
 			nl_problem.line_search_end();
 
 			set_al_weight(nl_problem, sol, al_weight);

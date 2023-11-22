@@ -11,9 +11,6 @@
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
 
-#include <polyfem/solver/NonlinearSolver.hpp>
-#include <polyfem/solver/LBFGSSolver.hpp>
-#include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/SolveData.hpp>
@@ -34,28 +31,9 @@ namespace polyfem
 	using namespace io;
 	using namespace utils;
 
-	template <typename ProblemType>
-	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> State::make_nl_solver(
-		const std::string &linear_solver_type) const
+	std::shared_ptr<polysolve::nonlinear::Solver> State::make_nl_solver() const
 	{
-		const std::string name = args["solver"]["nonlinear"]["solver"];
-		const double dt = problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 1.0;
-		if (name == "newton" || name == "Newton")
-		{
-			json linear_solver_params = args["solver"]["linear"];
-			if (!linear_solver_type.empty())
-				linear_solver_params["solver"] = linear_solver_type;
-			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
-				args["solver"]["nonlinear"], linear_solver_params, dt, units.characteristic_length());
-		}
-		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
-		{
-			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(args["solver"]["nonlinear"], dt, units.characteristic_length());
-		}
-		else
-		{
-			throw std::invalid_argument(fmt::format("invalid nonlinear solver type: {}", name));
-		}
+		return polysolve::nonlinear::Solver::create(args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
 	}
 
 	void State::solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol)
@@ -311,7 +289,7 @@ namespace polyfem
 
 		// ---------------------------------------------------------------------
 
-		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_solver<NLProblem>();
+		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver();
 
 		ALSolver al_solver(
 			nl_solver, solve_data.al_lagr_form, solve_data.al_pen_form,
@@ -335,7 +313,7 @@ namespace polyfem
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
-		al_solver.solve(nl_problem, sol, args["solver"]["augmented_lagrangian"]["force"]);
+		al_solver.solve(nl_problem, sol);
 
 		// ---------------------------------------------------------------------
 
@@ -404,8 +382,4 @@ namespace polyfem
 			}
 		}
 	}
-
-	////////////////////////////////////////////////////////////////////////
-	// Template instantiations
-	template std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> State::make_nl_solver(const std::string &) const;
 } // namespace polyfem

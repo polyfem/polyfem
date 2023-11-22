@@ -1,7 +1,7 @@
 #pragma once
 
 #include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/NonlinearSolver.hpp>
+#include <polysolve/nonlinear/Solver.hpp>
 #include <polyfem/solver/forms/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/BCPenaltyForm.hpp>
 #include <polyfem/Common.hpp>
@@ -15,7 +15,7 @@ namespace polyfem::solver
 {
 	class ALSolver
 	{
-		using NLSolver = cppoptlib::NonlinearSolver<NLProblem>;
+		using NLSolver = polysolve::nonlinear::Solver;
 
 	public:
 		ALSolver(
@@ -29,7 +29,7 @@ namespace polyfem::solver
 			const int max_solver_iter,
 			const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness);
 
-		void solve(NLProblem &nl_problem, Eigen::MatrixXd &sol, bool force_al = false);
+		void solve(NLProblem &nl_problem, Eigen::MatrixXd &sol);
 
 		std::function<void(const double)> post_subsolve = [](const double) {};
 

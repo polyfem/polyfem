@@ -5,7 +5,7 @@
 #include <polyfem/assembler/NavierStokes.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
@@ -57,12 +57,10 @@ namespace polyfem
 							 const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 							 const StiffnessMatrix &velocity_mass,
 							 const Eigen::VectorXd &rhs, const double grad_norm,
-							 std::unique_ptr<polysolve::LinearSolver> &solver, double &nlres_norm,
+							 std::unique_ptr<polysolve::linear::Solver> &solver, double &nlres_norm,
 							 Eigen::VectorXd &x);
 
 			const json solver_param;
-			const std::string solver_type;
-			const std::string precond_type;
 
 			double gradNorm;
 			int iterations;

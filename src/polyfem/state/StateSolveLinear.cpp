@@ -9,7 +9,7 @@
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
-#include <polysolve/FEMSolver.hpp>
+#include <polysolve/linear/FEMSolver.hpp>
 
 #include <polyfem/utils/Timer.hpp>
 
@@ -66,7 +66,7 @@ namespace polyfem
 	}
 
 	void State::solve_linear(
-		const std::unique_ptr<polysolve::LinearSolver> &solver,
+		const std::unique_ptr<polysolve::linear::Solver> &solver,
 		StiffnessMatrix &A,
 		Eigen::VectorXd &b,
 		const bool compute_spectrum,
@@ -93,9 +93,10 @@ namespace polyfem
 		}
 		sol = x; // Explicit copy because sol is a MatrixXd (with one column)
 
-		solver->getInfo(stats.solver_info);
+		solver->get_info(stats.solver_info);
 
 		const auto error = (A * x - b).norm();
+
 		if (error > 1e-4)
 			logger().error("Solver error: {}", error);
 		else
@@ -115,8 +116,7 @@ namespace polyfem
 			lin_solver_cached.reset();
 
 		lin_solver_cached =
-			polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
-		lin_solver_cached->setParameters(args["solver"]["linear"]);
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", lin_solver_cached->name());
 
 		// --------------------------------------------------------------------
@@ -203,8 +203,7 @@ namespace polyfem
 		// --------------------------------------------------------------------
 
 		auto solver =
-			polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
-		solver->setParameters(args["solver"]["linear"]);
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
 		// --------------------------------------------------------------------

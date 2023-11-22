@@ -7,10 +7,9 @@ namespace polyfem
 	class State;
 }
 
-namespace cppoptlib
+namespace polysolve::nonlinear
 {
-	template <typename ProblemType>
-	class NonlinearSolver;
+	class Solver;
 }
 
 namespace polyfem::solver
@@ -24,7 +23,7 @@ namespace polyfem::solver
 	{
 		static json apply_opt_json_spec(const json &input_args, bool strict_validation);
 
-		static std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> make_nl_solver(const json &solver_params, const double characteristic_length);
+		static std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver(const json &solver_params, const json &linear_solver_params, const double characteristic_length);
 
 		static std::shared_ptr<State> create_state(const json &args, const size_t max_threads = 32);
 

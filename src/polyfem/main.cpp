@@ -7,14 +7,14 @@
 #include <polyfem/State.hpp>
 
 #include <polyfem/solver/AdjointNLProblem.hpp>
-#include <polyfem/solver/NonlinearSolver.hpp>
 #include <polyfem/solver/Optimizations.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/nonlinear/Solver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 using namespace polyfem;
 using namespace solver;
@@ -312,8 +312,7 @@ int optimization_simulation(const CLI::App &command_line,
 	//  	return EXIT_SUCCESS;
 	//  }
 
-	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> nl_solver =
-		AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], states.front()->units.characteristic_length());
+	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], states.front()->units.characteristic_length());
 	nl_solver->minimize(*nl_problem, x);
 
 	return EXIT_SUCCESS;

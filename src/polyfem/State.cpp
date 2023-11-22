@@ -40,8 +40,7 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Timer.hpp>
 
-#include <polysolve/LinearSolver.hpp>
-#include <polysolve/FEMSolver.hpp>
+#include <polysolve/linear/FEMSolver.hpp>
 
 #include <polyfem/io/OBJWriter.hpp>
 
@@ -616,8 +615,8 @@ namespace polyfem
 		stats.reset();
 
 		disc_orders.resize(mesh->n_elements());
-		problem->init(*mesh);
 
+		problem->init(*mesh);
 		logger().info("Building {} basis...", (iso_parametric() ? "isoparametric" : "not isoparametric"));
 		const bool has_polys = mesh->has_poly();
 
@@ -1429,8 +1428,6 @@ namespace polyfem
 			dirichlet_nodes_position, neumann_nodes_position,
 			n_bases_, size, bases_, geom_bases(), ass_vals_cache_, *problem,
 			args["space"]["advanced"]["bc_method"],
-			args["solver"]["linear"]["solver"],
-			args["solver"]["linear"]["precond"],
 			rhs_solver_params);
 	}
 
@@ -1448,9 +1445,6 @@ namespace polyfem
 		}
 
 		igl::Timer timer;
-		// std::string rhs_path = "";
-		// if (args["boundary_conditions"]["rhs"].is_string())
-		// 	rhs_path = resolve_input_path(args["boundary_conditions"]["rhs"]);
 
 		json p_params = {};
 		p_params["formulation"] = assembler->name();

@@ -77,10 +77,10 @@ namespace polyfem
 		{
 			Eigen::MatrixXi edges;
 			igl::edges(elements, edges);
-			Remesher::EdgeMap<std::vector<std::array<double, 2>>> elastic_multienergy;
+			Remesher::EdgeMap<std::vector<double>> elastic_multienergy;
 			for (const auto &edge : edges.rowwise())
 			{
-				elastic_multienergy[{{(size_t)edge(0), (size_t)edge(1)}}] = std::vector<std::array<double, 2>>();
+				elastic_multienergy[{{(size_t)edge(0), (size_t)edge(1)}}] = std::vector<double>();
 			}
 
 			assert(state.solve_data.elastic_form != nullptr);
@@ -91,19 +91,14 @@ namespace polyfem
 				const auto &element = elements.row(i);
 				const double energy = elastic_energy_per_element[i];
 
-				const double volume =
-					elements.cols() == 3
-						? utils::triangle_area(vertices(element, Eigen::all))
-						: utils::tetrahedron_volume(vertices(element, Eigen::all));
-
-				elastic_multienergy[{{(size_t)element(0), (size_t)element(1)}}].push_back({{energy, volume}});
-				elastic_multienergy[{{(size_t)element(0), (size_t)element(2)}}].push_back({{energy, volume}});
-				elastic_multienergy[{{(size_t)element(1), (size_t)element(2)}}].push_back({{energy, volume}});
+				elastic_multienergy[{{(size_t)element(0), (size_t)element(1)}}].push_back(energy);
+				elastic_multienergy[{{(size_t)element(0), (size_t)element(2)}}].push_back(energy);
+				elastic_multienergy[{{(size_t)element(1), (size_t)element(2)}}].push_back(energy);
 				if (elements.cols() == 4)
 				{
-					elastic_multienergy[{{(size_t)element(0), (size_t)element(3)}}].push_back({{energy, volume}});
-					elastic_multienergy[{{(size_t)element(1), (size_t)element(3)}}].push_back({{energy, volume}});
-					elastic_multienergy[{{(size_t)element(2), (size_t)element(3)}}].push_back({{energy, volume}});
+					elastic_multienergy[{{(size_t)element(0), (size_t)element(3)}}].push_back(energy);
+					elastic_multienergy[{{(size_t)element(1), (size_t)element(3)}}].push_back(energy);
+					elastic_multienergy[{{(size_t)element(2), (size_t)element(3)}}].push_back(energy);
 				}
 			}
 
@@ -111,9 +106,7 @@ namespace polyfem
 			for (const auto &[edge, energies] : elastic_multienergy)
 			{
 				elastic_energy[edge] =
-					std::accumulate(energies.begin(), energies.end(), 0.0, [](double a, const std::array<double, 2> &b) { return a + b[0]; })
-					// / std::accumulate(energies.begin(), energies.end(), 0.0, [](double a, const std::array<double, 2> &b) { return a + b[1]; });
-					/ energies.size();
+					std::reduce(energies.begin(), energies.end()) / energies.size();
 			}
 
 			if (state.solve_data.contact_form != nullptr)
