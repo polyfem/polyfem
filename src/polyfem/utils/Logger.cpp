@@ -18,6 +18,12 @@ namespace polyfem
 	} // namespace
 
 	// Retrieve current logger
+	spdlog::logger &adjoint_logger()
+	{
+		return logger();
+	}
+
+	// Retrieve current logger
 	spdlog::logger &logger()
 	{
 		if (get_shared_logger())

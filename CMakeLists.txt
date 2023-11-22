@@ -189,7 +189,7 @@ target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
 # polysolve
 include(polysolve)
-target_link_libraries(polyfem PUBLIC polysolve)
+target_link_libraries(polyfem PUBLIC polysolve::polysolve)
 
 # IPC Toolkit
 include(ipc_toolkit)
@@ -235,14 +235,6 @@ target_link_libraries(polyfem PUBLIC paraviewo::paraviewo)
 # spdlog
 include(spdlog)
 target_link_libraries(polyfem PUBLIC spdlog::spdlog)
-
-# CppNumericalSolvers
-include(cppoptlib)
-target_link_libraries(polyfem PUBLIC cppoptlib)
-
-# LBFGSpp
-include(LBFGSpp)
-target_link_libraries(polyfem PUBLIC LBFGSpp::LBFGSpp)
 
 # TinyExpr library
 include(tinyexpr)

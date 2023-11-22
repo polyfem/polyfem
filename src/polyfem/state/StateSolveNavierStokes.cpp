@@ -83,7 +83,7 @@ namespace polyfem
 		const int dim = mesh->dimension();
 		const int n_el = int(bases.size());       // number of elements
 		const int shape = gbases[0].bases.size(); // number of geometry vertices in an element
-		
+
 		double viscosity_ = std::dynamic_pointer_cast<assembler::OperatorSplitting>(assembler)->viscosity();
 		assert(viscosity_ >= 0);
 
@@ -111,8 +111,7 @@ namespace polyfem
 
 		solver::OperatorSplittingSolver ss(
 			*mesh, shape, n_el, local_boundary, boundary_nodes, pressure_boundary_nodes, bnd_nodes, mass,
-			stiffness_viscosity, stiffness, velocity_mass, dt, viscosity_, args["solver"]["linear"]["solver"],
-			args["solver"]["linear"]["precond"], args["solver"]["linear"]);
+			stiffness_viscosity, stiffness, velocity_mass, dt, viscosity_, args["solver"]["linear"]);
 
 		/* initialize solution */
 		pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
