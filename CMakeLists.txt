@@ -216,9 +216,9 @@ if(POLYFEM_WITH_TRIANGLE)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TRIANGLE)
 endif()
 
-# BVH
-include(BVH)
-target_link_libraries(polyfem PUBLIC BVH_lib)
+# SimpleBVH
+include(simple_bvh)
+target_link_libraries(ipc_toolkit PUBLIC simple_bvh::simple_bvh)
 
 # MSHIO
 include(mshio)

@@ -7,7 +7,7 @@
 #include <polyfem/utils/ClipperUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
-#include <BVH.hpp>
+#include <SimpleBVH/BVH.hpp>
 
 namespace polyfem
 {
@@ -223,7 +223,7 @@ namespace polyfem
 				boxes[i][1].head(size) = from_nodes.colwise().maxCoeff();
 			}
 
-			BVH::BVH bvh;
+			SimpleBVH::BVH bvh;
 			bvh.init(boxes);
 
 			// maybe_parallel_for(n_to_basis, [&](int start, int end, int thread_id) {
