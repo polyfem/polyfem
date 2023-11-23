@@ -10,9 +10,16 @@
         "optional": [
             "output",
             "solver",
-            "stopping_conditions"
+            "stopping_conditions",
+            "functionals"
         ],
         "doc": "Root of the configuration file."
+    },
+    {
+        "pointer": "/functionals",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
     },
     {
         "pointer": "/stopping_conditions",
