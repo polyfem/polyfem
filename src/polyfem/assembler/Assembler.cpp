@@ -35,14 +35,14 @@ namespace polyfem::assembler
 			}
 
 			LocalThreadMatStorage(const LocalThreadMatStorage &other)
-				: cache(other.cache->clone()), vals(other.vals), da(other.da)
+				: cache(other.cache->copy()), vals(other.vals), da(other.da)
 			{
 			}
 
 			LocalThreadMatStorage &operator=(const LocalThreadMatStorage &other)
 			{
 				assert(other.cache != nullptr);
-				cache = other.cache->clone();
+				cache = other.cache->copy();
 				vals = other.vals;
 				da = other.da;
 				return *this;
@@ -60,7 +60,7 @@ namespace polyfem::assembler
 			void init(const int buffer_size, const MatrixCache &c)
 			{
 				if (cache == nullptr)
-					cache = c.clone();
+					cache = c.copy();
 				cache->reserve(buffer_size);
 				cache->init(c);
 			}

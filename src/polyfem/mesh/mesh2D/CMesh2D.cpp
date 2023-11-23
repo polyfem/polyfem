@@ -721,5 +721,28 @@ namespace polyfem
 			boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
 			boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
 		}
+
+		std::unique_ptr<Mesh> CMesh2D::copy() const
+		{
+			std::unique_ptr<CMesh2D> copy_mesh = std::make_unique<CMesh2D>();
+			copy_mesh->load(this->mesh_);
+
+			// Manually copy parent's data
+			copy_mesh->elements_tag_ = this->elements_tag_;
+			copy_mesh->node_ids_ = this->node_ids_;
+			copy_mesh->boundary_ids_ = this->boundary_ids_;
+			copy_mesh->body_ids_ = this->body_ids_;
+			copy_mesh->orders_ = this->orders_;
+			copy_mesh->is_rational_ = this->is_rational_;
+			copy_mesh->edge_nodes_ = this->edge_nodes_;
+			copy_mesh->face_nodes_ = this->face_nodes_;
+			copy_mesh->cell_nodes_ = this->cell_nodes_;
+			copy_mesh->cell_weights_ = this->cell_weights_;
+			copy_mesh->in_ordered_vertices_ = this->in_ordered_vertices_;
+			copy_mesh->in_ordered_edges_ = this->in_ordered_edges_;
+			copy_mesh->in_ordered_faces_ = this->in_ordered_faces_;
+
+			return copy_mesh;
+		}
 	} // namespace mesh
 } // namespace polyfem

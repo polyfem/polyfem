@@ -7,6 +7,7 @@ namespace polyfem
 {
 	// Stack-allocated vectors of size either 2 or 3
 	typedef Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> VectorNd;
+	typedef Eigen::Matrix<int, Eigen::Dynamic, 1, 0, 3, 1> VectorNi;
 	typedef Eigen::Matrix<double, 1, Eigen::Dynamic, Eigen::RowMajor, 1, 3> RowVectorNd;
 	typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor, 3, 3> MatrixNd;
 
