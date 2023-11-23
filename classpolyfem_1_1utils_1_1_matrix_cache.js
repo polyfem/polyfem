@@ -4,7 +4,7 @@ var classpolyfem_1_1utils_1_1_matrix_cache =
     [ "~MatrixCache", "classpolyfem_1_1utils_1_1_matrix_cache.html#a07fadeb5d9aac2bdb25ec0565680df73", null ],
     [ "add_value", "classpolyfem_1_1utils_1_1_matrix_cache.html#a04e70368c86530cc8de1aa9f8a76b369", null ],
     [ "capacity", "classpolyfem_1_1utils_1_1_matrix_cache.html#aadd4d8ed10ecdb1fbda4fcda8c2d19d9", null ],
-    [ "clone", "classpolyfem_1_1utils_1_1_matrix_cache.html#acac86bd683c9559068a285c7a22ed48b", null ],
+    [ "copy", "classpolyfem_1_1utils_1_1_matrix_cache.html#ab2f30c2b118fd833777e0b952284469f", null ],
     [ "entries_size", "classpolyfem_1_1utils_1_1_matrix_cache.html#a248a6a263309014d59e5afbe60736d8b", null ],
     [ "get_matrix", "classpolyfem_1_1utils_1_1_matrix_cache.html#a5e50a47fc4b8b2589dac15a4c5507412", null ],
     [ "init", "classpolyfem_1_1utils_1_1_matrix_cache.html#a232dc628927c72ab3f3e38af902c8711", null ],

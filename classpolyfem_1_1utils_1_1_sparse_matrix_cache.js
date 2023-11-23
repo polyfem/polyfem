@@ -7,7 +7,7 @@ var classpolyfem_1_1utils_1_1_sparse_matrix_cache =
     [ "SparseMatrixCache", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a506debff160c1162e5cc28f553bb314b", null ],
     [ "add_value", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a23bb0c92d0709f13c317c7da13498c08", null ],
     [ "capacity", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a5e85b367b1f622ecacefdf3e76dcf24f", null ],
-    [ "clone", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a411d93f5caf20e8d5353380c29c43989", null ],
+    [ "copy", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ad88a48a400a496954c400573daf100de", null ],
     [ "entries", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ad648e9993048c63266f5d93dd1eabcb6", null ],
     [ "entries_size", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#a89781c2d4e2a97773b893382299efeda", null ],
     [ "get_matrix", "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ab08b3096f768a889b2ccd7c7b7c8ee4a", null ],

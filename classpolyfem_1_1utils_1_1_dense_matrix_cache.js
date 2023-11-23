@@ -7,7 +7,7 @@ var classpolyfem_1_1utils_1_1_dense_matrix_cache =
     [ "DenseMatrixCache", "classpolyfem_1_1utils_1_1_dense_matrix_cache.html#ac5a27ec4cfba5b4b4d6095c9f52abea6", null ],
     [ "add_value", "classpolyfem_1_1utils_1_1_dense_matrix_cache.html#aaa8ad33e9a84fc2c32487f166bec9fd5", null ],
     [ "capacity", "classpolyfem_1_1utils_1_1_dense_matrix_cache.html#aa42f9bb2cb1c45778ddcb578bb535bc4", null ],
-    [ "clone", "classpolyfem_1_1utils_1_1_dense_matrix_cache.html#aff6d2db75d1b18661e8014c1325ce5fa", null ],
+    [ "copy", "classpolyfem_1_1utils_1_1_dense_matrix_cache.html#ac5b49dfc0f09e27aefa4274bf88d1219", null ],
     [ "entries_size", "classpolyfem_1_1utils_1_1_dense_matrix_cache.html#a1109529ca79c49b57010f7495dc87cdb", null ],
     [ "get_matrix", "classpolyfem_1_1utils_1_1_dense_matrix_cache.html#a8896f65dde3dc49608070b20a74b8aef", null ],
     [ "init", "classpolyfem_1_1utils_1_1_dense_matrix_cache.html#abfc97622192045abfaa19dffa9883bbc", null ],

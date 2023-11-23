@@ -29,6 +29,7 @@ var classpolyfem_1_1mesh_1_1_mesh =
     [ "compute_element_barycenters", "classpolyfem_1_1mesh_1_1_mesh.html#a04f6350c32dae56eab1571c2af9d06c3", null ],
     [ "compute_elements_tag", "classpolyfem_1_1mesh_1_1_mesh.html#a46596119e02dda1e34dac2f448eb87dc", null ],
     [ "compute_node_ids", "classpolyfem_1_1mesh_1_1_mesh.html#a5dcf305d137e8cda1d1d8b7e301d0aab", null ],
+    [ "copy", "classpolyfem_1_1mesh_1_1_mesh.html#a9de3fd9e41a943ab65fbc3d5c1c5fdf3", null ],
     [ "dimension", "classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6", null ],
     [ "edge_barycenter", "classpolyfem_1_1mesh_1_1_mesh.html#a1969921941c1fdfbbd8999a7852b5731", null ],
     [ "edge_barycenters", "classpolyfem_1_1mesh_1_1_mesh.html#aef8b5354d06a6e77b14ade524abda3e4", null ],

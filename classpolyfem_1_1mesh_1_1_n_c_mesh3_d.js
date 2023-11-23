@@ -38,6 +38,7 @@ var classpolyfem_1_1mesh_1_1_n_c_mesh3_d =
     [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a55a4fdd6f19339710f445dcb17364c1b", null ],
     [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#afdf4f657f97acf9d5fa26598af1f4303", null ],
     [ "compute_elements_tag", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a89ee5afccb067cb71680df636929e885", null ],
+    [ "copy", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a75042fb3d410b2200608d09736e83988", null ],
     [ "edge_barycenter", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#ab8798c49d17b5bebf82e39c55dead3e2", null ],
     [ "edge_length", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a4e73c6795687666c5d7b040f977480b6", null ],
     [ "edge_neighs", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a5ff1e639748f464536567ce8d46404bc", null ],

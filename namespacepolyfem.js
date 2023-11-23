@@ -69,6 +69,7 @@ var namespacepolyfem =
     [ "RowVectorNd", "namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321", null ],
     [ "StiffnessMatrix", "namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4", null ],
     [ "VectorNd", "namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c", null ],
+    [ "VectorNi", "namespacepolyfem.html#ab97febca5b8b70517cc760a5409fa522", null ],
     [ "ElasticityTensorType", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1", [
       [ "CAUCHY", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a9d0e3157464d10e95bff71bbcf0001ad", null ],
       [ "PK1", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e", null ],
