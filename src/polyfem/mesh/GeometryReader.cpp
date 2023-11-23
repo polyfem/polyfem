@@ -522,7 +522,9 @@ namespace polyfem::mesh
 								if (is_offset_relative)
 									translation.array() *= dimensions.array();
 
-								const int n = i * size[1] * size[2] + j * size[2] + k;
+								int n = i * size[1] + j;
+								if (size.size() > 2)
+									n = n * size[2] + k;
 								if (n == 0)
 									continue;
 
