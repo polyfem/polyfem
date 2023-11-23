@@ -135,7 +135,7 @@ $(document).ready(function(){initNavTree('_collision_proxy_8cpp_source.html','')
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;<a class="code" href="_logger_8hpp.html">polyfem/utils/Logger.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;<a class="code" href="_matrix_utils_8hpp.html">polyfem/utils/MatrixUtils.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;BVH.hpp&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;SimpleBVH/BVH.hpp&gt;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;igl/edges.h&gt;</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;igl/barycentric_coordinates.h&gt;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;h5pp/h5pp.h&gt;</span></div>
@@ -330,7 +330,7 @@ $(document).ready(function(){initNavTree('_collision_proxy_8cpp_source.html','')
 <div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>            boxes[i][1].head(dim) = nodes.colwise().maxCoeff();</div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        }</div>
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        BVH::BVH bvh;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        SimpleBVH::BVH bvh;</div>
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        bvh.init(boxes);</div>
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
 <div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="comment">// --------------------------------------------------------------------</span></div>

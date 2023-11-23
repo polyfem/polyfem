@@ -174,7 +174,7 @@ $(document).ready(function(){initNavTree('_out_data_8cpp_source.html',''); initR
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="preprocessor">#include &lt;paraviewo/VTMWriter.hpp&gt;</span></div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="preprocessor">#include &lt;paraviewo/PVDWriter.hpp&gt;</span></div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="preprocessor">#include &lt;BVH.hpp&gt;</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="preprocessor">#include &lt;SimpleBVH/BVH.hpp&gt;</span></div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="preprocessor">#include &lt;igl/write_triangle_mesh.h&gt;</span></div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="preprocessor">#include &lt;igl/edges.h&gt;</span></div>
@@ -2480,7 +2480,7 @@ $(document).ready(function(){initNavTree('_out_data_8cpp_source.html',''); initR
 <div class="line"><a id="l02320" name="l02320"></a><span class="lineno"> 2320</span>        std::vector&lt;std::array&lt;Eigen::Vector3d, 2&gt;&gt; boxes;</div>
 <div class="line"><a id="l02321" name="l02321"></a><span class="lineno"> 2321</span>        mesh.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh.html#af1d92506a3031ea11d6c3ba2879c157d">elements_boxes</a>(boxes);</div>
 <div class="line"><a id="l02322" name="l02322"></a><span class="lineno"> 2322</span> </div>
-<div class="line"><a id="l02323" name="l02323"></a><span class="lineno"> 2323</span>        BVH::BVH bvh;</div>
+<div class="line"><a id="l02323" name="l02323"></a><span class="lineno"> 2323</span>        SimpleBVH::BVH bvh;</div>
 <div class="line"><a id="l02324" name="l02324"></a><span class="lineno"> 2324</span>        bvh.init(boxes);</div>
 <div class="line"><a id="l02325" name="l02325"></a><span class="lineno"> 2325</span> </div>
 <div class="line"><a id="l02326" name="l02326"></a><span class="lineno"> 2326</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> eps = 1e-6;</div>
