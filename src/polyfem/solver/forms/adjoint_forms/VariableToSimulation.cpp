@@ -1,6 +1,5 @@
 #include "VariableToSimulation.hpp"
 #include <polyfem/State.hpp>
-#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>

@@ -53,7 +53,7 @@ namespace polyfem
 #endif
 		// const double save_dt = remesh_enabled ? (dt / 3) : dt;
 
-		if (optimization_enabled)
+		if (optimization_enabled != CacheLevel::None)
 			cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 
 		for (int t = 1; t <= time_steps; ++t)
@@ -62,7 +62,14 @@ namespace polyfem
 
 			{
 				POLYFEM_SCOPED_TIMER(forward_solve_time);
-				solve_tensor_nonlinear(sol, t);
+				try {
+					solve_tensor_nonlinear(sol, t);
+				}
+				catch (...)
+				{
+					logger().error("Exit transient simulation...");
+					break;
+				}
 			}
 
 #ifdef POLYFEM_WITH_REMESHING
@@ -95,7 +102,7 @@ namespace polyfem
 			energy_csv.write(save_i, sol);
 			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 
-			if (optimization_enabled)
+			if (optimization_enabled != CacheLevel::None)
 			{
 				cache_transient_adjoint_quantities(t, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 			}
@@ -141,7 +148,7 @@ namespace polyfem
 		assert(!problem->is_scalar());                           // tensor
 		assert(mixed_assembler == nullptr);
 
-		if (optimization_enabled)
+		if (optimization_enabled != CacheLevel::None)
 		{
 			if (initial_sol_update.size() == ndof())
 				sol = initial_sol_update;
@@ -185,7 +192,7 @@ namespace polyfem
 				initial_acceleration(acceleration);
 				assert(acceleration.rows() == sol.size());
 
-				if (optimization_enabled)
+				if (optimization_enabled != CacheLevel::None)
 				{
 					if (initial_vel_update.size() == ndof())
 						velocity = initial_vel_update;
@@ -231,13 +238,15 @@ namespace polyfem
 			// Augmented lagrangian form
 			obstacle.ndof(),
 			// Contact form
-			args["contact"]["enabled"], collision_mesh, args["contact"]["dhat"],
+			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
 			avg_mass, args["contact"]["use_convergent_formulation"],
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
-			optimization_enabled,
+			optimization_enabled == CacheLevel::Derivatives,
+			// Periodic contact
+			args["contact"]["periodic"], tiled_to_single,
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
@@ -257,7 +266,7 @@ namespace polyfem
 		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
-			*solve_data.rhs_assembler, t, forms);
+			*solve_data.rhs_assembler, periodic_bc, t, forms);
 
 		// --------------------------------------------------------------------
 
@@ -320,7 +329,7 @@ namespace polyfem
 		// TODO: Make this more general
 		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2) * units.characteristic_length();
 
-		if (!optimization_enabled)
+		if (optimization_enabled != CacheLevel::Derivatives)
 		{
 			// Lagging loop (start at 1 because we already did an iteration above)
 			bool lagging_converged = !nl_problem.uses_lagging();

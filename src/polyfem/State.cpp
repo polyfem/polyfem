@@ -52,7 +52,7 @@
 #include <memory>
 #include <filesystem>
 
-#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
+#include <polyfem/io/Evaluator.hpp>
 
 #include <polyfem/utils/autodiff.h>
 DECLARE_DIFFSCALAR_BASE();
@@ -544,7 +544,10 @@ namespace polyfem
 		if (args["space"]["use_p_ref"])
 			return false;
 
-		if (optimization_enabled)
+		if (has_periodic_bc())
+			return false;
+		
+		if (optimization_enabled == CacheLevel::Derivatives)
 			return false;
 
 		if (mesh->orders().size() <= 0)
@@ -719,7 +722,7 @@ namespace polyfem
 		}
 
 		// shape optimization needs continuous geometric basis
-		const bool use_continuous_gbasis = optimization_enabled;
+		const bool use_continuous_gbasis = optimization_enabled == CacheLevel::Derivatives;
 
 		if (mesh->is_volume())
 		{
@@ -805,7 +808,7 @@ namespace polyfem
 
 		auto &gbases = geom_bases();
 
-		if (optimization_enabled)
+		if (optimization_enabled == CacheLevel::Derivatives)
 		{
 			std::map<std::array<int, 2>, double> pairs;
 			for (int e = 0; e < gbases.size(); e++)
@@ -863,6 +866,30 @@ namespace polyfem
 		const int dim = mesh->dimension();
 		const int problem_dim = problem->is_scalar() ? 1 : dim;
 
+		// handle periodic bc
+		if (has_periodic_bc())
+		{
+			// collect periodic directions
+			json directions = args["boundary_conditions"]["periodic_boundary"]["correspondence"];
+			Eigen::MatrixXd tile_offset = Eigen::MatrixXd::Identity(dim, dim);
+
+			if (directions.size() > 0)
+			{
+				Eigen::VectorXd tmp;
+				for (int d = 0; d < dim; d++)
+				{
+					tmp = directions[d];
+					if (tmp.size() != dim)
+						log_and_throw_error("Invalid size of periodic directions!");
+					tile_offset.col(d) = tmp;
+				}
+			}
+
+			periodic_bc = std::make_shared<PeriodicBoundary>(problem->is_scalar(), n_bases, bases, mesh_nodes, tile_offset, args["boundary_conditions"]["periodic_boundary"]["tolerance"].get<double>());
+		
+			macro_strain_constraint.init(args["boundary_conditions"]["periodic_boundary"]);
+		}
+		
 		if (args["space"]["advanced"]["count_flipped_els"])
 			stats.count_flipped_elements(*mesh, geom_bases());
 
@@ -882,6 +909,8 @@ namespace polyfem
 
 		logger().info("Building collision mesh...");
 		build_collision_mesh();
+		if (periodic_bc && args["contact"]["periodic"])
+			build_periodic_collision_mesh();
 		logger().info("Done!");
 
 		const int prev_b_size = local_boundary.size();
@@ -966,6 +995,35 @@ namespace polyfem
 		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
 
+		// for elastic pure periodic problem, find an internal node and force zero dirichlet
+		if ((!problem->is_time_dependent() || args["time"]["quasistatic"]) && boundary_nodes.size() == 0 && !problem->is_scalar() && has_periodic_bc())
+		{
+			// find an internal node to force zero dirichlet
+			std::vector<bool> isboundary(n_bases, false);
+			for (const auto &lb : total_local_boundary)
+			{
+				const int e = lb.element_id();
+				for (int i = 0; i < lb.size(); ++i)
+				{
+					const auto nodes = bases[e].local_nodes_for_primitive(lb.global_primitive_id(i), *mesh);
+
+					for (int n : nodes)
+						isboundary[bases[e].bases[n].global()[0].index] = true;
+				}
+			}
+			int i = 0;
+			for (; i < n_bases; i++)
+				if (!isboundary[i]) // (!periodic_bc->is_periodic_dof(i))
+					break;
+			if (i >= n_bases)
+				log_and_throw_error("Failed to find a non-periodic node!");
+			for (int d = 0; d < mesh->dimension(); d++)
+			{
+				boundary_nodes.push_back(i * mesh->dimension() + d);
+			}
+			logger().info("Fix displacement at node {} to remove singularity due to periodic BC", i);
+		}
+
 		const auto &curret_bases = geom_bases();
 		const int n_samples = 10;
 		stats.compute_mesh_size(*mesh, curret_bases, n_samples, args["output"]["advanced"]["curved_mesh_size"]);
@@ -1030,9 +1088,9 @@ namespace polyfem
 
 		out_geom.build_grid(*mesh, args["output"]["advanced"]["sol_on_grid"]);
 
-		if (!problem->is_time_dependent() && boundary_nodes.empty())
+		if ((!problem->is_time_dependent() || args["time"]["quasistatic"]) && boundary_nodes.empty())
 		{
-			log_and_throw_error("Static problem need to have some Dirichlet nodes!");
+			logger().warn("(Quasi-)Static problem without Dirichlet nodes, will use Lagrange multipliers to find a unique solution!");
 		}
 	}
 
@@ -1197,6 +1255,136 @@ namespace polyfem
 		logger().info(" took {}s", timings.computing_poly_basis_time);
 
 		n_bases += new_bases;
+	}
+
+	void State::build_periodic_collision_mesh()
+	{
+		assert(!mesh->is_volume());
+		const int dim = mesh->dimension();
+		const int n_tiles = 2;
+
+		if (mesh->dimension() != 2)
+			log_and_throw_error("Periodic collision mesh is only implemented in 2D!");
+
+		Eigen::MatrixXd V(n_bases, dim);
+		for (const auto &bs : bases)
+			for (const auto &b : bs.bases)
+				for (const auto &g : b.global())
+					V.row(g.index) = g.node;
+		
+		Eigen::MatrixXi E = collision_mesh.edges();
+		for (int i = 0; i < E.size(); i++)
+			E(i) = collision_mesh.to_full_vertex_id(E(i));
+
+        Eigen::MatrixXd bbox(V.cols(), 2);
+        bbox.col(0) = V.colwise().minCoeff();
+        bbox.col(1) = V.colwise().maxCoeff();
+
+		// remove boundary edges on periodic BC, buggy
+		{
+			std::vector<int> ind;
+			for (int i = 0; i < E.rows(); i++)
+			{
+				if (!periodic_bc->is_periodic_dof(E(i, 0)) || !periodic_bc->is_periodic_dof(E(i, 1)))
+					ind.push_back(i);
+			}
+			E = E(ind, Eigen::all).eval();
+		}
+
+        Eigen::MatrixXd Vtmp, Vnew;
+        Eigen::MatrixXi Etmp, Enew;
+        Vtmp.setZero(V.rows() * n_tiles * n_tiles, V.cols());
+        Etmp.setZero(E.rows() * n_tiles * n_tiles, E.cols());
+
+		Eigen::MatrixXd tile_offset = periodic_bc->get_affine_matrix();
+
+		for (int i = 0, idx = 0; i < n_tiles; i++)
+		{
+			for (int j = 0; j < n_tiles; j++)
+			{
+				Eigen::Vector2d block_id;
+				block_id << i, j;
+
+				Vtmp.middleRows(idx * V.rows(), V.rows()) = V;
+				// Vtmp.block(idx * V.rows(), 0, V.rows(), 1).array() += tile_offset(0) * i;
+				// Vtmp.block(idx * V.rows(), 1, V.rows(), 1).array() += tile_offset(1) * j;
+				for (int vid = 0; vid < V.rows(); vid++)
+					Vtmp.block(idx * V.rows() + vid, 0, 1, 2) += (tile_offset * block_id).transpose();
+
+				Etmp.middleRows(idx * E.rows(), E.rows()) = E.array() + idx * V.rows();
+				idx += 1;
+			}
+		}
+
+        // clean duplicated vertices
+        Eigen::VectorXi indices;
+        {
+            std::vector<int> tmp;
+            for (int i = 0; i < V.rows(); i++)
+            {
+                if (periodic_bc->is_periodic_dof(i))
+                    tmp.push_back(i);
+            }
+
+            indices.resize(tmp.size() * n_tiles * n_tiles);
+            for (int i = 0; i < n_tiles * n_tiles; i++)
+            {
+                indices.segment(i * tmp.size(), tmp.size()) = Eigen::Map<Eigen::VectorXi, Eigen::Unaligned>(tmp.data(), tmp.size());
+                indices.segment(i * tmp.size(), tmp.size()).array() += i * V.rows();
+            }
+        }
+
+        Eigen::VectorXi potentially_duplicate_mask(Vtmp.rows());
+        potentially_duplicate_mask.setZero();
+        potentially_duplicate_mask(indices).array() = 1;
+        Eigen::MatrixXd candidates = Vtmp(indices, Eigen::all);
+
+        Eigen::VectorXi SVI;
+        std::vector<int> SVJ;
+        SVI.setConstant(Vtmp.rows(), -1);
+        int id = 0;
+		const double eps = (bbox.col(1) - bbox.col(0)).maxCoeff() * args["boundary_conditions"]["periodic_boundary"]["tolerance"].get<double>();
+        for (int i = 0; i < Vtmp.rows(); i++)
+        {
+            if (SVI[i] < 0)
+            {
+                SVI[i] = id;
+                SVJ.push_back(i);
+                if (potentially_duplicate_mask(i))
+                {
+                    Eigen::VectorXd diffs = (candidates.rowwise() - Vtmp.row(i)).rowwise().norm();
+                    for (int j = 0; j < diffs.size(); j++)
+                        if (diffs(j) < eps)
+                            SVI[indices[j]] = id;
+                }
+                id++;
+            }
+        }
+        Vnew = Vtmp(SVJ, Eigen::all);
+
+        Enew.resizeLike(Etmp);
+        for (int d = 0; d < Etmp.cols(); d++)
+            Enew.col(d) = SVI(Etmp.col(d));
+
+		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(Vnew.rows(), Enew);
+
+		Eigen::MatrixXi boundary_triangles;
+		Eigen::SparseMatrix<double> displacement_map;
+		periodic_collision_mesh = ipc::CollisionMesh(is_on_surface,
+											 Vnew,
+											 Enew,
+											 boundary_triangles,
+											 displacement_map);
+		
+		periodic_collision_mesh.init_area_jacobians();
+
+		tiled_to_single.setConstant(Vnew.rows(), -1);
+		for (int i = 0; i < V.rows(); i++)
+			for (int j = 0; j < n_tiles * n_tiles; j++)
+				tiled_to_single(SVI[j * V.rows() + i]) = i;
+		
+		if (tiled_to_single.maxCoeff() + 1 != V.rows())
+			log_and_throw_error("Failed to tile mesh!");
 	}
 
 	void State::build_collision_mesh()
@@ -1549,6 +1737,8 @@ namespace polyfem
 				solve_transient_navier_stokes(time_steps, t0, dt, sol, pressure);
 			else if (assembler->name() == "OperatorSplitting")
 				solve_transient_navier_stokes_split(time_steps, dt, sol, pressure);
+			else if (solve_homogenization())
+				solve_transient_homogenization(time_steps, t0, dt, args["boundary_conditions"]["periodic_boundary"]["fixed_macro_strain"].get<std::vector<int>>(), sol);
 			else if (assembler->is_linear() && !is_contact_enabled()) // Collisions add nonlinearity to the problem
 				solve_transient_linear(time_steps, t0, dt, sol, pressure);
 			else if (!assembler->is_linear() && problem->is_scalar())
@@ -1560,11 +1750,18 @@ namespace polyfem
 		{
 			if (assembler->name() == "NavierStokes")
 				solve_navier_stokes(sol, pressure);
+			else if (solve_homogenization())
+			{
+				Eigen::MatrixXd disp_grad = macro_strain_constraint.eval(mesh->dimension(), 0);
+				init_homogenization_solve(args["boundary_conditions"]["periodic_boundary"]["fixed_macro_strain"].get<std::vector<int>>(), 0);
+				Eigen::MatrixXd extended_sol = solve_homogenized_field(disp_grad, args["boundary_conditions"]["periodic_boundary"]["fixed_macro_strain"].get<std::vector<int>>(), 0, true);
+				sol = extended_sol.topRows(extended_sol.size()-disp_grad.size()) + io::Evaluator::generate_linear_field(n_bases, mesh_nodes, disp_grad);
+			}
 			else if (assembler->is_linear() && !is_contact_enabled())
 			{
 				init_linear_solve(sol);
 				solve_linear(sol, pressure);
-				if (optimization_enabled)
+				if (optimization_enabled != CacheLevel::None)
 					cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 			}
 			else if (!assembler->is_linear() && problem->is_scalar())
@@ -1573,7 +1770,7 @@ namespace polyfem
 			{
 				init_nonlinear_tensor_solve(sol);
 				solve_tensor_nonlinear(sol);
-				if (optimization_enabled)
+				if (optimization_enabled != CacheLevel::None)
 					cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 
 				const std::string state_path = resolve_output_path(args["output"]["data"]["state"]);

@@ -11,7 +11,6 @@
 #include <polyfem/solver/forms/adjoint_forms/SmoothingForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/TargetForms.hpp>
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
-#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
 
 #include <catch2/catch_all.hpp>

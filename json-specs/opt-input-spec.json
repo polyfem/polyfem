@@ -38,11 +38,20 @@
         "required": [
             "path"
         ],
+        "optional": [
+            "initial_guess"
+        ],
         "doc": "TODO"
     },
     {
         "pointer": "/states/*/path",
         "type": "file",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/states/*/initial_guess",
+        "default": -1,
+        "type": "int",
         "doc": "TODO"
     },
     {
@@ -99,9 +108,6 @@
             "damping",
             "macro-strain",
             "initial",
-            "sdf-shape",
-            "periodic-shape-scale",
-            "sdf-periodic-shape",
             "dirichlet"
         ]
     },
@@ -164,51 +170,6 @@
     {
         "pointer": "/variable_to_simulation/*",
         "type_name": "initial",
-        "type": "object",
-        "required": [
-            "state",
-            "type",
-            "composition"
-        ],
-        "optional": [
-            "composite_map_type",
-            "composite_map_indices"
-        ]
-    },
-    {
-        "pointer": "/variable_to_simulation/*",
-        "type_name": "sdf-shape",
-        "type": "object",
-        "required": [
-            "mesh",
-            "mesh_id",
-            "state",
-            "type",
-            "composition"
-        ],
-        "optional": [
-            "composite_map_type",
-            "composite_map_indices"
-        ]
-    },
-    {
-        "pointer": "/variable_to_simulation/*",
-        "type_name": "sdf-periodic-shape",
-        "type": "object",
-        "required": [
-            "mesh",
-            "state",
-            "type",
-            "composition"
-        ],
-        "optional": [
-            "composite_map_type",
-            "composite_map_indices"
-        ]
-    },
-    {
-        "pointer": "/variable_to_simulation/*",
-        "type_name": "periodic-shape-scale",
         "type": "object",
         "required": [
             "state",
@@ -708,8 +669,7 @@
         "type": "object",
         "optional": [
             "solve_in_parallel",
-            "solve_in_order",
-            "better_initial_guess"
+            "solve_in_order"
         ],
         "doc": "Advanced settings for arranging forward simulations"
     },
@@ -729,11 +689,5 @@
         "pointer": "/solver/advanced/solve_in_order/*",
         "type": "int",
         "doc": "Id of forward simulations."
-    },
-    {
-        "pointer": "/solver/advanced/better_initial_guess",
-        "default": false,
-        "type": "bool",
-        "doc": "Given simulation ordering, use the last simulation result as the initial guess for the next one."
     }
 ]

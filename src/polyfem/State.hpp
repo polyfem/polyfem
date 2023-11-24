@@ -10,6 +10,7 @@
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
+#include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/assembler/Problem.hpp>
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
@@ -26,6 +27,7 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/assembler/PeriodicBoundary.hpp>
 
 #include <polyfem/io/OutData.hpp>
 
@@ -67,6 +69,13 @@ namespace polyfem
 		class Mesh2D;
 		class Mesh3D;
 	} // namespace mesh
+
+	enum class CacheLevel
+	{
+		None,
+		Solution,
+		Derivatives
+	};
 
 	/// main class that contains the polyfem solver and all its state
 	class State
@@ -197,6 +206,9 @@ namespace polyfem
 
 		/// System right-hand side.
 		Eigen::MatrixXd rhs;
+
+		/// In Elasticity PDE, solve for "min W(disp_grad + \grad u)" instead of "min W(\grad u)"
+		assembler::MacroStrainValue macro_strain_constraint;
 
 		/// use average pressure for stokes problem to fix the additional dofs, true by default
 		/// if false, it will fix one pressure node to zero
@@ -369,6 +381,13 @@ namespace polyfem
 		/// @return nonlinear solver (eg newton or LBFGS)
 		std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver() const;
 
+		/// periodic BC and periodic mesh utils
+		std::shared_ptr<utils::PeriodicBoundary> periodic_bc;
+		bool has_periodic_bc() const
+		{
+			return args["boundary_conditions"]["periodic_boundary"]["enabled"].get<bool>();
+		}
+
 		/// @brief Solve the linear problem with the given solver and system.
 		/// @param solver Linear solver.
 		/// @param A Linear system matrix.
@@ -507,6 +526,11 @@ namespace polyfem
 		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
 
+		/// @brief IPC collision mesh under periodic BC
+		ipc::CollisionMesh periodic_collision_mesh;
+		/// index mapping from tiled mesh to original periodic mesh
+		Eigen::VectorXi tiled_to_single;
+
 		/// @brief extracts the boundary mesh for collision, called in build_basis
 		static void build_collision_mesh(
 			const mesh::Mesh &mesh,
@@ -522,6 +546,7 @@ namespace polyfem
 
 		/// @brief extracts the boundary mesh for collision, called in build_basis
 		void build_collision_mesh();
+		void build_periodic_collision_mesh();
 
 		/// checks if vertex is obstacle
 		/// @param[in] vi vertex index
@@ -624,7 +649,7 @@ namespace polyfem
 		//-----------------differentiable--------------------
 		//---------------------------------------------------
 	public:
-		bool optimization_enabled = false;
+		CacheLevel optimization_enabled = CacheLevel::None;
 		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
 		solver::DiffCache diff_cached;
 
@@ -677,6 +702,17 @@ namespace polyfem
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
 		// mapping from positions of geometric nodes to positions of FE basis nodes
 		StiffnessMatrix gbasis_nodes_to_basis_nodes;
+
+		//---------------------------------------------------
+		//-----------------homogenization--------------------
+		//---------------------------------------------------
+	public:
+		Eigen::MatrixXd solve_homogenized_field(Eigen::MatrixXd &disp_grad, const std::vector<int> &fixed_entry, const int t = 0, bool adaptive_initial_weight = false); // returns the extended solution, i.e. [periodic fluctuation, macro strain]; it's designed to run parallel on the same state
+		void init_homogenization_solve(const std::vector<int> &fixed_entry, const double t);
+		void solve_transient_homogenization(const int time_steps, const double t0, const double dt, const std::vector<int> &fixed_entry, Eigen::MatrixXd &sol);
+		bool solve_homogenization() const { return args["boundary_conditions"]["periodic_boundary"]["linear_displacement_offset"].size() > 0; }
+
+		Eigen::VectorXd initial_guess;
 	};
 
 } // namespace polyfem

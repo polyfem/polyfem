@@ -5,6 +5,11 @@
         "spec_file": "linear-solver-spec.json"
     },
     {
+        "pointer": "/adjoint_linear",
+        "type": "include",
+        "spec_file": "linear-solver-spec.json"
+    },
+    {
         "pointer": "/nonlinear",
         "type": "include",
         "spec_file": "non-linear-solver-spec.json",

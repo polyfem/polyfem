@@ -1,11 +1,7 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-
-namespace polyfem
-{
-	class State;
-}
+#include <polyfem/State.hpp>
 
 namespace polysolve::nonlinear
 {
@@ -25,7 +21,7 @@ namespace polyfem::solver
 
 		static std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver(const json &solver_params, const json &linear_solver_params, const double characteristic_length);
 
-		static std::shared_ptr<State> create_state(const json &args, const size_t max_threads = 32);
+		static std::shared_ptr<State> create_state(const json &args, CacheLevel level = CacheLevel::Derivatives, const size_t max_threads = 32);
 
 		static void solve_pde(State &state);
 

@@ -113,10 +113,10 @@ namespace polyfem
 								const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id);
 								tmp += rho * vals.basis_values[i].val(q) * vals.basis_values[j].val(q) * local_storage.da(q);
 							}
-							if (std::abs(tmp) < 1e-30)
-							{
-								continue;
-							}
+							// if (std::abs(tmp) < 1e-30)
+							// {
+							// 	continue;
+							// }
 
 							for (int n = 0; n < size; ++n)
 							{

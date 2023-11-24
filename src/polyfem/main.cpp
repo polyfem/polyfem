@@ -242,7 +242,7 @@ int optimization_simulation(const CLI::App &command_line,
 				cur_args.merge_patch(tmp);
 			}
 
-			states[i++] = AdjointOptUtils::create_state(cur_args, max_threads);
+			states[i++] = AdjointOptUtils::create_state(cur_args, CacheLevel::Derivatives, max_threads);
 		}
 	}
 
@@ -283,7 +283,7 @@ int optimization_simulation(const CLI::App &command_line,
 		Eigen::VectorXd tmp(variable_sizes[var]);
 		if (arg["initial"].is_array() && arg["initial"].size() > 0)
 		{
-			nlohmann::adl_serializer<Eigen::VectorXd>::from_json(arg["initial"], tmp);
+			tmp = arg["initial"];
 			x.segment(accumulative, tmp.size()) = tmp;
 		}
 		else if (arg["initial"].is_number())
@@ -312,7 +312,7 @@ int optimization_simulation(const CLI::App &command_line,
 	//  	return EXIT_SUCCESS;
 	//  }
 
-	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], states.front()->units.characteristic_length());
+	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], 1);
 	nl_solver->minimize(*nl_problem, x);
 
 	return EXIT_SUCCESS;
