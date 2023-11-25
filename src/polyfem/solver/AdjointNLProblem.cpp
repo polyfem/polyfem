@@ -1,6 +1,6 @@
 #include "AdjointNLProblem.hpp"
 
-#include <polyfem/solver/forms/adjoint_forms/CompositeForm.hpp>
+#include <polyfem/solver/forms/adjoint_forms/AdjointForm.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -96,10 +96,10 @@ namespace polyfem::solver
 		}
 	}
 
-	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<CompositeForm> composite_form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
-		: FullNLProblem({composite_form}),
+	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
+		: FullNLProblem({form}),
 		  args_(args),
-		  composite_form_(composite_form),
+		  form_(form),
 		  variables_to_simulation_(variables_to_simulation),
 		  all_states_(all_states),
 		  solve_log_level(args["output"]["solve_log_level"]),
@@ -138,7 +138,7 @@ namespace polyfem::solver
 		}
 	}
 
-	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<CompositeForm> composite_form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args) : AdjointNLProblem(composite_form, variables_to_simulation, all_states, args)
+	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args) : AdjointNLProblem(form, variables_to_simulation, all_states, args)
 	{
 		stopping_conditions_ = stopping_conditions;
 	}
@@ -150,7 +150,7 @@ namespace polyfem::solver
 
 	double AdjointNLProblem::value(const Eigen::VectorXd &x)
 	{
-		return composite_form_->value(x);
+		return form_->value(x);
 	}
 
 	void AdjointNLProblem::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
@@ -168,7 +168,7 @@ namespace polyfem::solver
 				all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
 
 				for (int i = 0; i < all_states_.size(); i++)
-					all_states_[i]->solve_adjoint_cached(composite_form_->compute_adjoint_rhs(x, *all_states_[i])); // caches inside state
+					all_states_[i]->solve_adjoint_cached(form_->compute_adjoint_rhs(x, *all_states_[i])); // caches inside state
 
 				all_states_[0]->set_log_level(cur_log_level);
 			}
@@ -179,7 +179,7 @@ namespace polyfem::solver
 				const auto cur_log_level = logger().level();
 				all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
 
-				composite_form_->first_derivative(x, gradv);
+				form_->first_derivative(x, gradv);
 
 				all_states_[0]->set_log_level(cur_log_level);
 			}
@@ -190,33 +190,33 @@ namespace polyfem::solver
 
 	bool AdjointNLProblem::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		return composite_form_->is_step_valid(x0, x1);
+		return form_->is_step_valid(x0, x1);
 	}
 
 	bool AdjointNLProblem::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		return composite_form_->is_step_collision_free(x0, x1);
+		return form_->is_step_collision_free(x0, x1);
 	}
 
 	double AdjointNLProblem::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		return composite_form_->max_step_size(x0, x1);
+		return form_->max_step_size(x0, x1);
 	}
 
 	void AdjointNLProblem::line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
-		composite_form_->line_search_begin(x0, x1);
+		form_->line_search_begin(x0, x1);
 	}
 
 	void AdjointNLProblem::line_search_end()
 	{
-		composite_form_->line_search_end();
+		form_->line_search_end();
 	}
 
 	void AdjointNLProblem::post_step(const int iter_num, const Eigen::VectorXd &x)
 	{
 		iter++;
-		composite_form_->post_step(iter_num, x);
+		form_->post_step(iter_num, x);
 	}
 
 	void AdjointNLProblem::save_to_file(const Eigen::VectorXd &x0)
@@ -292,7 +292,7 @@ namespace polyfem::solver
 			all_states_[0]->set_log_level(cur_log_level);
 		}
 
-		composite_form_->solution_changed(newX);
+		form_->solution_changed(newX);
 	}
 
 	void AdjointNLProblem::solution_changed(const Eigen::VectorXd &newX)
@@ -319,7 +319,7 @@ namespace polyfem::solver
 		// solve PDE
 		solve_pde();
 
-		composite_form_->solution_changed(newX);
+		form_->solution_changed(newX);
 	}
 
 	void AdjointNLProblem::solve_pde()

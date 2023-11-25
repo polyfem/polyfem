@@ -230,7 +230,8 @@
         "type": "object",
         "required": [
             "value",
-            "size"
+            "size",
+            "type"
         ],
         "optional": [
             "start"
@@ -250,7 +251,8 @@
         "type_name": "append-values",
         "type": "object",
         "required": [
-            "values"
+            "values",
+            "type"
         ],
         "doc": "Append a list of constants at the end of the input vector"
     },
@@ -273,7 +275,8 @@
         "type": "object",
         "required": [
             "from",
-            "to"
+            "to",
+            "type"
         ],
         "optional": [
             "last"
@@ -285,7 +288,8 @@
         "type_name": "slice",
         "type": "object",
         "required": [
-            "parameter_index"
+            "parameter_index",
+            "type"
         ],
         "doc": "Ouputs x[from:to], where x is the input vector"
     },
@@ -311,7 +315,8 @@
         "type_name": "power",
         "type": "object",
         "required": [
-            "power"
+            "power",
+            "type"
         ],
         "doc": "Ouputs x ^ power, where x is the input vector"
     },
@@ -321,10 +326,21 @@
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "exp",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "Ouputs exp(x), where x is the input vector"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
         "type_name": "scale",
         "type": "object",
         "required": [
-            "value"
+            "type",
+            "value",
+            "type"
         ],
         "doc": "Ouputs x * value, where x is the input vector"
     },
@@ -335,7 +351,8 @@
         "required": [
             "input_path",
             "output_path",
-            "dimension"
+            "dimension",
+            "type"
         ],
         "optional": [
             "transformation"
@@ -420,7 +437,8 @@
         "required": [
             "input_path",
             "output_path",
-            "dimensions"
+            "dimensions",
+            "type"
         ],
         "doc": "Append a list of constants at the end of the input vector"
     },
@@ -437,7 +455,8 @@
         "type_name": "per-body-to-per-elem",
         "type": "object",
         "required": [
-            "state"
+            "state",
+            "type"
         ],
         "doc": "From per volume selection to per element."
     },
@@ -446,7 +465,8 @@
         "type_name": "per-body-to-per-node",
         "type": "object",
         "required": [
-            "state"
+            "state",
+            "type"
         ],
         "doc": "From per volume selection to per FE node."
     },
@@ -455,7 +475,8 @@
         "type_name": "E-nu-to-lambda-mu",
         "type": "object",
         "required": [
-            "is_volume"
+            "is_volume",
+            "type"
         ]
     },
     {
@@ -468,7 +489,8 @@
         "type": "object",
         "required": [
             "state",
-            "radius"
+            "radius",
+            "type"
         ],
         "doc": "Apply linear smoothing filter on a field per element."
     },

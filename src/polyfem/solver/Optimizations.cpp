@@ -355,6 +355,35 @@ namespace polyfem::solver
 		return var2sim;
 	}
 
+	Eigen::VectorXd AdjointOptUtils::inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, std::vector<std::shared_ptr<VariableToSimulation>> &var2sim)
+	{
+		Eigen::VectorXd x;
+		x.setZero(ndof);
+		int accumulative = 0;
+		int var = 0;
+		for (const auto &arg : args)
+		{
+			Eigen::VectorXd tmp(variable_sizes[var]);
+			if (arg["initial"].is_array() && arg["initial"].size() > 0)
+			{
+				tmp = arg["initial"];
+				x.segment(accumulative, tmp.size()) = tmp;
+			}
+			else if (arg["initial"].is_number())
+			{
+				tmp.setConstant(arg["initial"].get<double>());
+				x.segment(accumulative, tmp.size()) = tmp;
+			}
+			else
+				x += var2sim[var]->inverse_eval();
+
+			accumulative += tmp.size();
+			var++;
+		}
+
+		return x;
+	}
+
 	std::shared_ptr<State> AdjointOptUtils::create_state(const json &args, CacheLevel level, const size_t max_threads)
 	{
 		std::shared_ptr<State> state = std::make_shared<State>();
@@ -386,6 +415,35 @@ namespace polyfem::solver
 		state->assemble_mass_mat();
 
 		return state;
+	}
+
+	std::vector<std::shared_ptr<State>> AdjointOptUtils::create_states(const json &state_args, const CacheLevel &level, const spdlog::level::level_enum &log_level, const size_t max_threads)
+	{
+		std::vector<std::shared_ptr<State>> states(state_args.size());
+		int i = 0;
+		for (const json &args : state_args)
+		{
+			json cur_args;
+			if (!load_json(args["path"], cur_args))
+				log_and_throw_error("Can't find json for State {}", i);
+
+			{
+				auto tmp = R"({
+						"output": {
+							"log": {
+								"level": -1
+							}
+						}
+					})"_json;
+
+				tmp["output"]["log"]["level"] = int(log_level);
+
+				cur_args.merge_patch(tmp);
+			}
+
+			states[i++] = AdjointOptUtils::create_state(cur_args, level, max_threads);
+		}
+		return states;
 	}
 
 	void AdjointOptUtils::solve_pde(State &state)

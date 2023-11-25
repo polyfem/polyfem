@@ -62,14 +62,7 @@ namespace polyfem
 
 			{
 				POLYFEM_SCOPED_TIMER(forward_solve_time);
-				try {
-					solve_tensor_nonlinear(sol, t);
-				}
-				catch (...)
-				{
-					logger().error("Exit transient simulation...");
-					break;
-				}
+				solve_tensor_nonlinear(sol, t);
 			}
 
 #ifdef POLYFEM_WITH_REMESHING

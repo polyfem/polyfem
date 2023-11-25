@@ -12,14 +12,13 @@ namespace polyfem
 namespace polyfem::solver
 {
 	class AdjointForm;
-	class CompositeForm;
 	class VariableToSimulation;
 
 	class AdjointNLProblem : public FullNLProblem
 	{
 	public:
-		AdjointNLProblem(std::shared_ptr<CompositeForm> composite_form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
-		AdjointNLProblem(std::shared_ptr<CompositeForm> composite_form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
+		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
+		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
 
 		double value(const Eigen::VectorXd &x) override;
 
@@ -48,7 +47,7 @@ namespace polyfem::solver
 	private:
 		const json args_;
 
-		std::shared_ptr<CompositeForm> composite_form_;
+		std::shared_ptr<AdjointForm> form_;
 		std::vector<std::shared_ptr<VariableToSimulation>> variables_to_simulation_;
 		std::vector<std::shared_ptr<State>> all_states_;
 		std::vector<bool> active_state_mask;
