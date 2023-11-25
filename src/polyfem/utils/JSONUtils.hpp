@@ -125,14 +125,25 @@ namespace nlohmann
 	{
 		static void to_json(json &j, const Eigen::Matrix<T, nrows, ncols, Eigen::ColMajor, maxdim1, maxdim2> &matrix)
 		{
-			for (int row = 0; row < matrix.rows(); ++row)
+			if (matrix.rows() > 1)
 			{
-				json column = json::array();
+				for (int row = 0; row < matrix.rows(); ++row)
+				{
+					json column = json::array();
+					for (int col = 0; col < matrix.cols(); ++col)
+					{
+						column.push_back(matrix(row, col));
+					}
+					j.push_back(column);
+				}
+			}
+			else if (matrix.rows() == 1)
+			{
+				j = json::array();
 				for (int col = 0; col < matrix.cols(); ++col)
 				{
-					column.push_back(matrix(row, col));
+					j.push_back(matrix(0, col));
 				}
-				j.push_back(column);
 			}
 		}
 
@@ -141,19 +152,23 @@ namespace nlohmann
 			using Scalar = typename Eigen::Matrix<T, nrows, ncols, Eigen::ColMajor, maxdim1, maxdim2>::Scalar;
 			assert(j.size() > 0);
 			assert(nrows >= j.size() || nrows == -1);
-			assert(ncols >= j.at(0).size() || ncols == -1);
+			assert(j.at(0).is_number() || ncols == -1 || ncols >= j.at(0).size());
 			
+			const int n_cols = j.at(0).is_number() ? 1 : j.at(0).size();
 			if (nrows == -1 || ncols == -1)
-				matrix.setZero(j.size(), j.at(0).size());
+				matrix.setZero(j.size(), n_cols);
 			
 			for (std::size_t row = 0; row < j.size(); ++row)
 			{
 				const auto& jrow = j.at(row);
-				for (std::size_t col = 0; col < jrow.size(); ++col)
-				{
-					const auto& value = jrow.at(col);
-					matrix(row, col) = value.get<Scalar>();
-				}
+				if (jrow.is_number())
+					matrix(row) = jrow;
+				else
+					for (std::size_t col = 0; col < jrow.size(); ++col)
+					{
+						const auto& value = jrow.at(col);
+						matrix(row, col) = value.get<Scalar>();
+					}
 			}
 		}
 	};
