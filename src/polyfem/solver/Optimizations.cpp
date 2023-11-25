@@ -23,7 +23,7 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 
-#include <polysolve/nonlinear/Solver.hpp>
+#include <polysolve/nonlinear/BoxConstraintSolver.hpp>
 
 namespace polyfem::solver
 {
@@ -46,7 +46,15 @@ namespace polyfem::solver
 
 	std::shared_ptr<polysolve::nonlinear::Solver> AdjointOptUtils::make_nl_solver(const json &solver_params, const json &linear_solver_params, const double characteristic_length)
 	{
-		return polysolve::nonlinear::Solver::create(solver_params, linear_solver_params, characteristic_length, adjoint_logger());
+		auto names = polysolve::nonlinear::Solver::available_solvers();
+		if (std::find(names.begin(),names.end(),solver_params["solver"]) != names.end())
+			return polysolve::nonlinear::Solver::create(solver_params, linear_solver_params, characteristic_length, adjoint_logger());
+		
+		names = polysolve::nonlinear::BoxConstraintSolver::available_solvers();
+		if (std::find(names.begin(),names.end(),solver_params["solver"]) != names.end())
+			return polysolve::nonlinear::BoxConstraintSolver::create(solver_params, linear_solver_params, characteristic_length, adjoint_logger());
+		
+		log_and_throw_error("Invalid nonlinear solver name!");
 	}
 
 	std::shared_ptr<AdjointForm> AdjointOptUtils::create_form(const json &args, const std::vector<std::shared_ptr<VariableToSimulation>> &var2sim, const std::vector<std::shared_ptr<State>> &states)
@@ -540,5 +548,4 @@ namespace polyfem::solver
 
 		return -1;
 	}
-
 } // namespace polyfem::solver

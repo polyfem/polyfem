@@ -1737,8 +1737,8 @@ namespace polyfem
 				solve_transient_navier_stokes(time_steps, t0, dt, sol, pressure);
 			else if (assembler->name() == "OperatorSplitting")
 				solve_transient_navier_stokes_split(time_steps, dt, sol, pressure);
-			else if (solve_homogenization())
-				solve_transient_homogenization(time_steps, t0, dt, args["boundary_conditions"]["periodic_boundary"]["fixed_macro_strain"].get<std::vector<int>>(), sol);
+			else if (is_homogenization())
+				solve_homogenization(time_steps, t0, dt, args["boundary_conditions"]["periodic_boundary"]["fixed_macro_strain"].get<std::vector<int>>(), sol);
 			else if (assembler->is_linear() && !is_contact_enabled()) // Collisions add nonlinearity to the problem
 				solve_transient_linear(time_steps, t0, dt, sol, pressure);
 			else if (!assembler->is_linear() && problem->is_scalar())
@@ -1750,13 +1750,8 @@ namespace polyfem
 		{
 			if (assembler->name() == "NavierStokes")
 				solve_navier_stokes(sol, pressure);
-			else if (solve_homogenization())
-			{
-				Eigen::MatrixXd disp_grad = macro_strain_constraint.eval(mesh->dimension(), 0);
-				init_homogenization_solve(args["boundary_conditions"]["periodic_boundary"]["fixed_macro_strain"].get<std::vector<int>>(), 0);
-				Eigen::MatrixXd extended_sol = solve_homogenized_field(disp_grad, args["boundary_conditions"]["periodic_boundary"]["fixed_macro_strain"].get<std::vector<int>>(), 0, true);
-				sol = extended_sol.topRows(extended_sol.size()-disp_grad.size()) + io::Evaluator::generate_linear_field(n_bases, mesh_nodes, disp_grad);
-			}
+			else if (is_homogenization())
+				solve_homogenization(/* time steps */ 0, /* t0 */ 0, /* dt */ 0, args["boundary_conditions"]["periodic_boundary"]["fixed_macro_strain"].get<std::vector<int>>(), sol);
 			else if (assembler->is_linear() && !is_contact_enabled())
 			{
 				init_linear_solve(sol);

@@ -19,7 +19,7 @@
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
 
-#include <polysolve/nonlinear/Solver.hpp>
+#include <polysolve/nonlinear/BoxConstraintSolver.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -243,7 +243,7 @@ TEST_CASE("topology-opt", "[optimization]")
 		{
 			Eigen::VectorXd tmp(arg["number"].get<int>());
 			if (arg["initial"].is_array())
-				nlohmann::adl_serializer<Eigen::VectorXd>::from_json(arg["initial"], tmp);
+				tmp = arg["initial"];
 			else if (arg["initial"].is_number())
 				tmp.setConstant(arg["initial"].get<double>());
 			x.segment(accumulative, tmp.size()) = tmp;
@@ -258,32 +258,26 @@ TEST_CASE("topology-opt", "[optimization]")
 		nl_problem->solution_changed(x);
 	}
 
-	// TODO @Zizhou
-	//  auto nl_solver = std::make_shared<polysolve::nonlinear::Solver>(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], 0., 1);
+	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], 1);
 
-	// // TODO: Define in json interface
-	// // nonlinear inequality constraints g(x) < 0
-	// {
-	// 	auto obj1 = std::make_shared<WeightedVolumeForm>(CompositeParametrization({std::make_shared<LinearFilter>(*(states[0]->mesh), 0.1)}), *(states[0]));
-	// 	obj1->set_weight(1 / 1.2);
-	// 	auto obj2 = std::make_shared<PlusConstCompositeForm>(obj1, -1);
-	// 	// TODO
-	// 	//  nl_solver->set_constraints({obj2});
-	// }
+	// TODO: Define in json interface
+	// nonlinear inequality constraints g(x) < 0
+	{
+		auto obj1 = std::make_shared<WeightedVolumeForm>(CompositeParametrization({std::make_shared<LinearFilter>(*(states[0]->mesh), 0.1)}), *(states[0]));
+		obj1->set_weight(1 / 1.2);
+		auto obj2 = std::make_shared<PlusConstCompositeForm>(obj1, -1);
+		std::vector<std::shared_ptr<Form>> constraints = {{obj2}};
+		auto constraint = std::make_shared<FullNLProblem>(constraints);
+		std::dynamic_pointer_cast<polysolve::nonlinear::BoxConstraintSolver>(nl_solver)->add_constraint(constraint);
+	}
 
-	// // run the optimization for a few steps
-	// // CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
-	// nl_solver->minimize(*nl_problem, x);
+	// run the optimization for a few steps
+	nl_solver->minimize(*nl_problem, x);
 
-	// const json &params = nl_solver->get_info();
-	// std::cout << "final energy " << params["energy"].get<double>() << "\n";
+	const json &params = nl_solver->get_info();
+	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
-	// REQUIRE(params["energy"].get<double>() == Catch::Approx(0.726565).epsilon(1e-4));
-
-	// check if the objective at these steps are correct
-	// auto energies = read_energy(name);
-	// REQUIRE(energies[0] == Catch::Approx(136.014).epsilon(1e-4));
-	// REQUIRE(energies[energies.size() - 1] == Catch::Approx(0.726565).epsilon(1e-4));
+	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.726565).epsilon(1e-4));
 }
 
 TEST_CASE("AMIPS-debug", "[optimization]")

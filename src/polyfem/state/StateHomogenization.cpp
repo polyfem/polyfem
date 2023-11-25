@@ -103,7 +103,7 @@ void State::init_homogenization_solve(const std::vector<int> &fixed_entry, const
     solve_data.nl_problem = homo_problem;
 }
 
-Eigen::MatrixXd State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, const std::vector<int> &fixed_entry, const int t, bool adaptive_initial_weight)
+void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, const std::vector<int> &fixed_entry, const int t, bool adaptive_initial_weight)
 {
     const int dim = mesh->dimension();
     const int ndof = n_bases * dim;
@@ -114,16 +114,12 @@ Eigen::MatrixXd State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, const
         log_and_throw_error("Macro strain is not symmetric!");
 
     std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver();
-    
-    bool force_al = args["solver"]["augmented_lagrangian"]["force"];
 
     Eigen::VectorXd extended_sol;
     extended_sol.setZero(ndof + dim * dim);
-    if (!force_al)
-        extended_sol.tail(dim * dim) = utils::flatten(disp_grad); // if not forcing AL, start solve from pure compression
     
-    if (initial_guess.size() == extended_sol.size())
-        extended_sol = initial_guess;
+    if (sol.size() == extended_sol.size())
+        extended_sol = sol;
 
     {
         Eigen::VectorXi al_indices;
@@ -161,6 +157,7 @@ Eigen::MatrixXd State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, const
 
         homo_problem->line_search_begin(tmp_sol, reduced_sol);
         int al_steps = 0;
+        bool force_al = true;
 		while (force_al
 			   || !std::isfinite(homo_problem->value(reduced_sol))
 			   || !homo_problem->is_step_valid(tmp_sol, reduced_sol)
@@ -253,40 +250,37 @@ Eigen::MatrixXd State::solve_homogenized_field(Eigen::MatrixXd &disp_grad, const
     homo_problem->init(reduced_sol);
     nl_solver->minimize(*homo_problem, reduced_sol);
 
-    disp_grad = homo_problem->reduced_to_disp_grad(reduced_sol);
-    logger().info("displacement grad {}", utils::flatten(disp_grad).transpose());
+    logger().info("displacement grad {}", extended_sol.tail(dim * dim).transpose());
 
     if (optimization_enabled != CacheLevel::None)
-        cache_transient_adjoint_quantities(t, homo_problem->reduced_to_full(reduced_sol), disp_grad);
+        cache_transient_adjoint_quantities(t, homo_problem->reduced_to_full(reduced_sol), utils::unflatten(extended_sol.tail(dim * dim), dim));
     
-    return homo_problem->reduced_to_extended(reduced_sol);
+    sol = homo_problem->reduced_to_extended(reduced_sol);
 }
 
-void State::solve_transient_homogenization(const int time_steps, const double t0, const double dt, const std::vector<int> &fixed_entry, Eigen::MatrixXd &sol)
+void State::solve_homogenization(const int time_steps, const double t0, const double dt, const std::vector<int> &fixed_entry, Eigen::MatrixXd &sol)
 {
-    if (!args["time"]["quasistatic"])
+    bool is_static = !is_param_valid(args, "time");
+    if (!is_static && !args["time"]["quasistatic"])
         log_and_throw_error("Transient homogenization can only do quasi-static!");
     
-    Eigen::MatrixXd disp_grad = macro_strain_constraint.eval(mesh->dimension(), t0);
     init_homogenization_solve(fixed_entry, t0);
 
+    Eigen::MatrixXd extended_sol;
     for (int t = 0; t <= time_steps; ++t)
     {
         double forward_solve_time = 0, remeshing_time = 0, global_relaxation_time = 0;
 
-        disp_grad = macro_strain_constraint.eval(mesh->dimension(), t0 + dt * t);
+        const Eigen::MatrixXd disp_grad = macro_strain_constraint.eval(mesh->dimension(), t0 + dt * t);
         {
             POLYFEM_SCOPED_TIMER(forward_solve_time);
-            try {
-                initial_guess = solve_homogenized_field(disp_grad, fixed_entry, t, false);
-            }
-            catch (...)
-            {
-                logger().error("Exit quasi-static simulation...");
-                break;
-            }
+            solve_homogenization_step(extended_sol, disp_grad, fixed_entry, t, false);
         }
-        sol = initial_guess.topRows(initial_guess.size()-disp_grad.size()) + io::Evaluator::generate_linear_field(n_bases, mesh_nodes, disp_grad);
+        sol = extended_sol.topRows(extended_sol.size()-disp_grad.size()) + io::Evaluator::generate_linear_field(n_bases, mesh_nodes, utils::unflatten(extended_sol.bottomRows(disp_grad.size()), mesh->dimension()));
+        
+        if (is_static)
+            return;
+
         // Always save the solution for consistency
         save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 

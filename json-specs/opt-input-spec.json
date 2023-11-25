@@ -19,18 +19,18 @@
         "pointer": "/functionals",
         "type": "list",
         "default": [],
-        "doc": "TODO"
+        "doc": "A list of functionals. Their sum is the functional being optimized."
     },
     {
         "pointer": "/stopping_conditions",
         "type": "list",
         "default": [],
-        "doc": "TODO"
+        "doc": "A list of functionals. The optimization stops if these functionals are all negative, even if the objective gradient norm is not small enough."
     },
     {
         "pointer": "/states",
         "type": "list",
-        "doc": "TODO"
+        "doc": "Specify a numebr of simulations used in the optimization."
     },
     {
         "pointer": "/states/*",
@@ -40,19 +40,18 @@
         ],
         "optional": [
             "initial_guess"
-        ],
-        "doc": "TODO"
+        ]
     },
     {
         "pointer": "/states/*/path",
         "type": "file",
-        "doc": "TODO"
+        "doc": "The json file path for this state."
     },
     {
         "pointer": "/states/*/initial_guess",
         "default": -1,
         "type": "int",
-        "doc": "TODO"
+        "doc": "Specify the state ID, whose solution is used to initialize the solve in this state."
     },
     {
         "pointer": "/output",
@@ -84,7 +83,7 @@
             "nonlinear",
             "advanced"
         ],
-        "doc": "TODO"
+        "doc": "Optimization solver parameters."
     },
     {
         "pointer": "/solver/nonlinear",
@@ -95,7 +94,7 @@
     {
         "pointer": "/variable_to_simulation",
         "type": "list",
-        "doc": "TODO"
+        "doc": "A list of mappings from the raw optimization variable to parameters in states."
     },
     {
         "pointer": "/variable_to_simulation/*/type",

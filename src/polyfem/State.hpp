@@ -207,9 +207,6 @@ namespace polyfem
 		/// System right-hand side.
 		Eigen::MatrixXd rhs;
 
-		/// In Elasticity PDE, solve for "min W(disp_grad + \grad u)" instead of "min W(\grad u)"
-		assembler::MacroStrainValue macro_strain_constraint;
-
 		/// use average pressure for stokes problem to fix the additional dofs, true by default
 		/// if false, it will fix one pressure node to zero
 		bool use_avg_pressure;
@@ -707,12 +704,13 @@ namespace polyfem
 		//-----------------homogenization--------------------
 		//---------------------------------------------------
 	public:
-		Eigen::MatrixXd solve_homogenized_field(Eigen::MatrixXd &disp_grad, const std::vector<int> &fixed_entry, const int t = 0, bool adaptive_initial_weight = false); // returns the extended solution, i.e. [periodic fluctuation, macro strain]; it's designed to run parallel on the same state
-		void init_homogenization_solve(const std::vector<int> &fixed_entry, const double t);
-		void solve_transient_homogenization(const int time_steps, const double t0, const double dt, const std::vector<int> &fixed_entry, Eigen::MatrixXd &sol);
-		bool solve_homogenization() const { return args["boundary_conditions"]["periodic_boundary"]["linear_displacement_offset"].size() > 0; }
+		assembler::MacroStrainValue macro_strain_constraint;
 
-		Eigen::VectorXd initial_guess;
+		/// In Elasticity PDE, solve for "min W(disp_grad + \grad u)" instead of "min W(\grad u)"
+		void solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, const std::vector<int> &fixed_entry, const int t = 0, bool adaptive_initial_weight = false); // sol is the extended solution, i.e. [periodic fluctuation, macro strain]
+		void init_homogenization_solve(const std::vector<int> &fixed_entry, const double t);
+		void solve_homogenization(const int time_steps, const double t0, const double dt, const std::vector<int> &fixed_entry, Eigen::MatrixXd &sol);
+		bool is_homogenization() const { return args["boundary_conditions"]["periodic_boundary"]["linear_displacement_offset"].size() > 0; }
 	};
 
 } // namespace polyfem

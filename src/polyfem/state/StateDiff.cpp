@@ -176,7 +176,7 @@ namespace polyfem
 		}
 		else // static formulation
 		{
-			if (assembler->is_linear() && !is_contact_enabled() && !solve_homogenization())
+			if (assembler->is_linear() && !is_contact_enabled() && !is_homogenization())
 			{
 				hessian.setZero();
 				StiffnessMatrix stiffness;
@@ -187,7 +187,7 @@ namespace polyfem
 			{
 				solve_data.nl_problem->set_project_to_psd(false);
 				Eigen::VectorXd reduced;
-				if (solve_homogenization())
+				if (is_homogenization())
 				{
 					std::shared_ptr<solver::NLHomoProblem> homo_problem = std::dynamic_pointer_cast<solver::NLHomoProblem>(solve_data.nl_problem);
 					reduced = homo_problem->full_to_reduced(sol, disp_grad);
@@ -383,7 +383,7 @@ namespace polyfem
 			For non-periodic problems, the adjoint solution p's size is the full size in NLProblem
 			For periodic problems, the adjoint solution p's size is the reduced size in NLProblem
 			*/
-			if (!solve_homogenization())
+			if (!is_homogenization())
 			{
 				for (int i = 0; i < b.cols(); i++)
 				{
@@ -484,7 +484,7 @@ namespace polyfem
 					Eigen::VectorXd b_ = rhs_;
 					b_(boundary_nodes).setZero();
 
-					auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], adjoint_logger());
+					auto solver = polysolve::linear::Solver::create(args["solver"]["adjoint_linear"], adjoint_logger());
 
 					Eigen::VectorXd x;
 					dirichlet_solve(*solver, A, b_, boundary_nodes, x, A.rows(), "", false, false, false);
