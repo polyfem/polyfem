@@ -1378,12 +1378,12 @@ namespace polyfem
 		
 		periodic_collision_mesh.init_area_jacobians();
 
-		tiled_to_single.setConstant(Vnew.rows(), -1);
+		periodic_collision_mesh_to_basis.setConstant(Vnew.rows(), -1);
 		for (int i = 0; i < V.rows(); i++)
 			for (int j = 0; j < n_tiles * n_tiles; j++)
-				tiled_to_single(SVI[j * V.rows() + i]) = i;
+				periodic_collision_mesh_to_basis(SVI[j * V.rows() + i]) = i;
 		
-		if (tiled_to_single.maxCoeff() + 1 != V.rows())
+		if (periodic_collision_mesh_to_basis.maxCoeff() + 1 != V.rows())
 			log_and_throw_error("Failed to tile mesh!");
 	}
 

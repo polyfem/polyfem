@@ -525,8 +525,8 @@ namespace polyfem
 
 		/// @brief IPC collision mesh under periodic BC
 		ipc::CollisionMesh periodic_collision_mesh;
-		/// index mapping from tiled mesh to original periodic mesh
-		Eigen::VectorXi tiled_to_single;
+		/// index mapping from periodic 2x2 collision mesh to FE periodic mesh
+		Eigen::VectorXi periodic_collision_mesh_to_basis;
 
 		/// @brief extracts the boundary mesh for collision, called in build_basis
 		static void build_collision_mesh(

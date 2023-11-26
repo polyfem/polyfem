@@ -62,7 +62,7 @@ void State::init_homogenization_solve(const std::vector<int> &fixed_entry, const
         args["solver"]["contact"]["CCD"]["max_iterations"],
         optimization_enabled == CacheLevel::Derivatives,
         // Periodic contact
-        args["contact"]["periodic"], tiled_to_single,
+        args["contact"]["periodic"], periodic_collision_mesh_to_basis,
         // Friction form
         args["contact"]["friction_coefficient"],
         args["contact"]["epsv"],
