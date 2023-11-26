@@ -106,7 +106,7 @@ namespace
 		for (auto& arg : opt_args["states"])
 			arg["path"] = append_root_path(arg["path"]);
 
-		std::vector<std::shared_ptr<State>> states = AdjointOptUtils::create_states(opt_args["states"], CacheLevel::Derivatives, spdlog::level::level_enum::err, 16);
+		std::vector<std::shared_ptr<State>> states = AdjointOptUtils::create_states(opt_args["states"], solver::CacheLevel::Derivatives, spdlog::level::level_enum::err, 16);
 
 		/* DOF */
 		int ndof = 0;

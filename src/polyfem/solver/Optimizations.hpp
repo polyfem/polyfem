@@ -1,6 +1,8 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/solver/DiffCache.hpp>
 
 namespace polyfem
 {

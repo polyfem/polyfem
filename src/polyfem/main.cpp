@@ -217,7 +217,7 @@ int optimization_simulation(const CLI::App &command_line,
 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, is_strict);
 
 	/* states */
-	std::vector<std::shared_ptr<State>> states = AdjointOptUtils::create_states(opt_args["states"], CacheLevel::Derivatives, log_level, max_threads);
+	std::vector<std::shared_ptr<State>> states = AdjointOptUtils::create_states(opt_args["states"], polyfem::solver::CacheLevel::Derivatives, log_level, max_threads);
 
 	/* DOF */
 	int ndof = 0;

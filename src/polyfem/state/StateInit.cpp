@@ -348,7 +348,7 @@ namespace polyfem
 
 		problem->set_units(*assembler, units);
 
-		if (optimization_enabled == CacheLevel::Derivatives)
+		if (optimization_enabled == solver::CacheLevel::Derivatives)
 		{
 			if (is_contact_enabled())
 			{
