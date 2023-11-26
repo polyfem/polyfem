@@ -25,6 +25,7 @@
             "strain_norm",
             "boundary_smoothing",
             "collision_barrier",
+            "deformed_collision_barrier",
             "control_smoothing",
             "material_smoothing",
             "volume",
@@ -694,6 +695,21 @@
         "pointer": "/",
         "type": "object",
         "type_name": "collision_barrier",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "weight",
+            "print_energy",
+            "dhat"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "deformed_collision_barrier",
         "required": [
             "state",
             "type"

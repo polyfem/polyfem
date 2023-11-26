@@ -54,21 +54,6 @@ namespace polyfem::solver
 		virtual void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
 	};
 
-	// For optimizing the shape of a parametrized SDF. The mesh connectivity may change when SDF changes, so a new mesh is loaded whenever the optimization variable changes.
-	// state variable dof = dim * n_vertices
-	class SDFShapeVariableToSimulation : public ShapeVariableToSimulation
-	{
-	public:
-		SDFShapeVariableToSimulation(const std::vector<std::shared_ptr<State>> &states, const CompositeParametrization &parametrization, const json &args);
-		virtual ~SDFShapeVariableToSimulation() {}
-
-		void update(const Eigen::VectorXd &x) override;
-
-	protected:
-		const int mesh_id_;
-		const std::string mesh_path_;
-	};
-
 	// To optimize per element elastic parameters
 	// state variable dof = 2 * n_elements
 	class ElasticVariableToSimulation : public VariableToSimulation

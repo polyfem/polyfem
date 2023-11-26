@@ -68,6 +68,13 @@ namespace polyfem
 		class Mesh3D;
 	} // namespace mesh
 
+	enum class CacheLevel
+	{
+		None,
+		Solution,
+		Derivatives
+	};
+
 	/// main class that contains the polyfem solver and all its state
 	class State
 	{
@@ -624,7 +631,7 @@ namespace polyfem
 		//-----------------differentiable--------------------
 		//---------------------------------------------------
 	public:
-		bool optimization_enabled = false;
+		CacheLevel optimization_enabled = CacheLevel::None;
 		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
 		solver::DiffCache diff_cached;
 
