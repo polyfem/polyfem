@@ -552,9 +552,16 @@
         "type": "object",
         "optional": [
             "solve_in_parallel",
-            "solve_in_order"
+            "solve_in_order",
+            "characteristic_length"
         ],
         "doc": "Advanced settings for arranging forward simulations"
+    },
+    {
+        "pointer": "/solver/advanced/characteristic_length",
+        "default": 1,
+        "type": "float",
+        "doc": "A scaling on the nonlinear problem for better stability."
     },
     {
         "pointer": "/solver/advanced/solve_in_parallel",

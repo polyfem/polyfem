@@ -262,7 +262,7 @@ int optimization_simulation(const CLI::App &command_line,
 	//  	return EXIT_SUCCESS;
 	//  }
 
-	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], 1);
+	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], opt_args["solver"]["advanced"]["characteristic_length"]);
 	nl_solver->minimize(*nl_problem, x);
 
 	return EXIT_SUCCESS;
