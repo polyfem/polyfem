@@ -45,8 +45,6 @@ namespace polyfem::solver
 		std::shared_ptr<State> get_state(int id) { return all_states_[id]; }
 
 	private:
-		const json args_;
-
 		std::shared_ptr<AdjointForm> form_;
 		std::vector<std::shared_ptr<VariableToSimulation>> variables_to_simulation_;
 		std::vector<std::shared_ptr<State>> all_states_;

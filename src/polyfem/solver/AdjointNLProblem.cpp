@@ -94,7 +94,6 @@ namespace polyfem::solver
 
 	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
 		: FullNLProblem({form}),
-		  args_(args),
 		  form_(form),
 		  variables_to_simulation_(variables_to_simulation),
 		  all_states_(all_states),
