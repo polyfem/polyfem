@@ -7,8 +7,8 @@
 #include <polyfem/State.hpp>
 
 #include <polyfem/solver/AdjointNLProblem.hpp>
+#include <polyfem/solver/forms/adjoint_forms/AdjointForm.hpp>
 #include <polyfem/solver/Optimizations.hpp>
-#include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -214,37 +214,10 @@ int optimization_simulation(const CLI::App &command_line,
 							json &opt_args)
 {
 	// TODO fix gobal stuff threads log level etc
-
 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, is_strict);
 
 	/* states */
-	json state_args = opt_args["states"];
-	std::vector<std::shared_ptr<State>> states(state_args.size());
-	{
-		int i = 0;
-		for (const json &args : state_args)
-		{
-			json cur_args;
-			if (!load_json(args["path"], cur_args))
-				log_and_throw_error("Can't find json for State {}", i);
-
-			{
-				auto tmp = R"({
-						"output": {
-							"log": {
-								"level": -1
-							}
-						}
-					})"_json;
-
-				tmp["output"]["log"]["level"] = int(log_level);
-
-				cur_args.merge_patch(tmp);
-			}
-
-			states[i++] = AdjointOptUtils::create_state(cur_args, max_threads);
-		}
-	}
+	std::vector<std::shared_ptr<State>> states = AdjointOptUtils::create_states(opt_args["states"], polyfem::solver::CacheLevel::Derivatives, log_level, max_threads);
 
 	/* DOF */
 	int ndof = 0;
@@ -264,9 +237,8 @@ int optimization_simulation(const CLI::App &command_line,
 														   variable_sizes));
 
 	/* forms */
-	std::shared_ptr<SumCompositeForm> obj =
-		std::dynamic_pointer_cast<SumCompositeForm>(AdjointOptUtils::create_form(
-			opt_args["functionals"], variable_to_simulations, states));
+	std::shared_ptr<AdjointForm> obj = AdjointOptUtils::create_form(
+			opt_args["functionals"], variable_to_simulations, states);
 
 	/* stopping conditions */
 	std::vector<std::shared_ptr<AdjointForm>> stopping_conditions;
@@ -274,29 +246,7 @@ int optimization_simulation(const CLI::App &command_line,
 		stopping_conditions.push_back(
 			AdjointOptUtils::create_form(arg, variable_to_simulations, states));
 
-	Eigen::VectorXd x;
-	x.setZero(ndof);
-	int accumulative = 0;
-	int var = 0;
-	for (const auto &arg : opt_args["parameters"])
-	{
-		Eigen::VectorXd tmp(variable_sizes[var]);
-		if (arg["initial"].is_array() && arg["initial"].size() > 0)
-		{
-			nlohmann::adl_serializer<Eigen::VectorXd>::from_json(arg["initial"], tmp);
-			x.segment(accumulative, tmp.size()) = tmp;
-		}
-		else if (arg["initial"].is_number())
-		{
-			tmp.setConstant(arg["initial"].get<double>());
-			x.segment(accumulative, tmp.size()) = tmp;
-		}
-		else
-			x += variable_to_simulations[var]->inverse_eval();
-
-		accumulative += tmp.size();
-		var++;
-	}
+	Eigen::VectorXd x = AdjointOptUtils::inverse_evaluation(opt_args["parameters"], ndof, variable_sizes, variable_to_simulations);
 
 	for (auto &v2s : variable_to_simulations)
 		v2s->update(x);
@@ -304,15 +254,14 @@ int optimization_simulation(const CLI::App &command_line,
 	auto nl_problem = std::make_shared<AdjointNLProblem>(
 		obj, stopping_conditions, variable_to_simulations, states, opt_args);
 
-	// TODO this should be a json arg
-	//  if (only_compute_energy)
-	//  {
-	//  	nl_problem->solution_changed(x);
-	//  	logger().info("Energy is {}", nl_problem->value(x));
-	//  	return EXIT_SUCCESS;
-	//  }
+	if (opt_args["compute_objective"].get<bool>())
+	{
+		nl_problem->solution_changed(x);
+		logger().info("Objective is {}", nl_problem->value(x));
+		return EXIT_SUCCESS;
+	}
 
-	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], states.front()->units.characteristic_length());
+	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], opt_args["solver"]["advanced"]["characteristic_length"]);
 	nl_solver->minimize(*nl_problem, x);
 
 	return EXIT_SUCCESS;
