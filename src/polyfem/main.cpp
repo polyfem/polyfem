@@ -256,9 +256,9 @@ int optimization_simulation(const CLI::App &command_line,
 
 	if (opt_args["compute_objective"].get<bool>())
 	{
-	nl_problem->solution_changed(x);
-	logger().info("Objective is {}", nl_problem->value(x));
-	return EXIT_SUCCESS;
+		nl_problem->solution_changed(x);
+		logger().info("Objective is {}", nl_problem->value(x));
+		return EXIT_SUCCESS;
 	}
 
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], opt_args["solver"]["advanced"]["characteristic_length"]);
