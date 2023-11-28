@@ -11,7 +11,8 @@
             "output",
             "solver",
             "stopping_conditions",
-            "functionals"
+            "functionals",
+            "compute_objective"
         ],
         "doc": "Root of the configuration file."
     },
@@ -579,5 +580,11 @@
         "pointer": "/solver/advanced/solve_in_order/*",
         "type": "int",
         "doc": "Id of forward simulations."
+    },
+    {
+        "pointer": "/compute_objective",
+        "type": "bool",
+        "default": false,
+        "doc": "Evaluate the functionals and exit."
     }
 ]

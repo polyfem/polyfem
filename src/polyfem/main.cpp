@@ -254,13 +254,12 @@ int optimization_simulation(const CLI::App &command_line,
 	auto nl_problem = std::make_shared<AdjointNLProblem>(
 		obj, stopping_conditions, variable_to_simulations, states, opt_args);
 
-	// TODO this should be a json arg
-	//  if (only_compute_energy)
-	//  {
-	//  	nl_problem->solution_changed(x);
-	//  	logger().info("Energy is {}", nl_problem->value(x));
-	//  	return EXIT_SUCCESS;
-	//  }
+	if (opt_args["compute_objective"].get<bool>())
+	{
+	nl_problem->solution_changed(x);
+	logger().info("Objective is {}", nl_problem->value(x));
+	return EXIT_SUCCESS;
+	}
 
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], opt_args["solver"]["advanced"]["characteristic_length"]);
 	nl_solver->minimize(*nl_problem, x);
