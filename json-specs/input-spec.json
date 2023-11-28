@@ -2095,9 +2095,16 @@
             "tolerance",
             "correspondence",
             "linear_displacement_offset",
-            "fixed_macro_strain"
+            "fixed_macro_strain",
+            "force_zero_mean"
         ],
         "doc": "Options for periodic boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/force_zero_mean",
+        "type": "bool",
+        "default": false,
+        "doc": "The periodic solution is not unique, set to true to find the solution with zero mean."
     },
     {
         "pointer": "/boundary_conditions/periodic_boundary/enabled",

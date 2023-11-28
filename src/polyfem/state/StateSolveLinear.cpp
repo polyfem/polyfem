@@ -14,6 +14,7 @@
 #include <polyfem/utils/Timer.hpp>
 
 #include <unsupported/Eigen/SparseExtra>
+#include <polyfem/io/Evaluator.hpp>
 
 namespace polyfem
 {
@@ -104,7 +105,16 @@ namespace polyfem
 				assembler->is_fluid(), use_avg_pressure);
 		}
  		if (has_periodic_bc())
- 			sol = periodic_bc->periodic_to_full(full_size, x);
+ 		{
+			sol = periodic_bc->periodic_to_full(full_size, x);
+			if (args["/boundary_conditions/periodic_boundary/force_zero_mean"_json_pointer].get<bool>())
+			{
+				Eigen::VectorXd integral = Evaluator::integrate_function(bases, geom_bases(), sol, mesh->dimension(), problem_dim);
+				double area = Evaluator::integrate_function(bases, geom_bases(), Eigen::VectorXd::Ones(n_bases), mesh->dimension(), 1)(0);
+				for (int d = 0; d < problem_dim; d++)
+					sol(Eigen::seqN(d, n_bases, problem_dim), 0).array() -= integral(d) / area;
+			}
+		}
  		else
  			sol = x; // Explicit copy because sol is a MatrixXd (with one column)
 

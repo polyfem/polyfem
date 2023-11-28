@@ -6,16 +6,12 @@
 #include <polyfem/utils/Timer.hpp>
 
 #include <polysolve/nonlinear/Solver.hpp>
-// #include <polyfem/solver/LBFGSSolver.hpp>
-// #include <polyfem/solver/SparseNewtonDescentSolver.hpp>
-// #include <polyfem/solver/GradientDescentSolver.hpp>
 
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/MacroStrainALForm.hpp>
 #include <polyfem/solver/forms/MacroStrainLagrangianForm.hpp>
 
-// #include <polysolve/FEMSolver.hpp>
 #include <unsupported/Eigen/SparseExtra>
 
 #include <polyfem/io/OBJWriter.hpp>
@@ -245,10 +241,17 @@ void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixX
 
     logger().info("displacement grad {}", extended_sol.tail(dim * dim).transpose());
 
-    if (optimization_enabled != CacheLevel::None)
-        cache_transient_adjoint_quantities(t, homo_problem->reduced_to_full(reduced_sol), utils::unflatten(extended_sol.tail(dim * dim), dim));
-    
     sol = homo_problem->reduced_to_extended(reduced_sol);
+    if (args["/boundary_conditions/periodic_boundary/force_zero_mean"_json_pointer].get<bool>())
+    {
+        Eigen::VectorXd integral = io::Evaluator::integrate_function(bases, geom_bases(), sol, dim, dim);
+        double area = io::Evaluator::integrate_function(bases, geom_bases(), Eigen::VectorXd::Ones(n_bases), dim, 1)(0);
+        for (int d = 0; d < dim; d++)
+            sol(Eigen::seqN(d, n_bases, dim), 0).array() -= integral(d) / area;
+    }
+
+    if (optimization_enabled != CacheLevel::None)
+        cache_transient_adjoint_quantities(t, sol, utils::unflatten(extended_sol.tail(dim * dim), dim));
 }
 
 void State::solve_homogenization(const int time_steps, const double t0, const double dt, const std::vector<int> &fixed_entry, Eigen::MatrixXd &sol)

@@ -996,7 +996,7 @@ namespace polyfem
 		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
 
 		// for elastic pure periodic problem, find an internal node and force zero dirichlet
-		if ((!problem->is_time_dependent() || args["time"]["quasistatic"]) && boundary_nodes.size() == 0 && !problem->is_scalar() && has_periodic_bc())
+		if ((!problem->is_time_dependent() || args["time"]["quasistatic"]) && boundary_nodes.size() == 0 && has_periodic_bc())
 		{
 			// find an internal node to force zero dirichlet
 			std::vector<bool> isboundary(n_bases, false);
@@ -1017,11 +1017,12 @@ namespace polyfem
 					break;
 			if (i >= n_bases)
 				log_and_throw_error("Failed to find a non-periodic node!");
-			for (int d = 0; d < mesh->dimension(); d++)
+			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
+			for (int d = 0; d < actual_dim; d++)
 			{
-				boundary_nodes.push_back(i * mesh->dimension() + d);
+				boundary_nodes.push_back(i * actual_dim + d);
 			}
-			logger().info("Fix displacement at node {} to remove singularity due to periodic BC", i);
+			logger().info("Fix solution at node {} to remove singularity due to periodic BC", i);
 		}
 
 		const auto &curret_bases = geom_bases();
@@ -1090,7 +1091,7 @@ namespace polyfem
 
 		if ((!problem->is_time_dependent() || args["time"]["quasistatic"]) && boundary_nodes.empty())
 		{
-			logger().warn("(Quasi-)Static problem without Dirichlet nodes, will use Lagrange multipliers to find a unique solution!");
+			logger().warn("(Quasi-)Static problem without Dirichlet nodes, will fix solution at one node to find a unique solution!");
 		}
 	}
 
