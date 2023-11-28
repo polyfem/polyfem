@@ -16,9 +16,6 @@
 #include <list>
 #include <stack>
 
-#include <list>
-#include <stack>
-
 namespace polyfem::solver
 {
 	namespace {
