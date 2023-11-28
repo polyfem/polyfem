@@ -50,7 +50,6 @@ namespace polyfem::utils
 		int n_pairs = 0;
 
 		// find corresponding periodic boundary nodes
-		// Eigen::Vector3i dependent_face({1, 2, 5}), target_face({3, 4, 6});
 		for (int d = 0; d < dim; d++)
 		{
 			std::set<int> dependent_ids, target_ids;

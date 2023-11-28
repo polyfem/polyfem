@@ -89,6 +89,8 @@ void State::init_homogenization_solve(const std::vector<int> &fixed_entry, const
                     break;
                 }
             }
+            if (solve_symmetric_flag)
+                break;
         }
     }
 
@@ -206,15 +208,6 @@ void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixX
                     logger().warn("AL weight too small, increase weight and revert solution, new initial weight is {}", args["solver"]["augmented_lagrangian"]["initial_weight"].get<double>());
                 }
                 tmp_sol = initial_sol;
-            }
-            else if (current_error <= error_tol && al_steps == 0)
-            {
-                args["solver"]["augmented_lagrangian"]["initial_weight"] = args["solver"]["augmented_lagrangian"]["initial_weight"].get<double>() / scaling;
-                {
-                    json tmp = json::object();
-                    tmp["/solver/augmented_lagrangian/initial_weight"_json_pointer] = args["solver"]["augmented_lagrangian"]["initial_weight"];
-                }
-                logger().warn("AL weight too large, decrease initial weight to {}", args["solver"]["augmented_lagrangian"]["initial_weight"].get<double>());
             }
 
             // try to enforce fixed values on macro strain
